@@ -26,6 +26,19 @@ class StudioCatalogTest(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)
         (self.root / "configs" / "tasks").mkdir(parents=True)
+        self._write_json(
+            self.root / "configs" / "polycam" / "capture.json",
+            {
+                "simulation_estimates": {
+                    "board": {
+                        "pose_id": "board_robotward_72mm_20260718_v2",
+                        "center_in_table_frame_xy_m": [0.04, -0.093],
+                        "robotward_displacement_from_previous_pose_m": 0.072,
+                    },
+                    "robots": [],
+                }
+            },
+        )
         (self.root / "datasets" / "pick_v1" / "meta").mkdir(parents=True)
         video_dir = (
             self.root
@@ -138,6 +151,30 @@ class StudioCatalogTest(unittest.TestCase):
             "sparse_two_sided_pawns",
         )
         self.assertIn("16 sparse pawns", catalog["simulations"][0]["subtitle"])
+        self.assertEqual(
+            catalog["simulations"][0]["workcell_pose_id"],
+            "board_robotward_72mm_20260718_v2",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["board_center_in_table_frame_xy_m"],
+            [0.04, -0.093],
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["board_pose_label"],
+            "72 mm robotward",
+        )
+        receipt = json.loads(
+            (STUDIO_ASSET_ROOT / "receipt.json").read_text(encoding="utf-8")
+        )
+        expected_revision = hashlib.sha256(
+            json.dumps(
+                receipt["sources"], sort_keys=True, separators=(",", ":")
+            ).encode("utf-8")
+        ).hexdigest()[:8]
+        self.assertEqual(
+            catalog["simulations"][0]["asset_revision"],
+            expected_revision,
+        )
 
     def test_media_tokens_cannot_escape_generated_storage(self) -> None:
         outside = self.root / "README.md"
@@ -192,6 +229,22 @@ class StudioCatalogTest(unittest.TestCase):
                 recorder["schema_version"],
                 "sim2claw.teleop_recorder_state.v1",
             )
+            with urlopen(
+                f"{base}/api/recorder/live-simulation", timeout=3
+            ) as response:
+                live_simulation = json.load(response)
+            self.assertEqual(
+                live_simulation["schema_version"],
+                "sim2claw.live_simulation_recorder.v1",
+            )
+            self.assertFalse(live_simulation["active"])
+            self.assertEqual(
+                live_simulation["scene_url"],
+                "/api/scene?layout=sparse_two_sided_pawns",
+            )
+            self.assertFalse(
+                live_simulation["authority"]["physical_authority"]
+            )
             preflight_request = Request(
                 f"{base}/api/recorder/preflight",
                 data=b"{}",
@@ -233,6 +286,8 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('id="pawn-preview-board"', html)
             self.assertIn('id="sync-follower"', html)
             self.assertIn('id="three-canvas"', html)
+            self.assertIn('id="live-simulation-canvas"', html)
+            self.assertIn('id="live-simulation-status"', html)
             self.assertIn('src="/studio3d.js"', html)
             self.assertIn('src="/assets/workcell/studio-left.png"', html)
             self.assertIn('src="/assets/workcell/studio-right.png"', html)
@@ -255,7 +310,13 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('"C922 REC"', javascript)
             self.assertIn('sim2claw.recorder.settings.v1', javascript)
             self.assertIn('postRecorder("gateway-sync"', javascript)
+            self.assertIn("server_owned_prestart_sequence: physical", javascript)
+            self.assertIn("new AbortController()", javascript)
+            self.assertNotIn("for (const count of [3, 2, 1])", javascript)
             self.assertIn('episode.inspection?.kind === "threejs_state_trace"', javascript)
+            self.assertIn('fetch("/api/recorder/live-simulation"', javascript)
+            self.assertIn("viewer.applyLiveState(liveState)", javascript)
+            self.assertIn("refreshLiveSimulation(), 50", javascript)
             self.assertNotIn("window.confirm", javascript)
 
             font_path = (

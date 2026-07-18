@@ -4,21 +4,21 @@
       "camera": "studio_overview",
       "height": 720,
       "path": "studio-overview.png",
-      "sha256": "30841354efb765192ae9f697704f75285099c162744da483e8b9b84b08dfdb02",
+      "sha256": "4f1d001813ee99f5a8bc8cfd2415fd1e3de1e765d996e618f322271a664f8e3e",
       "width": 1280
     },
     {
       "camera": "studio_left",
       "height": 720,
       "path": "studio-left.png",
-      "sha256": "1a0c1197dd0ec0eba8e6c957b62cc63de41a32bc9f0641fd9895f2cbfa16faca",
+      "sha256": "dd04c5de1663d22666f0acc1271b881eb8c4085b67fd0a03a5983319fbc73a78",
       "width": 960
     },
     {
       "camera": "studio_right",
       "height": 720,
       "path": "studio-right.png",
-      "sha256": "aebd50af4dc6745c1b832e9950dbbad5aebbc609561dfd5568acb73699c511e3",
+      "sha256": "a37a8e1a34665cb35a013c0fe01ba9a95cbc27dc7f7ea26c5183b7d99a1527e0",
       "width": 960
     }
   ],
@@ -29,8 +29,8 @@
   "schema_version": "sim2claw.studio_assets.v1",
   "settle_steps": 500,
   "sources": {
-    "capture_config_sha256": "0e7f603222b03b30d9c9bb4295e0f709f9b89ce71522938038e06234fbe14229",
-    "scene_py_sha256": "c6b13b905f5874f4180f3b2347bb158cea02a88c6d28624a9c563842b4837be2",
+    "capture_config_sha256": "c0cd8769349f8d3f61e7af14c3eb01d43306c34e5ca232a710b32d09068e6107",
+    "scene_py_sha256": "c4bf964145b8acf77ebc7074cc886b3e06b8d9a63215d5d140822c5502aa729e",
     "so101_model_sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
   },
   "training_input": false

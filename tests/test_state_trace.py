@@ -17,6 +17,7 @@ from sim2claw.scene import (
 )
 from sim2claw.state_trace import (
     EpisodeStateTraceRecorder,
+    LIVE_STATE_SCHEMA,
     SCENE_MANIFEST_SCHEMA,
     STATE_TRACE_SCHEMA,
     build_scene_manifest,
@@ -47,6 +48,7 @@ class StateTraceTest(unittest.TestCase):
             mujoco.mj_step(model, data)
             recorder.capture(data, phase="advance")
         recorder.capture(data, phase="advance", force=True)
+        live = recorder.live_snapshot()
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "state_trace.json"
             result = recorder.write(path)
@@ -58,6 +60,9 @@ class StateTraceTest(unittest.TestCase):
         self.assertEqual(payload["authority"]["pose_source"], "mujoco.MjData.xpos+xquat")
         self.assertFalse(payload["authority"]["physical_authority"])
         self.assertEqual(len(result["sha256"]), 64)
+        self.assertEqual(live["schema_version"], LIVE_STATE_SCHEMA)
+        self.assertEqual(live["frame_index"], payload["frame_count"] - 1)
+        self.assertEqual(live["frame"]["p"], payload["frames"][-1]["p"])
 
     def test_grasp_probe_emits_smooth_state_trace_alongside_receipt(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

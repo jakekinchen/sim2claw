@@ -7,6 +7,11 @@ Repo/path: `/Users/kelly/Developer/sim2claw`
 
 Date: 2026-07-17 America/Chicago
 
+Historical status: this log preserves the board pose measured on 2026-07-17.
+The live workcell registration was superseded on 2026-07-18 when the owner
+moved the board 72 mm toward the robots; see
+[`2026-07-18-board-robotward-72mm-registration.md`](./2026-07-18-board-robotward-72mm-registration.md).
+
 ## Acceptance criteria
 
 - Use the Polycam RoomPlan table as the metric reference surface.
@@ -59,7 +64,8 @@ and the Polycam-capture board can be fit independently from the later photo.
 The two evidence surfaces contain different board poses. The Polycam capture
 has the board center near `(-0.022, 0.182) m`; the later overhead photo places
 it at `(0.040, -0.165) m`, a 0.352 m displacement. This is treated as a real
-scene-state change, not registration noise.
+scene-state change, not registration noise. These values remain the historical
+2026-07-17 result; they are not the current workcell pose.
 
 ## Verification and proof
 

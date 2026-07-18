@@ -43,6 +43,7 @@ from .scene import (
     TELEOP_PAWN_SOURCE_SQUARES,
     build_scene_spec,
     initialize_robot_poses,
+    scene_summary,
 )
 from .state_trace import EpisodeStateTraceRecorder
 
@@ -52,6 +53,7 @@ RECEIPT_SCHEMA = "sim2claw.act_source_recording_receipt.v1"
 DEFAULT_LEADER_SERIAL_SUFFIX = "0448141"
 DEFAULT_FOLLOWER_SERIAL_SUFFIX = "0406411"
 DEFAULT_SAMPLE_HZ = 30
+LIVE_SIMULATION_SCHEMA = "sim2claw.live_simulation_recorder.v1"
 LABEL_PATTERN = re.compile(r"[^a-z0-9]+")
 TELEOP_DESTINATION_SQUARES = tuple(
     f"{file_name}{rank}" for rank in "1234" for file_name in "abcdefgh"
@@ -371,6 +373,7 @@ class SimulationFollowerBackend:
             "physical_gateway_preflight": None,
             "sim_replay": None,
             "pose_inputs_available": True,
+            "_live_simulation": self.trace.live_snapshot(),
         }
 
     def sample(self, elapsed_seconds: float) -> dict[str, Any]:
@@ -404,6 +407,14 @@ class SimulationFollowerBackend:
             "pose_inputs_available": True,
             "available_motor_current": None,
             "physical_follower_torque_enabled": False,
+            "_live_simulation_frame": (
+                {
+                    "frame_index": len(self.trace.frames) - 1,
+                    "frame": self.trace.frames[-1],
+                }
+                if self.trace is not None and self.trace.frames
+                else None
+            ),
         }
 
     def write_state_trace(self, path: Path) -> dict[str, Any]:
@@ -428,12 +439,9 @@ class PhysicalFollowerBackend:
     def open(self) -> dict[str, Any]:
         if not self.request.get("physical_safety_acknowledged"):
             raise RecorderError("Physical safety acknowledgement is required.")
-        if not self.request.get("physical_pose_match_acknowledged"):
-            raise RecorderError("Paired physical-pose acknowledgement is required.")
-        gateway = self.gateway.open(
-            enable_motion=True,
-            paired_pose_confirmed=True,
-        )
+        if not self.request.get("server_owned_prestart_sequence"):
+            raise RecorderError("Server-owned physical pre-start sequence is required.")
+        gateway = self.gateway.synchronize_and_arm(countdown_seconds=3.0)
         return {
             **gateway,
             "proof_class": self.proof_class,
@@ -503,7 +511,26 @@ class TeleopRecordingManager:
         self.thread: threading.Thread | None = None
         self.backend: RecorderBackend | None = None
         self.video_recorder: DiagnosticVideoRecorder | None = None
+        self.live_simulation: dict[str, Any] = self._empty_live_simulation()
         self.state: dict[str, Any] = self._recover_existing_state()
+
+    def _empty_live_simulation(self) -> dict[str, Any]:
+        return {
+            "schema_version": LIVE_SIMULATION_SCHEMA,
+            "mode": None,
+            "recording_id": None,
+            "active": False,
+            "scene_url": f"/api/scene?layout={CURRENT_TASK_PIECE_LAYOUT}",
+            "manifest_revision_sha256": None,
+            "body_names": [],
+            "frame_index": None,
+            "frame": None,
+            "authority": {
+                "pose_source": "mujoco.MjData.xpos+xquat",
+                "browser_renderer": "inspection_only",
+                "physical_authority": False,
+            },
+        }
 
     def _idle_state(self) -> dict[str, Any]:
         return {
@@ -520,6 +547,7 @@ class TeleopRecordingManager:
             "saved_path": None,
             "error": None,
             "last_error": None,
+            "last_error_details": None,
             "last_failed_recording_id": None,
             "last_failed_attempt_path": None,
             "training_admission": "not_applicable",
@@ -573,6 +601,7 @@ class TeleopRecordingManager:
                 if last_failure is None:
                     last_failure = {
                         "last_error": candidate.get("error"),
+                        "last_error_details": candidate.get("error_details"),
                         "last_failed_recording_id": candidate.get("recording_id"),
                         "last_failed_attempt_path": archived_path,
                     }
@@ -590,6 +619,7 @@ class TeleopRecordingManager:
             self.state = {
                 **self._idle_state(),
                 "last_error": failed_state.get("error"),
+                "last_error_details": failed_state.get("error_details"),
                 "last_failed_recording_id": failed_state.get("recording_id"),
                 "last_failed_attempt_path": archived_path,
             }
@@ -605,6 +635,12 @@ class TeleopRecordingManager:
             snapshot = json.loads(json.dumps(self.state))
         snapshot["preflight"] = self.preflight()
         return snapshot
+
+    def live_simulation_snapshot(self) -> dict[str, Any]:
+        """Return the latest simulator pose without touching either arm bus."""
+
+        with self.lock:
+            return json.loads(json.dumps(self.live_simulation))
 
     def verify_physical_gateway(self) -> dict[str, Any]:
         with self.lock:
@@ -638,7 +674,7 @@ class TeleopRecordingManager:
             self.state["last_error"] = None
         return self.snapshot()
 
-    def start(self, request: dict[str, Any], *, timeout_seconds: float = 20.0) -> dict[str, Any]:
+    def start(self, request: dict[str, Any], *, timeout_seconds: float = 40.0) -> dict[str, Any]:
         self._return_failed_attempt_to_ready()
         contract = load_act_pick_place_task_contract()
         mode = str(request.get("mode") or "simulation_follower")
@@ -661,6 +697,21 @@ class TeleopRecordingManager:
         mode_status = preflight["modes"][mode]
         if not mode_status["ready"]:
             raise RecorderError(str(mode_status["reason"]))
+        board_registration = scene_summary(
+            piece_layout=CURRENT_TASK_PIECE_LAYOUT
+        )["board"]
+        workcell_registration = {
+            "board_pose_id": board_registration["pose_id"],
+            "board_center_in_table_frame_xy_m": board_registration[
+                "center_in_table_frame_xy_m"
+            ],
+            "robotward_displacement_from_previous_pose_m": board_registration[
+                "robotward_displacement_from_previous_pose_m"
+            ],
+            "robotward_axis_in_table_frame": board_registration[
+                "robotward_axis_in_table_frame"
+            ],
+        }
         request = {
             "mode": mode,
             "piece_id": piece_id,
@@ -668,18 +719,15 @@ class TeleopRecordingManager:
             "target_square": target_square,
             "sample_hz": sample_hz,
             "physical_safety_acknowledged": bool(request.get("physical_safety_acknowledged")),
-            "physical_pose_match_acknowledged": bool(
-                request.get("physical_pose_match_acknowledged")
+            "server_owned_prestart_sequence": bool(
+                request.get("server_owned_prestart_sequence")
             ),
-            "prestart_countdown_completed": bool(request.get("prestart_countdown_completed")),
             "task_id": contract["task_id"],
         }
         if mode == "physical_follower" and not request["physical_safety_acknowledged"]:
             raise RecorderError("Physical safety acknowledgement is required.")
-        if mode == "physical_follower" and not request["physical_pose_match_acknowledged"]:
-            raise RecorderError("Paired physical-pose acknowledgement is required.")
-        if mode == "physical_follower" and not request["prestart_countdown_completed"]:
-            raise RecorderError("Physical pre-start countdown is required.")
+        if mode == "physical_follower" and not request["server_owned_prestart_sequence"]:
+            raise RecorderError("Server-owned physical pre-start sequence is required.")
         with self.lock:
             if self.state["status"] not in {"idle", "saved", "discarded"}:
                 raise RecorderConflict("Stop, label, or discard the current recording first.")
@@ -702,6 +750,12 @@ class TeleopRecordingManager:
                 "training_admission": "pending_replay_and_separate_evaluator",
                 "task_id": contract["task_id"],
                 "task_contract_sha256": task_contract_sha256(),
+                "workcell_registration": workcell_registration,
+            }
+            self.live_simulation = {
+                **self._empty_live_simulation(),
+                "mode": mode,
+                "recording_id": recording_id,
             }
             self.thread = threading.Thread(
                 target=self._record_loop,
@@ -731,6 +785,8 @@ class TeleopRecordingManager:
         draft: Path,
     ) -> None:
         samples_path = draft / "samples.jsonl"
+        sequence_started_monotonic: float | None = None
+        sequence_stopped_monotonic: float | None = None
         action_started_monotonic: float | None = None
         action_stopped_monotonic: float | None = None
         action_stopped_at: str | None = None
@@ -738,14 +794,23 @@ class TeleopRecordingManager:
         try:
             self.video_recorder = self.video_recorder_factory(draft)
             video_state = self.video_recorder.start()
-            with self.lock:
-                self.state["overhead_video"] = video_state
-            self.backend = self.backend_factory(request, preflight)
-            backend_state = self.backend.open()
-            action_started_monotonic = time.monotonic()
+            sequence_started_monotonic = time.monotonic()
             video_started_monotonic = self.video_recorder.started_monotonic
             if video_started_monotonic is None:
                 raise OverheadVideoError("C922 video capture did not publish its start clock.")
+            with self.lock:
+                self.live_simulation["active"] = False
+                self.state.update(
+                    overhead_video=video_state,
+                    prestart_sequence_started_at=_utc_now(),
+                    prestart_sequence_start_video_offset_seconds=(
+                        sequence_started_monotonic - video_started_monotonic
+                    ),
+                )
+            self.backend = self.backend_factory(request, preflight)
+            backend_state = self.backend.open()
+            live_start = backend_state.pop("_live_simulation", None)
+            action_started_monotonic = time.monotonic()
             with self.lock:
                 self.state.update(
                     status="recording",
@@ -758,6 +823,21 @@ class TeleopRecordingManager:
                         backend_state.get("physical_follower_torque_enabled")
                     ),
                 )
+                if isinstance(live_start, dict):
+                    live_scene = dict(live_start.get("scene") or {})
+                    self.live_simulation = {
+                        **self._empty_live_simulation(),
+                        "mode": request["mode"],
+                        "recording_id": self.state["recording_id"],
+                        "active": True,
+                        "scene_url": live_scene.get("manifest_url"),
+                        "manifest_revision_sha256": live_scene.get(
+                            "manifest_revision_sha256"
+                        ),
+                        "body_names": list(live_start.get("body_names") or []),
+                        "frame_index": live_start.get("frame_index"),
+                        "frame": live_start.get("frame"),
+                    }
             self.ready_event.set()
             interval = 1.0 / int(request["sample_hz"])
             next_tick = time.monotonic()
@@ -766,6 +846,7 @@ class TeleopRecordingManager:
                     tick = time.monotonic()
                     self.video_recorder.ensure_running()
                     sample = self.backend.sample(tick - action_started_monotonic)
+                    live_frame = sample.pop("_live_simulation_frame", None)
                     with self.lock:
                         index = int(self.state["sample_count"])
                     row = {
@@ -784,11 +865,19 @@ class TeleopRecordingManager:
                         self.state["sample_count"] = index + 1
                         self.state["duration_seconds"] = float(row["timestamp_monotonic_seconds"])
                         self.state["last_sample"] = row
+                        if isinstance(live_frame, dict):
+                            self.live_simulation.update(
+                                active=True,
+                                frame_index=live_frame.get("frame_index"),
+                                frame=live_frame.get("frame"),
+                            )
                     next_tick += interval
                     self.stop_event.wait(max(0.0, next_tick - time.monotonic()))
             action_stopped_monotonic = time.monotonic()
+            sequence_stopped_monotonic = action_stopped_monotonic
             action_stopped_at = _utc_now()
             with self.lock:
+                self.live_simulation["active"] = False
                 self.state.update(
                     status="stopping",
                     action_stopped_at=action_stopped_at,
@@ -804,8 +893,14 @@ class TeleopRecordingManager:
                     self.state["backend"]["state_trace_sha256"] = trace_result["sha256"]
         except Exception as error:  # hardware/runtime errors must fail closed
             errors.append(f"{type(error).__name__}: {error}")
+            error_details = getattr(error, "details", None)
+            if error_details is not None:
+                with self.lock:
+                    self.state["error_details"] = error_details
+            if sequence_started_monotonic is not None:
+                sequence_stopped_monotonic = time.monotonic()
             if action_started_monotonic is not None and action_stopped_monotonic is None:
-                action_stopped_monotonic = time.monotonic()
+                action_stopped_monotonic = sequence_stopped_monotonic
                 action_stopped_at = _utc_now()
         finally:
             if self.backend is not None:
@@ -819,13 +914,50 @@ class TeleopRecordingManager:
             video_metadata: dict[str, Any] | None = None
             if self.video_recorder is not None:
                 try:
+                    video_stop_anchor = (
+                        action_stopped_monotonic or sequence_stopped_monotonic
+                    )
                     video_metadata = self.video_recorder.finish(
                         action_started_monotonic=action_started_monotonic,
-                        action_stopped_monotonic=action_stopped_monotonic,
+                        action_stopped_monotonic=video_stop_anchor,
                         post_roll_seconds=(
-                            1.0 if action_stopped_monotonic is not None else 0.0
+                            1.0 if video_stop_anchor is not None else 0.0
                         ),
                     )
+                    video_started_monotonic = self.video_recorder.started_monotonic
+                    if video_started_monotonic is not None:
+                        video_metadata.update(
+                            prestart_sequence_start_video_offset_seconds=(
+                                sequence_started_monotonic - video_started_monotonic
+                                if sequence_started_monotonic is not None
+                                else None
+                            ),
+                            prestart_sequence_stop_video_offset_seconds=(
+                                sequence_stopped_monotonic - video_started_monotonic
+                                if sequence_stopped_monotonic is not None
+                                else None
+                            ),
+                            teleoperation_start_video_offset_seconds=(
+                                action_started_monotonic - video_started_monotonic
+                                if action_started_monotonic is not None
+                                else None
+                            ),
+                            teleoperation_stop_video_offset_seconds=(
+                                action_stopped_monotonic - video_started_monotonic
+                                if action_stopped_monotonic is not None
+                                else None
+                            ),
+                            action_start_video_offset_seconds=(
+                                action_started_monotonic - video_started_monotonic
+                                if action_started_monotonic is not None
+                                else None
+                            ),
+                            action_stop_video_offset_seconds=(
+                                action_stopped_monotonic - video_started_monotonic
+                                if action_stopped_monotonic is not None
+                                else None
+                            ),
+                        )
                     _atomic_json(draft / "overhead_video.json", video_metadata)
                     if video_metadata.get("status") != "completed":
                         detail = str(video_metadata.get("error_log_tail") or "").strip()
@@ -857,6 +989,7 @@ class TeleopRecordingManager:
                     self.state = {
                         **self._idle_state(),
                         "last_error": failed_state.get("error"),
+                        "last_error_details": failed_state.get("error_details"),
                         "last_failed_recording_id": failed_state.get("recording_id"),
                         "last_failed_attempt_path": archived_path,
                         "gateway_close_confirmed": not any(
@@ -948,6 +1081,7 @@ class TeleopRecordingManager:
                 "source_square": self.state["source_square"],
                 "destination_square": self.state["target_square"],
                 "initial_layout_id": CURRENT_TASK_LAYOUT_ID,
+                "workcell_registration": self.state["workcell_registration"],
                 "target_square_operator_metadata": self.state["target_square"],
                 "sample_hz": self.state["sample_hz"],
                 "sample_count": self.state["sample_count"],
@@ -1029,3 +1163,5 @@ class TeleopRecordingManager:
                 self.stop(timeout_seconds=5.0)
             except RecorderError:
                 self.stop_event.set()
+        with self.lock:
+            self.live_simulation["active"] = False

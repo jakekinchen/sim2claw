@@ -7,7 +7,6 @@ success verdict. All data produced here is synthetic simulation evidence.
 
 from __future__ import annotations
 
-import copy
 import hashlib
 import json
 import math
@@ -30,7 +29,7 @@ from .grasp import (
     _solve_reach,
 )
 from .paths import DEFAULT_GROOT_CHESS_TASK_CONFIG
-from .scene import ROBOT_JOINTS, board_square_center
+from .scene import ROBOT_JOINTS, board_square_center, registered_board_center
 from .state_trace import EpisodeStateTraceRecorder
 
 
@@ -69,8 +68,12 @@ def load_groot_task_contract(
         raise ValueError("held-out episode references a non-held-out case")
     if any(int(row.get("training_rows", -1)) != 0 for row in contract["held_out_episodes"]):
         raise ValueError("held-out episodes must contribute zero training rows")
+    board_center = registered_board_center(str(contract["scene"]["scene_id"]))
     for case in (*contract["training_cases"], *contract["held_out_cases"]):
-        board_square_center(str(case["target_square"]))
+        board_square_center(
+            str(case["target_square"]),
+            board_center_in_table_frame_xy_m=board_center,
+        )
     return contract
 
 
@@ -99,6 +102,7 @@ def _episode_shim(
     phase_steps = contract["episode"]["phase_physics_steps"]
     return {
         "scene": {
+            "scene_id": contract["scene"]["scene_id"],
             "arm": contract["scene"]["arm"],
             "piece": case["piece"],
         },
@@ -363,7 +367,15 @@ def collect_groot_expert_episode(
         proof_class="simulation_synthetic_vla_demonstration_state_trace",
     )
     trace.capture(env.data, phase="initial", force=True)
-    target = np.asarray(board_square_center(str(case["target_square"])), dtype=np.float64)
+    target = np.asarray(
+        board_square_center(
+            str(case["target_square"]),
+            board_center_in_table_frame_xy_m=(
+                env.board_center_in_table_frame_xy_m
+            ),
+        ),
+        dtype=np.float64,
+    )
     piece_start = env.piece_position()
     initial_height = float(piece_start[2])
     all_piece_ids = _piece_bodies(env.model)

@@ -93,11 +93,25 @@
       "note": "The board pose in the Polycam capture differs from the later overhead photo, so scan pose is retained only as a comparison reference."
     },
     "board": {
-      "confidence": "photo_registered_with_polycam_textured_mesh_size_cross_check",
+      "scene_id": "operator_updated_chess_workcell_v2",
+      "pose_id": "board_robotward_72mm_20260718_v2",
+      "confidence": "operator_measured_72mm_robotward_displacement_from_photo_registered_pose",
       "side_m": 0.3556,
       "frame_width_m": 0.0254,
       "thickness_m": 0.016,
-      "center_in_table_frame_xy_m": [0.04, -0.165],
+      "center_in_table_frame_xy_m": [0.04, -0.093],
+      "previous_center_in_table_frame_xy_m": [0.04, -0.165],
+      "robotward_displacement_from_previous_pose_m": 0.072,
+      "robotward_axis_in_table_frame": "+y",
+      "historical_registrations": [
+        {
+          "scene_id": "photo_aligned_chess_workcell_v1",
+          "pose_id": "board_photo_registered_20260717_v1",
+          "center_in_table_frame_xy_m": [0.04, -0.165],
+          "status": "frozen_historical_simulation_scene",
+          "source": "2026-07-17_overhead_photo_registration"
+        }
+      ],
       "yaw_relative_to_table_degrees": 1.55,
       "near_side_color": "black"
     },

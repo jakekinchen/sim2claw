@@ -57,6 +57,10 @@ POST_HOLD_GRIPPER_TOLERANCE = 5.0
 class PhysicalGatewayError(RuntimeError):
     """Expected fail-closed gateway error."""
 
+    def __init__(self, message: str, *, details: dict[str, Any] | None = None):
+        super().__init__(message)
+        self.details = details
+
 
 def action_vector(action: dict[str, float]) -> np.ndarray:
     return np.asarray(
@@ -217,6 +221,23 @@ def paired_pose_registration_report(
         "body_registration_offset_limit_degrees": BODY_REGISTRATION_OFFSET_LIMIT_DEG,
         "gripper_registration_offset_limit": GRIPPER_REGISTRATION_OFFSET_LIMIT,
     }
+
+
+def _pose_diagnostics(
+    stage: str,
+    *,
+    leader: np.ndarray | None = None,
+    follower: np.ndarray | None = None,
+    **extra: Any,
+) -> dict[str, Any]:
+    details: dict[str, Any] = {"stage": stage, **extra}
+    if leader is not None:
+        details["leader_degrees"] = leader.tolist()
+    if follower is not None:
+        details["follower_degrees"] = follower.tolist()
+    if leader is not None and follower is not None:
+        details.update(paired_pose_registration_report(leader, follower))
+    return details
 
 
 def _position_dict(values: np.ndarray) -> dict[str, float]:
@@ -385,7 +406,12 @@ class SO101PhysicalGateway:
                     "Paired-pose registration is outside the calibration-offset guard: "
                     f"maximum body offset is "
                     f"{registration['maximum_body_calibration_offset_degrees']:.1f}° "
-                    f"(limit {BODY_REGISTRATION_OFFSET_LIMIT_DEG:.1f}°)."
+                    f"(limit {BODY_REGISTRATION_OFFSET_LIMIT_DEG:.1f}°).",
+                    details=_pose_diagnostics(
+                        "initial_paired_pose_registration",
+                        leader=leader,
+                        follower=follower,
+                    ),
                 )
             # Set the goal to the follower's current position before torque is
             # enabled. This intentionally commands no leader-to-follower sweep.
@@ -402,7 +428,12 @@ class SO101PhysicalGateway:
                 self.follower.bus.disable_torque()
                 self.torque_enabled = False
                 raise PhysicalGatewayError(
-                    "The paired pose changed before registration completed; torque released."
+                    "The paired pose changed before registration completed; torque released.",
+                    details=_pose_diagnostics(
+                        "post_hold_paired_pose_registration",
+                        leader=registered_leader,
+                        follower=actual,
+                    ),
                 )
             hold_residual = follower - actual
             hold_residual[4] = shortest_delta_degrees(
@@ -419,7 +450,14 @@ class SO101PhysicalGateway:
                 self.torque_enabled = False
                 raise PhysicalGatewayError(
                     "Follower moved while establishing the paired-pose hold; "
-                    f"maximum residual {maximum_hold_residual:.1f}°. Torque released."
+                    f"maximum residual {maximum_hold_residual:.1f}°. Torque released.",
+                    details=_pose_diagnostics(
+                        "post_hold_follower_drift",
+                        leader=registered_leader,
+                        follower=actual,
+                        follower_hold_start_degrees=follower.tolist(),
+                        follower_hold_residual_degrees=hold_residual.tolist(),
+                    ),
                 )
             self.leader_start = registered_leader
             self.follower_start = actual
@@ -700,7 +738,7 @@ class SO101PhysicalGateway:
         }
 
     def synchronize_to_leader(self) -> dict[str, Any]:
-        """Ramp a nearby follower to the leader pose and finish with torque off."""
+        """Ramp a nearby follower to the leader pose while retaining torque ownership."""
 
         self._connect_torque_off()
         leader = action_vector(self.leader.get_action())
@@ -718,13 +756,25 @@ class SO101PhysicalGateway:
             raise PhysicalGatewayError(
                 "Sync requires the arms to already be in roughly the same pose: "
                 f"maximum body delta {maximum_body_delta:.1f}° "
-                f"(limit {SYNC_BODY_DELTA_LIMIT_DEG:.1f}°)."
+                f"(limit {SYNC_BODY_DELTA_LIMIT_DEG:.1f}°).",
+                details=_pose_diagnostics(
+                    "sync_initial_pose",
+                    leader=leader,
+                    follower=follower,
+                ),
             )
         target = follower + delta
         calibrated_target = np.clip(target, self.lower_limits, self.upper_limits)
         if np.any(np.abs(calibrated_target - target) > 0.5):
             raise PhysicalGatewayError(
-                "Leader pose is outside the follower's calibrated range; sync was not armed."
+                "Leader pose is outside the follower's calibrated range; sync was not armed.",
+                details=_pose_diagnostics(
+                    "sync_calibrated_range",
+                    leader=leader,
+                    follower=follower,
+                    requested_target_degrees=target.tolist(),
+                    calibrated_target_degrees=calibrated_target.tolist(),
+                ),
             )
 
         torque = self._read_optional("Torque_Enable")
@@ -745,7 +795,14 @@ class SO101PhysicalGateway:
             or abs(float(hold_residual[5])) > POST_HOLD_GRIPPER_TOLERANCE
         ):
             raise PhysicalGatewayError(
-                "Follower moved unexpectedly while establishing the sync hold."
+                "Follower moved unexpectedly while establishing the sync hold.",
+                details=_pose_diagnostics(
+                    "sync_initial_hold",
+                    leader=leader,
+                    follower=held,
+                    follower_hold_start_degrees=follower.tolist(),
+                    follower_hold_residual_degrees=hold_residual.tolist(),
+                ),
             )
 
         steps = max(1, round(SYNC_DURATION_SECONDS * SYNC_COMMAND_HZ))
@@ -770,7 +827,14 @@ class SO101PhysicalGateway:
             or abs(float(leader_motion[5])) > POST_HOLD_GRIPPER_TOLERANCE
         ):
             raise PhysicalGatewayError(
-                "Leader moved during sync; torque released before accepting the pair."
+                "Leader moved during sync; torque released before accepting the pair.",
+                details=_pose_diagnostics(
+                    "sync_leader_motion",
+                    leader=final_leader,
+                    follower=actual,
+                    leader_sync_start_degrees=leader.tolist(),
+                    leader_motion_degrees=leader_motion.tolist(),
+                ),
             )
         residual = target - actual
         residual[4] = shortest_delta_degrees(float(target[4]), float(actual[4]))
@@ -781,7 +845,14 @@ class SO101PhysicalGateway:
             or gripper_residual > POST_HOLD_GRIPPER_TOLERANCE
         ):
             raise PhysicalGatewayError(
-                "Follower did not reach the bounded sync target; torque released."
+                "Follower did not reach the bounded sync target; torque released.",
+                details=_pose_diagnostics(
+                    "sync_final_residual",
+                    leader=final_leader,
+                    follower=actual,
+                    follower_sync_target_degrees=target.tolist(),
+                    follower_sync_residual_degrees=residual.tolist(),
+                ),
             )
         registration = paired_pose_registration_report(final_leader, actual)
         return {
@@ -791,6 +862,8 @@ class SO101PhysicalGateway:
             "follower_port": self.identity.follower_port,
             "leader_calibration_sha256": self.identity.leader_calibration_sha256,
             "follower_calibration_sha256": self.identity.follower_calibration_sha256,
+            "leader_sync_start_degrees": leader.tolist(),
+            "leader_sync_final_degrees": final_leader.tolist(),
             "leader_sync_target_degrees": target.tolist(),
             "follower_sync_start_degrees": follower.tolist(),
             "follower_sync_actual_degrees": actual.tolist(),
@@ -798,6 +871,129 @@ class SO101PhysicalGateway:
             "maximum_sync_residual_degrees": maximum_residual,
             "sync_duration_seconds": SYNC_DURATION_SECONDS,
             "sync_motion_commanded": maximum_body_delta > 0.25 or gripper_delta > 0.5,
+            "physical_follower_torque_enabled": True,
+            **registration,
+        }
+
+    def synchronize_and_arm(self, *, countdown_seconds: float = 3.0) -> dict[str, Any]:
+        """Sync, hold, count down, and register relative zero in one bus session."""
+
+        if countdown_seconds < 0.0:
+            raise PhysicalGatewayError("Countdown duration cannot be negative.")
+        sync = self.synchronize_to_leader()
+        sync_leader = np.asarray(sync["leader_sync_final_degrees"], dtype=np.float64)
+        sync_follower = np.asarray(
+            sync["follower_sync_actual_degrees"], dtype=np.float64
+        )
+        hold_target = np.asarray(sync["leader_sync_target_degrees"], dtype=np.float64)
+
+        countdown_checks: list[dict[str, Any]] = []
+        remaining = float(countdown_seconds)
+        while remaining > 0.0:
+            wait_seconds = min(1.0, remaining)
+            self.sleep(wait_seconds)
+            remaining -= wait_seconds
+            leader = self._motion_read(
+                "countdown leader position", self.leader.get_action
+            )
+            follower = self._motion_read(
+                "countdown follower position", self.follower.get_observation
+            )
+            leader_motion = leader - sync_leader
+            leader_motion[4] = shortest_delta_degrees(
+                float(leader[4]), float(sync_leader[4])
+            )
+            follower_drift = sync_follower - follower
+            follower_drift[4] = shortest_delta_degrees(
+                float(sync_follower[4]), float(follower[4])
+            )
+            check = {
+                "remaining_seconds": remaining,
+                "leader_degrees": leader.tolist(),
+                "follower_degrees": follower.tolist(),
+                "leader_motion_degrees": leader_motion.tolist(),
+                "follower_hold_drift_degrees": follower_drift.tolist(),
+            }
+            countdown_checks.append(check)
+            if (
+                float(np.max(np.abs(leader_motion[:5])))
+                > SYNC_LEADER_MOTION_TOLERANCE_DEG
+                or abs(float(leader_motion[5])) > POST_HOLD_GRIPPER_TOLERANCE
+            ):
+                raise PhysicalGatewayError(
+                    "Leader moved during the torque-held countdown; recording was not armed.",
+                    details=_pose_diagnostics(
+                        "countdown_leader_motion",
+                        leader=leader,
+                        follower=follower,
+                        leader_sync_final_degrees=sync_leader.tolist(),
+                        leader_motion_degrees=leader_motion.tolist(),
+                        countdown_checks=countdown_checks,
+                    ),
+                )
+            if (
+                float(np.max(np.abs(follower_drift[:5])))
+                > POST_HOLD_BODY_TOLERANCE_DEG
+                or abs(float(follower_drift[5])) > POST_HOLD_GRIPPER_TOLERANCE
+            ):
+                raise PhysicalGatewayError(
+                    "Follower drifted during the torque-held countdown; recording was not armed.",
+                    details=_pose_diagnostics(
+                        "countdown_follower_drift",
+                        leader=leader,
+                        follower=follower,
+                        follower_sync_final_degrees=sync_follower.tolist(),
+                        follower_hold_drift_degrees=follower_drift.tolist(),
+                        countdown_checks=countdown_checks,
+                    ),
+                )
+            self.follower.send_action(_position_dict(hold_target))
+
+        registered_leader = self._motion_read(
+            "pre-record leader position", self.leader.get_action
+        )
+        registered_follower = self._motion_read(
+            "pre-record follower position", self.follower.get_observation
+        )
+        registration = paired_pose_registration_report(
+            registered_leader, registered_follower
+        )
+        if not registration["paired_pose_registration_ready"]:
+            raise PhysicalGatewayError(
+                "Paired-pose registration changed during the torque-held countdown; "
+                "recording was not armed.",
+                details=_pose_diagnostics(
+                    "pre_record_paired_pose_registration",
+                    leader=registered_leader,
+                    follower=registered_follower,
+                    leader_sync_final_degrees=sync_leader.tolist(),
+                    follower_sync_final_degrees=sync_follower.tolist(),
+                    countdown_checks=countdown_checks,
+                ),
+            )
+
+        self.leader_start = registered_leader
+        self.follower_start = registered_follower
+        self.previous_actual = registered_follower.copy()
+        self.previous_command = registered_follower.copy()
+        self.previous_elapsed_seconds = 0.0
+        self.previous_time = time.monotonic()
+        self.stall_anchor_actual = registered_follower.copy()
+        self.stall_started_at[:] = np.nan
+        self.stall_command_direction[:] = 0.0
+        return {
+            **sync,
+            "control_mode": "continuous_sync_countdown_relative_teleoperation",
+            "server_owned_prestart_sequence": True,
+            "single_gateway_session": True,
+            "countdown_seconds": float(countdown_seconds),
+            "countdown_checks": countdown_checks,
+            "leader_registration_degrees": registered_leader.tolist(),
+            "follower_registration_degrees": registered_follower.tolist(),
+            "leader_to_follower_zero_offset_degrees": (
+                registered_follower - registered_leader
+            ).tolist(),
+            "paired_pose_registered_before_recording": True,
             "physical_follower_torque_enabled": True,
             **registration,
         }

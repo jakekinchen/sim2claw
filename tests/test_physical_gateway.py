@@ -298,8 +298,14 @@ class PhysicalGatewayTest(unittest.TestCase):
         gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)
         with self.assertRaisesRegex(
             PhysicalGatewayError, "outside the calibration-offset"
-        ):
+        ) as raised:
             gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        self.assertEqual(
+            raised.exception.details["stage"],
+            "initial_paired_pose_registration",
+        )
+        self.assertEqual(len(raised.exception.details["leader_degrees"]), 6)
+        self.assertEqual(len(raised.exception.details["follower_degrees"]), 6)
         self.assertFalse(self.follower.bus.torque)
         gateway.close()
 
@@ -339,6 +345,47 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertTrue(report["sync_completed_torque_off"])
         self.assertLessEqual(report["maximum_sync_residual_degrees"], 3.0)
         self.assertFalse(report["physical_follower_torque_enabled"])
+        self.assertFalse(self.follower.bus.torque)
+
+    def test_continuous_sync_countdown_and_arm_retains_one_gateway_session(self) -> None:
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            sleep=lambda _seconds: None,
+        )
+        report = gateway.synchronize_and_arm(countdown_seconds=3.0)
+        self.assertTrue(report["server_owned_prestart_sequence"])
+        self.assertTrue(report["single_gateway_session"])
+        self.assertTrue(report["paired_pose_registered_before_recording"])
+        self.assertEqual(len(report["countdown_checks"]), 3)
+        self.assertTrue(report["physical_follower_torque_enabled"])
+        self.assertTrue(self.follower.bus.torque)
+        sample = gateway.sample(0.05)
+        self.assertTrue(sample["physical_follower_torque_enabled"])
+        gateway.close()
+        self.assertFalse(self.follower.bus.torque)
+
+    def test_continuous_countdown_rejects_leader_motion_with_joint_diagnostics(
+        self,
+    ) -> None:
+        def drift_during_countdown(seconds: float) -> None:
+            if seconds == 1.0:
+                self.leader.values[0] += 4.0
+
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            sleep=drift_during_countdown,
+        )
+        with self.assertRaisesRegex(
+            PhysicalGatewayError, "Leader moved during the torque-held countdown"
+        ) as raised:
+            gateway.synchronize_and_arm(countdown_seconds=3.0)
+        details = raised.exception.details
+        self.assertEqual(details["stage"], "countdown_leader_motion")
+        self.assertEqual(len(details["leader_degrees"]), 6)
+        self.assertEqual(len(details["follower_degrees"]), 6)
+        gateway.close()
         self.assertFalse(self.follower.bus.torque)
 
     def test_sync_refuses_large_pose_mismatch_before_torque(self) -> None:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import os
 import shlex
@@ -725,11 +726,28 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
 
     studio_asset_root = Path(__file__).with_name("studio_web") / "assets" / "workcell"
     studio_asset_receipt = _read_json(studio_asset_root / "receipt.json")
+    studio_asset_sources = studio_asset_receipt.get("sources", {})
+    asset_revision = hashlib.sha256(
+        json.dumps(
+            studio_asset_sources,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()[:8]
     capture_paths = sorted((repo_root / "configs" / "polycam").glob("*.json"))
     capture_config = _read_json(capture_paths[0]) if capture_paths else {}
     scene_estimates = capture_config.get("simulation_estimates", {})
-    board_local = scene_estimates.get("board", {}).get(
+    board_estimate = scene_estimates.get("board", {})
+    board_local = board_estimate.get(
         "center_in_table_frame_xy_m", [0.0, 0.0]
+    )
+    robotward_displacement = board_estimate.get(
+        "robotward_displacement_from_previous_pose_m"
+    )
+    board_pose_label = (
+        f"{round(float(robotward_displacement) * 1000):d} mm robotward"
+        if robotward_displacement is not None
+        else "Current registration"
     )
     robot_estimates = {
         str(row.get("name")): row
@@ -738,25 +756,21 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     }
     simulations = [
         {
-            "id": "photo_aligned_chess_workcell_v1",
+            "id": board_estimate.get("scene_id", "unversioned_workcell_scene"),
             "title": "Chess table workcell",
             "subtitle": "MuJoCo · dual SO-101 · 16 sparse pawns",
             "piece_layout": "sparse_two_sided_pawns",
             "piece_layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
+            "workcell_pose_id": board_estimate.get("pose_id"),
+            "board_center_in_table_frame_xy_m": board_local,
+            "board_pose_label": board_pose_label,
             "status": "simulation_ready",
             "task_count": len(tasks),
             "robot_count": 2,
             "physical_authority": False,
             "poster_url": "/assets/workcell/studio-overview.png",
             "poster_camera": "studio_overview",
-            "asset_revision": str(
-                studio_asset_receipt.get("sources", {}).get(
-                    "scene_py_sha256",
-                    studio_asset_receipt.get("sources", {}).get(
-                        "capture_config_sha256", "unversioned"
-                    ),
-                )
-            )[:8],
+            "asset_revision": asset_revision,
         }
     ]
     robots = []

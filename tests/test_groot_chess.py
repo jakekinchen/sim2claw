@@ -8,7 +8,11 @@ from sim2claw.groot_chess import (
     collect_groot_expert_episode,
     load_groot_task_contract,
 )
-from sim2claw.scene import board_square_center, scene_geometry
+from sim2claw.scene import (
+    board_square_center,
+    registered_board_center,
+    scene_geometry,
+)
 from sim2claw.capture import load_capture_config
 from sim2claw.paths import DEFAULT_CAPTURE_CONFIG
 
@@ -25,9 +29,24 @@ class GrootChessContractTest(unittest.TestCase):
         self.assertTrue(task["authority"]["training_cannot_promote_itself"])
 
     def test_square_centers_follow_the_frozen_board_geometry(self) -> None:
-        geometry = scene_geometry(load_capture_config(DEFAULT_CAPTURE_CONFIG))
-        a8 = np.asarray(board_square_center("a8"))
-        b8 = np.asarray(board_square_center("b8"))
+        task = load_groot_task_contract()
+        frozen_center = registered_board_center(task["scene"]["scene_id"])
+        self.assertEqual(frozen_center, (0.04, -0.165))
+        config = load_capture_config(DEFAULT_CAPTURE_CONFIG)
+        config["simulation_estimates"]["board"][
+            "center_in_table_frame_xy_m"
+        ] = list(frozen_center)
+        geometry = scene_geometry(config)
+        a8 = np.asarray(
+            board_square_center(
+                "a8", board_center_in_table_frame_xy_m=frozen_center
+            )
+        )
+        b8 = np.asarray(
+            board_square_center(
+                "b8", board_center_in_table_frame_xy_m=frozen_center
+            )
+        )
         self.assertAlmostEqual(
             float(np.linalg.norm(b8[:2] - a8[:2])),
             geometry.square_size,

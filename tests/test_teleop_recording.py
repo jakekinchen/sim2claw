@@ -13,6 +13,7 @@ from sim2claw.teleop_recording import (
     TeleopRecordingManager,
     discover_so101_devices,
 )
+from sim2claw.physical_gateway import PhysicalGatewayError
 from sim2claw.scene import CURRENT_TASK_LAYOUT_ID
 
 
@@ -29,6 +30,22 @@ class FakeBackend:
             "follower": "fixture-simulator",
             "physical_follower_torque_enabled": False,
             "pose_inputs_available": True,
+            "_live_simulation": {
+                "schema_version": "sim2claw.mujoco_live_body_state.v1",
+                "scene": {
+                    "manifest_url": "/api/scene?layout=sparse_two_sided_pawns",
+                    "manifest_revision_sha256": "fixture-revision",
+                },
+                "body_names": ["world", "left_base"],
+                "frame_index": 0,
+                "frame": {
+                    "t": 0.0,
+                    "phase": "teleoperation",
+                    "p": [0.0] * 6,
+                    "q": [1.0, 0.0, 0.0, 0.0] * 2,
+                    "c": [],
+                },
+            },
         }
 
     def sample(self, elapsed_seconds: float) -> dict[str, Any]:
@@ -46,6 +63,16 @@ class FakeBackend:
             "pose_inputs_available": True,
             "available_motor_current": None,
             "physical_follower_torque_enabled": False,
+            "_live_simulation_frame": {
+                "frame_index": self.sample_index,
+                "frame": {
+                    "t": elapsed_seconds,
+                    "phase": "teleoperation",
+                    "p": [0.0, 0.0, 0.0, self.sample_index / 100.0, 0.0, 0.0],
+                    "q": [1.0, 0.0, 0.0, 0.0] * 2,
+                    "c": [],
+                },
+            },
         }
 
     def close(self) -> None:
@@ -58,6 +85,9 @@ class FakeVideoRecorder:
         self.log_path = draft / "overhead_c922.ffmpeg.log"
         self.started_monotonic: float | None = None
         self.finished = False
+        self.finish_action_started: float | None = None
+        self.finish_action_stopped: float | None = None
+        self.finish_post_roll = 0.0
 
     def start(self) -> dict[str, Any]:
         self.started_monotonic = time.monotonic()
@@ -85,6 +115,9 @@ class FakeVideoRecorder:
         post_roll_seconds: float,
     ) -> dict[str, Any]:
         self.finished = True
+        self.finish_action_started = action_started_monotonic
+        self.finish_action_stopped = action_stopped_monotonic
+        self.finish_post_roll = post_roll_seconds
         assert self.started_monotonic is not None
         return {
             "schema_version": "sim2claw.overhead_diagnostic_video.v1",
@@ -215,6 +248,15 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertEqual(receipt["source_square"], "a2")
         self.assertEqual(receipt["destination_square"], "c3")
         self.assertEqual(receipt["initial_layout_id"], CURRENT_TASK_LAYOUT_ID)
+        self.assertEqual(
+            receipt["workcell_registration"],
+            {
+                "board_pose_id": "board_robotward_72mm_20260718_v2",
+                "board_center_in_table_frame_xy_m": [0.04, -0.093],
+                "robotward_displacement_from_previous_pose_m": 0.072,
+                "robotward_axis_in_table_frame": "+y",
+            },
+        )
         self.assertIn("overhead_video_time_seconds", rows[0])
         self.assertEqual(
             receipt["overhead_video"]["camera_name"],
@@ -226,6 +268,35 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertTrue((destination / "overhead_video.json").is_file())
         self.assertTrue(self.videos[0].finished)
         self.assertTrue(self.backends[0].closed)
+
+    def test_sim_record_publishes_live_mujoco_state_outside_sample_rows(self) -> None:
+        self.manager.start(
+            {
+                "mode": "simulation_follower",
+                "source_square": "b1",
+                "target_square": "b2",
+                "sample_hz": 20,
+            }
+        )
+        deadline = time.monotonic() + 2
+        live = self.manager.live_simulation_snapshot()
+        while live["frame_index"] in {None, 0} and time.monotonic() < deadline:
+            time.sleep(0.02)
+            live = self.manager.live_simulation_snapshot()
+        self.assertTrue(live["active"])
+        self.assertEqual(live["mode"], "simulation_follower")
+        self.assertEqual(live["body_names"], ["world", "left_base"])
+        self.assertEqual(
+            live["authority"]["pose_source"],
+            "mujoco.MjData.xpos+xquat",
+        )
+        stopped = self.manager.stop()
+        self.assertEqual(stopped["status"], "awaiting_label")
+        self.assertFalse(self.manager.live_simulation_snapshot()["active"])
+        draft = self.repo_root / str(stopped["draft_path"])
+        rows = [json.loads(line) for line in (draft / "samples.jsonl").read_text().splitlines()]
+        self.assertGreaterEqual(len(rows), 1)
+        self.assertNotIn("_live_simulation_frame", rows[0])
 
     def test_physical_mode_is_ready_but_requires_operator_acknowledgement(self) -> None:
         preflight = self.manager.preflight()
@@ -317,8 +388,8 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertEqual(state["physical_gateway_sync"], report)
         self.assertFalse(state["physical_gateway_sync"]["physical_follower_torque_enabled"])
 
-    def test_physical_mode_requires_prestart_countdown(self) -> None:
-        with self.assertRaisesRegex(RecorderError, "countdown"):
+    def test_physical_mode_requires_server_owned_prestart_sequence(self) -> None:
+        with self.assertRaisesRegex(RecorderError, "Server-owned"):
             self.manager.start(
                 {
                     "mode": "physical_follower",
@@ -327,22 +398,63 @@ class TeleopRecordingTest(unittest.TestCase):
                     "sample_hz": 20,
                     "physical_safety_acknowledged": True,
                     "physical_pose_match_acknowledged": True,
-                    "prestart_countdown_completed": False,
+                    "prestart_countdown_completed": True,
+                    "server_owned_prestart_sequence": False,
                 }
             )
 
-    def test_physical_mode_requires_paired_pose_acknowledgement(self) -> None:
-        with self.assertRaisesRegex(RecorderError, "Paired physical-pose"):
+    def test_preteleoperation_gateway_failure_retains_video_and_joint_details(
+        self,
+    ) -> None:
+        details = {
+            "stage": "pre_record_paired_pose_registration",
+            "leader_degrees": [1.0] * 6,
+            "follower_degrees": [2.0] * 6,
+        }
+
+        class FailingOpenBackend(FakeBackend):
+            def open(self) -> dict[str, Any]:
+                raise PhysicalGatewayError("fixture pre-arm fault", details=details)
+
+        videos: list[FakeVideoRecorder] = []
+
+        def video_factory(draft: Path) -> FakeVideoRecorder:
+            video = FakeVideoRecorder(draft)
+            videos.append(video)
+            return video
+
+        self.manager.shutdown()
+        self.manager = TeleopRecordingManager(
+            repo_root=self.repo_root,
+            backend_factory=lambda request, preflight: FailingOpenBackend(
+                request, preflight
+            ),
+            video_recorder_factory=video_factory,
+            dev_root=self.dev_root,
+            calibration_root=self.calibration_root,
+        )
+        with self.assertRaisesRegex(RecorderError, "fixture pre-arm fault"):
             self.manager.start(
                 {
-                    "mode": "physical_follower",
-                    "source_square": "a2",
-                    "target_square": "c3",
-                    "sample_hz": 20,
-                    "physical_safety_acknowledged": True,
-                    "physical_pose_match_acknowledged": False,
+                    "mode": "simulation_follower",
+                    "source_square": "b1",
+                    "target_square": "b2",
                 }
             )
+        state = self.manager.snapshot()
+        failed = self.repo_root / state["last_failed_attempt_path"]
+        archived = json.loads((failed / "draft_state.json").read_text())
+        self.assertEqual(archived["error_details"], details)
+        self.assertEqual(state["last_error_details"], details)
+        self.assertTrue(videos[0].finished)
+        self.assertIsNone(videos[0].finish_action_started)
+        self.assertIsNotNone(videos[0].finish_action_stopped)
+        self.assertEqual(videos[0].finish_post_roll, 1.0)
+        overhead = json.loads((failed / "overhead_video.json").read_text())
+        self.assertIsNotNone(
+            overhead["prestart_sequence_stop_video_offset_seconds"]
+        )
+        self.assertIsNone(overhead["teleoperation_start_video_offset_seconds"])
 
     def test_pawn_metadata_rejects_unknown_source_and_occupied_destination(self) -> None:
         with self.assertRaisesRegex(RecorderError, "eight declared pawn"):

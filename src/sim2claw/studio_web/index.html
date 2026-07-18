@@ -246,7 +246,7 @@
                   <div class="preflight-item" id="runtime-preflight"><span class="preflight-light"></span><div><b>LeRobot runtime</b><small>Checking dependency</small></div></div>
                 </div>
                 <div class="alignment-panel" id="alignment-panel" hidden>
-                  <div class="alignment-heading"><div><span class="section-label">Paired-pose registration</span><b id="alignment-status">Check or sync both buses</b></div><small id="alignment-summary">Start automatically ramps a nearby follower to the leader pose, verifies the pair, and finishes Sync torque-off.</small></div>
+                  <div class="alignment-heading"><div><span class="section-label">Paired-pose registration</span><b id="alignment-status">Check or sync both buses</b></div><small id="alignment-summary">Start records the C922, then syncs and torque-holds the nearby follower through countdown in one gateway session.</small></div>
                   <div class="alignment-joints" id="alignment-joints"></div>
                 </div>
               </article>
@@ -254,6 +254,17 @@
 
             <aside class="recorder-console" aria-live="polite">
               <div class="console-topline"><span>Recording console</span><b class="recorder-status" id="recorder-status">Idle</b></div>
+              <section class="live-simulation-panel" id="live-simulation-panel" aria-labelledby="live-simulation-title">
+                <header>
+                  <div><span class="section-label">Live simulator follower</span><h2 id="live-simulation-title">Physical leader → MuJoCo arm</h2></div>
+                  <b id="live-simulation-badge" data-active="false">Ready</b>
+                </header>
+                <div class="live-simulation-stage">
+                  <canvas id="live-simulation-canvas" aria-label="Live interactive MuJoCo follower scene"></canvas>
+                  <div class="live-simulation-toolbar"><span id="live-simulation-status">Loading current sparse-pawn workcell…</span><button id="live-simulation-reset" type="button">Reset view</button></div>
+                  <small>MuJoCo body poses · browser inspection only · drag to orbit</small>
+                </div>
+              </section>
               <div class="record-clock" id="record-clock">00:00.000</div>
               <div class="record-facts"><span>Samples <b id="record-samples">0</b></span><span>Rate <b id="record-rate">30 Hz</b></span><span>Mode <b id="record-mode-label">SIM</b></span><span>Camera <b id="record-camera">C922 on Start</b></span></div>
               <div class="joint-monitor">

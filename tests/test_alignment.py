@@ -29,7 +29,13 @@ class AlignmentContractTest(unittest.TestCase):
         self.assertAlmostEqual(robots[1]["mount_in_table_frame_xyz_m"][0], -0.526)
         self.assertAlmostEqual(
             config["simulation_estimates"]["board"]["center_in_table_frame_xy_m"][1],
-            -0.165,
+            -0.093,
+        )
+        self.assertAlmostEqual(
+            config["simulation_estimates"]["board"][
+                "robotward_displacement_from_previous_pose_m"
+            ],
+            0.072,
         )
 
 
