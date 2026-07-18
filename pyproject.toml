@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sim2claw"
+version = "0.1.0"
+description = "Clean-room MuJoCo workcells and simulation proof for sim2claw"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { file = "LICENSE" }
+dependencies = [
+  "mujoco==3.10.0",
+  "numpy==2.5.1",
+  "pillow==12.3.0",
+]
+
+[project.scripts]
+sim2claw = "sim2claw.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sim2claw"]
+
+[dependency-groups]
+dev = ["pytest>=8"]
