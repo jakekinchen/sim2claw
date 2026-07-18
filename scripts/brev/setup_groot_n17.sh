@@ -9,7 +9,8 @@ sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
   cuda-nvcc-12-8 \
   ffmpeg \
-  git-lfs
+  git-lfs \
+  libosmesa6
 git lfs install --skip-repo
 
 if [ ! -d "$GROOT_ROOT/.git" ]; then
@@ -35,11 +36,15 @@ if [ ! -x "$UV_BIN" ]; then
   exit 1
 fi
 "$UV_BIN" sync --python 3.10
+"$UV_BIN" pip install \
+  --python "$GROOT_ROOT/.venv/bin/python" \
+  mujoco==3.10.0
 
 "$UV_BIN" run python - <<'PY'
 import json
 import subprocess
 
+import mujoco
 import torch
 
 payload = {
@@ -49,6 +54,7 @@ payload = {
     "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
     "capability": list(torch.cuda.get_device_capability(0)) if torch.cuda.is_available() else None,
     "gr00t_import": False,
+    "mujoco": mujoco.__version__,
 }
 import gr00t
 payload["gr00t_import"] = True

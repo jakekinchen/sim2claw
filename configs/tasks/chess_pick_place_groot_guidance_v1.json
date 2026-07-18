@@ -1,0 +1,45 @@
+{
+  "schema_version": "sim2claw.groot_chess_reward_guidance.v1",
+  "base_task_contract_sha256": "473915817b3a8474f796df53e199df92031d17fad152599a1d43ccecd3f15683",
+  "frozen_before_held_out": true,
+  "proof_class": "reward_guided_learned_policy_simulation",
+  "selection": {
+    "proposal_count": 16,
+    "execution_horizon": 4,
+    "candidate_seed_scheme": "sha256(episode_seed,sample_step,candidate_index)",
+    "tie_breaker": "lowest_candidate_index"
+  },
+  "reward": {
+    "pinch_distance_scale_m": 0.08,
+    "destination_distance_scale_m": 0.18,
+    "height_distance_scale_m": 0.09,
+    "clearance_distance_scale_m": 0.12,
+    "linear_speed_scale_m_s": 0.20,
+    "control_delta_scale_rad": 2.5,
+    "weights": {
+      "phase_goal": 4.0,
+      "lift_progress": 3.0,
+      "destination_proximity": 5.0,
+      "height_proximity": 3.0,
+      "jaw_contact": 2.0,
+      "released": 3.0,
+      "upright": 2.0,
+      "settled": 2.0,
+      "clearance": 2.0,
+      "control_smoothness": 0.10
+    }
+  },
+  "safety": {
+    "other_piece_displacement_soft_limit_m": 0.003,
+    "other_piece_displacement_hard_limit_m": 0.006,
+    "upright_soft_minimum": 0.90,
+    "piece_floor_margin_m": 0.015,
+    "hard_penalty": 1000.0
+  },
+  "authority": {
+    "reward_has_promotion_authority": false,
+    "guided_selection_counts_as_assistance": true,
+    "physical_authority": false,
+    "held_out_evaluator_unchanged": true
+  }
+}

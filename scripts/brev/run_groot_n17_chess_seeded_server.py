@@ -48,9 +48,14 @@ class SeededResetPolicy(PolicyWrapper):
         self._episode_seed: int | None = None
 
     @staticmethod
-    def _query_seed(episode_seed: int, sample_step: int) -> int:
+    def _query_seed(
+        episode_seed: int,
+        sample_step: int,
+        candidate_index: int = 0,
+    ) -> int:
         payload = (
-            f"sim2claw.groot_n17.query_seed.v1:{episode_seed}:{sample_step}"
+            "sim2claw.groot_n17.query_seed.v2:"
+            f"{episode_seed}:{sample_step}:{candidate_index}"
         ).encode("utf-8")
         return int.from_bytes(hashlib.sha256(payload).digest()[:4], "big")
 
@@ -72,7 +77,14 @@ class SeededResetPolicy(PolicyWrapper):
         sample_step = int(options["sample_step"])
         if sample_step < 0:
             raise ValueError("sample_step must be non-negative")
-        query_seed = self._query_seed(self._episode_seed, sample_step)
+        candidate_index = int(options.get("candidate_index", 0))
+        if candidate_index < 0:
+            raise ValueError("candidate_index must be non-negative")
+        query_seed = self._query_seed(
+            self._episode_seed,
+            sample_step,
+            candidate_index,
+        )
         seed_policy_rng(query_seed)
         rng_before = policy_rng_snapshot()
         action, delegated_info = self.policy.get_action(observation, options)
@@ -82,6 +94,7 @@ class SeededResetPolicy(PolicyWrapper):
                 "rng_before": rng_before,
                 "rng_after": policy_rng_snapshot(),
                 "sample_step": sample_step,
+                "candidate_index": candidate_index,
                 "query_seed": query_seed,
             }
         )

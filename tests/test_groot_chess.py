@@ -53,6 +53,7 @@ class GrootChessContractTest(unittest.TestCase):
             "black_king_e8",
         })
         for episode in episodes:
+            self.assertTrue(episode.verdict["task_consequence_success"])
             self.assertTrue(episode.verdict["success"])
             self.assertEqual(episode.states.shape, (363, 6))
             self.assertEqual(episode.actions.shape, (363, 6))

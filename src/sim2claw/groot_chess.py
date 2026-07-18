@@ -248,6 +248,7 @@ def evaluate_episode(
     maximum_height: float,
     initial_other_positions: dict[str, np.ndarray],
     action_count: int,
+    assistance_frames: int = 0,
 ) -> dict[str, Any]:
     evaluator = contract["evaluator"]
     final_position = env.piece_position()
@@ -327,7 +328,7 @@ def evaluate_episode(
             "threshold": expected_physics_actions,
         },
         "assistance_frames": {
-            "measured": 0,
+            "measured": int(assistance_frames),
             "comparison": "==",
             "threshold": 0,
         },
@@ -339,11 +340,21 @@ def evaluate_episode(
             gate["passed"] = gate["measured"] <= gate["threshold"]
         else:
             gate["passed"] = gate["measured"] == gate["threshold"]
-    success = all(bool(gate["passed"]) for gate in gates.values())
+    task_consequence_success = all(
+        bool(gate["passed"])
+        for name, gate in gates.items()
+        if name not in {"model_owned_actions", "assistance_frames"}
+    )
+    success = task_consequence_success and all(
+        bool(gate["passed"])
+        for name, gate in gates.items()
+        if name in {"model_owned_actions", "assistance_frames"}
+    )
     return {
         "schema_version": "sim2claw.groot_chess_consequence_verdict.v1",
         "evaluator_owner": evaluator["owner"],
         "gates": gates,
+        "task_consequence_success": task_consequence_success,
         "success": success,
         "terminal_outcome": (
             "piece_released_upright_on_target_square"
