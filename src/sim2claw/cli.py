@@ -72,6 +72,14 @@ def build_parser() -> argparse.ArgumentParser:
     act_eval.add_argument("--checkpoint", type=Path, required=True)
     act_eval.add_argument("--no-video", action="store_true")
 
+    studio = subparsers.add_parser(
+        "studio",
+        help="open the read-only browser visualization studio",
+    )
+    studio.add_argument("--host", default="127.0.0.1")
+    studio.add_argument("--port", type=int, default=4173)
+    studio.add_argument("--no-open", action="store_true")
+
     groot_export = subparsers.add_parser(
         "groot-export",
         help="export evaluator-accepted dynamic chess demonstrations for GR00T N1.7",
@@ -153,6 +161,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["success"] else 1
+    if args.command == "studio":
+        from .studio_server import serve_studio
+
+        serve_studio(
+            host=args.host,
+            port=args.port,
+            open_browser=not args.no_open,
+        )
+        return 0
     if args.command == "groot-export":
         from .groot_chess import export_groot_dataset
 

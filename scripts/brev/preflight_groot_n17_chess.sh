@@ -6,10 +6,11 @@ SIM2CLAW_ROOT="${SIM2CLAW_ROOT:-/home/shadeform/sim2claw}"
 DATASET_ROOT="${DATASET_ROOT:-$SIM2CLAW_ROOT/datasets/chess_pick_place_groot_v1}"
 MODEL_ID="nvidia/GR00T-N1.7-3B"
 MODEL_REVISION="2fc962b973bccdd5d8ce4f67cc63b264d6886495"
+UV_BIN="${UV_BIN:-/home/shadeform/.local/bin/uv}"
 
 cd "$GROOT_ROOT"
 
-uv run python gr00t/data/stats.py \
+"$UV_BIN" run python gr00t/data/stats.py \
   --dataset-path "$DATASET_ROOT" \
   --embodiment-tag NEW_EMBODIMENT \
   --modality-config-path "$SIM2CLAW_ROOT/configs/groot/sim2claw_so101_config.py"
@@ -19,7 +20,7 @@ env \
   DATASET_ROOT="$DATASET_ROOT" \
   MODEL_ID="$MODEL_ID" \
   MODEL_REVISION="$MODEL_REVISION" \
-  uv run python - <<'PY'
+  "$UV_BIN" run python - <<'PY'
 import importlib.util
 import json
 import os

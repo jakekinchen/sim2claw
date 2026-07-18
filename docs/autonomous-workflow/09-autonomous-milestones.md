@@ -72,7 +72,12 @@ uv run sim2claw groot-export --output datasets/chess_pick_place_groot_v1
 - Dataset receipt, metadata, parquet, RGB videos, stats, and file hashes exist
   under ignored `datasets/chess_pick_place_groot_v1/`.
 
-**Status:** IN PROGRESS until the pinned NVIDIA loader accepts the export.
+**Completion evidence:**
+
+- NVIDIA's loader at the frozen source commit accepted 24 episodes and the
+  declared language, state, action, and front-video modalities on A100-80GB.
+
+**Status:** PASS
 
 ## M2 - Pinned N1.7 Policy-Server Preflight
 
@@ -83,7 +88,11 @@ dataset, and starts a policy server without opening a physical path.
 **Verification gate:** Preserve CUDA/GPU/source/model identities, loader output,
 and one finite policy response.
 
-**Status:** PENDING
+**Evidence:** The exact source, A100/CUDA/Torch environment, dataset loader, and
+base-model revision passed. A finite custom policy response was not reached
+because model construction required gated `nvidia/Cosmos-Reason2-2B` access.
+
+**Status:** PARTIAL; policy response remains open behind the gated dependency.
 
 ## M3 - Bounded Post-Training Candidate
 
@@ -94,7 +103,10 @@ data. Training never sets promotion.
 **Verification gate:** Immutable run receipt plus fixed-checkpoint evaluator
 artifacts and exact optimizer/data identities.
 
-**Status:** PENDING
+**Evidence:** The fixed 250-step command was launched, but Hugging Face denied
+the Cosmos dependency before optimizer step zero. No checkpoint was created.
+
+**Status:** BLOCKED on human acceptance/access for the gated NVIDIA model.
 
 ## M4 - Closed-Loop Chess Consequence
 
@@ -105,7 +117,7 @@ partial, or terminal negative by the frozen consequence evaluator.
 **Verification gate:** Action traces, RGB evidence, per-gate results, and zero
 assistance frames.
 
-**Status:** PENDING
+**Status:** NOT RUN; there is no learned checkpoint to evaluate.
 
 ## M5 - Evidence Preservation and Paid-Compute Teardown
 
@@ -115,4 +127,8 @@ non-stoppable Brev worker, and poll authenticated inventory until empty.
 **Verification gate:** Recomputed artifact hashes, spend ledger, deletion
 receipt, and final `brev --no-check-latest ls --json` showing no workspaces.
 
-**Status:** PENDING
+**Completion evidence:** Workspace deletion was requested at 01:06:47 CDT.
+Authenticated inventory at 01:15:57 CDT returned `workspaces: null`. Estimated
+spend is approximately `$0.30`, with a conservative bound of `$0.40`.
+
+**Status:** PASS

@@ -3,9 +3,13 @@ set -euo pipefail
 
 GROOT_ROOT="${GROOT_ROOT:-/home/shadeform/Isaac-GR00T}"
 EXPECTED_COMMIT="23ace64f17aa5015259b8609d371eb61a357c776"
+UV_BIN="${UV_BIN:-/home/shadeform/.local/bin/uv}"
 
 sudo apt-get update
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ffmpeg git-lfs
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+  cuda-nvcc-12-8 \
+  ffmpeg \
+  git-lfs
 git lfs install --skip-repo
 
 if [ ! -d "$GROOT_ROOT/.git" ]; then
@@ -25,9 +29,14 @@ if [ "$actual_commit" != "$EXPECTED_COMMIT" ]; then
 fi
 
 cd "$GROOT_ROOT"
-uv sync --python 3.10
+git lfs pull --include="scripts/deployment/dgpu/wheels/*"
+if [ ! -x "$UV_BIN" ]; then
+  echo "uv executable missing: $UV_BIN" >&2
+  exit 1
+fi
+"$UV_BIN" sync --python 3.10
 
-uv run python - <<'PY'
+"$UV_BIN" run python - <<'PY'
 import json
 import subprocess
 

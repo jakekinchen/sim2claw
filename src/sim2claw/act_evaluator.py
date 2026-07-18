@@ -19,6 +19,7 @@ from .act_model import load_act_checkpoint
 from .chess_task import ChessRookLiftEnv, load_task_contract, task_contract_sha256
 from .paths import DEFAULT_OUTPUT_ROOT
 from .render import write_rgb_png
+from .studio_events import StudioActivity
 
 
 def _sha256_file(path: Path) -> str:
@@ -92,6 +93,11 @@ def evaluate_act(
     output = output_directory or DEFAULT_OUTPUT_ROOT / "act" / task["task_id"] / "eval"
     frames_directory = output / "frames"
     output.mkdir(parents=True, exist_ok=True)
+    activity = StudioActivity(
+        kind="evaluation",
+        title="Evaluate held-out ACT episode",
+        task_id=str(task["task_id"]),
+    )
     if render_video:
         frames_directory.mkdir(parents=True, exist_ok=True)
 
@@ -174,6 +180,13 @@ def evaluate_act(
             heights.append(float(env.piece_position()[2]))
             if (control_step + 1) % render_stride == 0:
                 snapshot()
+                activity.update(
+                    phase="Running held-out simulation",
+                    current=control_step + 1,
+                    total=env.horizon,
+                    detail=f"Rendered frame {frame_index}",
+                    metrics={"piece_height_m": heights[-1]},
+                )
         if env.horizon % render_stride:
             snapshot()
     finally:
@@ -308,4 +321,12 @@ def evaluate_act(
         json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     receipt["receipt"] = str(receipt_path)
+    activity.complete(
+        detail=str(receipt["terminal_outcome"]),
+        metrics={
+            "maximum_piece_rise_m": maximum_rise,
+            "final_piece_rise_m": final_rise,
+        },
+        episode_id=f"{task['task_id']}:held-out-{seed}",
+    )
     return receipt

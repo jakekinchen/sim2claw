@@ -608,14 +608,17 @@ def export_groot_dataset(
     output: Path,
     *,
     contract_path: Path = DEFAULT_GROOT_CHESS_TASK_CONFIG,
+    split: str = "training",
     max_episodes: int | None = None,
 ) -> dict[str, Any]:
-    """Export evaluator-accepted training demonstrations as GR00T LeRobot v2."""
+    """Export one frozen evaluator split as a GR00T LeRobot v2 dataset."""
 
     import pyarrow as pa
     import pyarrow.parquet as pq
 
     contract = load_groot_task_contract(contract_path)
+    if split not in {"training", "held_out"}:
+        raise ValueError("split must be 'training' or 'held_out'")
     if output.exists() and any(output.iterdir()):
         raise FileExistsError(f"refusing to overwrite non-empty dataset: {output}")
     meta_dir = output / "meta"
@@ -625,16 +628,16 @@ def export_groot_dataset(
     for directory in (meta_dir, data_dir, video_dir):
         directory.mkdir(parents=True, exist_ok=True)
 
-    episode_rows = contract["training_episodes"]
+    episode_rows = contract[f"{split}_episodes"]
     if max_episodes is not None:
         episode_rows = episode_rows[:max_episodes]
     task_index_by_case = {
         str(case["case_id"]): index
-        for index, case in enumerate(contract["training_cases"])
+        for index, case in enumerate(contract[f"{split}_cases"])
     }
     task_rows = [
         {"task_index": index, "task": str(case["instruction"])}
-        for index, case in enumerate(contract["training_cases"])
+        for index, case in enumerate(contract[f"{split}_cases"])
     ]
     _write_jsonl(meta_dir / "tasks.jsonl", task_rows)
 
@@ -651,7 +654,7 @@ def export_groot_dataset(
     for dataset_episode_index, _ in enumerate(episode_rows):
         episode = collect_groot_expert_episode(
             contract,
-            split="training",
+            split=split,
             episode_index=dataset_episode_index,
             render_frames=True,
         )
@@ -801,6 +804,7 @@ def export_groot_dataset(
         "schema_version": "sim2claw.groot_lerobot_dataset_receipt.v1",
         "task_id": contract["task_id"],
         "task_contract_sha256": groot_task_contract_sha256(contract_path),
+        "split": split,
         "proof_class": "simulation_synthetic_vla_demonstration_dataset",
         "format": "GR00T LeRobot v2.1",
         "model_source_commit": contract["model"]["source_commit"],

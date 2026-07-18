@@ -58,6 +58,21 @@ under ignored `outputs/` storage. This is an in-process, offscreen simulator
 workflow; the repository does not currently expose an interactive MuJoCo
 viewer.
 
+## Open the browser visualization studio
+
+Replay the repo's generated episodes, scrub through phase-aligned video or
+frames, browse task-grouped evidence, and watch active training/evaluation
+processes from a local browser:
+
+```bash
+uv run sim2claw studio
+```
+
+The studio is a read-only evidence surface. It does not start work, promote a
+checkpoint, connect a gateway, or grant physical authority. See
+[`VISUALIZATION_STUDIO.md`](./docs/VISUALIZATION_STUDIO.md) for its artifact
+adapters and live heartbeat contract.
+
 ### Optional Polycam scan overlay
 
 Fetch the exact owner-provided Polycam artifacts into ignored `external/`

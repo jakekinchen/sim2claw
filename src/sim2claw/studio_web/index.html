@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ecefed">
+    <title>sim2claw studio</title>
+    <link rel="stylesheet" href="/studio.css">
+  </head>
+  <body data-view="replay">
+    <a class="skip-link" href="#episode-stage">Skip to replay</a>
+
+    <div class="app-shell">
+      <header class="masthead">
+        <button class="wordmark" type="button" data-route="replay" aria-label="Open replay workbench">
+          <span class="wordmark-mark" aria-hidden="true"><i></i><i></i></span>
+          <span><b>sim2claw</b><small>visual studio</small></span>
+        </button>
+
+        <nav class="view-switch" aria-label="Studio views">
+          <button class="view-button is-active" type="button" data-route="replay">Replay</button>
+          <button class="view-button" type="button" data-route="library">Library</button>
+          <button class="view-button" type="button" data-route="robots">Robots</button>
+        </nav>
+
+        <div class="status-line" aria-label="Workspace status">
+          <span class="campaign-name" id="campaign-label">Loading workspace</span>
+          <span class="pass-ratio" id="pass-ratio">—</span>
+          <button class="live-trigger" id="live-trigger" type="button" aria-controls="process-drawer" aria-expanded="false">
+            <span class="live-dot" aria-hidden="true"></span>
+            <b id="live-count">0 live</b>
+          </button>
+          <span class="authority-state" title="Inspection only; no robot control authority">
+            <span class="lock-icon" aria-hidden="true"></span>
+            read-only
+          </span>
+          <div class="connection" id="connection-state" aria-live="polite">
+            <span class="connection-light"></span>
+            <span>Connecting</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="live-strip" id="live-strip" hidden>
+        <span class="live-strip-pulse" aria-hidden="true"></span>
+        <b id="live-strip-title">Process active</b>
+        <span id="live-strip-phase"></span>
+        <button type="button" id="live-strip-open">Open live detail</button>
+      </div>
+
+      <main class="studio-main">
+        <section class="view-panel replay-view" data-view-panel="replay" aria-label="Replay workbench">
+          <aside class="browser-rail" id="browser-rail" aria-labelledby="browser-heading">
+            <header class="rail-header">
+              <div>
+                <span class="section-label">Episode browser</span>
+                <h2 id="browser-heading">Choose evidence</h2>
+              </div>
+              <button class="rail-close" id="rail-close" type="button" aria-label="Close episode browser">Close</button>
+            </header>
+
+            <label class="search-field rail-search">
+              <span class="visually-hidden">Search episodes</span>
+              <svg aria-hidden="true" viewBox="0 0 20 20"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="m13 13 4 4"></path></svg>
+              <input id="episode-search" type="search" placeholder="Search tasks, seeds, outcomes">
+              <kbd>/</kbd>
+            </label>
+
+            <div class="task-filter-list" id="task-filter-list" aria-label="Filter by task"></div>
+
+            <div class="rail-result-line">
+              <span id="rail-context">All episodes</span>
+              <b id="rail-result-count">0</b>
+            </div>
+            <div class="rail-episode-list" id="rail-episode-list"></div>
+            <button class="open-library" type="button" data-route="library">Open the full library <span aria-hidden="true">↗</span></button>
+          </aside>
+
+          <section class="stage-panel" aria-labelledby="stage-title">
+            <header class="stage-heading">
+              <div class="stage-copy">
+                <span class="stage-kicker" id="stage-kicker">Replay evidence</span>
+                <h1 id="stage-title">Choose an episode</h1>
+                <p id="stage-subtitle">The newest replayable evidence will appear here.</p>
+              </div>
+              <div class="stage-actions">
+                <span class="stage-verdict" id="stage-verdict">Waiting</span>
+                <button class="detail-button" id="evidence-trigger" type="button" aria-controls="evidence-drawer" aria-expanded="false">Evidence details</button>
+              </div>
+            </header>
+
+            <div class="episode-stage" id="episode-stage" tabindex="0" aria-label="Episode replay viewer">
+              <video id="replay-video" playsinline muted preload="metadata"></video>
+              <img id="replay-frame" alt="Current simulation episode frame">
+              <div class="empty-stage" id="empty-stage">
+                <svg class="stage-portrait" id="stage-portrait" viewBox="0 0 640 360" aria-hidden="true"></svg>
+                <p>No replay selected</p>
+              </div>
+              <button class="camera-label" type="button" data-route="robots" aria-label="Open robot and workcell view">
+                <span>CAM 01</span><b>WORKCELL / FRONT</b>
+              </button>
+              <div class="stage-timecode" id="stage-timecode">00:00.000</div>
+              <div class="stage-progress" id="stage-progress" aria-hidden="true"></div>
+              <div class="scan-head" id="scan-head" aria-hidden="true"></div>
+            </div>
+
+            <div class="transport" aria-label="Replay controls">
+              <div class="transport-controls">
+                <button class="step-button" id="jump-back" type="button" aria-label="Go backward">−5 sec</button>
+                <button class="play-button" id="play-toggle" type="button" aria-label="Play episode"><span></span></button>
+                <button class="step-button" id="jump-forward" type="button" aria-label="Go forward">+5 sec</button>
+              </div>
+
+              <div class="timeline-shell" id="timeline-shell">
+                <div class="phase-rail" id="phase-rail" aria-label="Episode phases"></div>
+                <div class="timeline-ticks" id="timeline-ticks" aria-hidden="true"></div>
+                <input id="scrubber" type="range" min="0" max="1000" value="0" aria-label="Episode position">
+                <div class="timeline-head" id="timeline-head" aria-hidden="true"></div>
+                <div class="timeline-preview" id="timeline-preview" hidden>
+                  <video id="preview-video" playsinline muted preload="metadata"></video>
+                  <img id="preview-frame" alt="">
+                  <span id="preview-timecode">00:00.000</span>
+                </div>
+              </div>
+
+              <button class="speed-button" id="speed-toggle" type="button" aria-label="Change replay speed">1×</button>
+            </div>
+
+            <div class="metric-strip" id="metric-strip" aria-label="Selected evaluator metrics"></div>
+            <button class="mobile-browser-toggle" id="mobile-browser-toggle" type="button" aria-controls="browser-rail" aria-expanded="false">
+              Browse task episodes <span aria-hidden="true">＋</span>
+            </button>
+          </section>
+        </section>
+
+        <section class="view-panel library-view" data-view-panel="library" aria-labelledby="library-heading">
+          <header class="view-heading library-heading">
+            <div>
+              <span class="section-label">Replayable evidence</span>
+              <h1 id="library-heading">Episode library</h1>
+              <p>Browse by task. Open an episode to return to the replay workbench.</p>
+            </div>
+            <label class="search-field library-search">
+              <span class="visually-hidden">Search the episode library</span>
+              <svg aria-hidden="true" viewBox="0 0 20 20"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="m13 13 4 4"></path></svg>
+              <input id="library-search" type="search" placeholder="Find an episode">
+            </label>
+          </header>
+          <div class="library-summary" id="library-summary"></div>
+          <div class="library-groups" id="library-groups"></div>
+        </section>
+
+        <section class="view-panel robots-view" data-view-panel="robots" aria-labelledby="robots-heading">
+          <header class="view-heading robots-heading">
+            <div>
+              <span class="section-label">Embodiments in scene</span>
+              <h1 id="robots-heading">Robot workcell</h1>
+              <p>Simulation presence is visible here. Camera, serial, gateway, and motion authority remain closed.</p>
+            </div>
+            <span class="neutral-tag"><span class="lock-icon" aria-hidden="true"></span> physical control closed</span>
+          </header>
+          <article class="simulation-card" id="simulation-card"></article>
+          <div class="robot-grid" id="robot-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+
+    <aside class="side-drawer process-drawer" id="process-drawer" aria-labelledby="process-heading" aria-hidden="true">
+      <header class="drawer-heading">
+        <div>
+          <span class="section-label">Process observer</span>
+          <h2 id="process-heading">Live work</h2>
+        </div>
+        <button class="drawer-close" type="button" data-close-drawer aria-label="Close live work drawer">Close</button>
+      </header>
+      <p class="drawer-intro">Progress is observed from local heartbeats. This panel cannot start, stop, or promote a run.</p>
+      <div class="activity-list" id="activity-list"></div>
+    </aside>
+
+    <aside class="side-drawer evidence-drawer" id="evidence-drawer" aria-labelledby="evidence-heading" aria-hidden="true">
+      <header class="drawer-heading">
+        <div>
+          <span class="section-label">Selected episode</span>
+          <h2 id="evidence-heading">Evidence details</h2>
+        </div>
+        <button class="drawer-close" type="button" data-close-drawer aria-label="Close evidence drawer">Close</button>
+      </header>
+      <div class="evidence-content" id="evidence-content"></div>
+    </aside>
+
+    <template id="task-filter-template">
+      <button class="task-filter" type="button">
+        <span class="task-filter-copy"><b></b><small></small></span>
+        <span class="task-filter-result"></span>
+      </button>
+    </template>
+
+    <template id="rail-episode-template">
+      <button class="rail-episode" type="button">
+        <span class="rail-thumb"><span class="phase-portrait"></span></span>
+        <span class="rail-copy"><b></b><small></small></span>
+        <span class="rail-status" aria-hidden="true"></span>
+      </button>
+    </template>
+
+    <template id="episode-template">
+      <button class="episode-card" type="button">
+        <span class="episode-thumb"><span class="phase-portrait"></span><span class="episode-special"></span></span>
+        <span class="episode-card-copy"><b></b><small></small><span class="episode-card-meta"></span></span>
+      </button>
+    </template>
+
+    <script src="/studio.js" defer></script>
+  </body>
+</html>

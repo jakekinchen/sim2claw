@@ -1,9 +1,9 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-18T00:32:00-05:00",
+  "updated_at": "2026-07-18T01:15:57-05:00",
   "active_campaign": "groot_n17_dynamic_chess_overnight",
-  "current_milestone": "M1_ACCEPTED_DYNAMIC_DEMONSTRATION_DATASET",
-  "training_lock": "closed_until_pinned_nvidia_loader_passes",
+  "current_milestone": "M3_BLOCKED_GATED_COSMOS_ACCESS",
+  "training_lock": "closed_until_cosmos_reason2_access_passes",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "simulation_synthetic_vla_demonstration",
   "brev": {
@@ -12,13 +12,35 @@
     "worker_limit": 1,
     "hard_stop_local": "2026-07-18T08:30:00-05:00",
     "workspace": null,
-    "initial_inventory_empty": true
+    "initial_inventory_empty": true,
+    "final_inventory_empty": true,
+    "estimated_spend_usd": 0.3,
+    "conservative_spend_bound_usd": 0.4,
+    "teardown_verified_at": "2026-07-18T01:15:57-05:00"
   },
   "local_evidence": {
     "training_expert_passes": 24,
     "held_out_expert_passes": 4,
     "tests_passed": 15,
     "full_board_counterexample_retained": true
+  },
+  "nvidia_preflight": {
+    "source_commit_verified": true,
+    "a100_80gb_verified": true,
+    "dataset_loader_passed": true,
+    "dataset_episodes": 24,
+    "base_model_revision_verified": "2fc962b973bccdd5d8ce4f67cc63b264d6886495",
+    "optimizer_steps_completed": 0,
+    "checkpoint_created": false,
+    "policy_episode_completed": false
+  },
+  "external_blocker": {
+    "kind": "hugging_face_gated_model_access",
+    "dependency": "nvidia/Cosmos-Reason2-2B",
+    "account": "jakekinchen",
+    "credential_valid": true,
+    "dependency_http_status": 403,
+    "token_stored_in_repo": false
   },
   "physical_authority": false
 }
