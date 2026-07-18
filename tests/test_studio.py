@@ -30,10 +30,21 @@ class StudioCatalogTest(unittest.TestCase):
             self.root / "configs" / "polycam" / "capture.json",
             {
                 "simulation_estimates": {
+                    "workspace_pose": {
+                        "pose_id": (
+                            "workspace_board_fiducial_robotward_100mm_20260718_v3"
+                        )
+                    },
                     "board": {
-                        "pose_id": "board_robotward_72mm_20260718_v2",
-                        "center_in_table_frame_xy_m": [0.04, -0.093],
-                        "robotward_displacement_from_previous_pose_m": 0.072,
+                        "pose_id": "board_robotward_100mm_20260718_v3",
+                        "center_in_table_frame_xy_m": [0.04, -0.065],
+                        "robotward_displacement_from_previous_pose_m": 0.1,
+                    },
+                    "background": {
+                        "fiducial_pose_id": (
+                            "fiducial_robotward_100mm_20260718_v2"
+                        ),
+                        "fiducial_center_in_table_frame_xy_m": [0.02, 0.18],
                     },
                     "robots": [],
                 }
@@ -153,15 +164,27 @@ class StudioCatalogTest(unittest.TestCase):
         self.assertIn("16 sparse pawns", catalog["simulations"][0]["subtitle"])
         self.assertEqual(
             catalog["simulations"][0]["workcell_pose_id"],
-            "board_robotward_72mm_20260718_v2",
+            "board_robotward_100mm_20260718_v3",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["workspace_pose_id"],
+            "workspace_board_fiducial_robotward_100mm_20260718_v3",
         )
         self.assertEqual(
             catalog["simulations"][0]["board_center_in_table_frame_xy_m"],
-            [0.04, -0.093],
+            [0.04, -0.065],
         )
         self.assertEqual(
             catalog["simulations"][0]["board_pose_label"],
-            "72 mm robotward",
+            "100 mm robotward",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["fiducial_pose_id"],
+            "fiducial_robotward_100mm_20260718_v2",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["fiducial_center_in_table_frame_xy_m"],
+            [0.02, 0.18],
         )
 
     def test_catalog_includes_physical_source_with_simulator_replay(self) -> None:

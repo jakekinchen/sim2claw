@@ -697,10 +697,12 @@ class TeleopRecordingManager:
         mode_status = preflight["modes"][mode]
         if not mode_status["ready"]:
             raise RecorderError(str(mode_status["reason"]))
-        board_registration = scene_summary(
-            piece_layout=CURRENT_TASK_PIECE_LAYOUT
-        )["board"]
+        scene_registration = scene_summary(piece_layout=CURRENT_TASK_PIECE_LAYOUT)
+        board_registration = scene_registration["board"]
+        fiducial_registration = scene_registration["fiducial"]
         workcell_registration = {
+            "workspace_pose_id": scene_registration["workspace_pose"]["pose_id"],
+            "board_scene_id": board_registration["scene_id"],
             "board_pose_id": board_registration["pose_id"],
             "board_center_in_table_frame_xy_m": board_registration[
                 "center_in_table_frame_xy_m"
@@ -709,6 +711,18 @@ class TeleopRecordingManager:
                 "robotward_displacement_from_previous_pose_m"
             ],
             "robotward_axis_in_table_frame": board_registration[
+                "robotward_axis_in_table_frame"
+            ],
+            "fiducial_pose_id": fiducial_registration["pose_id"],
+            "fiducial_center_in_table_frame_xy_m": fiducial_registration[
+                "center_in_table_frame_xy_m"
+            ],
+            "fiducial_robotward_displacement_from_previous_pose_m": (
+                fiducial_registration[
+                    "robotward_displacement_from_previous_pose_m"
+                ]
+            ),
+            "fiducial_robotward_axis_in_table_frame": fiducial_registration[
                 "robotward_axis_in_table_frame"
             ],
         }

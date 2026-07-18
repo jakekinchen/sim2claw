@@ -251,10 +251,18 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertEqual(
             receipt["workcell_registration"],
             {
-                "board_pose_id": "board_robotward_72mm_20260718_v2",
-                "board_center_in_table_frame_xy_m": [0.04, -0.093],
-                "robotward_displacement_from_previous_pose_m": 0.072,
+                "workspace_pose_id": (
+                    "workspace_board_fiducial_robotward_100mm_20260718_v3"
+                ),
+                "board_scene_id": "operator_updated_chess_workcell_v3",
+                "board_pose_id": "board_robotward_100mm_20260718_v3",
+                "board_center_in_table_frame_xy_m": [0.04, -0.065],
+                "robotward_displacement_from_previous_pose_m": 0.1,
                 "robotward_axis_in_table_frame": "+y",
+                "fiducial_pose_id": "fiducial_robotward_100mm_20260718_v2",
+                "fiducial_center_in_table_frame_xy_m": [0.02, 0.18],
+                "fiducial_robotward_displacement_from_previous_pose_m": 0.1,
+                "fiducial_robotward_axis_in_table_frame": "+y",
             },
         )
         self.assertIn("overhead_video_time_seconds", rows[0])

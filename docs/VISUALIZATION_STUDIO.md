@@ -200,13 +200,18 @@ a higher-contrast inspection palette and hides the photo-reference tripod group.
 Neither choice changes the frozen `workcell` task camera, physics, evaluator, or
 recorded training observations.
 
-The current board registration is
-`board_robotward_72mm_20260718_v2`: center `(0.040, -0.093) m` in the table
-frame, 72 mm along `+y` from the earlier overhead-photo pose. The Robots card
-surfaces this as `72 mm robotward`, while the scene manifest, live simulator,
-replay geometry, pawn coordinates, and freshly generated posters all consume
-the same capture-config center. Recording receipts preserve this pose identity
-so episodes are not later interpreted against a different workcell layout.
+The current workspace registration is
+`workspace_board_fiducial_robotward_100mm_20260718_v3`. Its board pose is
+`board_robotward_100mm_20260718_v3` at `(0.040, -0.065) m`, 100 mm total along
+`+y` from the overhead-photo pose and 28 mm beyond the historical 72 mm pose.
+Its fiducial pose is `fiducial_robotward_100mm_20260718_v2` at
+`(0.020, 0.180) m`; because the simulated sheet never received the earlier
+board-only update, it moves the full 100 mm now. The Robots card surfaces the
+board as `100 mm robotward`, while the scene manifest, live simulator, replay
+geometry, pawn coordinates, and freshly generated posters consume the same
+capture-config workspace. Recording receipts preserve both board and fiducial
+pose identities so episodes are not later interpreted against a different
+workcell layout.
 
 ## Dependency record
 

@@ -427,6 +427,130 @@ def _fiducial_body(config: dict[str, Any], geometry: SceneGeometry) -> list[str]
     return lines
 
 
+def _antler_mug(
+    background: dict[str, Any],
+    *,
+    ledge_center_y: float,
+    ledge_top_z: float,
+) -> list[str]:
+    """Build a fixed, non-colliding mug from the user's photo reference."""
+
+    mug = background["antler_mug"]
+    sill_x, sill_y = (
+        float(value) for value in mug["center_in_sill_frame_xy_m"]
+    )
+    radius = float(mug["outer_radius_m"])
+    height = float(mug["height_m"])
+    half_height = height / 2.0
+    visual_only = 'group="0" contype="0" conaffinity="0"'
+    ceramic = 'rgba="0.94 0.94 0.92 1"'
+    red = 'rgba="0.78 0.08 0.025 1"'
+    white = 'rgba="0.98 0.98 0.965 1"'
+    lines = [
+        f'<body name="antler_mug" pos="{sill_x:.9g} '
+        f'{ledge_center_y + sill_y:.9g} {ledge_top_z + half_height:.9g}">',
+        f'<geom name="antler_mug_ceramic" type="cylinder" '
+        f'size="{radius:.9g} {half_height:.9g}" {ceramic} {visual_only}/>',
+        f'<geom name="antler_mug_inner" type="cylinder" '
+        f'size="{radius - 0.008:.9g} 0.0012" pos="0 0 {half_height + 0.0007:.9g}" '
+        f'rgba="0.60 0.60 0.57 1" {visual_only}/>',
+        f'<geom name="antler_mug_base_ring" type="cylinder" '
+        f'size="{radius - 0.004:.9g} 0.002" pos="0 0 {-half_height + 0.001:.9g}" '
+        f'{ceramic} {visual_only}/>',
+    ]
+
+    rim_z = half_height + 0.0015
+    rim_segments = 20
+    for index in range(rim_segments):
+        first = (2.0 * math.pi * index) / rim_segments
+        second = (2.0 * math.pi * (index + 1)) / rim_segments
+        x1, y1 = radius * math.cos(first), radius * math.sin(first)
+        x2, y2 = radius * math.cos(second), radius * math.sin(second)
+        lines.append(
+            f'<geom name="antler_mug_rim_{index:02d}" type="capsule" size="0.003" '
+            f'fromto="{x1:.9g} {y1:.9g} {rim_z:.9g} '
+            f'{x2:.9g} {y2:.9g} {rim_z:.9g}" {ceramic} {visual_only}/>'
+        )
+
+    handle_inner_x = -radius + 0.003
+    handle_outer_x = -radius - 0.037
+    handle_top_z = 0.027
+    handle_bottom_z = -0.026
+    handle_segments = (
+        (handle_inner_x, 0.0, handle_top_z, handle_outer_x, 0.0, handle_top_z),
+        (handle_outer_x, 0.0, handle_top_z, handle_outer_x, 0.0, handle_bottom_z),
+        (
+            handle_outer_x,
+            0.0,
+            handle_bottom_z,
+            handle_inner_x,
+            0.0,
+            handle_bottom_z,
+        ),
+    )
+    for index, segment in enumerate(handle_segments):
+        lines.append(
+            f'<geom name="antler_mug_handle_{index}" type="capsule" size="0.007" '
+            f'fromto="{_format_vector(segment)}" {ceramic} {visual_only}/>'
+        )
+
+    def decal_point(x: float, z: float, offset: float) -> tuple[float, float, float]:
+        theta = math.asin(max(-0.98, min(0.98, x / radius)))
+        return x, (radius * math.cos(theta)) + offset, z
+
+    logo_center_x = 0.023
+    logo_center_z = -0.006
+    logo_theta = math.asin(logo_center_x / radius)
+    logo_y = (radius * math.cos(logo_theta)) + 0.001
+    lines.append(
+        f'<geom name="antler_logo_red_square" type="box" size="0.010 0.0008 0.010" '
+        f'pos="{logo_center_x:.9g} {logo_y:.9g} {logo_center_z:.9g}" '
+        f'euler="0 0 {-math.degrees(logo_theta):.9g}" {red} {visual_only}/>'
+    )
+    a_segments = (
+        ((0.030, -0.012), (0.023, 0.002)),
+        ((0.023, 0.002), (0.016, -0.012)),
+        ((0.027, -0.006), (0.019, -0.006)),
+    )
+    for index, (start, end) in enumerate(a_segments):
+        x1, y1, z1 = decal_point(*start, 0.0021)
+        x2, y2, z2 = decal_point(*end, 0.0021)
+        lines.append(
+            f'<geom name="antler_logo_a_{index}" type="capsule" size="0.00135" '
+            f'fromto="{x1:.9g} {y1:.9g} {z1:.9g} '
+            f'{x2:.9g} {y2:.9g} {z2:.9g}" {white} {visual_only}/>'
+        )
+
+    wordmark = {
+        "N": ("101", "111", "111", "111", "101"),
+        "T": ("111", "010", "010", "010", "010"),
+        "L": ("100", "100", "100", "100", "111"),
+        "E": ("111", "100", "110", "100", "111"),
+        "R": ("110", "101", "110", "101", "101"),
+    }
+    cell = 0.0018
+    cursor = 0.009
+    for letter, rows in wordmark.items():
+        for row_index, row in enumerate(rows):
+            for column_index, enabled in enumerate(row):
+                if enabled != "1":
+                    continue
+                x = cursor - (column_index * cell)
+                z = logo_center_z + ((2 - row_index) * cell)
+                _, y, _ = decal_point(x, z, 0.0014)
+                theta = math.asin(x / radius)
+                lines.append(
+                    f'<geom name="antler_wordmark_{letter}_{row_index}_{column_index}" '
+                    f'type="box" size="0.00072 0.00045 0.00072" '
+                    f'pos="{x:.9g} {y:.9g} {z:.9g}" '
+                    f'euler="0 0 {-math.degrees(theta):.9g}" {red} {visual_only}/>'
+                )
+        cursor -= 4 * cell
+
+    lines.append("</body>")
+    return lines
+
+
 def _photo_background(config: dict[str, Any], geometry: SceneGeometry) -> list[str]:
     half_width = geometry.table_width / 2.0
     background = config["simulation_estimates"]["background"]
@@ -464,6 +588,13 @@ def _photo_background(config: dict[str, Any], geometry: SceneGeometry) -> list[s
             f'pos="0 {rear_y + 0.005:.9g} {blind_z:.9g}" '
             'rgba="0.76 0.76 0.74 1" contype="0" conaffinity="0"/>'
         )
+    lines.extend(
+        _antler_mug(
+            background,
+            ledge_center_y=ledge_center_y,
+            ledge_top_z=ledge_bottom_z + ledge_thickness,
+        )
+    )
     # A compact black tripod at the left edge reproduces the strongest side silhouette.
     lines.extend(
         [
@@ -711,8 +842,10 @@ def scene_summary(
 ) -> dict[str, Any]:
     config = load_capture_config(config_path)
     geometry = scene_geometry(config)
-    robots = config["simulation_estimates"]["robots"]
-    board = config["simulation_estimates"]["board"]
+    estimates = config["simulation_estimates"]
+    robots = estimates["robots"]
+    board = estimates["board"]
+    background = estimates["background"]
     board_local_x = float(
         board["center_in_table_frame_xy_m"][0]
     )
@@ -744,6 +877,23 @@ def scene_summary(
             "measurement_confidence": config["simulation_estimates"]["board"]["confidence"],
             "near_side_color": "black",
         },
+        "fiducial": {
+            "pose_id": background["fiducial_pose_id"],
+            "center_in_table_frame_xy_m": background[
+                "fiducial_center_in_table_frame_xy_m"
+            ],
+            "previous_center_in_table_frame_xy_m": background[
+                "previous_fiducial_center_in_table_frame_xy_m"
+            ],
+            "robotward_displacement_from_previous_pose_m": background[
+                "fiducial_robotward_displacement_from_previous_pose_m"
+            ],
+            "robotward_axis_in_table_frame": background[
+                "fiducial_robotward_axis_in_table_frame"
+            ],
+            "physical_authority": False,
+        },
+        "workspace_pose": estimates["workspace_pose"],
         "robots": {
             "count": 2,
             "model": "MuJoCo Menagerie robotstudio_so101",
@@ -762,8 +912,8 @@ def scene_summary(
             ],
         },
         "studio_cameras": list(STUDIO_CAMERAS),
-        "photo_alignment": config["simulation_estimates"]["photo_reference"],
-        "scene_elements": config["simulation_estimates"]["background"]["elements"],
+        "photo_alignment": estimates["photo_reference"],
+        "scene_elements": background["elements"],
         "piece_layout": piece_layout,
         "piece_layout_id": (
             CURRENT_TASK_LAYOUT_ID

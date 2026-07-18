@@ -1,6 +1,6 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-18T18:37:00-05:00",
+  "updated_at": "2026-07-18T18:50:38-05:00",
   "active_campaign": "goal_conditioned_act_pick_place",
   "current_milestone": "M7_RETARGETED_STRICT_SUCCESS_DATASET",
   "training_lock": "closed_until_m7_candidates_replay_and_pass_separate_evaluator",
@@ -34,6 +34,22 @@
     "complete_product_target": "48_of_48_simulation_and_16_of_16_physical_for_same_checkpoint",
     "simulation_and_physical_results_separate": true,
     "training_or_policy_result_proven": false
+  },
+  "workspace_registration": {
+    "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "status": "operator_reported_current_physical_layout_not_calibrated_physical_authority",
+    "robotward_axis_in_table_frame": "+y",
+    "board_pose_id": "board_robotward_100mm_20260718_v3",
+    "board_center_in_table_frame_xy_m": [0.04, -0.065],
+    "board_total_displacement_from_photo_pose_m": 0.1,
+    "board_additional_displacement_from_prior_v2_m": 0.028,
+    "fiducial_pose_id": "fiducial_robotward_100mm_20260718_v2",
+    "fiducial_center_in_table_frame_xy_m": [0.02, 0.18],
+    "fiducial_total_displacement_from_photo_pose_m": 0.1,
+    "frozen_product_evaluation_board_pose_id": "board_robotward_72mm_20260718_v2",
+    "frozen_product_evaluation_requires_requalification_for_current_workspace": true,
+    "historical_receipts_rewritten": false,
+    "physical_authority": false
   },
   "act_contract_evidence": {
     "schema_version": "sim2claw.chess_pick_place_act_state_task.v1",

@@ -858,6 +858,8 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     capture_config = _read_json(capture_paths[0]) if capture_paths else {}
     scene_estimates = capture_config.get("simulation_estimates", {})
     board_estimate = scene_estimates.get("board", {})
+    background_estimate = scene_estimates.get("background", {})
+    workspace_pose = scene_estimates.get("workspace_pose", {})
     board_local = board_estimate.get(
         "center_in_table_frame_xy_m", [0.0, 0.0]
     )
@@ -882,8 +884,13 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
             "piece_layout": "sparse_two_sided_pawns",
             "piece_layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
             "workcell_pose_id": board_estimate.get("pose_id"),
+            "workspace_pose_id": workspace_pose.get("pose_id"),
             "board_center_in_table_frame_xy_m": board_local,
             "board_pose_label": board_pose_label,
+            "fiducial_pose_id": background_estimate.get("fiducial_pose_id"),
+            "fiducial_center_in_table_frame_xy_m": background_estimate.get(
+                "fiducial_center_in_table_frame_xy_m"
+            ),
             "status": "simulation_ready",
             "task_count": len(tasks),
             "robot_count": 2,
