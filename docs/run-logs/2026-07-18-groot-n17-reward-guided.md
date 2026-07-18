@@ -224,3 +224,21 @@ dimension alone contributes 0.6777 MAE. The precision optimization change did
 not repair first-action dispersion or phase/jaw timing. More optimizer or
 horizon fishing is therefore rejected; the complementary causal temporal
 executor is the next justified mechanism test.
+
+## Evidence preservation and worker teardown
+
+The inference-only sibling lane accepted ownership of the nonredundant causal
+temporal plus training-derived rate-limit experiment on its separate worker.
+This lane therefore had no remaining verified paid task. Before teardown, all
+non-checkpoint logs, receipts, videos, trajectories, and manifests under the
+worker evidence directory were archived as 92 entries. The local archive is
+`outputs/brev_evidence/sim2claw-gr00t-guided-evidence-0718.tgz`, with SHA-256
+`5aef0c49cab2a531ff8aa2ea7530c666cdc0783dc43eedee5021ea5767c3bfb0`.
+
+The checkpoint-750 server was stopped by its exact wrapper PID; no training,
+evaluation, closed-loop, or GPU compute process remained. Brev worker
+`4v9suefrt` was then deleted at approximately 12:24 CDT and disappeared from
+the authenticated inventory. Only sibling-owned worker `50abriamr` remained
+healthy and running. At the quoted $1.656/hour, this lane's roughly five-hour
+worker lifetime is approximately $8.25; this is a rate-times-duration estimate,
+not a final provider invoice.
