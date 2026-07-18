@@ -17,6 +17,7 @@ from sim2claw.groot_chess import (
     _apply_sparse_board_curriculum,
     _case_map,
     _episode_shim,
+    collect_groot_expert_episode,
     load_groot_task_contract,
 )
 
@@ -27,9 +28,19 @@ def array_sha256(value: np.ndarray) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--episode-split",
+        choices=("training", "held_out"),
+        default="held_out",
+    )
     parser.add_argument("--episode-index", type=int, default=0)
     parser.add_argument("--inference-seed", type=int, default=0)
     parser.add_argument("--repeats", type=int, default=3)
+    parser.add_argument(
+        "--include-training-expert-diagnostic",
+        action="store_true",
+        help="Compare with the geometric expert; allowed only on the training split.",
+    )
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=5555)
     parser.add_argument(
@@ -45,10 +56,18 @@ def main() -> None:
     args = parser.parse_args()
     if args.repeats < 2:
         parser.error("--repeats must be at least 2")
+    if args.include_training_expert_diagnostic and args.episode_split != "training":
+        parser.error("expert diagnostics are restricted to the training split")
 
     contract = load_groot_task_contract()
-    episode_row = contract["held_out_episodes"][args.episode_index]
-    case = _case_map(contract, "held_out")[episode_row["case_id"]]
+    episode_rows = contract[f"{args.episode_split}_episodes"]
+    if not 0 <= args.episode_index < len(episode_rows):
+        parser.error(
+            f"--episode-index must be between 0 and {len(episode_rows) - 1} "
+            f"for split {args.episode_split}"
+        )
+    episode_row = episode_rows[args.episode_index]
+    case = _case_map(contract, args.episode_split)[episode_row["case_id"]]
     env = ChessRookLiftEnv(
         _episode_shim(contract, case),
         seed=int(episode_row["seed"]),
@@ -123,6 +142,18 @@ def main() -> None:
         raise RuntimeError("GR00T policy server did not answer ping")
 
     probes = []
+    expert_chunk: np.ndarray | None = None
+    if args.include_training_expert_diagnostic:
+        expert_episode = collect_groot_expert_episode(
+            contract,
+            split="training",
+            episode_index=args.episode_index,
+            render_frames=False,
+        )
+        expert_chunk = np.asarray(
+            expert_episode.actions[: int(contract["model"]["action_horizon"])],
+            dtype=np.float32,
+        )
     for repeat in range(args.repeats):
         reset_info = client.reset(options={"inference_seed": args.inference_seed})
         predicted, action_info = client.get_action(
@@ -132,19 +163,29 @@ def main() -> None:
         arm = np.asarray(predicted["single_arm"], dtype=np.float32)
         gripper = np.asarray(predicted["gripper"], dtype=np.float32)
         action = np.concatenate([arm, gripper], axis=-1)
-        probes.append(
-            {
-                "repeat": repeat,
-                "action_sha256": array_sha256(action),
-                "first_action": action[0, 0].tolist(),
-                "reset_info": reset_info,
-                "action_info": action_info,
+        probe = {
+            "repeat": repeat,
+            "action_sha256": array_sha256(action),
+            "first_action": action[0, 0].tolist(),
+            "reset_info": reset_info,
+            "action_info": action_info,
+        }
+        if expert_chunk is not None:
+            learned_chunk = action[0, : len(expert_chunk)]
+            delta = learned_chunk - expert_chunk
+            probe["training_expert_diagnostic"] = {
+                "promotion_authority": False,
+                "first_action_l2": float(np.linalg.norm(delta[0])),
+                "first_action_mae": float(np.mean(np.abs(delta[0]))),
+                "chunk_l2": float(np.linalg.norm(delta)),
+                "chunk_mae": float(np.mean(np.abs(delta))),
             }
-        )
+        probes.append(probe)
 
     unique_action_hashes = sorted({row["action_sha256"] for row in probes})
     result = {
         "schema_version": "sim2claw.groot_n17_seed_replay_probe.v1",
+        "split": args.episode_split,
         "episode_index": args.episode_index,
         "inference_seed": args.inference_seed,
         "repeats": args.repeats,
@@ -159,6 +200,7 @@ def main() -> None:
         "piece_position_m": env.piece_position().tolist(),
         "unique_action_hashes": unique_action_hashes,
         "repeatable": len(unique_action_hashes) == 1,
+        "training_expert_diagnostic_included": expert_chunk is not None,
         "probes": probes,
     }
     print(json.dumps(result, indent=2, sort_keys=True))

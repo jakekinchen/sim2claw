@@ -9,6 +9,7 @@ OUTPUT_ROOT="${OUTPUT_ROOT:-/home/shadeform/runs/groot-n17-placement/horizon-swe
 SERVER_HOST="${SERVER_HOST:-127.0.0.1}"
 SERVER_PORT="${SERVER_PORT:-5555}"
 HORIZONS="${HORIZONS:-8 4 2 1}"
+EPISODE_SPLIT="${EPISODE_SPLIT:-held_out}"
 EPISODE_INDICES="${EPISODE_INDICES:-0}"
 ROLLOUT_REPLICATE="${ROLLOUT_REPLICATE:-0}"
 INFERENCE_SEED="${INFERENCE_SEED:-$ROLLOUT_REPLICATE}"
@@ -28,8 +29,8 @@ cd "${GROOT_DIR}"
 
 for horizon in ${HORIZONS}; do
   for episode_index in ${EPISODE_INDICES}; do
-    output="${OUTPUT_ROOT}/episode-${episode_index}-horizon-${horizon}-replicate-${ROLLOUT_REPLICATE}"
-    log="${OUTPUT_ROOT}/episode-${episode_index}-horizon-${horizon}-replicate-${ROLLOUT_REPLICATE}.log"
+    output="${OUTPUT_ROOT}/${EPISODE_SPLIT}-episode-${episode_index}-horizon-${horizon}-replicate-${ROLLOUT_REPLICATE}"
+    log="${OUTPUT_ROOT}/${EPISODE_SPLIT}-episode-${episode_index}-horizon-${horizon}-replicate-${ROLLOUT_REPLICATE}.log"
     if [[ -f "${output}/receipt.json" ]]; then
       echo "skipping completed episode=${episode_index} horizon=${horizon}"
       continue
@@ -41,6 +42,7 @@ for horizon in ${HORIZONS}; do
       PYTHONPATH="${SIM2CLAW_ROOT}/src" \
       "${UV_BIN}" run python \
         "${SIM2CLAW_ROOT}/scripts/brev/run_groot_n17_chess_closed_loop.py" \
+        --episode-split "${EPISODE_SPLIT}" \
         --episode-index "${episode_index}" \
         --rollout-replicate "${ROLLOUT_REPLICATE}" \
         --inference-seed "${INFERENCE_SEED}" \
@@ -53,7 +55,7 @@ for horizon in ${HORIZONS}; do
         --output "${output}" \
         >"${log}" 2>&1
     jq -c \
-      '{episode_index,rollout_replicate,inference_seed,policy_server_mode,execution_horizon,maximum_piece_rise_m,verdict}' \
+      '{split,episode_index,rollout_replicate,inference_seed,policy_server_mode,execution_horizon,maximum_piece_rise_m,verdict}' \
       "${output}/receipt.json"
   done
 done

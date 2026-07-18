@@ -38,6 +38,11 @@ def sha256_file(path: Path) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--episode-split",
+        choices=("training", "held_out"),
+        default="held_out",
+    )
     parser.add_argument("--episode-index", type=int, default=0)
     parser.add_argument("--rollout-replicate", type=int, default=0)
     parser.add_argument("--inference-seed", type=int, default=0)
@@ -63,8 +68,14 @@ def main() -> None:
     args = parser.parse_args()
 
     contract = load_groot_task_contract()
-    episode_row = contract["held_out_episodes"][args.episode_index]
-    case = _case_map(contract, "held_out")[episode_row["case_id"]]
+    episode_rows = contract[f"{args.episode_split}_episodes"]
+    if not 0 <= args.episode_index < len(episode_rows):
+        parser.error(
+            f"--episode-index must be between 0 and {len(episode_rows) - 1} "
+            f"for split {args.episode_split}"
+        )
+    episode_row = episode_rows[args.episode_index]
+    case = _case_map(contract, args.episode_split)[episode_row["case_id"]]
     offset = tuple(float(value) for value in episode_row["piece_planar_offset_m"])
     env = ChessRookLiftEnv(
         _episode_shim(contract, case),
@@ -207,11 +218,12 @@ def main() -> None:
     receipt = {
         "schema_version": "sim2claw.groot_n17_closed_loop_episode.v1",
         "proof_class": "learned_policy_simulation",
-        "split": "held_out",
+        "split": args.episode_split,
         "episode_index": args.episode_index,
         "rollout_replicate": args.rollout_replicate,
         "inference_seed": args.inference_seed,
         "policy_server_mode": args.policy_server_mode,
+        "policy_reset_info": reset_info,
         "case_id": str(case["case_id"]),
         "instruction": str(case["instruction"]),
         "seed": int(episode_row["seed"]),

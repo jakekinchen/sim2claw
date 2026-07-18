@@ -9,6 +9,12 @@ from sim2claw.groot_chess import (
     load_groot_task_contract,
     resolve_execution_horizon,
 )
+from sim2claw.groot_consensus import (
+    action_sha256,
+    aggregate_action_proposals,
+    proposal_seed,
+    query_seed,
+)
 from sim2claw.scene import board_square_center, scene_geometry
 from sim2claw.capture import load_capture_config
 from sim2claw.paths import DEFAULT_CAPTURE_CONFIG
@@ -72,6 +78,70 @@ class GrootChessContractTest(unittest.TestCase):
         for invalid in (0, 17):
             with self.assertRaises(ValueError):
                 resolve_execution_horizon(invalid, model_action_horizon=16)
+
+
+class GrootConsensusTest(unittest.TestCase):
+    @staticmethod
+    def _proposal(value: float) -> dict[str, np.ndarray]:
+        return {
+            "single_arm": np.full((1, 16, 5), value, dtype=np.float32),
+            "gripper": np.full((1, 16, 1), value, dtype=np.float32),
+        }
+
+    def test_first_proposal_retains_original_query_seed(self) -> None:
+        baseline = query_seed(9301, 16)
+        self.assertEqual(proposal_seed(9301, 16, 0), baseline)
+        self.assertEqual(proposal_seed(9301, 16, 1), proposal_seed(9301, 16, 1))
+        self.assertNotEqual(proposal_seed(9301, 16, 1), baseline)
+        self.assertNotEqual(
+            proposal_seed(9301, 16, 1),
+            proposal_seed(9301, 16, 2),
+        )
+
+    def test_medoid_selects_a_complete_model_proposal(self) -> None:
+        proposals = [
+            self._proposal(0.0),
+            self._proposal(1.0),
+            self._proposal(10.0),
+        ]
+        aggregate, diagnostics = aggregate_action_proposals(
+            proposals,
+            method="medoid",
+        )
+        self.assertEqual(diagnostics["selected_proposal_index"], 1)
+        self.assertEqual(
+            diagnostics["aggregate_action_sha256"],
+            action_sha256(proposals[1]),
+        )
+        np.testing.assert_array_equal(aggregate["single_arm"], 1.0)
+
+    def test_median_and_trimmed_mean_reject_outlier(self) -> None:
+        proposals = [
+            self._proposal(value) for value in (0.0, 1.0, 2.0, 3.0, 100.0)
+        ]
+        median, median_diagnostics = aggregate_action_proposals(
+            proposals,
+            method="median",
+        )
+        trimmed, trimmed_diagnostics = aggregate_action_proposals(
+            proposals,
+            method="trimmed_mean",
+        )
+        np.testing.assert_array_equal(median["gripper"], 2.0)
+        np.testing.assert_array_equal(trimmed["gripper"], 2.0)
+        self.assertIsNone(median_diagnostics["selected_proposal_index"])
+        self.assertIsNone(trimmed_diagnostics["selected_proposal_index"])
+
+    def test_aggregation_rejects_nonfinite_and_mismatched_actions(self) -> None:
+        invalid = self._proposal(0.0)
+        invalid["gripper"][0, 0, 0] = np.nan
+        with self.assertRaises(ValueError):
+            aggregate_action_proposals([invalid], method="mean")
+        with self.assertRaises(ValueError):
+            aggregate_action_proposals(
+                [self._proposal(0.0), {"single_arm": np.zeros((1, 16, 5))}],
+                method="mean",
+            )
 
 
 if __name__ == "__main__":
