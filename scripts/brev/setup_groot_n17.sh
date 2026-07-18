@@ -36,6 +36,7 @@ if [ ! -x "$UV_BIN" ]; then
   exit 1
 fi
 "$UV_BIN" sync --python 3.10
+"$UV_BIN" pip install --python .venv/bin/python mujoco==3.10.0
 
 "$UV_BIN" run python - <<'PY'
 import json

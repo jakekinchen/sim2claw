@@ -112,8 +112,9 @@ Local preflight passed before remote execution:
 | Consensus worker | READY | `sim2claw-gr00t-consensus-0718` (`50abriamr`), one A100-SXM4-80GB at `$1.656/hour`; driver 580.126.09, compute capability 8.0 |
 | Pinned runtime setup | PASS | NVIDIA source `23ace64f`; Torch 2.7.1+cu128 reports CUDA available; FFmpeg 4.4.2; libosmesa6 `23.2.1-1ubuntu3.1~22.04.4` |
 | Source/config upload | PASS | remote flow-consensus experiment SHA-256 matches `4558ccb3...f8d`; remote scripts compile in the pinned GR00T runtime |
-| Checkpoint restore | ACTIVE | exact local three-shard nominal checkpoint is transferring; execute nothing until all remote shard hashes match local |
-| Baseline reproduction | PENDING | exact nominal checkpoint and OSMesa hashes required |
+| Checkpoint restore | PASS | all 16 files match local; shard hashes `cbcaea5e...edec`, `e0f46753...f14e`, and `fcab36db...8fb` |
+| Constructor dependency | PASS | pinned `nvidia/Cosmos-Reason2-2B` constructor cache resolved through the secured HF token; subsequent inference can remain cached |
+| Baseline reproduction | ACTIVE | exact K=1, noise=1, four-step, horizon-eight sample-hold OSMesa canary is running before v2 evaluation |
 | Training diagnostic | PENDING | no remote result yet |
 | Closed-loop development | PENDING | no remote result yet |
 | Held-out promotion | SEALED | cannot run until a configuration hash is frozen |
