@@ -72,9 +72,9 @@ with `torch.randn` and uses four Euler flow-inference steps by default. The
 same per-episode receipt also controls a bounded one-to-sixteen step count;
 the frozen matrix adds only two eight-step arms.
 
-Local preflight passed:
+Local preflight passed before remote execution:
 
-- 27/27 repository tests;
+- 29/29 repository tests, including analyzer rejection of held-out probes;
 - Python compilation for the server, evaluator runner, probe, and consensus
   module;
 - shell syntax for both Brev launch/sweep scripts;
@@ -86,7 +86,10 @@ Local preflight passed:
 | --- | --- | --- |
 | Initial inventory | PASS | only separately owned `sim2claw-gr00t-guided-0718` (`4v9suefrt`) was running |
 | A100 price check | PASS | known-compatible `massedcompute_A100_sxm4_80G_DGX` quoted at `$1.656/hour`; one A100-80GB |
-| Consensus worker | STARTING | `sim2claw-gr00t-consensus-0718` (`50abriamr`), one known-compatible A100-80GB at `$1.656/hour` |
+| Consensus worker | READY | `sim2claw-gr00t-consensus-0718` (`50abriamr`), one A100-SXM4-80GB at `$1.656/hour`; driver 580.126.09, compute capability 8.0 |
+| Pinned runtime setup | PASS | NVIDIA source `23ace64f`; Torch 2.7.1+cu128 reports CUDA available; FFmpeg 4.4.2; libosmesa6 `23.2.1-1ubuntu3.1~22.04.4` |
+| Source/config upload | PASS | remote flow-consensus experiment SHA-256 matches `4558ccb3...f8d`; remote scripts compile in the pinned GR00T runtime |
+| Checkpoint restore | ACTIVE | exact local three-shard nominal checkpoint is transferring; execute nothing until all remote shard hashes match local |
 | Baseline reproduction | PENDING | exact nominal checkpoint and OSMesa hashes required |
 | Training diagnostic | PENDING | no remote result yet |
 | Closed-loop development | PENDING | no remote result yet |
