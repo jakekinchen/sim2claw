@@ -9,24 +9,27 @@
   table, photo-aligned two-arm scene, source record, and proof interpretation.
 - [`decisions/0001-runtime-and-scene-foundation.md`](./decisions/0001-runtime-and-scene-foundation.md)
   — adopted runtime dependencies, sources, and host support matrix.
+- [`decisions/0002-state-act-chess-rook-lift.md`](./decisions/0002-state-act-chess-rook-lift.md)
+  — first ACT architecture, dependency, evaluator, and proof boundary.
 - [`run-logs/2026-07-17-polycam-chess-table.md`](./run-logs/2026-07-17-polycam-chess-table.md)
   — commands, artifact identities, proof results, and remaining gaps.
 - [`run-logs/2026-07-17-photo-polycam-alignment.md`](./run-logs/2026-07-17-photo-polycam-alignment.md)
   — corrected scan transform, planar registration, dimension results, overlays,
   residuals, and remaining calibration boundary.
-- [`reference/imported/SOURCE_BOUNDARY.md`](./reference/imported/SOURCE_BOUNDARY.md)
-  — exact archive and document-import boundary.
-- [`reference/imported/DOCUMENT_IMPORT_MANIFEST.tsv`](./reference/imported/DOCUMENT_IMPORT_MANIFEST.tsv)
-  — byte identities for every imported reference document.
+- [`run-logs/2026-07-17-act-chess-rook-lift.md`](./run-logs/2026-07-17-act-chess-rook-lift.md)
+  — frozen task/evaluator, bounded ACT training, failed attempts, accepted
+  held-out episode, and artifact identities.
+- [`reference/ARCHIVE_INDEX.md`](./reference/ARCHIVE_INDEX.md) — freshly
+  authored map of the read-only archive without imported files.
+- [`reference/PRIOR_RESULTS_SUMMARY.md`](./reference/PRIOR_RESULTS_SUMMARY.md)
+  — historical lessons only; no live capability or authority.
 
-## Imported reference material
+## Read-only reference material
 
-The preserved source paths live under
-[`reference/imported/source-tree/`](./reference/imported/source-tree/). This
-material includes plans, architecture notes, historical session logs, reviewer
-messages, state snapshots, and reconstruction notes.
+The earlier repository remains outside this checkout in the imported archive
+and local read-only `sim-link` checkout. No source, dataset, checkpoint,
+configuration, receipt, or generated output is copied into this repository.
 
-Imported material is not active project state. If a reference document says a
-simulator, model, gateway, host, or robot path passed, that statement applies
-only to its archived source context. Fresh capabilities in this repository are
-limited to the active documents and repo-native evidence listed above.
+Prior material is not active project state. Historical claims apply only to
+their source context. Fresh capabilities are limited to the active documents
+and repo-native evidence listed above.

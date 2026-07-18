@@ -108,13 +108,16 @@ The comparison command writes:
 
 ## Proof interpretation
 
-The current evidence proves a local Apple Silicon MuJoCo scene with two
+The scene/render evidence in this document proves a local Apple Silicon MuJoCo scene with two
 articulated arms can compile, step, settle, and render, and that its composition
 matches the major elements of the supplied photo. It does not prove calibrated
 robot or camera transforms, exact chess layout, collision-free task motion,
-task success, learned-policy readiness, NVIDIA rendering, sim-to-real
-equivalence, or physical authority. The current table-plane registration has a
-board-corner RMS of about 0.033 m; that residual includes lens distortion,
-manual landmark uncertainty, and the fact that the photo is not a calibrated
-camera. Exact 3D alignment still requires a camera calibration and a direct
-measurement of the board and sill profile.
+learned-policy robustness, NVIDIA rendering, sim-to-real equivalence, or
+physical authority. A later, separately frozen ACT task proves one narrow
+simulation episode; see
+[`run-logs/2026-07-17-act-chess-rook-lift.md`](./run-logs/2026-07-17-act-chess-rook-lift.md).
+The current table-plane registration has a board-corner RMS of about 0.033 m;
+that residual includes lens distortion, manual landmark uncertainty, and the
+fact that the photo is not a calibrated camera. Exact 3D alignment still
+requires a camera calibration and a direct measurement of the board and sill
+profile.

@@ -6,8 +6,8 @@ repo-native implementation and evidence for every capability.
 
 ## Current achieved slice
 
-- Python 3.12, MuJoCo 3.10.0, and Pillow 12.3.0 are directly pinned; `uv.lock`
-  freezes the transitive environment.
+- Python 3.12, MuJoCo 3.10.0, Pillow 12.3.0, and PyTorch 2.11.0 are directly
+  pinned; `uv.lock` freezes the transitive environment.
 - A fresh bootstrap and fail-closed Mac/NVIDIA doctor are implemented.
 - Capture `8873B66C-774C-48B1-B51D-338645867009` is fetched with exact
   SHA-256 verification into ignored storage and converted by repo-native code.
@@ -50,8 +50,8 @@ repo-native implementation and evidence for every capability.
 - PASS: one new table-and-chess simulator workcell compiles and renders in
   process on a Mac.
 - PASS: the same doctor contract has a fail-closed NVIDIA/EGL preflight.
-- PARTIAL: fresh tests and a run log exist; the work is not committed yet, so
-  the run log records the working tree rather than a final commit identity.
+- PASS: fresh tests and a run log are tracked; the ACT source implementation is
+  recorded in commit `361e042`.
 - PASS: no physical hardware path is opened.
 - PASS: the first task, split, ACT recipe, and CPU/fp32 evaluator are frozen in
   repo-native code/configuration; one model-owned held-out episode passed.
