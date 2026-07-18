@@ -14,6 +14,9 @@ EPISODE_INDICES="${EPISODE_INDICES:-0}"
 ROLLOUT_REPLICATE="${ROLLOUT_REPLICATE:-0}"
 INFERENCE_SEED="${INFERENCE_SEED:-$ROLLOUT_REPLICATE}"
 POLICY_SERVER_MODE="${POLICY_SERVER_MODE:-official_unseeded}"
+PROPOSAL_COUNT="${PROPOSAL_COUNT:-1}"
+ACTION_AGGREGATION="${ACTION_AGGREGATION:-medoid}"
+NOISE_SCALE="${NOISE_SCALE:-1.0}"
 MUJOCO_GL_BACKEND="${MUJOCO_GL_BACKEND:-egl}"
 PYOPENGL_BACKEND="${PYOPENGL_BACKEND:-${MUJOCO_GL_BACKEND}}"
 UV_BIN="${UV_BIN:-/home/shadeform/.local/bin/uv}"
@@ -47,6 +50,9 @@ for horizon in ${HORIZONS}; do
         --rollout-replicate "${ROLLOUT_REPLICATE}" \
         --inference-seed "${INFERENCE_SEED}" \
         --policy-server-mode "${POLICY_SERVER_MODE}" \
+        --proposal-count "${PROPOSAL_COUNT}" \
+        --action-aggregation "${ACTION_AGGREGATION}" \
+        --noise-scale "${NOISE_SCALE}" \
         --checkpoint-id "${CHECKPOINT_ID}" \
         --checkpoint-manifest-sha256 "${CHECKPOINT_MANIFEST_SHA256}" \
         --host "${SERVER_HOST}" \

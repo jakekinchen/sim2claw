@@ -43,6 +43,13 @@ def main() -> None:
     )
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=5555)
+    parser.add_argument("--proposal-count", type=int, default=1)
+    parser.add_argument(
+        "--action-aggregation",
+        choices=("mean", "median", "medoid", "trimmed_mean"),
+        default="medoid",
+    )
+    parser.add_argument("--noise-scale", type=float, default=1.0)
     parser.add_argument(
         "--frame-input",
         type=Path,
@@ -56,6 +63,12 @@ def main() -> None:
     args = parser.parse_args()
     if args.repeats < 2:
         parser.error("--repeats must be at least 2")
+    if args.proposal_count < 1:
+        parser.error("--proposal-count must be positive")
+    if args.action_aggregation == "trimmed_mean" and args.proposal_count < 5:
+        parser.error("trimmed_mean requires --proposal-count of at least 5")
+    if not 0.0 <= args.noise_scale <= 1.0:
+        parser.error("--noise-scale must be between 0 and 1")
     if args.include_training_expert_diagnostic and args.episode_split != "training":
         parser.error("expert diagnostics are restricted to the training split")
 
@@ -155,7 +168,22 @@ def main() -> None:
             dtype=np.float32,
         )
     for repeat in range(args.repeats):
-        reset_info = client.reset(options={"inference_seed": args.inference_seed})
+        reset_info = client.reset(
+            options={
+                "inference_seed": args.inference_seed,
+                "proposal_count": args.proposal_count,
+                "action_aggregation": args.action_aggregation,
+                "noise_scale": args.noise_scale,
+            }
+        )
+        expected_reset = {
+            "proposal_count": args.proposal_count,
+            "action_aggregation": args.action_aggregation,
+            "noise_scale": args.noise_scale,
+        }
+        for key, expected in expected_reset.items():
+            if reset_info.get(key) != expected:
+                raise RuntimeError(f"seeded policy server acknowledged wrong {key}")
         predicted, action_info = client.get_action(
             observation,
             options={"sample_step": 0},
@@ -188,6 +216,11 @@ def main() -> None:
         "split": args.episode_split,
         "episode_index": args.episode_index,
         "inference_seed": args.inference_seed,
+        "action_consensus": {
+            "proposal_count": args.proposal_count,
+            "action_aggregation": args.action_aggregation,
+            "noise_scale": args.noise_scale,
+        },
         "repeats": args.repeats,
         "frame_source": frame_source,
         "frame_input": str(args.frame_input.resolve()) if args.frame_input else None,

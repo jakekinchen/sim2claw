@@ -81,6 +81,23 @@ class SeededResetPolicy(PolicyWrapper):
         noise_scale: float,
     ) -> None:
         super().__init__(policy, strict=False)
+        self._validate_configuration(proposal_count, aggregation, noise_scale)
+        self._default_configuration = {
+            "proposal_count": proposal_count,
+            "action_aggregation": aggregation,
+            "noise_scale": noise_scale,
+        }
+        self._episode_seed: int | None = None
+        self._proposal_count = proposal_count
+        self._aggregation = aggregation
+        self._noise_scale = noise_scale
+
+    @staticmethod
+    def _validate_configuration(
+        proposal_count: int,
+        aggregation: str,
+        noise_scale: float,
+    ) -> None:
         if proposal_count < 1:
             raise ValueError("proposal_count must be positive")
         if aggregation not in AGGREGATION_METHODS:
@@ -89,10 +106,6 @@ class SeededResetPolicy(PolicyWrapper):
             raise ValueError("trimmed_mean requires at least five proposals")
         if not 0.0 <= noise_scale <= 1.0:
             raise ValueError("noise_scale must be between 0 and 1")
-        self._episode_seed: int | None = None
-        self._proposal_count = proposal_count
-        self._aggregation = aggregation
-        self._noise_scale = noise_scale
 
     @staticmethod
     def _query_seed(episode_seed: int, sample_step: int) -> int:
@@ -173,9 +186,31 @@ class SeededResetPolicy(PolicyWrapper):
         seed = int(options["inference_seed"])
         if seed < 0:
             raise ValueError("inference_seed must be non-negative")
+        proposal_count = int(
+            options.get(
+                "proposal_count",
+                self._default_configuration["proposal_count"],
+            )
+        )
+        aggregation = str(
+            options.get(
+                "action_aggregation",
+                self._default_configuration["action_aggregation"],
+            )
+        )
+        noise_scale = float(
+            options.get(
+                "noise_scale",
+                self._default_configuration["noise_scale"],
+            )
+        )
+        self._validate_configuration(proposal_count, aggregation, noise_scale)
         self._episode_seed = seed
+        self._proposal_count = proposal_count
+        self._aggregation = aggregation
+        self._noise_scale = noise_scale
         seed_policy_rng(seed)
-        info = dict(self.policy.reset(options))
+        info = dict(self.policy.reset({"inference_seed": seed}))
         info.update(
             {
                 "action_aggregation": self._aggregation,

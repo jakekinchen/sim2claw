@@ -55,6 +55,13 @@ def main() -> None:
     parser.add_argument("--checkpoint-manifest-sha256", required=True)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=5555)
+    parser.add_argument("--proposal-count", type=int, default=1)
+    parser.add_argument(
+        "--action-aggregation",
+        choices=("mean", "median", "medoid", "trimmed_mean"),
+        default="medoid",
+    )
+    parser.add_argument("--noise-scale", type=float, default=1.0)
     parser.add_argument(
         "--execution-horizon",
         type=int,
@@ -66,6 +73,18 @@ def main() -> None:
     )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if args.proposal_count < 1:
+        parser.error("--proposal-count must be positive")
+    if args.action_aggregation == "trimmed_mean" and args.proposal_count < 5:
+        parser.error("trimmed_mean requires --proposal-count of at least 5")
+    if not 0.0 <= args.noise_scale <= 1.0:
+        parser.error("--noise-scale must be between 0 and 1")
+    if args.policy_server_mode == "official_unseeded" and (
+        args.proposal_count != 1
+        or args.action_aggregation != "medoid"
+        or args.noise_scale != 1.0
+    ):
+        parser.error("consensus controls require --policy-server-mode seeded_reset")
 
     contract = load_groot_task_contract()
     episode_rows = contract[f"{args.episode_split}_episodes"]
@@ -120,12 +139,27 @@ def main() -> None:
     )
     if not client.ping():
         raise RuntimeError("GR00T policy server did not answer ping")
-    reset_info = client.reset(options={"inference_seed": args.inference_seed})
+    reset_info = client.reset(
+        options={
+            "inference_seed": args.inference_seed,
+            "proposal_count": args.proposal_count,
+            "action_aggregation": args.action_aggregation,
+            "noise_scale": args.noise_scale,
+        }
+    )
     if args.policy_server_mode == "seeded_reset":
         if reset_info.get("rng_reset") is not True:
             raise RuntimeError("seeded policy server did not acknowledge RNG reset")
         if int(reset_info.get("inference_seed", -1)) != args.inference_seed:
             raise RuntimeError("seeded policy server acknowledged the wrong seed")
+        expected_reset = {
+            "proposal_count": args.proposal_count,
+            "action_aggregation": args.action_aggregation,
+            "noise_scale": args.noise_scale,
+        }
+        for key, expected in expected_reset.items():
+            if reset_info.get(key) != expected:
+                raise RuntimeError(f"seeded policy server acknowledged wrong {key}")
 
     frames: list[np.ndarray] = []
     states: list[np.ndarray] = []
@@ -224,6 +258,11 @@ def main() -> None:
         "inference_seed": args.inference_seed,
         "policy_server_mode": args.policy_server_mode,
         "policy_reset_info": reset_info,
+        "action_consensus": {
+            "proposal_count": args.proposal_count,
+            "action_aggregation": args.action_aggregation,
+            "noise_scale": args.noise_scale,
+        },
         "case_id": str(case["case_id"]),
         "instruction": str(case["instruction"]),
         "seed": int(episode_row["seed"]),
