@@ -190,6 +190,27 @@ Before claiming a milestone, surface:
 Training loss, generated-episode yield, a good-looking video, or one successful
 training-distribution rollout is diagnostic evidence only.
 
+## Locked final product benchmark
+
+`configs/evaluations/pawn_rank12_bidirectional_v1.json` is the final
+owner-selected task-coverage scorecard. It asks for A1→A2 and A2→A1, repeated
+through H, for 16 directed cases. Three exact simulation realizations per case
+produce 48 zero-training-row episodes. The exact seeds, initial-state
+perturbations, reset rules, gates, and rollouts never enter training.
+
+This benchmark is consequence-based: safe pushing and safe pick/lift/place are
+both valid if the pawn finishes upright, settled, and inside the requested
+square while the robot clears contact and non-target pieces remain undisturbed.
+It does not replace the compositional/continuous-pose held-outs above; those
+measure generalization, while this scorecard measures complete coverage of the
+owner's concrete product task.
+
+Every fixed ACT checkpoint must report 48-row simulation results by file and
+direction. The later physical run is a separate 16-trial scorecard and requires
+the same checkpoint plus separately authorized pose sensing and consequence
+evaluation. The five recorded physical episodes may become training sources
+after admission but can never be recycled as benchmark trials.
+
 ## Execution rhythm
 
 1. Inspect `GOAL.md`, this file, Decision 0004, current project state, the exact
@@ -213,16 +234,16 @@ the bounded task and verify authenticated inventory before ending.
 ```text
 Current milestone: M7 retargeted strict-success dataset foundation
 Contract/config identity: chess_pick_place_act_state_v1 @ 3f1fcdbb...
-Current state: five saved physical source episodes reviewed; zero training rows admitted
-Completed: source hash audit, video review, joint-response-only MuJoCo replay, tracked intake ledger
-Evidence: configs/data/physical_teleop_episode_intake_20260718.json
+Current state: five saved physical source episodes reviewed; final 16-case product benchmark frozen; zero training rows admitted
+Completed: source hash audit, video review, joint-response-only MuJoCo replay, intake ledger, bidirectional rank-1/rank-2 eval contract
+Evidence: configs/data/physical_teleop_episode_intake_20260718.json; configs/evaluations/pawn_rank12_bidirectional_v1.json
 Counterexamples: one push-only strategy; one laggy-start episode; three move-metadata conflicts
 Dataset counts and lineage: 5 physical sources / 2,186 samples / 0 admitted rows
 Evaluator result: no physical consequence evaluator result; all formal outcomes unreviewed
 Paid resources: none opened for intake
-Remaining: reconcile coordinates/outcomes, annotate pose and skill segments, run versioned admission gate
-Blockers: authoritative physical piece/target pose and strict physical consequence verdict are absent
-Next smallest step: adjudicate the three move conflicts and create a versioned annotation sidecar
+Remaining: implement benchmark reset/evaluator, reconcile coordinates/outcomes, annotate pose and skill segments, run versioned admission gate
+Blockers: benchmark evaluator implementation plus authoritative physical piece/target pose and strict physical consequence verdict are absent
+Next smallest step: implement deterministic reset fixtures for all 16 cases without generating training or eval rows
 Claim boundary: physical teleoperation source evidence only; no ACT, GR00T, or task-success claim
 ```
 

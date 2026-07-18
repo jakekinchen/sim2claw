@@ -66,6 +66,15 @@ pair. The accepted architecture and long-horizon execution contract are in
 and
 [`docs/goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md`](docs/goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md).
 
+The final owner-selected product benchmark is frozen separately in
+[`configs/evaluations/pawn_rank12_bidirectional_v1.json`](configs/evaluations/pawn_rank12_bidirectional_v1.json):
+move the near-side pawn A1→A2 and A2→A1, repeated through H. It contains 16
+directed core cases and 48 fixed simulation realizations, all with zero
+training rows. Exact evaluator realizations never enter training. Safe pushing
+and pick/lift/place are both valid when the same strict board-consequence and
+collateral gates pass. ACT and GR00T use the same scorecard, while simulation
+and physical evidence remain separate.
+
 ## Immediate mission
 
 1. Freeze `configs/tasks/chess_pick_place_act_state_v1.json`, its observation
@@ -83,7 +92,10 @@ and
    recovery data. The first practical dataset target is 10--20 good simulated
    source episodes plus constructive experts expanded into 500--2,000 accepted
    episodes for one grasp family.
-4. Keep the gated GR00T campaign preserved as a challenger and external-access
+4. Implement the frozen bidirectional rank-1/rank-2 reset builder and separate
+   consequence evaluator before generating any of its 48 simulation traces.
+   Bind every checkpoint comparison to the unchanged 16-case scorecard.
+5. Keep the gated GR00T campaign preserved as a challenger and external-access
    blocker; do not spend more Brev money until its access preflight passes and a
    separately bounded task is authorized.
 
@@ -117,8 +129,12 @@ and
   dataset, disjoint held-out cases, and consequence evaluator are frozen.
 - PASS: the earlier paid GR00T worker was torn down and authenticated Brev
   inventory was verified empty.
+- PASS: the owner-selected A1↔A2 through H1↔H2 product benchmark, reset rules,
+  16 directed cases, 48 zero-row simulation realizations, gates, and scorecard
+  are frozen before candidate selection.
 - PENDING: the new goal-conditioned ACT contract, retarget/validation pipeline,
-  ACT-1 through ACT-6 evidence, and any later sim-plus-real anchoring evidence.
+  benchmark evaluator implementation, ACT-1 through ACT-6 evidence, and any
+  later sim-plus-real anchoring evidence.
 - BLOCKED CHALLENGER: GR00T optimizer steps and learned closed-loop consequences
   remain blocked on gated `nvidia/Cosmos-Reason2-2B` access.
 

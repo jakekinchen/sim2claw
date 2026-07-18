@@ -31,6 +31,12 @@ the runtime foundation and the photo-aligned portion of Phase 2:
   are admitted: three move labels conflict with recorder metadata, one episode
   is push-only, all formal outcomes remain unreviewed, and authoritative
   piece/target poses plus physical consequence verdicts are absent.
+- The final product scorecard is frozen in
+  `configs/evaluations/pawn_rank12_bidirectional_v1.json`: 16 directed pawn
+  transfers covering A1↔A2 through H1↔H2, three fixed simulation realizations
+  per case, zero evaluator training rows, and one separately reported physical
+  trial per directed case. It is a task-coverage benchmark; compositional
+  generalization remains a separate held-out claim.
 
 ## Phase 0 — Documentation boundary
 
@@ -173,13 +179,12 @@ reference document can skip this phase.
 
 ## Next reviewed slice
 
-Keep the five physical sources outside training while the three coordinate
-conflicts and five formal outcomes are adjudicated. Add versioned pose/video
-annotation and contact-skill segmentation without rewriting raw receipts. The
-consistent E2→E1 episode may then become the first nominal physical ACT anchor
-candidate; the push-only D1→D2 source belongs to a separate task family, and
-the laggy-start source is a recovery hypothesis requiring exact segment
-lineage. In parallel, implement only the deterministic retarget-and-validate
-foundation needed for ACT-1. Do not add this cohort to frozen GR00T v1; any
-future physical-RGB use requires a new LeRobot modality/dataset contract and
-the separate evaluator.
+Implement and test the frozen 16-case board-reset builder and strategy-agnostic
+consequence evaluator before rendering any of its 48 zero-row simulation
+episodes. Keep the five physical sources outside training while the three
+coordinate conflicts and five formal outcomes are adjudicated; add versioned
+pose/video annotation and contact-skill segmentation without rewriting raw
+receipts. Generate training variations from disjoint seeds and compare fixed
+ACT checkpoints only on the frozen scorecard. Do not add this cohort or the new
+evaluation rows to frozen GR00T v1; a future pawn GR00T lane requires a new
+versioned LeRobot modality/dataset contract and a separately bounded Brev run.
