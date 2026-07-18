@@ -80,8 +80,8 @@ This section is updated only at stable evidence boundaries.
 | Recovery-v2 checkpoint sweep | TERMINAL NEGATIVE | 0/120 held-out consequences; 0/24 at every fixed checkpoint |
 | Frozen-v1 regression sweep | TERMINAL NEGATIVE | 0/20 unchanged v1 held-out consequences; 0/4 at every fixed checkpoint |
 | Candidate B | NOT RUN | dominant failures are full-task placement and board safety, not an isolated recovery cluster |
-| Artifact preservation | IN PROGRESS | immutable 12 GiB archive SHA-256 `1cbf6ddbcec721c3fb319f5a132dfb29a345ed13c87e5c9876e6bdcaebcb69a5` transferring locally |
-| Paid worker teardown | PENDING | waits only for verified local archive copy |
+| Artifact preservation | PASS | 12,627,834,880-byte local archive at `/Users/kelly/Documents/Codex/sim2claw-groot-recovery-n17-20260718.tar`; local and remote SHA-256 both `1cbf6ddbcec721c3fb319f5a132dfb29a345ed13c87e5c9876e6bdcaebcb69a5` |
+| Paid worker teardown | PASS | recovery worker `u9709tq27` deleted after the local integrity and manifest gates passed |
 
 Candidate A started at approximately 04:10 America/Chicago from the pinned
 clean base and exact validated dataset. It saves every 1,000 steps, retains at
@@ -117,10 +117,17 @@ recorded post-fault target contact; it still failed the task consequence.
 | 4,000 | 0/24 | 0/4 | 9/24 | 0/6 | 1.262 m | 0.13015 |
 | 5,000 | 0/24 | 0/4 | 10/24 | 0/6 | 1.623 m | 0.12796 |
 
-Checkpoint-4000 is retained only as the least-unsafe terminal-negative
-artifact: all checkpoints tied at zero v2 and v1 passes, and checkpoint-4000
-had the smallest worst-case other-piece displacement. It is not promoted. The
-falling open-loop error did not predict closed-loop success.
+Checkpoint-4000 is retained as the representative terminal-negative artifact
+because it had the smallest observed worst-case other-piece displacement in
+this realized sweep. It is not promoted or reproducibly selected. After the
+sweep, the placement lane proved that EGL can vary approximately 23 image
+channel values by one LSB across otherwise bitwise-identical fresh processes,
+changing GR00T actions even when per-query RNG hashes match. OSMesa eliminated
+that variation in its three-process diagnostic. Therefore the cross-checkpoint
+ordering above is provisional and cannot select a model; the 0/140 realized
+v1/v2 consequence result remains terminal negative evidence, not a
+deterministic comparison. Per coordination direction, this lane did not start a
+new remote diagnostic or retrain after that finding.
 
 The result was sent to the separate placement lane with the explicit warning
 that this recovery checkpoint-4000 is not its nominal checkpoint-4000. The
@@ -143,3 +150,23 @@ policy performance. Training loss and open-loop action error remain diagnostic.
 Only separately invoked closed-loop consequence receipts may select a
 checkpoint. Generated datasets, weights, videos, logs, caches, and credentials
 remain outside Git.
+
+## Closeout
+
+The immutable local archive passed exact byte-size and SHA-256 comparison
+against the remote source. Its 1,026-entry manifest contains all 120 recovery-v2
+receipts and videos, all 20 unchanged-v1 receipts and videos, both dataset
+receipts, the complete retained checkpoint-4000, logs, exit markers, exact
+configuration/source/scripts, and the final summary. An adjacent local receipt
+at
+`/Users/kelly/Documents/Codex/sim2claw-groot-recovery-n17-20260718.README.md`
+records the later EGL/OSMesa reproducibility qualification without altering the
+archive.
+
+The final read-only worker check found no GR00T, training, evaluator, or GPU
+compute process. Brev authentication was refreshed with the intended personal
+account after the first delete request encountered an expired CLI token. The
+recovery worker then transitioned through deletion and disappeared from
+authenticated inventory. The only remaining Brev workspace is the separately
+owned healthy placement worker `sim2claw-gr00t-placement-0718` (`lpfsp2w5x`),
+which this lane did not modify or stop.
