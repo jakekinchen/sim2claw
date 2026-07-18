@@ -248,7 +248,15 @@ def collect_expert_episode(
     def execute_phase(name: str, goal: np.ndarray, count: int) -> None:
         nonlocal control_step
         start = env.controls()
-        ramp = max(1, min(count // 2, 160))
+        # Close promptly once the jaws reach the piece; a long open-jaw ramp
+        # can push an offset rook out of the learned demonstration path.
+        advance_contact = bool(contacts[-int(phase_counts["advance"]) :])
+        close_promptly = (
+            name == "close"
+            and advance_contact
+            and piece_offset_xy_m[0] <= 0.00025
+        )
+        ramp = 1 if close_promptly else max(1, min(count // 2, 160))
         for phase_step in range(count):
             blend = min(1.0, float(phase_step + 1) / float(ramp))
             action = start + blend * (goal - start)

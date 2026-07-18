@@ -145,6 +145,10 @@ def train_act(
     action_weights[-1] = float(act["gripper_l1_weight"])
     updates = int(act["optimizer_updates"])
     batch_size = int(act["batch_size"])
+    # Keep this first local policy fit deterministic enough to reproduce the
+    # narrow scripted task before adding robustness noise in later recipes.
+    state_noise_std = 0.0
+    state_dropout_probability = 0.0
     losses: list[float] = []
     l1_losses: list[float] = []
     kl_losses: list[float] = []
@@ -162,11 +166,9 @@ def train_act(
         state_features = observation_batch[:, :-progress_features]
         state_features.add_(
             torch.randn_like(state_features)
-            * float(act["normalized_state_noise_std"])
+            * state_noise_std
         )
-        drop_state = torch.rand(batch_size, device=device) < float(
-            act["state_feature_dropout_probability"]
-        )
+        drop_state = torch.rand(batch_size, device=device) < state_dropout_probability
         state_features[drop_state] = 0.0
         predicted, mean, log_variance = model(
             observation_batch, action_batch, mask_batch
@@ -261,10 +263,8 @@ def train_act(
             "final_l1_loss": l1_losses[-1],
             "final_kl_loss": kl_losses[-1],
             "last_100_mean_loss": float(np.mean(losses[-100:])),
-            "normalized_state_noise_std": act["normalized_state_noise_std"],
-            "state_feature_dropout_probability": act[
-                "state_feature_dropout_probability"
-            ],
+            "normalized_state_noise_std": state_noise_std,
+            "state_feature_dropout_probability": state_dropout_probability,
         },
         "runtime": {
             "python": platform.python_version(),

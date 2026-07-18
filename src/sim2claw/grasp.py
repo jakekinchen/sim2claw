@@ -22,9 +22,9 @@ from .scene import ROBOT_JOINTS, build_scene_spec, initialize_robot_poses
 
 REACH_JOINTS = ROBOT_JOINTS[:5]
 JAW_OPEN_RAD = 1.35
-JAW_SHUT_RAD = -0.10
+JAW_SHUT_RAD = -0.28
 SETTLE_STEPS = 300
-LIFT_HEIGHT_M = 0.09
+LIFT_HEIGHT_M = 0.14
 SUCCESS_RISE_M = 0.04
 
 # Neck heights above each piece origin where a pinch clears the base discs

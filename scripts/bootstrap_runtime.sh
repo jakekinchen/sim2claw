@@ -10,5 +10,10 @@ if ! command -v uv >/dev/null 2>&1; then
 fi
 
 uv sync --python 3.12 --frozen
-uv run sim2claw doctor --target auto --render-probe
 
+if [[ -n "${DISPLAY:-}" || -n "${WAYLAND_DISPLAY:-}" || "${TERM_PROGRAM:-}" == "vscode" ]]; then
+  uv run sim2claw doctor --target auto --render-probe
+else
+  echo "Skipping MuJoCo render probe: no GUI/display session detected."
+  uv run sim2claw doctor --target auto
+fi
