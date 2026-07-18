@@ -20,6 +20,7 @@ from .scene import build_scene_spec, initialize_robot_poses
 
 SCENE_MANIFEST_SCHEMA = "sim2claw.mujoco_scene_manifest.v1"
 STATE_TRACE_SCHEMA = "sim2claw.mujoco_body_state_trace.v1"
+LIVE_STATE_SCHEMA = "sim2claw.mujoco_live_body_state.v1"
 DEFAULT_TRACE_FPS = 30
 VISIBLE_GEOM_GROUPS = frozenset({0, 2})
 
@@ -275,6 +276,26 @@ class EpisodeStateTraceRecorder:
             "authority": {
                 "pose_source": "mujoco.MjData.xpos+xquat",
                 "browser_interpolation": "visual_only",
+                "physical_authority": False,
+            },
+        }
+
+    def live_snapshot(self) -> dict[str, Any]:
+        """Return the latest MuJoCo-owned pose without exporting an episode."""
+
+        return {
+            "schema_version": LIVE_STATE_SCHEMA,
+            "scene": {
+                "piece_layout": self.piece_layout,
+                "manifest_url": f"/api/scene?layout={self.piece_layout}",
+                "manifest_revision_sha256": self._manifest["revision_sha256"],
+            },
+            "body_names": self.body_names,
+            "frame_index": len(self.frames) - 1 if self.frames else None,
+            "frame": self.frames[-1] if self.frames else None,
+            "authority": {
+                "pose_source": "mujoco.MjData.xpos+xquat",
+                "browser_renderer": "inspection_only",
                 "physical_authority": False,
             },
         }

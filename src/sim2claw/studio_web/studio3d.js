@@ -43,6 +43,8 @@ class ThreeReplayViewer {
     this.bodyTraceIndices = [];
     this.trace = null;
     this.manifest = null;
+    this.liveSceneUrl = null;
+    this.liveBodyKey = null;
     this.currentTime = 0;
     this.playing = false;
     this.playbackRate = 1;
@@ -110,6 +112,62 @@ class ThreeReplayViewer {
     this.applyTime(0);
     this.setStatus(
       `${trace.frame_count} MuJoCo states · ${Number(trace.fps).toFixed(0)} Hz · drag to orbit`,
+    );
+  }
+
+  async loadLive({ scene_url: sceneUrl, manifest_revision_sha256: expectedRevision }) {
+    if (!sceneUrl) throw new Error("The live simulator did not publish a scene URL.");
+    if (this.liveSceneUrl === sceneUrl && this.manifest) return;
+    this.pause();
+    this.setStatus("Loading live MuJoCo scene…");
+    const response = await fetch(sceneUrl, { cache: "no-store" });
+    if (!response.ok) throw new Error("The live MuJoCo scene could not be loaded.");
+    const manifest = await response.json();
+    if (manifest.schema_version !== "sim2claw.mujoco_scene_manifest.v1") {
+      throw new Error("Unsupported live MuJoCo scene manifest.");
+    }
+    if (expectedRevision && expectedRevision !== manifest.revision_sha256) {
+      throw new Error("The live simulator and browser scene revisions do not match.");
+    }
+    this.clearScene();
+    this.trace = null;
+    this.manifest = manifest;
+    this.liveSceneUrl = sceneUrl;
+    this.liveBodyKey = null;
+    await this.buildScene();
+    this.resetCamera();
+    this.setStatus("Simulator ready · waiting for Start");
+  }
+
+  applyLiveState(liveState) {
+    const frame = liveState?.frame;
+    const bodyNames = liveState?.body_names || [];
+    if (!this.manifest || !frame || !bodyNames.length) return;
+    const bodyKey = bodyNames.join("\u0000");
+    if (bodyKey !== this.liveBodyKey) {
+      this.bodyTraceIndices = bodyNames.map((name) => this.bodyGroups.get(name) || null);
+      this.liveBodyKey = bodyKey;
+    }
+    const position = new THREE.Vector3();
+    const quaternion = new THREE.Quaternion();
+    this.bodyTraceIndices.forEach((group, index) => {
+      if (!group) return;
+      position.fromArray(frame.p, index * 3);
+      const qIndex = index * 4;
+      quaternion.set(
+        frame.q[qIndex + 1],
+        frame.q[qIndex + 2],
+        frame.q[qIndex + 3],
+        frame.q[qIndex],
+      );
+      group.position.copy(position);
+      group.quaternion.copy(quaternion);
+    });
+    this.updateContacts(frame.c);
+    this.setStatus(
+      liveState.active
+        ? `LIVE · state ${Number(liveState.frame_index) + 1} · drag to orbit`
+        : `Last simulator state · ${Number(frame.t || 0).toFixed(2)}s · drag to orbit`,
     );
   }
 

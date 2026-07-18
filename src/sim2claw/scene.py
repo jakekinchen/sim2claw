@@ -132,16 +132,41 @@ def scene_geometry(config: dict[str, Any]) -> SceneGeometry:
     )
 
 
+def registered_board_center(
+    scene_id: str,
+    *,
+    config_path: Path = DEFAULT_CAPTURE_CONFIG,
+) -> tuple[float, float]:
+    """Resolve one named board pose without rewriting a frozen scene."""
+
+    board = load_capture_config(config_path)["simulation_estimates"]["board"]
+    if scene_id == board.get("scene_id"):
+        return tuple(float(value) for value in board["center_in_table_frame_xy_m"])
+    for registration in board.get("historical_registrations", []):
+        if scene_id == registration.get("scene_id"):
+            return tuple(
+                float(value)
+                for value in registration["center_in_table_frame_xy_m"]
+            )
+    raise ValueError(f"unknown workcell scene registration: {scene_id}")
+
+
 def board_square_center(
     square: str,
     *,
     config_path: Path = DEFAULT_CAPTURE_CONFIG,
+    board_center_in_table_frame_xy_m: tuple[float, float] | None = None,
 ) -> tuple[float, float, float]:
     """Return the simulation-only world-frame center of one board square."""
 
     if len(square) != 2 or square[0] not in "abcdefgh" or square[1] not in "12345678":
         raise ValueError(f"invalid chess square: {square}")
-    geometry = scene_geometry(load_capture_config(config_path))
+    config = load_capture_config(config_path)
+    if board_center_in_table_frame_xy_m is not None:
+        config["simulation_estimates"]["board"][
+            "center_in_table_frame_xy_m"
+        ] = list(board_center_in_table_frame_xy_m)
+    geometry = scene_geometry(config)
     file_index = ord(square[0]) - ord("a")
     rank_index = int(square[1]) - 1
     local_x = (file_index - 3.5) * geometry.square_size
@@ -531,8 +556,13 @@ def build_scene_xml(
     external_root: Path = DEFAULT_EXTERNAL_ROOT,
     scan_overlay: bool = False,
     piece_layout: str = "standard",
+    board_center_in_table_frame_xy_m: tuple[float, float] | None = None,
 ) -> str:
     config = load_capture_config(config_path)
+    if board_center_in_table_frame_xy_m is not None:
+        config["simulation_estimates"]["board"][
+            "center_in_table_frame_xy_m"
+        ] = list(board_center_in_table_frame_xy_m)
     geometry = scene_geometry(config)
     capture_root = capture_directory(config, external_root)
 
@@ -625,6 +655,7 @@ def build_scene_spec(
     scan_overlay: bool = False,
     include_robots: bool = True,
     piece_layout: str = "standard",
+    board_center_in_table_frame_xy_m: tuple[float, float] | None = None,
 ) -> mujoco.MjSpec:
     spec = mujoco.MjSpec.from_string(
         build_scene_xml(
@@ -632,6 +663,7 @@ def build_scene_spec(
             external_root=external_root,
             scan_overlay=scan_overlay,
             piece_layout=piece_layout,
+            board_center_in_table_frame_xy_m=board_center_in_table_frame_xy_m,
         )
     )
     if not include_robots:
@@ -680,12 +712,13 @@ def scene_summary(
     config = load_capture_config(config_path)
     geometry = scene_geometry(config)
     robots = config["simulation_estimates"]["robots"]
+    board = config["simulation_estimates"]["board"]
     board_local_x = float(
-        config["simulation_estimates"]["board"]["center_in_table_frame_xy_m"][0]
+        board["center_in_table_frame_xy_m"][0]
     )
     return {
         "capture_id": config["capture_id"],
-        "proof_class": "photo_aligned_simulation_scene",
+        "proof_class": "operator_updated_simulation_scene",
         "table": {
             "length_m": geometry.table_length,
             "width_m": geometry.table_width,
@@ -693,9 +726,21 @@ def scene_summary(
             "measurement_confidence": config["roomplan_measurements"]["table"]["confidence"],
         },
         "board": {
+            "scene_id": board.get("scene_id", "unversioned_workcell_scene"),
+            "pose_id": board.get("pose_id", "unversioned_board_pose"),
             "playing_side_m": geometry.board_side,
             "total_side_m": geometry.board_total_side,
             "square_m": geometry.square_size,
+            "center_in_table_frame_xy_m": board["center_in_table_frame_xy_m"],
+            "previous_center_in_table_frame_xy_m": board.get(
+                "previous_center_in_table_frame_xy_m"
+            ),
+            "robotward_displacement_from_previous_pose_m": board.get(
+                "robotward_displacement_from_previous_pose_m"
+            ),
+            "robotward_axis_in_table_frame": board.get(
+                "robotward_axis_in_table_frame"
+            ),
             "measurement_confidence": config["simulation_estimates"]["board"]["confidence"],
             "near_side_color": "black",
         },

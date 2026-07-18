@@ -25,7 +25,12 @@ from .grasp import (
     _solve_reach,
 )
 from .paths import DEFAULT_CHESS_TASK_CONFIG
-from .scene import ROBOT_JOINTS, build_scene_spec, initialize_robot_poses
+from .scene import (
+    ROBOT_JOINTS,
+    build_scene_spec,
+    initialize_robot_poses,
+    registered_board_center,
+)
 
 
 def load_task_contract(path: Path = DEFAULT_CHESS_TASK_CONFIG) -> dict[str, Any]:
@@ -82,9 +87,17 @@ class ChessRookLiftEnv:
         self.contract = contract
         self.seed = int(seed)
         self.arm = str(contract["scene"]["arm"])
+        scene_id = contract["scene"].get("scene_id")
+        self.board_center_in_table_frame_xy_m = (
+            registered_board_center(str(scene_id)) if scene_id else None
+        )
         np.random.seed(self.seed)
 
-        self.model = build_scene_spec().compile()
+        self.model = build_scene_spec(
+            board_center_in_table_frame_xy_m=(
+                self.board_center_in_table_frame_xy_m
+            )
+        ).compile()
         self.data = mujoco.MjData(self.model)
         initialize_robot_poses(self.model, self.data)
         for _ in range(int(contract["episode"]["settle_steps"])):

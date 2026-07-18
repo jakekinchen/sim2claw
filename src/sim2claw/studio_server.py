@@ -79,6 +79,15 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                 return
             self._send_json(self.server.recorder.snapshot())
             return
+        if path == "/api/recorder/live-simulation":
+            if not self.server.recorder_control_enabled:
+                self._send_json(
+                    {"ok": False, "error": "Live simulator state is available only on loopback."},
+                    HTTPStatus.FORBIDDEN,
+                )
+                return
+            self._send_json(self.server.recorder.live_simulation_snapshot())
+            return
         if path == "/api/health":
             self._send_json(
                 {
@@ -188,7 +197,11 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         self.send_header("Content-Length", str(len(encoded)))
         self.end_headers()
-        self.wfile.write(encoded)
+        try:
+            self.wfile.write(encoded)
+        except (BrokenPipeError, ConnectionResetError):
+            # A browser reload or request watchdog must not take down Studio.
+            pass
 
     def _send_static(self, request_path: str) -> None:
         relative = "index.html" if request_path in {"", "/"} else request_path.lstrip("/")

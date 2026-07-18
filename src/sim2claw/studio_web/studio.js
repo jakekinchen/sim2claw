@@ -17,6 +17,9 @@ const state = {
   replayMode: "recorded",
   threeViewer: null,
   threeLoadId: 0,
+  liveSimViewer: null,
+  liveSimViewerPromise: null,
+  liveSimFetchActive: false,
   expandedTasks: new Set(),
   processHistory: new Map(),
   thumbnailObserver: null,
@@ -24,7 +27,7 @@ const state = {
   recorderRequestActive: false,
   recorderRequestError: null,
   physicalPreflighting: false,
-  physicalCountdown: null,
+  physicalStartSequence: false,
   physicalSyncing: false,
   discardConfirmationArmed: false,
   discardConfirmationTimer: null,
@@ -59,6 +62,11 @@ const elements = {
   threeCanvas: document.querySelector("#three-canvas"),
   threeStatus: document.querySelector("#three-status"),
   threeReset: document.querySelector("#three-reset"),
+  liveSimulationPanel: document.querySelector("#live-simulation-panel"),
+  liveSimulationCanvas: document.querySelector("#live-simulation-canvas"),
+  liveSimulationStatus: document.querySelector("#live-simulation-status"),
+  liveSimulationBadge: document.querySelector("#live-simulation-badge"),
+  liveSimulationReset: document.querySelector("#live-simulation-reset"),
   stagePortrait: document.querySelector("#stage-portrait"),
   stageKicker: document.querySelector("#stage-kicker"),
   stageTitle: document.querySelector("#stage-title"),
@@ -744,6 +752,57 @@ async function ensureThreeViewer() {
   return viewer;
 }
 
+async function ensureLiveSimulationViewer() {
+  if (state.liveSimViewer) return state.liveSimViewer;
+  if (state.liveSimViewerPromise) return state.liveSimViewerPromise;
+  state.liveSimViewerPromise = (async () => {
+    const { ThreeReplayViewer } = await whenThreeReady();
+    const viewer = new ThreeReplayViewer({
+      canvas: elements.liveSimulationCanvas,
+      status: elements.liveSimulationStatus,
+    });
+    state.liveSimViewer = viewer;
+    return viewer;
+  })();
+  try {
+    return await state.liveSimViewerPromise;
+  } finally {
+    state.liveSimViewerPromise = null;
+  }
+}
+
+async function refreshLiveSimulation() {
+  if (
+    state.liveSimFetchActive
+    || state.view !== "record"
+    || selectedRecorderMode() !== "simulation_follower"
+  ) return;
+  state.liveSimFetchActive = true;
+  try {
+    const response = await fetch("/api/recorder/live-simulation", { cache: "no-store" });
+    if (!response.ok) throw new Error(`live simulator returned ${response.status}`);
+    const liveState = await response.json();
+    const viewer = await ensureLiveSimulationViewer();
+    await viewer.loadLive(liveState);
+    viewer.applyLiveState(liveState);
+    const active = Boolean(liveState.active);
+    elements.liveSimulationBadge.dataset.active = String(active);
+    text(
+      elements.liveSimulationBadge,
+      active ? "Live" : liveState.frame ? "Last state" : "Ready",
+    );
+  } catch (error) {
+    text(
+      elements.liveSimulationStatus,
+      `Live simulator unavailable · ${error.message || String(error)}`,
+    );
+    elements.liveSimulationBadge.dataset.active = "false";
+    text(elements.liveSimulationBadge, "Offline");
+  } finally {
+    state.liveSimFetchActive = false;
+  }
+}
+
 async function loadThreeEpisode(episode, loadId) {
   try {
     const viewer = await ensureThreeViewer();
@@ -1181,7 +1240,7 @@ function renderSimulation() {
   text(subtitle, simulation.subtitle);
   const facts = document.createElement("div");
   facts.className = "simulation-facts";
-  [["Tasks", simulation.task_count], ["Robots", simulation.robot_count], ["View", "Current"]].forEach(([name, value]) => {
+  [["Tasks", simulation.task_count], ["Robots", simulation.robot_count], ["Board", simulation.board_pose_label || "Current"]].forEach(([name, value]) => {
     const fact = document.createElement("span");
     const factValue = document.createElement("b");
     text(fact, name);
@@ -1339,9 +1398,13 @@ function renderRecorder() {
   const awaitingLabel = status === "awaiting_label";
   const hasError = status === "error";
   const selectedMode = selectedRecorderMode();
+  elements.liveSimulationPanel.hidden = selectedMode !== "simulation_follower";
   const simReady = Boolean(preflight?.modes?.simulation_follower?.ready);
   const physicalReady = Boolean(preflight?.modes?.physical_follower?.ready);
-  const gatewayPreflight = recorder.physical_gateway_sync || recorder.physical_gateway_preflight;
+  const errorDetails = recorder.error_details || recorder.last_error_details;
+  const gatewayPreflight = recorder.physical_gateway_sync
+    || recorder.physical_gateway_preflight
+    || (errorDetails?.calibration_offset_leader_minus_follower ? errorDetails : null);
   const registrationReady = Boolean(
     gatewayPreflight?.paired_pose_registration_ready,
   );
@@ -1385,10 +1448,10 @@ function renderRecorder() {
   elements.alignmentPanel.classList.toggle("is-blocked", Boolean(gatewayPreflight) && !registrationReady);
   text(elements.alignmentStatus, !gatewayPreflight ? "Check or sync both buses" : registrationReady ? "Follower and leader are synchronized" : "Pose mismatch is outside the guard");
   text(elements.alignmentSummary, !gatewayPreflight
-    ? "Check is read-only. Sync ramps a nearby follower to the leader pose and finishes torque-off. Start runs Sync automatically."
+    ? "Check is read-only. Separate Sync finishes torque-off. Start records the C922, then syncs and torque-holds the follower through countdown in one gateway session."
     : registrationReady
-      ? `Maximum calibration offset ${Number(gatewayPreflight.maximum_body_calibration_offset_degrees).toFixed(1)}°. Start maps subsequent leader motion relative to this pair across the calibrated workspace.`
-      : `Maximum calibration offset ${Number(gatewayPreflight.maximum_body_calibration_offset_degrees).toFixed(1)}°. Put the arms roughly together; Sync refuses more than a 20° body mismatch.`);
+      ? `Maximum calibration offset ${Number(gatewayPreflight.maximum_body_calibration_offset_degrees).toFixed(1)}°. Start rechecks this pair after continuous Sync and torque-held countdown, then maps relative motion.`
+      : `Maximum calibration offset ${Number(gatewayPreflight.maximum_body_calibration_offset_degrees).toFixed(1)}°. Start may bounded-sync a nearby pair; any body mismatch over 20° is refused.`);
   elements.alignmentJoints.replaceChildren();
   const alignmentDelta = gatewayPreflight?.calibration_offset_leader_minus_follower;
   if (alignmentDelta) {
@@ -1404,7 +1467,7 @@ function renderRecorder() {
   }
 
   const selectedReady = selectedMode === "physical_follower" ? physicalReady : simReady;
-  elements.startRecording.disabled = state.recorderRequestActive || state.physicalPreflighting || state.physicalCountdown !== null || state.physicalSyncing || active || awaitingLabel || hasError || !selectedReady || (selectedMode === "physical_follower" && !elements.physicalSafetyAck.checked);
+  elements.startRecording.disabled = state.recorderRequestActive || state.physicalPreflighting || state.physicalStartSequence || state.physicalSyncing || active || awaitingLabel || hasError || !selectedReady || (selectedMode === "physical_follower" && !elements.physicalSafetyAck.checked);
   elements.stopRecording.disabled = state.recorderRequestActive || !["starting", "recording"].includes(status);
   elements.labelForm.hidden = !awaitingLabel && !hasError;
   elements.labelForm.classList.toggle("is-error", hasError);
@@ -1454,8 +1517,8 @@ function renderRecorder() {
     text(elements.recorderMessage, state.recorderRequestError);
   } else if (state.physicalPreflighting) {
     text(elements.recorderMessage, "Automatically verifying both buses torque-off and measuring the paired-pose offset…");
-  } else if (state.physicalCountdown !== null) {
-    text(elements.recorderMessage, `Paired-pose capture starts in ${state.physicalCountdown}. Keep both arms still and the workcell clear.`);
+  } else if (state.physicalStartSequence) {
+    text(elements.recorderMessage, "C922 is recording. The server is syncing the nearby follower, keeping torque held through the countdown, then registering relative zero. Keep both arms still and the workcell clear.");
   } else if (state.physicalSyncing) {
     text(elements.recorderMessage, "Ramping the nearby follower to the leader pose through the reviewed gateway; torque will be off again when Sync completes.");
   } else if (status === "recording") {
@@ -1469,17 +1532,17 @@ function renderRecorder() {
   } else if (status === "saved") {
     text(elements.recorderMessage, `Saved ${recorder.sample_count} samples. This episode is still pending replay and separate evaluator admission.`);
   } else if (hasError) {
-    text(elements.recorderMessage, `${recorder.error || "Recording failed closed."} Torque is off. Return to ready does not delete the failed trace.`);
+    text(elements.recorderMessage, `${recorder.error || "Recording failed closed."} Torque is off. ${errorDetails?.stage ? `Failure stage: ${formatIdentifier(errorDetails.stage)}. ` : ""}Return to ready does not delete the failed trace.`);
   } else if (recorder.last_error) {
-    text(elements.recorderMessage, `Previous attempt stopped safely: ${recorder.last_error} Ready to retry; the failed trace was retained at ${recorder.last_failed_attempt_path || "failed-attempt storage"}.`);
+    text(elements.recorderMessage, `Previous attempt stopped safely: ${recorder.last_error} ${errorDetails?.stage ? `Failure stage: ${formatIdentifier(errorDetails.stage)}. Six-joint diagnostics were retained. ` : ""}Ready to retry; the failed trace was retained at ${recorder.last_failed_attempt_path || "failed-attempt storage"}.`);
   } else if (!selectedReady) {
     text(elements.recorderMessage, preflight?.modes?.[selectedMode]?.reason || "Selected follower is not ready.");
   } else if (selectedMode === "physical_follower" && !gatewayPreflight) {
-    text(elements.recorderMessage, "Ready: Start automatically syncs the nearby follower, finishes torque-off, counts down, and begins relative teleoperation. Sync is also available separately.");
+    text(elements.recorderMessage, "Ready: Start records the C922 first, then syncs and holds the nearby follower through a server-owned countdown before relative teleoperation. Sync is also available separately.");
   } else if (selectedMode === "physical_follower" && !registrationReady) {
-    text(elements.recorderMessage, "Registration is blocked because the pose-pair offset is too large. Keep torque off, physically match the arms, and verify again.");
+    text(elements.recorderMessage, "The current pair is outside the 12° registration guard. Start can bounded-sync a nearby pair up to 20°; otherwise physically match the arms and verify again.");
   } else if (selectedMode === "physical_follower") {
-    text(elements.recorderMessage, "Ready: the pair is synchronized. Start captures the pair as relative zero and follows across the calibrated workspace.");
+    text(elements.recorderMessage, "Ready: Start records the C922, re-syncs the pair, and keeps follower torque held through countdown before relative teleoperation.");
   } else {
     text(elements.recorderMessage, "Move the leader to a comfortable starting pose. The simulator initializes from that pose when recording begins.");
   }
@@ -1503,19 +1566,25 @@ async function postRecorder(action, payload = {}) {
   state.recorderRequestActive = true;
   renderRecorder();
   let succeeded = false;
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 55000);
   try {
     const response = await fetch(`/api/recorder/${action}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      signal: controller.signal,
     });
     const result = await response.json();
     if (!response.ok || !result.ok) throw new Error(result.error || `recorder returned ${response.status}`);
     state.recorder = result.recorder;
     succeeded = true;
   } catch (error) {
-    state.recorderRequestError = error.message || String(error);
+    state.recorderRequestError = error.name === "AbortError"
+      ? "Recorder request timed out. Refresh recorder status and preflight before retrying."
+      : error.message || String(error);
   } finally {
+    window.clearTimeout(timeout);
     state.recorderRequestActive = false;
     renderRecorder();
   }
@@ -1530,31 +1599,14 @@ async function beginRecording() {
     target_square: elements.target.value,
     sample_hz: Number(elements.sampleHz.value),
     physical_safety_acknowledged: elements.physicalSafetyAck.checked,
-    physical_pose_match_acknowledged: false,
-    prestart_countdown_completed: false,
+    server_owned_prestart_sequence: physical,
   };
   if (physical) {
-    state.physicalSyncing = true;
-    renderRecorder();
-    const synced = await postRecorder("gateway-sync", {
-      physical_safety_acknowledged: elements.physicalSafetyAck.checked,
-    });
-    state.physicalSyncing = false;
-    if (!synced) {
-      renderRecorder();
-      return;
-    }
-    for (const count of [3, 2, 1]) {
-      state.physicalCountdown = count;
-      renderRecorder();
-      await new Promise(resolve => window.setTimeout(resolve, 1000));
-    }
-    state.physicalCountdown = null;
-    payload.physical_pose_match_acknowledged = true;
-    payload.prestart_countdown_completed = true;
+    state.physicalStartSequence = true;
     renderRecorder();
   }
   await postRecorder("start", payload);
+  state.physicalStartSequence = false;
   renderRecorder();
 }
 
@@ -1784,6 +1836,7 @@ elements.replayModeSwitch.querySelectorAll("[data-replay-mode]").forEach((button
   button.addEventListener("click", () => setReplayMode(button.dataset.replayMode));
 });
 elements.threeReset.addEventListener("click", () => state.threeViewer?.resetCamera());
+elements.liveSimulationReset.addEventListener("click", () => state.liveSimViewer?.resetCamera());
 elements.timeline.addEventListener("pointermove", updateTimelinePreview);
 elements.timeline.addEventListener("pointerleave", () => { elements.preview.hidden = true; });
 elements.search.addEventListener("input", () => setQuery(elements.search.value));
@@ -1806,6 +1859,7 @@ elements.railClose.addEventListener("click", () => {
 document.querySelectorAll('input[name="recorder-mode"]').forEach((input) => input.addEventListener("change", () => {
   persistRecorderSettings();
   renderRecorder();
+  refreshLiveSimulation();
 }));
 elements.physicalSafetyAck.addEventListener("change", renderRecorder);
 elements.sourceSquare.addEventListener("change", () => {
@@ -1872,5 +1926,7 @@ window.addEventListener("hashchange", restoreRoute);
 initializeRecorderForm();
 fetchCatalog({ initial: true }).then(restoreRoute);
 fetchRecorder();
+refreshLiveSimulation();
 window.setInterval(() => fetchCatalog(), 2000);
 window.setInterval(() => fetchRecorder(), 500);
+window.setInterval(() => refreshLiveSimulation(), 50);

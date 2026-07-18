@@ -25,7 +25,19 @@ class SceneContractTest(unittest.TestCase):
         self.assertEqual(summary["table"]["measurement_confidence"], "high")
         self.assertEqual(
             summary["board"]["measurement_confidence"],
-            "photo_registered_with_polycam_textured_mesh_size_cross_check",
+            "operator_measured_72mm_robotward_displacement_from_photo_registered_pose",
+        )
+        self.assertEqual(
+            summary["board"]["pose_id"],
+            "board_robotward_72mm_20260718_v2",
+        )
+        self.assertEqual(
+            summary["board"]["center_in_table_frame_xy_m"],
+            [0.04, -0.093],
+        )
+        self.assertAlmostEqual(
+            summary["board"]["robotward_displacement_from_previous_pose_m"],
+            0.072,
         )
         self.assertFalse(summary["physical_authority"])
 

@@ -23,10 +23,11 @@ view adds one narrow exception: when the server binds to loopback, it may open
 the identified physical leader with torque disabled and use its joint targets
 to control the MuJoCo follower. It has no command-launch, network gateway, or
 checkpoint-promotion endpoint. Physical follower mode uses
-one reviewed local gateway with explicit operator acknowledgement, torque-off
-paired-pose preflight, countdown, relative-zero registration, excursion limits,
-and fail-closed shutdown. Start first commands the follower to hold its own
-current pose, not the leader's distinct calibration coordinates. Physical task
+one reviewed local gateway with explicit operator acknowledgement, bounded
+paired-pose synchronization, a torque-held countdown, relative-zero registration,
+excursion limits, and fail-closed shutdown. Start keeps the same gateway session
+open from Sync through recording instead of releasing torque between phases.
+Physical task
 proof remains deferred until
 pose sensing and consequence evaluation are present.
 The studio always reports `physical_authority: false` because the surface does
@@ -64,8 +65,16 @@ Current pawn geometry follows the owner-supplied physical-set silhouette with a
 stepped foot, rounded/flared base, narrow waist, collar, and spherical head.
 The photo is a shape reference, not a metric scan, so board-relative scale and
 MuJoCo physics remain the reviewed scene values.
-Start owns bounded Sync, torque-off verification, and the countdown; the
-separate Sync and Check buttons are optional controls. Failed attempts move to
+When Simulator follower is selected, the Record console also opens the current
+sparse-pawn workcell as an interactive live 3D view. During recording, a
+loopback-only lightweight endpoint publishes the latest `MjData.xpos` and
+`MjData.xquat` body state at the recorder rate; the browser samples that feed at
+up to 20 Hz and only mirrors those MuJoCo-owned transforms. The live frame is
+kept out of the ACT sample rows because the separately written state trace is
+the episode artifact. Physical follower mode hides this simulator feed.
+Start begins C922 capture, then owns bounded Sync, a torque-held countdown, and
+relative-zero registration in one continuous gateway session; the separate Sync
+and Check buttons are optional torque-off controls. Failed attempts move to
 ignored diagnostic storage and the recorder becomes ready again without a
 native browser dialog or reset step.
 
@@ -74,8 +83,9 @@ separate ffmpeg process before the selected follower opens. The camera uses the
 stable AVFoundation NV12 mode at 640x480 and a requested 30 fps; the observed
 frame rate and frame count are probed into the receipt rather than assumed.
 The mounted image is rotated 180 degrees in the capture process. Arm samples
-carry `overhead_video_time_seconds`, and the video metadata records the action
-start/stop offsets against the camera clock. Arm control and torque close first;
+carry `overhead_video_time_seconds`, and the video metadata records pre-start
+sequence and teleoperation offsets against the camera clock. Sync/countdown
+failures also retain one second of post-roll. Arm control and torque close first;
 the camera retains at least one second of post-roll, then shuts down gracefully
 so the MP4 remains seekable. A missing or prematurely stopped camera fails the
 attempt closed and retains the partial diagnostic bundle.
@@ -189,6 +199,14 @@ PNG; the test suite rejects a stale poster generation. The poster renderer uses
 a higher-contrast inspection palette and hides the photo-reference tripod group.
 Neither choice changes the frozen `workcell` task camera, physics, evaluator, or
 recorded training observations.
+
+The current board registration is
+`board_robotward_72mm_20260718_v2`: center `(0.040, -0.093) m` in the table
+frame, 72 mm along `+y` from the earlier overhead-photo pose. The Robots card
+surfaces this as `72 mm robotward`, while the scene manifest, live simulator,
+replay geometry, pawn coordinates, and freshly generated posters all consume
+the same capture-config center. Recording receipts preserve this pose identity
+so episodes are not later interpreted against a different workcell layout.
 
 ## Dependency record
 
