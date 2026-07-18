@@ -27,6 +27,31 @@ STUDIO_CAMERAS = (
     "studio_right",
 )
 
+CURRENT_TASK_PIECE_LAYOUT = "sparse_two_sided_pawns"
+CURRENT_TASK_LAYOUT_ID = "two_sided_sparse_pawns_rows_1_2_7_8_v1"
+
+TELEOP_PAWN_SOURCE_SQUARES = (
+    "a2",
+    "b1",
+    "c2",
+    "d1",
+    "e2",
+    "f1",
+    "g2",
+    "h1",
+)
+
+TELEOP_TAN_PAWN_SQUARES = (
+    "a8",
+    "b7",
+    "c8",
+    "d7",
+    "e8",
+    "f7",
+    "g8",
+    "h7",
+)
+
 
 @dataclass(frozen=True)
 class SceneGeometry:
@@ -174,20 +199,51 @@ def _piece_geoms(kind: str, rgba: str) -> list[str]:
     raise ValueError(f"unknown chess piece kind: {kind}")
 
 
-def _piece_bodies(geometry: SceneGeometry) -> list[str]:
+def _piece_bodies(
+    geometry: SceneGeometry,
+    *,
+    piece_layout: str = "standard",
+) -> list[str]:
     back_rank = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
-    colors = {"white": "0.91 0.79 0.58 1", "black": "0.18 0.075 0.025 1"}
+    colors = {
+        "white": "0.91 0.79 0.58 1",
+        "black": "0.18 0.075 0.025 1",
+        "brown": "0.34 0.13 0.045 1",
+        "tan": "0.84 0.68 0.43 1",
+    }
     pieces: list[tuple[str, str, int, int]] = []
-    for file_index, kind in enumerate(back_rank):
-        # The photo has white at the window side and black at the near side.
-        pieces.extend(
-            [
-                ("white", kind, file_index, 0),
-                ("white", "pawn", file_index, 1),
-                ("black", "pawn", file_index, 6),
-                ("black", kind, file_index, 7),
-            ]
-        )
+    if piece_layout in {CURRENT_TASK_PIECE_LAYOUT, "teleop_pawns"}:
+        for square in TELEOP_PAWN_SOURCE_SQUARES:
+            pieces.append(
+                (
+                    "brown",
+                    "pawn",
+                    ord(square[0]) - ord("a"),
+                    int(square[1]) - 1,
+                )
+            )
+        for square in TELEOP_TAN_PAWN_SQUARES:
+            pieces.append(
+                (
+                    "tan",
+                    "pawn",
+                    ord(square[0]) - ord("a"),
+                    int(square[1]) - 1,
+                )
+            )
+    elif piece_layout == "standard":
+        for file_index, kind in enumerate(back_rank):
+            # The photo has white at the window side and black at the near side.
+            pieces.extend(
+                [
+                    ("white", kind, file_index, 0),
+                    ("white", "pawn", file_index, 1),
+                    ("black", "pawn", file_index, 6),
+                    ("black", kind, file_index, 7),
+                ]
+            )
+    else:
+        raise ValueError(f"unknown chess piece layout: {piece_layout}")
 
     board_top = geometry.table_top + geometry.board_thickness + 0.001
     bodies: list[str] = []
@@ -433,6 +489,7 @@ def build_scene_xml(
     config_path: Path = DEFAULT_CAPTURE_CONFIG,
     external_root: Path = DEFAULT_EXTERNAL_ROOT,
     scan_overlay: bool = False,
+    piece_layout: str = "standard",
 ) -> str:
     config = load_capture_config(config_path)
     geometry = scene_geometry(config)
@@ -487,7 +544,7 @@ def build_scene_xml(
         *_table_body(geometry),
         *_fiducial_body(config, geometry),
         *_board_body(geometry),
-        *_piece_bodies(geometry),
+        *_piece_bodies(geometry, piece_layout=piece_layout),
         *_robot_mounts(config, geometry),
     ]
     return "\n".join(
@@ -526,12 +583,14 @@ def build_scene_spec(
     external_root: Path = DEFAULT_EXTERNAL_ROOT,
     scan_overlay: bool = False,
     include_robots: bool = True,
+    piece_layout: str = "standard",
 ) -> mujoco.MjSpec:
     spec = mujoco.MjSpec.from_string(
         build_scene_xml(
             config_path=config_path,
             external_root=external_root,
             scan_overlay=scan_overlay,
+            piece_layout=piece_layout,
         )
     )
     if not include_robots:
@@ -572,7 +631,11 @@ def initialize_robot_poses(
     mujoco.mj_forward(model, data)
 
 
-def scene_summary(config_path: Path = DEFAULT_CAPTURE_CONFIG) -> dict[str, Any]:
+def scene_summary(
+    config_path: Path = DEFAULT_CAPTURE_CONFIG,
+    *,
+    piece_layout: str = "standard",
+) -> dict[str, Any]:
     config = load_capture_config(config_path)
     geometry = scene_geometry(config)
     robots = config["simulation_estimates"]["robots"]
@@ -615,6 +678,16 @@ def scene_summary(config_path: Path = DEFAULT_CAPTURE_CONFIG) -> dict[str, Any]:
         "studio_cameras": list(STUDIO_CAMERAS),
         "photo_alignment": config["simulation_estimates"]["photo_reference"],
         "scene_elements": config["simulation_estimates"]["background"]["elements"],
-        "piece_count": 32,
+        "piece_layout": piece_layout,
+        "piece_layout_id": (
+            CURRENT_TASK_LAYOUT_ID
+            if piece_layout in {CURRENT_TASK_PIECE_LAYOUT, "teleop_pawns"}
+            else "standard_full_chess_v1"
+        ),
+        "piece_count": (
+            len(TELEOP_PAWN_SOURCE_SQUARES) + len(TELEOP_TAN_PAWN_SQUARES)
+            if piece_layout in {CURRENT_TASK_PIECE_LAYOUT, "teleop_pawns"}
+            else 32
+        ),
         "physical_authority": False,
     }

@@ -16,13 +16,14 @@ The governing design sentence is:
 > the task instances combinatorially in simulation using object- and
 > target-relative trajectory retargeting.
 
-The task planner translates language such as "move the black rook to c6" into
+The task planner translates an operator selection such as "move the brown pawn
+from a2 to c3" into
 structured inputs:
 
 ```text
-piece_id = black_rook_a8
+piece_id = brown_pawn_a2
 piece_pose = current observed pose
-target_pose = board.square_pose("c6")
+target_pose = board.square_pose("c3")
 ```
 
 The ACT policy receives state, object, and target geometry. It does not receive
@@ -69,8 +70,8 @@ SO-101 joint-position targets clipped to the actuator control range.
 
 The initial object descriptor should support at least these grasp families:
 
-1. rook-like cylindrical base;
-2. pawn-like small base;
+1. pawn-like small base;
+2. rook-like cylindrical base;
 3. large king/queen/bishop; and
 4. asymmetric knight.
 
@@ -203,10 +204,12 @@ RGB/language conditioning with explicit state and goal poses:
 Freeze evaluator behavior, generator behavior, scene cells, seeds, and split
 membership before training. Training must include each object and destination
 region somewhere while withholding specific object/destination pairs, entire
-continuous source/target pose cells, and nearby-distractor layouts. A pair
-holdout such as training on `rook -> b6,d6` and `king -> c6,e6` while evaluating
-`rook -> c6` and `king -> d6` tests composition without claiming unseen object
-geometry.
+continuous source/target pose cells, and nearby-distractor layouts. For the
+current sparse pawn layout, training-source examples use A2 through F1 and
+held-out source examples use G2 and H1 across separately frozen target cells.
+The far-side tan pawns at A8, B7, C8, D7, E8, F7, G8, and H7 remain explicit
+scene objects and potential distractors. This tests composition without
+claiming unseen object geometry.
 
 ## Ordered curriculum
 

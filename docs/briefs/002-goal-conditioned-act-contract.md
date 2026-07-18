@@ -11,6 +11,10 @@ smallest loader/schema and deterministic fixture surface needed to prove that
 the new continuous-goal ACT contract is coherent and leakage-resistant. Do not
 generate a training dataset or train a policy in this slice.
 
+The owner-confirmed current scene layout is two-sided and sparse: brown pawns
+at A2, B1, C2, D1, E2, F1, G2, H1 and mirrored tan pawns at A8, B7, C8, D7,
+E8, F7, G8, H7. The standard full-chess scene remains a legacy proof layout.
+
 ## Product / Project value
 
 This replaces the combinatorial "one demonstration/checkpoint per
@@ -32,8 +36,8 @@ its own held-outs after data generation begins.
 - Freeze consequence-based transition predicates and tolerances for pregrasp,
   grasp/lift, transport, place/release, and retreat. Distinguish planner-owned,
   ACT-owned, and state-machine-owned behavior.
-- Freeze an extensible grasp-family descriptor with rook-like as the first
-  supported family and pawn-like, large king/queen/bishop, and asymmetric
+- Freeze an extensible grasp-family descriptor with pawn-like as the first
+  supported family and rook-like, large king/queen/bishop, and asymmetric
   knight as declared later families.
 - Reuse the GR00T evaluator semantics for destination, height, uprightness,
   settling, gripper clearance, non-target displacement, final jaw contact,
@@ -96,7 +100,7 @@ claiming the contract frozen.
 ## Reachability / demo proof
 
 Construct a deterministic fixture in which the planner resolves
-`black_rook_a8` and `board.square_pose("c6")` to structured poses. Show that the
+`brown_pawn_a2` and `board.square_pose("c3")` to structured poses. Show that the
 contract can encode this state and a second continuous destination using the
 same observation schema, with no square class or policy identity change. Show
 that timed phase/progress input is rejected.

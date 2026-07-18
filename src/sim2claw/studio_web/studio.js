@@ -17,6 +17,14 @@ const state = {
   expandedTasks: new Set(),
   processHistory: new Map(),
   thumbnailObserver: null,
+  recorder: null,
+  recorderRequestActive: false,
+  recorderRequestError: null,
+  physicalPreflighting: false,
+  physicalCountdown: null,
+  physicalSyncing: false,
+  discardConfirmationArmed: false,
+  discardConfirmationTimer: null,
 };
 
 const elements = {
@@ -77,6 +85,49 @@ const elements = {
   activityList: document.querySelector("#activity-list"),
   simulationCard: document.querySelector("#simulation-card"),
   robotGrid: document.querySelector("#robot-grid"),
+  recorderStatus: document.querySelector("#recorder-status"),
+  recordClock: document.querySelector("#record-clock"),
+  recordSamples: document.querySelector("#record-samples"),
+  recordRate: document.querySelector("#record-rate"),
+  recordModeLabel: document.querySelector("#record-mode-label"),
+  recordPath: document.querySelector("#record-path"),
+  recorderMessage: document.querySelector("#recorder-message"),
+  jointBars: document.querySelector("#joint-bars"),
+  jointUnit: document.querySelector("#joint-unit"),
+  sourceSquare: document.querySelector("#record-source-square"),
+  target: document.querySelector("#record-target"),
+  sampleHz: document.querySelector("#record-sample-hz"),
+  physicalModeOption: document.querySelector("#physical-mode-option"),
+  physicalSafetyCheck: document.querySelector("#physical-safety-check"),
+  physicalSafetyAck: document.querySelector("#physical-safety-ack"),
+  simModeState: document.querySelector("#sim-mode-state"),
+  physicalModeState: document.querySelector("#physical-mode-state"),
+  leaderPreflight: document.querySelector("#leader-preflight"),
+  followerPreflight: document.querySelector("#follower-preflight"),
+  runtimePreflight: document.querySelector("#runtime-preflight"),
+  alignmentPanel: document.querySelector("#alignment-panel"),
+  alignmentStatus: document.querySelector("#alignment-status"),
+  alignmentSummary: document.querySelector("#alignment-summary"),
+  alignmentJoints: document.querySelector("#alignment-joints"),
+  refreshPreflight: document.querySelector("#refresh-preflight"),
+  verifyGateway: document.querySelector("#verify-gateway"),
+  syncFollower: document.querySelector("#sync-follower"),
+  startRecording: document.querySelector("#start-recording"),
+  stopRecording: document.querySelector("#stop-recording"),
+  labelForm: document.querySelector("#record-label-form"),
+  recordLabel: document.querySelector("#record-label"),
+  recordSkill: document.querySelector("#record-skill"),
+  recordOutcome: document.querySelector("#record-outcome"),
+  recordNotes: document.querySelector("#record-notes"),
+  discardRecording: document.querySelector("#discard-recording"),
+  simReplayPanel: document.querySelector("#sim-replay-panel"),
+  runSimReplay: document.querySelector("#run-sim-replay"),
+  simReplayMetrics: document.querySelector("#sim-replay-metrics"),
+  pawnPreviewBoard: document.querySelector("#pawn-preview-board"),
+  pawnPreviewSource: document.querySelector("#pawn-preview-source"),
+  pawnPreviewTarget: document.querySelector("#pawn-preview-target"),
+  pawnPreviewDescription: document.querySelector("#pawn-preview-description"),
+  pawnMoveLine: document.querySelector("#pawn-move-line"),
 };
 
 function text(node, value) {
@@ -1074,8 +1125,408 @@ function renderRobots() {
   });
 }
 
+const jointNames = ["Shoulder pan", "Shoulder lift", "Elbow", "Wrist flex", "Wrist roll", "Gripper"];
+const pawnSourceSquares = ["a2", "b1", "c2", "d1", "e2", "f1", "g2", "h1"];
+const tanPawnSquares = ["a8", "b7", "c8", "d7", "e8", "f7", "g8", "h7"];
+const boardFiles = "abcdefgh";
+const recorderSettingsKey = "sim2claw.recorder.settings.v1";
+const defaultRecorderSettings = Object.freeze({
+  mode: "simulation_follower",
+  source_square: "b1",
+  target_square: "b2",
+  sample_hz: 20,
+});
+
+function loadRecorderSettings() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(recorderSettingsKey) || "null");
+    if (!stored || typeof stored !== "object") return { ...defaultRecorderSettings };
+    return {
+      mode: ["simulation_follower", "physical_follower"].includes(stored.mode)
+        ? stored.mode
+        : defaultRecorderSettings.mode,
+      source_square: pawnSourceSquares.includes(stored.source_square)
+        ? stored.source_square
+        : defaultRecorderSettings.source_square,
+      target_square: /^[a-h][1-4]$/.test(stored.target_square || "")
+        ? stored.target_square
+        : defaultRecorderSettings.target_square,
+      sample_hz: [10, 20, 30].includes(Number(stored.sample_hz))
+        ? Number(stored.sample_hz)
+        : defaultRecorderSettings.sample_hz,
+    };
+  } catch (_error) {
+    return { ...defaultRecorderSettings };
+  }
+}
+
+function persistRecorderSettings() {
+  try {
+    localStorage.setItem(recorderSettingsKey, JSON.stringify({
+      mode: selectedRecorderMode(),
+      source_square: elements.sourceSquare.value,
+      target_square: elements.target.value,
+      sample_hz: Number(elements.sampleHz.value),
+    }));
+  } catch (_error) {
+    // Private browsing or a locked-down profile may reject storage; defaults remain usable.
+  }
+}
+
+function selectedRecorderMode() {
+  return document.querySelector('input[name="recorder-mode"]:checked')?.value || "simulation_follower";
+}
+
+function setPreflightItem(element, ready, detail) {
+  element.classList.toggle("is-ready", Boolean(ready));
+  element.classList.toggle("is-missing", !ready);
+  text(element.querySelector("small"), detail);
+}
+
+function renderJointMonitor(recorder) {
+  const sample = recorder?.last_sample;
+  const physical = (recorder?.mode || selectedRecorderMode()) === "physical_follower";
+  const values = physical
+    ? sample?.follower_actual_position_degrees
+    : sample?.follower_actual_position_rad;
+  text(elements.jointUnit, physical ? "degrees" : "radians");
+  elements.jointBars.replaceChildren();
+  jointNames.forEach((name, index) => {
+    const value = Number(values?.[index]);
+    const row = document.createElement("div");
+    row.className = "joint-row";
+    const label = document.createElement("span");
+    const track = document.createElement("i");
+    const marker = document.createElement("b");
+    const readout = document.createElement("code");
+    text(label, name);
+    const normalized = Number.isFinite(value)
+      ? physical
+        ? (value + 180) / 360
+        : (value + Math.PI) / (2 * Math.PI)
+      : 0.5;
+    marker.style.setProperty("--joint-position", `${Math.max(0, Math.min(1, normalized)) * 100}%`);
+    text(readout, Number.isFinite(value) ? `${value.toFixed(physical ? 1 : 3)}` : "—");
+    track.append(marker);
+    row.append(label, track, readout);
+    elements.jointBars.append(row);
+  });
+}
+
+function renderRecorder() {
+  const recorder = state.recorder;
+  if (!recorder) return;
+  const preflight = recorder.preflight;
+  const status = recorder.status || "idle";
+  document.body.dataset.recorderStatus = status;
+  const active = ["starting", "recording"].includes(status);
+  const awaitingLabel = status === "awaiting_label";
+  const hasError = status === "error";
+  const selectedMode = selectedRecorderMode();
+  const simReady = Boolean(preflight?.modes?.simulation_follower?.ready);
+  const physicalReady = Boolean(preflight?.modes?.physical_follower?.ready);
+  const gatewayPreflight = recorder.physical_gateway_sync || recorder.physical_gateway_preflight;
+  const registrationReady = Boolean(
+    gatewayPreflight?.paired_pose_registration_ready,
+  );
+
+  text(elements.recorderStatus, formatIdentifier(status));
+  elements.recorderStatus.dataset.status = status;
+  text(elements.recordClock, formatTime(Number(recorder.duration_seconds || 0)));
+  text(elements.recordSamples, recorder.sample_count || 0);
+  text(elements.recordRate, `${recorder.sample_hz || elements.sampleHz.value} Hz`);
+  text(elements.recordModeLabel, (recorder.mode || selectedMode) === "physical_follower" ? "PHYSICAL" : "SIM");
+  text(elements.recordPath, recorder.saved_path || recorder.draft_path || "datasets/act_source_recordings/");
+
+  text(elements.simModeState, simReady ? "Ready" : "Missing");
+  text(elements.physicalModeState, physicalReady ? "Ready" : "Missing");
+  elements.physicalModeOption.classList.toggle("is-disabled", !physicalReady);
+  elements.physicalModeOption.querySelector("input").disabled = !physicalReady || active || awaitingLabel;
+  document.querySelectorAll('input[name="recorder-mode"]').forEach((input) => {
+    if (input.value === "simulation_follower") input.disabled = active || awaitingLabel;
+    input.closest(".mode-option").classList.toggle("is-selected", input.checked);
+  });
+  elements.physicalSafetyCheck.hidden = selectedMode !== "physical_follower";
+
+  const leader = preflight?.devices?.leader;
+  const follower = preflight?.devices?.follower;
+  const runtime = preflight?.runtime;
+  setPreflightItem(elements.leaderPreflight, leader?.connected && preflight?.calibrations?.leader?.present, leader?.connected ? `Bus ${leader.serial_suffix} · calibrated` : "Expected leader bus not found");
+  setPreflightItem(elements.followerPreflight, follower?.connected && preflight?.calibrations?.follower?.present, gatewayPreflight?.passed ? `Bus ${follower.serial_suffix} · torque-off verified` : follower?.connected ? `Bus ${follower.serial_suffix} · calibrated` : "Expected follower bus not found");
+  setPreflightItem(elements.runtimePreflight, runtime?.lerobot_version === runtime?.required_lerobot_version, runtime?.lerobot_version ? `LeRobot ${runtime.lerobot_version}` : "LeRobot runtime missing");
+
+  elements.alignmentPanel.hidden = selectedMode !== "physical_follower";
+  elements.alignmentPanel.classList.toggle("is-ready", registrationReady);
+  elements.alignmentPanel.classList.toggle("is-blocked", Boolean(gatewayPreflight) && !registrationReady);
+  text(elements.alignmentStatus, !gatewayPreflight ? "Check or sync both buses" : registrationReady ? "Follower and leader are synchronized" : "Pose mismatch is outside the guard");
+  text(elements.alignmentSummary, !gatewayPreflight
+    ? "Check is read-only. Sync ramps a nearby follower to the leader pose and finishes torque-off. Start runs Sync automatically."
+    : registrationReady
+      ? `Maximum calibration offset ${Number(gatewayPreflight.maximum_body_calibration_offset_degrees).toFixed(1)}°. Start maps subsequent leader motion relative to this pair across the calibrated workspace.`
+      : `Maximum calibration offset ${Number(gatewayPreflight.maximum_body_calibration_offset_degrees).toFixed(1)}°. Put the arms roughly together; Sync refuses more than a 20° body mismatch.`);
+  elements.alignmentJoints.replaceChildren();
+  const alignmentDelta = gatewayPreflight?.calibration_offset_leader_minus_follower;
+  if (alignmentDelta) {
+    jointNames.forEach((name, index) => {
+      const item = document.createElement("span");
+      const label = document.createElement("small");
+      const value = document.createElement("b");
+      text(label, name);
+      text(value, `${Number(alignmentDelta[index]).toFixed(1)}${index === 5 ? "" : "°"}`);
+      item.append(label, value);
+      elements.alignmentJoints.append(item);
+    });
+  }
+
+  const selectedReady = selectedMode === "physical_follower" ? physicalReady : simReady;
+  elements.startRecording.disabled = state.recorderRequestActive || state.physicalPreflighting || state.physicalCountdown !== null || state.physicalSyncing || active || awaitingLabel || hasError || !selectedReady || (selectedMode === "physical_follower" && !elements.physicalSafetyAck.checked);
+  elements.stopRecording.disabled = state.recorderRequestActive || !active;
+  elements.labelForm.hidden = !awaitingLabel && !hasError;
+  elements.labelForm.classList.toggle("is-error", hasError);
+  elements.labelForm.querySelector(".save-button").hidden = hasError;
+  elements.labelForm.querySelectorAll("input, select, textarea").forEach((field) => { field.disabled = hasError; });
+  elements.discardRecording.hidden = !awaitingLabel && !hasError;
+  text(
+    elements.discardRecording,
+    hasError
+      ? "Return to ready"
+      : state.discardConfirmationArmed
+        ? "Click again to discard"
+        : "Discard draft",
+  );
+  elements.sourceSquare.disabled = active || awaitingLabel;
+  elements.target.disabled = active || awaitingLabel;
+  elements.sampleHz.disabled = active || awaitingLabel;
+  elements.verifyGateway.hidden = selectedMode !== "physical_follower";
+  elements.verifyGateway.disabled = state.recorderRequestActive || active || !physicalReady;
+  elements.syncFollower.hidden = selectedMode !== "physical_follower";
+  elements.syncFollower.disabled = state.recorderRequestActive || state.physicalSyncing || active || awaitingLabel || !physicalReady || !elements.physicalSafetyAck.checked;
+
+  const canReplayPhysical = status === "saved" && recorder.mode === "physical_follower";
+  elements.simReplayPanel.hidden = !canReplayPhysical;
+  elements.runSimReplay.disabled = state.recorderRequestActive;
+  const replay = recorder.sim_replay;
+  elements.simReplayMetrics.hidden = !replay;
+  elements.simReplayMetrics.replaceChildren();
+  if (replay) {
+    [
+      ["Body RMSE", `${Number(replay.aggregate_body_joint_rmse_degrees).toFixed(2)}°`],
+      ["Worst body error", `${Number(replay.maximum_body_joint_error_degrees).toFixed(2)}°`],
+      ["Gripper RMSE", `${Number(replay.gripper_rmse_actuator_rad).toFixed(4)} rad`],
+      ["Samples", replay.sample_count],
+    ].forEach(([label, value]) => {
+      const row = document.createElement("div");
+      const term = document.createElement("dt");
+      const detail = document.createElement("dd");
+      text(term, label);
+      text(detail, value);
+      row.append(term, detail);
+      elements.simReplayMetrics.append(row);
+    });
+  }
+
+  if (state.recorderRequestError) {
+    text(elements.recorderMessage, state.recorderRequestError);
+  } else if (state.physicalPreflighting) {
+    text(elements.recorderMessage, "Automatically verifying both buses torque-off and measuring the paired-pose offset…");
+  } else if (state.physicalCountdown !== null) {
+    text(elements.recorderMessage, `Paired-pose capture starts in ${state.physicalCountdown}. Keep both arms still and the workcell clear.`);
+  } else if (state.physicalSyncing) {
+    text(elements.recorderMessage, "Ramping the nearby follower to the leader pose through the reviewed gateway; torque will be off again when Sync completes.");
+  } else if (status === "recording") {
+    text(elements.recorderMessage, "Recording leader targets and follower state. Stop when this demonstration or correction is complete.");
+  } else if (status === "starting") {
+    text(elements.recorderMessage, "Opening the leader bus with torque disabled and initializing the selected follower…");
+  } else if (awaitingLabel) {
+    text(elements.recorderMessage, "Recording stopped. Add the observed skill and outcome before saving the raw source episode.");
+  } else if (status === "saved") {
+    text(elements.recorderMessage, `Saved ${recorder.sample_count} samples. This episode is still pending replay and separate evaluator admission.`);
+  } else if (hasError) {
+    text(elements.recorderMessage, `${recorder.error || "Recording failed closed."} Torque is off. Return to ready does not delete the failed trace.`);
+  } else if (recorder.last_error) {
+    text(elements.recorderMessage, `Previous attempt stopped safely: ${recorder.last_error} Ready to retry; the failed trace was retained at ${recorder.last_failed_attempt_path || "failed-attempt storage"}.`);
+  } else if (!selectedReady) {
+    text(elements.recorderMessage, preflight?.modes?.[selectedMode]?.reason || "Selected follower is not ready.");
+  } else if (selectedMode === "physical_follower" && !gatewayPreflight) {
+    text(elements.recorderMessage, "Ready: Start automatically syncs the nearby follower, finishes torque-off, counts down, and begins relative teleoperation. Sync is also available separately.");
+  } else if (selectedMode === "physical_follower" && !registrationReady) {
+    text(elements.recorderMessage, "Registration is blocked because the pose-pair offset is too large. Keep torque off, physically match the arms, and verify again.");
+  } else if (selectedMode === "physical_follower") {
+    text(elements.recorderMessage, "Ready: the pair is synchronized. Start captures the pair as relative zero and follows across the calibrated workspace.");
+  } else {
+    text(elements.recorderMessage, "Move the leader to a comfortable starting pose. The simulator initializes from that pose when recording begins.");
+  }
+  renderJointMonitor(recorder);
+}
+
+async function fetchRecorder() {
+  if (state.recorderRequestActive) return;
+  try {
+    const response = await fetch("/api/recorder", { cache: "no-store" });
+    if (!response.ok) throw new Error(`recorder returned ${response.status}`);
+    state.recorder = await response.json();
+    renderRecorder();
+  } catch (error) {
+    text(elements.recorderMessage, "Recorder service is unavailable. Restart the local Studio server.");
+  }
+}
+
+async function postRecorder(action, payload = {}) {
+  state.recorderRequestError = null;
+  state.recorderRequestActive = true;
+  renderRecorder();
+  let succeeded = false;
+  try {
+    const response = await fetch(`/api/recorder/${action}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.ok) throw new Error(result.error || `recorder returned ${response.status}`);
+    state.recorder = result.recorder;
+    succeeded = true;
+  } catch (error) {
+    state.recorderRequestError = error.message || String(error);
+  } finally {
+    state.recorderRequestActive = false;
+    renderRecorder();
+  }
+  return succeeded;
+}
+
+async function beginRecording() {
+  const physical = selectedRecorderMode() === "physical_follower";
+  const payload = {
+    mode: selectedRecorderMode(),
+    source_square: elements.sourceSquare.value,
+    target_square: elements.target.value,
+    sample_hz: Number(elements.sampleHz.value),
+    physical_safety_acknowledged: elements.physicalSafetyAck.checked,
+    physical_pose_match_acknowledged: false,
+    prestart_countdown_completed: false,
+  };
+  if (physical) {
+    state.physicalSyncing = true;
+    renderRecorder();
+    const synced = await postRecorder("gateway-sync", {
+      physical_safety_acknowledged: elements.physicalSafetyAck.checked,
+    });
+    state.physicalSyncing = false;
+    if (!synced) {
+      renderRecorder();
+      return;
+    }
+    for (const count of [3, 2, 1]) {
+      state.physicalCountdown = count;
+      renderRecorder();
+      await new Promise(resolve => window.setTimeout(resolve, 1000));
+    }
+    state.physicalCountdown = null;
+    payload.physical_pose_match_acknowledged = true;
+    payload.prestart_countdown_completed = true;
+    renderRecorder();
+  }
+  await postRecorder("start", payload);
+  renderRecorder();
+}
+
+async function syncPhysicalFollower() {
+  state.physicalSyncing = true;
+  renderRecorder();
+  await postRecorder("gateway-sync", {
+    physical_safety_acknowledged: elements.physicalSafetyAck.checked,
+  });
+  state.physicalSyncing = false;
+  renderRecorder();
+}
+
+function updateDestinationOptions(preferred = elements.target.value || "b2") {
+  const occupied = new Set(pawnSourceSquares);
+  elements.target.replaceChildren();
+  for (const rank of "1234") {
+    for (const file of boardFiles) {
+      const square = `${file}${rank}`;
+      if (occupied.has(square)) continue;
+      const option = document.createElement("option");
+      option.value = square;
+      text(option, square.toUpperCase());
+      if (square === preferred) option.selected = true;
+      elements.target.append(option);
+    }
+  }
+}
+
+function renderPawnMovePreview() {
+  const source = elements.sourceSquare.value || "b1";
+  const destination = elements.target.value || "b2";
+  text(elements.pawnPreviewSource, source.toUpperCase());
+  text(elements.pawnPreviewTarget, destination.toUpperCase());
+  text(elements.pawnPreviewDescription, `Move the brown pawn from ${source.toUpperCase()} to ${destination.toUpperCase()}. Brown and tan pawns not selected remain in place.`);
+  elements.pawnPreviewBoard.setAttribute(
+    "aria-label",
+    `Brown pawn movement from ${source.toUpperCase()} to ${destination.toUpperCase()} on a two-sided sparse pawn board`,
+  );
+  elements.pawnPreviewBoard.replaceChildren();
+  for (const rank of [8, 7, 6, 5, 4, 3, 2, 1]) {
+    for (const file of boardFiles) {
+      const square = `${file}${rank}`;
+      const cell = document.createElement("span");
+      cell.className = "pawn-board-cell";
+      cell.dataset.square = square;
+      if ((boardFiles.indexOf(file) + rank) % 2 === 0) cell.classList.add("is-dark");
+      if (square === source) cell.classList.add("is-source");
+      if (square === destination) cell.classList.add("is-destination");
+      if (pawnSourceSquares.includes(square)) {
+        const pawn = document.createElement("i");
+        pawn.className = "pawn-token";
+        pawn.setAttribute("aria-hidden", "true");
+        cell.append(pawn);
+      } else if (tanPawnSquares.includes(square)) {
+        const pawn = document.createElement("i");
+        pawn.className = "pawn-token is-tan";
+        pawn.setAttribute("aria-hidden", "true");
+        cell.append(pawn);
+      }
+      const coordinate = document.createElement("small");
+      text(coordinate, square.toUpperCase());
+      cell.append(coordinate);
+      elements.pawnPreviewBoard.append(cell);
+    }
+  }
+  const sourceX = boardFiles.indexOf(source[0]) + 0.5;
+  const sourceY = 8 - Number(source[1]) + 0.5;
+  const targetX = boardFiles.indexOf(destination[0]) + 0.5;
+  const targetY = 8 - Number(destination[1]) + 0.5;
+  const dx = targetX - sourceX;
+  const dy = targetY - sourceY;
+  const length = Math.hypot(dx, dy) || 1;
+  const inset = 0.28;
+  elements.pawnMoveLine.setAttribute("x1", String(sourceX + (dx / length) * inset));
+  elements.pawnMoveLine.setAttribute("y1", String(sourceY + (dy / length) * inset));
+  elements.pawnMoveLine.setAttribute("x2", String(targetX - (dx / length) * inset));
+  elements.pawnMoveLine.setAttribute("y2", String(targetY - (dy / length) * inset));
+}
+
+function initializeRecorderForm() {
+  const settings = loadRecorderSettings();
+  for (const square of pawnSourceSquares) {
+    const option = document.createElement("option");
+    option.value = square;
+    text(option, `${square.toUpperCase()} · brown pawn`);
+    elements.sourceSquare.append(option);
+  }
+  elements.sourceSquare.value = settings.source_square;
+  updateDestinationOptions(settings.target_square);
+  elements.sampleHz.value = String(settings.sample_hz);
+  const mode = document.querySelector(`input[name="recorder-mode"][value="${settings.mode}"]`);
+  if (mode) mode.checked = true;
+  renderPawnMovePreview();
+  renderJointMonitor(null);
+}
+
 function setActiveView(view, { updateRoute = true } = {}) {
-  const safeView = ["replay", "library", "robots"].includes(view) ? view : "replay";
+  const safeView = ["replay", "library", "robots", "record"].includes(view) ? view : "replay";
   state.view = safeView;
   document.body.dataset.view = safeView;
   document.querySelectorAll("[data-route]").forEach((button) => {
@@ -1110,6 +1561,10 @@ function restoreRoute() {
   }
   if (route === "robots") {
     setActiveView("robots", { updateRoute: false });
+    return;
+  }
+  if (route === "record") {
+    setActiveView("record", { updateRoute: false });
     return;
   }
   setActiveView("replay", { updateRoute: false });
@@ -1214,6 +1669,61 @@ elements.railClose.addEventListener("click", () => {
   elements.browserRail.classList.remove("is-mobile-open");
   elements.mobileBrowserToggle.setAttribute("aria-expanded", "false");
 });
+document.querySelectorAll('input[name="recorder-mode"]').forEach((input) => input.addEventListener("change", () => {
+  persistRecorderSettings();
+  renderRecorder();
+}));
+elements.physicalSafetyAck.addEventListener("change", renderRecorder);
+elements.sourceSquare.addEventListener("change", () => {
+  updateDestinationOptions();
+  renderPawnMovePreview();
+  persistRecorderSettings();
+});
+elements.target.addEventListener("change", () => {
+  renderPawnMovePreview();
+  persistRecorderSettings();
+});
+elements.sampleHz.addEventListener("change", () => {
+  text(elements.recordRate, `${elements.sampleHz.value} Hz`);
+  persistRecorderSettings();
+});
+elements.refreshPreflight.addEventListener("click", () => postRecorder("preflight"));
+elements.verifyGateway.addEventListener("click", () => postRecorder("gateway-preflight"));
+elements.syncFollower.addEventListener("click", syncPhysicalFollower);
+elements.startRecording.addEventListener("click", beginRecording);
+elements.stopRecording.addEventListener("click", () => postRecorder("stop"));
+elements.runSimReplay.addEventListener("click", () => postRecorder("sim-replay"));
+elements.labelForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  postRecorder("finalize", {
+    label: elements.recordLabel.value,
+    skill: elements.recordSkill.value,
+    outcome: elements.recordOutcome.value,
+    notes: elements.recordNotes.value,
+  });
+});
+elements.discardRecording.addEventListener("click", () => {
+  const failed = state.recorder?.status === "error";
+  if (failed) {
+    postRecorder("discard");
+    return;
+  }
+  if (!state.discardConfirmationArmed) {
+    state.discardConfirmationArmed = true;
+    if (state.discardConfirmationTimer) window.clearTimeout(state.discardConfirmationTimer);
+    state.discardConfirmationTimer = window.setTimeout(() => {
+      state.discardConfirmationArmed = false;
+      state.discardConfirmationTimer = null;
+      renderRecorder();
+    }, 5000);
+    renderRecorder();
+    return;
+  }
+  state.discardConfirmationArmed = false;
+  if (state.discardConfirmationTimer) window.clearTimeout(state.discardConfirmationTimer);
+  state.discardConfirmationTimer = null;
+  postRecorder("discard");
+});
 document.querySelectorAll("[data-route]").forEach((button) => button.addEventListener("click", () => navigate(button.dataset.route)));
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && state.drawer) closeDrawer();
@@ -1225,5 +1735,8 @@ document.addEventListener("keydown", (event) => {
 });
 window.addEventListener("hashchange", restoreRoute);
 
+initializeRecorderForm();
 fetchCatalog({ initial: true }).then(restoreRoute);
+fetchRecorder();
 window.setInterval(() => fetchCatalog(), 2000);
+window.setInterval(() => fetchRecorder(), 500);

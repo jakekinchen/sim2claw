@@ -162,7 +162,11 @@ wrong-piece motion, collision/spill, bad placement, non-clear release,
 assistance, and non-model-owned actions. The frozen rook ACT and GR00T v1 files
 remain unchanged.
 
-**Status:** NEXT; planning accepted, config and tests not yet implemented.
+**Status:** PASS on 2026-07-18. Contract SHA-256
+`1f91d318684a2e98d646e9f2c266cae6ec4dca6d43ded23bc2ed841c988738f4`;
+9 contract tests and 10 negative subtests passed; both frozen predecessor
+contracts remained byte-identical; no training rows or hardware authority were
+created.
 
 ## M7 - Retargeted Strict-Success Dataset
 
@@ -179,7 +183,9 @@ training rows. The practical first recipe is 10--20 diverse simulated source
 episodes plus constructive experts expanded into 500--2,000 accepted episodes
 for one grasp family.
 
-**Status:** NOT STARTED.
+**Status:** IN PROGRESS. The loopback simulated-teleoperation source recorder is
+implemented as a prerequisite; segmentation, retargeting, stitching, replay,
+strict-success admission, and the M7 dataset remain not yet proven.
 
 ## M8 - ACT-1 Variable-Pose Grasp and Lift
 
@@ -255,3 +261,9 @@ physical rollout requires explicit owner authority and the one reviewed
 gateway. Published sim-plus-real gains are rationale, not a local success gate.
 
 **Status:** DEFERRED; not authorized by this roadmap.
+
+**Owner-directed infrastructure update, 2026-07-18:** The single reviewed
+physical gateway, torque-off paired-pose registration gate, raw recording schema, and
+physical-command-to-MuJoCo joint replay were advanced early. No physical
+episode, pose-sensing proof, physical task verdict, training admission, or
+sim-plus-real candidate has passed M13.

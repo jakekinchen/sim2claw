@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/studio.css">
   </head>
   <body data-view="replay">
-    <a class="skip-link" href="#episode-stage">Skip to replay</a>
+    <a class="skip-link" href="#studio-main">Skip to main workspace</a>
 
     <div class="app-shell">
       <header class="masthead">
@@ -21,6 +21,7 @@
           <button class="view-button is-active" type="button" data-route="replay">Replay</button>
           <button class="view-button" type="button" data-route="library">Library</button>
           <button class="view-button" type="button" data-route="robots">Robots</button>
+          <button class="view-button record-route" type="button" data-route="record"><span class="record-route-dot" aria-hidden="true"></span>Record</button>
         </nav>
 
         <div class="status-line" aria-label="Workspace status">
@@ -30,9 +31,9 @@
             <span class="live-dot" aria-hidden="true"></span>
             <b id="live-count">0 live</b>
           </button>
-          <span class="authority-state" title="Inspection only; no robot control authority">
+          <span class="authority-state" title="Recorder controls are loopback-only; physical follower control remains gated">
             <span class="lock-icon" aria-hidden="true"></span>
-            read-only
+            local gated
           </span>
           <div class="connection" id="connection-state" aria-live="polite">
             <span class="connection-light"></span>
@@ -48,7 +49,7 @@
         <button type="button" id="live-strip-open">Open live detail</button>
       </div>
 
-      <main class="studio-main">
+      <main class="studio-main" id="studio-main">
         <section class="view-panel replay-view" data-view-panel="replay" aria-label="Replay workbench">
           <aside class="browser-rail" id="browser-rail" aria-labelledby="browser-heading">
             <header class="rail-header">
@@ -161,6 +162,120 @@
           </header>
           <article class="simulation-card" id="simulation-card"></article>
           <div class="robot-grid" id="robot-grid"></div>
+        </section>
+
+        <section class="view-panel record-view" data-view-panel="record" aria-labelledby="record-heading">
+          <header class="view-heading record-heading">
+            <div>
+              <span class="section-label">Leader-guided ACT source collection</span>
+              <h1 id="record-heading">Record a demonstration</h1>
+              <p>Drive the selected follower from the physical leader, then label the raw episode. Saved recordings remain outside Git and are not training data until replay and evaluator admission.</p>
+            </div>
+            <span class="neutral-tag recorder-boundary"><span class="lock-icon" aria-hidden="true"></span> physical motion operator-gated</span>
+          </header>
+
+          <div class="recorder-layout">
+            <div class="recorder-setup">
+              <article class="recorder-card">
+                <header class="recorder-card-heading">
+                  <span class="recorder-step">01</span>
+                  <div><h2>Choose the follower</h2><p>The leader arm is always the input device.</p></div>
+                </header>
+                <div class="mode-grid" id="recorder-mode-grid">
+                  <label class="mode-option is-selected">
+                    <input type="radio" name="recorder-mode" value="simulation_follower" checked>
+                    <span class="mode-illustration sim-mode" aria-hidden="true"><i></i></span>
+                    <span><b>Simulator follower</b><small>MuJoCo · no follower torque</small></span>
+                    <em id="sim-mode-state">Checking</em>
+                  </label>
+                  <label class="mode-option" id="physical-mode-option">
+                    <input type="radio" name="recorder-mode" value="physical_follower">
+                    <span class="mode-illustration physical-mode" aria-hidden="true"><i></i></span>
+                    <span><b>Physical follower</b><small>Relative bounded · reviewed gateway</small></span>
+                    <em id="physical-mode-state">Gated</em>
+                  </label>
+                </div>
+              </article>
+
+              <article class="recorder-card">
+                <header class="recorder-card-heading">
+                  <span class="recorder-step">02</span>
+                  <div><h2>Set pawn movement</h2><p>Choose one pawn from the sparse near-side layout and its destination.</p></div>
+                </header>
+                <div class="recorder-fields metadata-fields">
+                  <label><span>Source pawn</span><select id="record-source-square"></select></label>
+                  <label><span>Destination square</span><select id="record-target"></select></label>
+                  <label><span>Sample rate</span><select id="record-sample-hz"><option value="10">10 Hz</option><option value="20" selected>20 Hz</option><option value="30">30 Hz</option></select></label>
+                </div>
+                <section class="pawn-move-preview" aria-labelledby="pawn-preview-title">
+                  <div class="pawn-preview-copy">
+                    <span class="section-label">Episode preview</span>
+                    <h3 id="pawn-preview-title"><span id="pawn-preview-source">B1</span> <i aria-hidden="true">→</i> <span id="pawn-preview-target">B2</span></h3>
+                    <p id="pawn-preview-description">Move the brown pawn from B1 to B2. Brown and tan pawns not selected remain in place.</p>
+                    <details><summary>More info</summary><p>Brown pawns begin at A2, B1, C2, D1, E2, F1, G2, and H1. The mirrored tan side occupies A8, B7, C8, D7, E8, F7, G8, and H7. Destinations are limited to unoccupied squares in rows 1–4. The saved receipt records both squares and the two-sided layout identity.</p></details>
+                  </div>
+                  <div class="pawn-board-shell">
+                    <div class="pawn-board" id="pawn-preview-board" role="img" aria-label="Pawn movement preview"></div>
+                    <svg class="pawn-move-arrow" id="pawn-move-arrow" viewBox="0 0 8 8" aria-hidden="true"><defs><marker id="pawn-arrow-head" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z"></path></marker></defs><line id="pawn-move-line" marker-end="url(#pawn-arrow-head)"></line></svg>
+                  </div>
+                </section>
+                <label class="safety-check" id="physical-safety-check" hidden>
+                  <input id="physical-safety-ack" type="checkbox">
+                  <span>I cleared the workcell, can reach power, and accept calibrated relative motion up to ±90° (±180° wrist roll) with torque release on bus loss or a sustained five-second stall.</span>
+                </label>
+              </article>
+
+              <article class="recorder-card preflight-card">
+                <header class="recorder-card-heading">
+                  <span class="recorder-step">03</span>
+                  <div><h2>Connected-device preflight</h2><p>Expected buses and same-arm calibration are checked before Start unlocks.</p></div>
+                  <div class="preflight-actions"><button class="quiet-button" id="refresh-preflight" type="button">Refresh</button><button class="quiet-button" id="verify-gateway" type="button">Check buses · torque off</button><button class="sync-button" id="sync-follower" type="button">Sync follower to leader</button></div>
+                </header>
+                <div class="preflight-grid">
+                  <div class="preflight-item" id="leader-preflight"><span class="preflight-light"></span><div><b>Leader arm</b><small>Checking expected bus</small></div></div>
+                  <div class="preflight-item" id="follower-preflight"><span class="preflight-light"></span><div><b>Follower arm</b><small>Checking expected bus</small></div></div>
+                  <div class="preflight-item" id="runtime-preflight"><span class="preflight-light"></span><div><b>LeRobot runtime</b><small>Checking dependency</small></div></div>
+                </div>
+                <div class="alignment-panel" id="alignment-panel" hidden>
+                  <div class="alignment-heading"><div><span class="section-label">Paired-pose registration</span><b id="alignment-status">Check or sync both buses</b></div><small id="alignment-summary">Start automatically ramps a nearby follower to the leader pose, verifies the pair, and finishes Sync torque-off.</small></div>
+                  <div class="alignment-joints" id="alignment-joints"></div>
+                </div>
+              </article>
+            </div>
+
+            <aside class="recorder-console" aria-live="polite">
+              <div class="console-topline"><span>Recording console</span><b class="recorder-status" id="recorder-status">Idle</b></div>
+              <div class="record-clock" id="record-clock">00:00.000</div>
+              <div class="record-facts"><span>Samples <b id="record-samples">0</b></span><span>Rate <b id="record-rate">20 Hz</b></span><span>Mode <b id="record-mode-label">SIM</b></span></div>
+              <div class="joint-monitor">
+                <div class="joint-monitor-heading"><span>Follower joint state</span><small id="joint-unit">radians</small></div>
+                <div id="joint-bars"></div>
+              </div>
+              <div class="record-path"><span>Repository destination</span><code id="record-path">datasets/act_source_recordings/</code></div>
+              <p class="recorder-message" id="recorder-message">Move the leader to a comfortable starting pose. Start unlocks after simulator preflight passes.</p>
+              <div class="record-controls">
+                <button class="record-button" id="start-recording" type="button" disabled><span></span>Start recording</button>
+                <button class="stop-button" id="stop-recording" type="button" disabled><span></span>Stop</button>
+              </div>
+
+              <section class="sim-replay-panel" id="sim-replay-panel" hidden>
+                <div><span class="section-label">Simulator accuracy check</span><h2>Replay this physical command trace</h2><p>Runs the recorded follower commands through the current MuJoCo arm and compares joint response. This does not validate object/contact dynamics or a learned policy.</p></div>
+                <button class="sim-replay-button" id="run-sim-replay" type="button">Replay trace in simulator</button>
+                <dl class="sim-replay-metrics" id="sim-replay-metrics" hidden></dl>
+              </section>
+
+              <form class="label-panel" id="record-label-form" hidden>
+                <div class="label-panel-heading"><span class="recorder-step">04</span><div><h2>Label and save</h2><p>Correct, incorrect, and corrective episodes all retain their provenance.</p></div></div>
+                <div class="recorder-fields">
+                  <label class="wide-field"><span>Recording label</span><input id="record-label" type="text" maxlength="96" placeholder="pawn-d1-to-h4-clean-place" required></label>
+                  <label><span>Skill segment</span><select id="record-skill"><option value="full_episode">Full episode</option><option value="pregrasp">Pregrasp</option><option value="grasp_lift">Grasp + lift</option><option value="transport">Transport</option><option value="place_release">Place + release</option><option value="retreat">Retreat</option><option value="recovery">Recovery / correction</option></select></label>
+                  <label><span>Observed outcome</span><select id="record-outcome"><option value="unreviewed">Unreviewed</option><option value="success">Correct / success</option><option value="failure">Incorrect / failure</option><option value="correction">Corrective episode</option></select></label>
+                  <label class="wide-field"><span>Notes</span><textarea id="record-notes" rows="3" placeholder="What happened, and what should the downstream replay inspect?"></textarea></label>
+                </div>
+                <div class="label-actions"><button class="save-button" type="submit">Save source recording</button><button class="discard-button" id="discard-recording" type="button">Discard draft</button></div>
+              </form>
+            </aside>
+          </div>
         </section>
       </main>
     </div>
