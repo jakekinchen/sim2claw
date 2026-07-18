@@ -73,6 +73,12 @@ def main() -> None:
         default="sample_hold",
     )
     parser.add_argument(
+        "--render-cadence",
+        choices=("all_samples", "policy_queries"),
+        default="all_samples",
+        help="Policy-query rendering is a training-development diagnostic only.",
+    )
+    parser.add_argument(
         "--execution-horizon",
         type=int,
         default=None,
@@ -197,13 +203,21 @@ def main() -> None:
 
     try:
         for sample_step in range(sample_count):
-            renderer.update_scene(env.data, camera=str(contract["scene"]["camera"]))
-            frame = renderer.render().copy()
+            needs_policy_query = sample_step % execution_horizon == 0
+            frame: np.ndarray | None = None
+            if args.render_cadence == "all_samples" or needs_policy_query:
+                renderer.update_scene(
+                    env.data,
+                    camera=str(contract["scene"]["camera"]),
+                )
+                frame = renderer.render().copy()
+                frames.append(frame)
             state = np.asarray(env.data.qpos[env.qpos_addresses], dtype=np.float32).copy()
-            frames.append(frame)
             states.append(state)
 
-            if sample_step % execution_horizon == 0:
+            if needs_policy_query:
+                if frame is None:
+                    raise RuntimeError("policy query is missing its rendered frame")
                 observation = {
                     "video": {"front": frame[None, None, ...]},
                     "state": {
@@ -288,7 +302,10 @@ def main() -> None:
     )
     video_path = args.output / "episode.mp4"
     arrays_path = args.output / "trajectory.npz"
-    _write_video(video_path, frames, int(contract["episode"]["sample_fps"]))
+    video_fps = int(contract["episode"]["sample_fps"])
+    if args.render_cadence == "policy_queries":
+        video_fps = max(1, video_fps // execution_horizon)
+    _write_video(video_path, frames, video_fps)
     np.savez_compressed(
         arrays_path,
         states=np.asarray(states, dtype=np.float32),
@@ -327,6 +344,13 @@ def main() -> None:
         },
         "model_action_horizon": action_horizon,
         "execution_horizon": execution_horizon,
+        "render_cadence": {
+            "method": args.render_cadence,
+            "rendered_frame_count": len(frames),
+            "video_fps": video_fps,
+            "policy_observation_frames_omitted": False,
+            "promotion_evidence_eligible": args.render_cadence == "all_samples",
+        },
         "action_execution_adapter": {
             "schema_version": "sim2claw.groot_n17_action_execution_adapter.v1",
             "method": args.physics_action_adapter,

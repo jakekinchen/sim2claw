@@ -43,7 +43,10 @@
     "mujoco_gl": "osmesa",
     "pyopengl_platform": "osmesa",
     "role": "versioned_deterministic_diagnostic",
-    "promotion_authority": false
+    "promotion_authority": false,
+    "development_cadence": "policy_queries",
+    "sealed_promotion_cadence": "all_samples",
+    "policy_observation_frames_omitted": false
   },
   "development": {
     "split": "training",

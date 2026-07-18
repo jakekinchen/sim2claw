@@ -29,7 +29,7 @@ passes may be shared as a positive result.
 - Flow-consensus experiment SHA-256:
   `4558ccb360ecb58315c56d069b4836314a90ac488e6c848d2bd958d3106f4f8d`.
 - Waypoint-execution v2 experiment SHA-256:
-  `934ba0693e377240aee9220d162715623a07ecd308a07989f08ee0427a6cb84f`.
+  `6fd12566e33c992994f74d7f68ab9a8c6b8796de9c7e4d5215658d99efc78b33`.
 - Deterministic diagnostic renderer: `MUJOCO_GL=osmesa` and
   `PYOPENGL_PLATFORM=osmesa`.
 - OSMesa is a versioned deterministic diagnostic backend, not a new promotion
@@ -63,7 +63,9 @@ known phase boundaries from the frozen task schedule, performs no expert or
 geometric action selection, uses zero assistance, and leaves every consequence
 gate unchanged. The already-frozen consensus canary and training-only probe
 remain bounded; learned closed-loop priority moves to v2 after the probe ranks
-the stochastic arms.
+the stochastic arms. Training development renders only policy-query frames to
+avoid spending CPU time on video-only frames; every policy observation remains
+rendered. Compatibility and sealed promotion retain full-frame cadence.
 
 The exact experiment contract is
 `configs/experiments/groot_n17_flow_consensus_v1.json`. Its order is:
