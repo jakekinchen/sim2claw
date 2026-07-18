@@ -437,7 +437,7 @@ def build_scene_xml(
             '<asset>',
             *assets,
             '</asset>',
-            '<default><geom density="720" solref="0.008 1" solimp="0.95 0.99 0.001" '
+            '<default><geom density="720" solref="0.01 1" solimp="0.95 0.99 0.001" '
             'friction="0.8 0.01 0.001"/></default>',
             '<worldbody>',
             *world,
