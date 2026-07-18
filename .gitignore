@@ -1,5 +1,6 @@
 .DS_Store
 .env
+scripts/jetson/local.env
 .venv/
 __pycache__/
 *.py[cod]
