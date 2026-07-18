@@ -186,7 +186,8 @@ mutate that worker after transfer.
 
 Handoff state:
 
-- the canonical local inference source is clean at commit `647da27` on
+- the canonical local inference implementation is commit `647da27`, with this
+  handoff ledger committed immediately afterward on
   `codex/gr00t-n17-flow-consensus`;
 - `/home/shadeform/sim2claw` is a scratch upload tree with no `.git` directory,
   so the receiving lane must deploy its canonical commit rather than infer a
