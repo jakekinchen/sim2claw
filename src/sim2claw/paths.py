@@ -19,6 +19,9 @@ DEFAULT_GROOT_GUIDANCE_CONFIG = (
 DEFAULT_GROOT_ZOH_DATASET_CONFIG = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_groot_zoh_dataset_v2.json"
 )
+DEFAULT_GROOT_PHASE_LANGUAGE_CONFIG = (
+    REPO_ROOT / "configs" / "tasks" / "chess_pick_place_groot_phase_language_v1.json"
+)
 STUDIO_ASSET_ROOT = (
     REPO_ROOT / "src" / "sim2claw" / "studio_web" / "assets" / "workcell"
 )

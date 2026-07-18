@@ -1,0 +1,35 @@
+{
+  "schema_version": "sim2claw.groot_chess_phase_language.v1",
+  "base_task_contract_sha256": "473915817b3a8474f796df53e199df92031d17fad152599a1d43ccecd3f15683",
+  "source_dataset_receipt_sha256": "298d9b143ac7c4e5baa8a30952e53cd537c64f072cd5d466c7d0515ac0f75619",
+  "frozen_before_held_out": true,
+  "proof_class": "hierarchical_language_conditioned_learned_policy_simulation",
+  "scheduler": {
+    "mode": "frozen_sample_step",
+    "phase_boundaries": "base_task_contract_phase_physics_steps",
+    "settle_phase": "base_task_contract_settle_steps_after",
+    "uses_observation_geometry": false,
+    "uses_reward": false,
+    "selects_or_modifies_actions": false
+  },
+  "phase_prompt_templates": {
+    "stand_off": "Pick up the {piece} from {source_square} and place it on {target_square}. Current subtask: move the gripper to a safe stand-off pose near the {piece}, keeping the jaws open.",
+    "advance": "Pick up the {piece} from {source_square} and place it on {target_square}. Current subtask: approach the grasp point on the {piece}, keeping the jaws open.",
+    "close": "Pick up the {piece} from {source_square} and place it on {target_square}. Current subtask: close the gripper around the {piece} and establish a secure grasp.",
+    "lift": "Pick up the {piece} from {source_square} and place it on {target_square}. Current subtask: lift the grasped {piece} straight upward while keeping the jaws closed.",
+    "transit": "Pick up the {piece} from {source_square} and place it on {target_square}. Current subtask: carry the grasped {piece} above {target_square}, keeping it lifted and the jaws closed.",
+    "lower": "Pick up the {piece} from {source_square} and place it on {target_square}. Current subtask: lower the grasped {piece} upright onto {target_square}, keeping the jaws closed.",
+    "release": "Pick up the {piece} from {source_square} and place it on {target_square}. Current subtask: open the gripper to release the {piece} on {target_square}.",
+    "retreat": "Pick up the {piece} from {source_square} and place it on {target_square}. Current subtask: move the open gripper safely away from the released {piece}.",
+    "settle": "Pick up the {piece} from {source_square} and place it on {target_square}. Current subtask: keep the open gripper clear while the {piece} settles upright on {target_square}."
+  },
+  "authority": {
+    "language_scheduler_is_receipt_visible": true,
+    "hierarchical_task_decomposition": true,
+    "action_assistance_frames": 0,
+    "all_executed_actions_must_be_model_derived": true,
+    "single_prompt_end_to_end_claim": false,
+    "held_out_evaluator_unchanged": true,
+    "physical_authority": false
+  }
+}

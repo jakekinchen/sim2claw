@@ -242,3 +242,40 @@ the authenticated inventory. Only sibling-owned worker `50abriamr` remained
 healthy and running. At the quoted $1.656/hour, this lane's roughly five-hour
 worker lifetime is approximately $8.25; this is a rate-times-duration estimate,
 not a final provider invoice.
+
+## Phase-language contingency
+
+The causal temporal sibling lane subsequently produced repeated board-safe lift
+signals without placement, including a 115.6 mm lift, while this lane localized
+large jaw/phase error from the first learned action. If the sibling's frozen v4
+rate-limited executor remains terminal negative, the next pre-registered axis
+is therefore language-conditioned task decomposition rather than another
+optimizer, seed, horizon, reward, or rate-limit sweep.
+
+The frozen contract is
+`configs/tasks/chess_pick_place_groot_phase_language_v1.json`. It maps the
+existing stand-off, advance, close, lift, transit, lower, release, retreat, and
+settle sample ranges to explicit language subtasks. The scheduler uses frozen
+sample step only: it cannot inspect reward or geometry and cannot select or
+modify an action. Every executed action must remain model-derived, and receipts
+record the contract hash, phase, and prompt hash. This establishes a
+hierarchical language-conditioned policy claim, not a single-prompt end-to-end
+VLA claim.
+
+The derived training dataset is training-only and changes only `task_index` and
+its task/episode metadata. All action, state, reward, timestamp, indexing, and
+termination columns round-trip exactly, and all 13 videos match byte-for-byte.
+It contains the same 13 admitted episodes and 4,719 frames, now assigned to 27
+case-by-phase prompts, with zero held-out rows. Dataset receipt SHA-256 is
+`b29885b421837eec5c3fe0c25505f8692c4a2c1611fd8b43f1b83969145b18f1`;
+its artifact manifest digest is
+`e3dd2eb9df37241d92c907956a41adc7adc615e65bd840910e8780c5533dfe55`.
+
+One challenger is pre-registered only if v4 misses its development gate:
+initialize from the byte-verified nominal checkpoint-4000 into a fresh
+optimizer/output, train the same parameter set for at most 1,000 steps with
+batch 16, learning rate `5e-5`, state dropout `0`, unchanged augmentation, and
+checkpoints every 250 steps. Select by seeded phase-language training MSE, then
+evaluate the selected checkpoint with the sibling's already-ranked causal
+temporal executor and this frozen language scheduler. At least two full
+unchanged-gate training consequence passes are required before held-out opens.

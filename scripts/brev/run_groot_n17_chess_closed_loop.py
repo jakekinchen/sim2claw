@@ -25,6 +25,13 @@ from sim2claw.groot_chess import (
     load_groot_task_contract,
     resolve_execution_horizon,
 )
+from sim2claw.groot_phase_language import (
+    load_phase_language_contract,
+    phase_for_sample_step,
+    phase_language_contract_sha256,
+    phase_prompt,
+)
+from sim2claw.paths import DEFAULT_GROOT_PHASE_LANGUAGE_CONFIG
 from sim2claw.scene import board_square_center
 
 
@@ -52,6 +59,20 @@ def main() -> None:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=5555)
     parser.add_argument(
+        "--language-scheduler",
+        choices=("fixed_instruction", "frozen_phase"),
+        default="fixed_instruction",
+        help=(
+            "Use the original episode instruction or a receipt-visible, sample-step "
+            "phase-language curriculum that never selects or modifies actions."
+        ),
+    )
+    parser.add_argument(
+        "--phase-language-contract",
+        type=Path,
+        default=DEFAULT_GROOT_PHASE_LANGUAGE_CONFIG,
+    )
+    parser.add_argument(
         "--execution-horizon",
         type=int,
         default=None,
@@ -73,6 +94,11 @@ def main() -> None:
     args = parser.parse_args()
 
     contract = load_groot_task_contract()
+    phase_language_contract = (
+        load_phase_language_contract(args.phase_language_contract)
+        if args.language_scheduler == "frozen_phase"
+        else None
+    )
     episode_row = contract[f"{args.split}_episodes"][args.episode_index]
     case = _case_map(contract, args.split)[episode_row["case_id"]]
     offset = tuple(float(value) for value in episode_row["piece_planar_offset_m"])
@@ -135,11 +161,27 @@ def main() -> None:
     chunks_requested = 0
     physics_actions = 0
     action_chunk = np.empty((0, 6), dtype=np.float32)
+    action_chunk_index = 0
+    active_language_phase: str | None = None
     policy_queries: list[dict[str, object]] = []
 
     try:
         for sample_step in range(sample_count):
-            is_policy_query = sample_step % execution_horizon == 0
+            language_phase = (
+                phase_for_sample_step(contract, sample_step)
+                if phase_language_contract is not None
+                else None
+            )
+            phase_changed = (
+                phase_language_contract is not None
+                and active_language_phase is not None
+                and language_phase != active_language_phase
+            )
+            is_policy_query = (
+                action_chunk_index >= execution_horizon
+                or len(action_chunk) == 0
+                or phase_changed
+            )
             render_this_sample = (
                 args.evidence_frame_cadence == "all_samples" or is_policy_query
             )
@@ -157,17 +199,18 @@ def main() -> None:
             if is_policy_query:
                 if frame is None:
                     raise RuntimeError("policy query sample was not rendered")
+                instruction = (
+                    phase_prompt(phase_language_contract, case, str(language_phase))
+                    if phase_language_contract is not None
+                    else str(case["instruction"])
+                )
                 observation = {
                     "video": {"front": frame[None, None, ...]},
                     "state": {
                         "single_arm": state[None, None, :5],
                         "gripper": state[None, None, 5:],
                     },
-                    "language": {
-                        "annotation.human.task_description": [
-                            [str(case["instruction"])]
-                        ]
-                    },
+                    "language": {"annotation.human.task_description": [[instruction]]},
                 }
                 predicted, action_info = client.get_action(
                     observation,
@@ -189,6 +232,10 @@ def main() -> None:
                             "state_sha256": hashlib.sha256(
                                 np.ascontiguousarray(state).tobytes()
                             ).hexdigest(),
+                            "language_phase": language_phase,
+                            "language_prompt_sha256": hashlib.sha256(
+                                instruction.encode("utf-8")
+                            ).hexdigest(),
                         }
                     )
                     policy_queries.append(query_receipt)
@@ -207,8 +254,11 @@ def main() -> None:
                 if not np.isfinite(action_chunk).all():
                     raise RuntimeError("policy returned a non-finite action")
                 chunks_requested += 1
+                action_chunk_index = 0
+                active_language_phase = language_phase
 
-            action = action_chunk[sample_step % execution_horizon].copy()
+            action = action_chunk[action_chunk_index].copy()
+            action_chunk_index += 1
             actions.append(action)
             for _ in range(sample_stride):
                 env.step(action)
@@ -264,6 +314,19 @@ def main() -> None:
         "execution_horizon": execution_horizon,
         "chunks_requested": chunks_requested,
         "policy_queries": policy_queries,
+        "language_scheduler": {
+            "mode": args.language_scheduler,
+            "phase_language_contract_sha256": (
+                phase_language_contract_sha256(args.phase_language_contract)
+                if phase_language_contract is not None
+                else None
+            ),
+            "hierarchical_task_decomposition": phase_language_contract is not None,
+            "single_prompt_end_to_end": phase_language_contract is None,
+            "selects_or_modifies_actions": False,
+            "uses_observation_geometry": False,
+            "uses_reward": False,
+        },
         "sampled_actions": len(actions),
         "physics_actions": physics_actions,
         "all_actions_model_owned": True,
