@@ -202,6 +202,42 @@ Handoff state:
   and
 - the corrected-data lane now owns worker mutation and its eventual teardown.
 
+## Independent phase-language review
+
+Read-only review of the receiving lane's pushed `e2deb59` contract found no
+held-out-row use, geometric/reward scheduler input, action assistance, or
+mutation of source states, actions, or images. The phase scheduler is a
+receipt-visible sample-step transform and therefore supports only the declared
+hierarchical language-conditioned simulation proof class, not a single-prompt
+end-to-end claim.
+
+An initial loader concern was disproved against the exact pinned configuration.
+NVIDIA's `LeRobotEpisodeLoader.create_language_from_meta()` can randomly repeat
+one episode task only for literal language keys `task` or `sub_task`; this
+project configures `annotation.human.task_description`. Its
+`_load_parquet_data()` path maps each row's `task_index` through `tasks_map`.
+Direct episode-zero inspection returned nine prompt runs at the exact frozen
+boundaries `0/42/80/122/172/222/272/298/323/363`, so the live curriculum does
+retain its per-frame phase labels.
+
+One bounded training/evaluator mismatch remains receipt-visible. The language
+input has delta index zero while the action target uses delta indices zero
+through fifteen. Consequently, the final 15 valid start rows before each of
+eight phase boundaries supervise a chunk that extends into the following phase:
+120 of 348 effective training starts per episode, or 34.4828%. The evaluator's
+phase-boundary re-query and temporal-history reset ensure that only the
+current-phase prefix is executed, but joint chunk prediction may still couple
+that prefix to cross-phase targets. This does not invalidate the bounded run;
+it limits causal interpretation and motivates phase-split episodes if the
+challenger remains consequence-negative.
+
+During the direct loader probe, invoking the worker's `uv run python` caused uv
+to report one package uninstall followed by one install before the read-only
+Python body ran. No source, dataset, checkpoint, or policy process was changed,
+and no inference was launched, but this environment resynchronization was an
+unintended post-handoff mutation. The receiving owner was notified immediately;
+this lane will issue no further uv commands or mutations on worker `50abriamr`.
+
 ## Brev and evidence ledger
 
 | Event | State | Evidence |
