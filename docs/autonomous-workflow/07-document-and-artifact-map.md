@@ -10,6 +10,8 @@
 | `docs/autonomous-workflow/09-autonomous-milestones.md` | Invariant milestone gates. |
 | `configs/data/physical_teleop_episode_intake_20260718.json` | Machine-readable pointers, hashes, review, and lane routing for the owner-local physical source cohort. |
 | `docs/run-logs/2026-07-18-physical-episode-intake.md` | Human-readable physical episode assessment and admission boundary. |
+| `configs/evaluations/pawn_rank12_bidirectional_v1.json` | Frozen A1↔A2 through H1↔H2 product benchmark, resets, seeds, gates, and scorecard. |
+| `docs/decisions/0006-pawn-rank12-bidirectional-evaluation.md` | Owner decision and ACT/GR00T/Brev execution boundary for the final benchmark. |
 
 Add project-specific product and architecture docs to this table after setup.
 
@@ -35,5 +37,6 @@ Add project-specific product and architecture docs to this table after setup.
 | Review decisions | `docs/reviewer-messages/` |
 | Manager interventions | `docs/manager-log/` |
 | Physical source episode inventory | Versioned `configs/data/physical_teleop_episode_intake_*.json` ledger; raw artifacts remain under ignored `datasets/act_source_recordings/` |
+| Final product evaluation | `configs/evaluations/pawn_rank12_bidirectional_v1.json`; exact rows remain zero-training-row held-outs |
 
 If a new doc duplicates one of these concerns, delete or merge it before it drifts.

@@ -18,6 +18,10 @@
 - [`run-logs/2026-07-18-physical-episode-intake.md`](./run-logs/2026-07-18-physical-episode-intake.md)
   — five saved physical pawn sources, hashes, visual review, simulator
   joint-response comparisons, metadata conflicts, and ACT/GR00T routing.
+- [`decisions/0006-pawn-rank12-bidirectional-evaluation.md`](./decisions/0006-pawn-rank12-bidirectional-evaluation.md)
+  — frozen final product benchmark: A1↔A2 through H1↔H2, 16 directed
+  cases, 48 zero-row simulation realizations, physical scorecard, and
+  ACT/GR00T/Brev plan.
 - [`goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md`](./goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md)
   — unattended second-machine GR00T recovery and robustness research lane.
 - [`decisions/0001-runtime-and-scene-foundation.md`](./decisions/0001-runtime-and-scene-foundation.md)

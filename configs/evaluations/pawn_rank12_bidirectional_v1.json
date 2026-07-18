@@ -1,0 +1,140 @@
+{
+  "schema_version": "sim2claw.pawn_rank12_bidirectional_eval.v1",
+  "evaluation_set_id": "pawn_rank12_bidirectional_v1",
+  "status": "frozen_owner_selected_product_benchmark",
+  "frozen_at": "2026-07-18T18:37:00-05:00",
+  "mutation_policy": "never_edit_cases_seeds_or_gates_in_place_create_a_new_version",
+  "proof_class": "evaluation_contract_only_no_policy_result",
+  "benchmark_question": "How reliably can the robot move each near-side pawn between ranks 1 and 2 in both directions?",
+  "benchmark_scope": {
+    "kind": "declared_task_coverage_not_unseen_instruction_generalization",
+    "files": ["a", "b", "c", "d", "e", "f", "g", "h"],
+    "positions": {
+      "position_1": "rank_1",
+      "position_2": "rank_2"
+    },
+    "directed_case_count": 16,
+    "simulation_realizations_per_case": 3,
+    "simulation_episode_count": 48,
+    "physical_trials_per_case_per_run": 1,
+    "physical_trial_count_per_run": 16,
+    "same_semantic_moves_may_appear_in_training": true,
+    "exact_evaluation_realizations_may_appear_in_training": false,
+    "evaluation_training_rows": 0
+  },
+  "workcell": {
+    "scene_id": "operator_updated_chess_workcell_v2",
+    "pose_id": "board_robotward_72mm_20260718_v2",
+    "board_center_in_table_frame_xy_m": [0.04, -0.093],
+    "piece_layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
+    "arm": "left",
+    "simulation_camera": "workcell",
+    "physical_camera": "overhead_c922",
+    "canonical_near_side_pawns": {
+      "a": {"piece_id": "brown_pawn_a2", "square": "a2"},
+      "b": {"piece_id": "brown_pawn_b1", "square": "b1"},
+      "c": {"piece_id": "brown_pawn_c2", "square": "c2"},
+      "d": {"piece_id": "brown_pawn_d1", "square": "d1"},
+      "e": {"piece_id": "brown_pawn_e2", "square": "e2"},
+      "f": {"piece_id": "brown_pawn_f1", "square": "f1"},
+      "g": {"piece_id": "brown_pawn_g2", "square": "g2"},
+      "h": {"piece_id": "brown_pawn_h1", "square": "h1"}
+    },
+    "static_far_side_tan_pawns": ["a8", "b7", "c8", "d7", "e8", "f7", "g8", "h7"],
+    "case_reset_rule": "keep_seven_non_target_near_side_pawns_at_their_canonical_squares_move_the_named_target_pawn_to_source_and_leave_destination_empty",
+    "reset_verification": "verify_target_at_source_destination_empty_all_other_pawns_within_placement_tolerance_and_robot_at_declared_home_before_every_trial"
+  },
+  "strategy_policy": {
+    "success_is_consequence_based": true,
+    "lift_required": false,
+    "push_allowed": true,
+    "pick_lift_place_allowed": true,
+    "strategy_reported_as_diagnostic": true,
+    "reason": "the product benchmark asks whether the pawn is moved safely to the requested square, not which valid manipulation strategy produced the consequence"
+  },
+  "simulation_realization_slots": [
+    {
+      "slot": 1,
+      "name": "nominal",
+      "target_planar_offset_m": [0.0, 0.0],
+      "initial_left_joint_offset_degrees": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    },
+    {
+      "slot": 2,
+      "name": "positive_pose_jitter",
+      "target_planar_offset_m": [0.003, -0.002],
+      "initial_left_joint_offset_degrees": [1.0, -1.0, 1.0, -1.0, 1.0, 0.0]
+    },
+    {
+      "slot": 3,
+      "name": "negative_pose_jitter",
+      "target_planar_offset_m": [-0.003, 0.002],
+      "initial_left_joint_offset_degrees": [-1.0, 1.0, -1.0, 1.0, -1.0, 0.0]
+    }
+  ],
+  "cases": [
+    {"case_id": "pawn_a1_to_a2", "file": "a", "source_square": "a1", "destination_square": "a2", "direction": "position_1_to_position_2", "piece_id": "brown_pawn_a2", "instruction": "Move the brown pawn from a1 to a2.", "simulation_seeds": [12101, 12102, 12103], "training_rows": 0},
+    {"case_id": "pawn_a2_to_a1", "file": "a", "source_square": "a2", "destination_square": "a1", "direction": "position_2_to_position_1", "piece_id": "brown_pawn_a2", "instruction": "Move the brown pawn from a2 to a1.", "simulation_seeds": [12111, 12112, 12113], "training_rows": 0},
+    {"case_id": "pawn_b1_to_b2", "file": "b", "source_square": "b1", "destination_square": "b2", "direction": "position_1_to_position_2", "piece_id": "brown_pawn_b1", "instruction": "Move the brown pawn from b1 to b2.", "simulation_seeds": [12201, 12202, 12203], "training_rows": 0},
+    {"case_id": "pawn_b2_to_b1", "file": "b", "source_square": "b2", "destination_square": "b1", "direction": "position_2_to_position_1", "piece_id": "brown_pawn_b1", "instruction": "Move the brown pawn from b2 to b1.", "simulation_seeds": [12211, 12212, 12213], "training_rows": 0},
+    {"case_id": "pawn_c1_to_c2", "file": "c", "source_square": "c1", "destination_square": "c2", "direction": "position_1_to_position_2", "piece_id": "brown_pawn_c2", "instruction": "Move the brown pawn from c1 to c2.", "simulation_seeds": [12301, 12302, 12303], "training_rows": 0},
+    {"case_id": "pawn_c2_to_c1", "file": "c", "source_square": "c2", "destination_square": "c1", "direction": "position_2_to_position_1", "piece_id": "brown_pawn_c2", "instruction": "Move the brown pawn from c2 to c1.", "simulation_seeds": [12311, 12312, 12313], "training_rows": 0},
+    {"case_id": "pawn_d1_to_d2", "file": "d", "source_square": "d1", "destination_square": "d2", "direction": "position_1_to_position_2", "piece_id": "brown_pawn_d1", "instruction": "Move the brown pawn from d1 to d2.", "simulation_seeds": [12401, 12402, 12403], "training_rows": 0},
+    {"case_id": "pawn_d2_to_d1", "file": "d", "source_square": "d2", "destination_square": "d1", "direction": "position_2_to_position_1", "piece_id": "brown_pawn_d1", "instruction": "Move the brown pawn from d2 to d1.", "simulation_seeds": [12411, 12412, 12413], "training_rows": 0},
+    {"case_id": "pawn_e1_to_e2", "file": "e", "source_square": "e1", "destination_square": "e2", "direction": "position_1_to_position_2", "piece_id": "brown_pawn_e2", "instruction": "Move the brown pawn from e1 to e2.", "simulation_seeds": [12501, 12502, 12503], "training_rows": 0},
+    {"case_id": "pawn_e2_to_e1", "file": "e", "source_square": "e2", "destination_square": "e1", "direction": "position_2_to_position_1", "piece_id": "brown_pawn_e2", "instruction": "Move the brown pawn from e2 to e1.", "simulation_seeds": [12511, 12512, 12513], "training_rows": 0},
+    {"case_id": "pawn_f1_to_f2", "file": "f", "source_square": "f1", "destination_square": "f2", "direction": "position_1_to_position_2", "piece_id": "brown_pawn_f1", "instruction": "Move the brown pawn from f1 to f2.", "simulation_seeds": [12601, 12602, 12603], "training_rows": 0},
+    {"case_id": "pawn_f2_to_f1", "file": "f", "source_square": "f2", "destination_square": "f1", "direction": "position_2_to_position_1", "piece_id": "brown_pawn_f1", "instruction": "Move the brown pawn from f2 to f1.", "simulation_seeds": [12611, 12612, 12613], "training_rows": 0},
+    {"case_id": "pawn_g1_to_g2", "file": "g", "source_square": "g1", "destination_square": "g2", "direction": "position_1_to_position_2", "piece_id": "brown_pawn_g2", "instruction": "Move the brown pawn from g1 to g2.", "simulation_seeds": [12701, 12702, 12703], "training_rows": 0},
+    {"case_id": "pawn_g2_to_g1", "file": "g", "source_square": "g2", "destination_square": "g1", "direction": "position_2_to_position_1", "piece_id": "brown_pawn_g2", "instruction": "Move the brown pawn from g2 to g1.", "simulation_seeds": [12711, 12712, 12713], "training_rows": 0},
+    {"case_id": "pawn_h1_to_h2", "file": "h", "source_square": "h1", "destination_square": "h2", "direction": "position_1_to_position_2", "piece_id": "brown_pawn_h1", "instruction": "Move the brown pawn from h1 to h2.", "simulation_seeds": [12801, 12802, 12803], "training_rows": 0},
+    {"case_id": "pawn_h2_to_h1", "file": "h", "source_square": "h2", "destination_square": "h1", "direction": "position_2_to_position_1", "piece_id": "brown_pawn_h1", "instruction": "Move the brown pawn from h2 to h1.", "simulation_seeds": [12811, 12812, 12813], "training_rows": 0}
+  ],
+  "consequence_evaluator": {
+    "owner": "separate_cpu_fp32_consequence_evaluator",
+    "maximum_episode_seconds": 60.0,
+    "maximum_final_xy_error_m": 0.015,
+    "maximum_final_height_error_m": 0.005,
+    "minimum_final_upright_cosine": 0.95,
+    "maximum_final_linear_speed_m_s": 0.02,
+    "minimum_settled_hold_seconds": 1.0,
+    "minimum_robot_piece_clearance_m": 0.035,
+    "maximum_non_target_piece_displacement_m": 0.006,
+    "non_target_ejection_displacement_m": 0.05,
+    "require_destination_initially_empty": true,
+    "require_target_inside_destination_at_end": true,
+    "require_no_final_robot_piece_contact": true,
+    "require_no_non_target_arm_contact": true,
+    "require_model_owned_actions": true,
+    "require_no_assistance": true,
+    "training_cannot_promote": true,
+    "diagnostic_reward_cannot_promote": true
+  },
+  "scorecard": {
+    "primary_metric": "macro_success_rate_across_16_directed_cases",
+    "simulation_denominator": 48,
+    "physical_denominator": 16,
+    "required_breakdowns": [
+      "rank1_to_rank2_success_rate",
+      "rank2_to_rank1_success_rate",
+      "per_file_two_direction_success_rate",
+      "worst_file_success_rate",
+      "direction_parity_gap",
+      "median_time_to_success_seconds",
+      "maximum_non_target_piece_displacement_m",
+      "assistance_or_intervention_count",
+      "strategy_push_pick_or_other"
+    ],
+    "complete_product_target": "all_16_core_cases_pass_in_one_physical_run_and_all_48_frozen_simulation_realizations_pass_for_the_same_checkpoint",
+    "checkpoint_binding_required": true,
+    "dataset_binding_required": true,
+    "append_only_history_required": true
+  },
+  "lane_contract": {
+    "act": "evaluate_structured_piece_and_target_pose_policy_against_all_48_simulation_realizations_then_the_separate_16_trial_physical_run",
+    "groot": "create_a_new_versioned_pawn_rgb_language_action_lane_do_not_modify_frozen_chess_pick_place_groot_v1",
+    "physical_sources": "recorded_episodes_may_seed_training_after_admission_but_are_never_reused_as_evaluation_trials",
+    "correction_flywheel": "derive_new_training_seed_replans_from_failure_classes_never_copy_frozen_evaluation_trajectories_or_realizations_into_training"
+  },
+  "claim_boundary": "this_file_freezes_the_question_cases_resets_seeds_gates_and_scorecard_it_does_not_create_an_evaluator_dataset_checkpoint_simulation_result_or_physical_result"
+}

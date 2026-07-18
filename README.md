@@ -28,6 +28,7 @@ they grant no authority or proof that anything exists or works here.
 9. [NVIDIA machine 2 recovery goal](./docs/goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md)
 10. [Goal-conditioned ACT pick-and-place program](./docs/goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md)
 11. [Goal-conditioned ACT architecture decision](./docs/decisions/0004-goal-conditioned-act-pick-place.md)
+12. [Final bidirectional pawn evaluation](./docs/decisions/0006-pawn-rank12-bidirectional-evaluation.md)
 
 ## Install and verify
 
@@ -108,6 +109,14 @@ ledger and reviewed in
 [`2026-07-18-physical-episode-intake.md`](./docs/run-logs/2026-07-18-physical-episode-intake.md).
 It records five saved physical sources and zero admitted training rows; the raw
 samples and C922 videos remain ignored and local.
+
+The final product benchmark is frozen in
+[`pawn_rank12_bidirectional_v1.json`](./configs/evaluations/pawn_rank12_bidirectional_v1.json):
+16 directed cases covering A1→A2 and A2→A1 through H, plus three fixed
+zero-training-row simulation realizations per case. It scores safe board
+consequences regardless of whether a policy pushes or picks the pawn. ACT and
+future pawn-GR00T candidates use the same scorecard; simulation and physical
+results are never merged into one proof claim.
 
 Replay and process views remain read-only. Recorder controls are loopback-only.
 Physical Start requires a cleared-workcell acknowledgement, a bounded Sync of

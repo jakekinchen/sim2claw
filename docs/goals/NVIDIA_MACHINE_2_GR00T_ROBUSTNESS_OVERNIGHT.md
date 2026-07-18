@@ -70,6 +70,31 @@ versioned GR00T LeRobot RGB/language/action modality contract. A future recovery
 v2 lane may use the cohort only after metadata repair, synchronized modality
 conversion, zero-row held-outs, and separate consequence evaluation.
 
+## Locked pawn product benchmark
+
+The owner-selected comparison target is now frozen at
+`configs/evaluations/pawn_rank12_bidirectional_v1.json`: 16 directed near-side
+pawn moves covering A1↔A2 through H1↔H2. Simulation uses three fixed
+realizations per case, or 48 evaluator rows; physical evaluation uses one reset
+trial per directed case. Exact evaluation seeds, states, trajectories, and
+physical trials contribute zero training rows.
+
+Do not mutate the frozen rook/king `chess_pick_place_groot_v1` task. A GR00T
+pawn experiment needs a new versioned RGB/language/action contract. Generate
+training examples for all 16 semantic instructions from disjoint seeds and
+include safe push, pick/lift/place, nearby-pawn avoidance, and evaluator-linked
+recovery variants. The benchmark accepts any safe strategy based on board
+consequences; strategy is a diagnostic breakdown.
+
+Before provisioning Brev, prove locally that the new dataset export, official
+NVIDIA loader, 48-row reset builder, and separate consequence evaluator pass.
+Then authorize one bounded clean-base N1.7 run with fixed checkpoints. Sweep
+every checkpoint on the same 48 rows and rank by valid case coverage,
+worst-file result, direction parity, collateral displacement, and only then
+open-loop diagnostics. Convert failure classes into disjoint expert or
+corrective training rows; never copy an evaluator realization into training.
+No paid worker is authorized by this plan itself.
+
 ## Research hypothesis
 
 The current nominal demonstrations mostly teach one uninterrupted trajectory.
