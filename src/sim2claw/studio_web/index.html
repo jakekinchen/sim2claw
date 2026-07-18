@@ -85,6 +85,10 @@
                 <p id="stage-subtitle">The newest replayable evidence will appear here.</p>
               </div>
               <div class="stage-actions">
+                <div class="replay-mode-switch" id="replay-mode-switch" hidden aria-label="Replay view">
+                  <button type="button" data-replay-mode="three" aria-pressed="true">3D inspect</button>
+                  <button type="button" data-replay-mode="recorded" aria-pressed="false">Recorded</button>
+                </div>
                 <span class="stage-verdict" id="stage-verdict">Waiting</span>
                 <button class="detail-button" id="evidence-trigger" type="button" aria-controls="evidence-drawer" aria-expanded="false">Evidence details</button>
               </div>
@@ -93,6 +97,11 @@
             <div class="episode-stage" id="episode-stage" tabindex="0" aria-label="Episode replay viewer">
               <video id="replay-video" playsinline muted preload="metadata"></video>
               <img id="replay-frame" alt="Current simulation episode frame">
+              <div class="three-replay" id="three-replay" aria-label="Interactive MuJoCo episode inspection">
+                <canvas id="three-canvas"></canvas>
+                <div class="three-status" id="three-status">Loading MuJoCo scene…</div>
+                <button class="three-reset" id="three-reset" type="button">Reset view</button>
+              </div>
               <div class="empty-stage" id="empty-stage">
                 <svg class="stage-portrait" id="stage-portrait" viewBox="0 0 640 360" aria-hidden="true"></svg>
                 <p>No replay selected</p>
@@ -184,13 +193,13 @@
                 <div class="mode-grid" id="recorder-mode-grid">
                   <label class="mode-option is-selected">
                     <input type="radio" name="recorder-mode" value="simulation_follower" checked>
-                    <span class="mode-illustration sim-mode" aria-hidden="true"><i></i></span>
+                    <span class="mode-illustration sim-mode" aria-hidden="true"><img src="/assets/workcell/studio-left.png" alt=""><i>MuJoCo</i></span>
                     <span><b>Simulator follower</b><small>MuJoCo · no follower torque</small></span>
                     <em id="sim-mode-state">Checking</em>
                   </label>
                   <label class="mode-option" id="physical-mode-option">
                     <input type="radio" name="recorder-mode" value="physical_follower">
-                    <span class="mode-illustration physical-mode" aria-hidden="true"><i></i></span>
+                    <span class="mode-illustration physical-mode" aria-hidden="true"><img src="/assets/workcell/studio-right.png" alt=""><i>SO-101</i></span>
                     <span><b>Physical follower</b><small>Relative bounded · reviewed gateway</small></span>
                     <em id="physical-mode-state">Gated</em>
                   </label>
@@ -205,7 +214,7 @@
                 <div class="recorder-fields metadata-fields">
                   <label><span>Source pawn</span><select id="record-source-square"></select></label>
                   <label><span>Destination square</span><select id="record-target"></select></label>
-                  <label><span>Sample rate</span><select id="record-sample-hz"><option value="10">10 Hz</option><option value="20" selected>20 Hz</option><option value="30">30 Hz</option></select></label>
+                  <label><span>Sample rate</span><select id="record-sample-hz"><option value="10">10 Hz</option><option value="20">20 Hz</option><option value="30" selected>30 Hz</option></select></label>
                 </div>
                 <section class="pawn-move-preview" aria-labelledby="pawn-preview-title">
                   <div class="pawn-preview-copy">
@@ -246,7 +255,7 @@
             <aside class="recorder-console" aria-live="polite">
               <div class="console-topline"><span>Recording console</span><b class="recorder-status" id="recorder-status">Idle</b></div>
               <div class="record-clock" id="record-clock">00:00.000</div>
-              <div class="record-facts"><span>Samples <b id="record-samples">0</b></span><span>Rate <b id="record-rate">20 Hz</b></span><span>Mode <b id="record-mode-label">SIM</b></span></div>
+              <div class="record-facts"><span>Samples <b id="record-samples">0</b></span><span>Rate <b id="record-rate">30 Hz</b></span><span>Mode <b id="record-mode-label">SIM</b></span><span>Camera <b id="record-camera">C922 on Start</b></span></div>
               <div class="joint-monitor">
                 <div class="joint-monitor-heading"><span>Follower joint state</span><small id="joint-unit">radians</small></div>
                 <div id="joint-bars"></div>
@@ -327,6 +336,7 @@
       </button>
     </template>
 
+    <script type="module" src="/studio3d.js"></script>
     <script src="/studio.js" defer></script>
   </body>
 </html>

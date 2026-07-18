@@ -58,6 +58,11 @@ class GrootChessContractTest(unittest.TestCase):
             self.assertFalse(
                 episode.verdict["diagnostic_reward_has_promotion_authority"]
             )
+            self.assertEqual(
+                episode.state_trace["schema_version"],
+                "sim2claw.mujoco_body_state_trace.v1",
+            )
+            self.assertGreater(episode.state_trace["frame_count"], 250)
 
 
 if __name__ == "__main__":

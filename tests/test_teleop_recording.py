@@ -52,6 +52,66 @@ class FakeBackend:
         self.closed = True
 
 
+class FakeVideoRecorder:
+    def __init__(self, draft: Path):
+        self.output_path = draft / "overhead_c922.mp4"
+        self.log_path = draft / "overhead_c922.ffmpeg.log"
+        self.started_monotonic: float | None = None
+        self.finished = False
+
+    def start(self) -> dict[str, Any]:
+        self.started_monotonic = time.monotonic()
+        self.output_path.write_bytes(b"fixture-c922-video")
+        self.log_path.write_text("fixture camera log\n", encoding="utf-8")
+        return {
+            "schema_version": "sim2claw.overhead_diagnostic_video.v1",
+            "status": "recording",
+            "camera_name": "C922 Pro Stream Webcam",
+            "configured_width": 640,
+            "configured_height": 480,
+            "configured_fps": 30,
+            "diagnostic_only": True,
+            "is_training_data": False,
+        }
+
+    def ensure_running(self) -> None:
+        return
+
+    def finish(
+        self,
+        *,
+        action_started_monotonic: float | None,
+        action_stopped_monotonic: float | None,
+        post_roll_seconds: float,
+    ) -> dict[str, Any]:
+        self.finished = True
+        assert self.started_monotonic is not None
+        return {
+            "schema_version": "sim2claw.overhead_diagnostic_video.v1",
+            "status": "completed",
+            "camera_name": "C922 Pro Stream Webcam",
+            "configured_width": 640,
+            "configured_height": 480,
+            "configured_fps": 30,
+            "video_path": "overhead_c922.mp4",
+            "ffmpeg_log_path": "overhead_c922.ffmpeg.log",
+            "action_start_video_offset_seconds": (
+                action_started_monotonic - self.started_monotonic
+                if action_started_monotonic is not None
+                else None
+            ),
+            "action_stop_video_offset_seconds": (
+                action_stopped_monotonic - self.started_monotonic
+                if action_stopped_monotonic is not None
+                else None
+            ),
+            "post_roll_seconds_configured": post_roll_seconds,
+            "post_roll_seconds_observed": post_roll_seconds,
+            "diagnostic_only": True,
+            "is_training_data": False,
+        }
+
+
 class TeleopRecordingTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -81,15 +141,22 @@ class TeleopRecordingTest(unittest.TestCase):
         leader_calibration.write_text("{}\n", encoding="utf-8")
         follower_calibration.write_text("{}\n", encoding="utf-8")
         self.backends: list[FakeBackend] = []
+        self.videos: list[FakeVideoRecorder] = []
 
         def factory(request: dict[str, Any], preflight: dict[str, Any]) -> FakeBackend:
             backend = FakeBackend(request, preflight)
             self.backends.append(backend)
             return backend
 
+        def video_factory(draft: Path) -> FakeVideoRecorder:
+            video = FakeVideoRecorder(draft)
+            self.videos.append(video)
+            return video
+
         self.manager = TeleopRecordingManager(
             repo_root=self.repo_root,
             backend_factory=factory,
+            video_recorder_factory=video_factory,
             dev_root=self.dev_root,
             calibration_root=self.calibration_root,
         )
@@ -148,6 +215,16 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertEqual(receipt["source_square"], "a2")
         self.assertEqual(receipt["destination_square"], "c3")
         self.assertEqual(receipt["initial_layout_id"], CURRENT_TASK_LAYOUT_ID)
+        self.assertIn("overhead_video_time_seconds", rows[0])
+        self.assertEqual(
+            receipt["overhead_video"]["camera_name"],
+            "C922 Pro Stream Webcam",
+        )
+        self.assertTrue(receipt["overhead_video"]["diagnostic_only"])
+        self.assertFalse(receipt["overhead_video"]["is_training_data"])
+        self.assertTrue((destination / "overhead_c922.mp4").is_file())
+        self.assertTrue((destination / "overhead_video.json").is_file())
+        self.assertTrue(self.videos[0].finished)
         self.assertTrue(self.backends[0].closed)
 
     def test_physical_mode_is_ready_but_requires_operator_acknowledgement(self) -> None:
@@ -193,6 +270,7 @@ class TeleopRecordingTest(unittest.TestCase):
         self.manager = TeleopRecordingManager(
             repo_root=self.repo_root,
             backend_factory=lambda request, preflight: FailingBackend(request, preflight),
+            video_recorder_factory=lambda draft: FakeVideoRecorder(draft),
             dev_root=self.dev_root,
             calibration_root=self.calibration_root,
         )

@@ -11,14 +11,20 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Callable
 
 import mujoco
 import numpy as np
 
 from .paths import DEFAULT_OUTPUT_ROOT
 from .render import write_rgb_png
-from .scene import ROBOT_JOINTS, build_scene_spec, initialize_robot_poses
+from .scene import (
+    CURRENT_TASK_PIECE_LAYOUT,
+    ROBOT_JOINTS,
+    build_scene_spec,
+    initialize_robot_poses,
+)
+from .state_trace import EpisodeStateTraceRecorder
 
 REACH_JOINTS = ROBOT_JOINTS[:5]
 JAW_OPEN_RAD = 1.35
@@ -34,10 +40,10 @@ NECK_HEIGHT_M = {
     "queen": 0.033,
     "king": 0.034,
     "bishop": 0.029,
-    "pawn": 0.039,
+    "pawn": 0.035,
     "knight": 0.028,
 }
-PREFERRED_KINDS = ("rook", "queen", "bishop", "pawn", "king", "knight")
+PREFERRED_KINDS = ("pawn", "rook", "queen", "bishop", "king", "knight")
 
 
 @dataclass
@@ -161,10 +167,15 @@ def _piece_bodies(model: mujoco.MjModel) -> dict[str, int]:
     pieces = {}
     for body_id in range(model.nbody):
         name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, body_id)
-        if name and "_" in name and name.split("_")[0] in ("white", "black"):
+        if name and "_" in name and name.split("_")[0] in {
+            "white",
+            "black",
+            "brown",
+            "tan",
+        }:
             pieces[name] = body_id
-    if len(pieces) != 32:
-        raise GraspSetupError(f"expected 32 chess pieces, found {len(pieces)}")
+    if not pieces:
+        raise GraspSetupError("scene contains no chess pieces")
     return pieces
 
 
@@ -257,6 +268,7 @@ def _drive(
     *,
     piece_body: int,
     jaw_bodies: set[int],
+    on_step: Callable[[], None] | None = None,
 ) -> tuple[int, int]:
     """Step physics toward actuator targets; count jaw-piece contact steps."""
 
@@ -276,6 +288,8 @@ def _drive(
                 goal[joint] - start[joint]
             )
         mujoco.mj_step(model, data)
+        if on_step is not None:
+            on_step()
         touching = False
         for contact_index in range(data.ncon):
             contact = data.contact[contact_index]
@@ -311,7 +325,7 @@ def run_grasp_probe(
     output_dir = (output_root or DEFAULT_OUTPUT_ROOT) / "grasp_probe"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    spec = build_scene_spec()
+    spec = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT)
     model = spec.compile()
     data = mujoco.MjData(model)
     initialize_robot_poses(model, data)
@@ -340,6 +354,15 @@ def run_grasp_probe(
         lift_contact_fraction=0.0,
         success=False,
     )
+    trace = EpisodeStateTraceRecorder(
+        model,
+        piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+        proof_class="simulation_scripted_grasp_probe_state_trace",
+    )
+    trace.capture(data, phase="settled", force=True)
+
+    def trace_step(phase: str) -> Callable[[], None]:
+        return lambda: trace.capture(data, phase=phase)
 
     def record_phase(name: str, steps: int, residual: float, contacts: int) -> None:
         report.phases.append(
@@ -379,7 +402,9 @@ def run_grasp_probe(
     contacts, steps = _drive(
         model, data, actuators, pose, JAW_OPEN_RAD, 420,
         piece_body=piece_body, jaw_bodies=jaw_bodies,
+        on_step=trace_step("stand_off"),
     )
+    trace.capture(data, phase="stand_off", force=True)
     record_phase("stand_off", steps, residual, contacts)
     snapshot("01_stand_off")
 
@@ -387,14 +412,18 @@ def run_grasp_probe(
     contacts, steps = _drive(
         model, data, actuators, pose, JAW_OPEN_RAD, 380,
         piece_body=piece_body, jaw_bodies=jaw_bodies,
+        on_step=trace_step("advance"),
     )
+    trace.capture(data, phase="advance", force=True)
     record_phase("advance", steps, residual, contacts)
     snapshot("02_advance")
 
     contacts, steps = _drive(
         model, data, actuators, pose, JAW_SHUT_RAD, 420,
         piece_body=piece_body, jaw_bodies=jaw_bodies,
+        on_step=trace_step("close"),
     )
+    trace.capture(data, phase="close", force=True)
     record_phase("close", steps, 0.0, contacts)
     snapshot("03_close")
 
@@ -403,13 +432,17 @@ def run_grasp_probe(
     lift_contacts, lift_steps = _drive(
         model, data, actuators, lift_pose, JAW_SHUT_RAD, 500,
         piece_body=piece_body, jaw_bodies=jaw_bodies,
+        on_step=trace_step("lift"),
     )
+    trace.capture(data, phase="lift", force=True)
     record_phase("lift", lift_steps, residual, lift_contacts)
 
     hold_contacts, hold_steps = _drive(
         model, data, actuators, lift_pose, JAW_SHUT_RAD, 300,
         piece_body=piece_body, jaw_bodies=jaw_bodies,
+        on_step=trace_step("hold"),
     )
+    trace.capture(data, phase="hold", force=True)
     record_phase("hold", hold_steps, 0.0, hold_contacts)
     snapshot("04_lifted")
 
@@ -421,6 +454,10 @@ def run_grasp_probe(
     report.success = (
         report.piece_rise_m >= SUCCESS_RISE_M and report.lift_contact_fraction >= 0.6
     )
+
+    trace_path = output_dir / "state_trace.json"
+    trace.write(trace_path)
+    report.artifacts["state_trace"] = str(trace_path)
 
     receipt_path = output_dir / "grasp_probe_receipt.json"
     receipt_path.write_text(

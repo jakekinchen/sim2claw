@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 import re
 import shutil
 import threading
@@ -27,6 +26,7 @@ from .act_pick_place import (
     resolve_structured_goal,
     task_contract_sha256,
 )
+from .overhead_video import OverheadVideoError, OverheadVideoRecorder
 from .paths import REPO_ROOT
 from .physical_gateway import (
     GATEWAY_SCHEMA,
@@ -44,13 +44,14 @@ from .scene import (
     build_scene_spec,
     initialize_robot_poses,
 )
+from .state_trace import EpisodeStateTraceRecorder
 
 
 SOURCE_SCHEMA = "sim2claw.act_source_episode.v1"
 RECEIPT_SCHEMA = "sim2claw.act_source_recording_receipt.v1"
 DEFAULT_LEADER_SERIAL_SUFFIX = "0448141"
 DEFAULT_FOLLOWER_SERIAL_SUFFIX = "0406411"
-DEFAULT_SAMPLE_HZ = 20
+DEFAULT_SAMPLE_HZ = 30
 LABEL_PATTERN = re.compile(r"[^a-z0-9]+")
 TELEOP_DESTINATION_SQUARES = tuple(
     f"{file_name}{rank}" for rank in "1234" for file_name in "abcdefgh"
@@ -71,6 +72,22 @@ class RecorderBackend(Protocol):
     def sample(self, elapsed_seconds: float) -> dict[str, Any]: ...
 
     def close(self) -> None: ...
+
+
+class DiagnosticVideoRecorder(Protocol):
+    started_monotonic: float | None
+
+    def start(self) -> dict[str, Any]: ...
+
+    def ensure_running(self) -> None: ...
+
+    def finish(
+        self,
+        *,
+        action_started_monotonic: float | None,
+        action_stopped_monotonic: float | None,
+        post_roll_seconds: float,
+    ) -> dict[str, Any]: ...
 
 
 def _utc_now() -> str:
@@ -301,6 +318,7 @@ class SimulationFollowerBackend:
             str(request["piece_id"]), str(request["target_square"])
         )["target_pose"]
         self.sample_hz = int(request.get("sample_hz") or DEFAULT_SAMPLE_HZ)
+        self.trace: EpisodeStateTraceRecorder | None = None
 
     def _command_from_leader(self, leader_values: np.ndarray) -> np.ndarray:
         if self.model is None:
@@ -338,6 +356,13 @@ class SimulationFollowerBackend:
         self.data.qpos[self.joint_qpos_addresses] = command
         self.data.ctrl[self.actuator_ids] = command
         mujoco.mj_forward(self.model, self.data)
+        self.trace = EpisodeStateTraceRecorder(
+            self.model,
+            piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+            fps=self.sample_hz,
+            proof_class="simulation_teleoperation_source_state_trace",
+        )
+        self.trace.capture(self.data, phase="teleoperation", force=True)
         return {
             "proof_class": self.proof_class,
             "leader_port": self.leader.port,
@@ -357,6 +382,8 @@ class SimulationFollowerBackend:
         self.data.ctrl[self.actuator_ids] = command
         steps = max(1, round((1.0 / self.sample_hz) / float(self.model.opt.timestep)))
         mujoco.mj_step(self.model, self.data, nstep=steps)
+        if self.trace is not None:
+            self.trace.capture(self.data, phase="teleoperation")
         piece_position = self.data.xpos[self.piece_body_id].astype(float).tolist()
         piece_quaternion = self.data.xquat[self.piece_body_id].astype(float).tolist()
         return {
@@ -378,6 +405,12 @@ class SimulationFollowerBackend:
             "available_motor_current": None,
             "physical_follower_torque_enabled": False,
         }
+
+    def write_state_trace(self, path: Path) -> dict[str, Any]:
+        if self.trace is None or self.data is None:
+            raise RecorderError("Simulator trace is not available.")
+        self.trace.capture(self.data, phase="teleoperation", force=True)
+        return self.trace.write(path)
 
     def close(self) -> None:
         self.leader.close()
@@ -416,6 +449,7 @@ class PhysicalFollowerBackend:
 
 
 BackendFactory = Callable[[dict[str, Any], dict[str, Any]], RecorderBackend]
+VideoRecorderFactory = Callable[[Path], DiagnosticVideoRecorder]
 
 
 def _default_backend_factory(request: dict[str, Any], preflight: dict[str, Any]) -> RecorderBackend:
@@ -425,6 +459,10 @@ def _default_backend_factory(request: dict[str, Any], preflight: dict[str, Any])
     if mode == "physical_follower":
         return PhysicalFollowerBackend(request, preflight)
     raise RecorderError(f"Unsupported recording mode: {mode}")
+
+
+def _default_video_recorder_factory(draft: Path) -> DiagnosticVideoRecorder:
+    return OverheadVideoRecorder(draft / "overhead_c922.mp4")
 
 
 @dataclass
@@ -450,11 +488,13 @@ class TeleopRecordingManager:
         *,
         repo_root: Path = REPO_ROOT,
         backend_factory: BackendFactory = _default_backend_factory,
+        video_recorder_factory: VideoRecorderFactory = _default_video_recorder_factory,
         dev_root: Path = Path("/dev"),
         calibration_root: Path | None = None,
     ):
         self.paths = RecorderPaths(repo_root.resolve())
         self.backend_factory = backend_factory
+        self.video_recorder_factory = video_recorder_factory
         self.dev_root = dev_root
         self.calibration_root = calibration_root
         self.lock = threading.RLock()
@@ -462,6 +502,7 @@ class TeleopRecordingManager:
         self.ready_event = threading.Event()
         self.thread: threading.Thread | None = None
         self.backend: RecorderBackend | None = None
+        self.video_recorder: DiagnosticVideoRecorder | None = None
         self.state: dict[str, Any] = self._recover_existing_state()
 
     def _idle_state(self) -> dict[str, Any]:
@@ -689,15 +730,30 @@ class TeleopRecordingManager:
         preflight: dict[str, Any],
         draft: Path,
     ) -> None:
-        started = time.monotonic()
         samples_path = draft / "samples.jsonl"
+        action_started_monotonic: float | None = None
+        action_stopped_monotonic: float | None = None
+        action_stopped_at: str | None = None
+        errors: list[str] = []
         try:
+            self.video_recorder = self.video_recorder_factory(draft)
+            video_state = self.video_recorder.start()
+            with self.lock:
+                self.state["overhead_video"] = video_state
             self.backend = self.backend_factory(request, preflight)
             backend_state = self.backend.open()
+            action_started_monotonic = time.monotonic()
+            video_started_monotonic = self.video_recorder.started_monotonic
+            if video_started_monotonic is None:
+                raise OverheadVideoError("C922 video capture did not publish its start clock.")
             with self.lock:
                 self.state.update(
                     status="recording",
                     backend=backend_state,
+                    action_started_at=_utc_now(),
+                    action_start_video_offset_seconds=(
+                        action_started_monotonic - video_started_monotonic
+                    ),
                     physical_follower_torque_enabled=bool(
                         backend_state.get("physical_follower_torque_enabled")
                     ),
@@ -708,7 +764,8 @@ class TeleopRecordingManager:
             with samples_path.open("w", encoding="utf-8") as handle:
                 while not self.stop_event.is_set():
                     tick = time.monotonic()
-                    sample = self.backend.sample(tick - started)
+                    self.video_recorder.ensure_running()
+                    sample = self.backend.sample(tick - action_started_monotonic)
                     with self.lock:
                         index = int(self.state["sample_count"])
                     row = {
@@ -716,8 +773,9 @@ class TeleopRecordingManager:
                         "recording_id": self.state["recording_id"],
                         "sample_index": index,
                         "timestamp_monotonic_seconds": sample.pop(
-                            "elapsed_seconds", tick - started
+                            "elapsed_seconds", tick - action_started_monotonic
                         ),
+                        "overhead_video_time_seconds": tick - video_started_monotonic,
                         **sample,
                     }
                     handle.write(json.dumps(row, separators=(",", ":"), sort_keys=True) + "\n")
@@ -728,40 +786,71 @@ class TeleopRecordingManager:
                         self.state["last_sample"] = row
                     next_tick += interval
                     self.stop_event.wait(max(0.0, next_tick - time.monotonic()))
+            action_stopped_monotonic = time.monotonic()
+            action_stopped_at = _utc_now()
             with self.lock:
                 self.state.update(
-                    status="awaiting_label",
-                    stopped_at=_utc_now(),
-                    physical_follower_torque_enabled=False,
+                    status="stopping",
+                    action_stopped_at=action_stopped_at,
+                    action_stop_video_offset_seconds=(
+                        action_stopped_monotonic - video_started_monotonic
+                    ),
                 )
-            _atomic_json(draft / "draft_state.json", self.state)
+            export_trace = getattr(self.backend, "write_state_trace", None)
+            if callable(export_trace):
+                trace_result = export_trace(draft / "state_trace.json")
+                with self.lock:
+                    self.state["backend"]["state_trace_path"] = "state_trace.json"
+                    self.state["backend"]["state_trace_sha256"] = trace_result["sha256"]
         except Exception as error:  # hardware/runtime errors must fail closed
-            with self.lock:
-                self.state.update(
-                    status="error",
-                    error=f"{type(error).__name__}: {error}",
-                    stopped_at=_utc_now(),
-                    physical_follower_torque_enabled=False,
-                )
-            _atomic_json(draft / "draft_state.json", self.state)
+            errors.append(f"{type(error).__name__}: {error}")
+            if action_started_monotonic is not None and action_stopped_monotonic is None:
+                action_stopped_monotonic = time.monotonic()
+                action_stopped_at = _utc_now()
         finally:
-            close_error: Exception | None = None
             if self.backend is not None:
                 try:
                     self.backend.close()
                 except Exception as error:
-                    close_error = error
-                    with self.lock:
-                        existing = str(self.state.get("error") or "").strip()
-                        suffix = f"close error: {error}"
-                        self.state["status"] = "error"
-                        self.state["error"] = f"{existing}; {suffix}" if existing else suffix
+                    errors.append(f"backend close error: {type(error).__name__}: {error}")
                 finally:
                     self.backend = None
+
+            video_metadata: dict[str, Any] | None = None
+            if self.video_recorder is not None:
+                try:
+                    video_metadata = self.video_recorder.finish(
+                        action_started_monotonic=action_started_monotonic,
+                        action_stopped_monotonic=action_stopped_monotonic,
+                        post_roll_seconds=(
+                            1.0 if action_stopped_monotonic is not None else 0.0
+                        ),
+                    )
+                    _atomic_json(draft / "overhead_video.json", video_metadata)
+                    if video_metadata.get("status") != "completed":
+                        detail = str(video_metadata.get("error_log_tail") or "").strip()
+                        errors.append(
+                            "OverheadVideoError: C922 video capture did not complete"
+                            + (f": {detail}" if detail else ".")
+                        )
+                except Exception as error:
+                    errors.append(f"video close error: {type(error).__name__}: {error}")
+                finally:
+                    self.video_recorder = None
+
             with self.lock:
-                self.state["physical_follower_torque_enabled"] = False
-                failed = self.state.get("status") == "error"
+                self.state.update(
+                    status="error" if errors else "awaiting_label",
+                    error="; ".join(errors) if errors else None,
+                    stopped_at=action_stopped_at or _utc_now(),
+                    physical_follower_torque_enabled=False,
+                )
+                if video_metadata is not None:
+                    self.state["overhead_video"] = video_metadata
+                failed = bool(errors)
                 failed_state = json.loads(json.dumps(self.state)) if failed else None
+                draft_state = json.loads(json.dumps(self.state))
+            _atomic_json(draft / "draft_state.json", draft_state)
             if failed_state is not None:
                 archived_path = self._archive_failed_draft(failed_state)
                 with self.lock:
@@ -770,7 +859,9 @@ class TeleopRecordingManager:
                         "last_error": failed_state.get("error"),
                         "last_failed_recording_id": failed_state.get("recording_id"),
                         "last_failed_attempt_path": archived_path,
-                        "gateway_close_confirmed": close_error is None,
+                        "gateway_close_confirmed": not any(
+                            row.startswith("backend close error:") for row in errors
+                        ),
                     }
             self.ready_event.set()
 
@@ -813,7 +904,32 @@ class TeleopRecordingManager:
             samples = draft / "samples.jsonl"
             if not samples.is_file() or self.state["sample_count"] < 1:
                 raise RecorderError("An empty recording cannot be saved.")
+            overhead_video = draft / "overhead_c922.mp4"
+            overhead_metadata = draft / "overhead_video.json"
+            if not overhead_video.is_file() or not overhead_metadata.is_file():
+                raise RecorderError(
+                    "The required C922 diagnostic video is incomplete; the draft was retained."
+                )
             shutil.move(str(draft), str(destination))
+            video_receipt = {
+                **dict(self.state.get("overhead_video") or {}),
+                "video_path": "overhead_c922.mp4",
+                "video_sha256": _sha256(destination / "overhead_c922.mp4"),
+                "metadata_path": "overhead_video.json",
+                "metadata_sha256": _sha256(destination / "overhead_video.json"),
+                "ffmpeg_log_path": (
+                    "overhead_c922.ffmpeg.log"
+                    if (destination / "overhead_c922.ffmpeg.log").is_file()
+                    else None
+                ),
+                "ffmpeg_log_sha256": (
+                    _sha256(destination / "overhead_c922.ffmpeg.log")
+                    if (destination / "overhead_c922.ffmpeg.log").is_file()
+                    else None
+                ),
+                "diagnostic_only": True,
+                "is_training_data": False,
+            }
             receipt = {
                 "schema_version": RECEIPT_SCHEMA,
                 "source_episode_schema": SOURCE_SCHEMA,
@@ -840,6 +956,15 @@ class TeleopRecordingManager:
                 "duration_seconds": self.state["duration_seconds"],
                 "samples_path": "samples.jsonl",
                 "samples_sha256": _sha256(destination / "samples.jsonl"),
+                "state_trace_path": (
+                    "state_trace.json" if (destination / "state_trace.json").is_file() else None
+                ),
+                "state_trace_sha256": (
+                    _sha256(destination / "state_trace.json")
+                    if (destination / "state_trace.json").is_file()
+                    else None
+                ),
+                "overhead_video": video_receipt,
                 "backend": self.state.get("backend"),
                 "training_admission": "pending_deterministic_replay_and_separate_evaluator",
                 "is_training_data": False,

@@ -37,6 +37,21 @@ class StudioCatalogTest(unittest.TestCase):
         )
         video_dir.mkdir(parents=True)
         (video_dir / "episode_000000.mp4").write_bytes(b"0123456789")
+        trace_dir = self.root / "datasets" / "pick_v1" / "state_traces"
+        trace_dir.mkdir(parents=True)
+        self._write_json(
+            trace_dir / "episode_000000.json",
+            {
+                "schema_version": "sim2claw.mujoco_body_state_trace.v1",
+                "scene": {
+                    "piece_layout": "standard",
+                    "manifest_url": "/api/scene?layout=standard",
+                },
+                "frame_count": 61,
+                "fps": 30,
+                "duration_seconds": 2.0,
+            },
+        )
         self._write_json(
             self.root / "configs" / "tasks" / "pick_v1.json",
             {
@@ -103,6 +118,8 @@ class StudioCatalogTest(unittest.TestCase):
         self.assertEqual([row["name"] for row in episode["phases"]], ["Reach", "Lift"])
         self.assertFalse(episode["physical_authority"])
         self.assertEqual(episode["camera"], "workcell")
+        self.assertEqual(episode["inspection"]["kind"], "threejs_state_trace")
+        self.assertEqual(episode["inspection"]["frame_count"], 61)
         resolved = resolve_media_token(
             episode["media"]["url"].split("/")[-1],
             self.root,
@@ -116,6 +133,11 @@ class StudioCatalogTest(unittest.TestCase):
             catalog["robots"][0]["poster_url"],
             catalog["robots"][1]["poster_url"],
         )
+        self.assertEqual(
+            catalog["simulations"][0]["piece_layout"],
+            "sparse_two_sided_pawns",
+        )
+        self.assertIn("16 sparse pawns", catalog["simulations"][0]["subtitle"])
 
     def test_media_tokens_cannot_escape_generated_storage(self) -> None:
         outside = self.root / "README.md"
@@ -123,6 +145,10 @@ class StudioCatalogTest(unittest.TestCase):
         token = media_token(outside, self.root)
         with self.assertRaisesRegex(ValueError, "outside generated artifact storage"):
             resolve_media_token(token, self.root)
+        private_receipt = self.root / "runs" / "private_receipt.json"
+        self._write_json(private_receipt, {"serial_port": "fixture-secret"})
+        with self.assertRaisesRegex(ValueError, "limited to episode state traces"):
+            resolve_media_token(media_token(private_receipt, self.root), self.root)
 
     def test_activity_progress_is_catalogued(self) -> None:
         run_root = self.root / "runs" / "studio" / "processes"
@@ -148,6 +174,18 @@ class StudioCatalogTest(unittest.TestCase):
             with urlopen(f"{base}/api/catalog", timeout=3) as response:
                 payload = json.load(response)
             self.assertEqual(payload["summary"]["episodes"], 1)
+            # The explicit historical full-board scene compiles 32 free bodies
+            # on its cold compatibility path. The current sparse scene is the
+            # interactive default; allow the legacy probe a wider CI budget.
+            with urlopen(f"{base}/api/scene?layout=standard", timeout=10) as response:
+                scene = json.load(response)
+            self.assertEqual(scene["schema_version"], "sim2claw.mujoco_scene_manifest.v1")
+            self.assertFalse(scene["authority"]["physical_authority"])
+            with urlopen(
+                f"{base}{scene['meshes'][0]['asset_url']}", timeout=3
+            ) as response:
+                mesh = response.read()
+            self.assertGreater(len(mesh), 1000)
             with urlopen(f"{base}/api/recorder", timeout=3) as response:
                 recorder = json.load(response)
             self.assertEqual(
@@ -165,7 +203,7 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertTrue(preflight["ok"])
             self.assertEqual(
                 preflight["recorder"]["preflight"]["required_physical_path"],
-                "sim2claw.so101_physical_gateway.v1",
+                "sim2claw.so101_physical_gateway.v2",
             )
             token = payload["episodes"][0]["media"]["url"].split("/")[-1]
             request = Request(f"{base}/media/{token}", headers={"Range": "bytes=2-5"})
@@ -190,9 +228,14 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('id="process-drawer"', html)
             self.assertIn('data-view-panel="record"', html)
             self.assertIn('id="start-recording"', html)
+            self.assertIn('id="record-camera"', html)
             self.assertIn('id="record-source-square"', html)
             self.assertIn('id="pawn-preview-board"', html)
             self.assertIn('id="sync-follower"', html)
+            self.assertIn('id="three-canvas"', html)
+            self.assertIn('src="/studio3d.js"', html)
+            self.assertIn('src="/assets/workcell/studio-left.png"', html)
+            self.assertIn('src="/assets/workcell/studio-right.png"', html)
             self.assertIn('<span id="pawn-preview-source">B1</span>', html)
             self.assertIn('<span id="pawn-preview-target">B2</span>', html)
             self.assertIn("The mirrored tan side occupies A8", html)
@@ -209,8 +252,10 @@ class StudioCatalogTest(unittest.TestCase):
             with urlopen(f"{base}/studio.js", timeout=3) as response:
                 javascript = response.read().decode("utf-8")
             self.assertIn("document.body.dataset.recorderStatus = status", javascript)
+            self.assertIn('"C922 REC"', javascript)
             self.assertIn('sim2claw.recorder.settings.v1', javascript)
             self.assertIn('postRecorder("gateway-sync"', javascript)
+            self.assertIn('episode.inspection?.kind === "threejs_state_trace"', javascript)
             self.assertNotIn("window.confirm", javascript)
 
             font_path = (

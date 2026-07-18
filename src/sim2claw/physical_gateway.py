@@ -18,12 +18,23 @@ import numpy as np
 from .scene import ROBOT_JOINTS
 
 
-GATEWAY_SCHEMA = "sim2claw.so101_physical_gateway.v1"
+GATEWAY_SCHEMA = "sim2claw.so101_physical_gateway.v2"
 BODY_EXCURSION_LIMIT_DEG = 90.0
 WRIST_ROLL_EXCURSION_LIMIT_DEG = 180.0
 GRIPPER_EXCURSION_LIMIT = 100.0
-BODY_STEP_LIMIT_DEG = 4.0
-GRIPPER_STEP_LIMIT = 8.0
+BODY_COMMAND_RATE_LIMIT_DEG_S = 60.0
+WRIST_ROLL_COMMAND_RATE_LIMIT_DEG_S = 90.0
+GRIPPER_COMMAND_RATE_LIMIT_S = 100.0
+BODY_TRACKING_ERROR_LIMIT_DEG = 6.0
+SHOULDER_LIFT_TRACKING_ERROR_LIMIT_DEG = 8.0
+WRIST_ROLL_TRACKING_ERROR_LIMIT_DEG = 8.0
+GRIPPER_TRACKING_ERROR_LIMIT = 12.0
+BODY_STALL_ERROR_DEG = 3.0
+GRIPPER_STALL_ERROR = 6.0
+MAX_CONTROL_INTERVAL_SECONDS = 0.1
+CURRENT_TELEMETRY_HZ = 5.0
+BUS_READ_RETRIES = 1
+BUS_RETRY_DELAY_SECONDS = 0.002
 STALL_TIMEOUT_SECONDS = 5.0
 STALL_WARNING_SECONDS = 1.0
 MIN_PROGRESS_DEG = 0.5
@@ -66,7 +77,11 @@ def bounded_relative_target(
     lower_limits: np.ndarray | None = None,
     upper_limits: np.ndarray | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
-    if leader.shape != (6,) or leader_start.shape != (6,) or follower_start.shape != (6,):
+    if (
+        leader.shape != (6,)
+        or leader_start.shape != (6,)
+        or follower_start.shape != (6,)
+    ):
         raise PhysicalGatewayError("SO-101 gateway requires exactly six joint values.")
     delta = leader - leader_start
     delta[4] = shortest_delta_degrees(float(leader[4]), float(leader_start[4]))
@@ -88,12 +103,97 @@ def bounded_relative_target(
     target = follower_start + delta
     if lower_limits is not None or upper_limits is not None:
         if lower_limits is None or upper_limits is None:
-            raise PhysicalGatewayError("Both calibrated position-limit arrays are required.")
+            raise PhysicalGatewayError(
+                "Both calibrated position-limit arrays are required."
+            )
         if lower_limits.shape != (6,) or upper_limits.shape != (6,):
-            raise PhysicalGatewayError("Calibrated position limits require six joint values.")
+            raise PhysicalGatewayError(
+                "Calibrated position limits require six joint values."
+            )
         target = np.clip(target, lower_limits, upper_limits)
         delta = target - follower_start
     return target, delta
+
+
+def slew_limited_target(
+    requested: np.ndarray,
+    previous_command: np.ndarray,
+    previous_actual: np.ndarray,
+    dt_seconds: float,
+    *,
+    lower_limits: np.ndarray,
+    upper_limits: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Advance toward the full target without building an unsafe error backlog.
+
+    The speed limit is based on elapsed time and the last command, rather than
+    repeatedly clipping the target against the measured pose. A separate
+    command-to-actual bound leaves enough shoulder-lift error to overcome its
+    load while preventing a stalled joint from accumulating an arbitrary jump.
+    """
+
+    for values, name in (
+        (requested, "requested target"),
+        (previous_command, "previous command"),
+        (previous_actual, "previous actual position"),
+        (lower_limits, "lower limits"),
+        (upper_limits, "upper limits"),
+    ):
+        _finite(values, name)
+    if not np.isfinite(dt_seconds) or dt_seconds < 0.0:
+        raise PhysicalGatewayError("Control interval must be finite and non-negative.")
+
+    rate_limits = np.asarray(
+        [
+            BODY_COMMAND_RATE_LIMIT_DEG_S,
+            BODY_COMMAND_RATE_LIMIT_DEG_S,
+            BODY_COMMAND_RATE_LIMIT_DEG_S,
+            BODY_COMMAND_RATE_LIMIT_DEG_S,
+            WRIST_ROLL_COMMAND_RATE_LIMIT_DEG_S,
+            GRIPPER_COMMAND_RATE_LIMIT_S,
+        ],
+        dtype=np.float64,
+    )
+    tracking_limits = np.asarray(
+        [
+            BODY_TRACKING_ERROR_LIMIT_DEG,
+            SHOULDER_LIFT_TRACKING_ERROR_LIMIT_DEG,
+            BODY_TRACKING_ERROR_LIMIT_DEG,
+            BODY_TRACKING_ERROR_LIMIT_DEG,
+            WRIST_ROLL_TRACKING_ERROR_LIMIT_DEG,
+            GRIPPER_TRACKING_ERROR_LIMIT,
+        ],
+        dtype=np.float64,
+    )
+    bounded_dt = min(dt_seconds, MAX_CONTROL_INTERVAL_SECONDS)
+    requested_delta = requested - previous_command
+    requested_delta[4] = shortest_delta_degrees(
+        float(requested[4]),
+        float(previous_command[4]),
+    )
+    rate_limited_delta = np.clip(
+        requested_delta,
+        -rate_limits * bounded_dt,
+        rate_limits * bounded_dt,
+    )
+    rate_limited = previous_command + rate_limited_delta
+
+    tracking_delta = rate_limited - previous_actual
+    tracking_delta[4] = shortest_delta_degrees(
+        float(rate_limited[4]),
+        float(previous_actual[4]),
+    )
+    bounded_tracking_delta = np.clip(
+        tracking_delta,
+        -tracking_limits,
+        tracking_limits,
+    )
+    command = np.clip(
+        previous_actual + bounded_tracking_delta,
+        lower_limits,
+        upper_limits,
+    )
+    return command, rate_limits, tracking_limits
 
 
 def paired_pose_registration_report(
@@ -159,14 +259,9 @@ def _lerobot_devices(identity: GatewayIdentity) -> tuple[Any, Any]:
             port=identity.follower_port,
             id="so101_follower",
             use_degrees=True,
-            max_relative_target={
-                "shoulder_pan": BODY_STEP_LIMIT_DEG,
-                "shoulder_lift": BODY_STEP_LIMIT_DEG,
-                "elbow_flex": BODY_STEP_LIMIT_DEG,
-                "wrist_flex": BODY_STEP_LIMIT_DEG,
-                "wrist_roll": BODY_STEP_LIMIT_DEG,
-                "gripper": GRIPPER_STEP_LIMIT,
-            },
+            # The gateway owns rate and tracking-error bounds. LeRobot's
+            # present-position clamp can permanently strand a loaded joint.
+            max_relative_target=None,
             disable_torque_on_disconnect=True,
         )
     )
@@ -193,11 +288,19 @@ class SO101PhysicalGateway:
         self.lower_limits = np.asarray([-180.0] * 5 + [0.0], dtype=np.float64)
         self.upper_limits = np.asarray([180.0] * 5 + [100.0], dtype=np.float64)
         self.previous_actual: np.ndarray | None = None
+        self.previous_command: np.ndarray | None = None
+        self.previous_elapsed_seconds = 0.0
         self.previous_time: float | None = None
         self.consecutive_rate_limited = 0
         self.consecutive_stall_samples = np.zeros(6, dtype=np.int64)
         self.stall_started_at = np.full(6, np.nan, dtype=np.float64)
         self.stall_anchor_actual = np.zeros(6, dtype=np.float64)
+        self.stall_command_direction = np.zeros(6, dtype=np.float64)
+        self.current_telemetry: dict[str, float] | None = None
+        self.current_telemetry_elapsed: float | None = None
+        self.current_telemetry_missed_samples = 0
+        self.current_telemetry_stale = False
+        self.bus_read_retries_total = 0
         self.torque_enabled = False
         self.connected = False
 
@@ -262,6 +365,8 @@ class SO101PhysicalGateway:
         self.leader_start = leader
         self.follower_start = follower
         self.previous_actual = follower.copy()
+        self.previous_command = follower.copy()
+        self.previous_elapsed_seconds = 0.0
         self.previous_time = time.monotonic()
         registration = paired_pose_registration_report(leader, follower)
 
@@ -319,9 +424,12 @@ class SO101PhysicalGateway:
             self.leader_start = registered_leader
             self.follower_start = actual
             self.previous_actual = actual.copy()
+            self.previous_command = actual.copy()
+            self.previous_elapsed_seconds = 0.0
             self.previous_time = time.monotonic()
             self.stall_anchor_actual = actual.copy()
             self.stall_started_at[:] = np.nan
+            self.stall_command_direction[:] = 0.0
             registration_state = {
                 "paired_pose_registered_before_recording": True,
                 "start_alignment_motion_commanded": False,
@@ -341,7 +449,7 @@ class SO101PhysicalGateway:
 
         return {
             "schema_version": GATEWAY_SCHEMA,
-            "control_mode": "relative_bounded",
+            "control_mode": "relative_time_slew_bounded_tracking",
             "leader_port": self.identity.leader_port,
             "follower_port": self.identity.follower_port,
             "leader_calibration_sha256": self.identity.leader_calibration_sha256,
@@ -352,8 +460,17 @@ class SO101PhysicalGateway:
             "body_excursion_limit_degrees": BODY_EXCURSION_LIMIT_DEG,
             "wrist_roll_excursion_limit_degrees": WRIST_ROLL_EXCURSION_LIMIT_DEG,
             "gripper_excursion_limit": GRIPPER_EXCURSION_LIMIT,
-            "body_step_limit_degrees": BODY_STEP_LIMIT_DEG,
-            "gripper_step_limit": GRIPPER_STEP_LIMIT,
+            "body_command_rate_limit_degrees_s": BODY_COMMAND_RATE_LIMIT_DEG_S,
+            "wrist_roll_command_rate_limit_degrees_s": WRIST_ROLL_COMMAND_RATE_LIMIT_DEG_S,
+            "gripper_command_rate_limit_s": GRIPPER_COMMAND_RATE_LIMIT_S,
+            "body_tracking_error_limit_degrees": BODY_TRACKING_ERROR_LIMIT_DEG,
+            "shoulder_lift_tracking_error_limit_degrees": (
+                SHOULDER_LIFT_TRACKING_ERROR_LIMIT_DEG
+            ),
+            "wrist_roll_tracking_error_limit_degrees": (
+                WRIST_ROLL_TRACKING_ERROR_LIMIT_DEG
+            ),
+            "gripper_tracking_error_limit": GRIPPER_TRACKING_ERROR_LIMIT,
             "maximum_consecutive_stall_samples": MAX_CONSECUTIVE_STALL_SAMPLES,
             "stall_timeout_seconds": STALL_TIMEOUT_SECONDS,
             "follower_calibrated_minimum": self.lower_limits.tolist(),
@@ -372,15 +489,63 @@ class SO101PhysicalGateway:
         except (KeyError, NotImplementedError):
             return None
 
+    def _runtime_current(
+        self, elapsed_seconds: float
+    ) -> tuple[dict[str, float] | None, bool]:
+        period = 1.0 / CURRENT_TELEMETRY_HZ
+        due = (
+            self.current_telemetry_elapsed is None
+            or elapsed_seconds - self.current_telemetry_elapsed >= period
+        )
+        if not due:
+            return self.current_telemetry, self.current_telemetry_stale
+        try:
+            self.current_telemetry = self._read_optional("Present_Current")
+            self.current_telemetry_elapsed = elapsed_seconds
+            self.current_telemetry_missed_samples = 0
+            self.current_telemetry_stale = False
+            return self.current_telemetry, False
+        except (ConnectionError, OSError):
+            # Current is diagnostic telemetry. Motion-critical position reads
+            # still fail closed, but one missing current packet must not end an
+            # otherwise healthy recording.
+            self.current_telemetry_elapsed = elapsed_seconds
+            self.current_telemetry_missed_samples += 1
+            self.current_telemetry_stale = True
+            return self.current_telemetry, True
+
+    def _motion_read(
+        self,
+        name: str,
+        operation: Callable[[], dict[str, float]],
+    ) -> np.ndarray:
+        last_error: ConnectionError | None = None
+        for attempt in range(BUS_READ_RETRIES + 1):
+            try:
+                values = action_vector(operation())
+                _finite(values, name)
+                return values
+            except ConnectionError as error:
+                last_error = error
+                if attempt >= BUS_READ_RETRIES:
+                    raise
+                self.bus_read_retries_total += 1
+                self.sleep(BUS_RETRY_DELAY_SECONDS)
+        assert last_error is not None
+        raise last_error
+
     def sample(self, elapsed_seconds: float) -> dict[str, Any]:
         if (
             not self.connected
             or not self.torque_enabled
             or self.leader_start is None
             or self.follower_start is None
+            or self.previous_command is None
+            or self.previous_actual is None
         ):
             raise PhysicalGatewayError("Physical gateway is not armed.")
-        leader = action_vector(self.leader.get_action())
+        retries_before = self.bus_read_retries_total
+        leader = self._motion_read("leader position", self.leader.get_action)
         requested, relative_delta = bounded_relative_target(
             leader,
             self.leader_start,
@@ -388,11 +553,18 @@ class SO101PhysicalGateway:
             lower_limits=self.lower_limits,
             upper_limits=self.upper_limits,
         )
-        sent = action_vector(self.follower.send_action(_position_dict(requested)))
-        actual = action_vector(self.follower.get_observation())
-        _finite(leader, "leader position")
+        control_dt = max(0.0, elapsed_seconds - self.previous_elapsed_seconds)
+        command, rate_limits, tracking_limits = slew_limited_target(
+            requested,
+            self.previous_command,
+            self.previous_actual,
+            control_dt,
+            lower_limits=self.lower_limits,
+            upper_limits=self.upper_limits,
+        )
+        sent = action_vector(self.follower.send_action(_position_dict(command)))
+        actual = self._motion_read("follower position", self.follower.get_observation)
         _finite(sent, "follower command")
-        _finite(actual, "follower position")
 
         requested_sent_delta = requested - sent
         requested_sent_delta[4] = shortest_delta_degrees(
@@ -404,23 +576,24 @@ class SO101PhysicalGateway:
         self.consecutive_rate_limited = (
             self.consecutive_rate_limited + 1 if rate_limited else 0
         )
-        previous = self.previous_actual if self.previous_actual is not None else actual
-        requested_actual_delta = requested - actual
-        requested_actual_delta[4] = shortest_delta_degrees(
-            float(requested[4]),
+        previous = self.previous_actual
+        sent_actual_delta = sent - actual
+        sent_actual_delta[4] = shortest_delta_degrees(
+            float(sent[4]),
             float(actual[4]),
         )
-        target_error_after = np.abs(requested_actual_delta)
-        far_from_target = target_error_after > np.asarray(
-            [BODY_STEP_LIMIT_DEG * 1.5] * 5 + [GRIPPER_STEP_LIMIT * 1.5],
+        stall_thresholds = np.asarray(
+            [BODY_STALL_ERROR_DEG] * 5 + [GRIPPER_STALL_ERROR],
             dtype=np.float64,
         )
-        stall_candidates = rate_limited_joints & far_from_target
+        stall_candidates = np.abs(sent_actual_delta) > stall_thresholds
+        stall_directions = np.sign(sent_actual_delta)
         stall_durations = np.zeros(6, dtype=np.float64)
         for index, candidate in enumerate(stall_candidates.tolist()):
             if not candidate:
                 self.stall_started_at[index] = np.nan
                 self.stall_anchor_actual[index] = actual[index]
+                self.stall_command_direction[index] = 0.0
                 self.consecutive_stall_samples[index] = 0
                 continue
             progress = abs(actual[index] - self.stall_anchor_actual[index])
@@ -431,9 +604,18 @@ class SO101PhysicalGateway:
                         float(self.stall_anchor_actual[index]),
                     )
                 )
-            if np.isnan(self.stall_started_at[index]) or progress >= MIN_PROGRESS_DEG:
+            direction_changed = (
+                self.stall_command_direction[index] != 0.0
+                and stall_directions[index] != self.stall_command_direction[index]
+            )
+            if (
+                np.isnan(self.stall_started_at[index])
+                or direction_changed
+                or progress >= MIN_PROGRESS_DEG
+            ):
                 self.stall_started_at[index] = elapsed_seconds
                 self.stall_anchor_actual[index] = actual[index]
+                self.stall_command_direction[index] = stall_directions[index]
                 self.consecutive_stall_samples[index] = 1
             else:
                 self.consecutive_stall_samples[index] += 1
@@ -457,12 +639,10 @@ class SO101PhysicalGateway:
             float(previous[4]),
         )
         velocity = actual_delta / dt
-        sent_actual_delta = sent - actual
-        sent_actual_delta[4] = shortest_delta_degrees(
-            float(sent[4]),
-            float(actual[4]),
-        )
+        current, current_stale = self._runtime_current(elapsed_seconds)
         self.previous_actual = actual.copy()
+        self.previous_command = sent.copy()
+        self.previous_elapsed_seconds = elapsed_seconds
         self.previous_time = now
         return {
             "elapsed_seconds": elapsed_seconds,
@@ -476,11 +656,21 @@ class SO101PhysicalGateway:
             "selected_piece_pose_world": None,
             "continuous_target_pose_world": None,
             "pose_inputs_available": False,
-            "available_motor_current_raw": self._read_optional("Present_Current"),
+            "available_motor_current_raw": current,
+            "current_telemetry_hz": CURRENT_TELEMETRY_HZ,
+            "current_telemetry_stale": current_stale,
+            "current_telemetry_missed_samples": self.current_telemetry_missed_samples,
+            "bus_read_retries_this_sample": (
+                self.bus_read_retries_total - retries_before
+            ),
+            "bus_read_retries_total": self.bus_read_retries_total,
             "physical_follower_torque_enabled": True,
             "safety_clamped": rate_limited,
             "rate_limited": rate_limited,
             "consecutive_rate_limited_samples": self.consecutive_rate_limited,
+            "command_rate_limits_per_second": rate_limits.tolist(),
+            "tracking_error_limits": tracking_limits.tolist(),
+            "control_dt_seconds": min(control_dt, MAX_CONTROL_INTERVAL_SECONDS),
             "stalled": stalled,
             "stalled_joints": [
                 joint

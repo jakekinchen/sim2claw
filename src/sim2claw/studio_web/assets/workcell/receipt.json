@@ -4,21 +4,21 @@
       "camera": "studio_overview",
       "height": 720,
       "path": "studio-overview.png",
-      "sha256": "88c4f018869ffa6cbc6b6b79f938a5ad4fca32b361d5bb9c68169b45c4afe116",
+      "sha256": "30841354efb765192ae9f697704f75285099c162744da483e8b9b84b08dfdb02",
       "width": 1280
     },
     {
       "camera": "studio_left",
       "height": 720,
       "path": "studio-left.png",
-      "sha256": "d2a80298f4f1b104493ba75773af6747d7a2d982ab2793ada7141e4a805b3c42",
+      "sha256": "1a0c1197dd0ec0eba8e6c957b62cc63de41a32bc9f0641fd9895f2cbfa16faca",
       "width": 960
     },
     {
       "camera": "studio_right",
       "height": 720,
       "path": "studio-right.png",
-      "sha256": "48291a1761a154288ee32da96c8f4f56af72c5f6b8739dcd631acb1f9179af19",
+      "sha256": "aebd50af4dc6745c1b832e9950dbbad5aebbc609561dfd5568acb73699c511e3",
       "width": 960
     }
   ],
@@ -30,7 +30,7 @@
   "settle_steps": 500,
   "sources": {
     "capture_config_sha256": "0e7f603222b03b30d9c9bb4295e0f709f9b89ce71522938038e06234fbe14229",
-    "scene_py_sha256": "b361c9a1c41daf1b928532a26b7a53612ffeb2960709d527b0005d997e8aa590",
+    "scene_py_sha256": "c6b13b905f5874f4180f3b2347bb158cea02a88c6d28624a9c563842b4837be2",
     "so101_model_sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
   },
   "training_input": false

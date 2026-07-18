@@ -11,15 +11,19 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
-from urllib.parse import unquote, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 from .paths import REPO_ROOT
 from .physical_gateway import PhysicalGatewayError
 from .studio_catalog import build_catalog, resolve_media_token
+from .state_trace import build_scene_manifest
 from .teleop_recording import RecorderConflict, RecorderError, TeleopRecordingManager
+from .scene import CURRENT_TASK_PIECE_LAYOUT
+from .paths import SO101_MODEL_PATH
 
 
 STATIC_ROOT = Path(__file__).with_name("studio_web")
+SCENE_ASSET_ROOT = SO101_MODEL_PATH.parent / "assets"
 RANGE_PATTERN = re.compile(r"bytes=(\d*)-(\d*)$")
 
 
@@ -34,6 +38,7 @@ class StudioServer(ThreadingHTTPServer):
         except ValueError:
             self.recorder_control_enabled = address[0] == "localhost"
         self.recorder = TeleopRecordingManager(repo_root=self.repo_root)
+        self.scene_manifests: dict[str, dict[str, Any]] = {}
         super().__init__(address, StudioRequestHandler)
 
     def server_close(self) -> None:
@@ -46,9 +51,24 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
-        path = unquote(urlsplit(self.path).path)
+        request = urlsplit(self.path)
+        path = unquote(request.path)
         if path == "/api/catalog":
             self._send_json(build_catalog(self.server.repo_root))
+            return
+        if path == "/api/scene":
+            layout = parse_qs(request.query).get("layout", ["standard"])[0]
+            if layout not in {"standard", CURRENT_TASK_PIECE_LAYOUT}:
+                self._send_json(
+                    {"ok": False, "error": "Unknown scene layout."},
+                    HTTPStatus.BAD_REQUEST,
+                )
+                return
+            if layout not in self.server.scene_manifests:
+                self.server.scene_manifests[layout] = build_scene_manifest(
+                    piece_layout=layout
+                )
+            self._send_json(self.server.scene_manifests[layout])
             return
         if path == "/api/recorder":
             if not self.server.recorder_control_enabled:
@@ -65,7 +85,9 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                     "ok": True,
                     "service": "sim2claw-studio",
                     "physical_authority": False,
-                    "physical_motion_endpoint": "operator_gated_relative_bounded",
+                    "physical_motion_endpoint": (
+                        "operator_gated_relative_time_slew_bounded_tracking"
+                    ),
                     "recorder_control": (
                         "loopback_only" if self.server.recorder_control_enabled else "disabled"
                     ),
@@ -74,6 +96,9 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
             return
         if path.startswith("/media/"):
             self._send_media(path.removeprefix("/media/"))
+            return
+        if path.startswith("/scene-assets/"):
+            self._send_scene_asset(path.removeprefix("/scene-assets/"))
             return
         self._send_static(path)
 
@@ -241,6 +266,24 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                     remaining -= len(block)
         except (BrokenPipeError, ConnectionResetError):
             return
+
+    def _send_scene_asset(self, name: str) -> None:
+        candidate = (SCENE_ASSET_ROOT / name).resolve()
+        if (
+            not candidate.is_relative_to(SCENE_ASSET_ROOT.resolve())
+            or candidate.suffix.lower() != ".stl"
+            or not candidate.is_file()
+        ):
+            self.send_error(HTTPStatus.NOT_FOUND)
+            return
+        payload = candidate.read_bytes()
+        self.send_response(HTTPStatus.OK)
+        self._security_headers()
+        self.send_header("Content-Type", "model/stl")
+        self.send_header("Cache-Control", "public, max-age=31536000, immutable")
+        self.send_header("Content-Length", str(len(payload)))
+        self.end_headers()
+        self.wfile.write(payload)
 
     def _security_headers(self) -> None:
         self.send_header("X-Content-Type-Options", "nosniff")

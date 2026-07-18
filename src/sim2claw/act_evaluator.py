@@ -19,6 +19,7 @@ from .act_model import load_act_checkpoint
 from .chess_task import ChessRookLiftEnv, load_task_contract, task_contract_sha256
 from .paths import DEFAULT_OUTPUT_ROOT
 from .render import write_rgb_png
+from .state_trace import EpisodeStateTraceRecorder
 from .studio_events import StudioActivity
 
 
@@ -118,6 +119,16 @@ def evaluate_act(
     raw_offset = task["held_out_split"]["piece_planar_offsets_m"][0]
     offset = (float(raw_offset[0]), float(raw_offset[1]))
     env = ChessRookLiftEnv(task, seed=seed, piece_offset_xy_m=offset)
+    trace = EpisodeStateTraceRecorder(
+        env.model,
+        proof_class="simulation_learned_policy_episode_state_trace",
+    )
+    trace.capture(env.data, phase="initial", force=True)
+    phase_boundaries: list[tuple[int, str]] = []
+    phase_cursor = 0
+    for phase_name, phase_count in task["episode"]["phase_control_steps"].items():
+        phase_cursor += int(phase_count)
+        phase_boundaries.append((phase_cursor, str(phase_name)))
     renderer = (
         mujoco.Renderer(env.model, height=640, width=960) if render_video else None
     )
@@ -175,6 +186,10 @@ def evaluate_act(
                 )
             action = queue.popleft()
             env.step(action)
+            phase = next(
+                name for boundary, name in phase_boundaries if control_step < boundary
+            )
+            trace.capture(env.data, phase=phase)
             actions.append(np.asarray(action, dtype=float).tolist())
             contacts.append(env.jaw_piece_contact())
             heights.append(float(env.piece_position()[2]))
@@ -189,6 +204,7 @@ def evaluate_act(
                 )
         if env.horizon % render_stride:
             snapshot()
+        trace.capture(env.data, phase=phase_boundaries[-1][1], force=True)
     finally:
         if renderer is not None:
             renderer.close()
@@ -206,6 +222,8 @@ def evaluate_act(
         encoding="utf-8",
     )
     action_trace_sha256 = _sha256_file(action_trace_path)
+    state_trace_path = output / "state_trace.json"
+    state_trace = trace.write(state_trace_path)
 
     initial_height = env.initial_piece_height_m
     maximum_rise = float(max(heights) - initial_height)
@@ -298,6 +316,8 @@ def evaluate_act(
         "artifacts": {
             "action_trace": str(action_trace_path),
             "action_trace_sha256": action_trace_sha256,
+            "state_trace": str(state_trace_path),
+            "state_trace_sha256": state_trace["sha256"],
             "video": video,
         },
         "runtime": {

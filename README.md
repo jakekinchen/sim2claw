@@ -74,13 +74,15 @@ uv run sim2claw render \
 
 The command writes a PNG, generated MJCF, and machine-readable JSON report
 under ignored `outputs/` storage. This is an in-process, offscreen simulator
-workflow; the repository does not currently expose an interactive MuJoCo
-viewer.
+workflow. Generated episodes can be inspected in the Studio's interactive 3D
+view; the browser mirrors recorded MuJoCo poses and does not become a second
+physics engine.
 
 ## Open the browser visualization studio
 
-Replay the repo's generated episodes, scrub through phase-aligned video or
-frames, browse task-grouped evidence, watch active training/evaluation
+Replay the repo's generated episodes as synchronized interactive 3D state
+traces, video, or phase frames; orbit and inspect the workcell; browse
+task-grouped evidence; watch active training/evaluation
 processes, and collect labeled ACT source demonstrations from the SO-101 leader
 to the MuJoCo follower:
 
@@ -92,7 +94,7 @@ Open `Record`, choose one of the eight brown pawn source squares and an
 unoccupied destination in rows 1–4, then Start/Stop and label the observed
 outcome. The board preview and current task simulator show the mirrored tan
 pawns at A8, B7, C8, D7, E8, F7, G8, and H7 as static far-side pieces. Start
-defaults to B1→B2 at 20 Hz, persists the operator's metadata choices, and
+defaults to B1→B2 at 30 Hz, persists the operator's metadata choices, and
 automatically performs the bounded follower Sync, torque-off verification, and
 paired-pose check;
 `uv run sim2claw teleop-preflight` remains available as a separate diagnostic.
@@ -225,7 +227,10 @@ The simulator also exposes a deterministic scripted grasp probe:
 uv run sim2claw grasp-probe
 ```
 
-It writes phase frames and a JSON receipt under ignored `outputs/` storage.
+It writes phase frames, a 30 Hz MuJoCo body-state trace, and a JSON receipt
+under ignored `outputs/` storage. The Studio opens the state trace in 3D by
+default while retaining the five recorded phase frames as a source-evidence
+toggle.
 This is simulation-only scripted-grasp evidence. It is not a frozen task
 evaluator, learned policy result, training-readiness result, or physical
 capability.

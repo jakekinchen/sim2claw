@@ -10,8 +10,9 @@ The studio is the browser-first visual cousin of a process dashboard. Its job
 is to make repo-native simulation evidence legible:
 
 - tasks group their replayable episodes;
-- episodes play as video or frame sequences and expose a scrubber, phase rail,
-  timecode, proof class, evaluator result, and selected metrics;
+- episodes play as interactive 3D MuJoCo state traces, video, or frame
+  sequences and expose a scrubber, phase rail, timecode, proof class,
+  evaluator result, and selected metrics;
 - the live rail observes training, evaluation, dataset export, and simulation
   processes;
 - the robot bench shows which embodiments are present in the MuJoCo scene;
@@ -20,8 +21,8 @@ is to make repo-native simulation evidence legible:
 Replay, Library, Robots, and process observation remain read-only. The Record
 view adds one narrow exception: when the server binds to loopback, it may open
 the identified physical leader with torque disabled and use its joint targets
-to control the MuJoCo follower. It has no command-launch, camera, network
-network gateway, or checkpoint-promotion endpoint. Physical follower mode uses
+to control the MuJoCo follower. It has no command-launch, network gateway, or
+checkpoint-promotion endpoint. Physical follower mode uses
 one reviewed local gateway with explicit operator acknowledgement, torque-off
 paired-pose preflight, countdown, relative-zero registration, excursion limits,
 and fail-closed shutdown. Start first commands the follower to hold its own
@@ -57,12 +58,27 @@ squares in rows 1–4. Tan pawns mirror them at A8, B7, C8, D7, E8, F7, G8, and
 H7. A generated full-board preview marks the selected pawn, destination, all
 remaining pawns, and move arrow. New recording, physical-command replay, and
 Studio inspection scenes use this 16-pawn layout; the standard 32-piece scene
-remains available only for prior frozen proof paths. B1→B2 at 20 Hz is the
+remains available only for prior frozen proof paths. B1→B2 at 30 Hz is the
 initial metadata default, and later choices persist in browser-local settings.
+Current pawn geometry follows the owner-supplied physical-set silhouette with a
+stepped foot, rounded/flared base, narrow waist, collar, and spherical head.
+The photo is a shape reference, not a metric scan, so board-relative scale and
+MuJoCo physics remain the reviewed scene values.
 Start owns bounded Sync, torque-off verification, and the countdown; the
 separate Sync and Check buttons are optional controls. Failed attempts move to
 ignored diagnostic storage and the recorder becomes ready again without a
 native browser dialog or reset step.
+
+Every admitted recording starts the exact-name `C922 Pro Stream Webcam` in a
+separate ffmpeg process before the selected follower opens. The camera uses the
+stable AVFoundation NV12 mode at 640x480 and a requested 30 fps; the observed
+frame rate and frame count are probed into the receipt rather than assumed.
+The mounted image is rotated 180 degrees in the capture process. Arm samples
+carry `overhead_video_time_seconds`, and the video metadata records the action
+start/stop offsets against the camera clock. Arm control and torque close first;
+the camera retains at least one second of post-roll, then shuts down gracefully
+so the MP4 remains seekable. A missing or prematurely stopped camera fails the
+attempt closed and retains the partial diagnostic bundle.
 
 Before recording, inspect the same preflight used by the UI:
 
@@ -72,9 +88,12 @@ uv run sim2claw teleop-preflight
 
 The default recording path is
 `datasets/act_source_recordings/<label>__<recording-id>/`. Each directory has a
-JSONL sample stream and checksummed receipt. These generated artifacts are
-ignored by Git and explicitly remain raw source, not training data, until M7
-deterministic replay and the separately owned evaluator admit derived rows.
+JSONL sample stream, checksummed receipt, `overhead_c922.mp4`, camera timing
+metadata, and an ffmpeg log. Failed attempts retain the same available camera
+evidence under `runs/teleop_recordings/failed_attempts/`. These generated
+artifacts are ignored by Git. The overhead video is diagnostic-only, and the
+raw episode remains non-training data until M7 deterministic replay and the
+separately owned evaluator admit derived rows.
 
 ## Current adapters
 
@@ -85,15 +104,18 @@ The catalog is rebuilt from current local truth every two seconds:
 | Task shelf | `configs/tasks/*.json` | Frozen task identity and proof class |
 | GR00T episode contact sheet | `datasets/*/meta/*.json*`, videos, and `dataset_receipt.json` | Synthetic simulation demonstrations and evaluator verdicts |
 | ACT replay | `outputs/**/evaluation_receipt.json`, MP4, or rendered frames | Separately evaluated learned-policy simulation episode |
-| Scripted probe | `outputs/**/grasp_probe_receipt.json` and phase frames | Scripted simulation probe, not learned-policy evidence |
+| Scripted probe | `outputs/**/grasp_probe_receipt.json`, `state_trace.json`, and phase frames | Scripted simulation probe, not learned-policy evidence |
+| MuJoCo scene manifest | `/api/scene?layout=standard` or the sparse task layout, plus allowlisted SO-101 STL assets | Browser geometry and initial pose contract; MuJoCo owns physics |
+| Episode state trace | `state_trace.json` from grasp, ACT evaluation, GR00T export, or simulated teleoperation | World body poses and contacts sampled from `MjData`; browser interpolation is visual only |
 | Live process rail | `runs/studio/processes/*.json` plus a bounded local `ps` scan | Observability only; it never controls the process |
 | Robot bench | Versioned `studio_*` MuJoCo cameras plus the current scene contract | Simulated embodiment presence and alignment, not connected hardware |
 | ACT source recorder | Expected SO-101 leader bus, frozen ACT state/goal contract, MuJoCo follower | Raw simulated teleoperation source; never learned-policy or physical-task proof |
 | Physical gateway | Expected leader/follower buses and calibration hashes | Operator-gated raw physical trace; unavailable pose fields keep it out of ACT training |
+| Overhead diagnostic video | Exact-name Logitech C922 via isolated AVFoundation/ffmpeg process | Time-correlated visual diagnosis with one-second post-roll; never evaluator or training admission |
 | Simulator trace replay | Saved physical follower commands and actual state | Joint-response comparison only; not learned-policy or object/contact validation |
 
-Generated artifacts stay ignored by Git. The server only serves approved image
-and video types below `outputs/`, `datasets/`, and `runs/`; encoded media paths
+Generated artifacts stay ignored by Git. The server only serves approved image,
+video, and state-trace JSON types below `outputs/`, `datasets/`, and `runs/`; encoded media paths
 cannot escape those roots. MP4 byte ranges are supported so native browser
 scrubbing does not require loading a whole video first.
 
@@ -137,9 +159,12 @@ and real phase durations provides visual indexing. It is not presented as a
 measured end-effector trajectory.
 
 Thumbnail selection prefers the middle of grasp, lift, or transfer phases rather
-than an arbitrary early frame. The replay stage identifies the recorded source
-camera so task evidence cannot be confused with the inspection-only poster
-cameras.
+than an arbitrary early frame. The replay stage identifies either the recorded
+source camera or `MUJOCO / FREE ORBIT`. Episodes with a state trace open in 3D
+by default and retain a Recorded toggle when source video or frames exist. Drag
+or touch to orbit, pan with the secondary pointer gesture, scroll to zoom, click
+geometry to identify its body, and use Reset view to return to the versioned
+overview camera.
 
 The semantic filmstrip is the signature interaction: visible phase names,
 ticks, preview, and a synchronized orange playhead turn the episode's real
@@ -171,9 +196,22 @@ The Studio server itself still uses Python 3.12 standard-library HTTP, JSON,
 subprocess, and browser-launch modules. The recorder adds the reviewed public
 `lerobot[feetech]==0.6.0` dependency for SO-101 bus/calibration access and pins
 NumPy to `2.2.6` for its declared compatibility range. The client uses native
-HTML, CSS, JavaScript, `<video>`, and range requests. This keeps the studio
-inside the existing explicit Python runtime and avoids a second Node, Electron,
-or Tauri build chain at this boundary.
+HTML, CSS, JavaScript, `<video>`, and range requests. Three.js is vendored as
+browser modules, so no Node, Electron, Tauri, CDN, or runtime package install is
+added.
+
+The 3D adapter uses `three@0.185.1` under MIT for WebGL rendering,
+`OrbitControls`, and `STLLoader`. Exact source, adopted files, local import
+specifier patch, license, and reason are recorded in
+`studio_web/vendor/three/SOURCE.md`. The adapter loads the already-reviewed
+MuJoCo Menagerie SO-101 STL assets; it does not introduce a second robot model.
+
+Overhead diagnostics adopt the installed upstream FFmpeg 7.1.1 command-line
+runtime. AVFoundation opens the C922 by exact device name, and
+`h264_videotoolbox` keeps encoding outside the serial control thread and on the
+Mac video encoder. `ffprobe` records actual dimensions, frame rate, frame count,
+duration, and size after graceful finalization. This dependency is used only
+for ignored diagnostic artifacts and creates no camera or motion authority.
 
 Two open-source webfont assets are vendored for deterministic local typography:
 
@@ -185,10 +223,22 @@ Two open-source webfont assets are vendored for deterministic local typography:
 Only the Latin 400/600 WOFF2 files are shipped. Their license texts live beside
 the assets under `studio_web/assets/fonts/licenses/`.
 
-## Known boundary
+## 3D replay contract and boundary
 
-The studio replays rendered camera evidence; it is not a second physics engine
-and does not reconstruct authoritative 3D state in the browser. MuJoCo remains
-the simulation source of truth. A future state-stream adapter can add a
-Three.js inspection camera without changing evaluator ownership or treating
-browser rendering as collision evidence.
+`sim2claw.mujoco_scene_manifest.v1` maps visible MuJoCo geoms (groups 0 and 2),
+body identities, materials, primitive dimensions, compile-time STL transforms,
+and a suggested inspection camera. `sim2claw.mujoco_body_state_trace.v1`
+records body `xpos`/`xquat`, phase, and bounded contact markers at episode
+cadence. The viewer interpolates adjacent recorded poses for smooth display and
+never steps dynamics, computes contacts, evaluates success, or sends commands.
+
+The scripted grasp probe and ACT evaluator write one trace beside their
+receipts. GR00T export writes one trace per dataset episode under
+`state_traces/`. The simulated teleoperation follower writes one beside its raw
+source samples. Older artifacts without traces continue to replay as video or
+frames.
+
+MuJoCo remains the simulation and collision source of truth. Three.js is an
+inspection renderer only; its visuals and interpolated frames cannot promote a
+dataset, prove a learned policy, establish physical readiness, or authorize
+robot motion.

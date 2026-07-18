@@ -31,6 +31,7 @@ from .grasp import (
 )
 from .paths import DEFAULT_GROOT_CHESS_TASK_CONFIG
 from .scene import ROBOT_JOINTS, board_square_center
+from .state_trace import EpisodeStateTraceRecorder
 
 
 def load_groot_task_contract(
@@ -170,6 +171,7 @@ class GrootExpertEpisode:
     rewards: np.ndarray
     phases: list[str]
     frames: list[np.ndarray]
+    state_trace: dict[str, Any]
     verdict: dict[str, Any]
     maximum_ik_residual_m: float
 
@@ -355,6 +357,12 @@ def collect_groot_expert_episode(
         piece_offset_xy_m=offset,
     )
     _apply_sparse_board_curriculum(env, contract)
+    trace = EpisodeStateTraceRecorder(
+        env.model,
+        fps=int(contract["episode"]["sample_fps"]),
+        proof_class="simulation_synthetic_vla_demonstration_state_trace",
+    )
+    trace.capture(env.data, phase="initial", force=True)
     target = np.asarray(board_square_center(str(case["target_square"])), dtype=np.float64)
     piece_start = env.piece_position()
     initial_height = float(piece_start[2])
@@ -425,6 +433,7 @@ def collect_groot_expert_episode(
             if physics_step % sample_stride == 0:
                 record(action, name)
             env.step(action)
+            trace.capture(env.data, phase=name)
             maximum_height = max(maximum_height, float(env.piece_position()[2]))
             physics_step += 1
 
@@ -500,6 +509,7 @@ def collect_groot_expert_episode(
         initial_other_positions=initial_other_positions,
         action_count=physics_step,
     )
+    trace.capture(env.data, phase="settle", force=True)
     state_array = np.asarray(states, dtype=np.float32)
     action_array = np.asarray(actions, dtype=np.float32)
     if state_array.shape != action_array.shape or state_array.shape[1] != len(ROBOT_JOINTS):
@@ -518,6 +528,7 @@ def collect_groot_expert_episode(
         rewards=np.asarray(rewards, dtype=np.float32),
         phases=phases,
         frames=frames,
+        state_trace=trace.payload(),
         verdict=verdict,
         maximum_ik_residual_m=max(ik_residuals),
     )
@@ -625,7 +636,8 @@ def export_groot_dataset(
     data_dir = output / "data" / "chunk-000"
     video_key = str(contract["observation"]["video_original_key"])
     video_dir = output / "videos" / "chunk-000" / video_key
-    for directory in (meta_dir, data_dir, video_dir):
+    state_trace_dir = output / "state_traces"
+    for directory in (meta_dir, data_dir, video_dir, state_trace_dir):
         directory.mkdir(parents=True, exist_ok=True)
 
     episode_rows = contract[f"{split}_episodes"]
@@ -692,8 +704,13 @@ def export_groot_dataset(
         )
         parquet_path = data_dir / f"episode_{dataset_episode_index:06d}.parquet"
         video_path = video_dir / f"episode_{dataset_episode_index:06d}.mp4"
+        state_trace_path = state_trace_dir / f"episode_{dataset_episode_index:06d}.json"
         pq.write_table(table, parquet_path, compression="zstd")
         _write_video(video_path, episode.frames, fps)
+        state_trace_path.write_text(
+            json.dumps(episode.state_trace, separators=(",", ":"), sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
         episodes_meta.append(
             {
                 "episode_index": dataset_episode_index,
@@ -709,6 +726,8 @@ def export_groot_dataset(
                 "piece_offset_xy_m": list(episode.piece_offset_xy_m),
                 "verdict": episode.verdict,
                 "maximum_ik_residual_m": episode.maximum_ik_residual_m,
+                "state_trace_path": str(state_trace_path.relative_to(output)),
+                "state_trace_sha256": _sha256_file(state_trace_path),
             }
         )
         all_states.append(episode.states)
