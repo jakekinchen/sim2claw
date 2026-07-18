@@ -75,10 +75,13 @@ This section is updated only at stable evidence boundaries.
 | Official NVIDIA loader | PASS | 48 episodes; episode 0 has 363 rows and the expected language, state, action, and `video.front` columns |
 | Held-out diagnostic export | PASS | 24 zero-training-row episodes, 9,444 frames, 54 files; receipt SHA-256 `f849460fe89bee251355ea105a4e1553076da70e5105fb51186a8ba641cd816b` |
 | Held-out NVIDIA loader | PASS | 24 episodes; 363-row non-contact and 485-row recovery trajectories; expected modalities |
-| Clean-base candidate A | RUNNING | PID 16012; checkpoint-4000 complete and training resumed; finite loss history and no exit marker |
+| Clean-base candidate A | PASS | 5,000 steps; exit 0; five fixed checkpoints; 1,764.98 seconds; no non-finite metrics |
 | Recovery policy runner | PREFLIGHT PASS | compiled locally/remotely and imported in the pinned GR00T environment; fixed action horizon 16 |
-| Evaluator checkpoint sweep | NOT RUN | checkpoints 1000--4000 available; waits for training exit and checkpoint-5000 |
-| Paid worker teardown | NOT DUE | worker remains bounded to the active verified run |
+| Recovery-v2 checkpoint sweep | TERMINAL NEGATIVE | 0/120 held-out consequences; 0/24 at every fixed checkpoint |
+| Frozen-v1 regression sweep | TERMINAL NEGATIVE | 0/20 unchanged v1 held-out consequences; 0/4 at every fixed checkpoint |
+| Candidate B | NOT RUN | dominant failures are full-task placement and board safety, not an isolated recovery cluster |
+| Artifact preservation | IN PROGRESS | immutable 12 GiB archive SHA-256 `1cbf6ddbcec721c3fb319f5a132dfb29a345ed13c87e5c9876e6bdcaebcb69a5` transferring locally |
+| Paid worker teardown | PENDING | waits only for verified local archive copy |
 
 Candidate A started at approximately 04:10 America/Chicago from the pinned
 clean base and exact validated dataset. It saves every 1,000 steps, retains at
@@ -86,16 +89,44 @@ most five checkpoints, and is guarded by a 21,600-second hard timeout. The
 initial live check observed 77 percent GPU utilization at 44 C. The run remains
 diagnostic until a separately owned evaluator accepts a saved checkpoint.
 
-Checkpoint boundary metrics remained finite through step 4,000: loss was
+Checkpoint boundary metrics remained finite through step 5,000: loss was
 0.8382 at step 1,000, 0.7580 at step 2,000, 0.6113 at step 3,000, and 0.5534 at
-step 4,000. These values establish optimizer health only and have no promotion
-authority.
+step 4,000. The final step-5,000 loss was 0.5727 with gradient norm 0.7630.
+These values establish optimizer health only and have no promotion authority.
 
 The learned-policy recovery runner uses the frozen 16-action horizon. In
 contact-recovery cases, the declared fault occurs after the frozen stand-off
 and advance durations at physics step 800, which is both a sample boundary and
 a new action-chunk query boundary. Fault injection remains separate from robot
 assistance, and every robot action after the fault remains model-owned.
+
+## Learned-policy result
+
+Every checkpoint was a terminal negative under both the recovery-v2 evaluator
+and the unchanged v1 evaluator. Across the 120 recovery-v2 receipts, all 120
+missed final XY, 119 missed final upright, 96 exceeded the 6 mm other-piece
+displacement gate, 78 missed the 40 mm lift gate, and 69 contacted a wrong
+piece. Of the 30 declared-slip episodes, only one checkpoint-3000 episode
+recorded post-fault target contact; it still failed the task consequence.
+
+| Step | v2 pass | v1 pass | Lift gate pass | Recovery-contact pass | Worst other-piece displacement | Recovery open-loop MAE |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1,000 | 0/24 | 0/4 | 7/24 | 0/6 | 81.037 m | 0.16542 |
+| 2,000 | 0/24 | 0/4 | 5/24 | 0/6 | 144.116 m | 0.15388 |
+| 3,000 | 0/24 | 0/4 | 11/24 | 1/6 | 1.780 m | 0.13520 |
+| 4,000 | 0/24 | 0/4 | 9/24 | 0/6 | 1.262 m | 0.13015 |
+| 5,000 | 0/24 | 0/4 | 10/24 | 0/6 | 1.623 m | 0.12796 |
+
+Checkpoint-4000 is retained only as the least-unsafe terminal-negative
+artifact: all checkpoints tied at zero v2 and v1 passes, and checkpoint-4000
+had the smallest worst-case other-piece displacement. It is not promoted. The
+falling open-loop error did not predict closed-loop success.
+
+The result was sent to the separate placement lane with the explicit warning
+that this recovery checkpoint-4000 is not its nominal checkpoint-4000. The
+shared implication is to continue seeded failure localization around
+transit/lower/release and safety consequences; recovery-mixture training alone
+did not rescue execution geometry.
 
 An attempted dataset replay on the Brev/Linux MuJoCo stack failed episode 0
 while lowering to the piece, despite the same consequence passing the frozen
