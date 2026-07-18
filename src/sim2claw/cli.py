@@ -60,6 +60,17 @@ def build_parser() -> argparse.ArgumentParser:
     grasp.add_argument("--arm", choices=("left", "right"), default="left")
     grasp.add_argument("--piece", type=str, default=None)
     grasp.add_argument("--no-frames", action="store_true")
+
+    subparsers.add_parser(
+        "act-train",
+        help="train the frozen chess-rook ACT policy from fresh synthetic episodes",
+    )
+    act_eval = subparsers.add_parser(
+        "act-eval",
+        help="run the separately owned CPU/fp32 ACT chess-rook episode",
+    )
+    act_eval.add_argument("--checkpoint", type=Path, required=True)
+    act_eval.add_argument("--no-video", action="store_true")
     return parser
 
 
@@ -105,6 +116,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         print(json.dumps(asdict(report), indent=2, sort_keys=True))
         return 0 if report.success else 1
+    if args.command == "act-train":
+        from .act_train import train_act
+
+        print(json.dumps(train_act(), indent=2, sort_keys=True))
+        return 0
+    if args.command == "act-eval":
+        from .act_evaluator import evaluate_act
+
+        report = evaluate_act(
+            args.checkpoint,
+            render_video=not args.no_video,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["success"] else 1
     raise AssertionError(f"unhandled command: {args.command}")
 
 

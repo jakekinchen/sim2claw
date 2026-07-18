@@ -14,7 +14,11 @@ the runtime foundation and the photo-aligned portion of Phase 2:
   compiles, settles, and renders on Mac.
 - The correction photo's major workcell elements are represented, with every
   non-RoomPlan transform labeled as a visual estimate.
-- Phase 3 evaluator behavior, seeds, and held-out scenes remain unimplemented.
+- Phase 3 now has one frozen chess-rook task, disjoint training/evaluation
+  seeds, and a separately invoked CPU/fp32 consequence evaluator.
+- Phase 4 has one narrow state-based ACT imitation-learning slice and a passed
+  held-out episode. Dataset breadth, a state-RL baseline, multi-pose
+  robustness, and promotion remain open.
 
 ## Phase 0 — Documentation boundary
 
@@ -82,8 +86,13 @@ reference document can skip this phase.
 3. Photo-aligned robot slice: pinned public SO-101 model, two independently
    controlled instances, edge mounts, fiducial/background props, portrait
    camera, and compile/step/render contract tests.
+4. First task/evaluator slice: a frozen black-rook lift, disjoint training and
+   evaluation seeds, CPU/fp32 consequence gates, and immutable ignored receipts.
+5. First learning slice: fresh state-based ACT training on eight synthetic
+   episodes and one evaluator-accepted held-out simulation episode.
 
 ## Next reviewed slice
 
-Freeze the first chess-manipulation task, held-out scenes and seeds, then add a
-separately owned CPU/fp32 evaluator before any training code.
+Broaden the held-out pose matrix and add evaluator-owned repeated rollouts
+before considering the current single-seed ACT pass for any promotion. Keep
+calibration, gateway, and physical authority closed until their own phases.

@@ -19,11 +19,17 @@ repo-native implementation and evidence for every capability.
   mounts and poses remain distinct from measured geometry.
 - The scan can render as a non-colliding reference overlay. Physical authority
   remains closed.
+- A frozen `chess_rook_lift_v1` task now separates eight training seeds from a
+  zero-training-row held-out seed and binds a separately invoked CPU/fp32
+  evaluator before policy selection.
+- A fresh 957,350-parameter state-based ACT policy trained locally on MPS and
+  passed one held-out simulation episode: 94.88 mm maximum rook lift, 94.01 mm
+  final rise, 1,083 consecutive jaw-contact steps, and no assistance.
 
 ## Immediate mission
 
-1. Freeze the first chess manipulation task, training seeds, held-out scenes,
-   and separately owned CPU/fp32 evaluator before adding training.
+1. Expand evaluator-owned held-out pose coverage before making a robustness or
+   promotion claim; the current pass is one fixed simulation task and seed.
 2. Replace photo-estimated transforms with calibration evidence when owner
    measurements become available.
 3. Add learning, gateway, and eventual hardware paths only as separately
@@ -47,6 +53,9 @@ repo-native implementation and evidence for every capability.
 - PARTIAL: fresh tests and a run log exist; the work is not committed yet, so
   the run log records the working tree rather than a final commit identity.
 - PASS: no physical hardware path is opened.
+- PASS: the first task, split, ACT recipe, and CPU/fp32 evaluator are frozen in
+  repo-native code/configuration; one model-owned held-out episode passed.
 
-The robot geometry and composition slice is complete. This does not claim a
-task-success, evaluator, calibration, or physical workcell gate.
+The robot geometry/composition slice and one narrow ACT simulation task are
+complete. This does not claim broad policy robustness, calibration, gateway,
+sim-to-real transfer, or a physical workcell gate.
