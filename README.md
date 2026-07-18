@@ -25,6 +25,7 @@ they grant no authority or proof that anything exists or works here.
 6. [Polycam chess-table scene](./docs/POLYCAM_CHESS_TABLE_SCENE.md)
 7. [First ACT chess-rook run](./docs/run-logs/2026-07-17-act-chess-rook-lift.md)
 8. [GR00T N1.7 overnight campaign](./docs/run-logs/2026-07-18-groot-n17-chess-overnight.md)
+9. [NVIDIA machine 2 recovery goal](./docs/goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md)
 
 ## Install and verify
 
@@ -164,6 +165,18 @@ rejected after it moved the target but swept a queen off the board.
 The local exporter and scripted evaluator do not prove that GR00T loads,
 trains, serves, or succeeds. Those are separate NVIDIA/Brev gates in
 [`09-autonomous-milestones.md`](./docs/autonomous-workflow/09-autonomous-milestones.md).
+
+### NVIDIA research assignments
+
+- **Machine 1 — nominal baseline:** owns the frozen v1 sparse-board dataset,
+  5,000-step checkpoint sweep, and nominal held-out consequence evaluation.
+- **Machine 2 — recovery and robustness challenger:** owns a new versioned
+  curriculum for pose error, nearby distractors, and grasp recovery. Its full
+  unattended overnight command is
+  [`NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md`](./docs/goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md).
+
+The two machines must use separate checkouts and branches. They compare only
+through frozen evaluator receipts; neither training process may promote itself.
 
 The default portrait render contains the measured white table, a configurable
 355.6 mm playing board with a 406.4 mm outer frame, 32 independently simulated

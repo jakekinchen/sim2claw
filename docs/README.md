@@ -9,6 +9,8 @@
   table, photo-aligned two-arm scene, source record, and proof interpretation.
 - [`VISUALIZATION_STUDIO.md`](./VISUALIZATION_STUDIO.md) — browser replay,
   task/episode contact sheet, live process rail, and authority boundary.
+- [`goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md`](./goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md)
+  — unattended second-machine GR00T recovery and robustness research lane.
 - [`decisions/0001-runtime-and-scene-foundation.md`](./decisions/0001-runtime-and-scene-foundation.md)
   — adopted runtime dependencies, sources, and host support matrix.
 - [`decisions/0002-state-act-chess-rook-lift.md`](./decisions/0002-state-act-chess-rook-lift.md)
