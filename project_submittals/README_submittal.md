@@ -29,3 +29,11 @@
   - Jeff Pape, Software Engineer, jeff.pape@gmail.com
   - Mahata Abhinav, Product Manager, Mahata.abhinav@gmail.com
 - [ ]  **Short write-up (150–300 words):** problem → who it helps → solution → impact
+
+**Problem.** Teaching a robot arm a manipulation task like picking up a chess piece usually means one of two bad options: hand-scripting brittle motions that break the moment anything shifts, or hand-teleoperating thousands of individual task instances to train a policy. Both scale badly, and most robot-learning pipelines blur the line between "we demonstrated this" and "the policy actually generalized," so results are hard to trust.
+
+**Who it helps.** Robotics researchers, sim-to-real engineers, and anyone building learned manipulation who needs reproducible, honestly-scoped evidence rather than impressive-looking demos.
+
+**Solution.** sim2claw is a clean-room simulation-to-robot stack. A photo-aligned MuJoCo workcell (measured table, chessboard, 32 dynamic pieces, two articulated SO-101 arms) runs entirely in-process on Apple Silicon. Its governing idea: teleoperate only grasp styles and corrections, then generate task instances combinatorially in simulation via object- and target-relative trajectory retargeting. A frozen ACT (Action Chunking Transformer) policy learns the contact-sensitive skills; a separate CPU/fp32 evaluator on a held-out seed decides pass/fail — a policy can never promote itself. A read-only visualization studio replays every episode with phase-aligned video and receipts.
+
+**Impact.** It reaches a verifiable milestone — a fresh 957K-parameter ACT policy trained locally and lifted a held-out rook 94.88 mm — while rigorously refusing to overclaim: no gateway, no physical-robot authority, no "it generalized" without frozen held-out proof. The payoff is a trustworthy, reproducible foundation for learned manipulation, where each capability is backed by fresh code and its own evidence.
