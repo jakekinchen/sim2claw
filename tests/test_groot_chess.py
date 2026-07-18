@@ -15,7 +15,11 @@ from sim2claw.groot_consensus import (
     proposal_seed,
     query_seed,
 )
-from sim2claw.groot_execution import physics_targets_from_waypoints, sample_phase
+from sim2claw.groot_execution import (
+    aggregate_temporal_action,
+    physics_targets_from_waypoints,
+    sample_phase,
+)
 from sim2claw.scene import board_square_center, scene_geometry
 from sim2claw.capture import load_capture_config
 from sim2claw.paths import DEFAULT_CAPTURE_CONFIG
@@ -184,6 +188,67 @@ class GrootExecutionAdapterTest(unittest.TestCase):
         )
         self.assertFalse(info["interpolated_to_next_waypoint"])
         np.testing.assert_array_equal(targets, 2.0)
+
+    def test_temporal_latest_matches_receding_horizon_replacement(self) -> None:
+        old = np.arange(16 * 2, dtype=np.float32).reshape(16, 2)
+        new = np.full((16, 2), 100.0, dtype=np.float32)
+        before_query, _ = aggregate_temporal_action(
+            [(0, old)], sample_step=7, method="latest"
+        )
+        after_query, info = aggregate_temporal_action(
+            [(0, old), (8, new)], sample_step=8, method="latest"
+        )
+        np.testing.assert_array_equal(before_query, old[7])
+        np.testing.assert_array_equal(after_query, new[0])
+        self.assertEqual(info["source_query_steps"], [0, 8])
+
+    def test_temporal_mean_and_median_use_only_covering_chunks(self) -> None:
+        first = np.zeros((16, 2), dtype=np.float32)
+        second = np.full((16, 2), 2.0, dtype=np.float32)
+        third = np.full((16, 2), 10.0, dtype=np.float32)
+        chunks = [(0, first), (4, second), (8, third)]
+        mean, mean_info = aggregate_temporal_action(
+            chunks, sample_step=8, method="mean"
+        )
+        median, median_info = aggregate_temporal_action(
+            chunks, sample_step=8, method="median"
+        )
+        np.testing.assert_array_equal(mean, 4.0)
+        np.testing.assert_array_equal(median, 2.0)
+        self.assertEqual(mean_info["candidate_count"], 3)
+        self.assertEqual(median_info["source_query_steps"], [0, 4, 8])
+
+    def test_temporal_exponential_favors_newer_predictions(self) -> None:
+        chunks = [
+            (0, np.zeros((16, 1), dtype=np.float32)),
+            (8, np.full((16, 1), 3.0, dtype=np.float32)),
+        ]
+        action, info = aggregate_temporal_action(
+            chunks,
+            sample_step=8,
+            method="exponential",
+            exponential_decay=0.5,
+        )
+        np.testing.assert_allclose(action, 2.0)
+        self.assertEqual(
+            info["normalized_weights_oldest_to_newest"],
+            [1.0 / 3.0, 2.0 / 3.0],
+        )
+
+    def test_temporal_aggregation_rejects_future_or_invalid_inputs(self) -> None:
+        chunk = np.zeros((4, 2), dtype=np.float32)
+        with self.assertRaises(ValueError):
+            aggregate_temporal_action(
+                [(4, chunk)], sample_step=3, method="latest"
+            )
+        with self.assertRaises(ValueError):
+            aggregate_temporal_action(
+                [(0, chunk), (0, chunk)], sample_step=0, method="mean"
+            )
+        with self.assertRaises(ValueError):
+            aggregate_temporal_action(
+                [(0, chunk)], sample_step=0, method="unknown"
+            )
 
 
 if __name__ == "__main__":

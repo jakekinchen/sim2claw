@@ -27,6 +27,8 @@ from sim2claw.groot_chess import (
 )
 from sim2claw.groot_execution import (
     ACTION_EXECUTION_ADAPTERS,
+    TEMPORAL_ACTION_AGGREGATIONS,
+    aggregate_temporal_action,
     physics_targets_from_waypoints,
 )
 from sim2claw.scene import board_square_center
@@ -87,6 +89,18 @@ def main() -> None:
             "Defaults to the model action horizon."
         ),
     )
+    parser.add_argument(
+        "--temporal-action-aggregation",
+        choices=sorted(TEMPORAL_ACTION_AGGREGATIONS),
+        default="latest",
+        help="Causally aggregate overlapping model chunks for each sample step.",
+    )
+    parser.add_argument(
+        "--temporal-decay",
+        type=float,
+        default=0.5,
+        help="Newest-to-older decay used by exponential temporal aggregation.",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.proposal_count < 1:
@@ -99,6 +113,8 @@ def main() -> None:
         1 <= args.num_inference_timesteps <= 16
     ):
         parser.error("--num-inference-timesteps must be between 1 and 16")
+    if not 0.0 < args.temporal_decay <= 1.0:
+        parser.error("--temporal-decay must be in (0, 1]")
     if args.policy_server_mode == "official_unseeded" and (
         args.proposal_count != 1
         or args.action_aggregation != "medoid"
@@ -197,9 +213,11 @@ def main() -> None:
     chunks_requested = 0
     physics_actions = 0
     action_chunk = np.empty((0, 6), dtype=np.float32)
+    action_chunk_history: list[tuple[int, np.ndarray]] = []
     policy_queries: list[dict[str, object]] = []
     physics_control_digest = hashlib.sha256()
     interpolated_sample_intervals = 0
+    temporal_candidate_counts: list[int] = []
 
     try:
         for sample_step in range(sample_count):
@@ -261,15 +279,22 @@ def main() -> None:
                     )
                 if not np.isfinite(action_chunk).all():
                     raise RuntimeError("policy returned a non-finite action")
+                action_chunk_history.append((sample_step, action_chunk.copy()))
                 chunks_requested += 1
 
-            chunk_index = sample_step % execution_horizon
-            action = action_chunk[chunk_index].copy()
+            action, temporal_info = aggregate_temporal_action(
+                action_chunk_history,
+                sample_step=sample_step,
+                method=args.temporal_action_aggregation,
+                exponential_decay=args.temporal_decay,
+            )
+            temporal_candidate_counts.append(int(temporal_info["candidate_count"]))
             actions.append(action)
-            next_waypoint = (
-                action_chunk[chunk_index + 1]
-                if chunk_index + 1 < action_chunk.shape[0]
-                else None
+            next_waypoint, _ = aggregate_temporal_action(
+                action_chunk_history,
+                sample_step=sample_step + 1,
+                method=args.temporal_action_aggregation,
+                exponential_decay=args.temporal_decay,
             )
             physics_targets, adapter_info = physics_targets_from_waypoints(
                 contract,
@@ -344,6 +369,19 @@ def main() -> None:
         },
         "model_action_horizon": action_horizon,
         "execution_horizon": execution_horizon,
+        "temporal_action_aggregation": {
+            "schema_version": "sim2claw.groot_n17_temporal_action_aggregation.v1",
+            "method": args.temporal_action_aggregation,
+            "exponential_decay": args.temporal_decay,
+            "maximum_overlapping_predictions": max(temporal_candidate_counts),
+            "candidate_count_histogram": {
+                str(count): temporal_candidate_counts.count(count)
+                for count in sorted(set(temporal_candidate_counts))
+            },
+            "model_chunks_only": True,
+            "causal": True,
+            "assistance_frames": 0,
+        },
         "render_cadence": {
             "method": args.render_cadence,
             "rendered_frame_count": len(frames),

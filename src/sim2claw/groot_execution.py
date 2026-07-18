@@ -2,12 +2,87 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any
 
 import numpy as np
 
 
 ACTION_EXECUTION_ADAPTERS = frozenset({"sample_hold", "linear_same_phase"})
+TEMPORAL_ACTION_AGGREGATIONS = frozenset(
+    {"latest", "mean", "median", "exponential"}
+)
+
+
+def aggregate_temporal_action(
+    chunks: Sequence[tuple[int, np.ndarray]],
+    *,
+    sample_step: int,
+    method: str,
+    exponential_decay: float = 0.5,
+) -> tuple[np.ndarray, dict[str, object]]:
+    """Aggregate causal model predictions for one absolute sample step."""
+
+    if sample_step < 0:
+        raise ValueError("sample_step must be non-negative")
+    if method not in TEMPORAL_ACTION_AGGREGATIONS:
+        raise ValueError(f"unsupported temporal action aggregation: {method}")
+    if not 0.0 < exponential_decay <= 1.0:
+        raise ValueError("exponential_decay must be in (0, 1]")
+    if not chunks:
+        raise ValueError("at least one model action chunk is required")
+
+    candidates: list[np.ndarray] = []
+    source_query_steps: list[int] = []
+    previous_start = -1
+    action_width: int | None = None
+    for start_step, chunk in chunks:
+        if start_step < 0 or start_step <= previous_start:
+            raise ValueError("chunk start steps must be non-negative and increasing")
+        previous_start = start_step
+        array = np.asarray(chunk, dtype=np.float32)
+        if array.ndim != 2 or not array.shape[0] or not array.shape[1]:
+            raise ValueError("each action chunk must be a non-empty matrix")
+        if not np.isfinite(array).all():
+            raise ValueError("action chunks must contain only finite values")
+        if action_width is None:
+            action_width = int(array.shape[1])
+        elif array.shape[1] != action_width:
+            raise ValueError("action chunks must share one action width")
+        relative_step = sample_step - start_step
+        if 0 <= relative_step < array.shape[0]:
+            candidates.append(array[relative_step])
+            source_query_steps.append(start_step)
+
+    if not candidates:
+        raise ValueError(f"no model chunk predicts sample step {sample_step}")
+    stacked = np.stack(candidates).astype(np.float32, copy=False)
+    normalized_weights: list[float] | None = None
+    if method == "latest":
+        selected = stacked[-1]
+    elif method == "mean":
+        selected = np.mean(stacked, axis=0, dtype=np.float64)
+    elif method == "median":
+        selected = np.median(stacked, axis=0)
+    else:
+        ages = np.arange(len(candidates) - 1, -1, -1, dtype=np.float64)
+        weights = np.power(float(exponential_decay), ages)
+        weights /= np.sum(weights)
+        normalized_weights = [float(value) for value in weights]
+        selected = np.sum(stacked.astype(np.float64) * weights[:, None], axis=0)
+    action = np.asarray(selected, dtype=np.float32).copy()
+    if not np.isfinite(action).all():
+        raise ValueError("temporal aggregation produced a non-finite action")
+    return action, {
+        "method": method,
+        "exponential_decay": float(exponential_decay),
+        "candidate_count": len(candidates),
+        "source_query_steps": source_query_steps,
+        "normalized_weights_oldest_to_newest": normalized_weights,
+        "model_chunks_only": True,
+        "causal": True,
+        "assistance_frames": 0,
+    }
 
 
 def sample_phase(contract: dict[str, Any], sample_step: int) -> str:

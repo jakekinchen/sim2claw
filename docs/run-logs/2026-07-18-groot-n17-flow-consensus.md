@@ -30,6 +30,8 @@ passes may be shared as a positive result.
   `4558ccb360ecb58315c56d069b4836314a90ac488e6c848d2bd958d3106f4f8d`.
 - Waypoint-execution v2 experiment SHA-256:
   `6fd12566e33c992994f74d7f68ab9a8c6b8796de9c7e4d5215658d99efc78b33`.
+- Temporal-overlap v3 experiment SHA-256:
+  `a07ea6b50d492511ab98720ae0b1ae44534a8a2fa66eff9e19d56d3d2424e458`.
 - Deterministic diagnostic renderer: `MUJOCO_GL=osmesa` and
   `PYOPENGL_PLATFORM=osmesa`.
 - OSMesa is a versioned deterministic diagnostic backend, not a new promotion
@@ -97,13 +99,43 @@ the frozen matrix adds only two eight-step arms.
 
 Local preflight passed before remote execution:
 
-- 35/35 repository tests, including analyzer rejection of held-out probes and
+- 41/41 repository tests, including analyzer rejection of held-out probes and
   assisted or incomplete closed-loop development evidence plus action-adapter
-  phase-boundary behavior;
+  phase-boundary behavior and causal temporal-overlap checks;
 - Python compilation for the server, evaluator runner, probe, and consensus
   module;
 - shell syntax for both Brev launch/sweep scripts;
 - JSON parsing and `git diff --check`.
+
+## Learned development results
+
+The exact single-proposal baseline canary reproduced the prior deterministic
+episode byte-for-byte and remained terminal negative: 44.201 mm maximum rise,
+198.463 mm final XY error, a tipped rook, and 312 mm king displacement. The
+complete 60-cell training-only row-zero proposal probe selected coordinate
+median aggregation at K=5 with noise scales 1.0 and 0.5. Its summary SHA-256 is
+`09f9a3f4...58d`; it has no promotion authority and accessed no held-out rows.
+
+Waypoint v2 then evaluated the baseline and both shortlisted arms on the frozen
+18-cell training matrix. Every arm had 0/6 full consequence passes, 0/6 final
+XY passes, and 0/6 upright passes, so held-out remains sealed and no winning
+configuration exists. The best nonbaseline arm was exactly K=5, coordinate
+median, noise scale 0.5, four flow steps, and execution horizon eight. It
+produced 2/6 lift passes and 5/6 board-safety passes. This is the one bounded
+setting shared with the distinct corrected-checkpoint lane; it is not a
+positive pick-and-place result. The v2 summary SHA-256 is
+`8be1507f...39ab`. Its complete archive is preserved outside Git at
+`/Users/kelly/Documents/Codex/sim2claw-groot-n17-consensus-0718/waypoint-v2-development-evidence.tgz`
+with matching local/remote SHA-256 `b11171ad...aedb`.
+
+The nonredundant v3 hypothesis is now frozen before learned evaluation. It
+keeps that exact best v2 proposal/sampler setting and tests only causal temporal
+overlap: H=8 mean over at most two model predictions, and H=4 coordinate median
+over at most four. No future observation, expert action, geometry action, or
+assistance may enter the aggregate. The same linear same-phase physics adapter,
+renderer, training rows, seeds, consequence gates, and promotion gate remain
+fixed. V3 may open held-out only if one arm produces at least two full training
+consequence passes.
 
 ## Brev and evidence ledger
 
@@ -116,11 +148,12 @@ Local preflight passed before remote execution:
 | Source/config upload | PASS | remote flow-consensus experiment SHA-256 matches `4558ccb3...f8d`; remote scripts compile in the pinned GR00T runtime |
 | Checkpoint restore | PASS | all 16 files match local; shard hashes `cbcaea5e...edec`, `e0f46753...f14e`, and `fcab36db...8fb` |
 | Constructor dependency | PASS | pinned `nvidia/Cosmos-Reason2-2B` constructor cache resolved through the secured HF token; subsequent inference can remain cached |
-| Baseline reproduction | ACTIVE | exact K=1, noise=1, four-step, horizon-eight sample-hold OSMesa canary is running before v2 evaluation |
-| Training diagnostic | PENDING | no remote result yet |
-| Closed-loop development | PENDING | no remote result yet |
+| Baseline reproduction | PASS/TERMINAL NEGATIVE | exact deterministic hashes reproduced; 44.201 mm rise, 198.463 mm XY, tipped rook, 312 mm king displacement |
+| Training diagnostic | PASS/NON-PROMOTING | complete 60-cell row-zero matrix; K=5 median noise 1.0 and 0.5 shortlisted |
+| Waypoint v2 development | COMPLETE/TERMINAL NEGATIVE | 18/18 training cells; all arms 0/6 task passes; best nonbaseline K=5 median noise 0.5 had 2/6 lift and 5/6 safety passes |
+| Temporal v3 development | FROZEN/PENDING | two-arm causal-overlap matrix; experiment `a07ea6b5...e458`; no learned row run yet |
 | Held-out promotion | SEALED | cannot run until a configuration hash is frozen |
-| Artifact preservation | PENDING | generated data, checkpoints, videos, and logs remain outside Git |
+| Artifact preservation | PARTIAL | baseline, row-zero, waypoint replay, and v2 evidence are byte-preserved outside Git; v3 pending |
 | Paid worker teardown | PENDING | delete this lane's worker when it no longer has a verified task |
 
 ## Authority boundary

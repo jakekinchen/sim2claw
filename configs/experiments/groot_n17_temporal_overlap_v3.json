@@ -1,0 +1,113 @@
+{
+  "schema_version": "sim2claw.groot_n17_temporal_overlap_experiment.v1",
+  "frozen_before_learned_closed_loop_evaluation": true,
+  "frozen_before_held_out_evaluation": true,
+  "lane": "inference_only_temporal_overlap",
+  "parent_waypoint_experiment_sha256": "6fd12566e33c992994f74d7f68ab9a8c6b8796de9c7e4d5215658d99efc78b33",
+  "parent_waypoint_summary_sha256": "8be1507fbd4108658780c1c29ba9ef35f49e155219474b08d791cbcec10d39ab",
+  "parent_waypoint_evidence_archive_sha256": "b11171ad560a9de62fb09168f5b41a0ccee440bb50d24a064bf0eadb12b81aed",
+  "parent_result": {
+    "held_out_may_open": false,
+    "best_nonbaseline_arm": {
+      "id": "k5-median-noise0p5",
+      "proposal_count": 5,
+      "action_aggregation": "median",
+      "noise_scale": 0.5,
+      "num_inference_timesteps": 4,
+      "execution_horizon": 8,
+      "full_task_consequence_pass_count": 0,
+      "lift_pass_count": 2,
+      "final_xy_pass_count": 0,
+      "upright_pass_count": 0,
+      "board_safety_pass_count": 5,
+      "rollout_cells": 6
+    }
+  },
+  "frozen_identities": {
+    "nominal_checkpoint_id": "checkpoint-4000",
+    "nominal_checkpoint_aggregate_manifest_sha256": "e89dae30e4b06af815b55e1a9e3036547eeae151463740e29f7fea8ad0b166ac",
+    "nvidia_source_commit": "23ace64f17aa5015259b8609d371eb61a357c776",
+    "cosmos_snapshot": "9ce19a195e423419c349abfc86fd07178b230561",
+    "base_task_contract_canonical_sha256": "473915817b3a8474f796df53e199df92031d17fad152599a1d43ccecd3f15683"
+  },
+  "fixed_model_inference": {
+    "proposal_count": 5,
+    "action_aggregation": "median",
+    "noise_scale": 0.5,
+    "num_inference_timesteps": 4,
+    "model_action_horizon": 16
+  },
+  "hypothesis": "Causal overlap aggregation can suppress query-to-query phase instability by combining multiple model predictions for the same absolute action sample.",
+  "temporal_action_contract": {
+    "candidate_source": "only action chunks emitted by the frozen learned model at current or earlier policy queries",
+    "absolute_sample_mapping": "chunk_index = absolute_sample_step - policy_query_sample_step",
+    "future_observations_used": false,
+    "expert_or_geometric_actions_used": false,
+    "assistance_frames": 0
+  },
+  "action_execution_adapter": {
+    "method": "linear_same_phase",
+    "physics_target": "current_waypoint + (physics_substep / sample_stride) * (next_waypoint - current_waypoint)",
+    "phase_boundary_behavior": "hold_current_waypoint_for_the_complete_interval",
+    "current_and_next_waypoints_are_temporal_aggregates_of_model_outputs": true,
+    "assistance_frames": 0
+  },
+  "renderer": {
+    "mujoco_gl": "osmesa",
+    "pyopengl_platform": "osmesa",
+    "role": "versioned_deterministic_diagnostic",
+    "promotion_authority": false,
+    "development_cadence": "policy_queries",
+    "sealed_promotion_cadence": "all_samples",
+    "policy_observation_frames_omitted": false
+  },
+  "development": {
+    "split": "training",
+    "episode_indices": [0, 8, 16],
+    "inference_seeds": [0, 1],
+    "candidate_arms": [
+      {
+        "id": "h8-overlap-mean",
+        "execution_horizon": 8,
+        "temporal_action_aggregation": "mean",
+        "temporal_decay": 0.5,
+        "maximum_overlapping_predictions": 2
+      },
+      {
+        "id": "h4-overlap-median",
+        "execution_horizon": 4,
+        "temporal_action_aggregation": "median",
+        "temporal_decay": 0.5,
+        "maximum_overlapping_predictions": 4
+      }
+    ],
+    "maximum_candidate_arms": 2,
+    "advance_rule": "candidate must produce at least two full task-consequence passes with unchanged gates",
+    "selection_order": [
+      "full_task_consequence_pass_count",
+      "board_safety_pass_count",
+      "final_xy_pass_count",
+      "upright_pass_count",
+      "lift_pass_count"
+    ],
+    "promotion_authority": false
+  },
+  "sealed_promotion": {
+    "split": "held_out",
+    "episode_indices": [0, 1, 2, 3],
+    "inference_seeds": [7101, 7102],
+    "may_open_only_after_configuration_hash_is_frozen": true,
+    "minimum_success_claim": "the same held-out episode passes every unchanged gate for both inference seeds",
+    "robust_challenger_target": "at least six of eight held-out consequences pass",
+    "reroll_or_oracle_seed_selection_forbidden": true
+  },
+  "invariants": {
+    "all_actions_are_causal_aggregates_of_model_chunks": true,
+    "assistance_frames": 0,
+    "consequence_gates_unchanged": true,
+    "training_cannot_promote_itself": true,
+    "held_out_rows_remain_sealed_until_development_gate": true,
+    "recovery_checkpoint_comparison_forbidden": true,
+    "physical_authority": false
+  }
+}
