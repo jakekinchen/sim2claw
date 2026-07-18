@@ -528,7 +528,7 @@ def scene_summary(config_path: Path = DEFAULT_CAPTURE_CONFIG) -> dict[str, Any]:
             "count": 2,
             "model": "MuJoCo Menagerie robotstudio_so101",
             "upstream_commit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
-            "pose_confidence": "photo_estimated_not_calibrated",
+            "pose_confidence": "mounts_photo_registered_joint_poses_not_calibrated",
         },
         "photo_alignment": config["simulation_estimates"]["photo_reference"],
         "scene_elements": config["simulation_estimates"]["background"]["elements"],

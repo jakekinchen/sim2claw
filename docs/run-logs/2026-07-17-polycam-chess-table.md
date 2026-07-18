@@ -1,5 +1,10 @@
 # AI Build Run Log
 
+Alignment note: the later
+[`2026-07-17-photo-polycam-alignment.md`](./2026-07-17-photo-polycam-alignment.md)
+supersedes this run's estimated board and robot-mount placement. This file
+remains the historical build record for the first photo-aligned implementation.
+
 Request: Build the table-and-chess simulation from the supplied Polycam link,
 then correct it because the first scene did not align with the supplied workcell
 photo.

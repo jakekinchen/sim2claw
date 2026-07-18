@@ -239,6 +239,59 @@ def _annotate_photo(
     observed_ledge = np.asarray(reference["ledge_front_edge_px"], dtype=float)
     draw.line([tuple(point) for point in observed_ledge], fill=PHOTO_COLOR, width=6)
 
+    dimension_font = _font(34)
+    board_label_x = float(np.max(board_pixels[:, 0]) + 45)
+    board_label_y = float(np.min(board_pixels[:, 1]) + 170)
+    rear_clearance = (
+        float(board["center_in_table_frame_xy_m"][1])
+        - (geometry.board_total_side / 2.0)
+        + (geometry.table_width / 2.0)
+    )
+    draw.text(
+        (board_label_x, board_label_y),
+        f"board {geometry.board_total_side * 1000:.0f} mm overall\n"
+        f"rear gap {rear_clearance * 1000:.0f} mm",
+        font=dimension_font,
+        fill=MODEL_COLOR,
+        stroke_width=2,
+        stroke_fill=(0, 0, 0, 220),
+    )
+    draw.text(
+        (130, 2940),
+        f"RoomPlan table {geometry.table_length * 1000:.0f} x "
+        f"{geometry.table_width * 1000:.0f} mm",
+        font=dimension_font,
+        fill=TABLE_COLOR,
+        stroke_width=2,
+        stroke_fill=(0, 0, 0, 220),
+    )
+    ledge_midpoint = observed_ledge.mean(axis=0)
+    draw.text(
+        (ledge_midpoint[0] - 390, ledge_midpoint[1] - 105),
+        f"sill bottom +{float(ledge['bottom_above_table_m']) * 1000:.0f} mm "
+        "(photo estimate)",
+        font=dimension_font,
+        fill=LEDGE_COLOR,
+        stroke_width=2,
+        stroke_fill=(0, 0, 0, 220),
+    )
+    left_mount_pixel = np.asarray(predicted_mounts["left"])
+    right_mount_pixel = np.asarray(predicted_mounts["right"])
+    draw.line(
+        [tuple(left_mount_pixel), tuple(right_mount_pixel)],
+        fill=MOUNT_COLOR,
+        width=5,
+    )
+    mount_midpoint = (left_mount_pixel + right_mount_pixel) / 2.0
+    draw.text(
+        (mount_midpoint[0] - 175, mount_midpoint[1] + 35),
+        "clamps 486 mm apart",
+        font=dimension_font,
+        fill=MOUNT_COLOR,
+        stroke_width=2,
+        stroke_fill=(0, 0, 0, 220),
+    )
+
     legend_box = (50, 50, 1490, 410)
     draw.rounded_rectangle(legend_box, radius=24, fill=(8, 12, 18, 205))
     title_font = _font(52)

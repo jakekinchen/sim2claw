@@ -40,21 +40,29 @@ uv run sim2claw render \
   --output outputs/polycam_chess_table/photo-aligned.png
 uv run sim2claw render --scan-overlay \
   --output outputs/polycam_chess_table/reference-overlay.png
+uv run sim2claw compare-alignment --photo /path/to/Photo-1.jpg
 ```
 
 The default portrait render contains the measured white table, a configurable
-400 mm playing board with a wood frame, 32 independently simulated pieces, two
+355.6 mm playing board with a 406.4 mm outer frame, 32 independently simulated pieces, two
 white articulated SO-101 arms, the fiducial sheet, left tripod, and simplified
 window/sill/blinds background visible in the owner-provided photo. The table
 dimensions come from the capture's high-confidence RoomPlan object. Board,
 robot, prop, and camera placement remain clearly marked single-photo visual
 estimates.
 
+`compare-alignment` verifies the overhead photo's exact SHA-256, registers its
+table plane to the RoomPlan dimensions, and writes a photo overlay, an aligned
+Polycam textured-mesh overlay, and a machine-readable residual report under
+`outputs/polycam_chess_table/alignment/`.
+
 ## Current truth
 
 - Repository state: fresh runtime and first simulation scene implemented.
 - Simulator: the photo-aligned chess workcell with two articulated SO-101 arms
   compiles, steps, and renders.
+- Alignment: deterministic photo and Polycam comparison overlays are available;
+  the scan-to-RoomPlan transform is now applied before comparison.
 - Mac runtime: verified on Apple Silicon with Python 3.12 and MuJoCo 3.10.0.
 - NVIDIA runtime: not implemented.
 - Training and evaluation: not implemented.

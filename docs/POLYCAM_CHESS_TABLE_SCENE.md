@@ -14,6 +14,10 @@
 - Owner-provided correction photo: 2880 x 3840 JPEG, SHA-256
   `b673f959ddf608e1c64098e8c1194196741c5cbd938f2756c3bf2b20b1901889`.
   It is a visual composition reference and is not redistributed by the repo.
+- Owner-provided overhead alignment photo: 2880 x 3840 JPEG, SHA-256
+  `1201ca9ec105aabb8bb06d126ed582c1c1b30fb1f4f6c94de79f82d355d56ced`.
+  Its table, board, clamp-contact, fiducial, and ledge landmarks are frozen in
+  the capture config; the image itself remains outside Git.
 
 The live viewer exposed `raw.gltf`, `raw_geometry.bin`, one JPEG texture, and
 `optimized_roomplan.json`. Repo-native code validates the exact SHA-256 values,
@@ -28,16 +32,20 @@ imported archive.
 | Table length | 1.3513037 m | RoomPlan, high confidence |
 | Table width | 0.79171795 m | RoomPlan, high confidence |
 | Table height | 0.7799972 m | RoomPlan, high confidence |
-| Board side | 0.400 m | Visual estimate, configurable |
-| Board with frame | 0.446 m | Derived from visual estimate |
-| Square side | 0.050 m | Derived from estimated board |
+| Board playing side | 0.3556 m | Photo registration plus aligned textured-mesh cross-check |
+| Board with frame | 0.4064 m | Aligned scan visual fit range: 0.394–0.418 m |
+| Square side | 0.04445 m | Derived from registered playing side |
+| Board rear clearance | 0.0277 m | Overhead-photo planar registration |
+| Clamp separation | 0.486 m | Overhead-photo planar registration |
+| Sill bottom above table | 0.140 m | Photo estimate; not RoomPlan semantic geometry |
 | Pieces | 32 dynamic bodies | Fresh procedural simulation geometry |
 | Robot arms | 2 articulated SO-101 models | Public upstream model; mounts and poses are photo estimates |
 
 The RoomPlan table center and yaw are converted from Polycam y-up coordinates
-to MuJoCo z-up coordinates. The board was aligned against the translucent scan
-overlay and correction photo, but it remains an estimate because neither the
-glTF nor RoomPlan marks the board as a metric semantic object.
+to MuJoCo z-up coordinates. The raw glTF is additionally transformed by the
+inverse `optimized_roomplan.alignment_transform`; omitting this step displaced
+the scan from the semantic table frame. The board remains an estimate because
+neither the glTF nor RoomPlan marks it as a metric semantic object.
 
 ## Photo-alignment contract
 
@@ -46,6 +54,18 @@ therefore includes the two near-edge white arms, left arm reaching toward the
 board, right arm folded upright, black pieces at the near side, fiducial sheet,
 left tripod, rear window sill, horizontal blinds, and a front-left portrait
 camera. These are explicit estimates from one view, not calibrated transforms.
+
+The overhead photo changes the table-edge layout from the first visual pass:
+the reaching arm is mounted near the table center at `(-0.040, 0.365) m`, and
+the right arm at `(-0.526, 0.365) m` in the scene's table frame. Their clamp
+contacts reproduce the frozen photo landmarks within about 2 source pixels.
+The fiducial center reproduces its photo landmark within about 7 source pixels.
+
+The board was physically moved between evidence surfaces. Its Polycam-capture
+center is estimated near `(-0.022, 0.182) m`, while the later overhead photo
+places it at `(0.040, -0.165) m`: a 0.352 m center displacement. The simulator
+uses the later photo's layout; the scan overlay draws both poses rather than
+silently treating them as one observation.
 
 Robot geometry is vendored from Google DeepMind's public MuJoCo Menagerie
 `robotstudio_so101` directory at commit
@@ -74,7 +94,17 @@ uv run sim2claw fetch-polycam
 uv run sim2claw render --output outputs/polycam_chess_table/photo-aligned.png
 uv run sim2claw render --scan-overlay \
   --output outputs/polycam_chess_table/reference-overlay.png
+uv run sim2claw compare-alignment --photo /path/to/overhead-Photo-1.jpg
 ```
+
+The comparison command writes:
+
+- `alignment/photo-layout-overlay.png` — measured table outline, corrected
+  board and clamps, observed photo landmarks, dimensions, and ledge estimate;
+- `alignment/polycam-scan-overlay.png` — properly transformed textured scan,
+  its historical board pose, the later photo pose, and current clamp contacts;
+- `alignment/alignment-report.json` — homography, residuals, distances,
+  artifact hashes, and limitations.
 
 ## Proof interpretation
 
@@ -83,4 +113,8 @@ articulated arms can compile, step, settle, and render, and that its composition
 matches the major elements of the supplied photo. It does not prove calibrated
 robot or camera transforms, exact chess layout, collision-free task motion,
 task success, learned-policy readiness, NVIDIA rendering, sim-to-real
-equivalence, or physical authority.
+equivalence, or physical authority. The current table-plane registration has a
+board-corner RMS of about 0.033 m; that residual includes lens distortion,
+manual landmark uncertainty, and the fact that the photo is not a calibrated
+camera. Exact 3D alignment still requires a camera calibration and a direct
+measurement of the board and sill profile.

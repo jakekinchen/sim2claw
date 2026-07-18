@@ -18,6 +18,7 @@ visual/measurement references, never collision or promotion authority.
 | --- | --- | --- | --- |
 | CPython | 3.12.x | One portable interpreter supported on Apple Silicon and NVIDIA Linux | PSF; patch version selected by `uv.lock` |
 | MuJoCo | 3.10.0 from official PyPI | Canonical physics, MJCF compiler, and in-process offscreen renderer | Apache-2.0 |
+| NumPy | 2.5.1 from official PyPI | Deterministic homography solve, inverse projection, and alignment residuals | BSD-3-Clause |
 | Pillow | 12.3.0 from official PyPI | Deterministic JPEG-to-PNG conversion because MuJoCo rejects the capture JPEG as a direct texture | MIT-CMU |
 | hatchling | 1.27.0 build-system pin | Minimal standard wheel/editable build backend | MIT |
 | uv | external bootstrap tool | Creates the locked runtime without a repo-copied environment | Not installed by this repo |

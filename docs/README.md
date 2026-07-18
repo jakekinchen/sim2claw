@@ -11,6 +11,9 @@
   — adopted runtime dependencies, sources, and host support matrix.
 - [`run-logs/2026-07-17-polycam-chess-table.md`](./run-logs/2026-07-17-polycam-chess-table.md)
   — commands, artifact identities, proof results, and remaining gaps.
+- [`run-logs/2026-07-17-photo-polycam-alignment.md`](./run-logs/2026-07-17-photo-polycam-alignment.md)
+  — corrected scan transform, planar registration, dimension results, overlays,
+  residuals, and remaining calibration boundary.
 - [`reference/imported/SOURCE_BOUNDARY.md`](./reference/imported/SOURCE_BOUNDARY.md)
   — exact archive and document-import boundary.
 - [`reference/imported/DOCUMENT_IMPORT_MANIFEST.tsv`](./reference/imported/DOCUMENT_IMPORT_MANIFEST.tsv)
