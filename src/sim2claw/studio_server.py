@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ipaddress
 import json
 import mimetypes
 import re
@@ -13,7 +14,9 @@ from typing import Any
 from urllib.parse import unquote, urlsplit
 
 from .paths import REPO_ROOT
+from .physical_gateway import PhysicalGatewayError
 from .studio_catalog import build_catalog, resolve_media_token
+from .teleop_recording import RecorderConflict, RecorderError, TeleopRecordingManager
 
 
 STATIC_ROOT = Path(__file__).with_name("studio_web")
@@ -26,7 +29,16 @@ class StudioServer(ThreadingHTTPServer):
 
     def __init__(self, address: tuple[str, int], repo_root: Path = REPO_ROOT):
         self.repo_root = repo_root.resolve()
+        try:
+            self.recorder_control_enabled = ipaddress.ip_address(address[0]).is_loopback
+        except ValueError:
+            self.recorder_control_enabled = address[0] == "localhost"
+        self.recorder = TeleopRecordingManager(repo_root=self.repo_root)
         super().__init__(address, StudioRequestHandler)
+
+    def server_close(self) -> None:
+        self.recorder.shutdown()
+        super().server_close()
 
 
 class StudioRequestHandler(BaseHTTPRequestHandler):
@@ -38,12 +50,25 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
         if path == "/api/catalog":
             self._send_json(build_catalog(self.server.repo_root))
             return
+        if path == "/api/recorder":
+            if not self.server.recorder_control_enabled:
+                self._send_json(
+                    {"ok": False, "error": "Recorder state is available only on loopback."},
+                    HTTPStatus.FORBIDDEN,
+                )
+                return
+            self._send_json(self.server.recorder.snapshot())
+            return
         if path == "/api/health":
             self._send_json(
                 {
                     "ok": True,
                     "service": "sim2claw-studio",
                     "physical_authority": False,
+                    "physical_motion_endpoint": "operator_gated_relative_bounded",
+                    "recorder_control": (
+                        "loopback_only" if self.server.recorder_control_enabled else "disabled"
+                    ),
                 }
             )
             return
@@ -52,9 +77,87 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
             return
         self._send_static(path)
 
-    def _send_json(self, payload: dict[str, Any]) -> None:
+    def do_POST(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
+        path = unquote(urlsplit(self.path).path)
+        if not self.server.recorder_control_enabled:
+            self._send_json(
+                {"ok": False, "error": "Recorder control is available only on loopback."},
+                HTTPStatus.FORBIDDEN,
+            )
+            return
+        if self.headers.get_content_type() != "application/json":
+            self._send_json(
+                {"ok": False, "error": "Recorder requests require application/json."},
+                HTTPStatus.UNSUPPORTED_MEDIA_TYPE,
+            )
+            return
+        try:
+            payload = self._read_json_body()
+            if path == "/api/recorder/preflight":
+                result = self.server.recorder.snapshot()
+            elif path == "/api/recorder/gateway-preflight":
+                result = self.server.recorder.verify_physical_gateway()
+            elif path == "/api/recorder/gateway-sync":
+                result = self.server.recorder.synchronize_physical_gateway(payload)
+            elif path == "/api/recorder/start":
+                result = self.server.recorder.start(payload)
+            elif path == "/api/recorder/stop":
+                result = self.server.recorder.stop()
+            elif path == "/api/recorder/finalize":
+                result = self.server.recorder.finalize(payload)
+            elif path == "/api/recorder/discard":
+                result = self.server.recorder.discard()
+            elif path == "/api/recorder/sim-replay":
+                result = self.server.recorder.replay_saved_in_simulator()
+            else:
+                self._send_json(
+                    {"ok": False, "error": "Unknown recorder endpoint."},
+                    HTTPStatus.NOT_FOUND,
+                )
+                return
+        except RecorderConflict as error:
+            self._send_json({"ok": False, "error": str(error)}, HTTPStatus.CONFLICT)
+            return
+        except (
+            RecorderError,
+            PhysicalGatewayError,
+            ConnectionError,
+            OSError,
+            ValueError,
+            json.JSONDecodeError,
+        ) as error:
+            self._send_json({"ok": False, "error": str(error)}, HTTPStatus.BAD_REQUEST)
+            return
+        except Exception as error:  # keep loopback UI requests intact on unexpected faults
+            self._send_json(
+                {
+                    "ok": False,
+                    "error": f"Unexpected recorder error: {type(error).__name__}: {error}",
+                },
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+            )
+            return
+        self._send_json({"ok": True, "recorder": result})
+
+    def _read_json_body(self) -> dict[str, Any]:
+        raw_length = self.headers.get("Content-Length", "0")
+        length = int(raw_length)
+        if length < 0 or length > 64 * 1024:
+            raise RecorderError("Recorder request body is too large.")
+        if not length:
+            return {}
+        payload = json.loads(self.rfile.read(length).decode("utf-8"))
+        if not isinstance(payload, dict):
+            raise RecorderError("Recorder request must be a JSON object.")
+        return payload
+
+    def _send_json(
+        self,
+        payload: dict[str, Any],
+        status: HTTPStatus = HTTPStatus.OK,
+    ) -> None:
         encoded = json.dumps(payload, separators=(",", ":")).encode("utf-8")
-        self.send_response(HTTPStatus.OK)
+        self.send_response(status)
         self._security_headers()
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Cache-Control", "no-store")
@@ -173,7 +276,10 @@ def serve_studio(
     actual_port = int(server.server_address[1])
     url = f"http://{host}:{actual_port}"
     print(f"sim2claw studio: {url}", flush=True)
-    print("read-only visualization; physical and promotion authority remain closed", flush=True)
+    print(
+        "loopback recorder enabled; physical motion is operator-gated and promotion remains closed",
+        flush=True,
+    )
     if open_browser:
         webbrowser.open(url)
     try:

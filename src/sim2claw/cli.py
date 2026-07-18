@@ -81,11 +81,20 @@ def build_parser() -> argparse.ArgumentParser:
 
     studio = subparsers.add_parser(
         "studio",
-        help="open the read-only browser visualization studio",
+        help="open the browser evidence studio and loopback-only ACT source recorder",
     )
     studio.add_argument("--host", default="127.0.0.1")
     studio.add_argument("--port", type=int, default=4173)
     studio.add_argument("--no-open", action="store_true")
+
+    subparsers.add_parser(
+        "teleop-preflight",
+        help="inspect SO-101 buses, calibrations, and recorder mode gates",
+    )
+    subparsers.add_parser(
+        "physical-gateway-preflight",
+        help="open both identified buses torque-off and verify physical gateway state",
+    )
 
     studio_assets = subparsers.add_parser(
         "studio-assets",
@@ -186,6 +195,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             port=args.port,
             open_browser=not args.no_open,
         )
+        return 0
+    if args.command == "teleop-preflight":
+        from .teleop_recording import recorder_preflight
+
+        report = recorder_preflight()
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["modes"]["simulation_follower"]["ready"] else 1
+    if args.command == "physical-gateway-preflight":
+        from .teleop_recording import physical_gateway_preflight
+
+        print(json.dumps(physical_gateway_preflight(), indent=2, sort_keys=True))
         return 0
     if args.command == "studio-assets":
         from .studio_assets import render_studio_assets

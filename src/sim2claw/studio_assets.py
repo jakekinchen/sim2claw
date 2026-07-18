@@ -11,7 +11,12 @@ import mujoco
 
 from .paths import DEFAULT_CAPTURE_CONFIG, SO101_MODEL_PATH, STUDIO_ASSET_ROOT
 from .render import write_rgb_png
-from .scene import build_scene_spec, initialize_robot_poses
+from .scene import (
+    CURRENT_TASK_LAYOUT_ID,
+    CURRENT_TASK_PIECE_LAYOUT,
+    build_scene_spec,
+    initialize_robot_poses,
+)
 
 
 POSTER_SPECS = (
@@ -56,7 +61,7 @@ def render_studio_assets(
     if settle_steps < 0:
         raise ValueError("settle_steps cannot be negative")
     output_directory.mkdir(parents=True, exist_ok=True)
-    spec = build_scene_spec()
+    spec = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT)
     model = spec.compile()
     data = mujoco.MjData(model)
     initialize_robot_poses(model, data)
@@ -92,6 +97,7 @@ def render_studio_assets(
         "proof_class": "simulation_inspection_render",
         "physical_authority": False,
         "training_input": False,
+        "piece_layout_id": CURRENT_TASK_LAYOUT_ID,
         "generated_by": "uv run sim2claw studio-assets",
         "settle_steps": settle_steps,
         "sources": {

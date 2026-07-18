@@ -1,0 +1,192 @@
+{
+  "schema_version": "sim2claw.chess_pick_place_act_state_task.v1",
+  "task_id": "chess_pick_place_act_state_v1",
+  "frozen_before_training": true,
+  "proof_class": "simulation_goal_conditioned_act_contract",
+  "scene": {
+    "scene_id": "photo_aligned_chess_workcell_v1",
+    "piece_layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
+    "arm": "left",
+    "coordinate_convention": "mujoco_world_z_up_right_handed",
+    "piece_pose_authority": "simulation_state_only",
+    "target_pose_authority": "planner_resolved_continuous_pose"
+  },
+  "observation": {
+    "n_obs_steps": 1,
+    "features": [
+      {"name": "robot_joint_position", "dimension": 6, "unit": "rad", "frame": "so101_joint", "observability": "simulator_or_encoder"},
+      {"name": "robot_joint_velocity", "dimension": 6, "unit": "rad_s", "frame": "so101_joint", "observability": "simulator_or_finite_difference_encoder"},
+      {"name": "end_effector_pose", "dimension": 7, "unit": "m_and_unit_quaternion_wxyz", "frame": "world", "observability": "simulator_or_declared_pose_estimator"},
+      {"name": "gripper_aperture", "dimension": 1, "unit": "m", "frame": "gripper", "observability": "simulator_or_calibrated_encoder_mapping"},
+      {"name": "selected_piece_pose", "dimension": 7, "unit": "m_and_unit_quaternion_wxyz", "frame": "world", "observability": "simulator_or_declared_pose_estimator"},
+      {"name": "continuous_target_pose", "dimension": 7, "unit": "m_and_unit_quaternion_wxyz", "frame": "world", "observability": "planner_output"},
+      {"name": "end_effector_in_piece_frame", "dimension": 7, "unit": "m_and_unit_quaternion_wxyz", "frame": "selected_piece", "observability": "derived_from_observable_poses"},
+      {"name": "piece_in_target_frame", "dimension": 7, "unit": "m_and_unit_quaternion_wxyz", "frame": "continuous_target", "observability": "derived_from_observable_poses"},
+      {"name": "object_descriptor", "dimension": 7, "unit": "one_hot_4_and_dimensions_m_3", "frame": "selected_piece", "observability": "task_registry"},
+      {"name": "observable_skill_id", "dimension": 5, "unit": "one_hot", "frame": "state_machine", "observability": "consequence_derived"},
+      {"name": "selected_piece_contact", "dimension": 1, "unit": "boolean", "frame": "contact_sensor", "observability": "simulator_contact"}
+    ],
+    "dimension": 61,
+    "feature_order_is_frozen": true,
+    "prohibited_features": [
+      "episode_progress",
+      "elapsed_time",
+      "timed_phase_progress",
+      "destination_square_one_hot",
+      "raw_language",
+      "privileged_future_state",
+      "unavailable_sensor_placeholder"
+    ]
+  },
+  "action": {
+    "features": [
+      "left_shoulder_pan_target_rad",
+      "left_shoulder_lift_target_rad",
+      "left_elbow_flex_target_rad",
+      "left_wrist_flex_target_rad",
+      "left_wrist_roll_target_rad",
+      "left_gripper_target_rad"
+    ],
+    "dimension": 6,
+    "representation": "absolute_joint_position_target",
+    "unit": "rad",
+    "clip_to_mujoco_actuator_control_range": true,
+    "bounds": [
+      [-1.91986, 1.91986],
+      [-1.74533, 1.74533],
+      [-1.69, 1.69],
+      [-1.65806, 1.65806],
+      [-2.74385, 2.84121],
+      [-0.17453, 1.74533]
+    ]
+  },
+  "execution": {
+    "claim": "hierarchical_learned_manipulation",
+    "skills": ["pregrasp", "grasp_lift", "transport", "place_release", "retreat"],
+    "ownership": {
+      "pregrasp": "repo_native_motion_planner_or_constructive_controller",
+      "grasp_lift": "act",
+      "transport": "repo_native_motion_planner_or_constructive_controller",
+      "place_release": "act",
+      "retreat": "repo_native_motion_planner_or_constructive_controller",
+      "transition_logic": "observable_consequence_state_machine"
+    },
+    "transitions": [
+      {"from": "pregrasp", "to": "grasp_lift", "predicate": "end_effector_within_grasp_pose_tolerance", "threshold": 0.015, "unit": "m", "observable_inputs": ["end_effector_pose", "selected_piece_pose"]},
+      {"from": "grasp_lift", "to": "transport", "predicate": "selected_piece_clear_of_board", "threshold": 0.04, "unit": "m", "observable_inputs": ["selected_piece_pose", "selected_piece_contact"]},
+      {"from": "transport", "to": "place_release", "predicate": "selected_piece_within_target_standoff", "threshold": 0.025, "unit": "m", "observable_inputs": ["selected_piece_pose", "continuous_target_pose"]},
+      {"from": "place_release", "to": "retreat", "predicate": "piece_supported_and_jaw_contact_clear", "threshold": 0.015, "unit": "m_xy_error", "observable_inputs": ["selected_piece_pose", "continuous_target_pose", "selected_piece_contact"]}
+    ]
+  },
+  "object_descriptor": {
+    "encoding": "grasp_family_one_hot_then_xyz_dimensions_m",
+    "families": [
+      {"id": "rook_like_cylindrical_base", "index": 0, "status": "declared_later"},
+      {"id": "pawn_like_small_base", "index": 1, "status": "supported_first"},
+      {"id": "large_king_queen_bishop", "index": 2, "status": "declared_later"},
+      {"id": "asymmetric_knight", "index": 3, "status": "declared_later"}
+    ]
+  },
+  "generator": {
+    "generator_id": "object_target_relative_retarget_v1",
+    "behavior_frozen_before_rows": true,
+    "source_episode_format": "sim2claw.act_source_episode.v1",
+    "candidate_lineage_schema": "sim2claw.act_candidate_lineage.v1",
+    "required_lineage_fields": [
+      "source_episode_id",
+      "source_segment_ids",
+      "source_proof_class",
+      "object_relative_transform_sha256",
+      "target_relative_transform_sha256",
+      "planner_id",
+      "ik_solver_id",
+      "scene_id",
+      "initial_state_sha256",
+      "candidate_seed",
+      "repair_parent_id",
+      "evaluator_contract_sha256"
+    ],
+    "admission": "strict_evaluator_success_only",
+    "repairs_are_new_candidates": true
+  },
+  "splits": {
+    "training_seeds": [2101, 2102, 2103, 2104, 2105, 2106, 2107, 2108],
+    "held_out_seeds": [9201, 9202, 9203, 9204],
+    "source_pose_cells": {
+      "training": [
+        {"id": "source_center_train", "x_offset_m": [-0.006, 0.006], "y_offset_m": [-0.006, 0.006], "yaw_rad": [-0.12, 0.12]},
+        {"id": "source_lateral_train", "x_offset_m": [-0.018, -0.008], "y_offset_m": [-0.004, 0.012], "yaw_rad": [-0.2, 0.2]}
+      ],
+      "held_out": [
+        {"id": "source_positive_x_holdout", "x_offset_m": [0.009, 0.016], "y_offset_m": [-0.012, -0.007], "yaw_rad": [0.22, 0.3]},
+        {"id": "source_negative_y_holdout", "x_offset_m": [-0.004, 0.004], "y_offset_m": [-0.018, -0.013], "yaw_rad": [-0.3, -0.22]}
+      ]
+    },
+    "target_pose_cells": {
+      "training": [
+        {"id": "target_left_train", "x_m": [-0.17, -0.04], "y_m": [-0.17, 0.17]},
+        {"id": "target_right_train", "x_m": [0.04, 0.17], "y_m": [-0.17, 0.17]}
+      ],
+      "held_out": [
+        {"id": "target_center_holdout", "x_m": [-0.025, 0.025], "y_m": [-0.12, 0.12]},
+        {"id": "target_far_edge_holdout", "x_m": [-0.17, 0.17], "y_m": [0.18, 0.2]}
+      ]
+    },
+    "object_destination_pairs": {
+      "training": [
+        "brown_pawn_a2:target_left_train",
+        "brown_pawn_b1:target_right_train",
+        "brown_pawn_c2:target_left_train",
+        "brown_pawn_d1:target_right_train",
+        "brown_pawn_e2:target_left_train",
+        "brown_pawn_f1:target_right_train"
+      ],
+      "held_out": [
+        "brown_pawn_g2:target_center_holdout",
+        "brown_pawn_h1:target_far_edge_holdout"
+      ]
+    },
+    "distractor_layouts": {
+      "training": ["target_only", "one_distant_distractor"],
+      "held_out": ["one_nearby_distractor", "queen_sweep_counterexample", "sparse_board_unseen_layout"]
+    },
+    "held_out_training_rows": 0
+  },
+  "evaluator": {
+    "owner": "separate_cpu_fp32_consequence_evaluator",
+    "device": "cpu",
+    "dtype": "float32",
+    "minimum_piece_rise_m": 0.04,
+    "maximum_final_xy_error_m": 0.015,
+    "maximum_final_height_error_m": 0.005,
+    "minimum_final_upright_cosine": 0.95,
+    "maximum_final_linear_speed_m_s": 0.02,
+    "minimum_gripper_clearance_m": 0.035,
+    "maximum_other_piece_displacement_m": 0.006,
+    "require_no_final_jaw_contact": true,
+    "require_model_owned_actions": true,
+    "require_no_assistance": true,
+    "training_cannot_promote": true,
+    "diagnostic_reward_cannot_promote": true
+  },
+  "negative_fixture_rejections": [
+    "timing_leakage",
+    "split_leakage",
+    "invalid_frame_or_unit",
+    "wrong_piece_contact",
+    "collision_or_spill",
+    "lost_grasp",
+    "bad_placement",
+    "non_clear_release",
+    "assistance",
+    "non_model_owned_action"
+  ],
+  "authority": {
+    "physical_authority": false,
+    "camera_hardware_access": false,
+    "serial_access": false,
+    "gateway_access": false,
+    "generated_episode_is_policy_proof": false,
+    "training_cannot_promote_itself": true
+  }
+}

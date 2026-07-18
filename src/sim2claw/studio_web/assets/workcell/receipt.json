@@ -4,32 +4,33 @@
       "camera": "studio_overview",
       "height": 720,
       "path": "studio-overview.png",
-      "sha256": "f66509425cf9761f428755192d022b2ba3cb14c10f1c8d31eb7f38056076aacf",
+      "sha256": "88c4f018869ffa6cbc6b6b79f938a5ad4fca32b361d5bb9c68169b45c4afe116",
       "width": 1280
     },
     {
       "camera": "studio_left",
       "height": 720,
       "path": "studio-left.png",
-      "sha256": "e56aa538b5dea64c298e0a7072c0c12063e1a90432d8f9b4309dd13a641da0ef",
+      "sha256": "d2a80298f4f1b104493ba75773af6747d7a2d982ab2793ada7141e4a805b3c42",
       "width": 960
     },
     {
       "camera": "studio_right",
       "height": 720,
       "path": "studio-right.png",
-      "sha256": "4e256f292b31315baf7f756f0c32e04b93063f518a0858fa4405c40d1931bdfe",
+      "sha256": "48291a1761a154288ee32da96c8f4f56af72c5f6b8739dcd631acb1f9179af19",
       "width": 960
     }
   ],
   "generated_by": "uv run sim2claw studio-assets",
   "physical_authority": false,
+  "piece_layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
   "proof_class": "simulation_inspection_render",
   "schema_version": "sim2claw.studio_assets.v1",
   "settle_steps": 500,
   "sources": {
     "capture_config_sha256": "0e7f603222b03b30d9c9bb4295e0f709f9b89ce71522938038e06234fbe14229",
-    "scene_py_sha256": "29cba696ecafebd0c272be9c17058d028521f249b7713e267d3a00a110edf77a",
+    "scene_py_sha256": "b361c9a1c41daf1b928532a26b7a53612ffeb2960709d527b0005d997e8aa590",
     "so101_model_sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
   },
   "training_input": false

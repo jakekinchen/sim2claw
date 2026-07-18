@@ -6,10 +6,12 @@ import tempfile
 import threading
 import unittest
 from pathlib import Path
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from sim2claw import studio_assets
 from sim2claw.paths import DEFAULT_CAPTURE_CONFIG, SO101_MODEL_PATH, STUDIO_ASSET_ROOT
+from sim2claw.physical_gateway import PhysicalGatewayError
 from sim2claw.studio_catalog import (
     build_catalog,
     media_token,
@@ -146,6 +148,25 @@ class StudioCatalogTest(unittest.TestCase):
             with urlopen(f"{base}/api/catalog", timeout=3) as response:
                 payload = json.load(response)
             self.assertEqual(payload["summary"]["episodes"], 1)
+            with urlopen(f"{base}/api/recorder", timeout=3) as response:
+                recorder = json.load(response)
+            self.assertEqual(
+                recorder["schema_version"],
+                "sim2claw.teleop_recorder_state.v1",
+            )
+            preflight_request = Request(
+                f"{base}/api/recorder/preflight",
+                data=b"{}",
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urlopen(preflight_request, timeout=3) as response:
+                preflight = json.load(response)
+            self.assertTrue(preflight["ok"])
+            self.assertEqual(
+                preflight["recorder"]["preflight"]["required_physical_path"],
+                "sim2claw.so101_physical_gateway.v1",
+            )
             token = payload["episodes"][0]["media"]["url"].split("/")[-1]
             request = Request(f"{base}/media/{token}", headers={"Range": "bytes=2-5"})
             with urlopen(request, timeout=3) as response:
@@ -167,11 +188,30 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('data-view="replay"', html)
             self.assertIn('id="timeline-shell"', html)
             self.assertIn('id="process-drawer"', html)
+            self.assertIn('data-view-panel="record"', html)
+            self.assertIn('id="start-recording"', html)
+            self.assertIn('id="record-source-square"', html)
+            self.assertIn('id="pawn-preview-board"', html)
+            self.assertIn('id="sync-follower"', html)
+            self.assertIn('<span id="pawn-preview-source">B1</span>', html)
+            self.assertIn('<span id="pawn-preview-target">B2</span>', html)
+            self.assertIn("The mirrored tan side occupies A8", html)
+            self.assertNotIn('id="record-piece"', html)
 
             with urlopen(f"{base}/studio.css", timeout=3) as response:
                 css = response.read().decode("utf-8")
             self.assertIn('@font-face', css)
             self.assertIn('--motion: #ff5a1f', css)
+            self.assertIn('@media (max-width: 1080px)', css)
+            self.assertIn('scroll-behavior: auto', css)
+            self.assertIn('data-recorder-status="awaiting_label"', css)
+
+            with urlopen(f"{base}/studio.js", timeout=3) as response:
+                javascript = response.read().decode("utf-8")
+            self.assertIn("document.body.dataset.recorderStatus = status", javascript)
+            self.assertIn('sim2claw.recorder.settings.v1', javascript)
+            self.assertIn('postRecorder("gateway-sync"', javascript)
+            self.assertNotIn("window.confirm", javascript)
 
             font_path = (
                 f"{base}/assets/fonts/"
@@ -195,11 +235,43 @@ class StudioCatalogTest(unittest.TestCase):
             server.server_close()
             thread.join(timeout=3)
 
+    def test_gateway_failure_returns_stable_json_error(self) -> None:
+        server = create_server("127.0.0.1", 0, repo_root=self.root)
+
+        def fail_sync(_payload: dict[str, object]) -> dict[str, object]:
+            raise PhysicalGatewayError("fixture sync guard refused motion")
+
+        server.recorder.synchronize_physical_gateway = fail_sync  # type: ignore[method-assign]
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        base = f"http://127.0.0.1:{server.server_address[1]}"
+        request = Request(
+            f"{base}/api/recorder/gateway-sync",
+            data=json.dumps({"physical_safety_acknowledged": True}).encode(),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with self.assertRaises(HTTPError) as raised:
+                urlopen(request, timeout=3)
+            self.assertEqual(raised.exception.code, 400)
+            payload = json.loads(raised.exception.read().decode("utf-8"))
+            self.assertFalse(payload["ok"])
+            self.assertEqual(payload["error"], "fixture sync guard refused motion")
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
     def test_versioned_studio_posters_match_current_scene_sources(self) -> None:
         receipt = json.loads(
             (STUDIO_ASSET_ROOT / "receipt.json").read_text(encoding="utf-8")
         )
         sources = receipt["sources"]
+        self.assertEqual(
+            receipt["piece_layout_id"],
+            "two_sided_sparse_pawns_rows_1_2_7_8_v1",
+        )
         scene_path = Path(studio_assets.__file__).with_name("scene.py")
         expected = {
             "scene_py_sha256": hashlib.sha256(scene_path.read_bytes()).hexdigest(),

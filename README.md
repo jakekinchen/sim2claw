@@ -80,15 +80,39 @@ viewer.
 ## Open the browser visualization studio
 
 Replay the repo's generated episodes, scrub through phase-aligned video or
-frames, browse task-grouped evidence, and watch active training/evaluation
-processes from a local browser:
+frames, browse task-grouped evidence, watch active training/evaluation
+processes, and collect labeled ACT source demonstrations from the SO-101 leader
+to the MuJoCo follower:
 
 ```bash
 uv run sim2claw studio
 ```
 
-The studio is a read-only evidence surface. It does not start work, promote a
-checkpoint, connect a gateway, or grant physical authority. See
+Open `Record`, choose one of the eight brown pawn source squares and an
+unoccupied destination in rows 1–4, then Start/Stop and label the observed
+outcome. The board preview and current task simulator show the mirrored tan
+pawns at A8, B7, C8, D7, E8, F7, G8, and H7 as static far-side pieces. Start
+defaults to B1→B2 at 20 Hz, persists the operator's metadata choices, and
+automatically performs the bounded follower Sync, torque-off verification, and
+paired-pose check;
+`uv run sim2claw teleop-preflight` remains available as a separate diagnostic.
+Saved episodes go to ignored
+`datasets/act_source_recordings/` storage and are not training data until replay
+and evaluator admission.
+
+Replay and process views remain read-only. Recorder controls are loopback-only.
+Physical Start requires a cleared-workcell acknowledgement, a bounded Sync of
+an already-nearby follower, a countdown, and relative-zero registration through
+the reviewed gateway. Sync refuses a body mismatch above 20 degrees, ramps
+instead of jumping, and finishes torque-off. Recording then permits up to
+90 degrees of relative body travel (180 degrees for wrist roll), clamps every
+target to the follower calibration, and uses 4-degree command steps. A
+time-based stall guard releases torque only after five seconds without
+measurable progress. Failed attempts are retained under ignored diagnostic
+storage while the recorder returns to ready automatically. Saved physical
+traces can be replayed in MuJoCo for joint-space error,
+but the Studio cannot promote a checkpoint or turn that comparison into a task
+success claim. See
 [`VISUALIZATION_STUDIO.md`](./docs/VISUALIZATION_STUDIO.md) for its artifact
 adapters and live heartbeat contract.
 
