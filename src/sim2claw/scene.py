@@ -9,7 +9,17 @@ from typing import Any
 import mujoco
 
 from .capture import capture_directory, load_capture_config
-from .paths import DEFAULT_CAPTURE_CONFIG, DEFAULT_EXTERNAL_ROOT, SO101_MODEL_PATH
+from .mass_profile import (
+    apply_so101_mass_profile,
+    load_so101_mass_profile,
+    mass_profile_summary,
+)
+from .paths import (
+    DEFAULT_CAPTURE_CONFIG,
+    DEFAULT_EXTERNAL_ROOT,
+    DEFAULT_SO101_MASS_PROFILE,
+    SO101_MODEL_PATH,
+)
 
 
 ROBOT_JOINTS = (
@@ -581,6 +591,7 @@ def build_scene_spec(
     *,
     config_path: Path = DEFAULT_CAPTURE_CONFIG,
     external_root: Path = DEFAULT_EXTERNAL_ROOT,
+    mass_profile_path: Path | None = DEFAULT_SO101_MASS_PROFILE,
     scan_overlay: bool = False,
     include_robots: bool = True,
     piece_layout: str = "standard",
@@ -597,9 +608,18 @@ def build_scene_spec(
         return spec
     if not SO101_MODEL_PATH.is_file():
         raise FileNotFoundError(f"vendored SO-101 model missing: {SO101_MODEL_PATH}")
+    mass_profile = (
+        load_so101_mass_profile(mass_profile_path)
+        if mass_profile_path is not None
+        else None
+    )
     for prefix in ("left_", "right_"):
         robot = mujoco.MjSpec.from_file(str(SO101_MODEL_PATH))
         _white_robot_materials(robot)
+        if mass_profile is not None:
+            robot_name = prefix.removesuffix("_")
+            payload_id = mass_profile["scene_defaults"]["robot_payloads"][robot_name]
+            apply_so101_mass_profile(robot, mass_profile, payload_id=payload_id)
         spec.attach(
             robot,
             frame=spec.frame(f"{prefix}robot_mount"),
@@ -634,9 +654,11 @@ def initialize_robot_poses(
 def scene_summary(
     config_path: Path = DEFAULT_CAPTURE_CONFIG,
     *,
+    mass_profile_path: Path = DEFAULT_SO101_MASS_PROFILE,
     piece_layout: str = "standard",
 ) -> dict[str, Any]:
     config = load_capture_config(config_path)
+    mass_profile = load_so101_mass_profile(mass_profile_path)
     geometry = scene_geometry(config)
     robots = config["simulation_estimates"]["robots"]
     board_local_x = float(
@@ -663,6 +685,7 @@ def scene_summary(
             "model": "MuJoCo Menagerie robotstudio_so101",
             "upstream_commit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
             "pose_confidence": "mounts_photo_registered_joint_poses_not_calibrated",
+            "mass_profile": mass_profile_summary(mass_profile),
             "mounts": [
                 {
                     "name": robot["name"],

@@ -10,7 +10,12 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from sim2claw import studio_assets
-from sim2claw.paths import DEFAULT_CAPTURE_CONFIG, SO101_MODEL_PATH, STUDIO_ASSET_ROOT
+from sim2claw.paths import (
+    DEFAULT_CAPTURE_CONFIG,
+    DEFAULT_SO101_MASS_PROFILE,
+    SO101_MODEL_PATH,
+    STUDIO_ASSET_ROOT,
+)
 from sim2claw.physical_gateway import PhysicalGatewayError
 from sim2claw.studio_catalog import (
     build_catalog,
@@ -273,10 +278,19 @@ class StudioCatalogTest(unittest.TestCase):
             "two_sided_sparse_pawns_rows_1_2_7_8_v1",
         )
         scene_path = Path(studio_assets.__file__).with_name("scene.py")
+        mass_profile_path = Path(studio_assets.__file__).with_name(
+            "mass_profile.py"
+        )
         expected = {
             "scene_py_sha256": hashlib.sha256(scene_path.read_bytes()).hexdigest(),
+            "mass_profile_py_sha256": hashlib.sha256(
+                mass_profile_path.read_bytes()
+            ).hexdigest(),
             "capture_config_sha256": hashlib.sha256(
                 DEFAULT_CAPTURE_CONFIG.read_bytes()
+            ).hexdigest(),
+            "so101_mass_profile_sha256": hashlib.sha256(
+                DEFAULT_SO101_MASS_PROFILE.read_bytes()
             ).hexdigest(),
             "so101_model_sha256": hashlib.sha256(
                 SO101_MODEL_PATH.read_bytes()

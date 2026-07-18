@@ -9,7 +9,12 @@ from typing import Any
 
 import mujoco
 
-from .paths import DEFAULT_CAPTURE_CONFIG, SO101_MODEL_PATH, STUDIO_ASSET_ROOT
+from .paths import (
+    DEFAULT_CAPTURE_CONFIG,
+    DEFAULT_SO101_MASS_PROFILE,
+    SO101_MODEL_PATH,
+    STUDIO_ASSET_ROOT,
+)
 from .render import write_rgb_png
 from .scene import (
     CURRENT_TASK_LAYOUT_ID,
@@ -92,6 +97,7 @@ def render_studio_assets(
         )
 
     scene_source = Path(__file__).with_name("scene.py")
+    mass_profile_source = Path(__file__).with_name("mass_profile.py")
     receipt = {
         "schema_version": "sim2claw.studio_assets.v1",
         "proof_class": "simulation_inspection_render",
@@ -102,7 +108,9 @@ def render_studio_assets(
         "settle_steps": settle_steps,
         "sources": {
             "scene_py_sha256": _sha256(scene_source),
+            "mass_profile_py_sha256": _sha256(mass_profile_source),
             "capture_config_sha256": _sha256(DEFAULT_CAPTURE_CONFIG),
+            "so101_mass_profile_sha256": _sha256(DEFAULT_SO101_MASS_PROFILE),
             "so101_model_sha256": _sha256(SO101_MODEL_PATH),
         },
         "artifacts": artifacts,

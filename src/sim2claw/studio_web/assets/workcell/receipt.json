@@ -4,21 +4,21 @@
       "camera": "studio_overview",
       "height": 720,
       "path": "studio-overview.png",
-      "sha256": "88c4f018869ffa6cbc6b6b79f938a5ad4fca32b361d5bb9c68169b45c4afe116",
+      "sha256": "47d8f8e51c6ae12e2205750a7d709c613f47bb9cc690cd2562724b8f37688d78",
       "width": 1280
     },
     {
       "camera": "studio_left",
       "height": 720,
       "path": "studio-left.png",
-      "sha256": "d2a80298f4f1b104493ba75773af6747d7a2d982ab2793ada7141e4a805b3c42",
+      "sha256": "df67df71d4b030a8f187fc455b429789b0a2ebc841f18cdf191380c8bbbfbe15",
       "width": 960
     },
     {
       "camera": "studio_right",
       "height": 720,
       "path": "studio-right.png",
-      "sha256": "48291a1761a154288ee32da96c8f4f56af72c5f6b8739dcd631acb1f9179af19",
+      "sha256": "ffd27f28db88c8e5abc914d43de279b999e54df5adb68c5cff98994d3e37e5da",
       "width": 960
     }
   ],
@@ -30,7 +30,9 @@
   "settle_steps": 500,
   "sources": {
     "capture_config_sha256": "0e7f603222b03b30d9c9bb4295e0f709f9b89ce71522938038e06234fbe14229",
-    "scene_py_sha256": "b361c9a1c41daf1b928532a26b7a53612ffeb2960709d527b0005d997e8aa590",
+    "mass_profile_py_sha256": "e176f49413b42e6d27b427062573df1fa85f7691c7c1051b800d3abac0d5d08d",
+    "scene_py_sha256": "b8e084c946328f7e85f1634f495f623d04804f4af6655b5cf1dbda6959d1bfd7",
+    "so101_mass_profile_sha256": "bc0443d2411e7fa61a59bcde33327d0eb1e505f9224bab98c1ab2d51ed3c1648",
     "so101_model_sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
   },
   "training_input": false

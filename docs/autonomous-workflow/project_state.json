@@ -68,7 +68,19 @@
     "policy_parameters": 957350,
     "status": "immutable_narrow_clean_room_act_proof",
     "may_be_evolved_into_general_policy": false,
-    "broad_pick_place_claim": false
+    "broad_pick_place_claim": false,
+    "accepted_receipt_environment": "pre_owner_measured_mass_profile",
+    "current_mass_profile_requalification": "not_run"
+  },
+  "physical_mass_model": {
+    "profile": "calibration/so101/follower_mass_profile_v1.json",
+    "status": "owner_measured_printed_parts_with_specified_servos_and_camera_plus_bounded_hardware_mount_and_cable_estimates",
+    "bare_arm_total_g": 907,
+    "left_arm_with_d405_total_g": 1006,
+    "left_arm_total_range_g": [965, 1047],
+    "center_of_mass_status": "cad_prior_not_identified",
+    "inertia_status": "cad_full_tensors_scaled_linearly_not_identified",
+    "physical_authority": false
   },
   "act_program": {
     "curriculum": [

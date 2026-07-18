@@ -70,7 +70,7 @@ class ExpertEpisode:
 
 
 class ChessRookLiftEnv:
-    """Small state/action wrapper around the photo-aligned MuJoCo workcell."""
+    """Narrow task wrapper; defaults to the frozen pre-mass-profile dynamics."""
 
     def __init__(
         self,
@@ -78,13 +78,17 @@ class ChessRookLiftEnv:
         *,
         seed: int,
         piece_offset_xy_m: tuple[float, float],
+        mass_profile_path: Path | None = None,
     ) -> None:
         self.contract = contract
         self.seed = int(seed)
         self.arm = str(contract["scene"]["arm"])
         np.random.seed(self.seed)
 
-        self.model = build_scene_spec().compile()
+        # The default stays None because the v3 rook-lift and GR00T contracts
+        # were frozen before the mass profile existed. New requalification runs
+        # may pass the profile explicitly without moving the legacy evaluator.
+        self.model = build_scene_spec(mass_profile_path=mass_profile_path).compile()
         self.data = mujoco.MjData(self.model)
         initialize_robot_poses(self.model, self.data)
         for _ in range(int(contract["episode"]["settle_steps"])):
