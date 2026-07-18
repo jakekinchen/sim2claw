@@ -70,9 +70,46 @@ def resolve_media_token(token: str, repo_root: Path = REPO_ROOT) -> Path:
     ]
     if not any(candidate.is_relative_to(root) for root in allowed_roots):
         raise ValueError("media path is outside generated artifact storage")
-    if candidate.suffix.lower() not in {".png", ".jpg", ".jpeg", ".webp", ".mp4", ".webm"}:
+    suffix = candidate.suffix.lower()
+    if suffix not in {
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".webp",
+        ".mp4",
+        ".webm",
+        ".json",
+    }:
         raise ValueError("media type is not allowed")
+    if suffix == ".json" and not (
+        candidate.name == "state_trace.json"
+        or (
+            candidate.parent.name == "state_traces"
+            and candidate.name.startswith("episode_")
+        )
+    ):
+        raise ValueError("JSON media is limited to episode state traces")
     return candidate
+
+
+def _inspection(path: Path, repo_root: Path) -> dict[str, Any] | None:
+    trace = _read_json(path)
+    if trace.get("schema_version") != "sim2claw.mujoco_body_state_trace.v1":
+        return None
+    scene = trace.get("scene", {})
+    return {
+        "kind": "threejs_state_trace",
+        "trace_url": media_url(path, repo_root),
+        "scene_url": str(
+            scene.get("manifest_url")
+            or f"/api/scene?layout={scene.get('piece_layout', 'standard')}"
+        ),
+        "frame_count": int(trace.get("frame_count") or 0),
+        "fps": float(trace.get("fps") or 0),
+        "duration_seconds": float(trace.get("duration_seconds") or 0),
+        "physics_authority": "mujoco",
+        "renderer_authority": "inspection_only",
+    }
 
 
 def _proof_label(proof_class: str) -> str:
@@ -188,6 +225,8 @@ def _dataset_episodes(
             instruction = str(task_texts[0]) if task_texts else _title(task_id)
             frame_count = row.get("length")
             duration = float(frame_count) / fps if frame_count and fps else None
+            trace_path = dataset / "state_traces" / f"episode_{index:06d}.json"
+            inspection = _inspection(trace_path, repo_root) if trace_path.is_file() else None
             metrics = [
                 _metric("Seed", detail.get("seed", "—")),
                 _metric("Frames", frame_count or "—"),
@@ -210,8 +249,7 @@ def _dataset_episodes(
                         tone="good",
                     )
                 )
-            episodes.append(
-                {
+            catalog_episode = {
                     "id": f"{task_id}:episode-{index:06d}",
                     "task_id": task_id,
                     "title": f"Episode {index + 1:02d}",
@@ -244,7 +282,9 @@ def _dataset_episodes(
                     "phases": phases,
                     "case_id": detail.get("case_id") if isinstance(detail, dict) else None,
                 }
-            )
+            if inspection is not None:
+                catalog_episode["inspection"] = inspection
+            episodes.append(catalog_episode)
     return episodes
 
 
@@ -277,6 +317,15 @@ def _act_episodes(
         else:
             continue
         episode = receipt.get("episode", {})
+        state_trace_value = receipt.get("artifacts", {}).get("state_trace")
+        state_trace_path = Path(str(state_trace_value or "")).expanduser()
+        if state_trace_path and not state_trace_path.is_absolute():
+            state_trace_path = repo_root / state_trace_path
+        inspection = (
+            _inspection(state_trace_path, repo_root)
+            if state_trace_path.is_file()
+            else None
+        )
         proof_class = str(receipt.get("proof_class") or "simulation_learned_policy_episode")
         success = receipt.get("success")
         metrics = [
@@ -299,8 +348,7 @@ def _act_episodes(
                 tone="good",
             ),
         ]
-        episodes.append(
-            {
+        catalog_episode = {
                 "id": f"{task_id}:held-out-{episode.get('seed', 'episode')}",
                 "task_id": task_id,
                 "title": "Held-out policy replay",
@@ -324,7 +372,9 @@ def _act_episodes(
                 "phases": _phase_segments(contract),
                 "case_id": "held_out_evaluation",
             }
-        )
+        if inspection is not None:
+            catalog_episode["inspection"] = inspection
+        episodes.append(catalog_episode)
     return episodes
 
 
@@ -358,8 +408,12 @@ def _grasp_episodes(repo_root: Path) -> list[dict[str, Any]]:
             )
             cursor += steps
         proof_class = str(receipt.get("proof_class") or "simulation_scripted_grasp_probe")
-        episodes.append(
-            {
+        trace_value = receipt.get("artifacts", {}).get("state_trace")
+        trace_path = Path(str(trace_value or "")).expanduser()
+        if trace_path and not trace_path.is_absolute():
+            trace_path = repo_root / trace_path
+        inspection = _inspection(trace_path, repo_root) if trace_path.is_file() else None
+        catalog_episode = {
                 "id": "scripted_grasp_probe:latest",
                 "task_id": "scripted_grasp_probe",
                 "title": "Five-phase grasp probe",
@@ -399,6 +453,64 @@ def _grasp_episodes(repo_root: Path) -> list[dict[str, Any]]:
                 ],
                 "phases": segments,
                 "case_id": "scripted_probe",
+            }
+        if inspection is not None:
+            catalog_episode["inspection"] = inspection
+        episodes.append(catalog_episode)
+    return episodes
+
+
+def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
+    episodes: list[dict[str, Any]] = []
+    receipt_paths = sorted(
+        (repo_root / "datasets" / "act_source_recordings").glob(
+            "*/recording_receipt.json"
+        )
+    )
+    for sequence, receipt_path in enumerate(receipt_paths):
+        receipt = _read_json(receipt_path)
+        if receipt.get("mode") != "simulation_follower":
+            continue
+        trace_path = receipt_path.parent / str(
+            receipt.get("state_trace_path") or "state_trace.json"
+        )
+        inspection = _inspection(trace_path, repo_root) if trace_path.is_file() else None
+        if inspection is None:
+            continue
+        proof_class = str(
+            receipt.get("proof_class") or "simulation_teleoperation_source"
+        )
+        outcome = str(receipt.get("outcome_label") or "recorded")
+        duration = float(receipt.get("duration_seconds") or 0)
+        episodes.append(
+            {
+                "id": f"{receipt.get('task_id', 'teleop')}:{receipt.get('recording_id', sequence)}",
+                "task_id": str(receipt.get("task_id") or "act_source_recordings"),
+                "title": str(receipt.get("label") or f"Teleop recording {sequence + 1}"),
+                "subtitle": (
+                    f"{_title(str(receipt.get('piece_id', 'piece')))} · "
+                    f"{receipt.get('source_square', '—')} → {receipt.get('destination_square', '—')}"
+                ),
+                "sequence": 30_000 + sequence,
+                "status": "passed" if outcome == "success" else "recorded",
+                "terminal_outcome": outcome,
+                "proof_class": proof_class,
+                "proof_label": _proof_label(proof_class),
+                "physical_authority": False,
+                "frame_count": inspection["frame_count"],
+                "fps": inspection["fps"],
+                "duration_seconds": duration or inspection["duration_seconds"],
+                "recorded_at": _iso_timestamp(receipt_path),
+                "media": {"kind": "none"},
+                "inspection": inspection,
+                "camera": "free_orbit",
+                "metrics": [
+                    _metric("Samples", receipt.get("sample_count", "—")),
+                    _metric("Rate", receipt.get("sample_hz", "—"), unit="Hz"),
+                    _metric("Outcome", _title(outcome)),
+                ],
+                "phases": [{"name": "Teleoperation", "start": 0.0, "end": 1.0}],
+                "case_id": "simulation_teleoperation_source",
             }
         )
     return episodes
@@ -568,6 +680,7 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         _dataset_episodes(repo_root, contracts)
         + _act_episodes(repo_root, contracts)
         + _grasp_episodes(repo_root)
+        + _teleop_episodes(repo_root)
     )
     episodes.sort(key=lambda row: (str(row["task_id"]), int(row["sequence"])))
 
@@ -627,7 +740,9 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         {
             "id": "photo_aligned_chess_workcell_v1",
             "title": "Chess table workcell",
-            "subtitle": "MuJoCo · dual SO-101 · 32 dynamic pieces",
+            "subtitle": "MuJoCo · dual SO-101 · 16 sparse pawns",
+            "piece_layout": "sparse_two_sided_pawns",
+            "piece_layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
             "status": "simulation_ready",
             "task_count": len(tasks),
             "robot_count": 2,
@@ -636,7 +751,10 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
             "poster_camera": "studio_overview",
             "asset_revision": str(
                 studio_asset_receipt.get("sources", {}).get(
-                    "capture_config_sha256", "unversioned"
+                    "scene_py_sha256",
+                    studio_asset_receipt.get("sources", {}).get(
+                        "capture_config_sha256", "unversioned"
+                    ),
                 )
             )[:8],
         }

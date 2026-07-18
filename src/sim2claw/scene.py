@@ -158,7 +158,43 @@ def _format_vector(values: tuple[float, ...] | list[float]) -> str:
     return " ".join(f"{value:.9g}" for value in values)
 
 
-def _piece_geoms(kind: str, rgba: str) -> list[str]:
+def _piece_geoms(
+    kind: str,
+    rgba: str,
+    *,
+    detailed_pawn: bool = False,
+) -> list[str]:
+    if kind == "pawn" and detailed_pawn:
+        # A compact lathed profile matching the owner's physical wooden pawn:
+        # stepped foot, rounded/flared base, narrow waist, collar, and ball.
+        # The short overlapping rings avoid the pill-on-discs silhouette of the
+        # old capsule primitive while remaining native MuJoCo collision geoms.
+        pawn_profile = (
+            (0.0130, 0.0024, 0.0024),
+            (0.0138, 0.0016, 0.0062),
+            (0.0126, 0.0015, 0.0089),
+            (0.0103, 0.0011, 0.0170),
+            (0.0092, 0.0011, 0.0190),
+            (0.0080, 0.0011, 0.0210),
+            (0.0069, 0.0011, 0.0230),
+            (0.0062, 0.0011, 0.0250),
+            (0.0062, 0.0011, 0.0270),
+            (0.0068, 0.0011, 0.0290),
+            (0.0078, 0.0014, 0.0312),
+        )
+        rings = [
+            f'<geom type="cylinder" size="{radius:.4f} {half_height:.4f}" '
+            f'pos="0 0 {height:.4f}" rgba="{rgba}"/>'
+            for radius, half_height, height in pawn_profile
+        ]
+        return rings + [
+            f'<geom type="ellipsoid" size="0.0116 0.0116 0.0052" '
+            f'pos="0 0 0.0135" rgba="{rgba}"/>',
+            f'<geom type="ellipsoid" size="0.0098 0.0098 0.0031" '
+            f'pos="0 0 0.0340" rgba="{rgba}"/>',
+            f'<geom type="sphere" size="0.0087" pos="0 0 0.0445" rgba="{rgba}"/>',
+        ]
+
     base = [
         f'<geom type="cylinder" size="0.014 0.004" pos="0 0 0.004" rgba="{rgba}"/>',
         f'<geom type="cylinder" size="0.0105 0.003" pos="0 0 0.011" rgba="{rgba}"/>',
@@ -208,8 +244,8 @@ def _piece_bodies(
     colors = {
         "white": "0.91 0.79 0.58 1",
         "black": "0.18 0.075 0.025 1",
-        "brown": "0.34 0.13 0.045 1",
-        "tan": "0.84 0.68 0.43 1",
+        "brown": "0.42 0.24 0.13 1",
+        "tan": "0.78 0.62 0.40 1",
     }
     pieces: list[tuple[str, str, int, int]] = []
     if piece_layout in {CURRENT_TASK_PIECE_LAYOUT, "teleop_pawns"}:
@@ -246,6 +282,7 @@ def _piece_bodies(
         raise ValueError(f"unknown chess piece layout: {piece_layout}")
 
     board_top = geometry.table_top + geometry.board_thickness + 0.001
+    detailed_pawns = piece_layout in {CURRENT_TASK_PIECE_LAYOUT, "teleop_pawns"}
     bodies: list[str] = []
     for color, kind, file_index, rank_index in pieces:
         local_x = (file_index - 3.5) * geometry.square_size
@@ -253,11 +290,16 @@ def _piece_bodies(
         dx, dy = _rotate_xy(local_x, local_y, geometry.board_yaw_degrees)
         square = f"{chr(ord('a') + file_index)}{rank_index + 1}"
         name = f"{color}_{kind}_{square}"
+        piece_geoms = _piece_geoms(
+            kind,
+            colors[color],
+            detailed_pawn=detailed_pawns,
+        )
         bodies.append(
             f'<body name="{name}" pos="{geometry.board_center[0] + dx:.9g} '
             f'{geometry.board_center[1] + dy:.9g} {board_top:.9g}" '
             f'euler="0 0 {geometry.board_yaw_degrees:.9g}">'
-            f'<freejoint name="{name}_free"/>{"".join(_piece_geoms(kind, colors[color]))}</body>'
+            f'<freejoint name="{name}_free"/>{"".join(piece_geoms)}</body>'
         )
     return bodies
 
@@ -361,7 +403,6 @@ def _fiducial_body(config: dict[str, Any], geometry: SceneGeometry) -> list[str]
 
 
 def _photo_background(config: dict[str, Any], geometry: SceneGeometry) -> list[str]:
-    half_length = geometry.table_length / 2.0
     half_width = geometry.table_width / 2.0
     background = config["simulation_estimates"]["background"]
     ledge = background["ledge"]

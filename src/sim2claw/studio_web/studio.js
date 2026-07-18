@@ -14,6 +14,9 @@ const state = {
   framePlaying: false,
   frameCache: new Map(),
   playbackRate: 1,
+  replayMode: "recorded",
+  threeViewer: null,
+  threeLoadId: 0,
   expandedTasks: new Set(),
   processHistory: new Map(),
   thumbnailObserver: null,
@@ -51,6 +54,11 @@ const elements = {
   libraryGroups: document.querySelector("#library-groups"),
   episodeTemplate: document.querySelector("#episode-template"),
   stage: document.querySelector("#episode-stage"),
+  replayModeSwitch: document.querySelector("#replay-mode-switch"),
+  threeReplay: document.querySelector("#three-replay"),
+  threeCanvas: document.querySelector("#three-canvas"),
+  threeStatus: document.querySelector("#three-status"),
+  threeReset: document.querySelector("#three-reset"),
   stagePortrait: document.querySelector("#stage-portrait"),
   stageKicker: document.querySelector("#stage-kicker"),
   stageTitle: document.querySelector("#stage-title"),
@@ -90,6 +98,7 @@ const elements = {
   recordSamples: document.querySelector("#record-samples"),
   recordRate: document.querySelector("#record-rate"),
   recordModeLabel: document.querySelector("#record-mode-label"),
+  recordCamera: document.querySelector("#record-camera"),
   recordPath: document.querySelector("#record-path"),
   recorderMessage: document.querySelector("#recorder-message"),
   jointBars: document.querySelector("#joint-bars"),
@@ -641,6 +650,8 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
   const episode = episodeById(identifier);
   if (!episode) return;
   state.selectedEpisodeId = identifier;
+  state.threeLoadId += 1;
+  state.threeViewer?.pause();
   stopFramePlayback();
   elements.video.pause();
   elements.video.removeAttribute("src");
@@ -649,7 +660,9 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
   elements.previewVideo.load();
   elements.frame.removeAttribute("src");
   elements.previewFrame.removeAttribute("src");
-  elements.stage.classList.remove("has-video", "has-frames");
+  elements.stage.classList.remove("has-video", "has-frames", "has-three");
+  elements.stage.dataset.replayMode = "recorded";
+  elements.replayModeSwitch.hidden = true;
   elements.preview.className = "timeline-preview";
   elements.preview.hidden = true;
   elements.scrubber.value = "0";
@@ -659,7 +672,8 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
 
   const neutralMetrics = episode.metrics.filter((metric) => !metric.tone || metric.tone === "neutral");
   const inlineFacts = neutralMetrics.slice(0, 2).map((metric) => `${metric.label} ${formatMetric(metric)}`);
-  if (episode.fps) inlineFacts.push(`${episode.fps} fps`);
+  if (episode.inspection?.fps) inlineFacts.push(`${episode.inspection.fps} Hz state trace`);
+  else if (episode.fps) inlineFacts.push(`${episode.fps} fps`);
   text(elements.stageKicker, [episode.proof_label, ...inlineFacts].join(" · "));
   text(elements.stageTitle, episodeDisplayTitle(episode));
   text(elements.stageSubtitle, episode.subtitle);
@@ -684,6 +698,16 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
     preloadFrameWindow(episode, 0);
   }
 
+  if (episode.inspection?.kind === "threejs_state_trace") {
+    elements.stage.classList.add("has-three");
+    const hasRecordedMedia = ["video", "frames"].includes(episode.media.kind);
+    elements.replayModeSwitch.hidden = !hasRecordedMedia;
+    setReplayMode("three", { pauseCurrent: false });
+    loadThreeEpisode(episode, state.threeLoadId);
+  } else {
+    setReplayMode("recorded", { pauseCurrent: false });
+  }
+
   updateTransportSemantics(episode);
   renderMetrics(episode);
   renderPhases(episode.phases || []);
@@ -693,12 +717,80 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
   if (updateRoute) history.replaceState(null, "", `#/episodes/${encodeURIComponent(identifier)}`);
 }
 
+function whenThreeReady() {
+  if (window.Sim2Claw3D) return Promise.resolve(window.Sim2Claw3D);
+  return new Promise((resolve) => {
+    window.addEventListener("sim2claw-3d-ready", () => resolve(window.Sim2Claw3D), { once: true });
+  });
+}
+
+async function ensureThreeViewer() {
+  if (state.threeViewer) return state.threeViewer;
+  const { ThreeReplayViewer } = await whenThreeReady();
+  const viewer = new ThreeReplayViewer({
+    canvas: elements.threeCanvas,
+    status: elements.threeStatus,
+  });
+  viewer.onTime = ({ fraction, current }) => {
+    if (state.replayMode === "three") updateProgress(fraction, current);
+  };
+  viewer.onPlayState = (playing) => {
+    if (state.replayMode !== "three") return;
+    elements.play.classList.toggle("is-playing", playing);
+    elements.play.setAttribute("aria-label", playing ? "Pause episode" : "Play episode");
+  };
+  viewer.setRate(state.playbackRate);
+  state.threeViewer = viewer;
+  return viewer;
+}
+
+async function loadThreeEpisode(episode, loadId) {
+  try {
+    const viewer = await ensureThreeViewer();
+    if (loadId !== state.threeLoadId || episode.id !== state.selectedEpisodeId) return;
+    await viewer.load(episode.inspection);
+    if (loadId !== state.threeLoadId || episode.id !== state.selectedEpisodeId) return;
+    viewer.setRate(state.playbackRate);
+    if (state.replayMode === "three") updateProgress(0, 0);
+  } catch (error) {
+    if (loadId !== state.threeLoadId) return;
+    text(elements.threeStatus, `3D inspection unavailable · ${error.message}`);
+  }
+}
+
+function setReplayMode(mode, { pauseCurrent = true } = {}) {
+  const episode = selectedEpisode();
+  const next = mode === "three" && episode?.inspection ? "three" : "recorded";
+  if (pauseCurrent) {
+    state.threeViewer?.pause();
+    elements.video.pause();
+    stopFramePlayback();
+  }
+  state.replayMode = next;
+  elements.stage.dataset.replayMode = next;
+  elements.replayModeSwitch.querySelectorAll("[data-replay-mode]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.replayMode === next));
+  });
+  if (next === "three") {
+    text(elements.cameraSourceLabel, "PHYSICS TRACE");
+    text(elements.cameraName, "MUJOCO / FREE ORBIT");
+  } else if (episode) {
+    text(elements.cameraSourceLabel, "RECORDED VIEW");
+    text(elements.cameraName, `${formatIdentifier(episode.camera || "workcell")} / SOURCE`);
+  }
+  if (episode) {
+    updateTransportSemantics(episode);
+    renderTimelineTicks(episode);
+  }
+}
+
 function updateTransportSemantics(episode) {
-  const frames = episode.media.kind === "frames";
-  text(elements.jumpBack, frames ? "−1 frame" : "−5 sec");
-  text(elements.jumpForward, frames ? "+1 frame" : "+5 sec");
-  elements.jumpBack.setAttribute("aria-label", frames ? "Go back one frame" : "Go back five seconds");
-  elements.jumpForward.setAttribute("aria-label", frames ? "Go forward one frame" : "Go forward five seconds");
+  const three = state.replayMode === "three" && episode.inspection;
+  const frames = !three && episode.media.kind === "frames";
+  text(elements.jumpBack, three ? "−1 state" : frames ? "−1 frame" : "−5 sec");
+  text(elements.jumpForward, three ? "+1 state" : frames ? "+1 frame" : "+5 sec");
+  elements.jumpBack.setAttribute("aria-label", three ? "Go back one physics state" : frames ? "Go back one frame" : "Go back five seconds");
+  elements.jumpForward.setAttribute("aria-label", three ? "Go forward one physics state" : frames ? "Go forward one frame" : "Go forward five seconds");
 }
 
 function renderMetrics(episode) {
@@ -746,7 +838,10 @@ function renderPhases(phases) {
 
 function renderTimelineTicks(episode) {
   elements.timelineTicks.replaceChildren();
-  const duration = episode.media.kind === "frames"
+  const three = state.replayMode === "three" && episode.inspection;
+  const duration = three
+    ? episode.inspection.duration_seconds
+    : episode.media.kind === "frames"
     ? episode.media.urls.length
     : episode.duration_seconds || 0;
   const count = 6;
@@ -755,7 +850,7 @@ function renderTimelineTicks(episode) {
     tick.className = "timeline-tick";
     const label = document.createElement("span");
     const value = duration * index / (count - 1);
-    text(label, episode.media.kind === "frames" ? `${Math.round(value)}f` : `${Math.round(value)}s`);
+    text(label, !three && episode.media.kind === "frames" ? `${Math.round(value)}f` : `${Math.round(value)}s`);
     tick.append(label);
     elements.timelineTicks.append(tick);
   }
@@ -770,7 +865,9 @@ function updateSelectedCardState() {
 function togglePlayback() {
   const episode = selectedEpisode();
   if (!episode) return;
-  if (episode.media.kind === "video") {
+  if (state.replayMode === "three" && episode.inspection) {
+    state.threeViewer?.toggle();
+  } else if (episode.media.kind === "video") {
     if (elements.video.paused) elements.video.play().catch(() => {});
     else elements.video.pause();
   } else if (episode.media.kind === "frames") {
@@ -856,14 +953,21 @@ function updateProgress(fraction, seconds) {
 
 function stepFrames(delta) {
   const episode = selectedEpisode();
-  if (!episode || episode.media.kind !== "frames") return;
+  if (!episode) return;
+  if (state.replayMode === "three" && episode.inspection) {
+    state.threeViewer?.step(delta);
+    return;
+  }
+  if (episode.media.kind !== "frames") return;
   showFrame(episode, state.frameIndex + delta);
 }
 
 function jumpSeconds(delta) {
   const episode = selectedEpisode();
   if (!episode) return;
-  if (episode.media.kind === "video") {
+  if (state.replayMode === "three" && episode.inspection) {
+    if (state.threeViewer) state.threeViewer.applyTime(state.threeViewer.currentTime + delta);
+  } else if (episode.media.kind === "video") {
     elements.video.currentTime = Math.max(0, Math.min(elements.video.duration || 0, elements.video.currentTime + delta));
   } else {
     const fps = Number(episode.media.fps || episode.fps || 1);
@@ -874,7 +978,8 @@ function jumpSeconds(delta) {
 function performPrimaryStep(direction) {
   const episode = selectedEpisode();
   if (!episode) return;
-  if (episode.media.kind === "frames") stepFrames(direction);
+  if (state.replayMode === "three" && episode.inspection) state.threeViewer?.step(direction);
+  else if (episode.media.kind === "frames") stepFrames(direction);
   else jumpSeconds(direction * 5);
 }
 
@@ -882,7 +987,9 @@ function seekFraction(fraction) {
   const episode = selectedEpisode();
   if (!episode) return;
   const safe = Math.max(0, Math.min(1, fraction));
-  if (episode.media.kind === "video") {
+  if (state.replayMode === "three" && episode.inspection) {
+    state.threeViewer?.setFraction(safe);
+  } else if (episode.media.kind === "video") {
     if (Number.isFinite(elements.video.duration)) elements.video.currentTime = safe * elements.video.duration;
   } else {
     showFrame(episode, Math.round(safe * (episode.media.urls.length - 1)));
@@ -893,6 +1000,7 @@ function cycleSpeed() {
   const rates = [0.5, 1, 2];
   state.playbackRate = rates[(rates.indexOf(state.playbackRate) + 1) % rates.length];
   elements.video.playbackRate = state.playbackRate;
+  state.threeViewer?.setRate(state.playbackRate);
   text(elements.speed, `${state.playbackRate}×`);
   if (state.framePlaying) startFramePlayback();
 }
@@ -900,6 +1008,10 @@ function cycleSpeed() {
 function updateTimelinePreview(event) {
   const episode = selectedEpisode();
   if (!episode || window.matchMedia("(hover: none)").matches) return;
+  if (state.replayMode === "three" || episode.media.kind === "none") {
+    elements.preview.hidden = true;
+    return;
+  }
   const bounds = elements.timeline.getBoundingClientRect();
   const fraction = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
   elements.preview.hidden = false;
@@ -941,7 +1053,11 @@ function renderEvidence(episode) {
     ["Case", formatIdentifier(episode.case_id || "Not recorded")],
     ["Recorded", episode.recorded_at ? new Date(episode.recorded_at).toLocaleString() : "Not recorded"],
     ["Proof class", episode.proof_class],
-    ["Media", episode.media.kind === "video" ? "Recorded video" : `${episode.media.urls?.length || 0} rendered frames`],
+    ["Media", episode.inspection
+      ? `${episode.inspection.frame_count} MuJoCo states · interactive 3D`
+      : episode.media.kind === "video"
+      ? "Recorded video"
+      : `${episode.media.urls?.length || 0} rendered frames`],
     ...episode.metrics.map((metric) => [metric.label, formatMetric(metric)]),
   ];
   rows.forEach(([term, value]) => {
@@ -1134,7 +1250,7 @@ const defaultRecorderSettings = Object.freeze({
   mode: "simulation_follower",
   source_square: "b1",
   target_square: "b2",
-  sample_hz: 20,
+  sample_hz: 30,
 });
 
 function loadRecorderSettings() {
@@ -1219,7 +1335,7 @@ function renderRecorder() {
   const preflight = recorder.preflight;
   const status = recorder.status || "idle";
   document.body.dataset.recorderStatus = status;
-  const active = ["starting", "recording"].includes(status);
+  const active = ["starting", "recording", "stopping"].includes(status);
   const awaitingLabel = status === "awaiting_label";
   const hasError = status === "error";
   const selectedMode = selectedRecorderMode();
@@ -1236,6 +1352,15 @@ function renderRecorder() {
   text(elements.recordSamples, recorder.sample_count || 0);
   text(elements.recordRate, `${recorder.sample_hz || elements.sampleHz.value} Hz`);
   text(elements.recordModeLabel, (recorder.mode || selectedMode) === "physical_follower" ? "PHYSICAL" : "SIM");
+  const cameraStatus = recorder.overhead_video?.status;
+  text(
+    elements.recordCamera,
+    cameraStatus === "recording"
+      ? "C922 REC"
+      : cameraStatus === "completed"
+        ? "C922 saved"
+        : "C922 on Start",
+  );
   text(elements.recordPath, recorder.saved_path || recorder.draft_path || "datasets/act_source_recordings/");
 
   text(elements.simModeState, simReady ? "Ready" : "Missing");
@@ -1280,7 +1405,7 @@ function renderRecorder() {
 
   const selectedReady = selectedMode === "physical_follower" ? physicalReady : simReady;
   elements.startRecording.disabled = state.recorderRequestActive || state.physicalPreflighting || state.physicalCountdown !== null || state.physicalSyncing || active || awaitingLabel || hasError || !selectedReady || (selectedMode === "physical_follower" && !elements.physicalSafetyAck.checked);
-  elements.stopRecording.disabled = state.recorderRequestActive || !active;
+  elements.stopRecording.disabled = state.recorderRequestActive || !["starting", "recording"].includes(status);
   elements.labelForm.hidden = !awaitingLabel && !hasError;
   elements.labelForm.classList.toggle("is-error", hasError);
   elements.labelForm.querySelector(".save-button").hidden = hasError;
@@ -1334,11 +1459,13 @@ function renderRecorder() {
   } else if (state.physicalSyncing) {
     text(elements.recorderMessage, "Ramping the nearby follower to the leader pose through the reviewed gateway; torque will be off again when Sync completes.");
   } else if (status === "recording") {
-    text(elements.recorderMessage, "Recording leader targets and follower state. Stop when this demonstration or correction is complete.");
+    text(elements.recorderMessage, "Recording leader targets, follower state, and independent C922 overhead video. Stop when this demonstration or correction is complete.");
   } else if (status === "starting") {
-    text(elements.recorderMessage, "Opening the leader bus with torque disabled and initializing the selected follower…");
+    text(elements.recorderMessage, "Starting the overhead C922 first, then opening the leader bus and initializing the selected follower…");
+  } else if (status === "stopping") {
+    text(elements.recorderMessage, "Arm control is stopping; retaining one second of C922 post-roll and finalizing the video…");
   } else if (awaitingLabel) {
-    text(elements.recorderMessage, "Recording stopped. Add the observed skill and outcome before saving the raw source episode.");
+    text(elements.recorderMessage, "Recording stopped. The C922 video and one-second post-roll are retained; add the observed skill and outcome before saving.");
   } else if (status === "saved") {
     text(elements.recorderMessage, `Saved ${recorder.sample_count} samples. This episode is still pending replay and separate evaluator admission.`);
   } else if (hasError) {
@@ -1614,14 +1741,17 @@ elements.frame.addEventListener("load", () => {
   }
 });
 elements.video.addEventListener("timeupdate", () => {
+  if (state.replayMode === "three") return;
   const duration = elements.video.duration;
   updateProgress(duration ? elements.video.currentTime / duration : 0, elements.video.currentTime);
 });
 elements.video.addEventListener("play", () => {
+  if (state.replayMode === "three") return;
   elements.play.classList.add("is-playing");
   elements.play.setAttribute("aria-label", "Pause episode");
 });
 elements.video.addEventListener("pause", () => {
+  if (state.replayMode === "three") return;
   elements.play.classList.remove("is-playing");
   elements.play.setAttribute("aria-label", "Play episode");
 });
@@ -1650,6 +1780,10 @@ elements.jumpBack.addEventListener("click", () => performPrimaryStep(-1));
 elements.jumpForward.addEventListener("click", () => performPrimaryStep(1));
 elements.speed.addEventListener("click", cycleSpeed);
 elements.scrubber.addEventListener("input", () => seekFraction(Number(elements.scrubber.value) / 1000));
+elements.replayModeSwitch.querySelectorAll("[data-replay-mode]").forEach((button) => {
+  button.addEventListener("click", () => setReplayMode(button.dataset.replayMode));
+});
+elements.threeReset.addEventListener("click", () => state.threeViewer?.resetCamera());
 elements.timeline.addEventListener("pointermove", updateTimelinePreview);
 elements.timeline.addEventListener("pointerleave", () => { elements.preview.hidden = true; });
 elements.search.addEventListener("input", () => setQuery(elements.search.value));

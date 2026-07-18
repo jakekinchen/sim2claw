@@ -81,6 +81,21 @@ class SceneContractTest(unittest.TestCase):
         summary = scene_summary(piece_layout=CURRENT_TASK_PIECE_LAYOUT)
         self.assertEqual(summary["piece_count"], 16)
 
+        pawn_body = mujoco.mj_name2id(
+            model,
+            mujoco.mjtObj.mjOBJ_BODY,
+            "brown_pawn_a2",
+        )
+        pawn_geom_types = [
+            mujoco.mjtGeom(int(model.geom_type[geom_id]))
+            for geom_id in range(model.ngeom)
+            if int(model.geom_bodyid[geom_id]) == pawn_body
+        ]
+        self.assertEqual(pawn_geom_types.count(mujoco.mjtGeom.mjGEOM_CYLINDER), 11)
+        self.assertEqual(pawn_geom_types.count(mujoco.mjtGeom.mjGEOM_ELLIPSOID), 2)
+        self.assertEqual(pawn_geom_types.count(mujoco.mjtGeom.mjGEOM_SPHERE), 1)
+        self.assertNotIn(mujoco.mjtGeom.mjGEOM_CAPSULE, pawn_geom_types)
+
     def test_board_reaching_arm_tracks_board_length_centerline(self) -> None:
         summary = scene_summary()
         mounts = {
