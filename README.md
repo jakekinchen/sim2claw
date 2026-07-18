@@ -26,6 +26,8 @@ they grant no authority or proof that anything exists or works here.
 7. [First ACT chess-rook run](./docs/run-logs/2026-07-17-act-chess-rook-lift.md)
 8. [GR00T N1.7 overnight campaign](./docs/run-logs/2026-07-18-groot-n17-chess-overnight.md)
 9. [NVIDIA machine 2 recovery goal](./docs/goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md)
+10. [Goal-conditioned ACT pick-and-place program](./docs/goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md)
+11. [Goal-conditioned ACT architecture decision](./docs/decisions/0004-goal-conditioned-act-pick-place.md)
 
 ## Install and verify
 

@@ -32,15 +32,60 @@ repo-native implementation and evidence for every capability.
   experts passed. Their ignored GR00T LeRobot v2.1 export contains 8,712 frames
   with parquet/video/meta/stats identities bound by a dataset receipt.
 
+## Governing long-term direction
+
+The primary interpretable manipulation lane is now a new goal-conditioned,
+state-based ACT program. The governing design sentence is:
+
+> Teleoperate grasp styles and corrections, not every task instance; generate
+> the task instances combinatorially in simulation using object- and
+> target-relative trajectory retargeting.
+
+`chess_rook_lift_v1` and its accepted checkpoint remain frozen as narrow proof
+that the clean-room ACT implementation can learn one fixed rook-lift task. They
+must not be revised into, relabeled as, or used to claim the general policy.
+The replacement contract will be `chess_pick_place_act_state_v1`: continuous
+selected-piece and destination poses, relative transforms, robot state, object
+geometry, and observable skill state in; six absolute SO-101 joint targets out.
+Fixed episode progress, timed phase progress, and square-specific policies are
+not part of that contract.
+
+The first reliable system is hierarchical. A task planner resolves language to
+`piece_id`, measured/simulated `piece_pose`, and continuous `target_pose`; an
+observable consequence-driven skill state machine sequences manipulation; ACT
+learns the contact-sensitive grasp/lift and place/release skills. Ordinary
+motion planning or the constructive controller owns initial free-space
+stand-off, transit, and retreat. Any such result is claimed as hierarchical
+learned manipulation, not end-to-end policy control.
+
+GR00T remains a separate RGB/language generalization challenger. It reuses the
+same evaluator semantics but does not displace the state/goal ACT lane, and ACT
+does not consume raw chess language or require a checkpoint per piece-square
+pair. The accepted architecture and long-horizon execution contract are in
+[`docs/decisions/0004-goal-conditioned-act-pick-place.md`](docs/decisions/0004-goal-conditioned-act-pick-place.md)
+and
+[`docs/goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md`](docs/goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md).
+
 ## Immediate mission
 
-1. Validate the dynamic dataset through pinned NVIDIA source commit
-   `23ace64f...`, then run one bounded GR00T N1.7 post-training/policy-server
-   campaign on a single Brev A100-80GB worker.
-2. Evaluate fixed GR00T checkpoints on the frozen held-out rook-to-c6 and
-   king-to-e6 consequences without allowing reward or training to promote.
-3. Preserve selected evidence, prove paid-compute teardown, and keep broader
-   full-board, calibration, gateway, and hardware claims closed.
+1. Freeze `configs/tasks/chess_pick_place_act_state_v1.json`, its observation
+   and action schema, consequence-driven skill transitions, evaluator gates,
+   object-family descriptors, and train/held-out pose/composition splits before
+   generating training rows.
+2. Build a repo-native simulator data path that ingests constructive-expert and
+   simulated-teleoperation source episodes, converts contact segments to
+   object/target-relative trajectories, retargets them across continuous poses,
+   plans collision-free connecting motion, solves IK, replays every candidate
+   in MuJoCo, and admits strict successes only.
+3. Execute the ACT curriculum in order: variable-pose grasp/lift, variable-goal
+   placement from an already-held piece, sparse-board full pick/place,
+   combinatorial held-outs, distractors/collision avoidance, then corrective
+   recovery data. The first practical dataset target is 10--20 good simulated
+   source episodes plus constructive experts expanded into 500--2,000 accepted
+   episodes for one grasp family.
+4. Keep the gated GR00T campaign preserved as a challenger and external-access
+   blocker; do not spend more Brev money until its access preflight passes and a
+   separately bounded task is authorized.
 
 ## Non-goals at this boundary
 
@@ -49,6 +94,12 @@ repo-native implementation and evidence for every capability.
 - Do not treat imported documents as live authority or current proof.
 - Do not claim Mac, NVIDIA, simulator, policy, gateway, camera, serial, or robot
   readiness before fresh repo-native verification exists.
+- Do not manually teleoperate every piece-square combination, encode squares as
+  policy classes, or train one checkpoint per pair.
+- Do not present retargeted demonstrations as proof that a policy generalized;
+  only frozen held-out consequence evaluation can establish that claim.
+- Do not claim an externally staged or planned hierarchy is an entirely
+  end-to-end learned policy.
 
 ## First milestone acceptance status
 
@@ -64,10 +115,16 @@ repo-native implementation and evidence for every capability.
   repo-native code/configuration; one model-owned held-out episode passed.
 - PASS: a dynamic language/RGB chess contract, accepted sparse-board expert
   dataset, disjoint held-out cases, and consequence evaluator are frozen.
-- PENDING: official NVIDIA loader, GR00T training/server, learned closed-loop
-  consequences, and Brev teardown receipts.
+- PASS: the earlier paid GR00T worker was torn down and authenticated Brev
+  inventory was verified empty.
+- PENDING: the new goal-conditioned ACT contract, retarget/validation pipeline,
+  ACT-1 through ACT-6 evidence, and any later sim-plus-real anchoring evidence.
+- BLOCKED CHALLENGER: GR00T optimizer steps and learned closed-loop consequences
+  remain blocked on gated `nvidia/Cosmos-Reason2-2B` access.
 
-The robot geometry/composition slice, one narrow ACT simulation task, and the
-local GR00T data/evaluator foundation are complete. This does not claim a
-working GR00T policy, broad policy robustness, full-board manipulation,
-calibration, gateway, sim-to-real transfer, or a physical workcell gate.
+The robot geometry/composition slice, one narrow frozen ACT simulation task,
+and the local GR00T data/evaluator foundation are complete. The goal-conditioned
+ACT program is planned but not yet implemented or proven. This does not claim a
+working pick/place policy, working GR00T policy, broad policy robustness,
+full-board manipulation, calibration, gateway, sim-to-real transfer, or a
+physical workcell gate.

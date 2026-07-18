@@ -6,10 +6,12 @@ Milestones are required outcomes, not detailed subtasks. The Executor and Review
 
 ## Overall Goal
 
-Prove a clean-room, language-conditioned GR00T N1.7 policy-server path that
-observes the simulated chess workcell and moves a named piece to a named square.
-The path must preserve evaluator-owned promotion, bounded paid compute, and
-simulation-only authority.
+Prove a clean-room hierarchical manipulation system that moves a selected chess
+piece to a continuous destination pose. The primary reliable lane is explicit
+state/goal ACT trained from a small source set expanded by object/target-relative
+retargeting and strict simulation validation. GR00T remains the separate
+RGB/language generalization challenger. Both lanes preserve evaluator-owned
+promotion, bounded paid compute, and simulation-only authority.
 
 ## Milestone Rules
 
@@ -132,3 +134,124 @@ Authenticated inventory at 01:15:57 CDT returned `workspaces: null`. Estimated
 spend is approximately `$0.30`, with a conservative bound of `$0.40`.
 
 **Status:** PASS
+
+## Strategic program after the bounded GR00T campaign
+
+M0--M5 above preserve the first GR00T challenger campaign exactly as it ran:
+local data/evaluator success, a gated dependency before optimizer step zero,
+and verified paid-resource teardown. They are not rewritten as ACT evidence.
+The active next program begins at M6 and is governed by
+`docs/decisions/0004-goal-conditioned-act-pick-place.md` and
+`docs/goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md`.
+
+## M6 - Frozen State/Goal ACT Contract
+
+**Required outcome:** A new `chess_pick_place_act_state_v1` contract freezes
+continuous object/target pose inputs, robot and relative state, object-family
+descriptors, six absolute joint targets, observable skill transitions,
+generator lineage, train/held-out pose cells and object/destination pairs, and
+the GR00T-derived consequence gates before any training rows exist.
+
+**Why this is invariant:** Retargeting can create leakage at combinatorial scale.
+The evaluator, generator behavior, coordinate frames, and splits must therefore
+be fixed before either the data generator or learner can optimize against them.
+
+**Verification gate:** Contract/schema tests plus deterministic negative
+fixtures reject fixed progress clocks, invalid frames/units, held-out rows,
+wrong-piece motion, collision/spill, bad placement, non-clear release,
+assistance, and non-model-owned actions. The frozen rook ACT and GR00T v1 files
+remain unchanged.
+
+**Status:** NEXT; planning accepted, config and tests not yet implemented.
+
+## M7 - Retargeted Strict-Success Dataset
+
+**Required outcome:** Repo-native constructive and simulated-teleoperation
+sources are segmented into object/target-relative contact trajectories,
+retargeted across continuous source/goal poses, stitched through collision-free
+motion, solved through SO-101 IK, and fully replayed in MuJoCo. Only strict
+successes enter the ACT dataset.
+
+**Verification gate:** Exact source/segment/transform/planner/IK/simulator/
+repair/evaluator lineage for every candidate; accepted/rejected counts and
+rejection histogram; deterministic replay; dataset receipt and zero held-out
+training rows. The practical first recipe is 10--20 diverse simulated source
+episodes plus constructive experts expanded into 500--2,000 accepted episodes
+for one grasp family.
+
+**Status:** NOT STARTED.
+
+## M8 - ACT-1 Variable-Pose Grasp and Lift
+
+**Required outcome:** One grasp family is grasped and lifted from withheld
+continuous source-pose cells without episode progress or timed phase progress.
+ACT owns the learned contact actions; planned free-space actions remain labeled.
+
+**Verification gate:** Valid grasp, frozen minimum lift, stable unsupported hold,
+no board/distractor collision, model-owned learned actions, zero assistance,
+action traces, and CPU/fp32 evaluator receipts.
+
+**Status:** NOT STARTED.
+
+## M9 - ACT-2 Variable-Target Placement
+
+**Required outcome:** From an already-grasped reset, one goal-conditioned ACT
+placement skill reaches continuously sampled destinations, releases, and clears
+the piece on withheld target-pose cells.
+
+**Verification gate:** Destination XY and height error, uprightness, settled
+velocity, no final jaw contact, gripper/retreat clearance, zero assistance, and
+model-owned learned actions all pass the separate evaluator.
+
+**Status:** NOT STARTED.
+
+## M10 - ACT-3/4 Sparse Pick-and-Place Composition
+
+**Required outcome:** The hierarchical system composes grasp and placement on a
+sparse board for zero-row object/destination-pair and continuous-pose-cell
+held-outs. Planner, state-machine, and ACT action ownership remain explicit.
+
+**Verification gate:** Full pick/place gates pass for every required held-out;
+pair, pose-cell, and aggregate results are reported separately; no stage clock,
+square one-hot, task-specific checkpoint, or training-row leakage exists.
+
+**Status:** NOT STARTED.
+
+## M11 - ACT-5 Distractors and Collision Avoidance
+
+**Required outcome:** Evidence progresses through target-only, distant
+distractor, nearby distractor, sparse-board, and full-board layouts without
+moving non-target pieces beyond the frozen limit.
+
+**Verification gate:** Per-piece displacement, wrong-contact, spill, placement,
+release, ownership, and assistance results pass. The known queen-sweep
+counterexample remains a mandatory rejection fixture.
+
+**Status:** NOT STARTED.
+
+## M12 - ACT-6 Correction and Recovery
+
+**Required outcome:** A versioned correction mixture teaches recovery from
+frozen object-pose error, delayed gripper response, joint offsets, partial
+contact, and object motion. Human/constructive takeovers retain exact branch and
+corrective-suffix lineage.
+
+**Verification gate:** Held-out perturbation consequences pass without
+undeclared assistance; correction and nominal strata are reported separately.
+
+**Status:** NOT STARTED.
+
+## M13 - Separately Authorized Physical Anchoring
+
+**Required outcome:** Only after simulation and gateway gates pass, collect a
+small physical teleoperation anchor set and evaluate a versioned sim-plus-real
+candidate under a separately frozen physical proof contract.
+
+**Verification gate:** Every physical episode records leader target, follower
+command, actual follower state, timestamps, pose sensing, available
+current/effort, and outcome. The training action is the follower command;
+actual state and leader/follower difference remain observable evidence. Any
+physical rollout requires explicit owner authority and the one reviewed
+gateway. Published sim-plus-real gains are rationale, not a local success gate.
+
+**Status:** DEFERRED; not authorized by this roadmap.
