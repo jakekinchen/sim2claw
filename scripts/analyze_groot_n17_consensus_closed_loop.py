@@ -27,6 +27,7 @@ def canonical_sha256(value: object) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--experiment", type=Path, required=True)
+    parser.add_argument("--waypoint-experiment", type=Path)
     parser.add_argument("--probe-summary", type=Path, required=True)
     parser.add_argument("--rollout-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
@@ -44,32 +45,75 @@ def main() -> None:
         str(arm["id"]): arm
         for arm in experiment["row_zero_development_probe"]["candidate_arms"]
     }
-    shortlist = [str(value) for value in probe_summary["nonbaseline_shortlist"]]
+    nonbaseline_shortlist = [
+        str(value) for value in probe_summary["nonbaseline_shortlist"]
+    ]
     maximum = int(
         experiment["row_zero_development_probe"]["shortlist_rule"][
             "maximum_nonbaseline_arms"
         ]
     )
-    if not shortlist or len(shortlist) > maximum:
+    if not nonbaseline_shortlist or len(nonbaseline_shortlist) > maximum:
         raise ValueError("probe shortlist violates the frozen size bound")
-    if len(set(shortlist)) != len(shortlist):
+    if len(set(nonbaseline_shortlist)) != len(nonbaseline_shortlist):
         raise ValueError("probe shortlist contains duplicate arms")
-    for arm_id in shortlist:
+    for arm_id in nonbaseline_shortlist:
         if arm_id not in declared_arms or arm_id.startswith("baseline-"):
             raise ValueError(f"invalid nonbaseline shortlist arm: {arm_id}")
 
+    selection_experiment_sha256 = experiment_sha256
+    parent_experiment_sha256 = None
+    required_adapter = "sample_hold"
+    required_render_cadence = "all_samples"
+    candidate_arms = nonbaseline_shortlist
     development = experiment["closed_loop_development"]
+    identities = experiment["frozen_identities"]
+    execution_horizon = int(experiment["invariants"]["execution_horizon"])
+    renderer = experiment["renderer"]
+    configuration_schema = "sim2claw.groot_n17_consensus_configuration.v1"
+    summary_schema = "sim2claw.groot_n17_consensus_closed_loop_summary.v1"
+    if args.waypoint_experiment is not None:
+        waypoint_experiment = json.loads(
+            args.waypoint_experiment.read_text(encoding="utf-8")
+        )
+        selection_experiment_sha256 = sha256_file(args.waypoint_experiment)
+        if (
+            waypoint_experiment.get("parent_consensus_experiment_sha256")
+            != experiment_sha256
+        ):
+            raise ValueError("waypoint experiment references a different parent")
+        baseline_arms = sorted(
+            arm_id for arm_id in declared_arms if arm_id.startswith("baseline-")
+        )
+        if len(baseline_arms) != 1:
+            raise ValueError("parent experiment must declare exactly one baseline arm")
+        candidate_arms = [baseline_arms[0], *nonbaseline_shortlist]
+        development = waypoint_experiment["development"]
+        if len(candidate_arms) > int(development["maximum_candidate_arms"]):
+            raise ValueError("waypoint candidate set violates the frozen size bound")
+        identities = waypoint_experiment["frozen_identities"]
+        execution_horizon = int(development["execution_horizon"])
+        renderer = waypoint_experiment["renderer"]
+        required_adapter = str(
+            waypoint_experiment["action_execution_adapter"]["method"]
+        )
+        required_render_cadence = str(renderer["development_cadence"])
+        parent_experiment_sha256 = experiment_sha256
+        configuration_schema = (
+            "sim2claw.groot_n17_waypoint_execution_configuration.v1"
+        )
+        summary_schema = (
+            "sim2claw.groot_n17_waypoint_execution_closed_loop_summary.v1"
+        )
+
     expected_episodes = [int(value) for value in development["episode_indices"]]
     expected_seeds = [int(value) for value in development["inference_seeds"]]
     expected_cells = {
         (arm_id, episode_index, inference_seed)
-        for arm_id in shortlist
+        for arm_id in candidate_arms
         for episode_index in expected_episodes
         for inference_seed in expected_seeds
     }
-    identities = experiment["frozen_identities"]
-    invariants = experiment["invariants"]
-    renderer = experiment["renderer"]
     observed_cells: set[tuple[str, int, int]] = set()
     arm_rows: dict[str, list[dict[str, Any]]] = defaultdict(list)
     input_hashes: dict[str, str] = {}
@@ -79,8 +123,8 @@ def main() -> None:
 
     for path in paths:
         arm_id = path.parent.parent.name
-        if arm_id not in shortlist:
-            raise ValueError(f"receipt belongs to a non-shortlisted arm: {path}")
+        if arm_id not in candidate_arms:
+            raise ValueError(f"receipt belongs to an undeclared development arm: {path}")
         receipt = json.loads(path.read_text(encoding="utf-8"))
         cell = (
             arm_id,
@@ -117,14 +161,24 @@ def main() -> None:
         ):
             if observed_consensus.get(key) != arm.get(key):
                 raise ValueError(f"receipt {path} has wrong {key}")
-        if int(receipt.get("execution_horizon", -1)) != int(
-            invariants["execution_horizon"]
-        ):
+        if int(receipt.get("execution_horizon", -1)) != execution_horizon:
             raise ValueError(f"receipt {path} has wrong execution horizon")
         if receipt.get("all_actions_model_owned") is not True:
             raise ValueError(f"receipt {path} includes non-model actions")
         if int(receipt.get("assistance_frames", -1)) != 0:
             raise ValueError(f"receipt {path} includes assistance")
+        adapter = receipt.get("action_execution_adapter", {})
+        if adapter.get("method") != required_adapter:
+            raise ValueError(f"receipt {path} used the wrong action adapter")
+        if adapter.get("model_waypoints_only") is not True:
+            raise ValueError(f"receipt {path} has non-model waypoint provenance")
+        if int(adapter.get("assistance_frames", -1)) != 0:
+            raise ValueError(f"receipt {path} has assisted action adaptation")
+        render_cadence = receipt.get("render_cadence", {})
+        if render_cadence.get("method") != required_render_cadence:
+            raise ValueError(f"receipt {path} used the wrong render cadence")
+        if render_cadence.get("policy_observation_frames_omitted") is not False:
+            raise ValueError(f"receipt {path} omitted a policy observation frame")
         observed_renderer = receipt.get("render_backend", {})
         if (
             observed_renderer.get("mujoco_gl") != renderer["mujoco_gl"]
@@ -166,7 +220,7 @@ def main() -> None:
         raise ValueError(f"closed-loop matrix is incomplete; missing cells: {missing}")
 
     summaries: list[dict[str, Any]] = []
-    for arm_id in shortlist:
+    for arm_id in candidate_arms:
         rows = arm_rows[arm_id]
         counts = {
             "full_task_consequence_pass_count": sum(row["success"] for row in rows),
@@ -207,12 +261,19 @@ def main() -> None:
     if eligible:
         winner = eligible[0]
         winning_configuration = {
-            "schema_version": "sim2claw.groot_n17_consensus_configuration.v1",
-            "experiment_sha256": experiment_sha256,
+            "schema_version": configuration_schema,
+            "experiment_sha256": selection_experiment_sha256,
+            "parent_consensus_experiment_sha256": parent_experiment_sha256,
             "checkpoint_manifest_sha256": identities[
                 "nominal_checkpoint_aggregate_manifest_sha256"
             ],
-            "execution_horizon": invariants["execution_horizon"],
+            "execution_horizon": execution_horizon,
+            "physics_action_adapter": required_adapter,
+            "development_render_cadence": required_render_cadence,
+            "sealed_promotion_render_cadence": renderer.get(
+                "sealed_promotion_cadence",
+                required_render_cadence,
+            ),
             **{
                 key: winner[key]
                 for key in (
@@ -227,10 +288,11 @@ def main() -> None:
         winning_configuration_sha256 = canonical_sha256(winning_configuration)
 
     result = {
-        "schema_version": "sim2claw.groot_n17_consensus_closed_loop_summary.v1",
+        "schema_version": summary_schema,
         "proof_class": "learned_policy_simulation_development",
         "promotion_authority": False,
-        "experiment_sha256": experiment_sha256,
+        "experiment_sha256": selection_experiment_sha256,
+        "parent_consensus_experiment_sha256": parent_experiment_sha256,
         "probe_summary_sha256": sha256_file(args.probe_summary),
         "ranked_arms": ranked,
         "held_out_may_open": winning_configuration is not None,
