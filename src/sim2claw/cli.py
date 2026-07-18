@@ -42,6 +42,7 @@ def build_parser() -> argparse.ArgumentParser:
             "studio_overview",
             "studio_left",
             "studio_right",
+            "studio_mug",
         ),
         default="photo_reference",
     )

@@ -75,7 +75,7 @@ class ExpertEpisode:
 
 
 class ChessRookLiftEnv:
-    """Small state/action wrapper around the photo-aligned MuJoCo workcell."""
+    """Narrow task wrapper; defaults to the frozen pre-mass-profile dynamics."""
 
     def __init__(
         self,
@@ -83,6 +83,7 @@ class ChessRookLiftEnv:
         *,
         seed: int,
         piece_offset_xy_m: tuple[float, float],
+        mass_profile_path: Path | None = None,
     ) -> None:
         self.contract = contract
         self.seed = int(seed)
@@ -96,7 +97,11 @@ class ChessRookLiftEnv:
         self.model = build_scene_spec(
             board_center_in_table_frame_xy_m=(
                 self.board_center_in_table_frame_xy_m
-            )
+            ),
+            # The default stays None because the task contract was frozen before
+            # the measured profile existed. Requalification may opt in without
+            # changing historical evaluator dynamics.
+            mass_profile_path=mass_profile_path,
         ).compile()
         self.data = mujoco.MjData(self.model)
         initialize_robot_poses(self.model, self.data)

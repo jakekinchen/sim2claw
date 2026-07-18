@@ -190,14 +190,16 @@ bar.
 ## Workcell poster contract
 
 The Robots view no longer reads an arbitrary historical PNG from `outputs/`.
-Three committed inspection assets are regenerated from the current scene:
+Four committed inspection assets are regenerated from the current scene:
 
 - `studio_overview` shows the board-reaching arm on the board centerline;
 - `studio_left` shows the board-reaching arm and board relationship;
-- `studio_right` isolates the folded edge arm.
+- `studio_right` isolates the folded edge arm;
+- `studio_mug` provides a close inspection of the Antler mug and procedural
+  wordmark on the left window sill.
 
 Run `uv run sim2claw studio-assets` after changing the scene, capture config, or
-SO-101 model. `assets/workcell/receipt.json` hashes those three sources and each
+SO-101 model. `assets/workcell/receipt.json` hashes the scene sources and each
 PNG; the test suite rejects a stale poster generation. The poster renderer uses
 a higher-contrast inspection palette and hides the photo-reference tripod group.
 Neither choice changes the frozen `workcell` task camera, physics, evaluator, or

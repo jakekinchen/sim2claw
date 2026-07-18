@@ -10,7 +10,12 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from sim2claw import studio_assets
-from sim2claw.paths import DEFAULT_CAPTURE_CONFIG, SO101_MODEL_PATH, STUDIO_ASSET_ROOT
+from sim2claw.paths import (
+    DEFAULT_CAPTURE_CONFIG,
+    DEFAULT_SO101_MASS_PROFILE,
+    SO101_MODEL_PATH,
+    STUDIO_ASSET_ROOT,
+)
 from sim2claw.physical_gateway import PhysicalGatewayError
 from sim2claw.studio_catalog import (
     build_catalog,
@@ -177,6 +182,18 @@ class StudioCatalogTest(unittest.TestCase):
         self.assertEqual(
             catalog["simulations"][0]["board_pose_label"],
             "100 mm robotward",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["mug_inspection_url"],
+            "/assets/workcell/studio-mug.png",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["mug_inspection_camera"],
+            "studio_mug",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["visual_props"][0]["id"],
+            "antler_mug",
         )
         self.assertEqual(
             catalog["simulations"][0]["fiducial_pose_id"],
@@ -437,6 +454,14 @@ class StudioCatalogTest(unittest.TestCase):
                 poster_type = response.headers.get_content_type()
             self.assertEqual(poster_type, "image/png")
             self.assertGreater(len(poster), 50_000)
+
+            with urlopen(
+                f"{base}/assets/workcell/studio-mug.png", timeout=3
+            ) as response:
+                mug_poster = response.read()
+                mug_poster_type = response.headers.get_content_type()
+            self.assertEqual(mug_poster_type, "image/png")
+            self.assertGreater(len(mug_poster), 20_000)
         finally:
             server.shutdown()
             server.server_close()
@@ -480,16 +505,29 @@ class StudioCatalogTest(unittest.TestCase):
             "two_sided_sparse_pawns_rows_1_2_7_8_v1",
         )
         scene_path = Path(studio_assets.__file__).with_name("scene.py")
+        mass_profile_path = Path(studio_assets.__file__).with_name(
+            "mass_profile.py"
+        )
         expected = {
             "scene_py_sha256": hashlib.sha256(scene_path.read_bytes()).hexdigest(),
+            "mass_profile_py_sha256": hashlib.sha256(
+                mass_profile_path.read_bytes()
+            ).hexdigest(),
             "capture_config_sha256": hashlib.sha256(
                 DEFAULT_CAPTURE_CONFIG.read_bytes()
+            ).hexdigest(),
+            "so101_mass_profile_sha256": hashlib.sha256(
+                DEFAULT_SO101_MASS_PROFILE.read_bytes()
             ).hexdigest(),
             "so101_model_sha256": hashlib.sha256(
                 SO101_MODEL_PATH.read_bytes()
             ).hexdigest(),
         }
         self.assertEqual(sources, expected)
+        self.assertEqual(
+            [artifact["camera"] for artifact in receipt["artifacts"]],
+            ["studio_overview", "studio_left", "studio_right", "studio_mug"],
+        )
         for artifact in receipt["artifacts"]:
             path = STUDIO_ASSET_ROOT / artifact["path"]
             self.assertEqual(

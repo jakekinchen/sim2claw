@@ -99,8 +99,10 @@ colors and poses in memory. See `third_party/mujoco_menagerie/robotstudio_so101/
 - Both SO-101 arms retain six controlled joints and collision geometry; the
   assembled scene has 12 actuators.
 - Every chess piece has a free joint and settles under gravity onto the board.
-- `studio_overview`, `studio_left`, and `studio_right` are inspection-only
-  cameras. They do not replace the frozen `workcell` observation camera.
+- `studio_overview`, `studio_left`, `studio_right`, and `studio_mug` are
+  inspection-only cameras. The dedicated mug view makes the left-sill prop and
+  logo legible without changing the wide workcell framing. None replaces the
+  frozen `workcell` observation camera.
 - Photo-reference tripod geometry is in render group 4. Normal scene and task
   renders retain it; versioned browser-studio posters hide only that group to
   keep the arms and board unobstructed.

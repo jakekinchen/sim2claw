@@ -905,6 +905,16 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
             "physical_authority": False,
             "poster_url": "/assets/workcell/studio-overview.png",
             "poster_camera": "studio_overview",
+            "mug_inspection_url": "/assets/workcell/studio-mug.png",
+            "mug_inspection_camera": "studio_mug",
+            "visual_props": [
+                {
+                    "id": "antler_mug",
+                    "title": "Antler mug",
+                    "placement": "left_window_sill",
+                    "physical_authority": False,
+                }
+            ],
             "asset_revision": asset_revision,
         }
     ]
