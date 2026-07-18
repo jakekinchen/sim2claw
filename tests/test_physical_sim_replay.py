@@ -60,7 +60,29 @@ class PhysicalSimulationReplayTest(unittest.TestCase):
             self.assertFalse(report["learned_policy_verified"])
             self.assertFalse(report["object_or_contact_dynamics_verified"])
             self.assertTrue((root / "sim_replay_trace.jsonl").is_file())
+            self.assertTrue((root / "sim_replay_state_trace.json").is_file())
             self.assertTrue((root / "sim_replay_receipt.json").is_file())
+            state_trace = json.loads(
+                (root / "sim_replay_state_trace.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                state_trace["schema_version"],
+                "sim2claw.mujoco_body_state_trace.v1",
+            )
+            self.assertEqual(state_trace["frame_count"], 4)
+            self.assertEqual(report["state_trace_frame_count"], 4)
+            self.assertEqual(report["state_trace_fps"], 20)
+            self.assertEqual(
+                report["state_trace_schema_version"],
+                "sim2claw.mujoco_body_state_trace.v1",
+            )
+            self.assertEqual(
+                report["state_trace_piece_layout"],
+                "sparse_two_sided_pawns",
+            )
+            self.assertEqual(
+                report["state_trace_path"], "sim_replay_state_trace.json"
+            )
 
 
 if __name__ == "__main__":

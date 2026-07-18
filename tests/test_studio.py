@@ -163,6 +163,83 @@ class StudioCatalogTest(unittest.TestCase):
             catalog["simulations"][0]["board_pose_label"],
             "72 mm robotward",
         )
+
+    def test_catalog_includes_physical_source_with_simulator_replay(self) -> None:
+        recording = (
+            self.root
+            / "datasets"
+            / "act_source_recordings"
+            / "physical-demo__fixture-recording"
+        )
+        recording.mkdir(parents=True)
+        (recording / "overhead_c922.mp4").write_bytes(b"fixture-video")
+        self._write_json(
+            recording / "recording_receipt.json",
+            {
+                "recording_id": "fixture-recording",
+                "task_id": "pick_v1",
+                "label": "D1 to D2 push",
+                "skill": "full_episode",
+                "outcome_label": "unreviewed",
+                "notes": "Successful operator demonstration.",
+                "mode": "physical_follower",
+                "proof_class": "physical_teleoperation_source_unqualified",
+                "piece_id": "brown_pawn_d1",
+                "source_square": "d1",
+                "destination_square": "d2",
+                "sample_count": 42,
+                "sample_hz": 20,
+                "duration_seconds": 2.1,
+            },
+        )
+        self._write_json(
+            recording / "sim_replay_receipt.json",
+            {
+                "schema_version": "sim2claw.physical_command_sim_replay.v1",
+                "state_trace_path": "sim_replay_state_trace.json",
+                "state_trace_schema_version": "sim2claw.mujoco_body_state_trace.v1",
+                "state_trace_sha256": "0" * 64,
+                "state_trace_frame_count": 42,
+                "state_trace_fps": 20,
+                "state_trace_duration_seconds": 2.1,
+                "state_trace_piece_layout": "sparse_two_sided_pawns",
+                "state_trace_manifest_url": "/api/scene?layout=sparse_two_sided_pawns",
+                "aggregate_body_joint_rmse_degrees": 2.5,
+                "maximum_body_joint_error_degrees": 7.0,
+            },
+        )
+        self._write_json(
+            recording / "sim_replay_state_trace.json",
+            {
+                "schema_version": "sim2claw.mujoco_body_state_trace.v1",
+                "scene": {
+                    "piece_layout": "sparse_two_sided_pawns",
+                    "manifest_url": "/api/scene?layout=sparse_two_sided_pawns",
+                },
+                "frame_count": 42,
+                "fps": 20,
+                "duration_seconds": 2.1,
+            },
+        )
+
+        catalog = build_catalog(self.root)
+        episode = next(
+            row for row in catalog["episodes"] if row["title"] == "D1 to D2 push"
+        )
+        self.assertEqual(
+            episode["proof_class"],
+            "physical_source_simulation_command_replay",
+        )
+        self.assertEqual(episode["status"], "recorded")
+        self.assertEqual(episode["media"]["kind"], "video")
+        self.assertEqual(episode["inspection"]["kind"], "threejs_state_trace")
+        self.assertEqual(episode["inspection"]["frame_count"], 42)
+        self.assertEqual(episode["notes"], "Successful operator demonstration.")
+        trace = resolve_media_token(
+            episode["inspection"]["trace_url"].split("/")[-1],
+            self.root,
+        )
+        self.assertEqual(trace.name, "sim_replay_state_trace.json")
         receipt = json.loads(
             (STUDIO_ASSET_ROOT / "receipt.json").read_text(encoding="utf-8")
         )
@@ -314,6 +391,7 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn("new AbortController()", javascript)
             self.assertNotIn("for (const count of [3, 2, 1])", javascript)
             self.assertIn('episode.inspection?.kind === "threejs_state_trace"', javascript)
+            self.assertIn('"Operator notes"', javascript)
             self.assertIn('fetch("/api/recorder/live-simulation"', javascript)
             self.assertIn("viewer.applyLiveState(liveState)", javascript)
             self.assertIn("refreshLiveSimulation(), 50", javascript)

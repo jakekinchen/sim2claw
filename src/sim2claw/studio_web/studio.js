@@ -391,6 +391,7 @@ function filteredEpisodes() {
       episode.task_id,
       episode.case_id,
       episode.terminal_outcome,
+      episode.notes,
       ...episode.metrics.map((metric) => `${metric.label} ${metric.value}`),
     ].join(" ").toLowerCase();
     return haystack.includes(needle);
@@ -1117,6 +1118,7 @@ function renderEvidence(episode) {
       : episode.media.kind === "video"
       ? "Recorded video"
       : `${episode.media.urls?.length || 0} rendered frames`],
+    ...(episode.notes ? [["Operator notes", episode.notes]] : []),
     ...episode.metrics.map((metric) => [metric.label, formatMetric(metric)]),
   ];
   rows.forEach(([term, value]) => {

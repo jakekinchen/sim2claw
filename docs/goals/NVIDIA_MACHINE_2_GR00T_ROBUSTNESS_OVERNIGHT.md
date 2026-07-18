@@ -59,6 +59,17 @@ morning; do not optimize the report into a success claim.
 - Training loss and open-loop action error are diagnostic only. The separately
   invoked consequence evaluator owns promotion.
 
+## Local physical-source intake note
+
+The owner-local checkout now has five physical pawn teleoperation sources
+indexed by `configs/data/physical_teleop_episode_intake_20260718.json`. None is
+a GR00T v1 row. The frozen v1 dataset remains simulation-only, three physical
+move labels conflict with recorder metadata, every formal outcome is
+`unreviewed`, and the overhead C922 stream has not been exported under a
+versioned GR00T LeRobot RGB/language/action modality contract. A future recovery
+v2 lane may use the cohort only after metadata repair, synchronized modality
+conversion, zero-row held-outs, and separate consequence evaluation.
+
 ## Research hypothesis
 
 The current nominal demonstrations mostly teach one uninterrupted trajectory.

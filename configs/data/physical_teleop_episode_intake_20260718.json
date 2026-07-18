@@ -1,0 +1,231 @@
+{
+  "schema_version": "sim2claw.physical_teleop_episode_intake.v1",
+  "cohort_id": "physical_pawn_teleop_20260718_evening_v1",
+  "reviewed_at": "2026-07-18T18:19:24-05:00",
+  "raw_storage": {
+    "root": "datasets/act_source_recordings",
+    "availability": "owner_local_ignored_artifacts_not_distributed_by_git",
+    "git_policy": "receipts_samples_videos_and_sim_replays_remain_ignored",
+    "mutation_policy": "preserve_raw_receipts_and_record_operator_corrections_in_a_new_versioned_ledger"
+  },
+  "task_context": {
+    "source_task_id": "chess_pick_place_act_state_v1",
+    "source_task_contract_sha256": "3f1fcdbbe6dcd552e1261af4713ac80734ca394854d196e61a26a1934d4166b5",
+    "source_proof_class": "physical_teleoperation_source_unqualified",
+    "workcell_pose_id": "board_robotward_72mm_20260718_v2",
+    "board_center_in_table_frame_xy_m": [0.04, -0.093]
+  },
+  "cohort_summary": {
+    "saved_physical_episode_count": 5,
+    "saved_physical_sample_count": 2186,
+    "teleoperation_duration_seconds": 159.97220820904477,
+    "overhead_video_duration_seconds": 203.2,
+    "overhead_video_bytes": 102548320,
+    "receipt_sample_video_hash_sets_verified": 5,
+    "joint_response_sim_replays_completed": 5,
+    "formal_operator_outcomes_reviewed": 0,
+    "visual_pawn_relocations_observed": 5,
+    "metadata_consistent_episode_count": 1,
+    "metadata_ambiguous_episode_count": 1,
+    "metadata_conflict_episode_count": 3,
+    "training_rows_admitted": 0
+  },
+  "routing_decision": {
+    "current_act_lane": "no_direct_training_admission",
+    "act_reason": "joint_action_traces_are_relevant_but_authoritative_piece_and_target_poses_strict_physical_consequence_verdicts_and_segment_lineage_are_missing",
+    "current_groot_lane": "no_direct_training_admission",
+    "groot_reason": "the_frozen_groot_v1_dataset_is_simulation_only_and_these_physical_overhead_videos_have_not_been_converted_to_a_versioned_lerobot_rgb_language_action_contract",
+    "next_gate": "reconcile_source_target_metadata_set_formal_outcomes_segment_skill_content_add_pose_or_reviewed_video_annotations_then_run_versioned_dataset_and_evaluator_admission",
+    "physical_task_success_proven": false,
+    "learned_policy_verified": false
+  },
+  "episodes": [
+    {
+      "recording_id": "20260718T224507Z-cb15a243",
+      "source_path": "datasets/act_source_recordings/vv__20260718T224507Z-cb15a243",
+      "receipt_sha256": "fb70aaaf4e1e856d006b981d2ae0b6fd486d2be90c84ac55d85151791fb4449a",
+      "samples_sha256": "bfc209656cd16064dafd206bfa2de1488581cfa00f295aefa2a52383ffe89ead",
+      "overhead_video_sha256": "8cee1c705b803e422ef470775b6e076324911220c92062c4ff06b534305fe885",
+      "operator_label": "vv",
+      "operator_outcome": "unreviewed",
+      "operator_notes": "We did a successful demonstration of And from this side, I need the 1 to d 2. Just pushing it forward. We don't we don't lift up and grab it and then place it. We just push it forward.",
+      "recorder_move": "d1_to_d2",
+      "metadata_status": "ambiguous_label_note_and_recorder_agree_on_d1_to_d2_push",
+      "visual_review": "pawn_relocated_between_start_and_stop_coordinate_not_evaluator_verified",
+      "motion_trace": {
+        "sample_hz": 20,
+        "sample_count": 627,
+        "duration_seconds": 31.305071625043638,
+        "rate_limited_samples": 95,
+        "stalled_samples": 0,
+        "bus_read_retries": 0,
+        "current_telemetry_stale_samples": 0
+      },
+      "sim_replay": {
+        "receipt_path": "datasets/act_source_recordings/vv__20260718T224507Z-cb15a243/sim_replay_receipt.json",
+        "receipt_sha256": "443f7a7e0d27808a64c8512173253acdc82bea16236baffdb01c053d30f582cf",
+        "state_trace_path": "datasets/act_source_recordings/vv__20260718T224507Z-cb15a243/sim_replay_state_trace.json",
+        "state_trace_sha256": "f8c8ec93163fc1e39f472c4efd281c5d60e3f8d04dae9e2598db3aaa5567e8fd",
+        "state_trace_frame_count": 627,
+        "aggregate_body_joint_rmse_degrees": 3.2761140643235174,
+        "maximum_body_joint_error_degrees": 7.716135415137466,
+        "comparison_scope": "joint_space_command_response_only"
+      },
+      "act_route": "hold_for_separate_pawn_push_task_contract_not_current_pick_lift_place_training",
+      "groot_route": "hold_for_future_versioned_physical_rgb_lane_only",
+      "training_admission": "rejected_current_contract"
+    },
+    {
+      "recording_id": "20260718T225126Z-a19918d7",
+      "source_path": "datasets/act_source_recordings/b-1-to-b-2-drop-it-passed__20260718T225126Z-a19918d7",
+      "receipt_sha256": "4429ee8d071bf57cf80f761e427fd7fcf8efc28783b1b6d2d75ba76f449e3c1e",
+      "samples_sha256": "ae4ad082b0e9d304c466cacdc0d0d3e499876f0aaff327748d506d17ed4c0a2d",
+      "overhead_video_sha256": "7594d5fbe89391e922c36f5cf5dda7433e88fb41e7febbe14979a9f3e7ec59e4",
+      "operator_label": "B 1 to B 2. drop, it passed",
+      "operator_outcome": "unreviewed",
+      "operator_notes": "",
+      "recorder_move": "d1_to_d2",
+      "metadata_status": "conflict_operator_label_b1_to_b2_recorder_d1_to_d2",
+      "visual_review": "pawn_relocated_between_start_and_stop_coordinate_not_evaluator_verified",
+      "motion_trace": {
+        "sample_hz": 20,
+        "sample_count": 538,
+        "duration_seconds": 26.854793500038795,
+        "rate_limited_samples": 135,
+        "stalled_samples": 0,
+        "bus_read_retries": 0,
+        "current_telemetry_stale_samples": 0
+      },
+      "sim_replay": {
+        "receipt_path": "datasets/act_source_recordings/b-1-to-b-2-drop-it-passed__20260718T225126Z-a19918d7/sim_replay_receipt.json",
+        "receipt_sha256": "43abb91caa0bdeadcb36258a04e1d2c90599550747106e6c9b60da1bf9d4913b",
+        "state_trace_path": "datasets/act_source_recordings/b-1-to-b-2-drop-it-passed__20260718T225126Z-a19918d7/sim_replay_state_trace.json",
+        "state_trace_sha256": "ad71e24ac24aca4fc5ca61c40215763e1b56459580c3891710ba574940672bb4",
+        "state_trace_frame_count": 538,
+        "aggregate_body_joint_rmse_degrees": 2.8298892442690766,
+        "maximum_body_joint_error_degrees": 8.936141770171048,
+        "comparison_scope": "joint_space_command_response_only"
+      },
+      "act_route": "quarantine_until_move_and_skill_semantics_are_reconciled",
+      "groot_route": "not_admitted_current_groot_v1",
+      "training_admission": "pending_metadata_reconciliation"
+    },
+    {
+      "recording_id": "20260718T225419Z-bdd95fdf",
+      "source_path": "datasets/act_source_recordings/e-2-to-e-1-pass__20260718T225419Z-bdd95fdf",
+      "receipt_sha256": "011ae6a57c4aff6237b32a66c1ad5c86431c404d7436b370e9fb18c9924f58e4",
+      "samples_sha256": "bb7aa1e8153c134f6bfe87ffedb56db98d4e74f8717e8bc4d22b192aff575cd7",
+      "overhead_video_sha256": "a2562b3bb2dfe5a7b88dd8e7ed8404873cd07f0c6fc48f76b2b4cac21b801d09",
+      "operator_label": "E 2 to e 1 pass.",
+      "operator_outcome": "unreviewed",
+      "operator_notes": "",
+      "recorder_move": "e2_to_e1",
+      "metadata_status": "consistent_operator_label_and_recorder_move",
+      "visual_review": "pawn_relocated_between_start_and_stop_coordinate_not_evaluator_verified",
+      "motion_trace": {
+        "sample_hz": 10,
+        "sample_count": 274,
+        "duration_seconds": 27.30200604198035,
+        "rate_limited_samples": 96,
+        "stalled_samples": 0,
+        "bus_read_retries": 0,
+        "current_telemetry_stale_samples": 0
+      },
+      "sim_replay": {
+        "receipt_path": "datasets/act_source_recordings/e-2-to-e-1-pass__20260718T225419Z-bdd95fdf/sim_replay_receipt.json",
+        "receipt_sha256": "f5afdecda7affa2c348000f7baf2a395ccc2a7bd8f468cd623b251240969beb3",
+        "state_trace_path": "datasets/act_source_recordings/e-2-to-e-1-pass__20260718T225419Z-bdd95fdf/sim_replay_state_trace.json",
+        "state_trace_sha256": "1caa9b0b59a3e4f6c47b4d40a0107df6e47325b48d069cc1e4cc59830d74c459",
+        "state_trace_frame_count": 274,
+        "aggregate_body_joint_rmse_degrees": 2.972774222701809,
+        "maximum_body_joint_error_degrees": 6.837065706946333,
+        "comparison_scope": "joint_space_command_response_only"
+      },
+      "act_route": "nominal_physical_anchor_candidate_after_formal_outcome_pose_annotation_segmentation_and_evaluator_gates",
+      "groot_route": "not_admitted_current_groot_v1",
+      "training_admission": "pending_full_admission_gate"
+    },
+    {
+      "recording_id": "20260718T225715Z-e68b4076",
+      "source_path": "datasets/act_source_recordings/d1-to-d2__20260718T225715Z-e68b4076",
+      "receipt_sha256": "37a32c2503813fc97a87be9f9e17e975ecd8010759f2a0d4bdac6e6521dae404",
+      "samples_sha256": "bb131d47db97fcf8d548a3a4d899b08b0ec76d13823f0381ff9918821baa33d0",
+      "overhead_video_sha256": "b9a2c52ab1ad126a3dd8fb6bd47b73ad498e1847b2a8f1c9134e92d16833b8ca",
+      "operator_label": "d1 to d2",
+      "operator_outcome": "unreviewed",
+      "operator_notes": "There was a bit of a lapse at the beginning. I think he he kind of was just figuring it out, how to operate the robot, but we did get to the technically pass. But it was just really laggy at the beginning. So I'm not sure if wanna keep this or not. I don't know. We'll figure that out. But yeah.",
+      "recorder_move": "e2_to_e1",
+      "metadata_status": "conflict_operator_label_d1_to_d2_recorder_e2_to_e1",
+      "visual_review": "pawn_relocated_between_start_and_stop_with_operator_reported_laggy_start_coordinate_not_evaluator_verified",
+      "motion_trace": {
+        "sample_hz": 10,
+        "sample_count": 504,
+        "duration_seconds": 50.305166792008094,
+        "rate_limited_samples": 72,
+        "stalled_samples": 0,
+        "bus_read_retries": 0,
+        "current_telemetry_stale_samples": 0
+      },
+      "sim_replay": {
+        "receipt_path": "datasets/act_source_recordings/d1-to-d2__20260718T225715Z-e68b4076/sim_replay_receipt.json",
+        "receipt_sha256": "ca285005b7f2b2a122bfd96c00088ef0851c93b7765cc355bc692127f81f6bd4",
+        "state_trace_path": "datasets/act_source_recordings/d1-to-d2__20260718T225715Z-e68b4076/sim_replay_state_trace.json",
+        "state_trace_sha256": "7bcbffe1cebc78367941449e17b7c6478e80dbd00d0a80615d7345c1711c3394",
+        "state_trace_frame_count": 504,
+        "aggregate_body_joint_rmse_degrees": 3.0243950388267025,
+        "maximum_body_joint_error_degrees": 10.217646383041101,
+        "comparison_scope": "joint_space_command_response_only"
+      },
+      "act_route": "hold_as_recovery_or_hesitation_candidate_after_metadata_reconciliation_and_exact_segment_annotation",
+      "groot_route": "future_recovery_v2_hypothesis_only_not_a_training_row",
+      "training_admission": "pending_metadata_and_recovery_lineage"
+    },
+    {
+      "recording_id": "20260718T230416Z-573f2320",
+      "source_path": "datasets/act_source_recordings/f-2-to-f-1__20260718T230416Z-573f2320",
+      "receipt_sha256": "1ea97cd3ebb53694802b8b7f120625419c10e778ea133f85cb1f7da7c5fe1221",
+      "samples_sha256": "9f38c52d4d7f87d9f0ba0d840bd528bda8fc5c45a952aa57cb188b5582df702c",
+      "overhead_video_sha256": "b7347eac49420ee4a40bfdd022f915470624b540d6764fcfd0bf8fd803518125",
+      "operator_label": "F 2 to f 1",
+      "operator_outcome": "unreviewed",
+      "operator_notes": "That's cool. Pass with flying colors.",
+      "recorder_move": "e2_to_e1",
+      "metadata_status": "conflict_operator_label_f2_to_f1_recorder_e2_to_e1",
+      "visual_review": "pawn_relocated_between_start_and_stop_coordinate_not_evaluator_verified",
+      "motion_trace": {
+        "sample_hz": 10,
+        "sample_count": 243,
+        "duration_seconds": 24.20517024997389,
+        "rate_limited_samples": 107,
+        "stalled_samples": 0,
+        "bus_read_retries": 0,
+        "current_telemetry_stale_samples": 0
+      },
+      "sim_replay": {
+        "receipt_path": "datasets/act_source_recordings/f-2-to-f-1__20260718T230416Z-573f2320/sim_replay_receipt.json",
+        "receipt_sha256": "1eb8c9c1d3284ab4d8d83e2fd2b24ac1fdc5a37615dbbd4a93ac9472e94019f2",
+        "state_trace_path": "datasets/act_source_recordings/f-2-to-f-1__20260718T230416Z-573f2320/sim_replay_state_trace.json",
+        "state_trace_sha256": "e559e56ddadfee2fb3029ab4686dd0cea083fddfd40b7b4ce45b7015d7d452b9",
+        "state_trace_frame_count": 243,
+        "aggregate_body_joint_rmse_degrees": 3.451542791489592,
+        "maximum_body_joint_error_degrees": 6.9333293332113675,
+        "comparison_scope": "joint_space_command_response_only"
+      },
+      "act_route": "quarantine_until_move_metadata_is_reconciled_then_consider_nominal_physical_anchor",
+      "groot_route": "not_admitted_current_groot_v1",
+      "training_admission": "pending_metadata_reconciliation_and_full_admission_gate"
+    }
+  ],
+  "failed_attempt_diagnostics": {
+    "storage_root": "runs/teleop_recordings/failed_attempts",
+    "total_archived_physical_attempts": 23,
+    "same_session_prestart_failure_count": 6,
+    "same_session_failure_classes": {
+      "paired_pose_delta_above_20_degrees": 4,
+      "leader_moved_during_sync": 1,
+      "feetech_status_packet_missing_during_bus_setup": 1
+    },
+    "same_session_sample_rows": 0,
+    "learning_route": "diagnostics_only_not_corrective_training_examples"
+  }
+}

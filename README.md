@@ -102,6 +102,13 @@ Saved episodes go to ignored
 `datasets/act_source_recordings/` storage and are not training data until replay
 and evaluator admission.
 
+The current owner-local physical cohort is indexed by the tracked
+[`physical_teleop_episode_intake_20260718.json`](./configs/data/physical_teleop_episode_intake_20260718.json)
+ledger and reviewed in
+[`2026-07-18-physical-episode-intake.md`](./docs/run-logs/2026-07-18-physical-episode-intake.md).
+It records five saved physical sources and zero admitted training rows; the raw
+samples and C922 videos remain ignored and local.
+
 Replay and process views remain read-only. Recorder controls are loopback-only.
 Physical Start requires a cleared-workcell acknowledgement, a bounded Sync of
 an already-nearby follower, a countdown, and relative-zero registration through

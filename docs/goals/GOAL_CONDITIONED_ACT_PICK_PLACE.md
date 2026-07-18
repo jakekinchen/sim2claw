@@ -211,19 +211,19 @@ the bounded task and verify authenticated inventory before ending.
 ## Progress ledger
 
 ```text
-Current milestone:
-Contract/config identity:
-Current state:
-Completed:
-Evidence:
-Counterexamples:
-Dataset counts and lineage:
-Evaluator result:
-Paid resources:
-Remaining:
-Blockers:
-Next smallest step:
-Claim boundary:
+Current milestone: M7 retargeted strict-success dataset foundation
+Contract/config identity: chess_pick_place_act_state_v1 @ 3f1fcdbb...
+Current state: five saved physical source episodes reviewed; zero training rows admitted
+Completed: source hash audit, video review, joint-response-only MuJoCo replay, tracked intake ledger
+Evidence: configs/data/physical_teleop_episode_intake_20260718.json
+Counterexamples: one push-only strategy; one laggy-start episode; three move-metadata conflicts
+Dataset counts and lineage: 5 physical sources / 2,186 samples / 0 admitted rows
+Evaluator result: no physical consequence evaluator result; all formal outcomes unreviewed
+Paid resources: none opened for intake
+Remaining: reconcile coordinates/outcomes, annotate pose and skill segments, run versioned admission gate
+Blockers: authoritative physical piece/target pose and strict physical consequence verdict are absent
+Next smallest step: adjudicate the three move conflicts and create a versioned annotation sidecar
+Claim boundary: physical teleoperation source evidence only; no ACT, GR00T, or task-success claim
 ```
 
 ## Stop conditions

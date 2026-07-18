@@ -25,6 +25,12 @@ the runtime foundation and the photo-aligned portion of Phase 2:
   continuous object/target poses, object- and target-relative demonstration
   retargeting, strict MuJoCo validation, combinatorial held-outs, and the GR00T
   task's evaluator semantics. GR00T remains the RGB/language challenger.
+- Five owner-local physical pawn teleoperation sources are now checksummed and
+  indexed by `configs/data/physical_teleop_episode_intake_20260718.json`. They
+  contain 2,186 joint/action samples and finalized C922 videos, but zero rows
+  are admitted: three move labels conflict with recorder metadata, one episode
+  is push-only, all formal outcomes remain unreviewed, and authoritative
+  piece/target poses plus physical consequence verdicts are absent.
 
 ## Phase 0 — Documentation boundary
 
@@ -167,10 +173,13 @@ reference document can skip this phase.
 
 ## Next reviewed slice
 
-Freeze and review `configs/tasks/chess_pick_place_act_state_v1.json`, including
-its observation frames/units, observable transition predicates, generator
-lineage, held-out pose cells/combinations, and GR00T-derived evaluator gates.
-Then implement only the deterministic retarget-and-validate foundation needed
-for ACT-1. Keep GR00T as the blocked RGB/language challenger until its gated
-dependency is available; keep full-board, calibration, gateway, and physical
-authority closed until their own phases.
+Keep the five physical sources outside training while the three coordinate
+conflicts and five formal outcomes are adjudicated. Add versioned pose/video
+annotation and contact-skill segmentation without rewriting raw receipts. The
+consistent E2→E1 episode may then become the first nominal physical ACT anchor
+candidate; the push-only D1→D2 source belongs to a separate task family, and
+the laggy-start source is a recovery hypothesis requiring exact segment
+lineage. In parallel, implement only the deterministic retarget-and-validate
+foundation needed for ACT-1. Do not add this cohort to frozen GR00T v1; any
+future physical-RGB use requires a new LeRobot modality/dataset contract and
+the separate evaluator.

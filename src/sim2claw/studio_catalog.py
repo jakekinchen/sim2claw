@@ -83,7 +83,7 @@ def resolve_media_token(token: str, repo_root: Path = REPO_ROOT) -> Path:
     }:
         raise ValueError("media type is not allowed")
     if suffix == ".json" and not (
-        candidate.name == "state_trace.json"
+        candidate.name in {"state_trace.json", "sim_replay_state_trace.json"}
         or (
             candidate.parent.name == "state_traces"
             and candidate.name.startswith("episode_")
@@ -113,11 +113,57 @@ def _inspection(path: Path, repo_root: Path) -> dict[str, Any] | None:
     }
 
 
+def _receipt_inspection(
+    path: Path,
+    repo_root: Path,
+    receipt: dict[str, Any],
+) -> dict[str, Any] | None:
+    """Build a catalog row from a replay receipt without reparsing its trace.
+
+    Physical replay traces can contain hundreds of complete MuJoCo body states.
+    Their producer writes the immutable listing fields and trace digest into the
+    adjacent receipt, so the frequently-polled catalog can stay lightweight.
+    The browser still fetches and validates the complete trace when selected.
+    """
+
+    if not path.is_file():
+        return None
+    if receipt.get("state_trace_schema_version") != "sim2claw.mujoco_body_state_trace.v1":
+        return None
+    try:
+        frame_count = int(receipt.get("state_trace_frame_count") or 0)
+        fps = float(receipt.get("state_trace_fps") or 0)
+        duration = float(receipt.get("state_trace_duration_seconds") or 0)
+    except (TypeError, ValueError):
+        return None
+    trace_sha256 = str(receipt.get("state_trace_sha256") or "")
+    if frame_count < 1 or fps <= 0 or len(trace_sha256) != 64:
+        return None
+    piece_layout = str(receipt.get("state_trace_piece_layout") or "standard")
+    manifest_url = str(
+        receipt.get("state_trace_manifest_url")
+        or f"/api/scene?layout={piece_layout}"
+    )
+    return {
+        "kind": "threejs_state_trace",
+        "trace_url": media_url(path, repo_root),
+        "scene_url": manifest_url,
+        "frame_count": frame_count,
+        "fps": fps,
+        "duration_seconds": duration,
+        "physics_authority": "mujoco",
+        "renderer_authority": "inspection_only",
+    }
+
+
 def _proof_label(proof_class: str) -> str:
     labels = {
         "simulation_learned_policy": "Learned policy · simulation",
         "simulation_learned_policy_episode": "Learned policy · held-out simulation",
         "simulation_scripted_grasp_probe": "Scripted probe · simulation",
+        "physical_source_simulation_command_replay": (
+            "Physical source · simulator command replay"
+        ),
         "simulation_synthetic_vla_demonstration": "Synthetic VLA demonstrations",
         "simulation_synthetic_vla_demonstration_dataset": (
             "Evaluator-accepted synthetic demonstrations"
@@ -470,19 +516,85 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
     )
     for sequence, receipt_path in enumerate(receipt_paths):
         receipt = _read_json(receipt_path)
-        if receipt.get("mode") != "simulation_follower":
+        mode = str(receipt.get("mode") or "")
+        if mode not in {"simulation_follower", "physical_follower"}:
             continue
-        trace_path = receipt_path.parent / str(
-            receipt.get("state_trace_path") or "state_trace.json"
-        )
-        inspection = _inspection(trace_path, repo_root) if trace_path.is_file() else None
+        replay_receipt: dict[str, Any] = {}
+        if mode == "physical_follower":
+            replay_receipt = _read_json(receipt_path.parent / "sim_replay_receipt.json")
+            if (
+                replay_receipt.get("schema_version")
+                != "sim2claw.physical_command_sim_replay.v1"
+            ):
+                continue
+            trace_path = receipt_path.parent / str(
+                replay_receipt.get("state_trace_path")
+                or "sim_replay_state_trace.json"
+            )
+            inspection = _receipt_inspection(
+                trace_path,
+                repo_root,
+                replay_receipt,
+            )
+        else:
+            trace_path = receipt_path.parent / str(
+                receipt.get("state_trace_path") or "state_trace.json"
+            )
+            inspection = (
+                _inspection(trace_path, repo_root) if trace_path.is_file() else None
+            )
         if inspection is None:
             continue
-        proof_class = str(
+        source_proof_class = str(
             receipt.get("proof_class") or "simulation_teleoperation_source"
+        )
+        proof_class = (
+            "physical_source_simulation_command_replay"
+            if mode == "physical_follower"
+            else source_proof_class
         )
         outcome = str(receipt.get("outcome_label") or "recorded")
         duration = float(receipt.get("duration_seconds") or 0)
+        video_path = receipt_path.parent / "overhead_c922.mp4"
+        media = (
+            {"kind": "video", "url": media_url(video_path, repo_root)}
+            if video_path.is_file()
+            else {"kind": "none"}
+        )
+        metrics = [
+            _metric("Samples", receipt.get("sample_count", "—")),
+            _metric("Rate", receipt.get("sample_hz", "—"), unit="Hz"),
+            _metric("Outcome", _title(outcome)),
+        ]
+        if replay_receipt:
+            metrics.extend(
+                [
+                    _metric(
+                        "Sim body RMSE",
+                        round(
+                            float(
+                                replay_receipt.get(
+                                    "aggregate_body_joint_rmse_degrees", 0
+                                )
+                            ),
+                            2,
+                        ),
+                        unit="deg",
+                    ),
+                    _metric(
+                        "Worst sim error",
+                        round(
+                            float(
+                                replay_receipt.get(
+                                    "maximum_body_joint_error_degrees", 0
+                                )
+                            ),
+                            2,
+                        ),
+                        unit="deg",
+                    ),
+                ]
+            )
         episodes.append(
             {
                 "id": f"{receipt.get('task_id', 'teleop')}:{receipt.get('recording_id', sequence)}",
@@ -493,25 +605,33 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                     f"{receipt.get('source_square', '—')} → {receipt.get('destination_square', '—')}"
                 ),
                 "sequence": 30_000 + sequence,
-                "status": "passed" if outcome == "success" else "recorded",
+                "status": (
+                    "passed"
+                    if outcome == "success"
+                    else "failed"
+                    if outcome == "failure"
+                    else "recorded"
+                ),
                 "terminal_outcome": outcome,
                 "proof_class": proof_class,
+                "source_proof_class": source_proof_class,
                 "proof_label": _proof_label(proof_class),
                 "physical_authority": False,
                 "frame_count": inspection["frame_count"],
                 "fps": inspection["fps"],
                 "duration_seconds": duration or inspection["duration_seconds"],
                 "recorded_at": _iso_timestamp(receipt_path),
-                "media": {"kind": "none"},
+                "media": media,
                 "inspection": inspection,
                 "camera": "free_orbit",
-                "metrics": [
-                    _metric("Samples", receipt.get("sample_count", "—")),
-                    _metric("Rate", receipt.get("sample_hz", "—"), unit="Hz"),
-                    _metric("Outcome", _title(outcome)),
-                ],
+                "metrics": metrics,
+                "notes": str(receipt.get("notes") or "").strip(),
                 "phases": [{"name": "Teleoperation", "start": 0.0, "end": 1.0}],
-                "case_id": "simulation_teleoperation_source",
+                "case_id": (
+                    "physical_command_simulation_replay"
+                    if mode == "physical_follower"
+                    else "simulation_teleoperation_source"
+                ),
             }
         )
     return episodes
