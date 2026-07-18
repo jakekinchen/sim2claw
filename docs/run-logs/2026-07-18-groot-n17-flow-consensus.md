@@ -28,6 +28,8 @@ passes may be shared as a positive result.
   `473915817b3a8474f796df53e199df92031d17fad152599a1d43ccecd3f15683`.
 - Flow-consensus experiment SHA-256:
   `4558ccb360ecb58315c56d069b4836314a90ac488e6c848d2bd958d3106f4f8d`.
+- Waypoint-execution v2 experiment SHA-256:
+  `934ba0693e377240aee9220d162715623a07ecd308a07989f08ee0427a6cb84f`.
 - Deterministic diagnostic renderer: `MUJOCO_GL=osmesa` and
   `PYOPENGL_PLATFORM=osmesa`.
 - OSMesa is a versioned deterministic diagnostic backend, not a new promotion
@@ -43,6 +45,25 @@ and row-zero action divergence. Receding horizons alone produced no consequence
 gain, while visual-unfreeze preconditions failed. This lane tests whether a
 fixed deterministic set of complete model proposals can produce a more stable
 action chunk without geometric selection or expert actions at evaluation time.
+
+During checkpoint transfer, the reward-guided lane reported that exact nominal
+training rows are terminal-negative under the learned evaluator's 20 Hz
+zero-order hold. A local training-only causal replay reproduced that result and
+isolated a second, nonredundant inference defect: the clean-room generator
+executed a 200 Hz phase-local ramp but recorded only every tenth target. Exact
+float32 source waypoints passed only 2/24 training episodes under sample hold;
+deterministic same-phase linear reconstruction passed 22/24 with unchanged
+gates. The diagnostic artifact is outside Git at
+`/Users/kelly/Documents/Codex/sim2claw-groot-n17-consensus-0718/training-waypoint-replay/summary.json`
+(SHA-256 `54ec5155...ee0f`) and accessed zero held-out rows.
+
+The separately frozen waypoint-execution v2 contract reconstructs only the
+unsaved targets between current and next model-produced waypoints. It holds at
+known phase boundaries from the frozen task schedule, performs no expert or
+geometric action selection, uses zero assistance, and leaves every consequence
+gate unchanged. The already-frozen consensus canary and training-only probe
+remain bounded; learned closed-loop priority moves to v2 after the probe ranks
+the stochastic arms.
 
 The exact experiment contract is
 `configs/experiments/groot_n17_flow_consensus_v1.json`. Its order is:
@@ -74,8 +95,9 @@ the frozen matrix adds only two eight-step arms.
 
 Local preflight passed before remote execution:
 
-- 31/31 repository tests, including analyzer rejection of held-out probes and
-  assisted or incomplete closed-loop development evidence;
+- 34/34 repository tests, including analyzer rejection of held-out probes and
+  assisted or incomplete closed-loop development evidence plus action-adapter
+  phase-boundary behavior;
 - Python compilation for the server, evaluator runner, probe, and consensus
   module;
 - shell syntax for both Brev launch/sweep scripts;

@@ -15,6 +15,7 @@ from sim2claw.groot_consensus import (
     proposal_seed,
     query_seed,
 )
+from sim2claw.groot_execution import physics_targets_from_waypoints, sample_phase
 from sim2claw.scene import board_square_center, scene_geometry
 from sim2claw.capture import load_capture_config
 from sim2claw.paths import DEFAULT_CAPTURE_CONFIG
@@ -142,6 +143,47 @@ class GrootConsensusTest(unittest.TestCase):
                 [self._proposal(0.0), {"single_arm": np.zeros((1, 16, 5))}],
                 method="mean",
             )
+
+
+class GrootExecutionAdapterTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.contract = load_groot_task_contract()
+
+    def test_sample_phase_respects_frozen_phase_boundaries(self) -> None:
+        self.assertEqual(sample_phase(self.contract, 0), "stand_off")
+        self.assertEqual(sample_phase(self.contract, 41), "stand_off")
+        self.assertEqual(sample_phase(self.contract, 42), "advance")
+        self.assertEqual(sample_phase(self.contract, 322), "retreat")
+        self.assertEqual(sample_phase(self.contract, 323), "settle")
+        self.assertEqual(sample_phase(self.contract, 362), "settle")
+        with self.assertRaises(ValueError):
+            sample_phase(self.contract, 363)
+
+    def test_linear_adapter_reconstructs_internal_ramp_without_reaching_next(self) -> None:
+        current = np.zeros(6, dtype=np.float32)
+        next_waypoint = np.full(6, 10.0, dtype=np.float32)
+        targets, info = physics_targets_from_waypoints(
+            self.contract,
+            sample_step=0,
+            current=current,
+            next_waypoint=next_waypoint,
+            adapter="linear_same_phase",
+        )
+        self.assertTrue(info["interpolated_to_next_waypoint"])
+        np.testing.assert_array_equal(targets[0], 0.0)
+        np.testing.assert_array_equal(targets[-1], 9.0)
+
+    def test_linear_adapter_holds_at_phase_boundary(self) -> None:
+        current = np.full(6, 2.0, dtype=np.float32)
+        targets, info = physics_targets_from_waypoints(
+            self.contract,
+            sample_step=41,
+            current=current,
+            next_waypoint=np.full(6, 4.0, dtype=np.float32),
+            adapter="linear_same_phase",
+        )
+        self.assertFalse(info["interpolated_to_next_waypoint"])
+        np.testing.assert_array_equal(targets, 2.0)
 
 
 if __name__ == "__main__":

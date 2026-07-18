@@ -25,6 +25,10 @@ from sim2claw.groot_chess import (
     load_groot_task_contract,
     resolve_execution_horizon,
 )
+from sim2claw.groot_execution import (
+    ACTION_EXECUTION_ADAPTERS,
+    physics_targets_from_waypoints,
+)
 from sim2claw.scene import board_square_center
 
 
@@ -63,6 +67,11 @@ def main() -> None:
     )
     parser.add_argument("--noise-scale", type=float, default=1.0)
     parser.add_argument("--num-inference-timesteps", type=int)
+    parser.add_argument(
+        "--physics-action-adapter",
+        choices=sorted(ACTION_EXECUTION_ADAPTERS),
+        default="sample_hold",
+    )
     parser.add_argument(
         "--execution-horizon",
         type=int,
@@ -183,6 +192,8 @@ def main() -> None:
     physics_actions = 0
     action_chunk = np.empty((0, 6), dtype=np.float32)
     policy_queries: list[dict[str, object]] = []
+    physics_control_digest = hashlib.sha256()
+    interpolated_sample_intervals = 0
 
     try:
         for sample_step in range(sample_count):
@@ -238,10 +249,29 @@ def main() -> None:
                     raise RuntimeError("policy returned a non-finite action")
                 chunks_requested += 1
 
-            action = action_chunk[sample_step % execution_horizon].copy()
+            chunk_index = sample_step % execution_horizon
+            action = action_chunk[chunk_index].copy()
             actions.append(action)
-            for _ in range(sample_stride):
-                env.step(action)
+            next_waypoint = (
+                action_chunk[chunk_index + 1]
+                if chunk_index + 1 < action_chunk.shape[0]
+                else None
+            )
+            physics_targets, adapter_info = physics_targets_from_waypoints(
+                contract,
+                sample_step=sample_step,
+                current=action,
+                next_waypoint=next_waypoint,
+                adapter=args.physics_action_adapter,
+            )
+            interpolated_sample_intervals += int(
+                bool(adapter_info["interpolated_to_next_waypoint"])
+            )
+            for physics_target in physics_targets:
+                physics_control_digest.update(
+                    np.ascontiguousarray(physics_target).tobytes()
+                )
+                env.step(physics_target)
                 physics_actions += 1
                 maximum_height = max(maximum_height, float(env.piece_position()[2]))
     finally:
@@ -297,6 +327,18 @@ def main() -> None:
         },
         "model_action_horizon": action_horizon,
         "execution_horizon": execution_horizon,
+        "action_execution_adapter": {
+            "schema_version": "sim2claw.groot_n17_action_execution_adapter.v1",
+            "method": args.physics_action_adapter,
+            "sample_stride_physics_steps": sample_stride,
+            "linear_blend_convention": "physics_substep/sample_stride",
+            "phase_boundary_behavior": "hold_current_waypoint",
+            "phase_schedule_source": "frozen_base_task_contract",
+            "interpolated_sample_intervals": interpolated_sample_intervals,
+            "physics_controls_sha256": physics_control_digest.hexdigest(),
+            "model_waypoints_only": True,
+            "assistance_frames": 0,
+        },
         "chunks_requested": chunks_requested,
         "policy_queries": policy_queries,
         "sampled_actions": len(actions),

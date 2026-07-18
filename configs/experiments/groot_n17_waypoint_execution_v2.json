@@ -1,0 +1,83 @@
+{
+  "schema_version": "sim2claw.groot_n17_waypoint_execution_experiment.v1",
+  "frozen_before_learned_closed_loop_evaluation": true,
+  "frozen_before_held_out_evaluation": true,
+  "lane": "inference_only_waypoint_execution",
+  "parent_consensus_experiment_sha256": "4558ccb360ecb58315c56d069b4836314a90ac488e6c848d2bd958d3106f4f8d",
+  "frozen_identities": {
+    "nominal_checkpoint_id": "checkpoint-4000",
+    "nominal_checkpoint_aggregate_manifest_sha256": "e89dae30e4b06af815b55e1a9e3036547eeae151463740e29f7fea8ad0b166ac",
+    "nvidia_source_commit": "23ace64f17aa5015259b8609d371eb61a357c776",
+    "cosmos_snapshot": "9ce19a195e423419c349abfc86fd07178b230561",
+    "base_task_contract_canonical_sha256": "473915817b3a8474f796df53e199df92031d17fad152599a1d43ccecd3f15683"
+  },
+  "training_only_causal_diagnostic": {
+    "artifact_sha256": "54ec51554fd846a067352fcbd50fea13777e0ba88779ffa0d63fa25cb1d5ee0f",
+    "episode_count": 24,
+    "source_episode_pass_count": 24,
+    "sample_hold_pass_count": 2,
+    "linear_same_phase_pass_count": 22,
+    "held_out_rows_accessed": 0,
+    "promotion_authority": false
+  },
+  "source_generator_convention": {
+    "physics_hz": 200,
+    "recorded_waypoint_hz": 20,
+    "sample_stride_physics_steps": 10,
+    "phase_entry_start": "env.controls()",
+    "phase_ramp_steps": "max(1, min(phase_physics_steps // 2, 160))",
+    "phase_blend": "min(1.0, (zero_based_phase_step + 1) / phase_ramp_steps)",
+    "record_timing": "before env.step(action) when global physics_step modulo sample_stride is zero"
+  },
+  "action_execution_adapter": {
+    "method": "linear_same_phase",
+    "physics_target": "current_waypoint + (physics_substep / sample_stride) * (next_waypoint - current_waypoint)",
+    "physics_substeps": "0 through sample_stride - 1",
+    "phase_boundary_behavior": "hold_current_waypoint_for_the_complete_interval",
+    "phase_schedule_source": "frozen_base_task_contract",
+    "current_and_next_waypoints_are_model_outputs": true,
+    "expert_or_geometric_action_selection": false,
+    "assistance_frames": 0
+  },
+  "renderer": {
+    "mujoco_gl": "osmesa",
+    "pyopengl_platform": "osmesa",
+    "role": "versioned_deterministic_diagnostic",
+    "promotion_authority": false
+  },
+  "development": {
+    "split": "training",
+    "episode_indices": [0, 8, 16],
+    "inference_seeds": [0, 1],
+    "execution_horizon": 8,
+    "candidate_source": "baseline arm plus at most two nonbaseline arms from the complete parent training-only probe summary",
+    "maximum_candidate_arms": 3,
+    "advance_rule": "candidate must produce at least two full task-consequence passes with unchanged gates",
+    "selection_order": [
+      "full_task_consequence_pass_count",
+      "board_safety_pass_count",
+      "final_xy_pass_count",
+      "upright_pass_count",
+      "lift_pass_count"
+    ],
+    "promotion_authority": false
+  },
+  "sealed_promotion": {
+    "split": "held_out",
+    "episode_indices": [0, 1, 2, 3],
+    "inference_seeds": [7101, 7102],
+    "may_open_only_after_configuration_hash_is_frozen": true,
+    "minimum_success_claim": "the same held-out episode passes every unchanged gate for both inference seeds",
+    "robust_challenger_target": "at least six of eight held-out consequences pass",
+    "reroll_or_oracle_seed_selection_forbidden": true
+  },
+  "invariants": {
+    "all_physics_targets_derived_only_from_model_waypoints": true,
+    "assistance_frames": 0,
+    "consequence_gates_unchanged": true,
+    "training_cannot_promote_itself": true,
+    "held_out_rows_remain_sealed_until_development_gate": true,
+    "recovery_checkpoint_comparison_forbidden": true,
+    "physical_authority": false
+  }
+}
