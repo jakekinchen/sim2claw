@@ -23,7 +23,7 @@
 - [ ]  **Deployed URL (if any)** or short screen capture of the working app
 - [ ]  **Team roster** (names, roles, contacts)
   - Aishwarya Badlani, Data Engineer, aishwarya08badlani@gmail.com
-  - Jake Kinchen, Robotics Engineer, jakekinchen@gmail.com
+  - Jake Kinchen, Team Lead and Robotics Engineer, jakekinchen@gmail.com
   - Jeff Pape, Software Engineer, jeff.pape@gmail.com
   - Mahata Abhinav, Product Manager, Mahata.abhinav@gmail.com
 - [ ]  **Short write-up (150–300 words):** problem → who it helps → solution → impact

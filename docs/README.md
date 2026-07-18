@@ -13,6 +13,9 @@
   — adopted runtime dependencies, sources, and host support matrix.
 - [`decisions/0002-state-act-chess-rook-lift.md`](./decisions/0002-state-act-chess-rook-lift.md)
   — first ACT architecture, dependency, evaluator, and proof boundary.
+- [`decisions/0003-contributor-m3-change-review.md`](./decisions/0003-contributor-m3-change-review.md)
+  — disposition of the proposed M3/runtime, training-recipe, and scripted-task
+  changes from contributor branch `jeff_differences_0`.
 - [`run-logs/2026-07-17-polycam-chess-table.md`](./run-logs/2026-07-17-polycam-chess-table.md)
   — commands, artifact identities, proof results, and remaining gaps.
 - [`run-logs/2026-07-17-photo-polycam-alignment.md`](./run-logs/2026-07-17-photo-polycam-alignment.md)
