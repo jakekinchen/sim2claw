@@ -30,6 +30,7 @@ from sim2claw.groot_execution import (
     TEMPORAL_ACTION_AGGREGATIONS,
     aggregate_temporal_action,
     physics_targets_from_waypoints,
+    rate_limit_action,
 )
 from sim2claw.scene import board_square_center
 
@@ -101,6 +102,17 @@ def main() -> None:
         default=0.5,
         help="Newest-to-older decay used by exponential temporal aggregation.",
     )
+    parser.add_argument(
+        "--action-rate-limits",
+        type=float,
+        nargs=6,
+        metavar=("J0", "J1", "J2", "J3", "J4", "GRIPPER"),
+        help="Positive maximum absolute target delta per 20 Hz action sample.",
+    )
+    parser.add_argument(
+        "--action-rate-limit-source",
+        help="Frozen provenance identifier required when rate limits are enabled.",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.proposal_count < 1:
@@ -115,6 +127,12 @@ def main() -> None:
         parser.error("--num-inference-timesteps must be between 1 and 16")
     if not 0.0 < args.temporal_decay <= 1.0:
         parser.error("--temporal-decay must be in (0, 1]")
+    if args.action_rate_limits is not None and not all(
+        value > 0.0 for value in args.action_rate_limits
+    ):
+        parser.error("--action-rate-limits values must be positive")
+    if (args.action_rate_limits is None) != (args.action_rate_limit_source is None):
+        parser.error("rate-limit values and source must be provided together")
     if args.policy_server_mode == "official_unseeded" and (
         args.proposal_count != 1
         or args.action_aggregation != "medoid"
@@ -218,6 +236,16 @@ def main() -> None:
     physics_control_digest = hashlib.sha256()
     interpolated_sample_intervals = 0
     temporal_candidate_counts: list[int] = []
+    previous_applied_action = np.asarray(env.controls(), dtype=np.float32).copy()
+    action_rate_limits = (
+        None
+        if args.action_rate_limits is None
+        else np.asarray(args.action_rate_limits, dtype=np.float32)
+    )
+    rate_limited_sample_count = 0
+    rate_limited_coordinate_count = 0
+    maximum_requested_abs_delta = np.zeros(6, dtype=np.float32)
+    maximum_applied_abs_delta = np.zeros(6, dtype=np.float32)
 
     try:
         for sample_step in range(sample_count):
@@ -282,20 +310,47 @@ def main() -> None:
                 action_chunk_history.append((sample_step, action_chunk.copy()))
                 chunks_requested += 1
 
-            action, temporal_info = aggregate_temporal_action(
+            model_action, temporal_info = aggregate_temporal_action(
                 action_chunk_history,
                 sample_step=sample_step,
                 method=args.temporal_action_aggregation,
                 exponential_decay=args.temporal_decay,
             )
             temporal_candidate_counts.append(int(temporal_info["candidate_count"]))
+            if action_rate_limits is None:
+                action = model_action
+            else:
+                action, rate_info = rate_limit_action(
+                    model_action,
+                    previous=previous_applied_action,
+                    max_abs_delta=action_rate_limits,
+                )
+                clipped_count = int(rate_info["clipped_coordinate_count"])
+                rate_limited_sample_count += int(clipped_count > 0)
+                rate_limited_coordinate_count += clipped_count
+                maximum_requested_abs_delta = np.maximum(
+                    maximum_requested_abs_delta,
+                    np.asarray(rate_info["requested_abs_delta"], dtype=np.float32),
+                )
+                maximum_applied_abs_delta = np.maximum(
+                    maximum_applied_abs_delta,
+                    np.asarray(rate_info["applied_abs_delta"], dtype=np.float32),
+                )
             actions.append(action)
-            next_waypoint, _ = aggregate_temporal_action(
+            model_next_waypoint, _ = aggregate_temporal_action(
                 action_chunk_history,
                 sample_step=sample_step + 1,
                 method=args.temporal_action_aggregation,
                 exponential_decay=args.temporal_decay,
             )
+            next_waypoint = model_next_waypoint
+            if action_rate_limits is not None:
+                next_waypoint, _ = rate_limit_action(
+                    model_next_waypoint,
+                    previous=action,
+                    max_abs_delta=action_rate_limits,
+                )
+            previous_applied_action = action.copy()
             physics_targets, adapter_info = physics_targets_from_waypoints(
                 contract,
                 sample_step=sample_step,
@@ -380,6 +435,29 @@ def main() -> None:
             },
             "model_chunks_only": True,
             "causal": True,
+            "assistance_frames": 0,
+        },
+        "action_rate_limiter": {
+            "schema_version": "sim2claw.groot_n17_action_rate_limiter.v1",
+            "enabled": action_rate_limits is not None,
+            "maximum_abs_delta_per_sample": (
+                None
+                if action_rate_limits is None
+                else action_rate_limits.astype(float).tolist()
+            ),
+            "source": args.action_rate_limit_source,
+            "initial_reference": "env.controls_before_first_policy_action",
+            "rate_limited_sample_count": rate_limited_sample_count,
+            "rate_limited_coordinate_count": rate_limited_coordinate_count,
+            "maximum_requested_abs_delta": maximum_requested_abs_delta.astype(
+                float
+            ).tolist(),
+            "maximum_applied_abs_delta": maximum_applied_abs_delta.astype(
+                float
+            ).tolist(),
+            "model_targets_only": True,
+            "task_geometry_used": False,
+            "reward_used": False,
             "assistance_frames": 0,
         },
         "render_cadence": {

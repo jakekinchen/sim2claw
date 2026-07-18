@@ -32,6 +32,8 @@ passes may be shared as a positive result.
   `6fd12566e33c992994f74d7f68ab9a8c6b8796de9c7e4d5215658d99efc78b33`.
 - Temporal-overlap v3 experiment SHA-256:
   `a07ea6b50d492511ab98720ae0b1ae44534a8a2fa66eff9e19d56d3d2424e458`.
+- Rate-limited temporal v4 experiment SHA-256:
+  `3a6419d905fd29de4f61f931181d414de531d466c722f13dbf0cf2a39f2aab05`.
 - Deterministic diagnostic renderer: `MUJOCO_GL=osmesa` and
   `PYOPENGL_PLATFORM=osmesa`.
 - OSMesa is a versioned deterministic diagnostic backend, not a new promotion
@@ -99,9 +101,10 @@ the frozen matrix adds only two eight-step arms.
 
 Local preflight passed before remote execution:
 
-- 41/41 repository tests, including analyzer rejection of held-out probes and
+- 45/45 repository tests, including analyzer rejection of held-out probes and
   assisted or incomplete closed-loop development evidence plus action-adapter
-  phase-boundary behavior and causal temporal-overlap checks;
+  phase-boundary behavior, causal temporal-overlap checks, and rate-limit
+  provenance/enforcement;
 - Python compilation for the server, evaluator runner, probe, and consensus
   module;
 - shell syntax for both Brev launch/sweep scripts;
@@ -137,6 +140,29 @@ renderer, training rows, seeds, consequence gates, and promotion gate remain
 fixed. V3 may open held-out only if one arm produces at least two full training
 consequence passes.
 
+V3 completed all 12 frozen training cells with no full consequence, final XY,
+or upright passes. H=8 overlap mean ranked first with 2/6 lift and 6/6 safety
+passes; H=4 overlap median had 1/6 lift and 6/6 safety passes. The final H=4
+cell lifted 115.565 mm but ended 231.036 mm from target and tipped, so it remains
+terminal negative. No configuration hash was frozen and held-out remains
+sealed. The v3 summary SHA-256 is `7c463abb...cdee`; the full development and
+exact-compatibility canary archive is preserved at
+`/Users/kelly/Documents/Codex/sim2claw-groot-n17-consensus-0718/temporal-v3-development-evidence.tgz`
+with matching local/remote SHA-256 `b1de7ced...32ce`.
+
+The corrected-data lane then explicitly handed this inference lane a
+nonredundant training-only executor prior: per-coordinate 95th-percentile
+absolute action deltas from its 13 admitted replay-aligned training episodes.
+This lane did not independently recompute those limits and records that
+provenance rather than treating it as local evidence. V4 freezes the supplied
+20 Hz float32 limits
+`[0.0055728, 0.0158314, 0.0127604, 0.0157313, 0.0006170, 0.0503374]`, keeps
+the ranked H=8 overlap-mean executor otherwise unchanged, initializes from
+`env.controls()`, and bounds each subsequent target relative to the prior
+applied waypoint. It uses no held-out row, task geometry, reward, expert action,
+or assistance. Only the six-cell training matrix may run before the same
+two-pass development gate is evaluated.
+
 ## Brev and evidence ledger
 
 | Event | State | Evidence |
@@ -151,9 +177,10 @@ consequence passes.
 | Baseline reproduction | PASS/TERMINAL NEGATIVE | exact deterministic hashes reproduced; 44.201 mm rise, 198.463 mm XY, tipped rook, 312 mm king displacement |
 | Training diagnostic | PASS/NON-PROMOTING | complete 60-cell row-zero matrix; K=5 median noise 1.0 and 0.5 shortlisted |
 | Waypoint v2 development | COMPLETE/TERMINAL NEGATIVE | 18/18 training cells; all arms 0/6 task passes; best nonbaseline K=5 median noise 0.5 had 2/6 lift and 5/6 safety passes |
-| Temporal v3 development | FROZEN/PENDING | two-arm causal-overlap matrix; experiment `a07ea6b5...e458`; no learned row run yet |
+| Temporal v3 development | COMPLETE/TERMINAL NEGATIVE | 12/12 training cells; H=8 mean ranked first at 0/6 task, 2/6 lift, 6/6 safety; H=4 median 0/6 task, 1/6 lift, 6/6 safety |
+| Rate-limited v4 development | FROZEN/PENDING | one six-cell arm; exact supplied training-only limits; experiment `3a6419d9...ab05`; no learned row run yet |
 | Held-out promotion | SEALED | cannot run until a configuration hash is frozen |
-| Artifact preservation | PARTIAL | baseline, row-zero, waypoint replay, and v2 evidence are byte-preserved outside Git; v3 pending |
+| Artifact preservation | PARTIAL | baseline, row-zero, waypoint replay, v2, and v3 evidence are byte-preserved outside Git; v4 pending |
 | Paid worker teardown | PENDING | delete this lane's worker when it no longer has a verified task |
 
 ## Authority boundary

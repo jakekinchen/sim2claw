@@ -14,6 +14,41 @@ TEMPORAL_ACTION_AGGREGATIONS = frozenset(
 )
 
 
+def rate_limit_action(
+    target: np.ndarray,
+    *,
+    previous: np.ndarray,
+    max_abs_delta: np.ndarray,
+) -> tuple[np.ndarray, dict[str, object]]:
+    """Apply a deterministic per-coordinate rate limit to a model target."""
+
+    target_array = np.asarray(target, dtype=np.float32)
+    previous_array = np.asarray(previous, dtype=np.float32)
+    limit_array = np.asarray(max_abs_delta, dtype=np.float32)
+    if target_array.ndim != 1 or not np.isfinite(target_array).all():
+        raise ValueError("rate-limit target must be a finite vector")
+    if previous_array.shape != target_array.shape or not np.isfinite(
+        previous_array
+    ).all():
+        raise ValueError("rate-limit previous action must match the finite target")
+    if limit_array.shape != target_array.shape or not np.isfinite(limit_array).all():
+        raise ValueError("rate limits must match the finite target")
+    if not np.all(limit_array > 0.0):
+        raise ValueError("rate limits must be strictly positive")
+    requested_delta = target_array - previous_array
+    applied_delta = np.clip(requested_delta, -limit_array, limit_array)
+    clipped = np.abs(requested_delta) > limit_array
+    action = np.asarray(previous_array + applied_delta, dtype=np.float32)
+    return action, {
+        "coordinate_clipped": [bool(value) for value in clipped],
+        "clipped_coordinate_count": int(np.count_nonzero(clipped)),
+        "requested_abs_delta": np.abs(requested_delta).astype(float).tolist(),
+        "applied_abs_delta": np.abs(applied_delta).astype(float).tolist(),
+        "model_target_only": True,
+        "assistance_frames": 0,
+    }
+
+
 def aggregate_temporal_action(
     chunks: Sequence[tuple[int, np.ndarray]],
     *,

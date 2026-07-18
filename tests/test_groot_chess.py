@@ -18,6 +18,7 @@ from sim2claw.groot_consensus import (
 from sim2claw.groot_execution import (
     aggregate_temporal_action,
     physics_targets_from_waypoints,
+    rate_limit_action,
     sample_phase,
 )
 from sim2claw.scene import board_square_center, scene_geometry
@@ -248,6 +249,24 @@ class GrootExecutionAdapterTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             aggregate_temporal_action(
                 [(0, chunk)], sample_step=0, method="unknown"
+            )
+
+    def test_rate_limiter_clamps_each_coordinate_from_previous_action(self) -> None:
+        action, info = rate_limit_action(
+            np.asarray([2.0, -3.0, 0.25], dtype=np.float32),
+            previous=np.asarray([1.0, -1.0, 0.0], dtype=np.float32),
+            max_abs_delta=np.asarray([0.5, 1.0, 0.5], dtype=np.float32),
+        )
+        np.testing.assert_array_equal(action, [1.5, -2.0, 0.25])
+        self.assertEqual(info["coordinate_clipped"], [True, True, False])
+        self.assertEqual(info["clipped_coordinate_count"], 2)
+
+    def test_rate_limiter_rejects_invalid_limits(self) -> None:
+        with self.assertRaises(ValueError):
+            rate_limit_action(
+                np.ones(2, dtype=np.float32),
+                previous=np.zeros(2, dtype=np.float32),
+                max_abs_delta=np.asarray([0.1, 0.0], dtype=np.float32),
             )
 
 
