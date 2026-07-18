@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+set -u
+
+PID_FILE="$HOME/.cache/so101-teleop.pid"
+LOG_FILE="$HOME/.cache/so101-teleop.log"
+LEROBOT_HOME="${LEROBOT_HOME:-$HOME/lerobot}"
+PORTS_FILE="${SO101_PORTS_FILE:-$HOME/so101_config/ports.env}"
+
+notify() {
+  notify-send --app-name="SO-101 Teleop" "$1" "$2" 2>/dev/null || true
+}
+
+is_running() {
+  [[ -f "$PID_FILE" ]] || return 1
+  local pid
+  pid="$(<"$PID_FILE")"
+  [[ "$pid" =~ ^[0-9]+$ ]] && kill -0 "$pid" 2>/dev/null
+}
+
+stop_teleop() {
+  local pid
+  pid="$(<"$PID_FILE")"
+  kill -INT "$pid" 2>/dev/null || true
+
+  for _ in {1..50}; do
+    kill -0 "$pid" 2>/dev/null || break
+    sleep 0.1
+  done
+
+  if kill -0 "$pid" 2>/dev/null; then
+    kill -TERM "$pid" 2>/dev/null || true
+  fi
+
+  rm -f "$PID_FILE"
+  notify "Teleop stopped" "Leader and follower disconnected safely."
+}
+
+start_teleop() {
+  if [[ ! -f "$PORTS_FILE" ]]; then
+    notify "Cannot start teleop" "Missing $PORTS_FILE"
+    exit 1
+  fi
+
+  # shellcheck source=/dev/null
+  source "$PORTS_FILE"
+
+  for path in "$LEADER_PORT" "$FOLLOWER_PORT"; do
+    if [[ ! -e "$path" ]]; then
+      notify "Cannot start teleop" "Arm port is missing: $path"
+      exit 1
+    fi
+  done
+
+  local follower_cal="$HOME/.cache/huggingface/lerobot/calibration/robots/so_follower/${FOLLOWER_ID}.json"
+  local leader_cal="$HOME/.cache/huggingface/lerobot/calibration/teleoperators/so_leader/${LEADER_ID}.json"
+  if [[ ! -f "$follower_cal" || ! -f "$leader_cal" ]]; then
+    notify "Cannot start teleop" "Leader or follower calibration file is missing."
+    exit 1
+  fi
+
+  mkdir -p "$HOME/.cache"
+  : >"$LOG_FILE"
+
+  nohup bash -lc "
+    source '$LEROBOT_HOME/.venv/bin/activate'
+    source '$PORTS_FILE'
+    exec lerobot-teleoperate \
+      --robot.type=so101_follower \
+      --robot.port=\"\$FOLLOWER_PORT\" \
+      --robot.id=\"\$FOLLOWER_ID\" \
+      --robot.max_relative_target=5.0 \
+      --teleop.type=so101_leader \
+      --teleop.port=\"\$LEADER_PORT\" \
+      --teleop.id=\"\$LEADER_ID\" \
+      --fps=30 \
+      --display_data=false
+  " >>"$LOG_FILE" 2>&1 &
+
+  echo "$!" >"$PID_FILE"
+  sleep 2
+
+  if is_running; then
+    notify "Teleop started" "Move the leader slowly. Click this button again to stop."
+  else
+    rm -f "$PID_FILE"
+    notify "Teleop failed to start" "See $LOG_FILE for details."
+    exit 1
+  fi
+}
+
+if is_running; then
+  stop_teleop
+else
+  rm -f "$PID_FILE"
+  start_teleop
+fi
