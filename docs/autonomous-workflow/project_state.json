@@ -1,0 +1,24 @@
+{
+  "schema_version": "sim2claw.autonomous_project_state.v1",
+  "updated_at": "2026-07-18T00:32:00-05:00",
+  "active_campaign": "groot_n17_dynamic_chess_overnight",
+  "current_milestone": "M1_ACCEPTED_DYNAMIC_DEMONSTRATION_DATASET",
+  "training_lock": "closed_until_pinned_nvidia_loader_passes",
+  "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
+  "proof_class": "simulation_synthetic_vla_demonstration",
+  "brev": {
+    "maximum_budget_usd": 50.0,
+    "hourly_price_usd": 1.656,
+    "worker_limit": 1,
+    "hard_stop_local": "2026-07-18T08:30:00-05:00",
+    "workspace": null,
+    "initial_inventory_empty": true
+  },
+  "local_evidence": {
+    "training_expert_passes": 24,
+    "held_out_expert_passes": 4,
+    "tests_passed": 15,
+    "full_board_counterexample_retained": true
+  },
+  "physical_authority": false
+}

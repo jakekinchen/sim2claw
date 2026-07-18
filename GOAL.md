@@ -25,15 +25,22 @@ repo-native implementation and evidence for every capability.
 - A fresh 957,350-parameter state-based ACT policy trained locally on MPS and
   passed one held-out simulation episode: 94.88 mm maximum rook lift, 94.01 mm
   final rise, 1,083 consecutive jaw-contact steps, and no assistance.
+- A separate frozen GR00T N1.7 task now binds RGB, language, six-joint state,
+  six-joint targets, two named pieces, disjoint destination cases, a diagnostic
+  reward with no promotion authority, and evaluator-owned placement gates.
+- Twenty-four sparse-board training experts and four zero-training-row held-out
+  experts passed. Their ignored GR00T LeRobot v2.1 export contains 8,712 frames
+  with parquet/video/meta/stats identities bound by a dataset receipt.
 
 ## Immediate mission
 
-1. Expand evaluator-owned held-out pose coverage before making a robustness or
-   promotion claim; the current pass is one fixed simulation task and seed.
-2. Replace photo-estimated transforms with calibration evidence when owner
-   measurements become available.
-3. Add learning, gateway, and eventual hardware paths only as separately
-   reviewed milestones.
+1. Validate the dynamic dataset through pinned NVIDIA source commit
+   `23ace64f...`, then run one bounded GR00T N1.7 post-training/policy-server
+   campaign on a single Brev A100-80GB worker.
+2. Evaluate fixed GR00T checkpoints on the frozen held-out rook-to-c6 and
+   king-to-e6 consequences without allowing reward or training to promote.
+3. Preserve selected evidence, prove paid-compute teardown, and keep broader
+   full-board, calibration, gateway, and hardware claims closed.
 
 ## Non-goals at this boundary
 
@@ -55,7 +62,12 @@ repo-native implementation and evidence for every capability.
 - PASS: no physical hardware path is opened.
 - PASS: the first task, split, ACT recipe, and CPU/fp32 evaluator are frozen in
   repo-native code/configuration; one model-owned held-out episode passed.
+- PASS: a dynamic language/RGB chess contract, accepted sparse-board expert
+  dataset, disjoint held-out cases, and consequence evaluator are frozen.
+- PENDING: official NVIDIA loader, GR00T training/server, learned closed-loop
+  consequences, and Brev teardown receipts.
 
-The robot geometry/composition slice and one narrow ACT simulation task are
-complete. This does not claim broad policy robustness, calibration, gateway,
-sim-to-real transfer, or a physical workcell gate.
+The robot geometry/composition slice, one narrow ACT simulation task, and the
+local GR00T data/evaluator foundation are complete. This does not claim a
+working GR00T policy, broad policy robustness, full-board manipulation,
+calibration, gateway, sim-to-real transfer, or a physical workcell gate.

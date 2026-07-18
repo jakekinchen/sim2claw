@@ -3,7 +3,7 @@
 The build proceeds from requirements to fresh implementation. No phase imports
 implementation from `sim2claw-imported-archive`.
 
-## Current implementation state — 2026-07-17
+## Current implementation state — 2026-07-18
 
 The owner-directed Polycam chess-table request advanced the repository through
 the runtime foundation and the photo-aligned portion of Phase 2:
@@ -17,8 +17,9 @@ the runtime foundation and the photo-aligned portion of Phase 2:
 - Phase 3 now has one frozen chess-rook task, disjoint training/evaluation
   seeds, and a separately invoked CPU/fp32 consequence evaluator.
 - Phase 4 has one narrow state-based ACT imitation-learning slice and a passed
-  held-out episode. Dataset breadth, a state-RL baseline, multi-pose
-  robustness, and promotion remain open.
+  held-out episode. It also has a separate language/RGB GR00T N1.7 dataset and
+  frozen sparse-board pick/place evaluator. Official loader, post-training,
+  learned-policy consequences, broader occupancy, and promotion remain open.
 
 ## Phase 0 — Documentation boundary
 
@@ -90,9 +91,13 @@ reference document can skip this phase.
    evaluation seeds, CPU/fp32 consequence gates, and immutable ignored receipts.
 5. First learning slice: fresh state-based ACT training on eight synthetic
    episodes and one evaluator-accepted held-out simulation episode.
+6. First VLA data slice: 24 accepted GR00T LeRobot v2.1 training episodes for
+   two named pieces and three instructions, plus four zero-training-row held-out
+   expert consequences for unseen destination cases.
 
 ## Next reviewed slice
 
-Broaden the held-out pose matrix and add evaluator-owned repeated rollouts
-before considering the current single-seed ACT pass for any promotion. Keep
-calibration, gateway, and physical authority closed until their own phases.
+Execute the exact pinned NVIDIA loader on the accepted export, then run a
+single bounded GR00T N1.7 post-training/policy-server experiment and evaluate
+fixed checkpoints on the held-out consequences. Keep full-board, calibration,
+gateway, and physical authority closed until their own phases.

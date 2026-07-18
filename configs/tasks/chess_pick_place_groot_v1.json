@@ -1,0 +1,169 @@
+{
+  "schema_version": "sim2claw.chess_pick_place_groot_task.v1",
+  "task_id": "chess_pick_place_groot_v1",
+  "frozen_before_training": true,
+  "proof_class": "simulation_synthetic_vla_demonstration",
+  "scene": {
+    "scene_id": "photo_aligned_chess_workcell_v1",
+    "arm": "left",
+    "camera": "workcell",
+    "board_occupancy_mode": "sparse_two_piece_curriculum",
+    "active_pieces": ["black_rook_a8", "black_king_e8"],
+    "piece_pose_authority": "simulation_only_photo_estimate"
+  },
+  "model": {
+    "family": "NVIDIA Isaac GR00T N1.7",
+    "base_checkpoint": "nvidia/GR00T-N1.7-3B",
+    "source_repository": "https://github.com/NVIDIA/Isaac-GR00T",
+    "source_commit": "23ace64f17aa5015259b8609d371eb61a357c776",
+    "source_tag": "n1.7-release",
+    "embodiment_tag": "NEW_EMBODIMENT",
+    "action_horizon": 16
+  },
+  "episode": {
+    "settle_steps_before": 300,
+    "settle_steps_after": 400,
+    "physics_timestep_seconds": 0.005,
+    "sample_fps": 20,
+    "sample_every_physics_steps": 10,
+    "render_width": 256,
+    "render_height": 256,
+    "phase_physics_steps": {
+      "stand_off": 420,
+      "advance": 380,
+      "close": 420,
+      "lift": 500,
+      "transit": 500,
+      "lower": 500,
+      "release": 260,
+      "retreat": 250
+    },
+    "lift_height_m": 0.09,
+    "release_height_m": 0.025
+  },
+  "observation": {
+    "video_key": "front",
+    "video_original_key": "observation.images.front",
+    "state_features": [
+      "left_shoulder_pan_position_rad",
+      "left_shoulder_lift_position_rad",
+      "left_elbow_flex_position_rad",
+      "left_wrist_flex_position_rad",
+      "left_wrist_roll_position_rad",
+      "left_gripper_position_rad"
+    ],
+    "state_dimension": 6,
+    "language_key": "annotation.human.task_description"
+  },
+  "action": {
+    "features": [
+      "left_shoulder_pan_target_rad",
+      "left_shoulder_lift_target_rad",
+      "left_elbow_flex_target_rad",
+      "left_wrist_flex_target_rad",
+      "left_wrist_roll_target_rad",
+      "left_gripper_target_rad"
+    ],
+    "dimension": 6,
+    "representation": "absolute_joint_position_target",
+    "clip_to_mujoco_actuator_control_range": true
+  },
+  "training_cases": [
+    {
+      "case_id": "rook_a8_to_b6",
+      "piece": "black_rook_a8",
+      "target_square": "b6",
+      "instruction": "Pick up the black rook from a8 and place it on b6."
+    },
+    {
+      "case_id": "king_e8_to_d6",
+      "piece": "black_king_e8",
+      "target_square": "d6",
+      "instruction": "Pick up the black king from e8 and place it on d6."
+    },
+    {
+      "case_id": "king_e8_to_c6",
+      "piece": "black_king_e8",
+      "target_square": "c6",
+      "instruction": "Pick up the black king from e8 and place it on c6."
+    }
+  ],
+  "training_episodes": [
+    {"seed": 1301, "case_id": "rook_a8_to_b6", "piece_planar_offset_m": [-0.00075, 0.00050]},
+    {"seed": 1302, "case_id": "rook_a8_to_b6", "piece_planar_offset_m": [-0.00075, 0.00075]},
+    {"seed": 1303, "case_id": "rook_a8_to_b6", "piece_planar_offset_m": [-0.00050, 0.00050]},
+    {"seed": 1304, "case_id": "rook_a8_to_b6", "piece_planar_offset_m": [-0.00050, 0.00075]},
+    {"seed": 1305, "case_id": "rook_a8_to_b6", "piece_planar_offset_m": [-0.00040, 0.00040]},
+    {"seed": 1306, "case_id": "rook_a8_to_b6", "piece_planar_offset_m": [0.00075, 0.00050]},
+    {"seed": 1307, "case_id": "rook_a8_to_b6", "piece_planar_offset_m": [0.00075, 0.00075]},
+    {"seed": 1308, "case_id": "rook_a8_to_b6", "piece_planar_offset_m": [0.00000, 0.00000]},
+    {"seed": 1311, "case_id": "king_e8_to_d6", "piece_planar_offset_m": [-0.00075, 0.00050]},
+    {"seed": 1312, "case_id": "king_e8_to_d6", "piece_planar_offset_m": [-0.00075, 0.00075]},
+    {"seed": 1313, "case_id": "king_e8_to_d6", "piece_planar_offset_m": [-0.00025, 0.00075]},
+    {"seed": 1314, "case_id": "king_e8_to_d6", "piece_planar_offset_m": [0.00025, 0.00050]},
+    {"seed": 1315, "case_id": "king_e8_to_d6", "piece_planar_offset_m": [0.00025, 0.00075]},
+    {"seed": 1316, "case_id": "king_e8_to_d6", "piece_planar_offset_m": [0.00075, 0.00050]},
+    {"seed": 1317, "case_id": "king_e8_to_d6", "piece_planar_offset_m": [0.00075, 0.00075]},
+    {"seed": 1318, "case_id": "king_e8_to_d6", "piece_planar_offset_m": [0.00000, 0.00100]},
+    {"seed": 1321, "case_id": "king_e8_to_c6", "piece_planar_offset_m": [-0.00025, 0.00075]},
+    {"seed": 1322, "case_id": "king_e8_to_c6", "piece_planar_offset_m": [0.00025, 0.00050]},
+    {"seed": 1323, "case_id": "king_e8_to_c6", "piece_planar_offset_m": [-0.00025, 0.00075]},
+    {"seed": 1324, "case_id": "king_e8_to_c6", "piece_planar_offset_m": [0.00075, 0.00050]},
+    {"seed": 1325, "case_id": "king_e8_to_c6", "piece_planar_offset_m": [0.00025, 0.00050]},
+    {"seed": 1326, "case_id": "king_e8_to_c6", "piece_planar_offset_m": [0.00000, 0.00100]},
+    {"seed": 1327, "case_id": "king_e8_to_c6", "piece_planar_offset_m": [0.00000, 0.00000]},
+    {"seed": 1328, "case_id": "king_e8_to_c6", "piece_planar_offset_m": [0.00040, 0.00040]}
+  ],
+  "held_out_cases": [
+    {
+      "case_id": "rook_a8_to_c6",
+      "piece": "black_rook_a8",
+      "target_square": "c6",
+      "instruction": "Pick up the black rook from a8 and place it on c6."
+    },
+    {
+      "case_id": "king_e8_to_e6",
+      "piece": "black_king_e8",
+      "target_square": "e6",
+      "instruction": "Pick up the black king from e8 and place it on e6."
+    }
+  ],
+  "held_out_episodes": [
+    {"seed": 9301, "case_id": "rook_a8_to_c6", "piece_planar_offset_m": [0.0, 0.0], "training_rows": 0},
+    {"seed": 9302, "case_id": "rook_a8_to_c6", "piece_planar_offset_m": [-0.00040, 0.00040], "training_rows": 0},
+    {"seed": 9311, "case_id": "king_e8_to_e6", "piece_planar_offset_m": [-0.00025, 0.00075], "training_rows": 0},
+    {"seed": 9312, "case_id": "king_e8_to_e6", "piece_planar_offset_m": [0.00025, 0.00075], "training_rows": 0}
+  ],
+  "diagnostic_reward": {
+    "promotion_authority": false,
+    "weights": {
+      "lift_progress": 0.35,
+      "destination_proximity": 0.35,
+      "released": 0.15,
+      "upright": 0.10,
+      "settled": 0.05
+    },
+    "destination_distance_scale_m": 0.18
+  },
+  "evaluator": {
+    "owner": "separate_cpu_fp32_consequence_evaluator",
+    "minimum_piece_rise_m": 0.04,
+    "maximum_final_xy_error_m": 0.015,
+    "maximum_final_height_error_m": 0.005,
+    "minimum_final_upright_cosine": 0.95,
+    "maximum_final_linear_speed_m_s": 0.02,
+    "minimum_gripper_clearance_m": 0.035,
+    "maximum_other_piece_displacement_m": 0.006,
+    "require_no_final_jaw_contact": true,
+    "require_model_owned_actions": true,
+    "require_no_assistance": true
+  },
+  "authority": {
+    "physical_authority": false,
+    "camera_hardware_access": false,
+    "serial_access": false,
+    "gateway_access": false,
+    "training_cannot_promote_itself": true,
+    "diagnostic_reward_cannot_promote": true
+  }
+}

@@ -71,6 +71,29 @@ def build_parser() -> argparse.ArgumentParser:
     )
     act_eval.add_argument("--checkpoint", type=Path, required=True)
     act_eval.add_argument("--no-video", action="store_true")
+
+    groot_export = subparsers.add_parser(
+        "groot-export",
+        help="export evaluator-accepted dynamic chess demonstrations for GR00T N1.7",
+    )
+    groot_export.add_argument(
+        "--output",
+        type=Path,
+        default=Path("datasets/chess_pick_place_groot_v1"),
+    )
+    groot_export.add_argument("--max-episodes", type=int, default=None)
+
+    groot_expert = subparsers.add_parser(
+        "groot-expert-eval",
+        help="run one frozen scripted pick/place consequence evaluation",
+    )
+    groot_expert.add_argument(
+        "--split",
+        choices=("training", "held_out"),
+        default="held_out",
+    )
+    groot_expert.add_argument("--episode-index", type=int, default=0)
+    groot_expert.add_argument("--render-frames", action="store_true")
     return parser
 
 
@@ -130,6 +153,40 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["success"] else 1
+    if args.command == "groot-export":
+        from .groot_chess import export_groot_dataset
+
+        report = export_groot_dataset(
+            args.output,
+            max_episodes=args.max_episodes,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "groot-expert-eval":
+        from .groot_chess import (
+            collect_groot_expert_episode,
+            load_groot_task_contract,
+        )
+
+        task = load_groot_task_contract()
+        episode = collect_groot_expert_episode(
+            task,
+            split=args.split,
+            episode_index=args.episode_index,
+            render_frames=args.render_frames,
+        )
+        report = {
+            "case_id": episode.case_id,
+            "instruction": episode.instruction,
+            "piece": episode.piece,
+            "target_square": episode.target_square,
+            "seed": episode.seed,
+            "sample_count": int(episode.states.shape[0]),
+            "maximum_ik_residual_m": episode.maximum_ik_residual_m,
+            "verdict": episode.verdict,
+        }
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if episode.verdict["success"] else 1
     raise AssertionError(f"unhandled command: {args.command}")
 
 

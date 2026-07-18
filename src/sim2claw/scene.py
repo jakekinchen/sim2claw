@@ -101,6 +101,28 @@ def scene_geometry(config: dict[str, Any]) -> SceneGeometry:
     )
 
 
+def board_square_center(
+    square: str,
+    *,
+    config_path: Path = DEFAULT_CAPTURE_CONFIG,
+) -> tuple[float, float, float]:
+    """Return the simulation-only world-frame center of one board square."""
+
+    if len(square) != 2 or square[0] not in "abcdefgh" or square[1] not in "12345678":
+        raise ValueError(f"invalid chess square: {square}")
+    geometry = scene_geometry(load_capture_config(config_path))
+    file_index = ord(square[0]) - ord("a")
+    rank_index = int(square[1]) - 1
+    local_x = (file_index - 3.5) * geometry.square_size
+    local_y = (rank_index - 3.5) * geometry.square_size
+    dx, dy = _rotate_xy(local_x, local_y, geometry.board_yaw_degrees)
+    return (
+        geometry.board_center[0] + dx,
+        geometry.board_center[1] + dy,
+        geometry.table_top + geometry.board_thickness + 0.001,
+    )
+
+
 def _format_vector(values: tuple[float, ...] | list[float]) -> str:
     return " ".join(f"{value:.9g}" for value in values)
 

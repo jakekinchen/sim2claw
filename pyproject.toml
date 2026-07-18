@@ -12,6 +12,7 @@ license = { file = "LICENSE" }
 dependencies = [
   "mujoco==3.10.0",
   "numpy==2.5.1",
+  "pyarrow==23.0.1",
   "pillow==12.3.0",
   "torch==2.11.0",
 ]
