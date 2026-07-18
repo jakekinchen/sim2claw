@@ -1,0 +1,139 @@
+{
+  "schema_version": 2,
+  "capture_id": "8873B66C-774C-48B1-B51D-338645867009",
+  "source_url": "https://poly.cam/capture/8873B66C-774C-48B1-B51D-338645867009",
+  "proof_class": "owner_provided_scan_reference",
+  "asset_policy": {
+    "redistribute": false,
+    "tracked_in_git": false,
+    "reason": "The owner supplied the share link for this build, but no reusable asset license was visible. Raw downloads and conversions remain under ignored external/ storage."
+  },
+  "artifacts": [
+    {
+      "path": "raw.gltf",
+      "url": "https://poly.cam/api/capture/8873B66C-774C-48B1-B51D-338645867009/artifacts/raw.gltf?md5=3396e0b96a334d4023f3bc5c92160bf3",
+      "sha256": "13e6f9a3caa2536073405c7e27ac19f663c8bf308aafe3b1e5b4a2097fce6d9f"
+    },
+    {
+      "path": "raw_geometry.bin",
+      "url": "https://poly.cam/api/capture/8873B66C-774C-48B1-B51D-338645867009/artifacts/raw_geometry.bin?md5=d531efcd34518906b6921cbf3566009f",
+      "sha256": "7681d2554cec9403407d66abd2bd325eb2cff5a496a8f7a621f41f1aff3df089"
+    },
+    {
+      "path": "textures/cf0b076cb0c70da17b8b9521e1c314f8.jpg",
+      "url": "https://poly.cam/api/capture/8873B66C-774C-48B1-B51D-338645867009/artifacts/textures/cf0b076cb0c70da17b8b9521e1c314f8.jpg?md5=cf0b076cb0c70da17b8b9521e1c314f8",
+      "sha256": "61656f9227de126688b02e6ff0968e38f0e24a97605c12d49e1d185c415435a6"
+    },
+    {
+      "path": "optimized_roomplan.json",
+      "url": "https://poly.cam/api/capture/8873B66C-774C-48B1-B51D-338645867009/artifacts/optimized_roomplan.json?md5=e6c573417b113ad7169450f27759285c",
+      "sha256": "829312043726cd0cbf9139d60dc5eabf1383e622d409ab5a3f8a1e68082d9b36"
+    }
+  ],
+  "roomplan_measurements": {
+    "coordinate_system": "Polycam RoomPlan, y-up",
+    "floor_height_m": -1.2534494412854518,
+    "scan_to_roomplan_mujoco": {
+      "confidence": "derived_exactly_from_inverse_optimized_roomplan_alignment_transform",
+      "pos_xyz_m": [0.0362411, 0.21954003, 1.2534494412854518],
+      "quat_wxyz": [0.69594089, 0.69594089, -0.12516501, -0.12516501]
+    },
+    "table": {
+      "category_detail": "table_other_rect",
+      "confidence": "high",
+      "length_m": 1.3513037,
+      "height_m": 0.7799972,
+      "width_m": 0.79171795,
+      "center_xyz_m": [-0.10014410632358403, -0.8595641, -0.5659250486677556],
+      "yaw_degrees_after_z_up_conversion": -20.388574
+    },
+    "window": {
+      "confidence": "roomplan_semantic_measurement",
+      "width_m": 1.2185781,
+      "height_m": 0.427811,
+      "wall_thickness_m": 0.1,
+      "center_xyz_m": [0.04733332449802766, -0.54317638125, -0.9867710024952454]
+    }
+  },
+  "simulation_estimates": {
+    "photo_reference": {
+      "confidence": "owner_provided_single_view_visual_reference",
+      "sha256": "b673f959ddf608e1c64098e8c1194196741c5cbd938f2756c3bf2b20b1901889",
+      "alignment_target": "two edge-mounted SO-101 arms, rear chessboard, fiducial sheet, window and blinds, left tripod, front-left portrait camera"
+    },
+    "alignment_reference": {
+      "confidence": "owner_provided_overhead_photo_registered_to_roomplan_table",
+      "sha256": "1201ca9ec105aabb8bb06d126ed582c1c1b30fb1f4f6c94de79f82d355d56ced",
+      "image_size_px": [2880, 3840],
+      "landmark_method": "manual landmarks at full resolution; front table corners are line intersections just outside or at the image boundary",
+      "table_corners_px": {
+        "rear_left": [380, 1528],
+        "rear_right": [2376, 1472],
+        "front_left": [-2, 3108],
+        "front_right": [2880, 2964]
+      },
+      "board_corners_px": {
+        "rear_left": [964, 1560],
+        "rear_right": [1668, 1544],
+        "front_left": [960, 2204],
+        "front_right": [1784, 2164]
+      },
+      "clamp_contacts_px": {
+        "left": [1544, 3024],
+        "right": [2572, 2976]
+      },
+      "fiducial_center_px": [1400, 2280],
+      "ledge_front_edge_px": [[280, 1400], [2600, 1352]]
+    },
+    "polycam_scan_estimates": {
+      "confidence": "textured_mesh_visual_fit_not_roomplan_semantic",
+      "board_total_side_m_range": [0.394, 0.418],
+      "board_center_in_table_frame_xy_m": [-0.022, 0.182],
+      "board_yaw_relative_to_table_degrees": 0.1,
+      "note": "The board pose in the Polycam capture differs from the later overhead photo, so scan pose is retained only as a comparison reference."
+    },
+    "board": {
+      "confidence": "photo_registered_with_polycam_textured_mesh_size_cross_check",
+      "side_m": 0.3556,
+      "frame_width_m": 0.0254,
+      "thickness_m": 0.016,
+      "center_in_table_frame_xy_m": [0.04, -0.165],
+      "yaw_relative_to_table_degrees": 1.55,
+      "near_side_color": "black"
+    },
+    "robots": [
+      {
+        "name": "left",
+        "role": "board-reaching arm",
+        "confidence": "overhead_photo_registered_not_physical_calibration",
+        "mount_in_table_frame_xyz_m": [-0.04, 0.365, 0.799],
+        "clamp_contact_in_table_frame_xy_m": [-0.036, 0.394],
+        "yaw_relative_to_table_degrees": -88.0,
+        "joint_pose_radians": [-0.2232741, 0.655613, -0.5256741, 0.7046496, 1.964844, 0.45]
+      },
+      {
+        "name": "right",
+        "role": "folded near-edge arm",
+        "confidence": "overhead_photo_registered_not_physical_calibration",
+        "mount_in_table_frame_xyz_m": [-0.526, 0.365, 0.799],
+        "clamp_contact_in_table_frame_xy_m": [-0.526, 0.394],
+        "yaw_relative_to_table_degrees": -92.0,
+        "joint_pose_radians": [0.5300692, -1.4669525, 0.023239, 1.4378308, 1.8062804, 0.35]
+      }
+    ],
+    "background": {
+      "confidence": "photo_estimated_not_metric_scan_evidence",
+      "elements": ["window wall", "window sill", "horizontal blinds", "left tripod", "fiducial sheet"],
+      "fiducial_center_in_table_frame_xy_m": [0.02, 0.08],
+      "fiducial_size_xy_m": [0.27, 0.19],
+      "tripod_column_in_table_frame_xy_m": [0.43, 0.16],
+      "ledge": {
+        "confidence": "photo_estimated_vertical_profile_with_roomplan_wall_cross_check",
+        "front_overhang_past_rear_table_edge_m": 0.05,
+        "bottom_above_table_m": 0.14,
+        "depth_m": 0.20,
+        "thickness_m": 0.07
+      }
+    }
+  }
+}
