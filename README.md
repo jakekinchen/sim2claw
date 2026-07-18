@@ -42,10 +42,26 @@ uv run python -m unittest discover -s tests -v
 export of the same lock. It omits the development group and the local project
 package; the `uv` bootstrap above remains the verified setup path.
 
-## Render the first scene
+MP4 export from `act-eval` additionally uses the system
+[`ffmpeg`](https://ffmpeg.org/) CLI with H.264/libx264 support when it is
+available. On macOS it can be installed with `brew install ffmpeg`. It is not a
+Python package and does not belong in the generated `requirements.txt`; no
+single FFmpeg version is part of the frozen Python runtime. If the CLI is
+absent, evaluation still writes its action trace, rendered PNG frames, and
+receipt, while the receipt records that no MP4 was created. When it is present,
+the receipt records the exact executable version used.
 
-The base scene is self-contained after bootstrap. This command compiles,
-settles, and renders the workcell without fetching the Polycam scan:
+## Choose and run a simulation environment
+
+Scene reconstruction is not required to install this repository or run
+simulation training. The intended selection rule is simple: use an existing
+compatible simulation environment when one is supplied; otherwise use the
+bundled programmatic MuJoCo workcell as the default. The current CLI provides
+the bundled workcell but does not yet auto-discover arbitrary simulator asset
+formats.
+
+This command compiles, settles, and renders the bundled default without
+fetching any Polycam data:
 
 ```bash
 uv run sim2claw render \
@@ -57,10 +73,16 @@ under ignored `outputs/` storage. This is an in-process, offscreen simulator
 workflow; the repository does not currently expose an interactive MuJoCo
 viewer.
 
-### Optional Polycam scan overlay
+Creating a different environment is an optional, project-specific build step.
+An agent may combine reviewed CAD or mesh assets, textures, measurements,
+images, video, and optionally a Polycam capture to author it. That process is
+non-deterministic and is not a prerequisite or a claimed one-command script.
 
-Fetch the exact owner-provided Polycam artifacts into ignored `external/`
-storage, then render the scan as a non-colliding visual reference:
+### Optional Polycam reference workflow
+
+Polycam was one input to the initial bundled scene, not a recurring setup or
+training step. Only fetch these owner-provided artifacts when inspecting or
+rebuilding its non-colliding scan reference overlay:
 
 ```bash
 uv run sim2claw fetch-polycam
