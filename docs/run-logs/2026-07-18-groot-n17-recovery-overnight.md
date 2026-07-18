@@ -73,8 +73,11 @@ This section is updated only at stable evidence boundaries.
 | Held-out expert feasibility | PASS | 24/24 frozen consequences accepted; zero training rows |
 | LeRobot v2 training export | PASS | 48 episodes, 18,888 frames, 102 files; receipt SHA-256 `fba7697d1f4f95aad46998dd3ab2db79cbde629b91c8e5a228f59d4e214a967d` |
 | Official NVIDIA loader | PASS | 48 episodes; episode 0 has 363 rows and the expected language, state, action, and `video.front` columns |
-| Clean-base candidate A | RUNNING | PID 16012; reached step 146/5,000 at about 2.9 steps/s with 39,097/81,920 MiB VRAM in use; no exit marker |
-| Evaluator checkpoint sweep | NOT RUN | no recovery checkpoint yet |
+| Held-out diagnostic export | PASS | 24 zero-training-row episodes, 9,444 frames, 54 files; receipt SHA-256 `f849460fe89bee251355ea105a4e1553076da70e5105fb51186a8ba641cd816b` |
+| Held-out NVIDIA loader | PASS | 24 episodes; 363-row non-contact and 485-row recovery trajectories; expected modalities |
+| Clean-base candidate A | RUNNING | PID 16012; checkpoint-4000 complete and training resumed; finite loss history and no exit marker |
+| Recovery policy runner | PREFLIGHT PASS | compiled locally/remotely and imported in the pinned GR00T environment; fixed action horizon 16 |
+| Evaluator checkpoint sweep | NOT RUN | checkpoints 1000--4000 available; waits for training exit and checkpoint-5000 |
 | Paid worker teardown | NOT DUE | worker remains bounded to the active verified run |
 
 Candidate A started at approximately 04:10 America/Chicago from the pinned
@@ -82,6 +85,17 @@ clean base and exact validated dataset. It saves every 1,000 steps, retains at
 most five checkpoints, and is guarded by a 21,600-second hard timeout. The
 initial live check observed 77 percent GPU utilization at 44 C. The run remains
 diagnostic until a separately owned evaluator accepts a saved checkpoint.
+
+Checkpoint boundary metrics remained finite through step 4,000: loss was
+0.8382 at step 1,000, 0.7580 at step 2,000, 0.6113 at step 3,000, and 0.5534 at
+step 4,000. These values establish optimizer health only and have no promotion
+authority.
+
+The learned-policy recovery runner uses the frozen 16-action horizon. In
+contact-recovery cases, the declared fault occurs after the frozen stand-off
+and advance durations at physics step 800, which is both a sample boundary and
+a new action-chunk query boundary. Fault injection remains separate from robot
+assistance, and every robot action after the fault remains model-owned.
 
 An attempted dataset replay on the Brev/Linux MuJoCo stack failed episode 0
 while lowering to the piece, despite the same consequence passing the frozen
