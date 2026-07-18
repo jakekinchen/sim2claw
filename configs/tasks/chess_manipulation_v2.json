@@ -1,0 +1,158 @@
+{
+  "act": {
+    "architecture": "conditional_vae_action_chunking_transformer",
+    "attention_heads": 4,
+    "batch_size": 64,
+    "chunk_size": 50,
+    "decoder_layers": 2,
+    "dropout": 0.0,
+    "encoder_layers": 2,
+    "feedforward_dimension": 512,
+    "gripper_l1_weight": 5.0,
+    "kl_weight": 10.0,
+    "latent_dimension": 16,
+    "learning_rate": 0.0003,
+    "model_dimension": 128,
+    "n_action_steps": 50,
+    "normalized_state_noise_std": 0.25,
+    "optimizer": "AdamW",
+    "optimizer_updates": 2400,
+    "state_feature_dropout_probability": 0.1,
+    "training_seed": 20260717,
+    "weight_decay": 0.0001
+  },
+  "action": {
+    "clip_to_mujoco_actuator_control_range": true,
+    "dimension": 6,
+    "features": [
+      "left_position_target_rad_6"
+    ]
+  },
+  "authority": {
+    "camera_access": false,
+    "gateway_access": false,
+    "physical_authority": false,
+    "serial_access": false,
+    "training_cannot_promote_itself": true
+  },
+  "derived_from": {
+    "note": "v1 left frozen and untouched; v2 re-scores the same lift with honest manipulation gates",
+    "task_id": "chess_rook_lift_v1"
+  },
+  "episode": {
+    "control_horizon": 2020,
+    "control_interval_physics_steps": 1,
+    "phase_control_steps": {
+      "advance": 380,
+      "close": 420,
+      "hold": 300,
+      "lift": 500,
+      "stand_off": 420
+    },
+    "settle_steps": 300
+  },
+  "evaluator": {
+    "device": "cpu",
+    "dtype": "float32",
+    "final_contact_window_control_steps": 200,
+    "maximum_nontarget_displacement_m": 0.006,
+    "maximum_target_settle_speed_mps": 0.05,
+    "maximum_target_tilt_deg": 15.0,
+    "minimum_consecutive_contact_control_steps": 80,
+    "minimum_final_contact_fraction": 0.6,
+    "minimum_final_piece_rise_m": 0.04,
+    "minimum_piece_rise_m": 0.04,
+    "minimum_target_clearance_m": 0.04,
+    "nontarget_ejection_displacement_m": 0.05,
+    "owner": "separate_cpu_fp32_process",
+    "require_bilateral_pad_grasp": true,
+    "require_model_owned_actions": true,
+    "require_no_assistance": true,
+    "require_no_nontarget_arm_contact": true
+  },
+  "frozen_before_training": true,
+  "held_out_split": {
+    "piece_planar_offsets_m": [
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "seeds": [
+      9101
+    ],
+    "training_rows": 0
+  },
+  "observation": {
+    "dimension": 31,
+    "features": [
+      "left_joint_position_rad_6",
+      "left_joint_velocity_rad_s_6",
+      "left_actuator_target_rad_6",
+      "piece_position_m_3",
+      "pinch_position_m_3",
+      "episode_progress_1",
+      "phase_one_hot_5",
+      "phase_progress_1"
+    ],
+    "n_obs_steps": 1,
+    "unperturbed_progress_feature_dimension": 7
+  },
+  "proof_class": "simulation_learned_policy",
+  "recipe_revision": 4,
+  "revision_reason": "v1_evaluator_scored_destructive_trajectories_as_success; add collateral, ejection, non-target arm contact, clearance, upright/settled, bilateral-pad gates",
+  "scene": {
+    "arm": "left",
+    "piece": "black_rook_a8",
+    "piece_pose_authority": "simulation_only_photo_estimate",
+    "scene_id": "photo_aligned_chess_workcell_v1"
+  },
+  "schema_version": "sim2claw.chess_manipulation_task.v2",
+  "task_id": "chess_manipulation_v2",
+  "training_split": {
+    "piece_planar_offsets_m": [
+      [
+        -0.00075,
+        0.0005
+      ],
+      [
+        -0.00075,
+        0.00075
+      ],
+      [
+        -0.00025,
+        0.00075
+      ],
+      [
+        0.00025,
+        0.0005
+      ],
+      [
+        0.00025,
+        0.00075
+      ],
+      [
+        0.00075,
+        0.0005
+      ],
+      [
+        0.00075,
+        0.00075
+      ],
+      [
+        0.0,
+        0.001
+      ]
+    ],
+    "seeds": [
+      1101,
+      1102,
+      1103,
+      1104,
+      1105,
+      1106,
+      1107,
+      1108
+    ]
+  }
+}
