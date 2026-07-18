@@ -52,6 +52,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     subparsers.add_parser("scene-info", help="print the frozen scene contract")
+
+    grasp = subparsers.add_parser(
+        "grasp-probe",
+        help="scripted single-piece grasp probe with receipt and frames",
+    )
+    grasp.add_argument("--arm", choices=("left", "right"), default="left")
+    grasp.add_argument("--piece", type=str, default=None)
+    grasp.add_argument("--no-frames", action="store_true")
     return parser
 
 
@@ -85,6 +93,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "scene-info":
         print(json.dumps(scene_summary(), indent=2, sort_keys=True))
         return 0
+    if args.command == "grasp-probe":
+        from dataclasses import asdict
+
+        from .grasp import run_grasp_probe
+
+        report = run_grasp_probe(
+            arm=args.arm,
+            piece=args.piece,
+            render_frames=not args.no_frames,
+        )
+        print(json.dumps(asdict(report), indent=2, sort_keys=True))
+        return 0 if report.success else 1
     raise AssertionError(f"unhandled command: {args.command}")
 
 
