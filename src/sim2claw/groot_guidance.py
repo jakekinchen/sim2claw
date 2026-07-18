@@ -12,7 +12,13 @@ import mujoco
 import numpy as np
 
 from .chess_task import ChessRookLiftEnv
-from .grasp import JAW_OPEN_RAD, JAW_SHUT_RAD, NECK_HEIGHT_M, _piece_bodies, _pinch_point
+from .grasp import (
+    JAW_OPEN_RAD,
+    JAW_SHUT_RAD,
+    NECK_HEIGHT_M,
+    _piece_bodies,
+    _pinch_point,
+)
 from .groot_chess import (
     _body_upright_cosine,
     _piece_linear_speed,
@@ -25,7 +31,7 @@ def load_guidance_contract(
     path: Path = DEFAULT_GROOT_GUIDANCE_CONFIG,
 ) -> dict[str, Any]:
     contract = json.loads(path.read_text(encoding="utf-8"))
-    if contract.get("schema_version") != "sim2claw.groot_chess_reward_guidance.v1":
+    if contract.get("schema_version") != "sim2claw.groot_chess_reward_guidance.v2":
         raise ValueError("unsupported GR00T guidance contract")
     if not contract.get("frozen_before_held_out"):
         raise ValueError("guidance contract must be frozen before held-out evaluation")
@@ -97,9 +103,7 @@ def phase_for_sample_step(base_contract: dict[str, Any], sample_step: int) -> st
         raise ValueError("sample step must be non-negative")
     stride = int(base_contract["episode"]["sample_every_physics_steps"])
     cursor = 0
-    for phase, physics_steps in base_contract["episode"][
-        "phase_physics_steps"
-    ].items():
+    for phase, physics_steps in base_contract["episode"]["phase_physics_steps"].items():
         count = int(physics_steps) // stride
         if sample_step < cursor + count:
             return str(phase)
@@ -130,6 +134,9 @@ def guidance_metrics(
     destination_distance = float(
         np.linalg.norm(piece[:2] - context.target_position[:2])
     )
+    target_planar_displacement = float(
+        np.linalg.norm(piece[:2] - context.initial_piece_position[:2])
+    )
     height_distance = float(abs(piece[2] - context.target_position[2]))
     destination_proximity = _proximity(
         destination_distance, float(reward["destination_distance_scale_m"])
@@ -139,9 +146,7 @@ def guidance_metrics(
     )
     clearance = float(np.linalg.norm(pinch - piece))
     clearance_progress = float(
-        np.clip(
-            clearance / float(reward["clearance_distance_scale_m"]), 0.0, 1.0
-        )
+        np.clip(clearance / float(reward["clearance_distance_scale_m"]), 0.0, 1.0)
     )
     upright = _body_upright_cosine(env.data, env.piece_body)
     speed = _piece_linear_speed(env)
@@ -158,7 +163,9 @@ def guidance_metrics(
     )
     other_displacements = {
         name: float(
-            np.linalg.norm(env.data.xpos[body_id] - context.initial_other_positions[name])
+            np.linalg.norm(
+                env.data.xpos[body_id] - context.initial_other_positions[name]
+            )
         )
         for name, body_id in _piece_bodies(env.model).items()
         if name in context.initial_other_positions
@@ -171,6 +178,7 @@ def guidance_metrics(
         "initial_piece_height_m": float(context.initial_piece_position[2]),
         "lift_progress": lift_progress,
         "destination_distance_m": destination_distance,
+        "target_planar_displacement_m": target_planar_displacement,
         "destination_proximity": destination_proximity,
         "height_distance_m": height_distance,
         "height_proximity": height_proximity,
@@ -250,9 +258,39 @@ def guidance_score(
         score -= 10.0 * (other_displacement - soft_limit) / max(soft_limit, 1e-9)
     if other_displacement > hard_limit:
         score -= float(safety["hard_penalty"])
+    if phase in {"stand_off", "advance", "close"}:
+        target_displacement = float(metrics["target_planar_displacement_m"])
+        target_limit = float(safety["pre_grasp_target_displacement_hard_limit_m"])
+        if target_displacement > target_limit:
+            score -= float(safety["hard_penalty"]) * (
+                1.0 + (target_displacement - target_limit) / max(target_limit, 1e-9)
+            )
+        upright = float(metrics["upright_cosine"])
+        upright_minimum = float(safety["pre_grasp_upright_minimum"])
+        if upright < upright_minimum:
+            score -= float(safety["hard_penalty"]) * (upright_minimum - upright)
+    if phase in {"lift", "transit", "lower"} and not bool(metrics["jaw_contact"]):
+        score -= float(safety["hard_penalty"])
+    if phase in {"transit", "lower"}:
+        minimum_rise = float(safety["carry_minimum_rise_m"])
+        rise = float(metrics["piece_rise_m"])
+        if rise < minimum_rise:
+            score -= (
+                float(safety["hard_penalty"])
+                * (minimum_rise - rise)
+                / max(minimum_rise, 1e-9)
+            )
+    if phase in {"release", "retreat", "settle"}:
+        destination_limit = float(safety["release_destination_hard_limit_m"])
+        destination_distance = float(metrics["destination_distance_m"])
+        if destination_distance > destination_limit:
+            score -= (
+                float(safety["hard_penalty"])
+                * (destination_distance - destination_limit)
+                / max(destination_limit, 1e-9)
+            )
     if float(metrics["piece_height_m"]) < (
-        float(metrics["initial_piece_height_m"])
-        - float(safety["piece_floor_margin_m"])
+        float(metrics["initial_piece_height_m"]) - float(safety["piece_floor_margin_m"])
     ):
         score -= float(safety["hard_penalty"])
     if phase in {"lift", "transit", "lower", "release", "retreat", "settle"}:
@@ -299,7 +337,11 @@ def simulate_candidate(
             env, base_contract, guidance_contract, context, phase
         )
         metrics["candidate_maximum_piece_height_m"] = maximum_height
-        control_delta = float(np.mean(np.linalg.norm(action_chunk[:execution_horizon] - start_control, axis=1)))
+        control_delta = float(
+            np.mean(
+                np.linalg.norm(action_chunk[:execution_horizon] - start_control, axis=1)
+            )
+        )
         score = guidance_score(
             metrics,
             guidance_contract,

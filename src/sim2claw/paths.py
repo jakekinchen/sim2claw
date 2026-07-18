@@ -14,7 +14,7 @@ DEFAULT_GROOT_CHESS_TASK_CONFIG = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_groot_v1.json"
 )
 DEFAULT_GROOT_GUIDANCE_CONFIG = (
-    REPO_ROOT / "configs" / "tasks" / "chess_pick_place_groot_guidance_v1.json"
+    REPO_ROOT / "configs" / "tasks" / "chess_pick_place_groot_guidance_v2.json"
 )
 DEFAULT_GROOT_ZOH_DATASET_CONFIG = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_groot_zoh_dataset_v2.json"
