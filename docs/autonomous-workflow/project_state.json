@@ -1,0 +1,93 @@
+{
+  "schema_version": "sim2claw.autonomous_project_state.v1",
+  "updated_at": "2026-07-18T12:03:57-05:00",
+  "active_campaign": "goal_conditioned_act_pick_place",
+  "current_milestone": "M6_FROZEN_STATE_GOAL_ACT_CONTRACT",
+  "training_lock": "closed_until_act_contract_evaluator_generator_and_splits_are_frozen",
+  "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
+  "proof_class": "planning_only_for_new_lane_existing_narrow_act_and_synthetic_vla_evidence_preserved",
+  "strategic_program": {
+    "decision": "docs/decisions/0004-goal-conditioned-act-pick-place.md",
+    "goal": "docs/goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md",
+    "active_brief": "docs/briefs/002-goal-conditioned-act-contract.md",
+    "next_contract": "configs/tasks/chess_pick_place_act_state_v1.json",
+    "contract_exists": false,
+    "primary_lane": "hierarchical_goal_conditioned_state_act",
+    "challenger_lane": "rgb_language_groot_n17",
+    "governing_directive": "teleoperate_grasp_styles_and_corrections_generate_task_instances_combinatorially_by_object_and_target_relative_retargeting",
+    "current_claim": "architecture_and_long_term_goal_accepted_no_new_policy_or_dataset_evidence"
+  },
+  "frozen_act_baseline": {
+    "task_id": "chess_rook_lift_v1",
+    "policy_parameters": 957350,
+    "status": "immutable_narrow_clean_room_act_proof",
+    "may_be_evolved_into_general_policy": false,
+    "broad_pick_place_claim": false
+  },
+  "act_program": {
+    "curriculum": [
+      "ACT_0_contract_and_negative_fixtures",
+      "ACT_1_variable_pose_grasp_lift",
+      "ACT_2_variable_target_place_release",
+      "ACT_3_sparse_board_full_pick_place",
+      "ACT_4_combinatorial_held_outs",
+      "ACT_5_distractors_and_collision_avoidance",
+      "ACT_6_correction_and_recovery"
+    ],
+    "initial_execution_claim": "hierarchical_learned_manipulation",
+    "free_space_owner": "repo_native_motion_planner_or_constructive_controller",
+    "contact_skill_owner": "act",
+    "recommended_initial_grasp_family": "rook_like_cylindrical_base",
+    "recommended_source_episode_target_range": [10, 20],
+    "recommended_accepted_generated_episode_target_range": [500, 2000]
+  },
+  "groot_challenger": {
+    "campaign": "groot_n17_dynamic_chess_overnight",
+    "status": "blocked_before_optimizer_step_zero",
+    "training_lock": "closed_until_cosmos_reason2_access_passes",
+    "external_blocker": "nvidia/Cosmos-Reason2-2B_gated_access",
+    "next_role": "rgb_language_and_wider_generalization_challenger"
+  },
+  "brev": {
+    "maximum_budget_usd": 50.0,
+    "hourly_price_usd": 1.656,
+    "worker_limit": 1,
+    "hard_stop_local": "2026-07-18T08:30:00-05:00",
+    "workspace": null,
+    "initial_inventory_empty": true,
+    "final_inventory_empty": true,
+    "estimated_spend_usd": 0.3,
+    "conservative_spend_bound_usd": 0.4,
+    "teardown_verified_at": "2026-07-18T01:15:57-05:00"
+  },
+  "local_evidence": {
+    "training_expert_passes": 24,
+    "held_out_expert_passes": 4,
+    "tests_passed": 15,
+    "full_board_counterexample_retained": true
+  },
+  "planning_validation": {
+    "tests_passed": 22,
+    "workflow_audit": "clean",
+    "new_policy_or_dataset_evidence": false
+  },
+  "nvidia_preflight": {
+    "source_commit_verified": true,
+    "a100_80gb_verified": true,
+    "dataset_loader_passed": true,
+    "dataset_episodes": 24,
+    "base_model_revision_verified": "2fc962b973bccdd5d8ce4f67cc63b264d6886495",
+    "optimizer_steps_completed": 0,
+    "checkpoint_created": false,
+    "policy_episode_completed": false
+  },
+  "external_blocker": {
+    "kind": "hugging_face_gated_model_access",
+    "dependency": "nvidia/Cosmos-Reason2-2B",
+    "account": "jakekinchen",
+    "credential_valid": true,
+    "dependency_http_status": 403,
+    "token_stored_in_repo": false
+  },
+  "physical_authority": false
+}

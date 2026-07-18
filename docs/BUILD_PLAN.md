@@ -3,7 +3,7 @@
 The build proceeds from requirements to fresh implementation. No phase imports
 implementation from `sim2claw-imported-archive`.
 
-## Current implementation state — 2026-07-17
+## Current implementation state — 2026-07-18
 
 The owner-directed Polycam chess-table request advanced the repository through
 the runtime foundation and the photo-aligned portion of Phase 2:
@@ -17,8 +17,14 @@ the runtime foundation and the photo-aligned portion of Phase 2:
 - Phase 3 now has one frozen chess-rook task, disjoint training/evaluation
   seeds, and a separately invoked CPU/fp32 consequence evaluator.
 - Phase 4 has one narrow state-based ACT imitation-learning slice and a passed
-  held-out episode. Dataset breadth, a state-RL baseline, multi-pose
-  robustness, and promotion remain open.
+  held-out episode. It also has a separate language/RGB GR00T N1.7 dataset and
+  frozen sparse-board pick/place evaluator. Official loader, post-training,
+  learned-policy consequences, broader occupancy, and promotion remain open.
+- The next primary learning program is a new hierarchical, goal-conditioned
+  state ACT lane. The old rook-lift task remains frozen. The new lane will use
+  continuous object/target poses, object- and target-relative demonstration
+  retargeting, strict MuJoCo validation, combinatorial held-outs, and the GR00T
+  task's evaluator semantics. GR00T remains the RGB/language challenger.
 
 ## Phase 0 — Documentation boundary
 
@@ -62,6 +68,67 @@ simulator path.
 Gate: immutable run receipts, separately owned evaluation decisions, and
 replayable counterexamples.
 
+### Phase 4A — Frozen narrow ACT proof
+
+Preserve `chess_rook_lift_v1`, its timed/phase-conditioned input, checkpoint,
+and receipt as immutable evidence for one fixed simulation task. Do not broaden
+its claim or use it as the mutable base for general pick-and-place.
+
+Gate: existing task/config/checkpoint identities remain unchanged.
+
+### Phase 4B — State/goal contract and retargeting foundation
+
+Create `chess_pick_place_act_state_v1` with joint/velocity, end-effector,
+gripper, selected-piece, continuous-target, relative-transform, and
+object-family inputs. Remove fixed episode/phase progress. Freeze observable
+skill transitions, generator lineage, continuous pose cells,
+object/destination holdouts, distractors, seeds, and the placement consequence
+gates before producing training rows.
+
+Implement source-trajectory segmentation in object/target frames, collision-
+free connecting motion, SO-101 IK, full MuJoCo replay, and strict-success
+admission. Every candidate records source and transform lineage plus an explicit
+rejection reason. Retargeted data is a dataset result, not policy proof.
+
+Gate: schema/negative fixtures pass, zero held-out rows are proven, and a
+deterministic mini-batch of candidates reproduces accepted/rejected verdicts.
+
+### Phase 4C — Hierarchical ACT curriculum
+
+Use planned/constructive free-space stand-off, transit, and retreat first; use
+ACT for contact-sensitive grasp/lift and place/release. Debug separate skill
+policies before testing a shared model conditioned on an observable skill
+token. Progress only through:
+
+1. variable-pose grasp/lift;
+2. variable-target placement from already grasped state;
+3. sparse-board full pick/place;
+4. object/target-pair and continuous-pose-cell held-outs;
+5. nearby-distractor and full-board collision avoidance; and
+6. corrective recovery under frozen perturbations.
+
+Gate: the separately owned CPU/fp32 evaluator passes every consequence and
+action-ownership gate for the declared rung. Planned stages and actions remain
+explicit in the claim.
+
+### Phase 4D — Teleoperation and sim-plus-real anchoring
+
+Collect a small diverse source set, not exhaustive task instances. The first
+simulation recipe targets 10--20 good leader/follower source episodes plus
+repo-native constructive experts, expanded into 500--2,000 validated episodes
+for one grasp family. Cover near/far, left/right, central/edge, approach style,
+placement speed, and recovery modes; prevent rare contact/recovery data from
+being drowned out by transit.
+
+Physical teleoperation is later and separately authorized. Record leader
+targets, follower commands, actual state, timestamps, pose sensing, available
+effort/current, and outcomes. Use real episodes to anchor rather than replace
+the simulation mixture.
+
+Gate: synchronized data lineage, frozen sim/real mixture identity, evaluator-
+owned simulation and physical verdicts, and no authority inferred from data
+collection alone.
+
 ## Phase 5 — Gateway
 
 Design one versioned observation/action/acknowledgement protocol. Prove it
@@ -90,9 +157,20 @@ reference document can skip this phase.
    evaluation seeds, CPU/fp32 consequence gates, and immutable ignored receipts.
 5. First learning slice: fresh state-based ACT training on eight synthetic
    episodes and one evaluator-accepted held-out simulation episode.
+6. First VLA data slice: 24 accepted GR00T LeRobot v2.1 training episodes for
+   two named pieces and three instructions, plus four zero-training-row held-out
+   expert consequences for unseen destination cases.
+7. Strategic ACT successor boundary: accepted Decision 0004 and a durable goal
+   define one continuous-goal policy, hierarchical skill execution,
+   retarget-and-validate generation, grasp families, held-outs, distractors,
+   recovery, and proof-class boundaries. No new ACT capability is claimed yet.
 
 ## Next reviewed slice
 
-Broaden the held-out pose matrix and add evaluator-owned repeated rollouts
-before considering the current single-seed ACT pass for any promotion. Keep
-calibration, gateway, and physical authority closed until their own phases.
+Freeze and review `configs/tasks/chess_pick_place_act_state_v1.json`, including
+its observation frames/units, observable transition predicates, generator
+lineage, held-out pose cells/combinations, and GR00T-derived evaluator gates.
+Then implement only the deterministic retarget-and-validate foundation needed
+for ACT-1. Keep GR00T as the blocked RGB/language challenger until its gated
+dependency is available; keep full-board, calibration, gateway, and physical
+authority closed until their own phases.

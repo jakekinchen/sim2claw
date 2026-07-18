@@ -5,12 +5,28 @@
 - [`../GOAL.md`](../GOAL.md) — current clean-room objective and first gate.
 - [`BUILD_PLAN.md`](./BUILD_PLAN.md) — dependency-ordered manual construction
   plan.
+- [`goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md`](./goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md)
+  — durable long-horizon prompt for continuous-goal ACT, retargeted data,
+  hierarchical skills, held-outs, distractors, and recovery.
+- [`briefs/002-goal-conditioned-act-contract.md`](./briefs/002-goal-conditioned-act-contract.md)
+  — active M6 slice: freeze the new observation/action, transition, split,
+  lineage, evaluator, and negative-fixture contract before generating data.
 - [`POLYCAM_CHESS_TABLE_SCENE.md`](./POLYCAM_CHESS_TABLE_SCENE.md) — measured
   table, photo-aligned two-arm scene, source record, and proof interpretation.
+- [`VISUALIZATION_STUDIO.md`](./VISUALIZATION_STUDIO.md) — browser replay,
+  task/episode contact sheet, live process rail, and authority boundary.
+- [`goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md`](./goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md)
+  — unattended second-machine GR00T recovery and robustness research lane.
 - [`decisions/0001-runtime-and-scene-foundation.md`](./decisions/0001-runtime-and-scene-foundation.md)
   — adopted runtime dependencies, sources, and host support matrix.
 - [`decisions/0002-state-act-chess-rook-lift.md`](./decisions/0002-state-act-chess-rook-lift.md)
   — first ACT architecture, dependency, evaluator, and proof boundary.
+- [`decisions/0004-goal-conditioned-act-pick-place.md`](./decisions/0004-goal-conditioned-act-pick-place.md)
+  — accepted successor architecture: continuous state/goal inputs,
+  object/target-relative data generation, skill hierarchy, and evaluator gates.
+- [`decisions/0003-contributor-m3-change-review.md`](./decisions/0003-contributor-m3-change-review.md)
+  — disposition of the proposed M3/runtime, training-recipe, and scripted-task
+  changes from contributor branch `jeff_differences_0`.
 - [`run-logs/2026-07-17-polycam-chess-table.md`](./run-logs/2026-07-17-polycam-chess-table.md)
   — commands, artifact identities, proof results, and remaining gaps.
 - [`run-logs/2026-07-17-photo-polycam-alignment.md`](./run-logs/2026-07-17-photo-polycam-alignment.md)

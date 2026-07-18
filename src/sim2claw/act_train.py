@@ -21,6 +21,7 @@ from .chess_task import (
     task_contract_sha256,
 )
 from .paths import DEFAULT_OUTPUT_ROOT
+from .studio_events import StudioActivity
 
 
 def _sha256_file(path: Path) -> str:
@@ -94,6 +95,11 @@ def train_act(
     act = task["act"]
     output = output_directory or DEFAULT_OUTPUT_ROOT / "act" / task["task_id"]
     output.mkdir(parents=True, exist_ok=True)
+    activity = StudioActivity(
+        kind="training",
+        title="Train ACT rook lift",
+        task_id=str(task["task_id"]),
+    )
 
     torch.manual_seed(int(act["training_seed"]))
     np.random.seed(int(act["training_seed"]))
@@ -101,11 +107,20 @@ def train_act(
     started = time.monotonic()
 
     episodes: list[ExpertEpisode] = []
-    for seed, offset in zip(
-        task["training_split"]["seeds"],
-        task["training_split"]["piece_planar_offsets_m"],
-        strict=True,
-    ):
+    training_rows = list(
+        zip(
+            task["training_split"]["seeds"],
+            task["training_split"]["piece_planar_offsets_m"],
+            strict=True,
+        )
+    )
+    for episode_index, (seed, offset) in enumerate(training_rows, start=1):
+        activity.update(
+            phase="Generating expert episodes",
+            current=episode_index - 1,
+            total=len(training_rows),
+            detail=f"Simulation seed {seed}",
+        )
         episode = collect_expert_episode(
             task,
             seed=int(seed),
@@ -118,6 +133,12 @@ def train_act(
         ):
             raise RuntimeError(f"training expert episode {seed} failed dataset admission")
         episodes.append(episode)
+        activity.update(
+            phase="Generating expert episodes",
+            current=episode_index,
+            total=len(training_rows),
+            detail=f"Accepted simulation seed {seed}",
+        )
 
     observation_mean, observation_std, action_mean, action_std = _normalization(
         episodes
@@ -186,6 +207,17 @@ def train_act(
         l1_losses.append(float(l1.detach().cpu()))
         kl_losses.append(float(kl.detach().cpu()))
         if update == 1 or update % 200 == 0 or update == updates:
+            activity.update(
+                phase="Optimizing policy",
+                current=update,
+                total=updates,
+                detail=f"Loss {losses[-1]:.6f}",
+                metrics={
+                    "loss": losses[-1],
+                    "l1_loss": l1_losses[-1],
+                    "kl_loss": kl_losses[-1],
+                },
+            )
             print(
                 f"ACT update {update:04d}/{updates}: "
                 f"loss={losses[-1]:.6f} l1={l1_losses[-1]:.6f} "
@@ -282,4 +314,8 @@ def train_act(
         json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     receipt["receipt"] = str(receipt_path)
+    activity.complete(
+        detail="Checkpoint and training receipt written; evaluation still required",
+        metrics={"final_loss": losses[-1], "updates": updates},
+    )
     return receipt

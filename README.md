@@ -24,6 +24,10 @@ they grant no authority or proof that anything exists or works here.
 5. [Prior-results summary](./docs/reference/PRIOR_RESULTS_SUMMARY.md)
 6. [Polycam chess-table scene](./docs/POLYCAM_CHESS_TABLE_SCENE.md)
 7. [First ACT chess-rook run](./docs/run-logs/2026-07-17-act-chess-rook-lift.md)
+8. [GR00T N1.7 overnight campaign](./docs/run-logs/2026-07-18-groot-n17-chess-overnight.md)
+9. [NVIDIA machine 2 recovery goal](./docs/goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md)
+10. [Goal-conditioned ACT pick-and-place program](./docs/goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md)
+11. [Goal-conditioned ACT architecture decision](./docs/decisions/0004-goal-conditioned-act-pick-place.md)
 
 ## Install and verify
 
@@ -42,10 +46,26 @@ uv run python -m unittest discover -s tests -v
 export of the same lock. It omits the development group and the local project
 package; the `uv` bootstrap above remains the verified setup path.
 
-## Render the first scene
+MP4 export from `act-eval` additionally uses the system
+[`ffmpeg`](https://ffmpeg.org/) CLI with H.264/libx264 support when it is
+available. On macOS it can be installed with `brew install ffmpeg`. It is not a
+Python package and does not belong in the generated `requirements.txt`; no
+single FFmpeg version is part of the frozen Python runtime. If the CLI is
+absent, evaluation still writes its action trace, rendered PNG frames, and
+receipt, while the receipt records that no MP4 was created. When it is present,
+the receipt records the exact executable version used.
 
-The base scene is self-contained after bootstrap. This command compiles,
-settles, and renders the workcell without fetching the Polycam scan:
+## Choose and run a simulation environment
+
+Scene reconstruction is not required to install this repository or run
+simulation training. The intended selection rule is simple: use an existing
+compatible simulation environment when one is supplied; otherwise use the
+bundled programmatic MuJoCo workcell as the default. The current CLI provides
+the bundled workcell but does not yet auto-discover arbitrary simulator asset
+formats.
+
+This command compiles, settles, and renders the bundled default without
+fetching any Polycam data:
 
 ```bash
 uv run sim2claw render \
@@ -57,10 +77,31 @@ under ignored `outputs/` storage. This is an in-process, offscreen simulator
 workflow; the repository does not currently expose an interactive MuJoCo
 viewer.
 
-### Optional Polycam scan overlay
+## Open the browser visualization studio
 
-Fetch the exact owner-provided Polycam artifacts into ignored `external/`
-storage, then render the scan as a non-colliding visual reference:
+Replay the repo's generated episodes, scrub through phase-aligned video or
+frames, browse task-grouped evidence, and watch active training/evaluation
+processes from a local browser:
+
+```bash
+uv run sim2claw studio
+```
+
+The studio is a read-only evidence surface. It does not start work, promote a
+checkpoint, connect a gateway, or grant physical authority. See
+[`VISUALIZATION_STUDIO.md`](./docs/VISUALIZATION_STUDIO.md) for its artifact
+adapters and live heartbeat contract.
+
+Creating a different environment is an optional, project-specific build step.
+An agent may combine reviewed CAD or mesh assets, textures, measurements,
+images, video, and optionally a Polycam capture to author it. That process is
+non-deterministic and is not a prerequisite or a claimed one-command script.
+
+### Optional Polycam reference workflow
+
+Polycam was one input to the initial bundled scene, not a recurring setup or
+training step. Only fetch these owner-provided artifacts when inspecting or
+rebuilding its non-colliding scan reference overlay:
 
 ```bash
 uv run sim2claw fetch-polycam
@@ -101,6 +142,44 @@ run lifted `black_rook_a8` by 94.88 mm and held it through the final window.
 This is one bounded learned-policy simulation episode, not a robustness,
 calibration, gateway, sim-to-real, or physical-robot result.
 
+## Export the dynamic GR00T chess dataset
+
+The next lane is frozen in
+[`configs/tasks/chess_pick_place_groot_v1.json`](./configs/tasks/chess_pick_place_groot_v1.json).
+It is genuinely language and RGB conditioned: commands name a black rook or
+king and a destination square, while the dataset records the workcell camera,
+six SO-101 joint positions, and six absolute joint targets.
+
+```bash
+uv run sim2claw groot-expert-eval --split held_out --episode-index 0
+uv run sim2claw groot-expert-eval --split held_out --episode-index 2
+uv run sim2claw groot-export \
+  --output datasets/chess_pick_place_groot_v1
+```
+
+The export is GR00T LeRobot v2.1 with `meta/modality.json`, typed parquet,
+20 FPS RGB MP4, normalization statistics, natural-language task rows, and a
+hash receipt. Generated data remains ignored. The first curriculum is
+explicitly sparse: the rook and king remain visible while other pieces are
+parked at reset. This is not full-board capability. A full-board expert was
+rejected after it moved the target but swept a queen off the board.
+
+The local exporter and scripted evaluator do not prove that GR00T loads,
+trains, serves, or succeeds. Those are separate NVIDIA/Brev gates in
+[`09-autonomous-milestones.md`](./docs/autonomous-workflow/09-autonomous-milestones.md).
+
+### NVIDIA research assignments
+
+- **Machine 1 — nominal baseline:** owns the frozen v1 sparse-board dataset,
+  5,000-step checkpoint sweep, and nominal held-out consequence evaluation.
+- **Machine 2 — recovery and robustness challenger:** owns a new versioned
+  curriculum for pose error, nearby distractors, and grasp recovery. Its full
+  unattended overnight command is
+  [`NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md`](./docs/goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md).
+
+The two machines must use separate checkouts and branches. They compare only
+through frozen evaluator receipts; neither training process may promote itself.
+
 The default portrait render contains the measured white table, a configurable
 355.6 mm playing board with a 406.4 mm outer frame, 32 independently simulated
 pieces, two white articulated SO-101 arms, the fiducial sheet, left tripod, and
@@ -139,9 +218,11 @@ capability.
 - Scripted grasp probe: implemented as simulation evidence, separate from task
   or evaluator proof.
 - Mac runtime: verified on Apple Silicon with Python 3.12 and MuJoCo 3.10.0.
-- NVIDIA runtime: not implemented.
+- NVIDIA runtime: pinned Brev setup/preflight scripts are implemented; live
+  N1.7 execution remains a separate evidence gate.
 - Training and evaluation: implemented for one frozen state-based ACT
-  chess-rook lift task; broader policy evaluation is not implemented.
+  chess-rook lift task. A separate dynamic GR00T dataset/evaluator contract is
+  implemented locally, but no learned GR00T result is claimed yet.
 - Gateway and robot integration: not implemented.
 - Physical authority: closed.
 

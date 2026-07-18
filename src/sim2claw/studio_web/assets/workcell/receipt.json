@@ -1,0 +1,36 @@
+{
+  "artifacts": [
+    {
+      "camera": "studio_overview",
+      "height": 720,
+      "path": "studio-overview.png",
+      "sha256": "f66509425cf9761f428755192d022b2ba3cb14c10f1c8d31eb7f38056076aacf",
+      "width": 1280
+    },
+    {
+      "camera": "studio_left",
+      "height": 720,
+      "path": "studio-left.png",
+      "sha256": "e56aa538b5dea64c298e0a7072c0c12063e1a90432d8f9b4309dd13a641da0ef",
+      "width": 960
+    },
+    {
+      "camera": "studio_right",
+      "height": 720,
+      "path": "studio-right.png",
+      "sha256": "4e256f292b31315baf7f756f0c32e04b93063f518a0858fa4405c40d1931bdfe",
+      "width": 960
+    }
+  ],
+  "generated_by": "uv run sim2claw studio-assets",
+  "physical_authority": false,
+  "proof_class": "simulation_inspection_render",
+  "schema_version": "sim2claw.studio_assets.v1",
+  "settle_steps": 500,
+  "sources": {
+    "capture_config_sha256": "0e7f603222b03b30d9c9bb4295e0f709f9b89ce71522938038e06234fbe14229",
+    "scene_py_sha256": "29cba696ecafebd0c272be9c17058d028521f249b7713e267d3a00a110edf77a",
+    "so101_model_sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+  },
+  "training_input": false
+}

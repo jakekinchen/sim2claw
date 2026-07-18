@@ -10,6 +10,8 @@ artifacts/
 data/
 datasets/
 outputs/
+output/playwright/
+.playwright-cli/
 runs/
 checkpoints/
 tmp/
