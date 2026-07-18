@@ -238,6 +238,45 @@ and no inference was launched, but this environment resynchronization was an
 unintended post-handoff mutation. The receiving owner was notified immediately;
 this lane will issue no further uv commands or mutations on worker `50abriamr`.
 
+### Phase-bounded target v2 critic audit
+
+The receiving lane's v1 phase-temporal matrix is terminal negative: 0/6 full
+task passes, 2/6 lift, 0/6 final XY, 0/6 upright, and 4/6 board safety. Its
+summary SHA-256 is
+`a60f49c72a17bbc34c02ab8385b5971b229807d12c9fd8438f970107da8acde2`;
+assistance is zero, actions are model-owned, and held-out remains sealed.
+
+The directly implicated v2 loader patch is narrowly gated by
+`GROOT_CLAMP_ACTION_TARGETS_TO_LANGUAGE_RUN=1`. The final authored patch
+SHA-256 is
+`1c7f2e73f1c2121b488a3d4a40a9993aa8a85ad017a28e3695ac285022bf05f8`;
+the deployed loader SHA-256 is
+`b980665dd9ecb3cb40c9966d103ad2753ab12c2fdf1ce7c2d2871c3fd0f38d8a`
+on pinned NVIDIA source `23ace64f`. A transient second patch application had
+left a reject file, but the final read-only audit found that reject absent and
+the deployed source diff semantically identical to the authored patch.
+
+A plain pinned-venv loader probe with bytecode writes disabled independently
+verified all 348 effective starts of training episode zero. The environment-
+unset and environment-`0` paths were array-identical on all 348 rows. With the
+gate enabled, exactly 120 starts and 960 future target slots changed, while all
+348 delta-zero/current-action values remained identical. At every one of the
+eight phase boundaries, the two preceding starts clamped to the inclusive
+current-phase endpoint and the boundary start retained its normal 16-row
+sequence; for example, starts 40, 41, and 42 map to
+`[40,41,41,...]`, `[41,41,...]`, and `[42,...,57]`. Each returned action array
+matched the expected source rows exactly. All 13 admitted episodes have the
+same 363-row/348-effective-start contract, yielding 1,560 affected starts and
+12,480 affected future slots in total. No held-out row was opened.
+
+The first v2 launch began before the corrected denominator and proof request
+reached the receiving thread. The receiver agreed that run was inadmissible,
+stopped it before any checkpoint at approximately step 169, and classified it
+as an aborted preflight rather than a model result. At critic cutoff, the GPU
+was idle and no `launch_finetune.py` process remained. A corrected experiment
+freeze, explicit aborted-run receipt, and clean step-zero relaunch evidence are
+still required before a v2 training result is admissible.
+
 ## Brev and evidence ledger
 
 | Event | State | Evidence |
