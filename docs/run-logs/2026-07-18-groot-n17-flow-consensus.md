@@ -163,6 +163,44 @@ applied waypoint. It uses no held-out row, task geometry, reward, expert action,
 or assistance. Only the six-cell training matrix may run before the same
 two-pass development gate is evaluated.
 
+V4 completed all six training cells and is terminal negative: 0/6 full task,
+0/6 lift, 0/6 final XY, 6/6 board safety, and 4/6 upright passes. The limiter
+activated on 361-363 samples per episode and respected the exact float32 bounds,
+but it suppressed contact/motion rather than repairing the nominal policy's
+phase error. The v4 summary SHA-256 is `31cddfba...685e`; its complete archive
+is preserved at
+`/Users/kelly/Documents/Codex/sim2claw-groot-n17-consensus-0718/rate-limited-v4-development-evidence.tgz`
+with matching local/remote SHA-256 `5e8efd35...8594`. No configuration was
+frozen and held-out remains sealed.
+
+## Paid-worker handoff
+
+After v4 failed, the corrected-data lane supplied a durable, nonredundant
+phase-language curriculum at commit `e2deb59` and requested worker reuse. This
+lane stopped the policy server and every evaluator, verified that `nvidia-smi`
+reported no compute process, preserved all receipts, and handed off
+`sim2claw-gr00t-consensus-0718` (`50abriamr`) in RUNNING/READY/HEALTHY state.
+The corrected-data lane explicitly accepted ownership of all further spend,
+mutation, and mandatory final teardown. This lane must not delete, restart, or
+mutate that worker after transfer.
+
+Handoff state:
+
+- the canonical local inference source is clean at commit `647da27` on
+  `codex/gr00t-n17-flow-consensus`;
+- `/home/shadeform/sim2claw` is a scratch upload tree with no `.git` directory,
+  so the receiving lane must deploy its canonical commit rather than infer a
+  branch from the remote directory;
+- the exact nominal checkpoint remains at
+  `/home/shadeform/runs/groot-n17-consensus/checkpoint-4000` (12 GB);
+- the pinned NVIDIA runtime remains at `/home/shadeform/Isaac-GR00T`;
+- the Hugging Face token remains present at mode 600 without its contents being
+  printed, and the `nvidia/Cosmos-Reason2-2B` cache remains present at 4.6 GB;
+- all inference evidence remains under
+  `/home/shadeform/runs/groot-n17-consensus`, with byte-verified local copies;
+  and
+- the corrected-data lane now owns worker mutation and its eventual teardown.
+
 ## Brev and evidence ledger
 
 | Event | State | Evidence |
@@ -178,10 +216,10 @@ two-pass development gate is evaluated.
 | Training diagnostic | PASS/NON-PROMOTING | complete 60-cell row-zero matrix; K=5 median noise 1.0 and 0.5 shortlisted |
 | Waypoint v2 development | COMPLETE/TERMINAL NEGATIVE | 18/18 training cells; all arms 0/6 task passes; best nonbaseline K=5 median noise 0.5 had 2/6 lift and 5/6 safety passes |
 | Temporal v3 development | COMPLETE/TERMINAL NEGATIVE | 12/12 training cells; H=8 mean ranked first at 0/6 task, 2/6 lift, 6/6 safety; H=4 median 0/6 task, 1/6 lift, 6/6 safety |
-| Rate-limited v4 development | FROZEN/PENDING | one six-cell arm; exact supplied training-only limits; experiment `3a6419d9...ab05`; no learned row run yet |
+| Rate-limited v4 development | COMPLETE/TERMINAL NEGATIVE | 6/6 training cells; 0 task/lift/XY, 6 safety, 4 upright; limiter bounds enforced |
 | Held-out promotion | SEALED | cannot run until a configuration hash is frozen |
-| Artifact preservation | PARTIAL | baseline, row-zero, waypoint replay, v2, and v3 evidence are byte-preserved outside Git; v4 pending |
-| Paid worker teardown | PENDING | delete this lane's worker when it no longer has a verified task |
+| Artifact preservation | PASS | baseline, row-zero, waypoint replay, v2, v3, and v4 evidence are byte-preserved outside Git |
+| Paid worker handoff | TRANSFERRED | policy/evaluators stopped and GPU idle; worker `50abriamr` accepted by corrected-data phase-language lane, which owns all further spend and eventual teardown |
 
 ## Authority boundary
 
