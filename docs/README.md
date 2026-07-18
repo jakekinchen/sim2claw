@@ -14,19 +14,20 @@
 - [`run-logs/2026-07-17-photo-polycam-alignment.md`](./run-logs/2026-07-17-photo-polycam-alignment.md)
   — corrected scan transform, planar registration, dimension results, overlays,
   residuals, and remaining calibration boundary.
-- [`reference/imported/SOURCE_BOUNDARY.md`](./reference/imported/SOURCE_BOUNDARY.md)
-  — exact archive and document-import boundary.
-- [`reference/imported/DOCUMENT_IMPORT_MANIFEST.tsv`](./reference/imported/DOCUMENT_IMPORT_MANIFEST.tsv)
-  — byte identities for every imported reference document.
+- [`reference/ARCHIVE_INDEX.md`](./reference/ARCHIVE_INDEX.md) — fresh map of
+  the read-only prior-project archive.
+- [`reference/PRIOR_RESULTS_SUMMARY.md`](./reference/PRIOR_RESULTS_SUMMARY.md)
+  — fresh summary of prior results and their non-authoritative boundary.
 
-## Imported reference material
+## Read-only prior-project references
 
-The preserved source paths live under
-[`reference/imported/source-tree/`](./reference/imported/source-tree/). This
-material includes plans, architecture notes, historical session logs, reviewer
-messages, state snapshots, and reconstruction notes.
+Prior-project material remains in
+[`jakekinchen/sim2claw-imported-archive`](https://github.com/jakekinchen/sim2claw-imported-archive)
+at commit `798491e` or the designated read-only local checkout. No archive file
+is copied into this repository; only the two freshly authored maps above live
+here.
 
-Imported material is not active project state. If a reference document says a
-simulator, model, gateway, host, or robot path passed, that statement applies
-only to its archived source context. Fresh capabilities in this repository are
-limited to the active documents and repo-native evidence listed above.
+If a prior reference says a simulator, model, gateway, host, or robot path
+passed, that statement applies only to its archived source context. Fresh
+capabilities in this repository are limited to the active documents and
+repo-native evidence listed above.
