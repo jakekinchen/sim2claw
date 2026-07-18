@@ -22,6 +22,7 @@ from .scene import (
     build_scene_spec,
     initialize_robot_poses,
 )
+from .state_trace import EpisodeStateTraceRecorder
 
 
 SIM_REPLAY_SCHEMA = "sim2claw.physical_command_sim_replay.v1"
@@ -78,6 +79,12 @@ def replay_physical_recording(recording_directory: Path) -> dict[str, Any]:
     model = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT).compile()
     data = mujoco.MjData(model)
     initialize_robot_poses(model, data)
+    state_trace = EpisodeStateTraceRecorder(
+        model,
+        piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+        fps=max(1, int(receipt.get("sample_hz") or 20)),
+        proof_class="simulation_physical_command_replay",
+    )
     actuator_ids: list[int] = []
     qpos_addresses: list[int] = []
     for joint in ROBOT_JOINTS:
@@ -126,6 +133,7 @@ def replay_physical_recording(recording_directory: Path) -> dict[str, Any]:
             data.ctrl[actuator_ids] = command
             steps = max(1, round(dt / float(model.opt.timestep)))
             mujoco.mj_step(model, data, nstep=steps)
+            state_trace.capture(data, phase="physical_command_replay", force=True)
             simulated = data.qpos[qpos_addresses].astype(float)
             error = simulated - actual
             errors.append(error.copy())
@@ -146,6 +154,8 @@ def replay_physical_recording(recording_directory: Path) -> dict[str, Any]:
     maximum = np.max(np.abs(error_array), axis=0)
     body_rmse_deg = np.rad2deg(rmse[:5])
     body_max_deg = np.rad2deg(maximum[:5])
+    visual_trace_path = recording_directory / "sim_replay_state_trace.json"
+    visual_trace = state_trace.write(visual_trace_path)
     report = {
         "schema_version": SIM_REPLAY_SCHEMA,
         "source_recording_id": receipt["recording_id"],
@@ -163,6 +173,14 @@ def replay_physical_recording(recording_directory: Path) -> dict[str, Any]:
         "gripper_rmse_actuator_rad": float(rmse[5]),
         "trace_path": trace_path.name,
         "trace_sha256": _sha256(trace_path),
+        "state_trace_path": visual_trace_path.name,
+        "state_trace_sha256": visual_trace["sha256"],
+        "state_trace_schema_version": visual_trace["schema_version"],
+        "state_trace_frame_count": visual_trace["frame_count"],
+        "state_trace_fps": visual_trace["fps"],
+        "state_trace_duration_seconds": visual_trace["duration_seconds"],
+        "state_trace_piece_layout": visual_trace["scene"]["piece_layout"],
+        "state_trace_manifest_url": visual_trace["scene"]["manifest_url"],
         "simulator_scene": "photo_aligned_chess_workcell_v1:left_so101",
         "comparison_scope": "joint_space_command_response_only",
         "learned_policy_verified": False,

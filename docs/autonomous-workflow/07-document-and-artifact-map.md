@@ -8,6 +8,8 @@
 | `executor-reviewer-pair-programming.md` | Root quickstart and role overview for the pair. |
 | `docs/autonomous-workflow/` | Autonomous workflow strategy and protocols. |
 | `docs/autonomous-workflow/09-autonomous-milestones.md` | Invariant milestone gates. |
+| `configs/data/physical_teleop_episode_intake_20260718.json` | Machine-readable pointers, hashes, review, and lane routing for the owner-local physical source cohort. |
+| `docs/run-logs/2026-07-18-physical-episode-intake.md` | Human-readable physical episode assessment and admission boundary. |
 
 Add project-specific product and architecture docs to this table after setup.
 
@@ -32,5 +34,6 @@ Add project-specific product and architecture docs to this table after setup.
 | Completed evidence | `docs/session-logs/` plus commits |
 | Review decisions | `docs/reviewer-messages/` |
 | Manager interventions | `docs/manager-log/` |
+| Physical source episode inventory | Versioned `configs/data/physical_teleop_episode_intake_*.json` ledger; raw artifacts remain under ignored `datasets/act_source_recordings/` |
 
 If a new doc duplicates one of these concerns, delete or merge it before it drifts.

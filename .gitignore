@@ -9,6 +9,8 @@ __pycache__/
 external/
 artifacts/
 data/
+!configs/data/
+!configs/data/physical_teleop_episode_intake_*.json
 datasets/
 outputs/
 output/playwright/
@@ -22,4 +24,3 @@ tmp/
 *.pth
 MUJOCO_LOG.TXT
 .idea
-

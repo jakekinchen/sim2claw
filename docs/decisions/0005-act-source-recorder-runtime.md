@@ -57,6 +57,16 @@ Decision 0004 and milestone M13 remain the governing physical-proof boundary.
 Owner direction advanced gateway and raw-source infrastructure; it did not
 promote a physical episode or a sim-plus-real result.
 
+## Current intake ledger
+
+The first five saved physical sources are indexed without copying their raw
+artifacts into Git at
+`configs/data/physical_teleop_episode_intake_20260718.json`. The accompanying
+review is `docs/run-logs/2026-07-18-physical-episode-intake.md`. The ledger keeps
+raw receipt hashes, local relative paths, operator text, metadata conflicts,
+joint-response replay metrics, and ACT/GR00T routing decisions. Its admitted
+training-row count is zero.
+
 ## Adopted public dependency
 
 | Dependency | Source | Version | Reason |

@@ -15,6 +15,9 @@
   table, photo-aligned two-arm scene, source record, and proof interpretation.
 - [`VISUALIZATION_STUDIO.md`](./VISUALIZATION_STUDIO.md) — browser replay,
   task/episode contact sheet, live process rail, and authority boundary.
+- [`run-logs/2026-07-18-physical-episode-intake.md`](./run-logs/2026-07-18-physical-episode-intake.md)
+  — five saved physical pawn sources, hashes, visual review, simulator
+  joint-response comparisons, metadata conflicts, and ACT/GR00T routing.
 - [`goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md`](./goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md)
   — unattended second-machine GR00T recovery and robustness research lane.
 - [`decisions/0001-runtime-and-scene-foundation.md`](./decisions/0001-runtime-and-scene-foundation.md)
