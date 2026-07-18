@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import tempfile
 import threading
@@ -7,6 +8,8 @@ import unittest
 from pathlib import Path
 from urllib.request import Request, urlopen
 
+from sim2claw import studio_assets
+from sim2claw.paths import DEFAULT_CAPTURE_CONFIG, SO101_MODEL_PATH, STUDIO_ASSET_ROOT
 from sim2claw.studio_catalog import (
     build_catalog,
     media_token,
@@ -97,11 +100,20 @@ class StudioCatalogTest(unittest.TestCase):
         self.assertEqual(episode["status"], "passed")
         self.assertEqual([row["name"] for row in episode["phases"]], ["Reach", "Lift"])
         self.assertFalse(episode["physical_authority"])
+        self.assertEqual(episode["camera"], "workcell")
         resolved = resolve_media_token(
             episode["media"]["url"].split("/")[-1],
             self.root,
         )
         self.assertEqual(resolved.name, "episode_000000.mp4")
+        self.assertEqual(
+            catalog["simulations"][0]["poster_url"],
+            "/assets/workcell/studio-overview.png",
+        )
+        self.assertNotEqual(
+            catalog["robots"][0]["poster_url"],
+            catalog["robots"][1]["poster_url"],
+        )
 
     def test_media_tokens_cannot_escape_generated_storage(self) -> None:
         outside = self.root / "README.md"
@@ -170,10 +182,41 @@ class StudioCatalogTest(unittest.TestCase):
                 content_type = response.headers.get_content_type()
             self.assertEqual(content_type, "font/woff2")
             self.assertGreater(len(font), 20_000)
+
+            with urlopen(
+                f"{base}/assets/workcell/studio-overview.png", timeout=3
+            ) as response:
+                poster = response.read()
+                poster_type = response.headers.get_content_type()
+            self.assertEqual(poster_type, "image/png")
+            self.assertGreater(len(poster), 50_000)
         finally:
             server.shutdown()
             server.server_close()
             thread.join(timeout=3)
+
+    def test_versioned_studio_posters_match_current_scene_sources(self) -> None:
+        receipt = json.loads(
+            (STUDIO_ASSET_ROOT / "receipt.json").read_text(encoding="utf-8")
+        )
+        sources = receipt["sources"]
+        scene_path = Path(studio_assets.__file__).with_name("scene.py")
+        expected = {
+            "scene_py_sha256": hashlib.sha256(scene_path.read_bytes()).hexdigest(),
+            "capture_config_sha256": hashlib.sha256(
+                DEFAULT_CAPTURE_CONFIG.read_bytes()
+            ).hexdigest(),
+            "so101_model_sha256": hashlib.sha256(
+                SO101_MODEL_PATH.read_bytes()
+            ).hexdigest(),
+        }
+        self.assertEqual(sources, expected)
+        for artifact in receipt["artifacts"]:
+            path = STUDIO_ASSET_ROOT / artifact["path"]
+            self.assertEqual(
+                hashlib.sha256(path.read_bytes()).hexdigest(),
+                artifact["sha256"],
+            )
 
 
 if __name__ == "__main__":

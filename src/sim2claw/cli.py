@@ -8,7 +8,7 @@ from typing import Sequence
 from .alignment import compare_alignment
 from .capture import fetch_capture
 from .doctor import doctor_json, format_doctor, run_doctor
-from .paths import DEFAULT_OUTPUT_ROOT
+from .paths import DEFAULT_OUTPUT_ROOT, STUDIO_ASSET_ROOT
 from .render import render_scene
 from .scene import scene_summary
 
@@ -35,7 +35,14 @@ def build_parser() -> argparse.ArgumentParser:
     render.add_argument("--settle-steps", type=int, default=500)
     render.add_argument(
         "--camera",
-        choices=("photo_reference", "workcell", "overhead"),
+        choices=(
+            "photo_reference",
+            "workcell",
+            "overhead",
+            "studio_overview",
+            "studio_left",
+            "studio_right",
+        ),
         default="photo_reference",
     )
     render.add_argument("--scan-overlay", action="store_true")
@@ -79,6 +86,16 @@ def build_parser() -> argparse.ArgumentParser:
     studio.add_argument("--host", default="127.0.0.1")
     studio.add_argument("--port", type=int, default=4173)
     studio.add_argument("--no-open", action="store_true")
+
+    studio_assets = subparsers.add_parser(
+        "studio-assets",
+        help="regenerate inspection-only workcell posters from the current scene",
+    )
+    studio_assets.add_argument(
+        "--output-directory",
+        type=Path,
+        default=STUDIO_ASSET_ROOT,
+    )
 
     groot_export = subparsers.add_parser(
         "groot-export",
@@ -168,6 +185,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             host=args.host,
             port=args.port,
             open_browser=not args.no_open,
+        )
+        return 0
+    if args.command == "studio-assets":
+        from .studio_assets import render_studio_assets
+
+        print(
+            json.dumps(
+                render_studio_assets(args.output_directory),
+                indent=2,
+                sort_keys=True,
+            )
         )
         return 0
     if args.command == "groot-export":

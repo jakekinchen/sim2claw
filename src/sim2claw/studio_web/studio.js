@@ -48,6 +48,8 @@ const elements = {
   stageTitle: document.querySelector("#stage-title"),
   stageSubtitle: document.querySelector("#stage-subtitle"),
   stageVerdict: document.querySelector("#stage-verdict"),
+  cameraSourceLabel: document.querySelector("#camera-source-label"),
+  cameraName: document.querySelector("#camera-name"),
   video: document.querySelector("#replay-video"),
   frame: document.querySelector("#replay-frame"),
   preview: document.querySelector("#timeline-preview"),
@@ -160,6 +162,17 @@ function hashString(value) {
     hash = Math.imul(hash, 16777619);
   }
   return hash >>> 0;
+}
+
+function representativeFraction(episode) {
+  const preferred = (episode.phases || []).find((phase) =>
+    /grasp|close|lift|transfer|transit/i.test(phase.name)
+  );
+  const center = preferred
+    ? (Number(preferred.start) + Number(preferred.end)) / 2
+    : 0.54;
+  const jitter = ((hashString(episode.id) % 9) - 4) / 100;
+  return Math.max(0.12, Math.min(0.88, center + jitter));
 }
 
 function episodeById(identifier) {
@@ -433,7 +446,7 @@ function mountThumbnail(container, episode, priority = false) {
       if (video.src) return;
       video.src = media.url;
       video.addEventListener("loadedmetadata", () => {
-        const offset = 0.28 + (hashString(episode.id) % 38) / 100;
+        const offset = representativeFraction(episode);
         if (Number.isFinite(video.duration) && video.duration > 0) video.currentTime = Math.min(video.duration - 0.05, video.duration * offset);
       }, { once: true });
       video.addEventListener("seeked", () => container.classList.add("media-ready"), { once: true });
@@ -454,7 +467,7 @@ function mountThumbnail(container, episode, priority = false) {
     image.alt = "";
     const start = () => {
       if (image.src) return;
-      const offset = Math.floor(media.urls.length * (0.45 + (hashString(episode.id) % 30) / 100));
+      const offset = Math.floor(media.urls.length * representativeFraction(episode));
       image.src = media.urls[Math.min(media.urls.length - 1, offset)];
       image.decode?.().catch(() => {}).finally(() => container.classList.add("media-ready"));
     };
@@ -599,6 +612,8 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
   text(elements.stageKicker, [episode.proof_label, ...inlineFacts].join(" · "));
   text(elements.stageTitle, episodeDisplayTitle(episode));
   text(elements.stageSubtitle, episode.subtitle);
+  text(elements.cameraSourceLabel, "RECORDED VIEW");
+  text(elements.cameraName, `${formatIdentifier(episode.camera || "workcell")} / SOURCE`);
   elements.stageVerdict.className = `stage-verdict ${episode.status}`;
   text(elements.stageVerdict, episode.status === "passed" ? "Evaluator pass" : episode.status);
   drawPhasePortrait(elements.stagePortrait, episode, { stage: true });
@@ -994,12 +1009,12 @@ function renderSimulation() {
   label.className = "section-label";
   const title = document.createElement("h2");
   const subtitle = document.createElement("p");
-  text(label, "Loaded simulation");
+  text(label, `Current scene · ${simulation.asset_revision || "local"}`);
   text(title, simulation.title);
   text(subtitle, simulation.subtitle);
   const facts = document.createElement("div");
   facts.className = "simulation-facts";
-  [["Tasks", simulation.task_count], ["Robots", simulation.robot_count], ["State", "Ready"]].forEach(([name, value]) => {
+  [["Tasks", simulation.task_count], ["Robots", simulation.robot_count], ["View", "Current"]].forEach(([name, value]) => {
     const fact = document.createElement("span");
     const factValue = document.createElement("b");
     text(fact, name);
@@ -1032,13 +1047,17 @@ function renderRobots() {
     const description = document.createElement("p");
     text(label, robot.model);
     text(title, robot.title);
-    text(description, "Present in the loaded MuJoCo scene for visual replay and simulation evidence inspection.");
+    text(description, `${formatIdentifier(robot.role)}. This inspection view is generated from the current scene contract.`);
     const specs = document.createElement("dl");
     specs.className = "robot-specs";
+    const offset = robot.board_centerline_offset_m == null
+      ? Number.NaN
+      : Number(robot.board_centerline_offset_m);
     [
       ["Mode", robot.mode],
       ["Scene state", formatIdentifier(robot.status)],
-      ["Side", formatIdentifier(robot.side)],
+      ["Centerline offset", Number.isFinite(offset) ? `${Math.round(offset * 1000)} mm` : "Not registered"],
+      ["Poster camera", formatIdentifier(robot.poster_camera)],
       ["Physical link", "Closed"],
     ].forEach(([term, value]) => {
       const row = document.createElement("div");

@@ -1,6 +1,6 @@
 # Visualization Studio Redesign
 
-Status: implementation plan
+Status: implemented and refined
 
 Date: 2026-07-18 America/Chicago
 
@@ -107,7 +107,6 @@ trajectory.
 ```text
 +-------------------------------+
 | wordmark      live / offline   |
-| Replay   Library   Robots      |
 +-------------------------------+
 | title + verdict               |
 | REPLAY STAGE (16:10)          |
@@ -115,6 +114,8 @@ trajectory.
 | essential metrics             |
 | [Browse task episodes]        |
 | [Evidence details]            |
++-------------------------------+
+| Replay   Library   Robots      |
 +-------------------------------+
 ```
 
@@ -135,6 +136,8 @@ pixel wall of cards. Touch controls are at least 44px.
 6. Group the episode library by task and collapse large groups by default.
 7. Rebuild robots as concise embodiment sheets.
 8. Apply the responsive system, reduced-motion behavior, and keyboard paths.
+9. Replace stale workcell posters with versioned current-scene overview and
+   per-arm cameras; keep them inspection-only so evaluator inputs remain frozen.
 
 ## Acceptance criteria
 
@@ -152,6 +155,8 @@ pixel wall of cards. Touch controls are at least 44px.
 - Utility text is at least 11px and touch targets are at least 44px.
 - Keyboard replay, visible focus, reduced motion, and read-only authority
   messaging remain intact.
+- The board-reaching arm is visually centered along the board length in the
+  current-scene overview, and per-arm posters are distinct.
 
 ## Dependency record
 

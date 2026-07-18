@@ -60,6 +60,8 @@ the reaching arm is mounted near the table center at `(-0.040, 0.365) m`, and
 the right arm at `(-0.526, 0.365) m` in the scene's table frame. Their clamp
 contacts reproduce the frozen photo landmarks within about 2 source pixels.
 The fiducial center reproduces its photo landmark within about 7 source pixels.
+The reaching-arm mount is `0.080 m` from the board's lengthwise centerline,
+less than two registered squares; a regression test freezes that relationship.
 
 The board was physically moved between evidence surfaces. Its Polycam-capture
 center is estimated near `(-0.022, 0.182) m`, while the later overhead photo
@@ -81,6 +83,11 @@ colors and poses in memory. See `third_party/mujoco_menagerie/robotstudio_so101/
 - Both SO-101 arms retain six controlled joints and collision geometry; the
   assembled scene has 12 actuators.
 - Every chess piece has a free joint and settles under gravity onto the board.
+- `studio_overview`, `studio_left`, and `studio_right` are inspection-only
+  cameras. They do not replace the frozen `workcell` observation camera.
+- Photo-reference tripod geometry is in render group 4. Normal scene and task
+  renders retain it; versioned browser-studio posters hide only that group to
+  keep the arms and board unobstructed.
 - The render command writes the generated MJCF, PNG, and JSON report under
   ignored `outputs/polycam_chess_table/`.
 - The scene opens no camera, network, serial, servo, gateway, or robot path.
@@ -94,6 +101,7 @@ uv run sim2claw fetch-polycam
 uv run sim2claw render --output outputs/polycam_chess_table/photo-aligned.png
 uv run sim2claw render --scan-overlay \
   --output outputs/polycam_chess_table/reference-overlay.png
+uv run sim2claw studio-assets
 uv run sim2claw compare-alignment --photo /path/to/overhead-Photo-1.jpg
 ```
 

@@ -21,6 +21,12 @@ ROBOT_JOINTS = (
     "gripper",
 )
 
+STUDIO_CAMERAS = (
+    "studio_overview",
+    "studio_left",
+    "studio_right",
+)
+
 
 @dataclass(frozen=True)
 class SceneGeometry:
@@ -342,18 +348,18 @@ def _photo_background(config: dict[str, Any], geometry: SceneGeometry) -> list[s
             f'<geom name="tripod_column" type="capsule" size="0.014" '
             f'fromto="{tripod_x:.9g} {tripod_y:.9g} {top + 0.02:.9g} '
             f'{tripod_x:.9g} {tripod_y:.9g} {top + 0.58:.9g}" '
-            'rgba="0.035 0.04 0.045 1" contype="0" conaffinity="0"/>',
+            'rgba="0.035 0.04 0.045 1" group="4" contype="0" conaffinity="0"/>',
             f'<geom type="capsule" size="0.010" fromto="{tripod_x:.9g} {tripod_y:.9g} '
             f'{top + 0.31:.9g} {tripod_x - 0.17:.9g} {tripod_y + 0.20:.9g} '
             f'{top + 0.005:.9g}" '
-            'rgba="0.03 0.035 0.04 1" contype="0" conaffinity="0"/>',
+            'rgba="0.03 0.035 0.04 1" group="4" contype="0" conaffinity="0"/>',
             f'<geom type="capsule" size="0.010" fromto="{tripod_x:.9g} {tripod_y:.9g} '
             f'{top + 0.31:.9g} {tripod_x + 0.13:.9g} {tripod_y + 0.17:.9g} '
             f'{top + 0.005:.9g}" '
-            'rgba="0.03 0.035 0.04 1" contype="0" conaffinity="0"/>',
+            'rgba="0.03 0.035 0.04 1" group="4" contype="0" conaffinity="0"/>',
             f'<geom type="box" size="0.075 0.035 0.025" pos="{tripod_x:.9g} '
             f'{tripod_y:.9g} {top + 0.61:.9g}" rgba="0.025 0.03 0.035 1" '
-            'contype="0" conaffinity="0"/>',
+            'group="4" contype="0" conaffinity="0"/>',
         ]
     )
     lines.append("</body>")
@@ -379,6 +385,44 @@ def _robot_mounts(config: dict[str, Any], geometry: SceneGeometry) -> list[str]:
                 '</body>',
                 f'<frame name="{name}_robot_mount" pos="{x:.9g} {y:.9g} {base_z:.9g}" '
                 f'euler="0 0 {yaw:.9g}"/>',
+            ]
+        )
+    return lines
+
+
+def _studio_cameras(geometry: SceneGeometry) -> list[str]:
+    """Add inspection-only cameras without changing the frozen task camera."""
+
+    definitions = (
+        (
+            "studio_overview",
+            (0.00, 0.08, geometry.table_top + 0.14),
+            (0.00, 1.35, geometry.table_top + 0.82),
+            34.0,
+        ),
+        (
+            "studio_left",
+            (-0.01, 0.12, geometry.table_top + 0.18),
+            (-0.15, 1.05, geometry.table_top + 0.62),
+            30.0,
+        ),
+        (
+            "studio_right",
+            (-0.47, 0.28, geometry.table_top + 0.20),
+            (-0.75, 1.00, geometry.table_top + 0.62),
+            30.0,
+        ),
+    )
+    lines: list[str] = []
+    for name, target_local, camera_local, fovy in definitions:
+        target = _table_to_world(geometry, *target_local)
+        position = _table_to_world(geometry, *camera_local)
+        target_name = f"{name}_target"
+        lines.extend(
+            [
+                f'<body name="{target_name}" pos="{_format_vector(target)}"/>',
+                f'<camera name="{name}" pos="{_format_vector(position)}" '
+                f'mode="targetbody" target="{target_name}" fovy="{fovy:.9g}"/>',
             ]
         )
     return lines
@@ -437,6 +481,7 @@ def build_scene_xml(
         'mode="targetbody" target="scene_target" fovy="43"/>',
         f'<camera name="overhead" pos="{geometry.table_center[0]:.9g} '
         f'{geometry.table_center[1]:.9g} 2.5" mode="targetbody" target="scene_target" fovy="38"/>',
+        *_studio_cameras(geometry),
         scan_geom,
         *_photo_background(config, geometry),
         *_table_body(geometry),
@@ -530,6 +575,10 @@ def initialize_robot_poses(
 def scene_summary(config_path: Path = DEFAULT_CAPTURE_CONFIG) -> dict[str, Any]:
     config = load_capture_config(config_path)
     geometry = scene_geometry(config)
+    robots = config["simulation_estimates"]["robots"]
+    board_local_x = float(
+        config["simulation_estimates"]["board"]["center_in_table_frame_xy_m"][0]
+    )
     return {
         "capture_id": config["capture_id"],
         "proof_class": "photo_aligned_simulation_scene",
@@ -551,7 +600,19 @@ def scene_summary(config_path: Path = DEFAULT_CAPTURE_CONFIG) -> dict[str, Any]:
             "model": "MuJoCo Menagerie robotstudio_so101",
             "upstream_commit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
             "pose_confidence": "mounts_photo_registered_joint_poses_not_calibrated",
+            "mounts": [
+                {
+                    "name": robot["name"],
+                    "role": robot["role"],
+                    "table_frame_xyz_m": robot["mount_in_table_frame_xyz_m"],
+                    "board_centerline_offset_m": abs(
+                        float(robot["mount_in_table_frame_xyz_m"][0]) - board_local_x
+                    ),
+                }
+                for robot in robots
+            ],
         },
+        "studio_cameras": list(STUDIO_CAMERAS),
         "photo_alignment": config["simulation_estimates"]["photo_reference"],
         "scene_elements": config["simulation_estimates"]["background"]["elements"],
         "piece_count": 32,

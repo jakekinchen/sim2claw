@@ -16,6 +16,9 @@ DEFAULT_CHESS_TASK_CONFIG = REPO_ROOT / "configs" / "tasks" / "chess_rook_lift_v
 DEFAULT_GROOT_CHESS_TASK_CONFIG = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_groot_v1.json"
 )
+STUDIO_ASSET_ROOT = (
+    REPO_ROOT / "src" / "sim2claw" / "studio_web" / "assets" / "workcell"
+)
 SO101_MODEL_PATH = (
     REPO_ROOT
     / "third_party"

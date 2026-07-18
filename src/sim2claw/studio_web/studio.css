@@ -708,6 +708,20 @@ body[data-view="robots"] [data-view-panel="robots"] {
   transition: opacity 180ms ease, transform 300ms ease;
 }
 
+.rail-thumb video,
+.rail-thumb img {
+  object-position: 72% center;
+  transform: scale(1.12);
+  transform-origin: 76% center;
+}
+
+.episode-thumb video,
+.episode-thumb img {
+  object-position: 78% center;
+  transform: scale(1.24);
+  transform-origin: 78% center;
+}
+
 .rail-thumb.media-ready video,
 .rail-thumb.media-ready img,
 .episode-thumb.media-ready video,
@@ -1498,7 +1512,7 @@ body[data-view="robots"] [data-view-panel="robots"] {
 
 .episode-card:hover .episode-thumb video,
 .episode-card:hover .episode-thumb img {
-  transform: scale(1.025);
+  transform: scale(1.30);
 }
 
 .episode-card:hover .episode-card-copy b {

@@ -237,6 +237,9 @@ def _dataset_episodes(
                     "duration_seconds": duration,
                     "recorded_at": _iso_timestamp(video),
                     "media": {"kind": "video", "url": media_url(video, repo_root)},
+                    "camera": str(
+                        contract.get("scene", {}).get("camera") or "workcell"
+                    ),
                     "metrics": metrics,
                     "phases": phases,
                     "case_id": detail.get("case_id") if isinstance(detail, dict) else None,
@@ -316,6 +319,7 @@ def _act_episodes(
                 "duration_seconds": None,
                 "recorded_at": _iso_timestamp(receipt_path),
                 "media": media,
+                "camera": str(contract.get("scene", {}).get("camera") or "workcell"),
                 "metrics": metrics,
                 "phases": _phase_segments(contract),
                 "case_id": "held_out_evaluation",
@@ -378,6 +382,7 @@ def _grasp_episodes(repo_root: Path) -> list[dict[str, Any]]:
                     "urls": [media_url(path, repo_root) for path in artifact_paths],
                     "fps": 1,
                 },
+                "camera": "workcell",
                 "metrics": [
                     _metric(
                         "Rise",
@@ -605,12 +610,19 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
             }
         )
 
-    scene_poster_candidates = [
-        repo_root / "outputs" / "polycam_chess_table" / "photo-aligned-final.png",
-        repo_root / "outputs" / "polycam_chess_table" / "clean.png",
-        repo_root / "outputs" / "polycam_chess_table" / "reference-overlay.png",
-    ]
-    scene_poster = next((path for path in scene_poster_candidates if path.is_file()), None)
+    studio_asset_root = Path(__file__).with_name("studio_web") / "assets" / "workcell"
+    studio_asset_receipt = _read_json(studio_asset_root / "receipt.json")
+    capture_paths = sorted((repo_root / "configs" / "polycam").glob("*.json"))
+    capture_config = _read_json(capture_paths[0]) if capture_paths else {}
+    scene_estimates = capture_config.get("simulation_estimates", {})
+    board_local = scene_estimates.get("board", {}).get(
+        "center_in_table_frame_xy_m", [0.0, 0.0]
+    )
+    robot_estimates = {
+        str(row.get("name")): row
+        for row in scene_estimates.get("robots", [])
+        if isinstance(row, dict)
+    }
     simulations = [
         {
             "id": "photo_aligned_chess_workcell_v1",
@@ -620,22 +632,39 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
             "task_count": len(tasks),
             "robot_count": 2,
             "physical_authority": False,
-            "poster_url": media_url(scene_poster, repo_root) if scene_poster else None,
+            "poster_url": "/assets/workcell/studio-overview.png",
+            "poster_camera": "studio_overview",
+            "asset_revision": str(
+                studio_asset_receipt.get("sources", {}).get(
+                    "capture_config_sha256", "unversioned"
+                )
+            )[:8],
         }
     ]
-    robots = [
-        {
-            "id": f"so101_{side}",
-            "title": f"{side.capitalize()} SO-101",
-            "side": side,
-            "model": "RobotStudio SO-101",
-            "mode": "MuJoCo simulation",
-            "status": "available_in_scene",
-            "physical_authority": False,
-            "poster_url": media_url(scene_poster, repo_root) if scene_poster else None,
-        }
-        for side in ("left", "right")
-    ]
+    robots = []
+    for side in ("left", "right"):
+        estimate = robot_estimates.get(side, {})
+        mount = estimate.get("mount_in_table_frame_xyz_m") or []
+        board_offset = None
+        if mount and board_local:
+            board_offset = abs(float(mount[0]) - float(board_local[0]))
+        robots.append(
+            {
+                "id": f"so101_{side}",
+                "title": f"{side.capitalize()} SO-101",
+                "side": side,
+                "role": estimate.get("role") or f"{side.capitalize()} scene arm",
+                "model": "RobotStudio SO-101",
+                "mode": "MuJoCo simulation",
+                "status": "available_in_scene",
+                "physical_authority": False,
+                "poster_url": f"/assets/workcell/studio-{side}.png",
+                "poster_camera": f"studio_{side}",
+                "mount_in_table_frame_xyz_m": mount,
+                "board_centerline_offset_m": board_offset,
+                "alignment_confidence": estimate.get("confidence"),
+            }
+        )
 
     processes = _registered_processes(repo_root)
     processes.extend(_system_processes(repo_root, processes))

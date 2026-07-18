@@ -6,6 +6,7 @@ import mujoco
 
 from sim2claw.capture import load_capture_config
 from sim2claw.scene import (
+    STUDIO_CAMERAS,
     build_scene_spec,
     initialize_robot_poses,
     scene_geometry,
@@ -41,6 +42,10 @@ class SceneContractTest(unittest.TestCase):
         self.assertGreaterEqual(
             mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "right_base"), 0
         )
+        for camera in STUDIO_CAMERAS:
+            self.assertGreaterEqual(
+                mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, camera), 0
+            )
 
     def test_board_fits_measured_table(self) -> None:
         geometry = scene_geometry(load_capture_config())
@@ -48,6 +53,17 @@ class SceneContractTest(unittest.TestCase):
         self.assertLess(geometry.board_side, geometry.table_width)
         self.assertAlmostEqual(geometry.square_size, 0.04445)
         self.assertAlmostEqual(geometry.board_total_side, 0.4064)
+
+    def test_board_reaching_arm_tracks_board_length_centerline(self) -> None:
+        summary = scene_summary()
+        mounts = {
+            row["name"]: row for row in summary["robots"]["mounts"]
+        }
+        self.assertLessEqual(
+            mounts["left"]["board_centerline_offset_m"],
+            summary["board"]["square_m"] * 2,
+        )
+        self.assertEqual(summary["studio_cameras"], list(STUDIO_CAMERAS))
 
 
 if __name__ == "__main__":

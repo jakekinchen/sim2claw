@@ -51,7 +51,7 @@ The catalog is rebuilt from current local truth every two seconds:
 | ACT replay | `outputs/**/evaluation_receipt.json`, MP4, or rendered frames | Separately evaluated learned-policy simulation episode |
 | Scripted probe | `outputs/**/grasp_probe_receipt.json` and phase frames | Scripted simulation probe, not learned-policy evidence |
 | Live process rail | `runs/studio/processes/*.json` plus a bounded local `ps` scan | Observability only; it never controls the process |
-| Robot bench | Current scene contract | Simulated embodiment presence, not connected hardware |
+| Robot bench | Versioned `studio_*` MuJoCo cameras plus the current scene contract | Simulated embodiment presence and alignment, not connected hardware |
 
 Generated artifacts stay ignored by Git. The server only serves approved image
 and video types below `outputs/`, `datasets/`, and `runs/`; encoded media paths
@@ -96,12 +96,34 @@ or is unavailable, a deterministic phase portrait derived from episode identity
 and real phase durations provides visual indexing. It is not presented as a
 measured end-effector trajectory.
 
+Thumbnail selection prefers the middle of grasp, lift, or transfer phases rather
+than an arbitrary early frame. The replay stage identifies the recorded source
+camera so task evidence cannot be confused with the inspection-only poster
+cameras.
+
 The semantic filmstrip is the signature interaction: visible phase names,
 ticks, preview, and a synchronized orange playhead turn the episode's real
 temporal structure into the primary navigation model. Keyboard replay supports
 Space, arrows, and frame stepping; visible focus and reduced-motion behavior
 remain intact. Mobile keeps replay and verdict first, with episode browsing and
-evidence details behind explicit disclosures.
+evidence details behind explicit disclosures and Replay, Library, and Robots in
+a bottom tab bar.
+
+## Workcell poster contract
+
+The Robots view no longer reads an arbitrary historical PNG from `outputs/`.
+Three committed inspection assets are regenerated from the current scene:
+
+- `studio_overview` shows the board-reaching arm on the board centerline;
+- `studio_left` shows the board-reaching arm and board relationship;
+- `studio_right` isolates the folded edge arm.
+
+Run `uv run sim2claw studio-assets` after changing the scene, capture config, or
+SO-101 model. `assets/workcell/receipt.json` hashes those three sources and each
+PNG; the test suite rejects a stale poster generation. The poster renderer uses
+a higher-contrast inspection palette and hides the photo-reference tripod group.
+Neither choice changes the frozen `workcell` task camera, physics, evaluator, or
+recorded training observations.
 
 ## Dependency record
 
