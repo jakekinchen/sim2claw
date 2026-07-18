@@ -16,12 +16,14 @@
     Demo Video Instructions
 
 - [ ]  **Repo link** (Make sure it’s public!).
-    - [ ]  Must include a **README** with:
-        - [ ]  Quick start (commands to run)
-        - [ ]  Tech stack & architecture diagram (simple is fine)
-        - [ ]  How to reproduce the demo (env vars, API keys, sample .env)
-        - [ ]  Any **datasets/synthetic data** used + provenance
-        - [ ]  Known limitations & next steps
+  - https://github.com/jakekinchen/sim2claw
+    - <todo> verify repo is public
+        - [ ]  Must include a **README** with:
+            - [ ]  Quick start (commands to run)
+            - [ ]  Tech stack & architecture diagram (simple is fine)
+            - [ ]  How to reproduce the demo (env vars, API keys, sample .env)
+            - [ ]  Any **datasets/synthetic data** used + provenance
+            - [ ]  Known limitations & next steps
 - [ ]  **Deployed URL (if any)** or short screen capture of the working app
 - [ ]  **Team roster** (names, roles, contacts)
   - Aishwarya Badlani, Data Engineer, aishwarya08badlani@gmail.com
