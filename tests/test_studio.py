@@ -391,9 +391,9 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('src="/studio3d.js"', html)
             self.assertIn('src="/assets/workcell/studio-left.png"', html)
             self.assertIn('src="/assets/workcell/studio-right.png"', html)
-            self.assertIn('<span id="pawn-preview-source">B1</span>', html)
-            self.assertIn('<span id="pawn-preview-target">B2</span>', html)
-            self.assertIn("The mirrored tan side occupies A8", html)
+            self.assertIn('<span id="pawn-preview-source">C8</span>', html)
+            self.assertIn('<span id="pawn-preview-target">C6</span>', html)
+            self.assertIn("Tan pawns begin at A8", html)
             self.assertNotIn('id="record-piece"', html)
 
             with urlopen(f"{base}/studio.css", timeout=3) as response:
@@ -408,7 +408,7 @@ class StudioCatalogTest(unittest.TestCase):
                 javascript = response.read().decode("utf-8")
             self.assertIn("document.body.dataset.recorderStatus = status", javascript)
             self.assertIn('"C922 REC"', javascript)
-            self.assertIn('sim2claw.recorder.settings.v1', javascript)
+            self.assertIn('sim2claw.recorder.settings.v2', javascript)
             self.assertIn('postRecorder("gateway-sync"', javascript)
             self.assertIn("server_owned_prestart_sequence: physical", javascript)
             self.assertIn("new AbortController()", javascript)

@@ -1,7 +1,8 @@
-"""Leader-arm source recording for the goal-conditioned ACT data pipeline.
+"""Leader-arm recording for the canonical manipulation source-data pipeline.
 
-Raw recordings are not ACT training rows.  They remain pending deterministic
-replay and separately owned evaluator admission.
+Raw recordings are model-agnostic and are not ACT or GR00T training rows. They
+remain pending exact sample-hold replay and separately owned evaluator
+admission; downstream model-specific adapters are the only format boundary.
 """
 
 from __future__ import annotations
@@ -22,9 +23,7 @@ import mujoco
 import numpy as np
 
 from .act_pick_place import (
-    load_act_pick_place_task_contract,
     resolve_structured_goal,
-    task_contract_sha256,
 )
 from .overhead_video import OverheadVideoError, OverheadVideoRecorder
 from .paths import REPO_ROOT
@@ -40,26 +39,31 @@ from .scene import (
     CURRENT_TASK_LAYOUT_ID,
     CURRENT_TASK_PIECE_LAYOUT,
     ROBOT_JOINTS,
-    TELEOP_PAWN_SOURCE_SQUARES,
     build_scene_spec,
     initialize_robot_poses,
     scene_summary,
 )
+from .render import write_rgb_png
+from .source_episode import (
+    EPISODE_SCHEMA,
+    RECEIPT_SCHEMA,
+    SAMPLE_SCHEMA,
+    build_source_sample,
+    language_instruction,
+    load_source_contract,
+    source_contract_sha256,
+    tree_manifest,
+    validate_source_sample,
+)
 from .state_trace import EpisodeStateTraceRecorder
 
 
-SOURCE_SCHEMA = "sim2claw.act_source_episode.v1"
-RECEIPT_SCHEMA = "sim2claw.act_source_recording_receipt.v1"
+SOURCE_SCHEMA = SAMPLE_SCHEMA
 DEFAULT_LEADER_SERIAL_SUFFIX = "0448141"
 DEFAULT_FOLLOWER_SERIAL_SUFFIX = "0406411"
-DEFAULT_SAMPLE_HZ = 30
+DEFAULT_SAMPLE_HZ = 20
 LIVE_SIMULATION_SCHEMA = "sim2claw.live_simulation_recorder.v1"
 LABEL_PATTERN = re.compile(r"[^a-z0-9]+")
-TELEOP_DESTINATION_SQUARES = tuple(
-    f"{file_name}{rank}" for rank in "1234" for file_name in "abcdefgh"
-)
-
-
 class RecorderError(RuntimeError):
     """Expected operator-facing recording error."""
 
@@ -116,6 +120,31 @@ def _slug(value: str) -> str:
     if not normalized:
         raise RecorderError("A recording label is required before saving.")
     return normalized[:72]
+
+
+def _canonical_source_row(
+    *,
+    episode_id: str,
+    sample_index: int,
+    timestamp_monotonic_seconds: float,
+    instruction: str,
+    raw_sample: dict[str, Any],
+    rgb: dict[str, Any],
+    action_owner: str,
+    assistance: bool,
+    intervention: bool,
+) -> dict[str, Any]:
+    return build_source_sample(
+        episode_id=episode_id,
+        sample_index=sample_index,
+        timestamp_monotonic_seconds=timestamp_monotonic_seconds,
+        instruction=instruction,
+        raw_sample=raw_sample,
+        rgb=rgb,
+        action_owner=action_owner,
+        assistance=assistance,
+        intervention=intervention,
+    )
 
 
 def _port_for_suffix(ports: list[str], suffix: str) -> str | None:
@@ -191,7 +220,7 @@ def recorder_preflight(
         "runtime": {
             "lerobot_version": lerobot_version,
             "required_lerobot_version": "0.6.0",
-            "task_contract_sha256": task_contract_sha256(),
+            "source_contract_sha256": source_contract_sha256(),
         },
         "modes": {
             "simulation_follower": {
@@ -316,11 +345,13 @@ class SimulationFollowerBackend:
         self.joint_qpos_addresses: list[int] = []
         self.joint_dof_addresses: list[int] = []
         self.piece_body_id = -1
+        self.end_effector_body_id = -1
         self.target_pose = resolve_structured_goal(
             str(request["piece_id"]), str(request["target_square"])
         )["target_pose"]
         self.sample_hz = int(request.get("sample_hz") or DEFAULT_SAMPLE_HZ)
         self.trace: EpisodeStateTraceRecorder | None = None
+        self.rgb_renderers: dict[str, mujoco.Renderer] = {}
 
     def _command_from_leader(self, leader_values: np.ndarray) -> np.ndarray:
         if self.model is None:
@@ -332,7 +363,32 @@ class SimulationFollowerBackend:
             gripper_high - gripper_low
         )
         bounds = self.model.actuator_ctrlrange[self.actuator_ids]
-        return np.clip(command, bounds[:, 0], bounds[:, 1])
+        # Execute the exact float32 row that the canonical source artifact
+        # records. This keeps source collection and deployed sample-hold replay
+        # mechanically identical instead of repeating the old ramp/label gap.
+        return np.clip(command, bounds[:, 0], bounds[:, 1]).astype(np.float32).astype(
+            np.float64
+        )
+
+    def _integration_state_payload(self) -> dict[str, Any]:
+        if self.model is None or self.data is None:
+            raise RecorderError("Simulator is not open.")
+        state_size = mujoco.mj_stateSize(
+            self.model, mujoco.mjtState.mjSTATE_INTEGRATION
+        )
+        integration_state = np.empty(state_size, dtype=np.float64)
+        mujoco.mj_getState(
+            self.model,
+            self.data,
+            integration_state,
+            mujoco.mjtState.mjSTATE_INTEGRATION,
+        )
+        return {
+            "available": True,
+            "mj_state_spec": "mjSTATE_INTEGRATION",
+            "integration_state_float64": integration_state.astype(float).tolist(),
+            "simulation_time_seconds": float(self.data.time),
+        }
 
     def open(self) -> dict[str, Any]:
         self.leader.open()
@@ -353,6 +409,11 @@ class SimulationFollowerBackend:
         )
         if self.piece_body_id < 0:
             raise RecorderError(f"Unknown simulated piece: {self.request['piece_id']}")
+        self.end_effector_body_id = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_BODY, "left_gripper"
+        )
+        if self.end_effector_body_id < 0:
+            raise RecorderError("Simulator is missing the left gripper body.")
         leader_values = _leader_action_vector(self.leader.read())
         command = self._command_from_leader(leader_values)
         self.data.qpos[self.joint_qpos_addresses] = command
@@ -365,6 +426,10 @@ class SimulationFollowerBackend:
             proof_class="simulation_teleoperation_source_state_trace",
         )
         self.trace.capture(self.data, phase="teleoperation", force=True)
+        self.rgb_renderers = {
+            "top": mujoco.Renderer(self.model, height=256, width=256),
+            "wrist": mujoco.Renderer(self.model, height=256, width=256),
+        }
         return {
             "proof_class": self.proof_class,
             "leader_port": self.leader.port,
@@ -373,6 +438,7 @@ class SimulationFollowerBackend:
             "physical_gateway_preflight": None,
             "sim_replay": None,
             "pose_inputs_available": True,
+            "_initial_evaluator_privileged_state": self._integration_state_payload(),
             "_live_simulation": self.trace.live_snapshot(),
         }
 
@@ -389,6 +455,39 @@ class SimulationFollowerBackend:
             self.trace.capture(self.data, phase="teleoperation")
         piece_position = self.data.xpos[self.piece_body_id].astype(float).tolist()
         piece_quaternion = self.data.xquat[self.piece_body_id].astype(float).tolist()
+        end_effector_position = self.data.xpos[self.end_effector_body_id].astype(float).tolist()
+        end_effector_quaternion = self.data.xquat[self.end_effector_body_id].astype(float).tolist()
+        rgb_frames: dict[str, np.ndarray] = {}
+        for stream, camera in (("top", "overhead"), ("wrist", "left_wrist_cam")):
+            renderer = self.rgb_renderers.get(stream)
+            if renderer is None:
+                raise RecorderError(f"Simulator RGB renderer is missing: {stream}")
+            renderer.update_scene(self.data, camera=camera)
+            rgb_frames[stream] = renderer.render().copy()
+
+        contacts: list[dict[str, Any]] = []
+        for contact_index in range(self.data.ncon):
+            contact = self.data.contact[contact_index]
+            body_ids = (
+                int(self.model.geom_bodyid[contact.geom1]),
+                int(self.model.geom_bodyid[contact.geom2]),
+            )
+            body_names = [
+                mujoco.mj_id2name(self.model, mujoco.mjtObj.mjOBJ_BODY, body_id)
+                or ("world" if body_id == 0 else f"body-{body_id}")
+                for body_id in body_ids
+            ]
+            contacts.append(
+                {
+                    "body_a": body_names[0],
+                    "body_b": body_names[1],
+                    "position_world": contact.pos.astype(float).tolist(),
+                }
+            )
+            if len(contacts) >= 64:
+                break
+
+        integration_state = self._integration_state_payload()
         return {
             "elapsed_seconds": elapsed_seconds,
             "leader_target_degrees": leader_values.tolist(),
@@ -404,9 +503,24 @@ class SimulationFollowerBackend:
             ).astype(float).tolist(),
             "selected_piece_pose_world": [*piece_position, *piece_quaternion],
             "continuous_target_pose_world": self.target_pose,
+            "end_effector_pose_world": [
+                *end_effector_position,
+                *end_effector_quaternion,
+            ],
+            "gripper_joint_position_rad": float(
+                self.data.qpos[self.joint_qpos_addresses[-1]]
+            ),
+            "contacts": contacts,
+            "simulator_events": [],
             "pose_inputs_available": True,
             "available_motor_current": None,
             "physical_follower_torque_enabled": False,
+            "_rgb_frames": rgb_frames,
+            "_evaluator_privileged_state": {
+                **integration_state,
+                "selected_piece_body_id": self.piece_body_id,
+                "selected_piece_pose_world": [*piece_position, *piece_quaternion],
+            },
             "_live_simulation_frame": (
                 {
                     "frame_index": len(self.trace.frames) - 1,
@@ -424,9 +538,14 @@ class SimulationFollowerBackend:
         return self.trace.write(path)
 
     def close(self) -> None:
-        self.leader.close()
-        self.data = None
-        self.model = None
+        try:
+            for renderer in self.rgb_renderers.values():
+                renderer.close()
+        finally:
+            self.rgb_renderers = {}
+            self.leader.close()
+            self.data = None
+            self.model = None
 
 
 class PhysicalFollowerBackend:
@@ -483,7 +602,7 @@ class RecorderPaths:
 
     @property
     def recordings(self) -> Path:
-        return self.repo_root / "datasets" / "act_source_recordings"
+        return self.repo_root / "datasets" / "manipulation_source_recordings"
 
     @property
     def failures(self) -> Path:
@@ -676,23 +795,29 @@ class TeleopRecordingManager:
 
     def start(self, request: dict[str, Any], *, timeout_seconds: float = 40.0) -> dict[str, Any]:
         self._return_failed_attempt_to_ready()
-        contract = load_act_pick_place_task_contract()
+        contract = load_source_contract()
         mode = str(request.get("mode") or "simulation_follower")
         if mode not in {"simulation_follower", "physical_follower"}:
             raise RecorderError("Choose a simulator or physical follower.")
         source_square = str(request.get("source_square") or "").lower()
-        if source_square not in TELEOP_PAWN_SOURCE_SQUARES:
-            raise RecorderError("Choose one of the eight declared pawn source squares.")
-        piece_id = f"brown_pawn_{source_square}"
+        source_pieces_by_square = {
+            str(piece_id).rsplit("_", 1)[-1]: str(piece_id)
+            for piece_id in contract["scene"]["source_piece_ids"]
+        }
+        if source_square not in source_pieces_by_square:
+            raise RecorderError("Choose one of the eight reachable tan pawn source squares.")
+        piece_id = source_pieces_by_square[source_square]
         target_square = str(request.get("target_square") or "").lower()
-        if target_square not in TELEOP_DESTINATION_SQUARES:
-            raise RecorderError("Choose a destination square in rows 1 through 4.")
-        if target_square in TELEOP_PAWN_SOURCE_SQUARES:
-            raise RecorderError("Choose an unoccupied destination square.")
+        if target_square not in set(contract["scene"]["destination_squares"]):
+            raise RecorderError(
+                "Choose one of the declared left-arm-reachable empty destinations."
+            )
         resolve_structured_goal(piece_id, target_square)
         sample_hz = int(request.get("sample_hz") or DEFAULT_SAMPLE_HZ)
-        if not 5 <= sample_hz <= 60:
-            raise RecorderError("Sample rate must be between 5 and 60 Hz.")
+        if sample_hz != int(contract["episode"]["required_sample_hz"]):
+            raise RecorderError(
+                "Canonical source recording is frozen at exact 20 Hz sample-hold."
+            )
         preflight = self.preflight()
         mode_status = preflight["modes"][mode]
         if not mode_status["ready"]:
@@ -736,7 +861,9 @@ class TeleopRecordingManager:
             "server_owned_prestart_sequence": bool(
                 request.get("server_owned_prestart_sequence")
             ),
-            "task_id": contract["task_id"],
+            "task_id": contract["contract_id"],
+            "scene_reset_seed": int(request.get("scene_reset_seed") or 0),
+            "action_owner": str(request.get("action_owner") or "human_teleoperator"),
         }
         if mode == "physical_follower" and not request["physical_safety_acknowledged"]:
             raise RecorderError("Physical safety acknowledgement is required.")
@@ -762,9 +889,32 @@ class TeleopRecordingManager:
                 "started_at": _utc_now(),
                 "draft_path": str(draft.relative_to(self.paths.repo_root)),
                 "training_admission": "pending_replay_and_separate_evaluator",
-                "task_id": contract["task_id"],
-                "task_contract_sha256": task_contract_sha256(),
+                "task_id": contract["contract_id"],
+                "source_contract_sha256": source_contract_sha256(),
                 "workcell_registration": workcell_registration,
+                "scene_reset_seed": request["scene_reset_seed"],
+                "language_instruction": language_instruction(
+                    piece_id, source_square, target_square
+                ),
+                "source_identity": {
+                    "kind": "leader_teleoperation",
+                    "proof_class": (
+                        "simulation_teleoperation_source"
+                        if mode == "simulation_follower"
+                        else "physical_teleoperation_source_unqualified"
+                    ),
+                },
+                "model_identity": None,
+                "checkpoint_identity": None,
+                "action_owner": request["action_owner"],
+                "assistance_frames": 0,
+                "intervention_frames": 0,
+                "lineage": {
+                    "parent_source_episode_id": None,
+                    "failed_prefix_source_episode_id": None,
+                    "corrective_suffix_parent_state_sha256": None,
+                    "collection_kind": "original_source_episode",
+                },
             }
             self.live_simulation = {
                 **self._empty_live_simulation(),
@@ -799,6 +949,7 @@ class TeleopRecordingManager:
         draft: Path,
     ) -> None:
         samples_path = draft / "samples.jsonl"
+        privileged_path = draft / "evaluator_privileged_state.jsonl"
         sequence_started_monotonic: float | None = None
         sequence_stopped_monotonic: float | None = None
         action_started_monotonic: float | None = None
@@ -824,6 +975,20 @@ class TeleopRecordingManager:
             self.backend = self.backend_factory(request, preflight)
             backend_state = self.backend.open()
             live_start = backend_state.pop("_live_simulation", None)
+            initial_privileged_state = backend_state.pop(
+                "_initial_evaluator_privileged_state", None
+            )
+            _atomic_json(
+                draft / "initial_evaluator_privileged_state.json",
+                {
+                    "schema_version": "sim2claw.evaluator_initial_privileged_state.v1",
+                    "episode_id": self.state["recording_id"],
+                    "policy_adapter_access": False,
+                    "state": initial_privileged_state
+                    if isinstance(initial_privileged_state, dict)
+                    else {"available": False},
+                },
+            )
             action_started_monotonic = time.monotonic()
             with self.lock:
                 self.state.update(
@@ -855,26 +1020,85 @@ class TeleopRecordingManager:
             self.ready_event.set()
             interval = 1.0 / int(request["sample_hz"])
             next_tick = time.monotonic()
-            with samples_path.open("w", encoding="utf-8") as handle:
+            with (
+                samples_path.open("w", encoding="utf-8") as handle,
+                privileged_path.open("w", encoding="utf-8") as privileged_handle,
+            ):
                 while not self.stop_event.is_set():
                     tick = time.monotonic()
                     self.video_recorder.ensure_running()
                     sample = self.backend.sample(tick - action_started_monotonic)
                     live_frame = sample.pop("_live_simulation_frame", None)
+                    rgb_frames = sample.pop("_rgb_frames", None)
+                    privileged_state = sample.pop(
+                        "_evaluator_privileged_state", None
+                    )
                     with self.lock:
                         index = int(self.state["sample_count"])
-                    row = {
-                        "schema_version": SOURCE_SCHEMA,
-                        "recording_id": self.state["recording_id"],
-                        "sample_index": index,
-                        "timestamp_monotonic_seconds": sample.pop(
+                    timestamp = float(
+                        sample.pop(
                             "elapsed_seconds", tick - action_started_monotonic
-                        ),
-                        "overhead_video_time_seconds": tick - video_started_monotonic,
-                        **sample,
-                    }
+                        )
+                    )
+                    rgb_references: dict[str, Any] = {}
+                    for stream in ("top", "wrist"):
+                        frame = (
+                            rgb_frames.get(stream)
+                            if isinstance(rgb_frames, dict)
+                            else None
+                        )
+                        relative_path = Path("rgb") / stream / f"{index:06d}.png"
+                        frame_path = draft / relative_path
+                        if frame is None:
+                            rgb_references[stream] = {
+                                "available": False,
+                                "path": relative_path.as_posix(),
+                                "timestamp_monotonic_seconds": timestamp,
+                                "sha256": None,
+                            }
+                        else:
+                            write_rgb_png(frame_path, np.asarray(frame, dtype=np.uint8))
+                            rgb_references[stream] = {
+                                "available": True,
+                                "path": relative_path.as_posix(),
+                                "timestamp_monotonic_seconds": timestamp,
+                                "sha256": _sha256(frame_path),
+                            }
+                    row = _canonical_source_row(
+                        episode_id=str(self.state["recording_id"]),
+                        sample_index=index,
+                        timestamp_monotonic_seconds=timestamp,
+                        instruction=str(self.state["language_instruction"]),
+                        raw_sample={
+                            "overhead_video_time_seconds": tick
+                            - video_started_monotonic,
+                            **sample,
+                        },
+                        rgb=rgb_references,
+                        action_owner=str(self.state["action_owner"]),
+                        assistance=False,
+                        intervention=False,
+                    )
                     handle.write(json.dumps(row, separators=(",", ":"), sort_keys=True) + "\n")
                     handle.flush()
+                    privileged_handle.write(
+                        json.dumps(
+                            {
+                                "schema_version": "sim2claw.evaluator_privileged_state.v1",
+                                "episode_id": self.state["recording_id"],
+                                "sample_index": index,
+                                "timestamp_monotonic_seconds": timestamp,
+                                "policy_adapter_access": False,
+                                "state": privileged_state
+                                if isinstance(privileged_state, dict)
+                                else {"available": False},
+                            },
+                            separators=(",", ":"),
+                            sort_keys=True,
+                        )
+                        + "\n"
+                    )
+                    privileged_handle.flush()
                     with self.lock:
                         self.state["sample_count"] = index + 1
                         self.state["duration_seconds"] = float(row["timestamp_monotonic_seconds"])
@@ -1041,7 +1265,7 @@ class TeleopRecordingManager:
                 "recovery",
                 "full_episode",
             }:
-                raise RecorderError("Choose a declared ACT skill label.")
+                raise RecorderError("Choose a declared manipulation skill label.")
             if outcome not in {"success", "failure", "correction", "unreviewed"}:
                 raise RecorderError("Choose a valid outcome label.")
             destination = self.paths.recordings / f"{_slug(label)}__{self.state['recording_id']}"
@@ -1051,6 +1275,41 @@ class TeleopRecordingManager:
             samples = draft / "samples.jsonl"
             if not samples.is_file() or self.state["sample_count"] < 1:
                 raise RecorderError("An empty recording cannot be saved.")
+            privileged_state = draft / "evaluator_privileged_state.jsonl"
+            if not privileged_state.is_file():
+                raise RecorderError(
+                    "The required evaluator-only state stream is incomplete."
+                )
+            initial_privileged_state = (
+                draft / "initial_evaluator_privileged_state.json"
+            )
+            if not initial_privileged_state.is_file():
+                raise RecorderError(
+                    "The required initial evaluator-only state is incomplete."
+                )
+            try:
+                source_rows = [
+                    json.loads(line)
+                    for line in samples.read_text(encoding="utf-8").splitlines()
+                    if line.strip()
+                ]
+                if len(source_rows) != int(self.state["sample_count"]):
+                    raise ValueError("sample count changed before finalization")
+                for expected_index, row in enumerate(source_rows):
+                    validate_source_sample(row)
+                    if int(row["sample_index"]) != expected_index:
+                        raise ValueError("sample indices are not contiguous")
+                    for stream in ("top", "wrist"):
+                        reference = row["rgb"][stream]
+                        frame_path = draft / str(reference["path"])
+                        if not frame_path.is_file():
+                            raise ValueError(f"missing {stream} RGB frame")
+                        if _sha256(frame_path) != reference["sha256"]:
+                            raise ValueError(f"{stream} RGB frame hash mismatch")
+            except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
+                raise RecorderError(
+                    f"Canonical source validation failed; draft retained: {error}"
+                ) from error
             overhead_video = draft / "overhead_c922.mp4"
             overhead_metadata = draft / "overhead_video.json"
             if not overhead_video.is_file() or not overhead_metadata.is_file():
@@ -1079,22 +1338,28 @@ class TeleopRecordingManager:
             }
             receipt = {
                 "schema_version": RECEIPT_SCHEMA,
-                "source_episode_schema": SOURCE_SCHEMA,
+                "source_episode_schema": EPISODE_SCHEMA,
+                "source_sample_schema": SAMPLE_SCHEMA,
+                "source_contract_sha256": self.state["source_contract_sha256"],
                 "recording_id": self.state["recording_id"],
                 "label": label,
                 "skill": skill,
                 "outcome_label": outcome,
                 "notes": str(labels.get("notes") or "").strip(),
                 "task_id": self.state["task_id"],
-                "task_contract_sha256": self.state["task_contract_sha256"],
                 "mode": self.state["mode"],
                 "proof_class": self.state.get("backend", {}).get("proof_class"),
                 "piece_id": self.state["piece_id"],
                 "piece_type": "pawn",
-                "piece_color": "brown",
+                "piece_color": str(self.state["piece_id"]).split("_", 1)[0],
                 "source_square": self.state["source_square"],
                 "destination_square": self.state["target_square"],
                 "initial_layout_id": CURRENT_TASK_LAYOUT_ID,
+                "piece_layout": CURRENT_TASK_PIECE_LAYOUT,
+                "scene_id": "operator_updated_chess_workcell_v2",
+                "board_pose_id": self.state["workcell_registration"][
+                    "board_pose_id"
+                ],
                 "workcell_registration": self.state["workcell_registration"],
                 "target_square_operator_metadata": self.state["target_square"],
                 "sample_hz": self.state["sample_hz"],
@@ -1104,6 +1369,16 @@ class TeleopRecordingManager:
                 "duration_seconds": self.state["duration_seconds"],
                 "samples_path": "samples.jsonl",
                 "samples_sha256": _sha256(destination / "samples.jsonl"),
+                "evaluator_privileged_state_path": "evaluator_privileged_state.jsonl",
+                "evaluator_privileged_state_sha256": _sha256(
+                    destination / "evaluator_privileged_state.jsonl"
+                ),
+                "evaluator_privileged_state_policy_adapter_access": False,
+                "initial_evaluator_privileged_state_path": "initial_evaluator_privileged_state.json",
+                "initial_evaluator_privileged_state_sha256": _sha256(
+                    destination / "initial_evaluator_privileged_state.json"
+                ),
+                "rgb_streams": tree_manifest(destination / "rgb"),
                 "state_trace_path": (
                     "state_trace.json" if (destination / "state_trace.json").is_file() else None
                 ),
@@ -1114,6 +1389,22 @@ class TeleopRecordingManager:
                 ),
                 "overhead_video": video_receipt,
                 "backend": self.state.get("backend"),
+                "scene_reset_seed": self.state["scene_reset_seed"],
+                "language_instruction": self.state["language_instruction"],
+                "source_identity": self.state["source_identity"],
+                "model_identity": self.state["model_identity"],
+                "checkpoint_identity": self.state["checkpoint_identity"],
+                "action_owner": self.state["action_owner"],
+                "assistance_frames": self.state["assistance_frames"],
+                "intervention_frames": self.state["intervention_frames"],
+                "lineage": self.state["lineage"],
+                "execution": {
+                    "action_representation": "absolute_joint_position_target",
+                    "action_dtype": "float32_replay_required",
+                    "sample_hold_hz": 20,
+                    "physics_timestep_seconds": 0.005,
+                    "physics_steps_per_action": 10,
+                },
                 "training_admission": "pending_deterministic_replay_and_separate_evaluator",
                 "is_training_data": False,
                 "held_out_membership": False,

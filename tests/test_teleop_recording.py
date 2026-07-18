@@ -8,6 +8,15 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
+import numpy as np
+
+from sim2claw.source_episode import (
+    EPISODE_SCHEMA,
+    RECEIPT_SCHEMA,
+    SAMPLE_SCHEMA,
+    load_source_episode,
+    source_contract_sha256,
+)
 from sim2claw.teleop_recording import (
     RecorderError,
     TeleopRecordingManager,
@@ -30,6 +39,11 @@ class FakeBackend:
             "follower": "fixture-simulator",
             "physical_follower_torque_enabled": False,
             "pose_inputs_available": True,
+            "_initial_evaluator_privileged_state": {
+                "available": True,
+                "mj_state_spec": "mjSTATE_INTEGRATION",
+                "integration_state_float64": [0.0],
+            },
             "_live_simulation": {
                 "schema_version": "sim2claw.mujoco_live_body_state.v1",
                 "scene": {
@@ -60,9 +74,22 @@ class FakeBackend:
             "leader_follower_error_rad": [0.0] * 6,
             "selected_piece_pose_world": [0.0, 0.0, 0.1, 1.0, 0.0, 0.0, 0.0],
             "continuous_target_pose_world": [0.1, 0.1, 0.1, 1.0, 0.0, 0.0, 0.0],
+            "end_effector_pose_world": [0.0, 0.0, 0.2, 1.0, 0.0, 0.0, 0.0],
+            "gripper_joint_position_rad": positions[-1],
+            "contacts": [],
+            "simulator_events": [],
             "pose_inputs_available": True,
             "available_motor_current": None,
             "physical_follower_torque_enabled": False,
+            "_rgb_frames": {
+                "top": np.zeros((8, 8, 3), dtype=np.uint8),
+                "wrist": np.full((8, 8, 3), 127, dtype=np.uint8),
+            },
+            "_evaluator_privileged_state": {
+                "available": True,
+                "mj_state_spec": "mjSTATE_INTEGRATION",
+                "integration_state_float64": [float(self.sample_index)],
+            },
             "_live_simulation_frame": {
                 "frame_index": self.sample_index,
                 "frame": {
@@ -209,8 +236,8 @@ class TeleopRecordingTest(unittest.TestCase):
         started = self.manager.start(
             {
                 "mode": "simulation_follower",
-                "source_square": "a2",
-                "target_square": "c3",
+                "source_square": "c8",
+                "target_square": "c6",
                 "sample_hz": 20,
             }
         )
@@ -236,7 +263,21 @@ class TeleopRecordingTest(unittest.TestCase):
             for line in (destination / "samples.jsonl").read_text().splitlines()
         ]
         receipt = json.loads((destination / "recording_receipt.json").read_text())
+        loaded_receipt, loaded_rows = load_source_episode(destination)
         self.assertGreaterEqual(len(rows), 2)
+        self.assertEqual(loaded_receipt["recording_id"], receipt["recording_id"])
+        self.assertEqual(len(loaded_rows), len(rows))
+        self.assertEqual(rows[0]["schema_version"], SAMPLE_SCHEMA)
+        self.assertTrue(rows[0]["rgb"]["top"]["available"])
+        self.assertTrue(rows[0]["rgb"]["wrist"]["available"])
+        self.assertEqual(
+            rows[0]["action"]["joint_target_rad"],
+            rows[0]["follower_command_rad"],
+        )
+        self.assertNotIn("integration_state_float64", rows[0])
+        self.assertEqual(receipt["schema_version"], RECEIPT_SCHEMA)
+        self.assertEqual(receipt["source_episode_schema"], EPISODE_SCHEMA)
+        self.assertEqual(receipt["source_contract_sha256"], source_contract_sha256())
         self.assertEqual(receipt["outcome_label"], "success")
         self.assertEqual(
             receipt["training_admission"],
@@ -244,10 +285,13 @@ class TeleopRecordingTest(unittest.TestCase):
         )
         self.assertFalse(receipt["is_training_data"])
         self.assertFalse(receipt["held_out_membership"])
-        self.assertEqual(receipt["piece_id"], "brown_pawn_a2")
-        self.assertEqual(receipt["source_square"], "a2")
-        self.assertEqual(receipt["destination_square"], "c3")
+        self.assertEqual(receipt["piece_id"], "tan_pawn_c8")
+        self.assertEqual(receipt["piece_color"], "tan")
+        self.assertEqual(receipt["source_square"], "c8")
+        self.assertEqual(receipt["destination_square"], "c6")
         self.assertEqual(receipt["initial_layout_id"], CURRENT_TASK_LAYOUT_ID)
+        self.assertEqual(receipt["scene_id"], "operator_updated_chess_workcell_v2")
+        self.assertEqual(receipt["board_pose_id"], "board_robotward_72mm_20260718_v2")
         self.assertEqual(
             receipt["workcell_registration"],
             {
@@ -274,6 +318,12 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertFalse(receipt["overhead_video"]["is_training_data"])
         self.assertTrue((destination / "overhead_c922.mp4").is_file())
         self.assertTrue((destination / "overhead_video.json").is_file())
+        self.assertTrue((destination / "rgb" / "top" / "000000.png").is_file())
+        self.assertTrue((destination / "rgb" / "wrist" / "000000.png").is_file())
+        self.assertTrue((destination / "evaluator_privileged_state.jsonl").is_file())
+        self.assertTrue(
+            (destination / "initial_evaluator_privileged_state.json").is_file()
+        )
         self.assertTrue(self.videos[0].finished)
         self.assertTrue(self.backends[0].closed)
 
@@ -281,8 +331,8 @@ class TeleopRecordingTest(unittest.TestCase):
         self.manager.start(
             {
                 "mode": "simulation_follower",
-                "source_square": "b1",
-                "target_square": "b2",
+                "source_square": "b7",
+                "target_square": "b6",
                 "sample_hz": 20,
             }
         )
@@ -314,8 +364,8 @@ class TeleopRecordingTest(unittest.TestCase):
             self.manager.start(
                 {
                     "mode": "physical_follower",
-                    "source_square": "a2",
-                    "target_square": "c3",
+                    "source_square": "c8",
+                    "target_square": "c6",
                     "sample_hz": 20,
                     "physical_safety_acknowledged": False,
                 }
@@ -331,8 +381,8 @@ class TeleopRecordingTest(unittest.TestCase):
         started = self.manager.start(
             {
                 "mode": "simulation_follower",
-                "source_square": "a2",
-                "target_square": "c3",
+                "source_square": "c8",
+                "target_square": "c6",
                 "sample_hz": 20,
             }
         )
@@ -357,8 +407,8 @@ class TeleopRecordingTest(unittest.TestCase):
             self.manager.start(
                 {
                     "mode": "simulation_follower",
-                    "source_square": "b1",
-                    "target_square": "b2",
+                    "source_square": "b7",
+                    "target_square": "b6",
                     "sample_hz": 20,
                 }
             )
@@ -401,8 +451,8 @@ class TeleopRecordingTest(unittest.TestCase):
             self.manager.start(
                 {
                     "mode": "physical_follower",
-                    "source_square": "a2",
-                    "target_square": "c3",
+                    "source_square": "c8",
+                    "target_square": "c6",
                     "sample_hz": 20,
                     "physical_safety_acknowledged": True,
                     "physical_pose_match_acknowledged": True,
@@ -445,8 +495,8 @@ class TeleopRecordingTest(unittest.TestCase):
             self.manager.start(
                 {
                     "mode": "simulation_follower",
-                    "source_square": "b1",
-                    "target_square": "b2",
+                    "source_square": "b7",
+                    "target_square": "b6",
                 }
             )
         state = self.manager.snapshot()
@@ -464,21 +514,21 @@ class TeleopRecordingTest(unittest.TestCase):
         )
         self.assertIsNone(overhead["teleoperation_start_video_offset_seconds"])
 
-    def test_pawn_metadata_rejects_unknown_source_and_occupied_destination(self) -> None:
-        with self.assertRaisesRegex(RecorderError, "eight declared pawn"):
+    def test_pawn_metadata_rejects_unknown_source_and_unreachable_destination(self) -> None:
+        with self.assertRaisesRegex(RecorderError, "eight reachable tan pawn"):
             self.manager.start(
                 {
                     "mode": "simulation_follower",
                     "source_square": "a1",
-                    "target_square": "b3",
+                    "target_square": "b5",
                 }
             )
-        with self.assertRaisesRegex(RecorderError, "unoccupied destination"):
+        with self.assertRaisesRegex(RecorderError, "left-arm-reachable"):
             self.manager.start(
                 {
                     "mode": "simulation_follower",
-                    "source_square": "a2",
-                    "target_square": "b1",
+                    "source_square": "c8",
+                    "target_square": "b4",
                 }
             )
 

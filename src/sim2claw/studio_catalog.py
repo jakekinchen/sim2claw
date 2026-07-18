@@ -510,9 +510,15 @@ def _grasp_episodes(repo_root: Path) -> list[dict[str, Any]]:
 def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
     episodes: list[dict[str, Any]] = []
     receipt_paths = sorted(
-        (repo_root / "datasets" / "act_source_recordings").glob(
-            "*/recording_receipt.json"
-        )
+        [
+            *(
+                repo_root / "datasets" / "manipulation_source_recordings"
+            ).glob("*/recording_receipt.json"),
+            # Historical ACT-named raw recordings remain inspectable evidence.
+            *(repo_root / "datasets" / "act_source_recordings").glob(
+                "*/recording_receipt.json"
+            ),
+        ]
     )
     for sequence, receipt_path in enumerate(receipt_paths):
         receipt = _read_json(receipt_path)
@@ -598,7 +604,9 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
         episodes.append(
             {
                 "id": f"{receipt.get('task_id', 'teleop')}:{receipt.get('recording_id', sequence)}",
-                "task_id": str(receipt.get("task_id") or "act_source_recordings"),
+                "task_id": str(
+                    receipt.get("task_id") or "manipulation_source_recordings"
+                ),
                 "title": str(receipt.get("label") or f"Teleop recording {sequence + 1}"),
                 "subtitle": (
                     f"{_title(str(receipt.get('piece_id', 'piece')))} · "

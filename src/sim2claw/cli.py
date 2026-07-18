@@ -96,6 +96,29 @@ def build_parser() -> argparse.ArgumentParser:
         help="open both identified buses torque-off and verify physical gateway state",
     )
 
+    source_eval = subparsers.add_parser(
+        "source-eval",
+        help="replay and score one canonical pawn source episode on CPU/fp32",
+    )
+    source_eval.add_argument("--episode", type=Path, required=True)
+    source_eval.add_argument("--output", type=Path, default=None)
+
+    source_expert = subparsers.add_parser(
+        "source-expert",
+        help="collect the frozen scene-v2 c8-to-c6 geometric source candidate",
+    )
+    source_expert.add_argument("--output", type=Path, required=True)
+    source_expert.add_argument("--render-size", type=int, default=224)
+
+    source_adapt = subparsers.add_parser(
+        "source-adapt",
+        help="derive admitted ACT or GR00T rows from one canonical source episode",
+    )
+    source_adapt.add_argument("--episode", type=Path, required=True)
+    source_adapt.add_argument("--admission", type=Path, required=True)
+    source_adapt.add_argument("--adapter", choices=("act", "groot"), required=True)
+    source_adapt.add_argument("--output", type=Path, required=True)
+
     studio_assets = subparsers.add_parser(
         "studio-assets",
         help="regenerate inspection-only workcell posters from the current scene",
@@ -206,6 +229,52 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .teleop_recording import physical_gateway_preflight
 
         print(json.dumps(physical_gateway_preflight(), indent=2, sort_keys=True))
+        return 0
+    if args.command == "source-eval":
+        from .pawn_source_evaluator import evaluate_source_episode
+
+        output = args.output or args.episode / "admission_verdict.json"
+        report = evaluate_source_episode(args.episode, output_path=output)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["strict_success"] else 1
+    if args.command == "source-expert":
+        from .pawn_source_expert import collect_pawn_source_expert_candidate
+
+        report = collect_pawn_source_expert_candidate(
+            args.output, render_size=args.render_size
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "source-adapt":
+        from .source_episode import adapt_source_episode, sha256_file
+
+        admission = json.loads(args.admission.read_text(encoding="utf-8"))
+        rows = adapt_source_episode(
+            args.episode,
+            adapter=args.adapter,
+            admission_verdict=admission,
+        )
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(
+            "".join(
+                json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n"
+                for row in rows
+            ),
+            encoding="utf-8",
+        )
+        print(
+            json.dumps(
+                {
+                    "adapter": args.adapter,
+                    "row_count": len(rows),
+                    "output": str(args.output),
+                    "output_sha256": sha256_file(args.output),
+                    "training_promoted": False,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
         return 0
     if args.command == "studio-assets":
         from .studio_assets import render_studio_assets

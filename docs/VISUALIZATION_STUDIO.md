@@ -53,13 +53,16 @@ non-loopback host exposes generated visual artifacts without authentication;
 do that only inside a separately protected network boundary. Recorder POST
 endpoints are disabled on non-loopback binds.
 
-The Record metadata surface mirrors the current physical test layout: brown
-pawns begin at A2, B1, C2, D1, E2, F1, G2, and H1; destinations are unoccupied
-squares in rows 1–4. Tan pawns mirror them at A8, B7, C8, D7, E8, F7, G8, and
-H7. A generated full-board preview marks the selected pawn, destination, all
+The Record metadata surface mirrors the current physical test layout. Brown
+pawns remain at A2, B1, C2, D1, E2, F1, G2, and H1. Tan pawns occupy A8, B7,
+C8, D7, E8, F7, G8, and H7. The 72 mm workcell update leaves the brown side
+outside the left arm's verified IK envelope, so new canonical source collection
+selects tan pawns and reachable empty destinations A5–F5 plus A6–H6; G5 and H5
+remain outside the frozen IK residual limit. A generated
+full-board preview marks the selected pawn, destination, all
 remaining pawns, and move arrow. New recording, physical-command replay, and
 Studio inspection scenes use this 16-pawn layout; the standard 32-piece scene
-remains available only for prior frozen proof paths. B1→B2 at 30 Hz is the
+remains available only for prior frozen proof paths. C8→C6 at 20 Hz is the
 initial metadata default, and later choices persist in browser-local settings.
 Current pawn geometry follows the owner-supplied physical-set silhouette with a
 stepped foot, rounded/flared base, narrow waist, collar, and spherical head.
@@ -97,7 +100,7 @@ uv run sim2claw teleop-preflight
 ```
 
 The default recording path is
-`datasets/act_source_recordings/<label>__<recording-id>/`. Each directory has a
+`datasets/manipulation_source_recordings/<label>__<recording-id>/`. Each directory has a
 JSONL sample stream, checksummed receipt, `overhead_c922.mp4`, camera timing
 metadata, and an ffmpeg log. Failed attempts retain the same available camera
 evidence under `runs/teleop_recordings/failed_attempts/`. These generated
