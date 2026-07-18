@@ -71,11 +71,25 @@ This section is updated only at stable evidence boundaries.
 | --- | --- | --- |
 | Training demonstration sweep | PASS | 48/48 frozen consequences accepted |
 | Held-out expert feasibility | PASS | 24/24 frozen consequences accepted; zero training rows |
-| LeRobot v2 training export | IN PROGRESS | ignored local dataset; receipt pending |
-| Official NVIDIA loader | NOT RUN | waits for completed immutable dataset receipt |
-| Clean-base candidate A | NOT RUN | waits for loader proof |
+| LeRobot v2 training export | PASS | 48 episodes, 18,888 frames, 102 files; receipt SHA-256 `fba7697d1f4f95aad46998dd3ab2db79cbde629b91c8e5a228f59d4e214a967d` |
+| Official NVIDIA loader | PASS | 48 episodes; episode 0 has 363 rows and the expected language, state, action, and `video.front` columns |
+| Clean-base candidate A | RUNNING | PID 16012; reached step 146/5,000 at about 2.9 steps/s with 39,097/81,920 MiB VRAM in use; no exit marker |
 | Evaluator checkpoint sweep | NOT RUN | no recovery checkpoint yet |
 | Paid worker teardown | NOT DUE | worker remains bounded to the active verified run |
+
+Candidate A started at approximately 04:10 America/Chicago from the pinned
+clean base and exact validated dataset. It saves every 1,000 steps, retains at
+most five checkpoints, and is guarded by a 21,600-second hard timeout. The
+initial live check observed 77 percent GPU utilization at 44 C. The run remains
+diagnostic until a separately owned evaluator accepts a saved checkpoint.
+
+An attempted dataset replay on the Brev/Linux MuJoCo stack failed episode 0
+while lowering to the piece, despite the same consequence passing the frozen
+CPU/fp32 evaluator used to establish dataset authority. That attempt is
+quarantined at
+`/home/shadeform/sim2claw/datasets/chess_pick_place_groot_recovery_v2.failed-linux-physics`
+and is not training data or positive evidence. The earlier missing-model attempt
+is likewise quarantined under the `.failed-missing-model` suffix.
 
 ## Authority boundary
 
