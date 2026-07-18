@@ -49,3 +49,23 @@ The poster adds the evidence feedback loop after receipts and replay:
 - **Successful receipts** — accepted demonstrations enter the versioned training dataset; held-out policy passes may advance the frozen milestone.
 - **Failed receipts** — kept as counterexamples (never imitation rows); failure reasons are clustered to drive targeted correction and recovery demonstrations.
 - Both paths produce a new versioned dataset and receipt, then replay through the same frozen evaluator gates.
+
+## Technical architecture poster
+
+![sim2claw technical architecture poster](./sim2claw-technical-architecture-poster.png)
+
+This poster maps the concrete technologies behind each pipeline stage:
+
+1. **Scene capture & build** — a Polycam scan (glTF + RoomPlan JSON) is converted by a custom glTF-to-OBJ converter and assembled into the `photo_aligned_chess_workcell_v1` MuJoCo 3.10 scene with SO-101 arms from MuJoCo Menagerie, all on a Python 3.12 + `uv` runtime.
+2. **Demonstrations** — scripted IK experts (`chess_task`) and a 20 Hz teleop recorder built on LeRobot's SO-101 leader produce `samples.jsonl` plus a `recording_receipt.json`.
+3. **Policy training** — an ACT conditional-VAE Transformer trains in PyTorch 2.11 on Apple MPS, emitting `checkpoint.pt` and a training receipt; a parallel GR00T N1.7 lane exports LeRobot v2.1 Parquet + MP4 datasets (PyArrow) for fine-tuning on NVIDIA A100 / CUDA 12.8.
+4. **Independent evaluation** — a separately owned CPU/fp32 evaluator applies frozen gates from `configs/tasks/*.json` and writes a per-gate pass/fail `evaluation_receipt.json`.
+5. **Receipts & Studio** — every artifact carries a versioned JSON receipt (`sim2claw.*.v1` schemas), replayable as FFmpeg-encoded MP4s in the read-only Studio (vanilla JS + Python HTTP server).
+
+Throughout, training never grades itself, and `physical_gateway` remains the only reviewed path to robot hardware.
+
+## Scene extraction figure
+
+![sim2claw physical scene extraction to sim scene generation](./sim2claw-scene-extraction-figure.png)
+
+This figure shows the photo-aligned workcell path: Polycam capture → glTF / RoomPlan JSON / overhead photo → OBJ/MTL mesh and measured layout → MuJoCo procedural build with physics properties and SO-101 arms → photo-aligned simulation.
