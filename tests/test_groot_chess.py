@@ -7,6 +7,7 @@ import numpy as np
 from sim2claw.groot_chess import (
     collect_groot_expert_episode,
     load_groot_task_contract,
+    resolve_execution_horizon,
 )
 from sim2claw.scene import board_square_center, scene_geometry
 from sim2claw.capture import load_capture_config
@@ -58,6 +59,19 @@ class GrootChessContractTest(unittest.TestCase):
             self.assertFalse(
                 episode.verdict["diagnostic_reward_has_promotion_authority"]
             )
+
+    def test_execution_horizon_cannot_exceed_model_prediction(self) -> None:
+        self.assertEqual(
+            resolve_execution_horizon(None, model_action_horizon=16),
+            16,
+        )
+        self.assertEqual(
+            resolve_execution_horizon(8, model_action_horizon=16),
+            8,
+        )
+        for invalid in (0, 17):
+            with self.assertRaises(ValueError):
+                resolve_execution_horizon(invalid, model_action_horizon=16)
 
 
 if __name__ == "__main__":
