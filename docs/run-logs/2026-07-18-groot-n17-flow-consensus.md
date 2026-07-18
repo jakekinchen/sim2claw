@@ -82,7 +82,7 @@ Local preflight passed:
 | --- | --- | --- |
 | Initial inventory | PASS | only separately owned `sim2claw-gr00t-guided-0718` (`4v9suefrt`) was running |
 | A100 price check | PASS | known-compatible `massedcompute_A100_sxm4_80G_DGX` quoted at `$1.656/hour`; one A100-80GB |
-| Consensus worker | PENDING | proposed name `sim2claw-gr00t-consensus-0718`; not yet created |
+| Consensus worker | STARTING | `sim2claw-gr00t-consensus-0718` (`50abriamr`), one known-compatible A100-80GB at `$1.656/hour` |
 | Baseline reproduction | PENDING | exact nominal checkpoint and OSMesa hashes required |
 | Training diagnostic | PENDING | no remote result yet |
 | Closed-loop development | PENDING | no remote result yet |

@@ -9,7 +9,8 @@ sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
   cuda-nvcc-12-8 \
   ffmpeg \
-  git-lfs
+  git-lfs \
+  libosmesa6
 git lfs install --skip-repo
 
 if [ ! -d "$GROOT_ROOT/.git" ]; then
@@ -62,3 +63,4 @@ PY
 
 nvidia-smi --query-gpu=name,uuid,memory.total,driver_version,compute_cap --format=csv,noheader
 ffmpeg -version | head -n 1
+dpkg-query -W -f='libosmesa6=${Version}\n' libosmesa6
