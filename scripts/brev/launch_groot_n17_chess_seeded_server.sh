@@ -12,6 +12,7 @@ HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-0}"
 PROPOSAL_COUNT="${PROPOSAL_COUNT:-1}"
 ACTION_AGGREGATION="${ACTION_AGGREGATION:-medoid}"
 NOISE_SCALE="${NOISE_SCALE:-1.0}"
+NUM_INFERENCE_TIMESTEPS="${NUM_INFERENCE_TIMESTEPS:-4}"
 
 if [[ ! -d "${CHECKPOINT_DIR}" ]]; then
   echo "checkpoint directory not found: ${CHECKPOINT_DIR}" >&2
@@ -42,6 +43,7 @@ nohup timeout "${MAX_SERVER_SECONDS}" \
       --proposal-count "${PROPOSAL_COUNT}" \
       --action-aggregation "${ACTION_AGGREGATION}" \
       --noise-scale "${NOISE_SCALE}" \
+      --num-inference-timesteps "${NUM_INFERENCE_TIMESTEPS}" \
   >"${SERVER_LOG}" 2>&1 </dev/null &
 server_pid=$!
 echo "${server_pid}" >"${SERVER_PID_FILE}"

@@ -31,6 +31,7 @@
     "proposal_count": 1,
     "action_aggregation": "medoid",
     "noise_scale": 1.0,
+    "num_inference_timesteps": 4,
     "require_bitwise_repeatable_frame_and_action_hashes": true
   },
   "row_zero_development_probe": {
@@ -44,49 +45,71 @@
         "id": "baseline-k1-medoid-noise1",
         "proposal_count": 1,
         "action_aggregation": "medoid",
-        "noise_scale": 1.0
+        "noise_scale": 1.0,
+        "num_inference_timesteps": 4
       },
       {
         "id": "k5-medoid-noise1",
         "proposal_count": 5,
         "action_aggregation": "medoid",
-        "noise_scale": 1.0
+        "noise_scale": 1.0,
+        "num_inference_timesteps": 4
       },
       {
         "id": "k5-median-noise1",
         "proposal_count": 5,
         "action_aggregation": "median",
-        "noise_scale": 1.0
+        "noise_scale": 1.0,
+        "num_inference_timesteps": 4
       },
       {
         "id": "k5-medoid-noise0p5",
         "proposal_count": 5,
         "action_aggregation": "medoid",
-        "noise_scale": 0.5
+        "noise_scale": 0.5,
+        "num_inference_timesteps": 4
       },
       {
         "id": "k5-median-noise0p5",
         "proposal_count": 5,
         "action_aggregation": "median",
-        "noise_scale": 0.5
+        "noise_scale": 0.5,
+        "num_inference_timesteps": 4
       },
       {
         "id": "k5-medoid-noise0p25",
         "proposal_count": 5,
         "action_aggregation": "medoid",
-        "noise_scale": 0.25
+        "noise_scale": 0.25,
+        "num_inference_timesteps": 4
       },
       {
         "id": "k5-median-noise0p25",
         "proposal_count": 5,
         "action_aggregation": "median",
-        "noise_scale": 0.25
+        "noise_scale": 0.25,
+        "num_inference_timesteps": 4
       },
       {
         "id": "mode-k1-medoid-noise0",
         "proposal_count": 1,
         "action_aggregation": "medoid",
-        "noise_scale": 0.0
+        "noise_scale": 0.0,
+        "num_inference_timesteps": 4
+      },
+      {
+        "id": "k5-medoid-noise0p5-steps8",
+        "proposal_count": 5,
+        "action_aggregation": "medoid",
+        "noise_scale": 0.5,
+        "num_inference_timesteps": 8
+      },
+      {
+        "id": "k5-median-noise0p5-steps8",
+        "proposal_count": 5,
+        "action_aggregation": "median",
+        "noise_scale": 0.5,
+        "num_inference_timesteps": 8
       }
     ],
     "shortlist_rule": {

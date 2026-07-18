@@ -27,7 +27,7 @@ passes may be shared as a positive result.
 - Base task contract canonical SHA-256:
   `473915817b3a8474f796df53e199df92031d17fad152599a1d43ccecd3f15683`.
 - Flow-consensus experiment SHA-256:
-  `35be00ba838c0b03922ed04618f8785845faadba1e574d94e360b339ac2b04b8`.
+  `4558ccb360ecb58315c56d069b4836314a90ac488e6c848d2bd958d3106f4f8d`.
 - Deterministic diagnostic renderer: `MUJOCO_GL=osmesa` and
   `PYOPENGL_PLATFORM=osmesa`.
 - OSMesa is a versioned deterministic diagnostic backend, not a new promotion
@@ -48,7 +48,7 @@ The exact experiment contract is
 `configs/experiments/groot_n17_flow_consensus_v1.json`. Its order is:
 
 1. reproduce the single-proposal OSMesa baseline;
-2. compare eight frozen inference arms on training-only row-zero diagnostics;
+2. compare ten frozen inference arms on training-only row-zero diagnostics;
 3. advance at most two nonbaseline arms to training closed-loop evaluation;
 4. freeze the winning configuration hash only after at least two unchanged-gate
    training consequence passes; and
@@ -67,6 +67,10 @@ and proposal index. `medoid` selects one complete model-produced chunk;
 `median`, `mean`, and `trimmed_mean` aggregate only model-produced chunks. The
 bounded noise scale multiplies the flow head's sampled `torch.randn` latent for
 one inference call and restores the original function immediately afterward.
+Pinned-source inspection confirmed that the action head initializes the chunk
+with `torch.randn` and uses four Euler flow-inference steps by default. The
+same per-episode receipt also controls a bounded one-to-sixteen step count;
+the frozen matrix adds only two eight-step arms.
 
 Local preflight passed:
 

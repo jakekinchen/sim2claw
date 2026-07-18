@@ -50,6 +50,7 @@ def main() -> None:
         default="medoid",
     )
     parser.add_argument("--noise-scale", type=float, default=1.0)
+    parser.add_argument("--num-inference-timesteps", type=int)
     parser.add_argument(
         "--frame-input",
         type=Path,
@@ -69,6 +70,10 @@ def main() -> None:
         parser.error("trimmed_mean requires --proposal-count of at least 5")
     if not 0.0 <= args.noise_scale <= 1.0:
         parser.error("--noise-scale must be between 0 and 1")
+    if args.num_inference_timesteps is not None and not (
+        1 <= args.num_inference_timesteps <= 16
+    ):
+        parser.error("--num-inference-timesteps must be between 1 and 16")
     if args.include_training_expert_diagnostic and args.episode_split != "training":
         parser.error("expert diagnostics are restricted to the training split")
 
@@ -168,14 +173,15 @@ def main() -> None:
             dtype=np.float32,
         )
     for repeat in range(args.repeats):
-        reset_info = client.reset(
-            options={
-                "inference_seed": args.inference_seed,
-                "proposal_count": args.proposal_count,
-                "action_aggregation": args.action_aggregation,
-                "noise_scale": args.noise_scale,
-            }
-        )
+        reset_options: dict[str, object] = {
+            "inference_seed": args.inference_seed,
+            "proposal_count": args.proposal_count,
+            "action_aggregation": args.action_aggregation,
+            "noise_scale": args.noise_scale,
+        }
+        if args.num_inference_timesteps is not None:
+            reset_options["num_inference_timesteps"] = args.num_inference_timesteps
+        reset_info = client.reset(options=reset_options)
         expected_reset = {
             "proposal_count": args.proposal_count,
             "action_aggregation": args.action_aggregation,
@@ -184,6 +190,14 @@ def main() -> None:
         for key, expected in expected_reset.items():
             if reset_info.get(key) != expected:
                 raise RuntimeError(f"seeded policy server acknowledged wrong {key}")
+        if (
+            args.num_inference_timesteps is not None
+            and reset_info.get("num_inference_timesteps")
+            != args.num_inference_timesteps
+        ):
+            raise RuntimeError(
+                "seeded policy server acknowledged wrong num_inference_timesteps"
+            )
         predicted, action_info = client.get_action(
             observation,
             options={"sample_step": 0},
@@ -220,6 +234,9 @@ def main() -> None:
             "proposal_count": args.proposal_count,
             "action_aggregation": args.action_aggregation,
             "noise_scale": args.noise_scale,
+            "num_inference_timesteps": probes[0]["reset_info"].get(
+                "num_inference_timesteps"
+            ),
         },
         "repeats": args.repeats,
         "frame_source": frame_source,

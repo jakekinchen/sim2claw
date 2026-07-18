@@ -17,10 +17,16 @@ POLICY_SERVER_MODE="${POLICY_SERVER_MODE:-official_unseeded}"
 PROPOSAL_COUNT="${PROPOSAL_COUNT:-1}"
 ACTION_AGGREGATION="${ACTION_AGGREGATION:-medoid}"
 NOISE_SCALE="${NOISE_SCALE:-1.0}"
+NUM_INFERENCE_TIMESTEPS="${NUM_INFERENCE_TIMESTEPS:-}"
 MUJOCO_GL_BACKEND="${MUJOCO_GL_BACKEND:-egl}"
 PYOPENGL_BACKEND="${PYOPENGL_BACKEND:-${MUJOCO_GL_BACKEND}}"
 UV_BIN="${UV_BIN:-/home/shadeform/.local/bin/uv}"
 : "${CHECKPOINT_MANIFEST_SHA256:?CHECKPOINT_MANIFEST_SHA256 is required}"
+
+sampler_args=()
+if [[ -n "${NUM_INFERENCE_TIMESTEPS}" ]]; then
+  sampler_args+=(--num-inference-timesteps "${NUM_INFERENCE_TIMESTEPS}")
+fi
 
 if [[ ! -d "${CHECKPOINT_DIR}" ]]; then
   echo "checkpoint directory missing: ${CHECKPOINT_DIR}" >&2
@@ -53,6 +59,7 @@ for horizon in ${HORIZONS}; do
         --proposal-count "${PROPOSAL_COUNT}" \
         --action-aggregation "${ACTION_AGGREGATION}" \
         --noise-scale "${NOISE_SCALE}" \
+        "${sampler_args[@]}" \
         --checkpoint-id "${CHECKPOINT_ID}" \
         --checkpoint-manifest-sha256 "${CHECKPOINT_MANIFEST_SHA256}" \
         --host "${SERVER_HOST}" \

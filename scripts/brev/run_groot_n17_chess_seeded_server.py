@@ -79,24 +79,45 @@ class SeededResetPolicy(PolicyWrapper):
         proposal_count: int,
         aggregation: str,
         noise_scale: float,
+        num_inference_timesteps: int | None,
     ) -> None:
         super().__init__(policy, strict=False)
-        self._validate_configuration(proposal_count, aggregation, noise_scale)
+        model = getattr(policy, "model", None)
+        action_head = getattr(model, "action_head", None)
+        if action_head is None or not hasattr(action_head, "num_inference_timesteps"):
+            raise ValueError("GR00T policy does not expose action-head sampler steps")
+        checkpoint_timesteps = int(action_head.num_inference_timesteps)
+        configured_timesteps = (
+            checkpoint_timesteps
+            if num_inference_timesteps is None
+            else num_inference_timesteps
+        )
+        self._validate_configuration(
+            proposal_count,
+            aggregation,
+            noise_scale,
+            configured_timesteps,
+        )
         self._default_configuration = {
             "proposal_count": proposal_count,
             "action_aggregation": aggregation,
             "noise_scale": noise_scale,
+            "num_inference_timesteps": configured_timesteps,
         }
+        self._action_head = action_head
+        self._checkpoint_num_inference_timesteps = checkpoint_timesteps
         self._episode_seed: int | None = None
         self._proposal_count = proposal_count
         self._aggregation = aggregation
         self._noise_scale = noise_scale
+        self._num_inference_timesteps = configured_timesteps
 
     @staticmethod
     def _validate_configuration(
         proposal_count: int,
         aggregation: str,
         noise_scale: float,
+        num_inference_timesteps: int,
     ) -> None:
         if proposal_count < 1:
             raise ValueError("proposal_count must be positive")
@@ -106,6 +127,8 @@ class SeededResetPolicy(PolicyWrapper):
             raise ValueError("trimmed_mean requires at least five proposals")
         if not 0.0 <= noise_scale <= 1.0:
             raise ValueError("noise_scale must be between 0 and 1")
+        if not 1 <= num_inference_timesteps <= 16:
+            raise ValueError("num_inference_timesteps must be between 1 and 16")
 
     @staticmethod
     def _query_seed(episode_seed: int, sample_step: int) -> int:
@@ -204,11 +227,24 @@ class SeededResetPolicy(PolicyWrapper):
                 self._default_configuration["noise_scale"],
             )
         )
-        self._validate_configuration(proposal_count, aggregation, noise_scale)
+        num_inference_timesteps = int(
+            options.get(
+                "num_inference_timesteps",
+                self._default_configuration["num_inference_timesteps"],
+            )
+        )
+        self._validate_configuration(
+            proposal_count,
+            aggregation,
+            noise_scale,
+            num_inference_timesteps,
+        )
         self._episode_seed = seed
         self._proposal_count = proposal_count
         self._aggregation = aggregation
         self._noise_scale = noise_scale
+        self._num_inference_timesteps = num_inference_timesteps
+        self._action_head.num_inference_timesteps = num_inference_timesteps
         seed_policy_rng(seed)
         info = dict(self.policy.reset({"inference_seed": seed}))
         info.update(
@@ -216,6 +252,10 @@ class SeededResetPolicy(PolicyWrapper):
                 "action_aggregation": self._aggregation,
                 "inference_seed": seed,
                 "noise_scale": self._noise_scale,
+                "num_inference_timesteps": self._num_inference_timesteps,
+                "checkpoint_num_inference_timesteps": (
+                    self._checkpoint_num_inference_timesteps
+                ),
                 "proposal_count": self._proposal_count,
                 "rng_reset": True,
                 "rng_after_reset": policy_rng_snapshot(),
@@ -238,6 +278,7 @@ def main() -> None:
         default="medoid",
     )
     parser.add_argument("--noise-scale", type=float, default=1.0)
+    parser.add_argument("--num-inference-timesteps", type=int)
     args = parser.parse_args()
     if args.proposal_count < 1:
         parser.error("--proposal-count must be positive")
@@ -245,6 +286,10 @@ def main() -> None:
         parser.error("trimmed_mean requires --proposal-count of at least 5")
     if not 0.0 <= args.noise_scale <= 1.0:
         parser.error("--noise-scale must be between 0 and 1")
+    if args.num_inference_timesteps is not None and not (
+        1 <= args.num_inference_timesteps <= 16
+    ):
+        parser.error("--num-inference-timesteps must be between 1 and 16")
 
     seed_policy_rng(0)
     policy = Gr00tPolicy(
@@ -259,6 +304,7 @@ def main() -> None:
             proposal_count=args.proposal_count,
             aggregation=args.action_aggregation,
             noise_scale=args.noise_scale,
+            num_inference_timesteps=args.num_inference_timesteps,
         ),
         host=args.host,
         port=args.port,
