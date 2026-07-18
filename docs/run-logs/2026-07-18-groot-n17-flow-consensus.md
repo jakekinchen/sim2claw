@@ -74,7 +74,8 @@ the frozen matrix adds only two eight-step arms.
 
 Local preflight passed before remote execution:
 
-- 29/29 repository tests, including analyzer rejection of held-out probes;
+- 31/31 repository tests, including analyzer rejection of held-out probes and
+  assisted or incomplete closed-loop development evidence;
 - Python compilation for the server, evaluator runner, probe, and consensus
   module;
 - shell syntax for both Brev launch/sweep scripts;
