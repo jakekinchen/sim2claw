@@ -68,6 +68,57 @@ duplicate Brev experiments.
 | Worker requested | approximately 07:26 CDT | starting |
 | Worker healthy | approximately 07:28 CDT | A100-SXM4-80GB, CUDA available, pinned GR00T source |
 | Local controller validation | approximately 07:31 CDT | 26 tests passed; Ruff and diff checks clean |
+| Corrected dataset exported | approximately 11:15 CDT | 13 episodes, 4,719 frames, 13/13 source and exact-replay gates pass |
+| NVIDIA loader preflight | approximately 11:17 CDT | 13 episodes, 363 rows in first episode, all configured modalities loaded |
+| Bounded challenger started | approximately 11:18 CDT | fresh optimizer/output, checkpoint-4000 initialization, 1,000-step cap |
 
 Final candidate, receipt, cost, and teardown entries will be appended as the
 campaign advances.
+
+## Control-rate counterexample and corrective-data decision
+
+Before spending a full episode on best-of-16 guidance, the exact recorded
+training episode-0 actions were replayed using the learned-policy evaluator's
+execution semantics: one float32 command held for ten 5 ms physics steps. The
+sampled replay failed despite the original 200 Hz scripted trajectory passing:
+only 15.0 mm rise, 463.9 mm final XY error, upright cosine -0.1004, and final
+speed 104.5 mm/s. A perfect predictor of those labels therefore could not
+reproduce their source consequence.
+
+The corrective dataset contract is frozen at
+`configs/tasks/chess_pick_place_groot_zoh_dataset_v2.json`. It generates a
+planning pass, then records observations from an exact float32 20 Hz
+zero-order-hold replay of the resulting commands. Admission requires that this
+replay pass every unchanged gate. Selection used only the 24 training rows;
+held-out cases and seeds were not inspected. Thirteen source episodes pass and
+are admitted: `0, 1, 8, 11, 14, 16, 17, 18, 19, 20, 21, 22, 23`.
+
+The first admitted replay establishes the mechanism: 70.0 mm rise, 10.4 mm
+final XY error, upright cosine effectively 1.0, final speed 0.006 mm/s, 139.8
+mm gripper clearance, and sub-micrometer other-piece displacement. This is
+scripted synthetic training evidence only.
+
+An attempted Linux export was rejected at its first frozen gate and its
+incomplete dataset directory was deleted. The source, MuJoCo version (3.10.0),
+and float32 commands matched the Mac run, but the x86_64 planning pass differed
+from arm64 at approximately 1e-5 joint radians and contact dynamics diverged:
+15.0 mm rise, 99.6 mm final XY error, and upright cosine -0.099. Dataset
+generation is therefore bound to the separately owned Mac CPU evaluator
+runtime; the receipt records platform, Python, NumPy, and MuJoCo versions. The
+resulting files are transferred byte-for-byte to CUDA training. This does not
+change the independently executed Linux policy promotion gate.
+
+The completed raw dataset receipt SHA-256 is
+`298d9b143ac7c4e5baa8a30952e53cd537c64f072cd5d466c7d0515ac0f75619`;
+its canonical zero-order-hold contract SHA-256 is
+`238a9e4533f926314675bab94e5d228f238d0757e1f0810b8b8cbe0e97a26804`.
+An `rsync --checksum --dry-run` after transfer reported no differences.
+NVIDIA's pinned loader accepted all configured state, action, video, and
+language modalities before training began.
+
+One bounded challenger is pre-registered: initialize model weights from the
+byte-verified nominal checkpoint-4000 into a new run with a fresh optimizer;
+change only the training dataset to the replay-aligned contract; keep the
+original trainable set, augmentation, batch size, learning rate, state dropout,
+and NVIDIA source; cap at 1,000 steps with checkpoints every 250. Strict
+promotion remains a separate zero-assistance held-out consequence evaluation.

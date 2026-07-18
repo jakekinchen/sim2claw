@@ -8,6 +8,7 @@ OUTPUT_ROOT="${OUTPUT_ROOT:-/home/shadeform/runs/groot-n17-chess}"
 EXPERIMENT_NAME="${EXPERIMENT_NAME:-sim2claw-groot-n17-chess}"
 MODEL_REVISION="2fc962b973bccdd5d8ce4f67cc63b264d6886495"
 MODEL_CACHE="${MODEL_CACHE:-/home/shadeform/.cache/huggingface/hub/models--nvidia--GR00T-N1.7-3B/snapshots/$MODEL_REVISION}"
+BASE_MODEL_PATH="${BASE_MODEL_PATH:-$MODEL_CACHE}"
 UV_BIN="${UV_BIN:-/home/shadeform/.local/bin/uv}"
 CUDA_HOME="${CUDA_HOME:-/usr/local/cuda-12.8}"
 
@@ -22,8 +23,8 @@ MAX_STEPS="${MAX_STEPS:-250}"
 SAVE_STEPS="${SAVE_STEPS:-125}"
 GLOBAL_BATCH_SIZE="${GLOBAL_BATCH_SIZE:-16}"
 
-if [ ! -d "$MODEL_CACHE" ]; then
-  echo "pinned model snapshot missing: $MODEL_CACHE" >&2
+if [ ! -d "$BASE_MODEL_PATH" ]; then
+  echo "base model or checkpoint missing: $BASE_MODEL_PATH" >&2
   exit 1
 fi
 
@@ -42,7 +43,7 @@ env \
   NUM_SHARDS_PER_EPOCH=64 \
   EPISODE_SAMPLING_RATE=0.1 \
   "$UV_BIN" run bash examples/finetune.sh \
-    --base-model-path "$MODEL_CACHE" \
+    --base-model-path "$BASE_MODEL_PATH" \
     --dataset-path "$DATASET_ROOT" \
     --modality-config-path "$SIM2CLAW_ROOT/configs/groot/sim2claw_so101_config.py" \
     --embodiment-tag NEW_EMBODIMENT \

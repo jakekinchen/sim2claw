@@ -1,0 +1,56 @@
+{
+  "schema_version": "sim2claw.groot_chess_zoh_dataset.v2",
+  "base_task_contract_sha256": "473915817b3a8474f796df53e199df92031d17fad152599a1d43ccecd3f15683",
+  "frozen_before_training": true,
+  "split": "training",
+  "source_episode_indices": [
+    0,
+    1,
+    8,
+    11,
+    14,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "control_execution": {
+    "mode": "sample_hold",
+    "command_dtype": "float32",
+    "physics_steps_per_action": 10,
+    "interpolation": "cubic_smoothstep",
+    "approach_clearance_m": 0.008,
+    "lift_height_m": 0.06,
+    "release_retract_m": 0.015,
+    "release_ramp_fraction": 0.5
+  },
+  "admission": {
+    "source_episode_count": 24,
+    "admitted_episode_count": 13,
+    "rejected_source_episode_indices": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      9,
+      10,
+      12,
+      13,
+      15
+    ],
+    "criterion": "exact float32 sampled-action replay passes every unchanged consequence gate",
+    "selected_on_held_out_data": false
+  },
+  "authority": {
+    "proof_class": "simulation_synthetic_vla_demonstration_dataset",
+    "training_cannot_promote_itself": true,
+    "held_out_evaluator_unchanged": true,
+    "physical_authority": false
+  }
+}
