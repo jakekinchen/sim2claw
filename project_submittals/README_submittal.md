@@ -40,26 +40,6 @@
 
 **Impact.** It reaches a verifiable milestone — a fresh 957K-parameter ACT policy trained locally and lifted a held-out rook 94.88 mm — while rigorously refusing to overclaim: no gateway, no physical-robot authority, no "it generalized" without frozen held-out proof. The payoff is a trustworthy, reproducible foundation for learned manipulation, where each capability is backed by fresh code and its own evidence.
 
-## Pipeline diagram
-
-```mermaid
-flowchart LR
-    A["1. Scan & Photo\n(Polycam capture,\nmeasured table)"] --> B["2. Simulated Workcell\n(MuJoCo: table, board,\n32 pieces, 2 robot arms)"]
-    B --> C["3. Demonstrations\n(scripted expert\npick & lift episodes)"]
-    C --> D["4. Train Policy\n(ACT neural network,\nlearns from demos)"]
-    D --> E["5. Independent Exam\n(held-out test the policy\nnever saw in training)"]
-    E -->|pass / fail| F["6. Receipts & Replay\n(JSON verdicts, videos,\nviewable in Studio)"]
-```
-
-1. **Scan & Photo** — A real table is measured with a Polycam scan and an overhead photo.
-2. **Simulated workcell** — That geometry becomes a physics simulation with a chessboard and two SO-101 robot arms.
-3. **Demonstrations** — Scripted experts perform the task (e.g., lift a rook) to generate training examples.
-4. **Train policy** — A small ACT neural network learns to imitate those demonstrations.
-5. **Independent exam** — A separate evaluator tests the policy on a scenario it never trained on; training can never grade itself.
-6. **Receipts & replay** — Every result is written as a verdict file with video, browsable in the read-only Studio.
-
-The key safety rule throughout: the robot-hardware path stays closed — everything runs in simulation, and a policy is only "good" if the independent exam says so.
-
 ## Pipeline poster
 
 ![sim2claw simulation-to-robot data pipeline poster](./sim2claw-pipeline-poster-feedback-loop.png)
