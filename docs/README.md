@@ -20,16 +20,20 @@
   — frozen task/evaluator, bounded ACT training, failed attempts, accepted
   held-out episode, and artifact identities.
 - [`reference/ARCHIVE_INDEX.md`](./reference/ARCHIVE_INDEX.md) — freshly
-  authored map of the read-only archive without imported files.
+  authored map of the read-only prior-project archive without imported files.
 - [`reference/PRIOR_RESULTS_SUMMARY.md`](./reference/PRIOR_RESULTS_SUMMARY.md)
   — historical lessons only; no live capability or authority.
 
-## Read-only reference material
+## Read-only prior-project references
 
-The earlier repository remains outside this checkout in the imported archive
-and local read-only `sim-link` checkout. No source, dataset, checkpoint,
-configuration, receipt, or generated output is copied into this repository.
+Prior-project material remains in
+[`jakekinchen/sim2claw-imported-archive`](https://github.com/jakekinchen/sim2claw-imported-archive)
+at commit `798491e` or the designated local read-only `sim-link` checkout. No
+source, dataset, checkpoint, configuration, receipt, or generated output is
+copied into this repository; only the two freshly authored maps above live
+here.
 
-Prior material is not active project state. Historical claims apply only to
-their source context. Fresh capabilities are limited to the active documents
-and repo-native evidence listed above.
+If a prior reference says a simulator, model, gateway, host, or robot path
+passed, that statement applies only to its archived source context. Fresh
+capabilities in this repository are limited to the active documents and
+repo-native evidence listed above.
