@@ -7,7 +7,9 @@
 ### Required
 
 - [ ]  **Project title & Team Name**
+  - sin2claw
 - [ ]  **Track selected**
+  - Recursive Intelligence Track
 - [ ]  **2–5 min Loom video** (loom.com). Show the core loop live.
     - [ ]  **YOUR VIDEO MUST BE RECORDED WITH LOOM!**
 
