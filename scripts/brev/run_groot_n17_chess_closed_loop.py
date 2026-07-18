@@ -33,14 +33,26 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def load_checkpoint_manifest(path: Path) -> dict[str, object]:
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    if manifest.get("schema_version") != "sim2claw.groot_checkpoint_manifest.v1":
+        raise ValueError("unsupported checkpoint manifest")
+    files = manifest.get("files")
+    if not isinstance(files, dict) or not files:
+        raise ValueError("checkpoint manifest has no file identities")
+    return manifest
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--episode-index", type=int, default=0)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=5555)
+    parser.add_argument("--checkpoint-manifest", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
+    checkpoint_manifest = load_checkpoint_manifest(args.checkpoint_manifest)
     contract = load_groot_task_contract()
     episode_row = contract["held_out_episodes"][args.episode_index]
     case = _case_map(contract, "held_out")[episode_row["case_id"]]
@@ -67,7 +79,7 @@ def main() -> None:
     ) // sample_stride
     action_horizon = int(contract["model"]["action_horizon"])
 
-    args.output.mkdir(parents=True, exist_ok=True)
+    args.output.mkdir(parents=True, exist_ok=False)
     renderer = mujoco.Renderer(
         env.model,
         height=int(contract["episode"]["render_height"]),
@@ -154,6 +166,7 @@ def main() -> None:
         "instruction": str(case["instruction"]),
         "seed": int(episode_row["seed"]),
         "policy_transport": f"GR00T PolicyClient tcp://{args.host}:{args.port}",
+        "checkpoint_manifest": checkpoint_manifest,
         "chunks_requested": chunks_requested,
         "sampled_actions": len(actions),
         "physics_actions": physics_actions,
