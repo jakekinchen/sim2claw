@@ -60,6 +60,15 @@ def main() -> None:
             "Defaults to the model action horizon."
         ),
     )
+    parser.add_argument(
+        "--evidence-frame-cadence",
+        choices=("all_samples", "policy_queries"),
+        default="all_samples",
+        help=(
+            "Render every sample for promotion evidence, or only policy-query "
+            "samples for a non-promotable development diagnostic."
+        ),
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
@@ -120,6 +129,7 @@ def main() -> None:
             raise RuntimeError("seeded policy server acknowledged the wrong seed")
 
     frames: list[np.ndarray] = []
+    rendered_frame_sample_steps: list[int] = []
     states: list[np.ndarray] = []
     actions: list[np.ndarray] = []
     chunks_requested = 0
@@ -129,15 +139,24 @@ def main() -> None:
 
     try:
         for sample_step in range(sample_count):
-            renderer.update_scene(env.data, camera=str(contract["scene"]["camera"]))
-            frame = renderer.render().copy()
+            is_policy_query = sample_step % execution_horizon == 0
+            render_this_sample = (
+                args.evidence_frame_cadence == "all_samples" or is_policy_query
+            )
+            frame: np.ndarray | None = None
+            if render_this_sample:
+                renderer.update_scene(env.data, camera=str(contract["scene"]["camera"]))
+                frame = renderer.render().copy()
+                frames.append(frame)
+                rendered_frame_sample_steps.append(sample_step)
             state = np.asarray(
                 env.data.qpos[env.qpos_addresses], dtype=np.float32
             ).copy()
-            frames.append(frame)
             states.append(state)
 
-            if sample_step % execution_horizon == 0:
+            if is_policy_query:
+                if frame is None:
+                    raise RuntimeError("policy query sample was not rendered")
                 observation = {
                     "video": {"front": frame[None, None, ...]},
                     "state": {
@@ -235,6 +254,12 @@ def main() -> None:
             "mujoco_gl": os.environ.get("MUJOCO_GL", "unspecified"),
             "pyopengl_platform": os.environ.get("PYOPENGL_PLATFORM", "unspecified"),
         },
+        "evidence_frame_cadence": args.evidence_frame_cadence,
+        "promotion_eligible_render_cadence": (
+            args.evidence_frame_cadence == "all_samples"
+        ),
+        "rendered_frames": len(frames),
+        "rendered_frame_sample_steps": rendered_frame_sample_steps,
         "model_action_horizon": action_horizon,
         "execution_horizon": execution_horizon,
         "chunks_requested": chunks_requested,
