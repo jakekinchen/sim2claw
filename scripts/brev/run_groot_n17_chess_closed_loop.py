@@ -38,6 +38,7 @@ def sha256_file(path: Path) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--split", choices=("training", "held_out"), default="held_out")
     parser.add_argument("--episode-index", type=int, default=0)
     parser.add_argument("--rollout-replicate", type=int, default=0)
     parser.add_argument("--inference-seed", type=int, default=0)
@@ -63,8 +64,8 @@ def main() -> None:
     args = parser.parse_args()
 
     contract = load_groot_task_contract()
-    episode_row = contract["held_out_episodes"][args.episode_index]
-    case = _case_map(contract, "held_out")[episode_row["case_id"]]
+    episode_row = contract[f"{args.split}_episodes"][args.episode_index]
+    case = _case_map(contract, args.split)[episode_row["case_id"]]
     offset = tuple(float(value) for value in episode_row["piece_planar_offset_m"])
     env = ChessRookLiftEnv(
         _episode_shim(contract, case),
@@ -73,7 +74,9 @@ def main() -> None:
     )
     _apply_sparse_board_curriculum(env, contract)
 
-    target = np.asarray(board_square_center(str(case["target_square"])), dtype=np.float64)
+    target = np.asarray(
+        board_square_center(str(case["target_square"])), dtype=np.float64
+    )
     initial_piece_position = env.piece_position()
     initial_height = float(initial_piece_position[2])
     initial_other_positions = {
@@ -128,7 +131,9 @@ def main() -> None:
         for sample_step in range(sample_count):
             renderer.update_scene(env.data, camera=str(contract["scene"]["camera"]))
             frame = renderer.render().copy()
-            state = np.asarray(env.data.qpos[env.qpos_addresses], dtype=np.float32).copy()
+            state = np.asarray(
+                env.data.qpos[env.qpos_addresses], dtype=np.float32
+            ).copy()
             frames.append(frame)
             states.append(state)
 
@@ -140,7 +145,9 @@ def main() -> None:
                         "gripper": state[None, None, 5:],
                     },
                     "language": {
-                        "annotation.human.task_description": [[str(case["instruction"])]]
+                        "annotation.human.task_description": [
+                            [str(case["instruction"])]
+                        ]
                     },
                 }
                 predicted, action_info = client.get_action(
@@ -149,7 +156,9 @@ def main() -> None:
                 )
                 if args.policy_server_mode == "seeded_reset":
                     if int(action_info.get("sample_step", -1)) != sample_step:
-                        raise RuntimeError("seeded policy server acknowledged wrong sample step")
+                        raise RuntimeError(
+                            "seeded policy server acknowledged wrong sample step"
+                        )
                     if "query_seed" not in action_info:
                         raise RuntimeError("seeded policy server omitted query seed")
                     query_receipt = dict(action_info)
@@ -168,7 +177,9 @@ def main() -> None:
                 gripper = np.asarray(predicted["gripper"], dtype=np.float32)[0]
                 action_chunk = np.concatenate([arm, gripper], axis=-1)
                 if action_chunk.ndim != 2 or action_chunk.shape[1] != 6:
-                    raise RuntimeError(f"unexpected action chunk shape: {action_chunk.shape}")
+                    raise RuntimeError(
+                        f"unexpected action chunk shape: {action_chunk.shape}"
+                    )
                 if action_chunk.shape[0] < execution_horizon:
                     raise RuntimeError(
                         "policy returned fewer actions than the requested execution "
@@ -207,7 +218,7 @@ def main() -> None:
     receipt = {
         "schema_version": "sim2claw.groot_n17_closed_loop_episode.v1",
         "proof_class": "learned_policy_simulation",
-        "split": "held_out",
+        "split": args.split,
         "episode_index": args.episode_index,
         "rollout_replicate": args.rollout_replicate,
         "inference_seed": args.inference_seed,
@@ -222,9 +233,7 @@ def main() -> None:
         "policy_transport": f"GR00T PolicyClient tcp://{args.host}:{args.port}",
         "render_backend": {
             "mujoco_gl": os.environ.get("MUJOCO_GL", "unspecified"),
-            "pyopengl_platform": os.environ.get(
-                "PYOPENGL_PLATFORM", "unspecified"
-            ),
+            "pyopengl_platform": os.environ.get("PYOPENGL_PLATFORM", "unspecified"),
         },
         "model_action_horizon": action_horizon,
         "execution_horizon": execution_horizon,
