@@ -59,3 +59,13 @@ flowchart LR
 6. **Receipts & replay** — Every result is written as a verdict file with video, browsable in the read-only Studio.
 
 The key safety rule throughout: the robot-hardware path stays closed — everything runs in simulation, and a policy is only "good" if the independent exam says so.
+
+## Pipeline poster
+
+![sim2claw simulation-to-robot data pipeline poster](./sim2claw-pipeline-poster-feedback-loop.png)
+
+The poster adds the evidence feedback loop after receipts and replay:
+
+- **Successful receipts** — accepted demonstrations enter the versioned training dataset; held-out policy passes may advance the frozen milestone.
+- **Failed receipts** — kept as counterexamples (never imitation rows); failure reasons are clustered to drive targeted correction and recovery demonstrations.
+- Both paths produce a new versioned dataset and receipt, then replay through the same frozen evaluator gates.
