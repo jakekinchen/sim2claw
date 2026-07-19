@@ -1,6 +1,6 @@
 # sim2claw
 
-**Evidence-first, clean-room simulation-to-robot manipulation for low-cost
+**Evidence-first, simulation-to-robot manipulation for low-cost
 SO-101 arms.**
 
 ![sim2claw technical overview](./project_submittals/sim2claw-technical-overview.png)
