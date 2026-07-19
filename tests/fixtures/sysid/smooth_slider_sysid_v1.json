@@ -58,6 +58,7 @@
           "nominal": 0.0,
           "minimum": -0.03,
           "maximum": 0.03,
+          "supports_observables": ["end_effector_position"],
           "smooth": true,
           "fallback_supported": true
         }
@@ -74,6 +75,7 @@
           "nominal": 0.0,
           "minimum": 0.0,
           "maximum": 0.08,
+          "supports_observables": ["joint_position", "end_effector_position", "end_effector_orientation", "gripper_position"],
           "smooth": true,
           "fallback_supported": true
         },
@@ -83,6 +85,7 @@
           "nominal": 1.0,
           "minimum": 0.5,
           "maximum": 1.5,
+          "supports_observables": ["joint_position", "end_effector_position", "end_effector_orientation", "gripper_position"],
           "smooth": true,
           "fallback_supported": true
         },
@@ -92,6 +95,7 @@
           "nominal": 1.0,
           "minimum": 0.5,
           "maximum": 2.0,
+          "supports_observables": ["joint_position", "end_effector_position", "end_effector_orientation", "gripper_position"],
           "smooth": true,
           "fallback_supported": true
         }
@@ -108,6 +112,7 @@
           "nominal": 1.0,
           "minimum": 0.5,
           "maximum": 2.0,
+          "supports_observables": ["pawn_position", "pawn_orientation", "contact_active", "contact_force"],
           "smooth": false,
           "fallback_supported": false
         }
@@ -121,6 +126,7 @@
     "seed": 11,
     "maximum_iterations": 12,
     "finite_difference_relative_step": 0.0001,
+    "minimum_parameter_sensitivity": 1e-08,
     "near_equivalent_relative_loss": 0.01,
     "near_equivalent_absolute_loss": 1e-08
   },

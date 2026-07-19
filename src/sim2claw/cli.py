@@ -156,6 +156,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="verify physical payload integrity without interpreting video",
     )
     sysid_input.add_argument("--catalog", type=Path, default=DEFAULT_PHYSICAL_CATALOG)
+    sysid_input.add_argument("--config", type=Path, default=DEFAULT_SYSID_CONFIG)
     sysid_input.add_argument("--repo-root", type=Path, default=REPO_ROOT)
     sysid_input.add_argument(
         "--inspection-scope",
@@ -531,6 +532,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         report = inspect_recording_catalog_inputs(
             args.catalog,
             repo_root=args.repo_root,
+            config_path=args.config,
             inspection_scope=args.inspection_scope,
             output_path=args.output,
         )

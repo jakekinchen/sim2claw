@@ -9,6 +9,10 @@
       <geom name="slider_geom" type="box" size="0.02 0.02 0.02" mass="0.25"/>
       <site name="tool_site" pos="0.1 0 0"/>
     </body>
+    <body name="fixture_object" pos="0 0 0.2">
+      <freejoint name="fixture_object_free"/>
+      <geom name="fixture_object_geom" type="box" size="0.01 0.01 0.01" mass="0.1"/>
+    </body>
   </worldbody>
   <actuator>
     <position name="slider_position" joint="slider" kp="18"/>

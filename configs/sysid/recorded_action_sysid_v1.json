@@ -27,8 +27,41 @@
     "pawn_body": null,
     "contact_body_groups": [
       ["left_gripper", "left_moving_jaw_so101_v1"],
-      []
+      ["$episode_object"]
     ]
+  },
+  "physical_adapter": {
+    "joint_transform_sha256": "72812016bfa9dba2ba97fe448724394ad290a2b22458177bcbdec95aae0689e6",
+    "joint_transform": {
+      "schema_version": "sim2claw.physical_joint_transform.v1",
+      "transform_id": "so101_physical_degrees_to_current_scene_provisional_v1",
+      "source_joint_names": [
+        "shoulder_pan",
+        "shoulder_lift",
+        "elbow_flex",
+        "wrist_flex",
+        "wrist_roll",
+        "gripper"
+      ],
+      "simulator_joint_names": [
+        "left_shoulder_pan",
+        "left_shoulder_lift",
+        "left_elbow_flex",
+        "left_wrist_flex",
+        "left_wrist_roll",
+        "left_gripper"
+      ],
+      "calibration_approved": false,
+      "review_status": "provisional_range_audit_blocked",
+      "joints": [
+        {"source_joint": "shoulder_pan", "simulator_joint": "left_shoulder_pan", "input_unit": "degree", "output_unit": "radian", "sign": 1, "scale": 0.017453292519943295, "zero_offset": 0.0},
+        {"source_joint": "shoulder_lift", "simulator_joint": "left_shoulder_lift", "input_unit": "degree", "output_unit": "radian", "sign": 1, "scale": 0.017453292519943295, "zero_offset": 0.0},
+        {"source_joint": "elbow_flex", "simulator_joint": "left_elbow_flex", "input_unit": "degree", "output_unit": "radian", "sign": 1, "scale": 0.017453292519943295, "zero_offset": 0.0},
+        {"source_joint": "wrist_flex", "simulator_joint": "left_wrist_flex", "input_unit": "degree", "output_unit": "radian", "sign": 1, "scale": 0.017453292519943295, "zero_offset": 0.0},
+        {"source_joint": "wrist_roll", "simulator_joint": "left_wrist_roll", "input_unit": "degree", "output_unit": "radian", "sign": 1, "scale": 0.017453292519943295, "zero_offset": 0.0},
+        {"source_joint": "gripper", "simulator_joint": "left_gripper", "input_unit": "percent", "output_unit": "radian", "sign": 1, "scale": 0.0191986, "zero_offset": -0.17453}
+      ]
+    }
   },
   "replay": {
     "command_interpolation": "zero_order_hold",
@@ -67,7 +100,7 @@
     {
       "name": "geometry",
       "order": 1,
-      "requires_any_observable": ["end_effector_position", "pawn_position"],
+      "requires_any_observable": ["end_effector_position"],
       "parameters": [
         {
           "name": "ee_site_offset_x_m",
@@ -75,6 +108,7 @@
           "nominal": 0.0,
           "minimum": -0.03,
           "maximum": 0.03,
+          "supports_observables": ["end_effector_position"],
           "smooth": true,
           "fallback_supported": true
         },
@@ -84,6 +118,7 @@
           "nominal": 0.0,
           "minimum": -0.03,
           "maximum": 0.03,
+          "supports_observables": ["end_effector_position"],
           "smooth": true,
           "fallback_supported": true
         },
@@ -93,6 +128,7 @@
           "nominal": 0.0,
           "minimum": -0.03,
           "maximum": 0.03,
+          "supports_observables": ["end_effector_position"],
           "smooth": true,
           "fallback_supported": true
         }
@@ -109,6 +145,7 @@
           "nominal": 0.0,
           "minimum": 0.0,
           "maximum": 0.15,
+          "supports_observables": ["joint_position", "end_effector_position", "end_effector_orientation", "gripper_position"],
           "smooth": true,
           "fallback_supported": true
         },
@@ -118,6 +155,7 @@
           "nominal": 1.0,
           "minimum": 0.5,
           "maximum": 1.5,
+          "supports_observables": ["joint_position", "end_effector_position", "end_effector_orientation", "gripper_position"],
           "smooth": true,
           "fallback_supported": true
         },
@@ -127,6 +165,7 @@
           "nominal": 1.0,
           "minimum": 0.5,
           "maximum": 2.0,
+          "supports_observables": ["joint_position", "end_effector_position", "end_effector_orientation", "gripper_position"],
           "smooth": true,
           "fallback_supported": true
         }
@@ -143,6 +182,7 @@
           "nominal": 1.0,
           "minimum": 0.5,
           "maximum": 2.0,
+          "supports_observables": ["pawn_position", "pawn_orientation", "contact_active", "contact_force"],
           "smooth": false,
           "fallback_supported": false
         },
@@ -152,6 +192,7 @@
           "nominal": 1.0,
           "minimum": 0.25,
           "maximum": 2.5,
+          "supports_observables": ["pawn_position", "pawn_orientation", "contact_active", "contact_force"],
           "smooth": false,
           "fallback_supported": false
         }
@@ -165,6 +206,7 @@
     "seed": 1979,
     "maximum_iterations": 30,
     "finite_difference_relative_step": 0.0001,
+    "minimum_parameter_sensitivity": 1e-08,
     "near_equivalent_relative_loss": 0.01,
     "near_equivalent_absolute_loss": 1e-08
   },

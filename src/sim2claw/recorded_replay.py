@@ -20,7 +20,7 @@ from typing import Any, Iterable, Mapping, Sequence
 import mujoco
 import numpy as np
 
-from .physical_sim_replay import physical_values_to_sim
+from .paths import REPO_ROOT
 from .scene import (
     CURRENT_TASK_PIECE_LAYOUT,
     ROBOT_JOINTS,
@@ -34,6 +34,7 @@ REPLAY_RECEIPT_SCHEMA = "sim2claw.recorded_action_replay_receipt.v1"
 SYNCHRONIZED_ROW_SCHEMA = "sim2claw.synchronized_replay_row.v1"
 CONFIG_SCHEMA = "sim2claw.recorded_action_sysid_config.v1"
 PHYSICAL_SAMPLE_SCHEMA = "sim2claw.physical_teleoperation_sample.v1"
+PHYSICAL_JOINT_TRANSFORM_SCHEMA = "sim2claw.physical_joint_transform.v1"
 
 PROOF_CLASS_CATEGORIES = {
     "fixture",
@@ -45,20 +46,67 @@ PROOF_CLASS_CATEGORIES = {
     "physical_task",
 }
 
+OBSERVABLE_METADATA = {
+    "joint_position": {"field": "joint_position", "alignment": "continuous", "semantic": "vector"},
+    "end_effector_position": {"field": "end_effector_position_m", "alignment": "continuous", "semantic": "vector"},
+    "end_effector_orientation": {"field": "end_effector_quaternion_wxyz", "alignment": "continuous", "semantic": "quaternion_wxyz"},
+    "gripper_position": {"field": "gripper_position", "alignment": "continuous", "semantic": "scalar"},
+    "pawn_position": {"field": "pawn_position_m", "alignment": "continuous", "semantic": "vector"},
+    "pawn_orientation": {"field": "pawn_quaternion_wxyz", "alignment": "continuous", "semantic": "quaternion_wxyz"},
+    "contact_active": {"field": "contact_active", "alignment": "discrete", "semantic": "boolean"},
+    "contact_force": {"field": "contact_force_n", "alignment": "continuous", "semantic": "scalar"},
+}
 OBSERVABLE_FIELDS = {
-    "joint_position": "joint_position",
-    "end_effector_position": "end_effector_position_m",
-    "end_effector_orientation": "end_effector_quaternion_wxyz",
-    "gripper_position": "gripper_position",
-    "pawn_position": "pawn_position_m",
-    "pawn_orientation": "pawn_quaternion_wxyz",
-    "contact_active": "contact_active",
-    "contact_force": "contact_force_n",
+    name: str(metadata["field"]) for name, metadata in OBSERVABLE_METADATA.items()
+}
+
+TARGET_SUPPORTED_OBSERVABLES = {
+    "end_effector_site_offset_x": {"end_effector_position"},
+    "end_effector_site_offset_y": {"end_effector_position"},
+    "end_effector_site_offset_z": {"end_effector_position"},
+    "command_latency_seconds": {
+        "joint_position",
+        "end_effector_position",
+        "end_effector_orientation",
+        "gripper_position",
+    },
+    "actuator_gain_scale": {
+        "joint_position",
+        "end_effector_position",
+        "end_effector_orientation",
+        "gripper_position",
+    },
+    "joint_damping_scale": {
+        "joint_position",
+        "end_effector_position",
+        "end_effector_orientation",
+        "gripper_position",
+    },
+    "pawn_mass_scale": {
+        "pawn_position",
+        "pawn_orientation",
+        "contact_active",
+        "contact_force",
+    },
+    "pawn_friction_scale": {
+        "pawn_position",
+        "pawn_orientation",
+        "contact_active",
+        "contact_force",
+    },
 }
 
 
 class ReplayContractError(ValueError):
     """A replay input would require guessing, repair, or authority widening."""
+
+
+class ReplayRangeError(ReplayContractError):
+    """A measured state or exact requested command is outside model limits."""
+
+    def __init__(self, message: str, diagnostics: Mapping[str, Any]):
+        super().__init__(message)
+        self.diagnostics = dict(diagnostics)
 
 
 @dataclass(frozen=True)
@@ -74,10 +122,13 @@ class RecordedEpisode:
     original_timestamps: np.ndarray
     commands: np.ndarray
     measured: tuple[dict[str, Any], ...]
+    initial_object_state: Mapping[str, Any]
     unavailable_observables: Mapping[str, str]
     source_path: Path
     source_sha256: str
     source_schema_version: str
+    source_provenance: Mapping[str, Any]
+    joint_transform: Mapping[str, Any] | None
 
     @property
     def duration_seconds(self) -> float:
@@ -119,6 +170,212 @@ def _atomic_json(path: Path, payload: Mapping[str, Any]) -> None:
         encoding="utf-8",
     )
     temporary.replace(path)
+
+
+def canonical_json_sha256(payload: Mapping[str, Any]) -> str:
+    encoded = json.dumps(
+        payload,
+        separators=(",", ":"),
+        sort_keys=True,
+        ensure_ascii=True,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _is_sha256(value: Any) -> bool:
+    text = str(value or "")
+    return len(text) == 64 and all(character in "0123456789abcdef" for character in text)
+
+
+def portable_content_identity(path: Path, sha256: str) -> dict[str, str]:
+    resolved = path.resolve()
+    try:
+        relative = resolved.relative_to(REPO_ROOT.resolve()).as_posix()
+    except ValueError:
+        return {"kind": "content_addressed", "sha256": sha256}
+    return {"kind": "repo_relative", "path": relative, "sha256": sha256}
+
+
+def _validated_physical_transform(
+    config: Mapping[str, Any],
+) -> Mapping[str, Any] | None:
+    adapter = config.get("physical_adapter")
+    if adapter is None:
+        return None
+    if not isinstance(adapter, Mapping):
+        raise ReplayContractError("physical_adapter must be an object")
+    transform = adapter.get("joint_transform")
+    if not isinstance(transform, Mapping):
+        raise ReplayContractError("physical_adapter.joint_transform is required")
+    declared_hash = adapter.get("joint_transform_sha256")
+    if not _is_sha256(declared_hash) or declared_hash != canonical_json_sha256(transform):
+        raise ReplayContractError("physical joint transform hash binding does not match")
+    if transform.get("schema_version") != PHYSICAL_JOINT_TRANSFORM_SCHEMA:
+        raise ReplayContractError("unsupported physical joint transform schema")
+    source_names = transform.get("source_joint_names")
+    simulator_names = transform.get("simulator_joint_names")
+    entries = transform.get("joints")
+    if not (
+        isinstance(source_names, list)
+        and isinstance(simulator_names, list)
+        and isinstance(entries, list)
+        and source_names
+        and len(source_names) == len(simulator_names) == len(entries)
+        and len(source_names) == len(set(source_names))
+        and len(simulator_names) == len(set(simulator_names))
+    ):
+        raise ReplayContractError(
+            "physical joint transform names/order and per-joint entries must have equal unique shape"
+        )
+    if tuple(str(name) for name in simulator_names) != tuple(
+        str(name) for name in config["bindings"]["joint_names"]
+    ):
+        raise ReplayContractError(
+            "physical joint transform simulator order must match replay bindings"
+        )
+    for index, (source_name, simulator_name, entry) in enumerate(
+        zip(source_names, simulator_names, entries, strict=True)
+    ):
+        if not isinstance(entry, Mapping):
+            raise ReplayContractError(f"physical joint transform entry {index} is invalid")
+        if entry.get("source_joint") != source_name or entry.get(
+            "simulator_joint"
+        ) != simulator_name:
+            raise ReplayContractError(
+                f"physical joint transform entry {index} identity/order drifted"
+            )
+        sign = entry.get("sign")
+        scale = float(entry.get("scale", math.nan))
+        offset = float(entry.get("zero_offset", math.nan))
+        if sign not in {-1, 1} or not math.isfinite(scale) or scale <= 0:
+            raise ReplayContractError(
+                f"physical joint transform entry {index} sign/scale is invalid"
+            )
+        if not math.isfinite(offset):
+            raise ReplayContractError(
+                f"physical joint transform entry {index} zero_offset is invalid"
+            )
+        if not str(entry.get("input_unit") or "") or not str(
+            entry.get("output_unit") or ""
+        ):
+            raise ReplayContractError(
+                f"physical joint transform entry {index} units are required"
+            )
+    approved = transform.get("calibration_approved")
+    if not isinstance(approved, bool):
+        raise ReplayContractError(
+            "physical joint transform calibration_approved must be boolean"
+        )
+    if approved:
+        review = transform.get("review")
+        if not isinstance(review, Mapping) or any(
+            not str(review.get(field) or "").strip()
+            for field in ("reviewer", "reviewed_at", "decision_id")
+        ) or not _is_sha256(review.get("evidence_sha256")):
+            raise ReplayContractError(
+                "approved physical joint transform requires hash-bound review lineage"
+            )
+    return transform
+
+
+def physical_values_through_transform(
+    values: Any,
+    transform: Mapping[str, Any],
+    *,
+    field: str,
+) -> np.ndarray:
+    entries = transform["joints"]
+    raw = _finite_vector(values, size=len(entries), field=field)
+    converted = np.asarray(
+        [
+            float(entry["sign"]) * raw[index] * float(entry["scale"])
+            + float(entry["zero_offset"])
+            for index, entry in enumerate(entries)
+        ],
+        dtype=np.float64,
+    )
+    if not np.all(np.isfinite(converted)):
+        raise ReplayContractError(f"{field} transform produced non-finite values")
+    return converted
+
+
+def _validated_initial_object_state(value: Any) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        raise ReplayContractError("initial_object_state is required")
+    status = value.get("status")
+    if status == "unavailable":
+        reason = str(value.get("reason") or "").strip()
+        if not reason:
+            raise ReplayContractError(
+                "unavailable initial_object_state requires an explicit reason"
+            )
+        return {"status": "unavailable", "reason": reason}
+    if status != "available":
+        raise ReplayContractError(
+            "initial_object_state status must be available or unavailable"
+        )
+    body_name = str(value.get("body_name") or "").strip()
+    free_joint_name = str(value.get("free_joint_name") or "").strip()
+    if not body_name or not free_joint_name:
+        raise ReplayContractError(
+            "available initial_object_state requires body and free-joint identity"
+        )
+    if value.get("frame") != "world":
+        raise ReplayContractError("initial object pose frame must be world")
+    unit_contract = {
+        "position_unit": "m",
+        "orientation_convention": "wxyz_unit_quaternion",
+        "linear_velocity_unit": "m/s",
+        "angular_velocity_unit": "rad/s",
+    }
+    for field, expected in unit_contract.items():
+        if value.get(field) != expected:
+            raise ReplayContractError(
+                f"initial_object_state {field} must be {expected}"
+            )
+    position = _finite_vector(
+        value.get("position"), size=3, field="initial_object_state.position"
+    )
+    quaternion = _finite_vector(
+        value.get("quaternion_wxyz"),
+        size=4,
+        field="initial_object_state.quaternion_wxyz",
+    )
+    quaternion_norm = float(np.linalg.norm(quaternion))
+    if not math.isclose(quaternion_norm, 1.0, rel_tol=0.0, abs_tol=1e-6):
+        raise ReplayContractError(
+            "initial object quaternion must already be unit length; replay never repairs it"
+        )
+    linear_velocity = _finite_vector(
+        value.get("linear_velocity"),
+        size=3,
+        field="initial_object_state.linear_velocity",
+    )
+    angular_velocity = _finite_vector(
+        value.get("angular_velocity"),
+        size=3,
+        field="initial_object_state.angular_velocity",
+    )
+    provenance = value.get("measurement_provenance")
+    if not isinstance(provenance, Mapping) or any(
+        not str(provenance.get(field) or "").strip()
+        for field in ("source_id", "measurement_method")
+    ) or not _is_sha256(provenance.get("sha256")):
+        raise ReplayContractError(
+            "available initial_object_state requires hash-bound measurement provenance"
+        )
+    return {
+        "status": "available",
+        "body_name": body_name,
+        "free_joint_name": free_joint_name,
+        "frame": "world",
+        **unit_contract,
+        "position": position.tolist(),
+        "quaternion_wxyz": quaternion.tolist(),
+        "linear_velocity": linear_velocity.tolist(),
+        "angular_velocity": angular_velocity.tolist(),
+        "measurement_provenance": dict(provenance),
+    }
 
 
 def load_sysid_config(path: Path) -> dict[str, Any]:
@@ -164,6 +421,29 @@ def validate_sysid_config(config: Mapping[str, Any]) -> None:
             maximum = float(parameter["maximum"])
             if not (math.isfinite(minimum) and minimum <= nominal <= maximum):
                 raise ReplayContractError(f"invalid bounds for parameter {name}")
+            target = str(parameter.get("target") or "")
+            declared_support = parameter.get("supports_observables")
+            expected_support = TARGET_SUPPORTED_OBSERVABLES.get(target)
+            if expected_support is None:
+                raise ReplayContractError(f"unsupported parameter target: {target}")
+            if not isinstance(declared_support, list) or set(
+                str(observable) for observable in declared_support
+            ) != expected_support:
+                raise ReplayContractError(
+                    f"parameter {name} supporting observables do not match target semantics"
+                )
+    optimizer = config.get("optimizer")
+    try:
+        minimum_sensitivity = float(optimizer["minimum_parameter_sensitivity"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise ReplayContractError(
+            "optimizer minimum_parameter_sensitivity is required"
+        ) from error
+    if not math.isfinite(minimum_sensitivity) or minimum_sensitivity <= 0:
+        raise ReplayContractError(
+            "optimizer minimum_parameter_sensitivity must be finite and positive"
+        )
+    _validated_physical_transform(config)
 
 
 def _finite_vector(value: Any, *, size: int, field: str) -> np.ndarray:
@@ -283,6 +563,9 @@ def _load_canonical_episode(
             size=joint_count,
             field="initial_state.joint_velocity",
         )
+    initial_object_state = _validated_initial_object_state(
+        payload.get("initial_object_state")
+    )
     samples = payload.get("samples")
     if not isinstance(samples, list):
         raise ReplayContractError("samples must be an array")
@@ -341,10 +624,24 @@ def _load_canonical_episode(
         original_timestamps=original_timestamps,
         commands=commands,
         measured=measured,
+        initial_object_state=initial_object_state,
         unavailable_observables=dict(unavailable),
         source_path=path,
         source_sha256=sha256_file(path),
         source_schema_version=EPISODE_SCHEMA,
+        source_provenance={
+            "chain_complete": proof_class_category != "physical_read_only",
+            "episode": portable_content_identity(path, sha256_file(path)),
+            "catalog": None,
+            "recording_receipt": None,
+            "samples": portable_content_identity(path, sha256_file(path)),
+            "incomplete_reason": (
+                "canonical physical-read-only episode lacks catalog/receipt/sample chain"
+                if proof_class_category == "physical_read_only"
+                else None
+            ),
+        },
+        joint_transform=None,
     )
     available = episode.available_observables()
     conflict = available.intersection(unavailable)
@@ -352,12 +649,22 @@ def _load_canonical_episode(
         raise ReplayContractError(
             f"observables cannot be both present and unavailable: {sorted(conflict)}"
         )
+    object_observables = available.intersection(
+        {"pawn_position", "pawn_orientation", "contact_active", "contact_force"}
+    )
+    if object_observables and initial_object_state["status"] != "available":
+        raise ReplayContractError(
+            "pawn/contact observables require an available measured initial_object_state "
+            f"binding: {sorted(object_observables)}"
+        )
     return episode
 
 
 def _load_physical_recording(
     directory: Path,
     config: Mapping[str, Any],
+    *,
+    source_provenance: Mapping[str, Any] | None,
 ) -> RecordedEpisode:
     receipt_path = directory / "recording_receipt.json"
     samples_path = directory / "samples.jsonl"
@@ -366,39 +673,64 @@ def _load_physical_recording(
             "physical recording requires recording_receipt.json and samples.jsonl"
         )
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    if not isinstance(receipt, Mapping):
+        raise ReplayContractError("physical recording receipt must be a JSON object")
     if receipt.get("mode") != "physical_follower":
         raise ReplayContractError("recording is not a physical-follower command trace")
     samples_sha256 = sha256_file(samples_path)
     if samples_sha256 != receipt.get("samples_sha256"):
         raise ReplayContractError("physical recording samples do not match receipt")
-    samples = [
-        json.loads(line)
-        for line in samples_path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
-    ]
+    try:
+        samples = [
+            json.loads(line)
+            for line in samples_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+    except json.JSONDecodeError as error:
+        raise ReplayContractError(
+            f"physical recording contains malformed JSONL: {error}"
+        ) from error
     if not samples:
         raise ReplayContractError("physical recording is empty")
+    if receipt.get("sample_count") is not None and receipt.get("sample_count") != len(
+        samples
+    ):
+        raise ReplayContractError("physical recording sample_count does not match payload")
     expected_joint_names = tuple(config["bindings"]["joint_names"])
     if expected_joint_names != tuple(f"left_{name}" for name in ROBOT_JOINTS):
         raise ReplayContractError(
             "physical recording adapter only supports the current left SO-101 binding"
         )
-    model = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT).compile()
-    gripper_actuator = model.actuator("left_gripper").id
-    gripper_bounds = model.actuator_ctrlrange[gripper_actuator]
+    transform = _validated_physical_transform(config)
+    if transform is None:
+        raise ReplayContractError(
+            "physical recording requires an explicit hash-bound joint transform"
+        )
+    if tuple(str(name) for name in transform["source_joint_names"]) != tuple(
+        ROBOT_JOINTS
+    ):
+        raise ReplayContractError(
+            "physical source joint identity/order must match the recorded SO-101 schema"
+        )
     commands: list[np.ndarray] = []
     measured: list[dict[str, Any]] = []
     for index, sample in enumerate(samples):
+        if not isinstance(sample, Mapping):
+            raise ReplayContractError(f"physical sample {index} must be a JSON object")
         schema = sample.get("schema_version")
         if schema not in {None, PHYSICAL_SAMPLE_SCHEMA}:
             raise ReplayContractError(
                 f"physical sample {index} uses unsupported schema {schema}"
             )
-        command = physical_values_to_sim(
-            sample.get("follower_command_degrees"), gripper_bounds
+        command = physical_values_through_transform(
+            sample.get("follower_command_degrees"),
+            transform,
+            field=f"physical sample {index} follower_command_degrees",
         )
-        actual = physical_values_to_sim(
-            sample.get("follower_actual_position_degrees"), gripper_bounds
+        actual = physical_values_through_transform(
+            sample.get("follower_actual_position_degrees"),
+            transform,
+            field=f"physical sample {index} follower_actual_position_degrees",
         )
         commands.append(command)
         measured.append(
@@ -415,6 +747,42 @@ def _load_physical_recording(
         ),
     )
     episode_id = str(receipt.get("recording_id") or directory.name)
+    if not episode_id.strip():
+        raise ReplayContractError("physical receipt recording_id is required")
+    receipt_sha256 = sha256_file(receipt_path)
+    if source_provenance is not None:
+        expected_receipt = source_provenance.get("recording_receipt") or {}
+        expected_samples = source_provenance.get("samples") or {}
+        if (
+            expected_receipt.get("sha256") != receipt_sha256
+            or expected_samples.get("sha256") != samples_sha256
+        ):
+            raise ReplayContractError(
+                "physical catalog/receipt/sample provenance chain does not match payload"
+            )
+        if source_provenance.get("episode_id") != episode_id:
+            raise ReplayContractError(
+                "physical provenance recording identity does not match receipt"
+            )
+        bound_provenance = dict(source_provenance)
+        bound_provenance["chain_complete"] = bool(
+            source_provenance.get("catalog")
+            and source_provenance.get("recording_receipt")
+            and source_provenance.get("samples")
+        )
+    else:
+        bound_provenance = {
+            "episode_id": episode_id,
+            "chain_complete": False,
+            "catalog": None,
+            "recording_receipt": portable_content_identity(
+                receipt_path, receipt_sha256
+            ),
+            "samples": portable_content_identity(samples_path, samples_sha256),
+            "incomplete_reason": (
+                "direct physical replay was not supplied a catalog content binding"
+            ),
+        }
     unavailable = {
         "end_effector_position": "physical source schema has no measured end-effector trajectory",
         "end_effector_orientation": (
@@ -425,7 +793,7 @@ def _load_physical_recording(
         "contact_active": "physical source schema has no measured contact observable",
         "contact_force": "physical source schema has no measured contact-force observable",
     }
-    return RecordedEpisode(
+    episode = RecordedEpisode(
         episode_id=episode_id,
         proof_class=str(
             receipt.get("proof_class")
@@ -440,21 +808,48 @@ def _load_physical_recording(
         original_timestamps=original_timestamps,
         commands=np.asarray(commands, dtype=np.float64),
         measured=tuple(measured),
+        initial_object_state={
+            "status": "unavailable",
+            "reason": (
+                "physical source schema has no measured object body/free-joint pose binding"
+            ),
+        },
         unavailable_observables=unavailable,
         source_path=samples_path,
         source_sha256=samples_sha256,
         source_schema_version=PHYSICAL_SAMPLE_SCHEMA,
+        source_provenance=bound_provenance,
+        joint_transform={
+            "schema_version": transform["schema_version"],
+            "transform_id": transform.get("transform_id"),
+            "sha256": canonical_json_sha256(transform),
+            "calibration_approved": transform["calibration_approved"],
+        },
     )
+    model, _ = _compile_model(config, base_directory=None)
+    ids = _binding_ids(model, episode, config)
+    _require_episode_joint_limits(model, ids, episode)
+    return episode
 
 
 def load_recorded_episode(
     path: Path,
     config: Mapping[str, Any],
+    *,
+    source_provenance: Mapping[str, Any] | None = None,
 ) -> RecordedEpisode:
     path = path.resolve()
     validate_sysid_config(config)
     if path.is_dir():
-        return _load_physical_recording(path, config)
+        return _load_physical_recording(
+            path,
+            config,
+            source_provenance=source_provenance,
+        )
+    if source_provenance is not None:
+        raise ReplayContractError(
+            "catalog/receipt/sample provenance is only valid for physical directories"
+        )
     if not path.is_file():
         raise ReplayContractError(f"episode input does not exist: {path}")
     return _load_canonical_episode(path, config)
@@ -545,6 +940,8 @@ def _apply_parameters(
     model: mujoco.MjModel,
     config: Mapping[str, Any],
     values: Mapping[str, float],
+    *,
+    object_body_name: str | None,
 ) -> None:
     bindings = config["bindings"]
     joint_names = tuple(bindings["joint_names"])
@@ -586,7 +983,7 @@ def _apply_parameters(
                 dof_address = int(model.jnt_dofadr[joint_id])
                 model.dof_damping[dof_address] *= value
         elif target == "pawn_mass_scale":
-            pawn_body = bindings.get("pawn_body")
+            pawn_body = object_body_name
             if pawn_body:
                 body_id = mujoco.mj_name2id(
                     model, mujoco.mjtObj.mjOBJ_BODY, str(pawn_body)
@@ -594,12 +991,13 @@ def _apply_parameters(
                 if body_id < 0:
                     raise ReplayContractError(f"model is missing pawn body {pawn_body}")
                 model.body_mass[body_id] *= value
+                model.body_inertia[body_id] *= value
             elif not math.isclose(value, float(descriptor["nominal"])):
                 raise ReplayContractError(
-                    f"parameter {name} requires a configured pawn_body binding"
+                    f"parameter {name} requires an episode object-body binding"
                 )
         elif target == "pawn_friction_scale":
-            pawn_body = bindings.get("pawn_body")
+            pawn_body = object_body_name
             if pawn_body:
                 body_ids = _body_subtree_ids(model, [str(pawn_body)])
                 for geom_id in range(model.ngeom):
@@ -607,7 +1005,7 @@ def _apply_parameters(
                         model.geom_friction[geom_id] *= value
             elif not math.isclose(value, float(descriptor["nominal"])):
                 raise ReplayContractError(
-                    f"parameter {name} requires a configured pawn_body binding"
+                    f"parameter {name} requires an episode object-body binding"
                 )
         elif target == "command_latency_seconds":
             continue
@@ -674,15 +1072,43 @@ def _binding_ids(
                 "gripper_joint must be one of the replay joint bindings"
             ) from error
     pawn_body_id: int | None = None
-    if bindings.get("pawn_body"):
+    object_qpos_address: int | None = None
+    object_dof_address: int | None = None
+    object_state = episode.initial_object_state
+    object_body_name: str | None = None
+    if object_state.get("status") == "available":
+        object_body_name = str(object_state["body_name"])
+        configured_pawn = bindings.get("pawn_body")
+        if configured_pawn and str(configured_pawn) != object_body_name:
+            raise ReplayContractError(
+                "episode object body conflicts with the configured pawn_body"
+            )
         candidate = mujoco.mj_name2id(
-            model, mujoco.mjtObj.mjOBJ_BODY, str(bindings["pawn_body"])
+            model, mujoco.mjtObj.mjOBJ_BODY, object_body_name
         )
         if candidate < 0:
             raise ReplayContractError(
-                f"model is missing pawn body {bindings['pawn_body']}"
+                f"model is missing episode object body {object_body_name}"
             )
         pawn_body_id = candidate
+        free_joint_name = str(object_state["free_joint_name"])
+        free_joint_id = mujoco.mj_name2id(
+            model, mujoco.mjtObj.mjOBJ_JOINT, free_joint_name
+        )
+        if free_joint_id < 0:
+            raise ReplayContractError(
+                f"model is missing episode object free joint {free_joint_name}"
+            )
+        if model.jnt_type[free_joint_id] != mujoco.mjtJoint.mjJNT_FREE:
+            raise ReplayContractError(
+                f"episode object joint {free_joint_name} must be a free joint"
+            )
+        if int(model.jnt_bodyid[free_joint_id]) != pawn_body_id:
+            raise ReplayContractError(
+                "episode object free joint does not belong to the named object body"
+            )
+        object_qpos_address = int(model.jnt_qposadr[free_joint_id])
+        object_dof_address = int(model.jnt_dofadr[free_joint_id])
     contact_body_sets: tuple[set[int], set[int]] | None = None
     contact_groups = bindings.get("contact_body_groups")
     if contact_groups:
@@ -693,10 +1119,23 @@ def _binding_ids(
         ):
             raise ReplayContractError("contact_body_groups must contain two lists")
         if contact_groups[0] and contact_groups[1]:
-            contact_body_sets = (
-                _body_subtree_ids(model, contact_groups[0]),
-                _body_subtree_ids(model, contact_groups[1]),
-            )
+            resolved_groups: list[list[str]] = []
+            for group in contact_groups:
+                resolved: list[str] = []
+                for name in group:
+                    if name == "$episode_object":
+                        if object_body_name is None:
+                            resolved = []
+                            break
+                        resolved.append(object_body_name)
+                    else:
+                        resolved.append(str(name))
+                resolved_groups.append(resolved)
+            if all(resolved_groups):
+                contact_body_sets = (
+                    _body_subtree_ids(model, resolved_groups[0]),
+                    _body_subtree_ids(model, resolved_groups[1]),
+                )
     return {
         "joint_ids": joint_ids,
         "qpos_addresses": np.asarray(qpos_addresses, dtype=np.int64),
@@ -705,21 +1144,159 @@ def _binding_ids(
         "site_id": site_id,
         "gripper_index": gripper_index,
         "pawn_body_id": pawn_body_id,
+        "object_qpos_address": object_qpos_address,
+        "object_dof_address": object_dof_address,
         "contact_body_sets": contact_body_sets,
     }
 
 
-def _clip_controls(
+def _series_limit_report(
+    values: np.ndarray,
+    lower: np.ndarray,
+    upper: np.ndarray,
+    joint_names: Sequence[str],
+) -> dict[str, Any]:
+    array = np.asarray(values, dtype=np.float64)
+    if array.ndim == 1:
+        array = array.reshape(1, -1)
+    below = np.maximum(lower - array, 0.0)
+    above = np.maximum(array - upper, 0.0)
+    exceedance = np.maximum(below, above)
+    violations = exceedance > 1e-12
+    return {
+        "row_count": int(array.shape[0]),
+        "violating_row_count": int(np.count_nonzero(np.any(violations, axis=1))),
+        "violating_joint_value_count": int(np.count_nonzero(violations)),
+        "maximum_exceedance": float(np.max(exceedance, initial=0.0)),
+        "per_joint": {
+            name: {
+                "lower": float(lower[index]),
+                "upper": float(upper[index]),
+                "violating_row_count": int(np.count_nonzero(violations[:, index])),
+                "maximum_exceedance": float(
+                    np.max(exceedance[:, index], initial=0.0)
+                ),
+            }
+            for index, name in enumerate(joint_names)
+        },
+    }
+
+
+def episode_joint_limit_diagnostics(
+    model: mujoco.MjModel,
+    ids: Mapping[str, Any],
+    episode: RecordedEpisode,
+) -> dict[str, Any]:
+    joint_lower: list[float] = []
+    joint_upper: list[float] = []
+    command_lower: list[float] = []
+    command_upper: list[float] = []
+    for joint_id, actuator_id in zip(
+        ids["joint_ids"], ids["actuator_ids"], strict=True
+    ):
+        if bool(model.jnt_limited[joint_id]):
+            low, high = (float(value) for value in model.jnt_range[joint_id])
+        else:
+            low, high = -math.inf, math.inf
+        joint_lower.append(low)
+        joint_upper.append(high)
+        if bool(model.actuator_ctrllimited[actuator_id]):
+            control_low, control_high = (
+                float(value) for value in model.actuator_ctrlrange[actuator_id]
+            )
+            command_lower.append(max(low, control_low))
+            command_upper.append(min(high, control_high))
+        else:
+            command_lower.append(low)
+            command_upper.append(high)
+    joint_low = np.asarray(joint_lower, dtype=np.float64)
+    joint_high = np.asarray(joint_upper, dtype=np.float64)
+    control_low = np.asarray(command_lower, dtype=np.float64)
+    control_high = np.asarray(command_upper, dtype=np.float64)
+    measured = np.asarray(
+        [sample["joint_position"] for sample in episode.measured],
+        dtype=np.float64,
+    )
+    reports = {
+        "initial_measured_state": _series_limit_report(
+            episode.initial_joint_position,
+            joint_low,
+            joint_high,
+            episode.joint_names,
+        ),
+        "measured_trajectory": _series_limit_report(
+            measured,
+            joint_low,
+            joint_high,
+            episode.joint_names,
+        ),
+        "recorded_commands": _series_limit_report(
+            episode.commands,
+            control_low,
+            control_high,
+            episode.joint_names,
+        ),
+    }
+    all_within_limits = all(
+        report["violating_joint_value_count"] == 0 for report in reports.values()
+    )
+    return {
+        "joint_names": list(episode.joint_names),
+        **reports,
+        "all_within_limits": all_within_limits,
+        "exact_replay_eligible": all_within_limits,
+    }
+
+
+def _require_episode_joint_limits(
+    model: mujoco.MjModel,
+    ids: Mapping[str, Any],
+    episode: RecordedEpisode,
+) -> dict[str, Any]:
+    diagnostics = episode_joint_limit_diagnostics(model, ids, episode)
+    if not diagnostics["all_within_limits"]:
+        raise ReplayRangeError(
+            "episode initial state, measured trajectory, or exact recorded commands "
+            "exceed simulator joint/control limits; replay refuses silent assignment or clipping",
+            diagnostics,
+        )
+    return diagnostics
+
+
+def inspect_episode_joint_limits(
+    episode: RecordedEpisode,
+    config: Mapping[str, Any],
+    *,
+    model_base_directory: Path | None = None,
+) -> dict[str, Any]:
+    model, _ = _compile_model(config, base_directory=model_base_directory)
+    ids = _binding_ids(model, episode, config)
+    return episode_joint_limit_diagnostics(model, ids, episode)
+
+
+def _require_exact_control(
     model: mujoco.MjModel,
     actuator_ids: np.ndarray,
     command: np.ndarray,
 ) -> np.ndarray:
-    result = command.copy()
+    applied = np.asarray(command, dtype=np.float64).copy()
     for local_index, actuator_id in enumerate(actuator_ids):
         if bool(model.actuator_ctrllimited[actuator_id]):
             low, high = model.actuator_ctrlrange[actuator_id]
-            result[local_index] = np.clip(result[local_index], low, high)
-    return result
+            if applied[local_index] < low - 1e-12 or applied[local_index] > high + 1e-12:
+                diagnostics = {
+                    "actuator_id": int(actuator_id),
+                    "local_joint_index": local_index,
+                    "requested": float(applied[local_index]),
+                    "lower": float(low),
+                    "upper": float(high),
+                    "would_clip": True,
+                }
+                raise ReplayRangeError(
+                    "exact replay requested a control outside actuator limits; clipping is forbidden",
+                    diagnostics,
+                )
+    return applied
 
 
 def _command_at(
@@ -788,11 +1365,17 @@ def _align_continuous(
     native_times: np.ndarray,
     values: Sequence[Any],
     target_times: np.ndarray,
+    *,
+    semantic: str,
 ) -> np.ndarray:
     array = np.asarray(values, dtype=np.float64)
     if array.ndim == 1:
         return np.interp(target_times, native_times, array)
-    if array.shape[1] == 4:
+    if semantic == "quaternion_wxyz":
+        if array.ndim != 2 or array.shape[1] != 4:
+            raise ReplayContractError(
+                "quaternion alignment requires an explicit Nx4 quaternion series"
+            )
         array = array.copy()
         for index in range(1, len(array)):
             if float(np.dot(array[index - 1], array[index])) < 0.0:
@@ -803,7 +1386,7 @@ def _align_continuous(
             for column in range(array.shape[1])
         ]
     )
-    if array.shape[1] == 4:
+    if semantic == "quaternion_wxyz":
         norms = np.linalg.norm(aligned, axis=1, keepdims=True)
         aligned = aligned / np.maximum(norms, np.finfo(np.float64).eps)
     return aligned
@@ -834,13 +1417,47 @@ def simulate_and_align(
         config,
         base_directory=model_base_directory,
     )
-    _apply_parameters(model, config, parameters)
+    object_body_name = (
+        str(episode.initial_object_state["body_name"])
+        if episode.initial_object_state.get("status") == "available"
+        else None
+    )
+    _apply_parameters(
+        model,
+        config,
+        parameters,
+        object_body_name=object_body_name,
+    )
     ids = _binding_ids(model, episode, config)
+    joint_limit_diagnostics = _require_episode_joint_limits(model, ids, episode)
+    if episode.joint_transform is not None and not bool(
+        episode.joint_transform.get("calibration_approved")
+    ):
+        raise ReplayContractError(
+            "physical joint transform is not calibration-approved; exact replay and fitting "
+            "remain blocked even when individual rows are range-feasible"
+        )
     data = mujoco.MjData(model)
     if current_scene:
         initialize_robot_poses(model, data)
     else:
         mujoco.mj_resetData(model, data)
+    object_qpos_address = ids["object_qpos_address"]
+    object_dof_address = ids["object_dof_address"]
+    if object_qpos_address is not None and object_dof_address is not None:
+        object_state = episode.initial_object_state
+        data.qpos[object_qpos_address : object_qpos_address + 3] = object_state[
+            "position"
+        ]
+        data.qpos[object_qpos_address + 3 : object_qpos_address + 7] = object_state[
+            "quaternion_wxyz"
+        ]
+        data.qvel[object_dof_address : object_dof_address + 3] = object_state[
+            "linear_velocity"
+        ]
+        data.qvel[object_dof_address + 3 : object_dof_address + 6] = object_state[
+            "angular_velocity"
+        ]
     data.qpos[ids["qpos_addresses"]] = episode.initial_joint_position
     data.qvel[ids["dof_addresses"]] = episode.initial_joint_velocity
     base_latency = float(config["replay"]["base_latency_seconds"])
@@ -862,14 +1479,17 @@ def simulate_and_align(
         latency_seconds=latency_seconds,
         interpolation=interpolation,
     )
-    data.ctrl[ids["actuator_ids"]] = _clip_controls(
+    initial_applied = _require_exact_control(
         model, ids["actuator_ids"], initial_command
     )
+    data.ctrl[ids["actuator_ids"]] = initial_applied
     mujoco.mj_forward(model, data)
     native_times: list[float] = [float(data.time)]
     native_rows: list[dict[str, Any]] = [
         _simulation_observables(model, data, ids)
     ]
+    native_requested_controls: list[np.ndarray] = [initial_command.copy()]
+    native_applied_controls: list[np.ndarray] = [initial_applied.copy()]
     maximum_steps = int(math.ceil(episode.duration_seconds / model.opt.timestep)) + 2
     for _ in range(maximum_steps):
         if data.time + np.finfo(np.float64).eps >= episode.duration_seconds:
@@ -880,29 +1500,50 @@ def simulate_and_align(
             latency_seconds=latency_seconds,
             interpolation=interpolation,
         )
-        data.ctrl[ids["actuator_ids"]] = _clip_controls(
-            model, ids["actuator_ids"], command
-        )
+        applied = _require_exact_control(model, ids["actuator_ids"], command)
+        data.ctrl[ids["actuator_ids"]] = applied
         mujoco.mj_step(model, data)
         native_times.append(float(data.time))
         native_rows.append(_simulation_observables(model, data, ids))
+        native_requested_controls.append(command.copy())
+        native_applied_controls.append(applied.copy())
     if native_times[-1] + 1e-12 < episode.duration_seconds:
         raise ReplayContractError("bounded replay did not reach the final timestamp")
     native_time_array = np.asarray(native_times, dtype=np.float64)
     simulated: dict[str, np.ndarray] = {}
-    for observable, field in OBSERVABLE_FIELDS.items():
+    for observable, metadata in OBSERVABLE_METADATA.items():
+        field = str(metadata["field"])
         values = [row.get(field) for row in native_rows]
         if any(value is None for value in values):
             continue
-        if observable == "contact_active":
+        if metadata["alignment"] == "discrete":
             simulated[observable] = _align_discrete(
                 native_time_array, values, episode.timestamps
             ).astype(bool)
         else:
             simulated[observable] = _align_continuous(
-                native_time_array, values, episode.timestamps
+                native_time_array,
+                values,
+                episode.timestamps,
+                semantic=str(metadata["semantic"]),
             )
-    synchronized_rows = _synchronized_rows(episode, simulated)
+    requested_controls = _align_discrete(
+        native_time_array,
+        native_requested_controls,
+        episode.timestamps,
+    ).astype(np.float64)
+    applied_controls = _align_discrete(
+        native_time_array,
+        native_applied_controls,
+        episode.timestamps,
+    )
+    applied_controls = applied_controls.astype(np.float64)
+    synchronized_rows = _synchronized_rows(
+        episode,
+        simulated,
+        requested_controls=requested_controls,
+        applied_controls=applied_controls,
+    )
     return {
         "episode": episode,
         "parameters": parameters,
@@ -916,6 +1557,18 @@ def simulate_and_align(
             "native_sample_count": len(native_times),
         },
         "simulated": simulated,
+        "control_diagnostics": {
+            "exact_command_replay": True,
+            "requested_equals_applied": True,
+            "clipping_performed": False,
+            "clipped_row_count": 0,
+            "clipped_joint_value_count": 0,
+            "maximum_requested_applied_delta": 0.0,
+            "per_joint_clipped_row_count": {
+                name: 0 for name in episode.joint_names
+            },
+            "joint_limit_validation": joint_limit_diagnostics,
+        },
         "synchronized_rows": synchronized_rows,
     }
 
@@ -923,6 +1576,9 @@ def simulate_and_align(
 def _synchronized_rows(
     episode: RecordedEpisode,
     simulated: Mapping[str, np.ndarray],
+    *,
+    requested_controls: np.ndarray,
+    applied_controls: np.ndarray,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     available = episode.available_observables()
@@ -966,6 +1622,13 @@ def _synchronized_rows(
                 "timestamp_seconds": float(time_seconds),
                 "source_timestamp_seconds": float(original_time),
                 "command_joint_position": command.astype(float).tolist(),
+                "requested_control_joint_position": requested_controls[index]
+                .astype(float)
+                .tolist(),
+                "applied_control_joint_position": applied_controls[index]
+                .astype(float)
+                .tolist(),
+                "control_clipped": False,
                 "measured": measured,
                 "simulated": simulated_row,
                 "sim_minus_measured": errors,
@@ -1204,20 +1867,36 @@ def write_replay_receipt(
         "schema_version": REPLAY_RECEIPT_SCHEMA,
         "episode_id": episode.episode_id,
         "source": {
-            "path": str(episode.source_path),
-            "sha256": episode.source_sha256,
+            "identity": portable_content_identity(
+                episode.source_path, episode.source_sha256
+            ),
             "schema_version": episode.source_schema_version,
             "proof_class": episode.proof_class,
             "proof_class_category": episode.proof_class_category,
+            "provenance": episode.source_provenance,
+            "full_physical_provenance_bound": bool(
+                episode.proof_class_category != "physical_read_only"
+                or episode.source_provenance.get("chain_complete")
+            ),
         },
         "config": {
             "config_id": config["config_id"],
             "schema_version": config["schema_version"],
-            "path": config.get("_config_path"),
             "sha256": config.get("_config_sha256"),
+            "identity": (
+                portable_content_identity(
+                    Path(str(config["_config_path"])),
+                    str(config["_config_sha256"]),
+                )
+                if config.get("_config_path") and config.get("_config_sha256")
+                else {"kind": "embedded_runtime_config"}
+            ),
         },
+        "initial_object_state": episode.initial_object_state,
+        "joint_transform": episode.joint_transform,
         "parameters": replay["parameters"],
         "timing": replay["timing"],
+        "control_diagnostics": replay["control_diagnostics"],
         "sample_count": int(episode.timestamps.size),
         "duration_seconds": episode.duration_seconds,
         "observable_availability": availability,
@@ -1245,7 +1924,7 @@ def write_replay_receipt(
     }
     receipt_path = output_directory / "replay_receipt.json"
     _atomic_json(receipt_path, receipt)
-    receipt["receipt_path"] = str(receipt_path)
+    receipt["receipt_path"] = receipt_path.name
     receipt["receipt_sha256"] = sha256_file(receipt_path)
     return receipt
 

@@ -11,6 +11,7 @@
     "proof_class_category",
     "joint_names",
     "initial_state",
+    "initial_object_state",
     "samples"
   ],
   "properties": {
@@ -70,6 +71,82 @@
           "items": {"type": "number"}
         }
       }
+    },
+    "initial_object_state": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "reason"],
+          "properties": {
+            "status": {"const": "unavailable"},
+            "reason": {"type": "string", "minLength": 1}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "body_name",
+            "free_joint_name",
+            "frame",
+            "position_unit",
+            "orientation_convention",
+            "linear_velocity_unit",
+            "angular_velocity_unit",
+            "position",
+            "quaternion_wxyz",
+            "linear_velocity",
+            "angular_velocity",
+            "measurement_provenance"
+          ],
+          "properties": {
+            "status": {"const": "available"},
+            "body_name": {"type": "string", "minLength": 1},
+            "free_joint_name": {"type": "string", "minLength": 1},
+            "frame": {"const": "world"},
+            "position_unit": {"const": "m"},
+            "orientation_convention": {"const": "wxyz_unit_quaternion"},
+            "linear_velocity_unit": {"const": "m/s"},
+            "angular_velocity_unit": {"const": "rad/s"},
+            "position": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": {"type": "number"}
+            },
+            "quaternion_wxyz": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {"type": "number"}
+            },
+            "linear_velocity": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": {"type": "number"}
+            },
+            "angular_velocity": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": {"type": "number"}
+            },
+            "measurement_provenance": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["source_id", "measurement_method", "sha256"],
+              "properties": {
+                "source_id": {"type": "string", "minLength": 1},
+                "measurement_method": {"type": "string", "minLength": 1},
+                "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+              }
+            }
+          }
+        }
+      ]
     },
     "unavailable_observables": {
       "type": "object",

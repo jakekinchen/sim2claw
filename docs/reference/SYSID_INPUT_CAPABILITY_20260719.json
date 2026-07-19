@@ -1,4 +1,31 @@
 {
+  "aggregate_joint_limit_validation": {
+    "all_audited_values_within_limits": true,
+    "initial_measured_state": {
+      "audited_episode_count": 0,
+      "maximum_exceedance": 0.0,
+      "per_joint": {},
+      "row_count": 0,
+      "violating_joint_value_count": 0,
+      "violating_row_count": 0
+    },
+    "measured_trajectory": {
+      "audited_episode_count": 0,
+      "maximum_exceedance": 0.0,
+      "per_joint": {},
+      "row_count": 0,
+      "violating_joint_value_count": 0,
+      "violating_row_count": 0
+    },
+    "recorded_commands": {
+      "audited_episode_count": 0,
+      "maximum_exceedance": 0.0,
+      "per_joint": {},
+      "row_count": 0,
+      "violating_joint_value_count": 0,
+      "violating_row_count": 0
+    }
+  },
   "aggregate_observable_status": {
     "contact_active": "unavailable",
     "contact_force": "unavailable",
@@ -9,10 +36,14 @@
     "pawn_position": "unavailable"
   },
   "calibration_ready": false,
-  "calibration_ready_reason": "physical source schema lacks measured end-effector, pawn, and contact trajectories required by the configured geometry and contact/object stages",
+  "calibration_ready_reason": "joint/timing requires strict sample semantics, a reviewed hash-bound transform, and all initial/measured/command values within simulator limits; full calibration also lacks measured end-effector, object-pose, pawn, and contact trajectories",
   "catalog": {
     "catalog_id": "physical_pawn_moves_20260719_latest_v1",
-    "path": "configs/data/physical_pawn_move_catalog_20260719.json",
+    "identity": {
+      "kind": "repo_relative",
+      "path": "configs/data/physical_pawn_move_catalog_20260719.json",
+      "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
+    },
     "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
   },
   "claim": "missing_input_manifest_only",
@@ -23,7 +54,7 @@
     "requires_post_cherry_pick_regeneration": true,
     "verified_by_this_receipt": false
   },
-  "created_at": "2026-07-19T06:15:50.603610+00:00",
+  "created_at": "2026-07-19T07:00:41.962904+00:00",
   "current_root_catalog_integrity": {
     "all_catalog_bound_hashes_verified": false,
     "catalog_bound_asset_count": 54,
@@ -129,6 +160,9 @@
         }
       },
       "episode_id": "20260719T030059Z-a26f8400",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -136,6 +170,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -148,7 +183,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -185,6 +222,9 @@
         }
       },
       "episode_id": "20260719T032315Z-d3c3cf0b",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -192,6 +232,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -204,7 +245,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -241,6 +284,9 @@
         }
       },
       "episode_id": "20260719T033023Z-fd7005f3",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -248,6 +294,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -260,7 +307,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -297,6 +346,9 @@
         }
       },
       "episode_id": "20260719T032400Z-052d5137",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -304,6 +356,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -316,7 +369,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -353,6 +408,9 @@
         }
       },
       "episode_id": "20260719T035317Z-2a332ab7",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -360,6 +418,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -372,7 +431,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -409,6 +470,9 @@
         }
       },
       "episode_id": "20260719T030206Z-af661460",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -416,6 +480,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -428,7 +493,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -465,6 +532,9 @@
         }
       },
       "episode_id": "20260719T031324Z-bf91502b",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -472,6 +542,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -484,7 +555,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -521,6 +594,9 @@
         }
       },
       "episode_id": "20260719T031518Z-34bff0dd",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -528,6 +604,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -540,7 +617,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -577,6 +656,9 @@
         }
       },
       "episode_id": "20260719T032440Z-f728a18c",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -584,6 +666,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -596,7 +679,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -633,6 +718,9 @@
         }
       },
       "episode_id": "20260719T035413Z-5ab5603f",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -640,6 +728,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -652,7 +741,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -689,6 +780,9 @@
         }
       },
       "episode_id": "20260719T032935Z-66894edc",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -696,6 +790,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -708,7 +803,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -745,6 +842,9 @@
         }
       },
       "episode_id": "20260719T032531Z-06be393c",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -752,6 +852,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -764,7 +865,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -801,6 +904,9 @@
         }
       },
       "episode_id": "20260719T032853Z-1ee203e8",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -808,6 +914,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -820,7 +927,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -857,6 +966,9 @@
         }
       },
       "episode_id": "20260719T031615Z-0e058ca2",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -864,6 +976,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -876,7 +989,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -913,6 +1028,9 @@
         }
       },
       "episode_id": "20260719T031715Z-61ebb199",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -920,6 +1038,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -932,7 +1051,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -969,6 +1090,9 @@
         }
       },
       "episode_id": "20260719T032620Z-0c7e3d86",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -976,6 +1100,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -988,7 +1113,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -1025,6 +1152,9 @@
         }
       },
       "episode_id": "20260719T032810Z-9e623c5e",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -1032,6 +1162,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -1044,7 +1175,9 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     },
     {
       "asset_availability": {
@@ -1081,6 +1214,9 @@
         }
       },
       "episode_id": "20260719T031813Z-b147b429",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
       "measured_observables": {
         "command_joint_position": "unverified_payload_missing_or_invalid",
         "contact_active": "unavailable_not_recorded",
@@ -1088,6 +1224,7 @@
         "end_effector_orientation": "unavailable_not_recorded",
         "end_effector_position": "unavailable_not_recorded",
         "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
         "joint_position": "unverified_payload_missing_or_invalid",
         "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
         "pawn_position": "unavailable_no_reviewed_metric_pose_source"
@@ -1100,9 +1237,12 @@
       "required_assets": {
         "recording_receipt": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/samples.jsonl"
-      }
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
     }
   ],
+  "full_provenance_chain_episode_count": 0,
   "geometry_stage_ready": false,
   "input_report_exit_semantics": "the CLI returns zero only when every catalog episode is integrity-verified and ready for joint/timing replay; this never implies full calibration readiness",
   "inspection_scope": {
@@ -1112,8 +1252,9 @@
     "provided_root_inspected": true,
     "root_at_generation": "/Users/kelly/.codex/worktrees/5307ce13-4971-4a6c-abf3-abd28e179148/sim2claw",
     "root_path_semantics": "runtime_local_not_portable_project_contract",
-    "scope_source": "runtime_auto_detection"
+    "scope_source": "explicit_validated_argument"
   },
+  "joint_range_valid_episode_count": 0,
   "joint_replay_ready_episode_count": 0,
   "joint_timing_replay_ready": false,
   "metadata_conflict_episode_count": 11,
@@ -1158,15 +1299,39 @@
     "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/recording_receipt.json",
     "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/samples.jsonl"
   ],
+  "physical_joint_transform": {
+    "calibration_approved": false,
+    "exact_formula": "sim = sign * source * scale + zero_offset",
+    "joint_identity_and_order": [
+      "left_shoulder_pan",
+      "left_shoulder_lift",
+      "left_elbow_flex",
+      "left_wrist_flex",
+      "left_wrist_roll",
+      "left_gripper"
+    ],
+    "review_status": "provisional_range_audit_blocked",
+    "schema_version": "sim2claw.physical_joint_transform.v1",
+    "sha256": "72812016bfa9dba2ba97fe448724394ad290a2b22458177bcbdec95aae0689e6",
+    "transform_id": "so101_physical_degrees_to_current_scene_provisional_v1"
+  },
   "physical_motion": false,
   "post_cherry_pick_canonical_commands": [
     "cd /Users/kelly/Developer/sim2claw",
     "uv sync --frozen",
-    "uv run --frozen sim2claw sysid-input-report --catalog configs/data/physical_pawn_move_catalog_20260719.json --repo-root /Users/kelly/Developer/sim2claw --inspection-scope canonical_checkout --output runs/sysid/physical_pawn_input_capability_post_cherry_pick.json",
-    "uv run --frozen sim2claw sysid-fit --split configs/sysid/physical_pawn_sysid_split_v1.json --config configs/sysid/recorded_action_sysid_v1.json --output runs/sysid/physical_pawn_joint_timing_v1 --backend auto"
+    "uv run --frozen sim2claw sysid-input-report --catalog configs/data/physical_pawn_move_catalog_20260719.json --config configs/sysid/recorded_action_sysid_v1.json --repo-root /Users/kelly/Developer/sim2claw --inspection-scope canonical_checkout --output runs/sysid/physical_pawn_input_capability_post_cherry_pick.json"
   ],
-  "post_cherry_pick_fit_exit_semantics": "the fit receipt is authoritative; the CLI remains nonzero unless the frozen held-out gate and every configured stage support a full calibration-success claim",
+  "post_cherry_pick_fit_exit_semantics": "do not run sysid-fit while joint_timing_replay_ready is false; the current provisional transform and any range violations are calibration blockers",
   "schema_version": "sim2claw.sysid_input_capability.v1",
+  "strict_sample_semantics_valid_episode_count": 0,
+  "sysid_config": {
+    "config_id": "so101_recorded_action_sysid_v1",
+    "identity": {
+      "kind": "content_addressed",
+      "sha256": "4ed0a79ee165c4325784dafb9b578955a309fa00b7c4ef2b93a871bb53954585"
+    },
+    "sha256": "4ed0a79ee165c4325784dafb9b578955a309fa00b7c4ef2b93a871bb53954585"
+  },
   "timing_control_fit_ready": false,
   "video_used_for_metric_observables": false
 }

@@ -28,10 +28,13 @@ from .paths import REPO_ROOT
 from .recorded_replay import (
     RecordedEpisode,
     ReplayContractError,
+    ReplayRangeError,
     calculate_metrics,
     load_recorded_episode,
     load_sysid_config,
+    inspect_episode_joint_limits,
     nominal_parameter_values,
+    portable_content_identity,
     replay_residual_blocks,
     sha256_file,
     simulate_and_align,
@@ -236,30 +239,41 @@ def exercise_official_sysid() -> dict[str, Any]:
     }
 
 
+def _is_sha256(value: Any) -> bool:
+    text = str(value or "")
+    return len(text) == 64 and all(character in "0123456789abcdef" for character in text)
+
+
+def _square_column(value: Any) -> str | None:
+    square = str(value or "").lower()
+    if (
+        len(square) == 2
+        and square[0] in "abcdefgh"
+        and square[1] in "12345678"
+    ):
+        return square[0]
+    return None
+
+
 def _catalog_episode_entry(episode: Mapping[str, Any]) -> dict[str, Any]:
     source_square = str(episode.get("source_square") or "").lower()
     destination_square = str(episode.get("destination_square") or "").lower()
-    source_column = (
-        source_square[0]
-        if len(source_square) == 2
-        and source_square[0] in "abcdefgh"
-        and source_square[1] in "12345678"
-        else None
-    )
-    destination_column = (
-        destination_square[0]
-        if len(destination_square) == 2
-        and destination_square[0] in "abcdefgh"
-        and destination_square[1] in "12345678"
-        else None
-    )
+    source_column = _square_column(source_square)
+    destination_column = _square_column(destination_square)
     source_path = str(
         episode.get("source_path")
         or Path(str(episode["assets"]["samples"])).parent
     )
+    assets = episode.get("assets") or {}
     return {
         "episode_id": str(episode["recording_id"]),
+        "source_kind": (
+            "physical_recording" if assets.get("receipt") else "canonical_episode"
+        ),
         "source_path": source_path,
+        "source_receipt_path": assets.get("receipt"),
+        "source_receipt_sha256": episode.get("receipt_sha256"),
+        "source_samples_path": assets.get("samples"),
         "source_samples_sha256": str(episode["samples_sha256"]),
         "source_square": source_square or None,
         "destination_square": destination_square or None,
@@ -267,12 +281,82 @@ def _catalog_episode_entry(episode: Mapping[str, Any]) -> dict[str, Any]:
         "destination_column": destination_column,
         "proof_class": str(episode.get("proof_class") or "unknown"),
         "metadata_status": episode.get("metadata_status"),
+        "column_adjudication": copy.deepcopy(episode.get("column_adjudication")),
     }
 
 
 def _hash_fraction(seed: str, episode_id: str) -> float:
     digest = hashlib.sha256(f"{seed}:{episode_id}".encode("utf-8")).digest()
     return int.from_bytes(digest, "big") / float(2**256)
+
+
+_SPLIT_DIGEST_FIELDS = (
+    "schema_version",
+    "split_id",
+    "frozen",
+    "owner",
+    "unit",
+    "strategy",
+    "held_out_column",
+    "seed",
+    "holdout_fraction",
+    "source_catalog",
+    "sysid_config",
+    "split_counts",
+    "episodes",
+    "leakage_guards",
+    "created_at",
+)
+
+
+def _split_assignment_digest(manifest: Mapping[str, Any]) -> str:
+    payload = {
+        field: copy.deepcopy(manifest.get(field)) for field in _SPLIT_DIGEST_FIELDS
+    }
+    encoded = json.dumps(
+        payload,
+        separators=(",", ":"),
+        sort_keys=True,
+        ensure_ascii=True,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _validate_column_adjudication(entry: Mapping[str, Any]) -> None:
+    if entry.get("metadata_status") != "reviewed_adjudicated":
+        raise SystemIdentificationError(
+            "leave-one-column-out requires reviewed column adjudication lineage "
+            f"and metadata_status=reviewed_adjudicated for episode {entry.get('episode_id')}"
+        )
+    adjudication = entry.get("column_adjudication")
+    if not isinstance(adjudication, Mapping):
+        raise SystemIdentificationError(
+            "leave-one-column-out requires reviewed column adjudication lineage "
+            f"for episode {entry.get('episode_id')}"
+        )
+    required_text = ("decision_id", "reviewer", "reviewed_at")
+    if adjudication.get("status") != "reviewed" or any(
+        not str(adjudication.get(field) or "").strip() for field in required_text
+    ):
+        raise SystemIdentificationError(
+            "leave-one-column-out column adjudication must be reviewed with "
+            f"decision lineage for episode {entry.get('episode_id')}"
+        )
+    if not _is_sha256(adjudication.get("evidence_sha256")):
+        raise SystemIdentificationError(
+            "leave-one-column-out column adjudication requires a bound evidence hash "
+            f"for episode {entry.get('episode_id')}"
+        )
+    if (
+        str(adjudication.get("source_square") or "").lower()
+        != str(entry.get("source_square") or "").lower()
+        or str(adjudication.get("destination_square") or "").lower()
+        != str(entry.get("destination_square") or "").lower()
+    ):
+        raise SystemIdentificationError(
+            "leave-one-column-out adjudicated squares do not match the frozen episode "
+            f"for {entry.get('episode_id')}"
+        )
 
 
 def freeze_episode_split(
@@ -313,6 +397,8 @@ def freeze_episode_split(
                 "leave-one-column-out requires source and destination column "
                 f"metadata for every episode: {incomplete}"
             )
+        for entry in entries:
+            _validate_column_adjudication(entry)
     for entry in entries:
         if strategy == "deterministic_hash":
             fraction = _hash_fraction(
@@ -373,6 +459,7 @@ def freeze_episode_split(
         },
         "created_at": datetime.now(UTC).isoformat(),
     }
+    manifest["assignment_digest_sha256"] = _split_assignment_digest(manifest)
     validate_split_manifest(manifest)
     _atomic_json(output_path.resolve(), manifest)
     result = copy.deepcopy(manifest)
@@ -388,9 +475,49 @@ def validate_split_manifest(manifest: Mapping[str, Any]) -> None:
         raise SystemIdentificationError("split must be frozen at whole-episode scope")
     if not str(manifest.get("owner") or "").strip():
         raise SystemIdentificationError("split owner is required")
+    strategy = str(manifest.get("strategy") or "")
+    if strategy not in {"deterministic_hash", "leave_one_column_out"}:
+        raise SystemIdentificationError("split strategy is unsupported")
+    seed = str(manifest.get("seed") or "")
+    if not seed:
+        raise SystemIdentificationError("split seed is required")
+    if strategy == "deterministic_hash":
+        if manifest.get("held_out_column") is not None:
+            raise SystemIdentificationError(
+                "deterministic split cannot declare a held-out column"
+            )
+        try:
+            holdout_fraction = float(manifest["holdout_fraction"])
+        except (KeyError, TypeError, ValueError) as error:
+            raise SystemIdentificationError(
+                "deterministic split holdout_fraction is required"
+            ) from error
+        if not math.isfinite(holdout_fraction) or not 0.0 < holdout_fraction < 1.0:
+            raise SystemIdentificationError(
+                "deterministic split holdout_fraction must be between zero and one"
+            )
+    else:
+        held_out_column = str(manifest.get("held_out_column") or "").lower()
+        if held_out_column not in tuple("abcdefgh"):
+            raise SystemIdentificationError(
+                "leave-one-column-out requires a frozen held_out_column"
+            )
+        if manifest.get("holdout_fraction") is not None:
+            raise SystemIdentificationError(
+                "leave-one-column-out cannot declare holdout_fraction"
+            )
+    for binding_name in ("source_catalog", "sysid_config"):
+        binding = manifest.get(binding_name)
+        if not isinstance(binding, Mapping) or not _is_sha256(binding.get("sha256")):
+            raise SystemIdentificationError(
+                f"split {binding_name} content binding is incomplete"
+            )
     entries = manifest.get("episodes")
     if not isinstance(entries, list) or not entries:
         raise SystemIdentificationError("split requires episode entries")
+    episode_ids = [str(entry.get("episode_id") or "") for entry in entries]
+    if episode_ids != sorted(episode_ids):
+        raise SystemIdentificationError("split episodes must remain sorted by episode_id")
     seen_ids: dict[str, str] = {}
     seen_hashes: dict[str, str] = {}
     counts = {"train": 0, "held_out": 0}
@@ -400,12 +527,30 @@ def validate_split_manifest(manifest: Mapping[str, Any]) -> None:
             raise SystemIdentificationError("episode split must be train or held_out")
         episode_id = str(entry.get("episode_id") or "")
         source_hash = str(entry.get("source_samples_sha256") or "")
-        if (
-            not episode_id
-            or len(source_hash) != 64
-            or any(character not in "0123456789abcdef" for character in source_hash)
-        ):
+        if not episode_id or not _is_sha256(source_hash):
             raise SystemIdentificationError("split episode identity/hash is incomplete")
+        source_kind = entry.get("source_kind")
+        if source_kind not in {"physical_recording", "canonical_episode"}:
+            raise SystemIdentificationError(
+                f"split episode {episode_id} source_kind is required"
+            )
+        if source_kind == "physical_recording":
+            portable_paths = (
+                entry.get("source_path"),
+                entry.get("source_receipt_path"),
+                entry.get("source_samples_path"),
+            )
+            if any(
+                not str(path or "").strip() or Path(str(path)).is_absolute()
+                for path in portable_paths
+            ) or not _is_sha256(entry.get("source_receipt_sha256")):
+                raise SystemIdentificationError(
+                    f"physical episode {episode_id} requires portable catalog/receipt/sample provenance"
+                )
+            if entry.get("source_samples_sha256") != source_hash:
+                raise SystemIdentificationError(
+                    f"physical episode {episode_id} sample provenance hash drifted"
+                )
         if episode_id in seen_ids:
             raise SystemIdentificationError(
                 f"episode leakage: {episode_id} appears more than once"
@@ -417,13 +562,65 @@ def validate_split_manifest(manifest: Mapping[str, Any]) -> None:
         seen_ids[episode_id] = split
         seen_hashes[source_hash] = split
         counts[split] += 1
+        source_square = entry.get("source_square")
+        destination_square = entry.get("destination_square")
+        expected_source_column = _square_column(source_square)
+        expected_destination_column = _square_column(destination_square)
+        if entry.get("source_column") != expected_source_column or entry.get(
+            "destination_column"
+        ) != expected_destination_column:
+            raise SystemIdentificationError(
+                f"episode {episode_id} column fields drifted from its frozen squares"
+            )
+        if strategy == "deterministic_hash":
+            expected_fraction = _hash_fraction(seed, episode_id)
+            declared_fraction = entry.get("assignment_fraction")
+            if (
+                isinstance(declared_fraction, bool)
+                or not isinstance(declared_fraction, (int, float))
+                or float(declared_fraction) != expected_fraction
+            ):
+                raise SystemIdentificationError(
+                    f"episode {episode_id} deterministic assignment_fraction drifted"
+                )
+            expected_split = (
+                "held_out" if expected_fraction < holdout_fraction else "train"
+            )
+        else:
+            if expected_source_column is None or expected_destination_column is None:
+                raise SystemIdentificationError(
+                    "leave-one-column-out requires valid source and destination squares "
+                    f"for episode {episode_id}"
+                )
+            _validate_column_adjudication(entry)
+            if entry.get("assignment_fraction") is not None:
+                raise SystemIdentificationError(
+                    "leave-one-column-out assignment_fraction must remain null"
+                )
+            expected_split = (
+                "held_out"
+                if str(manifest["held_out_column"]) in {
+                    expected_source_column,
+                    expected_destination_column,
+                }
+                else "train"
+            )
+        if split != expected_split:
+            raise SystemIdentificationError(
+                f"episode {episode_id} assignment drifted from the frozen {strategy} algorithm"
+            )
     if not all(counts.values()):
         raise SystemIdentificationError(
             f"split requires non-empty train and held_out sets: {counts}"
         )
     declared_counts = manifest.get("split_counts")
-    if declared_counts and any(
-        int(declared_counts.get(name, -1)) != count for name, count in counts.items()
+    if not isinstance(declared_counts, Mapping) or set(declared_counts) != set(counts):
+        raise SystemIdentificationError("split_counts must declare train and held_out")
+    if any(
+        isinstance(declared_counts.get(name), bool)
+        or not isinstance(declared_counts.get(name), int)
+        or declared_counts[name] != count
+        for name, count in counts.items()
     ):
         raise SystemIdentificationError("split_counts do not match episode assignments")
     leakage_guards = manifest.get("leakage_guards") or {}
@@ -436,6 +633,12 @@ def validate_split_manifest(manifest: Mapping[str, Any]) -> None:
         )
     ):
         raise SystemIdentificationError("split leakage guards must be frozen true")
+    declared_digest = manifest.get("assignment_digest_sha256")
+    if not _is_sha256(declared_digest):
+        raise SystemIdentificationError("split assignment digest is required")
+    expected_digest = _split_assignment_digest(manifest)
+    if declared_digest != expected_digest:
+        raise SystemIdentificationError("split assignment digest drifted")
 
 
 def load_split_manifest(path: Path) -> dict[str, Any]:
@@ -447,17 +650,92 @@ def load_split_manifest(path: Path) -> dict[str, Any]:
     return manifest
 
 
+def _aggregate_joint_limit_reports(
+    episode_reports: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    sections = (
+        "initial_measured_state",
+        "measured_trajectory",
+        "recorded_commands",
+    )
+    aggregate: dict[str, Any] = {}
+    for section in sections:
+        reports = [
+            report["joint_limit_validation"][section]
+            for report in episode_reports
+            if isinstance(report.get("joint_limit_validation"), Mapping)
+            and isinstance(report["joint_limit_validation"].get(section), Mapping)
+        ]
+        per_joint_names = sorted(
+            {
+                name
+                for report in reports
+                for name in (report.get("per_joint") or {})
+            }
+        )
+        aggregate[section] = {
+            "audited_episode_count": len(reports),
+            "row_count": sum(int(report.get("row_count", 0)) for report in reports),
+            "violating_row_count": sum(
+                int(report.get("violating_row_count", 0)) for report in reports
+            ),
+            "violating_joint_value_count": sum(
+                int(report.get("violating_joint_value_count", 0))
+                for report in reports
+            ),
+            "maximum_exceedance": max(
+                (float(report.get("maximum_exceedance", 0.0)) for report in reports),
+                default=0.0,
+            ),
+            "per_joint": {
+                name: {
+                    "violating_row_count": sum(
+                        int((report.get("per_joint") or {}).get(name, {}).get(
+                            "violating_row_count", 0
+                        ))
+                        for report in reports
+                    ),
+                    "maximum_exceedance": max(
+                        (
+                            float((report.get("per_joint") or {}).get(name, {}).get(
+                                "maximum_exceedance", 0.0
+                            ))
+                            for report in reports
+                        ),
+                        default=0.0,
+                    ),
+                }
+                for name in per_joint_names
+            },
+        }
+    aggregate["all_audited_values_within_limits"] = all(
+        aggregate[section]["violating_joint_value_count"] == 0
+        for section in sections
+    )
+    return aggregate
+
+
 def inspect_recording_catalog_inputs(
     catalog_path: Path,
     *,
     repo_root: Path = REPO_ROOT,
+    config_path: Path | None = None,
     inspection_scope: str = "auto",
     output_path: Path | None = None,
 ) -> dict[str, Any]:
-    """Report physical file and observable availability without interpreting video."""
+    """Strictly parse and range-audit physical inputs without interpreting video."""
 
     catalog_path = catalog_path.resolve()
     repo_root = repo_root.resolve()
+    config_path = (
+        config_path.resolve()
+        if config_path is not None
+        else (REPO_ROOT / "configs/sysid/recorded_action_sysid_v1.json").resolve()
+    )
+    config = load_sysid_config(config_path)
+    transform_adapter = config.get("physical_adapter") or {}
+    transform = transform_adapter.get("joint_transform") or {}
+    transform_approved = transform.get("calibration_approved") is True
     if not repo_root.is_dir():
         raise SystemIdentificationError(f"inspection repo root is not a directory: {repo_root}")
     allowed_scopes = {
@@ -566,7 +844,67 @@ def inspect_recording_catalog_inputs(
                 receipt_chain_error = f"{type(error).__name__}: {error}"
         elif all(availability.values()):
             receipt_chain_error = "required asset hash does not match catalog"
-        ready_for_joint_replay = required_integrity_valid and receipt_chain_valid
+        sample_semantics_valid = False
+        sample_semantics_error: str | None = None
+        joint_limit_validation: dict[str, Any] | None = None
+        provenance_chain_complete = False
+        if required_integrity_valid and receipt_chain_valid:
+            source_directory = repo_root / str(
+                episode.get("source_path")
+                or Path(required_assets["samples"]).parent
+            )
+            source_provenance = {
+                "episode_id": episode["recording_id"],
+                "catalog": {
+                    "kind": "content_addressed",
+                    "catalog_id": catalog.get("catalog_id"),
+                    "sha256": sha256_file(catalog_path),
+                },
+                "recording_receipt": {
+                    "kind": "repo_relative",
+                    "path": required_assets["recording_receipt"],
+                    "sha256": str(episode.get("receipt_sha256") or ""),
+                },
+                "samples": {
+                    "kind": "repo_relative",
+                    "path": required_assets["samples"],
+                    "sha256": str(episode.get("samples_sha256") or ""),
+                },
+            }
+            try:
+                parsed_episode = load_recorded_episode(
+                    source_directory,
+                    config,
+                    source_provenance=source_provenance,
+                )
+                sample_semantics_valid = True
+                joint_limit_validation = inspect_episode_joint_limits(
+                    parsed_episode,
+                    config,
+                    model_base_directory=config_path.parent,
+                )
+                provenance_chain_complete = bool(
+                    parsed_episode.source_provenance.get("chain_complete")
+                )
+            except ReplayRangeError as error:
+                sample_semantics_valid = True
+                sample_semantics_error = f"{type(error).__name__}: {error}"
+                joint_limit_validation = dict(error.diagnostics)
+                provenance_chain_complete = True
+            except (OSError, TypeError, ValueError, ReplayContractError) as error:
+                sample_semantics_error = f"{type(error).__name__}: {error}"
+        range_valid = bool(
+            joint_limit_validation
+            and joint_limit_validation.get("all_within_limits")
+        )
+        ready_for_joint_replay = bool(
+            required_integrity_valid
+            and receipt_chain_valid
+            and sample_semantics_valid
+            and range_valid
+            and provenance_chain_complete
+            and transform_approved
+        )
         episode_reports.append(
             {
                 "episode_id": episode["recording_id"],
@@ -577,33 +915,58 @@ def inspect_recording_catalog_inputs(
                 "catalog_bound_asset_integrity": integrity,
                 "receipt_samples_chain_valid": receipt_chain_valid,
                 "receipt_samples_chain_error": receipt_chain_error,
+                "sample_semantics_valid": sample_semantics_valid,
+                "sample_semantics_error": sample_semantics_error,
+                "joint_limit_validation": joint_limit_validation,
+                "joint_transform_calibration_approved": transform_approved,
+                "full_catalog_receipt_sample_provenance_bound": (
+                    provenance_chain_complete
+                ),
                 "ready_for_joint_replay": ready_for_joint_replay,
                 "measured_observables": {
                     "command_joint_position": (
-                        "verified_physical_source_schema"
-                        if ready_for_joint_replay
+                        "strictly_parsed_physical_source_schema"
+                        if sample_semantics_valid
                         else "unverified_payload_missing_or_invalid"
                     ),
                     "joint_position": (
-                        "verified_physical_source_schema"
-                        if ready_for_joint_replay
+                        "strictly_parsed_physical_source_schema"
+                        if sample_semantics_valid
                         else "unverified_payload_missing_or_invalid"
                     ),
                     "gripper_position": (
                         "derivable_from_measured_gripper_joint"
-                        if ready_for_joint_replay
+                        if sample_semantics_valid
                         else "unverified_payload_missing_or_invalid"
                     ),
                     "end_effector_position": "unavailable_not_recorded",
                     "end_effector_orientation": "unavailable_not_recorded",
                     "pawn_position": "unavailable_no_reviewed_metric_pose_source",
                     "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+                    "initial_object_state": (
+                        "unavailable_no_measured_body_free_joint_pose_binding"
+                    ),
                     "contact_active": "unavailable_not_recorded",
                     "contact_force": "unavailable_not_recorded",
                 },
             }
         )
     ready_count = sum(report["ready_for_joint_replay"] for report in episode_reports)
+    semantic_valid_count = sum(
+        report["sample_semantics_valid"] for report in episode_reports
+    )
+    range_valid_count = sum(
+        bool(
+            report.get("joint_limit_validation")
+            and report["joint_limit_validation"].get("all_within_limits")
+        )
+        for report in episode_reports
+    )
+    provenance_complete_count = sum(
+        report["full_catalog_receipt_sample_provenance_bound"]
+        for report in episode_reports
+    )
+    aggregate_joint_limits = _aggregate_joint_limit_reports(episode_reports)
     metadata_conflict_count = sum(
         report.get("metadata_status") == "conflict_folder_label_vs_receipt"
         for report in episode_reports
@@ -673,12 +1036,35 @@ def inspect_recording_catalog_inputs(
             ),
         },
         "catalog": {
-            "path": _portable_repo_path(catalog_path),
             "sha256": sha256_file(catalog_path),
             "catalog_id": catalog.get("catalog_id"),
+            "identity": portable_content_identity(
+                catalog_path, sha256_file(catalog_path)
+            ),
+        },
+        "sysid_config": {
+            "config_id": config["config_id"],
+            "sha256": sha256_file(config_path),
+            "identity": {
+                "kind": "content_addressed",
+                "sha256": sha256_file(config_path),
+            },
+        },
+        "physical_joint_transform": {
+            "schema_version": transform.get("schema_version"),
+            "transform_id": transform.get("transform_id"),
+            "sha256": transform_adapter.get("joint_transform_sha256"),
+            "calibration_approved": transform_approved,
+            "review_status": transform.get("review_status"),
+            "joint_identity_and_order": transform.get("simulator_joint_names"),
+            "exact_formula": "sim = sign * source * scale + zero_offset",
         },
         "episode_count": len(episode_reports),
         "joint_replay_ready_episode_count": ready_count,
+        "strict_sample_semantics_valid_episode_count": semantic_valid_count,
+        "joint_range_valid_episode_count": range_valid_count,
+        "full_provenance_chain_episode_count": provenance_complete_count,
+        "aggregate_joint_limit_validation": aggregate_joint_limits,
         "metadata_conflict_episode_count": metadata_conflict_count,
         "missing_required_asset_count": len(missing_paths),
         "missing_required_assets": missing_paths,
@@ -699,9 +1085,9 @@ def inspect_recording_catalog_inputs(
         "aggregate_observable_status": {
             "joint_position": (
                 "available_for_all_episodes"
-                if all_episodes_ready
+                if semantic_valid_count == len(episode_reports)
                 else "available_for_some_episodes"
-                if ready_count
+                if semantic_valid_count
                 else "payloads_missing_or_invalid"
             ),
             "end_effector_position": "unavailable",
@@ -723,12 +1109,16 @@ def inspect_recording_catalog_inputs(
         "contact_object_stage_ready": False,
         "calibration_ready": False,
         "calibration_ready_reason": (
-            "physical source schema lacks measured end-effector, pawn, and contact "
-            "trajectories required by the configured geometry and contact/object stages"
+            "joint/timing requires strict sample semantics, a reviewed hash-bound transform, "
+            "and all initial/measured/command values within simulator limits; full calibration "
+            "also lacks measured end-effector, object-pose, pawn, and contact trajectories"
         ),
         "claim": (
             "joint_timing_replay_inputs_present"
             if all_episodes_ready
+            else "joint_timing_replay_blocked_by_transform_or_ranges"
+            if semantic_valid_count == len(episode_reports)
+            and provenance_complete_count == len(episode_reports)
             else "partial_joint_timing_replay_inputs_present"
             if ready_count
             else "missing_input_manifest_only"
@@ -739,21 +1129,15 @@ def inspect_recording_catalog_inputs(
             (
                 "uv run --frozen sim2claw sysid-input-report "
                 "--catalog configs/data/physical_pawn_move_catalog_20260719.json "
+                "--config configs/sysid/recorded_action_sysid_v1.json "
                 "--repo-root /Users/kelly/Developer/sim2claw "
                 "--inspection-scope canonical_checkout "
                 "--output runs/sysid/physical_pawn_input_capability_post_cherry_pick.json"
             ),
-            (
-                "uv run --frozen sim2claw sysid-fit "
-                "--split configs/sysid/physical_pawn_sysid_split_v1.json "
-                "--config configs/sysid/recorded_action_sysid_v1.json "
-                "--output runs/sysid/physical_pawn_joint_timing_v1 --backend auto"
-            ),
         ],
         "post_cherry_pick_fit_exit_semantics": (
-            "the fit receipt is authoritative; the CLI remains nonzero unless the "
-            "frozen held-out gate and every configured stage support a full "
-            "calibration-success claim"
+            "do not run sysid-fit while joint_timing_replay_ready is false; the current "
+            "provisional transform and any range violations are calibration blockers"
         ),
         "input_report_exit_semantics": (
             "the CLI returns zero only when every catalog episode is integrity-verified "
@@ -1024,6 +1408,7 @@ STAGE_OBSERVABLES = {
 def _stage_data_report(
     stage: Mapping[str, Any],
     episodes: Sequence[RecordedEpisode],
+    config: Mapping[str, Any],
 ) -> dict[str, Any]:
     by_episode = {
         episode.episode_id: sorted(episode.available_observables())
@@ -1041,12 +1426,36 @@ def _stage_data_report(
             missing_all[str(observable)] = missing
     required_any = set(stage.get("requires_any_observable", []))
     any_present = not required_any or bool(required_any.intersection(union))
+    weights = config["loss"]["weights"]
+    parameter_support: dict[str, Any] = {}
+    for parameter in stage.get("parameters", []):
+        configured = set(str(value) for value in parameter["supports_observables"])
+        measured_weighted = sorted(
+            observable
+            for observable in configured.intersection(union)
+            if float(weights.get(observable, 0.0)) > 0.0
+        )
+        parameter_support[str(parameter["name"])] = {
+            "configured_supporting_observables": sorted(configured),
+            "measured_weighted_supporting_observables": measured_weighted,
+            "dependency_supported": bool(measured_weighted),
+        }
+    dependency_ready = all(
+        report["dependency_supported"] for report in parameter_support.values()
+    )
+    object_binding_by_episode = {
+        episode.episode_id: episode.initial_object_state.get("status") == "available"
+        for episode in episodes
+    }
     return {
         "episode_observables": by_episode,
         "available_union": sorted(union),
         "missing_required_all": missing_all,
         "required_any": sorted(required_any),
         "required_any_present": any_present,
+        "parameter_support": parameter_support,
+        "parameter_dependency_ready": dependency_ready,
+        "object_binding_by_episode": object_binding_by_episode,
         "ready": not missing_all and any_present,
     }
 
@@ -1066,7 +1475,12 @@ def _stage_residual_function(
         if [parameter["name"] for parameter in stage.get("parameters", [])]
         == descriptor_names
     )
-    allowed = STAGE_OBSERVABLES[str(target_stage["name"])]
+    allowed = set().union(
+        *(
+            set(str(value) for value in descriptor["supports_observables"])
+            for descriptor in descriptors
+        )
+    ).intersection(STAGE_OBSERVABLES[str(target_stage["name"])])
 
     def residual(vector: np.ndarray) -> np.ndarray:
         values = dict(current_parameters)
@@ -1102,6 +1516,70 @@ def _stage_residual_function(
         return result
 
     return residual
+
+
+def _parameter_sensitivity_report(
+    descriptors: Sequence[Mapping[str, Any]],
+    point: np.ndarray,
+    residual_fn: Callable[[np.ndarray], np.ndarray],
+    config: Mapping[str, Any],
+) -> dict[str, Any]:
+    baseline = residual_fn(point)
+    relative_step = float(config["optimizer"]["finite_difference_relative_step"])
+    threshold = float(config["optimizer"]["minimum_parameter_sensitivity"])
+    parameters: dict[str, Any] = {}
+    for index, descriptor in enumerate(descriptors):
+        lower = float(descriptor["minimum"])
+        upper = float(descriptor["maximum"])
+        requested_step = max(
+            relative_step * (upper - lower),
+            np.finfo(np.float64).eps,
+        )
+        candidate = point.copy()
+        if candidate[index] + requested_step <= upper:
+            candidate[index] += requested_step
+        elif candidate[index] - requested_step >= lower:
+            candidate[index] -= requested_step
+        else:
+            parameters[str(descriptor["name"])] = {
+                "identifiable": False,
+                "reason": "parameter bounds do not admit a finite perturbation",
+                "sensitivity_norm": 0.0,
+            }
+            continue
+        actual_step = float(candidate[index] - point[index])
+        perturbed = residual_fn(candidate)
+        if perturbed.shape != baseline.shape:
+            raise SystemIdentificationError(
+                f"parameter {descriptor['name']} perturbation changed residual shape"
+            )
+        sensitivity = float(np.linalg.norm(perturbed - baseline) / abs(actual_step))
+        finite = math.isfinite(sensitivity)
+        identifiable = finite and sensitivity >= threshold
+        parameters[str(descriptor["name"])] = {
+            "configured_supporting_observables": list(
+                descriptor["supports_observables"]
+            ),
+            "perturbation": actual_step,
+            "sensitivity_norm": sensitivity if finite else None,
+            "minimum_sensitivity": threshold,
+            "finite": finite,
+            "identifiable": identifiable,
+            "reason": (
+                None
+                if identifiable
+                else "finite perturbation produced no nontrivial weighted residual sensitivity"
+            ),
+        }
+    return {
+        "method": "one_parameter_finite_perturbation_residual_norm",
+        "baseline_residual_scalar_count": int(baseline.size),
+        "minimum_parameter_sensitivity": threshold,
+        "parameters": parameters,
+        "all_parameters_identifiable": all(
+            report["identifiable"] for report in parameters.values()
+        ),
+    }
 
 
 def _fit_start(
@@ -1155,7 +1633,7 @@ def fit_parameter_stage(
     backend: str = "auto",
     model_base_directory: Path | None = None,
 ) -> dict[str, Any]:
-    data_report = _stage_data_report(stage, episodes)
+    data_report = _stage_data_report(stage, episodes, config)
     stage_name = str(stage["name"])
     if not data_report["ready"]:
         return {
@@ -1174,11 +1652,41 @@ def fit_parameter_stage(
             ),
             "parameters_unchanged": True,
         }
+    if not data_report["parameter_dependency_ready"]:
+        return {
+            "name": stage_name,
+            "order": stage["order"],
+            "status": (
+                "rejected_unidentifiable"
+                if stage_name == "contact_object"
+                else "skipped_unidentifiable"
+            ),
+            "data": data_report,
+            "reason": (
+                "one or more fitted parameters has no measured, weighted supporting observable"
+            ),
+            "parameters_unchanged": True,
+        }
     if stage_name == "contact_object":
         available = set(data_report["available_union"])
         binding_errors: list[str] = []
-        if not config["bindings"].get("pawn_body"):
-            binding_errors.append("pawn_body binding is required")
+        object_data_episodes = [
+            episode
+            for episode in episodes
+            if episode.available_observables().intersection(
+                {"pawn_position", "pawn_orientation", "contact_active", "contact_force"}
+            )
+        ]
+        missing_object_bindings = [
+            episode.episode_id
+            for episode in object_data_episodes
+            if episode.initial_object_state.get("status") != "available"
+        ]
+        if missing_object_bindings:
+            binding_errors.append(
+                "measured object body/free-joint initial-state binding is required for "
+                f"episodes {missing_object_bindings}"
+            )
         contact_groups = config["bindings"].get("contact_body_groups")
         if available.intersection({"contact_active", "contact_force"}) and not (
             isinstance(contact_groups, list)
@@ -1222,6 +1730,44 @@ def fit_parameter_stage(
     first = np.asarray(
         [float(current_parameters[str(descriptor["name"])]) for descriptor in descriptors]
     )
+    try:
+        sensitivity = _parameter_sensitivity_report(
+            descriptors,
+            first,
+            residual_fn,
+            config,
+        )
+    except Exception as error:
+        return {
+            "name": stage_name,
+            "order": stage["order"],
+            "status": (
+                "rejected_unidentifiable"
+                if stage_name == "contact_object"
+                else "skipped_unidentifiable"
+            ),
+            "data": data_report,
+            "sensitivity": {
+                "all_parameters_identifiable": False,
+                "error": f"{type(error).__name__}: {error}",
+            },
+            "reason": "parameter sensitivity evaluation failed closed",
+            "parameters_unchanged": True,
+        }
+    if not sensitivity["all_parameters_identifiable"]:
+        return {
+            "name": stage_name,
+            "order": stage["order"],
+            "status": (
+                "rejected_unidentifiable"
+                if stage_name == "contact_object"
+                else "skipped_unidentifiable"
+            ),
+            "data": data_report,
+            "sensitivity": sensitivity,
+            "reason": "one or more fitted parameters has zero or non-finite perturbation sensitivity",
+            "parameters_unchanged": True,
+        }
     rng = np.random.default_rng(
         int(config["optimizer"]["seed"]) + int(stage["order"])
     )
@@ -1299,6 +1845,7 @@ def fit_parameter_stage(
         "order": stage["order"],
         "status": "optimized",
         "data": data_report,
+        "sensitivity": sensitivity,
         "best_parameters": best["parameters"],
         "best_train_loss": best["loss"],
         "best_backend": best["backend"],
@@ -1394,6 +1941,17 @@ def fit_staged_parameters(
         raise SystemIdentificationError(
             "staged fitting requires non-empty whole-episode train and held-out sets"
         )
+    incomplete_physical_provenance = [
+        episode.episode_id
+        for episode in [*train_episodes, *held_out_episodes]
+        if episode.proof_class_category == "physical_read_only"
+        and not episode.source_provenance.get("chain_complete")
+    ]
+    if incomplete_physical_provenance:
+        raise SystemIdentificationError(
+            "physical fitting requires the full catalog/receipt/sample provenance chain: "
+            f"{incomplete_physical_provenance}"
+        )
     baseline_parameters = nominal_parameter_values(config)
     baseline_train = evaluate_episode_losses(
         train_episodes,
@@ -1486,14 +2044,37 @@ def _resolve_manifest_episode_path(
     source_path: str,
     *,
     manifest_path: Path,
+    repo_root: Path | None = None,
 ) -> Path:
     candidate = Path(source_path)
     if candidate.is_absolute():
         return candidate
-    repo_candidate = REPO_ROOT / candidate
+    repo_candidate = (repo_root or REPO_ROOT) / candidate
     if repo_candidate.exists():
         return repo_candidate
     return manifest_path.parent / candidate
+
+
+def _resolve_manifest_repo_root(
+    manifest: Mapping[str, Any],
+    manifest_path: Path,
+) -> Path | None:
+    source_catalog = manifest.get("source_catalog") or {}
+    relative = Path(str(source_catalog.get("path") or ""))
+    expected_hash = str(source_catalog.get("sha256") or "")
+    if relative.is_absolute() or not relative.parts:
+        return None
+    candidates = [*manifest_path.parents, REPO_ROOT.resolve()]
+    seen: set[Path] = set()
+    for root in candidates:
+        root = root.resolve()
+        if root in seen:
+            continue
+        seen.add(root)
+        candidate = root / relative
+        if candidate.is_file() and sha256_file(candidate) == expected_hash:
+            return root
+    return None
 
 
 def load_manifest_episodes(
@@ -1501,18 +2082,100 @@ def load_manifest_episodes(
     config: Mapping[str, Any],
 ) -> dict[str, list[RecordedEpisode]]:
     manifest_path = Path(str(manifest.get("_manifest_path") or ".")).resolve()
+    manifest_repo_root = _resolve_manifest_repo_root(manifest, manifest_path)
+    bound_catalog_entries: dict[str, dict[str, Any]] = {}
+    if manifest_repo_root is not None:
+        catalog_path = manifest_repo_root / str(manifest["source_catalog"]["path"])
+        catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+        bound_catalog_entries = {
+            entry["episode_id"]: entry
+            for entry in (
+                _catalog_episode_entry(episode) for episode in catalog["episodes"]
+            )
+        }
     result: dict[str, list[RecordedEpisode]] = {"train": [], "held_out": []}
     for entry in manifest["episodes"]:
+        source_kind = str(entry["source_kind"])
+        if source_kind == "physical_recording" and manifest_repo_root is None:
+            raise SystemIdentificationError(
+                "physical split source catalog cannot be resolved and hash-verified "
+                "relative to the manifest checkout"
+            )
         source_path = _resolve_manifest_episode_path(
             str(entry["source_path"]),
             manifest_path=manifest_path,
+            repo_root=manifest_repo_root,
         )
         if not source_path.exists():
             raise SystemIdentificationError(
                 f"split input is missing for episode {entry['episode_id']}: {source_path}; "
                 "run `sim2claw sysid-input-report` for the exact manifest"
             )
-        episode = load_recorded_episode(source_path, config)
+        source_provenance: Mapping[str, Any] | None = None
+        if source_kind == "physical_recording":
+            assert manifest_repo_root is not None
+            expected_entry = bound_catalog_entries.get(str(entry["episode_id"]))
+            provenance_fields = (
+                "source_kind",
+                "source_path",
+                "source_receipt_path",
+                "source_receipt_sha256",
+                "source_samples_path",
+                "source_samples_sha256",
+                "source_square",
+                "destination_square",
+                "source_column",
+                "destination_column",
+                "proof_class",
+                "metadata_status",
+                "column_adjudication",
+            )
+            if expected_entry is None or any(
+                entry.get(field) != expected_entry.get(field)
+                for field in provenance_fields
+            ):
+                raise SystemIdentificationError(
+                    f"physical split provenance drifted from the bound catalog for {entry['episode_id']}"
+                )
+            receipt_path = manifest_repo_root / str(entry["source_receipt_path"])
+            samples_path = manifest_repo_root / str(entry["source_samples_path"])
+            if not receipt_path.is_file() or not samples_path.is_file():
+                raise SystemIdentificationError(
+                    f"physical provenance payload is missing for {entry['episode_id']}"
+                )
+            if sha256_file(receipt_path) != entry["source_receipt_sha256"]:
+                raise SystemIdentificationError(
+                    f"physical receipt provenance mismatch for {entry['episode_id']}"
+                )
+            if sha256_file(samples_path) != entry["source_samples_sha256"]:
+                raise SystemIdentificationError(
+                    f"physical sample provenance mismatch for {entry['episode_id']}"
+                )
+            source_provenance = {
+                "episode_id": entry["episode_id"],
+                "chain_complete": True,
+                "catalog": {
+                    "kind": "repo_relative",
+                    "path": manifest["source_catalog"]["path"],
+                    "catalog_id": manifest["source_catalog"].get("catalog_id"),
+                    "sha256": manifest["source_catalog"]["sha256"],
+                },
+                "recording_receipt": {
+                    "kind": "repo_relative",
+                    "path": entry["source_receipt_path"],
+                    "sha256": entry["source_receipt_sha256"],
+                },
+                "samples": {
+                    "kind": "repo_relative",
+                    "path": entry["source_samples_path"],
+                    "sha256": entry["source_samples_sha256"],
+                },
+            }
+        episode = load_recorded_episode(
+            source_path,
+            config,
+            source_provenance=source_provenance,
+        )
         if episode.episode_id != entry["episode_id"]:
             raise SystemIdentificationError(
                 f"episode identity mismatch: manifest={entry['episode_id']} "
@@ -1586,7 +2249,9 @@ def run_system_identification(
         replay_receipts.append(
             {
                 "episode_id": episode.episode_id,
-                "receipt_path": receipt["receipt_path"],
+                "receipt_path": (
+                    f"held_out_replays/{episode.episode_id}/{receipt['receipt_path']}"
+                ),
                 "receipt_sha256": receipt["receipt_sha256"],
             }
         )
@@ -1603,8 +2268,10 @@ def run_system_identification(
     receipt = {
         "schema_version": FIT_RECEIPT_SCHEMA,
         "split": {
-            "path": str(split_manifest_path),
             "sha256": sha256_file(split_manifest_path),
+            "identity": portable_content_identity(
+                split_manifest_path, sha256_file(split_manifest_path)
+            ),
             "split_id": manifest["split_id"],
             "owner": manifest["owner"],
             "unit": manifest["unit"],
@@ -1612,8 +2279,10 @@ def run_system_identification(
             "split_counts": manifest["split_counts"],
         },
         "config": {
-            "path": str(config_path),
             "sha256": sha256_file(config_path),
+            "identity": portable_content_identity(
+                config_path, sha256_file(config_path)
+            ),
             "config_id": config["config_id"],
         },
         "backend_request": backend,
@@ -1636,6 +2305,26 @@ def run_system_identification(
             "promoted": False,
         },
         "held_out_replays": replay_receipts,
+        "input_provenance": {
+            "source_catalog": manifest["source_catalog"],
+            "episodes": [
+                {
+                    "episode_id": episode.episode_id,
+                    "split": next(
+                        entry["split"]
+                        for entry in manifest["episodes"]
+                        if entry["episode_id"] == episode.episode_id
+                    ),
+                    "provenance": episode.source_provenance,
+                }
+                for episode in all_episodes
+            ],
+            "all_physical_chains_complete": all(
+                episode.proof_class_category != "physical_read_only"
+                or episode.source_provenance.get("chain_complete")
+                for episode in all_episodes
+            ),
+        },
         "held_out_gate": fit["held_out_gate"],
         "all_stages_valid": fit["all_stages_valid"],
         "official_sysid_exercised": fit["official_sysid_exercised"],
@@ -1664,6 +2353,6 @@ def run_system_identification(
     receipt_path = output_directory / "fit_receipt.json"
     _atomic_json(receipt_path, receipt)
     result = copy.deepcopy(receipt)
-    result["receipt_path"] = str(receipt_path)
+    result["receipt_path"] = receipt_path.name
     result["receipt_sha256"] = sha256_file(receipt_path)
     return result

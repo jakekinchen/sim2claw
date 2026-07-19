@@ -9,6 +9,10 @@
     "joint_position": [0.0],
     "joint_velocity": [0.0]
   },
+  "initial_object_state": {
+    "status": "unavailable",
+    "reason": "fixture has no measured object body/free-joint pose binding"
+  },
   "unavailable_observables": {
     "end_effector_orientation": "fixture records position only",
     "pawn_position": "fixture has no pawn",
