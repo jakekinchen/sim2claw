@@ -100,7 +100,9 @@ class ChessRookLiftEnv:
         )
         np.random.seed(self.seed)
 
+        piece_layout = str(contract["scene"].get("piece_layout", "standard"))
         spec = build_scene_spec(
+            piece_layout=piece_layout,
             board_center_in_table_frame_xy_m=(
                 self.board_center_in_table_frame_xy_m
             ),

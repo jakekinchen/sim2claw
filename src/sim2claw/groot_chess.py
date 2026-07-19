@@ -184,6 +184,7 @@ def _episode_shim(
             "scene_id": contract["scene"]["scene_id"],
             "arm": contract["scene"]["arm"],
             "piece": case["piece"],
+            "piece_layout": contract["scene"].get("piece_layout", "standard"),
         },
         "episode": {
             "settle_steps": contract["episode"]["settle_steps_before"],
