@@ -1,6 +1,6 @@
 # Slice Brief 005 - Overnight Training Campaign Assessment
 
-**Date:** 2026-07-19 America/Chicago  
+**Date:** 2026-07-19 America/Chicago
 **Status:** historical pre-run assessment, superseded by the bounded 1,000-step
 campaign and its terminal-negative closeout; this brief never granted compute
 authority
