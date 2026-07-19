@@ -156,10 +156,20 @@ class PawnComposabilityEvaluationTest(unittest.TestCase):
             path = REPO_ROOT / inputs[path_key]
             self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), inputs[hash_key])
 
+        current_lock_sha256 = hashlib.sha256(
+            (REPO_ROOT / "uv.lock").read_bytes()
+        ).hexdigest()
         self.assertEqual(
-            hashlib.sha256((REPO_ROOT / "uv.lock").read_bytes()).hexdigest(),
-            inputs["lockfile_sha256"],
+            inputs["lockfile_binding_scope"],
+            "historical_generation_snapshot_not_current_repository_gate",
         )
+        reproduction = audit["post_integration_reproduction"]
+        self.assertEqual(
+            current_lock_sha256,
+            reproduction["current_lockfile_sha256"],
+        )
+        self.assertTrue(reproduction["semantic_core_matches_historical_receipt"])
+        self.assertEqual(len(reproduction["runner_output_sha256"]), 64)
         control_payload = {
             "joint_order": audit["simulator_joint_order"],
             "actuator_names": audit["actuator_names"],

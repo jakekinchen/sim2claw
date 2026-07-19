@@ -1,0 +1,146 @@
+{
+  "schema_version": "sim2claw.llm_scene_synthesis.v1",
+  "scene_id": "robo_scanner_img5349_workcell_v1",
+  "title": "Robo Scanner workcell scene synthesis",
+  "status": "proposal_visible_pending_operator_registration",
+  "provenance": {
+    "tool_identity": "OpenAI Codex visual analysis",
+    "model_identity": "GPT-5",
+    "prompt": "Inspect the indexed iPhone video contact sheet and 3D Gaussian Splat preview. Propose a display-only scene hierarchy of visible workcell objects and relationships. Mark geometry approximate, do not infer metric scale or collision geometry, and do not claim evaluator or physical-control authority.",
+    "prompt_sha256": "681ab89e113430649d2dcb69dd2588c8af949c6d66ebc76d05770a73c98a064a",
+    "output_scope": "canonical JSON object containing only analysis and hierarchy",
+    "output_sha256": "1b92d27b883b927ba56eff7c869a4cd063c379cafff8988048e7faceed1990b3",
+    "hash_algorithm": "sha256_utf8_python_json_sort_keys_compact",
+    "reviewer": null,
+    "review_status": "unreviewed_llm_proposal",
+    "generated_at": "2026-07-19"
+  },
+  "inputs": [
+    {
+      "id": "iphone_video",
+      "kind": "owner_provided_monocular_video",
+      "name": "IMG_5349.MOV",
+      "sha256": "0079c19d5a321dd3613924f4a7e0838a4f99943b0833a0b8bed81a12d303dfa8",
+      "analysis_role": "multi_view_temporal_semantics_and_occlusion_context"
+    },
+    {
+      "id": "gaussian_splat",
+      "kind": "real_gaussian_splat",
+      "name": "IMG_5349-primary-real-splat.ply",
+      "sha256": "f8f3bfe0a0f1fa13d54e47602dbf43f8e0448178c0e85f0f22a5f2115530443b",
+      "splat_count": 334537,
+      "analysis_role": "spatial_appearance_and_cross_view_consistency"
+    }
+  ],
+  "analysis": {
+    "method": "llm_visual_scene_analysis",
+    "evidence_views": [
+      {
+        "kind": "source_video_contact_sheet",
+        "sha256": "f5ff170558b2d70ae7f10528340ad1c2f7e3fff0b26840af09dbec95f1794ded",
+        "availability": "producer_workspace_only_not_indexed_in_sim2claw",
+        "hash_verifiable_in_repository": false
+      },
+      {
+        "kind": "exact_camera_3dgs_preview",
+        "sha256": "555bb81cfdbbcb896e672cfeaafbf41d618877fa92c9c3a882d58ebc5bc42703",
+        "availability": "tracked_manifest_indexed_private_release_asset",
+        "release_manifest": "docs/reference/IPHONE_VIDEO_3DGS_RELEASE_20260719.json",
+        "asset_name": "IMG_5349-preview.png",
+        "hash_verifiable_in_repository": true
+      }
+    ],
+    "observations": [
+      {
+        "id": "work_surface",
+        "label": "rectangular white work table",
+        "semantic_confidence": "high",
+        "geometry_confidence": "approximate_only"
+      },
+      {
+        "id": "chess_fixture",
+        "label": "wood-framed 8 by 8 chessboard with two sparse pawn ranks",
+        "semantic_confidence": "high",
+        "geometry_confidence": "approximate_only"
+      },
+      {
+        "id": "robot_pair",
+        "label": "two edge-mounted SO-101-class robot arms",
+        "semantic_confidence": "high",
+        "geometry_confidence": "use_reviewed_upstream_articulation_not_visual_mesh_inference"
+      },
+      {
+        "id": "fiducials",
+        "label": "planar black-and-white fiducial sheets beside the board",
+        "semantic_confidence": "high",
+        "geometry_confidence": "approximate_only"
+      },
+      {
+        "id": "room_context",
+        "label": "rear wall, window, sill, horizontal blinds, mug, and tripod",
+        "semantic_confidence": "high",
+        "geometry_confidence": "visual_context_only"
+      }
+    ]
+  },
+  "hierarchy": {
+    "id": "workcell",
+    "label": "Captured workcell",
+    "role": "scene_root",
+    "children": [
+      {
+        "id": "environment",
+        "label": "Room context",
+        "role": "visual_context",
+        "children": [
+          {"id": "rear_wall", "label": "Rear wall and window", "role": "visual_context"},
+          {"id": "window_sill", "label": "Window sill and blinds", "role": "visual_context"},
+          {"id": "mug", "label": "Mug", "role": "visual_prop"},
+          {"id": "tripod", "label": "Tripod column", "role": "visual_context"}
+        ]
+      },
+      {
+        "id": "table",
+        "label": "Work table",
+        "role": "support_surface",
+        "children": [
+          {
+            "id": "chess_board",
+            "label": "Chessboard",
+            "role": "task_fixture",
+            "children": [
+              {"id": "brown_pawns", "label": "Brown pawn set", "role": "task_objects"},
+              {"id": "tan_pawns", "label": "Tan pawn set", "role": "task_objects"}
+            ]
+          },
+          {"id": "fiducials", "label": "Fiducial sheet", "role": "visual_registration_reference"},
+          {"id": "left_robot", "label": "Left SO-101", "role": "articulated_actor"},
+          {"id": "right_robot", "label": "Right SO-101", "role": "articulated_actor"}
+        ]
+      }
+    ]
+  },
+  "representations": {
+    "appearance_reference": "verified_robo_scanner_3dgs",
+    "semantic_display": "this_json_hierarchy_is_rendered_as_read_only_studio_text",
+    "threejs_layer": "independent_browser_projection_of_the_accepted_mujoco_scene_manifest",
+    "mujoco_layer": "independent_reviewed_repo_native_geometry_joints_collision_and_contact",
+    "json_compiles_or_drives_geometry": false
+  },
+  "review": {
+    "semantic_status": "llm_proposal",
+    "threejs_mapping_status": "not_consumed_threejs_is_generated_independently_from_accepted_manifest",
+    "mujoco_mapping_status": "not_consumed_existing_reviewed_scene_contract",
+    "registration_status": "relative_visual_alignment_only"
+  },
+  "authority": {
+    "llm_may_propose_semantics": true,
+    "llm_may_propose_geometry": true,
+    "llm_establishes_metric_scale": false,
+    "llm_establishes_collision_geometry": false,
+    "llm_establishes_task_coordinates": false,
+    "llm_establishes_physical_authority": false,
+    "operator_or_reviewed_measurement_required_for_registration": true,
+    "mujoco_is_physics_authority_after_review": true
+  }
+}

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ipaddress
+import hashlib
 import json
 import mimetypes
 import re
@@ -15,7 +16,7 @@ from urllib.parse import parse_qs, unquote, urlsplit
 
 from .paths import REPO_ROOT
 from .physical_gateway import PhysicalGatewayError
-from .studio_catalog import build_catalog, resolve_media_token
+from .studio_catalog import build_catalog, open_media_token
 from .studio_live import LiveWorkspaceError, LiveWorkspaceService, MJPEG_BOUNDARY
 from .state_trace import build_scene_manifest
 from .teleop_recording import RecorderConflict, RecorderError, TeleopRecordingManager
@@ -26,26 +27,65 @@ from .paths import SO101_MODEL_PATH
 STATIC_ROOT = Path(__file__).with_name("studio_web")
 SCENE_ASSET_ROOT = SO101_MODEL_PATH.parent / "assets"
 RANGE_PATTERN = re.compile(r"bytes=(\d*)-(\d*)$")
+SCENE_SYNTHESIS_API_SCHEMA = "sim2claw.studio_scene_synthesis_proposal.v1"
+DEFAULT_SCENE_SYNTHESIS_CONFIG = (
+    REPO_ROOT / "configs" / "scenes" / "robo_scanner_llm_workcell_v1.json"
+)
+
+
+def load_scene_synthesis_proposal(
+    path: Path = DEFAULT_SCENE_SYNTHESIS_CONFIG,
+) -> dict[str, Any]:
+    """Load display-only scene analysis without changing MuJoCo identity."""
+
+    raw = path.read_bytes()
+    proposal = json.loads(raw)
+    return {
+        "schema_version": SCENE_SYNTHESIS_API_SCHEMA,
+        "proposal_sha256": hashlib.sha256(raw).hexdigest(),
+        "proposal": proposal,
+        "authority": {
+            "display_only": True,
+            "included_in_mujoco_manifest_revision": False,
+            "accepted_geometry_source": "mujoco_scene_manifest",
+            "physical_authority": False,
+        },
+    }
 
 
 class StudioServer(ThreadingHTTPServer):
     daemon_threads = True
     allow_reuse_address = True
 
-    def __init__(self, address: tuple[str, int], repo_root: Path = REPO_ROOT):
+    def __init__(
+        self,
+        address: tuple[str, int],
+        repo_root: Path = REPO_ROOT,
+        *,
+        read_only: bool = False,
+    ):
         self.repo_root = repo_root.resolve()
+        self.read_only = read_only
         try:
-            self.recorder_control_enabled = ipaddress.ip_address(address[0]).is_loopback
+            self.recorder_control_enabled = (
+                ipaddress.ip_address(address[0]).is_loopback and not read_only
+            )
         except ValueError:
-            self.recorder_control_enabled = address[0] == "localhost"
-        self.recorder = TeleopRecordingManager(repo_root=self.repo_root)
-        self.live_workspace = LiveWorkspaceService(self.recorder)
+            self.recorder_control_enabled = address[0] == "localhost" and not read_only
+        self.recorder: TeleopRecordingManager | None = None
+        self.live_workspace: LiveWorkspaceService | None = None
+        if not read_only:
+            self.recorder = TeleopRecordingManager(repo_root=self.repo_root)
+            self.live_workspace = LiveWorkspaceService(self.recorder)
         self.scene_manifests: dict[str, dict[str, Any]] = {}
+        self.scene_synthesis_proposal: dict[str, Any] | None = None
         super().__init__(address, StudioRequestHandler)
 
     def server_close(self) -> None:
-        self.live_workspace.shutdown()
-        self.recorder.shutdown()
+        if self.live_workspace is not None:
+            self.live_workspace.shutdown()
+        if self.recorder is not None:
+            self.recorder.shutdown()
         super().server_close()
 
 
@@ -66,6 +106,11 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
         path = unquote(request.path)
         if path == "/api/catalog":
             self._send_json(build_catalog(self.server.repo_root))
+            return
+        if path == "/api/scene-synthesis":
+            if self.server.scene_synthesis_proposal is None:
+                self.server.scene_synthesis_proposal = load_scene_synthesis_proposal()
+            self._send_json(self.server.scene_synthesis_proposal)
             return
         if path == "/api/scene":
             layout = parse_qs(request.query).get("layout", ["standard"])[0]
@@ -142,6 +187,8 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                 {
                     "ok": True,
                     "service": "sim2claw-studio",
+                    "mode": "read_only_evidence" if self.server.read_only else "interactive",
+                    "read_only": self.server.read_only,
                     "physical_authority": False,
                     "physical_motion_endpoint": (
                         "operator_gated_relative_time_slew_bounded_tracking"
@@ -331,51 +378,48 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
 
     def _send_media(self, token: str) -> None:
         try:
-            path = resolve_media_token(token, self.server.repo_root)
-        except ValueError:
+            path, handle, file_stat = open_media_token(token, self.server.repo_root)
+        except (OSError, ValueError):
             self.send_error(HTTPStatus.NOT_FOUND)
             return
-        if not path.is_file():
-            self.send_error(HTTPStatus.NOT_FOUND)
-            return
-        size = path.stat().st_size
-        start = 0
-        end = size - 1
-        status = HTTPStatus.OK
-        range_header = self.headers.get("Range")
-        if range_header:
-            match = RANGE_PATTERN.fullmatch(range_header.strip())
-            if not match:
-                self.send_error(HTTPStatus.REQUESTED_RANGE_NOT_SATISFIABLE)
-                return
-            raw_start, raw_end = match.groups()
-            if raw_start:
-                start = int(raw_start)
-                end = int(raw_end) if raw_end else end
-            elif raw_end:
-                suffix_length = int(raw_end)
-                start = max(0, size - suffix_length)
-            if start >= size or end < start:
-                self.send_response(HTTPStatus.REQUESTED_RANGE_NOT_SATISFIABLE)
-                self.send_header("Content-Range", f"bytes */{size}")
-                self.send_header("Content-Length", "0")
-                self.end_headers()
-                return
-            end = min(end, size - 1)
-            status = HTTPStatus.PARTIAL_CONTENT
-        length = end - start + 1
-        mime, _ = mimetypes.guess_type(path.name)
-        self.send_response(status)
-        self._security_headers()
-        self.send_header("Content-Type", mime or "application/octet-stream")
-        self.send_header("Accept-Ranges", "bytes")
-        self.send_header("Cache-Control", "private, max-age=5")
-        self.send_header("Content-Length", str(length))
-        if status == HTTPStatus.PARTIAL_CONTENT:
-            self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
-        self.end_headers()
-        try:
-            with path.open("rb") as handle:
+        with handle:
+            size = file_stat.st_size
+            start = 0
+            end = size - 1
+            status = HTTPStatus.OK
+            range_header = self.headers.get("Range")
+            if range_header:
+                match = RANGE_PATTERN.fullmatch(range_header.strip())
+                if not match:
+                    self.send_error(HTTPStatus.REQUESTED_RANGE_NOT_SATISFIABLE)
+                    return
+                raw_start, raw_end = match.groups()
+                if raw_start:
+                    start = int(raw_start)
+                    end = int(raw_end) if raw_end else end
+                elif raw_end:
+                    suffix_length = int(raw_end)
+                    start = max(0, size - suffix_length)
+                if start >= size or end < start:
+                    self.send_response(HTTPStatus.REQUESTED_RANGE_NOT_SATISFIABLE)
+                    self.send_header("Content-Range", f"bytes */{size}")
+                    self.send_header("Content-Length", "0")
+                    self.end_headers()
+                    return
+                end = min(end, size - 1)
+                status = HTTPStatus.PARTIAL_CONTENT
+            length = end - start + 1
+            mime, _ = mimetypes.guess_type(path.name)
+            self.send_response(status)
+            self._security_headers()
+            self.send_header("Content-Type", mime or "application/octet-stream")
+            self.send_header("Accept-Ranges", "bytes")
+            self.send_header("Cache-Control", "private, max-age=5")
+            self.send_header("Content-Length", str(length))
+            if status == HTTPStatus.PARTIAL_CONTENT:
+                self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+            self.end_headers()
+            try:
                 handle.seek(start)
                 remaining = length
                 while remaining:
@@ -384,8 +428,8 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                         break
                     self.wfile.write(block)
                     remaining -= len(block)
-        except (BrokenPipeError, ConnectionResetError):
-            return
+            except (BrokenPipeError, ConnectionResetError):
+                return
 
     def _send_scene_asset(self, name: str) -> None:
         candidate = (SCENE_ASSET_ROOT / name).resolve()
@@ -412,7 +456,9 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
         self.send_header(
             "Content-Security-Policy",
             "default-src 'self'; img-src 'self' data:; media-src 'self'; "
-            "style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'",
+            "style-src 'self' 'unsafe-inline'; "
+            "script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' data:; "
+            "worker-src 'self' blob:",
         )
 
     def log_message(self, format: str, *args: object) -> None:
@@ -425,8 +471,9 @@ def create_server(
     port: int = 4173,
     *,
     repo_root: Path = REPO_ROOT,
+    read_only: bool = False,
 ) -> StudioServer:
-    return StudioServer((host, port), repo_root=repo_root)
+    return StudioServer((host, port), repo_root=repo_root, read_only=read_only)
 
 
 def serve_studio(
@@ -434,15 +481,19 @@ def serve_studio(
     port: int = 4173,
     *,
     open_browser: bool = True,
+    read_only: bool = False,
 ) -> None:
-    server = create_server(host, port)
+    server = create_server(host, port, read_only=read_only)
     actual_port = int(server.server_address[1])
     url = f"http://{host}:{actual_port}"
     print(f"sim2claw studio: {url}", flush=True)
-    print(
-        "loopback recorder enabled; physical motion is operator-gated and promotion remains closed",
-        flush=True,
-    )
+    if read_only:
+        print("read-only evidence mode; recorder and live-device controls disabled", flush=True)
+    else:
+        print(
+            "loopback recorder enabled; physical motion is operator-gated and promotion remains closed",
+            flush=True,
+        )
     if open_browser:
         webbrowser.open(url)
     try:

@@ -1,0 +1,2 @@
+# Patch payloads are hash-bound run evidence; preserve their literal whitespace.
+*.patch -whitespace

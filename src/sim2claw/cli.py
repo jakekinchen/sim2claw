@@ -8,9 +8,28 @@ from typing import Sequence
 from .alignment import compare_alignment
 from .capture import fetch_capture
 from .doctor import doctor_json, format_doctor, run_doctor
-from .paths import DEFAULT_OUTPUT_ROOT, STUDIO_ASSET_ROOT
+from .paths import DEFAULT_OUTPUT_ROOT, REPO_ROOT, STUDIO_ASSET_ROOT
 from .render import render_scene
 from .scene import scene_summary
+
+
+DEFAULT_SYSID_CONFIG = Path("configs/sysid/recorded_action_sysid_v1.json")
+DEFAULT_PHYSICAL_CATALOG = Path(
+    "configs/data/physical_pawn_move_catalog_20260719.json"
+)
+
+
+def _parameter_assignments(values: Sequence[str] | None) -> dict[str, float]:
+    result: dict[str, float] = {}
+    for assignment in values or []:
+        if "=" not in assignment:
+            raise ValueError(f"parameter must use name=value: {assignment}")
+        name, raw_value = assignment.split("=", 1)
+        name = name.strip()
+        if not name or name in result:
+            raise ValueError(f"parameter name is empty or duplicated: {name!r}")
+        result[name] = float(raw_value)
+    return result
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -18,7 +37,9 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     doctor = subparsers.add_parser("doctor", help="fail-closed runtime preflight")
-    doctor.add_argument("--target", choices=("auto", "mac", "nvidia"), default="auto")
+    doctor.add_argument(
+        "--target", choices=("auto", "mac", "nvidia", "linux-cpu"), default="auto"
+    )
     doctor.add_argument("--render-probe", action="store_true")
     doctor.add_argument("--json", action="store_true", dest="as_json")
 
@@ -96,6 +117,49 @@ def build_parser() -> argparse.ArgumentParser:
     studio.add_argument("--host", default="127.0.0.1")
     studio.add_argument("--port", type=int, default=4173)
     studio.add_argument("--no-open", action="store_true")
+    studio.add_argument(
+        "--read-only",
+        action="store_true",
+        help="disable all recorder and live-device control endpoints",
+    )
+
+    project_pack = subparsers.add_parser(
+        "project-pack", help="create a hash-bound project evidence bundle"
+    )
+    project_pack.add_argument("--project", type=Path, required=True)
+    project_pack.add_argument("--output", type=Path, required=True)
+
+    project_inspect = subparsers.add_parser(
+        "project-inspect", help="verify a project contract or packed bundle"
+    )
+    project_inspect.add_argument("--project", type=Path, required=True)
+    project_inspect.add_argument("--bundle", type=Path, default=None)
+    project_inspect.add_argument(
+        "--expected-bundle-sha256",
+        default=None,
+        help="coordinator-computed outer bundle digest; required with --bundle",
+    )
+
+    pipeline_stage = subparsers.add_parser(
+        "pipeline-stage", help="run one bounded, truth-preserving project stage"
+    )
+    pipeline_stage.add_argument("--project", type=Path, required=True)
+    pipeline_stage.add_argument(
+        "--stage",
+        choices=(
+            "inspect",
+            "calibrate-sim",
+            "evaluate-skills",
+            "train-candidates",
+            "compare-candidates",
+        ),
+        required=True,
+    )
+
+    pipeline_status = subparsers.add_parser(
+        "pipeline-status", help="show the latest bounded NemoClaw stage result"
+    )
+    pipeline_status.add_argument("--project", type=Path, required=True)
 
     subparsers.add_parser(
         "teleop-preflight",
@@ -115,6 +179,78 @@ def build_parser() -> argparse.ArgumentParser:
         "--yes",
         action="store_true",
         help="acknowledge that the powered follower workcell is clear for motion",
+    )
+
+    recorded_replay = subparsers.add_parser(
+        "replay-recorded",
+        help="replay one recorded command episode in MuJoCo and emit synchronized metrics",
+    )
+    recorded_replay.add_argument("--episode", type=Path, required=True)
+    recorded_replay.add_argument(
+        "--config", type=Path, default=DEFAULT_SYSID_CONFIG
+    )
+    recorded_replay.add_argument("--output", type=Path, required=True)
+    recorded_replay.add_argument(
+        "--parameter",
+        action="append",
+        help="bounded candidate override in name=value form; repeat as needed",
+    )
+
+    sysid_capability = subparsers.add_parser(
+        "sysid-capability",
+        help="inspect the pinned official MuJoCo sysid toolbox and optional exercise",
+    )
+    sysid_capability.add_argument("--exercise", action="store_true")
+    sysid_capability.add_argument("--output", type=Path, default=None)
+
+    sysid_input = subparsers.add_parser(
+        "sysid-input-report",
+        help="verify physical payload integrity without interpreting video",
+    )
+    sysid_input.add_argument("--catalog", type=Path, default=DEFAULT_PHYSICAL_CATALOG)
+    sysid_input.add_argument("--config", type=Path, default=DEFAULT_SYSID_CONFIG)
+    sysid_input.add_argument("--repo-root", type=Path, default=REPO_ROOT)
+    sysid_input.add_argument(
+        "--inspection-scope",
+        choices=(
+            "auto",
+            "canonical_checkout",
+            "isolated_codex_worktree",
+            "explicit_repo_root",
+        ),
+        default="auto",
+    )
+    sysid_input.add_argument("--output", type=Path, default=None)
+
+    sysid_split = subparsers.add_parser(
+        "sysid-freeze-split",
+        help="freeze evaluator-owned whole-episode train and held-out assignments",
+    )
+    sysid_split.add_argument("--catalog", type=Path, default=DEFAULT_PHYSICAL_CATALOG)
+    sysid_split.add_argument("--config", type=Path, default=DEFAULT_SYSID_CONFIG)
+    sysid_split.add_argument("--output", type=Path, required=True)
+    sysid_split.add_argument(
+        "--strategy",
+        choices=("deterministic_hash", "leave_one_column_out"),
+        default="deterministic_hash",
+    )
+    sysid_split.add_argument(
+        "--held-out-column",
+        choices=tuple("abcdefgh"),
+        default=None,
+    )
+
+    sysid_fit = subparsers.add_parser(
+        "sysid-fit",
+        help="run staged bounded fits and require frozen held-out improvement",
+    )
+    sysid_fit.add_argument("--split", type=Path, required=True)
+    sysid_fit.add_argument("--config", type=Path, default=DEFAULT_SYSID_CONFIG)
+    sysid_fit.add_argument("--output", type=Path, required=True)
+    sysid_fit.add_argument(
+        "--backend",
+        choices=("auto", "official", "local"),
+        default="auto",
     )
 
     source_eval = subparsers.add_parser(
@@ -155,6 +291,22 @@ def build_parser() -> argparse.ArgumentParser:
     )
     pawn_groot_preflight.add_argument("--dataset", type=Path, required=True)
     pawn_groot_preflight.add_argument("--output", type=Path, required=True)
+
+    multisource_export = subparsers.add_parser(
+        "groot-multisource-export",
+        help="merge only receipt-admitted GR00T datasets into the frozen video mixture",
+    )
+    multisource_export.add_argument("--output", type=Path, required=True)
+    multisource_export.add_argument("--nominal-dataset", type=Path, required=True)
+    multisource_export.add_argument("--recovery-dataset", type=Path, required=True)
+    multisource_export.add_argument("--pawn-dataset", type=Path, required=True)
+
+    multisource_preflight = subparsers.add_parser(
+        "groot-multisource-preflight",
+        help="verify multisource hashes, row/video alignment, and frozen H16 counts",
+    )
+    multisource_preflight.add_argument("--dataset", type=Path, required=True)
+    multisource_preflight.add_argument("--output", type=Path, required=True)
 
     sim_real = subparsers.add_parser(
         "sim-real-bridge",
@@ -359,7 +511,46 @@ def main(argv: Sequence[str] | None = None) -> int:
             host=args.host,
             port=args.port,
             open_browser=not args.no_open,
+            read_only=args.read_only,
         )
+        return 0
+    if args.command == "project-pack":
+        from .project_bundle import pack_project
+
+        report = pack_project(args.project, args.output)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "project-inspect":
+        from .project_bundle import ProjectBundleError, inspect_bundle, inspect_project
+
+        report = inspect_project(args.project)
+        if args.bundle is not None:
+            if args.expected_bundle_sha256 is None:
+                raise ProjectBundleError(
+                    "--expected-bundle-sha256 is required when --bundle is supplied"
+                )
+            report["bundle"] = inspect_bundle(
+                args.bundle,
+                expected_sha256=args.expected_bundle_sha256,
+            )
+        elif args.expected_bundle_sha256 is not None:
+            raise ProjectBundleError(
+                "--expected-bundle-sha256 is valid only when --bundle is supplied"
+            )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "pipeline-stage":
+        from .autonomous_pipeline import run_stage
+
+        report = run_stage(args.stage, args.project)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "pipeline-status":
+        from .autonomous_pipeline import pipeline_status
+        from .project_bundle import inspect_project
+
+        inspect_project(args.project)
+        print(json.dumps(pipeline_status(args.project), indent=2, sort_keys=True))
         return 0
     if args.command == "teleop-preflight":
         from .teleop_recording import recorder_preflight
@@ -405,6 +596,87 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
+    if args.command == "replay-recorded":
+        from .recorded_replay import ReplayContractError, replay_recorded_episode
+
+        try:
+            report = replay_recorded_episode(
+                args.episode,
+                config_path=args.config,
+                output_directory=args.output,
+                parameter_values=_parameter_assignments(args.parameter),
+            )
+        except (ReplayContractError, ValueError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sysid-capability":
+        from .system_identification import (
+            mujoco_sysid_capability,
+            write_mujoco_sysid_capability,
+        )
+
+        report = (
+            write_mujoco_sysid_capability(args.output, exercise=args.exercise)
+            if args.output is not None
+            else mujoco_sysid_capability(exercise=args.exercise)
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        passed = report["compatible"] and (
+            not args.exercise or report["official_surface_exercised"]
+        )
+        return 0 if passed else 1
+    if args.command == "sysid-input-report":
+        from .system_identification import inspect_recording_catalog_inputs
+
+        report = inspect_recording_catalog_inputs(
+            args.catalog,
+            repo_root=args.repo_root,
+            config_path=args.config,
+            inspection_scope=args.inspection_scope,
+            output_path=args.output,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["joint_timing_replay_ready"] else 1
+    if args.command == "sysid-freeze-split":
+        from .system_identification import (
+            SystemIdentificationError,
+            freeze_episode_split,
+        )
+
+        try:
+            report = freeze_episode_split(
+                args.catalog,
+                args.config,
+                args.output,
+                strategy=args.strategy,
+                held_out_column=args.held_out_column,
+            )
+        except SystemIdentificationError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sysid-fit":
+        from .recorded_replay import ReplayContractError
+        from .system_identification import (
+            SystemIdentificationError,
+            run_system_identification,
+        )
+
+        try:
+            report = run_system_identification(
+                args.split,
+                config_path=args.config,
+                output_directory=args.output,
+                backend=args.backend,
+            )
+        except (ReplayContractError, SystemIdentificationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["calibration_success"] else 1
     if args.command == "source-eval":
         from .pawn_source_evaluator import evaluate_source_episode
 
@@ -464,6 +736,26 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .pawn_groot_dataset import preflight_pawn_groot_dataset
 
         report = preflight_pawn_groot_dataset(
+            args.dataset,
+            output_path=args.output,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "groot-multisource-export":
+        from .groot_multisource_dataset import export_groot_multisource_dataset
+
+        report = export_groot_multisource_dataset(
+            args.output,
+            nominal_dataset=args.nominal_dataset,
+            recovery_dataset=args.recovery_dataset,
+            pawn_dataset=args.pawn_dataset,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "groot-multisource-preflight":
+        from .groot_multisource_dataset import preflight_groot_multisource_dataset
+
+        report = preflight_groot_multisource_dataset(
             args.dataset,
             output_path=args.output,
         )

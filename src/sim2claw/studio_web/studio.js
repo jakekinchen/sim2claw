@@ -15,6 +15,8 @@ const state = {
   frameCache: new Map(),
   playbackRate: 1,
   replayMode: "recorded",
+  recordingFeedIndex: 0,
+  recordingWindow: null,
   threeViewer: null,
   threeLoadId: 0,
   liveSimViewer: null,
@@ -68,6 +70,7 @@ const elements = {
   episodeTemplate: document.querySelector("#episode-template"),
   stage: document.querySelector("#episode-stage"),
   replayModeSwitch: document.querySelector("#replay-mode-switch"),
+  recordingFeedSwitch: document.querySelector("#recording-feed-switch"),
   threeReplay: document.querySelector("#three-replay"),
   threeCanvas: document.querySelector("#three-canvas"),
   threeStatus: document.querySelector("#three-status"),
@@ -317,8 +320,10 @@ async function fetchCatalog({ initial = false } = {}) {
       summary: catalog.summary,
       tasks: catalog.tasks.map((task) => [task.id, task.episode_count, task.passed_count, task.failed_count]),
       episodes: catalog.episodes.map((episode) => [episode.id, episode.status, episode.recorded_at]),
+      feeds: catalog.episodes.map((episode) => [episode.id, ...(episode.recording_feeds || []).map((feed) => feed.id)]),
       processes: catalog.processes.map((process) => [process.id, process.pid, process.status, process.phase, process.progress, process.updated_at]),
       robots: catalog.robots.map((robot) => [robot.id, robot.status]),
+      calibrations: (catalog.calibrations || []).map((asset) => [asset.id, asset.status, asset.model?.sha256]),
     });
 
     renderSummary();
@@ -329,6 +334,7 @@ async function fetchCatalog({ initial = false } = {}) {
       renderLibrary();
       renderSimulation();
       renderRobots();
+      renderCalibration();
       renderActivity();
 
       if (!selectedEpisode()) {
@@ -690,10 +696,14 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
   elements.stage.classList.remove("has-video", "has-frames", "has-three");
   elements.stage.dataset.replayMode = "recorded";
   elements.replayModeSwitch.hidden = true;
+  elements.recordingFeedSwitch.hidden = true;
+  elements.recordingFeedSwitch.replaceChildren();
   elements.preview.className = "timeline-preview";
   elements.preview.hidden = true;
   elements.scrubber.value = "0";
   state.frameIndex = 0;
+  state.recordingFeedIndex = 0;
+  state.recordingWindow = null;
   state.frameCache.clear();
   updateProgress(0, 0);
 
@@ -711,12 +721,10 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
   drawPhasePortrait(elements.stagePortrait, episode, { stage: true });
 
   if (episode.media.kind === "video") {
-    elements.video.src = episode.media.url;
-    elements.video.playbackRate = state.playbackRate;
-    elements.previewVideo.src = episode.media.url;
     elements.stage.classList.add("has-video");
     elements.preview.classList.add("has-video");
-    elements.video.load();
+    renderRecordingFeedSwitch(episode);
+    loadRecordingFeed(episode, 0);
   } else if (episode.media.kind === "frames" && episode.media.urls.length) {
     elements.frame.src = episode.media.urls[0];
     elements.previewFrame.src = episode.media.urls[0];
@@ -742,6 +750,85 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
   renderEvidence(episode);
   updateSelectedCardState();
   if (updateRoute) history.replaceState(null, "", `#/episodes/${encodeURIComponent(identifier)}`);
+}
+
+function episodeRecordingFeeds(episode) {
+  if (episode?.recording_feeds?.length) return episode.recording_feeds;
+  if (episode?.media?.kind === "video" && episode.media.url) {
+    return [{
+      id: "recorded-source",
+      title: "Recorded",
+      camera: episode.camera || "workcell",
+      url: episode.media.url,
+      window_start_seconds: episode.media.window_start_seconds,
+      window_end_seconds: episode.media.window_end_seconds,
+    }];
+  }
+  return [];
+}
+
+function activeRecordingFeed(episode = selectedEpisode()) {
+  const feeds = episodeRecordingFeeds(episode);
+  return feeds[Math.min(state.recordingFeedIndex, Math.max(0, feeds.length - 1))] || null;
+}
+
+function feedWindow(feed, mediaDuration = 0) {
+  const start = Math.max(0, Number(feed?.window_start_seconds || 0));
+  const requestedEnd = Number(feed?.window_end_seconds || 0);
+  const end = requestedEnd > start
+    ? Math.min(requestedEnd, mediaDuration > 0 ? mediaDuration : requestedEnd)
+    : mediaDuration;
+  return { start, end: Math.max(start, end || start), duration: Math.max(0, (end || start) - start) };
+}
+
+function recordingDuration(episode = selectedEpisode()) {
+  if (state.recordingWindow?.duration > 0) return state.recordingWindow.duration;
+  const feed = activeRecordingFeed(episode);
+  const start = Number(feed?.window_start_seconds || 0);
+  const end = Number(feed?.window_end_seconds || 0);
+  if (end > start) return end - start;
+  return Number(elements.video.duration || episode?.duration_seconds || 0);
+}
+
+function renderRecordingFeedSwitch(episode) {
+  const feeds = episodeRecordingFeeds(episode);
+  elements.recordingFeedSwitch.replaceChildren();
+  elements.recordingFeedSwitch.hidden = feeds.length <= 1;
+  feeds.forEach((feed, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.feedIndex = String(index);
+    button.setAttribute("aria-pressed", String(index === state.recordingFeedIndex));
+    text(button, feed.title || `Feed ${index + 1}`);
+    button.addEventListener("click", () => {
+      if (episode.inspection) setReplayMode("recorded");
+      loadRecordingFeed(episode, index);
+    });
+    elements.recordingFeedSwitch.append(button);
+  });
+}
+
+function loadRecordingFeed(episode, index) {
+  const feeds = episodeRecordingFeeds(episode);
+  const feed = feeds[index];
+  if (!feed?.url) return;
+  state.recordingFeedIndex = index;
+  state.recordingWindow = null;
+  elements.video.pause();
+  elements.video.src = feed.url;
+  elements.video.playbackRate = state.playbackRate;
+  elements.previewVideo.src = feed.url;
+  elements.video.load();
+  elements.previewVideo.load();
+  elements.recordingFeedSwitch.querySelectorAll("[data-feed-index]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(Number(button.dataset.feedIndex) === index));
+  });
+  if (state.replayMode === "recorded") {
+    text(elements.cameraSourceLabel, feed.kind === "physical_command_replay" ? "PHYSICAL REPLAY" : "RECORDED VIEW");
+    text(elements.cameraName, `${formatIdentifier(feed.camera || episode.camera || "workcell")} / ${formatIdentifier(feed.title || "source")}`);
+  }
+  updateProgress(0, 0);
+  renderTimelineTicks(episode);
 }
 
 function whenThreeReady() {
@@ -1110,8 +1197,9 @@ function setReplayMode(mode, { pauseCurrent = true } = {}) {
     text(elements.cameraSourceLabel, "PHYSICS TRACE");
     text(elements.cameraName, "MUJOCO / FREE ORBIT");
   } else if (episode) {
-    text(elements.cameraSourceLabel, "RECORDED VIEW");
-    text(elements.cameraName, `${formatIdentifier(episode.camera || "workcell")} / SOURCE`);
+    const feed = activeRecordingFeed(episode);
+    text(elements.cameraSourceLabel, feed?.kind === "physical_command_replay" ? "PHYSICAL REPLAY" : "RECORDED VIEW");
+    text(elements.cameraName, `${formatIdentifier(feed?.camera || episode.camera || "workcell")} / ${formatIdentifier(feed?.title || "source")}`);
   }
   if (episode) {
     updateTransportSemantics(episode);
@@ -1178,7 +1266,7 @@ function renderTimelineTicks(episode) {
     ? episode.inspection.duration_seconds
     : episode.media.kind === "frames"
     ? episode.media.urls.length
-    : episode.duration_seconds || 0;
+    : recordingDuration(episode);
   const count = 6;
   for (let index = 0; index < count; index += 1) {
     const tick = document.createElement("i");
@@ -1203,7 +1291,13 @@ function togglePlayback() {
   if (state.replayMode === "three" && episode.inspection) {
     state.threeViewer?.toggle();
   } else if (episode.media.kind === "video") {
-    if (elements.video.paused) elements.video.play().catch(() => {});
+    if (elements.video.paused) {
+      const windowRange = state.recordingWindow || feedWindow(activeRecordingFeed(episode), elements.video.duration || 0);
+      if (windowRange.duration > 0 && elements.video.currentTime >= windowRange.end - 0.05) {
+        elements.video.currentTime = windowRange.start;
+      }
+      elements.video.play().catch(() => {});
+    }
     else elements.video.pause();
   } else if (episode.media.kind === "frames") {
     if (state.framePlaying) stopFramePlayback();
@@ -1303,7 +1397,8 @@ function jumpSeconds(delta) {
   if (state.replayMode === "three" && episode.inspection) {
     if (state.threeViewer) state.threeViewer.applyTime(state.threeViewer.currentTime + delta);
   } else if (episode.media.kind === "video") {
-    elements.video.currentTime = Math.max(0, Math.min(elements.video.duration || 0, elements.video.currentTime + delta));
+    const windowRange = state.recordingWindow || feedWindow(activeRecordingFeed(episode), elements.video.duration || 0);
+    elements.video.currentTime = Math.max(windowRange.start, Math.min(windowRange.end, elements.video.currentTime + delta));
   } else {
     const fps = Number(episode.media.fps || episode.fps || 1);
     stepFrames(Math.round(delta * fps));
@@ -1325,7 +1420,10 @@ function seekFraction(fraction) {
   if (state.replayMode === "three" && episode.inspection) {
     state.threeViewer?.setFraction(safe);
   } else if (episode.media.kind === "video") {
-    if (Number.isFinite(elements.video.duration)) elements.video.currentTime = safe * elements.video.duration;
+    if (Number.isFinite(elements.video.duration)) {
+      const windowRange = state.recordingWindow || feedWindow(activeRecordingFeed(episode), elements.video.duration);
+      elements.video.currentTime = windowRange.start + safe * windowRange.duration;
+    }
   } else {
     showFrame(episode, Math.round(safe * (episode.media.urls.length - 1)));
   }
@@ -1352,11 +1450,12 @@ function updateTimelinePreview(event) {
   elements.preview.hidden = false;
   elements.preview.style.left = `${Math.max(12, Math.min(88, fraction * 100))}%`;
   if (episode.media.kind === "video") {
-    const duration = elements.previewVideo.duration || elements.video.duration;
+    const windowRange = state.recordingWindow || feedWindow(activeRecordingFeed(episode), elements.previewVideo.duration || elements.video.duration);
+    const duration = windowRange.duration;
     if (Number.isFinite(duration) && duration > 0) {
-      const target = fraction * duration;
+      const target = windowRange.start + fraction * duration;
       if (Math.abs(elements.previewVideo.currentTime - target) > 0.12) elements.previewVideo.currentTime = target;
-      text(elements.previewTimecode, formatTime(target));
+      text(elements.previewTimecode, formatTime(target - windowRange.start));
     }
   } else {
     const index = Math.round(fraction * (episode.media.urls.length - 1));
@@ -1381,18 +1480,20 @@ function renderEvidence(episode) {
 
   const table = document.createElement("dl");
   table.className = "evidence-table";
+  const mediaFacts = [];
+  if (episode.inspection) mediaFacts.push(`${episode.inspection.frame_count} MuJoCo states · interactive 3D`);
+  const feedCount = episodeRecordingFeeds(episode).length;
+  if (feedCount > 1) mediaFacts.push(`${feedCount} recorded camera feeds`);
+  else if (episode.media.kind === "video") mediaFacts.push("Recorded video");
+  else if (episode.media.kind === "frames") mediaFacts.push(`${episode.media.urls?.length || 0} rendered frames`);
   const rows = [
-    ["Evaluator result", episode.status],
+    [episode.evaluator_verdict ? "Evaluator result" : "Evidence status", episode.evaluator_verdict || episode.status],
     ["Terminal outcome", formatIdentifier(episode.terminal_outcome || "Not recorded")],
     ["Task", taskById(episode.task_id)?.title || episode.task_id],
     ["Case", formatIdentifier(episode.case_id || "Not recorded")],
     ["Recorded", episode.recorded_at ? new Date(episode.recorded_at).toLocaleString() : "Not recorded"],
     ["Proof class", episode.proof_class],
-    ["Media", episode.inspection
-      ? `${episode.inspection.frame_count} MuJoCo states · interactive 3D`
-      : episode.media.kind === "video"
-      ? "Recorded video"
-      : `${episode.media.urls?.length || 0} rendered frames`],
+    ["Media", mediaFacts.join(" · ") || "No replay media"],
     ...(episode.notes ? [["Operator notes", episode.notes]] : []),
     ...episode.metrics.map((metric) => [metric.label, formatMetric(metric)]),
   ];
@@ -1575,6 +1676,16 @@ function renderRobots() {
     card.append(visual, copy);
     elements.robotGrid.append(card);
   });
+}
+
+function renderCalibration() {
+  const asset = state.catalog?.calibrations?.[0] || null;
+  const load = () => {
+    window.Sim2ClawCalibration?.load(asset);
+    window.Sim2ClawCalibration?.setActive(state.view === "calibration");
+  };
+  if (window.Sim2ClawCalibration) load();
+  else window.addEventListener("sim2claw-3dgs-ready", load, { once: true });
 }
 
 const jointNames = ["Shoulder pan", "Shoulder lift", "Elbow", "Wrist flex", "Wrist roll", "Gripper"];
@@ -2112,13 +2223,14 @@ function refreshRecorderSquareOptions(preferredSource = null, preferredTarget = 
 }
 
 function setActiveView(view, { updateRoute = true } = {}) {
-  const safeView = ["replay", "library", "robots", "record"].includes(view) ? view : "replay";
+  const safeView = ["replay", "library", "calibration", "robots", "record"].includes(view) ? view : "replay";
   state.view = safeView;
   document.body.dataset.view = safeView;
   state.threeViewer?.setActive(safeView === "replay" && state.replayMode === "three");
   state.liveSimViewer?.setActive(
     safeView === "record" && selectedRecorderMode() === "simulation_follower",
   );
+  window.Sim2ClawCalibration?.setActive(safeView === "calibration");
   document.querySelectorAll("[data-route]").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.route === safeView && button.classList.contains("view-button"));
   });
@@ -2151,6 +2263,10 @@ function restoreRoute() {
   }
   if (route === "robots") {
     setActiveView("robots", { updateRoute: false });
+    return;
+  }
+  if (route === "calibration") {
+    setActiveView("calibration", { updateRoute: false });
     return;
   }
   if (route === "record") {
@@ -2210,6 +2326,13 @@ elements.video.addEventListener("loadedmetadata", () => {
   if (elements.video.videoWidth && elements.video.videoHeight) {
     elements.stage.style.setProperty("--stage-ratio", `${elements.video.videoWidth} / ${elements.video.videoHeight}`);
   }
+  const episode = selectedEpisode();
+  const feed = activeRecordingFeed(episode);
+  state.recordingWindow = feedWindow(feed, elements.video.duration || 0);
+  if (state.recordingWindow.start > 0 && Math.abs(elements.video.currentTime - state.recordingWindow.start) > 0.05) {
+    elements.video.currentTime = state.recordingWindow.start;
+  }
+  renderTimelineTicks(episode);
 });
 elements.frame.addEventListener("load", () => {
   if (elements.frame.naturalWidth && elements.frame.naturalHeight) {
@@ -2218,8 +2341,13 @@ elements.frame.addEventListener("load", () => {
 });
 elements.video.addEventListener("timeupdate", () => {
   if (state.replayMode === "three") return;
-  const duration = elements.video.duration;
-  updateProgress(duration ? elements.video.currentTime / duration : 0, elements.video.currentTime);
+  const windowRange = state.recordingWindow || feedWindow(activeRecordingFeed(), elements.video.duration || 0);
+  if (windowRange.duration > 0 && elements.video.currentTime >= windowRange.end - 0.01) {
+    elements.video.currentTime = windowRange.end;
+    elements.video.pause();
+  }
+  const current = Math.max(0, elements.video.currentTime - windowRange.start);
+  updateProgress(windowRange.duration ? current / windowRange.duration : 0, current);
 });
 elements.video.addEventListener("play", () => {
   if (state.replayMode === "three") return;

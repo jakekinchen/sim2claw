@@ -1,0 +1,241 @@
+{
+  "schema_version": "sim2claw.recorded_action_sysid_config.v1",
+  "config_id": "so101_recorded_action_sysid_v1",
+  "model": {
+    "kind": "current_chess_scene",
+    "piece_layout": "sparse_two_sided_pawns"
+  },
+  "bindings": {
+    "joint_names": [
+      "left_shoulder_pan",
+      "left_shoulder_lift",
+      "left_elbow_flex",
+      "left_wrist_flex",
+      "left_wrist_roll",
+      "left_gripper"
+    ],
+    "actuator_names": [
+      "left_shoulder_pan",
+      "left_shoulder_lift",
+      "left_elbow_flex",
+      "left_wrist_flex",
+      "left_wrist_roll",
+      "left_gripper"
+    ],
+    "end_effector_site": "left_gripperframe",
+    "gripper_joint": "left_gripper",
+    "pawn_body": null,
+    "contact_body_groups": [
+      ["left_gripper", "left_moving_jaw_so101_v1"],
+      ["$episode_object"]
+    ]
+  },
+  "physical_adapter": {
+    "joint_transform_sha256": "72812016bfa9dba2ba97fe448724394ad290a2b22458177bcbdec95aae0689e6",
+    "joint_transform": {
+      "schema_version": "sim2claw.physical_joint_transform.v1",
+      "transform_id": "so101_physical_degrees_to_current_scene_provisional_v1",
+      "source_joint_names": [
+        "shoulder_pan",
+        "shoulder_lift",
+        "elbow_flex",
+        "wrist_flex",
+        "wrist_roll",
+        "gripper"
+      ],
+      "simulator_joint_names": [
+        "left_shoulder_pan",
+        "left_shoulder_lift",
+        "left_elbow_flex",
+        "left_wrist_flex",
+        "left_wrist_roll",
+        "left_gripper"
+      ],
+      "calibration_approved": false,
+      "review_status": "provisional_range_audit_blocked",
+      "joints": [
+        {"source_joint": "shoulder_pan", "simulator_joint": "left_shoulder_pan", "input_unit": "degree", "output_unit": "radian", "sign": 1, "scale": 0.017453292519943295, "zero_offset": 0.0},
+        {"source_joint": "shoulder_lift", "simulator_joint": "left_shoulder_lift", "input_unit": "degree", "output_unit": "radian", "sign": 1, "scale": 0.017453292519943295, "zero_offset": 0.0},
+        {"source_joint": "elbow_flex", "simulator_joint": "left_elbow_flex", "input_unit": "degree", "output_unit": "radian", "sign": 1, "scale": 0.017453292519943295, "zero_offset": 0.0},
+        {"source_joint": "wrist_flex", "simulator_joint": "left_wrist_flex", "input_unit": "degree", "output_unit": "radian", "sign": 1, "scale": 0.017453292519943295, "zero_offset": 0.0},
+        {"source_joint": "wrist_roll", "simulator_joint": "left_wrist_roll", "input_unit": "degree", "output_unit": "radian", "sign": 1, "scale": 0.017453292519943295, "zero_offset": 0.0},
+        {"source_joint": "gripper", "simulator_joint": "left_gripper", "input_unit": "percent", "output_unit": "radian", "sign": 1, "scale": 0.0191986, "zero_offset": -0.17453}
+      ]
+    }
+  },
+  "replay": {
+    "command_interpolation": "zero_order_hold",
+    "base_latency_seconds": 0.0,
+    "latency_semantics": "at simulation time t apply the source command evaluated at max(0, t - latency)",
+    "continuous_alignment": "linear interpolation from native MuJoCo step times onto measured timestamps",
+    "discrete_alignment": "previous native sample hold onto measured timestamps",
+    "timestamp_policy": "finite strictly increasing source timestamps; never repair, reorder, or synthesize a bad timestamp",
+    "maximum_gap_seconds": 1.0,
+    "maximum_duration_seconds": 180.0
+  },
+  "loss": {
+    "kind": "huber",
+    "weights": {
+      "joint_position": 1.0,
+      "end_effector_position": 1.0,
+      "end_effector_orientation": 0.25,
+      "gripper_position": 0.25,
+      "pawn_position": 1.0,
+      "pawn_orientation": 0.25,
+      "contact_active": 0.25,
+      "contact_force": 0.25
+    },
+    "huber_delta": {
+      "joint_position": 0.035,
+      "end_effector_position": 0.015,
+      "end_effector_orientation": 0.1,
+      "gripper_position": 0.05,
+      "pawn_position": 0.015,
+      "pawn_orientation": 0.1,
+      "contact_active": 1.0,
+      "contact_force": 1.0
+    }
+  },
+  "parameter_stages": [
+    {
+      "name": "geometry",
+      "order": 1,
+      "requires_any_observable": ["end_effector_position"],
+      "parameters": [
+        {
+          "name": "ee_site_offset_x_m",
+          "target": "end_effector_site_offset_x",
+          "nominal": 0.0,
+          "minimum": -0.03,
+          "maximum": 0.03,
+          "supports_observables": ["end_effector_position"],
+          "smooth": true,
+          "fallback_supported": true
+        },
+        {
+          "name": "ee_site_offset_y_m",
+          "target": "end_effector_site_offset_y",
+          "nominal": 0.0,
+          "minimum": -0.03,
+          "maximum": 0.03,
+          "supports_observables": ["end_effector_position"],
+          "smooth": true,
+          "fallback_supported": true
+        },
+        {
+          "name": "ee_site_offset_z_m",
+          "target": "end_effector_site_offset_z",
+          "nominal": 0.0,
+          "minimum": -0.03,
+          "maximum": 0.03,
+          "supports_observables": ["end_effector_position"],
+          "smooth": true,
+          "fallback_supported": true
+        }
+      ]
+    },
+    {
+      "name": "timing_control",
+      "order": 2,
+      "requires_all_observables": ["joint_position"],
+      "parameters": [
+        {
+          "name": "command_latency_seconds",
+          "target": "command_latency_seconds",
+          "nominal": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.15,
+          "supports_observables": ["joint_position", "end_effector_position", "end_effector_orientation", "gripper_position"],
+          "smooth": true,
+          "fallback_supported": true
+        },
+        {
+          "name": "actuator_gain_scale",
+          "target": "actuator_gain_scale",
+          "nominal": 1.0,
+          "minimum": 0.5,
+          "maximum": 1.5,
+          "supports_observables": ["joint_position", "end_effector_position", "end_effector_orientation", "gripper_position"],
+          "smooth": true,
+          "fallback_supported": true
+        },
+        {
+          "name": "joint_damping_scale",
+          "target": "joint_damping_scale",
+          "nominal": 1.0,
+          "minimum": 0.5,
+          "maximum": 2.0,
+          "supports_observables": ["joint_position", "end_effector_position", "end_effector_orientation", "gripper_position"],
+          "smooth": true,
+          "fallback_supported": true
+        }
+      ]
+    },
+    {
+      "name": "contact_object",
+      "order": 3,
+      "requires_any_observable": ["pawn_position", "contact_active", "contact_force"],
+      "parameters": [
+        {
+          "name": "pawn_mass_scale",
+          "target": "pawn_mass_scale",
+          "nominal": 1.0,
+          "minimum": 0.5,
+          "maximum": 2.0,
+          "supports_observables": ["pawn_position", "pawn_orientation", "contact_active", "contact_force"],
+          "smooth": false,
+          "fallback_supported": false
+        },
+        {
+          "name": "pawn_friction_scale",
+          "target": "pawn_friction_scale",
+          "nominal": 1.0,
+          "minimum": 0.25,
+          "maximum": 2.5,
+          "supports_observables": ["pawn_position", "pawn_orientation", "contact_active", "contact_force"],
+          "smooth": false,
+          "fallback_supported": false
+        }
+      ]
+    }
+  ],
+  "optimizer": {
+    "preferred_backend": "mujoco.sysid",
+    "official_optimizer": "mujoco",
+    "multi_start_count": 5,
+    "seed": 1979,
+    "maximum_iterations": 30,
+    "finite_difference_relative_step": 0.0001,
+    "minimum_parameter_sensitivity": 1e-08,
+    "near_equivalent_relative_loss": 0.01,
+    "near_equivalent_absolute_loss": 1e-08
+  },
+  "split": {
+    "schema_version": "sim2claw.sysid_episode_split.v1",
+    "owner": "independent_cpu_fp32_sysid_evaluator",
+    "unit": "whole_episode",
+    "allowed_strategies": ["deterministic_hash", "leave_one_column_out"],
+    "default_strategy": "deterministic_hash",
+    "holdout_fraction": 0.25,
+    "seed": "so101-recorded-action-sysid-v1",
+    "leave_one_column_out_rule": "an episode touching the held-out source or destination file belongs wholly to held_out"
+  },
+  "held_out_acceptance": {
+    "minimum_relative_improvement": 0.01,
+    "minimum_absolute_improvement": 1e-08,
+    "success_requires_every_stage_valid": true,
+    "claim": "calibration_success_requires_frozen_held_out_improvement_over_baseline"
+  },
+  "receipts": {
+    "replay_schema_version": "sim2claw.recorded_action_replay_receipt.v1",
+    "fit_schema_version": "sim2claw.sysid_fit_receipt.v1",
+    "capability_schema_version": "sim2claw.mujoco_sysid_capability.v1"
+  },
+  "authority": {
+    "proof_class": "replay",
+    "physical_motion": false,
+    "training": false,
+    "promotion": false,
+    "unavailable_observables_are_never_inferred_from_labels_or_video": true
+  }
+}

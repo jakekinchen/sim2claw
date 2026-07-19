@@ -309,7 +309,7 @@ As-of snapshot: `2026-07-19T02:20:00-05:00`.
 | Adjudication queue | `718f155a40c301058291b597938a0a10e74380ae152f15f9e33850ecaab4c516` |
 | Fail-closed summary | `43141d8aa65930342b14d292ddb5d83d1fcb61ddd46690bbe8013e98529deefc` |
 | Endpoint plus research-overlay focused verification | `24 passed` |
-| Replay range audit | `docs/reference/PHYSICAL_REPLAY_JOINT_LIMIT_AUDIT_20260719.json`, SHA-256 `eb59c1dbc4ea5b4e7a6899c9e487b8b7eb0d72a83d7574d109ed488e437f57a7`; 2,255/7,741 measured and 2,231/7,741 command rows outside ranges |
+| Replay range audit | `docs/reference/PHYSICAL_REPLAY_JOINT_LIMIT_AUDIT_20260719.json`, SHA-256 `f54e7dfafe2a9eded31516e20426113d54166c137a5a0020d64b3c228773bd42`; the historical generation lock remains recorded, and a post-integration rerun under the current lock reproduced the same semantic core: 2,255/7,741 measured and 2,231/7,741 command rows outside ranges |
 | Isolated GR00T branch | `codex/groot-multisource-100mm-v2`; commits `b8a4988`, `c977431`, `c0305e6`, `9671d78`; final identity hardening under independent review |
 | External GR00T archive | `sim2claw-groot-n17-multisource-v2-20260719T060030Z`; archive SHA-256 `0cc871b19ea009c4aae43abd1d2d408096fe27637b820190b4d0b8f818adf0f7` |
 | Isolated replay/sysid branch | `codex/recorded-replay-sysid-foundation`; base commits `dff9fa7`, `a32f6e7`, `4c5d78a` plus repair commits `4d0fb09`, `aaadce2`; exact initial-velocity parsing remains review-blocked and nothing is integrated |

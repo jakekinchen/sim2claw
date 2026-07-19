@@ -3,11 +3,14 @@
 
 from __future__ import annotations
 
-import argparse
 import hashlib
+import os
 import random
+import signal
+import sys
 from contextlib import contextmanager
 from collections.abc import Iterator
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -22,6 +25,11 @@ from sim2claw.groot_consensus import (
     proposal_seed,
     query_seed,
 )
+from sim2claw.groot_evaluation_identity import (
+    build_server_import_attestation,
+    write_json_exclusive,
+)
+from sim2claw.groot_server_identity import parse_seeded_server_argv
 
 
 def seed_policy_rng(seed: int) -> None:
@@ -80,6 +88,7 @@ class SeededResetPolicy(PolicyWrapper):
         aggregation: str,
         noise_scale: float,
         num_inference_timesteps: int | None,
+        checkpoint_identity: dict[str, str] | None = None,
     ) -> None:
         super().__init__(policy, strict=False)
         model = getattr(policy, "model", None)
@@ -111,6 +120,7 @@ class SeededResetPolicy(PolicyWrapper):
         self._aggregation = aggregation
         self._noise_scale = noise_scale
         self._num_inference_timesteps = configured_timesteps
+        self._checkpoint_identity = dict(checkpoint_identity or {})
 
     @staticmethod
     def _validate_configuration(
@@ -293,37 +303,86 @@ class SeededResetPolicy(PolicyWrapper):
                 "proposal_count": self._proposal_count,
                 "rng_reset": True,
                 "rng_after_reset": policy_rng_snapshot(),
+                **self._checkpoint_identity,
             }
         )
         return info
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model-path", required=True)
-    parser.add_argument("--embodiment-tag", default="new_embodiment")
-    parser.add_argument("--device", default="cuda")
-    parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=5555)
-    parser.add_argument("--proposal-count", type=int, default=1)
-    parser.add_argument(
-        "--action-aggregation",
-        choices=sorted(AGGREGATION_METHODS),
-        default="medoid",
-    )
-    parser.add_argument("--noise-scale", type=float, default=1.0)
-    parser.add_argument("--num-inference-timesteps", type=int)
-    args = parser.parse_args()
+    try:
+        args = parse_seeded_server_argv(sys.argv[1:])
+    except ValueError as error:
+        raise SystemExit(f"invalid seeded server argv: {error}") from error
     if args.proposal_count < 1:
-        parser.error("--proposal-count must be positive")
+        raise SystemExit("--proposal-count must be positive")
     if args.action_aggregation == "trimmed_mean" and args.proposal_count < 5:
-        parser.error("trimmed_mean requires --proposal-count of at least 5")
+        raise SystemExit("trimmed_mean requires --proposal-count of at least 5")
     if not 0.0 <= args.noise_scale <= 1.0:
-        parser.error("--noise-scale must be between 0 and 1")
+        raise SystemExit("--noise-scale must be between 0 and 1")
     if args.num_inference_timesteps is not None and not (
         1 <= args.num_inference_timesteps <= 16
     ):
-        parser.error("--num-inference-timesteps must be between 1 and 16")
+        raise SystemExit("--num-inference-timesteps must be between 1 and 16")
+    identity_digests = (
+        args.checkpoint_manifest_sha256,
+        args.checkpoint_payload_sha256,
+        args.evaluation_manifest_sha256,
+    )
+    attestation_fields = (
+        *identity_digests,
+        args.evaluation_manifest,
+        args.sim2claw_root,
+        args.groot_root,
+        args.server_import_identity,
+    )
+    if any(attestation_fields) and not all(attestation_fields):
+        raise SystemExit(
+            "checkpoint, evaluation, roots, and server attestation identity must "
+            "be provided together"
+        )
+    if all(attestation_fields) and args.processor_model_path is None:
+        raise SystemExit(
+            "--processor-model-path is required with checkpoint identity digests"
+        )
+    for label, value in (
+        ("checkpoint manifest", args.checkpoint_manifest_sha256),
+        ("checkpoint payload", args.checkpoint_payload_sha256),
+        ("evaluation manifest", args.evaluation_manifest_sha256),
+    ):
+        if value is not None:
+            try:
+                decoded = bytes.fromhex(value)
+            except ValueError:
+                raise SystemExit(f"{label} digest is not hexadecimal")
+            if len(decoded) != hashlib.sha256().digest_size:
+                raise SystemExit(f"{label} digest is not SHA-256")
+    if args.processor_model_path is not None:
+        try:
+            processor_path = str(
+                Path(args.processor_model_path).resolve(strict=True)
+            )
+        except (OSError, RuntimeError) as error:
+            raise SystemExit(f"processor model path is unavailable: {error}")
+        for environment_name in (
+            "GROOT_PROCESSOR_MODEL_PATH",
+            "GROOT_BACKBONE_MODEL_PATH",
+        ):
+            environment_path = os.environ.get(environment_name)
+            if environment_path is None:
+                raise SystemExit(f"{environment_name} is not set")
+            try:
+                resolved_environment_path = str(
+                    Path(environment_path).resolve(strict=True)
+                )
+            except (OSError, RuntimeError) as error:
+                raise SystemExit(f"{environment_name} is unavailable: {error}")
+            if resolved_environment_path != processor_path:
+                raise SystemExit(f"{environment_name} differs from the bound path")
+    if args.maximum_runtime_seconds is not None:
+        if args.maximum_runtime_seconds < 1:
+            raise SystemExit("--maximum-runtime-seconds must be positive")
+        signal.alarm(args.maximum_runtime_seconds)
 
     seed_policy_rng(0)
     policy = Gr00tPolicy(
@@ -332,6 +391,15 @@ def main() -> None:
         device=args.device,
         strict=False,
     )
+    if args.server_import_identity is not None:
+        attestation = build_server_import_attestation(
+            evaluation_manifest_path=Path(args.evaluation_manifest),
+            repo_root=Path(args.sim2claw_root),
+            groot_root=Path(args.groot_root),
+            processor_model_path=Path(processor_path),
+            server_script=Path(__file__),
+        )
+        write_json_exclusive(Path(args.server_import_identity), attestation)
     server = PolicyServer(
         policy=SeededResetPolicy(
             policy,
@@ -339,6 +407,20 @@ def main() -> None:
             aggregation=args.action_aggregation,
             noise_scale=args.noise_scale,
             num_inference_timesteps=args.num_inference_timesteps,
+            checkpoint_identity=(
+                {
+                    "checkpoint_manifest_sha256": (
+                        args.checkpoint_manifest_sha256
+                    ),
+                    "checkpoint_payload_sha256": args.checkpoint_payload_sha256,
+                    "evaluation_manifest_sha256": (
+                        args.evaluation_manifest_sha256
+                    ),
+                    "processor_model_path": processor_path,
+                }
+                if args.checkpoint_manifest_sha256 is not None
+                else None
+            ),
         ),
         host=args.host,
         port=args.port,

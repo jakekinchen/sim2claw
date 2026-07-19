@@ -1,0 +1,54 @@
+{
+  "schema_version": "sim2claw.project.v1",
+  "project_id": "pawn_rank12_reachable_bg_hackathon_v1",
+  "title": "Reachable B-G pawn rank-1/rank-2 hackathon project",
+  "purpose": "Run one evidence-aware Sim2Claw reference workflow inside one NemoClaw/OpenShell sandbox.",
+  "source_of_truth": {
+    "project_state": "docs/autonomous-workflow/project_state.json",
+    "project_state_sha256": "90de6f678254ed6109c4752b83f394c4554a310571396ddf725dc2d02952fec0",
+    "evaluation_contract": "configs/evaluations/pawn_rank12_bidirectional_v2.json",
+    "evaluation_contract_sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3",
+    "physical_source_catalog": "configs/data/physical_pawn_move_catalog_20260719.json",
+    "physical_source_catalog_sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
+  },
+  "scope": {
+    "files": ["b", "c", "d", "e", "f", "g"],
+    "ranks": [1, 2],
+    "directed_skill_count": 12,
+    "directed_skill_ids": [
+      "pawn_b1_to_b2",
+      "pawn_b2_to_b1",
+      "pawn_c1_to_c2",
+      "pawn_c2_to_c1",
+      "pawn_d1_to_d2",
+      "pawn_d2_to_d1",
+      "pawn_e1_to_e2",
+      "pawn_e2_to_e1",
+      "pawn_f1_to_f2",
+      "pawn_f2_to_f1",
+      "pawn_g1_to_g2",
+      "pawn_g2_to_g1"
+    ],
+    "include_a_or_h": false,
+    "workcell_registration": "workspace_board_fiducial_robotward_100mm_20260718_v3"
+  },
+  "bundle_entries": [
+    {"path": "configs/data/physical_pawn_move_catalog_20260719.json", "required": true, "proof_class": "physical_source_catalog_unqualified"},
+    {"path": "datasets/manipulation_source_recordings", "required": true, "proof_class": "physical_teleoperation_source_unqualified"},
+    {"path": "outputs/pawn_composability/recovered_corpus_v2", "required": true, "proof_class": "retrospective_source_score_and_review_material"}
+  ],
+  "pipeline": {
+    "stages": ["inspect", "calibrate-sim", "evaluate-skills", "train-candidates", "compare-candidates"],
+    "generated_roots": ["artifacts", "datasets", "outputs", "runs", "checkpoints"],
+    "training_lock_source": "docs/autonomous-workflow/project_state.json",
+    "promotion_owner": "separate_cpu_fp32_consequence_evaluator"
+  },
+  "authority": {
+    "physical_authority": false,
+    "robot_motion_allowed": false,
+    "retrospective_recordings_can_promote": false,
+    "training_can_promote_itself": false,
+    "held_out_rows_opened": 0
+  },
+  "claim_boundary": "This project packages the current B-G rank-1/rank-2 evidence and bounded workflow. It does not prove a learned policy, held-out generalization, calibrated current-workspace physics, or physical motion authority."
+}

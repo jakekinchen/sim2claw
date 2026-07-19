@@ -1,0 +1,132 @@
+{
+  "schema_version": "sim2claw.groot_multisource_dataset_contract.v2",
+  "contract_id": "chess_manipulation_groot_multisource_v2",
+  "frozen_before_export": true,
+  "proof_class": "derived_evaluator_admitted_simulation_vla_training_mixture",
+  "model": {
+    "family": "NVIDIA Isaac GR00T N1.7",
+    "base_checkpoint": "nvidia/GR00T-N1.7-3B",
+    "base_checkpoint_revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495",
+    "source_commit": "23ace64f17aa5015259b8609d371eb61a357c776",
+    "embodiment_tag": "NEW_EMBODIMENT",
+    "action_horizon": 16
+  },
+  "cohorts": [
+    {
+      "cohort_id": "historical_nominal_rook_king_v1",
+      "dataset_label": "chess_pick_place_groot_v1",
+      "dataset_receipt_sha256": "f910646690147518f05a89e7157be39b745051d768cece5f0e485b8d11eea3be",
+      "task_contract_sha256": "988a5a93d26358770c2dc3731602ba1dc11f723974758659d4cb05392f63ef58",
+      "proof_class": "simulation_synthetic_vla_demonstration_dataset",
+      "geometry_class": "photo_aligned_chess_workcell_v1_historical",
+      "unique_source_episode_count": 24,
+      "source_frame_count": 8712,
+      "dataset_repetitions_per_source_episode": 1,
+      "all_rows_evaluator_admitted": true,
+      "physical_authority": false
+    },
+    {
+      "cohort_id": "historical_recovery_rook_king_v2",
+      "dataset_label": "chess_pick_place_groot_recovery_v2",
+      "dataset_receipt_sha256": "fba7697d1f4f95aad46998dd3ab2db79cbde629b91c8e5a228f59d4e214a967d",
+      "task_contract_sha256": "e4c3d4d0068ae2baa075dc425fc2da28fdbad05cc116ae0a58b2f54ef07bc42a",
+      "proof_class": "simulation_synthetic_vla_recovery_demonstration_dataset",
+      "geometry_class": "photo_aligned_chess_workcell_v1_historical",
+      "unique_source_episode_count": 48,
+      "source_frame_count": 18888,
+      "dataset_repetitions_per_source_episode": 1,
+      "all_rows_evaluator_admitted": true,
+      "raw_failed_prefix_rows_included": false,
+      "physical_authority": false
+    },
+    {
+      "cohort_id": "current_100mm_pawn_v1",
+      "dataset_label": "chess_pick_place_pawn_groot_v1",
+      "dataset_receipt_sha256": "0a1ee253147186330c618d36131ce84b9ccb07707e8b8b1e72c22c22559c77be",
+      "task_contract_sha256": "8561c6b15ec565e724c9aaab272c84ac897c1a442cd69ab2f4fa91c22243bffa",
+      "proof_class": "evaluator_admitted_simulation_source_to_groot_dataset",
+      "geometry_class": "operator_updated_chess_workcell_v3_100mm",
+      "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+      "board_pose_id": "board_robotward_100mm_20260718_v3",
+      "board_center_in_table_frame_xy_m": [0.04, -0.065],
+      "unique_source_episode_count": 1,
+      "source_frame_count": 562,
+      "dataset_repetitions_per_source_episode": 24,
+      "repetition_semantics": "sampling_weight_only_not_independent_evidence",
+      "all_rows_evaluator_admitted": true,
+      "pawn_authority_scope": "tan_pawn_c8_to_a6_only",
+      "physical_authority": false
+    }
+  ],
+  "dataset": {
+    "format": "GR00T LeRobot v2.1",
+    "fps": 20,
+    "unique_source_episode_count": 73,
+    "derived_dataset_episode_count": 96,
+    "frame_count": 41088,
+    "task_count": 4,
+    "state_dimension": 6,
+    "action_dimension": 6,
+    "action_representation": "absolute_joint_position_target",
+    "video": {
+      "modality_key": "observation.images.front",
+      "height": 256,
+      "width": 256,
+      "codec": "h264",
+      "pixel_format": "yuv420p",
+      "pawn_224_to_256_transform": "ffmpeg_lanczos_scale_only",
+      "diagnostic_physical_video_included": false
+    },
+    "expected_effective_h16_start_count": 39648,
+    "held_out_rows": 0
+  },
+  "loader_proof": {
+    "pinned_nvidia_loader_required_before_training": true,
+    "allow_padding": false,
+    "expected_columns": [
+      "language.annotation.human.task_description",
+      "state.single_arm",
+      "state.gripper",
+      "action.single_arm",
+      "action.gripper",
+      "video.front"
+    ],
+    "expected_video_frame_shape": [256, 256, 3],
+    "shard_size": 128,
+    "episode_sampling_rate": 0.1,
+    "seed": 42,
+    "expected_shard_count": 310,
+    "expected_sharded_start_count": 39648,
+    "model_queries": 0,
+    "training_started": false
+  },
+  "sealed_evidence": {
+    "nominal_held_out_receipt_sha256": "41e9df28b4aa96c8f473575a640df3e194dec219caf57fd95334856d95fbdb7d",
+    "recovery_held_out_receipt_sha256": "f849460fe89bee251355ea105a4e1553076da70e5105fb51186a8ba641cd816b",
+    "pawn_rank12_evaluator_contract_sha256": "f3dac8b86cd7b0252153d25c0d5c09204079003ac9780642992fd10bc08e0d43",
+    "held_out_rows_used": 0,
+    "held_out_receipts_are_identity_only_not_builder_inputs": true
+  },
+  "excluded_evidence": {
+    "physical_teleop_intake_sha256": "22de7ec867448f8a3b524775bf586dc7fd013dc266d741e77b31a57d8bc87870",
+    "physical_recording_count": 5,
+    "physical_sample_count": 2186,
+    "physical_video_count": 5,
+    "physical_training_rows": 0,
+    "physical_exclusion_reason": "72mm_geometry_unreviewed_outcomes_and_unreconciled_labels",
+    "current_100mm_counterexamples": 4,
+    "counterexample_training_rows": 0,
+    "raw_failure_actions_may_enter_behavior_cloning": false
+  },
+  "authority": {
+    "training_cannot_promote": true,
+    "dataset_builder_cannot_declare_success": true,
+    "source_geometry_classes_remain_distinct": true,
+    "historical_rook_king_rows_are_skill_prior_not_pawn_authority": true,
+    "current_100mm_pawn_repetitions_do_not_multiply_evidence": true,
+    "failed_actions_and_held_out_rows_are_excluded": true,
+    "llm_or_vlm_review_cannot_admit_training_rows": true,
+    "physical_authority": false,
+    "serial_authority": false
+  }
+}

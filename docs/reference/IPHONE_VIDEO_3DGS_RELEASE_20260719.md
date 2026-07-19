@@ -39,10 +39,22 @@ artifacts/private/releases/img5349-3dgs-20260719/
 
 Verify it against `IPHONE_VIDEO_3DGS_RELEASE_20260719.sha256` before use.
 
+When the PLY, preview, and orbit all match the tracked index, Studio exposes
+them in the read-only Calibration view. The tracked JSON also preserves the
+producer's exact-camera center, rotation, vertical field of view, preferred
+relative target, and source viewer-config SHA-256. The viewer-config itself is
+producer-workspace-only and is not tracked or independently hash-verifiable in
+this repository; the JSON index records that limitation. Those values establish
+an inspectable starting view only. Studio presents the LLM-proposed semantic
+JSON hierarchy as read-only text beside a translucent Three.js projection built
+independently from the accepted MuJoCo manifest. The JSON does not drive either
+geometry layer. Neither the controls nor the proposal convert SfM units into
+metric scale, define collision geometry, or register the splat to MuJoCo task
+coordinates.
+
 ## Clean-room implementation boundary
 
 The repo-native pathway is `sim2claw iphone-3dgs`. It was authored manually in
 this repository from reviewed behavioral requirements and public dependency
 interfaces. No implementation file, script, configuration, generated dataset,
 checkpoint, or artifact was copied from the prior scanner repository into Git.
-

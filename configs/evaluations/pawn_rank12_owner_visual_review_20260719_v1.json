@@ -1,0 +1,49 @@
+{
+  "schema_version": "sim2claw.pawn_rank12_owner_visual_review.v1",
+  "review_id": "pawn_rank12_owner_visual_review_20260719_v1",
+  "reviewer": "dataset_owner",
+  "reviewed_at": "2026-07-19T03:42:08-05:00",
+  "acceptance_source": "current Codex conversation owner instruction after inspecting the split 36-panel review",
+  "decision": "accept_current_product_scope_visual_markers_after_required_final_c2_redo",
+  "accepted_scope": {
+    "candidate_skill_id_required": true,
+    "phases": [
+      "initial",
+      "final"
+    ],
+    "expected_episode_count": 13,
+    "expected_marker_count": 26,
+    "expected_directed_skill_coverage": 12
+  },
+  "required_redo": {
+    "recording_id": "20260719T032400Z-052d5137",
+    "folder_label": "c1-to-c2",
+    "phase": "final",
+    "square": "c2",
+    "accepted_visual_fiducial_center_px": [
+      462.5,
+      189.5
+    ],
+    "accepted_visual_fiducial_radius_px": 9.600000381469727,
+    "accepted_square_tone": "beige",
+    "accepted_darkness_threshold_luma": 12
+  },
+  "review_artifact": {
+    "path": "outputs/pawn_composability/recovered_corpus_v2/split_review/product_scope_26_panels.png",
+    "panel_count": 26,
+    "file_sha256": "8a2ae4029d2c89c3dee5a085f8cea835fe4f686de5f42e0c214467620dcea5f9",
+    "pixel_sha256": "11b02ee135fc0a0204757eef6896cef2c74b25c83c2399abcbff45f964d57369",
+    "accepted_marker_manifest_sha256": "c8076c59ebc070b5b3104030f2620d1f3add54830d169433a8bdbf657ab590c8",
+    "encoding_note": "deterministic PNG re-encoding of the pixel-identical product sheet inspected by the owner",
+    "banner_state": "pre_acceptance_source_artifact_preserved_for_review_lineage"
+  },
+  "task_label_decision": "for product-scope rows use the displayed folder transition as the owner-reviewed task label; retain catalog and receipt conflicts in history",
+  "out_of_scope_decision": "retain all five rows separately and exclude them from the current product evaluation",
+  "uncertainty": {
+    "status": "not_quantified_single_owner_qualitative_review",
+    "independent_annotator_count": 1,
+    "metric_grade_boundary_abstention_required": true
+  },
+  "board_calibration_decision": "not_accepted_for_metric_evaluation",
+  "claim_boundary": "This review accepts current cyan visual fiducial rings and inferred contact-center crosses as decent qualitative image-space annotations for the product-scope recordings. It does not validate the proposal homography, create metric board coordinates, identify transition A or b, establish self-centering or composability, validate simulator physics, or evaluate a learned policy."
+}
