@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1000" viewBox="0 0 1200 1000" role="img" aria-labelledby="title desc">
   <title id="title">Simulator spatial error across sequential optimization actions, task consequences, and the planned path to normalized GR00T training data</title>
-  <desc id="desc">Panel one: training-side event RMS error falls from 309.6 millimeters for the provisional identity mapping to 17.4 millimeters for the lift-dominant offset candidate, a 94.4 percent reduction across seven staged actions, with a one-time held-out check at 23.5 millimeters under the declared 60 millimeter kinematic-admission threshold. Panel two: selected-piece contact rises from zero to nine of eleven episodes and lift to one of eleven, while full pawn-move success remains zero everywhere. Panel three: the planned pipeline from the frozen workcell candidate through committed receipts, regenerated B-through-G episodes, and a frozen normalized dataset to a GR00T N1.7 fine-tune; only the first stage has working-receipt evidence today.</desc>
+  <desc id="desc">Panel one: training-side event RMS error falls from 309.6 millimeters for the provisional identity mapping to 17.4 millimeters for the lift-dominant offset candidate, a 94.4 percent reduction across seven staged actions. A separate held-out column shows the frozen candidate improving that split from its 327.5 millimeter baseline to 23.5 millimeters, a 92.8 percent reduction, under the declared 60 millimeter kinematic-admission threshold; the held-out column is a different data split, not a later step in the sequence. Panel two: selected-piece contact rises from zero to nine of eleven episodes and lift to one of eleven, while full pawn-move success remains zero everywhere. Panel three: the planned pipeline from the frozen workcell candidate through committed receipts, regenerated B-through-G episodes, and a frozen normalized dataset to a GR00T N1.7 fine-tune; only the first stage has working-receipt evidence today.</desc>
   <style>
     :root { color-scheme: light dark; }
     text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
@@ -8,7 +8,6 @@
     .grid { stroke: #e1e0d9; stroke-width: 1; }
     .axis { stroke: #c3c2b7; stroke-width: 1; }
     .refline { stroke: #898781; stroke-width: 1; }
-    .split-link { stroke: #898781; stroke-width: 1.5; stroke-dasharray: 2 6; fill: none; stroke-linecap: round; }
     .text { fill: #0b0b0b; }
     .text2 { fill: #52514e; }
     .muted { fill: #898781; }
@@ -25,11 +24,12 @@
     .flow-plan { fill: none; stroke: #898781; stroke-dasharray: 5 4; }
     .arrow { stroke: #898781; stroke-width: 1.5; fill: none; }
     .arrowhead { fill: #898781; }
+    .arrowhead-series { fill: #2a78d6; }
     @media (prefers-color-scheme: dark) {
       .bg { fill: #1a1a19; }
       .grid { stroke: #2c2c2a; }
       .axis { stroke: #383835; }
-      .refline, .split-link { stroke: #898781; }
+      .refline { stroke: #898781; }
       .text { fill: #ffffff; }
       .text2 { fill: #c3c2b7; }
       .committed-line, .working-line { stroke: #3987e5; }
@@ -37,6 +37,7 @@
       .working-point { fill: #1a1a19; stroke: #3987e5; }
       .holdout-point { fill: #3987e5; stroke: #1a1a19; }
       .bar-contact { fill: #3987e5; }
+      .arrowhead-series { fill: #3987e5; }
       .chip { fill: #262624; stroke: rgba(255,255,255,0.10); }
       .flow-done { fill: #262624; stroke: rgba(255,255,255,0.18); }
     }
@@ -83,11 +84,15 @@
   <text class="muted" x="88" y="565" text-anchor="end" font-size="13">0</text>
 
   <line class="refline" x1="98" y1="485" x2="1150" y2="485"/>
-  <text class="muted" x="1148" y="479" text-anchor="end" font-size="12">60 mm kinematic-admission threshold</text>
+  <text class="muted" x="1092" y="479" text-anchor="end" font-size="12">60 mm kinematic-admission threshold</text>
 
   <path class="committed-line" d="M130 173 L270 412"/>
   <path class="working-line" d="M270 412 L410 427 L550 448 L690 510 L830 527 L970 538"/>
-  <path class="split-link" d="M970 538 L1110 531"/>
+  <path class="working-line" d="M1110 158 L1110 512"/>
+  <path class="arrowhead-series" d="M1105 508 L1110 517 L1115 508 Z"/>
+  <circle class="working-point" cx="1110" cy="151" r="5.5"/>
+  <text class="text" x="1096" y="156" text-anchor="end" font-size="16" font-weight="600">327.5</text>
+  <text class="muted" x="1096" y="173" text-anchor="end" font-size="12">held-out baseline</text>
 
   <circle class="committed-point" cx="130" cy="173" r="5.5"/>
   <circle class="committed-point" cx="270" cy="412" r="5.5"/>
@@ -105,7 +110,7 @@
   <text class="text" x="690" y="493" text-anchor="middle" font-size="16" font-weight="600">39.7</text>
   <text class="text" x="830" y="510" text-anchor="middle" font-size="16" font-weight="600">26.1</text>
   <text class="text" x="970" y="524" text-anchor="middle" font-size="16" font-weight="600">17.4</text>
-  <text class="text" x="1110" y="514" text-anchor="middle" font-size="16" font-weight="600">23.5</text>
+  <text class="text" x="1096" y="536" text-anchor="end" font-size="16" font-weight="600">23.5</text>
 
   <!-- Step deltas -->
   <text class="muted" x="270" y="584" text-anchor="middle" font-size="12">−61.7%</text>

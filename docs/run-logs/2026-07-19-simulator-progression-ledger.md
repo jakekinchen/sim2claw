@@ -20,10 +20,14 @@ because its multi-radian offsets were physically implausible and produced no
 contact), and the *staged workcell fit* (a categorical 180-degree board
 relabel, a bounded planar board fit at yaw 184.9 degrees, bounded identity-sign
 joint offsets, height/timing nuisance terms, and the selected lift-dominant
-candidate with an 18.7-degree shoulder-lift offset). The diamond is the
-one-time held-out check of the frozen candidate (23.5 mm against a 327.5 mm
-held-out baseline), plotted against the declared 60 mm kinematic-admission
-threshold. The held-out set is now opened and must not be reused as fresh
+candidate with an 18.7-degree shoulder-lift offset). The final column is the
+one-time held-out check of the frozen candidate, drawn as a within-split drop
+from that split's own 327.5 mm baseline to 23.5 mm (a 92.8% reduction) against
+the declared 60 mm kinematic-admission threshold. The held-out column is a
+different data split, not a later step in the sequence: 23.5 mm on two unseen
+sealed episodes versus 17.4 mm on the eleven fitted training episodes is the
+expected generalization gap, evidence that the fit transfers rather than a
+regression. The held-out set is now opened and must not be reused as fresh
 evidence.
 
 **Panel 2 — task consequences.** Selected-piece contact and lift fractions
