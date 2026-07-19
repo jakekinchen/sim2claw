@@ -17,7 +17,7 @@
 
 - [ ]  **Repo link** (Make sure it’s public!).
   - https://github.com/jakekinchen/sim2claw
-    - <todo> verify repo is public
+    - NEED TO MSKE REPO PUBLIC repo is public
         - [ ]  Must include a **README** with:
             - [ ]  Quick start (commands to run)
             - [ ]  Tech stack & architecture diagram (simple is fine)
@@ -96,7 +96,7 @@ Aim for a confident pace of about 140 words per minute. Text in brackets is an o
 
 “The workflow starts with a real table captured using Polycam. We use its glTF geometry, RoomPlan measurements, and an overhead photograph to construct a photo-aligned MuJoCo workcell.
 
-The scene contains a measured table, a complete chessboard with thirty-two dynamic pieces, and two articulated SO-101 robot arms. This is not merely a visual reconstruction. MuJoCo simulates joints, collisions, friction, contact, and grasp behavior.”
+The scene contains a measured table, a complete chessboard with numerous pieces, and two articulated SO-101 robot arms where one arm guides and the other arm follows. This is not merely a visual reconstruction. MuJoCo simulates joints, collisions, friction, contact, and grasp behavior.”
 
 ### 0:55–1:30 — Technical depth
 
@@ -112,7 +112,7 @@ Most importantly, training cannot promote itself. A separate CPU, float-thirty-t
 
 [Play `outputs/polycam_chess_table/act/chess_rook_lift_v1/eval/act_chess_rook_lift.mp4`.]
 
-“This is the held-out evaluation. The newly trained policy lifts the rook **94.88 millimeters**.
+“This is the held-out evaluation. The newly trained policy lifts the pawn **94.88 millimeters**.
 
 That number is not taken from visual inspection. The evaluator writes an `evaluation_receipt.json` containing each measured gate, its threshold, and its pass-or-fail result. It also records the action trace, frames, and this replay video.”
 
@@ -134,7 +134,11 @@ Successful evidence can advance a frozen milestone. Failed runs remain counterex
 
 A researcher can clone the public repository, bootstrap it with `uv`, reproduce the simulation, and inspect results in the read-only Studio.”
 
-### 2:48–3:00 — Close
+### 2:48–3:18 — Capture on its own
+
+[Show 3 simulated videos + real video showing arm capturing pawn on its own]
+
+### 3:18-3:30 — Close
 
 [Finish on the project title or pipeline poster.]
 
