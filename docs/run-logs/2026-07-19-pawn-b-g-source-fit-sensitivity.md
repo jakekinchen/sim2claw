@@ -1,0 +1,232 @@
+# B-G pawn source-fit and contact-sensitivity run
+
+Date: 2026-07-19 America/Chicago
+
+Outcome: **terminal negative; no source-fit adapter accepted**
+
+This run implements the proposed gripper-close proxy, compares the resulting
+simulated pinch point with the labeled source/destination square centers, and
+scores the same permitted physical teleoperation source commands with the
+already frozen B-G simulation reward. It also records the evaluator score for
+every simulator configuration run.
+
+It is not an ACT policy evaluation. No compatible B-G pawn ACT checkpoint
+exists locally. The commands are human-owned ACT-source demonstrations, not
+policy weights or learned policy actions. No training, hardware, robot, camera,
+serial bus, gateway, network research, physical held-out data, Brev, paid
+compute, or physical motion was used.
+
+## Frozen specification and identities
+
+- source-fit contract:
+  `configs/optimization/pawn_bg_source_fit_v1.json`
+- source-fit contract SHA-256:
+  `9144e42316dc007f8fcd381c6b7c054cbfe12e8c7b639d2a06f1f91070172910`
+- B-G reward contract SHA-256:
+  `e702ad7fa3a366bc24c552c4cd0e5df66842d5fe7f6ef824266b8cfb2ee8d0c7`
+- physical product catalog SHA-256:
+  `7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e`
+- pre-existing physical system-identification split SHA-256:
+  `1aa839a31b896a26a000ed27ff649232427e3406403c66d7fe79c60b0a0acb08`
+- provisional baseline adapter config SHA-256:
+  `ebbcbee27555a767f40f347a36d1c54cb6faba2e1e843c197968f41dd1d9227d`
+- owner visual manifest SHA-256:
+  `3fab56dbf83e1a152f44f0daf88c0d43c44bfbc0ce3c23c0c2e0aa603797101e`
+- rubber-tip contact-prior contract SHA-256:
+  `e89eb1084e7e1dee64aaebfbc18b816b5bf58aefa98b18d38ef2e9a81b6ee499`
+- bounded least-squares seed: `190719`
+- discrete joint-sign hypotheses: `32`
+- full nominal physics shortlist: `3`
+
+The optimizer could change only five body-joint signs and five zero offsets in
+a separate diagnostic adapter. Radians-per-degree scale and the gripper
+mapping remained fixed. Offset bounds were the exact intersection that keeps
+every permitted training command and measured joint row inside the unchanged
+MuJoCo actuator limits. Simulator geometry, joint limits, actuators, mass,
+inertia, reward, evaluator, initial conditions, and task mappings were not
+optimized.
+
+The admission rule was frozen before the run: a candidate must have no
+clipping and strictly beat the provisional baseline on task consequence
+success, selected-piece contact, diagnostic reward, final target distance, and
+then pinch-point RMS in that lexicographic order. Otherwise no adapter is
+accepted.
+
+## Data used
+
+The quantitative source-fit cohort is the intersection of the 13
+owner-reviewed B-G product episodes with the already existing `train`
+partition:
+
+- 11 physical teleoperation episodes;
+- 10 distinct directed B-G rank-1/rank-2 moves;
+- 22 extracted events: one source near-close and one destination reopen per
+  episode;
+- six-joint follower actual/command rows sampled at 20 Hz;
+- task-labeled source and destination square centers from the frozen 100 mm
+  simulator registration.
+
+The two product episodes assigned to `held_out` (`d1-to-d2` and
+`g1-to-g2-redo`) were listed by metadata only. Their samples, receipts, and
+videos were not opened. The receipt records `held_out_episode_assets_read=false`
+and `held_out_validation_performed=false`.
+
+The 11 hash-bound C922 overhead videos and 22 owner-reviewed initial/final
+markers were used only for qualitative phase and episode review; their
+quantitative endpoint weight was zero. The separate, explicitly non-held-out
+D405 wrist release was also hash-bound and reviewed. It primarily shows the
+gripper and ceiling rather than the board, so it was used only to corroborate
+open/close phase and had zero object/endpoint metric weight:
+
+- wrist video SHA-256:
+  `19f2d6f853d8145ba1b6239b41cf31182778bc69e5bd4518069694af48780c2b`
+- wrist release manifest SHA-256:
+  `50bd9205a45d852cb9edb4ba143d899660adbc41ad16dc0f3d4be14750360fdf`
+- wrist source receipt SHA-256:
+  `1ea97cd3ebb53694802b8b7f120625419c10e778ea133f85cb1f7da7c5fe1221`
+
+These data contain no measured Cartesian end-effector trajectory, pawn pose
+trajectory, calibrated camera pose, force, or contact labels.
+
+## Gripper-close proxy
+
+For each permitted episode, the frozen extractor finds the first source-open
+peak in the first 55% of the actual gripper signal, the valley before the final
+reopen, and the first descent crossing within 15% of that valley. Five body
+joint samples centered on that crossing are averaged. Destination reopen is
+the maximum actual gripper value in the final 45%. Forward kinematics then
+compares the simulated jaw pinch point with the corresponding labeled square
+center at an explicitly estimated pawn-neck height of `0.038 m`.
+
+This is the user's proposed proxy made deterministic. It does not prove the
+physical gripper was centered when it closed, and the task label is not a
+measured object or hand trajectory.
+
+## Results
+
+The provisional adapter clipped at least one command and placed measured rows
+outside limits in all 11 episodes. Its 22-event pinch-point RMS was
+`0.30955046011340426 m`.
+
+The best bounded candidate had adapter SHA-256
+`9edd37f81fce7aa0d6d19a6dcf162a3c944d0f5437e5778164b8fe8cdc68b868`,
+body-joint signs `[-1, 1, 1, 1, -1]`, and zero offsets:
+
+`[-0.18590713072668855, 1.986768170091566, -2.255409959876831,
+0.1573889255319273, -2.157249866581557] rad`.
+
+It eliminated clipping for all permitted rows and reduced overall event RMS to
+`0.11842208424410972 m`, a `61.74385132532977%` reduction. Exact residuals:
+
+| Event proxy | Count | Mean distance | RMS distance | Maximum distance |
+|---|---:|---:|---:|---:|
+| source near-close | 11 | 0.1075865114217004 m | 0.11035592241845217 m | 0.14751809497471222 m |
+| destination reopen | 11 | 0.12214386426954432 m | 0.12597281635579400 m | 0.17070057209485426 m |
+| combined | 22 | 0.11486518784562237 m | 0.11842208424410972 m | 0.17070057209485426 m |
+
+Despite the kinematic fit, the frozen consequence score worsened. No selected
+pawn was contacted or lifted, and no episode succeeded:
+
+| Configuration/run sequence | Mean reward | Clipped episodes | Selected-pawn contact | Lifts | Successes |
+|---|---:|---:|---:|---:|---:|
+| provisional baseline / nominal | 0.1000001624739021 | 11/11 | 0/11 | 0/11 | 0/11 |
+| best candidate / nominal | -0.5818180192583345 | 0/11 | 0/11 | 0/11 | 0/11 |
+| best candidate / rubber low prior | -0.5818180192583345 | 0/11 | 0/11 | 0/11 | 0/11 |
+| best candidate / rubber midpoint prior | -0.5818180192583345 | 0/11 | 0/11 | 0/11 | 0/11 |
+| best candidate / rubber high prior | -0.5818180192583345 | 0/11 | 0/11 | 0/11 | 0/11 |
+
+All 55 candidate/variant episode replays remained finite. Maximum selected-pawn
+rise was only `0.00000009077044993421879 m`; mean final target distance was
+`0.04445000091877156 m`. Rubber-tip settings were outcome-insensitive because
+the selected pawn was never contacted. This does not establish that the real
+rubber bands are irrelevant.
+
+The candidate was therefore rejected by the frozen admission rule. The
+accepted adapter is `null`, promotion is forbidden, and the result is
+`terminal_negative_no_source_fit_adapter_accepted`.
+
+For the displayed B1-to-B2 episode, reward was `-0.8999996038285638`, selected
+pawn contact/lift/success were all false, and wrong-piece contact plus
+`0.029546378868293584 m` collateral displacement caused additional gate
+failures.
+
+## Score sequence and visual evidence
+
+The ignored machine-readable score sequence records all five comparable
+configurations in frozen order. The plot uses the same 11 training-side source
+episodes, reward, and evaluator for every row. It is source-fit/sensitivity
+history, not physical calibration history or held-out validation.
+
+- source-fit receipt:
+  `outputs/pawn_bg_act_v1/pawn_bg_source_fit_v1/receipt.json`
+- receipt SHA-256:
+  `b834f84fbfa8073ac671d1149749059e62aa292f7ad1acee98d5a4f9d94d6121`
+- deterministic receipt core SHA-256:
+  `dbc66475bbc9a336604e976de89190c49c613a6957baf6236aae7e6707924b30`
+- score-sequence JSON SHA-256:
+  `e4f752ef9626ba71bcb2e26f35cd84390977b288e68500cab52fdc691ac97e7a`
+- score plot SHA-256:
+  `11dc9bd3d62b3a9c88e81801d330dfaf17d16ebe1dd673aa780295c8c9a0d911`
+- synchronized B1 physical-overhead/simulator video SHA-256:
+  `3b3b322cfc39d8c2b0c46439c33217e5a9f0c3f3de667605d6a3bebbc3320718`
+- comparison poster SHA-256:
+  `d52ab0c8dc45932e3bb2b3be0a9495bcf2e51d692485e876451ce6fbdba797dd`
+- visual receipt SHA-256:
+  `62f016614448193a18c8847f802d034bbb6913a77b76468e273644c72c1fa8e0`
+
+The simulator panel deliberately uses the best **rejected** adapter and labels
+every frame `NOT CALIBRATED`; it is shown to diagnose the remaining spatial
+gap, not to present accepted replay equivalence.
+
+## Commands
+
+```bash
+uv run sim2claw pawn-bg-source-fit \
+  --source-repository-root /Users/kelly/Developer/sim2claw \
+  --output outputs/pawn_bg_act_v1/pawn_bg_source_fit_v1/receipt.json
+
+uv run sim2claw pawn-bg-source-fit-visuals \
+  --source-repository-root /Users/kelly/Developer/sim2claw \
+  --receipt outputs/pawn_bg_act_v1/pawn_bg_source_fit_v1/receipt.json \
+  --folder-label b1-to-b2 \
+  --output-directory outputs/pawn_bg_act_v1/pawn_bg_source_fit_v1/visuals
+```
+
+SciPy `1.18.0` is now an explicit project dependency because the bounded,
+deterministic least-squares solver is directly imported by this evaluator.
+MuJoCo remains the forward-kinematics and simulation runtime. OpenCV/ffmpeg and
+Pillow create review-only videos, posters, and plots. Generated outputs remain
+ignored.
+
+## Verification
+
+- focused source-fit/reward/contact/ACT regression set:
+  `39 passed, 254 subtests passed` in `2.26 s`
+- full suite: `400 passed, 306 subtests passed` in `21.49 s`
+- `uv lock --check`: passed (`94` packages resolved)
+- source distribution and wheel: built successfully
+- `git diff --check`: passed
+- historical joint-limit audit reproduction: exact prior runner-output SHA-256
+  `40dc058e817cdc652297b32d92c37dd7abd63edd74851204f5ebaadb8426cb49`
+- canonical checkout status: inspected read-only; unrelated concurrent changes
+  were present and this lane did not edit them
+- core contract/optimizer commit:
+  `6245c9c4e61a9a79ac54293625b9a257b6a928e4`
+- comparison/history tooling commit:
+  `849499e414d0348ca52e40896063880a3deb6009`
+
+## Independent proof-wording audit
+
+Accepted wording is limited to the 11-episode training-side source-fit cohort,
+the deterministic gripper-event proxy, exact simulator residuals and task
+scores, the rejected adapter, contact-prior non-sensitivity before selected
+pawn contact, and the lack of a compatible B-G ACT checkpoint.
+
+Rejected wording includes physical calibration, sealed or measured sim-to-real
+gap, physical endpoint error, camera calibration, rubber-property validation,
+ACT policy success, learned B-G skill, training admission, physical replay
+equivalence, held-out performance, language generalization, composability,
+transfer, or physical authority. Closing the next gap requires measured
+base/mount and joint registration plus synchronized, metric Cartesian gripper
+and pawn/contact trajectories. A compatible B-G policy would then need its own
+frozen training split and separately owned held-out evaluator.
