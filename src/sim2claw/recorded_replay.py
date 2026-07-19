@@ -443,6 +443,25 @@ def validate_sysid_config(config: Mapping[str, Any]) -> None:
         raise ReplayContractError(
             "optimizer minimum_parameter_sensitivity must be finite and positive"
         )
+    split = config.get("split")
+    if not isinstance(split, Mapping):
+        raise ReplayContractError("split authority config is required")
+    allowed_strategies = split.get("allowed_strategies")
+    if allowed_strategies != ["deterministic_hash", "leave_one_column_out"]:
+        raise ReplayContractError(
+            "split allowed_strategies must freeze deterministic hash and LOCO"
+        )
+    if split.get("default_strategy") not in allowed_strategies:
+        raise ReplayContractError("split default_strategy must be allowed")
+    if split.get("unit") != "whole_episode" or not str(
+        split.get("owner") or ""
+    ).strip():
+        raise ReplayContractError("split owner and whole-episode unit are required")
+    if not str(split.get("seed") or "").strip():
+        raise ReplayContractError("split seed is required")
+    holdout_fraction = float(split.get("holdout_fraction", math.nan))
+    if not math.isfinite(holdout_fraction) or not 0.0 < holdout_fraction < 1.0:
+        raise ReplayContractError("split holdout_fraction must be between zero and one")
     _validated_physical_transform(config)
 
 
@@ -660,6 +679,143 @@ def _load_canonical_episode(
     return episode
 
 
+def _bind_physical_catalog_provenance(
+    *,
+    directory: Path,
+    episode_id: str,
+    receipt_path: Path,
+    samples_path: Path,
+    receipt_sha256: str,
+    samples_sha256: str,
+    source_provenance: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Open and verify the catalog entry before granting a complete-chain claim."""
+
+    catalog_binding = source_provenance.get("catalog")
+    receipt_binding = source_provenance.get("recording_receipt") or {}
+    samples_binding = source_provenance.get("samples") or {}
+    if not isinstance(catalog_binding, Mapping):
+        catalog_binding = {}
+    catalog_hash = catalog_binding.get("sha256")
+    catalog_path_text = str(catalog_binding.get("path") or "")
+    runtime_path_text = str(catalog_binding.get("_runtime_path") or "")
+    portable_catalog = {
+        key: catalog_binding[key]
+        for key in ("kind", "path", "catalog_id", "sha256")
+        if catalog_binding.get(key) is not None
+    }
+    base = {
+        "episode_id": episode_id,
+        "chain_complete": False,
+        "catalog": portable_catalog or None,
+        "recording_receipt": {
+            key: receipt_binding[key]
+            for key in ("kind", "path", "sha256")
+            if receipt_binding.get(key) is not None
+        },
+        "samples": {
+            key: samples_binding[key]
+            for key in ("kind", "path", "sha256")
+            if samples_binding.get(key) is not None
+        },
+    }
+    if not runtime_path_text and not catalog_path_text:
+        base["incomplete_reason"] = (
+            "caller-supplied catalog identity had no resolvable catalog path; "
+            "receipt/sample hashes alone do not prove the catalog entry"
+        )
+        return base
+    if catalog_path_text and Path(catalog_path_text).is_absolute():
+        raise ReplayContractError("physical catalog provenance path must be portable")
+    if not _is_sha256(catalog_hash):
+        raise ReplayContractError("physical catalog provenance hash is invalid")
+
+    candidates: list[Path] = []
+    if runtime_path_text:
+        candidates.append(Path(runtime_path_text).resolve())
+    if catalog_path_text:
+        for ancestor in (directory.resolve(), *directory.resolve().parents):
+            candidates.append((ancestor / catalog_path_text).resolve())
+    matching_paths = {
+        candidate
+        for candidate in candidates
+        if candidate.is_file() and sha256_file(candidate) == catalog_hash
+    }
+    if len(matching_paths) != 1:
+        raise ReplayContractError(
+            "physical catalog provenance cannot be uniquely opened and hash-verified"
+        )
+    catalog_path = matching_paths.pop()
+    try:
+        catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ReplayContractError(
+            "physical catalog provenance is not a readable JSON catalog"
+        ) from error
+    if not isinstance(catalog, Mapping) or not isinstance(catalog.get("episodes"), list):
+        raise ReplayContractError("physical catalog provenance has no episode list")
+    if catalog.get("catalog_id") != catalog_binding.get("catalog_id"):
+        raise ReplayContractError("physical catalog identity does not match payload")
+    entries = [
+        entry
+        for entry in catalog["episodes"]
+        if isinstance(entry, Mapping) and entry.get("recording_id") == episode_id
+    ]
+    if len(entries) != 1:
+        raise ReplayContractError(
+            "physical catalog must bind exactly one entry for the recording identity"
+        )
+    entry = entries[0]
+    assets = entry.get("assets") or {}
+    receipt_asset = str(assets.get("receipt") or "")
+    samples_asset = str(assets.get("samples") or "")
+    if (
+        not receipt_asset
+        or not samples_asset
+        or Path(receipt_asset).is_absolute()
+        or Path(samples_asset).is_absolute()
+    ):
+        raise ReplayContractError("physical catalog asset paths must be repo-relative")
+    if (
+        entry.get("receipt_sha256") != receipt_sha256
+        or entry.get("samples_sha256") != samples_sha256
+        or receipt_binding.get("sha256") != receipt_sha256
+        or samples_binding.get("sha256") != samples_sha256
+        or receipt_binding.get("path") != receipt_asset
+        or samples_binding.get("path") != samples_asset
+    ):
+        raise ReplayContractError(
+            "physical catalog entry does not bind the supplied receipt/sample provenance"
+        )
+
+    candidate_roots = {
+        ancestor.resolve()
+        for ancestor in (
+            directory.resolve(),
+            *directory.resolve().parents,
+            catalog_path.parent.resolve(),
+            *catalog_path.parent.resolve().parents,
+        )
+    }
+    matching_roots = {
+        root
+        for root in candidate_roots
+        if (root / receipt_asset).resolve() == receipt_path.resolve()
+        and (root / samples_asset).resolve() == samples_path.resolve()
+        and (
+            not catalog_path_text
+            or (root / catalog_path_text).resolve() == catalog_path
+        )
+    }
+    if not matching_roots:
+        raise ReplayContractError(
+            "physical catalog asset paths do not resolve to the loaded recording"
+        )
+    base["chain_complete"] = True
+    base["incomplete_reason"] = None
+    return base
+
+
 def _load_physical_recording(
     directory: Path,
     config: Mapping[str, Any],
@@ -764,11 +920,14 @@ def _load_physical_recording(
             raise ReplayContractError(
                 "physical provenance recording identity does not match receipt"
             )
-        bound_provenance = dict(source_provenance)
-        bound_provenance["chain_complete"] = bool(
-            source_provenance.get("catalog")
-            and source_provenance.get("recording_receipt")
-            and source_provenance.get("samples")
+        bound_provenance = _bind_physical_catalog_provenance(
+            directory=directory,
+            episode_id=episode_id,
+            receipt_path=receipt_path,
+            samples_path=samples_path,
+            receipt_sha256=receipt_sha256,
+            samples_sha256=samples_sha256,
+            source_provenance=source_provenance,
         )
     else:
         bound_provenance = {
@@ -946,6 +1105,7 @@ def _apply_parameters(
     bindings = config["bindings"]
     joint_names = tuple(bindings["joint_names"])
     actuator_names = tuple(bindings["actuator_names"])
+    mass_properties_changed = False
     for name, descriptor in _parameter_descriptors(config).items():
         value = values[name]
         target = descriptor["target"]
@@ -992,6 +1152,7 @@ def _apply_parameters(
                     raise ReplayContractError(f"model is missing pawn body {pawn_body}")
                 model.body_mass[body_id] *= value
                 model.body_inertia[body_id] *= value
+                mass_properties_changed = True
             elif not math.isclose(value, float(descriptor["nominal"])):
                 raise ReplayContractError(
                     f"parameter {name} requires an episode object-body binding"
@@ -1011,6 +1172,11 @@ def _apply_parameters(
             continue
         else:
             raise ReplayContractError(f"unsupported parameter target: {target}")
+    if mass_properties_changed:
+        # MuJoCo caches subtree masses and other constants derived from body
+        # mass/inertia.  Mutating model arrays without this call leaves the
+        # actual dynamics internally inconsistent.
+        mujoco.mj_setConst(model, mujoco.MjData(model))
 
 
 def _binding_ids(

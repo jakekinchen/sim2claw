@@ -302,6 +302,7 @@ _SPLIT_DIGEST_FIELDS = (
     "holdout_fraction",
     "source_catalog",
     "sysid_config",
+    "split_authority",
     "split_counts",
     "episodes",
     "leakage_guards",
@@ -320,6 +321,26 @@ def _split_assignment_digest(manifest: Mapping[str, Any]) -> str:
         ensure_ascii=True,
     ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _split_authority_from_config(config: Mapping[str, Any]) -> dict[str, Any]:
+    split = config["split"]
+    config_sha256 = config.get("_config_sha256")
+    if not _is_sha256(config_sha256):
+        raise SystemIdentificationError(
+            "split validation requires a loaded, hash-bound sysid config"
+        )
+    return {
+        "config_id": config["config_id"],
+        "config_sha256": config_sha256,
+        "owner": split["owner"],
+        "unit": split["unit"],
+        "allowed_strategies": list(split["allowed_strategies"]),
+        "default_strategy": split["default_strategy"],
+        "seed": split["seed"],
+        "holdout_fraction": float(split["holdout_fraction"]),
+        "leave_one_column_out_rule": split["leave_one_column_out_rule"],
+    }
 
 
 def _validate_column_adjudication(entry: Mapping[str, Any]) -> None:
@@ -450,6 +471,7 @@ def freeze_episode_split(
             "sha256": sha256_file(config_path),
             "config_id": config["config_id"],
         },
+        "split_authority": _split_authority_from_config(config),
         "split_counts": split_counts,
         "episodes": sorted(entries, key=lambda entry: str(entry["episode_id"])),
         "leakage_guards": {
@@ -460,7 +482,7 @@ def freeze_episode_split(
         "created_at": datetime.now(UTC).isoformat(),
     }
     manifest["assignment_digest_sha256"] = _split_assignment_digest(manifest)
-    validate_split_manifest(manifest)
+    validate_split_manifest(manifest, config=config)
     _atomic_json(output_path.resolve(), manifest)
     result = copy.deepcopy(manifest)
     result["manifest_path"] = str(output_path.resolve())
@@ -468,16 +490,37 @@ def freeze_episode_split(
     return result
 
 
-def validate_split_manifest(manifest: Mapping[str, Any]) -> None:
+def validate_split_manifest(
+    manifest: Mapping[str, Any],
+    *,
+    config: Mapping[str, Any],
+) -> None:
     if manifest.get("schema_version") != SPLIT_SCHEMA:
         raise SystemIdentificationError("unsupported episode split schema")
     if manifest.get("frozen") is not True or manifest.get("unit") != "whole_episode":
         raise SystemIdentificationError("split must be frozen at whole-episode scope")
     if not str(manifest.get("owner") or "").strip():
         raise SystemIdentificationError("split owner is required")
+    expected_authority = _split_authority_from_config(config)
+    if manifest.get("split_authority") != expected_authority:
+        raise SystemIdentificationError(
+            "split authority drifted from the hash-bound sysid config"
+        )
+    if (
+        manifest.get("owner") != expected_authority["owner"]
+        or manifest.get("unit") != expected_authority["unit"]
+        or manifest.get("seed") != expected_authority["seed"]
+    ):
+        raise SystemIdentificationError(
+            "split owner/unit/seed drifted from the hash-bound sysid config"
+        )
     strategy = str(manifest.get("strategy") or "")
     if strategy not in {"deterministic_hash", "leave_one_column_out"}:
         raise SystemIdentificationError("split strategy is unsupported")
+    if strategy not in expected_authority["allowed_strategies"]:
+        raise SystemIdentificationError(
+            "split strategy is not allowed by the hash-bound sysid config"
+        )
     seed = str(manifest.get("seed") or "")
     if not seed:
         raise SystemIdentificationError("split seed is required")
@@ -496,6 +539,10 @@ def validate_split_manifest(manifest: Mapping[str, Any]) -> None:
             raise SystemIdentificationError(
                 "deterministic split holdout_fraction must be between zero and one"
             )
+        if holdout_fraction != expected_authority["holdout_fraction"]:
+            raise SystemIdentificationError(
+                "split holdout_fraction drifted from the hash-bound sysid config"
+            )
     else:
         held_out_column = str(manifest.get("held_out_column") or "").lower()
         if held_out_column not in tuple("abcdefgh"):
@@ -512,6 +559,19 @@ def validate_split_manifest(manifest: Mapping[str, Any]) -> None:
             raise SystemIdentificationError(
                 f"split {binding_name} content binding is incomplete"
             )
+    if (
+        manifest["sysid_config"].get("config_id") != expected_authority["config_id"]
+        or manifest["sysid_config"].get("sha256")
+        != expected_authority["config_sha256"]
+    ):
+        raise SystemIdentificationError(
+            "split sysid_config binding drifted from supplied config authority"
+        )
+    expected_split_id = (
+        f"{manifest['source_catalog'].get('catalog_id')}:{strategy}"
+    )
+    if manifest.get("split_id") != expected_split_id:
+        raise SystemIdentificationError("split_id drifted from catalog and strategy")
     entries = manifest.get("episodes")
     if not isinstance(entries, list) or not entries:
         raise SystemIdentificationError("split requires episode entries")
@@ -641,10 +701,14 @@ def validate_split_manifest(manifest: Mapping[str, Any]) -> None:
         raise SystemIdentificationError("split assignment digest drifted")
 
 
-def load_split_manifest(path: Path) -> dict[str, Any]:
+def load_split_manifest(
+    path: Path,
+    *,
+    config: Mapping[str, Any],
+) -> dict[str, Any]:
     path = path.resolve()
     manifest = json.loads(path.read_text(encoding="utf-8"))
-    validate_split_manifest(manifest)
+    validate_split_manifest(manifest, config=config)
     manifest["_manifest_path"] = str(path)
     manifest["_manifest_sha256"] = sha256_file(path)
     return manifest
@@ -758,16 +822,15 @@ def inspect_recording_catalog_inputs(
             scope_kind = "project_checkout"
         else:
             scope_kind = "explicit_repo_root"
+    elif inspection_scope == "canonical_checkout":
+        # A caller-supplied path cannot, by itself, establish that it is the
+        # coordinator's canonical checkout.  Preserve the legacy CLI spelling
+        # as an explicit-root request while making the receipt refuse that
+        # stronger identity claim.
+        scope_kind = "explicit_repo_root"
     else:
         scope_kind = inspection_scope
-    canonical_checkout_inspected = scope_kind == "canonical_checkout"
-    if canonical_checkout_inspected:
-        try:
-            catalog_path.relative_to(repo_root)
-        except ValueError as error:
-            raise SystemIdentificationError(
-                "canonical_checkout scope requires the catalog to be inside repo_root"
-            ) from error
+    canonical_checkout_inspected = False
     if scope_kind == "isolated_codex_worktree" and not {
         ".codex",
         "worktrees",
@@ -853,10 +916,20 @@ def inspect_recording_catalog_inputs(
                 episode.get("source_path")
                 or Path(required_assets["samples"]).parent
             )
+            try:
+                catalog_relative_path = catalog_path.relative_to(repo_root).as_posix()
+            except ValueError:
+                catalog_relative_path = None
             source_provenance = {
                 "episode_id": episode["recording_id"],
                 "catalog": {
-                    "kind": "content_addressed",
+                    "kind": (
+                        "repo_relative"
+                        if catalog_relative_path is not None
+                        else "content_addressed"
+                    ),
+                    "path": catalog_relative_path,
+                    "_runtime_path": str(catalog_path),
                     "catalog_id": catalog.get("catalog_id"),
                     "sha256": sha256_file(catalog_path),
                 },
@@ -1020,18 +1093,19 @@ def inspect_recording_catalog_inputs(
         "schema_version": INPUT_CAPABILITY_SCHEMA,
         "inspection_scope": {
             "kind": scope_kind,
+            "requested_kind": inspection_scope,
             "root_at_generation": str(repo_root),
             "provided_root_inspected": True,
             "scope_source": (
                 "runtime_auto_detection"
                 if inspection_scope == "auto"
-                else "explicit_validated_argument"
+                else "caller_supplied_repo_root"
             ),
             "root_path_semantics": "runtime_local_not_portable_project_contract",
             "canonical_checkout_inspected": canonical_checkout_inspected,
             "canonical_checkout_state": (
-                "inspected_by_this_receipt"
-                if canonical_checkout_inspected
+                "caller_supplied_root_inspected_without_canonical_identity_claim"
+                if inspection_scope == "canonical_checkout"
                 else "not_assessed_by_this_receipt"
             ),
         },
@@ -2201,8 +2275,8 @@ def run_system_identification(
     split_manifest_path = split_manifest_path.resolve()
     config_path = config_path.resolve()
     output_directory = output_directory.resolve()
-    manifest = load_split_manifest(split_manifest_path)
     config = load_sysid_config(config_path)
+    manifest = load_split_manifest(split_manifest_path, config=config)
     declared_config = manifest.get("sysid_config") or {}
     if declared_config.get("sha256") != sha256_file(config_path):
         raise SystemIdentificationError(

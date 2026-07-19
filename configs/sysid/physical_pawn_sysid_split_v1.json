@@ -1,6 +1,6 @@
 {
-  "assignment_digest_sha256": "97a19ff1017d61141cd2c9e5630e760c48caff8aeabdac2e517383aba9172d6c",
-  "created_at": "2026-07-19T06:55:12.667081+00:00",
+  "assignment_digest_sha256": "370581db3fa383e6a36a77de6463db401c384ecbf5ef46314abb939158a14d95",
+  "created_at": "2026-07-19T07:12:39.959370+00:00",
   "episodes": [
     {
       "assignment_fraction": 0.4432323072376439,
@@ -343,6 +343,20 @@
     "path": "configs/data/physical_pawn_move_catalog_20260719.json",
     "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
   },
+  "split_authority": {
+    "allowed_strategies": [
+      "deterministic_hash",
+      "leave_one_column_out"
+    ],
+    "config_id": "so101_recorded_action_sysid_v1",
+    "config_sha256": "ebbcbee27555a767f40f347a36d1c54cb6faba2e1e843c197968f41dd1d9227d",
+    "default_strategy": "deterministic_hash",
+    "holdout_fraction": 0.25,
+    "leave_one_column_out_rule": "an episode touching the held-out source or destination file belongs wholly to held_out",
+    "owner": "independent_cpu_fp32_sysid_evaluator",
+    "seed": "so101-recorded-action-sysid-v1",
+    "unit": "whole_episode"
+  },
   "split_counts": {
     "held_out": 3,
     "train": 15
@@ -352,7 +366,7 @@
   "sysid_config": {
     "config_id": "so101_recorded_action_sysid_v1",
     "path": "configs/sysid/recorded_action_sysid_v1.json",
-    "sha256": "4ed0a79ee165c4325784dafb9b578955a309fa00b7c4ef2b93a871bb53954585"
+    "sha256": "ebbcbee27555a767f40f347a36d1c54cb6faba2e1e843c197968f41dd1d9227d"
   },
   "unit": "whole_episode"
 }

@@ -26,6 +26,7 @@ from sim2claw.system_identification import (
     SystemIdentificationError,
     _local_least_squares,
     _hash_fraction,
+    _split_authority_from_config,
     _split_assignment_digest,
     fit_parameter_stage,
     freeze_episode_split,
@@ -65,6 +66,13 @@ def _approved_physical_config(root: Path) -> Path:
     }
     payload["physical_adapter"]["joint_transform_sha256"] = canonical_json_sha256(
         transform
+    )
+    payload["split"].update(
+        {
+            "owner": "fixture_evaluator",
+            "holdout_fraction": 0.5,
+            "seed": "fixture",
+        }
     )
     path = root / "approved-sysid-config.json"
     path.write_text(json.dumps(payload, sort_keys=True), encoding="utf-8")
@@ -151,7 +159,9 @@ def _physical_provenance(
         "episode_id": entry["recording_id"],
         "chain_complete": True,
         "catalog": {
-            "kind": "content_addressed",
+            "kind": "repo_relative",
+            "path": catalog_path.name,
+            "_runtime_path": str(catalog_path),
             "catalog_id": catalog["catalog_id"],
             "sha256": sha256_file(catalog_path),
         },
@@ -432,11 +442,11 @@ class SystemIdentificationTest(unittest.TestCase):
                 "source_samples_sha256"
             ]
             with self.assertRaisesRegex(SystemIdentificationError, "leakage"):
-                validate_split_manifest(leaked)
+                validate_split_manifest(leaked, config=self.config)
             unguarded = copy.deepcopy(manifest)
             unguarded["leakage_guards"]["row_level_split_forbidden"] = False
             with self.assertRaisesRegex(SystemIdentificationError, "leakage guards"):
-                validate_split_manifest(unguarded)
+                validate_split_manifest(unguarded, config=self.config)
             incomplete_catalog = copy.deepcopy(catalog)
             incomplete_catalog["episodes"][0]["destination_square"] = None
             incomplete_path = root / "incomplete-catalog.json"
@@ -514,17 +524,44 @@ class SystemIdentificationTest(unittest.TestCase):
             by_id[train["episode_id"]]["split"] = "held_out"
             by_id[held["episode_id"]]["split"] = "train"
             with self.assertRaisesRegex(SystemIdentificationError, "assignment drifted"):
-                validate_split_manifest(swapped)
+                validate_split_manifest(swapped, config=self.config)
             fraction_tamper = copy.deepcopy(portable)
             fraction_tamper["episodes"][0]["assignment_fraction"] += 0.001
             with self.assertRaisesRegex(
                 SystemIdentificationError, "assignment_fraction drifted"
             ):
-                validate_split_manifest(fraction_tamper)
+                validate_split_manifest(fraction_tamper, config=self.config)
             digest_tamper = copy.deepcopy(portable)
             digest_tamper["episodes"][0]["proof_class"] = "replay"
             with self.assertRaisesRegex(SystemIdentificationError, "digest drifted"):
-                validate_split_manifest(digest_tamper)
+                validate_split_manifest(digest_tamper, config=self.config)
+            authority_tamper = copy.deepcopy(portable)
+            authority_tamper["seed"] = "attacker-selected-seed"
+            authority_tamper["split_authority"]["seed"] = "attacker-selected-seed"
+            for entry in authority_tamper["episodes"]:
+                fraction = _hash_fraction(
+                    authority_tamper["seed"], entry["episode_id"]
+                )
+                entry["assignment_fraction"] = fraction
+                entry["split"] = (
+                    "held_out"
+                    if fraction < authority_tamper["holdout_fraction"]
+                    else "train"
+                )
+            authority_tamper["split_counts"] = {
+                name: sum(
+                    entry["split"] == name
+                    for entry in authority_tamper["episodes"]
+                )
+                for name in ("train", "held_out")
+            }
+            authority_tamper["assignment_digest_sha256"] = (
+                _split_assignment_digest(authority_tamper)
+            )
+            with self.assertRaisesRegex(
+                SystemIdentificationError, "split authority drifted"
+            ):
+                validate_split_manifest(authority_tamper, config=self.config)
 
     def test_loco_validator_rejects_column_rule_tamper(self) -> None:
         catalog = {
@@ -575,7 +612,7 @@ class SystemIdentificationTest(unittest.TestCase):
             c_entry["split"] = "train"
             tampered["split_counts"] = {"train": 3, "held_out": 0}
             with self.assertRaisesRegex(SystemIdentificationError, "assignment drifted"):
-                validate_split_manifest(tampered)
+                validate_split_manifest(tampered, config=self.config)
 
     def test_physical_catalog_report_is_exact_about_missing_payloads_and_observables(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -651,7 +688,7 @@ class SystemIdentificationTest(unittest.TestCase):
                 catalog_path,
                 repo_root=root,
                 config_path=_approved_physical_config(root),
-                inspection_scope="canonical_checkout",
+                inspection_scope="explicit_repo_root",
             )
             self.assertEqual(report["joint_replay_ready_episode_count"], 0)
             self.assertEqual(report["missing_required_asset_count"], 0)
@@ -661,7 +698,7 @@ class SystemIdentificationTest(unittest.TestCase):
             )
             self.assertFalse(report["joint_timing_replay_ready"])
 
-    def test_input_report_accepts_only_strict_range_valid_reviewed_transform(self) -> None:
+    def test_input_report_accepts_strict_range_valid_reviewed_transform_without_canonical_claim(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             catalog_path, recording, _ = _physical_fixture(
@@ -691,8 +728,18 @@ class SystemIdentificationTest(unittest.TestCase):
             self.assertTrue(report["timing_control_fit_ready"])
             self.assertFalse(report["calibration_ready"])
             self.assertEqual(report["claim"], "joint_timing_replay_inputs_present")
-            self.assertEqual(report["inspection_scope"]["kind"], "canonical_checkout")
-            self.assertNotIn("coordinator_reported_canonical_state", report)
+            self.assertEqual(report["inspection_scope"]["kind"], "explicit_repo_root")
+            self.assertEqual(
+                report["inspection_scope"]["requested_kind"], "canonical_checkout"
+            )
+            self.assertFalse(
+                report["inspection_scope"]["canonical_checkout_inspected"]
+            )
+            self.assertEqual(
+                report["inspection_scope"]["canonical_checkout_state"],
+                "caller_supplied_root_inspected_without_canonical_identity_claim",
+            )
+            self.assertIn("coordinator_reported_canonical_state", report)
             self.assertEqual(
                 report["current_root_catalog_integrity"][
                     "verified_catalog_bound_hash_count"
@@ -729,7 +776,7 @@ class SystemIdentificationTest(unittest.TestCase):
                 catalog_path,
                 repo_root=root,
                 config_path=_approved_physical_config(root),
-                inspection_scope="canonical_checkout",
+                inspection_scope="explicit_repo_root",
             )
             limits = report["aggregate_joint_limit_validation"]
             self.assertEqual(
@@ -755,7 +802,7 @@ class SystemIdentificationTest(unittest.TestCase):
                 repo_root=root,
                 config_path=REPO_ROOT
                 / "configs/sysid/recorded_action_sysid_v1.json",
-                inspection_scope="canonical_checkout",
+                inspection_scope="explicit_repo_root",
             )
             self.assertEqual(report["strict_sample_semantics_valid_episode_count"], 1)
             self.assertEqual(report["joint_range_valid_episode_count"], 1)
@@ -836,6 +883,42 @@ class SystemIdentificationTest(unittest.TestCase):
                     )
         self.assertEqual(sources[0], sources[1])
 
+    def test_caller_supplied_catalog_identity_cannot_fake_complete_provenance(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            catalog_path, recording, catalog = _physical_fixture(
+                root, rows=_valid_physical_rows()
+            )
+            config_path = _approved_physical_config(root)
+            config = load_sysid_config(config_path)
+            fake = _physical_provenance(catalog_path, catalog)
+            fake["catalog"] = {
+                "kind": "content_addressed",
+                "catalog_id": "nonexistent",
+                "sha256": "0" * 64,
+            }
+            episode = load_recorded_episode(
+                recording,
+                config,
+                source_provenance=fake,
+            )
+            self.assertFalse(episode.source_provenance["chain_complete"])
+            replay = simulate_and_align(episode, config)
+            receipt = write_replay_receipt(replay, config, root / "fake-output")
+            self.assertFalse(receipt["source"]["full_physical_provenance_bound"])
+
+            fake_with_path = copy.deepcopy(fake)
+            fake_with_path["catalog"]["path"] = catalog_path.name
+            fake_with_path["catalog"]["_runtime_path"] = str(catalog_path)
+            with self.assertRaisesRegex(
+                ReplayContractError, "opened and hash-verified"
+            ):
+                load_recorded_episode(
+                    recording,
+                    config,
+                    source_provenance=fake_with_path,
+                )
+
     def test_fit_receipt_binds_physical_provenance_and_true_proof_flag(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -869,7 +952,7 @@ class SystemIdentificationTest(unittest.TestCase):
             )
             manifest = {
                 "schema_version": "sim2claw.sysid_episode_split.v1",
-                "split_id": "physical-proof-receipt-fixture",
+                "split_id": f"{catalog['catalog_id']}:deterministic_hash",
                 "frozen": True,
                 "owner": "fixture_evaluator",
                 "unit": "whole_episode",
@@ -887,6 +970,7 @@ class SystemIdentificationTest(unittest.TestCase):
                     "sha256": sha256_file(config_path),
                     "config_id": config["config_id"],
                 },
+                "split_authority": _split_authority_from_config(config),
                 "split_counts": {"train": 1, "held_out": 1},
                 "episodes": [
                     {
@@ -992,7 +1076,9 @@ class SystemIdentificationTest(unittest.TestCase):
             manifest["episodes"][0]["source_receipt_sha256"] = "f" * 64
             manifest["assignment_digest_sha256"] = _split_assignment_digest(manifest)
             split_path.write_text(json.dumps(manifest), encoding="utf-8")
-            loaded = load_split_manifest(split_path)
+            loaded = load_split_manifest(
+                split_path, config=load_sysid_config(config_path)
+            )
             with self.assertRaisesRegex(
                 SystemIdentificationError, "provenance drifted from the bound catalog"
             ):
@@ -1011,7 +1097,7 @@ class SystemIdentificationTest(unittest.TestCase):
             held_path.write_text(json.dumps(held_payload), encoding="utf-8")
             manifest = {
                 "schema_version": "sim2claw.sysid_episode_split.v1",
-                "split_id": "fixture-end-to-end",
+                "split_id": "fixture:deterministic_hash",
                 "frozen": True,
                 "owner": "fixture_evaluator",
                 "unit": "whole_episode",
@@ -1029,6 +1115,7 @@ class SystemIdentificationTest(unittest.TestCase):
                     "sha256": sha256_file(CONFIG_PATH),
                     "config_id": self.config["config_id"]
                 },
+                "split_authority": _split_authority_from_config(self.config),
                 "split_counts": {"train": 1, "held_out": 1},
                 "episodes": [
                     {

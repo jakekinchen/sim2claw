@@ -54,7 +54,7 @@
     "requires_post_cherry_pick_regeneration": true,
     "verified_by_this_receipt": false
   },
-  "created_at": "2026-07-19T07:00:41.962904+00:00",
+  "created_at": "2026-07-19T07:12:48.952776+00:00",
   "current_root_catalog_integrity": {
     "all_catalog_bound_hashes_verified": false,
     "catalog_bound_asset_count": 54,
@@ -1250,9 +1250,10 @@
     "canonical_checkout_state": "not_assessed_by_this_receipt",
     "kind": "isolated_codex_worktree",
     "provided_root_inspected": true,
+    "requested_kind": "isolated_codex_worktree",
     "root_at_generation": "/Users/kelly/.codex/worktrees/5307ce13-4971-4a6c-abf3-abd28e179148/sim2claw",
     "root_path_semantics": "runtime_local_not_portable_project_contract",
-    "scope_source": "explicit_validated_argument"
+    "scope_source": "caller_supplied_repo_root"
   },
   "joint_range_valid_episode_count": 0,
   "joint_replay_ready_episode_count": 0,
@@ -1328,9 +1329,9 @@
     "config_id": "so101_recorded_action_sysid_v1",
     "identity": {
       "kind": "content_addressed",
-      "sha256": "4ed0a79ee165c4325784dafb9b578955a309fa00b7c4ef2b93a871bb53954585"
+      "sha256": "ebbcbee27555a767f40f347a36d1c54cb6faba2e1e843c197968f41dd1d9227d"
     },
-    "sha256": "4ed0a79ee165c4325784dafb9b578955a309fa00b7c4ef2b93a871bb53954585"
+    "sha256": "ebbcbee27555a767f40f347a36d1c54cb6faba2e1e843c197968f41dd1d9227d"
   },
   "timing_control_fit_ready": false,
   "video_used_for_metric_observables": false

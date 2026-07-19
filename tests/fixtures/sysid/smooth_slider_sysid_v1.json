@@ -134,9 +134,10 @@
     "schema_version": "sim2claw.sysid_episode_split.v1",
     "owner": "fixture_evaluator",
     "unit": "whole_episode",
+    "allowed_strategies": ["deterministic_hash", "leave_one_column_out"],
     "default_strategy": "deterministic_hash",
-    "holdout_fraction": 0.34,
-    "seed": "slider-fixture",
+    "holdout_fraction": 0.5,
+    "seed": "fixture",
     "leave_one_column_out_rule": "an episode touching the held-out source or destination file belongs wholly to held_out"
   },
   "held_out_acceptance": {

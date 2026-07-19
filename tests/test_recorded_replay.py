@@ -270,6 +270,7 @@ class RecordedReplayTest(unittest.TestCase):
         )
         original_mass = float(model.body_mass[body_id])
         original_inertia = model.body_inertia[body_id].copy()
+        original_subtree_mass = float(model.body_subtreemass[body_id])
         values = nominal_parameter_values(self.config)
         values["pawn_mass_scale"] = 1.5
         _apply_parameters(
@@ -280,6 +281,9 @@ class RecordedReplayTest(unittest.TestCase):
         )
         self.assertAlmostEqual(float(model.body_mass[body_id]), original_mass * 1.5)
         np.testing.assert_allclose(model.body_inertia[body_id], original_inertia * 1.5)
+        self.assertAlmostEqual(
+            float(model.body_subtreemass[body_id]), original_subtree_mass * 1.5
+        )
 
     def test_replay_receipt_source_identity_is_relocation_invariant(self) -> None:
         payload = EPISODE_PATH.read_text(encoding="utf-8")

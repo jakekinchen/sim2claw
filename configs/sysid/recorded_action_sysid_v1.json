@@ -214,6 +214,7 @@
     "schema_version": "sim2claw.sysid_episode_split.v1",
     "owner": "independent_cpu_fp32_sysid_evaluator",
     "unit": "whole_episode",
+    "allowed_strategies": ["deterministic_hash", "leave_one_column_out"],
     "default_strategy": "deterministic_hash",
     "holdout_fraction": 0.25,
     "seed": "so101-recorded-action-sysid-v1",
