@@ -72,15 +72,20 @@ class StudioServer(ThreadingHTTPServer):
             )
         except ValueError:
             self.recorder_control_enabled = address[0] == "localhost" and not read_only
-        self.recorder = TeleopRecordingManager(repo_root=self.repo_root)
-        self.live_workspace = LiveWorkspaceService(self.recorder)
+        self.recorder: TeleopRecordingManager | None = None
+        self.live_workspace: LiveWorkspaceService | None = None
+        if not read_only:
+            self.recorder = TeleopRecordingManager(repo_root=self.repo_root)
+            self.live_workspace = LiveWorkspaceService(self.recorder)
         self.scene_manifests: dict[str, dict[str, Any]] = {}
         self.scene_synthesis_proposal: dict[str, Any] | None = None
         super().__init__(address, StudioRequestHandler)
 
     def server_close(self) -> None:
-        self.live_workspace.shutdown()
-        self.recorder.shutdown()
+        if self.live_workspace is not None:
+            self.live_workspace.shutdown()
+        if self.recorder is not None:
+            self.recorder.shutdown()
         super().server_close()
 
 

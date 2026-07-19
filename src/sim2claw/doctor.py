@@ -58,7 +58,7 @@ def nvidia_preflight_requirements(
 
 
 def run_doctor(target: str = "auto", render_probe: bool = False) -> dict[str, Any]:
-    if target not in {"auto", "mac", "nvidia"}:
+    if target not in {"auto", "mac", "nvidia", "linux-cpu"}:
         raise ValueError(f"unsupported doctor target: {target}")
     platform_name = platform.system()
     machine = platform.machine()
@@ -97,6 +97,17 @@ def run_doctor(target: str = "auto", render_probe: bool = False) -> dict[str, An
                     "required": "arm64",
                 },
             ]
+        )
+        accelerator["simulation"] = "CPU"
+        accelerator["render"] = os.environ.get("MUJOCO_GL", "platform-default")
+    elif target == "linux-cpu":
+        checks.append(
+            {
+                "name": "linux-host",
+                "passed": platform_name == "Linux",
+                "observed": platform_name,
+                "required": "Linux",
+            }
         )
         accelerator["simulation"] = "CPU"
         accelerator["render"] = os.environ.get("MUJOCO_GL", "platform-default")
@@ -184,4 +195,3 @@ def format_doctor(report: dict[str, Any]) -> str:
 
 def doctor_json(report: dict[str, Any]) -> str:
     return json.dumps(report, indent=2, sort_keys=True)
-

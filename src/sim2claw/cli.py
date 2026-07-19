@@ -37,7 +37,9 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     doctor = subparsers.add_parser("doctor", help="fail-closed runtime preflight")
-    doctor.add_argument("--target", choices=("auto", "mac", "nvidia"), default="auto")
+    doctor.add_argument(
+        "--target", choices=("auto", "mac", "nvidia", "linux-cpu"), default="auto"
+    )
     doctor.add_argument("--render-probe", action="store_true")
     doctor.add_argument("--json", action="store_true", dest="as_json")
 
@@ -108,6 +110,49 @@ def build_parser() -> argparse.ArgumentParser:
     studio.add_argument("--host", default="127.0.0.1")
     studio.add_argument("--port", type=int, default=4173)
     studio.add_argument("--no-open", action="store_true")
+    studio.add_argument(
+        "--read-only",
+        action="store_true",
+        help="disable all recorder and live-device control endpoints",
+    )
+
+    project_pack = subparsers.add_parser(
+        "project-pack", help="create a hash-bound project evidence bundle"
+    )
+    project_pack.add_argument("--project", type=Path, required=True)
+    project_pack.add_argument("--output", type=Path, required=True)
+
+    project_inspect = subparsers.add_parser(
+        "project-inspect", help="verify a project contract or packed bundle"
+    )
+    project_inspect.add_argument("--project", type=Path, required=True)
+    project_inspect.add_argument("--bundle", type=Path, default=None)
+    project_inspect.add_argument(
+        "--expected-bundle-sha256",
+        default=None,
+        help="coordinator-computed outer bundle digest; required with --bundle",
+    )
+
+    pipeline_stage = subparsers.add_parser(
+        "pipeline-stage", help="run one bounded, truth-preserving project stage"
+    )
+    pipeline_stage.add_argument("--project", type=Path, required=True)
+    pipeline_stage.add_argument(
+        "--stage",
+        choices=(
+            "inspect",
+            "calibrate-sim",
+            "evaluate-skills",
+            "train-candidates",
+            "compare-candidates",
+        ),
+        required=True,
+    )
+
+    pipeline_status = subparsers.add_parser(
+        "pipeline-status", help="show the latest bounded NemoClaw stage result"
+    )
+    pipeline_status.add_argument("--project", type=Path, required=True)
 
     subparsers.add_parser(
         "teleop-preflight",
@@ -449,7 +494,46 @@ def main(argv: Sequence[str] | None = None) -> int:
             host=args.host,
             port=args.port,
             open_browser=not args.no_open,
+            read_only=args.read_only,
         )
+        return 0
+    if args.command == "project-pack":
+        from .project_bundle import pack_project
+
+        report = pack_project(args.project, args.output)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "project-inspect":
+        from .project_bundle import ProjectBundleError, inspect_bundle, inspect_project
+
+        report = inspect_project(args.project)
+        if args.bundle is not None:
+            if args.expected_bundle_sha256 is None:
+                raise ProjectBundleError(
+                    "--expected-bundle-sha256 is required when --bundle is supplied"
+                )
+            report["bundle"] = inspect_bundle(
+                args.bundle,
+                expected_sha256=args.expected_bundle_sha256,
+            )
+        elif args.expected_bundle_sha256 is not None:
+            raise ProjectBundleError(
+                "--expected-bundle-sha256 is valid only when --bundle is supplied"
+            )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "pipeline-stage":
+        from .autonomous_pipeline import run_stage
+
+        report = run_stage(args.stage, args.project)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "pipeline-status":
+        from .autonomous_pipeline import pipeline_status
+        from .project_bundle import inspect_project
+
+        inspect_project(args.project)
+        print(json.dumps(pipeline_status(args.project), indent=2, sort_keys=True))
         return 0
     if args.command == "teleop-preflight":
         from .teleop_recording import recorder_preflight
