@@ -163,6 +163,29 @@ checkpoint, receipt, generated output, or runtime environment was copied from
 it. See [`ARCHIVE_INDEX.md`](./docs/reference/ARCHIVE_INDEX.md) and
 [`PRIOR_RESULTS_SUMMARY.md`](./docs/reference/PRIOR_RESULTS_SUMMARY.md).
 
+### Private iPhone-video 3DGS pathway
+
+`sim2claw iphone-3dgs` is a clean-room, local-only path from one MOV to a
+relative-scale Gaussian PLY. It requires explicit public FFmpeg, ffprobe,
+COLMAP, and Brush executables and writes every frame, database, model, log,
+candidate, and receipt below an ignored `artifacts/private` run directory.
+
+```bash
+uv run sim2claw iphone-3dgs \
+  --video /path/to/capture.MOV \
+  --output artifacts/private/iphone-3dgs/my-run \
+  --ffmpeg /opt/homebrew/bin/ffmpeg \
+  --ffprobe /opt/homebrew/bin/ffprobe \
+  --colmap /path/to/colmap \
+  --brush /path/to/brush_app
+```
+
+The command freezes a holdout before reconstruction and labels the result
+`monocular_video_relative_scale_3dgs`. It does not claim metric scale, RGB-D,
+collision geometry, held-out acceptance, learned-policy evidence, or robot
+authority. See
+[`docs/decisions/0008-clean-room-iphone-video-3dgs.md`](./docs/decisions/0008-clean-room-iphone-video-3dgs.md).
+
 ## Hardware safety
 
 The reviewed gateway is the only robot command path. Live inspection opens it

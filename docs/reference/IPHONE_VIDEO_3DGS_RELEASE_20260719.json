@@ -1,0 +1,53 @@
+{
+  "schema_version": "sim2claw.private_3dgs_release_manifest.v1",
+  "release_tag": "iphone-video-3dgs-img5349-20260719",
+  "repository": "jakekinchen/sim2claw",
+  "repository_visibility": "private",
+  "git_asset_policy": "Generated PLY, video, frames, logs, and run receipts are ignored or release assets; only this index and documentation are tracked.",
+  "source": {
+    "name": "IMG_5349.MOV",
+    "size_bytes": 335783020,
+    "sha256": "0079c19d5a321dd3613924f4a7e0838a4f99943b0833a0b8bed81a12d303dfa8",
+    "proof_class": "owner_provided_monocular_video"
+  },
+  "assets": [
+    {
+      "name": "IMG_5349-primary-real-splat.ply",
+      "kind": "real_gaussian_splat",
+      "format": "binary_little_endian_ply",
+      "size_bytes": 78952283,
+      "sha256": "f8f3bfe0a0f1fa13d54e47602dbf43f8e0448178c0e85f0f22a5f2115530443b",
+      "splat_count": 334537,
+      "spherical_harmonics_degree": 3
+    },
+    {
+      "name": "IMG_5349-preview.png",
+      "kind": "exact_camera_preview",
+      "size_bytes": 1151448,
+      "sha256": "555bb81cfdbbcb896e672cfeaafbf41d618877fa92c9c3a882d58ebc5bc42703"
+    },
+    {
+      "name": "IMG_5349-orbit.mp4",
+      "kind": "bounded_visual_orbit",
+      "size_bytes": 8441321,
+      "sha256": "b8bf14d03795d9c5fee8b11b4bd605ac977629153f5eb696f8119bb5202ce769"
+    }
+  ],
+  "pipeline": {
+    "entrypoint": "sim2claw iphone-3dgs",
+    "source_file": "src/sim2claw/iphone_3dgs.py",
+    "implementation_origin": "fresh_clean_room_authorship_from_reviewed_requirements_and_public_dependency_interfaces",
+    "prior_repository_code_copied": false
+  },
+  "authority": {
+    "real_video_3dgs": true,
+    "metric_scale": false,
+    "measured_geometry": false,
+    "rgbd": false,
+    "collision_geometry": false,
+    "complete_unseen_geometry": false,
+    "learned_policy": false,
+    "robot_control": false
+  }
+}
+

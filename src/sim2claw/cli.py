@@ -252,6 +252,23 @@ def build_parser() -> argparse.ArgumentParser:
     )
     recovery_expert.add_argument("--episode-index", type=int, default=0)
     recovery_expert.add_argument("--render-frames", action="store_true")
+
+    iphone_3dgs = subparsers.add_parser(
+        "iphone-3dgs",
+        help="build an ignored relative-scale 3D Gaussian splat from one MOV",
+    )
+    iphone_3dgs.add_argument("--video", type=Path, required=True)
+    iphone_3dgs.add_argument("--output", type=Path, required=True)
+    iphone_3dgs.add_argument("--ffmpeg", type=Path, required=True)
+    iphone_3dgs.add_argument("--ffprobe", type=Path, required=True)
+    iphone_3dgs.add_argument("--colmap", type=Path, required=True)
+    iphone_3dgs.add_argument("--brush", type=Path, required=True)
+    iphone_3dgs.add_argument("--keyframes", type=int, default=80)
+    iphone_3dgs.add_argument("--holdout-fraction", type=float, default=0.125)
+    iphone_3dgs.add_argument("--max-resolution", type=int, default=1920)
+    iphone_3dgs.add_argument("--training-steps", type=int, default=30_000)
+    iphone_3dgs.add_argument("--max-splats", type=int, default=2_000_000)
+    iphone_3dgs.add_argument("--seed", type=int, default=42)
     return parser
 
 
@@ -532,6 +549,27 @@ def main(argv: Sequence[str] | None = None) -> int:
         }
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if episode.verdict["success"] else 1
+    if args.command == "iphone-3dgs":
+        from .iphone_3dgs import PipelineConfig, run_iphone_3dgs
+
+        report = run_iphone_3dgs(
+            PipelineConfig(
+                video=args.video,
+                output=args.output,
+                ffmpeg_binary=args.ffmpeg,
+                ffprobe_binary=args.ffprobe,
+                colmap_binary=args.colmap,
+                brush_binary=args.brush,
+                keyframes=args.keyframes,
+                holdout_fraction=args.holdout_fraction,
+                max_resolution=args.max_resolution,
+                training_steps=args.training_steps,
+                max_splats=args.max_splats,
+                seed=args.seed,
+            )
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     raise AssertionError(f"unhandled command: {args.command}")
 
 
