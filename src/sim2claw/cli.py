@@ -442,6 +442,35 @@ def build_parser() -> argparse.ArgumentParser:
         help="render measured follower encoder states kinematically or unchanged command-driven physics",
     )
 
+    pawn_game = subparsers.add_parser(
+        "pawn-game",
+        help="play a demo game built only from the 12 frozen B-G toggle skills",
+    )
+    pawn_game.add_argument(
+        "--game",
+        choices=("flip", "countdown"),
+        default="flip",
+        help="'flip' is Turning Turtles; 'countdown' is the simpler take-1-or-2 game",
+    )
+    pawn_game.add_argument(
+        "--first",
+        choices=("auto", "human", "robot"),
+        default="auto",
+        help="'auto' picks the side that gives the robot the theoretical win",
+    )
+    pawn_game.add_argument(
+        "--demo",
+        action="store_true",
+        help="replace the interactive human with a deterministic scripted opponent",
+    )
+    pawn_game.add_argument("--transcript", type=Path, default=None)
+    pawn_game.add_argument(
+        "--contract",
+        type=Path,
+        default=None,
+        help="frozen skill contract to validate against (defaults to rank12 v2)",
+    )
+
     camera_overlay = subparsers.add_parser(
         "camera-overlay",
         help="fit the physical camera to the board and render robot-anchored comparison views",
@@ -1051,6 +1080,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             "score_history": history,
         }, indent=2, sort_keys=True))
         return 0
+    if args.command == "pawn-game":
+        from .pawn_flip_game import run_pawn_game
+
+        return run_pawn_game(
+            args.game,
+            first_player=args.first,
+            demo=args.demo,
+            transcript_path=args.transcript,
+            contract_path=args.contract,
+        )
     if args.command == "camera-overlay":
         from .robot_anchored_overlay import build_robot_anchored_overlay
 
