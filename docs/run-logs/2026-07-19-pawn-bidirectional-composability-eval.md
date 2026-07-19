@@ -48,14 +48,14 @@ paid compute left running
 | Annotation template | Fresh repo-native JSON | Fail-closed empty evidence template | `configs/evaluations/pawn_rank12_bidirectional_annotations_template_v2.json` | Catalog and unaccepted visual proposals explicitly are not pose evidence |
 | Evaluator | Fresh repo-native Python | Deterministic endpoint and affine-composition analysis | `src/sim2claw/pawn_composability_eval.py` | Uses already-adopted NumPy/OpenCV dependencies |
 | Evidence preparation | Fresh repo-native Python | Inventory every catalog row, retain duplicate/off-scope/conflicting episodes, and extract hash-bound pre/post frames | `scripts/prepare_pawn_rank12_evidence.py` | Does not admit a pose annotation; product-skill coverage is reported separately from total episode inventory |
-| Recovered-corpus preparation | Silicon payloads plus preparation script | 18 raw episodes recovered and retained; 36 evidence frames generated | `outputs/pawn_composability/recovered_corpus_v2/` | Ignored local evidence; all visual/contact markers and approximate millimeter offsets remain unreviewed proposals |
+| Recovered-corpus preparation | Silicon payloads plus preparation script | 18 raw episodes recovered and retained; 36 evidence frames generated | `outputs/pawn_composability/recovered_corpus_v2/` | Ignored local evidence; the pre-acceptance 36-panel source artifact is preserved, 26 product markers have owner-reviewed qualitative image-space acceptance, and all approximate millimeter offsets remain unreviewed proposals |
 | Fail-closed product run | Evaluator CLI | Empty reviewed-annotation set while proposals await acceptance | `outputs/pawn_composability/recovered_corpus_v2/evaluation/` | `base_center_annotations_pending_review`, not a learned-policy result |
 
 ## Verification
 
 | Proof Surface | Command/URL | Result | Artifact |
 | --- | --- | --- | --- |
-| Focused unit/contract/preparation tests | `uv run --frozen pytest -q tests/test_pawn_composability_eval.py tests/test_pawn_rank12_evaluation.py tests/test_prepare_pawn_rank12_evidence.py` | 24 focused tests passed; includes proof-class/provenance gates, outcome completeness, collinear regression rejection, duplicate retention, adjudication retention, proposal-calibration boundaries, grid-remapped owner-retarget non-admission, and the panel-specific final-E2 redo | Test output |
+| Focused unit/contract/preparation tests | `uv run --frozen pytest -q tests/test_pawn_composability_eval.py tests/test_pawn_rank12_evaluation.py tests/test_prepare_pawn_rank12_evidence.py` | 25 focused tests passed; includes proof-class/provenance gates, outcome completeness, collinear regression rejection, duplicate retention, append-only owner label review, qualitative-marker/metric-boundary enforcement, proposal-calibration boundaries, grid-remapped retarget non-admission, and the panel-specific final-C2/final-E2 redos | Test output |
 | Earlier full repository suite | `uv run --frozen pytest -q` | 169 passed, 30 subtests passed before product-v2 replacement patch | Test output; not represented as post-v2 full-suite proof |
 | JSON syntax | `jq empty` on the contract, template, and project state | Passed | Tracked JSON files |
 | Patch hygiene | `git diff --check` | Passed | Working tree diff |
@@ -120,12 +120,33 @@ paid compute left running
   distance-regularized paired-frame-difference compact Hough candidate. This
   panel-specific redo remains an unreviewed proposal and supersedes only that
   inherited directive.
+- The owner then rejected the inherited down-right expansion on
+  `052d5137 final C2`. The final-C2 ring was restored to the strongest compact
+  paired-frame-difference candidate at `[462.5, 189.5] px`, radius
+  `9.6000 px`, and the panel metadata was corrected from the contaminated
+  luminance classification to the known beige C2 square with threshold 12.
+  The regenerated close-up visibly centers the compact ring on the pawn base.
+- After that required redo, the owner accepted the current product-scope set as
+  sufficiently accurate for qualitative review. The append-only review record
+  binds 13 product episodes, all 26 initial/final markers, 12/12 directed skill
+  coverage, exact frame hashes, pixel centers/radii, inferred contact-center
+  proposals, single-owner unquantified uncertainty, and review lineage. Seven
+  conflicting product task labels are separately recorded as owner-reviewed
+  folder-label corrections. The five out-of-scope rows remain retained,
+  deferred, and excluded.
 - The proposal-only pixel-to-board homography is identified as
   `c922_board_grid_homography_proposal_20260719_v1`, hash-bound to its matrix and
   reference frame, and explicitly prohibited from evaluator calibration. Every
   displayed millimeter offset is labeled approximate/unreviewed.
-- All 36 visual/contact proposals remain unaccepted and therefore are not
-  admitted as metric poses.
+- Product-scope visual review is complete in image space, but none of the 26
+  accepted markers is admitted as a metric pose. The homography has no frozen
+  held-out validation, propagated uncertainty, or independent point review;
+  the research-inference overlay therefore remains disabled.
+- Acceptance is bound to the exact deterministic 26-panel product sheet, its
+  decoded pixels, and the ordered 26-marker identity manifest. The corresponding
+  SHA-256 values are `8a2ae4029d2c89c3dee5a085f8cea835fe4f686de5f42e0c214467620dcea5f9`,
+  `11b02ee135fc0a0204757eef6896cef2c74b25c83c2399abcbff45f964d57369`,
+  and `c8076c59ebc070b5b3104030f2620d1f3add54830d169433a8bdbf657ab590c8`.
 - In a later qualitative review, the owner reported that the base in the
   focused `66894edc` folder-labeled final-E2 screenshot is fully inside the
   square, visibly off-center by a substantial amount, and close to touching an
@@ -140,26 +161,42 @@ paid compute left running
 - Held-out rows opened: 0.
 - Training rows admitted: 0.
 - Policies promoted: 0.
+- Product-scope source recordings with receipt `outcome_label=success`: 13/13.
+  These are retrospective human-teleoperation operator labels, not learned-policy
+  or simulator successes.
+- Compatible learned B-G policy checkpoints present: 0.
+- Canonical recorded-action replay readiness: 0/18 episodes. The integrated
+  input receipt remains fail-closed on the unapproved physical-to-simulator
+  transform and joint-range violations; no replay, sysid fit, limit expansion,
+  transform change, or closed-loop policy claim was attempted.
 - Brev instances created or used: 0.
 - Recovered frame-selection SHA-256:
-  `8bd8e37751b8c6032b12265e74264ea75bed8e5f355c019c194a46c5d7d62a98`.
+  `20c5dbdef2306f79cd24ed2bf7fae2353fa38a94a409ac3ca152014614aca0ea`.
 - Proposal review-sheet SHA-256:
-  `42aeb310061a0c4c7c0610ec7d9be932cb4ab979a2e680e4572b4623d8987da8`.
+  `837042097d2bb3a7d64c32502a89a0a6c667a90064c965e65bda9cf9e0d440de`.
+- Product-scope split review-sheet SHA-256:
+  `8a2ae4029d2c89c3dee5a085f8cea835fe4f686de5f42e0c214467620dcea5f9`.
+- Out-of-scope split review-sheet SHA-256:
+  `83b0a734a24fa98f98b7655b7d9782ad352437cc236ef6c7cbe8a5302e8c5f71`.
 - Task-label adjudication queue SHA-256:
-  `718f155a40c301058291b597938a0a10e74380ae152f15f9e33850ecaab4c516`.
+  `709081cd5b6efe450e08635885c82e48fa8e349614f564ea78e8f1a487e0c3f2`.
+- Product-scope owner visual-review SHA-256:
+  `3fab56dbf83e1a152f44f0daf88c0d43c44bfbc0ce3c23c0c2e0aa603797101e`.
+- Owner review-config SHA-256:
+  `7be42682f63747ae382c65bd4ee26ed5076dbfd9649d74a190fcfcfa859603fb`.
 - Fail-closed summary SHA-256:
   `43141d8aa65930342b14d292ddb5d83d1fcb61ddd46690bbe8013e98529deefc`.
 
 ## Known Gaps
 
-- Explicit human acceptance is required for every hash-bound fiducial and
-  inferred board-contact marker. The review sheet distinguishes nominal
-  references, visual fiducials, and inferred contact proposals; none is
-  admitted yet.
-- Resolve the 11 conflicting folder/receipt task labels through the generated
-  append-only queue. Five off-scope rows remain retained but excluded unless a
-  reviewed correction changes their mapping.
-- Annotate board-grid correspondences and initial/final pawn base centers.
+- Product-scope visual markers have single-owner qualitative acceptance, but
+  their pixel uncertainty is unquantified and there is no second independent
+  annotator.
+- Metric evaluation still requires a frozen, held-out-validated homography,
+  independently reviewed board correspondences, and propagated pose
+  uncertainty. The current matrix remains proposal-only.
+- Seven product label conflicts have owner-reviewed folder-label corrections.
+  Five off-scope rows remain retained, deferred, and excluded.
 - Capture enough independent initial-offset variation per skill to identify A
   and b; repeated nominal-center starts cannot answer self-centering.
 - Add synchronized real pawn/end-effector/contact observables before contact
@@ -169,13 +206,15 @@ paid compute left running
 
 ## Follow-Up Queue
 
-- Review each cyan proposal against its hash-bound full-resolution frame,
-  correct it if needed, and record explicit acceptance plus reviewer lineage
-  before populating the v2 annotation template.
-- Run the endpoint evaluator on those reviewed annotations first.
-- Use recorded-action replay to validate free-space joints and timing.
+- Add independent calibration/pose review and held-out board validation before
+  populating a metric v2 annotation manifest or running the metric endpoint
+  evaluator.
+- Keep recorded-action replay blocked until the canonical input report moves
+  from 0/18 readiness under a separately reviewed transform without joint-limit
+  violations.
 - Version the synchronized system-identification contract, enable MuJoCo's
   optional official `sysid` dependencies, and fit geometry → timing/control →
   contact/object groups with held-out validation.
-- Only then run calibrated closed-loop ACT, alternating-cycle, and correction
-  comparisons. None become physical proof until separately validated.
+- Recover or train a compatible B-G checkpoint before any closed-loop policy
+  comparison; none exists in the current checkout. Only after the calibration
+  and replay gates pass should alternating-cycle or correction comparisons run.

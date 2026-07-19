@@ -30,6 +30,7 @@ CORE_SKILL_IDS = frozenset(
 )
 PROPOSAL_CALIBRATION_ID = "c922_board_grid_homography_proposal_20260719_v1"
 PROPOSAL_CALIBRATION_REFERENCE_RECORDING_ID = "20260719T030059Z-a26f8400"
+OWNER_VISUAL_REVIEW_SCHEMA = "sim2claw.pawn_rank12_owner_visual_review.v1"
 PROPOSAL_CALIBRATION_MATRIX_SHA256 = hashlib.sha256(
     json.dumps(
         PIXEL_TO_BOARD_HOMOGRAPHY.tolist(),
@@ -59,9 +60,22 @@ OWNER_VISUAL_ADJUSTMENT_REMAP = (
         "corrected_phase": "final",
         "corrected_grid_position": [2, 4],
         "corrected_title": "pawn_c1_to_c2 052d5137 final c2",
-        "center_delta_px": [4.0, 3.0],
-        "radius_scale": 1.20,
-        "directive": "expand down-right",
+        "absolute_center_px": [462.5, 189.5],
+        "absolute_radius_px": 9.600000381469727,
+        "square_tone_override": "beige",
+        "darkness_threshold_override_luma": 12,
+        "directive": "retarget compact ring up-left onto the visible base footprint",
+        "panel_specific_redo": {
+            "supersedes_directive": "expand down-right",
+            "reason": (
+                "owner reported the remapped final C2 ring was too off-center "
+                "to represent the pawn base"
+            ),
+            "candidate_basis": (
+                "highest paired-frame-difference compact Hough candidate, "
+                "visually rechecked on the beige C2 square"
+            ),
+        },
     },
     {
         "prior_recording_id": "20260719T031324Z-bf91502b",
@@ -163,6 +177,21 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _canonical_sha256(value: object) -> str:
+    payload = json.dumps(value, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _image_pixel_sha256(image: np.ndarray) -> str:
+    digest = hashlib.sha256()
+    digest.update(str(image.dtype).encode("ascii"))
+    digest.update(repr(image.shape).encode("ascii"))
+    digest.update(image.tobytes(order="C"))
+    return digest.hexdigest()
+
+
 def _arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -179,6 +208,13 @@ def _arguments() -> argparse.Namespace:
         "--catalog",
         type=Path,
         default=Path("configs/data/physical_pawn_move_catalog_20260719.json"),
+    )
+    parser.add_argument(
+        "--owner-review",
+        type=Path,
+        default=Path(
+            "configs/evaluations/pawn_rank12_owner_visual_review_20260719_v1.json"
+        ),
     )
     return parser.parse_args()
 
@@ -373,6 +409,267 @@ def proposal_calibration_payload(
         "provenance": "manually selected Hough line-family proposal; not independently reviewed calibration",
         "board_offset_semantics": "approximate_unreviewed_mm_for_proposal_review_only",
         "claim_boundary": "must_not_flow_into_evaluator_calibrations_without_explicit_review_lineage",
+    }
+
+
+def apply_owner_task_label_review(
+    queue: dict[str, object], owner_review: dict[str, object]
+) -> dict[str, object]:
+    """Append the owner's product-label decision without admitting metric poses."""
+    review_id = str(owner_review["review_id"])
+    reviewer = str(owner_review["reviewer"])
+    reviewed_at = str(owner_review["reviewed_at"])
+    acceptance_source = str(owner_review["acceptance_source"])
+    reviewed_product_count = 0
+    deferred_out_of_scope_count = 0
+    for entry in queue["entries"]:
+        is_product = entry.get("candidate_skill_id") is not None
+        event = {
+            "review_id": review_id,
+            "reviewer": reviewer,
+            "reviewed_at": reviewed_at,
+            "acceptance_source": acceptance_source,
+            "status": (
+                "reviewed_correction"
+                if is_product
+                else "deferred_out_of_scope"
+            ),
+            "source_square": entry.get("folder_source_square"),
+            "destination_square": entry.get("folder_destination_square"),
+            "decision_basis": (
+                "owner_reviewed_displayed_folder_transition"
+                if is_product
+                else "owner_deferred_non_product_transition"
+            ),
+            "evaluator_pose_admission_allowed": False,
+        }
+        history = entry["review_history"]
+        matching_events = [
+            row for row in history if row.get("review_id") == review_id
+        ]
+        if len(matching_events) > 1:
+            raise RuntimeError(
+                f"duplicate owner review event for {entry['recording_id']}"
+            )
+        if matching_events and matching_events[0] != event:
+            raise RuntimeError(
+                f"owner review history drifted for {entry['recording_id']}"
+            )
+        if not matching_events:
+            history.append(event)
+        if is_product:
+            entry["adjudication_status"] = "reviewed_correction"
+            entry["candidate_mapping_basis"] = (
+                "owner_reviewed_displayed_folder_transition"
+            )
+            reviewed_product_count += 1
+        else:
+            entry["adjudication_status"] = "deferred_out_of_scope"
+            deferred_out_of_scope_count += 1
+        entry["evaluator_admission_allowed"] = False
+    queue["owner_review_id"] = review_id
+    queue["reviewed_product_correction_count"] = reviewed_product_count
+    queue["deferred_out_of_scope_count"] = deferred_out_of_scope_count
+    return queue
+
+
+OWNER_MARKER_IDENTITY_FIELDS = (
+    "source_recording_id",
+    "skill_id",
+    "phase",
+    "square",
+    "frame_sha256",
+    "visual_fiducial_center_px",
+    "visual_fiducial_radius_px",
+    "inferred_contact_center_px",
+    "square_tone",
+    "darkness_threshold_luma",
+)
+
+
+def owner_marker_manifest(markers: list[dict[str, object]]) -> list[dict[str, object]]:
+    """Return the path-independent marker identity the owner actually reviewed."""
+    return [
+        {field: marker[field] for field in OWNER_MARKER_IDENTITY_FIELDS}
+        for marker in markers
+    ]
+
+
+def build_owner_visual_review_payload(
+    episodes: list[dict[str, object]],
+    *,
+    owner_review: dict[str, object],
+    owner_review_config_path: Path,
+    owner_review_config_sha256: str,
+    catalog_path: Path,
+    catalog_sha256: str,
+    review_sheet: Path,
+    review_sheet_sha256: str,
+    review_sheet_pixel_sha256: str,
+    proposal_calibration: dict[str, object],
+) -> dict[str, object]:
+    """Bind accepted image-space markers while keeping metric inference disabled."""
+    if owner_review.get("schema_version") != OWNER_VISUAL_REVIEW_SCHEMA:
+        raise RuntimeError("unsupported owner visual review schema")
+    product = [row for row in episodes if row.get("candidate_skill_id") is not None]
+    excluded = [row for row in episodes if row.get("candidate_skill_id") is None]
+    accepted_scope = owner_review["accepted_scope"]
+    if len(product) != int(accepted_scope["expected_episode_count"]):
+        raise RuntimeError("owner review product episode count drifted")
+    if len({row["candidate_skill_id"] for row in product}) != int(
+        accepted_scope["expected_directed_skill_coverage"]
+    ):
+        raise RuntimeError("owner review directed-skill coverage drifted")
+
+    markers = []
+    task_label_reviews = []
+    uncertainty = dict(owner_review["uncertainty"])
+    for episode in product:
+        task_label_reviews.append(
+            {
+                "source_recording_id": episode["recording_id"],
+                "folder_label": episode["folder_label"],
+                "skill_id": episode["candidate_skill_id"],
+                "status": (
+                    "reviewed_correction"
+                    if episode["metadata_conflict"]
+                    else "reviewed_confirmation"
+                ),
+                "source_square": episode["folder_source_square"],
+                "destination_square": episode["folder_destination_square"],
+                "catalog_source_square": episode["catalog_source_square"],
+                "catalog_destination_square": episode["catalog_destination_square"],
+                "retrospective_operator_outcome_label": episode.get(
+                    "receipt_outcome_label"
+                ),
+                "reviewer": owner_review["reviewer"],
+                "reviewed_at": owner_review["reviewed_at"],
+                "acceptance_source": owner_review["acceptance_source"],
+            }
+        )
+        frame_by_phase = {row["phase"]: row for row in episode["frames"]}
+        for phase, square in (
+            ("initial", episode["folder_source_square"]),
+            ("final", episode["folder_destination_square"]),
+        ):
+            frame = frame_by_phase[phase]
+            fiducial = episode["visual_fiducial_proposals"][phase]
+            markers.append(
+                {
+                    "source_recording_id": episode["recording_id"],
+                    "skill_id": episode["candidate_skill_id"],
+                    "phase": phase,
+                    "square": square,
+                    "frame_path": str(Path(frame["path"]).resolve()),
+                    "frame_sha256": frame["sha256"],
+                    "visual_fiducial_center_px": fiducial["center_px"],
+                    "visual_fiducial_radius_px": fiducial["radius_px"],
+                    "inferred_contact_center_px": fiducial["contact_center_px"],
+                    "square_tone": fiducial["observed_square_tone"],
+                    "darkness_threshold_luma": fiducial[
+                        "foreground_darkness_threshold_luma"
+                    ],
+                    "review": {
+                        "status": (
+                            "accepted_for_qualitative_image_space_endpoint_review"
+                        ),
+                        "reviewer": owner_review["reviewer"],
+                        "reviewed_at": owner_review["reviewed_at"],
+                        "acceptance_source": owner_review["acceptance_source"],
+                    },
+                    "uncertainty": uncertainty,
+                    "metric_pose_admission_allowed": False,
+                    "simulator_or_policy_claim_allowed": False,
+                }
+            )
+    if len(markers) != int(accepted_scope["expected_marker_count"]):
+        raise RuntimeError("owner review marker count drifted")
+
+    marker_manifest = owner_marker_manifest(markers)
+    marker_manifest_sha256 = _canonical_sha256(marker_manifest)
+    review_artifact = owner_review.get("review_artifact")
+    if not isinstance(review_artifact, dict):
+        raise RuntimeError("owner review artifact binding is missing")
+    expected_review_sheet = Path(str(review_artifact.get("path", ""))).resolve()
+    if review_sheet.resolve() != expected_review_sheet:
+        raise RuntimeError("owner-reviewed product sheet path drifted")
+    if int(review_artifact.get("panel_count", -1)) != len(markers):
+        raise RuntimeError("owner-reviewed product sheet panel count drifted")
+    if review_sheet_sha256 != review_artifact.get("file_sha256"):
+        raise RuntimeError("owner-reviewed product sheet bytes drifted")
+    if review_sheet_pixel_sha256 != review_artifact.get("pixel_sha256"):
+        raise RuntimeError("owner-reviewed product sheet pixels drifted")
+    if marker_manifest_sha256 != review_artifact.get(
+        "accepted_marker_manifest_sha256"
+    ):
+        raise RuntimeError("owner-reviewed marker manifest drifted")
+
+    required_redo = owner_review["required_redo"]
+    accepted_redo = next(
+        row
+        for row in markers
+        if row["source_recording_id"] == required_redo["recording_id"]
+        and row["phase"] == required_redo["phase"]
+    )
+    if (
+        accepted_redo["visual_fiducial_center_px"]
+        != required_redo["accepted_visual_fiducial_center_px"]
+        or not np.isclose(
+            accepted_redo["visual_fiducial_radius_px"],
+            required_redo["accepted_visual_fiducial_radius_px"],
+        )
+        or accepted_redo["square_tone"] != required_redo["accepted_square_tone"]
+        or accepted_redo["darkness_threshold_luma"]
+        != required_redo["accepted_darkness_threshold_luma"]
+    ):
+        raise RuntimeError("required owner-approved final C2 redo drifted")
+
+    return {
+        "schema_version": "sim2claw.pawn_rank12_owner_visual_acceptance.v1",
+        "review_id": owner_review["review_id"],
+        "status": "product_scope_visual_review_complete_metric_evaluation_blocked",
+        "reviewer": owner_review["reviewer"],
+        "reviewed_at": owner_review["reviewed_at"],
+        "acceptance_source": owner_review["acceptance_source"],
+        "owner_review_config_path": str(owner_review_config_path),
+        "owner_review_config_sha256": owner_review_config_sha256,
+        "source_catalog_path": str(catalog_path),
+        "source_catalog_sha256": catalog_sha256,
+        "review_sheet_path": str(review_sheet.resolve()),
+        "review_sheet_sha256": review_sheet_sha256,
+        "review_sheet_pixel_sha256": review_sheet_pixel_sha256,
+        "accepted_marker_manifest_sha256": marker_manifest_sha256,
+        "accepted_marker_manifest": marker_manifest,
+        "review_artifact_banner_state": review_artifact["banner_state"],
+        "accepted_product_episode_count": len(product),
+        "accepted_visual_marker_count": len(markers),
+        "directed_skill_coverage_count": len(
+            {row["candidate_skill_id"] for row in product}
+        ),
+        "metric_pose_annotation_count": 0,
+        "out_of_scope_episode_count": len(excluded),
+        "out_of_scope_recording_ids": [row["recording_id"] for row in excluded],
+        "out_of_scope_decision": owner_review["out_of_scope_decision"],
+        "retrospective_operator_success_count": sum(
+            row.get("receipt_outcome_label") == "success" for row in product
+        ),
+        "retrospective_operator_outcome_semantics": (
+            "source-recording operator labels only; not learned-policy, metric "
+            "endpoint, simulator, or checkpoint evidence"
+        ),
+        "task_label_reviews": task_label_reviews,
+        "accepted_markers": markers,
+        "board_calibration": {
+            "calibration_id": proposal_calibration["calibration_id"],
+            "matrix_sha256": proposal_calibration["matrix_sha256"],
+            "status": owner_review["board_calibration_decision"],
+            "held_out_validated": False,
+            "metric_use_allowed": False,
+        },
+        "uncertainty": uncertainty,
+        "research_inference_overlay_status": "disabled",
+        "learned_b_g_policy_checkpoint_present": False,
+        "claim_boundary": owner_review["claim_boundary"],
     }
 
 
@@ -679,6 +976,16 @@ def apply_owner_visual_adjustments(
         )
         fiducial["confidence"] = "owner_retargeted_pending_exact_acceptance"
         fiducial["evaluator_pose_admission_allowed"] = False
+        if "square_tone_override" in adjustment:
+            fiducial["observed_square_tone"] = str(
+                adjustment["square_tone_override"]
+            )
+            fiducial["foreground_darkness_threshold_luma"] = int(
+                adjustment["darkness_threshold_override_luma"]
+            )
+            fiducial["tone_selection_basis"] = (
+                "owner_corrected_chess_square_identity"
+            )
         fiducial["owner_visual_adjustment"] = {
             "status": "proposed_pending_human_review",
             "directive": adjustment["directive"],
@@ -819,6 +1126,26 @@ def _review_tile(
         cv2.LINE_AA,
     )
     return tile
+
+
+def _write_split_review_sheet(
+    *, banner: np.ndarray, tiles: list[np.ndarray], path: Path
+) -> np.ndarray:
+    if not tiles:
+        raise RuntimeError(f"split review sheet has no panels: {path}")
+    blank = np.zeros_like(tiles[0])
+    rows = []
+    for index in range(0, len(tiles), 4):
+        row = list(tiles[index : index + 4])
+        row.extend(blank.copy() for _ in range(4 - len(row)))
+        rows.append(np.hstack(row))
+    sheet = np.vstack([banner, *rows])
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not cv2.imwrite(
+        str(path), sheet, [cv2.IMWRITE_PNG_COMPRESSION, 9]
+    ):
+        raise RuntimeError(f"split review sheet write failed: {path}")
+    return sheet
 
 
 def _circle_candidates(
@@ -1036,6 +1363,13 @@ def _select_base_footprint_proposal(
 def main() -> int:
     args = _arguments()
     catalog_path = args.catalog.resolve()
+    owner_review_config_path = args.owner_review.resolve()
+    owner_review = json.loads(
+        owner_review_config_path.read_text(encoding="utf-8")
+    )
+    if owner_review.get("schema_version") != OWNER_VISUAL_REVIEW_SCHEMA:
+        raise RuntimeError("unsupported owner visual review schema")
+    owner_review_config_sha256 = _sha256(owner_review_config_path)
     catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
     catalog_rows = catalog.get("episodes")
     if not isinstance(catalog_rows, list):
@@ -1121,6 +1455,7 @@ def main() -> int:
             "receipt_source_square": receipt_source,
             "receipt_destination_square": receipt_destination,
             "receipt_language_instruction": receipt.get("language_instruction"),
+            "receipt_outcome_label": receipt.get("outcome_label"),
             "proposal_square_basis": (
                 "folder_label_unreviewed_when_metadata_conflicts"
             ),
@@ -1233,12 +1568,17 @@ def main() -> int:
         catalog_sha256=catalog_sha256,
         existing=existing_queue,
     )
+    adjudication_queue = apply_owner_task_label_review(
+        adjudication_queue, owner_review
+    )
     queue_path.write_text(
         json.dumps(adjudication_queue, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
 
     tiles = []
+    product_tiles: list[np.ndarray] = []
+    out_of_scope_tiles: list[np.ndarray] = []
     for episode in episodes:
         source_square = str(episode["folder_source_square"])
         destination_square = str(episode["folder_destination_square"])
@@ -1246,22 +1586,25 @@ def main() -> int:
         final_path = Path(episode["frames"][1]["path"])
         candidate_label = episode["candidate_skill_id"] or "outside_product_scope"
         short_recording_id = str(episode["recording_id"])[-8:]
-        tiles.extend(
-            [
-                _review_tile(
-                    initial_path,
-                    source_square,
-                    f"{candidate_label} {short_recording_id} initial {source_square}",
-                    episode["visual_fiducial_proposals"]["initial"],
-                ),
-                _review_tile(
-                    final_path,
-                    destination_square,
-                    f"{candidate_label} {short_recording_id} final {destination_square}",
-                    episode["visual_fiducial_proposals"]["final"],
-                ),
-            ]
-        )
+        episode_tiles = [
+            _review_tile(
+                initial_path,
+                source_square,
+                f"{candidate_label} {short_recording_id} initial {source_square}",
+                episode["visual_fiducial_proposals"]["initial"],
+            ),
+            _review_tile(
+                final_path,
+                destination_square,
+                f"{candidate_label} {short_recording_id} final {destination_square}",
+                episode["visual_fiducial_proposals"]["final"],
+            ),
+        ]
+        tiles.extend(episode_tiles)
+        if episode["candidate_skill_id"] is None:
+            out_of_scope_tiles.extend(episode_tiles)
+        else:
+            product_tiles.extend(episode_tiles)
     rows = [np.hstack(tiles[index : index + 4]) for index in range(0, len(tiles), 4)]
     sheet_body = np.vstack(rows)
     banner = np.zeros((104, sheet_body.shape[1], 3), dtype=np.uint8)
@@ -1302,6 +1645,19 @@ def main() -> int:
     review_sheet = args.output / "base_center_review_sheet.png"
     if not cv2.imwrite(str(review_sheet), np.vstack([banner, sheet_body])):
         raise RuntimeError(f"review sheet write failed: {review_sheet}")
+    split_review_root = args.output / "split_review"
+    product_review_sheet = split_review_root / "product_scope_26_panels.png"
+    product_review_pixels = _write_split_review_sheet(
+        banner=banner,
+        tiles=product_tiles,
+        path=product_review_sheet,
+    )
+    out_of_scope_review_sheet = split_review_root / "out_of_scope_10_panels.png"
+    _write_split_review_sheet(
+        banner=banner,
+        tiles=out_of_scope_tiles,
+        path=out_of_scope_review_sheet,
+    )
 
     reference_frame = next(
         frame
@@ -1316,6 +1672,26 @@ def main() -> int:
     )
     proposal_calibration["contact_center_inference"] = (
         contact_center_proposal_calibration
+    )
+    review_sheet_sha256 = _sha256(review_sheet)
+    product_review_sheet_sha256 = _sha256(product_review_sheet)
+    product_review_sheet_pixel_sha256 = _image_pixel_sha256(product_review_pixels)
+    owner_acceptance = build_owner_visual_review_payload(
+        episodes,
+        owner_review=owner_review,
+        owner_review_config_path=owner_review_config_path,
+        owner_review_config_sha256=owner_review_config_sha256,
+        catalog_path=catalog_path,
+        catalog_sha256=catalog_sha256,
+        review_sheet=product_review_sheet,
+        review_sheet_sha256=product_review_sheet_sha256,
+        review_sheet_pixel_sha256=product_review_sheet_pixel_sha256,
+        proposal_calibration=proposal_calibration,
+    )
+    owner_acceptance_path = args.output / "product_scope_owner_visual_review.json"
+    owner_acceptance_path.write_text(
+        json.dumps(owner_acceptance, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
     )
     raw_files = [
         path for path in args.recording_root.rglob("*") if path.is_file()
@@ -1333,27 +1709,44 @@ def main() -> int:
         "source_catalog_path": str(catalog_path),
         "source_catalog_sha256": catalog_sha256,
         "admitted_base_center_annotation_count": 0,
-        "candidate_status": "proposed_pending_human_review",
+        "owner_accepted_qualitative_visual_marker_count": owner_acceptance[
+            "accepted_visual_marker_count"
+        ],
+        "candidate_status": (
+            "product_scope_visual_review_complete_metric_calibration_pending"
+        ),
         "review_finding": (
             "Square-tone-specific signed-darkness fiducials replace the prior "
             "single-threshold visual marker. The owner-supplied centered-initial "
             "observation calibrates a mean visual-to-contact offset for proposals only."
         ),
         "required_next_review": (
-            "A human must inspect every cyan ring and inferred contact-center cross "
-            "in its hash-bound full-resolution frame, adjudicate conflicting task "
-            "labels, and explicitly accept or correct each pose with reviewer lineage "
-            "before an evaluator annotation manifest is admitted."
+            "Metric admission still requires independently reviewed board "
+            "correspondences, a frozen held-out-validated homography, propagated "
+            "pose uncertainty, and a separate metric annotation manifest."
         ),
         "review_sheet_path": str(review_sheet.resolve()),
-        "review_sheet_sha256": _sha256(review_sheet),
+        "review_sheet_sha256": review_sheet_sha256,
+        "review_sheet_banner_state": (
+            "pre_acceptance_source_artifact_preserved_for_review_lineage"
+        ),
+        "product_scope_review_sheet_path": str(product_review_sheet.resolve()),
+        "product_scope_review_sheet_sha256": product_review_sheet_sha256,
+        "product_scope_review_sheet_pixel_sha256": (
+            product_review_sheet_pixel_sha256
+        ),
+        "out_of_scope_review_sheet_path": str(
+            out_of_scope_review_sheet.resolve()
+        ),
+        "out_of_scope_review_sheet_sha256": _sha256(out_of_scope_review_sheet),
         "review_sheet_marker_meaning": {
             "red_cross": "nominal_square_center_reference_not_a_measured_pose",
             "cyan_ring": (
                 "tone_adaptive_compact_dark_visual_fiducial_not_a_contact_measurement"
             ),
             "cyan_cross": (
-                "offset_corrected_contact_center_proposal_pending_human_review"
+                "owner_reviewed_qualitative_image_space_proposal_for_product_rows_"
+                "not_a_metric_contact_measurement"
             ),
             "millimeter_offsets": (
                 "approximate_unreviewed_proposal_values_never_evaluator_calibration"
@@ -1366,6 +1759,9 @@ def main() -> int:
         "task_label_adjudication_queue_entry_count": adjudication_queue[
             "entry_count"
         ],
+        "owner_visual_review_path": str(owner_acceptance_path.resolve()),
+        "owner_visual_review_sha256": _sha256(owner_acceptance_path),
+        "owner_visual_review_status": owner_acceptance["status"],
         "episodes": episodes,
     }
     selection_path.write_text(
