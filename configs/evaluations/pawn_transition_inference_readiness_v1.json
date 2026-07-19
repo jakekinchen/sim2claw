@@ -1,0 +1,146 @@
+{
+  "schema_version": "sim2claw.pawn_transition_inference_readiness.v1",
+  "protocol_id": "pawn_rank12_transition_inference_readiness_v1",
+  "status": "predeclared_research_claim_overlay",
+  "frozen_at": "2026-07-19T01:54:12-05:00",
+  "applies_to": "configs/evaluations/pawn_rank12_bidirectional_v2.json",
+  "applies_to_sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3",
+  "mutation_policy": "never_edit_thresholds_or_gates_in_place_create_a_new_version",
+  "proof_class": "research_inference_protocol_only_no_endpoint_or_policy_result",
+  "purpose": "Separate algebraically computable endpoint diagnostics from exploratory and claim-eligible conclusions.",
+  "enforcement_status": "manual_review_protocol_until_a_separate_readiness_evaluator_emits_a_passing_receipt",
+  "threshold_basis": "conservative_engineering_heuristics_not_a_power_analysis_or_guarantee_of_adequate_inference",
+  "pose_and_board_calibration": {
+    "minimum_spatially_distributed_correspondences": 8,
+    "minimum_independent_annotators_per_point": 2,
+    "require_lens_distortion_control": true,
+    "require_held_out_or_leave_one_out_board_error": true,
+    "maximum_held_out_or_leave_one_out_board_rms_m": 0.0015,
+    "maximum_pairwise_annotator_disagreement_m": 0.0015,
+    "annotator_disagreement_adjudication": "exclude_the_point_until_a_third_independent_annotator_and_named_reviewer_resolve_it_append_only",
+    "require_board_quadrant_coverage": true,
+    "require_pose_uncertainty_propagation": true,
+    "propagated_pose_uncertainty_definition": "per_episode_95_percent_board_plane_confidence_region_from_calibration_held_out_error_annotator_covariance_and_contact_center_fit_covariance_combined_by_monte_carlo",
+    "abstention_scope": "metric_and_episode_specific; a per_skill_transition_claim_requires_every_included_episode_to_be_pose_eligible",
+    "abstain_when_relevant_confidence_region_overlaps_grade_or_bias_boundary": true,
+    "frozen_engineering_maximum_board_rms_m": 0.003,
+    "note": "Four correspondences can determine a homography but cannot validate it. In-sample RMS alone is not claim evidence."
+  },
+  "episode_independence": {
+    "threshold_scope": "per_directed_skill",
+    "independent_episode_definition": "one_distinct_physical_or_simulated_execution_with_a_unique_source_payload_hash_and_episode_id; weighted_repeats_copies_augmented_views_or_replays_of_the_same_actions_count_once",
+    "one_claim_uses_exactly_one_proof_class_and_domain": true,
+    "physical_and_simulation_episodes_may_be_pooled_in_one_transition_estimate": false,
+    "same_session_dependence": "episodes_from_one_acquisition_session_may_count_as_distinct_executions_but_are_a_single_cluster_for_uncertainty_resampling",
+    "session_identity_required_for_claim_eligible": true,
+    "generalization_population": "only_the_frozen_policy_checkpoint_robot_gripper_board_workspace_pose_observation_pipeline_and_initial_offset_support_represented_by_the_eligible_sessions",
+    "generalization_beyond_population_allowed": false
+  },
+  "design_diagnostics": {
+    "centered_design_formula": "for_n_by_2_initial_offset_matrix_D_compute_Z_col_j=(D_col_j-mean(D_col_j))/s_j_where_s_j=max(sample_standard_deviation_ddof1,max_per_episode_axis_pose_standard_uncertainty,1e-9); X=[Z_x,Z_y,ones]",
+    "condition_number_formula": "two_norm_sigma_max_X_divided_by_sigma_min_X",
+    "offset_span_formula": "two_times_sigma_min_of_centered_D_divided_by_sqrt(n_minus_1); this_is_the_two_standard_deviation_span_along_the_least_excited_principal_axis",
+    "pose_uncertainty_for_span_ratio": "maximum_per_episode_95_percent_radial_board_plane_pose_uncertainty_m",
+    "claim_support_estimator": "convex_hull_of_reviewed_initial_offsets_with_no_margin_expansion; a_query_is_supported_only_if_its_entire_95_percent_pose_confidence_region_is_inside_the_hull",
+    "axis_aligned_engineering_envelope_is_claim_support": false
+  },
+  "transition_evidence_tiers": {
+    "fit_computable": {
+      "minimum_independent_episodes": 4,
+      "minimum_design_rank": 3,
+      "scope": "per_directed_skill",
+      "allowed_output": "algebraic_fit_only_no_transition_classification_or_composition_claim"
+    },
+    "exploratory": {
+      "minimum_independent_episodes": 10,
+      "minimum_independent_session_clusters": 3,
+      "scope": "per_directed_skill",
+      "maximum_centered_design_condition_number": 50.0,
+      "minimum_offset_span_to_pose_uncertainty_ratio": 4.0,
+      "require_measured_input_support_reporting": true,
+      "allowed_output": "exploratory_transition_diagnostic_with_uncertainty_and_support_caveats"
+    },
+    "claim_eligible": {
+      "status": "disabled_until_a_frozen_small_cluster_coverage_study_and_new_protocol_version",
+      "minimum_independent_episodes": 20,
+      "minimum_independent_session_clusters": null,
+      "scope": "per_directed_skill",
+      "require_stable_leave_one_session_out_predictions": true,
+      "leave_one_session_out_stability": {
+        "require_same_transition_classification_for_every_omission": true,
+        "maximum_held_out_prediction_rmse_m": 0.006,
+        "prediction_domain": "only_omitted_session_inputs_whose_95_percent_pose_region_is_inside_the_remaining_input_convex_hull",
+        "minimum_eligible_omission_count": null,
+        "minimum_eligible_omission_fraction": null
+      },
+      "require_uncertainty_intervals_if_reenabled": true,
+      "confidence_level": 0.95,
+      "candidate_interval_method_not_yet_authorized": {
+        "method": "studentized_wild_cluster_bootstrap_t",
+        "candidate_cluster_weight_distribution": "rademacher_plus_or_minus_one",
+        "resample_count": 10000,
+        "seed": 190719,
+        "candidate_resampling_unit": "acquisition_session_cluster_with_all_eligible_episodes_in_that_cluster"
+      },
+      "enabling_requirements": [
+        "frozen_simulation_or_power_study_defines_the_minimum_session_cluster_floor",
+        "coverage_study_demonstrates_acceptable_interval_coverage_for_the_selected_method",
+        "next_protocol_version_freezes_nonvacuous_minimum_eligible_leave_one_session_out_count_and_fraction",
+        "next_protocol_version_freezes_the_authorized_interval_or_test_method"
+      ],
+      "require_interval_wholly_inside_predeclared_equivalence_region": true,
+      "require_calibration_and_pose_uncertainty_propagation": true,
+      "require_independent_frozen_trials_for_checkpoint_promotion": true
+    }
+  },
+  "claim_scope_and_multiplicity": {
+    "primary_claim_unit": "one_directed_skill",
+    "per_directed_skill_alpha": 0.05,
+    "family_wide_inferential_claim_allowed": false,
+    "family_wide_reason": "v1_does_not_predeclare_cross_skill_multiplicity_adjusted_intervals_or_equivalence_tests",
+    "family_wide_output_allowed": "descriptive_only",
+    "column_pair_claim_requires_both_directions_claim_eligible": true
+  },
+  "frozen_point_thresholds": {
+    "a_near_zero_frobenius_max": 0.35,
+    "a_near_identity_frobenius_max": 0.35,
+    "small_bias_norm_m_max": 0.003,
+    "large_residual_rms_m_min_exclusive": 0.006,
+    "stabilizing_pair_spectral_radius_max": 0.95,
+    "neutral_pair_spectral_radius_max": 1.05,
+    "unmodeled_or_noisy_uses": "residual_rms_not_covariance_alone"
+  },
+  "composition_claim_boundary": {
+    "model": "exploratory_affine_gaussian_endpoint_diagnostic",
+    "assumptions": [
+      "stationary",
+      "linear",
+      "markov",
+      "gaussian_residual"
+    ],
+    "report_only_while_inside_measured_input_support": true,
+    "claim_level_support_estimator": "convex_hull_rule_from_design_diagnostics_not_the_v2_axis_aligned_engineering_envelope",
+    "support_exit_status": "unsupported",
+    "categorical_task_or_stability_failure_is_absorbing": true,
+    "propagate_episode_level_parameter_uncertainty": true,
+    "point_estimate_spectral_radius_alone_is_claim_eligible": false,
+    "physical_execution_survival_claim_allowed": false,
+    "precondition_language": "membership_in_measured_input_support_not_policy_validity_evidence"
+  },
+  "operational_definitions": {
+    "upright": "reviewer_confirms_the_pawn_is_not_toppled_and_its_base_remains_the_board_contact_surface",
+    "stable": "after_release_the_reviewed_base_center_moves_at_most_0.001_m_over_a_1.0_second_window_sampled_at_20_hz_or_higher_and_no_frame_shows_rocking_or_toppling",
+    "stable_observation_window_seconds": 1.0,
+    "stable_minimum_sample_rate_hz": 20.0,
+    "stable_maximum_base_center_displacement_m": 0.001,
+    "stable_uncertainty_rule": "the_upper_95_percent_bound_on_relative_same_camera_base_center_displacement_must_be_at_most_0.001_m; relative_tracking_uncertainty_is_recorded_separately_from_absolute_board_calibration_uncertainty",
+    "ordinary_square_success": "reviewer_reports_the_pawn_in_the_requested_destination_square_independent_of_center_precision",
+    "trajectory_repeatability": "progress_normalized_geometric_path_repeatability_not_temporal_or_controller_repeatability"
+  },
+  "authority": {
+    "may_change_frozen_v2_engineering_outputs": false,
+    "may_promote_a_checkpoint": false,
+    "may_authorize_physical_motion": false,
+    "llm_or_vlm_proposals_are_measurements": false
+  }
+}

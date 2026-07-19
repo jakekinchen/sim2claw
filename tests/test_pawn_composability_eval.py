@@ -30,9 +30,167 @@ TEMPLATE = (
     / "evaluations"
     / "pawn_rank12_bidirectional_annotations_template_v2.json"
 )
+INFERENCE_READINESS = (
+    REPO_ROOT
+    / "configs"
+    / "evaluations"
+    / "pawn_transition_inference_readiness_v1.json"
+)
+REPLAY_LIMIT_AUDIT = (
+    REPO_ROOT
+    / "docs"
+    / "reference"
+    / "PHYSICAL_REPLAY_JOINT_LIMIT_AUDIT_20260719.json"
+)
 
 
 class PawnComposabilityEvaluationTest(unittest.TestCase):
+    def test_research_readiness_overlay_is_stricter_and_non_authoritative(self) -> None:
+        contract = load_contract()
+        readiness = json.loads(INFERENCE_READINESS.read_text(encoding="utf-8"))
+        tiers = readiness["transition_evidence_tiers"]
+        calibration = readiness["pose_and_board_calibration"]
+        composition = readiness["composition_claim_boundary"]
+
+        self.assertEqual(
+            readiness["applies_to"],
+            "configs/evaluations/pawn_rank12_bidirectional_v2.json",
+        )
+        self.assertEqual(
+            readiness["applies_to_sha256"],
+            hashlib.sha256(CONTRACT_PATH.read_bytes()).hexdigest(),
+        )
+        self.assertEqual(
+            tiers["fit_computable"]["minimum_independent_episodes"],
+            contract["regression"]["minimum_episode_count"],
+        )
+        self.assertGreaterEqual(
+            tiers["exploratory"]["minimum_independent_episodes"], 10
+        )
+        self.assertGreater(
+            tiers["claim_eligible"]["minimum_independent_episodes"],
+            tiers["exploratory"]["minimum_independent_episodes"],
+        )
+        self.assertTrue(tiers["claim_eligible"]["status"].startswith("disabled_"))
+        self.assertIsNone(
+            tiers["claim_eligible"]["minimum_independent_session_clusters"]
+        )
+        self.assertTrue(
+            tiers["claim_eligible"]["require_stable_leave_one_session_out_predictions"]
+        )
+        self.assertIsNone(
+            tiers["claim_eligible"]["leave_one_session_out_stability"][
+                "minimum_eligible_omission_count"
+            ]
+        )
+        self.assertIn(
+            "candidate_interval_method_not_yet_authorized",
+            tiers["claim_eligible"],
+        )
+        self.assertNotIn(
+            "require_episode_bootstrap_confidence_intervals",
+            tiers["claim_eligible"],
+        )
+        self.assertGreaterEqual(
+            len(tiers["claim_eligible"]["enabling_requirements"]), 4
+        )
+        self.assertFalse(
+            readiness["episode_independence"][
+                "physical_and_simulation_episodes_may_be_pooled_in_one_transition_estimate"
+            ]
+        )
+        self.assertFalse(
+            readiness["claim_scope_and_multiplicity"][
+                "family_wide_inferential_claim_allowed"
+            ]
+        )
+        self.assertIn(
+            "upper_95_percent_bound",
+            readiness["operational_definitions"]["stable_uncertainty_rule"],
+        )
+        self.assertGreater(
+            calibration["minimum_spatially_distributed_correspondences"],
+            contract["pose_measurement"]["minimum_homography_correspondences"],
+        )
+        self.assertTrue(composition["categorical_task_or_stability_failure_is_absorbing"])
+        self.assertFalse(composition["physical_execution_survival_claim_allowed"])
+        point = readiness["frozen_point_thresholds"]
+        regression = contract["regression"]
+        self.assertEqual(
+            point["a_near_zero_frobenius_max"],
+            regression["a_near_zero_frobenius"],
+        )
+        self.assertEqual(
+            point["a_near_identity_frobenius_max"],
+            regression["a_near_identity_frobenius"],
+        )
+        self.assertEqual(point["small_bias_norm_m_max"], regression["small_bias_m"])
+        self.assertEqual(
+            point["large_residual_rms_m_min_exclusive"],
+            regression["large_residual_rms_m"],
+        )
+        self.assertEqual(
+            point["stabilizing_pair_spectral_radius_max"],
+            contract["composition_diagnostic"]["stabilizing_spectral_radius_max"],
+        )
+        self.assertEqual(
+            point["neutral_pair_spectral_radius_max"],
+            contract["composition_diagnostic"]["neutral_spectral_radius_max"],
+        )
+        self.assertFalse(
+            readiness["authority"]["may_change_frozen_v2_engineering_outputs"]
+        )
+        self.assertFalse(readiness["authority"]["may_promote_a_checkpoint"])
+        self.assertFalse(readiness["authority"]["may_authorize_physical_motion"])
+
+    def test_replay_limit_audit_binds_sources_and_internal_arithmetic(self) -> None:
+        audit = json.loads(REPLAY_LIMIT_AUDIT.read_text(encoding="utf-8"))
+        inputs = audit["inputs"]
+        for path_key, hash_key in (
+            ("catalog_path", "catalog_sha256"),
+            ("legacy_replay_source_path", "legacy_replay_source_sha256"),
+            ("audit_runner_path", "audit_runner_sha256"),
+            ("scene_source_path", "scene_source_sha256"),
+            ("so101_xml_path", "so101_xml_sha256"),
+        ):
+            path = REPO_ROOT / inputs[path_key]
+            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), inputs[hash_key])
+
+        self.assertEqual(
+            hashlib.sha256((REPO_ROOT / "uv.lock").read_bytes()).hexdigest(),
+            inputs["lockfile_sha256"],
+        )
+        control_payload = {
+            "joint_order": audit["simulator_joint_order"],
+            "actuator_names": audit["actuator_names"],
+            "actuator_ctrlrange": audit["actuator_control_ranges_sim_units"],
+        }
+        control_digest = hashlib.sha256(
+            json.dumps(
+                control_payload, sort_keys=True, separators=(",", ":")
+            ).encode()
+        ).hexdigest()
+        self.assertEqual(control_digest, audit["compiled_control_contract_sha256"])
+
+        self.assertEqual(
+            audit["violation_predicate"],
+            {
+                "expression": "value < lower_bound or value > upper_bound",
+                "tolerance_sim_units": 0.0,
+            },
+        )
+        for key in ("measured_trajectory", "recorded_commands"):
+            metric = audit["results"][key]
+            self.assertEqual(metric["row_count"], 7741)
+            self.assertAlmostEqual(
+                metric["violating_row_fraction"],
+                metric["violating_row_count"] / metric["row_count"],
+            )
+        self.assertEqual(
+            audit["results"]["episodes_with_out_of_range_initial_state"], 18
+        )
+        self.assertFalse(audit["interpretation"]["exact_recorded_action_replay_supported"])
+
     def test_contract_has_exact_b_to_g_product_scope_and_preserves_v1(self) -> None:
         contract = load_contract()
         self.assertEqual(len(contract["skills"]), 12)
