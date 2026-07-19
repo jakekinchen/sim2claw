@@ -15,7 +15,11 @@ import mujoco
 import numpy as np
 import torch
 
-from .act_model import load_act_checkpoint
+from .act_model import (
+    ACTCheckpointSnapshot,
+    load_act_checkpoint_snapshot,
+    read_act_checkpoint_snapshot,
+)
 from .chess_task import ChessRookLiftEnv, load_task_contract, task_contract_sha256
 from .contact_prior import SimulatorVariant
 from .paths import DEFAULT_OUTPUT_ROOT
@@ -102,7 +106,7 @@ def _encode_video(frames: Path, output: Path, *, fps: int) -> dict[str, Any]:
 
 
 def evaluate_act(
-    checkpoint_path: Path,
+    checkpoint_source: Path | ACTCheckpointSnapshot,
     *,
     output_directory: Path | None = None,
     render_video: bool = True,
@@ -124,8 +128,13 @@ def evaluate_act(
     torch.set_num_threads(1)
     torch.manual_seed(int(task["held_out_split"]["seeds"][0]))
     device = torch.device("cpu")
-    model, statistics, checkpoint = load_act_checkpoint(
-        checkpoint_path, device=device
+    checkpoint_snapshot = (
+        checkpoint_source
+        if isinstance(checkpoint_source, ACTCheckpointSnapshot)
+        else read_act_checkpoint_snapshot(checkpoint_source)
+    )
+    model, statistics, checkpoint = load_act_checkpoint_snapshot(
+        checkpoint_snapshot, device=device
     )
     if checkpoint.get("task_id") != task["task_id"]:
         raise ValueError("checkpoint task id does not match the frozen evaluator")
@@ -373,8 +382,10 @@ def evaluate_act(
         "policy": {
             "type": "ACT",
             "architecture": task["act"]["architecture"],
-            "checkpoint": str(checkpoint_path),
-            "checkpoint_sha256": _sha256_file(checkpoint_path),
+            "checkpoint_source_path": str(checkpoint_snapshot.source_path),
+            "checkpoint_snapshot_sha256": checkpoint_snapshot.sha256,
+            "checkpoint_snapshot_bytes": len(checkpoint_snapshot.data),
+            "checkpoint_snapshot_immutable": True,
             "chunk_size": chunk_size,
             "n_action_steps": n_action_steps,
             "n_obs_steps": 1,
@@ -387,12 +398,14 @@ def evaluate_act(
                 "contract_sha256": simulator_variant.contract_sha256,
                 "rubber_tip_enabled": simulator_variant.rubber_tip_enabled,
                 "application": env.variant_application,
+                "compiled_identity": env.compiled_variant_identity,
             }
             if simulator_variant is not None
             else {
                 "variant_id": "legacy_implicit_nominal",
                 "rubber_tip_enabled": False,
                 "application": None,
+                "compiled_identity": env.compiled_variant_identity,
             }
         ),
         "episode": {
