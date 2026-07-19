@@ -86,6 +86,7 @@
       "left_gripper_target_rad"
     ],
     "action_representation": "absolute_joint_position_target",
+    "relative_stats_payload": "canonical_empty_json_object_for_absolute_actions",
     "language_key": "annotation.human.task_description",
     "language_schedule": "one_constant_full_instruction_per_episode",
     "reward_semantics": "one_on_final_row_zero_elsewhere",
@@ -101,6 +102,13 @@
     "padding_used": false,
     "all_source_action_rows_appear_in_at_least_one_target": true,
     "local_payload_preflight_required": true,
+    "nvidia_shard_preflight": {
+      "shard_size": 64,
+      "episode_sampling_rate": 0.1,
+      "seed": 1703,
+      "expected_shard_count": 9,
+      "expected_sharded_start_count": 547
+    },
     "pinned_nvidia_loader_preflight_required_before_training": true
   },
   "splits": {
