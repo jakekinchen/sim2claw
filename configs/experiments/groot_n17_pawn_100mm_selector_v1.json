@@ -1,0 +1,108 @@
+{
+  "schema_version": "sim2claw.groot_n17_pawn_training_selector_contract.v1",
+  "contract_id": "groot_n17_pawn_100mm_selector_v1",
+  "frozen_before_model_queries": true,
+  "scope": {
+    "scene_id": "operator_updated_chess_workcell_v3",
+    "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "board_pose_id": "board_robotward_100mm_20260718_v3",
+    "piece_layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
+    "training_case": "tan_pawn_c8_to_a6",
+    "proof_goal": "training_only_checkpoint_selection_for_far_rank_simulation_pipeline_check",
+    "physical_robot_verified_reachable_ranks": [1, 2],
+    "c8_to_a6_physical_reach_authority": false,
+    "dynamic_generalization_authority": false,
+    "historical_72mm_authority": false,
+    "physical_authority": false
+  },
+  "identities": {
+    "selector_sha256": "51320544071ecb3aa9c54bb632807085893e79b5a891c56954dcd7043385f0bf",
+    "experiment_sha256": "ea6184ba10bd7803ac8e839ae3aebc4de079621afe03f43b6505a61e86622507",
+    "dataset_receipt_sha256": "0a1ee253147186330c618d36131ce84b9ccb07707e8b8b1e72c22c22559c77be",
+    "dataset_manifest_sha256": "0fa5095a5976186825d03a6728797785e5d8ecbe7b918b752ab5a12cca673394",
+    "training_runtime_recorder_sha256": "3eca76c13035f535ec720cbb29f84ab57ec07a900c07c2c398ce4c92a2fda33e",
+    "training_completion_recorder_sha256": "a159b4f8efe64a8a35d4a9961fd5a23ecc44836c688262ba1ef4753dffb4934a",
+    "nvidia_commit": "23ace64f17aa5015259b8609d371eb61a357c776",
+    "patched_processor_sha256": "674f2354418e3ea982c9b34f6cdb0c43284e57ab09ac559b459789b3c557e78b"
+  },
+  "training_evidence": {
+    "experiment_path": "/home/shadeform/sim2claw-pawn/configs/experiments/groot_n17_pawn_100mm_v1.json",
+    "launch_receipt": {
+      "path": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/training-launch-receipt.json",
+      "sha256": "4568c7fc8e014d26221b189a51dce23d5ccf5bd8981769e75e0b7cc704a79d93"
+    },
+    "runtime_receipt": {
+      "path": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/training-runtime.json",
+      "sha256": "78907189ee981990b031b44016145544215889bf0d26132b8edcaa83aa719aa9"
+    },
+    "completion_receipt": {
+      "path": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/training-completion.json",
+      "sha256": "96cdfc8c1b490930f1cb432ae7b93c5a7b672d4cb4d22e320d6f70a29862691a"
+    },
+    "training_log": {
+      "path": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/training.log",
+      "sha256": "91359bff4a1259adcdfc96769eca01a3a249c1724793c5ba2a4b5ab1247d2226"
+    },
+    "training_exit": {
+      "path": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/training.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "supervisor_pid": 14846,
+    "optimizer_steps": 1000,
+    "model_queries": 0,
+    "held_out_rows_used": 0
+  },
+  "runtime": {
+    "groot_root": "/home/shadeform/Isaac-GR00T",
+    "processor_path": "/home/shadeform/.cache/huggingface/hub/models--nvidia--Cosmos-Reason2-2B/snapshots/9ce19a195e423419c349abfc86fd07178b230561",
+    "expected_nvidia_tracked_dirtiness": " M gr00t/model/gr00t_n1d7/processing_gr00t_n1d7.py",
+    "device": "cuda",
+    "hf_hub_offline": true,
+    "transformers_offline": true
+  },
+  "selection": {
+    "dataset_path": "/home/shadeform/chess_pick_place_pawn_groot_v1",
+    "checkpoint_parent": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/train/sim2claw-groot-n17-pawn-100mm-v1",
+    "output_root": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/selector-v1",
+    "candidate_steps": [250, 500, 750, 1000],
+    "candidate_manifests": {
+      "250": {
+        "file_count": 16,
+        "manifest_sha256": "f2f07f3b555437b7e0788fc8c1f9bd9c061ac7f51205f11d9014f0826cd52b11"
+      },
+      "500": {
+        "file_count": 16,
+        "manifest_sha256": "353509b3c1e6534c38c764599889606e1dcdc6246c7a7cf1802081ea25f4c224"
+      },
+      "750": {
+        "file_count": 16,
+        "manifest_sha256": "78f37957034efa57375d07912cdcee09c3ca599f54623b2fd4f8d0ff065b1f41"
+      },
+      "1000": {
+        "file_count": 16,
+        "manifest_sha256": "dd179a6fbcfe3dde03071ed29bd4cfa302356690291665f7c4179d8be2740840"
+      }
+    },
+    "metric": "minimum full-dataset float32 H16 action mean_squared_error",
+    "episode_indices": [0],
+    "source_rows": 562,
+    "action_horizon": 16,
+    "query_start_span": [0, 547],
+    "evaluated_start_count_per_checkpoint": 547,
+    "action_slots_per_checkpoint": 8752,
+    "action_scalars_per_checkpoint": 52512,
+    "inference_seed": 1703,
+    "tie_break": "lowest_numeric_checkpoint_step",
+    "total_model_queries": 2188,
+    "closed_loop_consequences_used": false,
+    "held_out_rows_used": 0
+  },
+  "authority": {
+    "selector_cannot_declare_task_success": true,
+    "training_cannot_promote": true,
+    "held_out_remains_sealed": true,
+    "selected_checkpoint_requires_one_separately_frozen_zero_assistance_rollout": true,
+    "near_rank_physical_data_program_requires_new_source_dataset_checkpoint_and_evaluator_receipts": true,
+    "physical_authority": false
+  }
+}

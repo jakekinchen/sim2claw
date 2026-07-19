@@ -138,17 +138,30 @@ def validate_training(contract: dict) -> None:
         if selection.get(key) != value:
             raise SystemExit(f"selector redefines frozen field: {key}")
 
-    for key in ("launch_receipt", "runtime_receipt", "training_log", "training_exit"):
+    for key in (
+        "launch_receipt",
+        "runtime_receipt",
+        "completion_receipt",
+        "training_log",
+        "training_exit",
+    ):
         row = contract["training_evidence"][key]
         path = Path(row["path"])
         if sha256_file(path) != row["sha256"]:
             raise SystemExit(f"training evidence drifted: {key}")
     launch = json.loads(Path(contract["training_evidence"]["launch_receipt"]["path"]).read_text())
     runtime = json.loads(Path(contract["training_evidence"]["runtime_receipt"]["path"]).read_text())
+    completion = json.loads(
+        Path(contract["training_evidence"]["completion_receipt"]["path"]).read_text()
+    )
     if launch["experiment_sha256"] != identities["experiment_sha256"]:
         raise SystemExit("launch receipt belongs to another experiment")
     if runtime["experiment_sha256"] != identities["experiment_sha256"]:
         raise SystemExit("runtime receipt belongs to another experiment")
+    if completion["experiment_sha256"] != identities["experiment_sha256"]:
+        raise SystemExit("completion receipt belongs to another experiment")
+    if completion["optimizer_steps"] != 1000 or not completion["training_processes_stopped"]:
+        raise SystemExit("completion receipt does not prove bounded training completion")
     if launch["held_out_rows_used"] != 0 or runtime["held_out_rows_used"] != 0:
         raise SystemExit("training evidence consumed held-out rows")
     if Path("/proc", str(runtime["pid"])).exists():
@@ -160,6 +173,14 @@ def validate_training(contract: dict) -> None:
     log = Path(contract["training_evidence"]["training_log"]["path"]).read_bytes()
     if b"1000/1000" not in log or b"Traceback (most recent call last)" in log:
         raise SystemExit("training log does not prove clean 1000-step completion")
+    for step, expected_manifest in contract["selection"]["candidate_manifests"].items():
+        completed = completion["checkpoints"].get(step)
+        if completed is None:
+            raise SystemExit(f"completion receipt omits checkpoint-{step}")
+        if completed["manifest_sha256"] != expected_manifest["manifest_sha256"]:
+            raise SystemExit(f"completion receipt manifest drifted: checkpoint-{step}")
+        if completed["file_count"] != expected_manifest["file_count"]:
+            raise SystemExit(f"completion receipt file count drifted: checkpoint-{step}")
 
     groot_root = Path(contract["runtime"]["groot_root"])
     observed_commit = subprocess.check_output(
