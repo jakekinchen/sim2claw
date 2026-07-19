@@ -24,6 +24,7 @@ from .grasp import (
     _select_piece,
     _solve_reach,
 )
+from .contact_prior import SimulatorVariant, apply_contact_variant
 from .paths import DEFAULT_CHESS_TASK_CONFIG
 from .scene import (
     ROBOT_JOINTS,
@@ -84,6 +85,7 @@ class ChessRookLiftEnv:
         seed: int,
         piece_offset_xy_m: tuple[float, float],
         mass_profile_path: Path | None = None,
+        simulator_variant: SimulatorVariant | None = None,
     ) -> None:
         self.contract = contract
         self.seed = int(seed)
@@ -94,7 +96,7 @@ class ChessRookLiftEnv:
         )
         np.random.seed(self.seed)
 
-        self.model = build_scene_spec(
+        spec = build_scene_spec(
             board_center_in_table_frame_xy_m=(
                 self.board_center_in_table_frame_xy_m
             ),
@@ -102,7 +104,13 @@ class ChessRookLiftEnv:
             # the measured profile existed. Requalification may opt in without
             # changing historical evaluator dynamics.
             mass_profile_path=mass_profile_path,
-        ).compile()
+        )
+        self.variant_application = (
+            apply_contact_variant(spec, simulator_variant)
+            if simulator_variant is not None
+            else None
+        )
+        self.model = spec.compile()
         self.data = mujoco.MjData(self.model)
         initialize_robot_poses(self.model, self.data)
         for _ in range(int(contract["episode"]["settle_steps"])):
@@ -125,6 +133,7 @@ class ChessRookLiftEnv:
         )
         qpos_address = int(self.model.jnt_qposadr[piece_joint])
         dof_address = int(self.model.jnt_dofadr[piece_joint])
+        self.piece_dof_address = dof_address
         if piece_offset_xy_m != (0.0, 0.0):
             self.data.qpos[qpos_address] += float(piece_offset_xy_m[0])
             self.data.qpos[qpos_address + 1] += float(piece_offset_xy_m[1])
@@ -167,6 +176,12 @@ class ChessRookLiftEnv:
 
     def piece_position(self) -> np.ndarray:
         return np.asarray(self.data.xpos[self.piece_body], dtype=np.float64).copy()
+
+    def piece_velocity(self) -> np.ndarray:
+        return np.asarray(
+            self.data.qvel[self.piece_dof_address : self.piece_dof_address + 6],
+            dtype=np.float64,
+        ).copy()
 
     def observation(self, control_step: int) -> np.ndarray:
         progress = min(1.0, max(0.0, float(control_step) / float(self.horizon - 1)))

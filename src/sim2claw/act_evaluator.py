@@ -17,6 +17,7 @@ import torch
 
 from .act_model import load_act_checkpoint
 from .chess_task import ChessRookLiftEnv, load_task_contract, task_contract_sha256
+from .contact_prior import SimulatorVariant
 from .paths import DEFAULT_OUTPUT_ROOT
 from .render import write_rgb_png
 from .state_trace import EpisodeStateTraceRecorder
@@ -38,6 +39,23 @@ def _longest_true_run(values: list[bool]) -> int:
         current = current + 1 if value else 0
         longest = max(longest, current)
     return longest
+
+
+def _longest_true_span(values: list[bool]) -> tuple[int | None, int | None, int]:
+    best_start: int | None = None
+    best_end: int | None = None
+    best_length = 0
+    current_start: int | None = None
+    for index, value in enumerate(values):
+        if value and current_start is None:
+            current_start = index
+        if current_start is not None and (not value or index == len(values) - 1):
+            end = index if value else index - 1
+            length = end - current_start + 1
+            if length > best_length:
+                best_start, best_end, best_length = current_start, end, length
+            current_start = None
+    return best_start, best_end, best_length
 
 
 def _encode_video(frames: Path, output: Path, *, fps: int) -> dict[str, Any]:
@@ -88,6 +106,7 @@ def evaluate_act(
     *,
     output_directory: Path | None = None,
     render_video: bool = True,
+    simulator_variant: SimulatorVariant | None = None,
 ) -> dict[str, Any]:
     task = load_task_contract()
     evaluator = task["evaluator"]
@@ -112,13 +131,23 @@ def evaluate_act(
         raise ValueError("checkpoint task id does not match the frozen evaluator")
     if checkpoint.get("task_contract_sha256") != task_contract_sha256():
         raise ValueError("checkpoint predates or differs from the frozen task contract")
+    if simulator_variant is not None and (
+        simulator_variant.task_id != task["task_id"]
+        or simulator_variant.task_contract_sha256 != task_contract_sha256()
+    ):
+        raise ValueError("simulator variant does not bind the frozen ACT task contract")
     if next(model.parameters()).dtype != torch.float32:
         raise ValueError("evaluator requires a float32 ACT checkpoint")
 
     seed = int(task["held_out_split"]["seeds"][0])
     raw_offset = task["held_out_split"]["piece_planar_offsets_m"][0]
     offset = (float(raw_offset[0]), float(raw_offset[1]))
-    env = ChessRookLiftEnv(task, seed=seed, piece_offset_xy_m=offset)
+    env = ChessRookLiftEnv(
+        task,
+        seed=seed,
+        piece_offset_xy_m=offset,
+        simulator_variant=simulator_variant,
+    )
     trace = EpisodeStateTraceRecorder(
         env.model,
         proof_class="simulation_learned_policy_episode_state_trace",
@@ -145,6 +174,11 @@ def evaluate_act(
     actions: list[list[float]] = []
     contacts: list[bool] = []
     heights: list[float] = []
+    phase_labels: list[str] = []
+    piece_linear_speeds: list[float] = []
+    piece_angular_speeds: list[float] = []
+    maximum_absolute_joint_speed = 0.0
+    finite_state = True
     decode_rows: list[dict[str, Any]] = []
     queue: deque[np.ndarray] = deque()
     chunk_size = int(task["act"]["chunk_size"])
@@ -193,6 +227,22 @@ def evaluate_act(
             actions.append(np.asarray(action, dtype=float).tolist())
             contacts.append(env.jaw_piece_contact())
             heights.append(float(env.piece_position()[2]))
+            phase_labels.append(phase)
+            piece_velocity = env.piece_velocity()
+            piece_linear_speeds.append(float(np.linalg.norm(piece_velocity[:3])))
+            piece_angular_speeds.append(float(np.linalg.norm(piece_velocity[3:])))
+            joint_velocity = np.asarray(
+                env.data.qvel[env.dof_addresses], dtype=np.float64
+            )
+            maximum_absolute_joint_speed = max(
+                maximum_absolute_joint_speed,
+                float(np.max(np.abs(joint_velocity))),
+            )
+            finite_state = finite_state and bool(
+                np.isfinite(env.data.qpos).all()
+                and np.isfinite(env.data.qvel).all()
+                and np.isfinite(env.data.ctrl).all()
+            )
             if (control_step + 1) % render_stride == 0:
                 snapshot()
                 activity.update(
@@ -229,8 +279,42 @@ def evaluate_act(
     maximum_rise = float(max(heights) - initial_height)
     final_rise = float(heights[-1] - initial_height)
     longest_contact = _longest_true_run(contacts)
+    sustained_contact_start, sustained_contact_end, sustained_contact_length = (
+        _longest_true_span(contacts)
+    )
+    if sustained_contact_length != longest_contact:
+        raise RuntimeError("contact timing span disagrees with evaluator contact gate")
     final_window = int(evaluator["final_contact_window_control_steps"])
     final_contact_fraction = float(np.mean(contacts[-final_window:]))
+    contact_indices = [index for index, value in enumerate(contacts) if value]
+    first_contact = contact_indices[0] if contact_indices else None
+    last_contact = contact_indices[-1] if contact_indices else None
+    contact_transitions = [
+        index
+        for index in range(1, len(contacts))
+        if contacts[index] != contacts[index - 1]
+    ]
+    first_contact_loss = next(
+        (
+            index
+            for index in contact_transitions
+            if first_contact is not None and index > first_contact and not contacts[index]
+        ),
+        None,
+    )
+    first_contact_by_phase = {
+        phase_name: next(
+            (
+                index
+                for index, (phase, contacted) in enumerate(
+                    zip(phase_labels, contacts, strict=True)
+                )
+                if phase == phase_name and contacted
+            ),
+            None,
+        )
+        for phase_name in task["episode"]["phase_control_steps"]
+    }
     gates = {
         "maximum_piece_rise": {
             "measured": maximum_rise,
@@ -295,6 +379,22 @@ def evaluate_act(
             "n_action_steps": n_action_steps,
             "n_obs_steps": 1,
         },
+        "simulator_variant": (
+            {
+                "variant_id": simulator_variant.variant_id,
+                "variant_sha256": simulator_variant.variant_sha256,
+                "contract": str(simulator_variant.contract_path),
+                "contract_sha256": simulator_variant.contract_sha256,
+                "rubber_tip_enabled": simulator_variant.rubber_tip_enabled,
+                "application": env.variant_application,
+            }
+            if simulator_variant is not None
+            else {
+                "variant_id": "legacy_implicit_nominal",
+                "rubber_tip_enabled": False,
+                "application": None,
+            }
+        ),
         "episode": {
             "seed": seed,
             "seed_role": "held_out_evaluation_only",
@@ -309,9 +409,31 @@ def evaluate_act(
             "longest_contact_control_steps": longest_contact,
             "final_contact_fraction": final_contact_fraction,
             "decode_count": len(decode_rows),
+            "contact_timing": {
+                "first_contact_control_step": first_contact,
+                "last_contact_control_step": last_contact,
+                "contact_control_steps": len(contact_indices),
+                "transition_control_steps": contact_transitions,
+                "first_contact_loss_after_first_contact_control_step": first_contact_loss,
+                "longest_contact_run": {
+                    "start_control_step": sustained_contact_start,
+                    "end_control_step": sustained_contact_end,
+                    "control_steps": sustained_contact_length,
+                },
+                "first_contact_by_phase": first_contact_by_phase,
+                "task_has_release_phase": False,
+                "release_timing_control_step": None,
+            },
+        },
+        "stability": {
+            "finite_state": finite_state,
+            "maximum_piece_linear_speed_m_s": max(piece_linear_speeds, default=0.0),
+            "maximum_piece_angular_speed_rad_s": max(piece_angular_speeds, default=0.0),
+            "maximum_absolute_robot_joint_speed_rad_s": maximum_absolute_joint_speed,
         },
         "gates": gates,
         "success": success,
+        "failed_gates": [name for name, gate in gates.items() if not gate["passed"]],
         "terminal_outcome": "held_rook_above_board" if success else "act_episode_failed",
         "artifacts": {
             "action_trace": str(action_trace_path),

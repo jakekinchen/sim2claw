@@ -81,6 +81,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     act_eval.add_argument("--checkpoint", type=Path, required=True)
     act_eval.add_argument("--no-video", action="store_true")
+    contact_sensitivity = subparsers.add_parser(
+        "act-contact-sensitivity",
+        help="run the frozen ACT rook-lift evaluator over contact-prior variants",
+    )
+    contact_sensitivity.add_argument("--checkpoint", type=Path, required=True)
+    contact_sensitivity.add_argument("--output-directory", type=Path, default=None)
+    contact_sensitivity.add_argument("--render-video", action="store_true")
 
     studio = subparsers.add_parser(
         "studio",
@@ -335,6 +342,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["success"] else 1
+    if args.command == "act-contact-sensitivity":
+        from .contact_sensitivity import run_contact_sensitivity
+
+        report = run_contact_sensitivity(
+            args.checkpoint,
+            output_directory=args.output_directory,
+            render_video=args.render_video,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     if args.command == "studio":
         from .studio_server import serve_studio
 

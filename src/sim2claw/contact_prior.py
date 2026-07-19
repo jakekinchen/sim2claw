@@ -25,6 +25,8 @@ def _canonical_sha256(value: Any) -> str:
 class SimulatorVariant:
     contract_path: Path
     contract_sha256: str
+    task_id: str
+    task_contract_sha256: str
     variant_id: str
     variant_sha256: str
     payload: dict[str, Any]
@@ -128,6 +130,8 @@ def load_simulator_variant(
     return SimulatorVariant(
         contract_path=path,
         contract_sha256=_canonical_sha256(contract),
+        task_id=str(contract["task_id"]),
+        task_contract_sha256=str(contract["task_contract_sha256"]),
         variant_id=variant_id,
         variant_sha256=_canonical_sha256(identity_payload),
         payload=contract["variants"][variant_id],

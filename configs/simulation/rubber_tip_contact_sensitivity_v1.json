@@ -6,6 +6,13 @@
   "frozen_before_evaluation": true,
   "proof_class": "simulation_contact_prior_sensitivity",
   "purpose": "Bounded sensitivity analysis for an owner-reported rubber-band fingertip modification; not physical calibration.",
+  "policy": {
+    "type": "ACT",
+    "checkpoint_schema_version": "sim2claw.act_checkpoint.v1",
+    "accepted_checkpoint_sha256": "f0a58e49dcaa320d3d0b86ef839b2e39893b65cf26a738954e2bb833dd3144fc",
+    "checkpoint_location_authority": "existing_same_repository_ignored_output_read_only",
+    "weights_mutable": false
+  },
   "reported_modification": {
     "material_description": {
       "value": "rubber_band",
