@@ -1581,6 +1581,8 @@ const jointNames = ["Shoulder pan", "Shoulder lift", "Elbow", "Wrist flex", "Wri
 const boardFiles = "abcdefgh";
 const brownPawnSquares = ["a2", "b1", "c2", "d1", "e2", "f1", "g2", "h1"];
 const tanPawnSquares = ["a8", "b7", "c8", "d7", "e8", "f7", "g8", "h7"];
+const recordBrownPawnSquares = ["a1", "b2", "c1", "d2", "e1", "f2", "g1", "h2"];
+const recordTanPawnSquares = ["a7", "b8", "c7", "d8", "e7", "f8", "g7", "h8"];
 const lowerTwoRowSquares = boardFiles.split("").flatMap((file) => [`${file}1`, `${file}2`]);
 const simulatorDestinationSquares = [
   "a1", "c1", "e1", "g1",
@@ -1595,6 +1597,17 @@ const defaultRecorderSettings = Object.freeze({
   target_square: "b2",
   sample_hz: 20,
 });
+const reversePhysicalRecorderDefaults = Object.freeze({
+  source_square: "b2",
+  target_square: "b1",
+});
+const physicalRecorderLayoutId = "reverse_sparse_lower_v1";
+
+function previewPawnSquares() {
+  return selectedRecorderMode() === "physical_follower"
+    ? { brown: recordBrownPawnSquares, tan: recordTanPawnSquares }
+    : { brown: brownPawnSquares, tan: tanPawnSquares };
+}
 
 function loadRecorderSettings() {
   try {
@@ -1609,12 +1622,18 @@ function loadRecorderSettings() {
     const storedDestinationSquares = storedMode === "physical_follower"
       ? lowerTwoRowSquares
       : simulatorDestinationSquares;
+    const physicalLayoutChanged = storedMode === "physical_follower"
+      && stored.recording_layout !== physicalRecorderLayoutId;
     return {
       mode: storedMode,
-      source_square: storedSourceSquares.includes(stored.source_square)
+      source_square: physicalLayoutChanged
+        ? reversePhysicalRecorderDefaults.source_square
+        : storedSourceSquares.includes(stored.source_square)
         ? stored.source_square
         : defaultRecorderSettings.source_square,
-      target_square: storedDestinationSquares.includes(stored.target_square)
+      target_square: physicalLayoutChanged
+        ? reversePhysicalRecorderDefaults.target_square
+        : storedDestinationSquares.includes(stored.target_square)
         ? stored.target_square
         : defaultRecorderSettings.target_square,
       sample_hz: Number(stored.sample_hz) === 20
@@ -1633,6 +1652,9 @@ function persistRecorderSettings() {
       source_square: elements.sourceSquare.value,
       target_square: elements.target.value,
       sample_hz: Number(elements.sampleHz.value),
+      recording_layout: selectedRecorderMode() === "physical_follower"
+        ? physicalRecorderLayoutId
+        : "canonical_sparse_v1",
     }));
   } catch (_error) {
     // Private browsing or a locked-down profile may reject storage; defaults remain usable.
@@ -1935,10 +1957,10 @@ function updateDestinationOptions(preferred = elements.target.value || "b2") {
   }
 }
 
-function boardSquareDescription(square) {
+function boardSquareDescription(square, { brown, tan } = previewPawnSquares()) {
   const coordinate = square.toUpperCase();
-  if (brownPawnSquares.includes(square)) return `${coordinate}, brown pawn`;
-  if (tanPawnSquares.includes(square)) return `${coordinate}, tan pawn`;
+  if (brown.includes(square)) return `${coordinate}, brown pawn`;
+  if (tan.includes(square)) return `${coordinate}, tan pawn`;
   return `${coordinate}, empty square`;
 }
 
@@ -1984,7 +2006,8 @@ function renderPawnMovePreview() {
   const source = elements.sourceSquare.value || "b1";
   const destination = elements.target.value || "b2";
   const physical = selectedRecorderMode() === "physical_follower";
-  const sourceLabel = physical && !brownPawnSquares.includes(source)
+  const { brown: previewBrownPawnSquares, tan: previewTanPawnSquares } = previewPawnSquares();
+  const sourceLabel = physical && !previewBrownPawnSquares.includes(source)
     ? "source square"
     : "brown pawn";
   text(elements.pawnPreviewSource, source.toUpperCase());
@@ -1997,7 +2020,7 @@ function renderPawnMovePreview() {
   );
   elements.pawnPreviewBoard.setAttribute(
     "aria-label",
-    `${physical ? "Physical source-square movement" : "Brown pawn movement"} from ${source.toUpperCase()} to ${destination.toUpperCase()} on a two-sided sparse pawn board`,
+    `${physical ? "Physical reverse sparse source-square movement" : "Brown pawn movement"} from ${source.toUpperCase()} to ${destination.toUpperCase()} on a two-sided sparse pawn board`,
   );
   elements.pawnPreviewBoard.replaceChildren();
   for (const rank of [8, 7, 6, 5, 4, 3, 2, 1]) {
@@ -2010,12 +2033,12 @@ function renderPawnMovePreview() {
       if ((boardFiles.indexOf(file) + rank) % 2 === 0) cell.classList.add("is-dark");
       if (square === source) cell.classList.add("is-source");
       if (square === destination) cell.classList.add("is-destination");
-      if (brownPawnSquares.includes(square)) {
+      if (previewBrownPawnSquares.includes(square)) {
         const pawn = document.createElement("i");
         pawn.className = "pawn-token";
         pawn.setAttribute("aria-hidden", "true");
         cell.append(pawn);
-      } else if (tanPawnSquares.includes(square)) {
+      } else if (previewTanPawnSquares.includes(square)) {
         const pawn = document.createElement("i");
         pawn.className = "pawn-token is-tan";
         pawn.setAttribute("aria-hidden", "true");
@@ -2051,7 +2074,7 @@ function initializeRecorderForm() {
     option.value = square;
     text(
       option,
-      `${square.toUpperCase()} · ${brownPawnSquares.includes(square) ? "brown pawn" : "source square"}`,
+      `${square.toUpperCase()} · ${previewPawnSquares().brown.includes(square) ? "brown pawn" : "source square"}`,
     );
     elements.sourceSquare.append(option);
   }
@@ -2062,16 +2085,16 @@ function initializeRecorderForm() {
   renderJointMonitor(null);
 }
 
-function refreshRecorderSquareOptions() {
-  const source = elements.sourceSquare.value;
-  const target = elements.target.value;
+function refreshRecorderSquareOptions(preferredSource = null, preferredTarget = null) {
+  const source = preferredSource || elements.sourceSquare.value;
+  const target = preferredTarget || elements.target.value;
   elements.sourceSquare.replaceChildren();
   for (const square of recorderSourceSquares()) {
     const option = document.createElement("option");
     option.value = square;
     text(
       option,
-      `${square.toUpperCase()} · ${brownPawnSquares.includes(square) ? "brown pawn" : "source square"}`,
+      `${square.toUpperCase()} · ${previewPawnSquares().brown.includes(square) ? "brown pawn" : "source square"}`,
     );
     elements.sourceSquare.append(option);
   }
@@ -2282,7 +2305,10 @@ elements.railClose.addEventListener("click", () => {
   elements.mobileBrowserToggle.setAttribute("aria-expanded", "false");
 });
 document.querySelectorAll('input[name="recorder-mode"]').forEach((input) => input.addEventListener("change", () => {
-  refreshRecorderSquareOptions();
+  const reverseDefaults = input.checked && input.value === "physical_follower"
+    ? reversePhysicalRecorderDefaults
+    : {};
+  refreshRecorderSquareOptions(reverseDefaults.source_square, reverseDefaults.target_square);
   persistRecorderSettings();
   renderRecorder();
   state.liveSimViewer?.setActive(
