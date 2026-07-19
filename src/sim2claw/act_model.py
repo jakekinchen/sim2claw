@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import hmac
 import io
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,6 +18,23 @@ class ACTCheckpointSnapshot:
     source_path: Path
     sha256: str
     data: bytes
+
+
+def validate_act_checkpoint_snapshot(
+    snapshot: ACTCheckpointSnapshot,
+    *,
+    expected_sha256: str | None = None,
+) -> ACTCheckpointSnapshot:
+    """Recompute snapshot identity from bytes before any deserialization."""
+
+    if expected_sha256 is not None and not hmac.compare_digest(
+        snapshot.sha256, expected_sha256
+    ):
+        raise ValueError("checkpoint bytes do not match the accepted digest")
+    actual_sha256 = hashlib.sha256(snapshot.data).hexdigest()
+    if not hmac.compare_digest(actual_sha256, snapshot.sha256):
+        raise ValueError("checkpoint snapshot digest does not match its bytes")
+    return snapshot
 
 
 def read_act_checkpoint_snapshot(
@@ -189,6 +207,7 @@ class ACTPolicy(nn.Module):
 def load_act_checkpoint_snapshot(
     snapshot: ACTCheckpointSnapshot, *, device: torch.device
 ) -> tuple[ACTPolicy, dict[str, torch.Tensor], dict[str, Any]]:
+    validate_act_checkpoint_snapshot(snapshot)
     payload = torch.load(
         io.BytesIO(snapshot.data), map_location=device, weights_only=False
     )

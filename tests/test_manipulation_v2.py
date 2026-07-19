@@ -35,6 +35,14 @@ class ManipulationCheckpointSnapshotTest(unittest.TestCase):
                 snapshot, expected_checkpoint_sha256="1" * 64
             )
 
+    def test_forged_existing_snapshot_with_accepted_declared_digest_fails(self) -> None:
+        expected = "1" * 64
+        snapshot = ACTCheckpointSnapshot(Path("checkpoint.pt"), expected, b"forged")
+        with self.assertRaisesRegex(ValueError, "does not match its bytes"):
+            _accepted_checkpoint_snapshot(
+                snapshot, expected_checkpoint_sha256=expected
+            )
+
     def test_path_replacement_cannot_change_accepted_snapshot(self) -> None:
         accepted = b"accepted immutable manipulation snapshot"
         replacement = b"replacement"

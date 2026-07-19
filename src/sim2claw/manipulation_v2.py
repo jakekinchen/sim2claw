@@ -31,7 +31,11 @@ import mujoco
 import numpy as np
 
 from .act_evaluator import evaluate_act
-from .act_model import ACTCheckpointSnapshot, read_act_checkpoint_snapshot
+from .act_model import (
+    ACTCheckpointSnapshot,
+    read_act_checkpoint_snapshot,
+    validate_act_checkpoint_snapshot,
+)
 from .chess_task import ChessRookLiftEnv
 from .paths import DEFAULT_OUTPUT_ROOT
 
@@ -68,9 +72,9 @@ def _accepted_checkpoint_snapshot(
     if expected_checkpoint_sha256 is None:
         raise ValueError("honest manipulation evaluation requires an accepted digest")
     if isinstance(checkpoint_source, ACTCheckpointSnapshot):
-        if checkpoint_source.sha256 != expected_checkpoint_sha256:
-            raise ValueError("checkpoint snapshot does not match the accepted digest")
-        return checkpoint_source
+        return validate_act_checkpoint_snapshot(
+            checkpoint_source, expected_sha256=expected_checkpoint_sha256
+        )
     return read_act_checkpoint_snapshot(
         checkpoint_source, expected_sha256=expected_checkpoint_sha256
     )

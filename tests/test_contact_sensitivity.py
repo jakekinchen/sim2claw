@@ -93,6 +93,22 @@ class CheckpointSnapshotTest(unittest.TestCase):
                     )
                 deserialize.assert_not_called()
 
+    def test_variant_evaluator_rejects_forged_accepted_snapshot_bytes(self) -> None:
+        variant = load_simulator_variant("rubber_tip_low")
+        snapshot = ACTCheckpointSnapshot(
+            Path("forged.pt"), variant.accepted_checkpoint_sha256, b"forged"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            with mock.patch("sim2claw.act_model.torch.load") as torch_load:
+                with self.assertRaisesRegex(ValueError, "does not match its bytes"):
+                    evaluate_act(
+                        snapshot,
+                        output_directory=Path(directory),
+                        render_video=False,
+                        simulator_variant=variant,
+                    )
+                torch_load.assert_not_called()
+
     def test_path_replacement_after_snapshot_cannot_change_deserialized_bytes(self) -> None:
         accepted = b"accepted immutable snapshot"
         replacement = b"replacement bytes"
