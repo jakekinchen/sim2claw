@@ -58,7 +58,12 @@
     "initial_state": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["joint_position"],
+      "required": [
+        "joint_position",
+        "joint_position_units",
+        "joint_velocity",
+        "joint_velocity_units"
+      ],
       "properties": {
         "joint_position": {
           "type": "array",
@@ -69,6 +74,18 @@
           "type": "array",
           "minItems": 1,
           "items": {"type": "number"}
+        },
+        "joint_position_units": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"enum": ["radian", "meter"]}
+        },
+        "joint_velocity_units": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": ["radian_per_second", "meter_per_second"]
+          }
         }
       }
     },

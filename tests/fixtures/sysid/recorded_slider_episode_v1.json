@@ -7,7 +7,9 @@
   "joint_names": ["slider"],
   "initial_state": {
     "joint_position": [0.0],
-    "joint_velocity": [0.0]
+    "joint_position_units": ["meter"],
+    "joint_velocity": [0.0],
+    "joint_velocity_units": ["meter_per_second"]
   },
   "initial_object_state": {
     "status": "unavailable",

@@ -83,6 +83,10 @@ official optimizer surface are unavailable.
     from the first row with sign/scale only, and bound its schema, units,
     transform semantics, and sample provenance. Empty range audits now report
     incomplete/false instead of vacuous success.
+19. Removed the generic canonical-episode zero-velocity fallback. Episode v1
+    now requires finite, shape-exact measured initial joint velocity and
+    per-joint position/velocity units; replay verifies those units against the
+    bound MuJoCo hinge/slide types and records the complete initial joint state.
 
 Implementation commits:
 
@@ -139,13 +143,13 @@ fitting is forbidden.
 
 | Check | Result | Proof class |
 | --- | --- | --- |
-| Focused replay and sysid tests | 36 passed and 14 subtests passed in 1.35 seconds | Synthetic |
+| Focused replay and sysid tests | 37 passed and 20 subtests passed in 1.32 seconds | Synthetic |
 | Official `mujoco.sysid` bounded exercise | Passed; fitted `0.375` to target `0.375`, absolute error `0.0` | Dependency capability |
 | Deterministic replay CLI smoke | Passed; 5 synchronized rows with joint/EE/gripper metrics and explicit pawn/contact absence | Synthetic replay |
 | Isolated physical input report | Expected exit 1; 0/18 joint/timing-ready, 36 required inputs and 54 catalog-bound assets absent, full calibration readiness false | Physical read-only capability |
 | Physical whole-episode split | 15 train / 3 held-out identities; assignment digest `370581db3fa383e6a36a77de6463db401c384ecbf5ef46314abb939158a14d95`; exact config authority plus 18 full catalog/receipt/sample bindings | Contract |
-| Full repository tests | 200 passed and 44 subtests passed in 16.92 seconds | Mixed repository test proof |
-| Package build | sdist and wheel built successfully under `/tmp/sim2claw-w4-velocity-final.Jt38JE` | Packaging |
+| Full repository tests | 201 passed and 50 subtests passed in 16.90 seconds | Mixed repository test proof |
+| Package build | sdist and wheel built successfully under `/tmp/sim2claw-w4-canonical-qvel-final.2FrU8x` | Packaging |
 | Lock, JSON, CLI, and whitespace checks | `uv lock --check`, `jq empty`, sysid input help, and `git diff --check` passed | Source hygiene |
 
 ## Result and limitations
@@ -176,4 +180,4 @@ and contact observables. The legacy `canonical_checkout` scope spelling records
 that this caller-supplied root was inspected; it does not independently prove
 that the root is the coordinator's canonical checkout.
 
-Repair completed: 2026-07-19T07:20:45Z.
+Repair completed: 2026-07-19T07:32:27Z.

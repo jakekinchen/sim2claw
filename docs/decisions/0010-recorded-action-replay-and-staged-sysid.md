@@ -40,6 +40,12 @@ the module, but importing the complete public surface requires the upstream
 
 - Adopt `sim2claw.recorded_action_episode.v1` as the versioned, proof-classed
   episode contract.
+- Canonical episodes must provide measured initial joint position and velocity,
+  plus per-joint position/velocity units in exact `joint_names` order. Missing
+  velocity is never replaced with zero. Hinge bindings require
+  radian/radian-per-second semantics and slide bindings require
+  meter/meter-per-second semantics; shape, finiteness, unit pairing, and model
+  joint type are all checked before replay.
 - Require an episode-specific `initial_object_state`: either a named body and
   free joint with measured world-frame pose/velocity, explicit units, and
   hash-bound provenance, or an explicit unavailable reason that blocks pawn and

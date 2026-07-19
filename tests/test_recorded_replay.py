@@ -246,6 +246,26 @@ class RecordedReplayTest(unittest.TestCase):
                     ReplayContractError, message
                 ):
                     load_recorded_episode(path, self.config)
+            wrong_model_units = copy.deepcopy(base)
+            wrong_model_units["initial_state"]["joint_position_units"] = [
+                "radian"
+            ]
+            wrong_model_units["initial_state"]["joint_velocity_units"] = [
+                "radian_per_second"
+            ]
+            wrong_model_path = root / "wrong-model-units.json"
+            wrong_model_path.write_text(
+                json.dumps(wrong_model_units), encoding="utf-8"
+            )
+            episode = load_recorded_episode(wrong_model_path, self.config)
+            with self.assertRaisesRegex(
+                ReplayContractError, "must match its MuJoCo joint type"
+            ):
+                simulate_and_align(
+                    episode,
+                    self.config,
+                    model_base_directory=FIXTURE_ROOT,
+                )
 
     def test_out_of_range_state_or_command_never_silently_clips(self) -> None:
         payload = json.loads(EPISODE_PATH.read_text(encoding="utf-8"))
@@ -262,6 +282,42 @@ class RecordedReplayTest(unittest.TestCase):
                     self.config,
                     model_base_directory=FIXTURE_ROOT,
                 )
+
+    def test_canonical_initial_joint_velocity_and_units_are_required(self) -> None:
+        base = json.loads(EPISODE_PATH.read_text(encoding="utf-8"))
+        cases = []
+        missing = copy.deepcopy(base)
+        missing["initial_state"].pop("joint_velocity")
+        cases.append(("joint_velocity", missing))
+        nonfinite = copy.deepcopy(base)
+        nonfinite["initial_state"]["joint_velocity"] = [float("nan")]
+        cases.append(("finite values", nonfinite))
+        wrong_shape = copy.deepcopy(base)
+        wrong_shape["initial_state"]["joint_velocity"] = [0.0, 0.0]
+        cases.append(("contain 1 finite values", wrong_shape))
+        missing_units = copy.deepcopy(base)
+        missing_units["initial_state"].pop("joint_velocity_units")
+        cases.append(("units must match", missing_units))
+        wrong_unit_shape = copy.deepcopy(base)
+        wrong_unit_shape["initial_state"]["joint_velocity_units"] = [
+            "meter_per_second",
+            "meter_per_second",
+        ]
+        cases.append(("units must match", wrong_unit_shape))
+        semantic_mismatch = copy.deepcopy(base)
+        semantic_mismatch["initial_state"]["joint_velocity_units"] = [
+            "radian_per_second"
+        ]
+        cases.append(("unsupported semantics", semantic_mismatch))
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for index, (message, payload) in enumerate(cases):
+                path = root / f"bad-initial-velocity-{index}.json"
+                path.write_text(json.dumps(payload), encoding="utf-8")
+                with self.subTest(message=message), self.assertRaisesRegex(
+                    ReplayContractError, message
+                ):
+                    load_recorded_episode(path, self.config)
 
     def test_mass_scaling_preserves_mass_inertia_ratio(self) -> None:
         model, _ = _compile_model(self.config, base_directory=FIXTURE_ROOT)
@@ -300,6 +356,13 @@ class RecordedReplayTest(unittest.TestCase):
                 )
                 sources.append(receipt["source"])
                 self.assertNotIn(root_text, json.dumps(receipt["source"]))
+                self.assertEqual(
+                    receipt["initial_joint_state"]["joint_velocity"], [0.0]
+                )
+                self.assertEqual(
+                    receipt["initial_joint_state"]["joint_velocity_units"],
+                    ["meter_per_second"],
+                )
         self.assertEqual(sources[0], sources[1])
 
 

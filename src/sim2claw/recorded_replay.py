@@ -117,7 +117,9 @@ class RecordedEpisode:
     column: str | None
     joint_names: tuple[str, ...]
     initial_joint_position: np.ndarray
+    initial_joint_position_units: tuple[str, ...]
     initial_joint_velocity: np.ndarray
+    initial_joint_velocity_units: tuple[str, ...]
     timestamps: np.ndarray
     original_timestamps: np.ndarray
     commands: np.ndarray
@@ -596,13 +598,36 @@ def _load_canonical_episode(
         size=joint_count,
         field="initial_state.joint_position",
     )
-    if initial.get("joint_velocity") is None:
-        initial_velocity = np.zeros(joint_count, dtype=np.float64)
-    else:
-        initial_velocity = _finite_vector(
-            initial["joint_velocity"],
-            size=joint_count,
-            field="initial_state.joint_velocity",
+    initial_velocity = _finite_vector(
+        initial.get("joint_velocity"),
+        size=joint_count,
+        field="initial_state.joint_velocity",
+    )
+    position_units = initial.get("joint_position_units")
+    velocity_units = initial.get("joint_velocity_units")
+    if not (
+        isinstance(position_units, list)
+        and isinstance(velocity_units, list)
+        and len(position_units) == len(velocity_units) == joint_count
+    ):
+        raise ReplayContractError(
+            "initial_state joint position/velocity units must match joint_names shape"
+        )
+    initial_position_units = tuple(str(unit) for unit in position_units)
+    initial_velocity_units = tuple(str(unit) for unit in velocity_units)
+    valid_unit_pairs = {
+        ("radian", "radian_per_second"),
+        ("meter", "meter_per_second"),
+    }
+    invalid_units = [
+        (joint_names[index], initial_position_units[index], initial_velocity_units[index])
+        for index in range(joint_count)
+        if (initial_position_units[index], initial_velocity_units[index])
+        not in valid_unit_pairs
+    ]
+    if invalid_units:
+        raise ReplayContractError(
+            f"initial_state joint units have unsupported semantics: {invalid_units}"
         )
     initial_object_state = _validated_initial_object_state(
         payload.get("initial_object_state")
@@ -660,7 +685,9 @@ def _load_canonical_episode(
         column=column,
         joint_names=joint_names,
         initial_joint_position=initial_position,
+        initial_joint_position_units=initial_position_units,
         initial_joint_velocity=initial_velocity,
+        initial_joint_velocity_units=initial_velocity_units,
         timestamps=timestamps,
         original_timestamps=original_timestamps,
         commands=commands,
@@ -998,7 +1025,14 @@ def _load_physical_recording(
         column=None,
         joint_names=expected_joint_names,
         initial_joint_position=np.asarray(measured[0]["joint_position"]),
+        initial_joint_position_units=tuple(
+            str(entry["output_unit"]) for entry in transform["joints"]
+        ),
         initial_joint_velocity=measured_velocities[0].copy(),
+        initial_joint_velocity_units=tuple(
+            f"{entry['output_unit']}_per_second"
+            for entry in transform["joints"]
+        ),
         timestamps=timestamps,
         original_timestamps=original_timestamps,
         commands=np.asarray(commands, dtype=np.float64),
@@ -1025,10 +1059,12 @@ def _load_physical_recording(
             "velocity_formula": "sim_velocity = sign * source_velocity * scale",
             "velocity_zero_offset_applied": False,
             "source_velocity_units_by_joint": [
-                f"{entry['input_unit']}/second" for entry in transform["joints"]
+                f"{entry['input_unit']}_per_second"
+                for entry in transform["joints"]
             ],
             "simulator_velocity_units_by_joint": [
-                f"{entry['output_unit']}/second" for entry in transform["joints"]
+                f"{entry['output_unit']}_per_second"
+                for entry in transform["joints"]
             ],
             "source_samples_sha256": samples_sha256,
         },
@@ -1245,7 +1281,9 @@ def _binding_ids(
     qpos_addresses: list[int] = []
     dof_addresses: list[int] = []
     actuator_ids: list[int] = []
-    for joint_name, actuator_name in zip(joint_names, actuator_names, strict=True):
+    for local_index, (joint_name, actuator_name) in enumerate(
+        zip(joint_names, actuator_names, strict=True)
+    ):
         joint_id = mujoco.mj_name2id(
             model, mujoco.mjtObj.mjOBJ_JOINT, joint_name
         )
@@ -1261,6 +1299,20 @@ def _binding_ids(
             mujoco.mjtJoint.mjJNT_SLIDE,
         }:
             raise ReplayContractError(f"replay joint {joint_name} must be scalar")
+        expected_units = (
+            ("radian", "radian_per_second")
+            if model.jnt_type[joint_id] == mujoco.mjtJoint.mjJNT_HINGE
+            else ("meter", "meter_per_second")
+        )
+        actual_units = (
+            episode.initial_joint_position_units[local_index],
+            episode.initial_joint_velocity_units[local_index],
+        )
+        if actual_units != expected_units:
+            raise ReplayContractError(
+                f"initial_state units for {joint_name} must match its MuJoCo joint type: "
+                f"expected {expected_units}, got {actual_units}"
+            )
         joint_ids.append(joint_id)
         qpos_addresses.append(int(model.jnt_qposadr[joint_id]))
         dof_addresses.append(int(model.jnt_dofadr[joint_id]))
@@ -2105,6 +2157,14 @@ def write_replay_receipt(
                 if config.get("_config_path") and config.get("_config_sha256")
                 else {"kind": "embedded_runtime_config"}
             ),
+        },
+        "initial_joint_state": {
+            "source_semantics": "measured_episode_initial_state",
+            "joint_names": list(episode.joint_names),
+            "joint_position": episode.initial_joint_position.tolist(),
+            "joint_position_units": list(episode.initial_joint_position_units),
+            "joint_velocity": episode.initial_joint_velocity.tolist(),
+            "joint_velocity_units": list(episode.initial_joint_velocity_units),
         },
         "initial_object_state": episode.initial_object_state,
         "joint_transform": episode.joint_transform,
