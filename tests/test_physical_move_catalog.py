@@ -22,7 +22,7 @@ class PhysicalPawnMoveCatalogContractTest(unittest.TestCase):
             self.catalog["schema_version"],
             "sim2claw.physical_pawn_move_catalog.v1",
         )
-        self.assertEqual(len(self.catalog["episodes"]), 16)
+        self.assertEqual(len(self.catalog["episodes"]), 18)
         self.assertEqual(len(self.catalog["moves"]), 9)
         self.assertEqual(
             self.catalog["moves"][7]["preferred_recording_id"],
@@ -39,7 +39,7 @@ class PhysicalPawnMoveCatalogContractTest(unittest.TestCase):
             for episode in self.catalog["episodes"]
             if episode["metadata_status"].startswith("conflict_")
         ]
-        self.assertEqual(len(conflicts), 9)
+        self.assertEqual(len(conflicts), 11)
         self.assertTrue(all(episode["receipt_sha256"] for episode in conflicts))
         self.assertTrue(all(episode["samples_sha256"] for episode in conflicts))
         self.assertTrue(all(episode["overhead_video_sha256"] for episode in conflicts))
@@ -54,7 +54,7 @@ class PhysicalPawnMoveCatalogContractTest(unittest.TestCase):
     def test_side_to_side_recordings_are_retained_for_brev_generalization(self) -> None:
         brev = self.catalog["brev_generalization"]
         self.assertEqual(brev["status"], "candidate_not_admitted")
-        self.assertEqual(brev["candidate_count"], 3)
+        self.assertEqual(brev["candidate_count"], 5)
         self.assertEqual(brev["candidate_move_ids"], ["e1_to_f1"])
         self.assertEqual(
             set(brev["candidate_recording_ids"]),
@@ -62,6 +62,8 @@ class PhysicalPawnMoveCatalogContractTest(unittest.TestCase):
                 "20260719T033023Z-fd7005f3",
                 "20260719T032935Z-66894edc",
                 "20260719T032853Z-1ee203e8",
+                "20260719T035317Z-2a332ab7",
+                "20260719T035413Z-5ab5603f",
             },
         )
         self.assertTrue(

@@ -1,11 +1,13 @@
 {
   "brev_generalization": {
-    "candidate_count": 3,
+    "candidate_count": 5,
     "candidate_move_ids": [
       "e1_to_f1"
     ],
     "candidate_recording_ids": [
       "20260719T033023Z-fd7005f3",
+      "20260719T035317Z-2a332ab7",
+      "20260719T035413Z-5ab5603f",
       "20260719T032935Z-66894edc",
       "20260719T032853Z-1ee203e8"
     ],
@@ -145,6 +147,36 @@
     },
     {
       "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/samples.jsonl"
+      },
+      "brev_generalization_candidate": true,
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "f1",
+      "duration_seconds": 21.752461208961904,
+      "folder_label": "c1-to-d2",
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "mode": "physical_follower",
+      "move_id": "e1_to_f1",
+      "movement_axis": "horizontal",
+      "outcome_label": "success",
+      "overhead_video_sha256": "ea5e0a4ccc4101c2249f2e7e97f89fd3e7aa1db9ae14b4a8dc27e3ca6e8ddf6e",
+      "policy_candidate_id": "pawn_e1_to_f1_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "c1 to d2",
+      "receipt_sha256": "cb1b6cdf8c7404d84a29f6078dda5d48a353e117b2e999aabede091065eb1d45",
+      "recording_id": "20260719T035317Z-2a332ab7",
+      "sample_count": 436,
+      "sample_hz": 20,
+      "samples_sha256": "65d74dd25ec6f3e30203147dd166087276917daf29a4ebe65494a4830c13326b",
+      "source_path": "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7",
+      "source_square": "e1",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
         "overhead_video": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/overhead_c922.mp4",
         "receipt": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/samples.jsonl"
@@ -261,6 +293,36 @@
       "samples_sha256": "7d52ecadd85988453ebc7d9c12f318e9c9a4387a752f5508436d2546e4ed5a54",
       "source_path": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c",
       "source_square": "c1",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/samples.jsonl"
+      },
+      "brev_generalization_candidate": true,
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "f1",
+      "duration_seconds": 22.653621042030863,
+      "folder_label": "d2-to-e1",
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "mode": "physical_follower",
+      "move_id": "e1_to_f1",
+      "movement_axis": "horizontal",
+      "outcome_label": "success",
+      "overhead_video_sha256": "8a48dc2b00dd1a56c94696407e8a3aaf6690aa0e63c9eb1b2bd0a1a21b63de67",
+      "policy_candidate_id": "pawn_e1_to_f1_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "d2 to e1",
+      "receipt_sha256": "ff75cb153e65a911f5ab40e3cfee14146a645c803dbe4ad784173676a7398262",
+      "recording_id": "20260719T035413Z-5ab5603f",
+      "sample_count": 454,
+      "sample_hz": 20,
+      "samples_sha256": "b5a8f7c708c409dbcdb0d6fb5f0f988d3608a4f4980cc0a74e7d284e46f4fd70",
+      "source_path": "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f",
+      "source_square": "e1",
       "training_admission": "pending_deterministic_replay_and_separate_evaluator"
     },
     {
@@ -575,6 +637,8 @@
       "callable_policy": false,
       "candidate_recording_ids": [
         "20260719T033023Z-fd7005f3",
+        "20260719T035317Z-2a332ab7",
+        "20260719T035413Z-5ab5603f",
         "20260719T032935Z-66894edc",
         "20260719T032853Z-1ee203e8"
       ],
