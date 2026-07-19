@@ -7,7 +7,7 @@
   "claim": "legacy_canonical_replay_is_not_exact_and_joint_timing_fit_is_not_ready",
   "receipt_format": {
     "runner_output": "reproducible_semantic_core_counts_bounds_hashes_and_interpretation",
-    "tracked_reference_enrichment": "as_of_commit_runner_and_source_identities_plus_required_next_gate",
+    "tracked_reference_enrichment": "generation_snapshot_plus_post_integration_semantic_reproduction_and_required_next_gate",
     "byte_for_byte_runner_reproduction_claimed": false,
     "semantic_core_binding_test": "tests/test_pawn_composability_eval.py::PawnComposabilityEvaluationTest::test_replay_limit_audit_binds_sources_and_internal_arithmetic"
   },
@@ -28,7 +28,17 @@
     "so101_xml_path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
     "so101_xml_sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308",
     "lockfile_sha256": "38f4692318133d3d5dfc510a66676c49ef4ef838ece370c827906e3c4719aadb",
+    "lockfile_binding_scope": "historical_generation_snapshot_not_current_repository_gate",
     "mujoco_version": "3.10.0"
+  },
+  "post_integration_reproduction": {
+    "verified_at": "2026-07-19T03:14:06-05:00",
+    "canonical_head_before_receipt_refresh": "4e5824502a9e918e337fdc3e6e988e3cc1b12c35",
+    "command": "uv run --frozen python scripts/audit_physical_replay_joint_limits.py --output /tmp/sim2claw-replay-audit-integrated.json",
+    "current_lockfile_sha256": "6f8cca983bd126c355569c3773bf1f776e5edf603bc385f4bfbf97700adc6f0f",
+    "runner_output_sha256": "40dc058e817cdc652297b32d92c37dd7abd63edd74851204f5ebaadb8426cb49",
+    "semantic_core_matches_historical_receipt": true,
+    "proof_note": "The replay/sysid integration changed uv.lock while retaining MuJoCo 3.10.0. The audit runner was re-executed under the integrated lock and reproduced the same control-contract hash, counts, bounds, exceedances, and fail-closed interpretation. The historical lock hash remains a generation-time identity rather than being rewritten."
   },
   "compiled_control_contract_sha256": "0094a3671dd0e1f5e516d3603bd9b6fc37776b5e688ac1bb1f53e963a3629fec",
   "simulator_joint_order": [
