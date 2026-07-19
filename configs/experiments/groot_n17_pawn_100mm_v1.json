@@ -4,6 +4,17 @@
   "frozen_before_training": true,
   "frozen_before_learned_closed_loop_evaluation": true,
   "hypothesis": "A GR00T N1.7 challenger trained only on an evaluator-admitted, exact 20 Hz sample-hold canonical source episode can reproduce the same C8-to-A6 pawn pick-and-place in the current 100 mm simulator without geometric actions, reward guidance, assistance, or held-out rows.",
+  "superseded_no_training_launch": {
+    "experiment_sha256": "0949ba38708cfbe4465ad409147941fddb48a6684669ac8dbfb237f86d1a59e6",
+    "failure": "NVIDIA finetune shell invoked outside the uv environment; python executable not found",
+    "training_log_sha256": "5c438877f87067b8c5bc7e2ecb931c70a0aec0023fb9ea7fac7a5cea9962fc9d",
+    "launch_receipt_sha256": "c72ff0bcfe10255c55563268eeea5c5a5d2dd18b7d76b64b977e5a3b20c8f8a5",
+    "exit_receipt_sha256": "743c7850cccfba5e53a9002663ec1ddd1079315a98bdbfdde10e6044f56abefe",
+    "optimizer_steps": 0,
+    "model_constructed": false,
+    "gpu_memory_allocated": false,
+    "checkpoint_created": false
+  },
   "task_scope": {
     "task_id": "chess_pick_place_pawn_groot_100mm_v1",
     "scene_id": "operator_updated_chess_workcell_v3",
@@ -56,7 +67,7 @@
     "offline_processor_patch_sha256": "379890dba26c5ccc0750cadd3e0057af9c3d0a9543fd327a60f99212a68869e6",
     "patched_processor_file_sha256": "674f2354418e3ea982c9b34f6cdb0c43284e57ab09ac559b459789b3c557e78b",
     "modality_config_sha256": "915ab13c911052b596fbd2cf735f1cbc9a4f6336e70c507c1b7b849fdf656753",
-    "training_wrapper_sha256": "66f77296f952c9da8ff24cb92940268123961f1673d801d872ec7a7aa1c368a0",
+    "training_wrapper_sha256": "ff92ce5aa1b75470e53d3875d9ecd0d84e3ce11e5f0bf48d9f264e31c5147196",
     "training_launcher_sha256": "cd7e6566abf9fdfbc0fb28882091046d3b9a21500a8eb52bca3ac93659506a6a"
   },
   "dataset": {

@@ -286,7 +286,7 @@ payload["canonical_payload_sha256"] = hashlib.sha256(
 Path(sys.argv[1]).write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
 PY
 
-exec bash "$FINETUNE_SCRIPT" \
+exec "$UV_BIN" run bash "$FINETUNE_SCRIPT" \
   --base-model-path "$BASE_MODEL_PATH" \
   --dataset-path "$DATASET_ROOT" \
   --modality-config-path "$SIM2CLAW_ROOT/configs/groot/sim2claw_so101_config.py" \
