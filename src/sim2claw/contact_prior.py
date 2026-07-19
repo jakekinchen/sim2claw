@@ -17,7 +17,7 @@ from .paths import DEFAULT_RUBBER_TIP_CONTACT_PRIOR
 
 SCHEMA_VERSION = "sim2claw.rubber_tip_contact_prior.v1"
 EXPECTED_CONTRACT_SHA256 = (
-    "e32112b1edd4b966aca65b25bf6ddfd68ef7b3fa0875bf2447c9355c4f345bac"
+    "e89eb1084e7e1dee64aaebfbc18b816b5bf58aefa98b18d38ef2e9a81b6ee499"
 )
 VARIANT_ORDER = (
     "nominal_uncalibrated",
