@@ -8,9 +8,28 @@ from typing import Sequence
 from .alignment import compare_alignment
 from .capture import fetch_capture
 from .doctor import doctor_json, format_doctor, run_doctor
-from .paths import DEFAULT_OUTPUT_ROOT, STUDIO_ASSET_ROOT
+from .paths import DEFAULT_OUTPUT_ROOT, REPO_ROOT, STUDIO_ASSET_ROOT
 from .render import render_scene
 from .scene import scene_summary
+
+
+DEFAULT_SYSID_CONFIG = Path("configs/sysid/recorded_action_sysid_v1.json")
+DEFAULT_PHYSICAL_CATALOG = Path(
+    "configs/data/physical_pawn_move_catalog_20260719.json"
+)
+
+
+def _parameter_assignments(values: Sequence[str] | None) -> dict[str, float]:
+    result: dict[str, float] = {}
+    for assignment in values or []:
+        if "=" not in assignment:
+            raise ValueError(f"parameter must use name=value: {assignment}")
+        name, raw_value = assignment.split("=", 1)
+        name = name.strip()
+        if not name or name in result:
+            raise ValueError(f"parameter name is empty or duplicated: {name!r}")
+        result[name] = float(raw_value)
+    return result
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -108,6 +127,77 @@ def build_parser() -> argparse.ArgumentParser:
         "--yes",
         action="store_true",
         help="acknowledge that the powered follower workcell is clear for motion",
+    )
+
+    recorded_replay = subparsers.add_parser(
+        "replay-recorded",
+        help="replay one recorded command episode in MuJoCo and emit synchronized metrics",
+    )
+    recorded_replay.add_argument("--episode", type=Path, required=True)
+    recorded_replay.add_argument(
+        "--config", type=Path, default=DEFAULT_SYSID_CONFIG
+    )
+    recorded_replay.add_argument("--output", type=Path, required=True)
+    recorded_replay.add_argument(
+        "--parameter",
+        action="append",
+        help="bounded candidate override in name=value form; repeat as needed",
+    )
+
+    sysid_capability = subparsers.add_parser(
+        "sysid-capability",
+        help="inspect the pinned official MuJoCo sysid toolbox and optional exercise",
+    )
+    sysid_capability.add_argument("--exercise", action="store_true")
+    sysid_capability.add_argument("--output", type=Path, default=None)
+
+    sysid_input = subparsers.add_parser(
+        "sysid-input-report",
+        help="verify physical payload integrity without interpreting video",
+    )
+    sysid_input.add_argument("--catalog", type=Path, default=DEFAULT_PHYSICAL_CATALOG)
+    sysid_input.add_argument("--repo-root", type=Path, default=REPO_ROOT)
+    sysid_input.add_argument(
+        "--inspection-scope",
+        choices=(
+            "auto",
+            "canonical_checkout",
+            "isolated_codex_worktree",
+            "explicit_repo_root",
+        ),
+        default="auto",
+    )
+    sysid_input.add_argument("--output", type=Path, default=None)
+
+    sysid_split = subparsers.add_parser(
+        "sysid-freeze-split",
+        help="freeze evaluator-owned whole-episode train and held-out assignments",
+    )
+    sysid_split.add_argument("--catalog", type=Path, default=DEFAULT_PHYSICAL_CATALOG)
+    sysid_split.add_argument("--config", type=Path, default=DEFAULT_SYSID_CONFIG)
+    sysid_split.add_argument("--output", type=Path, required=True)
+    sysid_split.add_argument(
+        "--strategy",
+        choices=("deterministic_hash", "leave_one_column_out"),
+        default="deterministic_hash",
+    )
+    sysid_split.add_argument(
+        "--held-out-column",
+        choices=tuple("abcdefgh"),
+        default=None,
+    )
+
+    sysid_fit = subparsers.add_parser(
+        "sysid-fit",
+        help="run staged bounded fits and require frozen held-out improvement",
+    )
+    sysid_fit.add_argument("--split", type=Path, required=True)
+    sysid_fit.add_argument("--config", type=Path, default=DEFAULT_SYSID_CONFIG)
+    sysid_fit.add_argument("--output", type=Path, required=True)
+    sysid_fit.add_argument(
+        "--backend",
+        choices=("auto", "official", "local"),
+        default="auto",
     )
 
     source_eval = subparsers.add_parser(
@@ -404,6 +494,86 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
+    if args.command == "replay-recorded":
+        from .recorded_replay import ReplayContractError, replay_recorded_episode
+
+        try:
+            report = replay_recorded_episode(
+                args.episode,
+                config_path=args.config,
+                output_directory=args.output,
+                parameter_values=_parameter_assignments(args.parameter),
+            )
+        except (ReplayContractError, ValueError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sysid-capability":
+        from .system_identification import (
+            mujoco_sysid_capability,
+            write_mujoco_sysid_capability,
+        )
+
+        report = (
+            write_mujoco_sysid_capability(args.output, exercise=args.exercise)
+            if args.output is not None
+            else mujoco_sysid_capability(exercise=args.exercise)
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        passed = report["compatible"] and (
+            not args.exercise or report["official_surface_exercised"]
+        )
+        return 0 if passed else 1
+    if args.command == "sysid-input-report":
+        from .system_identification import inspect_recording_catalog_inputs
+
+        report = inspect_recording_catalog_inputs(
+            args.catalog,
+            repo_root=args.repo_root,
+            inspection_scope=args.inspection_scope,
+            output_path=args.output,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["joint_timing_replay_ready"] else 1
+    if args.command == "sysid-freeze-split":
+        from .system_identification import (
+            SystemIdentificationError,
+            freeze_episode_split,
+        )
+
+        try:
+            report = freeze_episode_split(
+                args.catalog,
+                args.config,
+                args.output,
+                strategy=args.strategy,
+                held_out_column=args.held_out_column,
+            )
+        except SystemIdentificationError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sysid-fit":
+        from .recorded_replay import ReplayContractError
+        from .system_identification import (
+            SystemIdentificationError,
+            run_system_identification,
+        )
+
+        try:
+            report = run_system_identification(
+                args.split,
+                config_path=args.config,
+                output_directory=args.output,
+                backend=args.backend,
+            )
+        except (ReplayContractError, SystemIdentificationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["calibration_success"] else 1
     if args.command == "source-eval":
         from .pawn_source_evaluator import evaluate_source_episode
 
