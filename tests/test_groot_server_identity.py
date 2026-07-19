@@ -13,6 +13,7 @@ from sim2claw.groot_evaluation_identity import (
     SERVER_ATTESTED_MODULES,
     SERVER_IMPORT_ATTESTATION_SCHEMA,
     build_evaluation_manifest,
+    validate_server_sys_path_prefix,
 )
 from sim2claw.groot_server_identity import (
     CHECKPOINT_MANIFEST_SCHEMA,
@@ -104,7 +105,7 @@ class GrootServerRuntimeIdentityTests(unittest.TestCase):
             },
             runtime={
                 "python": {
-                    "version": "hermetic",
+                    "version": "3.10.13",
                     "executable": str(Path("/usr/bin/python3").resolve()),
                     "executable_sha256": "3" * 64,
                 },
@@ -224,7 +225,12 @@ class GrootServerRuntimeIdentityTests(unittest.TestCase):
                 "executable": snapshot.executable,
                 "cwd": snapshot.cwd,
                 "argv": list(snapshot.argv),
-                "sys_path": [str(self.root.resolve() / "src")],
+                "sys_path": [
+                    str(self.server_script.resolve().parent),
+                    str(self.root.resolve() / "src"),
+                    "/hermetic/python310/stdlib",
+                    "/hermetic/python310/site-packages",
+                ],
                 "environment": dict(snapshot.environment),
             },
             "server_script": self._file_row(self.server_script),
@@ -286,6 +292,23 @@ class GrootServerRuntimeIdentityTests(unittest.TestCase):
         self.assertTrue(identity["checkpoint"]["complete_file_inventory_verified"])
         self.assertTrue(identity["promotion_eligible"])
 
+    def test_accepts_python310_direct_script_import_prefix(self) -> None:
+        payload = json.loads(self.attestation_path.read_text(encoding="utf-8"))
+        sys_path = payload["process"]["sys_path"]
+        expected = validate_server_sys_path_prefix(
+            sys_path,
+            repo_root=self.root,
+            server_script=self.server_script,
+        )
+        self.assertEqual(
+            expected,
+            [
+                str(self.server_script.resolve().parent),
+                str(self.root.resolve() / "src"),
+            ],
+        )
+        self.assertIsNone(dict(self.snapshot.environment)["PYTHONSAFEPATH"])
+
     def test_rejects_checkpoint_directory_path_mismatch(self) -> None:
         other = self.root / "other-checkpoint"
         other.mkdir()
@@ -342,6 +365,18 @@ class GrootServerRuntimeIdentityTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "import environment differs"):
             self._build(changed)
+
+    def test_rejects_malicious_import_prefix_before_python310_layout(self) -> None:
+        payload = json.loads(self.attestation_path.read_text(encoding="utf-8"))
+        payload.pop("canonical_payload_sha256")
+        payload["process"]["sys_path"].insert(0, "/shadow/site-packages")
+        payload["canonical_payload_sha256"] = canonical_sha256(payload)
+        self.attestation_path.write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(ValueError, "noncanonical import prefix"):
+            self._build(self.snapshot)
 
     def test_rejects_imported_module_tamper_after_identity(self) -> None:
         self.runtime_module.write_text("RUNTIME = 'shadowed'\n", encoding="utf-8")

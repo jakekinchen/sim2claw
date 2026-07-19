@@ -161,6 +161,15 @@ includes untracked files, including executable, configuration, and
 exclusive creation. These are prospective safeguards only and do not add a
 missing attestation or checkpoint-specific attribution to the completed run.
 
+The paid-lane runtime is pinned to Python 3.10, which does not provide the
+newer `PYTHONSAFEPATH` behavior. Its prospective server contract therefore
+requires the actual direct-script prefix in this exact order: the resolved
+`scripts/brev` directory followed immediately by the resolved repository
+`src` directory. The launcher explicitly removes `PYTHONSAFEPATH`; both the
+server-side attestation writer and client-side verifier reject any inserted or
+shadowing prefix while retaining the clean-worktree and imported-module
+origin/hash checks. This compatibility rule was not applied retroactively.
+
 The repository follow-up implements these gates for future runs only. It does
 not repair or relabel the completed run and does not authorize a rerun. The
 historical C8-to-A6 runner is explicitly marked off-product and refuses to run

@@ -26,6 +26,7 @@ from .groot_evaluation_identity import (
     load_server_import_attestation,
     runtime_asset_inventory,
     selected_server_environment,
+    validate_server_sys_path_prefix,
 )
 
 
@@ -367,7 +368,6 @@ def expected_server_environment(
             "PYTHONHASHSEED": "0",
             "PYTHONNOUSERSITE": "1",
             "PYTHONPATH": str(resolved_repo / "src"),
-            "PYTHONSAFEPATH": "1",
             "SIM2CLAW_ROOT": str(resolved_repo),
             "TRANSFORMERS_OFFLINE": "1",
             "VIRTUAL_ENV": str(resolved_groot / ".venv"),
@@ -400,14 +400,11 @@ def _validate_server_import_attestation(
     for key, expected in expected_process.items():
         if process.get(key) != expected:
             raise ValueError(f"server import attestation process {key} differs")
-    sys_path = process.get("sys_path")
-    expected_python_path = str(repo_root.resolve(strict=True) / "src")
-    if (
-        not isinstance(sys_path, list)
-        or not sys_path
-        or sys_path[0] != expected_python_path
-    ):
-        raise ValueError("server import attestation Python path is not canonical")
+    validate_server_sys_path_prefix(
+        process.get("sys_path"),
+        repo_root=repo_root,
+        server_script=server_script,
+    )
 
     resolved_manifest = evaluation_manifest_path.resolve(strict=True)
     expected_evaluation = {

@@ -120,6 +120,7 @@ nohup env \
   -u LD_PRELOAD \
   -u PYTHONHOME \
   -u PYTHONINSPECT \
+  -u PYTHONSAFEPATH \
   -u PYTHONSTARTUP \
   -u PYTHONUSERBASE \
   HF_HUB_OFFLINE=1 \
@@ -133,7 +134,6 @@ nohup env \
   PYTHONHASHSEED=0 \
   PYTHONNOUSERSITE=1 \
   PYTHONPATH="${SIM2CLAW_ROOT}/src" \
-  PYTHONSAFEPATH=1 \
   "$PYTHON_BIN" -u "$SERVER_SCRIPT" \
     --model-path "$CHECKPOINT_DIR" \
     --processor-model-path "$PROCESSOR_MODEL_PATH" \

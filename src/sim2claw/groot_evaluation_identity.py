@@ -321,6 +321,27 @@ def selected_server_environment(
     return {name: source.get(name) for name in SERVER_ENVIRONMENT_KEYS}
 
 
+def validate_server_sys_path_prefix(
+    sys_path: object,
+    *,
+    repo_root: Path,
+    server_script: Path,
+) -> list[str]:
+    """Require Python 3.10's exact trusted direct-script import prefix."""
+
+    expected = [
+        str(server_script.resolve(strict=True).parent),
+        str(repo_root.resolve(strict=True) / "src"),
+    ]
+    if (
+        not isinstance(sys_path, list)
+        or len(sys_path) < len(expected)
+        or sys_path[: len(expected)] != expected
+    ):
+        raise ValueError("server Python path has a noncanonical import prefix")
+    return expected
+
+
 def imported_module_inventory(
     module_names: Iterable[str] = SERVER_ATTESTED_MODULES,
 ) -> dict[str, dict[str, Any]]:
@@ -392,6 +413,11 @@ def build_server_import_attestation(
     }
     if implementation_files.get(script_relative) != script_identity:
         raise ValueError("seeded server script is not in the frozen implementation")
+    validate_server_sys_path_prefix(
+        list(sys.path),
+        repo_root=resolved_repo,
+        server_script=script,
+    )
 
     process_argv = argv
     if process_argv is None:
