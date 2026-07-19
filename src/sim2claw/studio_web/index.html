@@ -178,29 +178,24 @@
         <section class="view-panel calibration-view" data-view-panel="calibration" aria-labelledby="calibration-heading">
           <header class="view-heading calibration-heading">
             <div>
-              <span class="section-label">Robo Scanner + LLM scene calibration</span>
-              <h1 id="calibration-heading">Align capture and accepted scene</h1>
-              <p>Inspect the video-and-3DGS scene proposal, its JSON hierarchy, and the accepted Three.js projection together. Move the splat against the simulation datum; LLM proposals cannot define metric scale, collision geometry, task coordinates, or robot motion.</p>
+              <span class="section-label">Robo Scanner + LLM scene inputs</span>
+              <h1 id="calibration-heading">Scene input artifacts</h1>
+              <p>Inspect the video, 3D Gaussian Splat, and JSON scene proposal. Reviewed MuJoCo geometry is optional; visual inputs do not define scale, collision, task coordinates, or robot motion.</p>
             </div>
             <span class="neutral-tag calibration-boundary"><span class="lock-icon" aria-hidden="true"></span> visual layer only</span>
           </header>
 
           <div class="calibration-layout">
-            <section class="calibration-stage" aria-label="Interactive Gaussian splat calibration view">
+            <section class="calibration-stage" aria-label="Interactive Gaussian splat scene input view">
               <canvas id="calibration-canvas"></canvas>
-              <div class="calibration-ruler calibration-ruler-x" aria-hidden="true"></div>
-              <div class="calibration-ruler calibration-ruler-y" aria-hidden="true"></div>
-              <div class="calibration-crosshair" aria-hidden="true"><i></i><i></i></div>
               <div class="calibration-stage-toolbar">
                 <span id="calibration-status">Waiting for the verified splat…</span>
                 <div>
-                  <button id="calibration-scene-toggle" type="button" aria-pressed="true">Accepted scene on</button>
-                  <button id="calibration-frame-toggle" type="button" aria-pressed="true">Simulation datum on</button>
+                  <button id="calibration-scene-toggle" type="button" aria-pressed="false">Show reviewed geometry</button>
                   <button id="calibration-fit" type="button">Fit splat</button>
                   <button id="calibration-reset" type="button">Reset transform</button>
                 </div>
               </div>
-              <div class="calibration-axis-key" aria-hidden="true"><span class="axis-x">X</span><span class="axis-y">Y</span><span class="axis-z">Z</span></div>
             </section>
 
             <aside class="calibration-console" aria-label="Calibration controls and source evidence">

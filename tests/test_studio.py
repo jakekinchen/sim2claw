@@ -863,8 +863,18 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('id="calibration-canvas"', html)
             self.assertIn('id="recording-feed-switch"', html)
             self.assertIn('src="/studio3dgs.js"', html)
-            self.assertIn("Robo Scanner + LLM scene calibration", html)
+            self.assertIn("Robo Scanner + LLM scene inputs", html)
+            self.assertIn(
+                '<h1 id="calibration-heading">Scene input artifacts</h1>', html
+            )
             self.assertIn('id="calibration-scene-toggle"', html)
+            self.assertIn(
+                'aria-pressed="false">Show reviewed geometry</button>', html
+            )
+            self.assertNotIn('id="calibration-frame-toggle"', html)
+            self.assertNotIn('class="calibration-ruler', html)
+            self.assertNotIn('class="calibration-crosshair', html)
+            self.assertNotIn('class="calibration-axis-key', html)
             self.assertIn('id="scene-synthesis-status"', html)
             self.assertIn('id="scene-hierarchy"', html)
             self.assertIn("this JSON is not compiled, promoted, or used to drive either geometry layer", html)
@@ -899,7 +909,9 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('scroll-behavior: auto', css)
             self.assertIn('data-recorder-status="awaiting_label"', css)
             self.assertIn('.pawn-board-cell.is-selectable', css)
-            self.assertIn('.calibration-crosshair', css)
+            self.assertNotIn('.calibration-crosshair', css)
+            self.assertNotIn('.calibration-ruler', css)
+            self.assertNotIn('.calibration-axis-key', css)
             self.assertIn('.scene-synthesis-card', css)
             self.assertIn('.scene-hierarchy', css)
             self.assertIn('.recording-feed-switch', css)
@@ -951,6 +963,13 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn("stopLiveCameraStreams()", javascript)
             self.assertIn("refreshLiveWorkspace(), 100", javascript)
             self.assertNotIn("window.confirm", javascript)
+
+            with urlopen(f"{base}/studio3dgs.js", timeout=3) as response:
+                calibration_javascript = response.read().decode("utf-8")
+            self.assertNotIn("new THREE.GridHelper", calibration_javascript)
+            self.assertNotIn("new THREE.AxesHelper", calibration_javascript)
+            self.assertIn("this.sceneOverlay.visible = false", calibration_javascript)
+            self.assertIn('"Show reviewed geometry"', calibration_javascript)
 
             font_path = (
                 f"{base}/assets/fonts/"

@@ -16,7 +16,8 @@ is to make repo-native simulation evidence legible:
 - physical release episodes keep the source recording and overhead, side, and
   wrist command-replay feeds selectable on the same bounded episode timeline;
 - Calibration renders the exact, checksummed Robo Scanner Gaussian PLY with
-  orbit and relative translate/rotate/scale controls beside a simulation datum;
+  orbit and relative translate/rotate/scale controls; reviewed MuJoCo geometry
+  is an optional comparison layer hidden by default;
 - the live rail observes training, evaluation, dataset export, and simulation
   processes;
 - the arm-status control opens a leased physical-joint mirror or three
@@ -31,9 +32,11 @@ Calibration exposes the tracked
 checksummed source video and Gaussian Splat, LLM visual observations, the
 semantic scene hierarchy, reproducible prompt/output hashes, review state, and
 explicit authority limits. The browser renders the hierarchy as read-only text.
-Separately, it renders the accepted MuJoCo manifest as a translucent Three.js
-layer on the fixed simulation datum while the 3DGS remains movable with
-relative translation, rotation, and scale controls.
+Separately, it can render the accepted MuJoCo manifest as an opt-in translucent
+Three.js layer while the 3DGS remains movable with relative translation,
+rotation, and scale controls. The default view has no generic floor or grid
+overlay because an unregistered grid would imply a spatial relationship that
+the visual inputs do not prove.
 
 This is a comparison surface, not an implemented promotion path. LLM analysis
 may propose objects, relationships, and approximate geometry. The current code

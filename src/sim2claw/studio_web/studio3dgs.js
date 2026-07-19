@@ -48,22 +48,9 @@ class CalibrationViewer {
     this.scene.add(this.transformGroup);
 
     this.datum = new THREE.Group();
-    const grid = new THREE.GridHelper(10, 20, 0x8aa98f, 0x2c4336);
-    grid.material.transparent = true;
-    grid.material.opacity = 0.52;
-    this.datum.add(grid);
-    const axes = new THREE.AxesHelper(2.4);
-    axes.material.depthTest = false;
-    this.datum.add(axes);
-    const boundary = new THREE.LineSegments(
-      new THREE.EdgesGeometry(new THREE.BoxGeometry(4.8, 0.03, 3.6)),
-      new THREE.LineBasicMaterial({ color: 0xdce6dc, transparent: true, opacity: 0.44 }),
-    );
-    boundary.position.y = 0.02;
-    this.datum.add(boundary);
-
     this.sceneOverlay = new THREE.Group();
     this.sceneOverlay.name = "accepted-mujoco-scene-overlay";
+    this.sceneOverlay.visible = false;
     // MuJoCo is Z-up; the calibration workspace is Three.js Y-up.
     this.sceneOverlay.rotation.x = -Math.PI / 2;
     this.datum.add(this.sceneOverlay);
@@ -86,15 +73,12 @@ class CalibrationViewer {
     });
     element("#calibration-fit")?.addEventListener("click", () => this.fit());
     element("#calibration-reset")?.addEventListener("click", () => this.reset());
-    element("#calibration-frame-toggle")?.addEventListener("click", (event) => {
-      this.datum.visible = !this.datum.visible;
-      event.currentTarget.setAttribute("aria-pressed", String(this.datum.visible));
-      event.currentTarget.textContent = `Simulation datum ${this.datum.visible ? "on" : "off"}`;
-    });
     element("#calibration-scene-toggle")?.addEventListener("click", (event) => {
       this.sceneOverlay.visible = !this.sceneOverlay.visible;
       event.currentTarget.setAttribute("aria-pressed", String(this.sceneOverlay.visible));
-      event.currentTarget.textContent = `Accepted scene ${this.sceneOverlay.visible ? "on" : "off"}`;
+      event.currentTarget.textContent = this.sceneOverlay.visible
+        ? "Hide reviewed geometry"
+        : "Show reviewed geometry";
     });
   }
 
@@ -161,10 +145,10 @@ class CalibrationViewer {
         this.sceneManifestRevision = manifest.revision_sha256;
       }
       if (sceneState) {
-        sceneState.textContent = `${manifest.model.body_count} bodies · accepted Three.js projection`;
+        sceneState.textContent = `${manifest.model.body_count} bodies · reviewed geometry available`;
       }
     } catch (error) {
-      if (sceneState) sceneState.textContent = `Accepted scene unavailable · ${error?.message || String(error)}`;
+      if (sceneState) sceneState.textContent = `Reviewed geometry unavailable · ${error?.message || String(error)}`;
       const hierarchy = element("#scene-hierarchy");
       if (hierarchy) hierarchy.textContent = "Scene hierarchy unavailable.";
     }

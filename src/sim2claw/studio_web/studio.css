@@ -2988,63 +2988,6 @@ body[data-view="record"] [data-view-panel="record"] {
   cursor: grabbing;
 }
 
-.calibration-ruler {
-  position: absolute;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0.38;
-}
-
-.calibration-ruler-x {
-  right: 18px;
-  bottom: 70px;
-  left: 48px;
-  height: 8px;
-  border-bottom: 1px solid #dce6dc;
-  background: repeating-linear-gradient(90deg, #dce6dc 0 1px, transparent 1px 40px);
-}
-
-.calibration-ruler-y {
-  top: 22px;
-  bottom: 70px;
-  left: 40px;
-  width: 8px;
-  border-left: 1px solid #dce6dc;
-  background: repeating-linear-gradient(180deg, #dce6dc 0 1px, transparent 1px 40px);
-}
-
-.calibration-crosshair {
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  left: 50%;
-  width: 54px;
-  height: 54px;
-  transform: translate(-50%, -50%);
-  border: 1px solid rgb(220 230 220 / 42%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.calibration-crosshair i {
-  position: absolute;
-  background: rgb(220 230 220 / 62%);
-}
-
-.calibration-crosshair i:first-child {
-  top: 50%;
-  left: -10px;
-  width: 72px;
-  height: 1px;
-}
-
-.calibration-crosshair i:last-child {
-  top: -10px;
-  left: 50%;
-  width: 1px;
-  height: 72px;
-}
-
 .calibration-stage-toolbar {
   position: absolute;
   z-index: 3;
@@ -3087,32 +3030,6 @@ body[data-view="record"] [data-view-panel="record"] {
 .calibration-stage-toolbar button:hover {
   background: rgb(220 230 220 / 15%);
 }
-
-.calibration-axis-key {
-  position: absolute;
-  z-index: 3;
-  top: 18px;
-  right: 18px;
-  display: grid;
-  grid-template-columns: repeat(3, 26px);
-  min-height: 24px;
-  overflow: hidden;
-  border: 1px solid rgb(220 230 220 / 32%);
-  border-radius: 3px;
-  background: rgb(12 16 14 / 72%);
-  color: white;
-  font-family: var(--utility);
-  font-size: 9px;
-}
-
-.calibration-axis-key span {
-  display: grid;
-  place-items: center;
-}
-
-.calibration-axis-key .axis-x { color: #ff786a; }
-.calibration-axis-key .axis-y { color: #81df8a; }
-.calibration-axis-key .axis-z { color: #73a8ff; }
 
 .calibration-console {
   min-width: 0;
