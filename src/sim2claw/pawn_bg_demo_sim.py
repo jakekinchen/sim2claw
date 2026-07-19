@@ -11,6 +11,7 @@ import hashlib
 import json
 import math
 import re
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -25,7 +26,6 @@ from .contact_prior import (
     read_contact_prior_snapshot,
 )
 from .pawn_bg_reward import CONTRACT_PATH, load_reward_contract, score_episode, sha256_file
-from .physical_sim_replay import physical_values_to_sim
 from .scene import (
     CURRENT_TASK_PIECE_LAYOUT,
     ROBOT_JOINTS,
@@ -42,6 +42,85 @@ BASELINE_PIECE_BY_FILE = {
     "b": "brown_pawn_b1", "c": "brown_pawn_c2", "d": "brown_pawn_d1",
     "e": "brown_pawn_e2", "f": "brown_pawn_f1", "g": "brown_pawn_g2",
 }
+
+
+@dataclass(frozen=True)
+class JointAdapter:
+    """One immutable physical-degree to simulator-joint mapping.
+
+    Source-fit adapters remain diagnostic.  They do not rewrite the scene,
+    joint limits, actuator model, contact parameters, or physical calibration.
+    """
+
+    adapter_id: str
+    body_joint_signs: tuple[int, int, int, int, int]
+    body_joint_zero_offsets_rad: tuple[float, float, float, float, float]
+    evidence_class: str
+
+    def __post_init__(self) -> None:
+        if not self.adapter_id or not self.evidence_class:
+            raise ValueError("joint adapter identity and evidence class are required")
+        if len(self.body_joint_signs) != 5 or any(
+            type(value) is not int or value not in (-1, 1)
+            for value in self.body_joint_signs
+        ):
+            raise ValueError("joint adapter signs must be five exact -1/+1 integers")
+        if len(self.body_joint_zero_offsets_rad) != 5 or any(
+            type(value) is not float or not math.isfinite(value)
+            for value in self.body_joint_zero_offsets_rad
+        ):
+            raise ValueError("joint adapter offsets must be five finite floats")
+
+    @property
+    def sha256(self) -> str:
+        payload = {
+            "adapter_id": self.adapter_id,
+            "body_joint_signs": list(self.body_joint_signs),
+            "body_joint_zero_offsets_rad": list(self.body_joint_zero_offsets_rad),
+            "evidence_class": self.evidence_class,
+            "gripper_transform": "linear_physical_percent_to_current_actuator_ctrlrange",
+            "scale_radians_per_degree": math.pi / 180.0,
+        }
+        encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+        return hashlib.sha256(encoded).hexdigest()
+
+    def receipt(self) -> dict[str, Any]:
+        return {
+            "adapter_id": self.adapter_id,
+            "adapter_sha256": self.sha256,
+            "body_joint_signs": list(self.body_joint_signs),
+            "body_joint_zero_offsets_rad": list(self.body_joint_zero_offsets_rad),
+            "evidence_class": self.evidence_class,
+            "gripper_transform": "linear_physical_percent_to_current_actuator_ctrlrange",
+            "scale_radians_per_degree": math.pi / 180.0,
+            "physical_calibration_approved": False,
+        }
+
+
+BASELINE_JOINT_ADAPTER = JointAdapter(
+    adapter_id="so101_physical_degrees_to_current_scene_provisional_v1",
+    body_joint_signs=(1, 1, 1, 1, 1),
+    body_joint_zero_offsets_rad=(0.0, 0.0, 0.0, 0.0, 0.0),
+    evidence_class="provisional_range_audit_blocked_not_calibrated",
+)
+
+
+def physical_values_to_sim_with_adapter(
+    values: list[float] | np.ndarray,
+    gripper_bounds: np.ndarray,
+    adapter: JointAdapter,
+) -> np.ndarray:
+    physical = np.asarray(values, dtype=np.float64)
+    if physical.shape != (6,) or not np.all(np.isfinite(physical)):
+        raise ValueError("physical replay requires six finite joint values")
+    converted = np.empty(6, dtype=np.float64)
+    converted[:5] = (
+        np.deg2rad(physical[:5]) * np.asarray(adapter.body_joint_signs)
+        + np.asarray(adapter.body_joint_zero_offsets_rad)
+    )
+    low, high = (float(value) for value in gripper_bounds)
+    converted[5] = low + np.clip(physical[5], 0.0, 100.0) / 100.0 * (high - low)
+    return converted
 
 
 def _id(model: mujoco.MjModel, kind: mujoco.mjtObj, name: str) -> int:
@@ -143,6 +222,7 @@ def _load_source(episode: dict[str, Any], source_root: Path) -> list[dict[str, A
 def _run_episode(
     *, contract: dict[str, Any], episode: dict[str, Any], source: str, destination: str,
     samples: list[dict[str, Any]], variant: Any,
+    joint_adapter: JointAdapter = BASELINE_JOINT_ADAPTER,
 ) -> dict[str, Any]:
     board_center = registered_board_center(contract["scene_binding"]["scene_id"])
     spec = build_scene_spec(
@@ -169,7 +249,9 @@ def _run_episode(
     joint_ids = [_id(model, mujoco.mjtObj.mjOBJ_JOINT, f"left_{joint}") for joint in ROBOT_JOINTS]
     qpos_addresses = [int(model.jnt_qposadr[joint_id]) for joint_id in joint_ids]
     bounds = np.asarray(model.actuator_ctrlrange[actuator_ids], dtype=float)
-    first_actual_raw = physical_values_to_sim(samples[0]["follower_actual_position_degrees"], bounds[-1])
+    first_actual_raw = physical_values_to_sim_with_adapter(
+        samples[0]["follower_actual_position_degrees"], bounds[-1], joint_adapter
+    )
     first_actual = np.clip(first_actual_raw, bounds[:, 0], bounds[:, 1])
     data.qpos[qpos_addresses] = first_actual
     data.ctrl[actuator_ids] = first_actual
@@ -203,10 +285,14 @@ def _run_episode(
         if not math.isfinite(dt) or dt <= 0.0 or dt > 1.0:
             dt = nominal_dt
         previous_timestamp = timestamp
-        raw_command = physical_values_to_sim(sample["follower_command_degrees"], bounds[-1])
+        raw_command = physical_values_to_sim_with_adapter(
+            sample["follower_command_degrees"], bounds[-1], joint_adapter
+        )
         command = np.clip(raw_command, bounds[:, 0], bounds[:, 1])
         clipped_command_rows += int(not np.array_equal(raw_command, command))
-        actual = physical_values_to_sim(sample["follower_actual_position_degrees"], bounds[-1])
+        actual = physical_values_to_sim_with_adapter(
+            sample["follower_actual_position_degrees"], bounds[-1], joint_adapter
+        )
         clipped_actual_rows += int(np.any((actual < bounds[:, 0]) | (actual > bounds[:, 1])))
         data.ctrl[actuator_ids] = command
         mujoco.mj_step(model, data, nstep=max(1, round(dt / float(model.opt.timestep))))
@@ -241,7 +327,8 @@ def _run_episode(
         "command_rows_clipped": clipped_command_rows,
         "actual_rows_outside_sim_limits": clipped_actual_rows,
         "exact_replay": clipped_command_rows == 0 and clipped_actual_rows == 0,
-        "transform_status": "provisional_so101_physical_degrees_to_current_scene_not_calibrated",
+        "joint_adapter": joint_adapter.receipt(),
+        "transform_status": joint_adapter.evidence_class,
         "variant_id": variant.variant_id,
         "variant_sha256": variant.variant_sha256,
         "compiled_identity": compiled_identity,
@@ -316,4 +403,9 @@ def evaluate_demo_catalog(*, catalog_path: Path, source_root: Path, output_path:
     return report
 
 
-__all__ = ["evaluate_demo_catalog"]
+__all__ = [
+    "BASELINE_JOINT_ADAPTER",
+    "JointAdapter",
+    "evaluate_demo_catalog",
+    "physical_values_to_sim_with_adapter",
+]

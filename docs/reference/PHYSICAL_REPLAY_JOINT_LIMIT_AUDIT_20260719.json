@@ -32,13 +32,13 @@
     "mujoco_version": "3.10.0"
   },
   "post_integration_reproduction": {
-    "verified_at": "2026-07-19T03:14:06-05:00",
-    "canonical_head_before_receipt_refresh": "4e5824502a9e918e337fdc3e6e988e3cc1b12c35",
-    "command": "uv run --frozen python scripts/audit_physical_replay_joint_limits.py --output /tmp/sim2claw-replay-audit-integrated.json",
-    "current_lockfile_sha256": "6f8cca983bd126c355569c3773bf1f776e5edf603bc385f4bfbf97700adc6f0f",
+    "verified_at": "2026-07-19T05:59:34-05:00",
+    "worktree_head_before_receipt_refresh": "3e137e27b22d9311519941feff9fdef800426890",
+    "command": "uv run --frozen python scripts/audit_physical_replay_joint_limits.py --repo-root /Users/kelly/Developer/sim2claw --catalog configs/data/physical_pawn_move_catalog_20260719.json --output /tmp/sim2claw-replay-audit-source-fit.json",
+    "current_lockfile_sha256": "f77c155acc1f55fefe861b274a31bfbf91100481b0da6fc774de51e46a9964e8",
     "runner_output_sha256": "40dc058e817cdc652297b32d92c37dd7abd63edd74851204f5ebaadb8426cb49",
     "semantic_core_matches_historical_receipt": true,
-    "proof_note": "The replay/sysid integration changed uv.lock while retaining MuJoCo 3.10.0. The audit runner was re-executed under the integrated lock and reproduced the same control-contract hash, counts, bounds, exceedances, and fail-closed interpretation. The historical lock hash remains a generation-time identity rather than being rewritten."
+    "proof_note": "The B-G source-fit evaluator made SciPy 1.18.0 an explicit direct dependency; it was already present transitively. The audit runner was re-executed with current worktree code and read-only canonical physical assets and reproduced the exact prior runner-output hash, control-contract hash, counts, bounds, exceedances, and fail-closed interpretation. The historical lock hash remains a generation-time identity rather than being rewritten."
   },
   "compiled_control_contract_sha256": "0094a3671dd0e1f5e516d3603bd9b6fc37776b5e688ac1bb1f53e963a3629fec",
   "simulator_joint_order": [
