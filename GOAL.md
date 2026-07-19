@@ -74,20 +74,44 @@ and
 [`docs/goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md`](docs/goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md).
 
 The final owner-selected product benchmark is frozen separately in
-[`configs/evaluations/pawn_rank12_bidirectional_v1.json`](configs/evaluations/pawn_rank12_bidirectional_v1.json):
-move the near-side pawn A1→A2 and A2→A1, repeated through H. It contains 16
-directed core cases and 48 fixed simulation realizations, all with zero
-training rows. Exact evaluator realizations never enter training. Safe pushing
-and pick/lift/place are both valid when the same strict board-consequence and
-collateral gates pass. ACT and GR00T use the same scorecard, while simulation
-and physical evidence remain separate.
+[`configs/evaluations/pawn_rank12_bidirectional_v2.json`](configs/evaluations/pawn_rank12_bidirectional_v2.json):
+move the near-side brown pawns between ranks 1 and 2 in both directions for
+files B through G. It contains 12 directed skills. The earlier A--H v1 contract
+is immutable historical evidence and no longer defines current product scope.
+Exact evaluator realizations never enter training. Safe pushing and
+pick/lift/place are both valid only when the same strict board-consequence and
+collateral gates pass. ACT and GR00T use the same scorecard, while simulation,
+learned-policy, physical read-only, and physical task evidence remain separate.
+
+The v2 evaluator measures base-center endpoint grades, bias/covariance,
+initial-to-final offset sensitivity, measured input support, geometric path
+repeatability, and affine alternating-move diagnostics. The 18 recovered,
+hash-bound physical recordings provide 36 visual review panels and folder-label
+coverage of all 12 skills. The owner reviewed the 26 product-scope image-space
+markers covering 13 recordings and all 12 skills; the five out-of-scope rows
+remain excluded. No marker is admitted as a metric pose, so no self-centering,
+drift, or policy result is admitted. Research-level
+interpretation is further governed by the separate protocol-only
+[`configs/evaluations/pawn_transition_inference_readiness_v1.json`](configs/evaluations/pawn_transition_inference_readiness_v1.json);
+it does not change v2 engineering outputs or promote a checkpoint. Its
+claim-eligible tier is disabled until a new protocol version is justified by a
+frozen small-cluster coverage study.
+
+Those 18 recordings were produced by leader/follower teleoperation. Their
+receipts identify `human_teleoperator` as the action owner, carry no model or
+checkpoint identity, and mark the corresponding policy candidates as
+non-callable. They are source trajectories for the B--G benchmark and future
+ACT training, not executions of learned B--G ACT policies. No compatible B--G
+ACT checkpoint is present in the current project storage. The only retained
+learned ACT weights are for the separate fixed rook-lift proof and must never be
+substituted for the B--G benchmark.
 
 ## Immediate mission
 
-1. Freeze `configs/tasks/chess_pick_place_act_state_v1.json`, its observation
-   and action schema, consequence-driven skill transitions, evaluator gates,
-   object-family descriptors, and train/held-out pose/composition splits before
-   generating training rows.
+1. Preserve the frozen `configs/tasks/chess_pick_place_act_state_v1.json`
+   observation/action schema, consequence-driven skill transitions, evaluator
+   gates, object-family descriptors, and train/held-out pose/composition splits
+   while implementing its still-missing data and policy milestones.
 2. Build a repo-native simulator data path that ingests constructive-expert and
    simulated-teleoperation source episodes, converts contact segments to
    object/target-relative trajectories, retargets them across continuous poses,
@@ -99,12 +123,29 @@ and physical evidence remain separate.
    recovery data. The first practical dataset target is 10--20 good simulated
    source episodes plus constructive experts expanded into 500--2,000 accepted
    episodes for one grasp family.
-4. Implement the frozen bidirectional rank-1/rank-2 reset builder and separate
-   consequence evaluator before generating any of its 48 simulation traces.
-   Bind every checkpoint comparison to the unchanged 16-case scorecard.
-5. Keep the gated GR00T campaign preserved as a challenger and external-access
-   blocker; do not spend more Brev money until its access preflight passes and a
-   separately bounded task is authorized.
+4. Preserve all 11 folder/receipt conflicts. Seven product rows now have
+   append-only owner-reviewed folder-label corrections for qualitative routing;
+   those corrections do not rewrite replay or training provenance. Obtain
+   independently reviewed, uncertainty-bearing metric pawn base centers plus a
+   held-out-validated board calibration. Do not infer `A`, `b`, support, or
+   drift from catalog labels, nominal square centers, or qualitative markers.
+5. Review and freeze the physical-to-simulator joint transform, then replay
+   exact requested actions without clipping. Fit geometry, timing/control, and
+   contact/object parameters only when each stage has identifying observables
+   and improves a frozen held-out split. Bind the owner-reported rubber-band
+   fingertip wraps to a named physical hardware profile before treating
+   gripper contact geometry, friction, compliance, or release behavior as
+   calibrated. The current fail-closed preflight is itself the uncalibrated
+   B--G baseline boundary: all 54 assets verify, but 0/18 episodes are replay
+   eligible because the transform is provisional and recorded values exceed
+   current simulator limits.
+6. Build current-scope B--G simulation sources and evaluate ACT or GR00T only
+   with a compatible checkpoint, frozen preprocessing/runtime identity, and the
+   separate evaluator. The completed 1,000-step C8→A6 GR00T campaign is an
+   off-product terminal negative, not B--G evidence. Do not launch another
+   paid GR00T training run until a newly bounded task, admitted B--G source
+   groups, and cap exist. The owner-reserved 20-hour NemoClaw deployment lane
+   is separate and remains under its originating thread's compute authority.
 
 ## Non-goals at this boundary
 
@@ -134,20 +175,44 @@ and physical evidence remain separate.
   repo-native code/configuration; one model-owned held-out episode passed.
 - PASS: a dynamic language/RGB chess contract, accepted sparse-board expert
   dataset, disjoint held-out cases, and consequence evaluator are frozen.
-- PASS: the earlier paid GR00T worker was torn down and authenticated Brev
-  inventory was verified empty.
-- PASS: the owner-selected A1↔A2 through H1↔H2 product benchmark, reset rules,
-  16 directed cases, 48 zero-row simulation realizations, gates, and scorecard
-  are frozen before candidate selection.
-- PENDING: the new goal-conditioned ACT contract, retarget/validation pipeline,
-  benchmark evaluator implementation, ACT-1 through ACT-6 evidence, and any
-  later sim-plus-real anchoring evidence.
-- BLOCKED CHALLENGER: GR00T optimizer steps and learned closed-loop consequences
-  remain blocked on gated `nvidia/Cosmos-Reason2-2B` access.
+- PASS: the earlier paid GR00T training worker was torn down and authenticated
+  inventory for that campaign was verified empty. A later, separate NemoClaw
+  workspace is owner-reserved for a 20-hour deployment lane and must not be
+  mistaken for an idle GR00T worker.
+- PASS: the owner-selected B1↔B2 through G1↔G2 product benchmark, 12 directed
+  skills, endpoint grades, fail-closed pose admission, and scorecard are frozen.
+- PASS: all 18 current recording directories and 54 catalog-bound assets are
+  recovered and hash-verified; 36 proposal panels are preserved with zero
+  admitted poses.
+- PASS: a separate research inference protocol and reproducible replay-limit
+  audit are frozen. Current claim eligibility is disabled, and the legacy
+  physical mapping is explicitly not exact-replay or calibration-ready.
+- PASS: recorded-action replay and staged system-ID contracts require measured
+  initial velocity and units, exact unclipped controls, immutable episode
+  splits, object-state provenance, observable residuals, and sensitivity. The
+  canonical report admits 0/18 episodes, so no project parameter was fit.
+- PASS: the exact 12-semantic B--G language surface, deterministic prompt
+  provenance, group-before-prompt split rule, and evidence-count accounting are
+  frozen. Current coverage is zero admitted source groups and zero training
+  rows; generated prompt strings are not behavioral evidence.
+- TERMINAL NEGATIVE: one bounded 1,000-step GR00T challenger completed, but its
+  sole off-product C8→A6 development rollout produced 0 mm lift and 125.724 mm
+  final XY error. Held-outs stayed sealed and the paid worker was deleted.
+- PENDING: goal-conditioned ACT data generation and training, the
+  retarget/validation pipeline, ACT-1 through ACT-6 evidence, reviewed endpoint
+  poses, exact replay, held-out-improving calibration, and any later
+  sim-plus-real anchoring evidence. The contract itself is already frozen and
+  tested.
+- BLOCKED PRODUCT CHALLENGER: no compatible B--G learned checkpoint or admitted
+  current-scope training dataset exists.
+- REJECTED ANCILLARY DIAGNOSTIC: the unmeasured rook-lift rubber-wrap run is not
+  B--G evidence. Its first result was rejected because checkpoint snapshot
+  bytes were not rehashed before deserialization. The task-independent contact
+  prior may be reviewed separately, but no sensitivity result is accepted.
 
 The robot geometry/composition slice, one narrow frozen ACT simulation task,
 and the local GR00T data/evaluator foundation are complete. The goal-conditioned
-ACT program is planned but not yet implemented or proven. This does not claim a
-working pick/place policy, working GR00T policy, broad policy robustness,
-full-board manipulation, calibration, gateway, sim-to-real transfer, or a
-physical workcell gate.
+ACT contract is implemented, but its dataset, trained policy, and milestone
+evidence are not. This does not claim a working pick/place policy, working
+GR00T policy, broad policy robustness, full-board manipulation, calibration,
+gateway, sim-to-real transfer, or a physical workcell gate.

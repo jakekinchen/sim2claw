@@ -105,9 +105,31 @@ Implementation commits:
 - `58e6a50d1e9d1b0c0e9d36dfb8930e94308b9327` — binds measured initial joint
   velocity and makes empty joint-range audits explicitly incomplete.
 
-The coordinator's independent reviewer formally recommended holding the three
-original commits until this repair is integrated and rerun. This log does not
-override that integration hold.
+The coordinator's independent reviewer originally held the three pre-repair
+commits. After the later repairs and rereview, the full eight-commit sequence
+was integrated as canonical commits `17f5391` through `4e58245`; lock-lineage
+repair `42572a1` preserved both the generation-time and post-integration runtime
+identities.
+
+## Canonical integration result
+
+The required post-integration command was run read-only against the canonical
+18-recording corpus. It exited nonzero as expected and wrote ignored report
+`runs/sysid/physical_pawn_input_capability_post_cherry_pick.json`, SHA-256
+`5676b3db1db359316e1e061726f742f5784a43d48a67dd079428822c22acc948`.
+
+- all 54 catalog-bound receipt/sample/video assets verified;
+- 18 episodes inspected and 0 marked `joint_timing_replay_ready`;
+- 2,255/7,741 measured rows and 2,231/7,741 command rows violate current
+  MuJoCo limits under the provisional transform;
+- maximum measured and command exceedance values were respectively
+  `0.12351556059700508` and `0.11584378366516201` radians;
+- 11 task-label conflicts remain; and
+- no measured end-effector, pawn, contact, grasp, or release observable exists.
+
+No physical replay, optimizer, fit, held-out evaluation, calibration, or
+promotion was run. The nonzero result is the accepted canonical capability
+boundary, not a failed attempt that should be bypassed.
 
 ## Input-capability state
 
@@ -128,16 +150,13 @@ this isolated worktree. It reports:
 The coordinator separately reported 18 recovered canonical directories and 54
 verified catalog-bound hashes. That statement is recorded as externally
 reported context only; this receipt did not inspect canonical and does not
-verify it. Endpoint visual proposals remain unreviewed and are not admitted as
-telemetry.
+verify it. The 26 product endpoint markers now have owner-reviewed qualitative
+image-space acceptance, but none is a metric pose or admitted telemetry.
 
-The coordinator also reported a canonical read-only range audit: all 18
-episodes begin out of range in three mapped joints; 2,255 of 7,741 measured rows
-and 2,231 command rows are out of range, with maximum exceedance 0.1235 rad.
-Those numbers were not reproduced in this isolated checkout. The repaired
-canonical input command must regenerate them through the strict adapter. Until
-that report is green with a separately reviewed transform, timing/control
-fitting is forbidden.
+The isolated receipt did not reproduce the coordinator's canonical range
+audit. The later integrated strict-adapter run did reproduce and bind the
+counts in the canonical-integration section above. Until a separately reviewed
+transform makes that report green, timing/control fitting is forbidden.
 
 ## Verification ledger
 
@@ -154,14 +173,13 @@ fitting is forbidden.
 
 ## Result and limitations
 
-The repaired dependency-ready foundation and verification ledger are complete.
-No physical calibration was performed in this worktree. Canonical must first
-regenerate the strict input capability report; it must not run joint/timing
-fitting with the provisional transform or any range violation. Geometry and
-contact/object stages remain skipped or rejected until measured identifying
-observables and the episode-specific object binding are supplied. Even after a
-future eligible fit, calibration success requires the frozen held-out gate;
-optimizer convergence alone is insufficient.
+The repaired dependency-ready foundation is integrated, and the canonical
+strict input report is complete. It prohibits joint/timing fitting with the
+provisional transform and current range violations. Geometry and contact/object
+stages remain skipped or rejected until measured identifying observables and
+the episode-specific object binding are supplied. Even after a future eligible
+fit, calibration success requires the frozen held-out gate; optimizer
+convergence alone is insufficient.
 
 ## Canonical post-cherry-pick commands
 
@@ -171,9 +189,9 @@ uv sync --frozen
 uv run --frozen sim2claw sysid-input-report --catalog configs/data/physical_pawn_move_catalog_20260719.json --config configs/sysid/recorded_action_sysid_v1.json --repo-root /Users/kelly/Developer/sim2claw --inspection-scope canonical_checkout --output runs/sysid/physical_pawn_input_capability_post_cherry_pick.json
 ```
 
-The expected current input-report result is nonzero and
-`joint_timing_replay_ready=false`, with exact range diagnostics and the
-provisional-transform blocker. Do not invoke `sysid-fit` until a reviewed,
+The reproduced current input-report result is nonzero and
+`joint_timing_replay_ready=false`, with the exact range diagnostics above and
+the provisional-transform blocker. Do not invoke `sysid-fit` until a reviewed,
 hash-bound transform resolves the mismatch and the regenerated report returns
 zero. Full calibration readiness still requires geometry, object-pose, pawn,
 and contact observables. The legacy `canonical_checkout` scope spelling records

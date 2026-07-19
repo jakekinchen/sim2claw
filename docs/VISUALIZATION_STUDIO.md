@@ -253,8 +253,8 @@ probe command.
 
 The interface is an evidence and collection workbench, not an admin dashboard.
 Replay, Library, Calibration, Robots, and Record are distinct views; tasks are
-filters within Replay and Library. Calibration deliberately uses one dark datum
-stage and a narrow evidence console so its visual-placement role cannot be
+filters within Replay and Library. Calibration deliberately uses one dark visual
+stage and a narrow evidence console so its visual-inspection role cannot be
 mistaken for episode replay or robot control.
 The selected episode, semantic filmstrip, and evaluator metrics fit in one
 desktop viewport. An idle process rail consumes no layout space. The compact

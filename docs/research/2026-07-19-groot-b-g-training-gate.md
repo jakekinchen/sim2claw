@@ -12,8 +12,11 @@ worth paying for only when its frozen development result can answer a B--G
 product question and its retained evidence can be attributed to the exact
 dataset, checkpoint, runtime, and evaluator.
 
-Authenticated inventory is currently empty. The completed 1,000-step run is a
-terminal-negative infrastructure result for one off-product C8-to-A6
+The completed GR00T campaign's worker was deleted and its campaign-specific
+inventory was verified empty at teardown. Any current NemoClaw workspace is a
+separate owner-reserved deployment lane, not a GR00T training worker. The
+completed 1,000-step run is a terminal-negative infrastructure result for one
+off-product C8-to-A6
 development rollout: zero pawn lift and 125.724 mm final XY error. It is not a
 negative result for the GR00T model class or for the B1/B2 through G1/G2 product
 surface.

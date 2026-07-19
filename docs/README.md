@@ -19,19 +19,44 @@
   — durable long-horizon prompt for continuous-goal ACT, retargeted data,
   hierarchical skills, held-outs, distractors, and recovery.
 - [`briefs/002-goal-conditioned-act-contract.md`](./briefs/002-goal-conditioned-act-contract.md)
-  — active M6 slice: freeze the new observation/action, transition, split,
-  lineage, evaluator, and negative-fixture contract before generating data.
-- [`POLYCAM_CHESS_TABLE_SCENE.md`](./POLYCAM_CHESS_TABLE_SCENE.md) — measured
-  table, photo-aligned two-arm scene, source record, and proof interpretation.
+  — completed M6 contract slice: the observation/action, transition, split,
+  lineage, evaluator, and negative-fixture contract is frozen; data generation
+  and learned-policy milestones remain pending.
+- [`research/2026-07-19-pawn-composability-study.md`](./research/2026-07-19-pawn-composability-study.md)
+  — current B--G endpoint, exact-replay, calibration, composition, language,
+  and checkpoint evidence boundary.
+- [`reference/IPHONE_VIDEO_3DGS_RELEASE_20260719.md`](./reference/IPHONE_VIDEO_3DGS_RELEASE_20260719.md)
+  — current Robo Scanner / iPhone-video Gaussian Splat release, immutable hashes,
+  and visual-only authority boundary.
+- [`POLYCAM_CHESS_TABLE_SCENE.md`](./POLYCAM_CHESS_TABLE_SCENE.md) — historical
+  initial-scene alignment record; it is not the current capture pipeline.
 - [`VISUALIZATION_STUDIO.md`](./VISUALIZATION_STUDIO.md) — browser replay,
   task/episode contact sheet, live process rail, and authority boundary.
 - [`run-logs/2026-07-18-physical-episode-intake.md`](./run-logs/2026-07-18-physical-episode-intake.md)
   — five saved physical pawn sources, hashes, visual review, simulator
   joint-response comparisons, metadata conflicts, and ACT/GR00T routing.
+- [`run-logs/2026-07-18-robo-scanner-studio-integration.md`](./run-logs/2026-07-18-robo-scanner-studio-integration.md)
+  — immutable Robo Scanner and physical-release parity, Studio calibration and
+  multi-feed adapters, transfer audit, and remaining remote-SSH limitation.
 - [`decisions/0006-pawn-rank12-bidirectional-evaluation.md`](./decisions/0006-pawn-rank12-bidirectional-evaluation.md)
-  — frozen final product benchmark: A1↔A2 through H1↔H2, 16 directed
-  cases, 48 zero-row simulation realizations, physical scorecard, and
-  ACT/GR00T/Brev plan.
+  — historical v1 A--H benchmark and campaign plan; preserved for provenance,
+  but superseded as current product authority by the B--G v2 contract.
+- [`decisions/0009-pawn-bidirectional-composability-evaluation.md`](./decisions/0009-pawn-bidirectional-composability-evaluation.md)
+  — implemented non-promoting B–G endpoint, self-centering, precondition,
+  repeatability, and alternating-composition diagnostic.
+- [`run-logs/2026-07-19-pawn-bidirectional-composability-eval.md`](./run-logs/2026-07-19-pawn-bidirectional-composability-eval.md)
+  — implementation proof, current no-pose-evidence result, and system-ID
+  handoff boundary.
+- [`run-logs/2026-07-19-recorded-action-replay-sysid.md`](./run-logs/2026-07-19-recorded-action-replay-sysid.md)
+  — exact-action replay/system-ID contracts, synthetic capability proof, and
+  the canonical 0/18 physical readiness boundary; no fit or calibration claim.
+- [`run-logs/2026-07-19-pawn-b-g-language-semantics.md`](./run-logs/2026-07-19-pawn-b-g-language-semantics.md)
+  — exact 12-semantic prompt contract, group-aware leakage controls, and the
+  zero-source-group/no-paid-training result.
+- [`run-logs/2026-07-19-groot-n17-multisource-v2.md`](./run-logs/2026-07-19-groot-n17-multisource-v2.md)
+  — completed 1,000-step off-product challenger, terminal-negative development
+  result, sealed held-outs, missing checkpoint weights, and future identity
+  requirements.
 - [`goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md`](./goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md)
   — unattended second-machine GR00T recovery and robustness research lane.
 - [`decisions/0001-runtime-and-scene-foundation.md`](./decisions/0001-runtime-and-scene-foundation.md)

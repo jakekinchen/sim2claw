@@ -1,6 +1,10 @@
 # Decision 0006: Bidirectional Rank-1/Rank-2 Pawn Evaluation
 
-Status: accepted and frozen owner-selected product benchmark
+Status: historical frozen v1 benchmark; superseded as current product authority
+
+Superseded by:
+`configs/evaluations/pawn_rank12_bidirectional_v2.json` and
+`docs/decisions/0009-pawn-bidirectional-composability-evaluation.md`
 
 Date: 2026-07-18 America/Chicago
 
@@ -9,6 +13,14 @@ Machine-readable contract:
 
 Contract SHA-256:
 `f3dac8b86cd7b0252153d25c0d5c09204079003ac9780642992fd10bc08e0d43`
+
+## Supersession note
+
+This file preserves the accepted 2026-07-18 A--H v1 proposal and its campaign
+plan without rewriting history. The owner later narrowed the current product
+surface to the 12 B--G, rank-1/rank-2 directed skills. Current-facing claims,
+training gates, and checkpoint comparisons use v2. Nothing below authorizes an
+A/H product claim, a new paid run, or reuse of v1 evaluator rows.
 
 ## Decision
 

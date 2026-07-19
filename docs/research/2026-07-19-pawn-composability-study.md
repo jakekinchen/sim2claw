@@ -16,17 +16,21 @@ needed to test whether placement error contracts, persists, or grows.
 
 The current result is deliberately incomplete rather than falsely precise. All
 18 catalog-bound physical recordings were recovered and exposed as 36
-hash-bound review panels, but no pawn base-center pose has been admitted. The
-endpoint evaluator therefore reports zero supported transition regressions and
-no drift classification. Separately, an isolated bounded GR00T fine-tune
+hash-bound review panels. The owner accepted the 26 product-scope markers as
+qualitative image-space annotations, but no pawn base-center pose has been
+admitted metrically. The endpoint evaluator therefore reports zero supported
+transition regressions and no drift classification. Separately, an isolated
+bounded GR00T fine-tune
 completed 1,000 steps, but its sole frozen development rollout was terminal
-negative. A canonical read-only audit also found that the legacy replay path
-silently clips commands: 2,231 of 7,741 command rows and 2,255 of 7,741 measured
-rows exceed current MuJoCo actuator ranges under the legacy mapping. Its
-replacement remains isolated and review-blocked, so the repository grants no
-exact-replay or calibration authority.
+negative. The integrated replay replacement now requires measured initial
+velocity and units, object-state binding, exact unclipped controls, immutable
+splits, and observable/sensitivity gates. Its canonical read-only input report
+still finds 2,231 of 7,741 command rows and 2,255 of 7,741 measured rows outside
+current MuJoCo limits and admits 0/18 episodes. No replay or fit was run, so the
+repository grants no exact-replay or calibration authority.
 
-**Built:** a canonical fail-closed 12-skill endpoint evaluator.
+**Built:** a canonical fail-closed 12-skill endpoint evaluator, exact-action
+replay/system-ID contracts, and an exact 12-semantic language/data gate.
 
 **Learned:** the existing recordings cannot identify self-centering, and the
 bounded GR00T challenger did not lift the pawn.
@@ -148,20 +152,25 @@ evaluator.
 | Folder-label product candidates | 13 | Candidate routing only |
 | Directed skills represented by folder labels | 12/12 | Candidate coverage only |
 | Retained off-scope episodes | 5 | Preserved, non-admitted |
-| Pending task-label adjudications | 12 | Eleven metadata conflicts plus one catalog-consistent off-scope transition |
+| Owner-reviewed qualitative product markers | 26 | Image-space review only; no metric pose |
+| Owner-reviewed product folder-label corrections | 7 | Qualitative product routing only; source conflicts remain preserved |
+| Excluded out-of-scope episodes | 5 | Retained outside product evaluation |
 | Reviewed pawn base-center poses | 0 | No metric endpoint authority |
 | Supported skill regressions | 0/12 | No self-centering result |
 | Opened held-out rows | 0 | Sealed |
 | Admitted training rows from this benchmark | 0 | Non-promoting |
 
 The red crosses in the review sheet are nominal square centers. Compact cyan
-rings are tone-aware visual fiducial proposals, and cyan crosses are inferred
-board-contact-center proposals. Owner-directed retargets remain directional
-visual proposals pending exact acceptance. None is an evaluator input.
+rings are tone-aware visual fiducials, and cyan crosses are inferred
+board-contact-center proposals. The exact deterministic 26-panel product sheet,
+its decoded pixels, and all 26 ordered marker identities are bound to the
+owner's qualitative acceptance. None is admitted as a metric evaluator input.
 
-Seven of the eleven metadata conflicts affect B--G product candidates. Folder
-names and videos may route review, but only an append-only adjudication can
-establish the task identity used by an evaluator or split.
+Seven of the eleven metadata conflicts affect B--G product candidates. Their
+folder labels now have append-only owner review for this qualitative product
+inventory. The original catalog/receipt conflicts remain preserved and still
+cannot be treated as replay, training, or metric evaluator truth without a
+separately admissible reconciliation.
 
 ## Results Matrix
 
@@ -169,12 +178,14 @@ establish the task identity used by an evaluator or split.
 | --- | --- | --- |
 | Canonical endpoint contract and evaluator | Integrated and fail-closed | Engineering artifact generation and pose-admission rejection are implemented; research-inference readiness remains protocol-only |
 | Recovered-corpus endpoint run | Incomplete: 0 admitted poses | Self-centering, bias, covariance, and drift remain unknown |
-| Legacy canonical replay | Invalid for exact-replay claims | It clips initial state and commands and does not preserve the requested/applied distinction |
-| Replacement replay/sysid | Isolated, repaired after first review, fresh review pending | Not integrated; grants no canonical replay or calibration authority |
+| Legacy canonical replay | Invalid for exact-replay claims | It clipped initial state and commands and did not preserve the requested/applied distinction |
+| Integrated replay/sysid replacement | Fail-closed capability only: 0/18 replay-ready | Requires canonical initial velocity/units and exact no-clip controls; no physical replay, fit, held-out comparison, calibration, or promotion occurred |
 | Geometry calibration | Blocked | No admitted EE/board/object pose observations |
 | Timing/control calibration | Blocked pending joint-map correction | Limit forces would confound gains, damping, and latency |
 | Contact/object calibration | Blocked | No admitted pawn/contact/grasp/release trajectories |
 | Isolated GR00T challenger | Terminal negative for this bounded served process only | Off-product C8→A6 smoke case: 0 mm lift, 125.724 mm final XY error; not a GR00T-model-class or B--G result; held-outs sealed |
+| B--G language/data gate | Frozen semantics, no launch | Twelve exact meanings and 24 deterministic prompt strings; zero admitted source groups and zero behavioral training rows |
+| Rubber-tip ACT diagnostic | Rejected ancillary result | The rook-lift run is not B--G evidence, and snapshot bytes were not rehashed before deserialization; only a future task-independent contact prior may be reconsidered |
 | Closed-loop B--G ACT replay | Unsupported | No compatible checkpoint exists |
 | Alternating-cycle stability | Unsupported | No paired claim-eligible endpoint regressions; this blocks affine composition. Calibrated closed-loop policy replay is a separate unavailable lane |
 | Bias compensation / retargeted placement | Not opened | Correction must not precede measurement and calibration |
@@ -266,9 +277,10 @@ hash-bound runtime identity before the first query.
 
 The next useful data is not more nominal-center success video. It is:
 
-1. exact human-reviewed base/contact centers for every retained pre/post frame,
-   with a reviewed pixel-to-board calibration;
-2. append-only resolution of the 11 folder/receipt task-label conflicts;
+1. independent metric review of base/contact centers plus a frozen,
+   held-out-validated pixel-to-board calibration with propagated uncertainty;
+2. reconcile the preserved folder/receipt conflicts for any future replay or
+   training use without overwriting the seven qualitative product corrections;
 3. at least 10 well-spread independent episodes across three sessions per
    directed skill for exploratory analysis; the candidate 20-episode claim
    floor remains disabled pending a coverage study and new protocol version;
