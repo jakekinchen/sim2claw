@@ -14,6 +14,12 @@ from typing import Any
 
 SCHEDULED_STEPS = (250, 500, 750, 1000)
 EXPERIMENT_NAME = "sim2claw-groot-n17-multisource-v2"
+HISTORICAL_RANK12_PATH = Path(
+    "configs/evaluations/pawn_rank12_bidirectional_v1.json"
+)
+CURRENT_RANK12_PATH = Path(
+    "configs/evaluations/pawn_rank12_bidirectional_v2.json"
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -33,7 +39,9 @@ def canonical_sha256(value: Any) -> str:
 def checkpoint_manifest(checkpoint: Path, step: int) -> dict[str, Any]:
     files: dict[str, str] = {}
     sizes: dict[str, int] = {}
-    for path in sorted(candidate for candidate in checkpoint.rglob("*") if candidate.is_file()):
+    for path in sorted(
+        candidate for candidate in checkpoint.rglob("*") if candidate.is_file()
+    ):
         relative = path.relative_to(checkpoint).as_posix()
         files[relative] = sha256_file(path)
         sizes[relative] = path.stat().st_size
@@ -47,7 +55,11 @@ def checkpoint_manifest(checkpoint: Path, step: int) -> dict[str, Any]:
     if not required.issubset(files):
         missing = sorted(required - set(files))
         raise ValueError(f"checkpoint-{step} is missing identity files: {missing}")
-    model_shards = [name for name in files if name.startswith("model-") and name.endswith(".safetensors")]
+    model_shards = [
+        name
+        for name in files
+        if name.startswith("model-") and name.endswith(".safetensors")
+    ]
     if not model_shards:
         raise ValueError(f"checkpoint-{step} has no model shards")
     return {
@@ -58,6 +70,44 @@ def checkpoint_manifest(checkpoint: Path, step: int) -> dict[str, Any]:
         "file_sizes_bytes": sizes,
         "file_count": len(files),
         "total_size_bytes": sum(sizes.values()),
+    }
+
+
+def rank12_contract_identities(code_root: Path) -> dict[str, Any]:
+    """Keep the completed run's v1 identity historical beside current v2."""
+
+    historical = code_root / HISTORICAL_RANK12_PATH
+    current = code_root / CURRENT_RANK12_PATH
+    historical_payload = json.loads(historical.read_text(encoding="utf-8"))
+    if (
+        historical_payload.get("evaluation_set_id")
+        != "pawn_rank12_bidirectional_v1"
+    ):
+        raise ValueError("historical rank-12 v1 identity changed")
+    current_identity: dict[str, Any] = {
+        "path": CURRENT_RANK12_PATH.as_posix(),
+        "expected_evaluation_set_id": "pawn_rank12_bidirectional_b_to_g_v2",
+        "expected_scope": "brown_pawns_b_through_g_rank1_rank2_bidirectional",
+        "role": "current_product_contract_not_used_by_completed_run",
+        "available_in_code_root": current.is_file(),
+    }
+    if current.is_file():
+        current_payload = json.loads(current.read_text(encoding="utf-8"))
+        if (
+            current_payload.get("evaluation_set_id")
+            != current_identity["expected_evaluation_set_id"]
+        ):
+            raise ValueError("current rank-12 v2 identity changed")
+        current_identity["sha256"] = sha256_file(current)
+    return {
+        "historical_completed_run_contract": {
+            "path": HISTORICAL_RANK12_PATH.as_posix(),
+            "evaluation_set_id": historical_payload["evaluation_set_id"],
+            "sha256": sha256_file(historical),
+            "role": "historical_identity_used_by_completed_run",
+        },
+        "current_product_contract": current_identity,
+        "completed_run_contract_was_not_rewritten": True,
     }
 
 
@@ -76,7 +126,7 @@ def main() -> None:
     dataset = args.dataset.resolve()
     experiment = code_root / "configs/experiments/groot_n17_multisource_v2.json"
     evaluator = code_root / "configs/tasks/chess_pick_place_pawn_evaluator_v3.json"
-    rank12 = code_root / "configs/evaluations/pawn_rank12_bidirectional_v1.json"
+    rank12_identities = rank12_contract_identities(code_root)
     training_root = run_root / "train" / EXPERIMENT_NAME
     if (run_root / "training.exit").read_text().strip() != "0":
         raise ValueError("training did not exit successfully")
@@ -135,7 +185,11 @@ def main() -> None:
         "remote_loader_receipt_sha256": sha256_file(args.remote_loader_receipt),
         "model_snapshot_receipt_sha256": sha256_file(args.model_snapshot_receipt),
         "evaluator_contract_sha256": sha256_file(evaluator),
-        "sealed_rank12_evaluation_sha256": sha256_file(rank12),
+        # Backward-compatible historical field: this completed run used v1.
+        "sealed_rank12_evaluation_sha256": rank12_identities[
+            "historical_completed_run_contract"
+        ]["sha256"],
+        "rank12_contract_identities": rank12_identities,
         "training_log_sha256": sha256_file(run_root / "training.log"),
         "training_launch_receipt_sha256": sha256_file(
             run_root / "training-launch-receipt.json"

@@ -5,9 +5,12 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import random
+import signal
 from contextlib import contextmanager
 from collections.abc import Iterator
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -80,6 +83,7 @@ class SeededResetPolicy(PolicyWrapper):
         aggregation: str,
         noise_scale: float,
         num_inference_timesteps: int | None,
+        checkpoint_identity: dict[str, str] | None = None,
     ) -> None:
         super().__init__(policy, strict=False)
         model = getattr(policy, "model", None)
@@ -111,6 +115,7 @@ class SeededResetPolicy(PolicyWrapper):
         self._aggregation = aggregation
         self._noise_scale = noise_scale
         self._num_inference_timesteps = configured_timesteps
+        self._checkpoint_identity = dict(checkpoint_identity or {})
 
     @staticmethod
     def _validate_configuration(
@@ -293,6 +298,7 @@ class SeededResetPolicy(PolicyWrapper):
                 "proposal_count": self._proposal_count,
                 "rng_reset": True,
                 "rng_after_reset": policy_rng_snapshot(),
+                **self._checkpoint_identity,
             }
         )
         return info
@@ -301,6 +307,7 @@ class SeededResetPolicy(PolicyWrapper):
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model-path", required=True)
+    parser.add_argument("--processor-model-path")
     parser.add_argument("--embodiment-tag", default="new_embodiment")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--host", default="127.0.0.1")
@@ -313,6 +320,10 @@ def main() -> None:
     )
     parser.add_argument("--noise-scale", type=float, default=1.0)
     parser.add_argument("--num-inference-timesteps", type=int)
+    parser.add_argument("--checkpoint-manifest-sha256")
+    parser.add_argument("--checkpoint-payload-sha256")
+    parser.add_argument("--evaluation-manifest-sha256")
+    parser.add_argument("--maximum-runtime-seconds", type=int)
     args = parser.parse_args()
     if args.proposal_count < 1:
         parser.error("--proposal-count must be positive")
@@ -324,6 +335,57 @@ def main() -> None:
         1 <= args.num_inference_timesteps <= 16
     ):
         parser.error("--num-inference-timesteps must be between 1 and 16")
+    identity_digests = (
+        args.checkpoint_manifest_sha256,
+        args.checkpoint_payload_sha256,
+        args.evaluation_manifest_sha256,
+    )
+    if any(identity_digests) and not all(identity_digests):
+        parser.error(
+            "checkpoint and evaluation manifest digests must be provided together"
+        )
+    if all(identity_digests) and args.processor_model_path is None:
+        parser.error(
+            "--processor-model-path is required with checkpoint identity digests"
+        )
+    for label, value in (
+        ("checkpoint manifest", args.checkpoint_manifest_sha256),
+        ("checkpoint payload", args.checkpoint_payload_sha256),
+        ("evaluation manifest", args.evaluation_manifest_sha256),
+    ):
+        if value is not None:
+            try:
+                decoded = bytes.fromhex(value)
+            except ValueError:
+                parser.error(f"{label} digest is not hexadecimal")
+            if len(decoded) != hashlib.sha256().digest_size:
+                parser.error(f"{label} digest is not SHA-256")
+    if args.processor_model_path is not None:
+        try:
+            processor_path = str(
+                Path(args.processor_model_path).resolve(strict=True)
+            )
+        except (OSError, RuntimeError) as error:
+            parser.error(f"processor model path is unavailable: {error}")
+        for environment_name in (
+            "GROOT_PROCESSOR_MODEL_PATH",
+            "GROOT_BACKBONE_MODEL_PATH",
+        ):
+            environment_path = os.environ.get(environment_name)
+            if environment_path is None:
+                parser.error(f"{environment_name} is not set")
+            try:
+                resolved_environment_path = str(
+                    Path(environment_path).resolve(strict=True)
+                )
+            except (OSError, RuntimeError) as error:
+                parser.error(f"{environment_name} is unavailable: {error}")
+            if resolved_environment_path != processor_path:
+                parser.error(f"{environment_name} differs from the bound path")
+    if args.maximum_runtime_seconds is not None:
+        if args.maximum_runtime_seconds < 1:
+            parser.error("--maximum-runtime-seconds must be positive")
+        signal.alarm(args.maximum_runtime_seconds)
 
     seed_policy_rng(0)
     policy = Gr00tPolicy(
@@ -339,6 +401,20 @@ def main() -> None:
             aggregation=args.action_aggregation,
             noise_scale=args.noise_scale,
             num_inference_timesteps=args.num_inference_timesteps,
+            checkpoint_identity=(
+                {
+                    "checkpoint_manifest_sha256": (
+                        args.checkpoint_manifest_sha256
+                    ),
+                    "checkpoint_payload_sha256": args.checkpoint_payload_sha256,
+                    "evaluation_manifest_sha256": (
+                        args.evaluation_manifest_sha256
+                    ),
+                    "processor_model_path": processor_path,
+                }
+                if args.checkpoint_manifest_sha256 is not None
+                else None
+            ),
         ),
         host=args.host,
         port=args.port,

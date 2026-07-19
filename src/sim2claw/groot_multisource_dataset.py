@@ -590,6 +590,44 @@ def _video_probe(path: Path) -> dict[str, int]:
     }
 
 
+def validate_multisource_episode_alignment(
+    *,
+    episode_index: int,
+    row_count: int,
+    parquet_row_count: int,
+    parquet_episode_indices: list[int],
+    global_indices: list[int],
+    expected_global_index: int,
+    task_indices: list[int],
+    task_count: int,
+    video: dict[str, int],
+) -> None:
+    """Validate one derived parquet/video/task schedule without I/O."""
+
+    if parquet_row_count != row_count:
+        raise ValueError("GR00T multisource parquet length drifted")
+    if set(parquet_episode_indices) != {episode_index}:
+        raise ValueError("GR00T multisource episode index drifted")
+    expected_indices = list(
+        range(expected_global_index, expected_global_index + row_count)
+    )
+    if global_indices != expected_indices:
+        raise ValueError("GR00T multisource global indices are not contiguous")
+    observed_tasks = set(task_indices)
+    if len(observed_tasks) != 1 or not observed_tasks <= set(range(task_count)):
+        raise ValueError("GR00T multisource task schedule drifted")
+    expected_video = {
+        "width": 256,
+        "height": 256,
+        "frames": row_count,
+        "fps": 20,
+    }
+    if video != expected_video:
+        raise ValueError(
+            f"GR00T multisource video alignment drifted: {episode_index}:{video}"
+        )
+
+
 def preflight_groot_multisource_dataset(
     dataset: Path,
     *,
@@ -648,21 +686,19 @@ def preflight_groot_multisource_dataset(
         episode_index = int(episode["episode_index"])
         table = pq.read_table(_episode_path(dataset, "data", episode_index))
         row_count = int(episode["length"])
-        if table.num_rows != row_count:
-            raise ValueError("GR00T multisource parquet length drifted")
-        if set(table["episode_index"].to_pylist()) != {episode_index}:
-            raise ValueError("GR00T multisource episode index drifted")
         indices = table["index"].to_pylist()
-        if indices != list(range(global_index, global_index + row_count)):
-            raise ValueError("GR00T multisource global indices are not contiguous")
-        task_index = set(table["task_index"].to_pylist())
-        if len(task_index) != 1 or not task_index <= set(range(len(tasks))):
-            raise ValueError("GR00T multisource task schedule drifted")
         video = _video_probe(_episode_path(dataset, "video", episode_index))
-        if video != {"width": 256, "height": 256, "frames": row_count, "fps": 20}:
-            raise ValueError(
-                f"GR00T multisource video alignment drifted: {episode_index}:{video}"
-            )
+        validate_multisource_episode_alignment(
+            episode_index=episode_index,
+            row_count=row_count,
+            parquet_row_count=table.num_rows,
+            parquet_episode_indices=table["episode_index"].to_pylist(),
+            global_indices=indices,
+            expected_global_index=global_index,
+            task_indices=table["task_index"].to_pylist(),
+            task_count=len(tasks),
+            video=video,
+        )
         global_index += row_count
         video_frames += video["frames"]
         effective_starts += row_count - int(contract["model"]["action_horizon"]) + 1

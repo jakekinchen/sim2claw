@@ -1,19 +1,30 @@
 # GR00T N1.7 Multisource 100 mm Campaign
 
-Date: 2026-07-19 UTC (2026-07-18 America/Chicago)
+Date: 2026-07-19 UTC and America/Chicago (rollout ended about 06:00 UTC,
+01:00 CDT)
 
 ## Outcome
 
-The bounded GR00T N1.7 multisource fine-tune completed 1,000 optimizer steps,
-but its single predeclared current-geometry development rollout was a strict
-terminal negative. The C8 pawn was not lifted or moved toward A6. This run
-therefore grants no pawn, held-out, multi-piece, physical, or sim-to-real
-authority.
+The bounded GR00T N1.7 multisource fine-tune completed 1,000 optimizer steps.
+Its single predeclared current-geometry development rollout was a strict
+terminal negative for the model process that was served: the C8 pawn was not
+lifted or moved toward A6. The rollout did not retain the cryptographic server
+handshake now required to attribute that consequence independently to the
+checkpoint-1,000 payload. This run therefore grants no pawn, held-out,
+multi-piece, physical, or sim-to-real authority.
+
+C8-to-A6 was an off-product far-side smoke case, not the owner-selected pawn
+product task. The current product scope is the near-side brown pawns on ranks
+1 and 2, in both directions, for files B through G only. Columns A and H and
+all far-side rank-8/rank-6 moves are outside that scope. No result in this
+campaign answers the B-G rank-1/rank-2 product question.
 
 The pre-run configuration's `current_pawn_authority_scope` identifies only the
 narrow provenance of the admitted C8-to-A6 source episode. It is not a learned
-model capability claim. The unchanged CPU/fp32 consequence evaluator owns that
-decision, and it rejected the trained checkpoint.
+model capability claim. The unchanged CPU/fp32 consequence evaluator rejected
+the served model process on that case; because the server lacked a
+machine-verifiable checkpoint handshake, this log does not restate the result
+as a checkpoint-specific rejection.
 
 ## Admitted mixture
 
@@ -29,8 +40,11 @@ decision, and it rejected the trained checkpoint.
 
 The four current-geometry failed episodes contributed zero behavior-cloning
 rows. Five 72 mm physical recordings, including 2,186 samples and five videos,
-remained quarantined because their outcomes, labels, and geometry were not
-reconciled. Every held-out split remained sealed and contributed zero rows.
+were the frozen intake subset and remained quarantined because their outcomes,
+labels, and geometry were not reconciled. They were not the complete recording
+inventory: the catalog later contained 18 recordings. That larger, mutable
+catalog was outside this frozen intake and contributed no rows. Every held-out
+split remained sealed and contributed zero rows.
 
 Frozen dataset identities:
 
@@ -61,10 +75,18 @@ infrastructure receipts, not rollouts.
 
 ## Frozen development result
 
-Only checkpoint 1,000 and the predeclared C8-to-A6 development case were run.
-The rollout used 71 policy queries and 562 model-owned actions with zero
-assistance or reward guidance. Exact sample-hold replay passed for all 562
-actions, but only 13 of 15 consequence gates passed:
+The launcher selected the expected checkpoint-1,000 directory, wrapper, and
+manifest paths, and the predeclared C8-to-A6 development case was the only
+nonzero-query rollout. The rollout used 71 policy queries and 562 model-owned
+actions with zero assistance or reward guidance. The server launcher did not,
+however, rehash the checkpoint directory against the manifest or bind a live
+PID, exact command line, listening port, checkpoint digest, and implementation
+manifest into a client-verified handshake. Checkpoint-1,000 attribution is
+therefore convention-based rather than independently machine-verified. The
+terminal negative is usable only as evidence about the served model process.
+
+The receipt reported that exact sample-hold replay passed for all 562 actions,
+and 13 of 15 consequence gates passed:
 
 - maximum pawn rise: `0.0 m`, below the required `0.04 m`;
 - final XY error: `0.12572358052399646 m`, above the allowed `0.015 m`;
@@ -79,9 +101,54 @@ The trajectory and video SHA-256 values are respectively
 and
 `252a9ad7ee726e29aa43c568f81c62459bc46056769ad6e7c774ab52f8f8e882`.
 
+The compact `trajectory.npz` retained only the six-joint observations and
+requested actions. It did not retain applied/clipped actions separately,
+initial or per-action MuJoCo integration-state arrays and digests, per-pawn or
+end-effector traces, contact traces, or grasp/release timing. Consequently the
+reported exact replay was computed during the live run but cannot be audited
+independently from the retained archive as a richer simulator-state replay.
+
+The run also did not retain a complete evaluation implementation/runtime
+manifest covering the seeded server, rollout runner, evaluator and scene
+implementation, Sim2Claw Git commit/tree, Python/MuJoCo/GR00T versions, and
+source/runtime hashes. The training snapshot receipt identifies the expected
+processor/backbone inventory, but no runtime handshake proves which snapshot
+the live server actually selected. The missing complete runtime relationship
+cannot be reconstructed exactly after teardown and must not be inferred
+retroactively.
+
 This result must not be conflated with the older `development-v1` attempt,
 which recorded 25.20 mm rise and 139.07 mm final XY error. No held-out episode
 was opened after the current development gate failed.
+
+The completed-run receipt's rank-12 SHA-256 identifies historical
+`pawn_rank12_bidirectional_v1`. It remains historical evidence and is not
+rewritten as the current product contract. The current v2 product identity is
+the B-G, rank-1/rank-2 contract and must be recorded beside v1 in future run
+receipts; it was not used to grade this C8-to-A6 rollout.
+
+## Future-run evidence gate
+
+Future learned rollouts must fail closed before their first policy query unless
+all of the following agree:
+
+- a complete checkpoint-directory inventory and every file hash match its
+  manifest, and the processor/backbone snapshot inventory match the frozen
+  experiment;
+- the live server PID, process start identity, exact argv/model path, host,
+  listening port, checkpoint manifest/payload hashes, and evaluation-manifest
+  hash match one exclusive runtime-identity receipt;
+- the client independently revalidates that live identity and the frozen
+  implementation/runtime manifest immediately before its first query; and
+- the rollout receipt embeds those identities and retains requested/applied
+  actions, integration states and digests, pawn/end-effector traces, contact
+  traces, and grasp/release timing needed for independent replay scrutiny.
+
+The repository follow-up implements these gates for future runs only. It does
+not repair or relabel the completed run and does not authorize a rerun. The
+historical C8-to-A6 runner is explicitly marked off-product and refuses to run
+without an acknowledgement flag. A B-G rank-1/rank-2 product rollout still
+requires its own separately frozen reset/evaluator contract.
 
 ## Evidence retention and teardown
 
@@ -97,6 +164,12 @@ negative. Their approximately 12.6 GB transfer projected about 45 additional
 minutes on a non-stoppable paid worker. The incomplete local transfer was
 removed; the four checkpoint manifests remain evidence identities, not
 recoverable model artifacts.
+
+That retention decision makes the present-run gaps permanent: the served
+weights cannot be rehashed or relaunched, the missing process handshake and
+complete implementation/runtime identity cannot be created retroactively, and
+the omitted integration, applied-action, pawn, end-effector, contact, and
+grasp/release traces cannot be regenerated from the compact archive.
 
 The policy server was stopped, the GPU process inventory reached zero, and
 Brev worker `908o7pu3f` was deleted. Final authenticated `brev ls --json`
