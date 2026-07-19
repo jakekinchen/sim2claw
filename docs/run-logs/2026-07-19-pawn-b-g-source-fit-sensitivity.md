@@ -168,11 +168,11 @@ history, not physical calibration history or held-out validation.
 - score plot SHA-256:
   `11dc9bd3d62b3a9c88e81801d330dfaf17d16ebe1dd673aa780295c8c9a0d911`
 - synchronized B1 physical-overhead/simulator video SHA-256:
-  `8aace54e3ba0245fd69970012928a119e18c8895162e8094fb4c9747aeb912d5`
+  `5177563212c31527fc2f8fb208bff4456f7ae2cdb1410e32e7a919261c8781b2`
 - comparison poster SHA-256:
-  `bed85515ef66c1b41877d5b74baf31138967bf4b3915759471e12609322dbdf1`
+  `b0143cfa8a723ea4b04518ab039fc09de3114b6afb6f2e46eeb5383f3b0260f6`
 - visual receipt SHA-256:
-  `84594ff47e0f91535e7283e4018e73c120fcf0d7b76a3bd2807769360f299ea9`
+  `5bd3f2cf31457c71befb582f5e9ff24d282c9c395afea90c3072ea49bd6c79cb`
 
 The simulator panel deliberately uses the best **rejected** adapter and labels
 every frame `NOT CALIBRATED`; it is shown to diagnose the remaining spatial
@@ -181,19 +181,21 @@ gap, not to present accepted replay equivalence.
 The first comparison used the scene's top-down camera. It was superseded at the
 owner's request by a C922-angle render frozen in
 `configs/experiments/pawn_bg_c922_angle_transfer_v1.json`, SHA-256
-`16b7da2bfca9bdeed7a721fb054b1f82de52f609b4723c6d7a3dd4f6c32d1be4`.
+`4179694f20bc1e5aa6270bb20f0b2a616d99845d15cdb00773bac9f1aec24f71`.
 The visual transfer uses the proposal-only current B1 board homography
 `3252c0a3aa8b57d643880ed17ff589db56670be3522cd2f92d288ce9b6c442e1`,
 a `635.3212940802823 px` square-pixel focal approximation, and a
 `41.38928095678845 degree` vertical field of view. Simulated board corners
 reproduce the raw C922 perspective with `1.9442390799611005 px` RMS and
 `3.003278728572313 px` maximum residual; both panels then receive the source
-receipt's 180-degree orientation correction.
+receipt's 180-degree orientation correction. A separate 180-degree
+physical-board-axis-to-simulator mapping resolves the checkerboard-symmetric
+corner ambiguity and places the simulated camera over the same board corner.
 
 This aligns the board perspective without moving the simulated robot. The
-remaining arm-side disagreement is kept visible and remains evidence of the
-unresolved robot/board/joint-frame registration. The angle transfer is
-visual-only, not an accepted camera calibration or evaluator input.
+corrected render shows the arm entering from the same right/bottom side as the
+physical panel. The angle transfer is visual-only, not an accepted camera
+calibration or evaluator input.
 
 ## Commands
 
@@ -218,8 +220,8 @@ ignored.
 
 ## Verification
 
-- focused camera/source-fit regression set: `21 passed` in `0.39 s`
-- full suite: `402 passed, 306 subtests passed` in `21.45 s`
+- focused camera/source-fit regression set: `21 passed` in `0.40 s`
+- full suite: `402 passed, 306 subtests passed` in `21.27 s`
 - `uv lock --check`: passed (`94` packages resolved)
 - source distribution and wheel: built successfully
 - `git diff --check`: passed
@@ -233,6 +235,8 @@ ignored.
   `849499e414d0348ca52e40896063880a3deb6009`
 - C922-angle comparison commit:
   `86bcb7236cafd545554248d4fff0f2e1d1f28563`
+- corrected C922 corner-mapping commit:
+  `a5dff97b3ef11e1415e3bac3b9974e488dccf9ff`
 
 ## Independent proof-wording audit
 
