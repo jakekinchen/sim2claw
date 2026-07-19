@@ -13,7 +13,7 @@
 - [ ]  **2–5 min Loom video** (loom.com). Show the core loop live.
     - [ ]  **YOUR VIDEO MUST BE RECORDED WITH LOOM!**
 
-    Demo Video Instructions
+    See **3-minute Loom script** below.
 
 - [ ]  **Repo link** (Make sure it’s public!).
     - [ ]  Must include a **README** with:
@@ -67,3 +67,74 @@ The poster adds the evidence feedback loop after receipts and replay:
 - **Successful receipts** — accepted demonstrations enter the versioned training dataset; held-out policy passes may advance the frozen milestone.
 - **Failed receipts** — kept as counterexamples (never imitation rows); failure reasons are clustered to drive targeted correction and recovery demonstrations.
 - Both paths produce a new versioned dataset and receipt, then replay through the same frozen evaluator gates.
+
+## 3-minute Loom script
+
+Aim for a confident pace of about 140 words per minute. Text in brackets is an on-screen action, not narration. Keep the final recording between **2:50 and 3:10**.
+
+### Before you hit record
+
+- Open `README.md` (or this submittal checklist).
+- Start Studio: `uv run sim2claw studio` → http://127.0.0.1:4173
+- Queue the ACT evaluation MP4:
+  `outputs/polycam_chess_table/act/chess_rook_lift_v1/eval/act_chess_rook_lift.mp4`
+- Open the pipeline poster in this folder.
+- Record at 1080p with screen + microphone in Loom.
+- Do **not** claim a completed GR00T checkpoint or physical task success.
+
+### 0:00–0:20 — Hook
+
+[Show the repository README and project title.]
+
+“Teaching a robot to pick up a chess piece usually requires brittle hand-written motions or thousands of teleoperated examples. Even then, an impressive demo does not prove that the policy generalized. We built **sim2claw** to solve both problems: generating manipulation experience in simulation while producing trustworthy evidence for every result.”
+
+### 0:20–0:55 — Core workflow
+
+[Open the Studio at http://127.0.0.1:4173 and show the workcell.]
+
+“The workflow starts with a real table captured using Polycam. We use its glTF geometry, RoomPlan measurements, and an overhead photograph to construct a photo-aligned MuJoCo workcell.
+
+The scene contains a measured table, a complete chessboard with thirty-two dynamic pieces, and two articulated SO-101 robot arms. This is not merely a visual reconstruction. MuJoCo simulates joints, collisions, friction, contact, and grasp behavior.”
+
+### 0:55–1:30 — Technical depth
+
+[Show the pipeline poster or scroll the architecture / pipeline section.]
+
+“Scripted inverse-kinematics experts generate manipulation demonstrations. We also have a twenty-hertz teleoperation recorder built around Hugging Face LeRobot and the SO-101 embodiment.
+
+A custom Action Chunking Transformer then learns the contact-sensitive behavior. The current ACT policy has approximately **957,000 parameters** and trains locally using PyTorch on Apple Silicon MPS.
+
+Most importantly, training cannot promote itself. A separate CPU, float-thirty-two evaluator tests the frozen checkpoint on a held-out seed using thresholds defined before evaluation.”
+
+### 1:30–1:58 — Live result
+
+[Play `outputs/polycam_chess_table/act/chess_rook_lift_v1/eval/act_chess_rook_lift.mp4`.]
+
+“This is the held-out evaluation. The newly trained policy lifts the rook **94.88 millimeters**.
+
+That number is not taken from visual inspection. The evaluator writes an `evaluation_receipt.json` containing each measured gate, its threshold, and its pass-or-fail result. It also records the action trace, frames, and this replay video.”
+
+### 1:58–2:25 — Technology and why
+
+[Show the pipeline poster again; point at stack stages.]
+
+“Every technology has a specific purpose. Polycam anchors simulation to measured reality. MuJoCo provides fast, contact-rich physics. LeRobot provides a reproducible interface for low-cost SO-101 hardware. PyTorch makes local ACT training practical.
+
+We also export a separate LeRobot version-two-point-one dataset lane using Parquet state and action data with MP4 observations, designed for NVIDIA Isaac GR00T experimentation. We keep that lane separate from proven ACT results so unfinished training is never presented as evidence.”
+
+### 2:25–2:48 — Value and usability
+
+[Return to Studio and show receipts or replay entries.]
+
+“The useful output is not only a successful video. It is an auditable package of policy, measurements, receipts, and replay.
+
+Successful evidence can advance a frozen milestone. Failed runs remain counterexamples and identify where targeted correction demonstrations are needed. They are never silently converted into successful imitation data.
+
+A researcher can clone the public repository, bootstrap it with `uv`, reproduce the simulation, and inspect results in the read-only Studio.”
+
+### 2:48–3:00 — Close
+
+[Finish on the project title or pipeline poster.]
+
+“sim2claw combines real-world scene capture, scalable simulation, learned control, and independent evaluation in one evidence-backed loop. It is optimized for fast iteration without weakening the exam. This is simulation-to-robot engineering that users—and judges—can trust.”
+
