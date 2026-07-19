@@ -299,6 +299,28 @@ def physical_values_through_transform(
     return converted
 
 
+def physical_velocities_through_transform(
+    values: Any,
+    transform: Mapping[str, Any],
+    *,
+    field: str,
+) -> np.ndarray:
+    """Map measured rates with sign and scale only; offsets never affect velocity."""
+
+    entries = transform["joints"]
+    raw = _finite_vector(values, size=len(entries), field=field)
+    converted = np.asarray(
+        [
+            float(entry["sign"]) * raw[index] * float(entry["scale"])
+            for index, entry in enumerate(entries)
+        ],
+        dtype=np.float64,
+    )
+    if not np.all(np.isfinite(converted)):
+        raise ReplayContractError(f"{field} transform produced non-finite values")
+    return converted
+
+
 def _validated_initial_object_state(value: Any) -> dict[str, Any]:
     if not isinstance(value, Mapping):
         raise ReplayContractError("initial_object_state is required")
@@ -833,6 +855,10 @@ def _load_physical_recording(
         raise ReplayContractError("physical recording receipt must be a JSON object")
     if receipt.get("mode") != "physical_follower":
         raise ReplayContractError("recording is not a physical-follower command trace")
+    if receipt.get("source_sample_schema") != PHYSICAL_SAMPLE_SCHEMA:
+        raise ReplayContractError(
+            "physical recording receipt must bind the physical sample schema"
+        )
     samples_sha256 = sha256_file(samples_path)
     if samples_sha256 != receipt.get("samples_sha256"):
         raise ReplayContractError("physical recording samples do not match receipt")
@@ -870,13 +896,14 @@ def _load_physical_recording(
         )
     commands: list[np.ndarray] = []
     measured: list[dict[str, Any]] = []
+    measured_velocities: list[np.ndarray] = []
     for index, sample in enumerate(samples):
         if not isinstance(sample, Mapping):
             raise ReplayContractError(f"physical sample {index} must be a JSON object")
         schema = sample.get("schema_version")
-        if schema not in {None, PHYSICAL_SAMPLE_SCHEMA}:
+        if schema != PHYSICAL_SAMPLE_SCHEMA:
             raise ReplayContractError(
-                f"physical sample {index} uses unsupported schema {schema}"
+                f"physical sample {index} must use schema {PHYSICAL_SAMPLE_SCHEMA}"
             )
         command = physical_values_through_transform(
             sample.get("follower_command_degrees"),
@@ -888,7 +915,16 @@ def _load_physical_recording(
             transform,
             field=f"physical sample {index} follower_actual_position_degrees",
         )
+        velocity = physical_velocities_through_transform(
+            sample.get("follower_actual_velocity_degrees_s"),
+            transform,
+            field=(
+                f"physical sample {index} "
+                "follower_actual_velocity_degrees_s"
+            ),
+        )
         commands.append(command)
+        measured_velocities.append(velocity)
         measured.append(
             {
                 "joint_position": actual.tolist(),
@@ -962,7 +998,7 @@ def _load_physical_recording(
         column=None,
         joint_names=expected_joint_names,
         initial_joint_position=np.asarray(measured[0]["joint_position"]),
-        initial_joint_velocity=np.zeros(len(expected_joint_names), dtype=np.float64),
+        initial_joint_velocity=measured_velocities[0].copy(),
         timestamps=timestamps,
         original_timestamps=original_timestamps,
         commands=np.asarray(commands, dtype=np.float64),
@@ -983,6 +1019,18 @@ def _load_physical_recording(
             "transform_id": transform.get("transform_id"),
             "sha256": canonical_json_sha256(transform),
             "calibration_approved": transform["calibration_approved"],
+            "initial_velocity_source_field": (
+                "follower_actual_velocity_degrees_s"
+            ),
+            "velocity_formula": "sim_velocity = sign * source_velocity * scale",
+            "velocity_zero_offset_applied": False,
+            "source_velocity_units_by_joint": [
+                f"{entry['input_unit']}/second" for entry in transform["joints"]
+            ],
+            "simulator_velocity_units_by_joint": [
+                f"{entry['output_unit']}/second" for entry in transform["joints"]
+            ],
+            "source_samples_sha256": samples_sha256,
         },
     )
     model, _ = _compile_model(config, base_directory=None)

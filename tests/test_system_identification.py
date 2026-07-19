@@ -102,6 +102,9 @@ def _physical_fixture(
                 "recording_id": recording_id,
                 "sample_count": len(rows),
                 "sample_hz": 20,
+                "source_sample_schema": (
+                    "sim2claw.physical_teleoperation_sample.v1"
+                ),
                 "samples_sha256": samples_sha256,
             },
             sort_keys=True,
@@ -137,14 +140,19 @@ def _physical_fixture(
     return catalog_path, recording, catalog
 
 
-def _valid_physical_rows(values: list[float] | None = None) -> list[dict[str, object]]:
+def _valid_physical_rows(
+    values: list[float] | None = None,
+    velocities: list[float] | None = None,
+) -> list[dict[str, object]]:
     joint_values = values or [0.0, 0.0, 0.0, 0.0, 0.0, 20.0]
+    joint_velocities = velocities or [0.0] * 6
     return [
         {
             "schema_version": "sim2claw.physical_teleoperation_sample.v1",
             "timestamp_monotonic_seconds": index * 0.05,
             "follower_command_degrees": joint_values,
             "follower_actual_position_degrees": joint_values,
+            "follower_actual_velocity_degrees_s": joint_velocities,
         }
         for index in range(2)
     ]
@@ -658,6 +666,14 @@ class SystemIdentificationTest(unittest.TestCase):
             self.assertFalse(report["joint_timing_replay_ready"])
             self.assertFalse(report["timing_control_fit_ready"])
             self.assertFalse(report["calibration_ready"])
+            self.assertFalse(
+                report["aggregate_joint_limit_validation"]["audit_complete"]
+            )
+            self.assertFalse(
+                report["aggregate_joint_limit_validation"][
+                    "all_audited_values_within_limits"
+                ]
+            )
             self.assertEqual(report["claim"], "missing_input_manifest_only")
             self.assertEqual(
                 report["current_root_catalog_integrity"][
@@ -694,7 +710,7 @@ class SystemIdentificationTest(unittest.TestCase):
             self.assertEqual(report["missing_required_asset_count"], 0)
             self.assertFalse(report["episodes"][0]["sample_semantics_valid"])
             self.assertIn(
-                "finite values", report["episodes"][0]["sample_semantics_error"]
+                "must use schema", report["episodes"][0]["sample_semantics_error"]
             )
             self.assertFalse(report["joint_timing_replay_ready"])
 
@@ -727,6 +743,14 @@ class SystemIdentificationTest(unittest.TestCase):
             self.assertTrue(report["joint_timing_replay_ready"])
             self.assertTrue(report["timing_control_fit_ready"])
             self.assertFalse(report["calibration_ready"])
+            self.assertTrue(
+                report["aggregate_joint_limit_validation"]["audit_complete"]
+            )
+            self.assertTrue(
+                report["aggregate_joint_limit_validation"][
+                    "all_audited_values_within_limits"
+                ]
+            )
             self.assertEqual(report["claim"], "joint_timing_replay_inputs_present")
             self.assertEqual(report["inspection_scope"]["kind"], "explicit_repo_root")
             self.assertEqual(
@@ -790,6 +814,107 @@ class SystemIdentificationTest(unittest.TestCase):
             self.assertFalse(report["joint_timing_replay_ready"])
             self.assertFalse(report["timing_control_fit_ready"])
             self.assertEqual(report["joint_range_valid_episode_count"], 0)
+            self.assertTrue(limits["audit_complete"])
+            self.assertFalse(limits["all_audited_values_within_limits"])
+
+    def test_physical_initial_velocity_is_required_hash_bound_and_offset_free(self) -> None:
+        velocity_cases = (
+            ([0.0] * 6, np.zeros(6, dtype=np.float64)),
+            (
+                [10.0, -20.0, 30.0, -40.0, 50.0, 2.0],
+                None,
+            ),
+        )
+        for source_velocity, fixed_expected in velocity_cases:
+            with self.subTest(source_velocity=source_velocity), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                catalog_path, recording, catalog = _physical_fixture(
+                    root,
+                    rows=_valid_physical_rows(velocities=source_velocity),
+                )
+                config_path = _approved_physical_config(root)
+                config = load_sysid_config(config_path)
+                episode = load_recorded_episode(
+                    recording,
+                    config,
+                    source_provenance=_physical_provenance(catalog_path, catalog),
+                )
+                if fixed_expected is None:
+                    expected = np.asarray(
+                        [
+                            float(entry["sign"])
+                            * source_velocity[index]
+                            * float(entry["scale"])
+                            for index, entry in enumerate(
+                                config["physical_adapter"]["joint_transform"][
+                                    "joints"
+                                ]
+                            )
+                        ]
+                    )
+                else:
+                    expected = fixed_expected
+                np.testing.assert_allclose(episode.initial_joint_velocity, expected)
+                self.assertFalse(
+                    episode.joint_transform["velocity_zero_offset_applied"]
+                )
+                self.assertEqual(
+                    episode.joint_transform["source_samples_sha256"],
+                    catalog["episodes"][0]["samples_sha256"],
+                )
+
+        mutations = (
+            lambda row: row.pop("follower_actual_velocity_degrees_s"),
+            lambda row: row.update(
+                follower_actual_velocity_degrees_s=[0.0] * 5
+            ),
+            lambda row: row.update(
+                follower_actual_velocity_degrees_s=[0.0, 0.0, float("nan"), 0.0, 0.0, 0.0]
+            ),
+            lambda row: row.pop("schema_version"),
+        )
+        for index, mutate in enumerate(mutations):
+            with self.subTest(mutation=index), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                rows = _valid_physical_rows()
+                mutate(rows[0])
+                catalog_path, recording, catalog = _physical_fixture(root, rows=rows)
+                config_path = _approved_physical_config(root)
+                with self.assertRaisesRegex(
+                    ReplayContractError,
+                    "velocity_degrees_s|must use schema",
+                ):
+                    load_recorded_episode(
+                        recording,
+                        load_sysid_config(config_path),
+                        source_provenance=_physical_provenance(
+                            catalog_path, catalog
+                        ),
+                    )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            catalog_path, recording, catalog = _physical_fixture(
+                root, rows=_valid_physical_rows()
+            )
+            samples_path = recording / "samples.jsonl"
+            rows = [
+                json.loads(line)
+                for line in samples_path.read_text(encoding="utf-8").splitlines()
+            ]
+            rows[0]["follower_actual_velocity_degrees_s"][0] = 1.0
+            samples_path.write_text(
+                "".join(json.dumps(row) + "\n" for row in rows),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                ReplayContractError, "samples do not match receipt"
+            ):
+                load_recorded_episode(
+                    recording,
+                    load_sysid_config(_approved_physical_config(root)),
+                    source_provenance=_physical_provenance(catalog_path, catalog),
+                )
 
     def test_provisional_transform_blocks_even_range_valid_physical_inputs(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

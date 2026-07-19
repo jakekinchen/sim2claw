@@ -1,6 +1,7 @@
 {
   "aggregate_joint_limit_validation": {
-    "all_audited_values_within_limits": true,
+    "all_audited_values_within_limits": false,
+    "audit_complete": false,
     "initial_measured_state": {
       "audited_episode_count": 0,
       "maximum_exceedance": 0.0,
@@ -54,7 +55,7 @@
     "requires_post_cherry_pick_regeneration": true,
     "verified_by_this_receipt": false
   },
-  "created_at": "2026-07-19T07:12:48.952776+00:00",
+  "created_at": "2026-07-19T07:20:45.835220+00:00",
   "current_root_catalog_integrity": {
     "all_catalog_bound_hashes_verified": false,
     "catalog_bound_asset_count": 54,
@@ -1303,6 +1304,7 @@
   "physical_joint_transform": {
     "calibration_approved": false,
     "exact_formula": "sim = sign * source * scale + zero_offset",
+    "initial_velocity_source_field": "follower_actual_velocity_degrees_s",
     "joint_identity_and_order": [
       "left_shoulder_pan",
       "left_shoulder_lift",
@@ -1314,7 +1316,9 @@
     "review_status": "provisional_range_audit_blocked",
     "schema_version": "sim2claw.physical_joint_transform.v1",
     "sha256": "72812016bfa9dba2ba97fe448724394ad290a2b22458177bcbdec95aae0689e6",
-    "transform_id": "so101_physical_degrees_to_current_scene_provisional_v1"
+    "transform_id": "so101_physical_degrees_to_current_scene_provisional_v1",
+    "velocity_exact_formula": "sim_velocity = sign * source_velocity * scale",
+    "velocity_zero_offset_applied": false
   },
   "physical_motion": false,
   "post_cherry_pick_canonical_commands": [

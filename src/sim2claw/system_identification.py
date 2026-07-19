@@ -772,7 +772,13 @@ def _aggregate_joint_limit_reports(
                 for name in per_joint_names
             },
         }
-    aggregate["all_audited_values_within_limits"] = all(
+    audit_complete = bool(episode_reports) and all(
+        aggregate[section]["audited_episode_count"] == len(episode_reports)
+        and aggregate[section]["row_count"] > 0
+        for section in sections
+    )
+    aggregate["audit_complete"] = audit_complete
+    aggregate["all_audited_values_within_limits"] = audit_complete and all(
         aggregate[section]["violating_joint_value_count"] == 0
         for section in sections
     )
@@ -1132,6 +1138,11 @@ def inspect_recording_catalog_inputs(
             "review_status": transform.get("review_status"),
             "joint_identity_and_order": transform.get("simulator_joint_names"),
             "exact_formula": "sim = sign * source * scale + zero_offset",
+            "initial_velocity_source_field": (
+                "follower_actual_velocity_degrees_s"
+            ),
+            "velocity_exact_formula": "sim_velocity = sign * source_velocity * scale",
+            "velocity_zero_offset_applied": False,
         },
         "episode_count": len(episode_reports),
         "joint_replay_ready_episode_count": ready_count,
