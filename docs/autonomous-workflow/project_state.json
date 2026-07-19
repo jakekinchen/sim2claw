@@ -1,6 +1,6 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-19T04:12:21-05:00",
+  "updated_at": "2026-07-19T04:27:09-05:00",
   "active_campaign": "pawn_composability_replay_and_simulator_validation",
   "current_milestone": "QUALITATIVE_ENDPOINT_REVIEW_COMPLETE_METRIC_REPLAY_AND_CALIBRATION_BLOCKED",
   "training_lock": "closed_until_m7_candidates_replay_and_pass_separate_evaluator",
@@ -42,6 +42,10 @@
     "excluded_out_of_scope_episode_count": 5,
     "retrospective_human_operator_success_label_count": 13,
     "retrospective_human_labels_are_policy_results": false,
+    "source_action_owner": "human_teleoperator",
+    "source_episode_mode": "physical_follower",
+    "source_episodes_are_callable_policies": false,
+    "compatible_learned_b_to_g_act_checkpoint_present": false,
     "retrospective_source_episodes_are_held_out": false,
     "historical_v1_contract": "configs/evaluations/pawn_rank12_bidirectional_v1.json",
     "historical_v1_sha256": "f3dac8b86cd7b0252153d25c0d5c09204079003ac9780642992fd10bc08e0d43",
@@ -186,7 +190,7 @@
   },
   "recorded_action_replay": {
     "status": "canonical_input_report_fail_closed_zero_of_eighteen_ready",
-    "canonical_ignored_report_sha256": "7e3c64ddbd323754e0b2cf7b89fda3bb12ca2fd1d91e6864d461c983db38ee14",
+    "canonical_ignored_report_sha256": "5676b3db1db359316e1e061726f742f5784a43d48a67dd079428822c22acc948",
     "episode_count": 18,
     "joint_timing_replay_ready_count": 0,
     "measured_row_count": 7741,
@@ -220,11 +224,12 @@
     "mass_effect_mode": "excluded_as_negligible_unmeasured_owner_assessment",
     "contact_geometry_friction_compliance_calibrated": false,
     "recording_session_applicability_known": false,
-    "simulation_benchmark_status": "isolated_narrow_rook_lift_evaluation_in_progress_not_yet_integrated"
+    "simulation_benchmark_status": "isolated_narrow_rook_lift_result_rejected_not_b_to_g_evidence",
+    "contact_prior_integration_status": "not_integrated_pending_task_independent_review"
   },
   "nemoclaw_deployment": {
     "project": "configs/projects/pawn_rank12_reachable_bg_hackathon_v1.json",
-    "repo_contract_status": "independently_reviewed_ready_for_clean_committed_bundle",
+    "repo_contract_status": "independently_reviewed_and_integrated_commit_d0c4491",
     "runtime_deployment_status": "stopped_not_completed",
     "physical_authority": false,
     "robot_motion_allowed": false,
@@ -240,7 +245,7 @@
     "may_be_evolved_into_general_policy": false,
     "broad_pick_place_claim": false,
     "accepted_receipt_environment": "pre_owner_measured_mass_profile",
-    "current_mass_profile_requalification": "narrow_uncalibrated_contact_sensitivity_benchmark_in_progress"
+    "current_mass_profile_requalification": "no_accepted_result_narrow_rook_lift_contact_probe_rejected_as_ancillary"
   },
   "physical_mass_model": {
     "profile": "calibration/so101/follower_mass_profile_v1.json",
