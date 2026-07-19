@@ -1,0 +1,80 @@
+{
+  "schema_version": "sim2claw.robot_anchored_camera_overlay.v1",
+  "registration_id": "c922_left_so101_anchor_20260718_v1",
+  "physical_source": {
+    "ledger_path": "configs/data/physical_teleop_episode_intake_20260718.json",
+    "ledger_sha256": "22de7ec867448f8a3b524775bf586dc7fd013dc266d741e77b31a57d8bc87870",
+    "recording_id": "20260718T225419Z-bdd95fdf",
+    "recording_directory": "datasets/act_source_recordings/e-2-to-e-1-pass__20260718T225419Z-bdd95fdf",
+    "video_name": "overhead_c922.mp4",
+    "samples_name": "samples.jsonl",
+    "video_time_seconds": 15.0,
+    "image_size_px": [640, 480],
+    "recorded_scene_id": "operator_updated_chess_workcell_v2",
+    "recorded_board_pose_id": "board_robotward_72mm_20260718_v2"
+  },
+  "camera_model": {
+    "type": "square_pixel_pinhole_zero_distortion_diagnostic",
+    "principal_point_px": [320.0, 240.0],
+    "initial_focal_length_px": 900.0,
+    "focal_aspect_ratio": 1.0,
+    "lens_distortion_fitted": false
+  },
+  "board_grid_fit": {
+    "playing_side_m": 0.3556,
+    "vertical_lines": [
+      {"grid_index": 0, "p1_px": [214.0, 115.0], "p2_px": [354.0, 390.0]},
+      {"grid_index": 1, "p1_px": [252.0, 109.0], "p2_px": [385.0, 395.0]},
+      {"grid_index": 2, "p1_px": [326.0, 89.0], "p2_px": [454.0, 406.0]},
+      {"grid_index": 3, "p1_px": [381.0, 110.0], "p2_px": [487.0, 394.0]},
+      {"grid_index": 4, "p1_px": [423.0, 76.0], "p2_px": [535.0, 420.0]},
+      {"grid_index": 5, "p1_px": [478.0, 63.0], "p2_px": [573.0, 402.0]},
+      {"grid_index": 6, "p1_px": [540.0, 45.0], "p2_px": [630.0, 435.0]},
+      {"grid_index": 7, "p1_px": [618.0, 30.0], "p2_px": [700.0, 453.0]}
+    ],
+    "horizontal_lines": [
+      {"grid_index": 1, "p1_px": [214.0, 155.0], "p2_px": [553.0, 107.0]},
+      {"grid_index": 2, "p1_px": [326.0, 183.0], "p2_px": [611.0, 159.0]},
+      {"grid_index": 3, "p1_px": [270.0, 225.0], "p2_px": [639.0, 212.0]},
+      {"grid_index": 4, "p1_px": [267.0, 257.0], "p2_px": [628.0, 260.0]},
+      {"grid_index": 5, "p1_px": [303.0, 288.0], "p2_px": [639.0, 305.0]},
+      {"grid_index": 6, "p1_px": [297.0, 316.0], "p2_px": [632.0, 345.0]},
+      {"grid_index": 7, "p1_px": [284.0, 340.0], "p2_px": [639.0, 384.0]},
+      {"grid_index": 8, "p1_px": [334.0, 386.0], "p2_px": [639.0, 438.0]}
+    ],
+    "fit_point_count": 64,
+    "input_method": "reviewed_hough_line_segments_on_hash_bound_physical_frame"
+  },
+  "robot_anchor": {
+    "robot": "left",
+    "frame": "left_robot_mount",
+    "diagnostic_marker": {
+      "physical_feature": "red_wrist_roll_ring_centroid",
+      "simulator_body": "left_gripper",
+      "hsv_low": [165, 70, 60],
+      "hsv_high": [179, 255, 255],
+      "minimum_component_area_px": 80,
+      "maximum_component_area_px": 1200,
+      "maximum_validation_residual_px": 15.0
+    },
+    "policy": "camera_pose_is_stored_relative_to_the_fixed_robot_mount; robot_geometry_is_never_moved_to_hide_residual"
+  },
+  "transfer_preview": {
+    "current_scene_id": "operator_updated_chess_workcell_v3",
+    "current_workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "current_board_pose_id": "board_robotward_100mm_20260718_v3",
+    "historical_total_robotward_displacement_m": 0.072,
+    "current_total_robotward_displacement_m": 0.100,
+    "expected_increment_from_recording_m": 0.028,
+    "piece_layout": "sparse_two_sided_pawns"
+  },
+  "authority": {
+    "visual_registration_only": true,
+    "historical_video_is_not_current_100mm_spatial_evidence": true,
+    "robot_anchor_validation_required_before_metric_or_collision_authority": true,
+    "training_rows_authorized": 0,
+    "held_out_rows_used": 0,
+    "physical_motion_authority": false,
+    "pawn_policy_authority": false
+  }
+}

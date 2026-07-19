@@ -4,7 +4,7 @@ Date: 2026-07-18 America/Chicago
 
 ## Scope correction
 
-The current simulator truth is commit `7acd8b4` and workcell v3, not the
+The current integrated simulator truth is commit `b3ac222` and workcell v3, not the
 superseded 72 mm pose:
 
 - scene: `operator_updated_chess_workcell_v3`;
@@ -116,6 +116,31 @@ Current raw-verified receipt SHA-256:
 `f35cf032d0ecbee482955b680531bdb1c413379b42d34496747a428f68f406e9`.
 Joint-response calibration is ready. Readiness remains false for 100 mm spatial
 comparison, pawn-policy training, and pawn-policy closed-loop comparison.
+
+## Robot-anchored camera transfer
+
+The hash-bound physical frame at `15.0 s` in recording
+`20260718T225419Z-bdd95fdf` was registered to the historical 72 mm chessboard
+using 64 reviewed grid intersections. A square-pixel pinhole fit produced a
+`946.572 px` focal length, `28.455 degree` vertical field of view, and
+`11.303 px` reprojection RMS. The resulting camera pose is stored relative to
+the fixed left SO-101 mount, rather than moving the simulated robot to improve
+the overlay.
+
+That same robot-relative camera renders both the historical 72 mm scene and the
+current 100 mm scene. The receipt mechanically verifies that the current board
+is another `28 mm` robotward from the recorded scene. The old video remains
+historical evidence; its current-scene image is only a transfer preview.
+
+The independent robot-landmark check does not pass yet. The physical red wrist
+ring centroid and the current simulator's `left_gripper` body-origin surrogate
+differ by `179.015 px`, above the frozen `15 px` threshold. This localizes the
+remaining calibration work to physical/simulator joint-zero and exact landmark
+correspondence rather than hiding it in a board or robot translation. The
+camera overlay is therefore visual-only and authorizes zero imitation rows.
+
+Robot-anchored overlay receipt SHA-256:
+`7aa5a052412c523b0df672db55691d4bb58c2afa821801e35ef0291af39c7f10`.
 
 No held-out rows were opened, no physical authority was created, no GPU job was
 started, and authenticated `brev ls --json` returned `{"workspaces": null}`.

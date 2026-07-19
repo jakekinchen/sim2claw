@@ -131,6 +131,22 @@ def build_parser() -> argparse.ArgumentParser:
         default=Path("outputs/sim_real_bridge/receipt.json"),
     )
 
+    camera_overlay = subparsers.add_parser(
+        "camera-overlay",
+        help="fit the physical camera to the board and render robot-anchored comparison views",
+    )
+    camera_overlay.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/experiments/robot_anchored_camera_overlay_v1.json"),
+    )
+    camera_overlay.add_argument("--recording-directory", type=Path, default=None)
+    camera_overlay.add_argument(
+        "--output-directory",
+        type=Path,
+        default=Path("outputs/sim_real_bridge/robot_anchored_overlay"),
+    )
+
     studio_assets = subparsers.add_parser(
         "studio-assets",
         help="regenerate inspection-only workcell posters from the current scene",
@@ -297,6 +313,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["comparison_readiness"]["joint_response_calibration_ready"] else 1
+    if args.command == "camera-overlay":
+        from .robot_anchored_overlay import build_robot_anchored_overlay
+
+        report = build_robot_anchored_overlay(
+            config_path=args.config,
+            recording_directory=args.recording_directory,
+            output_directory=args.output_directory,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     if args.command == "studio-assets":
         from .studio_assets import render_studio_assets
 
