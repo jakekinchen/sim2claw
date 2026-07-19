@@ -55,7 +55,7 @@ paid compute left running
 
 | Proof Surface | Command/URL | Result | Artifact |
 | --- | --- | --- | --- |
-| Focused unit/contract/preparation tests | `uv run --frozen pytest -q tests/test_pawn_composability_eval.py tests/test_pawn_rank12_evaluation.py tests/test_prepare_pawn_rank12_evidence.py` | 22 passed; includes proof-class/provenance gates, outcome completeness, collinear regression rejection, duplicate retention, adjudication retention, proposal-calibration boundaries, and owner-retarget non-admission | Test output |
+| Focused unit/contract/preparation tests | `uv run --frozen pytest -q tests/test_pawn_composability_eval.py tests/test_pawn_rank12_evaluation.py tests/test_prepare_pawn_rank12_evidence.py` | 22 scoped tests passed; includes proof-class/provenance gates, outcome completeness, collinear regression rejection, duplicate retention, adjudication retention, proposal-calibration boundaries, and grid-remapped owner-retarget non-admission | Test output |
 | Earlier full repository suite | `uv run --frozen pytest -q` | 169 passed, 30 subtests passed before product-v2 replacement patch | Test output; not represented as post-v2 full-suite proof |
 | JSON syntax | `jq empty` on the contract, template, and project state | Passed | Tracked JSON files |
 | Patch hygiene | `git diff --check` | Passed | Working tree diff |
@@ -97,9 +97,22 @@ paid compute left running
   measurement and not evidence of policy self-centering.
 - Eight owner-directed visual retargets are recorded with their original
   coordinates, directional pixel delta, radius scale, and exact recording ID.
-  Both retained C2→C1 final frames were adjusted because the visual feedback did
-  not distinguish their recording IDs. These are directional proposals pending
-  exact acceptance, not reviewed coordinates.
+  The owner corrected the target interpretation after commit `70493fe`: every
+  directive moved exactly one generated-sheet row upward in the same column.
+  Runtime validation binds both sides to the generated layout and rejects drift,
+  duplicate targets, or a nonconforming row/column shift. All eight remaps were
+  unambiguous; these remain directional proposals pending exact acceptance.
+
+| Prior mistaken panel | Corrected panel one row above |
+| --- | --- |
+| R3C1 `2a332ab7 initial C1` | R2C1 `fd7005f3 initial B2` |
+| R3C4 `af661460 final C1` | R2C4 `052d5137 final C2` |
+| R4C2 `bf91502b final C1` | R3C2 `2a332ab7 final D2` |
+| R4C3 `34bff0dd initial D1` | R3C3 `af661460 initial C2` |
+| R5C3 `5ab5603f initial D2` | R4C3 `34bff0dd initial D1` |
+| R5C4 `5ab5603f final E1` | R4C4 `34bff0dd final D2` |
+| R7C2 `1ee203e8 final F1` | R6C2 `66894edc final E2` |
+| R8C4 `0c7e3d86 final F1` | R7C4 `0e058ca2 final E1` |
 - The proposal-only pixel-to-board homography is identified as
   `c922_board_grid_homography_proposal_20260719_v1`, hash-bound to its matrix and
   reference frame, and explicitly prohibited from evaluator calibration. Every
@@ -114,9 +127,9 @@ paid compute left running
 - Policies promoted: 0.
 - Brev instances created or used: 0.
 - Recovered frame-selection SHA-256:
-  `84eefbcd301809ee6e9f8529cf65f211cbaf9cfae3c7784be40e7d13a4d92693`.
+  `34a86ee1389b8e1b169801817240b9247c80a6ecebfac7b0571ab1f2b118ac59`.
 - Proposal review-sheet SHA-256:
-  `1c966bc8f4bb52aa434d895754340b721495a06d633cae9c90f43f8aca58dd1b`.
+  `55e82019d462dbfec7172adff3d66e84e2347806da75c431ee622ab783de1037`.
 - Task-label adjudication queue SHA-256:
   `718f155a40c301058291b597938a0a10e74380ae152f15f9e33850ecaab4c516`.
 - Fail-closed summary SHA-256:

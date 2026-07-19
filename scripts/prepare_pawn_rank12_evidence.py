@@ -36,48 +36,112 @@ PROPOSAL_CALIBRATION_MATRIX_SHA256 = hashlib.sha256(
         separators=(",", ":"),
     ).encode("utf-8")
 ).hexdigest()
-OWNER_VISUAL_ADJUSTMENTS = {
-    ("20260719T035317Z-2a332ab7", "initial"): {
+OWNER_VISUAL_ADJUSTMENT_REMAP = (
+    {
+        "prior_recording_id": "20260719T035317Z-2a332ab7",
+        "prior_phase": "initial",
+        "prior_grid_position": [3, 1],
+        "prior_title": "outside_product_scope 2a332ab7 initial c1",
+        "corrected_recording_id": "20260719T033023Z-fd7005f3",
+        "corrected_phase": "initial",
+        "corrected_grid_position": [2, 1],
+        "corrected_title": "outside_product_scope fd7005f3 initial b2",
         "center_delta_px": [-3.0, 3.0],
         "radius_scale": 1.30,
-        "directive": "outside-scope initial C1: enlarge and retarget down-left",
+        "directive": "enlarge and retarget down-left",
     },
-    ("20260719T030206Z-af661460", "final"): {
+    {
+        "prior_recording_id": "20260719T030206Z-af661460",
+        "prior_phase": "final",
+        "prior_grid_position": [3, 4],
+        "prior_title": "pawn_c2_to_c1 af661460 final c1",
+        "corrected_recording_id": "20260719T032400Z-052d5137",
+        "corrected_phase": "final",
+        "corrected_grid_position": [2, 4],
+        "corrected_title": "pawn_c1_to_c2 052d5137 final c2",
         "center_delta_px": [4.0, 3.0],
         "radius_scale": 1.20,
-        "directive": "first retained C2-to-C1 final C1: expand down-right",
+        "directive": "expand down-right",
     },
-    ("20260719T031324Z-bf91502b", "final"): {
+    {
+        "prior_recording_id": "20260719T031324Z-bf91502b",
+        "prior_phase": "final",
+        "prior_grid_position": [4, 2],
+        "prior_title": "pawn_c2_to_c1 bf91502b final c1",
+        "corrected_recording_id": "20260719T035317Z-2a332ab7",
+        "corrected_phase": "final",
+        "corrected_grid_position": [3, 2],
+        "corrected_title": "outside_product_scope 2a332ab7 final d2",
         "center_delta_px": [2.0, 2.0],
         "radius_scale": 1.15,
-        "directive": "second retained C2-to-C1 final C1: expand down-right",
+        "directive": "expand down-right",
     },
-    ("20260719T031518Z-34bff0dd", "initial"): {
+    {
+        "prior_recording_id": "20260719T031518Z-34bff0dd",
+        "prior_phase": "initial",
+        "prior_grid_position": [4, 3],
+        "prior_title": "pawn_d1_to_d2 34bff0dd initial d1",
+        "corrected_recording_id": "20260719T030206Z-af661460",
+        "corrected_phase": "initial",
+        "corrected_grid_position": [3, 3],
+        "corrected_title": "pawn_c2_to_c1 af661460 initial c2",
         "center_delta_px": [-3.0, 3.0],
         "radius_scale": 0.80,
-        "directive": "D1-to-D2 initial D1: shrink and retarget down-left",
+        "directive": "shrink and retarget down-left",
     },
-    ("20260719T035413Z-5ab5603f", "initial"): {
+    {
+        "prior_recording_id": "20260719T035413Z-5ab5603f",
+        "prior_phase": "initial",
+        "prior_grid_position": [5, 3],
+        "prior_title": "outside_product_scope 5ab5603f initial d2",
+        "corrected_recording_id": "20260719T031518Z-34bff0dd",
+        "corrected_phase": "initial",
+        "corrected_grid_position": [4, 3],
+        "corrected_title": "pawn_d1_to_d2 34bff0dd initial d1",
         "center_delta_px": [2.0, 3.0],
         "radius_scale": 1.15,
-        "directive": "outside-scope initial D2: expand down-right",
+        "directive": "expand down-right",
     },
-    ("20260719T035413Z-5ab5603f", "final"): {
+    {
+        "prior_recording_id": "20260719T035413Z-5ab5603f",
+        "prior_phase": "final",
+        "prior_grid_position": [5, 4],
+        "prior_title": "outside_product_scope 5ab5603f final e1",
+        "corrected_recording_id": "20260719T031518Z-34bff0dd",
+        "corrected_phase": "final",
+        "corrected_grid_position": [4, 4],
+        "corrected_title": "pawn_d1_to_d2 34bff0dd final d2",
         "center_delta_px": [-2.0, -3.0],
         "radius_scale": 1.00,
-        "directive": "outside-scope final E1: retarget up-left",
+        "directive": "retarget up-left",
     },
-    ("20260719T032853Z-1ee203e8", "final"): {
+    {
+        "prior_recording_id": "20260719T032853Z-1ee203e8",
+        "prior_phase": "final",
+        "prior_grid_position": [7, 2],
+        "prior_title": "outside_product_scope 1ee203e8 final f1",
+        "corrected_recording_id": "20260719T032935Z-66894edc",
+        "corrected_phase": "final",
+        "corrected_grid_position": [6, 2],
+        "corrected_title": "outside_product_scope 66894edc final e2",
         "center_delta_px": [-4.0, 3.0],
         "radius_scale": 1.25,
-        "directive": "outside-scope final F1: enlarge and retarget down-left",
+        "directive": "enlarge and retarget down-left",
     },
-    ("20260719T032620Z-0c7e3d86", "final"): {
+    {
+        "prior_recording_id": "20260719T032620Z-0c7e3d86",
+        "prior_phase": "final",
+        "prior_grid_position": [8, 4],
+        "prior_title": "pawn_f2_to_f1 0c7e3d86 final f1",
+        "corrected_recording_id": "20260719T031615Z-0e058ca2",
+        "corrected_phase": "final",
+        "corrected_grid_position": [7, 4],
+        "corrected_title": "pawn_e2_to_e1 0e058ca2 final e1",
         "center_delta_px": [-2.0, 2.0],
         "radius_scale": 1.15,
-        "directive": "F2-to-F1 final F1: enlarge and retarget down-left",
+        "directive": "enlarge and retarget down-left",
     },
-}
+)
 
 
 def _sha256(path: Path) -> str:
@@ -509,15 +573,71 @@ def infer_contact_center_proposals(
     }
 
 
+def _review_sheet_panel_positions(
+    episodes: list[dict[str, object]],
+) -> dict[tuple[str, str], dict[str, object]]:
+    positions = {}
+    for episode_index, episode in enumerate(episodes):
+        for phase_index, phase in enumerate(("initial", "final")):
+            panel_index = 2 * episode_index + phase_index
+            positions[(str(episode["recording_id"]), phase)] = {
+                "row": panel_index // 4 + 1,
+                "column": panel_index % 4 + 1,
+                "recording_id": episode["recording_id"],
+                "phase": phase,
+                "folder_label": episode["folder_label"],
+            }
+    return positions
+
+
 def apply_owner_visual_adjustments(
     episodes: list[dict[str, object]],
 ) -> dict[str, object]:
-    """Apply directional visual feedback without converting it into acceptance."""
+    """Apply the grid-corrected feedback without converting it into acceptance."""
     by_recording_id = {
         str(episode["recording_id"]): episode for episode in episodes
     }
+    panel_positions = _review_sheet_panel_positions(episodes)
     applied = []
-    for (recording_id, phase), adjustment in OWNER_VISUAL_ADJUSTMENTS.items():
+    seen_corrected_targets: set[tuple[str, str]] = set()
+    for adjustment in OWNER_VISUAL_ADJUSTMENT_REMAP:
+        prior_key = (
+            str(adjustment["prior_recording_id"]),
+            str(adjustment["prior_phase"]),
+        )
+        corrected_key = (
+            str(adjustment["corrected_recording_id"]),
+            str(adjustment["corrected_phase"]),
+        )
+        prior_position = panel_positions.get(prior_key)
+        corrected_position = panel_positions.get(corrected_key)
+        if prior_position is None or corrected_position is None:
+            raise RuntimeError(
+                "owner visual grid remap references a missing generated panel"
+            )
+        expected_prior = list(adjustment["prior_grid_position"])
+        expected_corrected = list(adjustment["corrected_grid_position"])
+        actual_prior = [prior_position["row"], prior_position["column"]]
+        actual_corrected = [
+            corrected_position["row"],
+            corrected_position["column"],
+        ]
+        if actual_prior != expected_prior or actual_corrected != expected_corrected:
+            raise RuntimeError(
+                "owner visual grid remap no longer matches generated sheet layout"
+            )
+        if not (
+            corrected_position["row"] == prior_position["row"] - 1
+            and corrected_position["column"] == prior_position["column"]
+        ):
+            raise RuntimeError(
+                "owner visual correction must move exactly one grid row upward"
+            )
+        if corrected_key in seen_corrected_targets:
+            raise RuntimeError("duplicate corrected owner visual target")
+        seen_corrected_targets.add(corrected_key)
+
+        recording_id, phase = corrected_key
         episode = by_recording_id.get(recording_id)
         if episode is None:
             raise RuntimeError(
@@ -548,6 +668,16 @@ def apply_owner_visual_adjustments(
             "radius_scale": float(adjustment["radius_scale"]),
             "adjusted_center_px": adjusted_center.astype(float).tolist(),
             "adjusted_radius_px": adjusted_radius,
+            "prior_mistargeted_panel": {
+                **prior_position,
+                "title": adjustment["prior_title"],
+            },
+            "corrected_target_panel": {
+                **corrected_position,
+                "title": adjustment["corrected_title"],
+            },
+            "remap_rule": "same_column_exactly_one_grid_row_up",
+            "supersedes_commit": "70493fe",
             "claim_boundary": (
                 "directional_owner_feedback_not_exact_coordinate_acceptance"
             ),
@@ -563,9 +693,11 @@ def apply_owner_visual_adjustments(
     return {
         "status": "proposal_only_pending_exact_acceptance",
         "adjustment_count": len(applied),
-        "ambiguous_c2_to_c1_final_handling": (
-            "both_retained_recordings_adjusted_because_feedback_did_not_name_recording_id"
+        "remap_policy": (
+            "each_70493fe_target_moved_exactly_one_generated_grid_row_up_same_column"
         ),
+        "unambiguous_remap_count": len(applied),
+        "ambiguous_or_unshiftable_panel_count": 0,
         "adjustments": applied,
         "evaluator_pose_admission_allowed": False,
     }

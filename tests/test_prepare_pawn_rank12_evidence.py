@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 
@@ -127,19 +128,17 @@ class PreparePawnRank12EvidenceTest(unittest.TestCase):
             self.assertFalse(final["evaluator_pose_admission_allowed"])
 
     def test_owner_directional_retargets_remain_proposals(self) -> None:
-        folder_labels = {
-            "20260719T035317Z-2a332ab7": "c1-to-d2",
-            "20260719T030206Z-af661460": "c2-to-c1",
-            "20260719T031324Z-bf91502b": "c2-to-c1",
-            "20260719T031518Z-34bff0dd": "d1-to-d2",
-            "20260719T035413Z-5ab5603f": "d2-to-e1",
-            "20260719T032853Z-1ee203e8": "e1-to-f1",
-            "20260719T032620Z-0c7e3d86": "f2-to-f1",
-        }
+        catalog = json.loads(
+            (
+                REPO_ROOT
+                / "configs"
+                / "data"
+                / "physical_pawn_move_catalog_20260719.json"
+            ).read_text(encoding="utf-8")
+        )
         episodes = [
             {
-                "recording_id": recording_id,
-                "folder_label": folder_label,
+                **classification,
                 "visual_fiducial_proposals": {
                     "initial": {
                         "center_px": [100.0, 100.0],
@@ -155,24 +154,28 @@ class PreparePawnRank12EvidenceTest(unittest.TestCase):
                     },
                 },
             }
-            for recording_id, folder_label in folder_labels.items()
+            for classification in PREPARE.classify_catalog_episodes(
+                catalog["episodes"]
+            )
         ]
         summary = PREPARE.apply_owner_visual_adjustments(episodes)
         self.assertEqual(summary["adjustment_count"], 8)
+        self.assertEqual(summary["unambiguous_remap_count"], 8)
+        self.assertEqual(summary["ambiguous_or_unshiftable_panel_count"], 0)
         self.assertFalse(summary["evaluator_pose_admission_allowed"])
         self.assertIn(
-            "both_retained_recordings_adjusted",
-            summary["ambiguous_c2_to_c1_final_handling"],
+            "one_generated_grid_row_up_same_column",
+            summary["remap_policy"],
         )
         expected_adjustments = {
-            ("20260719T035317Z-2a332ab7", "initial"): ([-3.0, 3.0], 1.30),
-            ("20260719T030206Z-af661460", "final"): ([4.0, 3.0], 1.20),
-            ("20260719T031324Z-bf91502b", "final"): ([2.0, 2.0], 1.15),
-            ("20260719T031518Z-34bff0dd", "initial"): ([-3.0, 3.0], 0.80),
-            ("20260719T035413Z-5ab5603f", "initial"): ([2.0, 3.0], 1.15),
-            ("20260719T035413Z-5ab5603f", "final"): ([-2.0, -3.0], 1.00),
-            ("20260719T032853Z-1ee203e8", "final"): ([-4.0, 3.0], 1.25),
-            ("20260719T032620Z-0c7e3d86", "final"): ([-2.0, 2.0], 1.15),
+            ("20260719T033023Z-fd7005f3", "initial"): ([-3.0, 3.0], 1.30),
+            ("20260719T032400Z-052d5137", "final"): ([4.0, 3.0], 1.20),
+            ("20260719T035317Z-2a332ab7", "final"): ([2.0, 2.0], 1.15),
+            ("20260719T030206Z-af661460", "initial"): ([-3.0, 3.0], 0.80),
+            ("20260719T031518Z-34bff0dd", "initial"): ([2.0, 3.0], 1.15),
+            ("20260719T031518Z-34bff0dd", "final"): ([-2.0, -3.0], 1.00),
+            ("20260719T032935Z-66894edc", "final"): ([-4.0, 3.0], 1.25),
+            ("20260719T031615Z-0e058ca2", "final"): ([-2.0, 2.0], 1.15),
         }
         actual_adjustments = {
             (row["recording_id"], row["phase"]): (
@@ -182,6 +185,62 @@ class PreparePawnRank12EvidenceTest(unittest.TestCase):
             for row in summary["adjustments"]
         }
         self.assertEqual(actual_adjustments, expected_adjustments)
+        actual_grid_remap = {
+            (
+                row["prior_mistargeted_panel"]["recording_id"],
+                row["prior_mistargeted_panel"]["phase"],
+            ): (
+                row["corrected_target_panel"]["recording_id"],
+                row["corrected_target_panel"]["phase"],
+            )
+            for row in summary["adjustments"]
+        }
+        self.assertEqual(
+            actual_grid_remap,
+            {
+                ("20260719T035317Z-2a332ab7", "initial"): (
+                    "20260719T033023Z-fd7005f3",
+                    "initial",
+                ),
+                ("20260719T030206Z-af661460", "final"): (
+                    "20260719T032400Z-052d5137",
+                    "final",
+                ),
+                ("20260719T031324Z-bf91502b", "final"): (
+                    "20260719T035317Z-2a332ab7",
+                    "final",
+                ),
+                ("20260719T031518Z-34bff0dd", "initial"): (
+                    "20260719T030206Z-af661460",
+                    "initial",
+                ),
+                ("20260719T035413Z-5ab5603f", "initial"): (
+                    "20260719T031518Z-34bff0dd",
+                    "initial",
+                ),
+                ("20260719T035413Z-5ab5603f", "final"): (
+                    "20260719T031518Z-34bff0dd",
+                    "final",
+                ),
+                ("20260719T032853Z-1ee203e8", "final"): (
+                    "20260719T032935Z-66894edc",
+                    "final",
+                ),
+                ("20260719T032620Z-0c7e3d86", "final"): (
+                    "20260719T031615Z-0e058ca2",
+                    "final",
+                ),
+            },
+        )
+        self.assertTrue(
+            all(
+                row["prior_mistargeted_panel"]["row"]
+                == row["corrected_target_panel"]["row"] + 1
+                and row["prior_mistargeted_panel"]["column"]
+                == row["corrected_target_panel"]["column"]
+                for row in summary["adjustments"]
+            )
+        )
         adjusted = [
             proposal
             for episode in episodes
