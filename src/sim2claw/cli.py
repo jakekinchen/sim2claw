@@ -224,6 +224,34 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("physics_ramp", "sample_hold"),
         default="physics_ramp",
     )
+
+    recovery_export = subparsers.add_parser(
+        "groot-recovery-export",
+        help="export evaluator-accepted GR00T recovery demonstrations",
+    )
+    recovery_export.add_argument(
+        "--output",
+        type=Path,
+        default=Path("datasets/chess_pick_place_groot_recovery_v2"),
+    )
+    recovery_export.add_argument(
+        "--split",
+        choices=("training", "held_out"),
+        default="training",
+    )
+    recovery_export.add_argument("--max-episodes", type=int, default=None)
+
+    recovery_expert = subparsers.add_parser(
+        "groot-recovery-expert-eval",
+        help="run one frozen GR00T recovery consequence evaluation",
+    )
+    recovery_expert.add_argument(
+        "--split",
+        choices=("training", "held_out"),
+        default="held_out",
+    )
+    recovery_expert.add_argument("--episode-index", type=int, default=0)
+    recovery_expert.add_argument("--render-frames", action="store_true")
     return parser
 
 
@@ -463,6 +491,43 @@ def main(argv: Sequence[str] | None = None) -> int:
             "seed": episode.seed,
             "sample_count": int(episode.states.shape[0]),
             "maximum_ik_residual_m": episode.maximum_ik_residual_m,
+            "verdict": episode.verdict,
+        }
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if episode.verdict["success"] else 1
+    if args.command == "groot-recovery-export":
+        from .groot_chess_recovery import export_recovery_dataset
+
+        report = export_recovery_dataset(
+            args.output,
+            split=args.split,
+            max_episodes=args.max_episodes,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "groot-recovery-expert-eval":
+        from .groot_chess_recovery import (
+            collect_recovery_expert_episode,
+            load_recovery_task_contract,
+        )
+
+        task = load_recovery_task_contract()
+        episode = collect_recovery_expert_episode(
+            task,
+            split=args.split,
+            episode_index=args.episode_index,
+            render_frames=args.render_frames,
+        )
+        report = {
+            "case_id": episode.case_id,
+            "instruction": episode.instruction,
+            "piece": episode.piece,
+            "target_square": episode.target_square,
+            "seed": episode.seed,
+            "perturbation": episode.perturbation,
+            "sample_count": int(episode.states.shape[0]),
+            "maximum_ik_residual_m": episode.maximum_ik_residual_m,
+            "contact_metrics": episode.contact_metrics,
             "verdict": episode.verdict,
         }
         print(json.dumps(report, indent=2, sort_keys=True))

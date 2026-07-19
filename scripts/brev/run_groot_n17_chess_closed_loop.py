@@ -50,6 +50,16 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def load_checkpoint_manifest(path: Path) -> dict[str, object]:
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    if manifest.get("schema_version") != "sim2claw.groot_checkpoint_manifest.v1":
+        raise ValueError("unsupported checkpoint manifest")
+    files = manifest.get("files")
+    if not isinstance(files, dict) or not files:
+        raise ValueError("checkpoint manifest has no file identities")
+    return manifest
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -65,8 +75,8 @@ def main() -> None:
         choices=("official_unseeded", "seeded_reset"),
         default="official_unseeded",
     )
-    parser.add_argument("--checkpoint-id", required=True)
-    parser.add_argument("--checkpoint-manifest-sha256", required=True)
+    parser.add_argument("--checkpoint-id")
+    parser.add_argument("--checkpoint-manifest-sha256")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=5555)
     parser.add_argument("--proposal-count", type=int, default=1)
@@ -134,6 +144,7 @@ def main() -> None:
         "--action-rate-limit-source",
         help="Frozen provenance identifier required when rate limits are enabled.",
     )
+    parser.add_argument("--checkpoint-manifest", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.proposal_count < 1:
@@ -162,6 +173,30 @@ def main() -> None:
     ):
         parser.error("consensus controls require --policy-server-mode seeded_reset")
 
+    checkpoint_manifest: dict[str, object] | None = None
+    checkpoint_id = args.checkpoint_id
+    checkpoint_manifest_sha256 = args.checkpoint_manifest_sha256
+    if args.checkpoint_manifest is not None:
+        checkpoint_manifest = load_checkpoint_manifest(args.checkpoint_manifest)
+        observed_manifest_sha256 = sha256_file(args.checkpoint_manifest)
+        if (
+            checkpoint_manifest_sha256 is not None
+            and checkpoint_manifest_sha256 != observed_manifest_sha256
+        ):
+            parser.error("--checkpoint-manifest-sha256 does not match the manifest")
+        checkpoint_manifest_sha256 = observed_manifest_sha256
+        if checkpoint_id is None:
+            checkpoint_step = checkpoint_manifest.get("checkpoint_step")
+            checkpoint_id = (
+                f"checkpoint-{checkpoint_step}"
+                if checkpoint_step is not None
+                else args.checkpoint_manifest.parent.name
+            )
+    if checkpoint_id is None or checkpoint_manifest_sha256 is None:
+        parser.error(
+            "provide --checkpoint-manifest, or both --checkpoint-id and "
+            "--checkpoint-manifest-sha256"
+        )
     contract = load_groot_task_contract()
     phase_language_contract = (
         load_phase_language_contract(args.phase_language_contract)
@@ -208,7 +243,7 @@ def main() -> None:
     except ValueError as exc:
         parser.error(str(exc))
 
-    args.output.mkdir(parents=True, exist_ok=True)
+    args.output.mkdir(parents=True, exist_ok=False)
     renderer = mujoco.Renderer(
         env.model,
         height=int(contract["episode"]["render_height"]),
@@ -470,8 +505,8 @@ def main() -> None:
         "case_id": str(case["case_id"]),
         "instruction": str(case["instruction"]),
         "seed": int(episode_row["seed"]),
-        "checkpoint_id": args.checkpoint_id,
-        "checkpoint_manifest_sha256": args.checkpoint_manifest_sha256,
+        "checkpoint_id": checkpoint_id,
+        "checkpoint_manifest_sha256": checkpoint_manifest_sha256,
         "groot_source_commit": str(contract["model"]["source_commit"]),
         "task_contract_sha256": groot_task_contract_sha256(),
         "policy_transport": f"GR00T PolicyClient tcp://{args.host}:{args.port}",
@@ -540,6 +575,7 @@ def main() -> None:
             "model_waypoints_only": True,
             "assistance_frames": 0,
         },
+        "checkpoint_manifest": checkpoint_manifest,
         "chunks_requested": chunks_requested,
         "policy_queries": policy_queries,
         "language_scheduler": {

@@ -792,7 +792,13 @@ def replay_groot_sampled_actions(
             env.step(action)
             maximum_height = max(maximum_height, float(env.piece_position()[2]))
     target = np.asarray(
-        board_square_center(str(case["target_square"])), dtype=np.float64
+        board_square_center(
+            str(case["target_square"]),
+            board_center_in_table_frame_xy_m=(
+                env.board_center_in_table_frame_xy_m
+            ),
+        ),
+        dtype=np.float64,
     )
     return evaluate_episode(
         env,

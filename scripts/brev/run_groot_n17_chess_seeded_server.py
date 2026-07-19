@@ -144,9 +144,8 @@ class SeededResetPolicy(PolicyWrapper):
         ).encode("utf-8")
         return int.from_bytes(hashlib.sha256(payload).digest()[:4], "big")
 
-    @classmethod
+    @staticmethod
     def _proposal_seed(
-        cls,
         episode_seed: int,
         sample_step: int,
         candidate_index: int,
