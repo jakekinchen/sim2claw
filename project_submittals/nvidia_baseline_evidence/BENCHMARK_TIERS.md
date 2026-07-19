@@ -93,6 +93,40 @@ gates it. The single shared script this maps to is the *presentation
 script* with a marked branch point (see prior discussion); this document is
 the benchmark spec that script's two branches draw from.
 
+## External reference data (Hugging Face) — three uses, kept distinct
+
+Public LeRobot-format SO-101 datasets on the Hugging Face Hub
+(`lerobot/svla_so101_pickplace` and community equivalents) share this
+project's exact embodiment and format, so they plug into existing tooling
+without a conversion step. They are external reference data, not captured
+evidence — tag anything derived from them with a distinct proof class,
+same discipline as everything else in this repo. Verify each dataset's
+license/card before use.
+
+1. **Track 2, new Tier 2.5 — generalization check.** Run the chess-tuned
+   GR00T checkpoint against a held-out external SO-101 dataset (different
+   task, same embodiment). Tests whether chess fine-tuning caused
+   catastrophic forgetting on unrelated manipulation — a materially
+   stronger "enhancement" claim than an aggregate in-domain metric alone.
+2. **Run-configuration check, before spending overnight compute.** NVIDIA's
+   own official "Post-Training Isaac GR00T N1.5 for LeRobot SO-101 Arm"
+   reference run reports loss plateauing around step 1,500–2,000 (0.080 at
+   step 500 → 0.040 at step 1,500) and MSE 0.017 at convergence — the same
+   metric `evaluate_groot_n17_chess_checkpoints.sh` already reports.
+   `run_groot_n17_chess_finetune.sh` currently defaults to `MAX_STEPS=250`,
+   roughly 6-8x short of NVIDIA's own published convergence point. Confirm
+   this is intentional before tonight's run, or Tier 1 risks an
+   undertrained checkpoint regardless of data quality.
+3. **Track 1, second task family.** Train/validate one additional ACT skill
+   against a public SO-101 dataset so the Tier 3 orchestrator leaderboard
+   isn't scored on a single chess task alone — an orchestrator × skill-family
+   matrix is a stronger comparison than orchestrator × one task.
+
+External reference numbers worth citing directly when presenting (not
+sim2claw results, context only): NVIDIA's own MSE 0.017 convergence point,
+and GR00T N1.5 vs N1 base success rate (38.3% vs 13.1% across 12 DreamGen
+tasks) as a realistic-magnitude anchor for any fine-tune delta claimed here.
+
 ## Open dependencies before either track produces a citable number
 
 - Track 1 needs the orchestrator-swap harness (Tier 1/2 runner) built —
