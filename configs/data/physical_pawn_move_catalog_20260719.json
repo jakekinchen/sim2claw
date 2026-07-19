@@ -1,4 +1,17 @@
 {
+  "brev_generalization": {
+    "candidate_count": 3,
+    "candidate_move_ids": [
+      "e1_to_f1"
+    ],
+    "candidate_recording_ids": [
+      "20260719T033023Z-fd7005f3",
+      "20260719T032935Z-66894edc",
+      "20260719T032853Z-1ee203e8"
+    ],
+    "rationale": "same-rank side-to-side demonstrations are retained as a supplemental generalization lane; they still require the Brev contract, split, and evaluator gates",
+    "status": "candidate_not_admitted"
+  },
   "catalog_id": "physical_pawn_moves_20260719_latest_v1",
   "discarded_recordings": [
     {
@@ -16,6 +29,7 @@
         "receipt": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "b2",
@@ -24,6 +38,7 @@
       "metadata_status": "consistent_folder_label_and_receipt",
       "mode": "physical_follower",
       "move_id": "b1_to_b2",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "fe07e303759c2d0aef0959c0e33524c11c7f4231aa7affc037a1d8a585265967",
       "policy_candidate_id": "pawn_b1_to_b2_v1",
@@ -44,6 +59,7 @@
         "receipt": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "b1",
@@ -52,6 +68,7 @@
       "metadata_status": "consistent_folder_label_and_receipt",
       "mode": "physical_follower",
       "move_id": "b2_to_b1",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "5d161c4596c3c7a4c3392b89b8eac99acd64c9e557bb79241ec7d2882c39b18c",
       "policy_candidate_id": "pawn_b2_to_b1_v1",
@@ -72,6 +89,7 @@
         "receipt": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/samples.jsonl"
       },
+      "brev_generalization_candidate": true,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "f1",
@@ -80,6 +98,7 @@
       "metadata_status": "conflict_folder_label_vs_receipt",
       "mode": "physical_follower",
       "move_id": "e1_to_f1",
+      "movement_axis": "horizontal",
       "outcome_label": "success",
       "overhead_video_sha256": "5a89045dfa8e8fa2776dc4077e7adc5334998455277b9b93b396f65650f2d508",
       "policy_candidate_id": "pawn_e1_to_f1_v1",
@@ -100,6 +119,7 @@
         "receipt": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "b1",
@@ -108,6 +128,7 @@
       "metadata_status": "conflict_folder_label_vs_receipt",
       "mode": "physical_follower",
       "move_id": "b2_to_b1",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "fcf781989b971770eb7eff72128f7b291d6fe4fa346b3a4eeb78072571408d2f",
       "policy_candidate_id": "pawn_b2_to_b1_v1",
@@ -128,6 +149,7 @@
         "receipt": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "b2",
@@ -136,6 +158,7 @@
       "metadata_status": "conflict_folder_label_vs_receipt",
       "mode": "physical_follower",
       "move_id": "b1_to_b2",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "820dba94ed6788c4855d64016dc1f7949f6806fc0df752113669a12657d5999a",
       "policy_candidate_id": "pawn_b1_to_b2_v1",
@@ -156,6 +179,7 @@
         "receipt": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "c1",
@@ -164,6 +188,7 @@
       "metadata_status": "consistent_folder_label_and_receipt",
       "mode": "physical_follower",
       "move_id": "c2_to_c1",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "e5cf0b1ab23174e908d509791653d2289a85770476381931384ea2f7308a867b",
       "policy_candidate_id": "pawn_c2_to_c1_v1",
@@ -184,6 +209,7 @@
         "receipt": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "c1",
@@ -192,6 +218,7 @@
       "metadata_status": "conflict_folder_label_vs_receipt",
       "mode": "physical_follower",
       "move_id": "c2_to_c1",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "a482c2acca1698cad7c278b72e6ffbbe54a14c2af66ab50b332863d8d1f55236",
       "policy_candidate_id": "pawn_c2_to_c1_v1",
@@ -212,6 +239,7 @@
         "receipt": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "c2",
@@ -220,6 +248,7 @@
       "metadata_status": "conflict_folder_label_vs_receipt",
       "mode": "physical_follower",
       "move_id": "c1_to_c2",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "5425ba00e12a1a1c4b2d1ce08980cca88fa48c69c8e92d5c63f9b59a5e1fdd11",
       "policy_candidate_id": "pawn_c1_to_c2_v1",
@@ -240,6 +269,7 @@
         "receipt": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/samples.jsonl"
       },
+      "brev_generalization_candidate": true,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "f1",
@@ -248,6 +278,7 @@
       "metadata_status": "conflict_folder_label_vs_receipt",
       "mode": "physical_follower",
       "move_id": "e1_to_f1",
+      "movement_axis": "horizontal",
       "outcome_label": "success",
       "overhead_video_sha256": "e85ed5b0c9ac1b42cd3ecea6f1eccb29def3b3f46326df464613475da395f9e9",
       "policy_candidate_id": "pawn_e1_to_f1_v1",
@@ -268,6 +299,7 @@
         "receipt": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "c2",
@@ -276,6 +308,7 @@
       "metadata_status": "conflict_folder_label_vs_receipt",
       "mode": "physical_follower",
       "move_id": "c1_to_c2",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "2307c79a7bbb8ef7bc5fe04a1f09fe79550ea8e005f713e11ebf84cb038ab006",
       "policy_candidate_id": "pawn_c1_to_c2_v1",
@@ -296,6 +329,7 @@
         "receipt": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/samples.jsonl"
       },
+      "brev_generalization_candidate": true,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "f1",
@@ -304,6 +338,7 @@
       "metadata_status": "consistent_folder_label_and_receipt",
       "mode": "physical_follower",
       "move_id": "e1_to_f1",
+      "movement_axis": "horizontal",
       "outcome_label": "success",
       "overhead_video_sha256": "00c4866bfad75926ab76ec2abcf1e149ceeb860f64a9d992bc7ee6da948f3713",
       "policy_candidate_id": "pawn_e1_to_f1_v1",
@@ -324,6 +359,7 @@
         "receipt": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "d2",
@@ -332,6 +368,7 @@
       "metadata_status": "conflict_folder_label_vs_receipt",
       "mode": "physical_follower",
       "move_id": "d1_to_d2",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "e0605b185b805c46eff952d5d822727024e0b94c125166e6dbe15f2959b8d02c",
       "policy_candidate_id": "pawn_d1_to_d2_v1",
@@ -352,6 +389,7 @@
         "receipt": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "d2",
@@ -360,6 +398,7 @@
       "metadata_status": "conflict_folder_label_vs_receipt",
       "mode": "physical_follower",
       "move_id": "d1_to_d2",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "4ac5db651f0cf14bccbd605818036ef75f434b7058d296c3d52ddc79e99b08a1",
       "policy_candidate_id": "pawn_d1_to_d2_v1",
@@ -380,6 +419,7 @@
         "receipt": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "f1",
@@ -388,6 +428,7 @@
       "metadata_status": "consistent_folder_label_and_receipt",
       "mode": "physical_follower",
       "move_id": "f2_to_f1",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "b3fe1f4b99b1bd7697695c8ed9093ccef8d08da22cdb889ee1a3f460af6d2081",
       "policy_candidate_id": "pawn_f2_to_f1_v1",
@@ -408,6 +449,7 @@
         "receipt": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "preferred_keep",
       "destination_square": "g2",
@@ -416,6 +458,7 @@
       "metadata_status": "consistent_folder_label_and_receipt",
       "mode": "physical_follower",
       "move_id": "g1_to_g2",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "682f755bf95b55c7e0d0e2dff31b76dcfc67451a1eab7732bd5da2134e63b720",
       "policy_candidate_id": "pawn_g1_to_g2_v1",
@@ -436,6 +479,7 @@
         "receipt": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/recording_receipt.json",
         "samples": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/samples.jsonl"
       },
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_role": "source_candidate",
       "destination_square": "g1",
@@ -444,6 +488,7 @@
       "metadata_status": "consistent_folder_label_and_receipt",
       "mode": "physical_follower",
       "move_id": "g2_to_g1",
+      "movement_axis": "vertical",
       "outcome_label": "success",
       "overhead_video_sha256": "418d4b2d7a1fc60265076cd88d85577c2ba74f49307232ebcfbfe446ba531640",
       "policy_candidate_id": "pawn_g2_to_g1_v1",
@@ -461,61 +506,72 @@
   ],
   "moves": [
     {
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_recording_ids": [
         "20260719T030059Z-a26f8400",
         "20260719T030206Z-af661460"
       ],
       "move_id": "b1_to_b2",
+      "movement_axis": "vertical",
       "policy_candidate_id": "pawn_b1_to_b2_v1",
       "preferred_recording_id": null,
       "status": "source_candidates_pending_reconciliation"
     },
     {
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_recording_ids": [
         "20260719T032315Z-d3c3cf0b",
         "20260719T032400Z-052d5137"
       ],
       "move_id": "b2_to_b1",
+      "movement_axis": "vertical",
       "policy_candidate_id": "pawn_b2_to_b1_v1",
       "preferred_recording_id": null,
       "status": "source_candidates_pending_reconciliation"
     },
     {
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_recording_ids": [
         "20260719T032440Z-f728a18c",
         "20260719T032531Z-06be393c"
       ],
       "move_id": "c1_to_c2",
+      "movement_axis": "vertical",
       "policy_candidate_id": "pawn_c1_to_c2_v1",
       "preferred_recording_id": null,
       "status": "source_candidates_pending_reconciliation"
     },
     {
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_recording_ids": [
         "20260719T031324Z-bf91502b",
         "20260719T031518Z-34bff0dd"
       ],
       "move_id": "c2_to_c1",
+      "movement_axis": "vertical",
       "policy_candidate_id": "pawn_c2_to_c1_v1",
       "preferred_recording_id": null,
       "status": "source_candidates_pending_reconciliation"
     },
     {
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_recording_ids": [
         "20260719T031615Z-0e058ca2",
         "20260719T031715Z-61ebb199"
       ],
       "move_id": "d1_to_d2",
+      "movement_axis": "vertical",
       "policy_candidate_id": "pawn_d1_to_d2_v1",
       "preferred_recording_id": null,
       "status": "source_candidates_pending_reconciliation"
     },
     {
+      "brev_generalization_candidate": true,
       "callable_policy": false,
       "candidate_recording_ids": [
         "20260719T033023Z-fd7005f3",
@@ -523,36 +579,43 @@
         "20260719T032853Z-1ee203e8"
       ],
       "move_id": "e1_to_f1",
+      "movement_axis": "horizontal",
       "policy_candidate_id": "pawn_e1_to_f1_v1",
       "preferred_recording_id": null,
       "status": "source_candidates_pending_reconciliation"
     },
     {
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_recording_ids": [
         "20260719T032620Z-0c7e3d86"
       ],
       "move_id": "f2_to_f1",
+      "movement_axis": "vertical",
       "policy_candidate_id": "pawn_f2_to_f1_v1",
       "preferred_recording_id": null,
       "status": "source_candidates_pending_reconciliation"
     },
     {
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_recording_ids": [
         "20260719T032810Z-9e623c5e"
       ],
       "move_id": "g1_to_g2",
+      "movement_axis": "vertical",
       "policy_candidate_id": "pawn_g1_to_g2_v1",
       "preferred_recording_id": "20260719T032810Z-9e623c5e",
       "status": "source_candidates_pending_reconciliation"
     },
     {
+      "brev_generalization_candidate": false,
       "callable_policy": false,
       "candidate_recording_ids": [
         "20260719T031813Z-b147b429"
       ],
       "move_id": "g2_to_g1",
+      "movement_axis": "vertical",
       "policy_candidate_id": "pawn_g2_to_g1_v1",
       "preferred_recording_id": null,
       "status": "source_candidates_pending_reconciliation"

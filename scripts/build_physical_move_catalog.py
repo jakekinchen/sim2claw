@@ -68,6 +68,11 @@ def build_episode(root: Path, directory: Path, preferred_recording_id: str | Non
         raise ValueError(f"video hash mismatch: {video_path}")
 
     move_id = f"{receipt_source}_to_{receipt_destination}"
+    same_rank = receipt_source[1] == receipt_destination[1]
+    same_file = receipt_source[0] == receipt_destination[0]
+    movement_axis = "horizontal" if same_rank and not same_file else (
+        "vertical" if same_file and not same_rank else "other"
+    )
     return {
         "recording_id": recording_id,
         "source_path": relative(directory),
@@ -77,6 +82,8 @@ def build_episode(root: Path, directory: Path, preferred_recording_id: str | Non
         "destination_square": receipt_destination,
         "move_id": move_id,
         "policy_candidate_id": f"pawn_{move_id}_v1",
+        "movement_axis": movement_axis,
+        "brev_generalization_candidate": movement_axis == "horizontal",
         "metadata_status": metadata_status,
         "candidate_role": (
             "preferred_keep"
@@ -120,17 +127,23 @@ def build_catalog(root: Path, preferred_recording_id: str) -> dict[str, Any]:
     for move_id in sorted(grouped):
         candidates = grouped[move_id]
         preferred = [item for item in candidates if item["candidate_role"] == "preferred_keep"]
+        horizontal = any(item["movement_axis"] == "horizontal" for item in candidates)
         moves.append(
             {
                 "move_id": move_id,
                 "policy_candidate_id": f"pawn_{move_id}_v1",
                 "candidate_recording_ids": [item["recording_id"] for item in candidates],
                 "preferred_recording_id": preferred[0]["recording_id"] if preferred else None,
+                "movement_axis": "horizontal" if horizontal else candidates[0]["movement_axis"],
+                "brev_generalization_candidate": horizontal,
                 "callable_policy": False,
                 "status": "source_candidates_pending_reconciliation",
             }
         )
 
+    horizontal_candidates = [
+        episode for episode in episodes if episode["brev_generalization_candidate"]
+    ]
     return {
         "schema_version": "sim2claw.physical_pawn_move_catalog.v1",
         "catalog_id": "physical_pawn_moves_20260719_latest_v1",
@@ -149,6 +162,17 @@ def build_catalog(root: Path, preferred_recording_id: str) -> dict[str, Any]:
             "learned_policy_verified": False,
             "physical_task_success_proven": False,
             "training_rows_admitted": 0,
+        },
+        "brev_generalization": {
+            "status": "candidate_not_admitted",
+            "rationale": "same-rank side-to-side demonstrations are retained as a supplemental generalization lane; they still require the Brev contract, split, and evaluator gates",
+            "candidate_recording_ids": [
+                episode["recording_id"] for episode in horizontal_candidates
+            ],
+            "candidate_move_ids": sorted(
+                {episode["move_id"] for episode in horizontal_candidates}
+            ),
+            "candidate_count": len(horizontal_candidates),
         },
         "discarded_recordings": [
             {

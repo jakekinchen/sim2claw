@@ -51,6 +51,28 @@ class PhysicalPawnMoveCatalogContractTest(unittest.TestCase):
         self.assertTrue(all(not episode["callable_policy"] for episode in self.catalog["episodes"]))
         self.assertTrue(all(not move["callable_policy"] for move in self.catalog["moves"]))
 
+    def test_side_to_side_recordings_are_retained_for_brev_generalization(self) -> None:
+        brev = self.catalog["brev_generalization"]
+        self.assertEqual(brev["status"], "candidate_not_admitted")
+        self.assertEqual(brev["candidate_count"], 3)
+        self.assertEqual(brev["candidate_move_ids"], ["e1_to_f1"])
+        self.assertEqual(
+            set(brev["candidate_recording_ids"]),
+            {
+                "20260719T033023Z-fd7005f3",
+                "20260719T032935Z-66894edc",
+                "20260719T032853Z-1ee203e8",
+            },
+        )
+        self.assertTrue(
+            all(
+                episode["movement_axis"] == "horizontal"
+                and episode["brev_generalization_candidate"]
+                for episode in self.catalog["episodes"]
+                if episode["recording_id"] in brev["candidate_recording_ids"]
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
