@@ -5,16 +5,20 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import mujoco
+
 from sim2claw.pawn_bg_demo_sim import BASELINE_JOINT_ADAPTER, JointAdapter
 from sim2claw.pawn_bg_source_fit import EXPECTED_CONTRACT_SHA256, SourceFitError
 from sim2claw.pawn_bg_source_fit_visuals import (
     EXPECTED_C922_ANGLE_CONTRACT_SHA256,
     _c922_angle_camera,
+    _apply_bg_visual_layout,
     _load_c922_angle_contract,
     _load_receipt,
     _tracking_summary,
     render_score_history,
 )
+from sim2claw.scene import CURRENT_TASK_PIECE_LAYOUT, build_scene_spec
 
 
 def _aggregate(reward: float, clipped: int) -> dict[str, object]:
@@ -67,6 +71,54 @@ def _receipt() -> dict[str, object]:
 
 
 class PawnBGSourceFitVisualTests(unittest.TestCase):
+    def test_visual_layout_swaps_palette_and_omits_robot_side_edge_files(self) -> None:
+        spec = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT)
+        receipt = _apply_bg_visual_layout(spec)
+        model = spec.compile()
+        self.assertEqual(
+            receipt["robot_side_semantic_piece_squares"],
+            ["b1", "c2", "d1", "e2", "f1", "g2"],
+        )
+        self.assertFalse(receipt["shared_scene_source_modified"])
+        for body_name in ("brown_pawn_a2", "brown_pawn_h1"):
+            self.assertEqual(
+                mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, body_name), -1
+            )
+        near_body = mujoco.mj_name2id(
+            model, mujoco.mjtObj.mjOBJ_BODY, "brown_pawn_b1"
+        )
+        far_body = mujoco.mj_name2id(
+            model, mujoco.mjtObj.mjOBJ_BODY, "tan_pawn_b7"
+        )
+        near_geom = next(
+            geom_id
+            for geom_id in range(model.ngeom)
+            if int(model.geom_bodyid[geom_id]) == near_body
+        )
+        far_geom = next(
+            geom_id
+            for geom_id in range(model.ngeom)
+            if int(model.geom_bodyid[geom_id]) == far_body
+        )
+        for actual, expected in zip(
+            model.geom_rgba[near_geom], (0.78, 0.62, 0.4, 1.0), strict=True
+        ):
+            self.assertAlmostEqual(float(actual), expected)
+        for actual, expected in zip(
+            model.geom_rgba[far_geom], (0.42, 0.24, 0.13, 1.0), strict=True
+        ):
+            self.assertAlmostEqual(float(actual), expected)
+        a1 = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "square_0_0")
+        b1 = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "square_1_0")
+        for actual, expected in zip(
+            model.geom_rgba[a1], (0.27, 0.105, 0.025, 1.0), strict=True
+        ):
+            self.assertAlmostEqual(float(actual), expected)
+        for actual, expected in zip(
+            model.geom_rgba[b1], (0.83, 0.63, 0.36, 1.0), strict=True
+        ):
+            self.assertAlmostEqual(float(actual), expected)
+
     def test_c922_angle_transfer_is_hash_pinned_and_visual_only(self) -> None:
         contract = _load_c922_angle_contract()
         self.assertEqual(

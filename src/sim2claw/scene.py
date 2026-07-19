@@ -41,13 +41,6 @@ STUDIO_CAMERAS = (
 CURRENT_TASK_PIECE_LAYOUT = "sparse_two_sided_pawns"
 CURRENT_TASK_LAYOUT_ID = "two_sided_sparse_pawns_rows_1_2_7_8_v1"
 
-# Review-only B-G scene layout matching the owner-corrected physical appearance.
-# Piece body names retain their historical semantic color so frozen task and
-# evaluator identities do not silently change; only the rendered palette is
-# swapped for this layout.
-PAWN_BG_VISUAL_PIECE_LAYOUT = "sparse_two_sided_pawns_bg_visual_v1"
-PAWN_BG_VISUAL_LAYOUT_ID = "two_sided_sparse_pawns_bg_rows_1_2_7_8_visual_v1"
-
 TELEOP_PAWN_SOURCE_SQUARES = (
     "a2",
     "b1",
@@ -68,10 +61,6 @@ TELEOP_TAN_PAWN_SQUARES = (
     "f7",
     "g8",
     "h7",
-)
-
-PAWN_BG_ROBOT_SIDE_SQUARES = tuple(
-    square for square in TELEOP_PAWN_SOURCE_SQUARES if square[0] in "bcdefg"
 )
 
 
@@ -295,18 +284,8 @@ def _piece_bodies(
         "tan": "0.78 0.62 0.40 1",
     }
     pieces: list[tuple[str, str, int, int]] = []
-    sparse_layouts = {
-        CURRENT_TASK_PIECE_LAYOUT,
-        "teleop_pawns",
-        PAWN_BG_VISUAL_PIECE_LAYOUT,
-    }
-    if piece_layout in sparse_layouts:
-        robot_side_squares = (
-            PAWN_BG_ROBOT_SIDE_SQUARES
-            if piece_layout == PAWN_BG_VISUAL_PIECE_LAYOUT
-            else TELEOP_PAWN_SOURCE_SQUARES
-        )
-        for square in robot_side_squares:
+    if piece_layout in {CURRENT_TASK_PIECE_LAYOUT, "teleop_pawns"}:
+        for square in TELEOP_PAWN_SOURCE_SQUARES:
             pieces.append(
                 (
                     "brown",
@@ -339,7 +318,7 @@ def _piece_bodies(
         raise ValueError(f"unknown chess piece layout: {piece_layout}")
 
     board_top = geometry.table_top + geometry.board_thickness + 0.001
-    detailed_pawns = piece_layout in sparse_layouts
+    detailed_pawns = piece_layout in {CURRENT_TASK_PIECE_LAYOUT, "teleop_pawns"}
     bodies: list[str] = []
     for color, kind, file_index, rank_index in pieces:
         local_x = (file_index - 3.5) * geometry.square_size
@@ -347,12 +326,9 @@ def _piece_bodies(
         dx, dy = _rotate_xy(local_x, local_y, geometry.board_yaw_degrees)
         square = f"{chr(ord('a') + file_index)}{rank_index + 1}"
         name = f"{color}_{kind}_{square}"
-        render_color = color
-        if piece_layout == PAWN_BG_VISUAL_PIECE_LAYOUT:
-            render_color = {"brown": "tan", "tan": "brown"}[color]
         piece_geoms = _piece_geoms(
             kind,
-            colors[render_color],
+            colors[color],
             detailed_pawn=detailed_pawns,
         )
         bodies.append(
@@ -405,9 +381,9 @@ def _board_body(geometry: SceneGeometry) -> list[str]:
     for file_index in range(8):
         for rank_index in range(8):
             tile_color = (
-                "0.27 0.105 0.025 1"
+                "0.83 0.63 0.36 1"
                 if (file_index + rank_index) % 2 == 0
-                else "0.83 0.63 0.36 1"
+                else "0.27 0.105 0.025 1"
             )
             local_x = (file_index - 3.5) * geometry.square_size
             local_y = (rank_index - 3.5) * geometry.square_size
@@ -981,16 +957,12 @@ def scene_summary(
         "scene_elements": background["elements"],
         "piece_layout": piece_layout,
         "piece_layout_id": (
-            PAWN_BG_VISUAL_LAYOUT_ID
-            if piece_layout == PAWN_BG_VISUAL_PIECE_LAYOUT
-            else CURRENT_TASK_LAYOUT_ID
+            CURRENT_TASK_LAYOUT_ID
             if piece_layout in {CURRENT_TASK_PIECE_LAYOUT, "teleop_pawns"}
             else "standard_full_chess_v1"
         ),
         "piece_count": (
-            len(PAWN_BG_ROBOT_SIDE_SQUARES) + len(TELEOP_TAN_PAWN_SQUARES)
-            if piece_layout == PAWN_BG_VISUAL_PIECE_LAYOUT
-            else len(TELEOP_PAWN_SOURCE_SQUARES) + len(TELEOP_TAN_PAWN_SQUARES)
+            len(TELEOP_PAWN_SOURCE_SQUARES) + len(TELEOP_TAN_PAWN_SQUARES)
             if piece_layout in {CURRENT_TASK_PIECE_LAYOUT, "teleop_pawns"}
             else 32
         ),

@@ -37,9 +37,7 @@ from .pawn_bg_source_fit import (
     load_source_fit_contract,
 )
 from .scene import (
-    PAWN_BG_ROBOT_SIDE_SQUARES,
-    PAWN_BG_VISUAL_LAYOUT_ID,
-    PAWN_BG_VISUAL_PIECE_LAYOUT,
+    CURRENT_TASK_PIECE_LAYOUT,
     ROBOT_JOINTS,
     _table_to_world,
     board_square_center,
@@ -54,6 +52,13 @@ VISUAL_SCHEMA = "sim2claw.pawn_bg_source_fit_visual_comparison.v3"
 HISTORY_SCHEMA = "sim2claw.pawn_bg_source_fit_score_history.v1"
 JOINT_TRACKING_SCHEMA = "sim2claw.pawn_bg_joint_tracking_visual.v1"
 TRAJECTORY_MODES = ("command_driven_physics", "measured_actual_state")
+PAWN_BG_VISUAL_PIECE_LAYOUT = "sparse_two_sided_pawns_bg_visual_v1"
+PAWN_BG_VISUAL_LAYOUT_ID = "two_sided_sparse_pawns_bg_rows_1_2_7_8_visual_v1"
+PAWN_BG_ROBOT_SIDE_SQUARES = ("b1", "c2", "d1", "e2", "f1", "g2")
+_BEIGE_RGBA = np.asarray((0.83, 0.63, 0.36, 1.0), dtype=np.float64)
+_BROWN_RGBA = np.asarray((0.27, 0.105, 0.025, 1.0), dtype=np.float64)
+_TAN_PAWN_RGBA = np.asarray((0.78, 0.62, 0.40, 1.0), dtype=np.float64)
+_BROWN_PAWN_RGBA = np.asarray((0.42, 0.24, 0.13, 1.0), dtype=np.float64)
 C922_ANGLE_CONTRACT_PATH = (
     REPO_ROOT / "configs/experiments/pawn_bg_c922_angle_transfer_v1.json"
 )
@@ -258,6 +263,62 @@ def _load_receipt(path: Path) -> dict[str, Any]:
     if receipt.get("schema_version") != "sim2claw.pawn_bg_source_fit_receipt.v1":
         raise SourceFitError("source-fit receipt schema drifted")
     return receipt
+
+
+def _apply_bg_visual_layout(spec: mujoco.MjSpec) -> dict[str, Any]:
+    """Apply the owner-corrected appearance without changing shared scene source."""
+
+    bodies = {body.name: body for body in spec.bodies if body.name}
+    removed = []
+    for body_name in ("brown_pawn_a2", "brown_pawn_h1"):
+        body = bodies.get(body_name)
+        if body is None:
+            raise SourceFitError(f"B-G visual layout is missing edge body {body_name}")
+        spec.delete(body)
+        removed.append(body_name)
+
+    square_count = 0
+    for geom in spec.geoms:
+        if not geom.name.startswith("square_"):
+            continue
+        try:
+            _, file_index, rank_index = geom.name.split("_")
+            parity = int(file_index) + int(rank_index)
+        except (ValueError, TypeError) as error:
+            raise SourceFitError("B-G visual layout found an invalid square identity") from error
+        geom.rgba = _BROWN_RGBA if parity % 2 == 0 else _BEIGE_RGBA
+        square_count += 1
+    if square_count != 64:
+        raise SourceFitError(f"B-G visual layout requires 64 squares, found {square_count}")
+
+    near_count = 0
+    far_count = 0
+    for body in spec.bodies:
+        if body.name.startswith("brown_pawn_"):
+            for geom in body.geoms:
+                geom.rgba = _TAN_PAWN_RGBA
+            near_count += 1
+        elif body.name.startswith("tan_pawn_"):
+            for geom in body.geoms:
+                geom.rgba = _BROWN_PAWN_RGBA
+            far_count += 1
+    if near_count != 6 or far_count != 8:
+        raise SourceFitError(
+            f"B-G visual layout requires 6 robot-side and 8 far-side pawns, "
+            f"found {near_count}/{far_count}"
+        )
+    return {
+        "piece_layout": PAWN_BG_VISUAL_PIECE_LAYOUT,
+        "piece_layout_id": PAWN_BG_VISUAL_LAYOUT_ID,
+        "robot_side_semantic_piece_squares": list(PAWN_BG_ROBOT_SIDE_SQUARES),
+        "removed_robot_side_edge_piece_bodies": removed,
+        "robot_side_edge_files_present": False,
+        "board_beige_brown_palette_swapped": True,
+        "piece_render_palette_swapped_between_sides": True,
+        "semantic_piece_ids_renamed": False,
+        "shared_scene_source_modified": False,
+        "frozen_evaluator_scene_changed": False,
+    }
 
 
 def _adapter_from_receipt(receipt: dict[str, Any]) -> JointAdapter:
@@ -567,9 +628,10 @@ def render_episode_comparison(
             raise SourceFitError("C922 angle-transfer reference frame hash rejected")
         angle_camera = _c922_angle_camera(angle_contract, board_center)
     spec = build_scene_spec(
-        piece_layout=PAWN_BG_VISUAL_PIECE_LAYOUT,
+        piece_layout=CURRENT_TASK_PIECE_LAYOUT,
         board_center_in_table_frame_xy_m=board_center,
     )
+    visual_layout_receipt = _apply_bg_visual_layout(spec)
     prior = read_contact_prior_snapshot()
     variant = load_simulator_variant("nominal_uncalibrated", contract_snapshot=prior)
     apply_contact_variant(spec, variant)
@@ -859,16 +921,7 @@ def render_episode_comparison(
         "physics_trajectory_executed": trajectory_mode == "command_driven_physics",
         "measured_encoder_state_kinematic_replay": trajectory_mode == "measured_actual_state",
         "reward_recomputed_for_display_trajectory": False,
-        "visual_piece_layout": {
-            "piece_layout": PAWN_BG_VISUAL_PIECE_LAYOUT,
-            "piece_layout_id": PAWN_BG_VISUAL_LAYOUT_ID,
-            "robot_side_semantic_piece_squares": list(PAWN_BG_ROBOT_SIDE_SQUARES),
-            "robot_side_edge_files_present": False,
-            "board_beige_brown_palette_swapped": True,
-            "piece_render_palette_swapped_between_sides": True,
-            "semantic_piece_ids_renamed": False,
-            "frozen_evaluator_scene_changed": False,
-        },
+        "visual_piece_layout": visual_layout_receipt,
         "episode_score": score,
         "physical_orientation_rotation_degrees_applied": rotation,
         "simulation_camera": camera_receipt,

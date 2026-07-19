@@ -10,9 +10,6 @@ from sim2claw.scene import (
     STUDIO_CAMERAS,
     TELEOP_PAWN_SOURCE_SQUARES,
     TELEOP_TAN_PAWN_SQUARES,
-    PAWN_BG_ROBOT_SIDE_SQUARES,
-    PAWN_BG_VISUAL_LAYOUT_ID,
-    PAWN_BG_VISUAL_PIECE_LAYOUT,
     build_scene_spec,
     initialize_robot_poses,
     registered_board_center,
@@ -219,63 +216,6 @@ class SceneContractTest(unittest.TestCase):
         self.assertEqual(pawn_geom_types.count(mujoco.mjtGeom.mjGEOM_ELLIPSOID), 2)
         self.assertEqual(pawn_geom_types.count(mujoco.mjtGeom.mjGEOM_SPHERE), 1)
         self.assertNotIn(mujoco.mjtGeom.mjGEOM_CAPSULE, pawn_geom_types)
-
-    def test_bg_visual_layout_swaps_palette_and_omits_robot_side_edge_files(self) -> None:
-        model = build_scene_spec(piece_layout=PAWN_BG_VISUAL_PIECE_LAYOUT).compile()
-        self.assertEqual(PAWN_BG_ROBOT_SIDE_SQUARES, ("b1", "c2", "d1", "e2", "f1", "g2"))
-        for square in PAWN_BG_ROBOT_SIDE_SQUARES:
-            self.assertGreaterEqual(
-                mujoco.mj_name2id(
-                    model, mujoco.mjtObj.mjOBJ_BODY, f"brown_pawn_{square}"
-                ),
-                0,
-            )
-        for square in ("a2", "h1"):
-            self.assertEqual(
-                mujoco.mj_name2id(
-                    model, mujoco.mjtObj.mjOBJ_BODY, f"brown_pawn_{square}"
-                ),
-                -1,
-            )
-
-        near_body = mujoco.mj_name2id(
-            model, mujoco.mjtObj.mjOBJ_BODY, "brown_pawn_b1"
-        )
-        far_body = mujoco.mj_name2id(
-            model, mujoco.mjtObj.mjOBJ_BODY, "tan_pawn_b7"
-        )
-        near_geom = next(
-            geom_id
-            for geom_id in range(model.ngeom)
-            if int(model.geom_bodyid[geom_id]) == near_body
-        )
-        far_geom = next(
-            geom_id
-            for geom_id in range(model.ngeom)
-            if int(model.geom_bodyid[geom_id]) == far_body
-        )
-        for actual, expected in zip(
-            model.geom_rgba[near_geom], (0.78, 0.62, 0.4, 1.0), strict=True
-        ):
-            self.assertAlmostEqual(float(actual), expected)
-        for actual, expected in zip(
-            model.geom_rgba[far_geom], (0.42, 0.24, 0.13, 1.0), strict=True
-        ):
-            self.assertAlmostEqual(float(actual), expected)
-
-        a1 = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "square_0_0")
-        b1 = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "square_1_0")
-        for actual, expected in zip(
-            model.geom_rgba[a1], (0.27, 0.105, 0.025, 1.0), strict=True
-        ):
-            self.assertAlmostEqual(float(actual), expected)
-        for actual, expected in zip(
-            model.geom_rgba[b1], (0.83, 0.63, 0.36, 1.0), strict=True
-        ):
-            self.assertAlmostEqual(float(actual), expected)
-        summary = scene_summary(piece_layout=PAWN_BG_VISUAL_PIECE_LAYOUT)
-        self.assertEqual(summary["piece_layout_id"], PAWN_BG_VISUAL_LAYOUT_ID)
-        self.assertEqual(summary["piece_count"], 14)
 
     def test_board_reaching_arm_tracks_board_length_centerline(self) -> None:
         summary = scene_summary()
