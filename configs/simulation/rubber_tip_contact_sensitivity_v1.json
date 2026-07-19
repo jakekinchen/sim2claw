@@ -157,7 +157,7 @@
     "training_rows_from_evaluator": 0
   },
   "limitations": [
-    "All rubber-tip dimensions, contact parameters, and added masses are estimated sensitivity priors, not measurements.",
+    "All rubber-tip dimensions and contact parameters are estimated sensitivity priors, not measurements; physical rubber mass is nonzero and unmeasured but intentionally excluded from simulator dynamics.",
     "The ensemble does not estimate sim-to-real error or validate the physical rubber bands.",
     "Only the frozen chess_rook_lift_v1 simulated ACT checkpoint is in scope; no pawn or broad manipulation authority follows."
   ]
