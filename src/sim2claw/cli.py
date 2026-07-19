@@ -120,6 +120,22 @@ def build_parser() -> argparse.ArgumentParser:
     source_adapt.add_argument("--adapter", choices=("act", "groot"), required=True)
     source_adapt.add_argument("--output", type=Path, required=True)
 
+    pawn_groot_export = subparsers.add_parser(
+        "pawn-groot-export",
+        help="export admitted 100 mm pawn sources as a GR00T LeRobot dataset",
+    )
+    pawn_groot_export.add_argument("--output", type=Path, required=True)
+    pawn_groot_export.add_argument(
+        "--source-episode", type=Path, action="append", required=True
+    )
+
+    pawn_groot_preflight = subparsers.add_parser(
+        "pawn-groot-preflight",
+        help="verify pawn GR00T payload and frozen action-chunk denominators",
+    )
+    pawn_groot_preflight.add_argument("--dataset", type=Path, required=True)
+    pawn_groot_preflight.add_argument("--output", type=Path, required=True)
+
     sim_real = subparsers.add_parser(
         "sim-real-bridge",
         help="verify physical-source availability and freeze the 72mm-to-100mm comparison boundary",
@@ -303,6 +319,24 @@ def main(argv: Sequence[str] | None = None) -> int:
                 sort_keys=True,
             )
         )
+        return 0
+    if args.command == "pawn-groot-export":
+        from .pawn_groot_dataset import export_pawn_groot_dataset
+
+        report = export_pawn_groot_dataset(
+            args.output,
+            source_directories=args.source_episode,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "pawn-groot-preflight":
+        from .pawn_groot_dataset import preflight_pawn_groot_dataset
+
+        report = preflight_pawn_groot_dataset(
+            args.dataset,
+            output_path=args.output,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
         return 0
     if args.command == "sim-real-bridge":
         from .sim_real_bridge import inspect_sim_real_bridge
