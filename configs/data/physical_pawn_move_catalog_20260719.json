@@ -1,0 +1,578 @@
+{
+  "catalog_id": "physical_pawn_moves_20260719_latest_v1",
+  "discarded_recordings": [
+    {
+      "original_path": "datasets/manipulation_source_recordings/g1-to-g2__20260719T032722Z-84dc04de",
+      "reason": "initial_attempt_replaced_by_explicit_redo",
+      "recording_id": "20260719T032722Z-84dc04de",
+      "recovery_location": "user_trash",
+      "replacement_recording_id": "20260719T032810Z-9e623c5e"
+    }
+  ],
+  "episodes": [
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "b2",
+      "duration_seconds": 18.370913541992195,
+      "folder_label": "b1-to-b2",
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "mode": "physical_follower",
+      "move_id": "b1_to_b2",
+      "outcome_label": "success",
+      "overhead_video_sha256": "fe07e303759c2d0aef0959c0e33524c11c7f4231aa7affc037a1d8a585265967",
+      "policy_candidate_id": "pawn_b1_to_b2_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "b1 to b2",
+      "receipt_sha256": "1907dbd408f6472ac39f851de414cf9f2c523560879a73e845960de4e692098e",
+      "recording_id": "20260719T030059Z-a26f8400",
+      "sample_count": 368,
+      "sample_hz": 20,
+      "samples_sha256": "1c451abb1232b900dae3cdf66b620afd727c871222c926ac750853821b2fe872",
+      "source_path": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400",
+      "source_square": "b1",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "b1",
+      "duration_seconds": 23.603924166003708,
+      "folder_label": "b2-to-b1",
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "mode": "physical_follower",
+      "move_id": "b2_to_b1",
+      "outcome_label": "success",
+      "overhead_video_sha256": "5d161c4596c3c7a4c3392b89b8eac99acd64c9e557bb79241ec7d2882c39b18c",
+      "policy_candidate_id": "pawn_b2_to_b1_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "b2 to b1",
+      "receipt_sha256": "8955cd4aa48b6b23dade50a6f4700c3c654ed68c368b91656c24a68c6ea49a46",
+      "recording_id": "20260719T032315Z-d3c3cf0b",
+      "sample_count": 473,
+      "sample_hz": 20,
+      "samples_sha256": "547dce8298c4111b1d58fe4101e0d8a7139ba49c503099f3d7ae720b5fb7e76e",
+      "source_path": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b",
+      "source_square": "b2",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "f1",
+      "duration_seconds": 28.255084500007797,
+      "folder_label": "b2-to-c2",
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "mode": "physical_follower",
+      "move_id": "e1_to_f1",
+      "outcome_label": "success",
+      "overhead_video_sha256": "5a89045dfa8e8fa2776dc4077e7adc5334998455277b9b93b396f65650f2d508",
+      "policy_candidate_id": "pawn_e1_to_f1_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "b2 to c2",
+      "receipt_sha256": "4ab698f2d238a627b93fc41e2ee2cfa24224813b11e70f441e6ee24f8721e24f",
+      "recording_id": "20260719T033023Z-fd7005f3",
+      "sample_count": 566,
+      "sample_hz": 20,
+      "samples_sha256": "67b77efe4e17083fc8da724fcca228dc43c1c8e203ace7c51d1e2c5e02fdef0b",
+      "source_path": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3",
+      "source_square": "e1",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "b1",
+      "duration_seconds": 19.70314649998909,
+      "folder_label": "c1-to-c2",
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "mode": "physical_follower",
+      "move_id": "b2_to_b1",
+      "outcome_label": "success",
+      "overhead_video_sha256": "fcf781989b971770eb7eff72128f7b291d6fe4fa346b3a4eeb78072571408d2f",
+      "policy_candidate_id": "pawn_b2_to_b1_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "c1 to c2",
+      "receipt_sha256": "538dda41dc2e98a85c7911535c046781a28ce3ed5c8a880f47134b2fbf04bcea",
+      "recording_id": "20260719T032400Z-052d5137",
+      "sample_count": 395,
+      "sample_hz": 20,
+      "samples_sha256": "e0eb09897bf92172924683b97e4f31240add47af78d4d6fdfaef9724878d887a",
+      "source_path": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137",
+      "source_square": "b2",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "b2",
+      "duration_seconds": 21.155075333022978,
+      "folder_label": "c2-to-c1",
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "mode": "physical_follower",
+      "move_id": "b1_to_b2",
+      "outcome_label": "success",
+      "overhead_video_sha256": "820dba94ed6788c4855d64016dc1f7949f6806fc0df752113669a12657d5999a",
+      "policy_candidate_id": "pawn_b1_to_b2_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "c2 to c1",
+      "receipt_sha256": "917a23b34bde78dfb61ec33f336ea3b4915fa0b55567a15ef957218afe90c22a",
+      "recording_id": "20260719T030206Z-af661460",
+      "sample_count": 424,
+      "sample_hz": 20,
+      "samples_sha256": "bb6290ce45b6b0804d972b1d018d0ddd48ed2fcfe7f6096841ce41a39be4a370",
+      "source_path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460",
+      "source_square": "b1",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "c1",
+      "duration_seconds": 26.304963750008028,
+      "folder_label": "c2-to-c1",
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "mode": "physical_follower",
+      "move_id": "c2_to_c1",
+      "outcome_label": "success",
+      "overhead_video_sha256": "e5cf0b1ab23174e908d509791653d2289a85770476381931384ea2f7308a867b",
+      "policy_candidate_id": "pawn_c2_to_c1_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "c2 to c1",
+      "receipt_sha256": "00d1a6b0375232be753f771b37f28117aa6d370778d16bb9b14ad2892c6a4c2f",
+      "recording_id": "20260719T031324Z-bf91502b",
+      "sample_count": 527,
+      "sample_hz": 20,
+      "samples_sha256": "b93fed706dd205197e9e068aec62d8fe552b822be150218dff5601a1a5eec183",
+      "source_path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b",
+      "source_square": "c2",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "c1",
+      "duration_seconds": 23.40508741600206,
+      "folder_label": "d1-to-d2",
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "mode": "physical_follower",
+      "move_id": "c2_to_c1",
+      "outcome_label": "success",
+      "overhead_video_sha256": "a482c2acca1698cad7c278b72e6ffbbe54a14c2af66ab50b332863d8d1f55236",
+      "policy_candidate_id": "pawn_c2_to_c1_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "d1 to d2",
+      "receipt_sha256": "3073f478683c42ab92c213888d32764b325fab0bedbf5fd93ff82901fdce5180",
+      "recording_id": "20260719T031518Z-34bff0dd",
+      "sample_count": 469,
+      "sample_hz": 20,
+      "samples_sha256": "7730cbe226c9ef0e5cf5edc4e1a7628d68c1358568ef3c4de885100c493fd7fd",
+      "source_path": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd",
+      "source_square": "c2",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "c2",
+      "duration_seconds": 20.35094954201486,
+      "folder_label": "d2-to-d1",
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "mode": "physical_follower",
+      "move_id": "c1_to_c2",
+      "outcome_label": "success",
+      "overhead_video_sha256": "5425ba00e12a1a1c4b2d1ce08980cca88fa48c69c8e92d5c63f9b59a5e1fdd11",
+      "policy_candidate_id": "pawn_c1_to_c2_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "d2 to d1",
+      "receipt_sha256": "640891f5a23e357ceb896082b9709c8994b55997ce6678e130f2a4f9d6b80b76",
+      "recording_id": "20260719T032440Z-f728a18c",
+      "sample_count": 408,
+      "sample_hz": 20,
+      "samples_sha256": "7d52ecadd85988453ebc7d9c12f318e9c9a4387a752f5508436d2546e4ed5a54",
+      "source_path": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c",
+      "source_square": "c1",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "f1",
+      "duration_seconds": 20.254974790965207,
+      "folder_label": "d2-to-e2",
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "mode": "physical_follower",
+      "move_id": "e1_to_f1",
+      "outcome_label": "success",
+      "overhead_video_sha256": "e85ed5b0c9ac1b42cd3ecea6f1eccb29def3b3f46326df464613475da395f9e9",
+      "policy_candidate_id": "pawn_e1_to_f1_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "d2 to e2",
+      "receipt_sha256": "bc555046b7f3d6c3cb11b08c8185b5ace14dc73a6e20a69d6b55be663fba4bdd",
+      "recording_id": "20260719T032935Z-66894edc",
+      "sample_count": 406,
+      "sample_hz": 20,
+      "samples_sha256": "c3ac0a0cd511d6728d73980279a20260e4f89657c3c2daeb197ccd54336afb26",
+      "source_path": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc",
+      "source_square": "e1",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "c2",
+      "duration_seconds": 21.05076154199196,
+      "folder_label": "e1-to-e2",
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "mode": "physical_follower",
+      "move_id": "c1_to_c2",
+      "outcome_label": "success",
+      "overhead_video_sha256": "2307c79a7bbb8ef7bc5fe04a1f09fe79550ea8e005f713e11ebf84cb038ab006",
+      "policy_candidate_id": "pawn_c1_to_c2_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "e1 to e2",
+      "receipt_sha256": "8960203559f69a47f4b35305c5a60a0489a41306571d3bcf5e659bb67816b88b",
+      "recording_id": "20260719T032531Z-06be393c",
+      "sample_count": 422,
+      "sample_hz": 20,
+      "samples_sha256": "f8e7a5629b35ca718836837716298aa68fe0a376e04d2943af3a8560d4bc16d6",
+      "source_path": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c",
+      "source_square": "c1",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "f1",
+      "duration_seconds": 15.805086499953177,
+      "folder_label": "e1-to-f1",
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "mode": "physical_follower",
+      "move_id": "e1_to_f1",
+      "outcome_label": "success",
+      "overhead_video_sha256": "00c4866bfad75926ab76ec2abcf1e149ceeb860f64a9d992bc7ee6da948f3713",
+      "policy_candidate_id": "pawn_e1_to_f1_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "e1 to f1",
+      "receipt_sha256": "c6de589e4e5883f295608b10d07367783f24b7e57da12c2b11351510f4eaa837",
+      "recording_id": "20260719T032853Z-1ee203e8",
+      "sample_count": 317,
+      "sample_hz": 20,
+      "samples_sha256": "2fa05cc1c065c3aef4e30cf67b7e029a7effabfcc7b126529e57f8f973dca3d1",
+      "source_path": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8",
+      "source_square": "e1",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "d2",
+      "duration_seconds": 20.858130750013515,
+      "folder_label": "e2-to-e1",
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "mode": "physical_follower",
+      "move_id": "d1_to_d2",
+      "outcome_label": "success",
+      "overhead_video_sha256": "e0605b185b805c46eff952d5d822727024e0b94c125166e6dbe15f2959b8d02c",
+      "policy_candidate_id": "pawn_d1_to_d2_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "e2 to e1",
+      "receipt_sha256": "bb272674590b66d3ad9e01f7a5418fd5f9fdf5abe2deeb2a1d650df73583e5d5",
+      "recording_id": "20260719T031615Z-0e058ca2",
+      "sample_count": 418,
+      "sample_hz": 20,
+      "samples_sha256": "7b77747478e8a33e48e3de30ffbbdf132e6c05827468b3ab16c3757d7e4aa71b",
+      "source_path": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2",
+      "source_square": "d1",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "d2",
+      "duration_seconds": 22.005065416975413,
+      "folder_label": "f1-to-f2",
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "mode": "physical_follower",
+      "move_id": "d1_to_d2",
+      "outcome_label": "success",
+      "overhead_video_sha256": "4ac5db651f0cf14bccbd605818036ef75f434b7058d296c3d52ddc79e99b08a1",
+      "policy_candidate_id": "pawn_d1_to_d2_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "f1 to f2",
+      "receipt_sha256": "0c97a8abe1e940c743b8150805055d79a9693d8703ed70f64814d6b81226774e",
+      "recording_id": "20260719T031715Z-61ebb199",
+      "sample_count": 441,
+      "sample_hz": 20,
+      "samples_sha256": "5cd8bcf817302d9cd85ae9c966ca08be7a5e84d6a8eae63261f0211312b49434",
+      "source_path": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199",
+      "source_square": "d1",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "f1",
+      "duration_seconds": 21.95510145800654,
+      "folder_label": "f2-to-f1",
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "mode": "physical_follower",
+      "move_id": "f2_to_f1",
+      "outcome_label": "success",
+      "overhead_video_sha256": "b3fe1f4b99b1bd7697695c8ed9093ccef8d08da22cdb889ee1a3f460af6d2081",
+      "policy_candidate_id": "pawn_f2_to_f1_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "f2 to f1",
+      "receipt_sha256": "03e883b919bf6c754685dc9023677569f662116d4e383132c17886e3bf64f631",
+      "recording_id": "20260719T032620Z-0c7e3d86",
+      "sample_count": 440,
+      "sample_hz": 20,
+      "samples_sha256": "11be4473baba000566a7d7147fb99144e6302cdfd9258fcdfdd7c59531ca2a70",
+      "source_path": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86",
+      "source_square": "f2",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "preferred_keep",
+      "destination_square": "g2",
+      "duration_seconds": 17.45281408302253,
+      "folder_label": "g1-to-g2-redo",
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "mode": "physical_follower",
+      "move_id": "g1_to_g2",
+      "outcome_label": "success",
+      "overhead_video_sha256": "682f755bf95b55c7e0d0e2dff31b76dcfc67451a1eab7732bd5da2134e63b720",
+      "policy_candidate_id": "pawn_g1_to_g2_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "g1 to g2 redo",
+      "receipt_sha256": "f507d7b9cd44a7bb3e66a84370e7f3d4c6b1e5ba0a139d63b6f28ca2a6089459",
+      "recording_id": "20260719T032810Z-9e623c5e",
+      "sample_count": 350,
+      "sample_hz": 20,
+      "samples_sha256": "6245ea196130a6be208f1091fadc3b1745bc8ccf1d020d427850fb08cc3bc633",
+      "source_path": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e",
+      "source_square": "g1",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    },
+    {
+      "assets": {
+        "overhead_video": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/overhead_c922.mp4",
+        "receipt": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/samples.jsonl"
+      },
+      "callable_policy": false,
+      "candidate_role": "source_candidate",
+      "destination_square": "g1",
+      "duration_seconds": 21.30034637497738,
+      "folder_label": "g2-to-g1",
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "mode": "physical_follower",
+      "move_id": "g2_to_g1",
+      "outcome_label": "success",
+      "overhead_video_sha256": "418d4b2d7a1fc60265076cd88d85577c2ba74f49307232ebcfbfe446ba531640",
+      "policy_candidate_id": "pawn_g2_to_g1_v1",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "receipt_label": "g2 to g1",
+      "receipt_sha256": "0297ebefa1c9316f87d6c045de727122df808c478862b30a3e33b0fca6aa6af0",
+      "recording_id": "20260719T031813Z-b147b429",
+      "sample_count": 427,
+      "sample_hz": 20,
+      "samples_sha256": "59a1199bf5be966d5e8163aff20306cf15bcfc608d4e176f2bf545d2ddbb2f30",
+      "source_path": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429",
+      "source_square": "g2",
+      "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+    }
+  ],
+  "moves": [
+    {
+      "callable_policy": false,
+      "candidate_recording_ids": [
+        "20260719T030059Z-a26f8400",
+        "20260719T030206Z-af661460"
+      ],
+      "move_id": "b1_to_b2",
+      "policy_candidate_id": "pawn_b1_to_b2_v1",
+      "preferred_recording_id": null,
+      "status": "source_candidates_pending_reconciliation"
+    },
+    {
+      "callable_policy": false,
+      "candidate_recording_ids": [
+        "20260719T032315Z-d3c3cf0b",
+        "20260719T032400Z-052d5137"
+      ],
+      "move_id": "b2_to_b1",
+      "policy_candidate_id": "pawn_b2_to_b1_v1",
+      "preferred_recording_id": null,
+      "status": "source_candidates_pending_reconciliation"
+    },
+    {
+      "callable_policy": false,
+      "candidate_recording_ids": [
+        "20260719T032440Z-f728a18c",
+        "20260719T032531Z-06be393c"
+      ],
+      "move_id": "c1_to_c2",
+      "policy_candidate_id": "pawn_c1_to_c2_v1",
+      "preferred_recording_id": null,
+      "status": "source_candidates_pending_reconciliation"
+    },
+    {
+      "callable_policy": false,
+      "candidate_recording_ids": [
+        "20260719T031324Z-bf91502b",
+        "20260719T031518Z-34bff0dd"
+      ],
+      "move_id": "c2_to_c1",
+      "policy_candidate_id": "pawn_c2_to_c1_v1",
+      "preferred_recording_id": null,
+      "status": "source_candidates_pending_reconciliation"
+    },
+    {
+      "callable_policy": false,
+      "candidate_recording_ids": [
+        "20260719T031615Z-0e058ca2",
+        "20260719T031715Z-61ebb199"
+      ],
+      "move_id": "d1_to_d2",
+      "policy_candidate_id": "pawn_d1_to_d2_v1",
+      "preferred_recording_id": null,
+      "status": "source_candidates_pending_reconciliation"
+    },
+    {
+      "callable_policy": false,
+      "candidate_recording_ids": [
+        "20260719T033023Z-fd7005f3",
+        "20260719T032935Z-66894edc",
+        "20260719T032853Z-1ee203e8"
+      ],
+      "move_id": "e1_to_f1",
+      "policy_candidate_id": "pawn_e1_to_f1_v1",
+      "preferred_recording_id": null,
+      "status": "source_candidates_pending_reconciliation"
+    },
+    {
+      "callable_policy": false,
+      "candidate_recording_ids": [
+        "20260719T032620Z-0c7e3d86"
+      ],
+      "move_id": "f2_to_f1",
+      "policy_candidate_id": "pawn_f2_to_f1_v1",
+      "preferred_recording_id": null,
+      "status": "source_candidates_pending_reconciliation"
+    },
+    {
+      "callable_policy": false,
+      "candidate_recording_ids": [
+        "20260719T032810Z-9e623c5e"
+      ],
+      "move_id": "g1_to_g2",
+      "policy_candidate_id": "pawn_g1_to_g2_v1",
+      "preferred_recording_id": "20260719T032810Z-9e623c5e",
+      "status": "source_candidates_pending_reconciliation"
+    },
+    {
+      "callable_policy": false,
+      "candidate_recording_ids": [
+        "20260719T031813Z-b147b429"
+      ],
+      "move_id": "g2_to_g1",
+      "policy_candidate_id": "pawn_g2_to_g1_v1",
+      "preferred_recording_id": null,
+      "status": "source_candidates_pending_reconciliation"
+    }
+  ],
+  "raw_storage": {
+    "availability": "owner_local_ignored_artifacts_not_distributed_by_git",
+    "git_policy": "raw_receipts_samples_videos_remain_ignored",
+    "mutation_policy": "raw_receipts_are_immutable; corrections_live_in_this_catalog",
+    "root": "datasets/manipulation_source_recordings"
+  },
+  "reviewed_at": "2026-07-19",
+  "routing_decision": {
+    "callable_policy_authorized": false,
+    "execution": "future_versioned_act_policy_adapter_after_replay_and_evaluator_admission",
+    "learned_policy_verified": false,
+    "observation": "overhead_camera_board_state_is_a_planner_input_only",
+    "physical_task_success_proven": false,
+    "selection": "planner_selects_a_receipt_grounded_move_id_after_board_state_review",
+    "training_rows_admitted": 0
+  },
+  "schema_version": "sim2claw.physical_pawn_move_catalog.v1"
+}
