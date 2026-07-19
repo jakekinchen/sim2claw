@@ -10,8 +10,11 @@
 | `docs/autonomous-workflow/09-autonomous-milestones.md` | Invariant milestone gates. |
 | `configs/data/physical_teleop_episode_intake_20260718.json` | Machine-readable pointers, hashes, review, and lane routing for the owner-local physical source cohort. |
 | `docs/run-logs/2026-07-18-physical-episode-intake.md` | Human-readable physical episode assessment and admission boundary. |
-| `configs/evaluations/pawn_rank12_bidirectional_v1.json` | Frozen A1↔A2 through H1↔H2 product benchmark, resets, seeds, gates, and scorecard. |
+| `configs/evaluations/pawn_rank12_bidirectional_v1.json` | Frozen historical A1↔A2 through H1↔H2 benchmark; preserved byte-for-byte, not current product authority. |
+| `configs/evaluations/pawn_rank12_bidirectional_v2.json` | Current B1↔B2 through G1↔G2 product benchmark, endpoint metrics, regression support, composition diagnostics, and scorecard. |
 | `docs/decisions/0006-pawn-rank12-bidirectional-evaluation.md` | Owner decision and ACT/GR00T/Brev execution boundary for the final benchmark. |
+| `configs/evaluations/pawn_bidirectional_composability_v1.json` | Non-promoting B–G endpoint, offset-regression, precondition, repeatability, and composition diagnostic. |
+| `docs/decisions/0009-pawn-bidirectional-composability-evaluation.md` | Diagnostic evidence model, grading, CLI, current incomplete result, and system-ID handoff. |
 
 Add project-specific product and architecture docs to this table after setup.
 
@@ -37,6 +40,8 @@ Add project-specific product and architecture docs to this table after setup.
 | Review decisions | `docs/reviewer-messages/` |
 | Manager interventions | `docs/manager-log/` |
 | Physical source episode inventory | Versioned `configs/data/physical_teleop_episode_intake_*.json` ledger; raw artifacts remain under ignored `datasets/act_source_recordings/` |
-| Final product evaluation | `configs/evaluations/pawn_rank12_bidirectional_v1.json`; exact rows remain zero-training-row held-outs |
+| Final product evaluation | `configs/evaluations/pawn_rank12_bidirectional_v2.json`; retrospective source rows remain non-promoting and future promotion trials remain separately frozen |
+| Historical A–H benchmark | `configs/evaluations/pawn_rank12_bidirectional_v1.json`; byte-identical prior contract, not current product authority |
+| Pawn skill composability diagnostic | `configs/evaluations/pawn_bidirectional_composability_v1.json`; superseded diagnostic retained for history, never a promotion surface |
 
 If a new doc duplicates one of these concerns, delete or merge it before it drifts.

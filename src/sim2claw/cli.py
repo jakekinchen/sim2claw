@@ -160,6 +160,13 @@ def build_parser() -> argparse.ArgumentParser:
         default=Path("outputs/sim_real_bridge/receipt.json"),
     )
 
+    pawn_composability = subparsers.add_parser(
+        "pawn-composability-eval",
+        help="measure pawn endpoint bias, offset sensitivity, and composition support",
+    )
+    pawn_composability.add_argument("--annotations", type=Path, required=True)
+    pawn_composability.add_argument("--output", type=Path, required=True)
+
     camera_overlay = subparsers.add_parser(
         "camera-overlay",
         help="fit the physical camera to the board and render robot-anchored comparison views",
@@ -454,6 +461,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["comparison_readiness"]["joint_response_calibration_ready"] else 1
+    if args.command == "pawn-composability-eval":
+        from .pawn_composability_eval import evaluate_composability
+
+        report = evaluate_composability(args.annotations, args.output)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["status"] == "complete_descriptive_evaluation" else 2
     if args.command == "camera-overlay":
         from .robot_anchored_overlay import build_robot_anchored_overlay
 
