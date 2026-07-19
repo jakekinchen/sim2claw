@@ -1,0 +1,185 @@
+{
+  "schema_version": "sim2claw.simulator_progression_ledger.v1",
+  "created_at": "2026-07-19T13:00:00-05:00",
+  "authority": {
+    "training_loss_is_diagnostic_only": true,
+    "metric_families_are_not_interchangeable": true,
+    "promotion_requires_separately_owned_consequence_evaluation": true,
+    "physical_authority": false
+  },
+  "chart": {
+    "path": "docs/run-logs/2026-07-19-simulator-accuracy-progression.svg",
+    "x_axis": "sequential_simulator_optimization_action",
+    "y_axis": "training_side_event_rms_mm",
+    "direction": "lower_is_better",
+    "first_value_mm": 309.55046011340426,
+    "latest_training_value_mm": 17.413912657897317,
+    "relative_error_reduction": 0.9437445105023662
+  },
+  "spatial_fit_progression": [
+    {
+      "order": 1,
+      "label": "provisional identity",
+      "change": "original board frame and provisional physical-to-sim joint adapter",
+      "git_commit": "3e137e2",
+      "proof_state": "committed_terminal_negative",
+      "split": "training",
+      "episode_count": 11,
+      "event_count": 22,
+      "event_rms_m": 0.30955046011340426,
+      "clipped_episode_count": 11,
+      "contact_episode_count": 0,
+      "lift_episode_count": 0,
+      "success_episode_count": 0,
+      "mean_reward": 0.1000001624739021,
+      "mean_final_target_distance_m": 0.044450000917677195
+    },
+    {
+      "order": 2,
+      "label": "free-sign source adapter",
+      "change": "bounded five-sign and five-offset source fit",
+      "git_commit": "b7e29ed",
+      "proof_state": "committed_rejected_candidate",
+      "split": "training",
+      "episode_count": 11,
+      "event_count": 22,
+      "event_rms_m": 0.11842208424410972,
+      "clipped_episode_count": 0,
+      "contact_episode_count": 0,
+      "lift_episode_count": 0,
+      "success_episode_count": 0,
+      "mean_reward": -0.5818180192583345,
+      "mean_final_target_distance_m": 0.04445000091877156
+    },
+    {
+      "order": 3,
+      "label": "180 degree relabel",
+      "change": "owner-video-consistent board-label rotation",
+      "git_commit": null,
+      "proof_state": "uncommitted_working_receipt",
+      "split": "training",
+      "episode_count": 11,
+      "event_count": 22,
+      "event_rms_m": 0.10671247009300287
+    },
+    {
+      "order": 4,
+      "label": "planar board fit",
+      "change": "bounded board center and yaw fit after relabel",
+      "git_commit": null,
+      "proof_state": "uncommitted_working_receipt",
+      "split": "training",
+      "episode_count": 11,
+      "event_count": 22,
+      "event_rms_m": 0.08940956040323188
+    },
+    {
+      "order": 5,
+      "label": "small joint offsets",
+      "change": "planar fit plus bounded pan, lift, elbow, and wrist-flex zero offsets",
+      "git_commit": null,
+      "proof_state": "uncommitted_working_receipt",
+      "split": "training",
+      "episode_count": 11,
+      "event_count": 22,
+      "event_rms_m": 0.039698166659578975,
+      "clipped_episode_count": 0,
+      "contact_episode_count": 0,
+      "lift_episode_count": 0,
+      "success_episode_count": 0,
+      "mean_reward": 0.009091163679582081,
+      "mean_final_target_distance_m": 0.0444499991923
+    },
+    {
+      "order": 6,
+      "label": "height and timing nuisance",
+      "change": "stage C plus bounded base-height and reopen-timing terms",
+      "git_commit": null,
+      "proof_state": "uncommitted_working_receipt",
+      "split": "training",
+      "episode_count": 11,
+      "event_count": 22,
+      "event_rms_m": 0.02613968639684607,
+      "clipped_episode_count": 0,
+      "contact_episode_count": 0,
+      "lift_episode_count": 0,
+      "success_episode_count": 0,
+      "mean_reward": -0.08181789223868126,
+      "mean_final_target_distance_m": 0.04444999919495013
+    },
+    {
+      "order": 7,
+      "label": "lift-dominant offset",
+      "change": "bounded shoulder-lift-dominant zero offset plus board fit",
+      "git_commit": null,
+      "proof_state": "uncommitted_working_receipt",
+      "split": "training",
+      "episode_count": 11,
+      "event_count": 22,
+      "event_rms_m": 0.017413912657897317,
+      "clipped_episode_count": 0,
+      "contact_episode_count": 9,
+      "lift_episode_count": 1,
+      "success_episode_count": 0,
+      "mean_reward": -0.25336828911555553,
+      "mean_final_target_distance_m": 0.060468421479392215
+    },
+    {
+      "order": 8,
+      "label": "held-out lift-dominant",
+      "change": "one-time kinematic validation of the frozen lift-dominant candidate",
+      "git_commit": null,
+      "proof_state": "uncommitted_kinematic_admission_only",
+      "split": "held_out",
+      "episode_count": 2,
+      "event_count": 4,
+      "event_rms_m": 0.023549307065757002,
+      "clipped_episode_count": 0,
+      "contact_episode_count": 2,
+      "lift_episode_count": 0,
+      "success_episode_count": 0
+    }
+  ],
+  "actuator_tracking_progression": [
+    {
+      "label": "nominal actuator model",
+      "proof_state": "uncommitted_working_receipt",
+      "train_joint_rms_deg": 2.040840723876258,
+      "held_out_joint_rms_deg": 2.132212076791536
+    },
+    {
+      "label": "bounded actuator sysid",
+      "proof_state": "uncommitted_working_receipt",
+      "train_joint_rms_deg": 2.031580440287786,
+      "held_out_joint_rms_deg": 2.123372813336462
+    }
+  ],
+  "act_training_runs": [
+    {
+      "label": "ACT recipe 1",
+      "final_loss": 0.01674436405301094,
+      "last_100_mean_loss": 0.019592951443046333,
+      "closed_loop_success": false
+    },
+    {
+      "label": "ACT recipe 2",
+      "final_loss": 0.04124948009848595,
+      "last_100_mean_loss": 0.04919697031378746,
+      "closed_loop_success": false
+    },
+    {
+      "label": "ACT recipe 3",
+      "final_loss": 0.03174522891640663,
+      "last_100_mean_loss": 0.025751128103584053,
+      "closed_loop_success": true,
+      "success_scope": "narrow rook-lift v1 only"
+    }
+  ],
+  "source_notes": [
+    "Committed B-G evidence: docs/run-logs/2026-07-19-pawn-b-g-sim-reward-diagnostic.md",
+    "Committed source-fit evidence: docs/run-logs/2026-07-19-pawn-b-g-source-fit-sensitivity.md",
+    "Working workcell receipts: .claude/worktrees/sim2real-so101-pawn-fidelity-9c75a2/outputs/pawn_bg_act_v1/pawn_bg_workcell_fit_v1/",
+    "Working actuator receipt: .claude/worktrees/sim2real-so101-pawn-fidelity-9c75a2/outputs/pawn_bg_act_v1/pawn_bg_actuator_sysid_v1/receipt.json",
+    "GR00T trainer histories and archives remain outside Git under /Users/kelly/Documents/Codex/"
+  ]
+}
