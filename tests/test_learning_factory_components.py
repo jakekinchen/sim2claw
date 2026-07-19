@@ -17,7 +17,14 @@ from sim2claw.learning_factory_components import (
     validate_twin_candidate,
 )
 from sim2claw.learning_factory import LearningFactory
+from sim2claw.learning_factory_recursion import (
+    CORRECTION_SCHEMA,
+    REGISTRY_SCHEMA,
+    _independent_replay_digest,
+    admit_correction_candidate,
+)
 from sim2claw.scene import board_square_center
+from sim2claw.source_episode import admission_payload_sha256
 from sim2claw.system_identification import _hash_fraction
 
 
@@ -433,6 +440,137 @@ def test_real_component_campaign_executes_lf00_through_lf13() -> None:
             ].get("diagnostics")
             assert report["results"][13]["output"]["state"] == "rejected"
             assert report["results"][13]["output"]["skill_package"] is None
+
+            candidate_id = report["results"][8]["output"]["candidates"][0][
+                "candidate_id"
+            ]
+            episode = (
+                factory.root
+                / "stages/LF-09/attempts"
+                / report["results"][9]["attempt_id"]
+                / "candidate_executions"
+                / candidate_id
+            )
+            dataset_root = Path(
+                report["results"][9]["output"]["dataset_receipt_path"]
+            ).parent
+            ordinary_verdict = json.loads(
+                (dataset_root / f"{candidate_id}.evaluator.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            parent_id = "counterexample-corrective-component"
+            action_trace_sha256 = "a" * 64
+            registry_unsigned = {
+                "schema_version": REGISTRY_SCHEMA,
+                "source_evaluation_sha256": "b" * 64,
+                "parent_registry_sha256": None,
+                "counterexample_count": 1,
+                "new_counterexample_count": 1,
+                "counterexamples": [
+                    {
+                        "counterexample_id": parent_id,
+                        "action_trace_sha256": action_trace_sha256,
+                        "route_targets": ["LF-09"],
+                    }
+                ],
+                "route_targets": ["LF-09"],
+                "correction_candidates": [],
+                "raw_failures_are_training_data": False,
+            }
+            registry = {
+                **registry_unsigned,
+                "artifact_sha256": _canonical(registry_unsigned),
+            }
+            correction_root = root / "correction"
+            correction_root.mkdir()
+            failed_prefix_path = correction_root / "failed_prefix.json"
+            failed_prefix_path.write_text(
+                json.dumps(
+                    {
+                        "parent_counterexample_id": parent_id,
+                        "action_trace_sha256": action_trace_sha256,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            privileged_rows = [
+                json.loads(line)
+                for line in (
+                    episode / "evaluator_privileged_state.jsonl"
+                ).read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            ]
+            state_path = correction_root / "pre_failure_state.json"
+            state_path.write_text(
+                json.dumps(
+                    {
+                        "integration_state_float64": privileged_rows[0]["state"][
+                            "integration_state_float64"
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            intervention_path = correction_root / "intervention.json"
+            intervention_path.write_text(
+                json.dumps(
+                    {"owner": "geometric_expert", "start_sample_index": 1}
+                ),
+                encoding="utf-8",
+            )
+            corrective_verdict = {
+                **ordinary_verdict,
+                "admission_class": "corrective_suffix",
+                "all_source_actions_admitted": False,
+                "corrective_suffix": {
+                    "start_sample_index": 1,
+                    "end_sample_index_exclusive": ordinary_verdict[
+                        "training_rows_authorized"
+                    ],
+                    "exact_pre_failure_integration_state_matched": True,
+                    "failed_prefix_excluded_from_imitation_rows": True,
+                    "independent_full_episode_replay_passed": True,
+                    "corrective_actions_owned_by_declared_expert_or_teleoperator": True,
+                    "parent_counterexample_id": parent_id,
+                    "failed_prefix_sha256": _sha256(failed_prefix_path),
+                    "pre_failure_integration_state_sha256": _sha256(state_path),
+                    "intervention_sha256": _sha256(intervention_path),
+                    "independent_full_episode_evidence_sha256": (
+                        _independent_replay_digest(ordinary_verdict)
+                    ),
+                },
+            }
+            corrective_verdict["canonical_payload_sha256"] = (
+                admission_payload_sha256(corrective_verdict)
+            )
+            verdict_path = correction_root / "corrective_verdict.json"
+            verdict_path.write_text(json.dumps(corrective_verdict), encoding="utf-8")
+            admitted_correction = admit_correction_candidate(
+                {
+                    "schema_version": CORRECTION_SCHEMA,
+                    "correction_candidate_id": "component-correction-v1",
+                    "parent_counterexample_id": parent_id,
+                    "failed_prefix": {
+                        "path": str(failed_prefix_path),
+                        "sha256": _sha256(failed_prefix_path),
+                    },
+                    "pre_failure_integration_state": {
+                        "path": str(state_path),
+                        "sha256": _sha256(state_path),
+                    },
+                    "intervention": {
+                        "path": str(intervention_path),
+                        "sha256": _sha256(intervention_path),
+                    },
+                    "corrective_episode_directory": str(episode),
+                    "admission_verdict_path": str(verdict_path),
+                },
+                registry=registry,
+            )
+            assert admitted_correction["independent_evaluator_admitted"] is True
+            assert admitted_correction["failed_prefix_training_rows"] == 0
+            assert admitted_correction["admitted_suffix_row_count"] == 561
         finally:
             shutil.rmtree(
                 REPO_ROOT

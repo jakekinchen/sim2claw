@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import Any
 
 from .learning_factory_artifacts import atomic_write_json, canonical_digest, sha256_file
-from .source_episode import adapt_source_episode
+from .pawn_source_evaluator import evaluate_source_episode
+from .source_episode import adapt_source_episode, load_source_episode
 
 
 REGISTRY_SCHEMA = "sim2claw.factory_counterexample_registry.v2"
@@ -25,6 +26,24 @@ COVERAGE_FAILURES = {
     "final_height_error",
     "gripper_clearance",
 }
+
+
+def _independent_replay_digest(verdict: dict[str, Any]) -> str:
+    """Hash evaluator evidence while excluding wall-clock and file-location fields."""
+
+    return canonical_digest(
+        {
+            key: value
+            for key, value in verdict.items()
+            if key
+            not in {
+                "canonical_payload_sha256",
+                "created_at",
+                "receipt_path",
+                "receipt_sha256",
+            }
+        }
+    )
 
 
 def _validate_evaluation(evaluation: dict[str, Any]) -> None:
@@ -134,12 +153,22 @@ def admit_correction_candidate(
 ) -> dict[str, Any]:
     """Validate an exact failed-prefix/intervention/corrective-suffix branch."""
 
+    unsigned_registry = {
+        key: value for key, value in registry.items() if key != "artifact_sha256"
+    }
+    if registry.get("artifact_sha256") != canonical_digest(unsigned_registry):
+        raise ValueError("counterexample registry digest mismatch")
     if correction.get("schema_version") != CORRECTION_SCHEMA:
         raise ValueError("unsupported correction candidate")
     parent_id = str(correction.get("parent_counterexample_id") or "")
-    if parent_id not in {row["counterexample_id"] for row in registry["counterexamples"]}:
+    parents = {
+        str(row["counterexample_id"]): row for row in registry["counterexamples"]
+    }
+    if parent_id not in parents:
         raise ValueError("correction references an unknown counterexample")
+    parent = parents[parent_id]
     artifacts: dict[str, dict[str, str]] = {}
+    artifact_payloads: dict[str, dict[str, Any]] = {}
     for name in ("failed_prefix", "pre_failure_integration_state", "intervention"):
         declaration = correction.get(name)
         if not isinstance(declaration, dict):
@@ -148,10 +177,92 @@ def admit_correction_candidate(
         digest = str(declaration.get("sha256") or "")
         if not path.is_file() or sha256_file(path) != digest:
             raise ValueError(f"correction {name} evidence is missing or changed")
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, UnicodeDecodeError) as error:
+            raise ValueError(f"correction {name} evidence is not JSON") from error
+        if not isinstance(payload, dict):
+            raise ValueError(f"correction {name} evidence must be an object")
         artifacts[name] = {"path": str(path), "sha256": digest}
+        artifact_payloads[name] = payload
+    failed_prefix = artifact_payloads["failed_prefix"]
+    if (
+        failed_prefix.get("parent_counterexample_id") != parent_id
+        or failed_prefix.get("action_trace_sha256")
+        != parent.get("action_trace_sha256")
+    ):
+        raise ValueError("failed-prefix evidence is not bound to its counterexample")
+    intervention = artifact_payloads["intervention"]
+    if intervention.get("owner") not in {
+        "human_teleoperator",
+        "geometric_expert",
+    }:
+        raise ValueError("correction intervention has no eligible action owner")
     episode = Path(str(correction.get("corrective_episode_directory") or "")).resolve()
     verdict_path = Path(str(correction.get("admission_verdict_path") or "")).resolve()
     verdict = json.loads(verdict_path.read_text(encoding="utf-8"))
+    independently_replayed = evaluate_source_episode(episode)
+    for field in (
+        "source_recording_id",
+        "source_receipt_sha256",
+        "source_samples_sha256",
+        "scene_id",
+        "board_pose_id",
+        "evaluator_identity",
+        "measurements",
+        "gates",
+        "strict_success",
+        "exact_float32_sample_hold_replay_passed",
+    ):
+        if verdict.get(field) != independently_replayed.get(field):
+            raise ValueError(
+                f"corrective verdict differs from independent replay: {field}"
+            )
+    suffix = verdict.get("corrective_suffix")
+    if not isinstance(suffix, dict):
+        raise ValueError("repair admission is missing corrective suffix evidence")
+    start = int(suffix.get("start_sample_index", -1))
+    end = int(suffix.get("end_sample_index_exclusive", -1))
+    receipt, source_rows = load_source_episode(episode)
+    if start < 0 or end > len(source_rows) or end <= start:
+        raise ValueError("corrective suffix row range is invalid")
+    privileged_path = episode / str(receipt["evaluator_privileged_state_path"])
+    privileged_rows = [
+        json.loads(line)
+        for line in privileged_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    if start == 0:
+        initial_path = episode / str(
+            receipt["initial_evaluator_privileged_state_path"]
+        )
+        expected_state = json.loads(initial_path.read_text(encoding="utf-8"))[
+            "state"
+        ]["integration_state_float64"]
+    else:
+        expected_state = privileged_rows[start - 1]["state"][
+            "integration_state_float64"
+        ]
+    branch_state = artifact_payloads["pre_failure_integration_state"].get(
+        "integration_state_float64"
+    )
+    if branch_state != expected_state:
+        raise ValueError("correction branch state differs from replay state")
+    if int(intervention.get("start_sample_index", -1)) != start:
+        raise ValueError("correction intervention starts at another sample")
+    evidence_bindings = {
+        "parent_counterexample_id": parent_id,
+        "failed_prefix_sha256": artifacts["failed_prefix"]["sha256"],
+        "pre_failure_integration_state_sha256": artifacts[
+            "pre_failure_integration_state"
+        ]["sha256"],
+        "intervention_sha256": artifacts["intervention"]["sha256"],
+        "independent_full_episode_evidence_sha256": _independent_replay_digest(
+            independently_replayed
+        ),
+    }
+    if any(suffix.get(key) != value for key, value in evidence_bindings.items()):
+        raise ValueError("corrective verdict evidence bindings are incomplete")
     rows = adapt_source_episode(episode, adapter="act", admission_verdict=verdict)
     if verdict.get("admission_class") != "corrective_suffix":
         raise ValueError("repair admission must be an evaluator-approved corrective suffix")
@@ -167,6 +278,9 @@ def admit_correction_candidate(
         "failed_prefix_training_rows": 0,
         "route_target": "LF-09",
         "independent_evaluator_admitted": True,
+        "independent_full_episode_evidence_sha256": _independent_replay_digest(
+            independently_replayed
+        ),
     }
     if not unsigned["correction_candidate_id"]:
         raise ValueError("correction candidate identity is required")
