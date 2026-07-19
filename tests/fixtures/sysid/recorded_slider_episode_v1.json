@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.recorded_action_episode.v1",
+  "episode_id": "fixture-slider-train-001",
+  "proof_class": "synthetic_recorded_action_fixture",
+  "proof_class_category": "synthetic",
+  "column": "c",
+  "joint_names": ["slider"],
+  "initial_state": {
+    "joint_position": [0.0],
+    "joint_velocity": [0.0]
+  },
+  "unavailable_observables": {
+    "end_effector_orientation": "fixture records position only",
+    "pawn_position": "fixture has no pawn",
+    "pawn_orientation": "fixture has no pawn",
+    "contact_active": "fixture disables contact",
+    "contact_force": "fixture disables contact"
+  },
+  "samples": [
+    {
+      "timestamp_seconds": 10.0,
+      "command_joint_position": [0.0],
+      "measured": {
+        "joint_position": [0.0],
+        "end_effector_position_m": [0.1, 0.0, 0.1],
+        "gripper_position": 0.0
+      }
+    },
+    {
+      "timestamp_seconds": 10.03,
+      "command_joint_position": [0.2],
+      "measured": {
+        "joint_position": [0.002],
+        "end_effector_position_m": [0.102, 0.0, 0.1],
+        "gripper_position": 0.002
+      }
+    },
+    {
+      "timestamp_seconds": 10.07,
+      "command_joint_position": [0.2],
+      "measured": {
+        "joint_position": [0.01],
+        "end_effector_position_m": [0.11, 0.0, 0.1],
+        "gripper_position": 0.01
+      }
+    },
+    {
+      "timestamp_seconds": 10.11,
+      "command_joint_position": [-0.1],
+      "measured": {
+        "joint_position": [0.02],
+        "end_effector_position_m": [0.12, 0.0, 0.1],
+        "gripper_position": 0.02
+      }
+    },
+    {
+      "timestamp_seconds": 10.16,
+      "command_joint_position": [-0.1],
+      "measured": {
+        "joint_position": [0.015],
+        "end_effector_position_m": [0.115, 0.0, 0.1],
+        "gripper_position": 0.015
+      }
+    }
+  ]
+}
