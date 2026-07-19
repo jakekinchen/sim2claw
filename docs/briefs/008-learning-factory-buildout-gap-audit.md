@@ -1,12 +1,14 @@
 # Learning Factory Buildout Gap Audit
 
-**Status:** hardware-free buildout complete; selected physical B--G campaign
-truthfully blocked at LF-05 on external evidence prerequisites
+**Status:** hardware-free buildout and clean-clone acceptance complete;
+selected physical B--G campaign truthfully blocked at LF-05 on external
+evidence prerequisites
 
 **Audit date:** 2026-07-19
 
-**Audited implementation:** uncommitted learning-factory slice on branch
-`codex/task-orchestrator-plan` at base commit `13999e9`
+**Accepted implementation:** `416eb77` on
+`codex/task-orchestrator-plan`; original audit was performed against the
+uncommitted slice based on `13999e9`
 
 ## 2026-07-19 buildout disposition
 
@@ -25,9 +27,9 @@ manufacture missing physical replay evidence or a successful B--G policy.
 | P3 | `passed` | Real sysid fit plus separate-process held-out calibration evaluator exercised on synthetic system-identification fixtures |
 | P4 | `passed` | Training-only curriculum, verified planner/IK lineage, real exact pawn replay/evaluation, 61-D ACT plus GR00T payloads, immutable rejection artifacts |
 | P5 | `passed` | Dataset-consuming ACT trainer and separate CPU/fp32 consequence evaluator; real component campaign produced an honest terminal-negative |
-| P6 | `passed` | Trace-native registry, guarded corrections, executable child generations, parent evidence inheritance, declared LF-12 routes |
+| P6 | `passed` | Trace-native registry; independently replayed, byte-bound corrective suffixes; executable child generations; parent evidence inheritance; declared LF-12 routes |
 | P7 | `passed` | Independent promotion/rejection process, hash-guarded simulation skill package, typed runtime counterexample return |
-| P8 | `in verification` | Full suite passed; clean committed-clone verification and final publication receipt remain |
+| P8 | `passed` | Fresh locked `git clone --no-local` at `416eb77`: 446 tests and 328 subtests, source/wheel build, lock, compile, JSON, Bash, ignore, and diff checks passed |
 
 Current real-component mechanism evidence is recorded in
 [`../run-logs/2026-07-19-learning-factory-buildout.md`](../run-logs/2026-07-19-learning-factory-buildout.md).

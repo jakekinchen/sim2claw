@@ -87,6 +87,10 @@ scorecard correctly leaves the other runtime skills unpassed.
 - trace-native counterexamples: 1, deduplicated
 - routes: LF-06 calibration and LF-08 coverage
 - raw failure training rows: 0
+- corrective-suffix acceptance reruns the full strict source evaluator, binds
+  the parent trace, failed-prefix bytes, exact pre-branch integration state,
+  intervention owner/start, and stable replay evidence digest; the component
+  campaign admitted 561 suffix rows while authorizing zero failed-prefix rows
 - a deterministic child-generation integration test inherited LF-00 through
   LF-07 and produced a distinct generation-1 LF-11 verdict without modifying
   generation 0.
@@ -104,15 +108,22 @@ entry unavailable.
 
 ## Verification
 
-- focused learning-factory, goal-loop, source/replay/sysid, ACT-contract, and
-  orchestrator tests: 73 passed and 32 subtests before final additions
-- full repository suite: 443 passed and 328 subtests before final additions
-- Python compile and `git diff --check`: passed
+- final in-checkout suite: 446 passed and 328 subtests
+- fresh locked `git clone --no-local` at `416eb77`: 446 passed and 328
+  subtests in 130.69 seconds
+- source distribution and wheel build, lock, Python compile, 69 tracked JSON
+  parses, tracked Bash syntax, ignore policy, and `git diff --check`: passed
+- the real-component campaign executed LF-00 through LF-13 in the clean clone:
+  LF-07 admitted the synthetic system-identification candidate, LF-09 admitted
+  one exact 562-row source, LF-10 consumed that dataset, LF-11 scored one sealed
+  reset for each of the 12 B--G runtime skills and returned
+  `terminal_negative`, LF-12 persisted counterexamples, and LF-13 issued an
+  authenticated rejection with no skill package
 - paid/Brev resources: none created, started, or used
 
-Final committed clean-clone verification is recorded in the execution ledger
-after publication because that check must use Git object bytes, not a copied
-dirty snapshot.
+The clean clone was created at `/tmp/sim2claw-release-clean-p64ZFe` from Git
+object bytes. Ignored project-bundle mount points were provisioned by the test;
+the result did not depend on development-checkout residue.
 
 ## Remaining external prerequisites
 

@@ -1,7 +1,7 @@
 # Goal Loop: Build the Codex-Driven Sim2Claw Learning Factory
 
-**Status:** hardware-free implementation complete; clean-clone closeout in
-progress; selected physical campaign remains externally blocked at LF-05
+**Status:** hardware-free implementation and clean-clone closeout complete;
+selected physical campaign remains externally blocked at LF-05
 
 **Executor:** Codex operating directly in the Sim2Claw repository
 

@@ -249,3 +249,35 @@ the run log, then resume LF-05. Do not relabel the upper-side mechanism source.
 Paid resources: none created, started, or used. No Brev inventory was touched.
 
 Next step: finish P8 from committed Git bytes.
+
+## 2026-07-19 — P8 committed clean-clone acceptance
+
+Accepted code HEAD: `416eb77`
+
+Clean clone: `/tmp/sim2claw-release-clean-p64ZFe`, created with
+`git clone --no-local` from the live repository.
+
+Completed:
+
+- `uv sync --frozen` created a fresh Python 3.12 environment from the lock.
+- The full suite passed: 446 tests and 328 subtests in 130.69 seconds.
+- The production-backed LF-00-through-LF-13 component campaign passed its
+  orchestration assertions and retained the expected LF-11 terminal-negative
+  and LF-13 authenticated rejection.
+- The same campaign independently replayed a strict corrective episode,
+  matched evaluator identity/measurements/gates and the exact branch state,
+  admitted 561 corrective-suffix rows, and authorized zero failed-prefix rows.
+- `uv lock --check`, source/wheel builds, Python compile, 69 tracked JSON
+  parses, tracked Bash syntax, generated-root ignore checks, clean tracked
+  status, and `git diff --check` passed.
+- The test provisions its two ignored project-bundle directory mounts, so the
+  campaign does not rely on residue from the development checkout.
+
+Acceptance criteria 1 through 17: `passed`.
+
+Acceptance criterion 18: `not_applicable`; no Brev or other paid resource was
+created, started, or used.
+
+Remaining blockers are external campaign evidence only: the selected physical
+project remains truthfully blocked at LF-05, and no successful B--G learned
+policy or physical authority is claimed.

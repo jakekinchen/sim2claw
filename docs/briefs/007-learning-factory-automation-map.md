@@ -6,7 +6,8 @@ implemented; live physical B--G campaign blocked at LF-05
 **Codex execution task:**
 [`../autonomous-workflow/goal-loop-learning-factory.md`](../autonomous-workflow/goal-loop-learning-factory.md)
 
-**Snapshot:** 2026-07-19, branch `codex/task-orchestrator-plan` at `13999e9`
+**Accepted code snapshot:** 2026-07-19, branch
+`codex/task-orchestrator-plan` at `416eb77`
 
 ## Objective
 
