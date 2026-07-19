@@ -85,11 +85,11 @@ class PhysicalSimulationReplayTest(unittest.TestCase):
             )
             self.assertEqual(
                 report["simulator_scene_id"],
-                "operator_updated_chess_workcell_v2",
+                "operator_updated_chess_workcell_v3",
             )
             self.assertEqual(
                 report["simulator_board_pose_id"],
-                "board_robotward_72mm_20260718_v2",
+                "board_robotward_100mm_20260718_v3",
             )
             self.assertEqual(
                 report["state_trace_manifest_revision_sha256"],
