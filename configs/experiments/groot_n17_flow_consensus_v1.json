@@ -1,0 +1,148 @@
+{
+  "schema_version": "sim2claw.groot_n17_flow_consensus_experiment.v1",
+  "frozen_before_remote_evaluation": true,
+  "lane": "inference_only_flow_dispersion",
+  "frozen_identities": {
+    "nominal_checkpoint_id": "checkpoint-4000",
+    "nominal_checkpoint_aggregate_manifest_sha256": "e89dae30e4b06af815b55e1a9e3036547eeae151463740e29f7fea8ad0b166ac",
+    "nvidia_source_commit": "23ace64f17aa5015259b8609d371eb61a357c776",
+    "nvidia_source_tag": "n1.7-release",
+    "cosmos_snapshot": "9ce19a195e423419c349abfc86fd07178b230561",
+    "base_task_contract_canonical_sha256": "473915817b3a8474f796df53e199df92031d17fad152599a1d43ccecd3f15683"
+  },
+  "renderer": {
+    "mujoco_gl": "osmesa",
+    "pyopengl_platform": "osmesa",
+    "role": "versioned_deterministic_diagnostic",
+    "promotion_authority": false
+  },
+  "invariants": {
+    "execution_horizon": 8,
+    "all_executed_actions_model_derived": true,
+    "assistance_frames": 0,
+    "geometric_or_expert_action_selection_during_evaluation": false,
+    "consequence_gates_unchanged": true,
+    "recovery_checkpoint_comparison_forbidden": true
+  },
+  "baseline_reproduction_gate": {
+    "split": "held_out",
+    "episode_index": 0,
+    "inference_seed": 0,
+    "proposal_count": 1,
+    "action_aggregation": "medoid",
+    "noise_scale": 1.0,
+    "num_inference_timesteps": 4,
+    "require_bitwise_repeatable_frame_and_action_hashes": true
+  },
+  "row_zero_development_probe": {
+    "split": "training",
+    "episode_indices": [0, 8, 16],
+    "inference_seeds": [0, 1],
+    "repeats": 2,
+    "expert_comparison": "training_only_diagnostic_no_promotion_authority",
+    "candidate_arms": [
+      {
+        "id": "baseline-k1-medoid-noise1",
+        "proposal_count": 1,
+        "action_aggregation": "medoid",
+        "noise_scale": 1.0,
+        "num_inference_timesteps": 4
+      },
+      {
+        "id": "k5-medoid-noise1",
+        "proposal_count": 5,
+        "action_aggregation": "medoid",
+        "noise_scale": 1.0,
+        "num_inference_timesteps": 4
+      },
+      {
+        "id": "k5-median-noise1",
+        "proposal_count": 5,
+        "action_aggregation": "median",
+        "noise_scale": 1.0,
+        "num_inference_timesteps": 4
+      },
+      {
+        "id": "k5-medoid-noise0p5",
+        "proposal_count": 5,
+        "action_aggregation": "medoid",
+        "noise_scale": 0.5,
+        "num_inference_timesteps": 4
+      },
+      {
+        "id": "k5-median-noise0p5",
+        "proposal_count": 5,
+        "action_aggregation": "median",
+        "noise_scale": 0.5,
+        "num_inference_timesteps": 4
+      },
+      {
+        "id": "k5-medoid-noise0p25",
+        "proposal_count": 5,
+        "action_aggregation": "medoid",
+        "noise_scale": 0.25,
+        "num_inference_timesteps": 4
+      },
+      {
+        "id": "k5-median-noise0p25",
+        "proposal_count": 5,
+        "action_aggregation": "median",
+        "noise_scale": 0.25,
+        "num_inference_timesteps": 4
+      },
+      {
+        "id": "mode-k1-medoid-noise0",
+        "proposal_count": 1,
+        "action_aggregation": "medoid",
+        "noise_scale": 0.0,
+        "num_inference_timesteps": 4
+      },
+      {
+        "id": "k5-medoid-noise0p5-steps8",
+        "proposal_count": 5,
+        "action_aggregation": "medoid",
+        "noise_scale": 0.5,
+        "num_inference_timesteps": 8
+      },
+      {
+        "id": "k5-median-noise0p5-steps8",
+        "proposal_count": 5,
+        "action_aggregation": "median",
+        "noise_scale": 0.5,
+        "num_inference_timesteps": 8
+      }
+    ],
+    "shortlist_rule": {
+      "maximum_nonbaseline_arms": 2,
+      "primary_metric": "median_training_expert_chunk_mae",
+      "tie_breakers": [
+        "median_training_expert_first_action_mae",
+        "maximum_pairwise_proposal_l2",
+        "proposal_count"
+      ],
+      "promotion_authority": false
+    }
+  },
+  "closed_loop_development": {
+    "split": "training",
+    "episode_indices": [0, 8, 16],
+    "inference_seeds": [0, 1],
+    "advance_rule": "candidate must produce at least two full task-consequence passes with unchanged gates",
+    "selection_order": [
+      "full_task_consequence_pass_count",
+      "board_safety_pass_count",
+      "final_xy_pass_count",
+      "upright_pass_count",
+      "lift_pass_count"
+    ]
+  },
+  "sealed_promotion": {
+    "split": "held_out",
+    "episode_indices": [0, 1, 2, 3],
+    "inference_seeds": [7101, 7102],
+    "may_open_only_after_configuration_hash_is_frozen": true,
+    "minimum_success_claim": "the same held-out episode passes every unchanged gate for both inference seeds",
+    "robust_challenger_target": "at least six of eight held-out consequences pass",
+    "reroll_or_oracle_seed_selection_forbidden": true
+  }
+}

@@ -26,7 +26,9 @@ def build_parser() -> argparse.ArgumentParser:
         "fetch-polycam", help="fetch and verify the owner-provided capture reference"
     )
 
-    render = subparsers.add_parser("render", help="compile, settle, and render the scene")
+    render = subparsers.add_parser(
+        "render", help="compile, settle, and render the scene"
+    )
     render.add_argument(
         "--output", type=Path, default=DEFAULT_OUTPUT_ROOT / "render.png"
     )
@@ -42,6 +44,7 @@ def build_parser() -> argparse.ArgumentParser:
             "studio_overview",
             "studio_left",
             "studio_right",
+            "studio_mug",
         ),
         default="photo_reference",
     )
@@ -107,6 +110,72 @@ def build_parser() -> argparse.ArgumentParser:
         help="acknowledge that the powered follower workcell is clear for motion",
     )
 
+    source_eval = subparsers.add_parser(
+        "source-eval",
+        help="replay and score one canonical pawn source episode on CPU/fp32",
+    )
+    source_eval.add_argument("--episode", type=Path, required=True)
+    source_eval.add_argument("--output", type=Path, default=None)
+
+    source_expert = subparsers.add_parser(
+        "source-expert",
+        help="collect the bounded current-scene geometric source candidate",
+    )
+    source_expert.add_argument("--output", type=Path, required=True)
+    source_expert.add_argument("--render-size", type=int, default=224)
+
+    source_adapt = subparsers.add_parser(
+        "source-adapt",
+        help="derive admitted ACT or GR00T rows from one canonical source episode",
+    )
+    source_adapt.add_argument("--episode", type=Path, required=True)
+    source_adapt.add_argument("--admission", type=Path, required=True)
+    source_adapt.add_argument("--adapter", choices=("act", "groot"), required=True)
+    source_adapt.add_argument("--output", type=Path, required=True)
+
+    pawn_groot_export = subparsers.add_parser(
+        "pawn-groot-export",
+        help="export admitted 100 mm pawn sources as a GR00T LeRobot dataset",
+    )
+    pawn_groot_export.add_argument("--output", type=Path, required=True)
+    pawn_groot_export.add_argument(
+        "--source-episode", type=Path, action="append", required=True
+    )
+
+    pawn_groot_preflight = subparsers.add_parser(
+        "pawn-groot-preflight",
+        help="verify pawn GR00T payload and frozen action-chunk denominators",
+    )
+    pawn_groot_preflight.add_argument("--dataset", type=Path, required=True)
+    pawn_groot_preflight.add_argument("--output", type=Path, required=True)
+
+    sim_real = subparsers.add_parser(
+        "sim-real-bridge",
+        help="verify physical-source availability and freeze the 72mm-to-100mm comparison boundary",
+    )
+    sim_real.add_argument("--physical-root", type=Path, default=None)
+    sim_real.add_argument(
+        "--output",
+        type=Path,
+        default=Path("outputs/sim_real_bridge/receipt.json"),
+    )
+
+    camera_overlay = subparsers.add_parser(
+        "camera-overlay",
+        help="fit the physical camera to the board and render robot-anchored comparison views",
+    )
+    camera_overlay.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/experiments/robot_anchored_camera_overlay_v1.json"),
+    )
+    camera_overlay.add_argument("--recording-directory", type=Path, default=None)
+    camera_overlay.add_argument(
+        "--output-directory",
+        type=Path,
+        default=Path("outputs/sim_real_bridge/robot_anchored_overlay"),
+    )
+
     studio_assets = subparsers.add_parser(
         "studio-assets",
         help="regenerate inspection-only workcell posters from the current scene",
@@ -127,6 +196,17 @@ def build_parser() -> argparse.ArgumentParser:
         default=Path("datasets/chess_pick_place_groot_v1"),
     )
     groot_export.add_argument("--max-episodes", type=int, default=None)
+    groot_export.add_argument(
+        "--control-mode",
+        choices=("physics_ramp", "sample_hold"),
+        default="physics_ramp",
+    )
+    groot_export.add_argument(
+        "--episode-index",
+        action="append",
+        type=int,
+        dest="episode_indices",
+    )
 
     groot_expert = subparsers.add_parser(
         "groot-expert-eval",
@@ -139,6 +219,39 @@ def build_parser() -> argparse.ArgumentParser:
     )
     groot_expert.add_argument("--episode-index", type=int, default=0)
     groot_expert.add_argument("--render-frames", action="store_true")
+    groot_expert.add_argument(
+        "--control-mode",
+        choices=("physics_ramp", "sample_hold"),
+        default="physics_ramp",
+    )
+
+    recovery_export = subparsers.add_parser(
+        "groot-recovery-export",
+        help="export evaluator-accepted GR00T recovery demonstrations",
+    )
+    recovery_export.add_argument(
+        "--output",
+        type=Path,
+        default=Path("datasets/chess_pick_place_groot_recovery_v2"),
+    )
+    recovery_export.add_argument(
+        "--split",
+        choices=("training", "held_out"),
+        default="training",
+    )
+    recovery_export.add_argument("--max-episodes", type=int, default=None)
+
+    recovery_expert = subparsers.add_parser(
+        "groot-recovery-expert-eval",
+        help="run one frozen GR00T recovery consequence evaluation",
+    )
+    recovery_expert.add_argument(
+        "--split",
+        choices=("training", "held_out"),
+        default="held_out",
+    )
+    recovery_expert.add_argument("--episode-index", type=int, default=0)
+    recovery_expert.add_argument("--render-frames", action="store_true")
     return parser
 
 
@@ -251,6 +364,89 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
+    if args.command == "source-eval":
+        from .pawn_source_evaluator import evaluate_source_episode
+
+        output = args.output or args.episode / "admission_verdict.json"
+        report = evaluate_source_episode(args.episode, output_path=output)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["strict_success"] else 1
+    if args.command == "source-expert":
+        from .pawn_source_expert import collect_pawn_source_expert_candidate
+
+        report = collect_pawn_source_expert_candidate(
+            args.output, render_size=args.render_size
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "source-adapt":
+        from .source_episode import adapt_source_episode, sha256_file
+
+        admission = json.loads(args.admission.read_text(encoding="utf-8"))
+        rows = adapt_source_episode(
+            args.episode,
+            adapter=args.adapter,
+            admission_verdict=admission,
+        )
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(
+            "".join(
+                json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n"
+                for row in rows
+            ),
+            encoding="utf-8",
+        )
+        print(
+            json.dumps(
+                {
+                    "adapter": args.adapter,
+                    "row_count": len(rows),
+                    "output": str(args.output),
+                    "output_sha256": sha256_file(args.output),
+                    "training_promoted": False,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+    if args.command == "pawn-groot-export":
+        from .pawn_groot_dataset import export_pawn_groot_dataset
+
+        report = export_pawn_groot_dataset(
+            args.output,
+            source_directories=args.source_episode,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "pawn-groot-preflight":
+        from .pawn_groot_dataset import preflight_pawn_groot_dataset
+
+        report = preflight_pawn_groot_dataset(
+            args.dataset,
+            output_path=args.output,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sim-real-bridge":
+        from .sim_real_bridge import inspect_sim_real_bridge
+
+        report = inspect_sim_real_bridge(
+            physical_root=args.physical_root,
+            output_path=args.output,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["comparison_readiness"]["joint_response_calibration_ready"] else 1
+    if args.command == "camera-overlay":
+        from .robot_anchored_overlay import build_robot_anchored_overlay
+
+        report = build_robot_anchored_overlay(
+            config_path=args.config,
+            recording_directory=args.recording_directory,
+            output_directory=args.output_directory,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     if args.command == "studio-assets":
         from .studio_assets import render_studio_assets
 
@@ -268,6 +464,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         report = export_groot_dataset(
             args.output,
             max_episodes=args.max_episodes,
+            control_mode=args.control_mode,
+            episode_indices=args.episode_indices,
         )
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
@@ -283,6 +481,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             split=args.split,
             episode_index=args.episode_index,
             render_frames=args.render_frames,
+            control_mode=args.control_mode,
         )
         report = {
             "case_id": episode.case_id,
@@ -292,6 +491,43 @@ def main(argv: Sequence[str] | None = None) -> int:
             "seed": episode.seed,
             "sample_count": int(episode.states.shape[0]),
             "maximum_ik_residual_m": episode.maximum_ik_residual_m,
+            "verdict": episode.verdict,
+        }
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if episode.verdict["success"] else 1
+    if args.command == "groot-recovery-export":
+        from .groot_chess_recovery import export_recovery_dataset
+
+        report = export_recovery_dataset(
+            args.output,
+            split=args.split,
+            max_episodes=args.max_episodes,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "groot-recovery-expert-eval":
+        from .groot_chess_recovery import (
+            collect_recovery_expert_episode,
+            load_recovery_task_contract,
+        )
+
+        task = load_recovery_task_contract()
+        episode = collect_recovery_expert_episode(
+            task,
+            split=args.split,
+            episode_index=args.episode_index,
+            render_frames=args.render_frames,
+        )
+        report = {
+            "case_id": episode.case_id,
+            "instruction": episode.instruction,
+            "piece": episode.piece,
+            "target_square": episode.target_square,
+            "seed": episode.seed,
+            "perturbation": episode.perturbation,
+            "sample_count": int(episode.states.shape[0]),
+            "maximum_ik_residual_m": episode.maximum_ik_residual_m,
+            "contact_metrics": episode.contact_metrics,
             "verdict": episode.verdict,
         }
         print(json.dumps(report, indent=2, sort_keys=True))

@@ -35,7 +35,7 @@ imported archive.
 | Board playing side | 0.3556 m | Photo registration plus aligned textured-mesh cross-check |
 | Board with frame | 0.4064 m | Aligned scan visual fit range: 0.394–0.418 m |
 | Square side | 0.04445 m | Derived from registered playing side |
-| Board rear clearance | 0.0997 m | Operator-measured 72 mm robotward update from overhead-photo registration |
+| Board rear clearance | 0.1277 m | Operator-measured 100 mm total robotward update from overhead-photo registration |
 | Clamp separation | 0.486 m | Overhead-photo planar registration |
 | Sill bottom above table | 0.140 m | Photo estimate; not RoomPlan semantic geometry |
 | Pieces | 32 dynamic bodies | Fresh procedural simulation geometry |
@@ -59,20 +59,31 @@ The overhead photo changes the table-edge layout from the first visual pass:
 the reaching arm is mounted near the table center at `(-0.040, 0.365) m`, and
 the right arm at `(-0.526, 0.365) m` in the scene's table frame. Their clamp
 contacts reproduce the frozen photo landmarks within about 2 source pixels.
-The fiducial center reproduces its photo landmark within about 7 source pixels.
+The fiducial center in the frozen overhead-photo registration reproduces its
+photo landmark within about 7 source pixels. The current simulated sheet is
+separately translated with the operator-reported physical workspace update.
 The reaching-arm mount is `0.080 m` from the board's lengthwise centerline,
 less than two registered squares. Its nearest table-plane distance to the
-current board edge is about `0.255 m`; a regression test freezes the
+current board edge is about `0.229 m`; a regression test freezes the
 centerline relationship.
 
 The board was physically moved between evidence surfaces. Its Polycam-capture
 center is estimated near `(-0.022, 0.182) m`, while the later overhead photo
-placed it at `(0.040, -0.165) m`: a 0.352 m center displacement. On 2026-07-18,
-the owner moved the physical board another `0.072 m` toward the robots along
-table-frame `+y`, establishing the current center at `(0.040, -0.093) m` under
-pose identity `board_robotward_72mm_20260718_v2`. The simulator uses that
-current registration. Historical overlays and receipts retain the pose that
-was current when they were captured rather than silently rewriting evidence.
+placed it at `(0.040, -0.165) m`: a 0.352 m center displacement. The first
+2026-07-18 operator update moved only the board `0.072 m` along table-frame
+`+y`, producing the now-historical pose
+`board_robotward_72mm_20260718_v2` at `(0.040, -0.093) m`. The current operator
+measurement is `0.100 m` total from the overhead-photo registration, so v3
+moves the board an additional `0.028 m` to `(0.040, -0.065) m` under
+`board_robotward_100mm_20260718_v3`.
+
+The AprilTag/fiducial sheet did not receive the earlier simulated 72 mm update.
+Its current pose therefore moves the full `0.100 m` from the photo-registered
+center `(0.020, 0.080) m` to `(0.020, 0.180) m` under
+`fiducial_robotward_100mm_20260718_v2`. The paired current workspace identity is
+`workspace_board_fiducial_robotward_100mm_20260718_v3`. Historical overlays,
+receipts, and frozen evaluations retain the pose current when they were created
+rather than silently rewriting evidence.
 
 Robot geometry is vendored from Google DeepMind's public MuJoCo Menagerie
 `robotstudio_so101` directory at commit
@@ -88,8 +99,10 @@ colors and poses in memory. See `third_party/mujoco_menagerie/robotstudio_so101/
 - Both SO-101 arms retain six controlled joints and collision geometry; the
   assembled scene has 12 actuators.
 - Every chess piece has a free joint and settles under gravity onto the board.
-- `studio_overview`, `studio_left`, and `studio_right` are inspection-only
-  cameras. They do not replace the frozen `workcell` observation camera.
+- `studio_overview`, `studio_left`, `studio_right`, and `studio_mug` are
+  inspection-only cameras. The dedicated mug view makes the left-sill prop and
+  logo legible without changing the wide workcell framing. None replaces the
+  frozen `workcell` observation camera.
 - Photo-reference tripod geometry is in render group 4. Normal scene and task
   renders retain it; versioned browser-studio posters hide only that group to
   keep the arms and board unobstructed.

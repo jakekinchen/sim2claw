@@ -1,0 +1,151 @@
+{
+  "schema_version": "sim2claw.canonical_manipulation_source_contract.v1",
+  "contract_id": "chess_pick_place_source_episode_v1",
+  "frozen_before_data_export": true,
+  "proof_class": "model_agnostic_simulation_source_episode_contract",
+  "scene": {
+    "scene_id": "operator_updated_chess_workcell_v2",
+    "board_pose_id": "board_robotward_72mm_20260718_v2",
+    "board_center_in_table_frame_xy_m": [0.04, -0.093],
+    "robotward_displacement_from_previous_pose_m": 0.072,
+    "robotward_axis_in_table_frame": "+y",
+    "piece_layout": "sparse_two_sided_pawns",
+    "piece_layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
+    "active_piece_count": 16,
+    "source_piece_ids": [
+      "tan_pawn_a8",
+      "tan_pawn_b7",
+      "tan_pawn_c8",
+      "tan_pawn_d7",
+      "tan_pawn_e8",
+      "tan_pawn_f7",
+      "tan_pawn_g8",
+      "tan_pawn_h7"
+    ],
+    "destination_squares": [
+      "a5",
+      "b5",
+      "c5",
+      "d5",
+      "e5",
+      "f5",
+      "a6",
+      "b6",
+      "c6",
+      "d6",
+      "e6",
+      "f6",
+      "g6",
+      "h6"
+    ],
+    "reachability_basis": "left_arm_zero_offset_neck_ik_residual_at_most_0.003m"
+  },
+  "episode": {
+    "schema_version": "sim2claw.manipulation_source_episode.v1",
+    "receipt_schema_version": "sim2claw.manipulation_source_recording_receipt.v1",
+    "sample_schema_version": "sim2claw.manipulation_source_sample.v1",
+    "timebase": "monotonic_seconds_from_action_start",
+    "required_sample_hz": 20,
+    "required_sample_count_minimum": 1,
+    "required_rgb_streams": ["top", "wrist"],
+    "required_language_field": "language_instruction",
+    "required_robot_fields": [
+      "joint_position_rad",
+      "joint_velocity_rad_s",
+      "end_effector_pose_world",
+      "gripper_joint_position_rad"
+    ],
+    "required_goal_fields": [
+      "selected_piece_pose_world",
+      "continuous_target_pose_world"
+    ],
+    "required_action_field": "joint_target_rad",
+    "required_event_fields": ["contacts", "simulator_events"],
+    "privileged_state_storage": "separate_evaluator_only_jsonl",
+    "privileged_state_may_enter_policy_adapter": false
+  },
+  "execution": {
+    "action_representation": "absolute_joint_position_target",
+    "action_dimension": 6,
+    "action_unit": "rad",
+    "sample_hold_hz": 20,
+    "physics_timestep_seconds": 0.005,
+    "physics_steps_per_action": 10,
+    "exact_float32_action_replay_required_before_export": true,
+    "replay_must_use_original_scene_and_reset_seed": true
+  },
+  "identity": {
+    "required_episode_fields": [
+      "scene_id",
+      "board_pose_id",
+      "piece_layout_id",
+      "scene_reset_seed",
+      "source_identity",
+      "model_identity",
+      "checkpoint_identity",
+      "action_owner",
+      "assistance_frames",
+      "intervention_frames",
+      "lineage"
+    ],
+    "model_and_checkpoint_may_be_null_for_human_or_expert_source": true,
+    "source_episode_is_model_agnostic": true
+  },
+  "admission": {
+    "ordinary_imitation": "strict_independent_evaluator_success_only",
+    "raw_failed_actions": "counterexample_and_evaluation_evidence_only",
+    "failed_actions_may_enter_behavior_cloning": false,
+    "failure_trace": {
+      "first_broken_gate_and_frame_required": true,
+      "visual_and_structured_trace_required": true
+    },
+    "corrective_suffix": {
+      "must_start_from_exact_pre_failure_integration_state": true,
+      "model_owned_failed_prefix_is_provenance_only": true,
+      "expert_or_teleoperator_actions_only": true,
+      "independent_full_episode_replay_must_pass": true,
+      "failed_suffix_contributes_zero_rows": true,
+      "paired_prefix_suffix_lineage_required": true
+    },
+    "training_cannot_promote": true,
+    "held_out_rows": 0
+  },
+  "adapters": {
+    "act": {
+      "adapter_schema_version": "sim2claw.canonical_source_to_act.v1",
+      "policy_inputs": ["robot", "goal"],
+      "action": "action.joint_target_rad",
+      "language_is_metadata_only": true,
+      "rgb_is_not_an_act_policy_input": true,
+      "privileged_state_forbidden": true
+    },
+    "groot": {
+      "adapter_schema_version": "sim2claw.canonical_source_to_groot.v1",
+      "policy_inputs": ["rgb.top", "rgb.wrist", "language_instruction", "robot.joint_position_rad"],
+      "action": "action.joint_target_rad",
+      "privileged_state_forbidden": true
+    }
+  },
+  "splits": {
+    "training_source_piece_ids": [
+      "tan_pawn_a8",
+      "tan_pawn_b7",
+      "tan_pawn_c8",
+      "tan_pawn_d7",
+      "tan_pawn_e8",
+      "tan_pawn_f7"
+    ],
+    "held_out_source_piece_ids": ["tan_pawn_g8", "tan_pawn_h7"],
+    "held_out_training_rows": 0
+  },
+  "authority": {
+    "dataset_adapter_cannot_declare_success": true,
+    "llm_or_vlm_cannot_declare_success": true,
+    "evaluator_gates_cannot_be_modified_by_source_recorder": true,
+    "physical_authority": false,
+    "serial_authority": false,
+    "gateway_authority": false,
+    "old_rook_or_king_evidence_grants_pawn_authority": false,
+    "old_checkpoint_may_be_transfer_initialization_only": true
+  }
+}

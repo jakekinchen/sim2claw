@@ -1576,15 +1576,20 @@ function renderRobots() {
 }
 
 const jointNames = ["Shoulder pan", "Shoulder lift", "Elbow", "Wrist flex", "Wrist roll", "Gripper"];
-const pawnSourceSquares = ["a2", "b1", "c2", "d1", "e2", "f1", "g2", "h1"];
+const brownPawnSquares = ["a2", "b1", "c2", "d1", "e2", "f1", "g2", "h1"];
 const tanPawnSquares = ["a8", "b7", "c8", "d7", "e8", "f7", "g8", "h7"];
+const pawnSourceSquares = tanPawnSquares;
+const reachableDestinationSquares = [
+  "a5", "b5", "c5", "d5", "e5", "f5",
+  "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+];
 const boardFiles = "abcdefgh";
-const recorderSettingsKey = "sim2claw.recorder.settings.v1";
+const recorderSettingsKey = "sim2claw.recorder.settings.v2";
 const defaultRecorderSettings = Object.freeze({
   mode: "simulation_follower",
-  source_square: "b1",
-  target_square: "b2",
-  sample_hz: 30,
+  source_square: "c8",
+  target_square: "c6",
+  sample_hz: 20,
 });
 
 function loadRecorderSettings() {
@@ -1598,10 +1603,10 @@ function loadRecorderSettings() {
       source_square: pawnSourceSquares.includes(stored.source_square)
         ? stored.source_square
         : defaultRecorderSettings.source_square,
-      target_square: /^[a-h][1-4]$/.test(stored.target_square || "")
+      target_square: reachableDestinationSquares.includes(stored.target_square)
         ? stored.target_square
         : defaultRecorderSettings.target_square,
-      sample_hz: [10, 20, 30].includes(Number(stored.sample_hz))
+      sample_hz: Number(stored.sample_hz) === 20
         ? Number(stored.sample_hz)
         : defaultRecorderSettings.sample_hz,
     };
@@ -1699,7 +1704,7 @@ function renderRecorder() {
         ? "C922 saved"
         : "C922 on Start",
   );
-  text(elements.recordPath, recorder.saved_path || recorder.draft_path || "datasets/act_source_recordings/");
+  text(elements.recordPath, recorder.saved_path || recorder.draft_path || "datasets/manipulation_source_recordings/");
 
   text(elements.simModeState, simReady ? "Ready" : "Missing");
   text(elements.physicalModeState, physicalReady ? "Ready" : "Missing");
@@ -1895,31 +1900,26 @@ async function syncPhysicalFollower() {
   renderRecorder();
 }
 
-function updateDestinationOptions(preferred = elements.target.value || "b2") {
-  const occupied = new Set(pawnSourceSquares);
+function updateDestinationOptions(preferred = elements.target.value || "c6") {
   elements.target.replaceChildren();
-  for (const rank of "1234") {
-    for (const file of boardFiles) {
-      const square = `${file}${rank}`;
-      if (occupied.has(square)) continue;
-      const option = document.createElement("option");
-      option.value = square;
-      text(option, square.toUpperCase());
-      if (square === preferred) option.selected = true;
-      elements.target.append(option);
-    }
+  for (const square of reachableDestinationSquares) {
+    const option = document.createElement("option");
+    option.value = square;
+    text(option, square.toUpperCase());
+    if (square === preferred) option.selected = true;
+    elements.target.append(option);
   }
 }
 
 function renderPawnMovePreview() {
-  const source = elements.sourceSquare.value || "b1";
-  const destination = elements.target.value || "b2";
+  const source = elements.sourceSquare.value || "c8";
+  const destination = elements.target.value || "c6";
   text(elements.pawnPreviewSource, source.toUpperCase());
   text(elements.pawnPreviewTarget, destination.toUpperCase());
-  text(elements.pawnPreviewDescription, `Move the brown pawn from ${source.toUpperCase()} to ${destination.toUpperCase()}. Brown and tan pawns not selected remain in place.`);
+  text(elements.pawnPreviewDescription, `Move the tan pawn from ${source.toUpperCase()} to ${destination.toUpperCase()}. Brown and tan pawns not selected remain in place.`);
   elements.pawnPreviewBoard.setAttribute(
     "aria-label",
-    `Brown pawn movement from ${source.toUpperCase()} to ${destination.toUpperCase()} on a two-sided sparse pawn board`,
+    `Tan pawn movement from ${source.toUpperCase()} to ${destination.toUpperCase()} on a two-sided sparse pawn board`,
   );
   elements.pawnPreviewBoard.replaceChildren();
   for (const rank of [8, 7, 6, 5, 4, 3, 2, 1]) {
@@ -1931,7 +1931,7 @@ function renderPawnMovePreview() {
       if ((boardFiles.indexOf(file) + rank) % 2 === 0) cell.classList.add("is-dark");
       if (square === source) cell.classList.add("is-source");
       if (square === destination) cell.classList.add("is-destination");
-      if (pawnSourceSquares.includes(square)) {
+      if (brownPawnSquares.includes(square)) {
         const pawn = document.createElement("i");
         pawn.className = "pawn-token";
         pawn.setAttribute("aria-hidden", "true");
@@ -1967,7 +1967,7 @@ function initializeRecorderForm() {
   for (const square of pawnSourceSquares) {
     const option = document.createElement("option");
     option.value = square;
-    text(option, `${square.toUpperCase()} · brown pawn`);
+    text(option, `${square.toUpperCase()} · tan pawn`);
     elements.sourceSquare.append(option);
   }
   elements.sourceSquare.value = settings.source_square;

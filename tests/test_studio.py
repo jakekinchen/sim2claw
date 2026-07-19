@@ -10,7 +10,12 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from sim2claw import studio_assets
-from sim2claw.paths import DEFAULT_CAPTURE_CONFIG, SO101_MODEL_PATH, STUDIO_ASSET_ROOT
+from sim2claw.paths import (
+    DEFAULT_CAPTURE_CONFIG,
+    DEFAULT_SO101_MASS_PROFILE,
+    SO101_MODEL_PATH,
+    STUDIO_ASSET_ROOT,
+)
 from sim2claw.physical_gateway import PhysicalGatewayError
 from sim2claw.studio_catalog import (
     build_catalog,
@@ -30,10 +35,21 @@ class StudioCatalogTest(unittest.TestCase):
             self.root / "configs" / "polycam" / "capture.json",
             {
                 "simulation_estimates": {
+                    "workspace_pose": {
+                        "pose_id": (
+                            "workspace_board_fiducial_robotward_100mm_20260718_v3"
+                        )
+                    },
                     "board": {
-                        "pose_id": "board_robotward_72mm_20260718_v2",
-                        "center_in_table_frame_xy_m": [0.04, -0.093],
-                        "robotward_displacement_from_previous_pose_m": 0.072,
+                        "pose_id": "board_robotward_100mm_20260718_v3",
+                        "center_in_table_frame_xy_m": [0.04, -0.065],
+                        "robotward_displacement_from_previous_pose_m": 0.1,
+                    },
+                    "background": {
+                        "fiducial_pose_id": (
+                            "fiducial_robotward_100mm_20260718_v2"
+                        ),
+                        "fiducial_center_in_table_frame_xy_m": [0.02, 0.18],
                     },
                     "robots": [],
                 }
@@ -153,15 +169,39 @@ class StudioCatalogTest(unittest.TestCase):
         self.assertIn("16 sparse pawns", catalog["simulations"][0]["subtitle"])
         self.assertEqual(
             catalog["simulations"][0]["workcell_pose_id"],
-            "board_robotward_72mm_20260718_v2",
+            "board_robotward_100mm_20260718_v3",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["workspace_pose_id"],
+            "workspace_board_fiducial_robotward_100mm_20260718_v3",
         )
         self.assertEqual(
             catalog["simulations"][0]["board_center_in_table_frame_xy_m"],
-            [0.04, -0.093],
+            [0.04, -0.065],
         )
         self.assertEqual(
             catalog["simulations"][0]["board_pose_label"],
-            "72 mm robotward",
+            "100 mm robotward",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["mug_inspection_url"],
+            "/assets/workcell/studio-mug.png",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["mug_inspection_camera"],
+            "studio_mug",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["visual_props"][0]["id"],
+            "antler_mug",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["fiducial_pose_id"],
+            "fiducial_robotward_100mm_20260718_v2",
+        )
+        self.assertEqual(
+            catalog["simulations"][0]["fiducial_center_in_table_frame_xy_m"],
+            [0.02, 0.18],
         )
 
     def test_catalog_includes_physical_source_with_simulator_replay(self) -> None:
@@ -377,9 +417,9 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('src="/studio3d.js"', html)
             self.assertIn('src="/assets/workcell/studio-left.png"', html)
             self.assertIn('src="/assets/workcell/studio-right.png"', html)
-            self.assertIn('<span id="pawn-preview-source">B1</span>', html)
-            self.assertIn('<span id="pawn-preview-target">B2</span>', html)
-            self.assertIn("The mirrored tan side occupies A8", html)
+            self.assertIn('<span id="pawn-preview-source">C8</span>', html)
+            self.assertIn('<span id="pawn-preview-target">C6</span>', html)
+            self.assertIn("Tan pawns begin at A8", html)
             self.assertNotIn('id="record-piece"', html)
 
             with urlopen(f"{base}/studio.css", timeout=3) as response:
@@ -394,7 +434,7 @@ class StudioCatalogTest(unittest.TestCase):
                 javascript = response.read().decode("utf-8")
             self.assertIn("document.body.dataset.recorderStatus = status", javascript)
             self.assertIn('"C922 REC"', javascript)
-            self.assertIn('sim2claw.recorder.settings.v1', javascript)
+            self.assertIn('sim2claw.recorder.settings.v2', javascript)
             self.assertIn('postRecorder("gateway-sync"', javascript)
             self.assertIn("server_owned_prestart_sequence: physical", javascript)
             self.assertIn("new AbortController()", javascript)
@@ -427,6 +467,14 @@ class StudioCatalogTest(unittest.TestCase):
                 poster_type = response.headers.get_content_type()
             self.assertEqual(poster_type, "image/png")
             self.assertGreater(len(poster), 50_000)
+
+            with urlopen(
+                f"{base}/assets/workcell/studio-mug.png", timeout=3
+            ) as response:
+                mug_poster = response.read()
+                mug_poster_type = response.headers.get_content_type()
+            self.assertEqual(mug_poster_type, "image/png")
+            self.assertGreater(len(mug_poster), 20_000)
         finally:
             server.shutdown()
             server.server_close()
@@ -470,16 +518,29 @@ class StudioCatalogTest(unittest.TestCase):
             "two_sided_sparse_pawns_rows_1_2_7_8_v1",
         )
         scene_path = Path(studio_assets.__file__).with_name("scene.py")
+        mass_profile_path = Path(studio_assets.__file__).with_name(
+            "mass_profile.py"
+        )
         expected = {
             "scene_py_sha256": hashlib.sha256(scene_path.read_bytes()).hexdigest(),
+            "mass_profile_py_sha256": hashlib.sha256(
+                mass_profile_path.read_bytes()
+            ).hexdigest(),
             "capture_config_sha256": hashlib.sha256(
                 DEFAULT_CAPTURE_CONFIG.read_bytes()
+            ).hexdigest(),
+            "so101_mass_profile_sha256": hashlib.sha256(
+                DEFAULT_SO101_MASS_PROFILE.read_bytes()
             ).hexdigest(),
             "so101_model_sha256": hashlib.sha256(
                 SO101_MODEL_PATH.read_bytes()
             ).hexdigest(),
         }
         self.assertEqual(sources, expected)
+        self.assertEqual(
+            [artifact["camera"] for artifact in receipt["artifacts"]],
+            ["studio_overview", "studio_left", "studio_right", "studio_mug"],
+        )
         for artifact in receipt["artifacts"]:
             path = STUDIO_ASSET_ROOT / artifact["path"]
             self.assertEqual(

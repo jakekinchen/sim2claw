@@ -18,12 +18,23 @@ REQUIRED_PYTHON = (3, 12)
 REQUIRED_MUJOCO = "3.10.0"
 
 
+def _detect_jetson_gpu() -> str | None:
+    """Jetson/Tegra boards expose their GPU via /dev/nvidia0 and never ship
+    nvidia-smi. Treat that device node (backed by the Tegra release file) as
+    equivalent proof of a working NVIDIA accelerator."""
+    if Path("/dev/nvidia0").exists() and Path("/etc/nv_tegra_release").is_file():
+        return "/dev/nvidia0"
+    return None
+
+
 def nvidia_preflight_requirements(
     *,
     platform_name: str,
     nvidia_smi_path: str | None,
     mujoco_gl: str | None,
+    jetson_gpu_path: str | None = None,
 ) -> list[dict[str, Any]]:
+    gpu_present = nvidia_smi_path or jetson_gpu_path
     return [
         {
             "name": "linux-host",
@@ -32,10 +43,10 @@ def nvidia_preflight_requirements(
             "required": "Linux",
         },
         {
-            "name": "nvidia-smi-present",
-            "passed": bool(nvidia_smi_path),
-            "observed": nvidia_smi_path,
-            "required": "nvidia-smi on PATH",
+            "name": "nvidia-gpu-present",
+            "passed": bool(gpu_present),
+            "observed": gpu_present,
+            "required": "nvidia-smi on PATH, or /dev/nvidia0 on a Tegra/Jetson host",
         },
         {
             "name": "egl-selected",
@@ -91,11 +102,13 @@ def run_doctor(target: str = "auto", render_probe: bool = False) -> dict[str, An
         accelerator["render"] = os.environ.get("MUJOCO_GL", "platform-default")
     else:
         nvidia_smi_path = shutil.which("nvidia-smi")
+        jetson_gpu_path = None if nvidia_smi_path else _detect_jetson_gpu()
         checks.extend(
             nvidia_preflight_requirements(
                 platform_name=platform_name,
                 nvidia_smi_path=nvidia_smi_path,
                 mujoco_gl=os.environ.get("MUJOCO_GL"),
+                jetson_gpu_path=jetson_gpu_path,
             )
         )
         if nvidia_smi_path:
@@ -111,6 +124,11 @@ def run_doctor(target: str = "auto", render_probe: bool = False) -> dict[str, An
                 timeout=15,
             )
             accelerator["nvidia_smi"] = result.stdout.strip() or result.stderr.strip()
+        elif jetson_gpu_path:
+            accelerator["jetson_gpu"] = jetson_gpu_path
+            accelerator["nv_tegra_release"] = Path(
+                "/etc/nv_tegra_release"
+            ).read_text().strip()
 
     proof_artifact: str | None = None
     if render_probe and all(check["passed"] for check in checks):

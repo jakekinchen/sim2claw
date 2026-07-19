@@ -1,5 +1,10 @@
 # Slice Brief 003: Simulated Teleoperation Source Recorder
 
+> Historical note: Decision 0006 supersedes the ACT-named raw storage boundary
+> for new recordings. Existing `datasets/act_source_recordings` artifacts remain
+> unchanged evidence; new recordings are canonical model-agnostic source
+> episodes under `datasets/manipulation_source_recordings`.
+
 **Date:** 2026-07-18
 
 **Milestone:** M7 - source-collection prerequisite only
@@ -20,7 +25,7 @@ provenance required by the frozen M6 contract.
   tracking error, selected-piece pose, continuous target pose, timestamps, and
   proof class.
 - Require a human label, declared skill, and success/failure/correction outcome
-  before moving the draft into `datasets/act_source_recordings/`.
+  before moving a new draft into `datasets/manipulation_source_recordings/`.
 - Mark every saved artifact as raw source, ignored by Git, not held-out, and not
   training data pending deterministic replay and separate evaluator admission.
 - Keep physical follower mode disabled by default and keep automated validation

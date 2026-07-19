@@ -1,0 +1,172 @@
+# GR00T N1.7 Recovery and Robustness Overnight Campaign
+
+Date: 2026-07-18 America/Chicago
+
+## Lane identity
+
+- Branch: `codex/gr00t-n17-recovery-overnight`.
+- Isolated worktree: `/Users/kelly/Developer/sim2claw-recovery`.
+- Starting `origin/main`: `42e0704bbfe8a29e8d629b441e7cccf980e983de`.
+- Machine 1 boundary: the existing `chess_pick_place_groot_v1` contract,
+  dataset, baseline run, and checkpoints remain owned by the nominal lane.
+- Machine 2 worker: `sim2claw-gr00t-recovery-0718` (`u9709tq27`).
+- Worker type: `massedcompute_A100_sxm4_80G_DGX` at the previously quoted
+  `$1.656/hour`.
+
+## Frozen identities
+
+- v1 contract SHA-256:
+  `473915817b3a8474f796df53e199df92031d17fad152599a1d43ccecd3f15683`.
+- v2 recovery contract SHA-256:
+  `2a258c068098c175eb5ea63beaaff8730b32a3217c65f60d7d6b99f78db39c6a`.
+- NVIDIA source: `23ace64f17aa5015259b8609d371eb61a357c776`.
+- Base model: `nvidia/GR00T-N1.7-3B`, revision
+  `2fc962b973bccdd5d8ce4f67cc63b264d6886495`.
+- Proof class: simulation synthetic demonstrations and learned-policy
+  evaluation only; no physical authority.
+
+## Worker preflight
+
+The dedicated second worker passed setup with:
+
+- NVIDIA A100-SXM4-80GB, 81,920 MiB, compute capability 8.0;
+- driver 580.126.09, CUDA 12.8, and Torch 2.7.1+cu128;
+- GR00T import from the exact pinned source revision; and
+- FFmpeg 4.4.2.
+
+Local access probes returned HTTP 200 for the account, GR00T base model, and
+Cosmos dependency before provisioning. The existing local Hugging Face token
+was transferred to the worker through a protected file and never printed or
+placed in Git.
+
+## Recovery contract result
+
+The v2 matrix contains 48 training rows and 24 held-out rows. Both splits cover
+nominal, pose-error, distractor-proximity, and contact-recovery families; the
+held-out rows have disjoint seeds and perturbation signatures and explicitly
+contribute zero training rows.
+
+The contact curriculum uses one declared 3--4.5 mm pre-lift displacement while
+the jaws are open. The expert then clears, recomputes the target geometry,
+reacquires, closes, and must produce post-fault target contact. Nearby pieces
+are placed tangent to the transport path with an inward-board component so the
+test measures manipulation clearance rather than an invalid reset on the board
+frame.
+
+A complete CPU/fp32 no-render sweep accepted all 48 training consequences and
+all 24 held-out consequences. Every accepted row had zero assistance. Failed
+candidate geometries encountered while designing the frozen matrix were kept
+out of imitation data.
+
+The new unit tests include deterministic negative fixtures for spills,
+wrong-piece jaw contact, failed capture, dragging, and late toppling. The
+focused recovery suite passed four tests, including both pieces and every
+failure family.
+
+## Dataset and training ledger
+
+This section is updated only at stable evidence boundaries.
+
+| Stage | State | Evidence |
+| --- | --- | --- |
+| Training demonstration sweep | PASS | 48/48 frozen consequences accepted |
+| Held-out expert feasibility | PASS | 24/24 frozen consequences accepted; zero training rows |
+| LeRobot v2 training export | PASS | 48 episodes, 18,888 frames, 102 files; receipt SHA-256 `fba7697d1f4f95aad46998dd3ab2db79cbde629b91c8e5a228f59d4e214a967d` |
+| Official NVIDIA loader | PASS | 48 episodes; episode 0 has 363 rows and the expected language, state, action, and `video.front` columns |
+| Held-out diagnostic export | PASS | 24 zero-training-row episodes, 9,444 frames, 54 files; receipt SHA-256 `f849460fe89bee251355ea105a4e1553076da70e5105fb51186a8ba641cd816b` |
+| Held-out NVIDIA loader | PASS | 24 episodes; 363-row non-contact and 485-row recovery trajectories; expected modalities |
+| Clean-base candidate A | PASS | 5,000 steps; exit 0; five fixed checkpoints; 1,764.98 seconds; no non-finite metrics |
+| Recovery policy runner | PREFLIGHT PASS | compiled locally/remotely and imported in the pinned GR00T environment; fixed action horizon 16 |
+| Recovery-v2 checkpoint sweep | TERMINAL NEGATIVE | 0/120 held-out consequences; 0/24 at every fixed checkpoint |
+| Frozen-v1 regression sweep | TERMINAL NEGATIVE | 0/20 unchanged v1 held-out consequences; 0/4 at every fixed checkpoint |
+| Candidate B | NOT RUN | dominant failures are full-task placement and board safety, not an isolated recovery cluster |
+| Artifact preservation | PASS | 12,627,834,880-byte local archive at `/Users/kelly/Documents/Codex/sim2claw-groot-recovery-n17-20260718.tar`; local and remote SHA-256 both `1cbf6ddbcec721c3fb319f5a132dfb29a345ed13c87e5c9876e6bdcaebcb69a5` |
+| Paid worker teardown | PASS | recovery worker `u9709tq27` deleted after the local integrity and manifest gates passed |
+
+Candidate A started at approximately 04:10 America/Chicago from the pinned
+clean base and exact validated dataset. It saves every 1,000 steps, retains at
+most five checkpoints, and is guarded by a 21,600-second hard timeout. The
+initial live check observed 77 percent GPU utilization at 44 C. The run remains
+diagnostic until a separately owned evaluator accepts a saved checkpoint.
+
+Checkpoint boundary metrics remained finite through step 5,000: loss was
+0.8382 at step 1,000, 0.7580 at step 2,000, 0.6113 at step 3,000, and 0.5534 at
+step 4,000. The final step-5,000 loss was 0.5727 with gradient norm 0.7630.
+These values establish optimizer health only and have no promotion authority.
+
+The learned-policy recovery runner uses the frozen 16-action horizon. In
+contact-recovery cases, the declared fault occurs after the frozen stand-off
+and advance durations at physics step 800, which is both a sample boundary and
+a new action-chunk query boundary. Fault injection remains separate from robot
+assistance, and every robot action after the fault remains model-owned.
+
+## Learned-policy result
+
+Every checkpoint was a terminal negative under both the recovery-v2 evaluator
+and the unchanged v1 evaluator. Across the 120 recovery-v2 receipts, all 120
+missed final XY, 119 missed final upright, 96 exceeded the 6 mm other-piece
+displacement gate, 78 missed the 40 mm lift gate, and 69 contacted a wrong
+piece. Of the 30 declared-slip episodes, only one checkpoint-3000 episode
+recorded post-fault target contact; it still failed the task consequence.
+
+| Step | v2 pass | v1 pass | Lift gate pass | Recovery-contact pass | Worst other-piece displacement | Recovery open-loop MAE |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1,000 | 0/24 | 0/4 | 7/24 | 0/6 | 81.037 m | 0.16542 |
+| 2,000 | 0/24 | 0/4 | 5/24 | 0/6 | 144.116 m | 0.15388 |
+| 3,000 | 0/24 | 0/4 | 11/24 | 1/6 | 1.780 m | 0.13520 |
+| 4,000 | 0/24 | 0/4 | 9/24 | 0/6 | 1.262 m | 0.13015 |
+| 5,000 | 0/24 | 0/4 | 10/24 | 0/6 | 1.623 m | 0.12796 |
+
+Checkpoint-4000 is retained as the representative terminal-negative artifact
+because it had the smallest observed worst-case other-piece displacement in
+this realized sweep. It is not promoted or reproducibly selected. After the
+sweep, the placement lane proved that EGL can vary approximately 23 image
+channel values by one LSB across otherwise bitwise-identical fresh processes,
+changing GR00T actions even when per-query RNG hashes match. OSMesa eliminated
+that variation in its three-process diagnostic. Therefore the cross-checkpoint
+ordering above is provisional and cannot select a model; the 0/140 realized
+v1/v2 consequence result remains terminal negative evidence, not a
+deterministic comparison. Per coordination direction, this lane did not start a
+new remote diagnostic or retrain after that finding.
+
+The result was sent to the separate placement lane with the explicit warning
+that this recovery checkpoint-4000 is not its nominal checkpoint-4000. The
+shared implication is to continue seeded failure localization around
+transit/lower/release and safety consequences; recovery-mixture training alone
+did not rescue execution geometry.
+
+An attempted dataset replay on the Brev/Linux MuJoCo stack failed episode 0
+while lowering to the piece, despite the same consequence passing the frozen
+CPU/fp32 evaluator used to establish dataset authority. That attempt is
+quarantined at
+`/home/shadeform/sim2claw/datasets/chess_pick_place_groot_recovery_v2.failed-linux-physics`
+and is not training data or positive evidence. The earlier missing-model attempt
+is likewise quarantined under the `.failed-missing-model` suffix.
+
+## Authority boundary
+
+The expert feasibility sweep and dataset acceptance do not establish learned
+policy performance. Training loss and open-loop action error remain diagnostic.
+Only separately invoked closed-loop consequence receipts may select a
+checkpoint. Generated datasets, weights, videos, logs, caches, and credentials
+remain outside Git.
+
+## Closeout
+
+The immutable local archive passed exact byte-size and SHA-256 comparison
+against the remote source. Its 1,026-entry manifest contains all 120 recovery-v2
+receipts and videos, all 20 unchanged-v1 receipts and videos, both dataset
+receipts, the complete retained checkpoint-4000, logs, exit markers, exact
+configuration/source/scripts, and the final summary. An adjacent local receipt
+at
+`/Users/kelly/Documents/Codex/sim2claw-groot-recovery-n17-20260718.README.md`
+records the later EGL/OSMesa reproducibility qualification without altering the
+archive.
+
+The final read-only worker check found no GR00T, training, evaluator, or GPU
+compute process. Brev authentication was refreshed with the intended personal
+account after the first delete request encountered an expired CLI token. The
+recovery worker then transitioned through deletion and disappeared from
+authenticated inventory. The only remaining Brev workspace is the separately
+owned healthy placement worker `sim2claw-gr00t-placement-0718` (`lpfsp2w5x`),
+which this lane did not modify or stop.

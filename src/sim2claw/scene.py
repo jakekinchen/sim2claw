@@ -9,7 +9,17 @@ from typing import Any
 import mujoco
 
 from .capture import capture_directory, load_capture_config
-from .paths import DEFAULT_CAPTURE_CONFIG, DEFAULT_EXTERNAL_ROOT, SO101_MODEL_PATH
+from .mass_profile import (
+    apply_so101_mass_profile,
+    load_so101_mass_profile,
+    mass_profile_summary,
+)
+from .paths import (
+    DEFAULT_CAPTURE_CONFIG,
+    DEFAULT_EXTERNAL_ROOT,
+    DEFAULT_SO101_MASS_PROFILE,
+    SO101_MODEL_PATH,
+)
 
 
 ROBOT_JOINTS = (
@@ -25,6 +35,7 @@ STUDIO_CAMERAS = (
     "studio_overview",
     "studio_left",
     "studio_right",
+    "studio_mug",
 )
 
 CURRENT_TASK_PIECE_LAYOUT = "sparse_two_sided_pawns"
@@ -427,7 +438,136 @@ def _fiducial_body(config: dict[str, Any], geometry: SceneGeometry) -> list[str]
     return lines
 
 
-def _photo_background(config: dict[str, Any], geometry: SceneGeometry) -> list[str]:
+def _antler_mug(
+    background: dict[str, Any],
+    *,
+    ledge_center_y: float,
+    ledge_top_z: float,
+) -> list[str]:
+    """Build a fixed, non-colliding mug from the user's photo reference."""
+
+    mug = background["antler_mug"]
+    sill_x, sill_y = (
+        float(value) for value in mug["center_in_sill_frame_xy_m"]
+    )
+    radius = float(mug["outer_radius_m"])
+    height = float(mug["height_m"])
+    half_height = height / 2.0
+    visual_only = 'group="0" contype="0" conaffinity="0"'
+    ceramic = 'rgba="0.94 0.94 0.92 1"'
+    red = 'rgba="0.78 0.08 0.025 1"'
+    white = 'rgba="0.98 0.98 0.965 1"'
+    lines = [
+        f'<body name="antler_mug" pos="{sill_x:.9g} '
+        f'{ledge_center_y + sill_y:.9g} {ledge_top_z + half_height:.9g}">',
+        f'<geom name="antler_mug_ceramic" type="cylinder" '
+        f'size="{radius:.9g} {half_height:.9g}" {ceramic} {visual_only}/>',
+        f'<geom name="antler_mug_inner" type="cylinder" '
+        f'size="{radius - 0.008:.9g} 0.0012" pos="0 0 {half_height + 0.0007:.9g}" '
+        f'rgba="0.60 0.60 0.57 1" {visual_only}/>',
+        f'<geom name="antler_mug_base_ring" type="cylinder" '
+        f'size="{radius - 0.004:.9g} 0.002" pos="0 0 {-half_height + 0.001:.9g}" '
+        f'{ceramic} {visual_only}/>',
+    ]
+
+    rim_z = half_height + 0.0015
+    rim_segments = 20
+    for index in range(rim_segments):
+        first = (2.0 * math.pi * index) / rim_segments
+        second = (2.0 * math.pi * (index + 1)) / rim_segments
+        x1, y1 = radius * math.cos(first), radius * math.sin(first)
+        x2, y2 = radius * math.cos(second), radius * math.sin(second)
+        lines.append(
+            f'<geom name="antler_mug_rim_{index:02d}" type="capsule" size="0.003" '
+            f'fromto="{x1:.9g} {y1:.9g} {rim_z:.9g} '
+            f'{x2:.9g} {y2:.9g} {rim_z:.9g}" {ceramic} {visual_only}/>'
+        )
+
+    handle_inner_x = -radius + 0.003
+    handle_outer_x = -radius - 0.037
+    handle_top_z = 0.027
+    handle_bottom_z = -0.026
+    handle_segments = (
+        (handle_inner_x, 0.0, handle_top_z, handle_outer_x, 0.0, handle_top_z),
+        (handle_outer_x, 0.0, handle_top_z, handle_outer_x, 0.0, handle_bottom_z),
+        (
+            handle_outer_x,
+            0.0,
+            handle_bottom_z,
+            handle_inner_x,
+            0.0,
+            handle_bottom_z,
+        ),
+    )
+    for index, segment in enumerate(handle_segments):
+        lines.append(
+            f'<geom name="antler_mug_handle_{index}" type="capsule" size="0.007" '
+            f'fromto="{_format_vector(segment)}" {ceramic} {visual_only}/>'
+        )
+
+    def decal_point(x: float, z: float, offset: float) -> tuple[float, float, float]:
+        theta = math.asin(max(-0.98, min(0.98, x / radius)))
+        return x, (radius * math.cos(theta)) + offset, z
+
+    logo_center_x = 0.023
+    logo_center_z = -0.006
+    logo_theta = math.asin(logo_center_x / radius)
+    logo_y = (radius * math.cos(logo_theta)) + 0.001
+    lines.append(
+        f'<geom name="antler_logo_red_square" type="box" size="0.010 0.0008 0.010" '
+        f'pos="{logo_center_x:.9g} {logo_y:.9g} {logo_center_z:.9g}" '
+        f'euler="0 0 {-math.degrees(logo_theta):.9g}" {red} {visual_only}/>'
+    )
+    a_segments = (
+        ((0.030, -0.012), (0.023, 0.002)),
+        ((0.023, 0.002), (0.016, -0.012)),
+        ((0.027, -0.006), (0.019, -0.006)),
+    )
+    for index, (start, end) in enumerate(a_segments):
+        x1, y1, z1 = decal_point(*start, 0.0021)
+        x2, y2, z2 = decal_point(*end, 0.0021)
+        lines.append(
+            f'<geom name="antler_logo_a_{index}" type="capsule" size="0.00135" '
+            f'fromto="{x1:.9g} {y1:.9g} {z1:.9g} '
+            f'{x2:.9g} {y2:.9g} {z2:.9g}" {white} {visual_only}/>'
+        )
+
+    wordmark = {
+        "N": ("101", "111", "111", "111", "101"),
+        "T": ("111", "010", "010", "010", "010"),
+        "L": ("100", "100", "100", "100", "111"),
+        "E": ("111", "100", "110", "100", "111"),
+        "R": ("110", "101", "110", "101", "101"),
+    }
+    cell = 0.0018
+    cursor = 0.009
+    for letter, rows in wordmark.items():
+        for row_index, row in enumerate(rows):
+            for column_index, enabled in enumerate(row):
+                if enabled != "1":
+                    continue
+                x = cursor - (column_index * cell)
+                z = logo_center_z + ((2 - row_index) * cell)
+                _, y, _ = decal_point(x, z, 0.0014)
+                theta = math.asin(x / radius)
+                lines.append(
+                    f'<geom name="antler_wordmark_{letter}_{row_index}_{column_index}" '
+                    f'type="box" size="0.00072 0.00045 0.00072" '
+                    f'pos="{x:.9g} {y:.9g} {z:.9g}" '
+                    f'euler="0 0 {-math.degrees(theta):.9g}" {red} {visual_only}/>'
+                )
+        cursor -= 4 * cell
+
+    lines.append("</body>")
+    return lines
+
+
+def _photo_background(
+    config: dict[str, Any],
+    geometry: SceneGeometry,
+    *,
+    include_visual_props: bool,
+) -> list[str]:
     half_width = geometry.table_width / 2.0
     background = config["simulation_estimates"]["background"]
     ledge = background["ledge"]
@@ -463,6 +603,14 @@ def _photo_background(config: dict[str, Any], geometry: SceneGeometry) -> list[s
             f'<geom name="blind_{index:02d}" type="box" size="0.85 0.011 0.014" '
             f'pos="0 {rear_y + 0.005:.9g} {blind_z:.9g}" '
             'rgba="0.76 0.76 0.74 1" contype="0" conaffinity="0"/>'
+        )
+    if include_visual_props:
+        lines.extend(
+            _antler_mug(
+                background,
+                ledge_center_y=ledge_center_y,
+                ledge_top_z=ledge_bottom_z + ledge_thickness,
+            )
         )
     # A compact black tripod at the left edge reproduces the strongest side silhouette.
     lines.extend(
@@ -534,6 +682,12 @@ def _studio_cameras(geometry: SceneGeometry) -> list[str]:
             (-0.75, 1.00, geometry.table_top + 0.62),
             30.0,
         ),
+        (
+            "studio_mug",
+            (0.72, -0.431, geometry.table_top + 0.26),
+            (0.72, 0.02, geometry.table_top + 0.32),
+            25.0,
+        ),
     )
     lines: list[str] = []
     for name, target_local, camera_local, fovy in definitions:
@@ -557,6 +711,7 @@ def build_scene_xml(
     scan_overlay: bool = False,
     piece_layout: str = "standard",
     board_center_in_table_frame_xy_m: tuple[float, float] | None = None,
+    include_visual_props: bool = True,
 ) -> str:
     config = load_capture_config(config_path)
     if board_center_in_table_frame_xy_m is not None:
@@ -611,7 +766,9 @@ def build_scene_xml(
         f'{geometry.table_center[1]:.9g} 2.5" mode="targetbody" target="scene_target" fovy="38"/>',
         *_studio_cameras(geometry),
         scan_geom,
-        *_photo_background(config, geometry),
+        *_photo_background(
+            config, geometry, include_visual_props=include_visual_props
+        ),
         *_table_body(geometry),
         *_fiducial_body(config, geometry),
         *_board_body(geometry),
@@ -652,10 +809,12 @@ def build_scene_spec(
     *,
     config_path: Path = DEFAULT_CAPTURE_CONFIG,
     external_root: Path = DEFAULT_EXTERNAL_ROOT,
+    mass_profile_path: Path | None = DEFAULT_SO101_MASS_PROFILE,
     scan_overlay: bool = False,
     include_robots: bool = True,
     piece_layout: str = "standard",
     board_center_in_table_frame_xy_m: tuple[float, float] | None = None,
+    include_visual_props: bool = True,
 ) -> mujoco.MjSpec:
     spec = mujoco.MjSpec.from_string(
         build_scene_xml(
@@ -664,15 +823,25 @@ def build_scene_spec(
             scan_overlay=scan_overlay,
             piece_layout=piece_layout,
             board_center_in_table_frame_xy_m=board_center_in_table_frame_xy_m,
+            include_visual_props=include_visual_props,
         )
     )
     if not include_robots:
         return spec
     if not SO101_MODEL_PATH.is_file():
         raise FileNotFoundError(f"vendored SO-101 model missing: {SO101_MODEL_PATH}")
+    mass_profile = (
+        load_so101_mass_profile(mass_profile_path)
+        if mass_profile_path is not None
+        else None
+    )
     for prefix in ("left_", "right_"):
         robot = mujoco.MjSpec.from_file(str(SO101_MODEL_PATH))
         _white_robot_materials(robot)
+        if mass_profile is not None:
+            robot_name = prefix.removesuffix("_")
+            payload_id = mass_profile["scene_defaults"]["robot_payloads"][robot_name]
+            apply_so101_mass_profile(robot, mass_profile, payload_id=payload_id)
         spec.attach(
             robot,
             frame=spec.frame(f"{prefix}robot_mount"),
@@ -707,12 +876,16 @@ def initialize_robot_poses(
 def scene_summary(
     config_path: Path = DEFAULT_CAPTURE_CONFIG,
     *,
+    mass_profile_path: Path = DEFAULT_SO101_MASS_PROFILE,
     piece_layout: str = "standard",
 ) -> dict[str, Any]:
     config = load_capture_config(config_path)
+    mass_profile = load_so101_mass_profile(mass_profile_path)
     geometry = scene_geometry(config)
-    robots = config["simulation_estimates"]["robots"]
-    board = config["simulation_estimates"]["board"]
+    estimates = config["simulation_estimates"]
+    robots = estimates["robots"]
+    board = estimates["board"]
+    background = estimates["background"]
     board_local_x = float(
         board["center_in_table_frame_xy_m"][0]
     )
@@ -744,11 +917,29 @@ def scene_summary(
             "measurement_confidence": config["simulation_estimates"]["board"]["confidence"],
             "near_side_color": "black",
         },
+        "fiducial": {
+            "pose_id": background["fiducial_pose_id"],
+            "center_in_table_frame_xy_m": background[
+                "fiducial_center_in_table_frame_xy_m"
+            ],
+            "previous_center_in_table_frame_xy_m": background[
+                "previous_fiducial_center_in_table_frame_xy_m"
+            ],
+            "robotward_displacement_from_previous_pose_m": background[
+                "fiducial_robotward_displacement_from_previous_pose_m"
+            ],
+            "robotward_axis_in_table_frame": background[
+                "fiducial_robotward_axis_in_table_frame"
+            ],
+            "physical_authority": False,
+        },
+        "workspace_pose": estimates["workspace_pose"],
         "robots": {
             "count": 2,
             "model": "MuJoCo Menagerie robotstudio_so101",
             "upstream_commit": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
             "pose_confidence": "mounts_photo_registered_joint_poses_not_calibrated",
+            "mass_profile": mass_profile_summary(mass_profile),
             "mounts": [
                 {
                     "name": robot["name"],
@@ -762,8 +953,8 @@ def scene_summary(
             ],
         },
         "studio_cameras": list(STUDIO_CAMERAS),
-        "photo_alignment": config["simulation_estimates"]["photo_reference"],
-        "scene_elements": config["simulation_estimates"]["background"]["elements"],
+        "photo_alignment": estimates["photo_reference"],
+        "scene_elements": background["elements"],
         "piece_layout": piece_layout,
         "piece_layout_id": (
             CURRENT_TASK_LAYOUT_ID

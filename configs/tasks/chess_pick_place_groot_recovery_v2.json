@@ -1,0 +1,127 @@
+{
+  "schema_version": "sim2claw.chess_pick_place_groot_recovery_task.v2",
+  "task_id": "chess_pick_place_groot_recovery_v2",
+  "frozen_before_training": true,
+  "proof_class": "simulation_synthetic_vla_recovery_demonstration",
+  "base_task": {
+    "task_id": "chess_pick_place_groot_v1",
+    "config": "configs/tasks/chess_pick_place_groot_v1.json",
+    "contract_sha256": "473915817b3a8474f796df53e199df92031d17fad152599a1d43ccecd3f15683"
+  },
+  "coordination": {
+    "machine_1_owns_nominal_v1": true,
+    "machine_2_owns_recovery_v2": true,
+    "nominal_v1_must_remain_unchanged": true,
+    "training_cannot_promote_itself": true
+  },
+  "recovery_episode": {
+    "phase_physics_steps": {
+      "recover_clear": 300,
+      "fault_settle": 120,
+      "recover_stand_off": 420,
+      "recover_advance": 380,
+      "recover_close": 420
+    },
+    "fault_injection_count": 1,
+    "minimum_recovery_target_contact_events": 1,
+    "transit_height_m": 0.07,
+    "maximum_ik_residual_m": 0.006
+  },
+  "robustness_evaluator": {
+    "owner": "separate_cpu_fp32_recovery_consequence_evaluator",
+    "maximum_other_piece_displacement_m": 0.006,
+    "require_first_piece_contact_is_target": true,
+    "require_recovery_contact_after_fault": true,
+    "require_declared_fault_count": true,
+    "require_no_assistance": true
+  },
+  "training_episodes": [
+    {"seed": 2101, "case_id": "rook_a8_to_b6", "family": "nominal", "piece_planar_offset_m": [0.0, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2102, "case_id": "king_e8_to_d6", "family": "nominal", "piece_planar_offset_m": [-0.00075, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2103, "case_id": "king_e8_to_c6", "family": "nominal", "piece_planar_offset_m": [0.00075, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2104, "case_id": "rook_a8_to_b6", "family": "nominal", "piece_planar_offset_m": [-0.0005, 0.00075], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2105, "case_id": "king_e8_to_d6", "family": "nominal", "piece_planar_offset_m": [0.0, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2106, "case_id": "king_e8_to_c6", "family": "nominal", "piece_planar_offset_m": [-0.00025, 0.00075], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2107, "case_id": "rook_a8_to_b6", "family": "nominal", "piece_planar_offset_m": [0.00075, 0.00075], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2108, "case_id": "king_e8_to_d6", "family": "nominal", "piece_planar_offset_m": [0.0, 0.001], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2109, "case_id": "king_e8_to_c6", "family": "nominal", "piece_planar_offset_m": [0.0004, 0.0004], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2110, "case_id": "rook_a8_to_b6", "family": "nominal", "piece_planar_offset_m": [-0.0004, 0.0004], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2111, "case_id": "king_e8_to_d6", "family": "nominal", "piece_planar_offset_m": [0.0005, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2112, "case_id": "king_e8_to_c6", "family": "nominal", "piece_planar_offset_m": [-0.0005, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+
+    {"seed": 2201, "case_id": "rook_a8_to_b6", "family": "pose_error", "piece_planar_offset_m": [0.002, 0.0], "piece_yaw_deg": 10.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2202, "case_id": "king_e8_to_d6", "family": "pose_error", "piece_planar_offset_m": [-0.004, 0.0], "piece_yaw_deg": -10.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2203, "case_id": "king_e8_to_c6", "family": "pose_error", "piece_planar_offset_m": [0.0, 0.008], "piece_yaw_deg": 20.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2204, "case_id": "rook_a8_to_b6", "family": "pose_error", "piece_planar_offset_m": [0.0015, 0.0], "piece_yaw_deg": -10.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2205, "case_id": "king_e8_to_d6", "family": "pose_error", "piece_planar_offset_m": [0.004, 0.0], "piece_yaw_deg": -20.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2206, "case_id": "king_e8_to_c6", "family": "pose_error", "piece_planar_offset_m": [-0.004, 0.0], "piece_yaw_deg": 20.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2207, "case_id": "rook_a8_to_b6", "family": "pose_error", "piece_planar_offset_m": [0.0, 0.0015], "piece_yaw_deg": -10.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2208, "case_id": "king_e8_to_d6", "family": "pose_error", "piece_planar_offset_m": [0.0, -0.004], "piece_yaw_deg": 10.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2209, "case_id": "king_e8_to_c6", "family": "pose_error", "piece_planar_offset_m": [0.008, 0.0], "piece_yaw_deg": 10.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2210, "case_id": "rook_a8_to_b6", "family": "pose_error", "piece_planar_offset_m": [-0.001, 0.0], "piece_yaw_deg": -10.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2211, "case_id": "king_e8_to_d6", "family": "pose_error", "piece_planar_offset_m": [0.0, 0.008], "piece_yaw_deg": -20.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2212, "case_id": "king_e8_to_c6", "family": "pose_error", "piece_planar_offset_m": [0.0, -0.008], "piece_yaw_deg": 20.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0},
+
+    {"seed": 2301, "case_id": "rook_a8_to_b6", "family": "distractor_proximity", "piece_planar_offset_m": [0.0, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.05, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2302, "case_id": "king_e8_to_d6", "family": "distractor_proximity", "piece_planar_offset_m": [0.0, 0.00075], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.05125, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2303, "case_id": "king_e8_to_c6", "family": "distractor_proximity", "piece_planar_offset_m": [0.00075, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.05, "distractor_side": 1, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2304, "case_id": "rook_a8_to_b6", "family": "distractor_proximity", "piece_planar_offset_m": [0.0001, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.07, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2305, "case_id": "king_e8_to_d6", "family": "distractor_proximity", "piece_planar_offset_m": [0.0005, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.0525, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2306, "case_id": "king_e8_to_c6", "family": "distractor_proximity", "piece_planar_offset_m": [-0.0005, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.05125, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2307, "case_id": "rook_a8_to_b6", "family": "distractor_proximity", "piece_planar_offset_m": [0.0, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.05375, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2308, "case_id": "king_e8_to_d6", "family": "distractor_proximity", "piece_planar_offset_m": [0.0005, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.05125, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2309, "case_id": "king_e8_to_c6", "family": "distractor_proximity", "piece_planar_offset_m": [-0.0005, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.05, "distractor_side": 1, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2310, "case_id": "rook_a8_to_b6", "family": "distractor_proximity", "piece_planar_offset_m": [-0.0001, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.05, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2311, "case_id": "king_e8_to_d6", "family": "distractor_proximity", "piece_planar_offset_m": [0.0004, 0.0004], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.05125, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0},
+    {"seed": 2312, "case_id": "king_e8_to_c6", "family": "distractor_proximity", "piece_planar_offset_m": [-0.0004, 0.0004], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.05, "distractor_side": 1, "slip_m": 0.0, "slip_side": 0},
+
+    {"seed": 2401, "case_id": "rook_a8_to_b6", "family": "contact_recovery", "piece_planar_offset_m": [0.0, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0035, "slip_side": -1},
+    {"seed": 2402, "case_id": "king_e8_to_d6", "family": "contact_recovery", "piece_planar_offset_m": [0.0, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.003, "slip_side": -1},
+    {"seed": 2403, "case_id": "king_e8_to_c6", "family": "contact_recovery", "piece_planar_offset_m": [0.0005, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.003, "slip_side": -1},
+    {"seed": 2404, "case_id": "rook_a8_to_b6", "family": "contact_recovery", "piece_planar_offset_m": [-0.0005, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.004, "slip_side": -1},
+    {"seed": 2405, "case_id": "king_e8_to_d6", "family": "contact_recovery", "piece_planar_offset_m": [0.0, -0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.003, "slip_side": -1},
+    {"seed": 2406, "case_id": "king_e8_to_c6", "family": "contact_recovery", "piece_planar_offset_m": [0.0004, 0.0004], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.003, "slip_side": -1},
+    {"seed": 2407, "case_id": "rook_a8_to_b6", "family": "contact_recovery", "piece_planar_offset_m": [-0.0004, 0.0004], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.003, "slip_side": 1},
+    {"seed": 2408, "case_id": "king_e8_to_d6", "family": "contact_recovery", "piece_planar_offset_m": [0.0005, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.003, "slip_side": -1},
+    {"seed": 2409, "case_id": "king_e8_to_c6", "family": "contact_recovery", "piece_planar_offset_m": [-0.0005, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.003, "slip_side": -1},
+    {"seed": 2410, "case_id": "rook_a8_to_b6", "family": "contact_recovery", "piece_planar_offset_m": [0.00075, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0035, "slip_side": 1},
+    {"seed": 2411, "case_id": "king_e8_to_d6", "family": "contact_recovery", "piece_planar_offset_m": [-0.00075, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.003, "slip_side": -1},
+    {"seed": 2412, "case_id": "king_e8_to_c6", "family": "contact_recovery", "piece_planar_offset_m": [0.0, 0.001], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.003, "slip_side": -1}
+  ],
+  "held_out_episodes": [
+    {"seed": 9501, "case_id": "rook_a8_to_c6", "family": "nominal", "piece_planar_offset_m": [0.0002, -0.0002], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9502, "case_id": "king_e8_to_e6", "family": "nominal", "piece_planar_offset_m": [-0.0006, 0.0002], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9503, "case_id": "rook_a8_to_c6", "family": "nominal", "piece_planar_offset_m": [0.0006, -0.0002], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9504, "case_id": "king_e8_to_e6", "family": "nominal", "piece_planar_offset_m": [-0.0001, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9505, "case_id": "rook_a8_to_c6", "family": "nominal", "piece_planar_offset_m": [0.0002, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9506, "case_id": "king_e8_to_e6", "family": "nominal", "piece_planar_offset_m": [0.0003, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+
+    {"seed": 9511, "case_id": "rook_a8_to_c6", "family": "pose_error", "piece_planar_offset_m": [0.0, 0.0], "piece_yaw_deg": 5.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9512, "case_id": "king_e8_to_e6", "family": "pose_error", "piece_planar_offset_m": [0.0, 0.0], "piece_yaw_deg": -5.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9513, "case_id": "rook_a8_to_c6", "family": "pose_error", "piece_planar_offset_m": [0.0, 0.0], "piece_yaw_deg": 10.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9514, "case_id": "king_e8_to_e6", "family": "pose_error", "piece_planar_offset_m": [0.001, 0.0], "piece_yaw_deg": 10.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9515, "case_id": "rook_a8_to_c6", "family": "pose_error", "piece_planar_offset_m": [0.0, 0.0], "piece_yaw_deg": -15.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9516, "case_id": "king_e8_to_e6", "family": "pose_error", "piece_planar_offset_m": [0.0, 0.004], "piece_yaw_deg": -5.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+
+    {"seed": 9521, "case_id": "rook_a8_to_c6", "family": "distractor_proximity", "piece_planar_offset_m": [0.0, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.0525, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9522, "case_id": "king_e8_to_e6", "family": "distractor_proximity", "piece_planar_offset_m": [0.0, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.06, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9523, "case_id": "rook_a8_to_c6", "family": "distractor_proximity", "piece_planar_offset_m": [0.0005, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.0525, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9524, "case_id": "king_e8_to_e6", "family": "distractor_proximity", "piece_planar_offset_m": [-0.0005, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.05375, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9525, "case_id": "rook_a8_to_c6", "family": "distractor_proximity", "piece_planar_offset_m": [0.0, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.05875, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+    {"seed": 9526, "case_id": "king_e8_to_e6", "family": "distractor_proximity", "piece_planar_offset_m": [-0.0004, 0.0004], "piece_yaw_deg": 0.0, "distractor_spacing_m": 0.055, "distractor_side": -1, "slip_m": 0.0, "slip_side": 0, "training_rows": 0},
+
+    {"seed": 9531, "case_id": "rook_a8_to_c6", "family": "contact_recovery", "piece_planar_offset_m": [0.0, -0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.004, "slip_side": -1, "training_rows": 0},
+    {"seed": 9532, "case_id": "king_e8_to_e6", "family": "contact_recovery", "piece_planar_offset_m": [0.0, 0.0005], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0045, "slip_side": -1, "training_rows": 0},
+    {"seed": 9533, "case_id": "rook_a8_to_c6", "family": "contact_recovery", "piece_planar_offset_m": [0.0005, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.004, "slip_side": 1, "training_rows": 0},
+    {"seed": 9534, "case_id": "king_e8_to_e6", "family": "contact_recovery", "piece_planar_offset_m": [-0.0005, 0.0], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.003, "slip_side": -1, "training_rows": 0},
+    {"seed": 9535, "case_id": "rook_a8_to_c6", "family": "contact_recovery", "piece_planar_offset_m": [0.0004, 0.0004], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.0035, "slip_side": -1, "training_rows": 0},
+    {"seed": 9536, "case_id": "king_e8_to_e6", "family": "contact_recovery", "piece_planar_offset_m": [-0.0004, 0.0004], "piece_yaw_deg": 0.0, "distractor_spacing_m": null, "distractor_side": 0, "slip_m": 0.003, "slip_side": -1, "training_rows": 0}
+  ],
+  "authority": {
+    "physical_authority": false,
+    "camera_hardware_access": false,
+    "serial_access": false,
+    "gateway_access": false,
+    "diagnostic_reward_cannot_promote": true
+  }
+}

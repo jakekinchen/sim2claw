@@ -1,0 +1,110 @@
+{
+  "schema_version": "sim2claw.groot_n17_rate_limited_temporal_experiment.v1",
+  "frozen_before_learned_closed_loop_evaluation": true,
+  "frozen_before_held_out_evaluation": true,
+  "lane": "inference_only_rate_limited_temporal_execution",
+  "parent_temporal_experiment_sha256": "a07ea6b50d492511ab98720ae0b1ae44534a8a2fa66eff9e19d56d3d2424e458",
+  "parent_temporal_summary_sha256": "7c463abb03384106d167cab56060e6a3fc7b686440edfdd5b3842347e256cdee",
+  "parent_temporal_evidence_archive_sha256": "b1de7ced0076f5e79ca446bf0a37abc213371701e2b54743c7a6ba971d3432ce",
+  "parent_result": {
+    "held_out_may_open": false,
+    "best_arm": {
+      "id": "h8-overlap-mean",
+      "execution_horizon": 8,
+      "temporal_action_aggregation": "mean",
+      "temporal_decay": 0.5,
+      "maximum_overlapping_predictions": 2,
+      "full_task_consequence_pass_count": 0,
+      "lift_pass_count": 2,
+      "final_xy_pass_count": 0,
+      "upright_pass_count": 0,
+      "board_safety_pass_count": 6,
+      "rollout_cells": 6
+    },
+    "representative_receipt_sha256": "7cf12f1b91ed170f1664bf5e5056c07ec40f9429b6676f600f97b51a0105a488"
+  },
+  "frozen_identities": {
+    "nominal_checkpoint_id": "checkpoint-4000",
+    "nominal_checkpoint_aggregate_manifest_sha256": "e89dae30e4b06af815b55e1a9e3036547eeae151463740e29f7fea8ad0b166ac",
+    "nvidia_source_commit": "23ace64f17aa5015259b8609d371eb61a357c776",
+    "cosmos_snapshot": "9ce19a195e423419c349abfc86fd07178b230561",
+    "base_task_contract_canonical_sha256": "473915817b3a8474f796df53e199df92031d17fad152599a1d43ccecd3f15683"
+  },
+  "fixed_model_inference": {
+    "proposal_count": 5,
+    "action_aggregation": "median",
+    "noise_scale": 0.5,
+    "num_inference_timesteps": 4,
+    "model_action_horizon": 16
+  },
+  "fixed_temporal_executor": {
+    "execution_horizon": 8,
+    "temporal_action_aggregation": "mean",
+    "temporal_decay": 0.5,
+    "maximum_overlapping_predictions": 2
+  },
+  "rate_limiter": {
+    "source": "corrected_lane_13_replay_aligned_training_episodes_p95_abs_delta_v1",
+    "source_kind": "cross_lane_training_only_handoff",
+    "independently_recomputed_in_this_lane": false,
+    "held_out_rows_accessed_by_derivation": 0,
+    "statistic": "per_coordinate_95th_percentile_absolute_action_delta",
+    "sample_rate_hz": 20,
+    "dtype": "float32",
+    "maximum_abs_delta_per_sample": [
+      0.0055728,
+      0.0158314,
+      0.0127604,
+      0.0157313,
+      0.000617,
+      0.0503374
+    ],
+    "initial_reference": "env.controls_before_first_policy_action",
+    "subsequent_reference": "previous_rate_limited_applied_waypoint",
+    "future_observations_used": false,
+    "task_geometry_used": false,
+    "reward_used": false,
+    "assistance_frames": 0
+  },
+  "action_execution_adapter": {
+    "method": "linear_same_phase",
+    "physics_target": "rate_limited_current_waypoint + (physics_substep / sample_stride) * (rate_limited_next_waypoint - rate_limited_current_waypoint)",
+    "phase_boundary_behavior": "hold_rate_limited_current_waypoint_for_the_complete_interval",
+    "assistance_frames": 0
+  },
+  "renderer": {
+    "mujoco_gl": "osmesa",
+    "pyopengl_platform": "osmesa",
+    "role": "versioned_deterministic_diagnostic",
+    "promotion_authority": false,
+    "development_cadence": "policy_queries",
+    "sealed_promotion_cadence": "all_samples",
+    "policy_observation_frames_omitted": false
+  },
+  "development": {
+    "split": "training",
+    "episode_indices": [0, 8, 16],
+    "inference_seeds": [0, 1],
+    "arm_id": "h8-overlap-mean-rate95",
+    "advance_rule": "the arm must produce at least two full task-consequence passes with unchanged gates",
+    "promotion_authority": false
+  },
+  "sealed_promotion": {
+    "split": "held_out",
+    "episode_indices": [0, 1, 2, 3],
+    "inference_seeds": [7101, 7102],
+    "may_open_only_after_configuration_hash_is_frozen": true,
+    "minimum_success_claim": "the same held-out episode passes every unchanged gate for both inference seeds",
+    "robust_challenger_target": "at least six of eight held-out consequences pass",
+    "reroll_or_oracle_seed_selection_forbidden": true
+  },
+  "invariants": {
+    "all_actions_are_rate_limited_causal_aggregates_of_model_chunks": true,
+    "assistance_frames": 0,
+    "consequence_gates_unchanged": true,
+    "training_cannot_promote_itself": true,
+    "held_out_rows_remain_sealed_until_development_gate": true,
+    "recovery_checkpoint_comparison_forbidden": true,
+    "physical_authority": false
+  }
+}
