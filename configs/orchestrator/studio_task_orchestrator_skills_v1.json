@@ -1,0 +1,46 @@
+{
+  "schema_version": "sim2claw.orchestrator_skill_registry.v1",
+  "registry_id": "studio_task_orchestrator_skills_v1",
+  "status": "frozen_no_promoted_bg_checkpoint_available",
+  "benchmark_binding": "configs/evaluations/pawn_rank12_bidirectional_v2.json",
+  "execution_contract": {
+    "architecture": "ACT",
+    "observation_schema": "chess_pick_place_act_state_v1",
+    "action_schema": "six_absolute_so101_joint_targets",
+    "supported_scene_id": "operator_updated_chess_workcell_v3",
+    "supported_workcell_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "supported_calibration_id": "board_robotward_100mm_20260718_v3",
+    "supported_workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "supported_board_pose_id": "board_robotward_100mm_20260718_v3",
+    "preconditions": ["source_square_confidently_occupied", "destination_square_confidently_empty", "exactly_one_managed_pawn_in_file"],
+    "postconditions": ["source_square_confidently_empty", "destination_square_confidently_occupied", "other_managed_squares_unchanged"],
+    "timeout_seconds": 30,
+    "safe_stop": "adapter_cancel_then_mode_owned_fail_closed_release",
+    "known_failure_regions": ["uncertain_occupancy", "obstruction", "zero_or_two_pawns_in_file", "out_of_supported_pair"],
+    "recovery_restriction": "no_cross_file_or_unregistered_recovery"
+  },
+  "skills": [
+    {"skill_id": "pawn_b1_to_b2", "version": 1, "source_square": "b1", "destination_square": "b2"},
+    {"skill_id": "pawn_b2_to_b1", "version": 1, "source_square": "b2", "destination_square": "b1"},
+    {"skill_id": "pawn_c1_to_c2", "version": 1, "source_square": "c1", "destination_square": "c2"},
+    {"skill_id": "pawn_c2_to_c1", "version": 1, "source_square": "c2", "destination_square": "c1"},
+    {"skill_id": "pawn_d1_to_d2", "version": 1, "source_square": "d1", "destination_square": "d2"},
+    {"skill_id": "pawn_d2_to_d1", "version": 1, "source_square": "d2", "destination_square": "d1"},
+    {"skill_id": "pawn_e1_to_e2", "version": 1, "source_square": "e1", "destination_square": "e2"},
+    {"skill_id": "pawn_e2_to_e1", "version": 1, "source_square": "e2", "destination_square": "e1"},
+    {"skill_id": "pawn_f1_to_f2", "version": 1, "source_square": "f1", "destination_square": "f2"},
+    {"skill_id": "pawn_f2_to_f1", "version": 1, "source_square": "f2", "destination_square": "f1"},
+    {"skill_id": "pawn_g1_to_g2", "version": 1, "source_square": "g1", "destination_square": "g2"},
+    {"skill_id": "pawn_g2_to_g1", "version": 1, "source_square": "g2", "destination_square": "g1"}
+  ],
+  "unavailable_defaults": {
+    "checkpoint_sha256": null,
+    "evaluator_receipt_sha256": null,
+    "promotion_receipt_sha256": null,
+    "execution_modes": [],
+    "readiness": "unavailable_no_promoted_compatible_checkpoint",
+    "callable": false,
+    "physical_authority": false
+  },
+  "forbidden_substitutions": ["chess_rook_lift_v1", "GR00T", "scripted_motion", "raw_joint_motion"]
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": "sim2claw.silicon_overhead_snapshot.v1",
+  "adapter_id": "silicon_overhead_snapshot_v1",
+  "status": "consumer_contract_frozen_endpoint_not_live_verified",
+  "endpoint": {
+    "url": "https://silicon.local.net/api/v1/cameras/overhead/registered-board-snapshot",
+    "method": "GET",
+    "allowed_scheme": "https",
+    "allowed_host": "silicon.local.net",
+    "redirects_allowed": false,
+    "authentication": {
+      "kind": "bearer",
+      "environment_variable": "SIM2CLAW_SILICON_SNAPSHOT_TOKEN",
+      "browser_exposure_allowed": false
+    },
+    "connect_timeout_seconds": 4,
+    "total_timeout_seconds": 8,
+    "maximum_bytes": 8388608,
+    "accepted_content_types": ["image/jpeg", "image/png"]
+  },
+  "required_response_headers": {
+    "X-Sim2Claw-Captured-At": "RFC3339 UTC source capture timestamp",
+    "X-Sim2Claw-Camera-Role": "overhead_workspace",
+    "X-Sim2Claw-ROI-Contract": "silicon_registered_board_100mm_v1",
+    "X-Sim2Claw-Workspace-Pose": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "X-Sim2Claw-Registration-Error-Px": "non-negative source registration residual in pixels"
+  },
+  "freshness": {
+    "maximum_age_seconds": 10,
+    "maximum_future_skew_seconds": 2
+  },
+  "image_contract": {
+    "source_camera_family": "C922-compatible overhead RGB",
+    "camera_role": "overhead_workspace",
+    "orientation_rotation_degrees": 180,
+    "roi_contract_id": "silicon_registered_board_100mm_v1",
+    "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "board_pose_id": "board_robotward_100mm_20260718_v3",
+    "payload_is_board_rectified": true,
+    "maximum_registration_error_pixels": 8.0,
+    "rectified_width": 512,
+    "rectified_height": 512,
+    "board_coordinates": {
+      "a8": [0, 0],
+      "h8": [512, 0],
+      "h1": [512, 512],
+      "a1": [0, 512]
+    }
+  },
+  "authority": {
+    "observation_only": true,
+    "training_input": false,
+    "metric_calibration": false,
+    "collision_geometry": false,
+    "physical_authority": false
+  }
+}

@@ -1,8 +1,14 @@
 # Slice Brief 006: Studio Dynamic Task Orchestrator
 
-**Status:** proposed architecture and implementation plan; no orchestrator,
-remote camera intake, model call, ACT execution, or physical authority is
-implemented by this brief
+**Status:** completed in the current worktree with deterministic fixture, HTTP,
+browser, full-suite, package-build, authenticated model-catalog, and real
+structured Responses proof. The exact provider binding is `gpt-5.6-luna` at
+medium reasoning with no substitution. The Silicon adapter is contract-complete
+but not live-verified without the camera feed/token, as explicitly allowed for
+this run. Production B--G ACT readiness remains 0/12, fixture-only simulation
+is not policy proof, the physical canary remains disabled, and physical
+authority remains false. See
+`docs/run-logs/2026-07-19-studio-task-orchestrator.md`.
 
 **Primary surface:** a new Studio tab labeled **Task Orchestrator**
 

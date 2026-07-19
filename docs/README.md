@@ -23,9 +23,14 @@
   lineage, evaluator, and negative-fixture contract is frozen; data generation
   and learned-policy milestones remain pending.
 - [`briefs/006-studio-task-orchestrator.md`](./briefs/006-studio-task-orchestrator.md)
-  — proposed Studio Task Orchestrator: Silicon overhead-frame intake,
-  deduplication, B--G base-case restoration, bounded model decisions, promoted
-  ACT skill dispatch, inactivity pause, and physical-authority tiers.
+  — implemented bounded Studio Task Orchestrator: protected Silicon snapshot
+  contract, deduplication, square-level B--G restoration, exact-model adapter,
+  serialized promoted-skill gate, inactivity pause, receipts, and closed
+  physical authority; exact `gpt-5.6-luna` live proof passed while Silicon live
+  connectivity remains intentionally unclaimed without the feed/token.
+- [`run-logs/2026-07-19-studio-task-orchestrator.md`](./run-logs/2026-07-19-studio-task-orchestrator.md)
+  — implementation, synthetic-proof boundary, visual audit, 435-test receipt,
+  package build, exact-model live proof, and explicit Silicon/physical limits.
 - [`research/2026-07-19-pawn-composability-study.md`](./research/2026-07-19-pawn-composability-study.md)
   — current B--G endpoint, exact-replay, calibration, composition, language,
   and checkpoint evidence boundary.

@@ -1,0 +1,71 @@
+{
+  "schema_version": "sim2claw.task_orchestrator_config.v1",
+  "config_id": "studio_task_orchestrator_v1",
+  "status": "frozen",
+  "task": {
+    "task_id": "restore_pawn_bg_region_to_base_case_v1",
+    "base_case_contract": "configs/orchestrator/pawn_bg_diagonal_base_case_v1.json",
+    "snapshot_contract": "configs/orchestrator/silicon_overhead_snapshot_v1.json",
+    "skill_registry": "configs/orchestrator/studio_task_orchestrator_skills_v1.json",
+    "fixture_manifest": "configs/orchestrator/fixtures/fixture_manifest_v1.json",
+    "physical_canary_gate": "configs/orchestrator/physical_canary_gate_v1.json",
+    "physical_evaluator": "configs/orchestrator/physical_pawn_bg_canary_evaluator_v1.json",
+    "event_schema": "configs/orchestrator/schemas/orchestrator_event_v1.json",
+    "result_schema": "configs/orchestrator/schemas/orchestrator_result_v1.json"
+  },
+  "model": {
+    "adapter_id": "openai_responses_5_6_luna_v1",
+    "user_facing_label": "5.6 luna",
+    "provider": "openai",
+    "provider_model_id": "gpt-5.6-luna",
+    "reasoning_effort": "medium",
+    "endpoint": "https://api.openai.com/v1/responses",
+    "model_preflight_endpoint": "https://api.openai.com/v1/models/gpt-5.6-luna",
+    "api_key_environment_variable": "OPENAI_API_KEY",
+    "timeout_seconds": 45,
+    "maximum_attempts": 1,
+    "store": false,
+    "allow_model_substitution": false,
+    "maximum_recent_messages": 8,
+    "maximum_output_tokens": 900
+  },
+  "polling": {
+    "default_interval_seconds": 15,
+    "minimum_interval_seconds": 2,
+    "maximum_interval_seconds": 300
+  },
+  "deduplication": {
+    "metric": "global_ssim_normalized_luminance_v1",
+    "threshold": 0.97,
+    "comparison_size": [256, 256]
+  },
+  "perception": {
+    "classifier": "registered_square_brown_occupancy_v1",
+    "occupied_ratio_minimum": 0.08,
+    "empty_ratio_maximum": 0.025,
+    "minimum_square_confidence": 0.72,
+    "brown_hsv_lower": [5, 55, 30],
+    "brown_hsv_upper": [32, 255, 225],
+    "square_inner_margin_fraction": 0.14,
+    "reference_image": "configs/orchestrator/fixtures/pawn_bg_base_case_v1.png"
+  },
+  "inactivity": {
+    "user_seconds": 300,
+    "world_action_seconds": 300
+  },
+  "execution": {
+    "default_mode": "observe_only",
+    "modes": ["observe_only", "simulation", "physical_shadow", "physical_gated"],
+    "maximum_actions_per_session": 12,
+    "physical_authority": false,
+    "physical_gated_enabled": false,
+    "raw_joint_actions_allowed": false,
+    "arbitrary_commands_allowed": false
+  },
+  "receipts": {
+    "root": "runs/task_orchestrator",
+    "retain_raw_accepted_frames": true,
+    "retain_raw_ignored_frames": false,
+    "ledger_tail_api_limit": 120
+  }
+}

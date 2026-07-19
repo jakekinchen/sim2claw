@@ -22,6 +22,7 @@
           <button class="view-button" type="button" data-route="library">Library</button>
           <button class="view-button" type="button" data-route="calibration">Calibration</button>
           <button class="view-button" type="button" data-route="robots">Robots</button>
+          <button class="view-button" type="button" data-route="orchestrator">Task Orchestrator</button>
           <button class="view-button record-route" type="button" data-route="record"><span class="record-route-dot" aria-hidden="true"></span>Record</button>
         </nav>
 
@@ -252,6 +253,105 @@
                 <figure><video id="calibration-orbit" playsinline muted loop controls preload="metadata"></video><figcaption>Recorded bounded orbit</figcaption></figure>
               </div>
             </aside>
+          </div>
+        </section>
+
+        <section class="view-panel orchestrator-view" data-view-panel="orchestrator" aria-labelledby="orchestrator-heading">
+          <header class="view-heading orchestrator-heading">
+            <div>
+              <span class="section-label">Bounded dynamic task runtime</span>
+              <h1 id="orchestrator-heading">Task Orchestrator</h1>
+              <p>Restore the managed B–G pawn region to its frozen base case. Model proposals remain executor-gated; physical authority is closed.</p>
+            </div>
+            <div class="orchestrator-status-stack">
+              <b class="orchestrator-status" id="orchestrator-main-status">Stopped</b>
+              <span id="orchestrator-state">STOPPED</span>
+            </div>
+          </header>
+
+          <div class="orchestrator-command-bar">
+            <div class="orchestrator-controls" aria-label="Orchestrator session controls">
+              <button id="orchestrator-start" type="button">Start</button>
+              <button id="orchestrator-pause" type="button">Pause</button>
+              <button id="orchestrator-resume" type="button">Resume</button>
+              <button id="orchestrator-stop" type="button">Stop</button>
+              <button id="orchestrator-refresh" type="button">Refresh frame</button>
+            </div>
+            <label><span>Mode</span><select id="orchestrator-mode"></select></label>
+            <label><span>Polling seconds</span><input id="orchestrator-polling" type="number" min="2" max="300" step="1" value="15"></label>
+            <div class="orchestrator-timers" aria-label="Inactivity timers">
+              <span>User idle <b id="orchestrator-user-timer">05:00</b></span>
+              <span>World/action idle <b id="orchestrator-world-timer">05:00</b></span>
+            </div>
+          </div>
+          <p class="orchestrator-message" id="orchestrator-message" role="status" aria-live="polite">Loading the loopback orchestrator preflight…</p>
+
+          <div class="orchestrator-grid">
+            <article class="orchestrator-card orchestrator-source-card">
+              <header><div><span class="section-label">Overhead source</span><h2>Silicon registered board</h2></div><b id="orchestrator-source-health">Not started</b></header>
+              <div class="orchestrator-frame-shell">
+                <img id="orchestrator-frame" alt="Latest accepted Silicon overhead board frame" hidden>
+                <span id="orchestrator-frame-empty">No accepted frame</span>
+              </div>
+              <dl class="orchestrator-detail-list">
+                <div><dt>Host</dt><dd id="orchestrator-source-host">silicon.local.net</dd></div>
+                <div><dt>Captured</dt><dd id="orchestrator-source-time">—</dd></div>
+                <div><dt>Accepted SHA</dt><dd id="orchestrator-source-hash">—</dd></div>
+                <div><dt>Similarity</dt><dd id="orchestrator-similarity">—</dd></div>
+                <div><dt>Suppressed</dt><dd id="orchestrator-suppressed">0</dd></div>
+              </dl>
+            </article>
+
+            <article class="orchestrator-card orchestrator-base-card">
+              <header><div><span class="section-label">Deterministic checker</span><h2>B–G base case</h2></div><b id="orchestrator-base-state">Awaiting frame</b></header>
+              <p class="orchestrator-base-contract">Required: B1 · C2 · D1 · E2 · F1 · G2</p>
+              <div class="orchestrator-square-grid" id="orchestrator-squares" aria-label="Managed square occupancy"></div>
+              <dl class="orchestrator-detail-list">
+                <div><dt>Mismatched files</dt><dd id="orchestrator-mismatches">—</dd></div>
+                <div><dt>Confidence</dt><dd id="orchestrator-confidence">—</dd></div>
+                <div><dt>Evidence frame</dt><dd id="orchestrator-base-frame">—</dd></div>
+              </dl>
+              <div class="orchestrator-blockers" id="orchestrator-blockers"></div>
+            </article>
+
+            <article class="orchestrator-card orchestrator-action-card">
+              <header><div><span class="section-label">One-at-a-time executor</span><h2>Action queue</h2></div><b id="orchestrator-verification">Not started</b></header>
+              <dl class="orchestrator-action-list">
+                <div><dt>Proposed plan</dt><dd id="orchestrator-plan">None</dd></div>
+                <div><dt>Current action</dt><dd id="orchestrator-current-action">None</dd></div>
+                <div><dt>Expected postcondition</dt><dd id="orchestrator-postcondition">None</dd></div>
+              </dl>
+              <form class="orchestrator-shadow-review" id="orchestrator-shadow-review" hidden>
+                <strong>Supervised shadow comparison</strong>
+                <p>Record what the operator would choose. This never issues a hardware command.</p>
+                <label><span>Operator identity</span><input id="orchestrator-shadow-operator" type="text" maxlength="128" autocomplete="off" placeholder="Required receipt identity"></label>
+                <label><span>Operator choice</span><select id="orchestrator-shadow-choice"><option value="">No action / ask user</option></select></label>
+                <label><span>Note</span><input id="orchestrator-shadow-note" type="text" maxlength="500" autocomplete="off" placeholder="Optional supervised note"></label>
+                <button id="orchestrator-shadow-submit" type="submit">Record comparison</button>
+                <small id="orchestrator-shadow-result">No comparison recorded</small>
+              </form>
+              <div class="orchestrator-model-line"><span>Model</span><b id="orchestrator-model">5.6 luna · medium</b><em id="orchestrator-model-state">Not verified</em></div>
+            </article>
+
+            <article class="orchestrator-card orchestrator-chat-card">
+              <header><div><span class="section-label">Immediate wake</span><h2>Session chat</h2></div></header>
+              <form id="orchestrator-chat-form">
+                <label class="visually-hidden" for="orchestrator-chat">Message the task orchestrator</label>
+                <textarea id="orchestrator-chat" maxlength="2000" rows="3" placeholder="Describe a change, blocker, or operator observation"></textarea>
+                <button type="submit">Send and inspect now</button>
+              </form>
+              <p>Chat forces a fresh accepted observation even when the frame is visually redundant.</p>
+            </article>
+
+            <article class="orchestrator-card orchestrator-skills-card">
+              <header><div><span class="section-label">Promotion-bound registry</span><h2>Allowed ACT skills</h2></div><b id="orchestrator-skill-count">0 ready</b></header>
+              <div class="orchestrator-skill-list" id="orchestrator-skills"></div>
+            </article>
+
+            <article class="orchestrator-card orchestrator-ledger-card">
+              <header><div><span class="section-label">Ignored session evidence</span><h2>Session ledger</h2></div><b id="orchestrator-ledger-count">0 events</b></header>
+              <div class="orchestrator-ledger" id="orchestrator-ledger"></div>
+            </article>
           </div>
         </section>
 

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sim2claw.orchestrator_decision.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decision", "reason", "skill_id", "arguments", "expected_postcondition", "confidence"],
+  "properties": {
+    "decision": {"type": "string", "enum": ["observe", "ask_user", "run_skill", "pause", "complete"]},
+    "reason": {"type": "string", "minLength": 1, "maxLength": 500},
+    "skill_id": {"type": ["string", "null"]},
+    "arguments": {
+      "anyOf": [
+        {"type": "object", "additionalProperties": false, "properties": {}, "required": []},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source_square", "destination_square"],
+          "properties": {
+            "source_square": {"type": "string", "pattern": "^[b-g][12]$"},
+            "destination_square": {"type": "string", "pattern": "^[b-g][12]$"}
+          }
+        }
+      ]
+    },
+    "expected_postcondition": {
+      "anyOf": [
+        {"type": "object", "additionalProperties": false, "properties": {}, "required": []},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["occupied", "empty"],
+          "properties": {
+            "occupied": {"type": "array", "items": {"type": "string", "pattern": "^[b-g][12]$"}},
+            "empty": {"type": "array", "items": {"type": "string", "pattern": "^[b-g][12]$"}}
+          }
+        }
+      ]
+    },
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+  }
+}

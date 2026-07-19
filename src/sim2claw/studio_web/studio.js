@@ -43,6 +43,10 @@ const state = {
   discardConfirmationArmed: false,
   discardConfirmationTimer: null,
   pawnBoardSelectionStep: "source",
+  orchestrator: null,
+  orchestratorRequestActive: false,
+  orchestratorRequestError: null,
+  orchestratorFrameHash: null,
 };
 
 const elements = {
@@ -168,6 +172,50 @@ const elements = {
   pawnPreviewTarget: document.querySelector("#pawn-preview-target"),
   pawnPreviewDescription: document.querySelector("#pawn-preview-description"),
   pawnMoveLine: document.querySelector("#pawn-move-line"),
+  orchestratorMainStatus: document.querySelector("#orchestrator-main-status"),
+  orchestratorState: document.querySelector("#orchestrator-state"),
+  orchestratorStart: document.querySelector("#orchestrator-start"),
+  orchestratorPause: document.querySelector("#orchestrator-pause"),
+  orchestratorResume: document.querySelector("#orchestrator-resume"),
+  orchestratorStop: document.querySelector("#orchestrator-stop"),
+  orchestratorRefresh: document.querySelector("#orchestrator-refresh"),
+  orchestratorMode: document.querySelector("#orchestrator-mode"),
+  orchestratorPolling: document.querySelector("#orchestrator-polling"),
+  orchestratorUserTimer: document.querySelector("#orchestrator-user-timer"),
+  orchestratorWorldTimer: document.querySelector("#orchestrator-world-timer"),
+  orchestratorMessage: document.querySelector("#orchestrator-message"),
+  orchestratorSourceHealth: document.querySelector("#orchestrator-source-health"),
+  orchestratorFrame: document.querySelector("#orchestrator-frame"),
+  orchestratorFrameEmpty: document.querySelector("#orchestrator-frame-empty"),
+  orchestratorSourceHost: document.querySelector("#orchestrator-source-host"),
+  orchestratorSourceTime: document.querySelector("#orchestrator-source-time"),
+  orchestratorSourceHash: document.querySelector("#orchestrator-source-hash"),
+  orchestratorSimilarity: document.querySelector("#orchestrator-similarity"),
+  orchestratorSuppressed: document.querySelector("#orchestrator-suppressed"),
+  orchestratorBaseState: document.querySelector("#orchestrator-base-state"),
+  orchestratorSquares: document.querySelector("#orchestrator-squares"),
+  orchestratorMismatches: document.querySelector("#orchestrator-mismatches"),
+  orchestratorConfidence: document.querySelector("#orchestrator-confidence"),
+  orchestratorBaseFrame: document.querySelector("#orchestrator-base-frame"),
+  orchestratorBlockers: document.querySelector("#orchestrator-blockers"),
+  orchestratorVerification: document.querySelector("#orchestrator-verification"),
+  orchestratorPlan: document.querySelector("#orchestrator-plan"),
+  orchestratorCurrentAction: document.querySelector("#orchestrator-current-action"),
+  orchestratorPostcondition: document.querySelector("#orchestrator-postcondition"),
+  orchestratorModel: document.querySelector("#orchestrator-model"),
+  orchestratorModelState: document.querySelector("#orchestrator-model-state"),
+  orchestratorShadowReview: document.querySelector("#orchestrator-shadow-review"),
+  orchestratorShadowOperator: document.querySelector("#orchestrator-shadow-operator"),
+  orchestratorShadowChoice: document.querySelector("#orchestrator-shadow-choice"),
+  orchestratorShadowNote: document.querySelector("#orchestrator-shadow-note"),
+  orchestratorShadowSubmit: document.querySelector("#orchestrator-shadow-submit"),
+  orchestratorShadowResult: document.querySelector("#orchestrator-shadow-result"),
+  orchestratorChatForm: document.querySelector("#orchestrator-chat-form"),
+  orchestratorChat: document.querySelector("#orchestrator-chat"),
+  orchestratorSkillCount: document.querySelector("#orchestrator-skill-count"),
+  orchestratorSkills: document.querySelector("#orchestrator-skills"),
+  orchestratorLedgerCount: document.querySelector("#orchestrator-ledger-count"),
+  orchestratorLedger: document.querySelector("#orchestrator-ledger"),
 };
 
 function text(node, value) {
@@ -2222,8 +2270,248 @@ function refreshRecorderSquareOptions(preferredSource = null, preferredTarget = 
   persistRecorderSettings();
 }
 
+function formatCountdown(seconds) {
+  const safe = Math.max(0, Math.ceil(Number(seconds) || 0));
+  const minutes = Math.floor(safe / 60);
+  return `${String(minutes).padStart(2, "0")}:${String(safe % 60).padStart(2, "0")}`;
+}
+
+function orchestratorActionLabel(action) {
+  if (!action) return "None";
+  const skill = action.skill_id || action.decision;
+  const source = action.arguments?.source_square;
+  const destination = action.arguments?.destination_square;
+  return source && destination
+    ? `${skill} · ${source.toUpperCase()}→${destination.toUpperCase()}`
+    : String(skill || "None");
+}
+
+function orchestratorEventDetail(row) {
+  const payload = row?.payload || {};
+  return payload.reason
+    || payload.skill_id
+    || payload.code
+    || payload.frame?.sha256?.slice(0, 12)
+    || payload.decision?.decision
+    || "receipt recorded";
+}
+
+function renderOrchestrator() {
+  const runtime = state.orchestrator;
+  if (!runtime) return;
+  const available = runtime.available !== false;
+  const machineState = runtime.state || "STOPPED";
+  const mainStatus = runtime.main_status || "stopped";
+  text(elements.orchestratorState, machineState);
+  text(elements.orchestratorMainStatus, formatIdentifier(mainStatus));
+  elements.orchestratorMainStatus.dataset.status = mainStatus;
+
+  const previousMode = elements.orchestratorMode.value || runtime.mode || "observe_only";
+  elements.orchestratorMode.replaceChildren();
+  Object.entries(runtime.modes || {}).forEach(([identifier, capability]) => {
+    const option = document.createElement("option");
+    option.value = identifier;
+    option.disabled = !capability.selectable;
+    option.title = capability.reason || "Preflight passed";
+    text(option, `${formatIdentifier(identifier)}${capability.selectable ? "" : " · unavailable"}`);
+    elements.orchestratorMode.append(option);
+  });
+  const preferredMode = machineState === "STOPPED" && runtime.modes?.[previousMode]
+    ? previousMode
+    : runtime.mode;
+  elements.orchestratorMode.value = preferredMode || "observe_only";
+  elements.orchestratorMode.disabled = !available || machineState !== "STOPPED" || state.orchestratorRequestActive;
+
+  if (document.activeElement !== elements.orchestratorPolling) {
+    elements.orchestratorPolling.value = String(runtime.settings?.polling_interval_seconds ?? 15);
+  }
+  elements.orchestratorPolling.min = String(runtime.settings?.polling_minimum_seconds ?? 2);
+  elements.orchestratorPolling.max = String(runtime.settings?.polling_maximum_seconds ?? 300);
+  elements.orchestratorPolling.disabled = !available || state.orchestratorRequestActive;
+  text(elements.orchestratorUserTimer, formatCountdown(runtime.timers?.user_remaining_seconds ?? 300));
+  text(elements.orchestratorWorldTimer, formatCountdown(runtime.timers?.world_action_remaining_seconds ?? 300));
+
+  const activeStates = new Set(["STARTING", "OBSERVING", "AWAITING_MODEL", "PROPOSED_ACTION", "EXECUTING_SKILL", "VERIFYING"]);
+  const selectedCapability = runtime.modes?.[elements.orchestratorMode.value];
+  elements.orchestratorStart.disabled = !available || machineState !== "STOPPED" || !selectedCapability?.selectable || state.orchestratorRequestActive;
+  elements.orchestratorPause.disabled = !activeStates.has(machineState) || state.orchestratorRequestActive;
+  elements.orchestratorResume.disabled = machineState !== "PAUSED" || state.orchestratorRequestActive;
+  elements.orchestratorStop.disabled = machineState === "STOPPED" || state.orchestratorRequestActive;
+  elements.orchestratorRefresh.disabled = !activeStates.has(machineState) || state.orchestratorRequestActive;
+  elements.orchestratorChat.disabled = !activeStates.has(machineState) || state.orchestratorRequestActive;
+  const chatButton = elements.orchestratorChatForm.querySelector("button");
+  if (chatButton) chatButton.disabled = !activeStates.has(machineState) || state.orchestratorRequestActive;
+
+  let message = "Loopback controls ready. Physical authority remains closed.";
+  if (!available) message = runtime.reason || "Task Orchestrator is unavailable.";
+  else if (state.orchestratorRequestError) message = state.orchestratorRequestError;
+  else if (runtime.fault) message = `${formatIdentifier(runtime.fault.category)}: ${runtime.fault.message || runtime.fault.code || "session fault"}`;
+  else if (machineState === "PAUSED") message = `Paused: ${formatIdentifier(runtime.pause_reason || "operator request")}`;
+  else if (machineState === "STOPPED" && runtime.task_outcome === "complete") message = "Verified complete by the deterministic managed-region checker.";
+  else if (machineState === "STOPPED" && !selectedCapability?.selectable) message = selectedCapability?.reason || "Selected mode did not pass preflight.";
+  else if (runtime.source?.health === "fault") message = runtime.source.latest_error?.message || "Overhead source faulted.";
+  text(elements.orchestratorMessage, message);
+
+  const source = runtime.source || {};
+  text(elements.orchestratorSourceHealth, formatIdentifier(source.health || "unknown"));
+  text(elements.orchestratorSourceHost, source.host || "—");
+  text(elements.orchestratorSourceTime, source.latest_captured_at ? new Date(source.latest_captured_at).toLocaleTimeString() : "—");
+  text(elements.orchestratorSourceHash, source.latest_accepted_sha256 ? source.latest_accepted_sha256.slice(0, 16) : "—");
+  text(elements.orchestratorSimilarity, runtime.comparison?.similarity == null ? "—" : Number(runtime.comparison.similarity).toFixed(4));
+  text(elements.orchestratorSuppressed, runtime.comparison?.suppression_count ?? 0);
+  if (source.latest_accepted_sha256 && source.latest_accepted_sha256 !== state.orchestratorFrameHash) {
+    state.orchestratorFrameHash = source.latest_accepted_sha256;
+    elements.orchestratorFrame.src = `/api/orchestrator/frame?sha=${encodeURIComponent(source.latest_accepted_sha256)}`;
+    elements.orchestratorFrame.hidden = false;
+    elements.orchestratorFrameEmpty.hidden = true;
+  } else if (!source.latest_accepted_sha256) {
+    elements.orchestratorFrame.hidden = true;
+    elements.orchestratorFrameEmpty.hidden = false;
+  }
+
+  const base = runtime.base_case;
+  text(elements.orchestratorBaseState, base ? formatIdentifier(base.state) : "Awaiting frame");
+  text(elements.orchestratorMismatches, base?.mismatched_files?.length ? base.mismatched_files.map((value) => value.toUpperCase()).join(", ") : "None");
+  text(elements.orchestratorConfidence, base ? `${(Number(base.confidence) * 100).toFixed(1)}%` : "—");
+  text(elements.orchestratorBaseFrame, base?.evidence_frame_sha256 ? base.evidence_frame_sha256.slice(0, 16) : "—");
+  elements.orchestratorSquares.replaceChildren();
+  for (const fileName of ["b", "c", "d", "e", "f", "g"]) {
+    for (const rank of [1, 2]) {
+      const square = `${fileName}${rank}`;
+      const observation = base?.squares?.[square];
+      const card = document.createElement("div");
+      card.className = "orchestrator-square";
+      card.dataset.occupancy = observation?.status || "unknown";
+      const label = document.createElement("b");
+      text(label, square.toUpperCase());
+      const status = document.createElement("span");
+      text(status, observation ? formatIdentifier(observation.status) : "—");
+      card.append(label, status);
+      elements.orchestratorSquares.append(card);
+    }
+  }
+  elements.orchestratorBlockers.replaceChildren();
+  (base?.blockers || []).forEach((blocker) => {
+    const badge = document.createElement("span");
+    text(badge, `${formatIdentifier(blocker.kind)}${blocker.square || blocker.file ? ` · ${(blocker.square || blocker.file).toUpperCase()}` : ""}`);
+    elements.orchestratorBlockers.append(badge);
+  });
+
+  const queue = runtime.action_queue || {};
+  const proposed = queue.proposed_plan?.[0];
+  text(elements.orchestratorVerification, formatIdentifier(queue.verification || "not_started"));
+  text(elements.orchestratorPlan, orchestratorActionLabel(proposed));
+  text(elements.orchestratorCurrentAction, orchestratorActionLabel(queue.current_action));
+  text(elements.orchestratorPostcondition, queue.expected_postcondition ? JSON.stringify(queue.expected_postcondition) : "None");
+  text(elements.orchestratorModel, `${runtime.model?.label || "5.6 luna"} · ${runtime.model?.reasoning_effort || "medium"}`);
+  text(elements.orchestratorModelState, runtime.model?.identity_verified ? "Exact identity verified" : runtime.model?.credential_configured ? "Credential configured" : "Credential unavailable");
+
+  const skills = runtime.allowed_skills || [];
+  const shadowVisible = runtime.mode === "physical_shadow";
+  elements.orchestratorShadowReview.hidden = !shadowVisible;
+  if (shadowVisible) {
+    const previousShadowChoice = elements.orchestratorShadowChoice.value;
+    elements.orchestratorShadowChoice.replaceChildren();
+    const noAction = document.createElement("option");
+    noAction.value = "";
+    text(noAction, "No action / ask user");
+    elements.orchestratorShadowChoice.append(noAction);
+    skills.filter((skill) => skill.callable && skill.execution_modes?.includes("physical_shadow")).forEach((skill) => {
+      const option = document.createElement("option");
+      option.value = skill.skill_id;
+      text(option, skill.skill_id);
+      elements.orchestratorShadowChoice.append(option);
+    });
+    if ([...elements.orchestratorShadowChoice.options].some((option) => option.value === previousShadowChoice)) {
+      elements.orchestratorShadowChoice.value = previousShadowChoice;
+    }
+    const waitingForShadowChoice = machineState === "PAUSED" && queue.verification === "awaiting_operator_shadow_choice";
+    elements.orchestratorShadowOperator.disabled = !waitingForShadowChoice || state.orchestratorRequestActive;
+    elements.orchestratorShadowChoice.disabled = !waitingForShadowChoice || state.orchestratorRequestActive;
+    elements.orchestratorShadowNote.disabled = !waitingForShadowChoice || state.orchestratorRequestActive;
+    elements.orchestratorShadowSubmit.disabled = !waitingForShadowChoice || !elements.orchestratorShadowOperator.value.trim() || state.orchestratorRequestActive;
+    const comparison = runtime.physical_shadow?.latest_comparison;
+    const shadowSummary = comparison ? runtime.physical_shadow?.by_proposed_skill?.[comparison.model_proposal?.skill_id] : null;
+    text(elements.orchestratorShadowResult, comparison ? `${comparison.exact_choice_match ? "Exact match" : "Choice mismatch"} · ${comparison.operator_identity} · trial ${shadowSummary?.trials || 1}/${shadowSummary?.minimum_supervised_trials || 5} · no hardware command` : "No comparison recorded");
+  }
+  const readySkills = skills.filter((skill) => skill.callable).length;
+  text(elements.orchestratorSkillCount, `${readySkills} ready · ${skills.length} registered`);
+  elements.orchestratorSkills.replaceChildren();
+  skills.forEach((skill) => {
+    const row = document.createElement("div");
+    row.className = "orchestrator-skill-row";
+    const detail = document.createElement("div");
+    const name = document.createElement("b");
+    text(name, skill.skill_id);
+    const identity = document.createElement("small");
+    text(identity, skill.checkpoint_sha256 ? `checkpoint ${skill.checkpoint_sha256.slice(0, 12)} · evaluator ${skill.evaluator_receipt_sha256?.slice(0, 12)} · promotion ${skill.promotion_receipt_sha256?.slice(0, 12)}` : "No promoted checkpoint/evaluator/promotion receipt");
+    const runtimeDetail = document.createElement("small");
+    const executionModes = skill.execution_modes?.length ? skill.execution_modes.map(formatIdentifier).join(", ") : "unavailable";
+    const lastResult = skill.last_result?.status || (skill.last_result?.postcondition_verification?.passed === true ? "verified" : "no result");
+    text(runtimeDetail, `mode ${executionModes} · last ${formatIdentifier(lastResult)}`);
+    detail.append(name, identity, runtimeDetail);
+    const readiness = document.createElement("em");
+    text(readiness, formatIdentifier(skill.readiness));
+    row.append(detail, readiness);
+    elements.orchestratorSkills.append(row);
+  });
+
+  const ledger = runtime.ledger || [];
+  text(elements.orchestratorLedgerCount, `${ledger.length} events`);
+  elements.orchestratorLedger.replaceChildren();
+  [...ledger].reverse().forEach((entry) => {
+    const row = document.createElement("div");
+    row.className = "orchestrator-ledger-row";
+    const detail = document.createElement("div");
+    const event = document.createElement("b");
+    text(event, formatIdentifier(entry.event));
+    const summary = document.createElement("small");
+    text(summary, orchestratorEventDetail(entry));
+    detail.append(event, summary);
+    const timestamp = document.createElement("time");
+    text(timestamp, entry.recorded_at ? new Date(entry.recorded_at).toLocaleTimeString() : "—");
+    row.append(detail, timestamp);
+    elements.orchestratorLedger.append(row);
+  });
+}
+
+async function fetchOrchestrator() {
+  if (state.view !== "orchestrator" && state.orchestrator) return;
+  try {
+    const response = await fetch("/api/orchestrator", { cache: "no-store" });
+    if (!response.ok) throw new Error(`orchestrator returned ${response.status}`);
+    state.orchestrator = await response.json();
+    if (!state.orchestratorRequestActive) state.orchestratorRequestError = null;
+  } catch (error) {
+    state.orchestratorRequestError = String(error.message || error);
+  }
+  renderOrchestrator();
+}
+
+async function postOrchestrator(path, payload) {
+  if (state.orchestratorRequestActive) return;
+  state.orchestratorRequestActive = true;
+  state.orchestratorRequestError = null;
+  renderOrchestrator();
+  try {
+    const response = await fetch(`/api/orchestrator/${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload || {}),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.ok) throw new Error(result.error || `orchestrator returned ${response.status}`);
+    state.orchestrator = result.orchestrator;
+  } catch (error) {
+    state.orchestratorRequestError = String(error.message || error);
+  } finally {
+    state.orchestratorRequestActive = false;
+    renderOrchestrator();
+  }
+}
+
 function setActiveView(view, { updateRoute = true } = {}) {
-  const safeView = ["replay", "library", "calibration", "robots", "record"].includes(view) ? view : "replay";
+  const safeView = ["replay", "library", "calibration", "robots", "orchestrator", "record"].includes(view) ? view : "replay";
   state.view = safeView;
   document.body.dataset.view = safeView;
   state.threeViewer?.setActive(safeView === "replay" && state.replayMode === "three");
@@ -2231,6 +2519,7 @@ function setActiveView(view, { updateRoute = true } = {}) {
     safeView === "record" && selectedRecorderMode() === "simulation_follower",
   );
   window.Sim2ClawCalibration?.setActive(safeView === "calibration");
+  if (safeView === "orchestrator") fetchOrchestrator();
   document.querySelectorAll("[data-route]").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.route === safeView && button.classList.contains("view-button"));
   });
@@ -2267,6 +2556,10 @@ function restoreRoute() {
   }
   if (route === "calibration") {
     setActiveView("calibration", { updateRoute: false });
+    return;
+  }
+  if (route === "orchestrator") {
+    setActiveView("orchestrator", { updateRoute: false });
     return;
   }
   if (route === "record") {
@@ -2502,12 +2795,55 @@ elements.discardRecording.addEventListener("click", () => {
   state.discardConfirmationTimer = null;
   postRecorder("discard");
 });
+elements.orchestratorStart.addEventListener("click", () => postOrchestrator("session", {
+  action: "start",
+  mode: elements.orchestratorMode.value,
+  polling_interval_seconds: Number(elements.orchestratorPolling.value),
+}));
+elements.orchestratorPause.addEventListener("click", () => postOrchestrator("session", { action: "pause" }));
+elements.orchestratorResume.addEventListener("click", () => postOrchestrator("session", { action: "resume" }));
+elements.orchestratorStop.addEventListener("click", () => postOrchestrator("session", { action: "stop" }));
+elements.orchestratorRefresh.addEventListener("click", () => postOrchestrator("refresh", {}));
+elements.orchestratorPolling.addEventListener("change", () => {
+  if (state.orchestrator?.state === "STOPPED") return;
+  postOrchestrator("session", {
+    action: "configure",
+    polling_interval_seconds: Number(elements.orchestratorPolling.value),
+  });
+});
+elements.orchestratorChatForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const message = elements.orchestratorChat.value.trim();
+  if (!message) return;
+  postOrchestrator("chat", { message });
+  elements.orchestratorChat.value = "";
+});
+elements.orchestratorShadowOperator.addEventListener("input", renderOrchestrator);
+elements.orchestratorShadowReview.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const operatorIdentity = elements.orchestratorShadowOperator.value.trim();
+  if (!operatorIdentity) return;
+  postOrchestrator("shadow-choice", {
+    skill_id: elements.orchestratorShadowChoice.value || null,
+    operator_identity: operatorIdentity,
+    note: elements.orchestratorShadowNote.value.trim(),
+  });
+});
+elements.orchestratorFrame.addEventListener("error", () => {
+  elements.orchestratorFrame.hidden = true;
+  elements.orchestratorFrameEmpty.hidden = false;
+  text(elements.orchestratorFrameEmpty, "Accepted frame unavailable");
+});
 document.querySelectorAll("[data-route]").forEach((button) => button.addEventListener("click", () => navigate(button.dataset.route)));
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && state.drawer) closeDrawer();
   if (event.key === "/" && !event.metaKey && !event.ctrlKey && !event.altKey && !["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) {
     event.preventDefault();
-    const target = state.view === "library" ? elements.librarySearch : elements.search;
+    const target = state.view === "library"
+      ? elements.librarySearch
+      : state.view === "orchestrator"
+        ? elements.orchestratorChat
+        : elements.search;
     target.focus();
   }
 });
@@ -2518,9 +2854,11 @@ initializeRecorderForm();
 fetchCatalog({ initial: true }).then(restoreRoute);
 fetchRecorder();
 fetchLiveWorkspaceStatus();
+fetchOrchestrator();
 refreshLiveSimulation();
 window.setInterval(() => fetchCatalog(), 2000);
 window.setInterval(() => fetchRecorder(), 500);
 window.setInterval(() => fetchLiveWorkspaceStatus(), 5000);
+window.setInterval(() => fetchOrchestrator(), 1000);
 window.setInterval(() => refreshLiveWorkspace(), 100);
 window.setInterval(() => refreshLiveSimulation(), 50);

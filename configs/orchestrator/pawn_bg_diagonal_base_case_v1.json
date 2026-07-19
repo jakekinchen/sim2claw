@@ -1,0 +1,28 @@
+{
+  "schema_version": "sim2claw.orchestrator_base_case.v1",
+  "contract_id": "pawn_bg_diagonal_base_case_v1",
+  "status": "frozen",
+  "proof_class": "task_state_contract_only",
+  "managed_region": {
+    "files": ["b", "c", "d", "e", "f", "g"],
+    "ranks": [1, 2],
+    "piece_class": "brown_pawn",
+    "piece_identity_semantics": "interchangeable_occupancy_only"
+  },
+  "required_occupied": ["b1", "c2", "d1", "e2", "f1", "g2"],
+  "required_empty": ["b2", "c1", "d2", "e1", "f2", "g1"],
+  "immutable_context": {
+    "files": ["a", "h"],
+    "ranks": [3, 4, 5, 6, 7, 8],
+    "piece_classes": ["tan_pawn"],
+    "entities": ["robots", "props", "workcell"]
+  },
+  "restoration": {
+    "exactly_one_pawn_per_managed_file": true,
+    "one_same_file_move_at_a_time": true,
+    "reacquire_after_every_move": true,
+    "unsupported_recovery": "ask_user"
+  },
+  "completion_owner": "deterministic_managed_region_checker",
+  "physical_authority": false
+}

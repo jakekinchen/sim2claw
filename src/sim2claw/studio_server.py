@@ -19,6 +19,7 @@ from .physical_gateway import PhysicalGatewayError
 from .studio_catalog import build_catalog, open_media_token
 from .studio_live import LiveWorkspaceError, LiveWorkspaceService, MJPEG_BOUNDARY
 from .state_trace import build_scene_manifest
+from .task_orchestrator import TaskOrchestratorError, TaskOrchestratorService
 from .teleop_recording import RecorderConflict, RecorderError, TeleopRecordingManager
 from .scene import CURRENT_TASK_PIECE_LAYOUT
 from .paths import SO101_MODEL_PATH
@@ -74,14 +75,19 @@ class StudioServer(ThreadingHTTPServer):
             self.recorder_control_enabled = address[0] == "localhost" and not read_only
         self.recorder: TeleopRecordingManager | None = None
         self.live_workspace: LiveWorkspaceService | None = None
+        self.task_orchestrator: TaskOrchestratorService | None = None
         if not read_only:
             self.recorder = TeleopRecordingManager(repo_root=self.repo_root)
             self.live_workspace = LiveWorkspaceService(self.recorder)
+            if self.recorder_control_enabled:
+                self.task_orchestrator = TaskOrchestratorService(repo_root=self.repo_root)
         self.scene_manifests: dict[str, dict[str, Any]] = {}
         self.scene_synthesis_proposal: dict[str, Any] | None = None
         super().__init__(address, StudioRequestHandler)
 
     def server_close(self) -> None:
+        if self.task_orchestrator is not None:
+            self.task_orchestrator.shutdown()
         if self.live_workspace is not None:
             self.live_workspace.shutdown()
         if self.recorder is not None:
@@ -111,6 +117,48 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
             if self.server.scene_synthesis_proposal is None:
                 self.server.scene_synthesis_proposal = load_scene_synthesis_proposal()
             self._send_json(self.server.scene_synthesis_proposal)
+            return
+        if path == "/api/orchestrator":
+            if self.server.task_orchestrator is None:
+                self._send_json(
+                    {
+                        "schema_version": "sim2claw.task_orchestrator_state.v1",
+                        "available": False,
+                        "reason": "Task Orchestrator control is available only on interactive loopback Studio.",
+                        "physical_authority": False,
+                    }
+                )
+                return
+            payload = self.server.task_orchestrator.snapshot()
+            payload["available"] = True
+            self._send_json(payload)
+            return
+        if path == "/api/orchestrator/frame":
+            if self.server.task_orchestrator is None:
+                self._send_json(
+                    {"ok": False, "error": "Task Orchestrator is not available."},
+                    HTTPStatus.NOT_FOUND,
+                )
+                return
+            frame = self.server.task_orchestrator.frame_payload()
+            if frame is None:
+                self._send_json(
+                    {"ok": False, "error": "No accepted orchestrator frame is available."},
+                    HTTPStatus.NOT_FOUND,
+                )
+                return
+            body, content_type, digest = frame
+            self.send_response(HTTPStatus.OK)
+            self._security_headers()
+            self.send_header("Content-Type", content_type)
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("ETag", f'"{digest}"')
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            try:
+                self.wfile.write(body)
+            except (BrokenPipeError, ConnectionResetError):
+                pass
             return
         if path == "/api/scene":
             layout = parse_qs(request.query).get("layout", ["standard"])[0]
@@ -228,6 +276,52 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
             return
         try:
             payload = self._read_json_body()
+            if path.startswith("/api/orchestrator"):
+                orchestrator = self.server.task_orchestrator
+                if orchestrator is None:
+                    raise TaskOrchestratorError(
+                        "Task Orchestrator is available only on interactive loopback Studio."
+                    )
+                if path == "/api/orchestrator/session":
+                    action = str(payload.get("action") or "")
+                    if action == "start":
+                        result = orchestrator.start(payload)
+                    elif action == "pause":
+                        result = orchestrator.pause()
+                    elif action == "resume":
+                        result = orchestrator.resume()
+                    elif action == "stop":
+                        result = orchestrator.stop()
+                    elif action == "configure":
+                        result = orchestrator.configure(payload)
+                    elif action == "acknowledge":
+                        result = orchestrator.acknowledge(
+                            str(payload.get("message") or "operator acknowledgement")
+                        )
+                    else:
+                        raise TaskOrchestratorError("Unknown orchestrator session action.")
+                elif path == "/api/orchestrator/chat":
+                    result = orchestrator.chat(str(payload.get("message") or ""))
+                elif path == "/api/orchestrator/refresh":
+                    result = orchestrator.refresh()
+                elif path == "/api/orchestrator/shadow-choice":
+                    result = orchestrator.shadow_choice(
+                        skill_id=(
+                            str(payload.get("skill_id"))
+                            if payload.get("skill_id") is not None
+                            else None
+                        ),
+                        operator_identity=str(payload.get("operator_identity") or ""),
+                        note=str(payload.get("note") or ""),
+                    )
+                else:
+                    self._send_json(
+                        {"ok": False, "error": "Unknown orchestrator endpoint."},
+                        HTTPStatus.NOT_FOUND,
+                    )
+                    return
+                self._send_json({"ok": True, "orchestrator": result})
+                return
             if path == "/api/live/session":
                 action = str(payload.get("action") or "start")
                 if action == "start":
@@ -276,6 +370,7 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
             RecorderError,
             PhysicalGatewayError,
             LiveWorkspaceError,
+            TaskOrchestratorError,
             ConnectionError,
             OSError,
             ValueError,

@@ -1,0 +1,87 @@
+{
+  "schema_version": "sim2claw.orchestrator_physical_evaluator.v1",
+  "evaluator_id": "pawn_bg_single_skill_physical_canary_evaluator_v1",
+  "status": "frozen_inactive_pending_separate_physical_implementation_and_authorization",
+  "execution_owner": "independent_physical_evaluator",
+  "completion_owner": "independent_physical_evaluator",
+  "training_or_promotion_authority": false,
+  "physical_authority": false,
+  "required_bindings": {
+    "scene_id": "operator_updated_chess_workcell_v3",
+    "workcell_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "calibration_id": "board_robotward_100mm_20260718_v3",
+    "base_case_contract_id": "pawn_bg_diagonal_base_case_v1",
+    "snapshot_adapter_id": "silicon_overhead_snapshot_v1",
+    "gateway": "single_reviewed_so101_physical_gateway",
+    "skill_identity_fields": [
+      "skill_id",
+      "checkpoint_sha256",
+      "evaluator_receipt_sha256",
+      "promotion_receipt_sha256"
+    ]
+  },
+  "pre_action_gates": {
+    "fresh_registered_frame_required": true,
+    "maximum_frame_age_seconds": 2,
+    "minimum_managed_square_confidence": 0.72,
+    "exactly_one_pawn_in_each_managed_file": true,
+    "requested_source_confidently_occupied": true,
+    "requested_destination_confidently_empty": true,
+    "managed_region_obstruction_allowed": false,
+    "current_calibration_identity_required": true,
+    "exclusive_leases_required": ["robot_bus", "overhead_camera", "recorder"],
+    "concurrent_live_or_recorder_owner_allowed": false,
+    "fresh_single_use_operator_approval_required": true
+  },
+  "operator_approval_schema": {
+    "schema_version": "sim2claw.orchestrator_physical_approval.v1",
+    "maximum_age_seconds": 60,
+    "single_use": true,
+    "required_fields": [
+      "session_id",
+      "action_nonce",
+      "skill_id",
+      "accepted_frame_sha256",
+      "checkpoint_sha256",
+      "calibration_id",
+      "workcell_id",
+      "operator_identity",
+      "approved_at"
+    ],
+    "approval_reuse_allowed": false,
+    "approval_after_frame_change_allowed": false
+  },
+  "runtime_gates": {
+    "maximum_actions": 1,
+    "unattended_execution_allowed": false,
+    "maximum_skill_duration_seconds": 30,
+    "tracking_limit_source": "promoted_skill_physical_evaluator_receipt",
+    "stall_limit_source": "promoted_skill_physical_evaluator_receipt",
+    "missing_tracking_or_stall_limit_result": "reject",
+    "raw_joint_or_servo_action_allowed": false,
+    "arbitrary_command_allowed": false,
+    "cross_file_recovery_allowed": false,
+    "fail_closed_safe_stop_required": true
+  },
+  "post_action_gates": {
+    "fresh_registered_frame_required": true,
+    "source_square_confidently_empty": true,
+    "destination_square_confidently_occupied": true,
+    "other_managed_squares_unchanged": true,
+    "immutable_context_displacement_allowed": false,
+    "collision_or_obstruction_allowed": false,
+    "gateway_trace_required": true,
+    "torque_off_receipt_required": true
+  },
+  "terminal_outcomes": {
+    "pass": "all_pre_runtime_post_and_torque_off_gates_pass",
+    "fail": "any_gate_fails_after_action_begins",
+    "reject": "any_pre_action_identity_authority_or_approval_gate_is_missing",
+    "aborted": "safe_stop_requested_before_postcondition_completion"
+  },
+  "enablement": {
+    "enabled": false,
+    "requires_separate_explicit_authorization": true,
+    "brief_006_grants_authority": false
+  }
+}

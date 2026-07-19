@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sim2claw.orchestrator_result.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "session_id",
+    "stopped_at",
+    "reason",
+    "state",
+    "main_status",
+    "task_outcome",
+    "base_case",
+    "frame_counts",
+    "physical_authority",
+    "torque_off"
+  ],
+  "properties": {
+    "schema_version": {"const": "sim2claw.task_orchestrator_final.v1"},
+    "session_id": {"type": "string", "minLength": 1},
+    "stopped_at": {"type": "string", "format": "date-time"},
+    "reason": {"type": "string", "minLength": 1},
+    "state": {"const": "STOPPED"},
+    "main_status": {
+      "enum": ["stopped", "observing", "proposed", "executing", "verified", "failed"]
+    },
+    "task_outcome": {"type": ["string", "null"]},
+    "base_case": {"type": ["object", "null"]},
+    "frame_counts": {"type": "object"},
+    "physical_authority": {"const": false},
+    "torque_off": {"const": "not_applicable_no_physical_adapter"}
+  }
+}

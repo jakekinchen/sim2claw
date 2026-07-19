@@ -1,0 +1,59 @@
+{
+  "schema_version": "sim2claw.orchestrator_physical_canary_gate.v1",
+  "gate_id": "pawn_bg_physical_canary_gate_v1",
+  "status": "disabled_pending_separate_authorization",
+  "physical_authority": false,
+  "physical_evaluator_contract": "configs/orchestrator/physical_pawn_bg_canary_evaluator_v1.json",
+  "shadow_protocol": {
+    "issues_hardware_command": false,
+    "minimum_supervised_trials_per_skill": 5,
+    "required_exact_operator_choice_match_rate": 1.0,
+    "required_records": [
+      "accepted_frame_sha256",
+      "managed_region_state",
+      "model_proposal",
+      "operator_choice",
+      "exact_choice_match",
+      "checkpoint_sha256",
+      "evaluator_receipt_sha256",
+      "promotion_receipt_sha256"
+    ]
+  },
+  "required_new_physical_evaluator": {
+    "status": "contract_frozen_implementation_not_enabled",
+    "requirements": [
+      "fresh_registered_overhead_frame",
+      "minimum_square_confidence",
+      "promoted_checkpoint_evaluator_and_promotion_digests",
+      "reviewed_gateway_and_current_calibration_identity",
+      "exclusive_robot_camera_and_recorder_leases",
+      "tracking_stall_and_skill_timeout_limits",
+      "postcondition_and_collateral_square_evaluation",
+      "fail_closed_safe_stop_and_torque_off_proof"
+    ]
+  },
+  "operator_approval": {
+    "required_per_action": true,
+    "maximum_age_seconds": 60,
+    "reusable": false,
+    "required_bindings": [
+      "session_id",
+      "skill_id",
+      "accepted_frame_sha256",
+      "checkpoint_sha256",
+      "calibration_id",
+      "workcell_id",
+      "operator_identity",
+      "approved_at"
+    ]
+  },
+  "canary": {
+    "enabled": false,
+    "maximum_actions": 1,
+    "unattended_execution": false,
+    "single_reviewed_gateway_only": true,
+    "raw_joint_or_servo_actions_allowed": false,
+    "cross_file_recovery_allowed": false,
+    "completion_owned_by_physical_evaluator": true
+  }
+}

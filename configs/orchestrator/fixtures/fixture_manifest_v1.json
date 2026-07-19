@@ -1,0 +1,87 @@
+{
+  "schema_version": "sim2claw.orchestrator_fixture_manifest.v1",
+  "fixture_set_id": "pawn_bg_orchestrator_synthetic_v1",
+  "status": "frozen",
+  "proof_class": "synthetic_fixture_only",
+  "generator": "scripts/generate_orchestrator_fixtures.py",
+  "authority": {
+    "learned_policy_proof": false,
+    "simulation_capability_proof": false,
+    "physical_authority": false
+  },
+  "positive_cases": [
+    {
+      "case_id": "base_case",
+      "frames": ["tests/fixtures/orchestrator/base_case.png"],
+      "expected": "deterministic_complete"
+    },
+    {
+      "case_id": "bounded_exposure_change",
+      "frames": [
+        "tests/fixtures/orchestrator/base_case.png",
+        "tests/fixtures/orchestrator/base_case_exposure.png"
+      ],
+      "expected": "deduplicated_model_input"
+    }
+  ],
+  "restoration_cases": [
+    {
+      "case_id": "every_single_file_mismatch",
+      "frames": [
+        "tests/fixtures/orchestrator/b_mismatch.png",
+        "tests/fixtures/orchestrator/c_mismatch.png",
+        "tests/fixtures/orchestrator/d_mismatch.png",
+        "tests/fixtures/orchestrator/e_mismatch.png",
+        "tests/fixtures/orchestrator/f_mismatch.png",
+        "tests/fixtures/orchestrator/g_mismatch.png"
+      ],
+      "expected": "one_verified_same_file_move_each"
+    },
+    {
+      "case_id": "multi_file_b_c_e",
+      "frames": [
+        "tests/fixtures/orchestrator/b_c_e_mismatch.png",
+        "tests/fixtures/orchestrator/c_e_mismatch.png",
+        "tests/fixtures/orchestrator/e_mismatch.png",
+        "tests/fixtures/orchestrator/base_case.png"
+      ],
+      "expected": "three_serial_verified_moves"
+    },
+    {
+      "case_id": "multi_file_d_f_g",
+      "frames": [
+        "tests/fixtures/orchestrator/d_f_g_mismatch.png",
+        "tests/fixtures/orchestrator/f_g_mismatch.png",
+        "tests/fixtures/orchestrator/g_mismatch.png",
+        "tests/fixtures/orchestrator/base_case.png"
+      ],
+      "expected": "three_serial_verified_moves"
+    }
+  ],
+  "negative_cases": [
+    {"case_id": "stale_frame", "expected": "stale_frame"},
+    {
+      "case_id": "camera_registration_drift",
+      "frames": ["tests/fixtures/orchestrator/camera_drift.png"],
+      "expected": "camera_registration_drift"
+    },
+    {
+      "case_id": "missing_pawn",
+      "frames": ["tests/fixtures/orchestrator/missing_d.png"],
+      "expected": "missing_pawn"
+    },
+    {
+      "case_id": "two_pawns_in_file",
+      "frames": ["tests/fixtures/orchestrator/two_f.png"],
+      "expected": "two_pawns_in_file"
+    },
+    {
+      "case_id": "obstruction",
+      "frames": ["tests/fixtures/orchestrator/obstruction_g.png"],
+      "expected": "obstruction"
+    },
+    {"case_id": "malformed_model_output", "expected": "pause_failed"},
+    {"case_id": "unavailable_skill", "expected": "rejected_not_dispatched"},
+    {"case_id": "skill_timeout", "expected": "safe_stop_terminal_failure"}
+  ]
+}
