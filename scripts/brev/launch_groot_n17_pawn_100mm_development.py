@@ -159,6 +159,14 @@ def validate_inputs(contract_path: Path, expected_hash: str) -> dict[str, Any]:
         raise SystemExit("NVIDIA processor patch drifted")
     if not Path(contract["runtime"]["processor_path"]).is_dir():
         raise SystemExit("offline processor snapshot is missing")
+    mujoco_version = subprocess.check_output(
+        [sys.executable, "-c", "import mujoco; print(mujoco.__version__)"],
+        text=True,
+    ).strip()
+    if mujoco_version != contract["runtime"]["mujoco_version"]:
+        raise SystemExit("MuJoCo runtime version drifted")
+    if not Path("/usr/bin/ffmpeg").is_file():
+        raise SystemExit("frozen rollout video encoder is missing")
 
     output = Path(contract["rollout"]["output_directory"])
     if output.exists():

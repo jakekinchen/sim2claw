@@ -17,8 +17,20 @@
     "rank_1_2_generalization_authority": false,
     "purpose": "far_rank_simulation_pipeline_and_single_episode_overfit_check_only"
   },
+  "superseded_no_query_launch": {
+    "parent_contract_sha256": "f1362ca2e0d4dbd1399b60e5e97378539e9e4cd5dbebfca63338b5a7e0267fa8",
+    "failure": "GR00T NVIDIA environment lacked the pinned MuJoCo runtime; runner failed at import before PolicyClient construction",
+    "outer_log_sha256": "33f02accac3667ab9647c1209a8a3ae58bbeafdc0010b1af240ebcf45fbe7443",
+    "runner_log_sha256": "24a6c0027444e691c9a908926295cdb6235d2d317049002632b262934dc1c8ab",
+    "server_runtime_receipt_sha256": "985c4790ba2b203bf659ac24ee304595cb5e1445f491ad5ba5965dcb039704b8",
+    "server_exit_receipt_sha256": "a46a645aa10fb25f5dbd2b23cb0fcfebbd140764d572da835846c112a555a858",
+    "server_log_sha256": "a83f3c22792d9175b9caac69903363636aea31fb896552824101782506af2706",
+    "model_queries": 0,
+    "rollout_actions": 0,
+    "gpu_processes_stopped": true
+  },
   "identities": {
-    "orchestrator_sha256": "7eeb3fc2dadaefe03eb733df15faff289bdd87cc3da4fbf2ffac3c18e745d3d3",
+    "orchestrator_sha256": "0261b839eceb7d4afba7e90c3e797aa7503f891660547ac2880fab1ab475d7b4",
     "experiment_sha256": "ea6184ba10bd7803ac8e839ae3aebc4de079621afe03f43b6505a61e86622507",
     "selector_contract_sha256": "22a6d834902b32b17763578a82704c280aecfc783f0a3dfbc7158981cac447df",
     "source_contract_sha256": "737a368916643d083d400c42176ae044d0cd4a5e4697c9902e0b7e6b32367fda",
@@ -63,6 +75,7 @@
     "processor_path": "/home/shadeform/.cache/huggingface/hub/models--nvidia--Cosmos-Reason2-2B/snapshots/9ce19a195e423419c349abfc86fd07178b230561",
     "expected_nvidia_tracked_dirtiness": " M gr00t/model/gr00t_n1d7/processing_gr00t_n1d7.py",
     "device": "cuda",
+    "mujoco_version": "3.10.0",
     "renderer": "osmesa"
   },
   "server": {
@@ -76,7 +89,7 @@
   },
   "rollout": {
     "output_directory": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/development-v1",
-    "evidence_directory": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/evidence/development-v1",
+    "evidence_directory": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/evidence/development-v1-attempt2",
     "scene_reset_seed": 0,
     "inference_seed": 0,
     "sample_count": 562,
