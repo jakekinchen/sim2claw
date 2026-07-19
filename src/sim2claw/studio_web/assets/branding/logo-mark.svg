@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  sim2claw mark — the pincer's left half is drawn as a dashed wireframe
+  (the simulated, not-yet-actuated state); the right half is a solid fill
+  in --motion, the Studio's existing "active/actuated" accent. The two
+  halves meeting at the base is the "2" in sim2claw: one state becoming
+  the other. Colors are hardcoded hex matching studio.css tokens so this
+  file has no build-time dependency on the stylesheet.
+    left prong stroke  = var(--graphite-dark) #373d39
+    right prong fill   = var(--motion)        #ff5a1f
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <path
+    d="M 24 14 C 6 20 4 48 20 62 C 26 67 36 66 44 58 C 34 52 28 40 29 28 C 30 20 28 16 24 14 Z"
+    fill="none"
+    stroke="#373d39"
+    stroke-width="3"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    stroke-dasharray="5 4"
+  />
+  <path
+    d="M 76 14 C 94 20 96 48 80 62 C 74 67 64 66 56 58 C 66 52 72 40 71 28 C 70 20 72 16 76 14 Z"
+    fill="#ff5a1f"
+  />
+</svg>

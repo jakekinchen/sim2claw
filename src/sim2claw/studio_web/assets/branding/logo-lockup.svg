@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  sim2claw horizontal lockup: mark + wordmark, sized for the Studio
+  masthead (chalk/light background). Wordmark uses the same utility
+  font stack as studio.css's --utility token (IBM Plex Mono) so it reads
+  as part of the product's existing receipt/CLI vocabulary rather than a
+  bolted-on brand face.
+    "sim"  = var(--graphite-dark) #373d39
+    "2"    = var(--carbon)        #151816
+    "claw" = var(--motion)        #ff5a1f
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 72">
+  <g transform="translate(0, 4) scale(0.64)">
+    <path
+      d="M 24 14 C 6 20 4 48 20 62 C 26 67 36 66 44 58 C 34 52 28 40 29 28 C 30 20 28 16 24 14 Z"
+      fill="none"
+      stroke="#373d39"
+      stroke-width="4"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      stroke-dasharray="7 6"
+    />
+    <path
+      d="M 76 14 C 94 20 96 48 80 62 C 74 67 64 66 56 58 C 66 52 72 40 71 28 C 70 20 72 16 76 14 Z"
+      fill="#ff5a1f"
+    />
+  </g>
+  <text
+    x="82"
+    y="46"
+    font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace"
+    font-weight="600"
+    font-size="32"
+    letter-spacing="-0.5"
+  >
+    <tspan fill="#373d39">sim</tspan><tspan fill="#151816">2</tspan><tspan fill="#ff5a1f">claw</tspan>
+  </text>
+</svg>
