@@ -40,6 +40,7 @@ const state = {
   physicalSyncing: false,
   discardConfirmationArmed: false,
   discardConfirmationTimer: null,
+  pawnBoardSelectionStep: "source",
 };
 
 const elements = {
@@ -159,6 +160,7 @@ const elements = {
   runSimReplay: document.querySelector("#run-sim-replay"),
   simReplayMetrics: document.querySelector("#sim-replay-metrics"),
   pawnPreviewBoard: document.querySelector("#pawn-preview-board"),
+  pawnBoardInstruction: document.querySelector("#pawn-board-instruction"),
   pawnPreviewSource: document.querySelector("#pawn-preview-source"),
   pawnPreviewTarget: document.querySelector("#pawn-preview-target"),
   pawnPreviewDescription: document.querySelector("#pawn-preview-description"),
@@ -1767,6 +1769,7 @@ function renderRecorder() {
   elements.sourceSquare.disabled = active || awaitingLabel;
   elements.target.disabled = active || awaitingLabel;
   elements.sampleHz.disabled = active || awaitingLabel;
+  updatePawnBoardInteractivity(active || awaitingLabel);
   elements.verifyGateway.hidden = selectedMode !== "physical_follower";
   elements.verifyGateway.disabled = state.recorderRequestActive || active || !physicalReady;
   elements.syncFollower.hidden = selectedMode !== "physical_follower";
@@ -1913,6 +1916,47 @@ function updateDestinationOptions(preferred = elements.target.value || "b2") {
   }
 }
 
+function boardSquareDescription(square) {
+  const coordinate = square.toUpperCase();
+  if (brownPawnSquares.includes(square)) return `${coordinate}, brown pawn`;
+  if (tanPawnSquares.includes(square)) return `${coordinate}, tan pawn`;
+  return `${coordinate}, empty square`;
+}
+
+function updatePawnBoardInteractivity(locked = elements.sourceSquare.disabled) {
+  const selectingSource = state.pawnBoardSelectionStep === "source";
+  const validSquares = selectingSource ? pawnSourceSquares : reachableDestinationSquares;
+  const instruction = selectingSource
+    ? "Choose source pawn · click a brown pawn"
+    : "Choose destination · click an empty square in rows 1–4";
+  text(elements.pawnBoardInstruction, locked ? "Board selection is locked while recording" : instruction);
+  elements.pawnPreviewBoard.dataset.selectionStep = state.pawnBoardSelectionStep;
+  elements.pawnPreviewBoard.setAttribute("aria-disabled", String(locked));
+  elements.pawnPreviewBoard.querySelectorAll("button[data-square]").forEach((cell) => {
+    const selectable = !locked && validSquares.includes(cell.dataset.square);
+    cell.disabled = !selectable;
+    cell.classList.toggle("is-selectable", selectable);
+    cell.setAttribute(
+      "aria-label",
+      `${boardSquareDescription(cell.dataset.square)}${selectable ? `; select as ${state.pawnBoardSelectionStep}` : ""}`,
+    );
+  });
+}
+
+function selectPawnBoardSquare(square) {
+  if (state.pawnBoardSelectionStep === "source") {
+    if (!pawnSourceSquares.includes(square)) return;
+    elements.sourceSquare.value = square;
+    state.pawnBoardSelectionStep = "destination";
+  } else {
+    if (!reachableDestinationSquares.includes(square)) return;
+    elements.target.value = square;
+    state.pawnBoardSelectionStep = "source";
+  }
+  renderPawnMovePreview();
+  persistRecorderSettings();
+}
+
 function renderPawnMovePreview() {
   const source = elements.sourceSquare.value || "b1";
   const destination = elements.target.value || "b2";
@@ -1927,7 +1971,8 @@ function renderPawnMovePreview() {
   for (const rank of [8, 7, 6, 5, 4, 3, 2, 1]) {
     for (const file of boardFiles) {
       const square = `${file}${rank}`;
-      const cell = document.createElement("span");
+      const cell = document.createElement("button");
+      cell.type = "button";
       cell.className = "pawn-board-cell";
       cell.dataset.square = square;
       if ((boardFiles.indexOf(file) + rank) % 2 === 0) cell.classList.add("is-dark");
@@ -1950,6 +1995,7 @@ function renderPawnMovePreview() {
       elements.pawnPreviewBoard.append(cell);
     }
   }
+  updatePawnBoardInteractivity();
   const sourceX = boardFiles.indexOf(source[0]) + 0.5;
   const sourceY = 8 - Number(source[1]) + 0.5;
   const targetX = boardFiles.indexOf(destination[0]) + 0.5;
@@ -2185,12 +2231,19 @@ document.querySelectorAll('input[name="recorder-mode"]').forEach((input) => inpu
 elements.physicalSafetyAck.addEventListener("change", renderRecorder);
 elements.sourceSquare.addEventListener("change", () => {
   updateDestinationOptions();
+  state.pawnBoardSelectionStep = "source";
   renderPawnMovePreview();
   persistRecorderSettings();
 });
 elements.target.addEventListener("change", () => {
+  state.pawnBoardSelectionStep = "source";
   renderPawnMovePreview();
   persistRecorderSettings();
+});
+elements.pawnPreviewBoard.addEventListener("click", (event) => {
+  const cell = event.target.closest("button[data-square]");
+  if (!cell || cell.disabled) return;
+  selectPawnBoardSquare(cell.dataset.square);
 });
 elements.sampleHz.addEventListener("change", () => {
   text(elements.recordRate, `${elements.sampleHz.value} Hz`);

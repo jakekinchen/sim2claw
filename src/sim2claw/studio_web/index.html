@@ -224,7 +224,8 @@
                     <details><summary>More info</summary><p>Brown pawns occupy A2, B1, C2, D1, E2, F1, G2, and H1. Tan pawns occupy the mirrored A8, B7, C8, D7, E8, F7, G8, and H7 side. Destinations are limited to unoccupied squares in rows 1–4. The saved receipt records both squares, the 100 mm board pose, and the two-sided layout identity.</p></details>
                   </div>
                   <div class="pawn-board-shell">
-                    <div class="pawn-board" id="pawn-preview-board" role="img" aria-label="Pawn movement preview"></div>
+                    <p class="pawn-board-instruction" id="pawn-board-instruction" aria-live="polite">Choose source pawn · click a brown pawn</p>
+                    <div class="pawn-board" id="pawn-preview-board" role="group" aria-label="Pawn movement selector" aria-describedby="pawn-board-instruction"></div>
                     <svg class="pawn-move-arrow" id="pawn-move-arrow" viewBox="0 0 8 8" aria-hidden="true"><defs><marker id="pawn-arrow-head" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z"></path></marker></defs><line id="pawn-move-line" marker-end="url(#pawn-arrow-head)"></line></svg>
                   </div>
                 </section>

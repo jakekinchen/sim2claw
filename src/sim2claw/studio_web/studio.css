@@ -827,6 +827,27 @@ body[data-view="record"] [data-view-panel="record"] {
   margin: 7px 0 0;
 }
 
+.pawn-board-instruction {
+  position: absolute;
+  z-index: 4;
+  top: 8px;
+  left: 50%;
+  margin: 0;
+  padding: 5px 9px;
+  border: 1px solid rgb(255 255 255 / 60%);
+  border-radius: 999px;
+  background: rgb(33 24 18 / 86%);
+  color: #fff;
+  font-family: var(--utility);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
 .pawn-board-shell {
   position: relative;
   width: 100%;
@@ -845,9 +866,15 @@ body[data-view="record"] [data-view-panel="record"] {
 .pawn-board-cell {
   position: relative;
   display: grid;
+  padding: 0;
+  border: 0;
   aspect-ratio: 1;
   place-items: center;
   background: #e8d2aa;
+  color: inherit;
+  font: inherit;
+  opacity: 1;
+  appearance: none;
 }
 
 .pawn-board-cell.is-dark {
@@ -871,6 +898,24 @@ body[data-view="record"] [data-view-panel="record"] {
   border-radius: 50%;
   background: rgb(255 255 255 / 35%);
   content: "";
+}
+
+.pawn-board-cell.is-selectable {
+  cursor: pointer;
+}
+
+.pawn-board[data-selection-step="source"] .pawn-board-cell.is-selectable:hover {
+  box-shadow: inset 0 0 0 3px var(--motion);
+}
+
+.pawn-board[data-selection-step="destination"] .pawn-board-cell.is-selectable:hover {
+  box-shadow: inset 0 0 0 3px #08785d;
+}
+
+.pawn-board-cell.is-selectable:focus-visible {
+  z-index: 2;
+  outline: 3px solid #fff;
+  outline-offset: -5px;
 }
 
 .pawn-board-cell small {
