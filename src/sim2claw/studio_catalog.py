@@ -7,12 +7,18 @@ import hashlib
 import json
 import os
 import shlex
+import stat
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, BinaryIO, Iterable
 
 from .paths import REPO_ROOT
+from .studio_private_releases import (
+    build_calibration_assets,
+    build_physical_release_episodes,
+    verify_private_media_descriptor,
+)
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -59,19 +65,30 @@ def media_url(path: Path, repo_root: Path = REPO_ROOT) -> str:
     return f"/media/{media_token(path, repo_root)}"
 
 
-def resolve_media_token(token: str, repo_root: Path = REPO_ROOT) -> Path:
+PRIVATE_RELEASE_PREFIX = Path("artifacts/private/releases")
+GENERATED_MEDIA_ROOTS = frozenset({"outputs", "datasets", "runs"})
+
+
+def _media_relative_path(token: str) -> Path:
     padding = "=" * (-len(token) % 4)
     try:
         relative = base64.urlsafe_b64decode(token + padding).decode("utf-8")
     except (ValueError, UnicodeDecodeError) as error:
         raise ValueError("invalid media token") from error
-    candidate = (repo_root / relative).resolve()
-    allowed_roots = [
-        (repo_root / name).resolve() for name in ("outputs", "datasets", "runs")
-    ]
-    if not any(candidate.is_relative_to(root) for root in allowed_roots):
+    if "\x00" in relative or "\\" in relative:
+        raise ValueError("invalid media token")
+    relative_path = Path(relative)
+    if (
+        relative_path.is_absolute()
+        or not relative_path.parts
+        or any(part in {"", ".", ".."} for part in relative_path.parts)
+    ):
         raise ValueError("media path is outside generated artifact storage")
-    suffix = candidate.suffix.lower()
+    is_generated = relative_path.parts[0] in GENERATED_MEDIA_ROOTS
+    is_private_release = relative_path.is_relative_to(PRIVATE_RELEASE_PREFIX)
+    if not is_generated and not is_private_release:
+        raise ValueError("media path is outside generated artifact storage")
+    suffix = relative_path.suffix.lower()
     if suffix not in {
         ".png",
         ".jpg",
@@ -79,18 +96,69 @@ def resolve_media_token(token: str, repo_root: Path = REPO_ROOT) -> Path:
         ".webp",
         ".mp4",
         ".webm",
+        ".ply",
         ".json",
     }:
         raise ValueError("media type is not allowed")
     if suffix == ".json" and not (
-        candidate.name in {"state_trace.json", "sim_replay_state_trace.json"}
+        relative_path.name in {"state_trace.json", "sim_replay_state_trace.json"}
         or (
-            candidate.parent.name == "state_traces"
-            and candidate.name.startswith("episode_")
+            relative_path.parent.name == "state_traces"
+            and relative_path.name.startswith("episode_")
         )
     ):
         raise ValueError("JSON media is limited to episode state traces")
-    return candidate
+    return relative_path
+
+
+def _open_relative_no_follow(repo_root: Path, relative: Path) -> int:
+    """Open each path component with no-follow semantics and return one file FD."""
+
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    file_flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC
+    directory_fd = os.open(repo_root, directory_flags)
+    try:
+        for part in relative.parts[:-1]:
+            next_fd = os.open(part, directory_flags, dir_fd=directory_fd)
+            os.close(directory_fd)
+            directory_fd = next_fd
+        return os.open(relative.name, file_flags, dir_fd=directory_fd)
+    finally:
+        os.close(directory_fd)
+
+
+def open_media_token(
+    token: str,
+    repo_root: Path = REPO_ROOT,
+) -> tuple[Path, BinaryIO, os.stat_result]:
+    """Open, admit, and return the exact descriptor that the server will stream."""
+
+    relative = _media_relative_path(token)
+    try:
+        fd = _open_relative_no_follow(repo_root, relative)
+    except OSError as error:
+        raise ValueError("media file is unavailable") from error
+    try:
+        file_stat = os.fstat(fd)
+        if not stat.S_ISREG(file_stat.st_mode):
+            raise ValueError("media file is not regular")
+        if relative.is_relative_to(PRIVATE_RELEASE_PREFIX):
+            if not verify_private_media_descriptor(repo_root, relative, fd):
+                raise ValueError(
+                    "private media is not admitted by a verified release manifest"
+                )
+            file_stat = os.fstat(fd)
+        handle = os.fdopen(fd, "rb")
+    except Exception:
+        os.close(fd)
+        raise
+    return repo_root / relative, handle, file_stat
+
+
+def resolve_media_token(token: str, repo_root: Path = REPO_ROOT) -> Path:
+    path, handle, _ = open_media_token(token, repo_root)
+    handle.close()
+    return path
 
 
 def _inspection(path: Path, repo_root: Path) -> dict[str, Any] | None:
@@ -168,6 +236,11 @@ def _proof_label(proof_class: str) -> str:
         "simulation_synthetic_vla_demonstration_dataset": (
             "Evaluator-accepted synthetic demonstrations"
         ),
+        "physical_teleoperation_source_unqualified": (
+            "Physical source · recorded, not admitted"
+        ),
+        "owner_provided_monocular_video": "Robo Scanner · owner video",
+        "monocular_video_relative_scale_3dgs": "Robo Scanner · visual 3DGS",
     }
     return labels.get(proof_class, proof_class.replace("_", " ").capitalize())
 
@@ -309,6 +382,13 @@ def _dataset_episodes(
                         if success is False
                         else "recorded"
                     ),
+                    "evaluator_verdict": (
+                        "passed"
+                        if success is True
+                        else "failed"
+                        if success is False
+                        else None
+                    ),
                     "terminal_outcome": (
                         verdict.get("terminal_outcome")
                         if isinstance(verdict, dict)
@@ -405,6 +485,7 @@ def _act_episodes(
                 ),
                 "sequence": 10_000 + len(episodes),
                 "status": "passed" if success is True else "failed",
+                "evaluator_verdict": "passed" if success is True else "failed",
                 "terminal_outcome": receipt.get("terminal_outcome"),
                 "proof_class": proof_class,
                 "proof_label": _proof_label(proof_class),
@@ -810,6 +891,7 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         + _act_episodes(repo_root, contracts)
         + _grasp_episodes(repo_root)
         + _teleop_episodes(repo_root)
+        + build_physical_release_episodes(repo_root, media_url)
     )
     episodes.sort(key=lambda row: (str(row["task_id"]), int(row["sequence"])))
 
@@ -954,6 +1036,7 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     active = [row for row in processes if row.get("status") == "running"]
 
     project_state = _read_json(repo_root / "docs" / "autonomous-workflow" / "project_state.json")
+    calibrations = build_calibration_assets(repo_root, media_url)
     return {
         "schema_version": "sim2claw.studio_catalog.v1",
         "generated_at": datetime.now(UTC).isoformat(),
@@ -973,10 +1056,12 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
             "passed_episodes": sum(row["status"] == "passed" for row in episodes),
             "active_processes": len(active),
             "robots": len(robots),
+            "calibration_assets": len(calibrations),
         },
         "tasks": tasks,
         "episodes": episodes,
         "processes": processes,
         "simulations": simulations,
         "robots": robots,
+        "calibrations": calibrations,
     }

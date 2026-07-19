@@ -37,6 +37,24 @@ class StateTraceTest(unittest.TestCase):
         )
         self.assertEqual(manifest["authority"]["physics"], "mujoco")
         self.assertFalse(manifest["authority"]["physical_authority"])
+        self.assertNotIn("scene_synthesis", manifest)
+        self.assertNotIn("scene_synthesis_config", manifest["source"])
+
+    def test_display_proposal_metadata_cannot_change_physics_revision(self) -> None:
+        baseline = build_scene_manifest(piece_layout=CURRENT_TASK_PIECE_LAYOUT)
+        display_only_proposal = {
+            "schema_version": "sim2claw.llm_scene_synthesis.v1",
+            "title": "arbitrarily changed display copy",
+            "hierarchy": {"id": "different-proposal"},
+        }
+        self.assertNotIn("scene_synthesis", baseline)
+        display_only_proposal["title"] = "changed again"
+        rebuilt = build_scene_manifest(piece_layout=CURRENT_TASK_PIECE_LAYOUT)
+        self.assertEqual(baseline["revision_sha256"], rebuilt["revision_sha256"])
+        self.assertEqual(
+            baseline["revision_sha256"],
+            "ddee05c5a692986f76351db2ef69e966247d65c205a2cd8759cb3ccca15ff8c0",
+        )
 
     def test_recorder_samples_mujoco_world_poses_and_writes_compact_trace(self) -> None:
         model = build_scene_spec().compile()
