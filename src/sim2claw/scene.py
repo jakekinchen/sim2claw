@@ -167,6 +167,7 @@ def board_square_center(
     *,
     config_path: Path = DEFAULT_CAPTURE_CONFIG,
     board_center_in_table_frame_xy_m: tuple[float, float] | None = None,
+    board_yaw_relative_to_table_degrees: float | None = None,
 ) -> tuple[float, float, float]:
     """Return the simulation-only world-frame center of one board square."""
 
@@ -177,6 +178,10 @@ def board_square_center(
         config["simulation_estimates"]["board"][
             "center_in_table_frame_xy_m"
         ] = list(board_center_in_table_frame_xy_m)
+    if board_yaw_relative_to_table_degrees is not None:
+        config["simulation_estimates"]["board"][
+            "yaw_relative_to_table_degrees"
+        ] = float(board_yaw_relative_to_table_degrees)
     geometry = scene_geometry(config)
     file_index = ord(square[0]) - ord("a")
     rank_index = int(square[1]) - 1
@@ -711,6 +716,7 @@ def build_scene_xml(
     scan_overlay: bool = False,
     piece_layout: str = "standard",
     board_center_in_table_frame_xy_m: tuple[float, float] | None = None,
+    board_yaw_relative_to_table_degrees: float | None = None,
     include_visual_props: bool = True,
 ) -> str:
     config = load_capture_config(config_path)
@@ -718,6 +724,10 @@ def build_scene_xml(
         config["simulation_estimates"]["board"][
             "center_in_table_frame_xy_m"
         ] = list(board_center_in_table_frame_xy_m)
+    if board_yaw_relative_to_table_degrees is not None:
+        config["simulation_estimates"]["board"][
+            "yaw_relative_to_table_degrees"
+        ] = float(board_yaw_relative_to_table_degrees)
     geometry = scene_geometry(config)
     capture_root = capture_directory(config, external_root)
 
@@ -814,6 +824,7 @@ def build_scene_spec(
     include_robots: bool = True,
     piece_layout: str = "standard",
     board_center_in_table_frame_xy_m: tuple[float, float] | None = None,
+    board_yaw_relative_to_table_degrees: float | None = None,
     include_visual_props: bool = True,
 ) -> mujoco.MjSpec:
     spec = mujoco.MjSpec.from_string(
@@ -823,6 +834,7 @@ def build_scene_spec(
             scan_overlay=scan_overlay,
             piece_layout=piece_layout,
             board_center_in_table_frame_xy_m=board_center_in_table_frame_xy_m,
+            board_yaw_relative_to_table_degrees=board_yaw_relative_to_table_degrees,
             include_visual_props=include_visual_props,
         )
     )
