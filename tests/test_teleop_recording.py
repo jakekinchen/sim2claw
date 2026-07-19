@@ -11,6 +11,7 @@ from unittest.mock import patch
 import numpy as np
 
 from sim2claw.source_episode import (
+    CONTRACT_PATH_V4,
     EPISODE_SCHEMA,
     RECEIPT_SCHEMA,
     SAMPLE_SCHEMA,
@@ -236,8 +237,8 @@ class TeleopRecordingTest(unittest.TestCase):
         started = self.manager.start(
             {
                 "mode": "simulation_follower",
-                "source_square": "c8",
-                "target_square": "c6",
+                "source_square": "b1",
+                "target_square": "b2",
                 "sample_hz": 20,
             }
         )
@@ -277,7 +278,10 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertNotIn("integration_state_float64", rows[0])
         self.assertEqual(receipt["schema_version"], RECEIPT_SCHEMA)
         self.assertEqual(receipt["source_episode_schema"], EPISODE_SCHEMA)
-        self.assertEqual(receipt["source_contract_sha256"], source_contract_sha256())
+        self.assertEqual(
+            receipt["source_contract_sha256"],
+            source_contract_sha256(CONTRACT_PATH_V4),
+        )
         self.assertEqual(receipt["outcome_label"], "success")
         self.assertEqual(
             receipt["training_admission"],
@@ -285,10 +289,10 @@ class TeleopRecordingTest(unittest.TestCase):
         )
         self.assertFalse(receipt["is_training_data"])
         self.assertFalse(receipt["held_out_membership"])
-        self.assertEqual(receipt["piece_id"], "tan_pawn_c8")
-        self.assertEqual(receipt["piece_color"], "tan")
-        self.assertEqual(receipt["source_square"], "c8")
-        self.assertEqual(receipt["destination_square"], "c6")
+        self.assertEqual(receipt["piece_id"], "brown_pawn_b1")
+        self.assertEqual(receipt["piece_color"], "brown")
+        self.assertEqual(receipt["source_square"], "b1")
+        self.assertEqual(receipt["destination_square"], "b2")
         self.assertEqual(receipt["initial_layout_id"], CURRENT_TASK_LAYOUT_ID)
         self.assertEqual(receipt["scene_id"], "operator_updated_chess_workcell_v3")
         self.assertEqual(receipt["board_pose_id"], "board_robotward_100mm_20260718_v3")
@@ -331,8 +335,8 @@ class TeleopRecordingTest(unittest.TestCase):
         self.manager.start(
             {
                 "mode": "simulation_follower",
-                "source_square": "b7",
-                "target_square": "b6",
+                "source_square": "d1",
+                "target_square": "d2",
                 "sample_hz": 20,
             }
         )
@@ -364,8 +368,8 @@ class TeleopRecordingTest(unittest.TestCase):
             self.manager.start(
                 {
                     "mode": "physical_follower",
-                    "source_square": "c8",
-                    "target_square": "c6",
+                    "source_square": "b1",
+                    "target_square": "b2",
                     "sample_hz": 20,
                     "physical_safety_acknowledged": False,
                 }
@@ -381,8 +385,8 @@ class TeleopRecordingTest(unittest.TestCase):
         started = self.manager.start(
             {
                 "mode": "simulation_follower",
-                "source_square": "c8",
-                "target_square": "c6",
+                "source_square": "b1",
+                "target_square": "b2",
                 "sample_hz": 20,
             }
         )
@@ -407,8 +411,8 @@ class TeleopRecordingTest(unittest.TestCase):
             self.manager.start(
                 {
                     "mode": "simulation_follower",
-                    "source_square": "b7",
-                    "target_square": "b6",
+                    "source_square": "d1",
+                    "target_square": "d2",
                     "sample_hz": 20,
                 }
             )
@@ -451,8 +455,8 @@ class TeleopRecordingTest(unittest.TestCase):
             self.manager.start(
                 {
                     "mode": "physical_follower",
-                    "source_square": "c8",
-                    "target_square": "c6",
+                    "source_square": "b1",
+                    "target_square": "b2",
                     "sample_hz": 20,
                     "physical_safety_acknowledged": True,
                     "physical_pose_match_acknowledged": True,
@@ -495,8 +499,8 @@ class TeleopRecordingTest(unittest.TestCase):
             self.manager.start(
                 {
                     "mode": "simulation_follower",
-                    "source_square": "b7",
-                    "target_square": "b6",
+                    "source_square": "d1",
+                    "target_square": "d2",
                 }
             )
         state = self.manager.snapshot()
@@ -515,20 +519,20 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertIsNone(overhead["teleoperation_start_video_offset_seconds"])
 
     def test_pawn_metadata_rejects_unknown_source_and_unreachable_destination(self) -> None:
-        with self.assertRaisesRegex(RecorderError, "eight reachable tan pawn"):
-            self.manager.start(
-                {
-                    "mode": "simulation_follower",
-                    "source_square": "a1",
-                    "target_square": "b5",
-                }
-            )
-        with self.assertRaisesRegex(RecorderError, "left-arm-reachable"):
+        with self.assertRaisesRegex(RecorderError, "lower-side brown pawn"):
             self.manager.start(
                 {
                     "mode": "simulation_follower",
                     "source_square": "c8",
-                    "target_square": "b4",
+                    "target_square": "b2",
+                }
+            )
+        with self.assertRaisesRegex(RecorderError, "rows 1 through 4"):
+            self.manager.start(
+                {
+                    "mode": "simulation_follower",
+                    "source_square": "b1",
+                    "target_square": "b5",
                 }
             )
 

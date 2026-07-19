@@ -22,6 +22,7 @@ from sim2claw.source_episode import (
     CURRENT_BOARD_POSE_ID,
     CURRENT_SCENE_ID,
     CONTRACT_PATH_V3,
+    CONTRACT_PATH_V4,
     CONTRACT_PATH_V1,
     EPISODE_SCHEMA,
     GROOT_ADAPTER_SCHEMA,
@@ -86,6 +87,32 @@ def _sample(index: int) -> dict:
 
 
 class CanonicalSourceEpisodeTest(unittest.TestCase):
+    def test_v4_contract_restores_lower_side_brown_collection(self) -> None:
+        contract = load_source_contract(CONTRACT_PATH_V4)
+        self.assertEqual(
+            set(contract["scene"]["source_piece_ids"]),
+            {
+                "brown_pawn_a2",
+                "brown_pawn_b1",
+                "brown_pawn_c2",
+                "brown_pawn_d1",
+                "brown_pawn_e2",
+                "brown_pawn_f1",
+                "brown_pawn_g2",
+                "brown_pawn_h1",
+            },
+        )
+        self.assertEqual(
+            set(contract["scene"]["destination_squares"]),
+            {
+                "a1", "c1", "e1", "g1",
+                "b2", "d2", "f2", "h2",
+                *(f"{file_name}3" for file_name in "abcdefgh"),
+                *(f"{file_name}4" for file_name in "abcdefgh"),
+            },
+        )
+        self.assertFalse(contract["authority"]["evaluator_for_this_contract_is_frozen"])
+
     def test_v3_contract_freezes_collision_free_current_scene_reset(self) -> None:
         contract = load_source_contract(CONTRACT_PATH_V3)
         self.assertEqual(

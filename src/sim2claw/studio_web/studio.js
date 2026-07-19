@@ -1578,17 +1578,19 @@ function renderRobots() {
 const jointNames = ["Shoulder pan", "Shoulder lift", "Elbow", "Wrist flex", "Wrist roll", "Gripper"];
 const brownPawnSquares = ["a2", "b1", "c2", "d1", "e2", "f1", "g2", "h1"];
 const tanPawnSquares = ["a8", "b7", "c8", "d7", "e8", "f7", "g8", "h7"];
-const pawnSourceSquares = tanPawnSquares;
+const pawnSourceSquares = brownPawnSquares;
 const reachableDestinationSquares = [
-  "a5", "b5", "c5", "d5", "e5", "f5",
-  "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+  "a1", "c1", "e1", "g1",
+  "b2", "d2", "f2", "h2",
+  "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
+  "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
 ];
 const boardFiles = "abcdefgh";
-const recorderSettingsKey = "sim2claw.recorder.settings.v2";
+const recorderSettingsKey = "sim2claw.recorder.settings.v3";
 const defaultRecorderSettings = Object.freeze({
   mode: "simulation_follower",
-  source_square: "c8",
-  target_square: "c6",
+  source_square: "b1",
+  target_square: "b2",
   sample_hz: 20,
 });
 
@@ -1900,7 +1902,7 @@ async function syncPhysicalFollower() {
   renderRecorder();
 }
 
-function updateDestinationOptions(preferred = elements.target.value || "c6") {
+function updateDestinationOptions(preferred = elements.target.value || "b2") {
   elements.target.replaceChildren();
   for (const square of reachableDestinationSquares) {
     const option = document.createElement("option");
@@ -1912,14 +1914,14 @@ function updateDestinationOptions(preferred = elements.target.value || "c6") {
 }
 
 function renderPawnMovePreview() {
-  const source = elements.sourceSquare.value || "c8";
-  const destination = elements.target.value || "c6";
+  const source = elements.sourceSquare.value || "b1";
+  const destination = elements.target.value || "b2";
   text(elements.pawnPreviewSource, source.toUpperCase());
   text(elements.pawnPreviewTarget, destination.toUpperCase());
-  text(elements.pawnPreviewDescription, `Move the tan pawn from ${source.toUpperCase()} to ${destination.toUpperCase()}. Brown and tan pawns not selected remain in place.`);
+  text(elements.pawnPreviewDescription, `Move the brown pawn from ${source.toUpperCase()} to ${destination.toUpperCase()}. Brown and tan pawns not selected remain in place.`);
   elements.pawnPreviewBoard.setAttribute(
     "aria-label",
-    `Tan pawn movement from ${source.toUpperCase()} to ${destination.toUpperCase()} on a two-sided sparse pawn board`,
+    `Brown pawn movement from ${source.toUpperCase()} to ${destination.toUpperCase()} on a two-sided sparse pawn board`,
   );
   elements.pawnPreviewBoard.replaceChildren();
   for (const rank of [8, 7, 6, 5, 4, 3, 2, 1]) {
@@ -1967,7 +1969,7 @@ function initializeRecorderForm() {
   for (const square of pawnSourceSquares) {
     const option = document.createElement("option");
     option.value = square;
-    text(option, `${square.toUpperCase()} · tan pawn`);
+    text(option, `${square.toUpperCase()} · brown pawn`);
     elements.sourceSquare.append(option);
   }
   elements.sourceSquare.value = settings.source_square;

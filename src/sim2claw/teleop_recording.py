@@ -45,6 +45,7 @@ from .scene import (
 )
 from .render import write_rgb_png
 from .source_episode import (
+    CONTRACT_PATH_V4,
     EPISODE_SCHEMA,
     RECEIPT_SCHEMA,
     SAMPLE_SCHEMA,
@@ -64,6 +65,9 @@ DEFAULT_FOLLOWER_SERIAL_SUFFIX = "0406411"
 DEFAULT_SAMPLE_HZ = 20
 LIVE_SIMULATION_SCHEMA = "sim2claw.live_simulation_recorder.v1"
 LABEL_PATTERN = re.compile(r"[^a-z0-9]+")
+RECORDER_SOURCE_CONTRACT_PATH = CONTRACT_PATH_V4
+
+
 class RecorderError(RuntimeError):
     """Expected operator-facing recording error."""
 
@@ -220,7 +224,9 @@ def recorder_preflight(
         "runtime": {
             "lerobot_version": lerobot_version,
             "required_lerobot_version": "0.6.0",
-            "source_contract_sha256": source_contract_sha256(),
+            "source_contract_sha256": source_contract_sha256(
+                RECORDER_SOURCE_CONTRACT_PATH
+            ),
         },
         "modes": {
             "simulation_follower": {
@@ -795,7 +801,7 @@ class TeleopRecordingManager:
 
     def start(self, request: dict[str, Any], *, timeout_seconds: float = 40.0) -> dict[str, Any]:
         self._return_failed_attempt_to_ready()
-        contract = load_source_contract()
+        contract = load_source_contract(RECORDER_SOURCE_CONTRACT_PATH)
         mode = str(request.get("mode") or "simulation_follower")
         if mode not in {"simulation_follower", "physical_follower"}:
             raise RecorderError("Choose a simulator or physical follower.")
@@ -805,12 +811,14 @@ class TeleopRecordingManager:
             for piece_id in contract["scene"]["source_piece_ids"]
         }
         if source_square not in source_pieces_by_square:
-            raise RecorderError("Choose one of the eight reachable tan pawn source squares.")
+            raise RecorderError(
+                "Choose one of the eight lower-side brown pawn source squares."
+            )
         piece_id = source_pieces_by_square[source_square]
         target_square = str(request.get("target_square") or "").lower()
         if target_square not in set(contract["scene"]["destination_squares"]):
             raise RecorderError(
-                "Choose one of the declared left-arm-reachable empty destinations."
+                "Choose an unoccupied destination square in rows 1 through 4."
             )
         resolve_structured_goal(piece_id, target_square)
         sample_hz = int(request.get("sample_hz") or DEFAULT_SAMPLE_HZ)
@@ -890,7 +898,9 @@ class TeleopRecordingManager:
                 "draft_path": str(draft.relative_to(self.paths.repo_root)),
                 "training_admission": "pending_replay_and_separate_evaluator",
                 "task_id": contract["contract_id"],
-                "source_contract_sha256": source_contract_sha256(),
+                "source_contract_sha256": source_contract_sha256(
+                    RECORDER_SOURCE_CONTRACT_PATH
+                ),
                 "workcell_registration": workcell_registration,
                 "scene_reset_seed": request["scene_reset_seed"],
                 "language_instruction": language_instruction(

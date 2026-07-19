@@ -23,10 +23,18 @@ CONTRACT_PATH_V1 = (
 CONTRACT_PATH_V3 = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_source_episode_v3.json"
 )
+CONTRACT_PATH_V4 = (
+    REPO_ROOT / "configs" / "tasks" / "chess_pick_place_source_episode_v4.json"
+)
 CONTRACT_PATH = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_source_episode_v2.json"
 )
-KNOWN_CONTRACT_PATHS = (CONTRACT_PATH_V3, CONTRACT_PATH, CONTRACT_PATH_V1)
+KNOWN_CONTRACT_PATHS = (
+    CONTRACT_PATH_V4,
+    CONTRACT_PATH_V3,
+    CONTRACT_PATH,
+    CONTRACT_PATH_V1,
+)
 CONTRACT_SCHEMAS = {
     "chess_pick_place_source_episode_v1": (
         "sim2claw.canonical_manipulation_source_contract.v1"
@@ -36,6 +44,9 @@ CONTRACT_SCHEMAS = {
     ),
     "chess_pick_place_source_episode_v3": (
         "sim2claw.canonical_manipulation_source_contract.v3"
+    ),
+    "chess_pick_place_source_episode_v4": (
+        "sim2claw.canonical_manipulation_source_contract.v4"
     ),
 }
 EPISODE_SCHEMA = "sim2claw.manipulation_source_episode.v1"
@@ -99,6 +110,30 @@ _SCENE_CONTRACTS: dict[str, dict[str, Any]] = {
             2.013538628193459,
             1.35,
         ],
+    },
+    "chess_pick_place_source_episode_v4": {
+        "scene_id": CURRENT_SCENE_ID,
+        "board_pose_id": CURRENT_BOARD_POSE_ID,
+        "board_center": [0.04, -0.065],
+        "displacement_field": "robotward_displacement_from_reference_pose_m",
+        "displacement_m": 0.1,
+        "workspace_pose_id": (
+            "workspace_board_fiducial_robotward_100mm_20260718_v3"
+        ),
+        "fiducial_pose_id": "fiducial_robotward_100mm_20260718_v2",
+        "fiducial_center": [0.02, 0.18],
+        "destination_squares": {
+            "a1",
+            "c1",
+            "e1",
+            "g1",
+            "b2",
+            "d2",
+            "f2",
+            "h2",
+            *(f"{file_name}3" for file_name in "abcdefgh"),
+            *(f"{file_name}4" for file_name in "abcdefgh"),
+        },
     },
 }
 
@@ -198,6 +233,7 @@ def validate_source_contract(contract: dict[str, Any]) -> dict[str, Any]:
     if contract_id in {
         "chess_pick_place_source_episode_v2",
         "chess_pick_place_source_episode_v3",
+        "chess_pick_place_source_episode_v4",
     }:
         if scene.get("workspace_pose_id") != expected_scene["workspace_pose_id"]:
             raise ValueError("canonical source workspace pose identity changed")
@@ -233,18 +269,31 @@ def validate_source_contract(contract: dict[str, Any]) -> dict[str, Any]:
             raise ValueError("source v3 reset may not create physical authority")
     if int(scene.get("active_piece_count", 0)) != 16:
         raise ValueError("pawn workcell must protect all sixteen pieces")
-    expected_sources = {
-        "tan_pawn_a8",
-        "tan_pawn_b7",
-        "tan_pawn_c8",
-        "tan_pawn_d7",
-        "tan_pawn_e8",
-        "tan_pawn_f7",
-        "tan_pawn_g8",
-        "tan_pawn_h7",
-    }
+    expected_sources = (
+        {
+            "brown_pawn_a2",
+            "brown_pawn_b1",
+            "brown_pawn_c2",
+            "brown_pawn_d1",
+            "brown_pawn_e2",
+            "brown_pawn_f1",
+            "brown_pawn_g2",
+            "brown_pawn_h1",
+        }
+        if contract_id == "chess_pick_place_source_episode_v4"
+        else {
+            "tan_pawn_a8",
+            "tan_pawn_b7",
+            "tan_pawn_c8",
+            "tan_pawn_d7",
+            "tan_pawn_e8",
+            "tan_pawn_f7",
+            "tan_pawn_g8",
+            "tan_pawn_h7",
+        }
+    )
     if set(scene.get("source_piece_ids") or []) != expected_sources:
-        raise ValueError("canonical source identities are not the reachable tan pawns")
+        raise ValueError("canonical source identities changed")
     expected_destinations = expected_scene["destination_squares"]
     if set(scene.get("destination_squares") or []) != expected_destinations:
         raise ValueError("canonical source destinations are not the reachable empty rows")
