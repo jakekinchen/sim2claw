@@ -127,14 +127,15 @@ OWNER_VISUAL_ADJUSTMENT_REMAP = (
         "absolute_center_px": [413.5, 219.5],
         "absolute_radius_px": 12.100000381469727,
         "directive": (
-            "panel-specific redo using the strongest compact paired-frame "
-            "difference candidate"
+            "panel-specific redo using the best distance-regularized compact "
+            "paired-frame-difference candidate"
         ),
         "panel_specific_redo": {
             "supersedes_directive": "enlarge and retarget down-left",
             "reason": "owner reported the remapped final E2 ring was completely off",
             "candidate_basis": (
-                "highest paired-frame difference score among compact Hough candidates"
+                "best distance-regularized paired-frame-difference objective "
+                "among compact Hough candidates"
             ),
         },
     },

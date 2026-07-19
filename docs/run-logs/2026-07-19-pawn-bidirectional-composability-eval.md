@@ -116,15 +116,24 @@ paid compute left running
 
 - After inspecting the remapped R6C2 result, the owner rejected its inherited
   down-left/expanded ring as completely off. The final E2 visual fiducial was
-  redone at `[413.5, 219.5] px`, radius `12.1000 px`, using the highest
-  paired-frame-difference compact Hough candidate. This panel-specific redo
-  remains an unreviewed proposal and supersedes only that inherited directive.
+  redone at `[413.5, 219.5] px`, radius `12.1000 px`, using the best
+  distance-regularized paired-frame-difference compact Hough candidate. This
+  panel-specific redo remains an unreviewed proposal and supersedes only that
+  inherited directive.
 - The proposal-only pixel-to-board homography is identified as
   `c922_board_grid_homography_proposal_20260719_v1`, hash-bound to its matrix and
   reference frame, and explicitly prohibited from evaluator calibration. Every
   displayed millimeter offset is labeled approximate/unreviewed.
 - All 36 visual/contact proposals remain unaccepted and therefore are not
   admitted as metric poses.
+- In a later qualitative review, the owner reported that the base in the
+  focused `66894edc` folder-labeled final-E2 screenshot is fully inside the
+  square, visibly off-center by a substantial amount, and close to touching an
+  edge. This is owner-supplied qualitative base-containment/square-membership
+  context for that visual frame only. It is not admitted as
+  `ordinary_square_success` because the folder label conflicts with the
+  catalog/receipt task (`e1` to `f1`), and it provides no metric center,
+  stability, upright, or composability annotation.
 - Reviewed pawn base-center annotations: 0.
 - Covered product skills by reviewed metric pose: 0/12.
 - Supported per-skill A,b regressions: 0/12.
@@ -133,7 +142,7 @@ paid compute left running
 - Policies promoted: 0.
 - Brev instances created or used: 0.
 - Recovered frame-selection SHA-256:
-  `16cf00d03205cd9f52e269e9707f6acf0b23d39319e0a449a6f9900e1a5297be`.
+  `8bd8e37751b8c6032b12265e74264ea75bed8e5f355c019c194a46c5d7d62a98`.
 - Proposal review-sheet SHA-256:
   `42aeb310061a0c4c7c0610ec7d9be932cb4ab979a2e680e4572b4623d8987da8`.
 - Task-label adjudication queue SHA-256:
