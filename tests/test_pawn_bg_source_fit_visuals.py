@@ -8,6 +8,9 @@ from pathlib import Path
 from sim2claw.pawn_bg_demo_sim import BASELINE_JOINT_ADAPTER, JointAdapter
 from sim2claw.pawn_bg_source_fit import EXPECTED_CONTRACT_SHA256, SourceFitError
 from sim2claw.pawn_bg_source_fit_visuals import (
+    EXPECTED_C922_ANGLE_CONTRACT_SHA256,
+    _c922_angle_camera,
+    _load_c922_angle_contract,
     _load_receipt,
     render_score_history,
 )
@@ -63,6 +66,27 @@ def _receipt() -> dict[str, object]:
 
 
 class PawnBGSourceFitVisualTests(unittest.TestCase):
+    def test_c922_angle_transfer_is_hash_pinned_and_visual_only(self) -> None:
+        contract = _load_c922_angle_contract()
+        self.assertEqual(
+            EXPECTED_C922_ANGLE_CONTRACT_SHA256,
+            "16b7da2bfca9bdeed7a721fb054b1f82de52f609b4723c6d7a3dd4f6c32d1be4",
+        )
+        self.assertTrue(contract["authority"]["visual_comparison_only"])
+        self.assertFalse(
+            contract["authority"]["physical_camera_calibration_claimed"]
+        )
+        self.assertFalse(contract["authority"]["metric_pose_authority"])
+
+    def test_c922_angle_transfer_reprojects_current_board_angle(self) -> None:
+        contract = _load_c922_angle_contract()
+        camera = _c922_angle_camera(contract, (0.04, -0.065))
+        self.assertLess(camera["board_corner_reprojection_rms_px"], 2.0)
+        self.assertLess(camera["board_corner_reprojection_max_px"], 3.1)
+        self.assertAlmostEqual(camera["vertical_fov_degrees"], 41.3892809568)
+        self.assertEqual(camera["camera_position_world"].shape, (3,))
+        self.assertEqual(camera["camera_cv_to_world"].shape, (3, 3))
+
     def test_score_history_binds_comparable_rows_and_writes_chart(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import shutil
@@ -14,11 +15,13 @@ import mujoco
 import numpy as np
 from PIL import Image, ImageDraw
 
+from .capture import load_capture_config
 from .contact_prior import (
     apply_contact_variant,
     load_simulator_variant,
     read_contact_prior_snapshot,
 )
+from .paths import DEFAULT_CAPTURE_CONFIG, REPO_ROOT
 from .pawn_bg_demo_sim import (
     BASELINE_PIECE_BY_FILE,
     JointAdapter,
@@ -36,15 +39,192 @@ from .pawn_bg_source_fit import (
 from .scene import (
     CURRENT_TASK_PIECE_LAYOUT,
     ROBOT_JOINTS,
+    _table_to_world,
     board_square_center,
     build_scene_spec,
     initialize_robot_poses,
     registered_board_center,
+    scene_geometry,
 )
 
 
-VISUAL_SCHEMA = "sim2claw.pawn_bg_source_fit_visual_comparison.v1"
+VISUAL_SCHEMA = "sim2claw.pawn_bg_source_fit_visual_comparison.v2"
 HISTORY_SCHEMA = "sim2claw.pawn_bg_source_fit_score_history.v1"
+C922_ANGLE_CONTRACT_PATH = (
+    REPO_ROOT / "configs/experiments/pawn_bg_c922_angle_transfer_v1.json"
+)
+EXPECTED_C922_ANGLE_CONTRACT_SHA256 = (
+    "16b7da2bfca9bdeed7a721fb054b1f82de52f609b4723c6d7a3dd4f6c32d1be4"
+)
+
+
+def _load_c922_angle_contract() -> dict[str, Any]:
+    raw = C922_ANGLE_CONTRACT_PATH.read_bytes()
+    digest = sha256_file(C922_ANGLE_CONTRACT_PATH)
+    if digest != EXPECTED_C922_ANGLE_CONTRACT_SHA256:
+        raise SourceFitError(
+            "C922 angle-transfer contract digest rejected: "
+            f"expected {EXPECTED_C922_ANGLE_CONTRACT_SHA256}, got {digest}"
+        )
+    try:
+        contract = json.loads(raw)
+    except json.JSONDecodeError as error:
+        raise SourceFitError("C922 angle-transfer contract is invalid JSON") from error
+    if set(contract) != {
+        "schema_version", "camera_id", "purpose", "source_proposal",
+        "pinhole_angle_transfer", "render_contract", "authority",
+    }:
+        raise SourceFitError("C922 angle-transfer contract keys drifted")
+    if contract["schema_version"] != "sim2claw.pawn_bg_c922_angle_transfer.v1":
+        raise SourceFitError("C922 angle-transfer schema drifted")
+    source = contract["source_proposal"]
+    homography = source.get("pixel_to_board_homography")
+    if (
+        type(homography) is not list
+        or len(homography) != 3
+        or any(type(row) is not list or len(row) != 3 for row in homography)
+    ):
+        raise SourceFitError("C922 angle-transfer homography must be 3x3")
+    encoded = json.dumps(homography, separators=(",", ":")).encode("utf-8")
+    if hashlib.sha256(encoded).hexdigest() != source.get("homography_sha256"):
+        raise SourceFitError("C922 angle-transfer homography digest drifted")
+    authority = contract["authority"]
+    if (
+        authority.get("visual_comparison_only") is not True
+        or authority.get("physical_camera_calibration_claimed") is not False
+        or authority.get("metric_pose_authority") is not False
+        or authority.get("reward_or_evaluator_input") is not False
+        or type(authority.get("training_rows_authorized")) is not int
+        or authority.get("training_rows_authorized") != 0
+        or type(authority.get("held_out_rows_used")) is not int
+        or authority.get("held_out_rows_used") != 0
+    ):
+        raise SourceFitError("C922 angle-transfer authority drifted")
+    return contract
+
+
+def _rotation_z(angle_degrees: float) -> np.ndarray:
+    angle = math.radians(angle_degrees)
+    return np.asarray(
+        [
+            [math.cos(angle), -math.sin(angle), 0.0],
+            [math.sin(angle), math.cos(angle), 0.0],
+            [0.0, 0.0, 1.0],
+        ],
+        dtype=np.float64,
+    )
+
+
+def _c922_angle_camera(
+    contract: dict[str, Any], board_center: tuple[float, float]
+) -> dict[str, Any]:
+    source = contract["source_proposal"]
+    pinhole = contract["pinhole_angle_transfer"]
+    homography_pixel_to_board = np.asarray(
+        source["pixel_to_board_homography"], dtype=np.float64
+    )
+    if (
+        homography_pixel_to_board.shape != (3, 3)
+        or not np.isfinite(homography_pixel_to_board).all()
+        or abs(float(np.linalg.det(homography_pixel_to_board))) <= 1e-12
+    ):
+        raise SourceFitError("C922 angle-transfer homography is singular")
+    focal = float(pinhole["focal_length_px"])
+    principal_x, principal_y = (
+        float(value) for value in pinhole["principal_point_px"]
+    )
+    camera_matrix = np.asarray(
+        [[focal, 0.0, principal_x], [0.0, focal, principal_y], [0.0, 0.0, 1.0]],
+        dtype=np.float64,
+    )
+    homography_board_to_pixel = np.linalg.inv(homography_pixel_to_board)
+    normalized = np.linalg.inv(camera_matrix) @ homography_board_to_pixel
+    scale = 0.5 * (
+        np.linalg.norm(normalized[:, 0]) + np.linalg.norm(normalized[:, 1])
+    )
+    if not math.isfinite(float(scale)) or scale <= 0.0:
+        raise SourceFitError("C922 angle-transfer homography scale is invalid")
+    first = normalized[:, 0] / scale
+    second = normalized[:, 1] / scale
+    initial_rotation = np.column_stack([first, second, np.cross(first, second)])
+    left, _, right = np.linalg.svd(initial_rotation)
+    board_to_camera_cv = left @ right
+    if np.linalg.det(board_to_camera_cv) < 0.0:
+        left[:, -1] *= -1.0
+        board_to_camera_cv = left @ right
+    translation_board_to_camera_cv = normalized[:, 2] / scale
+    camera_position_board = (
+        -board_to_camera_cv.T @ translation_board_to_camera_cv
+    )
+
+    capture = load_capture_config(DEFAULT_CAPTURE_CONFIG)
+    geometry = scene_geometry(capture)
+    board_surface_center_world = np.asarray(
+        _table_to_world(
+            geometry,
+            float(board_center[0]),
+            float(board_center[1]),
+            geometry.table_top + geometry.board_thickness + 0.001,
+        ),
+        dtype=np.float64,
+    )
+    board_to_world = _rotation_z(geometry.board_yaw_degrees)
+    board_origin_world = board_surface_center_world + board_to_world @ np.asarray(
+        [-geometry.board_side / 2.0, -geometry.board_side / 2.0, 0.0]
+    )
+    camera_position_world = board_origin_world + board_to_world @ camera_position_board
+    camera_cv_to_world = board_to_world @ board_to_camera_cv.T
+
+    corners_board = np.asarray(
+        [
+            [0.0, 0.0, 0.0],
+            [geometry.board_side, 0.0, 0.0],
+            [geometry.board_side, geometry.board_side, 0.0],
+            [0.0, geometry.board_side, 0.0],
+        ],
+        dtype=np.float64,
+    )
+    projected = []
+    for corner in corners_board:
+        camera_point = board_to_camera_cv @ corner + translation_board_to_camera_cv
+        pixel = camera_matrix @ camera_point
+        projected.append((pixel[:2] / pixel[2]).tolist())
+    expected = cv2.perspectiveTransform(
+        corners_board[:, :2].reshape(1, -1, 2), homography_board_to_pixel
+    )[0]
+    residuals = np.asarray(projected) - expected
+    return {
+        "camera_position_world": camera_position_world,
+        "camera_cv_to_world": camera_cv_to_world,
+        "vertical_fov_degrees": float(pinhole["vertical_fov_degrees"]),
+        "camera_matrix": camera_matrix,
+        "expected_board_corners_raw_px": expected.tolist(),
+        "projected_board_corners_raw_px": projected,
+        "board_corner_reprojection_rms_px": float(
+            np.sqrt(np.mean(np.sum(np.square(residuals), axis=1)))
+        ),
+        "board_corner_reprojection_max_px": float(
+            np.max(np.linalg.norm(residuals, axis=1))
+        ),
+    }
+
+
+def _configure_fixed_camera(
+    model: mujoco.MjModel, data: mujoco.MjData, camera: dict[str, Any]
+) -> None:
+    camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "workcell")
+    if camera_id < 0:
+        raise SourceFitError("current scene is missing the workcell camera")
+    model.cam_mode[camera_id] = mujoco.mjtCamLight.mjCAMLIGHT_FIXED
+    model.cam_pos[camera_id] = camera["camera_position_world"]
+    camera_mujoco_to_world = camera["camera_cv_to_world"] @ np.diag(
+        [1.0, -1.0, -1.0]
+    )
+    quaternion = np.empty(4, dtype=np.float64)
+    mujoco.mju_mat2Quat(quaternion, camera_mujoco_to_world.reshape(-1))
+    model.cam_quat[camera_id] = quaternion
+    model.cam_fovy[camera_id] = camera["vertical_fov_degrees"]
+    mujoco.mj_forward(model, data)
 
 
 def _load_receipt(path: Path) -> dict[str, Any]:
@@ -90,6 +270,7 @@ def _annotate_pair(
     *,
     relative_time_seconds: float,
     score: dict[str, Any],
+    simulation_header: str,
 ) -> np.ndarray:
     simulation_bgr = cv2.cvtColor(simulation_rgb, cv2.COLOR_RGB2BGR)
     if physical_bgr.shape[:2] != (480, 640):
@@ -111,7 +292,7 @@ def _annotate_pair(
     )
     cv2.putText(
         canvas,
-        "SIM NOMINAL + BEST REJECTED SOURCE-FIT ADAPTER",
+        simulation_header,
         (650, 22),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.48,
@@ -144,6 +325,7 @@ def render_episode_comparison(
     source_fit_receipt_path: Path,
     folder_label: str,
     output_directory: Path,
+    simulation_camera_mode: str = "c922_angle_transfer",
 ) -> dict[str, Any]:
     contract = load_source_fit_contract()
     receipt = _load_receipt(source_fit_receipt_path)
@@ -157,6 +339,23 @@ def render_episode_comparison(
 
     reward = load_reward_contract()
     board_center = registered_board_center(reward["scene_binding"]["scene_id"])
+    if simulation_camera_mode not in {"c922_angle_transfer", "scene_overhead"}:
+        raise SourceFitError("unknown source-fit visual simulation camera mode")
+    angle_contract: dict[str, Any] | None = None
+    angle_camera: dict[str, Any] | None = None
+    if simulation_camera_mode == "c922_angle_transfer":
+        angle_contract = _load_c922_angle_contract()
+        reference_frame = (
+            source_repository_root
+            / angle_contract["source_proposal"]["reference_frame_path"]
+        )
+        if (
+            not reference_frame.is_file()
+            or sha256_file(reference_frame)
+            != angle_contract["source_proposal"]["reference_frame_sha256"]
+        ):
+            raise SourceFitError("C922 angle-transfer reference frame hash rejected")
+        angle_camera = _c922_angle_camera(angle_contract, board_center)
     spec = build_scene_spec(
         piece_layout=CURRENT_TASK_PIECE_LAYOUT,
         board_center_in_table_frame_xy_m=board_center,
@@ -193,6 +392,8 @@ def render_episode_comparison(
     data.ctrl[actuator_ids] = first_actual
     mujoco.mj_forward(model, data)
     mujoco.mj_step(model, data, nstep=100)
+    if angle_camera is not None:
+        _configure_fixed_camera(model, data, angle_camera)
 
     source_receipt = json.loads(
         (source_repository_root / episode["assets"]["receipt"]).read_bytes()
@@ -205,6 +406,14 @@ def render_episode_comparison(
     rotation = int(video_metadata["orientation_rotation_degrees"])
     if rotation not in (0, 180):
         raise SourceFitError("visual comparison only supports frozen 0/180 orientation")
+    if (
+        angle_contract is not None
+        and angle_contract["render_contract"][
+            "apply_source_receipt_orientation_to_both_panels"
+        ]
+        is not True
+    ):
+        raise SourceFitError("C922 angle-transfer orientation contract drifted")
 
     output_directory.mkdir(parents=True, exist_ok=True)
     raw_path = output_directory / f"{folder_label}_physical_vs_sim.raw.mp4"
@@ -253,7 +462,14 @@ def render_episode_comparison(
                 data,
                 nstep=max(1, round(dt / float(model.opt.timestep))),
             )
-            renderer.update_scene(data, camera="overhead")
+            renderer.update_scene(
+                data,
+                camera=(
+                    angle_contract["render_contract"]["mujoco_camera_name"]
+                    if angle_contract is not None
+                    else "overhead"
+                ),
+            )
             simulation_rgb = renderer.render().copy()
             capture.set(cv2.CAP_PROP_POS_MSEC, (action_offset + timestamp) * 1000.0)
             ok, physical_bgr = capture.read()
@@ -261,11 +477,18 @@ def render_episode_comparison(
                 raise SourceFitError(f"overhead frame decode failed at sample {index}")
             if rotation == 180:
                 physical_bgr = cv2.rotate(physical_bgr, cv2.ROTATE_180)
+                if angle_contract is not None:
+                    simulation_rgb = cv2.rotate(simulation_rgb, cv2.ROTATE_180)
             paired = _annotate_pair(
                 physical_bgr,
                 simulation_rgb,
                 relative_time_seconds=timestamp,
                 score=score,
+                simulation_header=(
+                    "SIM C922 ANGLE TRANSFER + BEST REJECTED ADAPTER"
+                    if angle_contract is not None
+                    else "SIM SCENE OVERHEAD + BEST REJECTED ADAPTER"
+                ),
             )
             writer.write(paired)
             if index in poster_indices:
@@ -302,6 +525,57 @@ def render_episode_comparison(
         poster.paste(image, ((index % 2) * 640, (index // 2) * 256))
     poster.save(poster_output)
 
+    if angle_contract is not None and angle_camera is not None:
+        camera_receipt = {
+            "mode": angle_contract["render_contract"]["comparison_camera_mode"],
+            "camera_id": angle_contract["camera_id"],
+            "contract_path": str(C922_ANGLE_CONTRACT_PATH.relative_to(REPO_ROOT)),
+            "contract_sha256": EXPECTED_C922_ANGLE_CONTRACT_SHA256,
+            "proposal_calibration_id": angle_contract["source_proposal"][
+                "calibration_id"
+            ],
+            "proposal_homography_sha256": angle_contract["source_proposal"][
+                "homography_sha256"
+            ],
+            "reference_recording_id": angle_contract["source_proposal"][
+                "reference_recording_id"
+            ],
+            "reference_frame_sha256": angle_contract["source_proposal"][
+                "reference_frame_sha256"
+            ],
+            "focal_length_px": angle_contract["pinhole_angle_transfer"][
+                "focal_length_px"
+            ],
+            "vertical_fov_degrees": angle_camera["vertical_fov_degrees"],
+            "camera_position_world_m": angle_camera[
+                "camera_position_world"
+            ].tolist(),
+            "expected_board_corners_raw_px": angle_camera[
+                "expected_board_corners_raw_px"
+            ],
+            "projected_board_corners_raw_px": angle_camera[
+                "projected_board_corners_raw_px"
+            ],
+            "board_corner_reprojection_rms_px": angle_camera[
+                "board_corner_reprojection_rms_px"
+            ],
+            "board_corner_reprojection_max_px": angle_camera[
+                "board_corner_reprojection_max_px"
+            ],
+            "source_orientation_rotation_degrees_applied_to_both_panels": rotation,
+            "visual_comparison_only": True,
+            "physical_camera_calibration_claimed": False,
+            "metric_pose_authority": False,
+        }
+    else:
+        camera_receipt = {
+            "mode": "scene_overhead_legacy_visual",
+            "source_orientation_rotation_degrees_applied_to_simulation": 0,
+            "visual_comparison_only": True,
+            "physical_camera_calibration_claimed": False,
+            "metric_pose_authority": False,
+        }
+
     report = {
         "schema_version": VISUAL_SCHEMA,
         "folder_label": folder_label,
@@ -318,11 +592,12 @@ def render_episode_comparison(
         "contact_variant": "nominal_uncalibrated",
         "episode_score": score,
         "physical_orientation_rotation_degrees_applied": rotation,
+        "simulation_camera": camera_receipt,
         "comparison_video_path": str(video_output),
         "comparison_video_sha256": sha256_file(video_output),
         "poster_path": str(poster_output),
         "poster_sha256": sha256_file(poster_output),
-        "claim_boundary": "Review-only synchronized physical-source versus simulated diagnostic. The simulator adapter was rejected and is not physical calibration or ACT policy proof.",
+        "claim_boundary": "Review-only synchronized physical-source versus simulated diagnostic. The C922 angle is a proposal-derived visual transfer, the simulator adapter was rejected, and neither is physical calibration or ACT policy proof.",
     }
     report_path = output_directory / f"{folder_label}_physical_vs_sim_receipt.json"
     report_path.write_text(

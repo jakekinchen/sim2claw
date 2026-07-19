@@ -356,6 +356,12 @@ def build_parser() -> argparse.ArgumentParser:
     pawn_source_fit_visuals.add_argument("--receipt", type=Path, required=True)
     pawn_source_fit_visuals.add_argument("--folder-label", required=True)
     pawn_source_fit_visuals.add_argument("--output-directory", type=Path, required=True)
+    pawn_source_fit_visuals.add_argument(
+        "--simulation-camera",
+        choices=("c922-angle-transfer", "scene-overhead"),
+        default="c922-angle-transfer",
+        help="render from the proposal-derived C922 perspective or the legacy scene overhead",
+    )
 
     camera_overlay = subparsers.add_parser(
         "camera-overlay",
@@ -853,6 +859,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             source_fit_receipt_path=args.receipt,
             folder_label=args.folder_label,
             output_directory=args.output_directory,
+            simulation_camera_mode=args.simulation_camera.replace("-", "_"),
         )
         history = render_score_history(
             source_fit_receipt_path=args.receipt,
