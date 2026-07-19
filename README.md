@@ -1,175 +1,80 @@
 # sim2claw
 
-**Clean-room simulation-to-robot project.**
+**Evidence-first, clean-room simulation-to-robot manipulation for low-cost
+SO-101 arms.**
 
-This is a fresh repository. It intentionally contains no copied simulator,
-training, gateway, automation, configuration, receipt, dataset, checkpoint, or
-runtime implementation from the earlier repository.
+![sim2claw technical architecture](./project_submittals/sim2claw-technical-architecture-poster.png)
 
-The previous repository is preserved intact at
-[`jakekinchen/sim2claw-imported-archive`](https://github.com/jakekinchen/sim2claw-imported-archive)
-at commit `798491e`. It is consulted read-only; no prior-project file is copied
-into this repository. Freshly authored maps of the relevant history live in
-[`ARCHIVE_INDEX.md`](./docs/reference/ARCHIVE_INDEX.md) and
-[`PRIOR_RESULTS_SUMMARY.md`](./docs/reference/PRIOR_RESULTS_SUMMARY.md).
-The archive and local read-only `sim-link` checkout inform future design, but
-they grant no authority or proof that anything exists or works here.
+sim2claw turns a measured tabletop workcell into a MuJoCo simulation, produces
+versioned manipulation sources, trains or evaluates policy candidates, and
+keeps the resulting traces, videos, and receipts inspectable in a browser
+Studio. The central rule is simple: training never grades itself, and a
+simulation result is never relabeled as physical success.
 
-## Start here
+The current workcell uses a 100 mm robotward board registration, sixteen pawns,
+two articulated SO-101 arms, an owner-measured follower mass profile, and a
+visual Antler mug prop. Historical 72 mm scenes and frozen task identities are
+retained separately instead of being rewritten.
 
-1. [Current goal](./GOAL.md)
-2. [Manual build plan](./docs/BUILD_PLAN.md)
-3. [Documentation index](./docs/README.md)
-4. [Archive index](./docs/reference/ARCHIVE_INDEX.md)
-5. [Prior-results summary](./docs/reference/PRIOR_RESULTS_SUMMARY.md)
-6. [Polycam chess-table scene](./docs/POLYCAM_CHESS_TABLE_SCENE.md)
-7. [First ACT chess-rook run](./docs/run-logs/2026-07-17-act-chess-rook-lift.md)
-8. [GR00T N1.7 overnight campaign](./docs/run-logs/2026-07-18-groot-n17-chess-overnight.md)
-9. [NVIDIA machine 2 recovery goal](./docs/goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md)
-10. [Goal-conditioned ACT pick-and-place program](./docs/goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md)
-11. [Goal-conditioned ACT architecture decision](./docs/decisions/0004-goal-conditioned-act-pick-place.md)
-12. [Final bidirectional pawn evaluation](./docs/decisions/0006-pawn-rank12-bidirectional-evaluation.md)
+## What is included
 
-## Install and verify
+- A programmatic MuJoCo 3.10 workcell that compiles, steps, renders, and exposes
+  versioned board, robot, prop, and camera identities.
+- A loopback-only Studio for 3D replay, process status, evidence browsing,
+  source recording, guarded physical replay, and an on-demand live workspace.
+- A live simulator mirror of the connected follower plus three demand-loaded
+  camera views: Intel RealSense D405 wrist, Logitech C922 overhead, and a second
+  Logitech workspace camera.
+- Scripted source experts, frozen CPU/fp32 consequence evaluators, a narrow ACT
+  rook-lift task, pawn-source adapters, and GR00T LeRobot v2.1 export tooling.
+- Tracked contracts, decisions, run logs, release indexes, and tests; generated
+  datasets, checkpoints, recordings, caches, and runtime output stay out of Git.
 
-An Apple Silicon Mac is the currently verified host. Install
-[`uv`](https://docs.astral.sh/uv/getting-started/installation/) and ensure the
-host has network access for the first dependency sync. The bootstrap selects
-Python 3.12, creates `.venv/` from the checked-in [`uv.lock`](./uv.lock), and
-runs a compile/step/render doctor:
+## Quick start
+
+The verified local path is Apple Silicon macOS with
+[`uv`](https://docs.astral.sh/uv/) and network access for the first dependency
+sync. Python is pinned to 3.12 by the project.
 
 ```bash
+git clone https://github.com/jakekinchen/sim2claw.git
+cd sim2claw
 ./scripts/bootstrap_runtime.sh
-uv run python -m unittest discover -s tests -v
+uv run pytest -q
 ```
 
-[`requirements.txt`](./requirements.txt) is the runtime-only, pip-compatible
-export of the same lock. It omits the development group and the local project
-package; the `uv` bootstrap above remains the verified setup path.
-
-MP4 export from `act-eval` additionally uses the system
-[`ffmpeg`](https://ffmpeg.org/) CLI with H.264/libx264 support when it is
-available. On macOS it can be installed with `brew install ffmpeg`. It is not a
-Python package and does not belong in the generated `requirements.txt`; no
-single FFmpeg version is part of the frozen Python runtime. If the CLI is
-absent, evaluation still writes its action trace, rendered PNG frames, and
-receipt, while the receipt records that no MP4 was created. When it is present,
-the receipt records the exact executable version used.
-
-## Choose and run a simulation environment
-
-Scene reconstruction is not required to install this repository or run
-simulation training. The intended selection rule is simple: use an existing
-compatible simulation environment when one is supplied; otherwise use the
-bundled programmatic MuJoCo workcell as the default. The current CLI provides
-the bundled workcell but does not yet auto-discover arbitrary simulator asset
-formats.
-
-This command compiles, settles, and renders the bundled default without
-fetching any Polycam data:
+Inspect and render the current scene:
 
 ```bash
+uv run sim2claw scene-info
 uv run sim2claw render \
-  --output outputs/polycam_chess_table/photo-aligned.png
+  --camera studio_overview \
+  --output outputs/polycam_chess_table/studio-overview.png
 ```
 
-The command writes a PNG, generated MJCF, and machine-readable JSON report
-under ignored `outputs/` storage. This is an in-process, offscreen simulator
-workflow. Generated episodes can be inspected in the Studio's interactive 3D
-view; the browser mirrors recorded MuJoCo poses and does not become a second
-physics engine.
-
-## Open the browser visualization studio
-
-Replay the repo's generated episodes as synchronized interactive 3D state
-traces, video, or phase frames; orbit and inspect the workcell; browse
-task-grouped evidence; watch active training/evaluation
-processes, and collect labeled ACT source demonstrations from the SO-101 leader
-to the MuJoCo follower:
+Open Studio:
 
 ```bash
 uv run sim2claw studio
 ```
 
-Open `Record`, choose one of the eight brown pawn source squares and an
-unoccupied destination in rows 1–4, then Start/Stop and label the observed
-outcome. The board preview and current task simulator show the mirrored tan
-pawns at A8, B7, C8, D7, E8, F7, G8, and H7 as static far-side pieces. Start
-defaults to B1→B2 at 30 Hz, persists the operator's metadata choices, and
-automatically performs the bounded follower Sync, torque-off verification, and
-paired-pose check;
-`uv run sim2claw teleop-preflight` remains available as a separate diagnostic.
-Saved episodes go to ignored
-`datasets/act_source_recordings/` storage and are not training data until replay
-and evaluator admission.
+Then visit [http://127.0.0.1:4173](http://127.0.0.1:4173). The base simulator
+and Studio demo require no API key or `.env` file. FFmpeg with H.264/libx264 is
+optional for MP4 export; on macOS, install it with `brew install ffmpeg`.
 
-The current owner-local physical cohort is indexed by the tracked
-[`physical_teleop_episode_intake_20260718.json`](./configs/data/physical_teleop_episode_intake_20260718.json)
-ledger and reviewed in
-[`2026-07-18-physical-episode-intake.md`](./docs/run-logs/2026-07-18-physical-episode-intake.md).
-It records five saved physical sources and zero admitted training rows; the raw
-samples and C922 videos remain ignored and local.
+## Reproduce the demo
 
-The final product benchmark is frozen in
-[`pawn_rank12_bidirectional_v1.json`](./configs/evaluations/pawn_rank12_bidirectional_v1.json):
-16 directed cases covering A1→A2 and A2→A1 through H, plus three fixed
-zero-training-row simulation realizations per case. It scores safe board
-consequences regardless of whether a policy pushes or picks the pawn. ACT and
-future pawn-GR00T candidates use the same scorecard; simulation and physical
-results are never merged into one proof claim.
-
-Replay and process views remain read-only. Recorder controls are loopback-only.
-Physical Start requires a cleared-workcell acknowledgement, a bounded Sync of
-an already-nearby follower, a countdown, and relative-zero registration through
-the reviewed gateway. Sync refuses a body mismatch above 20 degrees, ramps
-instead of jumping, and finishes torque-off. Recording then permits up to
-90 degrees of relative body travel (180 degrees for wrist roll), clamps every
-target to the follower calibration, and uses 4-degree command steps. A
-time-based stall guard releases torque only after five seconds without
-measurable progress. Failed attempts are retained under ignored diagnostic
-storage while the recorder returns to ready automatically. Saved physical
-traces can be replayed in MuJoCo for joint-space error,
-but the Studio cannot promote a checkpoint or turn that comparison into a task
-success claim. See
-[`VISUALIZATION_STUDIO.md`](./docs/VISUALIZATION_STUDIO.md) for its artifact
-adapters and live heartbeat contract.
-
-Creating a different environment is an optional, project-specific build step.
-An agent may combine reviewed CAD or mesh assets, textures, measurements,
-images, video, and optionally a Polycam capture to author it. That process is
-non-deterministic and is not a prerequisite or a claimed one-command script.
-
-### Optional Polycam reference workflow
-
-Polycam was one input to the initial bundled scene, not a recurring setup or
-training step. Only fetch these owner-provided artifacts when inspecting or
-rebuilding its non-colliding scan reference overlay:
+### 1. Run the deterministic simulation probe
 
 ```bash
-uv run sim2claw fetch-polycam
-uv run sim2claw render --scan-overlay \
-  --output outputs/polycam_chess_table/reference-overlay.png
+uv run sim2claw grasp-probe
 ```
 
-### Optional owner-photo alignment
+The command writes ignored frames, a MuJoCo body-state trace, and a receipt
+under `outputs/`. This is scripted simulation evidence, not a learned-policy or
+physical-robot result.
 
-The photo comparison is not reproducible from the repository alone. It
-requires the owner-provided 2880 x 3840 overhead JPEG with SHA-256
-`1201ca9ec105aabb8bb06d126ed582c1c1b30fb1f4f6c94de79f82d355d56ced`.
-The command rejects any other file:
-
-```bash
-uv run sim2claw compare-alignment \
-  --photo /path/to/exact/overhead-Photo-1.jpg
-```
-
-## Run the ACT chess-rook episode
-
-The first narrow learned-policy task is frozen in
-[`configs/tasks/chess_rook_lift_v1.json`](./configs/tasks/chess_rook_lift_v1.json).
-It trains a fresh state-based conditional-VAE Action Chunking Transformer from
-eight synthetic simulation demonstrations, then invokes a separate CPU/fp32
-evaluator on seed `9101`:
+### 2. Train and independently evaluate the narrow ACT task
 
 ```bash
 uv run sim2claw act-train
@@ -177,105 +82,131 @@ uv run sim2claw act-eval \
   --checkpoint outputs/polycam_chess_table/act/chess_rook_lift_v1/checkpoint.pt
 ```
 
-The evaluator writes an ignored checkpoint-linked receipt, complete action
-trace, rendered frames, and MP4 under
-`outputs/polycam_chess_table/act/chess_rook_lift_v1/eval/`. The accepted local
-run lifted `black_rook_a8` by 94.88 mm and held it through the final window.
-This is one bounded learned-policy simulation episode, not a robustness,
-calibration, gateway, sim-to-real, or physical-robot result.
+The frozen run trains a state-based conditional-VAE Action Chunking Transformer
+from eight synthetic episodes, then invokes a separately owned CPU/fp32
+evaluator on held-out seed `9101`. The accepted repo-native run lifted
+`black_rook_a8` by 94.88 mm. That is one bounded learned-policy simulation
+episode, not a robustness or sim-to-real claim.
 
-## Export the dynamic GR00T chess dataset
+### 3. Inspect evidence in Studio
 
-The next lane is frozen in
-[`configs/tasks/chess_pick_place_groot_v1.json`](./configs/tasks/chess_pick_place_groot_v1.json).
-It is genuinely language and RGB conditioned: commands name a black rook or
-king and a destination square, while the dataset records the workcell camera,
-six SO-101 joint positions, and six absolute joint targets.
+Studio can replay MuJoCo state traces, videos, and phase frames; browse task and
+episode receipts; inspect the current 3D workcell; and collect labeled source
+episodes. Saved source recordings remain unreviewed until a separate replay and
+evaluator admits them.
 
-```bash
-uv run sim2claw groot-expert-eval --split held_out --episode-index 0
-uv run sim2claw groot-expert-eval --split held_out --episode-index 2
-uv run sim2claw groot-export \
-  --output datasets/chess_pick_place_groot_v1
+When the expected follower is connected, the masthead `Live` indicator opens:
+
+- **Simulator** mirrors fresh follower joints through MuJoCo forward kinematics
+  with torque off and no motion authority.
+- **Live Feed** starts the three camera processes only while that tab is open.
+  Switching tabs, closing Live, losing the lease, or shutting down Studio stops
+  the streams.
+
+The live viewer does not establish contact, task success, camera calibration,
+or learned-policy execution.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    A[Measured scene inputs] --> B[Versioned MuJoCo workcell]
+    B --> C[Scripted or teleoperated sources]
+    C --> D[ACT or GR00T candidate]
+    D --> E[Separate frozen evaluator]
+    E --> F[Receipts, traces, video, Studio]
+    G[SO-101 and cameras] --> H[Reviewed loopback gateway]
+    H --> C
+    H --> F
 ```
 
-The export is GR00T LeRobot v2.1 with `meta/modality.json`, typed parquet,
-20 FPS RGB MP4, normalization statistics, natural-language task rows, and a
-hash receipt. Generated data remains ignored. The first curriculum is
-explicitly sparse: the rook and king remain visible while other pieces are
-parked at reset. This is not full-board capability. A full-board expert was
-rejected after it moved the target but swept a queen off the board.
+The main stack is Python 3.12, MuJoCo 3.10, NumPy, PyTorch, PyArrow,
+FFmpeg, LeRobot-compatible SO-101 interfaces, vanilla JavaScript, and Three.js.
+The browser mirrors simulator state; it is not a second physics engine.
 
-The local exporter and scripted evaluator do not prove that GR00T loads,
-trains, serves, or succeeds. Those are separate NVIDIA/Brev gates in
-[`09-autonomous-milestones.md`](./docs/autonomous-workflow/09-autonomous-milestones.md).
+## Current evidence
 
-### NVIDIA research assignments
+| Lane | Repo-native result | Boundary |
+| --- | --- | --- |
+| Current pawn source | A strict geometric C8→A6 source passed the 100 mm v3 evaluator and produced 562 admitted simulation rows. | Scripted expert evidence only. |
+| ACT rook lift | One held-out simulation episode lifted the rook 94.88 mm. | No robustness, camera, gateway, or physical claim. |
+| Pawn GR00T data | One 562-frame, single-view LeRobot v2.1 training episode passes the local lineage/chunk preflight. | Zero held-out rows; pinned NVIDIA loader preflight is still required before GPU training. |
+| Earlier GR00T campaigns | Recovery, reward-guided, placement, and flow-consensus campaigns are preserved with terminal-negative learned-policy receipts. | No successful learned GR00T policy is claimed. |
+| Physical sources and replay | Five physical source recordings are indexed; guarded command replay produced joint-response diagnostics. | Zero admitted training rows and no object/contact or board-outcome proof. |
+| Live workspace | Three cameras streamed together and the follower was mirrored torque-off at MacBook-sized viewports without scrolling. | Intrinsics, AprilTag pose, hand-eye calibration, metric depth, and task success remain unverified. |
 
-- **Machine 1 — nominal baseline:** owns the frozen v1 sparse-board dataset,
-  5,000-step checkpoint sweep, and nominal held-out consequence evaluation.
-- **Machine 2 — recovery and robustness challenger:** owns a new versioned
-  curriculum for pose error, nearby distractors, and grasp recovery. Its full
-  unattended overnight command is
-  [`NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md`](./docs/goals/NVIDIA_MACHINE_2_GR00T_ROBUSTNESS_OVERNIGHT.md).
+Simulation, replay, learned-policy, physical read-only, and physical task
+evidence are intentionally separate proof classes.
 
-The two machines must use separate checkouts and branches. They compare only
-through frozen evaluator receipts; neither training process may promote itself.
+## Data and provenance
 
-The default portrait render contains the measured white table, a configurable
-355.6 mm playing board with a 406.4 mm outer frame, 32 independently simulated
-pieces, two white articulated SO-101 arms, the fiducial sheet, left tripod, and
-simplified window/sill/blinds background visible in the owner-provided photo.
-The table dimensions come from the capture's high-confidence RoomPlan object.
-Board, robot, prop, and camera placement remain clearly marked single-photo
-visual estimates.
+- Frozen task/evaluator contracts live under [`configs/`](./configs/).
+- Calibration identities and measured mass data live under
+  [`calibration/`](./calibration/).
+- Decisions and run evidence live in the [`docs/`](./docs/) index.
+- Generated `datasets/`, `outputs/`, `runs/`, checkpoints, recordings, and
+  credentials are ignored. They are never required to inspect the tracked
+  source or proof contracts.
+- The physical replay videos are Release assets rather than Git blobs; their
+  tracked index and hashes are in
+  [`PHYSICAL_REPLAY_RELEASE_20260719.md`](./docs/reference/PHYSICAL_REPLAY_RELEASE_20260719.md).
 
-`compare-alignment` verifies the overhead photo's exact SHA-256, registers its
-table plane to the RoomPlan dimensions, and writes a photo overlay, an aligned
-Polycam textured-mesh overlay, and a machine-readable residual report under
-`outputs/polycam_chess_table/alignment/`.
+Polycam was an optional input to the initial scene, not a recurring setup
+requirement. The bundled programmatic workcell runs without fetching Polycam
+data. Owner-photo comparison requires the exact separately held image described
+in [`POLYCAM_CHESS_TABLE_SCENE.md`](./docs/POLYCAM_CHESS_TABLE_SCENE.md).
 
-### Scripted grasp probe
+This repository is a clean-room implementation. The prior project is consulted
+read-only at `jakekinchen/sim2claw-imported-archive` commit `798491e` or through
+the designated local read-only checkout. No implementation, dataset,
+checkpoint, receipt, generated output, or runtime environment was copied from
+it. See [`ARCHIVE_INDEX.md`](./docs/reference/ARCHIVE_INDEX.md) and
+[`PRIOR_RESULTS_SUMMARY.md`](./docs/reference/PRIOR_RESULTS_SUMMARY.md).
 
-The simulator also exposes a deterministic scripted grasp probe:
+## Hardware safety
 
-```bash
-uv run sim2claw grasp-probe
-```
+The reviewed gateway is the only robot command path. Live inspection opens it
+with torque disabled. Recorder and replay motion require loopback access,
+explicit operator acknowledgement, identified leader/follower buses, matching
+calibration, bounded synchronization, target clamps, stall detection, and
+torque release on failure or shutdown.
 
-It writes phase frames, a 30 Hz MuJoCo body-state trace, and a JSON receipt
-under ignored `outputs/` storage. The Studio opens the state trace in 3D by
-default while retaining the five recorded phase frames as a source-evidence
-toggle.
-This is simulation-only scripted-grasp evidence. It is not a frozen task
-evaluator, learned policy result, training-readiness result, or physical
-capability.
+Do not run physical replay from this README. Complete the workcell-clear and
+registration procedure in
+[`VISUALIZATION_STUDIO.md`](./docs/VISUALIZATION_STUDIO.md) first.
 
-## Current truth
+## Known limitations and next gates
 
-- Repository state: fresh runtime and first simulation scene implemented.
-- Simulator: the photo-aligned chess workcell with two articulated SO-101 arms
-  compiles, steps, and renders.
-- Alignment: the Polycam scan overlay is reproducible from the pinned capture
-  endpoints. The photo comparison additionally requires the exact
-  owner-provided overhead JPEG; the scan-to-RoomPlan transform is applied
-  before comparison.
-- Scripted grasp probe: implemented as simulation evidence, separate from task
-  or evaluator proof.
-- Mac runtime: verified on Apple Silicon with Python 3.12 and MuJoCo 3.10.0.
-- NVIDIA runtime: pinned Brev setup/preflight scripts are implemented; live
-  N1.7 execution remains a separate evidence gate.
-- Training and evaluation: implemented for one frozen state-based ACT
-  chess-rook lift task. A separate dynamic GR00T dataset/evaluator contract is
-  implemented locally, but no learned GR00T result is claimed yet.
-- Gateway and robot integration: not implemented.
-- Physical authority: closed.
+- The D405 stream works, but its observed wrist pose points the optical axis
+  away from the board. A mount/pose decision and new extrinsic calibration are
+  required; rotating browser pixels cannot correct the optical axis.
+- Camera intrinsics, AprilTag detections, camera-to-robot transforms, and
+  board-to-camera transforms are not yet a frozen calibration proof.
+- The latest paired-arm preflight was outside the registration guard, so the
+  live-view audit issued no synchronization or physical task trial.
+- The current pawn dataset is deliberately one training episode. It is enough
+  to prove source-to-LeRobot mechanics, not to train or promote a useful policy.
+- Current 100 mm workcell evidence does not relabel historical 72 mm physical
+  recordings or frozen ACT/GR00T evaluations.
 
-The NVIDIA doctor contract exists and fails closed when Linux, `nvidia-smi`,
-or explicit EGL selection is absent; no NVIDIA host has been verified here.
-The frozen ACT evaluator is simulation-only and never opens camera, network,
-serial, gateway, or physical-robot paths.
+## Documentation
 
-Every later capability will continue to be implemented and verified manually
-from this clean boundary. Historical claims remain historical until this
-repository produces fresh code and fresh evidence of its own.
+- [Current goal](./GOAL.md)
+- [Build plan](./docs/BUILD_PLAN.md)
+- [Documentation index](./docs/README.md)
+- [Studio and gateway contract](./docs/VISUALIZATION_STUDIO.md)
+- [Current workcell integration](./docs/run-logs/2026-07-18-unified-workcell-v3-integration.md)
+- [Studio live-workspace audit](./docs/run-logs/2026-07-18-studio-live-workspace-audit.md)
+- [Pawn GR00T dataset receipt](./docs/run-logs/2026-07-18-pawn-groot-dataset-v1.md)
+- [Bidirectional pawn evaluation](./docs/decisions/0006-pawn-rank12-bidirectional-evaluation.md)
+
+## Team
+
+- Jake Kinchen — Team Lead and Robotics Engineer
+- Aishwarya Badlani — Data Engineer
+- Jeff Pape — Software Engineer
+- Mahata Abhinav — Product Manager
+
+## License
+
+See [`LICENSE`](./LICENSE).
