@@ -106,7 +106,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     source_expert = subparsers.add_parser(
         "source-expert",
-        help="collect the current-scene c8-to-c6 geometric source candidate",
+        help="collect the bounded current-scene geometric source candidate",
     )
     source_expert.add_argument("--output", type=Path, required=True)
     source_expert.add_argument("--render-size", type=int, default=224)

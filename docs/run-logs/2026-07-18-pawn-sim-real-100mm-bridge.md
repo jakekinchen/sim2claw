@@ -61,6 +61,22 @@ steps per action.
    `3.272 mm` IK residual. It has no completed receipt and contributes zero
    rows. The checked-in source mechanism is restored to the complete, diagnostic
    `-0.10 rad` baseline; no close-value sweep is opened.
+5. Air-tighten mechanism (`-0.10 rad` on the board, `-0.12 rad` after lift):
+   exact replay completed, but final XY was `139.836 mm`, height error was
+   `13.719 mm`, and upright cosine was `-0.135675`. The worst protected-pawn
+   displacement remained below the gate at `3.165 mm`. Zero rows were admitted.
+   Source receipt `85693c1645a7293d201c4b49e83453ea9deeae0524b492c1f3444ed62ccc0994`;
+   verdict receipt `850b7760be1968d521b675519b9f5164e7ac21dfc2f69ce8808eec861716ef82`.
+6. Lower collar target (`35 mm` instead of the original `41 mm` neck target):
+   exact replay completed, but final XY was `50.085 mm`, height error was
+   `13.719 mm`, and upright cosine was `-0.135675`. Zero rows were admitted.
+   Source receipt `f89db83d166d8917f5d3134424c696a353293d734d7f62a057f4710869179292`;
+   verdict receipt `3a6c334013b782293e0d4ee4ca843dc8d85fa83a0933040cc7b7b1526c3092dc`.
+7. Original grasp redirected to the lower-residual `d6` destination: the
+   generator aborted fail-closed during the post-release vertical extract when
+   IK residual reached `12.399 mm`, above the unchanged `3 mm` bound. It has no
+   completed receipt and contributes zero rows. The checked-in diagnostic
+   remains the original `c8` to `c6` mechanism.
 
 These are geometric-expert mechanism diagnostics, not learned-policy passes.
 
@@ -68,10 +84,16 @@ These are geometric-expert mechanism diagnostics, not learned-policy passes.
 
 The tracked five-episode physical ledger is intact at SHA-256
 `22de7ec867448f8a3b524775bf586dc7fd013dc266d741e77b31a57d8bc87870`,
-but it binds the 72 mm board pose. Its owner-local raw directories are absent
-from both the canonical and source worktrees on this Mac. Therefore the new
-bridge receipt reports zero verified raw rows and cannot yet derive per-joint
-lag, error, rate-limit frequency, or velocity envelopes.
+but it binds the 72 mm board pose. The five owner-local recording directories
+were copied read-only from `jakekinchen@silicon` over Tailscale into the ignored
+local recording root. Every ledger-bound receipt, sample stream, overhead
+video, replay receipt, and replay state trace matches its frozen SHA-256.
+
+The executable bridge now verifies `2,186` physical joint-response rows. Across
+the cohort, best observed command-response lag is `0.15 s` for the two 20 Hz
+episodes and `0.20 s` for the three 10 Hz episodes. These measurements authorize
+joint-response comparison only; the pixels and square labels still describe
+the historical 72 mm scene.
 
 The physical actions are human teleoperation traces, not a learned policy. The
 only newly preserved learned artifact is the historical GR00T N1.7
@@ -90,9 +112,9 @@ tracking RMSE, maximum error, best command-response lag, rate-limit frequency,
 and observed velocity envelopes. It deliberately refuses to transfer old board
 pixels, piece/target labels, contact dynamics, task success, or imitation rows.
 
-Current receipt SHA-256:
-`c9eae6bf735118b801b423cb2faa446577e3557ae5ac8a7180d2752f7df37088`.
-Current readiness is false for joint-response calibration, 100 mm spatial
+Current raw-verified receipt SHA-256:
+`f35cf032d0ecbee482955b680531bdb1c413379b42d34496747a428f68f406e9`.
+Joint-response calibration is ready. Readiness remains false for 100 mm spatial
 comparison, pawn-policy training, and pawn-policy closed-loop comparison.
 
 No held-out rows were opened, no physical authority was created, no GPU job was

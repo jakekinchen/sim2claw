@@ -61,6 +61,7 @@ PHYSICS_STEPS_PER_ACTION = 10
 SETTLE_PHYSICS_STEPS = 300
 EXPERT_MECHANISM_ID = "air_recenter_partial_release_vertical_extract_v1"
 PAWN_JAW_SHUT_RAD = -0.10
+PAWN_NECK_HEIGHT_M = 0.041
 
 
 def expert_phase_counts() -> dict[str, int]:
@@ -145,7 +146,7 @@ def collect_pawn_source_expert_candidate(
     *,
     render_size: int = 224,
 ) -> dict[str, Any]:
-    """Write the one mechanism-proven c8-to-c6 source candidate.
+    """Write the bounded current-scene source candidate.
 
     The directory must not exist.  The returned receipt remains explicitly
     pending admission until a separate evaluator replay passes every gate.
@@ -234,7 +235,7 @@ def collect_pawn_source_expert_candidate(
         [
             initial_piece_position[0],
             initial_piece_position[1],
-            initial_piece_position[2] + 0.041,
+            initial_piece_position[2] + PAWN_NECK_HEIGHT_M,
         ],
         dtype=np.float64,
     )
@@ -534,7 +535,10 @@ def collect_pawn_source_expert_candidate(
         "source_sample_schema": SAMPLE_SCHEMA,
         "source_contract_sha256": source_contract_sha256(),
         "recording_id": recording_id,
-        "label": "tan pawn c8 to c6 scene-v3 geometric expert",
+        "label": (
+            f"tan pawn {SOURCE_SQUARE} to {DESTINATION_SQUARE} "
+            "scene-v3 geometric expert"
+        ),
         "skill": "full_episode",
         "outcome_label": "pending_independent_evaluator",
         "task_id": contract["contract_id"],
@@ -619,6 +623,7 @@ def collect_pawn_source_expert_candidate(
             "release_clearance_m": 0.005,
             "partial_release_joint_target_rad": 0.15,
             "closed_jaw_joint_target_rad": PAWN_JAW_SHUT_RAD,
+            "pawn_neck_height_m": PAWN_NECK_HEIGHT_M,
             "vertical_extract_m": 0.08,
         },
         "generator_diagnostics_not_evaluator_authority": {

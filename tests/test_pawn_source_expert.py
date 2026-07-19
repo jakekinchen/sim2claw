@@ -5,6 +5,7 @@ import unittest
 from sim2claw.pawn_source_expert import (
     DESTINATION_SQUARE,
     PAWN_JAW_SHUT_RAD,
+    PAWN_NECK_HEIGHT_M,
     SOURCE_PIECE_ID,
     expected_action_count,
     expert_phase_counts,
@@ -27,6 +28,8 @@ class PawnSourceExpertTest(unittest.TestCase):
         self.assertNotIn(SOURCE_PIECE_ID, contract["splits"]["held_out_source_piece_ids"])
         self.assertIn(DESTINATION_SQUARE, contract["scene"]["destination_squares"])
         self.assertEqual(PAWN_JAW_SHUT_RAD, -0.10)
+        self.assertEqual(PAWN_NECK_HEIGHT_M, 0.041)
+        self.assertEqual(DESTINATION_SQUARE, "c6")
 
 
 if __name__ == "__main__":
