@@ -36,6 +36,48 @@ PROPOSAL_CALIBRATION_MATRIX_SHA256 = hashlib.sha256(
         separators=(",", ":"),
     ).encode("utf-8")
 ).hexdigest()
+OWNER_VISUAL_ADJUSTMENTS = {
+    ("20260719T035317Z-2a332ab7", "initial"): {
+        "center_delta_px": [-3.0, 3.0],
+        "radius_scale": 1.30,
+        "directive": "outside-scope initial C1: enlarge and retarget down-left",
+    },
+    ("20260719T030206Z-af661460", "final"): {
+        "center_delta_px": [4.0, 3.0],
+        "radius_scale": 1.20,
+        "directive": "first retained C2-to-C1 final C1: expand down-right",
+    },
+    ("20260719T031324Z-bf91502b", "final"): {
+        "center_delta_px": [2.0, 2.0],
+        "radius_scale": 1.15,
+        "directive": "second retained C2-to-C1 final C1: expand down-right",
+    },
+    ("20260719T031518Z-34bff0dd", "initial"): {
+        "center_delta_px": [-3.0, 3.0],
+        "radius_scale": 0.80,
+        "directive": "D1-to-D2 initial D1: shrink and retarget down-left",
+    },
+    ("20260719T035413Z-5ab5603f", "initial"): {
+        "center_delta_px": [2.0, 3.0],
+        "radius_scale": 1.15,
+        "directive": "outside-scope initial D2: expand down-right",
+    },
+    ("20260719T035413Z-5ab5603f", "final"): {
+        "center_delta_px": [-2.0, -3.0],
+        "radius_scale": 1.00,
+        "directive": "outside-scope final E1: retarget up-left",
+    },
+    ("20260719T032853Z-1ee203e8", "final"): {
+        "center_delta_px": [-4.0, 3.0],
+        "radius_scale": 1.25,
+        "directive": "outside-scope final F1: enlarge and retarget down-left",
+    },
+    ("20260719T032620Z-0c7e3d86", "final"): {
+        "center_delta_px": [-2.0, 2.0],
+        "radius_scale": 1.15,
+        "directive": "F2-to-F1 final F1: enlarge and retarget down-left",
+    },
+}
 
 
 def _sha256(path: Path) -> str:
@@ -467,6 +509,68 @@ def infer_contact_center_proposals(
     }
 
 
+def apply_owner_visual_adjustments(
+    episodes: list[dict[str, object]],
+) -> dict[str, object]:
+    """Apply directional visual feedback without converting it into acceptance."""
+    by_recording_id = {
+        str(episode["recording_id"]): episode for episode in episodes
+    }
+    applied = []
+    for (recording_id, phase), adjustment in OWNER_VISUAL_ADJUSTMENTS.items():
+        episode = by_recording_id.get(recording_id)
+        if episode is None:
+            raise RuntimeError(
+                f"owner visual adjustment references missing recording: {recording_id}"
+            )
+        fiducial = episode["visual_fiducial_proposals"][phase]
+        baseline_center = np.asarray(fiducial["center_px"], dtype=np.float64)
+        baseline_radius = float(fiducial["radius_px"])
+        center_delta = np.asarray(
+            adjustment["center_delta_px"], dtype=np.float64
+        )
+        adjusted_center = baseline_center + center_delta
+        adjusted_radius = baseline_radius * float(adjustment["radius_scale"])
+        fiducial["center_px"] = adjusted_center.astype(float).tolist()
+        fiducial["radius_px"] = adjusted_radius
+        fiducial["selection_method"] = (
+            str(fiducial["selection_method"])
+            + "+owner_directional_visual_adjustment"
+        )
+        fiducial["confidence"] = "owner_retargeted_pending_exact_acceptance"
+        fiducial["evaluator_pose_admission_allowed"] = False
+        fiducial["owner_visual_adjustment"] = {
+            "status": "proposed_pending_human_review",
+            "directive": adjustment["directive"],
+            "baseline_center_px": baseline_center.astype(float).tolist(),
+            "baseline_radius_px": baseline_radius,
+            "center_delta_px": center_delta.astype(float).tolist(),
+            "radius_scale": float(adjustment["radius_scale"]),
+            "adjusted_center_px": adjusted_center.astype(float).tolist(),
+            "adjusted_radius_px": adjusted_radius,
+            "claim_boundary": (
+                "directional_owner_feedback_not_exact_coordinate_acceptance"
+            ),
+        }
+        applied.append(
+            {
+                "recording_id": recording_id,
+                "phase": phase,
+                "folder_label": episode["folder_label"],
+                **fiducial["owner_visual_adjustment"],
+            }
+        )
+    return {
+        "status": "proposal_only_pending_exact_acceptance",
+        "adjustment_count": len(applied),
+        "ambiguous_c2_to_c1_final_handling": (
+            "both_retained_recordings_adjusted_because_feedback_did_not_name_recording_id"
+        ),
+        "adjustments": applied,
+        "evaluator_pose_admission_allowed": False,
+    }
+
+
 def _review_tile(
     frame_path: Path,
     square: str,
@@ -544,7 +648,12 @@ def _review_tile(
         tile,
         (
             f"{fiducial['observed_square_tone']} square; "
-            f"dark threshold={fiducial['foreground_darkness_threshold_luma']}"
+            f"dark threshold={fiducial['foreground_darkness_threshold_luma']}; "
+            + (
+                "owner retarget=proposed"
+                if "owner_visual_adjustment" in fiducial
+                else "auto proposal"
+            )
         ),
         (7, 397),
         cv2.FONT_HERSHEY_SIMPLEX,
@@ -951,6 +1060,7 @@ def main() -> int:
             }
         )
 
+    owner_visual_adjustment_summary = apply_owner_visual_adjustments(episodes)
     contact_center_proposal_calibration = infer_contact_center_proposals(episodes)
     inventory_summary = summarize_inventory(episodes)
     if not inventory_summary["candidate_skill_coverage_complete"]:
@@ -1021,7 +1131,11 @@ def main() -> int:
     )
     cv2.putText(
         banner,
-        "ALL 36 MARKERS AND APPROXIMATE MM OFFSETS ARE UNREVIEWED; CONFLICT ROWS ARE NOT ADMITTED",
+        (
+            "ALL 36 MARKERS ARE UNREVIEWED; "
+            f"{owner_visual_adjustment_summary['adjustment_count']} OWNER RETARGETS "
+            "REMAIN PROPOSALS; CONFLICTS NOT ADMITTED"
+        ),
         (12, 89),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.56,
@@ -1090,6 +1204,7 @@ def main() -> int:
             ),
         },
         "proposal_calibration": proposal_calibration,
+        "owner_visual_adjustments": owner_visual_adjustment_summary,
         "task_label_adjudication_queue_path": str(queue_path.resolve()),
         "task_label_adjudication_queue_sha256": _sha256(queue_path),
         "task_label_adjudication_queue_entry_count": adjudication_queue[

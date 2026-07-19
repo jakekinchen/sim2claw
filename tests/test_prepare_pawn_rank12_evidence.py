@@ -126,6 +126,90 @@ class PreparePawnRank12EvidenceTest(unittest.TestCase):
             )
             self.assertFalse(final["evaluator_pose_admission_allowed"])
 
+    def test_owner_directional_retargets_remain_proposals(self) -> None:
+        folder_labels = {
+            "20260719T035317Z-2a332ab7": "c1-to-d2",
+            "20260719T030206Z-af661460": "c2-to-c1",
+            "20260719T031324Z-bf91502b": "c2-to-c1",
+            "20260719T031518Z-34bff0dd": "d1-to-d2",
+            "20260719T035413Z-5ab5603f": "d2-to-e1",
+            "20260719T032853Z-1ee203e8": "e1-to-f1",
+            "20260719T032620Z-0c7e3d86": "f2-to-f1",
+        }
+        episodes = [
+            {
+                "recording_id": recording_id,
+                "folder_label": folder_label,
+                "visual_fiducial_proposals": {
+                    "initial": {
+                        "center_px": [100.0, 100.0],
+                        "radius_px": 10.0,
+                        "selection_method": "automatic",
+                        "confidence": "medium",
+                    },
+                    "final": {
+                        "center_px": [100.0, 100.0],
+                        "radius_px": 10.0,
+                        "selection_method": "automatic",
+                        "confidence": "medium",
+                    },
+                },
+            }
+            for recording_id, folder_label in folder_labels.items()
+        ]
+        summary = PREPARE.apply_owner_visual_adjustments(episodes)
+        self.assertEqual(summary["adjustment_count"], 8)
+        self.assertFalse(summary["evaluator_pose_admission_allowed"])
+        self.assertIn(
+            "both_retained_recordings_adjusted",
+            summary["ambiguous_c2_to_c1_final_handling"],
+        )
+        expected_adjustments = {
+            ("20260719T035317Z-2a332ab7", "initial"): ([-3.0, 3.0], 1.30),
+            ("20260719T030206Z-af661460", "final"): ([4.0, 3.0], 1.20),
+            ("20260719T031324Z-bf91502b", "final"): ([2.0, 2.0], 1.15),
+            ("20260719T031518Z-34bff0dd", "initial"): ([-3.0, 3.0], 0.80),
+            ("20260719T035413Z-5ab5603f", "initial"): ([2.0, 3.0], 1.15),
+            ("20260719T035413Z-5ab5603f", "final"): ([-2.0, -3.0], 1.00),
+            ("20260719T032853Z-1ee203e8", "final"): ([-4.0, 3.0], 1.25),
+            ("20260719T032620Z-0c7e3d86", "final"): ([-2.0, 2.0], 1.15),
+        }
+        actual_adjustments = {
+            (row["recording_id"], row["phase"]): (
+                row["center_delta_px"],
+                row["radius_scale"],
+            )
+            for row in summary["adjustments"]
+        }
+        self.assertEqual(actual_adjustments, expected_adjustments)
+        adjusted = [
+            proposal
+            for episode in episodes
+            for proposal in episode["visual_fiducial_proposals"].values()
+            if "owner_visual_adjustment" in proposal
+        ]
+        self.assertEqual(len(adjusted), 8)
+        self.assertTrue(
+            all(
+                proposal["evaluator_pose_admission_allowed"] is False
+                for proposal in adjusted
+            )
+        )
+        self.assertTrue(
+            all(
+                proposal["owner_visual_adjustment"]["status"]
+                == "proposed_pending_human_review"
+                for proposal in adjusted
+            )
+        )
+        self.assertTrue(
+            all(
+                "not_exact_coordinate_acceptance"
+                in proposal["owner_visual_adjustment"]["claim_boundary"]
+                for proposal in adjusted
+            )
+        )
+
     def test_proposal_homography_cannot_be_evaluator_calibration(self) -> None:
         payload = PREPARE.proposal_calibration_payload(
             reference_frame_path="frame.png",

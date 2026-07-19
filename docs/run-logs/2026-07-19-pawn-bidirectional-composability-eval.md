@@ -55,7 +55,7 @@ paid compute left running
 
 | Proof Surface | Command/URL | Result | Artifact |
 | --- | --- | --- | --- |
-| Focused unit/contract/preparation tests | `uv run --frozen pytest -q tests/test_pawn_composability_eval.py tests/test_pawn_rank12_evaluation.py tests/test_prepare_pawn_rank12_evidence.py` | 21 passed; includes proof-class/provenance gates, outcome completeness, collinear regression rejection, duplicate retention, adjudication retention, and proposal-calibration boundaries | Test output |
+| Focused unit/contract/preparation tests | `uv run --frozen pytest -q tests/test_pawn_composability_eval.py tests/test_pawn_rank12_evaluation.py tests/test_prepare_pawn_rank12_evidence.py` | 22 passed; includes proof-class/provenance gates, outcome completeness, collinear regression rejection, duplicate retention, adjudication retention, proposal-calibration boundaries, and owner-retarget non-admission | Test output |
 | Earlier full repository suite | `uv run --frozen pytest -q` | 169 passed, 30 subtests passed before product-v2 replacement patch | Test output; not represented as post-v2 full-suite proof |
 | JSON syntax | `jq empty` on the contract, template, and project state | Passed | Tracked JSON files |
 | Patch hygiene | `git diff --check` | Passed | Working tree diff |
@@ -92,9 +92,14 @@ paid compute left running
 - Red crosses remain nominal square-center references. Cyan rings are compact
   tone-adaptive dark visual fiducials. Cyan crosses are contact-center
   proposals obtained by subtracting the mean initial visual offset
-  `[-0.5723, +2.7636] px`, based on the owner's centered-initial observation.
+  `[-0.7945, +3.2636] px`, based on the owner's centered-initial observation.
   That observation is recorded as an unreviewed proposal prior, not an endpoint
   measurement and not evidence of policy self-centering.
+- Eight owner-directed visual retargets are recorded with their original
+  coordinates, directional pixel delta, radius scale, and exact recording ID.
+  Both retained C2→C1 final frames were adjusted because the visual feedback did
+  not distinguish their recording IDs. These are directional proposals pending
+  exact acceptance, not reviewed coordinates.
 - The proposal-only pixel-to-board homography is identified as
   `c922_board_grid_homography_proposal_20260719_v1`, hash-bound to its matrix and
   reference frame, and explicitly prohibited from evaluator calibration. Every
@@ -109,9 +114,9 @@ paid compute left running
 - Policies promoted: 0.
 - Brev instances created or used: 0.
 - Recovered frame-selection SHA-256:
-  `7107169c1cbb468a77b0df11a8ffb6e829c1d855fd5608c07414ade393e702b5`.
+  `84eefbcd301809ee6e9f8529cf65f211cbaf9cfae3c7784be40e7d13a4d92693`.
 - Proposal review-sheet SHA-256:
-  `67c54c030bd109c7299533135158ea0d8487425907174bbd7f758ea4ccc8d5ea`.
+  `1c966bc8f4bb52aa434d895754340b721495a06d633cae9c90f43f8aca58dd1b`.
 - Task-label adjudication queue SHA-256:
   `718f155a40c301058291b597938a0a10e74380ae152f15f9e33850ecaab4c516`.
 - Fail-closed summary SHA-256:
