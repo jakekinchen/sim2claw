@@ -2,12 +2,35 @@
 
 from __future__ import annotations
 
+import hashlib
+import io
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import torch
 from torch import nn
+
+
+@dataclass(frozen=True)
+class ACTCheckpointSnapshot:
+    source_path: Path
+    sha256: str
+    data: bytes
+
+
+def read_act_checkpoint_snapshot(
+    checkpoint_path: Path,
+    *,
+    expected_sha256: str | None = None,
+) -> ACTCheckpointSnapshot:
+    """Read once, then authenticate immutable bytes before deserialization."""
+
+    data = checkpoint_path.read_bytes()
+    digest = hashlib.sha256(data).hexdigest()
+    if expected_sha256 is not None and digest != expected_sha256:
+        raise ValueError("checkpoint bytes do not match the accepted digest")
+    return ACTCheckpointSnapshot(checkpoint_path, digest, data)
 
 
 @dataclass(frozen=True)
@@ -163,10 +186,12 @@ class ACTPolicy(nn.Module):
         return actions
 
 
-def load_act_checkpoint(
-    checkpoint_path: Path, *, device: torch.device
+def load_act_checkpoint_snapshot(
+    snapshot: ACTCheckpointSnapshot, *, device: torch.device
 ) -> tuple[ACTPolicy, dict[str, torch.Tensor], dict[str, Any]]:
-    payload = torch.load(checkpoint_path, map_location=device, weights_only=False)
+    payload = torch.load(
+        io.BytesIO(snapshot.data), map_location=device, weights_only=False
+    )
     if payload.get("schema_version") != "sim2claw.act_checkpoint.v1":
         raise ValueError("unsupported sim2claw ACT checkpoint")
     config = ACTModelConfig(**payload["model_config"])
@@ -178,3 +203,10 @@ def load_act_checkpoint(
         for name, values in payload["normalization"].items()
     }
     return model, statistics, payload
+
+
+def load_act_checkpoint(
+    checkpoint_path: Path, *, device: torch.device
+) -> tuple[ACTPolicy, dict[str, torch.Tensor], dict[str, Any]]:
+    snapshot = read_act_checkpoint_snapshot(checkpoint_path)
+    return load_act_checkpoint_snapshot(snapshot, device=device)
