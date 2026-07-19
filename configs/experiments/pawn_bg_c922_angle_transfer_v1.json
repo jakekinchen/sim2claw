@@ -30,6 +30,7 @@
   "render_contract": {
     "mujoco_camera_name": "workcell",
     "board_coordinate_origin": "file_a_rank_1_outer_playing_surface_corner",
+    "physical_board_axes_to_simulation_yaw_degrees": 180.0,
     "apply_source_receipt_orientation_to_both_panels": true,
     "comparison_camera_mode": "c922_angle_transfer_visual_only"
   },

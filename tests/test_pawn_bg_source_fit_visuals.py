@@ -70,13 +70,19 @@ class PawnBGSourceFitVisualTests(unittest.TestCase):
         contract = _load_c922_angle_contract()
         self.assertEqual(
             EXPECTED_C922_ANGLE_CONTRACT_SHA256,
-            "16b7da2bfca9bdeed7a721fb054b1f82de52f609b4723c6d7a3dd4f6c32d1be4",
+            "4179694f20bc1e5aa6270bb20f0b2a616d99845d15cdb00773bac9f1aec24f71",
         )
         self.assertTrue(contract["authority"]["visual_comparison_only"])
         self.assertFalse(
             contract["authority"]["physical_camera_calibration_claimed"]
         )
         self.assertFalse(contract["authority"]["metric_pose_authority"])
+        self.assertEqual(
+            contract["render_contract"][
+                "physical_board_axes_to_simulation_yaw_degrees"
+            ],
+            180.0,
+        )
 
     def test_c922_angle_transfer_reprojects_current_board_angle(self) -> None:
         contract = _load_c922_angle_contract()

@@ -54,7 +54,7 @@ C922_ANGLE_CONTRACT_PATH = (
     REPO_ROOT / "configs/experiments/pawn_bg_c922_angle_transfer_v1.json"
 )
 EXPECTED_C922_ANGLE_CONTRACT_SHA256 = (
-    "16b7da2bfca9bdeed7a721fb054b1f82de52f609b4723c6d7a3dd4f6c32d1be4"
+    "4179694f20bc1e5aa6270bb20f0b2a616d99845d15cdb00773bac9f1aec24f71"
 )
 
 
@@ -168,12 +168,27 @@ def _c922_angle_camera(
         ),
         dtype=np.float64,
     )
-    board_to_world = _rotation_z(geometry.board_yaw_degrees)
-    board_origin_world = board_surface_center_world + board_to_world @ np.asarray(
+    simulator_board_to_world = _rotation_z(geometry.board_yaw_degrees)
+    axes_yaw = contract["render_contract"].get(
+        "physical_board_axes_to_simulation_yaw_degrees"
+    )
+    if type(axes_yaw) is not float or axes_yaw != 180.0:
+        raise SourceFitError("C922 physical-to-simulator board-axis mapping drifted")
+    physical_board_to_simulator = _rotation_z(axes_yaw)
+    physical_board_origin_simulator = physical_board_to_simulator @ np.asarray(
         [-geometry.board_side / 2.0, -geometry.board_side / 2.0, 0.0]
     )
-    camera_position_world = board_origin_world + board_to_world @ camera_position_board
-    camera_cv_to_world = board_to_world @ board_to_camera_cv.T
+    board_origin_world = (
+        board_surface_center_world
+        + simulator_board_to_world @ physical_board_origin_simulator
+    )
+    physical_board_to_world = (
+        simulator_board_to_world @ physical_board_to_simulator
+    )
+    camera_position_world = (
+        board_origin_world + physical_board_to_world @ camera_position_board
+    )
+    camera_cv_to_world = physical_board_to_world @ board_to_camera_cv.T
 
     corners_board = np.asarray(
         [
@@ -563,6 +578,9 @@ def render_episode_comparison(
                 "board_corner_reprojection_max_px"
             ],
             "source_orientation_rotation_degrees_applied_to_both_panels": rotation,
+            "physical_board_axes_to_simulation_yaw_degrees": angle_contract[
+                "render_contract"
+            ]["physical_board_axes_to_simulation_yaw_degrees"],
             "visual_comparison_only": True,
             "physical_camera_calibration_claimed": False,
             "metric_pose_authority": False,
