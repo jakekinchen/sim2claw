@@ -20,6 +20,7 @@ NOISE_SCALE="${NOISE_SCALE:-1.0}"
 NUM_INFERENCE_TIMESTEPS="${NUM_INFERENCE_TIMESTEPS:-}"
 MUJOCO_GL_BACKEND="${MUJOCO_GL_BACKEND:-egl}"
 PYOPENGL_BACKEND="${PYOPENGL_BACKEND:-${MUJOCO_GL_BACKEND}}"
+EVIDENCE_FRAME_CADENCE="${EVIDENCE_FRAME_CADENCE:-all_samples}"
 UV_BIN="${UV_BIN:-/home/shadeform/.local/bin/uv}"
 : "${CHECKPOINT_MANIFEST_SHA256:?CHECKPOINT_MANIFEST_SHA256 is required}"
 
@@ -65,10 +66,11 @@ for horizon in ${HORIZONS}; do
         --host "${SERVER_HOST}" \
         --port "${SERVER_PORT}" \
         --execution-horizon "${horizon}" \
+        --render-cadence "${EVIDENCE_FRAME_CADENCE}" \
         --output "${output}" \
         >"${log}" 2>&1
     jq -c \
-      '{split,episode_index,rollout_replicate,inference_seed,policy_server_mode,execution_horizon,maximum_piece_rise_m,verdict}' \
+      '{split,episode_index,rollout_replicate,inference_seed,policy_server_mode,execution_horizon,evidence_frame_cadence,promotion_eligible_render_cadence,maximum_piece_rise_m,verdict}' \
       "${output}/receipt.json"
   done
 done

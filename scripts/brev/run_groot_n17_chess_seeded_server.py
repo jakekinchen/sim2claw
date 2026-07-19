@@ -131,8 +131,34 @@ class SeededResetPolicy(PolicyWrapper):
             raise ValueError("num_inference_timesteps must be between 1 and 16")
 
     @staticmethod
-    def _query_seed(episode_seed: int, sample_step: int) -> int:
-        return query_seed(episode_seed, sample_step)
+    def _query_seed(
+        episode_seed: int,
+        sample_step: int,
+        candidate_index: int = 0,
+    ) -> int:
+        if candidate_index == 0:
+            return query_seed(episode_seed, sample_step)
+        payload = (
+            "sim2claw.groot_n17.query_seed.v2:"
+            f"{episode_seed}:{sample_step}:{candidate_index}"
+        ).encode("utf-8")
+        return int.from_bytes(hashlib.sha256(payload).digest()[:4], "big")
+
+    @classmethod
+    def _proposal_seed(
+        cls,
+        episode_seed: int,
+        sample_step: int,
+        candidate_index: int,
+        proposal_index: int,
+    ) -> int:
+        if candidate_index == 0:
+            return proposal_seed(episode_seed, sample_step, proposal_index)
+        payload = (
+            "sim2claw.groot_n17.candidate_proposal_seed.v1:"
+            f"{episode_seed}:{sample_step}:{candidate_index}:{proposal_index}"
+        ).encode("utf-8")
+        return int.from_bytes(hashlib.sha256(payload).digest()[:4], "big")
 
     def check_observation(self, observation: dict[str, object]) -> None:
         self.policy.check_observation(observation)
@@ -152,15 +178,23 @@ class SeededResetPolicy(PolicyWrapper):
         sample_step = int(options["sample_step"])
         if sample_step < 0:
             raise ValueError("sample_step must be non-negative")
-        root_query_seed = self._query_seed(self._episode_seed, sample_step)
+        candidate_index = int(options.get("candidate_index", 0))
+        if candidate_index < 0:
+            raise ValueError("candidate_index must be non-negative")
+        root_query_seed = self._query_seed(
+            self._episode_seed,
+            sample_step,
+            candidate_index,
+        )
         proposals: list[dict[str, np.ndarray]] = []
         delegated_infos: list[dict[str, object]] = []
         proposal_rng: list[dict[str, object]] = []
         seeds: list[int] = []
         for proposal_index in range(self._proposal_count):
-            seed = proposal_seed(
+            seed = self._proposal_seed(
                 self._episode_seed,
                 sample_step,
+                candidate_index,
                 proposal_index,
             )
             seeds.append(seed)
@@ -195,6 +229,7 @@ class SeededResetPolicy(PolicyWrapper):
                 "proposal_seeds": seeds,
                 "rng_after": policy_rng_snapshot(),
                 "sample_step": sample_step,
+                "candidate_index": candidate_index,
                 "query_seed": root_query_seed,
             }
         )

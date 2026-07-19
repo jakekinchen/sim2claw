@@ -26,7 +26,9 @@ def build_parser() -> argparse.ArgumentParser:
         "fetch-polycam", help="fetch and verify the owner-provided capture reference"
     )
 
-    render = subparsers.add_parser("render", help="compile, settle, and render the scene")
+    render = subparsers.add_parser(
+        "render", help="compile, settle, and render the scene"
+    )
     render.add_argument(
         "--output", type=Path, default=DEFAULT_OUTPUT_ROOT / "render.png"
     )
@@ -194,6 +196,17 @@ def build_parser() -> argparse.ArgumentParser:
         default=Path("datasets/chess_pick_place_groot_v1"),
     )
     groot_export.add_argument("--max-episodes", type=int, default=None)
+    groot_export.add_argument(
+        "--control-mode",
+        choices=("physics_ramp", "sample_hold"),
+        default="physics_ramp",
+    )
+    groot_export.add_argument(
+        "--episode-index",
+        action="append",
+        type=int,
+        dest="episode_indices",
+    )
 
     groot_expert = subparsers.add_parser(
         "groot-expert-eval",
@@ -206,6 +219,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     groot_expert.add_argument("--episode-index", type=int, default=0)
     groot_expert.add_argument("--render-frames", action="store_true")
+    groot_expert.add_argument(
+        "--control-mode",
+        choices=("physics_ramp", "sample_hold"),
+        default="physics_ramp",
+    )
     return parser
 
 
@@ -418,6 +436,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         report = export_groot_dataset(
             args.output,
             max_episodes=args.max_episodes,
+            control_mode=args.control_mode,
+            episode_indices=args.episode_indices,
         )
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
@@ -433,6 +453,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             split=args.split,
             episode_index=args.episode_index,
             render_frames=args.render_frames,
+            control_mode=args.control_mode,
         )
         report = {
             "case_id": episode.case_id,

@@ -10,8 +10,10 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import platform
 import shutil
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -28,7 +30,7 @@ from .grasp import (
     _pinch_point,
     _solve_reach,
 )
-from .paths import DEFAULT_GROOT_CHESS_TASK_CONFIG
+from .paths import DEFAULT_GROOT_CHESS_TASK_CONFIG, DEFAULT_GROOT_ZOH_DATASET_CONFIG
 from .scene import ROBOT_JOINTS, board_square_center, registered_board_center
 from .state_trace import EpisodeStateTraceRecorder
 
@@ -62,11 +64,17 @@ def load_groot_task_contract(
     held_out_seeds = {int(row["seed"]) for row in contract["held_out_episodes"]}
     if training_seeds & held_out_seeds:
         raise ValueError("training and held-out seeds must be disjoint")
-    if any(row["case_id"] not in training_cases for row in contract["training_episodes"]):
+    if any(
+        row["case_id"] not in training_cases for row in contract["training_episodes"]
+    ):
         raise ValueError("training episode references a non-training case")
-    if any(row["case_id"] not in held_out_cases for row in contract["held_out_episodes"]):
+    if any(
+        row["case_id"] not in held_out_cases for row in contract["held_out_episodes"]
+    ):
         raise ValueError("held-out episode references a non-held-out case")
-    if any(int(row.get("training_rows", -1)) != 0 for row in contract["held_out_episodes"]):
+    if any(
+        int(row.get("training_rows", -1)) != 0 for row in contract["held_out_episodes"]
+    ):
         raise ValueError("held-out episodes must contribute zero training rows")
     board_center = registered_board_center(str(contract["scene"]["scene_id"]))
     for case in (*contract["training_cases"], *contract["held_out_cases"]):
@@ -88,6 +96,62 @@ def groot_task_contract_sha256(
     return hashlib.sha256(payload).hexdigest()
 
 
+def load_groot_zoh_dataset_contract(
+    path: Path = DEFAULT_GROOT_ZOH_DATASET_CONFIG,
+) -> dict[str, Any]:
+    contract = json.loads(path.read_text(encoding="utf-8"))
+    if contract.get("schema_version") != "sim2claw.groot_chess_zoh_dataset.v2":
+        raise ValueError("unsupported GR00T zero-order-hold dataset contract")
+    if not contract.get("frozen_before_training"):
+        raise ValueError("zero-order-hold dataset contract must be frozen")
+    task_contract = load_groot_task_contract()
+    if contract.get("base_task_contract_sha256") != groot_task_contract_sha256():
+        raise ValueError("zero-order-hold dataset references a different base task")
+    if contract.get("split") != "training":
+        raise ValueError("zero-order-hold dataset may select only training episodes")
+    control = contract["control_execution"]
+    if control.get("mode") != "sample_hold":
+        raise ValueError("zero-order-hold dataset must use sample-held controls")
+    if control.get("command_dtype") != "float32":
+        raise ValueError("zero-order-hold commands must be stored as float32")
+    if control.get("interpolation") != "cubic_smoothstep":
+        raise ValueError("unsupported zero-order-hold interpolation")
+    if int(control.get("physics_steps_per_action", -1)) != int(
+        task_contract["episode"]["sample_every_physics_steps"]
+    ):
+        raise ValueError("zero-order-hold cadence differs from the base task")
+    indices = [int(index) for index in contract["source_episode_indices"]]
+    if not indices or len(indices) != len(set(indices)):
+        raise ValueError("zero-order-hold source episode indices must be unique")
+    training_episode_count = len(task_contract["training_episodes"])
+    if any(index < 0 or index >= training_episode_count for index in indices):
+        raise ValueError("zero-order-hold source episode index is out of range")
+    admission = contract["admission"]
+    rejected = [int(index) for index in admission["rejected_source_episode_indices"]]
+    if int(admission["source_episode_count"]) != training_episode_count:
+        raise ValueError("zero-order-hold admission source count drifted")
+    if int(admission["admitted_episode_count"]) != len(indices):
+        raise ValueError("zero-order-hold admission count drifted")
+    if set(indices) & set(rejected) or set(indices) | set(rejected) != set(
+        range(training_episode_count)
+    ):
+        raise ValueError("zero-order-hold admission partition is incomplete")
+    if admission.get("selected_on_held_out_data") is not False:
+        raise ValueError("zero-order-hold admission must not use held-out data")
+    return contract
+
+
+def groot_zoh_dataset_contract_sha256(
+    path: Path = DEFAULT_GROOT_ZOH_DATASET_CONFIG,
+) -> str:
+    payload = json.dumps(
+        load_groot_zoh_dataset_contract(path),
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
 def resolve_execution_horizon(
     requested_horizon: int | None,
     *,
@@ -96,9 +160,7 @@ def resolve_execution_horizon(
     """Validate how many predicted actions may execute before re-observation."""
 
     execution_horizon = (
-        model_action_horizon
-        if requested_horizon is None
-        else int(requested_horizon)
+        model_action_horizon if requested_horizon is None else int(requested_horizon)
     )
     if not 1 <= execution_horizon <= model_action_horizon:
         raise ValueError(
@@ -109,10 +171,7 @@ def resolve_execution_horizon(
 
 
 def _case_map(contract: dict[str, Any], split: str) -> dict[str, dict[str, Any]]:
-    return {
-        str(case["case_id"]): case
-        for case in contract[f"{split}_cases"]
-    }
+    return {str(case["case_id"]): case for case in contract[f"{split}_cases"]}
 
 
 def _episode_shim(
@@ -255,6 +314,7 @@ def evaluate_episode(
     maximum_height: float,
     initial_other_positions: dict[str, np.ndarray],
     action_count: int,
+    assistance_frames: int = 0,
 ) -> dict[str, Any]:
     evaluator = contract["evaluator"]
     final_position = env.piece_position()
@@ -264,14 +324,15 @@ def evaluate_episode(
     final_linear_speed = _piece_linear_speed(env)
     gripper_clearance = float(
         np.linalg.norm(
-            _pinch_point(env.model, env.data, env.arm, env.pinch_local)
-            - final_position
+            _pinch_point(env.model, env.data, env.arm, env.pinch_local) - final_position
         )
     )
     current_pieces = _piece_bodies(env.model)
     protected_pieces = set(contract["scene"]["active_pieces"])
     other_displacements = {
-        name: float(np.linalg.norm(env.data.xpos[body_id] - initial_other_positions[name]))
+        name: float(
+            np.linalg.norm(env.data.xpos[body_id] - initial_other_positions[name])
+        )
         for name, body_id in current_pieces.items()
         if name != env.piece_name and name in protected_pieces
     }
@@ -283,10 +344,9 @@ def evaluate_episode(
     maximum_other_displacement = (
         other_displacements[worst_other_piece] if worst_other_piece is not None else 0.0
     )
-    expected_physics_actions = (
-        sum(int(value) for value in contract["episode"]["phase_physics_steps"].values())
-        + int(contract["episode"]["settle_steps_after"])
-    )
+    expected_physics_actions = sum(
+        int(value) for value in contract["episode"]["phase_physics_steps"].values()
+    ) + int(contract["episode"]["settle_steps_after"])
     gates = {
         "minimum_piece_rise": {
             "measured": float(maximum_height - initial_height),
@@ -334,7 +394,7 @@ def evaluate_episode(
             "threshold": expected_physics_actions,
         },
         "assistance_frames": {
-            "measured": 0,
+            "measured": int(assistance_frames),
             "comparison": "==",
             "threshold": 0,
         },
@@ -346,11 +406,21 @@ def evaluate_episode(
             gate["passed"] = gate["measured"] <= gate["threshold"]
         else:
             gate["passed"] = gate["measured"] == gate["threshold"]
-    success = all(bool(gate["passed"]) for gate in gates.values())
+    task_consequence_success = all(
+        bool(gate["passed"])
+        for name, gate in gates.items()
+        if name not in {"model_owned_actions", "assistance_frames"}
+    )
+    success = task_consequence_success and all(
+        bool(gate["passed"])
+        for name, gate in gates.items()
+        if name in {"model_owned_actions", "assistance_frames"}
+    )
     return {
         "schema_version": "sim2claw.groot_chess_consequence_verdict.v1",
         "evaluator_owner": evaluator["owner"],
         "gates": gates,
+        "task_consequence_success": task_consequence_success,
         "success": success,
         "terminal_outcome": (
             "piece_released_upright_on_target_square"
@@ -369,9 +439,16 @@ def collect_groot_expert_episode(
     split: str,
     episode_index: int,
     render_frames: bool = True,
+    control_mode: str = "physics_ramp",
 ) -> GrootExpertEpisode:
     if split not in {"training", "held_out"}:
         raise ValueError("split must be training or held_out")
+    if control_mode not in {"physics_ramp", "sample_hold"}:
+        raise ValueError("control mode must be physics_ramp or sample_hold")
+    zoh_contract = (
+        load_groot_zoh_dataset_contract() if control_mode == "sample_hold" else None
+    )
+    zoh_control = zoh_contract["control_execution"] if zoh_contract else None
     episode_row = contract[f"{split}_episodes"][episode_index]
     case = _case_map(contract, split)[episode_row["case_id"]]
     offset = tuple(float(value) for value in episode_row["piece_planar_offset_m"])
@@ -410,13 +487,20 @@ def collect_groot_expert_episode(
         [piece_start[0], piece_start[1], initial_height + NECK_HEIGHT_M[kind]],
         dtype=np.float64,
     )
-    stand_off = neck + np.asarray([away[0] * 0.055, away[1] * 0.055, 0.03])
+    approach_neck = neck.copy()
+    grasp_neck = neck.copy()
+    if control_mode == "sample_hold":
+        approach_clearance = float(zoh_control["approach_clearance_m"])
+        approach_neck += np.asarray(
+            [away[0] * approach_clearance, away[1] * approach_clearance, 0.0]
+        )
+    stand_off = approach_neck + np.asarray([away[0] * 0.055, away[1] * 0.055, 0.03])
 
     render_width = int(contract["episode"]["render_width"])
     render_height = int(contract["episode"]["render_height"])
     renderer = (
         mujoco.Renderer(env.model, height=render_height, width=render_width)
-        if render_frames
+        if render_frames and control_mode != "sample_hold"
         else None
     )
     states: list[np.ndarray] = []
@@ -447,9 +531,7 @@ def collect_groot_expert_episode(
             np.asarray(env.data.qpos[env.qpos_addresses], dtype=np.float32).copy()
         )
         actions.append(np.asarray(action, dtype=np.float32).copy())
-        rewards.append(
-            _diagnostic_reward(env, contract, target, initial_height, phase)
-        )
+        rewards.append(_diagnostic_reward(env, contract, target, initial_height, phase))
         phases.append(phase)
         if renderer is not None:
             renderer.update_scene(env.data, camera=contract["scene"]["camera"])
@@ -458,6 +540,33 @@ def collect_groot_expert_episode(
     def execute_phase(name: str, goal: np.ndarray, count: int) -> None:
         nonlocal physics_step, maximum_height
         start = env.controls()
+        if control_mode == "sample_hold":
+            if count % sample_stride:
+                raise ValueError(
+                    f"phase {name} has {count} physics steps, which is not divisible "
+                    f"by sample stride {sample_stride}"
+                )
+            sample_count = count // sample_stride
+            ramp_samples = (
+                max(
+                    1,
+                    round(sample_count * float(zoh_control["release_ramp_fraction"])),
+                )
+                if name == "release"
+                else sample_count
+            )
+            for sample_step in range(sample_count):
+                progress = min(1.0, float(sample_step + 1) / float(ramp_samples))
+                blend = progress * progress * (3.0 - 2.0 * progress)
+                action = start + blend * (goal - start)
+                record(action, name)
+                for _ in range(sample_stride):
+                    env.step(action)
+                    trace.capture(env.data, phase=name)
+                    maximum_height = max(maximum_height, float(env.piece_position()[2]))
+                    physics_step += 1
+            return
+
         ramp = max(1, min(count // 2, 160))
         for phase_step in range(count):
             blend = min(1.0, float(phase_step + 1) / float(ramp))
@@ -470,22 +579,28 @@ def collect_groot_expert_episode(
             physics_step += 1
 
     phase_steps = contract["episode"]["phase_physics_steps"]
+    lift_height = float(contract["episode"]["lift_height_m"])
+    release_height = float(contract["episode"]["release_height_m"])
+    if control_mode == "sample_hold":
+        lift_height = float(zoh_control["lift_height_m"])
     try:
         execute_phase(
             "stand_off",
             solve(stand_off, JAW_OPEN_RAD),
             int(phase_steps["stand_off"]),
         )
-        advance_goal = solve(neck, JAW_OPEN_RAD)
+        advance_goal = solve(approach_neck, JAW_OPEN_RAD)
         execute_phase("advance", advance_goal, int(phase_steps["advance"]))
-        close_goal = advance_goal.copy()
-        close_goal[-1] = JAW_SHUT_RAD
+        if control_mode == "sample_hold":
+            close_goal = solve(grasp_neck, JAW_SHUT_RAD)
+        else:
+            close_goal = advance_goal.copy()
+            close_goal[-1] = JAW_SHUT_RAD
         execute_phase("close", close_goal, int(phase_steps["close"]))
         execute_phase(
             "lift",
             solve(
-                neck
-                + np.asarray([0.0, 0.0, contract["episode"]["lift_height_m"]]),
+                grasp_neck + np.asarray([0.0, 0.0, lift_height]),
                 JAW_SHUT_RAD,
             ),
             int(phase_steps["lift"]),
@@ -495,9 +610,7 @@ def collect_groot_expert_episode(
             _pinch_point(env.model, env.data, env.arm, env.pinch_local)
             - env.piece_position()
         )
-        carry_point = target + grasp_offset + np.asarray(
-            [0.0, 0.0, contract["episode"]["lift_height_m"]]
-        )
+        carry_point = target + grasp_offset + np.asarray([0.0, 0.0, lift_height])
         execute_phase(
             "transit",
             solve(carry_point, JAW_SHUT_RAD),
@@ -508,13 +621,19 @@ def collect_groot_expert_episode(
             _pinch_point(env.model, env.data, env.arm, env.pinch_local)
             - env.piece_position()
         )
-        release_point = target + grasp_offset + np.asarray(
-            [0.0, 0.0, contract["episode"]["release_height_m"]]
-        )
+        release_point = target + grasp_offset + np.asarray([0.0, 0.0, release_height])
         lower_goal = solve(release_point, JAW_SHUT_RAD)
         execute_phase("lower", lower_goal, int(phase_steps["lower"]))
-        release_goal = lower_goal.copy()
-        release_goal[-1] = JAW_OPEN_RAD
+        if control_mode == "sample_hold":
+            release_pinch = _pinch_point(env.model, env.data, env.arm, env.pinch_local)
+            release_goal = solve(
+                release_pinch
+                + np.asarray([0.0, 0.0, float(zoh_control["release_retract_m"])]),
+                JAW_OPEN_RAD,
+            )
+        else:
+            release_goal = lower_goal.copy()
+            release_goal[-1] = JAW_OPEN_RAD
         execute_phase("release", release_goal, int(phase_steps["release"]))
 
         current_pinch = _pinch_point(env.model, env.data, env.arm, env.pinch_local)
@@ -542,9 +661,79 @@ def collect_groot_expert_episode(
         action_count=physics_step,
     )
     trace.capture(env.data, phase="settle", force=True)
+    if control_mode == "sample_hold":
+        replay_env = ChessRookLiftEnv(
+            _episode_shim(contract, case),
+            seed=int(episode_row["seed"]),
+            piece_offset_xy_m=offset,
+        )
+        _apply_sparse_board_curriculum(replay_env, contract)
+        replay_renderer = (
+            mujoco.Renderer(
+                replay_env.model,
+                height=render_height,
+                width=render_width,
+            )
+            if render_frames
+            else None
+        )
+        replay_states: list[np.ndarray] = []
+        replay_rewards: list[float] = []
+        replay_frames: list[np.ndarray] = []
+        replay_initial_height = float(replay_env.piece_position()[2])
+        replay_maximum_height = replay_initial_height
+        replay_initial_other_positions = {
+            name: np.asarray(replay_env.data.xpos[body_id], dtype=np.float64).copy()
+            for name, body_id in _piece_bodies(replay_env.model).items()
+        }
+        try:
+            for action, phase in zip(actions, phases, strict=True):
+                replay_states.append(
+                    np.asarray(
+                        replay_env.data.qpos[replay_env.qpos_addresses],
+                        dtype=np.float32,
+                    ).copy()
+                )
+                replay_rewards.append(
+                    _diagnostic_reward(
+                        replay_env,
+                        contract,
+                        target,
+                        replay_initial_height,
+                        phase,
+                    )
+                )
+                if replay_renderer is not None:
+                    replay_renderer.update_scene(
+                        replay_env.data, camera=contract["scene"]["camera"]
+                    )
+                    replay_frames.append(replay_renderer.render().copy())
+                for _ in range(sample_stride):
+                    replay_env.step(action)
+                    replay_maximum_height = max(
+                        replay_maximum_height,
+                        float(replay_env.piece_position()[2]),
+                    )
+        finally:
+            if replay_renderer is not None:
+                replay_renderer.close()
+        states = replay_states
+        rewards = replay_rewards
+        frames = replay_frames
+        verdict = evaluate_episode(
+            replay_env,
+            contract,
+            target=target,
+            initial_height=replay_initial_height,
+            maximum_height=replay_maximum_height,
+            initial_other_positions=replay_initial_other_positions,
+            action_count=len(actions) * sample_stride,
+        )
     state_array = np.asarray(states, dtype=np.float32)
     action_array = np.asarray(actions, dtype=np.float32)
-    if state_array.shape != action_array.shape or state_array.shape[1] != len(ROBOT_JOINTS):
+    if state_array.shape != action_array.shape or state_array.shape[1] != len(
+        ROBOT_JOINTS
+    ):
         raise RuntimeError("sampled state/action shape drifted from the contract")
     if render_frames and len(frames) != len(states):
         raise RuntimeError("video and low-dimensional sample counts diverged")
@@ -566,8 +755,60 @@ def collect_groot_expert_episode(
     )
 
 
+def replay_groot_sampled_actions(
+    contract: dict[str, Any],
+    *,
+    split: str,
+    episode_index: int,
+    actions: np.ndarray,
+) -> dict[str, Any]:
+    """Replay sampled commands using the learned-policy zero-order hold."""
+
+    if split not in {"training", "held_out"}:
+        raise ValueError("split must be training or held_out")
+    actions = np.asarray(actions, dtype=np.float64)
+    if actions.ndim != 2 or actions.shape[1] != len(ROBOT_JOINTS):
+        raise ValueError(f"unexpected sampled action shape: {actions.shape}")
+    if not np.isfinite(actions).all():
+        raise ValueError("sampled actions contain a non-finite value")
+
+    episode_row = contract[f"{split}_episodes"][episode_index]
+    case = _case_map(contract, split)[episode_row["case_id"]]
+    env = ChessRookLiftEnv(
+        _episode_shim(contract, case),
+        seed=int(episode_row["seed"]),
+        piece_offset_xy_m=tuple(episode_row["piece_planar_offset_m"]),
+    )
+    _apply_sparse_board_curriculum(env, contract)
+    initial_height = float(env.piece_position()[2])
+    maximum_height = initial_height
+    initial_other_positions = {
+        name: np.asarray(env.data.xpos[body_id], dtype=np.float64).copy()
+        for name, body_id in _piece_bodies(env.model).items()
+    }
+    stride = int(contract["episode"]["sample_every_physics_steps"])
+    for action in actions:
+        for _ in range(stride):
+            env.step(action)
+            maximum_height = max(maximum_height, float(env.piece_position()[2]))
+    target = np.asarray(
+        board_square_center(str(case["target_square"])), dtype=np.float64
+    )
+    return evaluate_episode(
+        env,
+        contract,
+        target=target,
+        initial_height=initial_height,
+        maximum_height=maximum_height,
+        initial_other_positions=initial_other_positions,
+        action_count=int(actions.shape[0]) * stride,
+    )
+
+
 def _write_json(path: Path, payload: Any) -> None:
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
@@ -653,6 +894,8 @@ def export_groot_dataset(
     contract_path: Path = DEFAULT_GROOT_CHESS_TASK_CONFIG,
     split: str = "training",
     max_episodes: int | None = None,
+    control_mode: str = "physics_ramp",
+    episode_indices: list[int] | None = None,
 ) -> dict[str, Any]:
     """Export one frozen evaluator split as a GR00T LeRobot v2 dataset."""
 
@@ -662,6 +905,10 @@ def export_groot_dataset(
     contract = load_groot_task_contract(contract_path)
     if split not in {"training", "held_out"}:
         raise ValueError("split must be 'training' or 'held_out'")
+    if control_mode not in {"physics_ramp", "sample_hold"}:
+        raise ValueError("control mode must be physics_ramp or sample_hold")
+    if max_episodes is not None and episode_indices is not None:
+        raise ValueError("max episodes and explicit episode indices are exclusive")
     if output.exists() and any(output.iterdir()):
         raise FileExistsError(f"refusing to overwrite non-empty dataset: {output}")
     meta_dir = output / "meta"
@@ -673,8 +920,20 @@ def export_groot_dataset(
         directory.mkdir(parents=True, exist_ok=True)
 
     episode_rows = contract[f"{split}_episodes"]
-    if max_episodes is not None:
-        episode_rows = episode_rows[:max_episodes]
+    if episode_indices is None:
+        source_episode_indices = list(range(len(episode_rows)))
+        if max_episodes is not None:
+            source_episode_indices = source_episode_indices[:max_episodes]
+    else:
+        source_episode_indices = [int(index) for index in episode_indices]
+        if len(set(source_episode_indices)) != len(source_episode_indices):
+            raise ValueError("episode indices must be unique")
+        if any(
+            index < 0 or index >= len(episode_rows) for index in source_episode_indices
+        ):
+            raise ValueError("episode index is out of range")
+    if not source_episode_indices:
+        raise ValueError("at least one episode must be exported")
     task_index_by_case = {
         str(case["case_id"]): index
         for index, case in enumerate(contract[f"{split}_cases"])
@@ -695,12 +954,15 @@ def export_groot_dataset(
     fps = int(contract["episode"]["sample_fps"])
     state_type = pa.list_(pa.float32(), len(ROBOT_JOINTS))
 
-    for dataset_episode_index, _ in enumerate(episode_rows):
+    for dataset_episode_index, source_episode_index in enumerate(
+        source_episode_indices
+    ):
         episode = collect_groot_expert_episode(
             contract,
             split=split,
-            episode_index=dataset_episode_index,
+            episode_index=source_episode_index,
             render_frames=True,
+            control_mode=control_mode,
         )
         if not episode.verdict["success"]:
             raise RuntimeError(
@@ -717,7 +979,9 @@ def export_groot_dataset(
                 pa.array(timestamps, type=pa.float32()),
                 pa.array(frame_indices, type=pa.int64()),
                 pa.array(np.full(length, dataset_episode_index), type=pa.int64()),
-                pa.array(np.arange(global_index, global_index + length), type=pa.int64()),
+                pa.array(
+                    np.arange(global_index, global_index + length), type=pa.int64()
+                ),
                 pa.array(np.full(length, task_index), type=pa.int64()),
                 pa.array(episode.rewards, type=pa.float32()),
                 pa.array(frame_indices == (length - 1), type=pa.bool_()),
@@ -750,18 +1014,31 @@ def export_groot_dataset(
                 "length": length,
             }
         )
-        evidence.append(
-            {
-                "episode_index": dataset_episode_index,
-                "case_id": episode.case_id,
-                "seed": episode.seed,
-                "piece_offset_xy_m": list(episode.piece_offset_xy_m),
-                "verdict": episode.verdict,
-                "maximum_ik_residual_m": episode.maximum_ik_residual_m,
-                "state_trace_path": str(state_trace_path.relative_to(output)),
-                "state_trace_sha256": _sha256_file(state_trace_path),
-            }
-        )
+        episode_evidence = {
+            "episode_index": dataset_episode_index,
+            "source_episode_index": source_episode_index,
+            "case_id": episode.case_id,
+            "seed": episode.seed,
+            "piece_offset_xy_m": list(episode.piece_offset_xy_m),
+            "verdict": episode.verdict,
+            "maximum_ik_residual_m": episode.maximum_ik_residual_m,
+            "state_trace_path": str(state_trace_path.relative_to(output)),
+            "state_trace_sha256": _sha256_file(state_trace_path),
+        }
+        if control_mode == "sample_hold":
+            replay_verdict = replay_groot_sampled_actions(
+                contract,
+                split=split,
+                episode_index=source_episode_index,
+                actions=episode.actions,
+            )
+            if not replay_verdict["success"]:
+                raise RuntimeError(
+                    f"sample-held source episode {source_episode_index} failed "
+                    "exact action replay"
+                )
+            episode_evidence["sampled_action_replay_verdict"] = replay_verdict
+        evidence.append(episode_evidence)
         all_states.append(episode.states)
         all_actions.append(episode.actions)
         all_rewards.append(episode.rewards)
@@ -852,7 +1129,11 @@ def export_groot_dataset(
         if path.is_file()
     }
     receipt = {
-        "schema_version": "sim2claw.groot_lerobot_dataset_receipt.v1",
+        "schema_version": (
+            "sim2claw.groot_lerobot_dataset_receipt.v2"
+            if control_mode == "sample_hold"
+            else "sim2claw.groot_lerobot_dataset_receipt.v1"
+        ),
         "task_id": contract["task_id"],
         "task_contract_sha256": groot_task_contract_sha256(contract_path),
         "split": split,
@@ -860,8 +1141,29 @@ def export_groot_dataset(
         "format": "GR00T LeRobot v2.1",
         "model_source_commit": contract["model"]["source_commit"],
         "episode_count": len(episodes_meta),
+        "source_episode_indices": source_episode_indices,
         "frame_count": global_index,
         "all_expert_episodes_passed_frozen_evaluator": True,
+        "generation_runtime": {
+            "platform": platform.platform(),
+            "machine": platform.machine(),
+            "python": platform.python_version(),
+            "python_implementation": sys.implementation.name,
+            "numpy": np.__version__,
+            "mujoco": mujoco.__version__,
+        },
+        "control_execution": {
+            "mode": control_mode,
+            "physics_steps_per_action": int(
+                contract["episode"]["sample_every_physics_steps"]
+            ),
+            "sampled_actions_replay_exactly": control_mode == "sample_hold",
+        },
+        "zoh_dataset_contract_sha256": (
+            groot_zoh_dataset_contract_sha256()
+            if control_mode == "sample_hold"
+            else None
+        ),
         "diagnostic_reward_has_promotion_authority": False,
         "training_cannot_promote_itself": True,
         "physical_authority": False,
