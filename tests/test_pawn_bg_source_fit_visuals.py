@@ -12,6 +12,7 @@ from sim2claw.pawn_bg_source_fit_visuals import (
     _c922_angle_camera,
     _load_c922_angle_contract,
     _load_receipt,
+    _tracking_summary,
     render_score_history,
 )
 
@@ -140,6 +141,44 @@ class PawnBGSourceFitVisualTests(unittest.TestCase):
                     source_fit_receipt_path=path,
                     output_directory=root / "visuals",
                 )
+
+    def test_joint_tracking_summary_separates_physical_and_simulator_error(self) -> None:
+        rows = [
+            {
+                "timestamp_monotonic_seconds": 0.0,
+                "physical_actual_position_degrees": [0.0, 0.0, 0.0, 0.0, 0.0, 10.0],
+                "physical_command_minus_actual_degrees": [1.0, -2.0, 3.0, -4.0, 5.0, 6.0],
+                "simulation_minus_mapped_actual_degrees": [2.0, 0.0, -2.0, 0.0, 1.0],
+                "simulation_minus_mapped_actual_gripper_actuator": 0.1,
+            },
+            {
+                "timestamp_monotonic_seconds": 0.05,
+                "physical_actual_position_degrees": [0.1, 1.0, 2.0, 3.0, 4.0, 11.0],
+                "physical_command_minus_actual_degrees": [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0],
+                "simulation_minus_mapped_actual_degrees": [-2.0, 0.0, 2.0, 0.0, -1.0],
+                "simulation_minus_mapped_actual_gripper_actuator": -0.1,
+            },
+        ]
+        summary = _tracking_summary(rows)
+        self.assertEqual(summary["sample_count"], 2)
+        self.assertAlmostEqual(
+            summary["body_joints"]["shoulder_pan"]
+            ["physical_command_minus_actual_rms_degrees"],
+            1.0,
+        )
+        self.assertAlmostEqual(
+            summary["body_joints"]["shoulder_pan"]
+            ["simulation_minus_mapped_actual_rms_degrees"],
+            2.0,
+        )
+        self.assertAlmostEqual(
+            summary["gripper_simulation_minus_mapped_actual_rms_actuator"], 0.1
+        )
+        self.assertEqual(
+            summary["body_joints"]["elbow_flex"]["guard_like_stall_sample_count"],
+            0,
+        )
+        self.assertFalse(summary["guard_like_stall_is_mechanical_guard_proof"])
 
 
 if __name__ == "__main__":

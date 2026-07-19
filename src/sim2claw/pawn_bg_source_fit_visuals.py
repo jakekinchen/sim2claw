@@ -37,7 +37,9 @@ from .pawn_bg_source_fit import (
     load_source_fit_contract,
 )
 from .scene import (
-    CURRENT_TASK_PIECE_LAYOUT,
+    PAWN_BG_ROBOT_SIDE_SQUARES,
+    PAWN_BG_VISUAL_LAYOUT_ID,
+    PAWN_BG_VISUAL_PIECE_LAYOUT,
     ROBOT_JOINTS,
     _table_to_world,
     board_square_center,
@@ -48,8 +50,10 @@ from .scene import (
 )
 
 
-VISUAL_SCHEMA = "sim2claw.pawn_bg_source_fit_visual_comparison.v2"
+VISUAL_SCHEMA = "sim2claw.pawn_bg_source_fit_visual_comparison.v3"
 HISTORY_SCHEMA = "sim2claw.pawn_bg_source_fit_score_history.v1"
+JOINT_TRACKING_SCHEMA = "sim2claw.pawn_bg_joint_tracking_visual.v1"
+TRAJECTORY_MODES = ("command_driven_physics", "measured_actual_state")
 C922_ANGLE_CONTRACT_PATH = (
     REPO_ROOT / "configs/experiments/pawn_bg_c922_angle_transfer_v1.json"
 )
@@ -286,6 +290,7 @@ def _annotate_pair(
     relative_time_seconds: float,
     score: dict[str, Any],
     simulation_header: str,
+    trajectory_mode: str,
 ) -> np.ndarray:
     simulation_bgr = cv2.cvtColor(simulation_rgb, cv2.COLOR_RGB2BGR)
     if physical_bgr.shape[:2] != (480, 640):
@@ -315,11 +320,18 @@ def _annotate_pair(
         1,
         cv2.LINE_AA,
     )
-    footer = (
-        f"t={relative_time_seconds:5.2f}s | diagnostic reward={score['diagnostic_reward']:.3f} | "
-        f"contact={int(score['gate_results']['selected_piece_contact_observed'])} | "
-        f"success={int(score['task_consequence_success'])} | NOT CALIBRATED"
-    )
+    if trajectory_mode == "command_driven_physics":
+        footer = (
+            f"t={relative_time_seconds:5.2f}s | frozen command-replay reward="
+            f"{score['diagnostic_reward']:.3f} | "
+            f"contact={int(score['gate_results']['selected_piece_contact_observed'])} | "
+            f"success={int(score['task_consequence_success'])} | NOT CALIBRATED"
+        )
+    else:
+        footer = (
+            f"t={relative_time_seconds:5.2f}s | MEASURED ENCODER-STATE KINEMATIC REPLAY | "
+            "reward/contact not recomputed | NOT CALIBRATED"
+        )
     cv2.rectangle(canvas, (0, 486), (1280, 512), (0, 0, 0), -1)
     cv2.putText(
         canvas,
@@ -334,6 +346,186 @@ def _annotate_pair(
     return canvas
 
 
+def _tracking_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    if not rows:
+        raise SourceFitError("joint tracking summary requires at least one row")
+    body_errors = np.asarray(
+        [row["simulation_minus_mapped_actual_degrees"] for row in rows],
+        dtype=np.float64,
+    )
+    command_errors = np.asarray(
+        [row["physical_command_minus_actual_degrees"][:5] for row in rows],
+        dtype=np.float64,
+    )
+    gripper_errors = np.asarray(
+        [row["simulation_minus_mapped_actual_gripper_actuator"] for row in rows],
+        dtype=np.float64,
+    )
+    if body_errors.shape != (len(rows), 5) or command_errors.shape != (len(rows), 5):
+        raise SourceFitError("joint tracking row shape drifted")
+    timestamps = np.asarray(
+        [row["timestamp_monotonic_seconds"] for row in rows], dtype=np.float64
+    )
+    actual_degrees = np.asarray(
+        [row["physical_actual_position_degrees"][:5] for row in rows],
+        dtype=np.float64,
+    )
+    if actual_degrees.shape != (len(rows), 5):
+        raise SourceFitError("physical actual joint row shape drifted")
+    if len(rows) > 1:
+        delta_time = np.diff(timestamps)
+        if np.any(~np.isfinite(delta_time)) or np.any(delta_time <= 0.0):
+            raise SourceFitError("joint tracking timestamps must be finite and increasing")
+        delta_actual = np.diff(actual_degrees, axis=0)
+        velocity = delta_actual / delta_time[:, None]
+        guard_like_stalls = (
+            (np.abs(delta_actual) < 0.5)
+            & (np.abs(command_errors[1:]) > 2.0)
+        )
+    else:
+        velocity = np.zeros((0, 5), dtype=np.float64)
+        guard_like_stalls = np.zeros((0, 5), dtype=bool)
+    return {
+        "sample_count": len(rows),
+        "body_joints": {
+            joint: {
+                "physical_command_minus_actual_rms_degrees": float(
+                    np.sqrt(np.mean(np.square(command_errors[:, index])))
+                ),
+                "simulation_minus_mapped_actual_rms_degrees": float(
+                    np.sqrt(np.mean(np.square(body_errors[:, index])))
+                ),
+                "simulation_minus_mapped_actual_max_abs_degrees": float(
+                    np.max(np.abs(body_errors[:, index]))
+                ),
+                "physical_actual_min_degrees": float(np.min(actual_degrees[:, index])),
+                "physical_actual_max_degrees": float(np.max(actual_degrees[:, index])),
+                "physical_actual_peak_abs_velocity_degrees_s": (
+                    float(np.max(np.abs(velocity[:, index])))
+                    if len(velocity)
+                    else 0.0
+                ),
+                "guard_like_stall_sample_count": int(
+                    np.count_nonzero(guard_like_stalls[:, index])
+                ),
+            }
+            for index, joint in enumerate(ROBOT_JOINTS[:5])
+        },
+        "gripper_simulation_minus_mapped_actual_rms_actuator": float(
+            np.sqrt(np.mean(np.square(gripper_errors)))
+        ),
+        "gripper_simulation_minus_mapped_actual_max_abs_actuator": float(
+            np.max(np.abs(gripper_errors))
+        ),
+        "guard_like_stall_definition": (
+            "absolute measured change below 0.5 degree per sample while absolute "
+            "physical command-minus-actual error exceeds 2.0 degrees"
+        ),
+        "guard_like_stall_is_mechanical_guard_proof": False,
+    }
+
+
+def _sim_to_display_units(
+    simulated: np.ndarray, adapter: JointAdapter, gripper_bounds: np.ndarray
+) -> list[float]:
+    result = np.empty(6, dtype=np.float64)
+    result[:5] = np.rad2deg(
+        (simulated[:5] - np.asarray(adapter.body_joint_zero_offsets_rad))
+        / np.asarray(adapter.body_joint_signs)
+    )
+    low, high = (float(value) for value in gripper_bounds)
+    result[5] = 100.0 * (simulated[5] - low) / (high - low)
+    return result.tolist()
+
+
+def _render_joint_tracking_evidence(
+    *,
+    rows: list[dict[str, Any]],
+    summary: dict[str, Any],
+    trajectory_mode: str,
+    folder_label: str,
+    output_directory: Path,
+) -> dict[str, Any]:
+    payload = {
+        "schema_version": JOINT_TRACKING_SCHEMA,
+        "folder_label": folder_label,
+        "trajectory_mode": trajectory_mode,
+        "joint_order": list(ROBOT_JOINTS),
+        "rows": rows,
+        "summary": summary,
+        "authority": {
+            "diagnostic_only": True,
+            "command_driven_physics_executed": trajectory_mode == "command_driven_physics",
+            "reward_authority": False,
+            "physical_camera_calibration_claimed": False,
+            "accepted_joint_registration": False,
+        },
+        "claim_boundary": (
+            "The measured-state mode places simulator joints at hash-bound follower encoder "
+            "states after applying the best rejected adapter. It visualizes carried-out joint "
+            "motion but is not a dynamics replay, reward result, camera calibration, or accepted "
+            "robot-to-simulator registration."
+        ),
+    }
+    json_path = output_directory / f"{folder_label}_joint_tracking__{trajectory_mode}.json"
+    json_path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n",
+        encoding="utf-8",
+    )
+
+    chart = Image.new("RGB", (1600, 1260), color=(19, 22, 27))
+    draw = ImageDraw.Draw(chart)
+    draw.text((35, 20), f"B1 source joint tracking — {trajectory_mode}", fill=(255, 255, 255))
+    draw.text(
+        (35, 44),
+        "yellow: measured follower encoder | blue: simulator display pose | rejected adapter",
+        fill=(180, 187, 196),
+    )
+    for joint_index, joint in enumerate(ROBOT_JOINTS):
+        top = 82 + joint_index * 190
+        bottom = top + 155
+        actual = [float(row["physical_actual_display_units"][joint_index]) for row in rows]
+        simulated = [float(row["simulation_display_units"][joint_index]) for row in rows]
+        low = min(actual + simulated)
+        high = max(actual + simulated)
+        padding = max(1.0, 0.08 * max(1.0, high - low))
+        low -= padding
+        high += padding
+        box = (35, top, 1565, bottom)
+        draw.rectangle(box, outline=(75, 80, 88), width=1)
+        draw.text((45, top + 8), joint, fill=(235, 235, 235))
+        if joint_index < 5:
+            metric = summary["body_joints"][joint]
+            unit = "deg"
+            label = (
+                f"sim-actual RMS {metric['simulation_minus_mapped_actual_rms_degrees']:.3f} {unit} | "
+                f"max {metric['simulation_minus_mapped_actual_max_abs_degrees']:.3f} {unit}"
+            )
+        else:
+            label = (
+                "sim-actual RMS "
+                f"{summary['gripper_simulation_minus_mapped_actual_rms_actuator']:.5f} actuator"
+            )
+        draw.text((1050, top + 8), label, fill=(180, 187, 196))
+        for values, color in ((actual, (255, 196, 70)), (simulated, (70, 176, 255))):
+            points = []
+            for index, value in enumerate(values):
+                x = 45 + index * (1510.0 / max(1, len(values) - 1))
+                y = bottom - 10 - (value - low) / (high - low) * (bottom - top - 38)
+                points.append((x, y))
+            if len(points) > 1:
+                draw.line(points, fill=color, width=2)
+    chart_path = output_directory / f"{folder_label}_joint_tracking__{trajectory_mode}.png"
+    chart.save(chart_path)
+    return {
+        "json_path": str(json_path),
+        "json_sha256": sha256_file(json_path),
+        "chart_path": str(chart_path),
+        "chart_sha256": sha256_file(chart_path),
+        "summary": summary,
+    }
+
+
 def render_episode_comparison(
     *,
     source_repository_root: Path,
@@ -341,6 +533,7 @@ def render_episode_comparison(
     folder_label: str,
     output_directory: Path,
     simulation_camera_mode: str = "c922_angle_transfer",
+    trajectory_mode: str = "measured_actual_state",
 ) -> dict[str, Any]:
     contract = load_source_fit_contract()
     receipt = _load_receipt(source_fit_receipt_path)
@@ -351,6 +544,8 @@ def render_episode_comparison(
         raise SourceFitError("visual comparison requires one allowed training episode")
     episode, source, _, samples = matches[0]
     score = _episode_score(receipt, folder_label)
+    if trajectory_mode not in TRAJECTORY_MODES:
+        raise SourceFitError("unknown source-fit visual trajectory mode")
 
     reward = load_reward_contract()
     board_center = registered_board_center(reward["scene_binding"]["scene_id"])
@@ -372,7 +567,7 @@ def render_episode_comparison(
             raise SourceFitError("C922 angle-transfer reference frame hash rejected")
         angle_camera = _c922_angle_camera(angle_contract, board_center)
     spec = build_scene_spec(
-        piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+        piece_layout=PAWN_BG_VISUAL_PIECE_LAYOUT,
         board_center_in_table_frame_xy_m=board_center,
     )
     prior = read_contact_prior_snapshot()
@@ -397,6 +592,7 @@ def render_episode_comparison(
         for joint in ROBOT_JOINTS
     ]
     qpos_addresses = [int(model.jnt_qposadr[joint_id]) for joint_id in joint_ids]
+    dof_addresses = [int(model.jnt_dofadr[joint_id]) for joint_id in joint_ids]
     bounds = np.asarray(model.actuator_ctrlrange[actuator_ids], dtype=np.float64)
     first_actual = physical_values_to_sim_with_adapter(
         samples[0]["follower_actual_position_degrees"], bounds[-1], adapter
@@ -431,9 +627,10 @@ def render_episode_comparison(
         raise SourceFitError("C922 angle-transfer orientation contract drifted")
 
     output_directory.mkdir(parents=True, exist_ok=True)
-    raw_path = output_directory / f"{folder_label}_physical_vs_sim.raw.mp4"
-    video_output = output_directory / f"{folder_label}_physical_vs_sim.mp4"
-    poster_output = output_directory / f"{folder_label}_physical_vs_sim_poster.png"
+    artifact_stem = f"{folder_label}_physical_vs_sim__{trajectory_mode}"
+    raw_path = output_directory / f"{artifact_stem}.raw.mp4"
+    video_output = output_directory / f"{artifact_stem}.mp4"
+    poster_output = output_directory / f"{artifact_stem}_poster.png"
     writer = cv2.VideoWriter(
         str(raw_path),
         cv2.VideoWriter_fourcc(*"mp4v"),
@@ -459,6 +656,7 @@ def render_episode_comparison(
     poster_frames: list[tuple[str, np.ndarray]] = []
     previous_timestamp: float | None = None
     nominal_dt = 1.0 / float(episode["sample_hz"])
+    tracking_rows: list[dict[str, Any]] = []
     try:
         for index, sample in enumerate(samples):
             timestamp = float(sample["timestamp_monotonic_seconds"])
@@ -469,14 +667,54 @@ def render_episode_comparison(
             command = physical_values_to_sim_with_adapter(
                 sample["follower_command_degrees"], bounds[-1], adapter
             )
+            actual = physical_values_to_sim_with_adapter(
+                sample["follower_actual_position_degrees"], bounds[-1], adapter
+            )
             if np.any(command < bounds[:, 0]) or np.any(command > bounds[:, 1]):
                 raise SourceFitError("comparison refuses to clip a source-fit command")
-            data.ctrl[actuator_ids] = command
-            mujoco.mj_step(
-                model,
-                data,
-                nstep=max(1, round(dt / float(model.opt.timestep))),
-            )
+            if np.any(actual < bounds[:, 0]) or np.any(actual > bounds[:, 1]):
+                raise SourceFitError("comparison refuses an out-of-range measured state")
+            if trajectory_mode == "command_driven_physics":
+                data.ctrl[actuator_ids] = command
+                mujoco.mj_step(
+                    model,
+                    data,
+                    nstep=max(1, round(dt / float(model.opt.timestep))),
+                )
+            else:
+                data.qpos[qpos_addresses] = actual
+                data.qvel[dof_addresses] = 0.0
+                data.ctrl[actuator_ids] = actual
+                mujoco.mj_forward(model, data)
+            simulated = np.asarray(data.qpos[qpos_addresses], dtype=np.float64).copy()
+            simulated_display = _sim_to_display_units(simulated, adapter, bounds[-1])
+            tracking_rows.append({
+                "sample_index": index,
+                "timestamp_monotonic_seconds": timestamp,
+                "physical_command_degrees": [
+                    float(value) for value in sample["follower_command_degrees"]
+                ],
+                "physical_actual_position_degrees": [
+                    float(value) for value in sample["follower_actual_position_degrees"]
+                ],
+                "physical_actual_display_units": [
+                    float(value) for value in sample["follower_actual_position_degrees"]
+                ],
+                "mapped_command_sim_units": command.tolist(),
+                "mapped_actual_sim_units": actual.tolist(),
+                "simulation_qpos_units": simulated.tolist(),
+                "simulation_display_units": simulated_display,
+                "physical_command_minus_actual_degrees": (
+                    np.asarray(sample["follower_command_degrees"], dtype=np.float64)
+                    - np.asarray(sample["follower_actual_position_degrees"], dtype=np.float64)
+                ).tolist(),
+                "simulation_minus_mapped_actual_degrees": np.rad2deg(
+                    simulated[:5] - actual[:5]
+                ).tolist(),
+                "simulation_minus_mapped_actual_gripper_actuator": float(
+                    simulated[5] - actual[5]
+                ),
+            })
             renderer.update_scene(
                 data,
                 camera=(
@@ -500,10 +738,11 @@ def render_episode_comparison(
                 relative_time_seconds=timestamp,
                 score=score,
                 simulation_header=(
-                    "SIM C922 ANGLE TRANSFER + BEST REJECTED ADAPTER"
-                    if angle_contract is not None
-                    else "SIM SCENE OVERHEAD + BEST REJECTED ADAPTER"
+                    "SIM MEASURED ENCODER-STATE KINEMATIC REPLAY"
+                    if trajectory_mode == "measured_actual_state"
+                    else "SIM COMMAND-DRIVEN PHYSICS + BEST REJECTED ADAPTER"
                 ),
+                trajectory_mode=trajectory_mode,
             )
             writer.write(paired)
             if index in poster_indices:
@@ -539,6 +778,14 @@ def render_episode_comparison(
         draw.text((6, 5), label, fill=(255, 255, 255))
         poster.paste(image, ((index % 2) * 640, (index // 2) * 256))
     poster.save(poster_output)
+    tracking_summary = _tracking_summary(tracking_rows)
+    tracking_evidence = _render_joint_tracking_evidence(
+        rows=tracking_rows,
+        summary=tracking_summary,
+        trajectory_mode=trajectory_mode,
+        folder_label=folder_label,
+        output_directory=output_directory,
+    )
 
     if angle_contract is not None and angle_camera is not None:
         camera_receipt = {
@@ -608,6 +855,20 @@ def render_episode_comparison(
         "candidate_accepted": receipt["candidate_accepted"],
         "optimization_status": receipt["optimization_status"],
         "contact_variant": "nominal_uncalibrated",
+        "trajectory_mode": trajectory_mode,
+        "physics_trajectory_executed": trajectory_mode == "command_driven_physics",
+        "measured_encoder_state_kinematic_replay": trajectory_mode == "measured_actual_state",
+        "reward_recomputed_for_display_trajectory": False,
+        "visual_piece_layout": {
+            "piece_layout": PAWN_BG_VISUAL_PIECE_LAYOUT,
+            "piece_layout_id": PAWN_BG_VISUAL_LAYOUT_ID,
+            "robot_side_semantic_piece_squares": list(PAWN_BG_ROBOT_SIDE_SQUARES),
+            "robot_side_edge_files_present": False,
+            "board_beige_brown_palette_swapped": True,
+            "piece_render_palette_swapped_between_sides": True,
+            "semantic_piece_ids_renamed": False,
+            "frozen_evaluator_scene_changed": False,
+        },
         "episode_score": score,
         "physical_orientation_rotation_degrees_applied": rotation,
         "simulation_camera": camera_receipt,
@@ -615,9 +876,10 @@ def render_episode_comparison(
         "comparison_video_sha256": sha256_file(video_output),
         "poster_path": str(poster_output),
         "poster_sha256": sha256_file(poster_output),
-        "claim_boundary": "Review-only synchronized physical-source versus simulated diagnostic. The C922 angle is a proposal-derived visual transfer, the simulator adapter was rejected, and neither is physical calibration or ACT policy proof.",
+        "joint_tracking_evidence": tracking_evidence,
+        "claim_boundary": "Review-only synchronized physical-source versus simulated diagnostic. Measured-state mode is kinematic display only; command-driven mode is unchanged simulator physics. The B-G visual layout does not rewrite the frozen evaluator scene. The C922 angle is a proposal-derived visual transfer, the simulator adapter was rejected, and none of these are physical calibration or ACT policy proof.",
     }
-    report_path = output_directory / f"{folder_label}_physical_vs_sim_receipt.json"
+    report_path = output_directory / f"{artifact_stem}_receipt.json"
     report_path.write_text(
         json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n",
         encoding="utf-8",

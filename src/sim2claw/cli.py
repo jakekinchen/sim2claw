@@ -362,6 +362,12 @@ def build_parser() -> argparse.ArgumentParser:
         default="c922-angle-transfer",
         help="render from the proposal-derived C922 perspective or the legacy scene overhead",
     )
+    pawn_source_fit_visuals.add_argument(
+        "--trajectory-mode",
+        choices=("measured-actual-state", "command-driven-physics"),
+        default="measured-actual-state",
+        help="render measured follower encoder states kinematically or unchanged command-driven physics",
+    )
 
     camera_overlay = subparsers.add_parser(
         "camera-overlay",
@@ -860,6 +866,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             folder_label=args.folder_label,
             output_directory=args.output_directory,
             simulation_camera_mode=args.simulation_camera.replace("-", "_"),
+            trajectory_mode=args.trajectory_mode.replace("-", "_"),
         )
         history = render_score_history(
             source_fit_receipt_path=args.receipt,
