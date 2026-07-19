@@ -1,4 +1,4 @@
-"""Deterministic scene-v2 pawn source candidate under policy execution semantics.
+"""Deterministic current-scene pawn source candidate under policy execution semantics.
 
 This generator owns actions, not success.  It writes a canonical, model-agnostic
 episode candidate with exact float32 20 Hz sample-hold actions, synchronized RGB,
@@ -21,7 +21,6 @@ import numpy as np
 
 from .grasp import (
     JAW_OPEN_RAD,
-    JAW_SHUT_RAD,
     _actuator_map,
     _piece_bodies,
     _pinch_offset,
@@ -61,6 +60,7 @@ SAMPLE_HZ = 20
 PHYSICS_STEPS_PER_ACTION = 10
 SETTLE_PHYSICS_STEPS = 300
 EXPERT_MECHANISM_ID = "air_recenter_partial_release_vertical_extract_v1"
+PAWN_JAW_SHUT_RAD = -0.10
 
 
 def expert_phase_counts() -> dict[str, int]:
@@ -170,7 +170,10 @@ def collect_pawn_source_expert_candidate(
         + uuid.uuid4().hex[:8]
     )
 
-    model = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT).compile()
+    model = build_scene_spec(
+        piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+        board_center_in_table_frame_xy_m=registered_board_center(CURRENT_SCENE_ID),
+    ).compile()
     if not np.isclose(float(model.opt.timestep), 0.005, atol=1e-12):
         raise ValueError("runtime MuJoCo timestep changed")
     data = mujoco.MjData(model)
@@ -412,11 +415,13 @@ def collect_pawn_source_expert_candidate(
         advance = solve_goal(neck, JAW_OPEN_RAD)
         execute_phase("advance", advance, 38)
         close = advance.copy()
-        close[-1] = JAW_SHUT_RAD
+        close[-1] = PAWN_JAW_SHUT_RAD
         execute_phase("close", close, 42)
         execute_phase(
             "lift",
-            solve_goal(neck + np.asarray([0.0, 0.0, 0.10]), JAW_SHUT_RAD),
+            solve_goal(
+                neck + np.asarray([0.0, 0.0, 0.10]), PAWN_JAW_SHUT_RAD
+            ),
             60,
         )
 
@@ -430,7 +435,7 @@ def collect_pawn_source_expert_candidate(
             point = start_pinch + (waypoint / 40.0) * (target_pinch - start_pinch)
             execute_phase(
                 "transit",
-                solve_goal(point, JAW_SHUT_RAD),
+                solve_goal(point, PAWN_JAW_SHUT_RAD),
                 3,
                 ramp=3,
             )
@@ -455,7 +460,7 @@ def collect_pawn_source_expert_candidate(
             "air_recenter",
             solve_goal(
                 _pinch_point(model, data, "left", pinch_local) + correction,
-                JAW_SHUT_RAD,
+                PAWN_JAW_SHUT_RAD,
             ),
             20,
             ramp=12,
@@ -469,7 +474,7 @@ def collect_pawn_source_expert_candidate(
             point = start_pinch + (waypoint / 30.0) * (target_pinch - start_pinch)
             execute_phase(
                 "lower",
-                solve_goal(point, JAW_SHUT_RAD),
+                solve_goal(point, PAWN_JAW_SHUT_RAD),
                 3,
                 ramp=3,
             )
@@ -529,7 +534,7 @@ def collect_pawn_source_expert_candidate(
         "source_sample_schema": SAMPLE_SCHEMA,
         "source_contract_sha256": source_contract_sha256(),
         "recording_id": recording_id,
-        "label": "tan pawn c8 to c6 scene-v2 geometric expert",
+        "label": "tan pawn c8 to c6 scene-v3 geometric expert",
         "skill": "full_episode",
         "outcome_label": "pending_independent_evaluator",
         "task_id": contract["contract_id"],
@@ -545,10 +550,20 @@ def collect_pawn_source_expert_candidate(
         "scene_id": CURRENT_SCENE_ID,
         "board_pose_id": CURRENT_BOARD_POSE_ID,
         "workcell_registration": {
+            "workspace_pose_id": contract["scene"]["workspace_pose_id"],
+            "board_scene_id": CURRENT_SCENE_ID,
             "board_pose_id": CURRENT_BOARD_POSE_ID,
-            "board_center_in_table_frame_xy_m": [0.04, -0.093],
-            "robotward_displacement_from_previous_pose_m": 0.072,
+            "board_center_in_table_frame_xy_m": contract["scene"][
+                "board_center_in_table_frame_xy_m"
+            ],
+            "robotward_displacement_from_reference_pose_m": contract["scene"][
+                "robotward_displacement_from_reference_pose_m"
+            ],
             "robotward_axis_in_table_frame": "+y",
+            "fiducial_pose_id": contract["scene"]["fiducial_pose_id"],
+            "fiducial_center_in_table_frame_xy_m": contract["scene"][
+                "fiducial_center_in_table_frame_xy_m"
+            ],
         },
         "sample_hz": SAMPLE_HZ,
         "sample_count": len(rows),
@@ -603,6 +618,7 @@ def collect_pawn_source_expert_candidate(
             "maximum_ik_residual_m": maximum_ik_residual,
             "release_clearance_m": 0.005,
             "partial_release_joint_target_rad": 0.15,
+            "closed_jaw_joint_target_rad": PAWN_JAW_SHUT_RAD,
             "vertical_extract_m": 0.08,
         },
         "generator_diagnostics_not_evaluator_authority": {

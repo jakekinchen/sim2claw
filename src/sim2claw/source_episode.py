@@ -17,18 +17,59 @@ from .paths import REPO_ROOT
 from .scene import CURRENT_TASK_LAYOUT_ID, CURRENT_TASK_PIECE_LAYOUT, ROBOT_JOINTS
 
 
-CONTRACT_PATH = (
+CONTRACT_PATH_V1 = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_source_episode_v1.json"
 )
-CONTRACT_SCHEMA = "sim2claw.canonical_manipulation_source_contract.v1"
+CONTRACT_PATH = (
+    REPO_ROOT / "configs" / "tasks" / "chess_pick_place_source_episode_v2.json"
+)
+KNOWN_CONTRACT_PATHS = (CONTRACT_PATH, CONTRACT_PATH_V1)
+CONTRACT_SCHEMAS = {
+    "chess_pick_place_source_episode_v1": (
+        "sim2claw.canonical_manipulation_source_contract.v1"
+    ),
+    "chess_pick_place_source_episode_v2": (
+        "sim2claw.canonical_manipulation_source_contract.v2"
+    ),
+}
 EPISODE_SCHEMA = "sim2claw.manipulation_source_episode.v1"
 SAMPLE_SCHEMA = "sim2claw.manipulation_source_sample.v1"
 RECEIPT_SCHEMA = "sim2claw.manipulation_source_recording_receipt.v1"
 ADMISSION_SCHEMA = "sim2claw.manipulation_source_admission_verdict.v1"
 ACT_ADAPTER_SCHEMA = "sim2claw.canonical_source_to_act.v1"
 GROOT_ADAPTER_SCHEMA = "sim2claw.canonical_source_to_groot.v1"
-CURRENT_SCENE_ID = "operator_updated_chess_workcell_v2"
-CURRENT_BOARD_POSE_ID = "board_robotward_72mm_20260718_v2"
+CURRENT_SCENE_ID = "operator_updated_chess_workcell_v3"
+CURRENT_BOARD_POSE_ID = "board_robotward_100mm_20260718_v3"
+
+_SCENE_CONTRACTS: dict[str, dict[str, Any]] = {
+    "chess_pick_place_source_episode_v1": {
+        "scene_id": "operator_updated_chess_workcell_v2",
+        "board_pose_id": "board_robotward_72mm_20260718_v2",
+        "board_center": [0.04, -0.093],
+        "displacement_field": "robotward_displacement_from_previous_pose_m",
+        "displacement_m": 0.072,
+        "destination_squares": {
+            *(f"{file_name}5" for file_name in "abcdef"),
+            *(f"{file_name}6" for file_name in "abcdefgh"),
+        },
+    },
+    "chess_pick_place_source_episode_v2": {
+        "scene_id": CURRENT_SCENE_ID,
+        "board_pose_id": CURRENT_BOARD_POSE_ID,
+        "board_center": [0.04, -0.065],
+        "displacement_field": "robotward_displacement_from_reference_pose_m",
+        "displacement_m": 0.1,
+        "workspace_pose_id": (
+            "workspace_board_fiducial_robotward_100mm_20260718_v3"
+        ),
+        "fiducial_pose_id": "fiducial_robotward_100mm_20260718_v2",
+        "fiducial_center": [0.02, 0.18],
+        "destination_squares": {
+            *(f"{file_name}5" for file_name in "abcdefgh"),
+            *(f"{file_name}6" for file_name in "abcdefgh"),
+        },
+    },
+}
 
 
 def sha256_file(path: Path) -> str:
@@ -97,30 +138,41 @@ def _finite_vector(
 
 
 def validate_source_contract(contract: dict[str, Any]) -> dict[str, Any]:
-    if contract.get("schema_version") != CONTRACT_SCHEMA:
+    contract_id = str(contract.get("contract_id") or "")
+    if contract.get("schema_version") != CONTRACT_SCHEMAS.get(contract_id):
         raise ValueError("unsupported canonical source contract schema")
-    if contract.get("contract_id") != "chess_pick_place_source_episode_v1":
+    if contract_id not in _SCENE_CONTRACTS:
         raise ValueError("unexpected canonical source contract identity")
     if not contract.get("frozen_before_data_export"):
         raise ValueError("source contract must be frozen before data export")
 
     scene = contract["scene"]
-    if scene.get("scene_id") != CURRENT_SCENE_ID:
-        raise ValueError("canonical source scene does not bind the current workcell")
-    if scene.get("board_pose_id") != CURRENT_BOARD_POSE_ID:
-        raise ValueError("canonical source scene does not bind the 72 mm board pose")
+    expected_scene = _SCENE_CONTRACTS[contract_id]
+    if scene.get("scene_id") != expected_scene["scene_id"]:
+        raise ValueError("canonical source scene identity changed")
+    if scene.get("board_pose_id") != expected_scene["board_pose_id"]:
+        raise ValueError("canonical source board pose identity changed")
     if scene.get("piece_layout") != CURRENT_TASK_PIECE_LAYOUT:
         raise ValueError("canonical source contract uses the wrong piece layout")
     if scene.get("piece_layout_id") != CURRENT_TASK_LAYOUT_ID:
         raise ValueError("canonical source contract uses the wrong layout identity")
-    if scene.get("board_center_in_table_frame_xy_m") != [0.04, -0.093]:
+    if scene.get("board_center_in_table_frame_xy_m") != expected_scene["board_center"]:
         raise ValueError("canonical source contract uses the wrong board center")
     if not math.isclose(
-        float(scene.get("robotward_displacement_from_previous_pose_m", -1.0)),
-        0.072,
+        float(scene.get(expected_scene["displacement_field"], -1.0)),
+        float(expected_scene["displacement_m"]),
         abs_tol=1e-12,
     ):
-        raise ValueError("canonical source contract does not bind the 72 mm shift")
+        raise ValueError("canonical source contract does not bind its board shift")
+    if contract_id == "chess_pick_place_source_episode_v2":
+        if scene.get("workspace_pose_id") != expected_scene["workspace_pose_id"]:
+            raise ValueError("canonical source workspace pose identity changed")
+        if scene.get("fiducial_pose_id") != expected_scene["fiducial_pose_id"]:
+            raise ValueError("canonical source fiducial pose identity changed")
+        if scene.get("fiducial_center_in_table_frame_xy_m") != expected_scene[
+            "fiducial_center"
+        ]:
+            raise ValueError("canonical source fiducial center changed")
     if int(scene.get("active_piece_count", 0)) != 16:
         raise ValueError("pawn workcell must protect all sixteen pieces")
     expected_sources = {
@@ -135,10 +187,7 @@ def validate_source_contract(contract: dict[str, Any]) -> dict[str, Any]:
     }
     if set(scene.get("source_piece_ids") or []) != expected_sources:
         raise ValueError("canonical source identities are not the reachable tan pawns")
-    expected_destinations = {
-        *(f"{file_name}5" for file_name in "abcdef"),
-        *(f"{file_name}6" for file_name in "abcdefgh"),
-    }
+    expected_destinations = expected_scene["destination_squares"]
     if set(scene.get("destination_squares") or []) != expected_destinations:
         raise ValueError("canonical source destinations are not the reachable empty rows")
 
@@ -204,6 +253,13 @@ def load_source_contract(path: Path = CONTRACT_PATH) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("canonical source contract must be a JSON object")
     return validate_source_contract(payload)
+
+
+def source_contract_path_for_sha256(expected_sha256: str) -> Path:
+    for path in KNOWN_CONTRACT_PATHS:
+        if path.is_file() and sha256_file(path) == expected_sha256:
+            return path
+    raise ValueError("canonical source contract hash is not recognized")
 
 
 def language_instruction(piece_id: str, source_square: str, destination_square: str) -> str:
@@ -396,8 +452,16 @@ def load_source_episode(directory: Path) -> tuple[dict[str, Any], list[dict[str,
         raise ValueError("unsupported canonical source receipt schema")
     if receipt.get("source_episode_schema") != EPISODE_SCHEMA:
         raise ValueError("canonical source episode identity changed")
-    if receipt.get("source_contract_sha256") != source_contract_sha256():
-        raise ValueError("canonical source contract hash mismatch")
+    contract_path = source_contract_path_for_sha256(
+        str(receipt.get("source_contract_sha256") or "")
+    )
+    contract = load_source_contract(contract_path)
+    if receipt.get("task_id") != contract.get("contract_id"):
+        raise ValueError("canonical source task identity does not match its contract")
+    if receipt.get("scene_id") != contract["scene"]["scene_id"]:
+        raise ValueError("canonical source scene does not match its contract")
+    if receipt.get("board_pose_id") != contract["scene"]["board_pose_id"]:
+        raise ValueError("canonical source board pose does not match its contract")
     if sha256_file(samples_path) != receipt.get("samples_sha256"):
         raise ValueError("canonical source samples do not match their receipt")
     privileged_path = directory / str(receipt.get("evaluator_privileged_state_path") or "")
@@ -470,9 +534,9 @@ def _require_admitted(
         raise ValueError("admission verdict is not bound to this source receipt")
     if verdict.get("source_samples_sha256") != receipt.get("samples_sha256"):
         raise ValueError("admission verdict is not bound to these source samples")
-    if verdict.get("scene_id") != CURRENT_SCENE_ID:
+    if verdict.get("scene_id") != receipt.get("scene_id"):
         raise ValueError("admission verdict used the wrong workcell scene")
-    if verdict.get("board_pose_id") != CURRENT_BOARD_POSE_ID:
+    if verdict.get("board_pose_id") != receipt.get("board_pose_id"):
         raise ValueError("admission verdict used the wrong board pose")
     if verdict.get("held_out_membership") is not False:
         raise ValueError("held-out episodes may not enter training adapters")

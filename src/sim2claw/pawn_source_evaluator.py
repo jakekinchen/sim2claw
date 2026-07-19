@@ -29,6 +29,7 @@ from .source_episode import (
     ADMISSION_SCHEMA,
     CURRENT_BOARD_POSE_ID,
     CURRENT_SCENE_ID,
+    KNOWN_CONTRACT_PATHS,
     admission_payload_sha256,
     load_source_contract,
     load_source_episode,
@@ -37,10 +38,21 @@ from .source_episode import (
 )
 
 
-EVALUATOR_PATH = (
+EVALUATOR_PATH_V1 = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_pawn_evaluator_v1.json"
 )
-EVALUATOR_SCHEMA = "sim2claw.chess_pick_place_pawn_evaluator.v1"
+EVALUATOR_PATH = (
+    REPO_ROOT / "configs" / "tasks" / "chess_pick_place_pawn_evaluator_v2.json"
+)
+KNOWN_EVALUATOR_PATHS = (EVALUATOR_PATH, EVALUATOR_PATH_V1)
+EVALUATOR_SCHEMAS = {
+    "chess_pick_place_pawn_evaluator_v1": (
+        "sim2claw.chess_pick_place_pawn_evaluator.v1"
+    ),
+    "chess_pick_place_pawn_evaluator_v2": (
+        "sim2claw.chess_pick_place_pawn_evaluator.v2"
+    ),
+}
 
 
 def pawn_evaluator_sha256(path: Path = EVALUATOR_PATH) -> str:
@@ -49,7 +61,8 @@ def pawn_evaluator_sha256(path: Path = EVALUATOR_PATH) -> str:
 
 def load_pawn_evaluator_contract(path: Path = EVALUATOR_PATH) -> dict[str, Any]:
     contract = json.loads(path.read_text(encoding="utf-8"))
-    if contract.get("schema_version") != EVALUATOR_SCHEMA:
+    evaluator_id = str(contract.get("evaluator_id") or "")
+    if contract.get("schema_version") != EVALUATOR_SCHEMAS.get(evaluator_id):
         raise ValueError("unsupported pawn evaluator contract")
     if not contract.get("frozen_before_training"):
         raise ValueError("pawn evaluator must be frozen before training")
@@ -58,13 +71,25 @@ def load_pawn_evaluator_contract(path: Path = EVALUATOR_PATH) -> dict[str, Any]:
     if contract.get("device") != "cpu" or contract.get("dtype") != "float32":
         raise ValueError("pawn evaluator must remain CPU/fp32")
     scene = contract["scene"]
+    expected_scene = {
+        "chess_pick_place_pawn_evaluator_v1": (
+            "operator_updated_chess_workcell_v2",
+            "board_robotward_72mm_20260718_v2",
+            [0.04, -0.093],
+        ),
+        "chess_pick_place_pawn_evaluator_v2": (
+            CURRENT_SCENE_ID,
+            CURRENT_BOARD_POSE_ID,
+            [0.04, -0.065],
+        ),
+    }[evaluator_id]
     if (
-        scene.get("scene_id") != CURRENT_SCENE_ID
-        or scene.get("board_pose_id") != CURRENT_BOARD_POSE_ID
+        scene.get("scene_id") != expected_scene[0]
+        or scene.get("board_pose_id") != expected_scene[1]
         or scene.get("piece_layout") != CURRENT_TASK_PIECE_LAYOUT
-        or scene.get("board_center_in_table_frame_xy_m") != [0.04, -0.093]
+        or scene.get("board_center_in_table_frame_xy_m") != expected_scene[2]
     ):
-        raise ValueError("pawn evaluator is not bound to the current 72 mm workcell")
+        raise ValueError("pawn evaluator workcell identity changed")
     protected = list(scene.get("protected_piece_ids") or [])
     if len(protected) != 16 or len(set(protected)) != 16:
         raise ValueError("pawn evaluator must protect exactly sixteen unique pieces")
@@ -95,10 +120,25 @@ def load_pawn_evaluator_contract(path: Path = EVALUATOR_PATH) -> dict[str, Any]:
             raise ValueError(f"pawn evaluator requirement disabled: {requirement}")
     if int(contract["authority"].get("held_out_rows", -1)) != 0:
         raise ValueError("pawn evaluator must keep held-out rows at zero")
-    source = load_source_contract()
+    source = None
+    for source_path in KNOWN_CONTRACT_PATHS:
+        candidate = load_source_contract(source_path)
+        if candidate["contract_id"] == execution["source_contract_id"]:
+            source = candidate
+            break
+    if source is None:
+        raise ValueError("pawn evaluator references an unknown source contract")
     if source["contract_id"] != execution["source_contract_id"]:
         raise ValueError("pawn evaluator references the wrong source contract")
     return contract
+
+
+def evaluator_path_for_scene(scene_id: str) -> Path:
+    for path in KNOWN_EVALUATOR_PATHS:
+        contract = json.loads(path.read_text(encoding="utf-8"))
+        if contract.get("scene", {}).get("scene_id") == scene_id:
+            return path
+    raise ValueError("source scene has no frozen pawn evaluator")
 
 
 def _gate(measured: Any, comparison: str, threshold: Any) -> dict[str, Any]:
@@ -250,11 +290,13 @@ def evaluate_source_episode(
     """Replay and score one canonical source episode on CPU/fp32."""
 
     directory = directory.resolve()
-    evaluator = load_pawn_evaluator_contract()
     receipt, rows = load_source_episode(directory)
-    if receipt.get("scene_id") != CURRENT_SCENE_ID:
+    evaluator_path = evaluator_path_for_scene(str(receipt.get("scene_id") or ""))
+    evaluator = load_pawn_evaluator_contract(evaluator_path)
+    evaluator_scene = evaluator["scene"]
+    if receipt.get("scene_id") != evaluator_scene["scene_id"]:
         raise ValueError("source receipt uses the wrong scene identity")
-    if receipt.get("board_pose_id") != CURRENT_BOARD_POSE_ID:
+    if receipt.get("board_pose_id") != evaluator_scene["board_pose_id"]:
         raise ValueError("source receipt uses the wrong board pose identity")
     if receipt.get("piece_layout") != CURRENT_TASK_PIECE_LAYOUT:
         raise ValueError("source receipt uses the wrong pawn layout")
@@ -276,7 +318,12 @@ def evaluate_source_episode(
         if line.strip()
     ]
 
-    model = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT).compile()
+    scene_id = str(receipt["scene_id"])
+    model = build_scene_spec(
+        piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+        board_center_in_table_frame_xy_m=registered_board_center(scene_id),
+        include_visual_props=scene_id == CURRENT_SCENE_ID,
+    ).compile()
     if not math.isclose(float(model.opt.timestep), 0.005, abs_tol=1e-12):
         raise ValueError("runtime MuJoCo timestep differs from the evaluator contract")
     data = mujoco.MjData(model)
@@ -324,7 +371,7 @@ def evaluate_source_episode(
         raise ValueError("source receipt is missing its destination square")
     target_position = board_square_center(
         destination_square,
-        board_center_in_table_frame_xy_m=registered_board_center(CURRENT_SCENE_ID),
+        board_center_in_table_frame_xy_m=registered_board_center(scene_id),
     )
     target_pose = np.asarray(
         [*target_position, 1.0, 0.0, 0.0, 0.0], dtype=np.float64
@@ -438,14 +485,14 @@ def evaluate_source_episode(
     scored = score_pawn_consequences(measurements, evaluator)
     verdict = {
         "schema_version": ADMISSION_SCHEMA,
-        "evaluator_contract_schema": EVALUATOR_SCHEMA,
-        "evaluator_contract_sha256": pawn_evaluator_sha256(),
-        "source_contract_sha256": source_contract_sha256(),
+        "evaluator_contract_schema": evaluator["schema_version"],
+        "evaluator_contract_sha256": pawn_evaluator_sha256(evaluator_path),
+        "source_contract_sha256": receipt["source_contract_sha256"],
         "source_recording_id": receipt["recording_id"],
         "source_receipt_sha256": sha256_file(directory / "recording_receipt.json"),
         "source_samples_sha256": receipt["samples_sha256"],
-        "scene_id": CURRENT_SCENE_ID,
-        "board_pose_id": CURRENT_BOARD_POSE_ID,
+        "scene_id": receipt["scene_id"],
+        "board_pose_id": receipt["board_pose_id"],
         "piece_layout": CURRENT_TASK_PIECE_LAYOUT,
         "selected_piece_id": target_name,
         "protected_other_piece_count": 15,

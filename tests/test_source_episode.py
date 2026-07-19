@@ -21,6 +21,7 @@ from sim2claw.source_episode import (
     ADMISSION_SCHEMA,
     CURRENT_BOARD_POSE_ID,
     CURRENT_SCENE_ID,
+    CONTRACT_PATH_V1,
     EPISODE_SCHEMA,
     GROOT_ADAPTER_SCHEMA,
     RECEIPT_SCHEMA,
@@ -146,6 +147,9 @@ class CanonicalSourceEpisodeTest(unittest.TestCase):
             "schema_version": RECEIPT_SCHEMA,
             "source_episode_schema": EPISODE_SCHEMA,
             "source_contract_sha256": source_contract_sha256(),
+            "task_id": "chess_pick_place_source_episode_v2",
+            "scene_id": CURRENT_SCENE_ID,
+            "board_pose_id": CURRENT_BOARD_POSE_ID,
             "recording_id": "episode-001",
             "sample_count": 3,
             "samples_sha256": sha256_file(samples_path),
@@ -187,17 +191,23 @@ class CanonicalSourceEpisodeTest(unittest.TestCase):
         verdict["canonical_payload_sha256"] = admission_payload_sha256(verdict)
         return verdict
 
-    def test_contract_binds_new_72_mm_workcell_and_zero_heldout_rows(self) -> None:
+    def test_contract_binds_current_100_mm_workcell_and_zero_heldout_rows(self) -> None:
         contract = load_source_contract()
         self.assertEqual(contract["scene"]["scene_id"], CURRENT_SCENE_ID)
         self.assertEqual(contract["scene"]["board_pose_id"], CURRENT_BOARD_POSE_ID)
-        self.assertEqual(contract["scene"]["board_center_in_table_frame_xy_m"], [0.04, -0.093])
+        self.assertEqual(contract["scene"]["board_center_in_table_frame_xy_m"], [0.04, -0.065])
         self.assertEqual(contract["splits"]["held_out_training_rows"], 0)
 
         changed = json.loads(json.dumps(contract))
         changed["scene"]["board_center_in_table_frame_xy_m"] = [0.04, -0.165]
         with self.assertRaisesRegex(ValueError, "wrong board center"):
             validate_source_contract(changed)
+
+        historical = load_source_contract(CONTRACT_PATH_V1)
+        self.assertEqual(
+            historical["scene"]["board_pose_id"],
+            "board_robotward_72mm_20260718_v2",
+        )
 
     def test_source_and_destination_cells_are_inside_left_arm_ik_envelope(self) -> None:
         contract = load_source_contract()
@@ -238,7 +248,7 @@ class CanonicalSourceEpisodeTest(unittest.TestCase):
             _, residual = _solve_reach(model, data, "left", target, pinch)
             self.assertGreater(residual, 0.003, square)
 
-        for square in ("g5", "h5"):
+        for square in ("f4", "g4", "h4"):
             target = np.asarray(board_square_center(square), dtype=np.float64)
             target[2] = pawn_height + NECK_HEIGHT_M["pawn"]
             _, residual = _solve_reach(model, data, "left", target, pinch)

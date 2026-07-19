@@ -108,6 +108,7 @@ class SceneContractTest(unittest.TestCase):
             model, mujoco.mjtObj.mjOBJ_BODY, "antler_mug"
         )
         self.assertGreaterEqual(mug_body, 0)
+
         self.assertGreater(float(model.body_pos[mug_body][0]), 0.5)
 
         mug_geoms = [
@@ -142,6 +143,40 @@ class SceneContractTest(unittest.TestCase):
             float(mug_config["height_m"]) / 2.0
         )
         self.assertAlmostEqual(mug_bottom, sill_top)
+
+    def test_historical_scene_can_omit_new_visual_prop_state(self) -> None:
+        current = build_scene_spec(
+            piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+            include_visual_props=True,
+        ).compile()
+        historical = build_scene_spec(
+            piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+            board_center_in_table_frame_xy_m=registered_board_center(
+                "operator_updated_chess_workcell_v2"
+            ),
+            include_visual_props=False,
+        ).compile()
+        self.assertGreaterEqual(
+            mujoco.mj_name2id(
+                current, mujoco.mjtObj.mjOBJ_BODY, "antler_mug"
+            ),
+            0,
+        )
+        self.assertEqual(
+            mujoco.mj_name2id(
+                historical, mujoco.mjtObj.mjOBJ_BODY, "antler_mug"
+            ),
+            -1,
+        )
+        self.assertEqual(
+            mujoco.mj_stateSize(
+                current, mujoco.mjtState.mjSTATE_INTEGRATION
+            ),
+            mujoco.mj_stateSize(
+                historical, mujoco.mjtState.mjSTATE_INTEGRATION
+            )
+            + 6,
+        )
 
     def test_current_task_layout_contains_two_mirrored_sparse_pawn_sides(self) -> None:
         model = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT).compile()

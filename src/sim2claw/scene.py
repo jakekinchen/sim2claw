@@ -551,7 +551,12 @@ def _antler_mug(
     return lines
 
 
-def _photo_background(config: dict[str, Any], geometry: SceneGeometry) -> list[str]:
+def _photo_background(
+    config: dict[str, Any],
+    geometry: SceneGeometry,
+    *,
+    include_visual_props: bool,
+) -> list[str]:
     half_width = geometry.table_width / 2.0
     background = config["simulation_estimates"]["background"]
     ledge = background["ledge"]
@@ -588,13 +593,14 @@ def _photo_background(config: dict[str, Any], geometry: SceneGeometry) -> list[s
             f'pos="0 {rear_y + 0.005:.9g} {blind_z:.9g}" '
             'rgba="0.76 0.76 0.74 1" contype="0" conaffinity="0"/>'
         )
-    lines.extend(
-        _antler_mug(
-            background,
-            ledge_center_y=ledge_center_y,
-            ledge_top_z=ledge_bottom_z + ledge_thickness,
+    if include_visual_props:
+        lines.extend(
+            _antler_mug(
+                background,
+                ledge_center_y=ledge_center_y,
+                ledge_top_z=ledge_bottom_z + ledge_thickness,
+            )
         )
-    )
     # A compact black tripod at the left edge reproduces the strongest side silhouette.
     lines.extend(
         [
@@ -688,6 +694,7 @@ def build_scene_xml(
     scan_overlay: bool = False,
     piece_layout: str = "standard",
     board_center_in_table_frame_xy_m: tuple[float, float] | None = None,
+    include_visual_props: bool = True,
 ) -> str:
     config = load_capture_config(config_path)
     if board_center_in_table_frame_xy_m is not None:
@@ -742,7 +749,9 @@ def build_scene_xml(
         f'{geometry.table_center[1]:.9g} 2.5" mode="targetbody" target="scene_target" fovy="38"/>',
         *_studio_cameras(geometry),
         scan_geom,
-        *_photo_background(config, geometry),
+        *_photo_background(
+            config, geometry, include_visual_props=include_visual_props
+        ),
         *_table_body(geometry),
         *_fiducial_body(config, geometry),
         *_board_body(geometry),
@@ -787,6 +796,7 @@ def build_scene_spec(
     include_robots: bool = True,
     piece_layout: str = "standard",
     board_center_in_table_frame_xy_m: tuple[float, float] | None = None,
+    include_visual_props: bool = True,
 ) -> mujoco.MjSpec:
     spec = mujoco.MjSpec.from_string(
         build_scene_xml(
@@ -795,6 +805,7 @@ def build_scene_spec(
             scan_overlay=scan_overlay,
             piece_layout=piece_layout,
             board_center_in_table_frame_xy_m=board_center_in_table_frame_xy_m,
+            include_visual_props=include_visual_props,
         )
     )
     if not include_robots:

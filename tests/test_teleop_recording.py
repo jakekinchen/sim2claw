@@ -290,8 +290,8 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertEqual(receipt["source_square"], "c8")
         self.assertEqual(receipt["destination_square"], "c6")
         self.assertEqual(receipt["initial_layout_id"], CURRENT_TASK_LAYOUT_ID)
-        self.assertEqual(receipt["scene_id"], "operator_updated_chess_workcell_v2")
-        self.assertEqual(receipt["board_pose_id"], "board_robotward_72mm_20260718_v2")
+        self.assertEqual(receipt["scene_id"], "operator_updated_chess_workcell_v3")
+        self.assertEqual(receipt["board_pose_id"], "board_robotward_100mm_20260718_v3")
         self.assertEqual(
             receipt["workcell_registration"],
             {

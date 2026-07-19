@@ -261,6 +261,7 @@ class PawnSourceEvaluatorTest(unittest.TestCase):
                 "schema_version": RECEIPT_SCHEMA,
                 "source_episode_schema": EPISODE_SCHEMA,
                 "source_contract_sha256": source_contract_sha256(),
+                "task_id": "chess_pick_place_source_episode_v2",
                 "recording_id": "fixture-episode",
                 "sample_count": len(rows),
                 "sample_hz": 20,

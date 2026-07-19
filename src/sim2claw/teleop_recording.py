@@ -1356,7 +1356,9 @@ class TeleopRecordingManager:
                 "destination_square": self.state["target_square"],
                 "initial_layout_id": CURRENT_TASK_LAYOUT_ID,
                 "piece_layout": CURRENT_TASK_PIECE_LAYOUT,
-                "scene_id": "operator_updated_chess_workcell_v2",
+                "scene_id": self.state["workcell_registration"][
+                    "board_scene_id"
+                ],
                 "board_pose_id": self.state["workcell_registration"][
                     "board_pose_id"
                 ],

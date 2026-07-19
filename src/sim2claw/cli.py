@@ -105,7 +105,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     source_expert = subparsers.add_parser(
         "source-expert",
-        help="collect the frozen scene-v2 c8-to-c6 geometric source candidate",
+        help="collect the current-scene c8-to-c6 geometric source candidate",
     )
     source_expert.add_argument("--output", type=Path, required=True)
     source_expert.add_argument("--render-size", type=int, default=224)
@@ -118,6 +118,17 @@ def build_parser() -> argparse.ArgumentParser:
     source_adapt.add_argument("--admission", type=Path, required=True)
     source_adapt.add_argument("--adapter", choices=("act", "groot"), required=True)
     source_adapt.add_argument("--output", type=Path, required=True)
+
+    sim_real = subparsers.add_parser(
+        "sim-real-bridge",
+        help="verify physical-source availability and freeze the 72mm-to-100mm comparison boundary",
+    )
+    sim_real.add_argument("--physical-root", type=Path, default=None)
+    sim_real.add_argument(
+        "--output",
+        type=Path,
+        default=Path("outputs/sim_real_bridge/receipt.json"),
+    )
 
     studio_assets = subparsers.add_parser(
         "studio-assets",
@@ -276,6 +287,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         )
         return 0
+    if args.command == "sim-real-bridge":
+        from .sim_real_bridge import inspect_sim_real_bridge
+
+        report = inspect_sim_real_bridge(
+            physical_root=args.physical_root,
+            output_path=args.output,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["comparison_readiness"]["joint_response_calibration_ready"] else 1
     if args.command == "studio-assets":
         from .studio_assets import render_studio_assets
 
