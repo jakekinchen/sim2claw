@@ -220,6 +220,12 @@ def test_real_split_and_exact_replay_chain_uses_payload_bytes() -> None:
 def test_real_component_campaign_executes_lf00_through_lf13() -> None:
     runtime_parent = REPO_ROOT / "runs"
     runtime_parent.mkdir(parents=True, exist_ok=True)
+    required_bundle_directories = [
+        REPO_ROOT / "datasets/manipulation_source_recordings",
+        REPO_ROOT / "outputs/pawn_composability/recovered_corpus_v2",
+    ]
+    for directory in required_bundle_directories:
+        directory.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(
         dir=runtime_parent, prefix="learning-factory-component-campaign-"
     ) as temporary:
