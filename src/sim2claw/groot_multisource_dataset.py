@@ -599,7 +599,10 @@ def validate_multisource_episode_alignment(
     global_indices: list[int],
     expected_global_index: int,
     task_indices: list[int],
-    task_count: int,
+    expected_task_index: int,
+    expected_task: str,
+    episode_tasks: list[str],
+    task_rows: list[dict[str, Any]],
     video: dict[str, int],
 ) -> None:
     """Validate one derived parquet/video/task schedule without I/O."""
@@ -613,8 +616,19 @@ def validate_multisource_episode_alignment(
     )
     if global_indices != expected_indices:
         raise ValueError("GR00T multisource global indices are not contiguous")
-    observed_tasks = set(task_indices)
-    if len(observed_tasks) != 1 or not observed_tasks <= set(range(task_count)):
+    metadata_indices = [int(row["task_index"]) for row in task_rows]
+    metadata_tasks = [str(row["task"]) for row in task_rows]
+    if metadata_indices != list(range(len(task_rows))):
+        raise ValueError("GR00T multisource task metadata is not contiguous")
+    if len(set(metadata_tasks)) != len(metadata_tasks):
+        raise ValueError("GR00T multisource task metadata is not unique")
+    if not 0 <= expected_task_index < len(task_rows):
+        raise ValueError("GR00T multisource expected task index is invalid")
+    if metadata_tasks[expected_task_index] != expected_task:
+        raise ValueError("GR00T multisource expected task identity drifted")
+    if episode_tasks != [expected_task]:
+        raise ValueError("GR00T multisource episode task identity drifted")
+    if set(task_indices) != {expected_task_index}:
         raise ValueError("GR00T multisource task schedule drifted")
     expected_video = {
         "width": 256,
@@ -678,6 +692,18 @@ def preflight_groot_multisource_dataset(
         raise ValueError("GR00T multisource frame count drifted")
     if len(tasks) != int(contract["dataset"]["task_count"]):
         raise ValueError("GR00T multisource task count drifted")
+    episode_indices = [int(row["episode_index"]) for row in episodes]
+    if episode_indices != list(range(expected_episodes)):
+        raise ValueError("GR00T multisource episode metadata is not contiguous")
+    task_indices = [int(row["task_index"]) for row in tasks]
+    task_strings = [str(row["task"]) for row in tasks]
+    if task_indices != list(range(len(tasks))) or len(set(task_strings)) != len(
+        task_strings
+    ):
+        raise ValueError("GR00T multisource task metadata is not unique and contiguous")
+    task_index_by_string = {
+        task: task_index for task_index, task in zip(task_indices, task_strings)
+    }
 
     global_index = 0
     effective_starts = 0
@@ -686,6 +712,10 @@ def preflight_groot_multisource_dataset(
         episode_index = int(episode["episode_index"])
         table = pq.read_table(_episode_path(dataset, "data", episode_index))
         row_count = int(episode["length"])
+        episode_tasks = [str(value) for value in episode.get("tasks", [])]
+        if len(episode_tasks) != 1 or episode_tasks[0] not in task_index_by_string:
+            raise ValueError("GR00T multisource episode task metadata drifted")
+        expected_task = episode_tasks[0]
         indices = table["index"].to_pylist()
         video = _video_probe(_episode_path(dataset, "video", episode_index))
         validate_multisource_episode_alignment(
@@ -696,7 +726,10 @@ def preflight_groot_multisource_dataset(
             global_indices=indices,
             expected_global_index=global_index,
             task_indices=table["task_index"].to_pylist(),
-            task_count=len(tasks),
+            expected_task_index=task_index_by_string[expected_task],
+            expected_task=expected_task,
+            episode_tasks=episode_tasks,
+            task_rows=tasks,
             video=video,
         )
         global_index += row_count

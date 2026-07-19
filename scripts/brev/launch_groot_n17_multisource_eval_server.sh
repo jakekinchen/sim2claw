@@ -13,6 +13,7 @@ EVALUATION_MANIFEST="${EVIDENCE_ROOT}/pawn-development-evaluation-implementation
 SERVER_LOG="${EVIDENCE_ROOT}/pawn-development-policy-server.log"
 SERVER_PID_FILE="${EVIDENCE_ROOT}/pawn-development-policy-server.pid"
 SERVER_RUNTIME_IDENTITY="${EVIDENCE_ROOT}/pawn-development-policy-server-runtime.json"
+SERVER_IMPORT_IDENTITY="${EVIDENCE_ROOT}/pawn-development-policy-server-import-runtime.json"
 SERVER_SCRIPT="${SIM2CLAW_ROOT}/scripts/brev/run_groot_n17_chess_seeded_server.py"
 PYTHON_BIN="${GROOT_DIR}/.venv/bin/python"
 SERVER_HOST="${SERVER_HOST:-127.0.0.1}"
@@ -33,6 +34,7 @@ for output in \
   "$EVALUATION_MANIFEST" \
   "$SERVER_LOG" \
   "$SERVER_PID_FILE" \
+  "$SERVER_IMPORT_IDENTITY" \
   "$SERVER_RUNTIME_IDENTITY"; do
   if [[ -e "$output" ]]; then
     echo "refusing to reuse evaluation-server evidence: $output" >&2
@@ -101,13 +103,37 @@ cleanup_failed_launch() {
 trap cleanup_failed_launch EXIT
 
 cd "$GROOT_DIR"
+set -o noclobber
+if ! exec 8>"$SERVER_PID_FILE"; then
+  echo "refusing to reuse evaluation-server PID evidence: $SERVER_PID_FILE" >&2
+  exit 1
+fi
+if ! exec 9>"$SERVER_LOG"; then
+  exec 8>&-
+  rm -f -- "$SERVER_PID_FILE"
+  echo "refusing to reuse evaluation-server log evidence: $SERVER_LOG" >&2
+  exit 1
+fi
+set +o noclobber
+
 nohup env \
+  -u LD_PRELOAD \
+  -u PYTHONHOME \
+  -u PYTHONINSPECT \
+  -u PYTHONSTARTUP \
+  -u PYTHONUSERBASE \
   HF_HUB_OFFLINE=1 \
   TRANSFORMERS_OFFLINE=1 \
   NO_ALBUMENTATIONS_UPDATE=1 \
+  GROOT_DIR="$GROOT_DIR" \
+  SIM2CLAW_ROOT="$SIM2CLAW_ROOT" \
   GROOT_PROCESSOR_MODEL_PATH="$PROCESSOR_MODEL_PATH" \
   GROOT_BACKBONE_MODEL_PATH="$PROCESSOR_MODEL_PATH" \
+  VIRTUAL_ENV="${GROOT_DIR}/.venv" \
+  PYTHONHASHSEED=0 \
+  PYTHONNOUSERSITE=1 \
   PYTHONPATH="${SIM2CLAW_ROOT}/src" \
+  PYTHONSAFEPATH=1 \
   "$PYTHON_BIN" -u "$SERVER_SCRIPT" \
     --model-path "$CHECKPOINT_DIR" \
     --processor-model-path "$PROCESSOR_MODEL_PATH" \
@@ -121,12 +147,18 @@ nohup env \
     --num-inference-timesteps 4 \
     --checkpoint-manifest-sha256 "$checkpoint_manifest_sha256" \
     --checkpoint-payload-sha256 "$checkpoint_payload_sha256" \
+    --evaluation-manifest "$EVALUATION_MANIFEST" \
     --evaluation-manifest-sha256 "$evaluation_manifest_sha256" \
+    --sim2claw-root "$SIM2CLAW_ROOT" \
+    --groot-root "$GROOT_DIR" \
+    --server-import-identity "$SERVER_IMPORT_IDENTITY" \
     --maximum-runtime-seconds "$MAX_SERVER_SECONDS" \
-  >"$SERVER_LOG" 2>&1 < /dev/null &
+  >&9 2>&1 < /dev/null &
 
 server_pid="$!"
-printf '%s\n' "$server_pid" > "$SERVER_PID_FILE"
+printf '%s\n' "$server_pid" >&8
+exec 8>&-
+exec 9>&-
 PYTHONPATH="${SIM2CLAW_ROOT}/src" "$PYTHON_BIN" -m \
   sim2claw.groot_server_identity wait \
   --pid "$server_pid" \

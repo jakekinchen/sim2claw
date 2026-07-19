@@ -18,13 +18,42 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from .groot_evaluation_identity import load_evaluation_manifest
+from .groot_evaluation_identity import (
+    RUNTIME_MODULES,
+    SERVER_ATTESTED_MODULES,
+    SERVER_ENVIRONMENT_KEYS,
+    load_evaluation_manifest,
+    load_server_import_attestation,
+    runtime_asset_inventory,
+    selected_server_environment,
+)
 
 
 CHECKPOINT_MANIFEST_SCHEMA = "sim2claw.groot_checkpoint_manifest.v1"
 CHECKPOINT_PREFLIGHT_SCHEMA = "sim2claw.groot_checkpoint_preflight.v1"
-RUNTIME_IDENTITY_SCHEMA = "sim2claw.groot_server_runtime_identity.v1"
+RUNTIME_IDENTITY_SCHEMA = "sim2claw.groot_server_runtime_identity.v2"
 SHA256_HEX_LENGTH = 64
+SERVER_ATTESTED_OPTION_ORDER = (
+    "--model-path",
+    "--processor-model-path",
+    "--embodiment-tag",
+    "--device",
+    "--host",
+    "--port",
+    "--proposal-count",
+    "--action-aggregation",
+    "--noise-scale",
+    "--num-inference-timesteps",
+    "--checkpoint-manifest-sha256",
+    "--checkpoint-payload-sha256",
+    "--evaluation-manifest",
+    "--evaluation-manifest-sha256",
+    "--sim2claw-root",
+    "--groot-root",
+    "--server-import-identity",
+    "--maximum-runtime-seconds",
+)
+SERVER_IDENTITY_OPTIONS = frozenset(SERVER_ATTESTED_OPTION_ORDER[10:])
 
 
 @dataclass(frozen=True)
@@ -35,8 +64,11 @@ class ProcessSnapshot:
     process_start_ticks: int
     boot_id: str
     executable: str
+    cwd: str
     argv: tuple[str, ...]
     cmdline_sha256: str
+    environment: tuple[tuple[str, str | None], ...]
+    environment_sha256: str
     listening_tcp_ports: tuple[int, ...]
 
 
@@ -52,6 +84,69 @@ def canonical_sha256(value: Any) -> str:
     return hashlib.sha256(
         json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
+
+
+class _RaisingArgumentParser(argparse.ArgumentParser):
+    def error(self, message: str) -> None:
+        raise ValueError(message)
+
+
+def seeded_server_argument_parser() -> argparse.ArgumentParser:
+    """Return the sole parser for the seeded policy-server command line."""
+
+    parser = _RaisingArgumentParser(add_help=False, allow_abbrev=False)
+    parser.add_argument("--model-path", required=True)
+    parser.add_argument("--processor-model-path")
+    parser.add_argument("--embodiment-tag", default="new_embodiment")
+    parser.add_argument("--device", default="cuda")
+    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=5555)
+    parser.add_argument("--proposal-count", type=int, default=1)
+    parser.add_argument(
+        "--action-aggregation",
+        choices=("mean", "median", "medoid", "trimmed_mean"),
+        default="medoid",
+    )
+    parser.add_argument("--noise-scale", type=float, default=1.0)
+    parser.add_argument("--num-inference-timesteps", type=int)
+    parser.add_argument("--checkpoint-manifest-sha256")
+    parser.add_argument("--checkpoint-payload-sha256")
+    parser.add_argument("--evaluation-manifest")
+    parser.add_argument("--evaluation-manifest-sha256")
+    parser.add_argument("--sim2claw-root")
+    parser.add_argument("--groot-root")
+    parser.add_argument("--server-import-identity")
+    parser.add_argument("--maximum-runtime-seconds", type=int)
+    return parser
+
+
+def parse_seeded_server_argv(
+    argv: tuple[str, ...] | list[str],
+    *,
+    require_attested: bool = False,
+) -> argparse.Namespace:
+    """Parse one unambiguous argv, rejecting aliases and second meanings."""
+
+    tokens = tuple(argv)
+    if len(tokens) % 2:
+        raise ValueError("seeded server argv must contain option/value pairs")
+    known = frozenset(SERVER_ATTESTED_OPTION_ORDER)
+    options: list[str] = []
+    for index in range(0, len(tokens), 2):
+        option = tokens[index]
+        value = tokens[index + 1]
+        if "=" in option or option not in known:
+            raise ValueError(f"noncanonical seeded server option: {option}")
+        if value.startswith("--"):
+            raise ValueError(f"seeded server option has no value: {option}")
+        if option in options:
+            raise ValueError(f"duplicate seeded server option: {option}")
+        options.append(option)
+    attested = bool(set(options) & SERVER_IDENTITY_OPTIONS)
+    if require_attested or attested:
+        if tuple(options) != SERVER_ATTESTED_OPTION_ORDER:
+            raise ValueError("attested seeded server argv is not canonical and complete")
+    return seeded_server_argument_parser().parse_args(tokens)
 
 
 def _require_sha256(value: object, label: str) -> str:
@@ -193,6 +288,20 @@ def read_process_snapshot(pid: int) -> ProcessSnapshot:
     if not argv:
         raise ValueError("server process has an empty command line")
     executable = str((process_root / "exe").resolve(strict=True))
+    cwd = str((process_root / "cwd").resolve(strict=True))
+    raw_environment = (process_root / "environ").read_bytes()
+    environment_values: dict[str, str] = {}
+    for entry in raw_environment.split(b"\0"):
+        if not entry or b"=" not in entry:
+            continue
+        raw_name, raw_value = entry.split(b"=", 1)
+        name = raw_name.decode("utf-8", errors="surrogateescape")
+        environment_values[name] = raw_value.decode(
+            "utf-8", errors="surrogateescape"
+        )
+    environment = tuple(
+        selected_server_environment(environment_values).items()
+    )
     start_ticks = _process_start_ticks(
         (process_root / "stat").read_text(encoding="utf-8")
     )
@@ -203,8 +312,11 @@ def read_process_snapshot(pid: int) -> ProcessSnapshot:
         process_start_ticks=start_ticks,
         boot_id=boot_id,
         executable=executable,
+        cwd=cwd,
         argv=argv,
         cmdline_sha256=hashlib.sha256(raw_cmdline).hexdigest(),
+        environment=environment,
+        environment_sha256=canonical_sha256(dict(environment)),
         listening_tcp_ports=listening_tcp_ports,
     )
 
@@ -233,11 +345,143 @@ def _listening_tcp_ports(process_root: Path) -> tuple[int, ...]:
     return tuple(sorted(ports))
 
 
-def _argv_option(argv: tuple[str, ...], option: str) -> str:
-    positions = [index for index, value in enumerate(argv) if value == option]
-    if len(positions) != 1 or positions[0] + 1 >= len(argv):
-        raise ValueError(f"server command line must contain one {option}")
-    return argv[positions[0] + 1]
+def expected_server_environment(
+    *,
+    repo_root: Path,
+    groot_root: Path,
+    processor_model_path: Path,
+) -> tuple[tuple[str, str | None], ...]:
+    values: dict[str, str | None] = {
+        name: None for name in SERVER_ENVIRONMENT_KEYS
+    }
+    resolved_repo = repo_root.resolve(strict=True)
+    resolved_groot = groot_root.resolve(strict=True)
+    resolved_processor = processor_model_path.resolve(strict=True)
+    values.update(
+        {
+            "GROOT_BACKBONE_MODEL_PATH": str(resolved_processor),
+            "GROOT_DIR": str(resolved_groot),
+            "GROOT_PROCESSOR_MODEL_PATH": str(resolved_processor),
+            "HF_HUB_OFFLINE": "1",
+            "NO_ALBUMENTATIONS_UPDATE": "1",
+            "PYTHONHASHSEED": "0",
+            "PYTHONNOUSERSITE": "1",
+            "PYTHONPATH": str(resolved_repo / "src"),
+            "PYTHONSAFEPATH": "1",
+            "SIM2CLAW_ROOT": str(resolved_repo),
+            "TRANSFORMERS_OFFLINE": "1",
+            "VIRTUAL_ENV": str(resolved_groot / ".venv"),
+        }
+    )
+    return tuple((name, values[name]) for name in SERVER_ENVIRONMENT_KEYS)
+
+
+def _validate_server_import_attestation(
+    *,
+    attestation_path: Path,
+    snapshot: ProcessSnapshot,
+    evaluation_manifest_path: Path,
+    evaluation_manifest: dict[str, Any],
+    server_script: Path,
+    repo_root: Path,
+) -> dict[str, Any]:
+    resolved_attestation = attestation_path.resolve(strict=True)
+    attestation = load_server_import_attestation(resolved_attestation)
+    process = attestation.get("process")
+    if not isinstance(process, dict):
+        raise ValueError("server import attestation has no process identity")
+    expected_process = {
+        "pid": snapshot.pid,
+        "executable": snapshot.executable,
+        "cwd": snapshot.cwd,
+        "argv": list(snapshot.argv),
+        "environment": dict(snapshot.environment),
+    }
+    for key, expected in expected_process.items():
+        if process.get(key) != expected:
+            raise ValueError(f"server import attestation process {key} differs")
+    sys_path = process.get("sys_path")
+    expected_python_path = str(repo_root.resolve(strict=True) / "src")
+    if (
+        not isinstance(sys_path, list)
+        or not sys_path
+        or sys_path[0] != expected_python_path
+    ):
+        raise ValueError("server import attestation Python path is not canonical")
+
+    resolved_manifest = evaluation_manifest_path.resolve(strict=True)
+    expected_evaluation = {
+        "manifest_path": str(resolved_manifest),
+        "manifest_sha256": sha256_file(resolved_manifest),
+        "canonical_payload_sha256": evaluation_manifest[
+            "canonical_payload_sha256"
+        ],
+        "implementation_inventory_sha256": evaluation_manifest[
+            "implementation_inventory_sha256"
+        ],
+        "runtime_sha256": evaluation_manifest["runtime_sha256"],
+        "runtime_assets_sha256": evaluation_manifest[
+            "runtime_assets_sha256"
+        ],
+    }
+    if attestation.get("evaluation_implementation") != expected_evaluation:
+        raise ValueError("server import attestation evaluation identity differs")
+
+    script = server_script.resolve(strict=True)
+    expected_script = {
+        "path": str(script),
+        "sha256": sha256_file(script),
+        "size_bytes": script.stat().st_size,
+    }
+    if attestation.get("server_script") != expected_script:
+        raise ValueError("server import attestation script identity differs")
+
+    modules = attestation.get("imported_modules")
+    if not isinstance(modules, dict) or set(modules) != set(
+        SERVER_ATTESTED_MODULES
+    ):
+        raise ValueError("server import attestation module inventory is incomplete")
+    if canonical_sha256(modules) != attestation.get("imported_modules_sha256"):
+        raise ValueError("server import attestation module inventory hash differs")
+    expected_runtime_modules = evaluation_manifest["runtime"].get(
+        "module_files", {}
+    )
+    implementation_files = evaluation_manifest["implementation_files"]
+    resolved_repo = repo_root.resolve(strict=True)
+    for name, row in modules.items():
+        if not isinstance(row, dict):
+            raise ValueError(f"server import attestation module is invalid: {name}")
+        path = Path(str(row.get("path", ""))).resolve(strict=True)
+        observed = {
+            "path": str(path),
+            "sha256": sha256_file(path),
+            "size_bytes": path.stat().st_size,
+        }
+        if row != observed:
+            raise ValueError(f"server import attestation module drifted: {name}")
+        if name in RUNTIME_MODULES:
+            if row != expected_runtime_modules.get(name):
+                raise ValueError(f"server runtime module identity differs: {name}")
+            continue
+        try:
+            relative = path.relative_to(resolved_repo).as_posix()
+        except ValueError as error:
+            raise ValueError(
+                f"server Sim2Claw import escaped its root: {name}"
+            ) from error
+        expected = implementation_files.get(relative)
+        if expected != {
+            "sha256": row["sha256"],
+            "size_bytes": row["size_bytes"],
+        }:
+            raise ValueError(f"server Sim2Claw module is not frozen: {name}")
+    return {
+        "path": str(resolved_attestation),
+        "sha256": sha256_file(resolved_attestation),
+        "canonical_payload_sha256": attestation["canonical_payload_sha256"],
+        "promotion_eligible_runtime_attestation": True,
+        "attestation": attestation,
+    }
 
 
 def validate_server_process(
@@ -249,58 +493,95 @@ def validate_server_process(
     port: int,
     checkpoint_manifest_sha256_value: str,
     checkpoint_payload_sha256_value: str,
-    evaluation_manifest_sha256_value: str,
+    evaluation_manifest_path: Path,
+    evaluation_manifest: dict[str, Any],
     python_executable: Path,
     processor_model_path: Path,
-) -> None:
+) -> tuple[argparse.Namespace, dict[str, Any]]:
     """Require the live argv to name the expected server, model, and digests."""
 
     expected_script = server_script.resolve(strict=True)
     if Path(snapshot.executable).resolve() != python_executable.resolve(strict=True):
         raise ValueError("server process uses a different Python executable")
-    script_arguments = [
-        Path(value).resolve(strict=True)
-        for value in snapshot.argv
-        if value.endswith("run_groot_n17_chess_seeded_server.py")
-    ]
-    if script_arguments != [expected_script]:
+    if len(snapshot.argv) < 3 or snapshot.argv[1] != "-u":
+        raise ValueError("server command line has a noncanonical Python prefix")
+    if Path(snapshot.argv[0]).resolve() != python_executable.resolve(strict=True):
+        raise ValueError("server argv names a different Python executable")
+    if Path(snapshot.argv[2]).resolve(strict=True) != expected_script:
         raise ValueError("server command line names a different server script")
-    observed_model = Path(_argv_option(snapshot.argv, "--model-path")).resolve(
-        strict=True
-    )
+    args = parse_seeded_server_argv(snapshot.argv[3:], require_attested=True)
+    observed_model = Path(args.model_path).resolve(strict=True)
     if observed_model != checkpoint_path.resolve(strict=True):
         raise ValueError("server command line names a different checkpoint path")
     observed_processor = Path(
-        _argv_option(snapshot.argv, "--processor-model-path")
+        args.processor_model_path
     ).resolve(strict=True)
     if observed_processor != processor_model_path.resolve(strict=True):
         raise ValueError("server command line names a different processor model")
-    if _argv_option(snapshot.argv, "--host") != host:
+    if args.host != host:
         raise ValueError("server command line host differs from runtime identity")
-    if int(_argv_option(snapshot.argv, "--port")) != port:
+    if args.port != port:
         raise ValueError("server command line port differs from runtime identity")
     if port not in snapshot.listening_tcp_ports:
         raise ValueError("server PID does not own the declared listening port")
-    if (
-        _argv_option(snapshot.argv, "--checkpoint-manifest-sha256")
-        != checkpoint_manifest_sha256_value
-    ):
+    if args.checkpoint_manifest_sha256 != checkpoint_manifest_sha256_value:
         raise ValueError("server command line manifest digest differs")
-    if (
-        _argv_option(snapshot.argv, "--checkpoint-payload-sha256")
-        != checkpoint_payload_sha256_value
-    ):
+    if args.checkpoint_payload_sha256 != checkpoint_payload_sha256_value:
         raise ValueError("server command line checkpoint payload digest differs")
+    resolved_evaluation_manifest = evaluation_manifest_path.resolve(strict=True)
     if (
-        _argv_option(snapshot.argv, "--evaluation-manifest-sha256")
-        != evaluation_manifest_sha256_value
+        Path(args.evaluation_manifest).resolve(strict=True)
+        != resolved_evaluation_manifest
     ):
+        raise ValueError("server command line evaluation manifest path differs")
+    if args.evaluation_manifest_sha256 != sha256_file(resolved_evaluation_manifest):
         raise ValueError("server command line evaluation manifest digest differs")
+    repo_root = Path(evaluation_manifest["sim2claw_git"]["root"])
+    groot_root = Path(evaluation_manifest["runtime"]["groot_git"]["root"])
+    if (
+        Path(args.sim2claw_root).resolve(strict=True)
+        != repo_root.resolve(strict=True)
+    ):
+        raise ValueError("server command line Sim2Claw root differs")
+    if Path(args.groot_root).resolve(strict=True) != groot_root.resolve(strict=True):
+        raise ValueError("server command line GR00T root differs")
+    if args.embodiment_tag != "new_embodiment" or args.device != "cuda":
+        raise ValueError("server command line policy configuration differs")
+    if (
+        args.proposal_count != 5
+        or args.action_aggregation != "median"
+        or args.noise_scale != 0.5
+        or args.num_inference_timesteps != 4
+    ):
+        raise ValueError("server command line frozen sampler configuration differs")
+    if args.maximum_runtime_seconds is None or args.maximum_runtime_seconds < 1:
+        raise ValueError("server command line has no bounded runtime")
+    expected_environment = expected_server_environment(
+        repo_root=repo_root,
+        groot_root=groot_root,
+        processor_model_path=processor_model_path,
+    )
+    if snapshot.cwd != str(groot_root.resolve(strict=True)):
+        raise ValueError("server process working directory differs")
+    if snapshot.environment != expected_environment:
+        raise ValueError("server process import environment differs")
+    if snapshot.environment_sha256 != canonical_sha256(dict(expected_environment)):
+        raise ValueError("server process environment hash differs")
+    attestation = _validate_server_import_attestation(
+        attestation_path=Path(args.server_import_identity),
+        snapshot=snapshot,
+        evaluation_manifest_path=resolved_evaluation_manifest,
+        evaluation_manifest=evaluation_manifest,
+        server_script=expected_script,
+        repo_root=repo_root,
+    )
+    return args, attestation
 
 
 def _snapshot_payload(snapshot: ProcessSnapshot) -> dict[str, Any]:
     payload = asdict(snapshot)
     payload["argv"] = list(snapshot.argv)
+    payload["environment"] = [list(row) for row in snapshot.environment]
     payload["listening_tcp_ports"] = list(snapshot.listening_tcp_ports)
     return payload
 
@@ -345,7 +626,7 @@ def build_runtime_identity(
     snapshot = process_snapshot or read_process_snapshot(pid)
     if snapshot.pid != pid:
         raise ValueError("live process PID differs from the requested server PID")
-    validate_server_process(
+    _, server_import_attestation = validate_server_process(
         snapshot,
         server_script=server_script,
         checkpoint_path=Path(checkpoint["checkpoint_path"]),
@@ -353,7 +634,8 @@ def build_runtime_identity(
         port=port,
         checkpoint_manifest_sha256_value=checkpoint["checkpoint_manifest_sha256"],
         checkpoint_payload_sha256_value=checkpoint["checkpoint_payload_sha256"],
-        evaluation_manifest_sha256_value=evaluation_binding["manifest_sha256"],
+        evaluation_manifest_path=resolved_evaluation_manifest,
+        evaluation_manifest=evaluation_manifest,
         python_executable=Path(
             evaluation_manifest["runtime"]["python"]["executable"]
         ),
@@ -368,6 +650,8 @@ def build_runtime_identity(
         "server_script": str(server_script.resolve(strict=True)),
         "checkpoint": checkpoint,
         "evaluation_implementation": evaluation_binding,
+        "server_import_attestation": server_import_attestation,
+        "promotion_eligible": True,
     }
     identity["canonical_payload_sha256"] = canonical_sha256(identity)
     return identity
@@ -407,6 +691,9 @@ def runtime_identity_receipt_binding(
     evaluation = on_disk.get("evaluation_implementation")
     if not isinstance(evaluation, dict):
         raise ValueError("runtime identity has no evaluation implementation binding")
+    server_import = on_disk.get("server_import_attestation")
+    if not isinstance(server_import, dict):
+        raise ValueError("runtime identity has no server import attestation")
     return {
         "server_runtime_identity_path": str(resolved),
         "server_runtime_identity_sha256": sha256_file(resolved),
@@ -427,6 +714,13 @@ def runtime_identity_receipt_binding(
         "evaluation_runtime_assets_sha256": evaluation[
             "runtime_assets_sha256"
         ],
+        "server_import_attestation_sha256": server_import["sha256"],
+        "server_import_attestation_canonical_sha256": server_import[
+            "canonical_payload_sha256"
+        ],
+        "promotion_eligible_runtime_attestation": server_import[
+            "promotion_eligible_runtime_attestation"
+        ],
     }
 
 
@@ -436,9 +730,17 @@ def _snapshot_from_payload(payload: dict[str, Any]) -> ProcessSnapshot:
         process_start_ticks=int(payload["process_start_ticks"]),
         boot_id=str(payload["boot_id"]),
         executable=str(payload["executable"]),
+        cwd=str(payload["cwd"]),
         argv=tuple(str(value) for value in payload["argv"]),
         cmdline_sha256=_require_sha256(
             payload["cmdline_sha256"], "runtime process command line"
+        ),
+        environment=tuple(
+            (str(row[0]), None if row[1] is None else str(row[1]))
+            for row in payload["environment"]
+        ),
+        environment_sha256=_require_sha256(
+            payload["environment_sha256"], "runtime process environment"
         ),
         listening_tcp_ports=tuple(
             int(value) for value in payload["listening_tcp_ports"]
@@ -484,6 +786,12 @@ def verify_runtime_identity(
         != manifest_checkpoint_path
     ):
         raise ValueError("runtime identity names a different checkpoint directory")
+    current_checkpoint = verify_checkpoint_directory(
+        expected_manifest,
+        manifest_checkpoint_path,
+    )
+    if current_checkpoint != checkpoint:
+        raise ValueError("runtime identity checkpoint directory revalidation differs")
 
     expected_evaluation_manifest = expected_evaluation_manifest_path.resolve(
         strict=True
@@ -494,6 +802,11 @@ def verify_runtime_identity(
     )
     if not isinstance(processor_asset, dict):
         raise ValueError("evaluation manifest does not bind the processor model")
+    observed_processor_asset = runtime_asset_inventory(
+        Path(processor_asset["root"])
+    )
+    if observed_processor_asset != processor_asset:
+        raise ValueError("runtime identity processor directory revalidation differs")
     evaluation_binding = identity.get("evaluation_implementation")
     if not isinstance(evaluation_binding, dict):
         raise ValueError("runtime identity has no evaluation implementation binding")
@@ -518,7 +831,7 @@ def verify_runtime_identity(
         raise ValueError(
             "live server PID, start time, executable, or command line drifted"
         )
-    validate_server_process(
+    _, server_import_attestation = validate_server_process(
         live_snapshot,
         server_script=Path(identity["server_script"]),
         checkpoint_path=manifest_checkpoint_path,
@@ -526,12 +839,17 @@ def verify_runtime_identity(
         port=expected_port,
         checkpoint_manifest_sha256_value=checkpoint["checkpoint_manifest_sha256"],
         checkpoint_payload_sha256_value=checkpoint["checkpoint_payload_sha256"],
-        evaluation_manifest_sha256_value=evaluation_binding["manifest_sha256"],
+        evaluation_manifest_path=expected_evaluation_manifest,
+        evaluation_manifest=evaluation_manifest,
         python_executable=Path(
             evaluation_manifest["runtime"]["python"]["executable"]
         ),
         processor_model_path=Path(processor_asset["root"]),
     )
+    if identity.get("server_import_attestation") != server_import_attestation:
+        raise ValueError("runtime identity server import attestation differs")
+    if identity.get("promotion_eligible") is not True:
+        raise ValueError("runtime identity is not promotion eligible")
     return identity
 
 

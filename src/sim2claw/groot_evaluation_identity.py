@@ -7,15 +7,18 @@ import hashlib
 import importlib
 import importlib.metadata
 import json
+import os
 import platform
 import subprocess
 import sys
 from collections.abc import Iterable, Mapping
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 
 EVALUATION_MANIFEST_SCHEMA = "sim2claw.groot_evaluation_implementation.v1"
+SERVER_IMPORT_ATTESTATION_SCHEMA = "sim2claw.groot_server_import_attestation.v1"
 EVALUATION_IMPLEMENTATION_PATHS = (
     "scripts/brev/launch_groot_n17_multisource_eval_server.sh",
     "scripts/brev/run_groot_n17_chess_seeded_server.py",
@@ -56,6 +59,30 @@ RUNTIME_MODULES = (
     "gr00t.policy.policy",
     "gr00t.policy.server_client",
 )
+SERVER_ATTESTED_MODULES = RUNTIME_MODULES + (
+    "sim2claw.groot_consensus",
+    "sim2claw.groot_evaluation_identity",
+    "sim2claw.groot_server_identity",
+)
+SERVER_ENVIRONMENT_KEYS = (
+    "GROOT_BACKBONE_MODEL_PATH",
+    "GROOT_DIR",
+    "GROOT_PROCESSOR_MODEL_PATH",
+    "HF_HUB_OFFLINE",
+    "LD_PRELOAD",
+    "NO_ALBUMENTATIONS_UPDATE",
+    "PYTHONHASHSEED",
+    "PYTHONHOME",
+    "PYTHONINSPECT",
+    "PYTHONNOUSERSITE",
+    "PYTHONPATH",
+    "PYTHONSAFEPATH",
+    "PYTHONSTARTUP",
+    "PYTHONUSERBASE",
+    "SIM2CLAW_ROOT",
+    "TRANSFORMERS_OFFLINE",
+    "VIRTUAL_ENV",
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -93,7 +120,10 @@ def git_identity(root: Path, *, require_clean: bool) -> dict[str, Any]:
     resolved = root.resolve(strict=True)
     commit = _git(["rev-parse", "HEAD"], resolved)
     tree = _git(["rev-parse", "HEAD^{tree}"], resolved)
-    status = _git(["status", "--porcelain=v1", "--untracked-files=no"], resolved)
+    status = _git(
+        ["status", "--porcelain=v1", "--untracked-files=all"],
+        resolved,
+    )
     tracked_diff = _git_bytes(["diff", "--binary", "HEAD", "--"], resolved)
     if require_clean and status:
         raise ValueError(f"Git worktree must be clean for evaluation: {resolved}")
@@ -101,6 +131,8 @@ def git_identity(root: Path, *, require_clean: bool) -> dict[str, Any]:
         "root": str(resolved),
         "commit": commit,
         "tree": tree,
+        # Retain the historical field name for manifest compatibility.  It now
+        # intentionally includes untracked paths as well as tracked changes.
         "tracked_status": status.splitlines(),
         "tracked_diff_sha256": hashlib.sha256(tracked_diff).hexdigest(),
         "tracked_diff_size_bytes": len(tracked_diff),
@@ -278,6 +310,144 @@ def runtime_identity(groot_root: Path) -> dict[str, Any]:
         "package_inventories": package_inventories,
         "groot_git": git_identity(groot_root, require_clean=False),
     }
+
+
+def selected_server_environment(
+    environment: Mapping[str, str] | None = None,
+) -> dict[str, str | None]:
+    """Return only import- and identity-sensitive environment variables."""
+
+    source = os.environ if environment is None else environment
+    return {name: source.get(name) for name in SERVER_ENVIRONMENT_KEYS}
+
+
+def imported_module_inventory(
+    module_names: Iterable[str] = SERVER_ATTESTED_MODULES,
+) -> dict[str, dict[str, Any]]:
+    """Bind the actual files imported by the server process."""
+
+    inventory: dict[str, dict[str, Any]] = {}
+    for module_name in module_names:
+        module = importlib.import_module(module_name)
+        origin = getattr(module, "__file__", None)
+        if origin is None:
+            raise ValueError(f"server module has no import identity: {module_name}")
+        path = Path(origin).resolve(strict=True)
+        if not path.is_file():
+            raise ValueError(f"server module has no import identity: {module_name}")
+        inventory[module_name] = {
+            "path": str(path),
+            "sha256": sha256_file(path),
+            "size_bytes": path.stat().st_size,
+        }
+    return inventory
+
+
+def build_server_import_attestation(
+    *,
+    evaluation_manifest_path: Path,
+    repo_root: Path,
+    groot_root: Path,
+    processor_model_path: Path,
+    server_script: Path,
+    argv: list[str] | None = None,
+    created_at_utc: str | None = None,
+) -> dict[str, Any]:
+    """Emit proof from the process that actually imported and loaded GR00T."""
+
+    resolved_manifest = evaluation_manifest_path.resolve(strict=True)
+    manifest = verify_evaluation_manifest(
+        resolved_manifest,
+        repo_root=repo_root,
+        groot_root=groot_root,
+        runtime_assets={"processor_model": processor_model_path},
+    )
+    modules = imported_module_inventory()
+    expected_runtime_modules = manifest["runtime"].get("module_files", {})
+    for name in RUNTIME_MODULES:
+        if modules.get(name) != expected_runtime_modules.get(name):
+            raise ValueError(f"server runtime import drifted: {name}")
+
+    resolved_repo = repo_root.resolve(strict=True)
+    implementation_files = manifest["implementation_files"]
+    for name in SERVER_ATTESTED_MODULES:
+        if not name.startswith("sim2claw."):
+            continue
+        path = Path(modules[name]["path"])
+        try:
+            relative = path.relative_to(resolved_repo).as_posix()
+        except ValueError as error:
+            raise ValueError(f"server Sim2Claw import escaped its root: {name}") from error
+        if implementation_files.get(relative) != {
+            "sha256": modules[name]["sha256"],
+            "size_bytes": modules[name]["size_bytes"],
+        }:
+            raise ValueError(f"server Sim2Claw import is not frozen: {name}")
+
+    script = server_script.resolve(strict=True)
+    script_relative = script.relative_to(resolved_repo).as_posix()
+    script_identity = {
+        "sha256": sha256_file(script),
+        "size_bytes": script.stat().st_size,
+    }
+    if implementation_files.get(script_relative) != script_identity:
+        raise ValueError("seeded server script is not in the frozen implementation")
+
+    process_argv = argv
+    if process_argv is None:
+        raw_cmdline = Path("/proc/self/cmdline").read_bytes()
+        process_argv = [
+            part.decode("utf-8", errors="surrogateescape")
+            for part in raw_cmdline.split(b"\0")
+            if part
+        ]
+        if not process_argv:
+            raise ValueError("server process has an empty command line")
+    payload = {
+        "schema_version": SERVER_IMPORT_ATTESTATION_SCHEMA,
+        "created_at_utc": created_at_utc
+        or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "promotion_eligible_runtime_attestation": True,
+        "process": {
+            "pid": os.getpid(),
+            "executable": str(Path(sys.executable).resolve(strict=True)),
+            "cwd": str(Path.cwd().resolve(strict=True)),
+            "argv": process_argv,
+            "sys_path": list(sys.path),
+            "environment": selected_server_environment(),
+        },
+        "server_script": {
+            "path": str(script),
+            **script_identity,
+        },
+        "evaluation_implementation": {
+            "manifest_path": str(resolved_manifest),
+            "manifest_sha256": sha256_file(resolved_manifest),
+            "canonical_payload_sha256": manifest["canonical_payload_sha256"],
+            "implementation_inventory_sha256": manifest[
+                "implementation_inventory_sha256"
+            ],
+            "runtime_sha256": manifest["runtime_sha256"],
+            "runtime_assets_sha256": manifest["runtime_assets_sha256"],
+        },
+        "imported_modules": modules,
+        "imported_modules_sha256": canonical_sha256(modules),
+    }
+    payload["canonical_payload_sha256"] = canonical_sha256(payload)
+    return payload
+
+
+def load_server_import_attestation(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("schema_version") != SERVER_IMPORT_ATTESTATION_SCHEMA:
+        raise ValueError("unsupported GR00T server import attestation")
+    canonical = dict(payload)
+    recorded = canonical.pop("canonical_payload_sha256", None)
+    if canonical_sha256(canonical) != recorded:
+        raise ValueError("GR00T server import attestation canonical hash is invalid")
+    if payload.get("promotion_eligible_runtime_attestation") is not True:
+        raise ValueError("GR00T server import attestation is not promotable")
+    return payload
 
 
 def build_evaluation_manifest(

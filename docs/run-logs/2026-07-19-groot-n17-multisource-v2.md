@@ -146,6 +146,21 @@ all of the following agree:
   actions, integration states and digests, pawn/end-effector traces, contact
   traces, and grasp/release timing needed for independent replay scrutiny.
 
+The final repository hardening also removes alternate parser interpretations:
+an attested server accepts one complete, ordered `--option value` argv only and
+rejects duplicate options, `--option=value`, abbreviations, and unknown tokens.
+The live server now verifies the frozen evaluator and processor inventory from
+inside the process that imported GR00T, writes an exclusive hash-bound import
+attestation, and binds its PID, cwd, Python path, selected environment, and
+actual module origins into the client receipt. The client rehashes the complete
+checkpoint and processor directories before inference. Dataset preflight now
+requires unique contiguous task and episode metadata and exact agreement among
+the episode task string, task index, and parquet rows. Evaluation cleanliness
+includes untracked files, including executable, configuration, and
+`sitecustomize.py` shadow paths; server PID and log files are reserved with
+exclusive creation. These are prospective safeguards only and do not add a
+missing attestation or checkpoint-specific attribution to the completed run.
+
 The repository follow-up implements these gates for future runs only. It does
 not repair or relabel the completed run and does not authorize a rerun. The
 historical C8-to-A6 runner is explicitly marked off-product and refuses to run

@@ -19,7 +19,14 @@ class GrootMultisourceDatasetContractTests(unittest.TestCase):
             "global_indices": [10, 11, 12],
             "expected_global_index": 10,
             "task_indices": [2, 2, 2],
-            "task_count": 3,
+            "expected_task_index": 2,
+            "expected_task": "move the brown pawn from G2 to G1",
+            "episode_tasks": ["move the brown pawn from G2 to G1"],
+            "task_rows": [
+                {"task": "move the brown pawn from B1 to B2", "task_index": 0},
+                {"task": "move the brown pawn from C2 to C1", "task_index": 1},
+                {"task": "move the brown pawn from G2 to G1", "task_index": 2},
+            ],
             "video": {"width": 256, "height": 256, "frames": 3, "fps": 20},
         }
 
@@ -64,6 +71,27 @@ class GrootMultisourceDatasetContractTests(unittest.TestCase):
         fields = self.alignment_fields()
         fields["task_indices"] = [2, 1, 2]
         with self.assertRaisesRegex(ValueError, "task schedule drifted"):
+            validate_multisource_episode_alignment(**fields)  # type: ignore[arg-type]
+
+    def test_preflight_rejects_constant_wrong_task_swap(self) -> None:
+        fields = self.alignment_fields()
+        fields["task_indices"] = [1, 1, 1]
+        with self.assertRaisesRegex(ValueError, "task schedule drifted"):
+            validate_multisource_episode_alignment(**fields)  # type: ignore[arg-type]
+
+    def test_preflight_rejects_episode_task_string_swap(self) -> None:
+        fields = self.alignment_fields()
+        fields["episode_tasks"] = ["move the brown pawn from C2 to C1"]
+        with self.assertRaisesRegex(ValueError, "episode task identity drifted"):
+            validate_multisource_episode_alignment(**fields)  # type: ignore[arg-type]
+
+    def test_preflight_rejects_noncontiguous_or_duplicate_task_metadata(self) -> None:
+        fields = self.alignment_fields()
+        fields["task_rows"] = [
+            {"task": "duplicate", "task_index": 0},
+            {"task": "duplicate", "task_index": 2},
+        ]
+        with self.assertRaisesRegex(ValueError, "not contiguous"):
             validate_multisource_episode_alignment(**fields)  # type: ignore[arg-type]
 
     def test_preflight_rejects_index_misalignment(self) -> None:

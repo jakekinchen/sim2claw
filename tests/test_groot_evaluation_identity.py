@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
 
 from sim2claw.groot_evaluation_identity import (
     build_evaluation_manifest,
+    git_identity,
     load_evaluation_manifest,
     runtime_package_inventory,
     verify_evaluation_manifest,
@@ -125,6 +127,38 @@ class GrootEvaluationIdentityTests(unittest.TestCase):
                 runtime=self.runtime,
                 runtime_assets={"processor_model": asset},
             )
+
+    def test_require_clean_rejects_all_untracked_shadow_paths(self) -> None:
+        repository = self.root / "cleanliness-repository"
+        repository.mkdir()
+        tracked = repository / "tracked.py"
+        tracked.write_text("VALUE = 1\n", encoding="utf-8")
+        for command in (
+            ["git", "init", "-q"],
+            ["git", "config", "user.email", "test@example.invalid"],
+            ["git", "config", "user.name", "Hermetic Test"],
+            ["git", "add", "tracked.py"],
+            ["git", "commit", "-qm", "fixture"],
+        ):
+            subprocess.run(command, cwd=repository, check=True)
+        (repository / "scripts").mkdir()
+        executable = repository / "scripts" / "shadow_server.py"
+        executable.write_text("#!/usr/bin/env python3\n", encoding="utf-8")
+        executable.chmod(0o755)
+        (repository / "configs").mkdir()
+        (repository / "configs" / "shadow.json").write_text(
+            "{}\n", encoding="utf-8"
+        )
+        (repository / "sitecustomize.py").write_text(
+            "raise RuntimeError('shadow')\n", encoding="utf-8"
+        )
+        observed = git_identity(repository, require_clean=False)
+        self.assertEqual(
+            set(observed["tracked_status"]),
+            {"?? configs/shadow.json", "?? scripts/shadow_server.py", "?? sitecustomize.py"},
+        )
+        with self.assertRaisesRegex(ValueError, "must be clean"):
+            git_identity(repository, require_clean=True)
 
 
 if __name__ == "__main__":

@@ -3,11 +3,11 @@
 
 from __future__ import annotations
 
-import argparse
 import hashlib
 import os
 import random
 import signal
+import sys
 from contextlib import contextmanager
 from collections.abc import Iterator
 from pathlib import Path
@@ -25,6 +25,11 @@ from sim2claw.groot_consensus import (
     proposal_seed,
     query_seed,
 )
+from sim2claw.groot_evaluation_identity import (
+    build_server_import_attestation,
+    write_json_exclusive,
+)
+from sim2claw.groot_server_identity import parse_seeded_server_argv
 
 
 def seed_policy_rng(seed: int) -> None:
@@ -305,47 +310,39 @@ class SeededResetPolicy(PolicyWrapper):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model-path", required=True)
-    parser.add_argument("--processor-model-path")
-    parser.add_argument("--embodiment-tag", default="new_embodiment")
-    parser.add_argument("--device", default="cuda")
-    parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=5555)
-    parser.add_argument("--proposal-count", type=int, default=1)
-    parser.add_argument(
-        "--action-aggregation",
-        choices=sorted(AGGREGATION_METHODS),
-        default="medoid",
-    )
-    parser.add_argument("--noise-scale", type=float, default=1.0)
-    parser.add_argument("--num-inference-timesteps", type=int)
-    parser.add_argument("--checkpoint-manifest-sha256")
-    parser.add_argument("--checkpoint-payload-sha256")
-    parser.add_argument("--evaluation-manifest-sha256")
-    parser.add_argument("--maximum-runtime-seconds", type=int)
-    args = parser.parse_args()
+    try:
+        args = parse_seeded_server_argv(sys.argv[1:])
+    except ValueError as error:
+        raise SystemExit(f"invalid seeded server argv: {error}") from error
     if args.proposal_count < 1:
-        parser.error("--proposal-count must be positive")
+        raise SystemExit("--proposal-count must be positive")
     if args.action_aggregation == "trimmed_mean" and args.proposal_count < 5:
-        parser.error("trimmed_mean requires --proposal-count of at least 5")
+        raise SystemExit("trimmed_mean requires --proposal-count of at least 5")
     if not 0.0 <= args.noise_scale <= 1.0:
-        parser.error("--noise-scale must be between 0 and 1")
+        raise SystemExit("--noise-scale must be between 0 and 1")
     if args.num_inference_timesteps is not None and not (
         1 <= args.num_inference_timesteps <= 16
     ):
-        parser.error("--num-inference-timesteps must be between 1 and 16")
+        raise SystemExit("--num-inference-timesteps must be between 1 and 16")
     identity_digests = (
         args.checkpoint_manifest_sha256,
         args.checkpoint_payload_sha256,
         args.evaluation_manifest_sha256,
     )
-    if any(identity_digests) and not all(identity_digests):
-        parser.error(
-            "checkpoint and evaluation manifest digests must be provided together"
+    attestation_fields = (
+        *identity_digests,
+        args.evaluation_manifest,
+        args.sim2claw_root,
+        args.groot_root,
+        args.server_import_identity,
+    )
+    if any(attestation_fields) and not all(attestation_fields):
+        raise SystemExit(
+            "checkpoint, evaluation, roots, and server attestation identity must "
+            "be provided together"
         )
-    if all(identity_digests) and args.processor_model_path is None:
-        parser.error(
+    if all(attestation_fields) and args.processor_model_path is None:
+        raise SystemExit(
             "--processor-model-path is required with checkpoint identity digests"
         )
     for label, value in (
@@ -357,34 +354,34 @@ def main() -> None:
             try:
                 decoded = bytes.fromhex(value)
             except ValueError:
-                parser.error(f"{label} digest is not hexadecimal")
+                raise SystemExit(f"{label} digest is not hexadecimal")
             if len(decoded) != hashlib.sha256().digest_size:
-                parser.error(f"{label} digest is not SHA-256")
+                raise SystemExit(f"{label} digest is not SHA-256")
     if args.processor_model_path is not None:
         try:
             processor_path = str(
                 Path(args.processor_model_path).resolve(strict=True)
             )
         except (OSError, RuntimeError) as error:
-            parser.error(f"processor model path is unavailable: {error}")
+            raise SystemExit(f"processor model path is unavailable: {error}")
         for environment_name in (
             "GROOT_PROCESSOR_MODEL_PATH",
             "GROOT_BACKBONE_MODEL_PATH",
         ):
             environment_path = os.environ.get(environment_name)
             if environment_path is None:
-                parser.error(f"{environment_name} is not set")
+                raise SystemExit(f"{environment_name} is not set")
             try:
                 resolved_environment_path = str(
                     Path(environment_path).resolve(strict=True)
                 )
             except (OSError, RuntimeError) as error:
-                parser.error(f"{environment_name} is unavailable: {error}")
+                raise SystemExit(f"{environment_name} is unavailable: {error}")
             if resolved_environment_path != processor_path:
-                parser.error(f"{environment_name} differs from the bound path")
+                raise SystemExit(f"{environment_name} differs from the bound path")
     if args.maximum_runtime_seconds is not None:
         if args.maximum_runtime_seconds < 1:
-            parser.error("--maximum-runtime-seconds must be positive")
+            raise SystemExit("--maximum-runtime-seconds must be positive")
         signal.alarm(args.maximum_runtime_seconds)
 
     seed_policy_rng(0)
@@ -394,6 +391,15 @@ def main() -> None:
         device=args.device,
         strict=False,
     )
+    if args.server_import_identity is not None:
+        attestation = build_server_import_attestation(
+            evaluation_manifest_path=Path(args.evaluation_manifest),
+            repo_root=Path(args.sim2claw_root),
+            groot_root=Path(args.groot_root),
+            processor_model_path=Path(processor_path),
+            server_script=Path(__file__),
+        )
+        write_json_exclusive(Path(args.server_import_identity), attestation)
     server = PolicyServer(
         policy=SeededResetPolicy(
             policy,
