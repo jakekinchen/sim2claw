@@ -1578,16 +1578,16 @@ function renderRobots() {
 }
 
 const jointNames = ["Shoulder pan", "Shoulder lift", "Elbow", "Wrist flex", "Wrist roll", "Gripper"];
+const boardFiles = "abcdefgh";
 const brownPawnSquares = ["a2", "b1", "c2", "d1", "e2", "f1", "g2", "h1"];
 const tanPawnSquares = ["a8", "b7", "c8", "d7", "e8", "f7", "g8", "h7"];
-const pawnSourceSquares = brownPawnSquares;
-const reachableDestinationSquares = [
+const lowerTwoRowSquares = boardFiles.split("").flatMap((file) => [`${file}1`, `${file}2`]);
+const simulatorDestinationSquares = [
   "a1", "c1", "e1", "g1",
   "b2", "d2", "f2", "h2",
   "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
   "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
 ];
-const boardFiles = "abcdefgh";
 const recorderSettingsKey = "sim2claw.recorder.settings.v3";
 const defaultRecorderSettings = Object.freeze({
   mode: "simulation_follower",
@@ -1600,14 +1600,21 @@ function loadRecorderSettings() {
   try {
     const stored = JSON.parse(localStorage.getItem(recorderSettingsKey) || "null");
     if (!stored || typeof stored !== "object") return { ...defaultRecorderSettings };
+    const storedMode = ["simulation_follower", "physical_follower"].includes(stored.mode)
+      ? stored.mode
+      : defaultRecorderSettings.mode;
+    const storedSourceSquares = storedMode === "physical_follower"
+      ? lowerTwoRowSquares
+      : brownPawnSquares;
+    const storedDestinationSquares = storedMode === "physical_follower"
+      ? lowerTwoRowSquares
+      : simulatorDestinationSquares;
     return {
-      mode: ["simulation_follower", "physical_follower"].includes(stored.mode)
-        ? stored.mode
-        : defaultRecorderSettings.mode,
-      source_square: pawnSourceSquares.includes(stored.source_square)
+      mode: storedMode,
+      source_square: storedSourceSquares.includes(stored.source_square)
         ? stored.source_square
         : defaultRecorderSettings.source_square,
-      target_square: reachableDestinationSquares.includes(stored.target_square)
+      target_square: storedDestinationSquares.includes(stored.target_square)
         ? stored.target_square
         : defaultRecorderSettings.target_square,
       sample_hz: Number(stored.sample_hz) === 20
@@ -1634,6 +1641,18 @@ function persistRecorderSettings() {
 
 function selectedRecorderMode() {
   return document.querySelector('input[name="recorder-mode"]:checked')?.value || "simulation_follower";
+}
+
+function recorderSourceSquares() {
+  return selectedRecorderMode() === "physical_follower"
+    ? lowerTwoRowSquares
+    : brownPawnSquares;
+}
+
+function recorderDestinationSquares() {
+  return selectedRecorderMode() === "physical_follower"
+    ? lowerTwoRowSquares
+    : simulatorDestinationSquares;
 }
 
 function setPreflightItem(element, ready, detail) {
@@ -1907,7 +1926,7 @@ async function syncPhysicalFollower() {
 
 function updateDestinationOptions(preferred = elements.target.value || "b2") {
   elements.target.replaceChildren();
-  for (const square of reachableDestinationSquares) {
+  for (const square of recorderDestinationSquares()) {
     const option = document.createElement("option");
     option.value = square;
     text(option, square.toUpperCase());
@@ -1925,10 +1944,14 @@ function boardSquareDescription(square) {
 
 function updatePawnBoardInteractivity(locked = elements.sourceSquare.disabled) {
   const selectingSource = state.pawnBoardSelectionStep === "source";
-  const validSquares = selectingSource ? pawnSourceSquares : reachableDestinationSquares;
+  const validSquares = selectingSource ? recorderSourceSquares() : recorderDestinationSquares();
   const instruction = selectingSource
-    ? "Choose source pawn · click a brown pawn"
-    : "Choose destination · click an empty square in rows 1–4";
+    ? selectedRecorderMode() === "physical_follower"
+      ? "Choose source square · click any lower-row square"
+      : "Choose source pawn · click a brown pawn"
+    : selectedRecorderMode() === "physical_follower"
+      ? "Choose destination · click any lower-row square"
+      : "Choose destination · click an empty square in rows 1–4";
   text(elements.pawnBoardInstruction, locked ? "Board selection is locked while recording" : instruction);
   elements.pawnPreviewBoard.dataset.selectionStep = state.pawnBoardSelectionStep;
   elements.pawnPreviewBoard.setAttribute("aria-disabled", String(locked));
@@ -1945,11 +1968,11 @@ function updatePawnBoardInteractivity(locked = elements.sourceSquare.disabled) {
 
 function selectPawnBoardSquare(square) {
   if (state.pawnBoardSelectionStep === "source") {
-    if (!pawnSourceSquares.includes(square)) return;
+    if (!recorderSourceSquares().includes(square)) return;
     elements.sourceSquare.value = square;
     state.pawnBoardSelectionStep = "destination";
   } else {
-    if (!reachableDestinationSquares.includes(square)) return;
+    if (!recorderDestinationSquares().includes(square)) return;
     elements.target.value = square;
     state.pawnBoardSelectionStep = "source";
   }
@@ -1960,12 +1983,21 @@ function selectPawnBoardSquare(square) {
 function renderPawnMovePreview() {
   const source = elements.sourceSquare.value || "b1";
   const destination = elements.target.value || "b2";
+  const physical = selectedRecorderMode() === "physical_follower";
+  const sourceLabel = physical && !brownPawnSquares.includes(source)
+    ? "source square"
+    : "brown pawn";
   text(elements.pawnPreviewSource, source.toUpperCase());
   text(elements.pawnPreviewTarget, destination.toUpperCase());
-  text(elements.pawnPreviewDescription, `Move the brown pawn from ${source.toUpperCase()} to ${destination.toUpperCase()}. Brown and tan pawns not selected remain in place.`);
+  text(
+    elements.pawnPreviewDescription,
+    physical
+      ? `Record the ${sourceLabel} from ${source.toUpperCase()} to ${destination.toUpperCase()}. Physical source metadata is not constrained by the sparse simulator layout.`
+      : `Move the brown pawn from ${source.toUpperCase()} to ${destination.toUpperCase()}. Brown and tan pawns not selected remain in place.`,
+  );
   elements.pawnPreviewBoard.setAttribute(
     "aria-label",
-    `Brown pawn movement from ${source.toUpperCase()} to ${destination.toUpperCase()} on a two-sided sparse pawn board`,
+    `${physical ? "Physical source-square movement" : "Brown pawn movement"} from ${source.toUpperCase()} to ${destination.toUpperCase()} on a two-sided sparse pawn board`,
   );
   elements.pawnPreviewBoard.replaceChildren();
   for (const rank of [8, 7, 6, 5, 4, 3, 2, 1]) {
@@ -2012,19 +2044,48 @@ function renderPawnMovePreview() {
 
 function initializeRecorderForm() {
   const settings = loadRecorderSettings();
-  for (const square of pawnSourceSquares) {
+  const mode = document.querySelector(`input[name="recorder-mode"][value="${settings.mode}"]`);
+  if (mode) mode.checked = true;
+  for (const square of recorderSourceSquares()) {
     const option = document.createElement("option");
     option.value = square;
-    text(option, `${square.toUpperCase()} · brown pawn`);
+    text(
+      option,
+      `${square.toUpperCase()} · ${brownPawnSquares.includes(square) ? "brown pawn" : "source square"}`,
+    );
     elements.sourceSquare.append(option);
   }
   elements.sourceSquare.value = settings.source_square;
   updateDestinationOptions(settings.target_square);
   elements.sampleHz.value = String(settings.sample_hz);
-  const mode = document.querySelector(`input[name="recorder-mode"][value="${settings.mode}"]`);
-  if (mode) mode.checked = true;
   renderPawnMovePreview();
   renderJointMonitor(null);
+}
+
+function refreshRecorderSquareOptions() {
+  const source = elements.sourceSquare.value;
+  const target = elements.target.value;
+  elements.sourceSquare.replaceChildren();
+  for (const square of recorderSourceSquares()) {
+    const option = document.createElement("option");
+    option.value = square;
+    text(
+      option,
+      `${square.toUpperCase()} · ${brownPawnSquares.includes(square) ? "brown pawn" : "source square"}`,
+    );
+    elements.sourceSquare.append(option);
+  }
+  elements.sourceSquare.value = recorderSourceSquares().includes(source)
+    ? source
+    : recorderSourceSquares()[0];
+  updateDestinationOptions(
+    recorderDestinationSquares().includes(target)
+      ? target
+      : recorderDestinationSquares()[0],
+  );
+  state.pawnBoardSelectionStep = "source";
+  renderPawnMovePreview();
+  persistRecorderSettings();
 }
 
 function setActiveView(view, { updateRoute = true } = {}) {
@@ -2221,6 +2282,7 @@ elements.railClose.addEventListener("click", () => {
   elements.mobileBrowserToggle.setAttribute("aria-expanded", "false");
 });
 document.querySelectorAll('input[name="recorder-mode"]').forEach((input) => input.addEventListener("change", () => {
+  refreshRecorderSquareOptions();
   persistRecorderSettings();
   renderRecorder();
   state.liveSimViewer?.setActive(

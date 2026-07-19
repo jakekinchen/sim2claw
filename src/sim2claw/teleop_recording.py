@@ -67,6 +67,11 @@ DEFAULT_SAMPLE_HZ = 20
 LIVE_SIMULATION_SCHEMA = "sim2claw.live_simulation_recorder.v1"
 LABEL_PATTERN = re.compile(r"[^a-z0-9]+")
 RECORDER_SOURCE_CONTRACT_PATH = CONTRACT_PATH_V4
+LOWER_TWO_ROW_SQUARES = tuple(
+    f"{file_name}{rank}"
+    for file_name in "abcdefgh"
+    for rank in ("1", "2")
+)
 
 
 class RecorderError(RuntimeError):
@@ -883,15 +888,31 @@ class TeleopRecordingManager:
             str(piece_id).rsplit("_", 1)[-1]: str(piece_id)
             for piece_id in contract["scene"]["source_piece_ids"]
         }
-        if source_square not in source_pieces_by_square:
-            raise RecorderError(
-                "Choose one of the eight lower-side brown pawn source squares."
+        if mode == "physical_follower":
+            if source_square not in LOWER_TWO_ROW_SQUARES:
+                raise RecorderError(
+                    "Choose a source square in lower rows 1 or 2."
+                )
+            # Physical command traces keep the operator's square as metadata;
+            # the physical backend does not require a MuJoCo body at that square.
+            piece_id = source_pieces_by_square.get(
+                source_square, f"brown_pawn_{source_square}"
             )
-        piece_id = source_pieces_by_square[source_square]
+        else:
+            if source_square not in source_pieces_by_square:
+                raise RecorderError(
+                    "Choose one of the brown pawns present in the simulator scene."
+                )
+            piece_id = source_pieces_by_square[source_square]
         target_square = str(request.get("target_square") or "").lower()
-        if target_square not in set(contract["scene"]["destination_squares"]):
+        allowed_destinations = (
+            set(LOWER_TWO_ROW_SQUARES)
+            if mode == "physical_follower"
+            else set(contract["scene"]["destination_squares"])
+        )
+        if target_square not in allowed_destinations:
             raise RecorderError(
-                "Choose an unoccupied destination square in rows 1 through 4."
+                "Choose a destination square in the supported lower-board area."
             )
         resolve_structured_goal(piece_id, target_square)
         sample_hz = int(request.get("sample_hz") or DEFAULT_SAMPLE_HZ)

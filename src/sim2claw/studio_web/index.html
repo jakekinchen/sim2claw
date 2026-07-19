@@ -207,9 +207,9 @@
               </article>
 
               <article class="recorder-card">
-                <header class="recorder-card-heading">
-                  <span class="recorder-step">02</span>
-                  <div><h2>Set pawn movement</h2><p>Choose a brown pawn from rows 1–2 and an empty destination on the lower half of the board.</p></div>
+                  <header class="recorder-card-heading">
+                    <span class="recorder-step">02</span>
+                  <div><h2>Set pawn movement</h2><p>Physical recording accepts any source and destination square in lower rows 1–2. Simulator recording keeps the modeled sparse-pawn and empty-destination guard.</p></div>
                 </header>
                 <div class="recorder-fields metadata-fields">
                   <label><span>Source pawn</span><select id="record-source-square"></select></label>
@@ -221,7 +221,7 @@
                     <span class="section-label">Episode preview</span>
                     <h3 id="pawn-preview-title"><span id="pawn-preview-source">B1</span> <i aria-hidden="true">→</i> <span id="pawn-preview-target">B2</span></h3>
                     <p id="pawn-preview-description">Move the brown pawn from B1 to B2. Brown and tan pawns not selected remain in place.</p>
-                    <details><summary>More info</summary><p>Brown pawns occupy A2, B1, C2, D1, E2, F1, G2, and H1. Tan pawns occupy the mirrored A8, B7, C8, D7, E8, F7, G8, and H7 side. Destinations are limited to unoccupied squares in rows 1–4. The saved receipt records both squares, the 100 mm board pose, and the two-sided layout identity.</p></details>
+                    <details><summary>More info</summary><p>Brown pawns occupy A2, B1, C2, D1, E2, F1, G2, and H1. Tan pawns occupy the mirrored A8, B7, C8, D7, E8, F7, G8, and H7 side. Physical recordings accept any source or destination square in A1–H2; simulator recordings keep the modeled sparse-pawn and empty-destination guard. The saved receipt records both squares, the 100 mm board pose, and the two-sided layout identity.</p></details>
                   </div>
                   <div class="pawn-board-shell">
                     <p class="pawn-board-instruction" id="pawn-board-instruction" aria-live="polite">Choose source pawn · click a brown pawn</p>

@@ -412,8 +412,8 @@ class TeleopRecordingTest(unittest.TestCase):
         started = self.manager.start(
             {
                 "mode": "physical_follower",
-                "source_square": "b1",
-                "target_square": "b2",
+                "source_square": "a1",
+                "target_square": "h2",
                 "sample_hz": 20,
                 "physical_safety_acknowledged": True,
                 "server_owned_prestart_sequence": True,
@@ -448,6 +448,8 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertEqual(receipt["source_sample_schema"], PHYSICAL_SAMPLE_SCHEMA)
         self.assertIsNone(receipt["rgb_streams"])
         self.assertTrue(receipt["physical_motion_recorded"])
+        self.assertEqual(receipt["source_square"], "a1")
+        self.assertEqual(receipt["destination_square"], "h2")
         self.assertTrue((destination / "overhead_c922.mp4").is_file())
         replay = replay_physical_recording(destination)
         self.assertEqual(replay["sample_count"], len(rows))
@@ -612,7 +614,7 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertIsNone(overhead["teleoperation_start_video_offset_seconds"])
 
     def test_pawn_metadata_rejects_unknown_source_and_unreachable_destination(self) -> None:
-        with self.assertRaisesRegex(RecorderError, "lower-side brown pawn"):
+        with self.assertRaisesRegex(RecorderError, "present in the simulator scene"):
             self.manager.start(
                 {
                     "mode": "simulation_follower",
@@ -620,7 +622,7 @@ class TeleopRecordingTest(unittest.TestCase):
                     "target_square": "b2",
                 }
             )
-        with self.assertRaisesRegex(RecorderError, "rows 1 through 4"):
+        with self.assertRaisesRegex(RecorderError, "supported lower-board area"):
             self.manager.start(
                 {
                     "mode": "simulation_follower",
