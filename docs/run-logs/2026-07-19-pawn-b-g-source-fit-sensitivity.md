@@ -197,6 +197,81 @@ corrected render shows the arm entering from the same right/bottom side as the
 physical panel. The angle transfer is visual-only, not an accepted camera
 calibration or evaluator input.
 
+## Owner-corrected B-G appearance and joint-state replay
+
+A later owner review corrected four display facts for the comparison surface:
+
+- the beige and brown board-square colors are exchanged;
+- the rendered pawn colors are exchanged between the two sides;
+- the robot-side sparse row contains exactly `B1, C2, D1, E2, F1, G2`;
+- robot-side A/H pawn bodies are absent from this review scene.
+
+These corrections are isolated in the B-G review renderer as visual layout
+`two_sided_sparse_pawns_bg_rows_1_2_7_8_visual_v1`. Semantic piece IDs are not
+renamed, and the shared scene source was restored byte-for-byte to SHA-256
+`5247d7ef694ef56721124d7e8a1fbb832e29789bcc1842cdfd1340ee980293ee`.
+That preserved the frozen evaluator, Studio source receipts, and historical
+replay-limit audit. The display layout does not change or rescore the frozen
+source-fit benchmark.
+
+The B1 comparison now has two explicitly separate trajectory modes:
+
+1. `measured_actual_state`: each simulator joint is placed at the hash-bound
+   follower encoder state after applying the best rejected adapter, then
+   `mj_forward` is called. This is kinematic display only. It does not step a
+   commanded arm trajectory and has no reward, contact, or dynamics authority.
+2. `command_driven_physics`: the original source command is applied to the
+   unchanged MuJoCo actuators and physics is stepped. This remains the relevant
+   motion-model diagnostic, but the adapter is still rejected and its displayed
+   score is the already frozen command-replay score.
+
+The measured-state replay has zero simulator-minus-mapped-encoder error by
+construction. The command-driven comparison against the same 368 B1 samples
+reported:
+
+| Joint | Physical command-actual RMS | Sim-mapped-actual RMS | Maximum absolute error |
+|---|---:|---:|---:|
+| shoulder pan | 1.704921 deg | 1.827787 deg | 6.482854 deg |
+| shoulder lift | 3.169448 deg | 3.237364 deg | 7.797788 deg |
+| elbow flex | 3.293654 deg | 3.330314 deg | 5.927254 deg |
+| wrist flex | 2.398791 deg | 2.510251 deg | 5.877803 deg |
+| wrist roll | 2.236267 deg | 2.369269 deg | 9.359462 deg |
+| gripper | n/a | 0.038224 actuator RMS | 0.173901 actuator |
+
+For the shoulder lift, 49/368 rows met the fixed descriptive heuristic:
+measured change below 0.5 degree per sample while absolute command-minus-actual
+error exceeded 2 degrees. The same heuristic also fires on other joints
+(including 101 elbow rows), so it is evidence of stalls/holds under tracking
+error, not proof that a visible plastic part is a mechanical stop. No joint
+limit, gain, damping, action semantics, or evaluator threshold was fitted.
+The existing sysid contract correctly forbids promotion while the joint frame
+adapter is rejected and no permitted physical held-out validation is available.
+
+Final ignored artifacts:
+
+- measured-state video SHA-256:
+  `500c4ef5543f60f5350e16eaf0ba02485c572ef845ba0c89fee8ad3f84feed47`
+- measured-state poster SHA-256:
+  `d94f0cf86b8ca40c9b1e2e282da35e7e19e01f77c7575c2afa36c83042219fb9`
+- measured-state tracking JSON/chart SHA-256:
+  `41525c88c5d2ba08ecaff92975bf5a364ffd148266405cf724e5cd13f568d14f` /
+  `e19d236810f3c6e73ce8349a630ecc40c616fd680c667c83a85e07784e4376cf`
+- measured-state comparison receipt SHA-256:
+  `c07d54a748eadf39c5879e92ff1df88e5d1ab9b6c98e9f38e87d81bb6ee88d0b`
+- command-driven video SHA-256:
+  `78f40b3a96facdd7ac0b28267724f6a67bf4a67e4472110a216dc1f9dbb91ad0`
+- command-driven poster SHA-256:
+  `14aeaeeaebb8a7f93a80e5762500551430b6b9ae6c7645de620419ff6d41cf9b`
+- command-driven tracking JSON/chart SHA-256:
+  `62b0c21dfc4f7d248bfd25154fc22aa2c11587213b90d828f1f80ed7aed0cc0b` /
+  `695cce471518c6c9c695a4802aa95554257a8b60f8c9727527bf9b5e8bace9c8`
+- command-driven comparison receipt SHA-256:
+  `919a0b942ee48afbc58e382dc5b3f06a10757789b33e1024a29e2fbe6c301e9f`
+
+Post-repair verification passed: 44 focused tests and 2 subtests, then 404
+full-suite tests and 306 subtests in 21.78 seconds; `uv lock --check`, source
+distribution and wheel build, and `git diff --check` also passed.
+
 ## Commands
 
 ```bash
@@ -209,6 +284,15 @@ uv run sim2claw pawn-bg-source-fit-visuals \
   --receipt outputs/pawn_bg_act_v1/pawn_bg_source_fit_v1/receipt.json \
   --folder-label b1-to-b2 \
   --simulation-camera c922-angle-transfer \
+  --trajectory-mode measured-actual-state \
+  --output-directory outputs/pawn_bg_act_v1/pawn_bg_source_fit_v1/visuals
+
+uv run sim2claw pawn-bg-source-fit-visuals \
+  --source-repository-root /Users/kelly/Developer/sim2claw \
+  --receipt outputs/pawn_bg_act_v1/pawn_bg_source_fit_v1/receipt.json \
+  --folder-label b1-to-b2 \
+  --simulation-camera c922-angle-transfer \
+  --trajectory-mode command-driven-physics \
   --output-directory outputs/pawn_bg_act_v1/pawn_bg_source_fit_v1/visuals
 ```
 
