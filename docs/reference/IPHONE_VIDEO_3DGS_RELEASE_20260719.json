@@ -39,6 +39,30 @@
     "implementation_origin": "fresh_clean_room_authorship_from_reviewed_requirements_and_public_dependency_interfaces",
     "prior_repository_code_copied": false
   },
+  "studio_view": {
+    "provenance": "Robo Scanner viewer-config.json",
+    "provenance_sha256": "bbdf33065289a1617246f10e6cadcaf2d88ebfdaabb5eb21c46291d1d4ae26ac",
+    "provenance_availability": "producer_workspace_only_not_tracked_in_sim2claw",
+    "hash_verifiable_in_repository": false,
+    "exact_camera_center": [
+      -0.8071585686395,
+      -0.43432124671395594,
+      -1.9422242040843467
+    ],
+    "exact_camera_world_to_camera_rotation": [
+      [-0.09328779841244406, -0.3581832157251654, 0.9289791012935323],
+      [0.4748616949516027, 0.8040821290447313, 0.35771259471618155],
+      [-0.8751021410869994, 0.47450681104033876, 0.09507643736109372]
+    ],
+    "exact_camera_vertical_fov_degrees": 97.71423446638285,
+    "preferred_target": [
+      -5.316663418972412,
+      1.1488539806522868,
+      -1.3375457247044131
+    ],
+    "preferred_radius": 4.817438516384764,
+    "coordinate_scale_authority": "relative_sfm_only"
+  },
   "authority": {
     "real_video_3dgs": true,
     "metric_scale": false,
@@ -50,4 +74,3 @@
     "robot_control": false
   }
 }
-

@@ -1,6 +1,6 @@
 # Browser Visualization Studio
 
-Status: implemented for local replay, on-demand live inspection, process observation, and gated ACT source recording
+Status: implemented for local replay, multi-feed evidence, interactive 3DGS visual calibration, on-demand live inspection, process observation, and gated ACT source recording
 
 Date: 2026-07-18 America/Chicago
 
@@ -13,6 +13,10 @@ is to make repo-native simulation evidence legible:
 - episodes play as interactive 3D MuJoCo state traces, video, or frame
   sequences and expose a scrubber, phase rail, timecode, proof class,
   evaluator result, and selected metrics;
+- physical release episodes keep the source recording and overhead, side, and
+  wrist command-replay feeds selectable on the same bounded episode timeline;
+- Calibration renders the exact, checksummed Robo Scanner Gaussian PLY with
+  orbit and relative translate/rotate/scale controls beside a simulation datum;
 - the live rail observes training, evaluation, dataset export, and simulation
   processes;
 - the arm-status control opens a leased physical-joint mirror or three
@@ -20,7 +24,24 @@ is to make repo-native simulation evidence legible:
 - the robot bench shows which embodiments are present in the MuJoCo scene;
 - all views preserve the difference between a convincing replay and authority.
 
-Replay, Library, Robots, and process observation remain read-only. The Record
+## Display-only LLM scene proposal
+
+Calibration exposes the tracked
+`configs/scenes/robo_scanner_llm_workcell_v1.json` contract. It records the
+checksummed source video and Gaussian Splat, LLM visual observations, the
+semantic scene hierarchy, reproducible prompt/output hashes, review state, and
+explicit authority limits. The browser renders the hierarchy as read-only text.
+Separately, it renders the accepted MuJoCo manifest as a translucent Three.js
+layer on the fixed simulation datum while the 3DGS remains movable with
+relative translation, rotation, and scale controls.
+
+This is a comparison surface, not an implemented promotion path. LLM analysis
+may propose objects, relationships, and approximate geometry. The current code
+does not consume hierarchy body-name mappings, compile the JSON, promote it, or
+use it to drive MuJoCo or Three.js. It cannot establish metric scale, collision
+geometry, task coordinates, evaluator proof, or physical-control authority.
+
+Replay, Library, Calibration, Robots, and process observation remain read-only. The Record
 view adds one narrow exception: when the server binds to loopback, it may open
 the identified physical leader with torque disabled and use its joint targets
 to control the MuJoCo follower. It has no command-launch, network gateway, or
@@ -55,17 +76,42 @@ non-loopback host exposes generated visual artifacts without authentication;
 do that only inside a separately protected network boundary. Recorder POST
 endpoints are disabled on non-loopback binds.
 
-The Record metadata surface mirrors the current physical test layout. Brown
-pawns remain at A2, B1, C2, D1, E2, F1, G2, and H1. Tan pawns occupy A8, B7,
-C8, D7, E8, F7, G8, and H7. The 72 mm workcell update leaves the brown side
-outside the left arm's verified IK envelope, so new canonical source collection
-selects tan pawns and reachable empty destinations A5–F5 plus A6–H6; G5 and H5
-remain outside the frozen IK residual limit. A generated
-full-board preview marks the selected pawn, destination, all
+### Verified private release intake
+
+Studio does not treat another machine's directory layout as proof of parity.
+It consumes source-free release assets only after their sizes and SHA-256
+digests match the tracked manifests:
+
+- `docs/reference/IPHONE_VIDEO_3DGS_RELEASE_20260719.json` indexes the exact
+  334,537-splat PLY, preview, orbit, and original-video identity;
+- `docs/reference/PHYSICAL_REPLAY_RELEASE_20260719.json` indexes the source
+  overhead MP4, three replay MKVs, and receipts;
+- downloaded assets live below ignored
+  `artifacts/private/releases/<release>/` paths, never in Git;
+- `scripts/prepare_studio_private_releases.py` verifies each original replay
+  feed before losslessly remuxing its H.264 stream from MKV to browser-seekable
+  MP4 and writing an ignored integration receipt.
+
+The catalog admits only exact manifest-listed private media whose resolved
+path, size, and SHA-256 all verify; derived browser MP4s must additionally bind
+to a verified source asset in the ignored integration receipt. Traversal,
+absolute names, separators, symlinks, unlisted files, and hash drift are
+rejected. The 3DGS is
+relative monocular visual context only: it cannot establish metric scale,
+measured geometry, RGB-D, collision geometry, task coordinates, evaluator
+success, learned-policy evidence, gateway authority, or robot motion.
+
+The Record metadata surface uses the current 100 mm workcell and explicit
+B1↔B2 contract. Simulator-follower mode defaults to B1→B2 on the canonical
+brown-pawn pattern A2, B1, C2, D1, E2, F1, G2, and H1, with tan pawns mirrored
+on A8, B7, C8, D7, E8, F7, G8, and H7. Physical-follower mode defaults to the
+reverse B2→B1 labeling on the lower-side physical pattern A1, B2, C1, D2, E1,
+F2, G1, and H2; selectable squares remain explicitly validated by the recorder.
+A generated full-board preview marks the selected pawn, destination, all
 remaining pawns, and move arrow. New recording, physical-command replay, and
-Studio inspection scenes use this 16-pawn layout; the standard 32-piece scene
-remains available only for prior frozen proof paths. C8→C6 at 20 Hz is the
-initial metadata default, and later choices persist in browser-local settings.
+Studio inspection scenes use the sparse 16-pawn layout; the standard 32-piece
+scene remains available only for prior frozen proof paths. The prior 72 mm
+C8→C6 default is historical and is not the current Studio UI or contract.
 Current pawn geometry follows the owner-supplied physical-set silhouette with a
 stepped foot, rounded/flared base, narrow waist, collar, and spherical head.
 The photo is a shape reference, not a metric scan, so board-relative scale and
@@ -160,6 +206,8 @@ The catalog is rebuilt from current local truth every two seconds:
 | Task shelf | `configs/tasks/*.json` | Frozen task identity and proof class |
 | GR00T episode contact sheet | `datasets/*/meta/*.json*`, videos, and `dataset_receipt.json` | Synthetic simulation demonstrations and evaluator verdicts |
 | ACT replay | `outputs/**/evaluation_receipt.json`, MP4, or rendered frames | Separately evaluated learned-policy simulation episode |
+| Robo Scanner calibration | Tracked 3DGS release manifest plus hash-verified private PLY, preview, and orbit | Interactive relative visual placement only; MuJoCo remains physics/collision authority |
+| Physical release feeds | Tracked physical-release manifest plus hash-verified source and browser-remuxed overhead, side, and wrist videos | Recorded source and guarded command-replay views; no task-success or training-admission claim |
 | Scripted probe | `outputs/**/grasp_probe_receipt.json`, `state_trace.json`, and phase frames | Scripted simulation probe, not learned-policy evidence |
 | MuJoCo scene manifest | `/api/scene?layout=standard` or the sparse task layout, plus allowlisted SO-101 STL assets | Browser geometry and initial pose contract; MuJoCo owns physics |
 | Episode state trace | `state_trace.json` from grasp, ACT evaluation, GR00T export, or simulated teleoperation | World body poses and contacts sampled from `MjData`; browser interpolation is visual only |
@@ -173,9 +221,11 @@ The catalog is rebuilt from current local truth every two seconds:
 | Simulator trace replay | Saved physical follower commands and actual state | Joint-response comparison only; not learned-policy or object/contact validation |
 
 Generated artifacts stay ignored by Git. The server only serves approved image,
-video, and state-trace JSON types below `outputs/`, `datasets/`, and `runs/`; encoded media paths
-cannot escape those roots. MP4 byte ranges are supported so native browser
-scrubbing does not require loading a whole video first.
+video, state-trace JSON, and Gaussian PLY types below `outputs/`, `datasets/`,
+and `runs/`. Files below the ignored private-release root require exact
+manifest/hash admission rather than root-level trust; encoded media paths
+cannot escape those roots. MP4 and PLY byte ranges are supported so browser
+scrubbing and splat loading remain bounded.
 
 ## Live heartbeat contract
 
@@ -199,8 +249,10 @@ probe command.
 ## Visual direction
 
 The interface is an evidence and collection workbench, not an admin dashboard.
-Replay, Library, Robots, and Record are distinct views; tasks are filters within
-Replay and Library.
+Replay, Library, Calibration, Robots, and Record are distinct views; tasks are
+filters within Replay and Library. Calibration deliberately uses one dark datum
+stage and a narrow evidence console so its visual-placement role cannot be
+mistaken for episode replay or robot control.
 The selected episode, semantic filmstrip, and evaluator metrics fit in one
 desktop viewport. An idle process rail consumes no layout space. The compact
 arm-status control opens a separate observational drawer with Simulator and
@@ -220,7 +272,9 @@ measured end-effector trajectory.
 Thumbnail selection prefers the middle of grasp, lift, or transfer phases rather
 than an arbitrary early frame. The replay stage identifies either the recorded
 source camera or `MUJOCO / FREE ORBIT`. Episodes with a state trace open in 3D
-by default and retain a Recorded toggle when source video or frames exist. Drag
+by default and retain a Recorded toggle when source video or frames exist.
+Multi-feed releases add an independent camera selector; changing the feed does
+not change the simulator state trace or evaluator verdict. Drag
 or touch to orbit, pan with the secondary pointer gesture, scroll to zoom, click
 geometry to identify its body, and use Reset view to return to the versioned
 overview camera.
@@ -230,7 +284,7 @@ ticks, preview, and a synchronized orange playhead turn the episode's real
 temporal structure into the primary navigation model. Keyboard replay supports
 Space, arrows, and frame stepping; visible focus and reduced-motion behavior
 remain intact. Mobile keeps replay and verdict first, with episode browsing and
-evidence details behind explicit disclosures and all four views in a bottom tab
+evidence details behind explicit disclosures and all five views in a bottom tab
 bar.
 
 ## Workcell poster contract
@@ -275,10 +329,16 @@ browser modules, so no Node, Electron, Tauri, CDN, or runtime package install is
 added.
 
 The 3D adapter uses `three@0.185.1` under MIT for WebGL rendering,
-`OrbitControls`, and `STLLoader`. Exact source, adopted files, local import
+`OrbitControls`, `STLLoader`, and the `Pass` base required by Spark. Exact
+source, adopted files, local import
 specifier patch, license, and reason are recorded in
 `studio_web/vendor/three/SOURCE.md`. The adapter loads the already-reviewed
 MuJoCo Menagerie SO-101 STL assets; it does not introduce a second robot model.
+
+The Calibration view uses `@sparkjsdev/spark@2.1.0` under its upstream MIT
+license to render the verified Gaussian PLY. Its pinned tarball, upstream and
+locally patched module hashes, adopted-file rationale, and World Labs license
+notice are recorded in `studio_web/vendor/spark/SOURCE.md` and `LICENSE`.
 
 Overhead diagnostics adopt the installed upstream FFmpeg 7.1.1 command-line
 runtime. AVFoundation opens the C922 by exact device name, and

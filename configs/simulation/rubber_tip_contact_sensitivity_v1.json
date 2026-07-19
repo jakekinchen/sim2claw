@@ -1,0 +1,164 @@
+{
+  "schema_version": "sim2claw.rubber_tip_contact_prior.v1",
+  "analysis_id": "rubber_tip_contact_sensitivity_v1",
+  "task_id": "chess_rook_lift_v1",
+  "task_contract_sha256": "4c3c4f95a9a7d72acebaed993091c576baf125f9ed0454a960dfd2d5906c518f",
+  "frozen_before_evaluation": true,
+  "proof_class": "simulation_contact_prior_sensitivity",
+  "purpose": "Bounded sensitivity analysis for an owner-reported rubber-band fingertip modification; not physical calibration.",
+  "policy": {
+    "type": "ACT",
+    "checkpoint_schema_version": "sim2claw.act_checkpoint.v1",
+    "accepted_checkpoint_sha256": "f0a58e49dcaa320d3d0b86ef839b2e39893b65cf26a738954e2bb833dd3144fc",
+    "checkpoint_location_authority": "existing_same_repository_ignored_output_read_only",
+    "weights_mutable": false
+  },
+  "reported_modification": {
+    "material_description": {
+      "value": "rubber_band",
+      "provenance": "owner_reported_unmeasured"
+    },
+    "wrap_count_per_fingertip": {
+      "range": [
+        4,
+        5
+      ],
+      "unit": "wraps",
+      "provenance": "owner_reported_unmeasured"
+    },
+    "applies_to": {
+      "value": "each_fixed_and_moving_gripper_fingertip",
+      "provenance": "owner_reported_unmeasured"
+    },
+    "physical_measurements_available": false
+  },
+  "collision_approximation": {
+    "type": "added_distal_box_sleeve",
+    "reason": "A separate collision geom preserves the nominal SO-101 model and makes the unmeasured wrap prior removable and reviewable.",
+    "task_arm": "left",
+    "fingers": [
+      {
+        "finger_id": "fixed",
+        "anchor_geom_suffix": "fixed_jaw_box5",
+        "coverage_axis_index": 2,
+        "width_axis_index": 1,
+        "normal_axis_index": 0
+      },
+      {
+        "finger_id": "moving",
+        "anchor_geom_suffix": "moving_jaw_box3",
+        "coverage_axis_index": 1,
+        "width_axis_index": 2,
+        "normal_axis_index": 0
+      }
+    ],
+    "geometry_provenance": "estimated_collision_prior_not_measured_geometry",
+    "mass_effect_mode": "excluded_as_negligible_unmeasured_owner_assessment",
+    "physical_mass_acknowledgement": "nonzero_unmeasured_intentionally_approximated_as_zero_for_dynamics"
+  },
+  "evaluation_order": [
+    "nominal_uncalibrated",
+    "rubber_tip_low",
+    "rubber_tip_nominal_prior",
+    "rubber_tip_high"
+  ],
+  "variants": {
+    "nominal_uncalibrated": {
+      "label": "Current nominal uncalibrated simulator",
+      "rubber_tip_enabled": false,
+      "evidence_class": "nominal_uncalibrated_simulation",
+      "parameter_provenance": "existing_frozen_task_simulator_unchanged"
+    },
+    "rubber_tip_low": {
+      "label": "Rubber-tip low-effect prior",
+      "rubber_tip_enabled": true,
+      "evidence_class": "rubber_tip_prior_sensitivity_simulation",
+      "effective_wrap_thickness_m": 0.0005,
+      "effective_box_half_width_m": 0.0055,
+      "distal_coverage_length_m": 0.012,
+      "contact_friction": {
+        "sliding_dimensionless": 0.8,
+        "torsional_m": 0.003,
+        "rolling_m": 0.0003
+      },
+      "contact_softness": {
+        "solref_time_constant_s": 0.015,
+        "solref_damping_ratio": 0.8,
+        "solimp": [
+          0.85,
+          0.93,
+          0.002,
+          0.5,
+          2.0
+        ]
+      },
+      "parameter_provenance": "estimated_low_effect_prior_not_measured"
+    },
+    "rubber_tip_nominal_prior": {
+      "label": "Rubber-tip nominal prior",
+      "rubber_tip_enabled": true,
+      "evidence_class": "rubber_tip_prior_sensitivity_simulation",
+      "effective_wrap_thickness_m": 0.001,
+      "effective_box_half_width_m": 0.006,
+      "distal_coverage_length_m": 0.018,
+      "contact_friction": {
+        "sliding_dimensionless": 1.2,
+        "torsional_m": 0.006,
+        "rolling_m": 0.0006
+      },
+      "contact_softness": {
+        "solref_time_constant_s": 0.01,
+        "solref_damping_ratio": 1.0,
+        "solimp": [
+          0.9,
+          0.95,
+          0.001,
+          0.5,
+          2.0
+        ]
+      },
+      "parameter_provenance": "estimated_midpoint_prior_not_measured"
+    },
+    "rubber_tip_high": {
+      "label": "Rubber-tip high-effect prior",
+      "rubber_tip_enabled": true,
+      "evidence_class": "rubber_tip_prior_sensitivity_simulation",
+      "effective_wrap_thickness_m": 0.0015,
+      "effective_box_half_width_m": 0.0065,
+      "distal_coverage_length_m": 0.024,
+      "contact_friction": {
+        "sliding_dimensionless": 1.8,
+        "torsional_m": 0.012,
+        "rolling_m": 0.0012
+      },
+      "contact_softness": {
+        "solref_time_constant_s": 0.006,
+        "solref_damping_ratio": 1.2,
+        "solimp": [
+          0.95,
+          0.98,
+          0.0005,
+          0.5,
+          2.0
+        ]
+      },
+      "parameter_provenance": "estimated_high_effect_prior_not_measured"
+    }
+  },
+  "fixed_evaluation": {
+    "held_out_seeds": [
+      9101
+    ],
+    "repetitions_per_variant": 1,
+    "policy_weights_mutable": false,
+    "observations_mutable": false,
+    "actions_mutable": false,
+    "evaluator_thresholds_mutable": false,
+    "training_rows_from_evaluator": 0
+  },
+  "limitations": [
+    "All rubber-tip dimensions and contact parameters are estimated sensitivity priors, not measurements; physical rubber mass is nonzero and unmeasured but intentionally excluded from simulator dynamics.",
+    "The ensemble does not estimate sim-to-real error or validate the physical rubber bands.",
+    "Only the frozen chess_rook_lift_v1 simulated ACT checkpoint is in scope; no pawn or broad manipulation authority follows."
+  ]
+}

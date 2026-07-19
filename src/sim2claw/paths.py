@@ -10,6 +10,12 @@ DEFAULT_CAPTURE_CONFIG = (
 DEFAULT_EXTERNAL_ROOT = REPO_ROOT / "external" / "polycam"
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "outputs" / "polycam_chess_table"
 DEFAULT_CHESS_TASK_CONFIG = REPO_ROOT / "configs" / "tasks" / "chess_rook_lift_v1.json"
+DEFAULT_RUBBER_TIP_CONTACT_PRIOR = (
+    REPO_ROOT
+    / "configs"
+    / "simulation"
+    / "rubber_tip_contact_sensitivity_v1.json"
+)
 DEFAULT_GROOT_CHESS_TASK_CONFIG = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_groot_v1.json"
 )

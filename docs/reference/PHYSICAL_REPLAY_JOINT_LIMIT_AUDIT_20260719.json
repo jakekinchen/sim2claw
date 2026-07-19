@@ -1,0 +1,121 @@
+{
+  "schema_version": "sim2claw.physical_replay_joint_limit_audit.v1",
+  "audit_id": "physical_pawn_replay_joint_limits_20260719",
+  "created_at": "2026-07-19T01:54:12-05:00",
+  "canonical_commit": "70493feeb24c756489c49859005488ecab358ad9",
+  "proof_class": "physical_read_only_input_capability",
+  "claim": "legacy_canonical_replay_is_not_exact_and_joint_timing_fit_is_not_ready",
+  "receipt_format": {
+    "runner_output": "reproducible_semantic_core_counts_bounds_hashes_and_interpretation",
+    "tracked_reference_enrichment": "generation_snapshot_plus_post_integration_semantic_reproduction_and_required_next_gate",
+    "byte_for_byte_runner_reproduction_claimed": false,
+    "semantic_core_binding_test": "tests/test_pawn_composability_eval.py::PawnComposabilityEvaluationTest::test_replay_limit_audit_binds_sources_and_internal_arithmetic"
+  },
+  "inputs": {
+    "catalog_path": "configs/data/physical_pawn_move_catalog_20260719.json",
+    "catalog_sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e",
+    "catalog_episode_count": 18,
+    "catalog_bound_assets_verified_before_audit": 54,
+    "sample_rows": 7741,
+    "physical_to_sim_transform": "legacy_physical_values_to_sim_degrees_to_radians_for_first_five_joints_and_0_to_100_linear_gripper_mapping",
+    "legacy_replay_source_path": "src/sim2claw/physical_sim_replay.py",
+    "legacy_replay_source_sha256": "4ab0cba06d4ea7c244aaeef6c1423a89ea6f1b762a308cdd3c4b95c9bce5b98d",
+    "audit_runner_path": "scripts/audit_physical_replay_joint_limits.py",
+    "audit_runner_sha256": "5276c3563c776222cdfbc44e5c35070e85ea7a471570a7add60adf005a1148ad",
+    "audit_command": "uv run --frozen python scripts/audit_physical_replay_joint_limits.py --output /tmp/sim2claw-replay-audit.json",
+    "scene_source_path": "src/sim2claw/scene.py",
+    "scene_source_sha256": "01366394bb10cc789956e59965b32b3f8d009df5ccba9390894b139b02639206",
+    "so101_xml_path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+    "so101_xml_sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308",
+    "lockfile_sha256": "38f4692318133d3d5dfc510a66676c49ef4ef838ece370c827906e3c4719aadb",
+    "lockfile_binding_scope": "historical_generation_snapshot_not_current_repository_gate",
+    "mujoco_version": "3.10.0"
+  },
+  "post_integration_reproduction": {
+    "verified_at": "2026-07-19T07:36:40-05:00",
+    "worktree_head_before_receipt_refresh": "fa5746153180ef4d2a4824645bb38df1436efbb5",
+    "command": "PYTHONPATH=src python scripts/audit_physical_replay_joint_limits.py --repo-root /Users/kelly/Developer/sim2claw --catalog configs/data/physical_pawn_move_catalog_20260719.json --output <scratch>/replay-audit-workcell-fit.json",
+    "current_lockfile_sha256": "f77c155acc1f55fefe861b274a31bfbf91100481b0da6fc774de51e46a9964e8",
+    "runner_output_sha256": "40dc058e817cdc652297b32d92c37dd7abd63edd74851204f5ebaadb8426cb49",
+    "semantic_core_matches_historical_receipt": true,
+    "proof_note": "The workcell-fit lane added optional board-yaw override parameters to scene.py with None defaults; no frozen code path changes behavior. The audit runner was re-executed with current worktree code and read-only canonical physical assets and reproduced the exact prior runner-output hash byte-for-byte, including the control-contract hash, counts, bounds, exceedances, and fail-closed interpretation."
+  },
+  "compiled_control_contract_sha256": "0094a3671dd0e1f5e516d3603bd9b6fc37776b5e688ac1bb1f53e963a3629fec",
+  "simulator_joint_order": [
+    "shoulder_pan",
+    "shoulder_lift",
+    "elbow_flex",
+    "wrist_flex",
+    "wrist_roll",
+    "gripper"
+  ],
+  "actuator_names": [
+    "left_shoulder_pan",
+    "left_shoulder_lift",
+    "left_elbow_flex",
+    "left_wrist_flex",
+    "left_wrist_roll",
+    "left_gripper"
+  ],
+  "actuator_control_ranges_sim_units": [
+    [
+      -1.91986,
+      1.91986
+    ],
+    [
+      -1.74533,
+      1.74533
+    ],
+    [
+      -1.69,
+      1.69
+    ],
+    [
+      -1.65806,
+      1.65806
+    ],
+    [
+      -2.74385,
+      2.84121
+    ],
+    [
+      -0.17453,
+      1.74533
+    ]
+  ],
+  "violation_predicate": {
+    "expression": "value < lower_bound or value > upper_bound",
+    "tolerance_sim_units": 0.0
+  },
+  "results": {
+    "episodes_with_out_of_range_initial_state": 18,
+    "episodes_audited": 18,
+    "out_of_range_initial_joint_values_per_episode": 3,
+    "measured_trajectory": {
+      "row_count": 7741,
+      "violating_row_count": 2255,
+      "violating_row_fraction": 0.29130603281229817,
+      "joint_value_count": 46446,
+      "violating_joint_value_count": 5155,
+      "maximum_exceedance_sim_units": 0.12351486059700512
+    },
+    "recorded_commands": {
+      "row_count": 7741,
+      "violating_row_count": 2231,
+      "violating_row_fraction": 0.2882056581836972,
+      "joint_value_count": 46446,
+      "violating_joint_value_count": 5099,
+      "maximum_exceedance_sim_units": 0.11584308366516205
+    }
+  },
+  "interpretation": {
+    "legacy_replay_clips_initial_state": true,
+    "legacy_replay_clips_commands": true,
+    "legacy_trace_preserves_requested_command_before_clipping": false,
+    "exact_recorded_action_replay_supported": false,
+    "reviewed_hash_bound_joint_transform_available": false,
+    "joint_timing_fit_ready": false,
+    "full_calibration_ready": false
+  },
+  "required_next_gate": "Review and freeze a hash-bound joint identity, order, units, sign, scale, and zero-offset transform; then rerun range validation without clipping before any joint/timing fit."
+}

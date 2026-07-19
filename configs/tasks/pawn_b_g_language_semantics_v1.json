@@ -1,0 +1,268 @@
+{
+  "schema_version": "sim2claw.pawn_b_g_language_semantics.v1",
+  "contract_id": "pawn_b_g_language_semantics_v1",
+  "frozen_before_dataset_export": true,
+  "proof_class": "language_semantics_contract_only_no_episode_or_policy_result",
+  "benchmark_binding": {
+    "path": "configs/evaluations/pawn_rank12_bidirectional_v2.json",
+    "evaluation_set_id": "pawn_rank12_bidirectional_b_to_g_v2",
+    "sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3",
+    "source_commit": "36f1ebc5f66e63317b1fba84ba9aaabf66a5ff2d",
+    "coordinate_authority": "board_coordinate_system"
+  },
+  "scene_binding": {
+    "scene_id": "operator_updated_chess_workcell_v3",
+    "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "board_pose_id": "board_robotward_100mm_20260718_v3",
+    "piece_family": "pawn",
+    "piece_color": "brown"
+  },
+  "prompt_templates": [
+    {
+      "variant_id": "canonical_move_v1",
+      "split": "train",
+      "variant_index": 0,
+      "template": "Move the brown pawn from {SOURCE} to {DESTINATION}.",
+      "provenance": {
+        "method": "deterministic_clean_room_template_expansion",
+        "source": "semantic_fields_only",
+        "archive_material_used": false,
+        "heldout_content_used": false,
+        "network_or_external_model_used": false,
+        "review_status": "accepted"
+      }
+    },
+    {
+      "variant_id": "pick_place_upright_v1",
+      "split": "train",
+      "variant_index": 1,
+      "template": "Pick up the brown pawn on {SOURCE} and place it upright on the empty square {DESTINATION}.",
+      "provenance": {
+        "method": "deterministic_clean_room_template_expansion",
+        "source": "semantic_fields_only",
+        "archive_material_used": false,
+        "heldout_content_used": false,
+        "network_or_external_model_used": false,
+        "review_status": "accepted"
+      }
+    },
+    {
+      "variant_id": "relocate_undisturbed_v1",
+      "split": "dev",
+      "variant_index": 0,
+      "template": "Relocate the brown pawn from {SOURCE} to {DESTINATION}, leaving every other piece undisturbed.",
+      "provenance": {
+        "method": "deterministic_clean_room_template_expansion",
+        "source": "semantic_fields_only",
+        "archive_material_used": false,
+        "heldout_content_used": false,
+        "network_or_external_model_used": false,
+        "review_status": "accepted"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "semantic_index": 0,
+      "semantic_id": "pawn_b1_to_b2",
+      "piece_id": "brown_pawn_b1",
+      "direction": "rank1_to_rank2",
+      "source_square": "b1",
+      "destination_square": "b2",
+      "reverse_semantic_id": "pawn_b2_to_b1",
+      "canonical_instruction": "Move the brown pawn from B1 to B2.",
+      "target": {"kind": "benchmark_destination_square_center", "coordinate_authority": "benchmark_binding.board_coordinate_system"}
+    },
+    {
+      "semantic_index": 1,
+      "semantic_id": "pawn_b2_to_b1",
+      "piece_id": "brown_pawn_b2",
+      "direction": "rank2_to_rank1",
+      "source_square": "b2",
+      "destination_square": "b1",
+      "reverse_semantic_id": "pawn_b1_to_b2",
+      "canonical_instruction": "Move the brown pawn from B2 to B1.",
+      "target": {"kind": "benchmark_destination_square_center", "coordinate_authority": "benchmark_binding.board_coordinate_system"}
+    },
+    {
+      "semantic_index": 2,
+      "semantic_id": "pawn_c1_to_c2",
+      "piece_id": "brown_pawn_c1",
+      "direction": "rank1_to_rank2",
+      "source_square": "c1",
+      "destination_square": "c2",
+      "reverse_semantic_id": "pawn_c2_to_c1",
+      "canonical_instruction": "Move the brown pawn from C1 to C2.",
+      "target": {"kind": "benchmark_destination_square_center", "coordinate_authority": "benchmark_binding.board_coordinate_system"}
+    },
+    {
+      "semantic_index": 3,
+      "semantic_id": "pawn_c2_to_c1",
+      "piece_id": "brown_pawn_c2",
+      "direction": "rank2_to_rank1",
+      "source_square": "c2",
+      "destination_square": "c1",
+      "reverse_semantic_id": "pawn_c1_to_c2",
+      "canonical_instruction": "Move the brown pawn from C2 to C1.",
+      "target": {"kind": "benchmark_destination_square_center", "coordinate_authority": "benchmark_binding.board_coordinate_system"}
+    },
+    {
+      "semantic_index": 4,
+      "semantic_id": "pawn_d1_to_d2",
+      "piece_id": "brown_pawn_d1",
+      "direction": "rank1_to_rank2",
+      "source_square": "d1",
+      "destination_square": "d2",
+      "reverse_semantic_id": "pawn_d2_to_d1",
+      "canonical_instruction": "Move the brown pawn from D1 to D2.",
+      "target": {"kind": "benchmark_destination_square_center", "coordinate_authority": "benchmark_binding.board_coordinate_system"}
+    },
+    {
+      "semantic_index": 5,
+      "semantic_id": "pawn_d2_to_d1",
+      "piece_id": "brown_pawn_d2",
+      "direction": "rank2_to_rank1",
+      "source_square": "d2",
+      "destination_square": "d1",
+      "reverse_semantic_id": "pawn_d1_to_d2",
+      "canonical_instruction": "Move the brown pawn from D2 to D1.",
+      "target": {"kind": "benchmark_destination_square_center", "coordinate_authority": "benchmark_binding.board_coordinate_system"}
+    },
+    {
+      "semantic_index": 6,
+      "semantic_id": "pawn_e1_to_e2",
+      "piece_id": "brown_pawn_e1",
+      "direction": "rank1_to_rank2",
+      "source_square": "e1",
+      "destination_square": "e2",
+      "reverse_semantic_id": "pawn_e2_to_e1",
+      "canonical_instruction": "Move the brown pawn from E1 to E2.",
+      "target": {"kind": "benchmark_destination_square_center", "coordinate_authority": "benchmark_binding.board_coordinate_system"}
+    },
+    {
+      "semantic_index": 7,
+      "semantic_id": "pawn_e2_to_e1",
+      "piece_id": "brown_pawn_e2",
+      "direction": "rank2_to_rank1",
+      "source_square": "e2",
+      "destination_square": "e1",
+      "reverse_semantic_id": "pawn_e1_to_e2",
+      "canonical_instruction": "Move the brown pawn from E2 to E1.",
+      "target": {"kind": "benchmark_destination_square_center", "coordinate_authority": "benchmark_binding.board_coordinate_system"}
+    },
+    {
+      "semantic_index": 8,
+      "semantic_id": "pawn_f1_to_f2",
+      "piece_id": "brown_pawn_f1",
+      "direction": "rank1_to_rank2",
+      "source_square": "f1",
+      "destination_square": "f2",
+      "reverse_semantic_id": "pawn_f2_to_f1",
+      "canonical_instruction": "Move the brown pawn from F1 to F2.",
+      "target": {"kind": "benchmark_destination_square_center", "coordinate_authority": "benchmark_binding.board_coordinate_system"}
+    },
+    {
+      "semantic_index": 9,
+      "semantic_id": "pawn_f2_to_f1",
+      "piece_id": "brown_pawn_f2",
+      "direction": "rank2_to_rank1",
+      "source_square": "f2",
+      "destination_square": "f1",
+      "reverse_semantic_id": "pawn_f1_to_f2",
+      "canonical_instruction": "Move the brown pawn from F2 to F1.",
+      "target": {"kind": "benchmark_destination_square_center", "coordinate_authority": "benchmark_binding.board_coordinate_system"}
+    },
+    {
+      "semantic_index": 10,
+      "semantic_id": "pawn_g1_to_g2",
+      "piece_id": "brown_pawn_g1",
+      "direction": "rank1_to_rank2",
+      "source_square": "g1",
+      "destination_square": "g2",
+      "reverse_semantic_id": "pawn_g2_to_g1",
+      "canonical_instruction": "Move the brown pawn from G1 to G2.",
+      "target": {"kind": "benchmark_destination_square_center", "coordinate_authority": "benchmark_binding.board_coordinate_system"}
+    },
+    {
+      "semantic_index": 11,
+      "semantic_id": "pawn_g2_to_g1",
+      "piece_id": "brown_pawn_g2",
+      "direction": "rank2_to_rank1",
+      "source_square": "g2",
+      "destination_square": "g1",
+      "reverse_semantic_id": "pawn_g1_to_g2",
+      "canonical_instruction": "Move the brown pawn from G2 to G1.",
+      "target": {"kind": "benchmark_destination_square_center", "coordinate_authority": "benchmark_binding.board_coordinate_system"}
+    }
+  ],
+  "augmentation_gate": {
+    "group_key": "source_episode_group_id",
+    "train_task_index_rule": "2 * semantic_index + train_variant_index",
+    "split_before_prompt_expansion": true,
+    "prompt_variants_are_independent_evidence": false,
+    "sampling_replicas_are_independent_evidence": false,
+    "heldout_rows_may_enter_builder": false,
+    "require_independently_admitted_current_geometry_source_group_per_semantic": true
+  },
+  "required_source_episode_binding_fields": [
+    "source_episode_group_id",
+    "source_episode_id",
+    "semantic_id",
+    "split",
+    "scene_id",
+    "workspace_pose_id",
+    "board_pose_id",
+    "piece_layout_id",
+    "reset_id",
+    "piece_id",
+    "observed_source_pose_world",
+    "continuous_target_pose_world",
+    "source_receipt_sha256",
+    "source_parquet_sha256",
+    "source_video_sha256",
+    "source_state_sha256",
+    "source_action_sha256",
+    "observation_action_schema_sha256",
+    "admission_verdict_sha256",
+    "evaluator_contract_sha256",
+    "strict_success",
+    "held_out_membership"
+  ],
+  "required_receipt_counts": [
+    "semantic_task_count",
+    "unique_source_episode_group_count",
+    "unique_source_episode_count",
+    "train_prompt_variant_count",
+    "derived_prompt_episode_count",
+    "sampling_weight_replica_count",
+    "derived_dataset_episode_count",
+    "source_frame_count",
+    "derived_frame_count",
+    "heldout_rows_used"
+  ],
+  "current_admission_snapshot": {
+    "created_at": "2026-07-19T03:20:00-05:00",
+    "unique_admitted_source_group_count": 0,
+    "training_row_count": 0,
+    "all_12_semantics_covered": false,
+    "paid_training_ready": false,
+    "missing_semantic_ids": [
+      "pawn_b1_to_b2", "pawn_b2_to_b1", "pawn_c1_to_c2", "pawn_c2_to_c1",
+      "pawn_d1_to_d2", "pawn_d2_to_d1", "pawn_e1_to_e2", "pawn_e2_to_e1",
+      "pawn_f1_to_f2", "pawn_f2_to_f1", "pawn_g1_to_g2", "pawn_g2_to_g1"
+    ],
+    "current_sparse_layout_native_direction_count": 6,
+    "reverse_direction_source_contract_required": true,
+    "physical_catalog_training_rows": 0,
+    "reason": "No independently evaluator-admitted current-geometry B-G source group exists for any semantic. Prompt expansion cannot repair missing behavioral coverage."
+  },
+  "authority": {
+    "proves_training_occurred": false,
+    "proves_language_generalization": false,
+    "proves_policy_success": false,
+    "proves_physical_calibration": false,
+    "grants_physical_authority": false,
+    "held_out_rows_opened": 0
+  },
+  "claim_boundary": "This contract freezes B-G task meaning, prompt provenance, split order, and counting semantics only. It creates no robot episode, no independent evidence, no training result, and no permission to launch paid compute."
+}

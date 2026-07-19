@@ -1,0 +1,37 @@
+diff --git a/gr00t/model/gr00t_n1d7/processing_gr00t_n1d7.py b/gr00t/model/gr00t_n1d7/processing_gr00t_n1d7.py
+--- a/gr00t/model/gr00t_n1d7/processing_gr00t_n1d7.py
++++ b/gr00t/model/gr00t_n1d7/processing_gr00t_n1d7.py
+@@ -78,7 +78,10 @@
+             "Qwen3VLProcessor is not available. "
+             "Please upgrade transformers: pip install transformers>=4.52.0"
+         )
+-    return Qwen3VLProcessor.from_pretrained(model_name, **transformers_loading_kwargs)
++    processor_model_name = os.environ.get("GROOT_PROCESSOR_MODEL_PATH", model_name)
++    return Qwen3VLProcessor.from_pretrained(
++        processor_model_name, **transformers_loading_kwargs
++    )
+ 
+ 
+ class Gr00tN1d7DataCollator:
+diff --git a/gr00t/model/modules/qwen3_backbone.py b/gr00t/model/modules/qwen3_backbone.py
+--- a/gr00t/model/modules/qwen3_backbone.py
++++ b/gr00t/model/modules/qwen3_backbone.py
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ 
+ import logging
++import os
+ 
+ import torch
+ from transformers.feature_extraction_utils import BatchFeature
+@@ -77,8 +78,9 @@
+         if load_bf16:
+             extra_kwargs["torch_dtype"] = torch.bfloat16
+ 
++        backbone_model_name = os.environ.get("GROOT_BACKBONE_MODEL_PATH", model_name)
+         self.model = Qwen3VLForConditionalGeneration.from_pretrained(
+-            model_name,
++            backbone_model_name,
+             **extra_kwargs,
+             **transformers_loading_kwargs,
+         ).eval()

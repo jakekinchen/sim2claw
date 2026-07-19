@@ -1,0 +1,1342 @@
+{
+  "aggregate_joint_limit_validation": {
+    "all_audited_values_within_limits": false,
+    "audit_complete": false,
+    "initial_measured_state": {
+      "audited_episode_count": 0,
+      "maximum_exceedance": 0.0,
+      "per_joint": {},
+      "row_count": 0,
+      "violating_joint_value_count": 0,
+      "violating_row_count": 0
+    },
+    "measured_trajectory": {
+      "audited_episode_count": 0,
+      "maximum_exceedance": 0.0,
+      "per_joint": {},
+      "row_count": 0,
+      "violating_joint_value_count": 0,
+      "violating_row_count": 0
+    },
+    "recorded_commands": {
+      "audited_episode_count": 0,
+      "maximum_exceedance": 0.0,
+      "per_joint": {},
+      "row_count": 0,
+      "violating_joint_value_count": 0,
+      "violating_row_count": 0
+    }
+  },
+  "aggregate_observable_status": {
+    "contact_active": "unavailable",
+    "contact_force": "unavailable",
+    "end_effector_orientation": "unavailable",
+    "end_effector_position": "unavailable",
+    "joint_position": "payloads_missing_or_invalid",
+    "pawn_orientation": "unavailable",
+    "pawn_position": "unavailable"
+  },
+  "calibration_ready": false,
+  "calibration_ready_reason": "joint/timing requires strict sample semantics, a reviewed hash-bound transform, and all initial/measured/command values within simulator limits; full calibration also lacks measured end-effector, object-pose, pawn, and contact trajectories",
+  "catalog": {
+    "catalog_id": "physical_pawn_moves_20260719_latest_v1",
+    "identity": {
+      "kind": "repo_relative",
+      "path": "configs/data/physical_pawn_move_catalog_20260719.json",
+      "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
+    },
+    "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
+  },
+  "claim": "missing_input_manifest_only",
+  "contact_object_stage_ready": false,
+  "coordinator_reported_canonical_state": {
+    "catalog_bound_hashes_verified": 54,
+    "physical_recording_directories_recovered": 18,
+    "requires_post_cherry_pick_regeneration": true,
+    "verified_by_this_receipt": false
+  },
+  "created_at": "2026-07-19T07:20:45.835220+00:00",
+  "current_root_catalog_integrity": {
+    "all_catalog_bound_hashes_verified": false,
+    "catalog_bound_asset_count": 54,
+    "mismatched_catalog_bound_asset_count": 0,
+    "mismatched_catalog_bound_assets": [],
+    "missing_catalog_bound_asset_count": 54,
+    "missing_catalog_bound_assets": [
+      "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/recording_receipt.json",
+      "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/samples.jsonl",
+      "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/recording_receipt.json",
+      "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/samples.jsonl",
+      "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/recording_receipt.json",
+      "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/samples.jsonl",
+      "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/recording_receipt.json",
+      "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/samples.jsonl",
+      "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/recording_receipt.json",
+      "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/samples.jsonl",
+      "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/recording_receipt.json",
+      "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/samples.jsonl",
+      "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/recording_receipt.json",
+      "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/samples.jsonl",
+      "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/recording_receipt.json",
+      "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/samples.jsonl",
+      "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/recording_receipt.json",
+      "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/samples.jsonl",
+      "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/recording_receipt.json",
+      "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/samples.jsonl",
+      "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/recording_receipt.json",
+      "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/samples.jsonl",
+      "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/recording_receipt.json",
+      "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/samples.jsonl",
+      "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/recording_receipt.json",
+      "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/samples.jsonl",
+      "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/recording_receipt.json",
+      "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/samples.jsonl",
+      "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/recording_receipt.json",
+      "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/samples.jsonl",
+      "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/recording_receipt.json",
+      "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/samples.jsonl",
+      "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/recording_receipt.json",
+      "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/samples.jsonl",
+      "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/overhead_c922.mp4",
+      "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/recording_receipt.json",
+      "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/samples.jsonl"
+    ],
+    "verified_catalog_bound_hash_count": 0,
+    "video_content_interpreted": false,
+    "video_files_hashed_for_integrity_only": true
+  },
+  "endpoint_visual_proposals_status": "unreviewed_not_pawn_trajectory_or_contact_input",
+  "endpoint_visual_proposals_used_for_metric_observables": false,
+  "episode_count": 18,
+  "episodes": [
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "fe07e303759c2d0aef0959c0e33524c11c7f4231aa7affc037a1d8a585265967",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "1907dbd408f6472ac39f851de414cf9f2c523560879a73e845960de4e692098e",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "1c451abb1232b900dae3cdf66b620afd727c871222c926ac750853821b2fe872",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T030059Z-a26f8400",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "5d161c4596c3c7a4c3392b89b8eac99acd64c9e557bb79241ec7d2882c39b18c",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "8955cd4aa48b6b23dade50a6f4700c3c654ed68c368b91656c24a68c6ea49a46",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "547dce8298c4111b1d58fe4101e0d8a7139ba49c503099f3d7ae720b5fb7e76e",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T032315Z-d3c3cf0b",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "5a89045dfa8e8fa2776dc4077e7adc5334998455277b9b93b396f65650f2d508",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "4ab698f2d238a627b93fc41e2ee2cfa24224813b11e70f441e6ee24f8721e24f",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "67b77efe4e17083fc8da724fcca228dc43c1c8e203ace7c51d1e2c5e02fdef0b",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T033023Z-fd7005f3",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "fcf781989b971770eb7eff72128f7b291d6fe4fa346b3a4eeb78072571408d2f",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "538dda41dc2e98a85c7911535c046781a28ce3ed5c8a880f47134b2fbf04bcea",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "e0eb09897bf92172924683b97e4f31240add47af78d4d6fdfaef9724878d887a",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T032400Z-052d5137",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "ea5e0a4ccc4101c2249f2e7e97f89fd3e7aa1db9ae14b4a8dc27e3ca6e8ddf6e",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "cb1b6cdf8c7404d84a29f6078dda5d48a353e117b2e999aabede091065eb1d45",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "65d74dd25ec6f3e30203147dd166087276917daf29a4ebe65494a4830c13326b",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T035317Z-2a332ab7",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "820dba94ed6788c4855d64016dc1f7949f6806fc0df752113669a12657d5999a",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "917a23b34bde78dfb61ec33f336ea3b4915fa0b55567a15ef957218afe90c22a",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "bb6290ce45b6b0804d972b1d018d0ddd48ed2fcfe7f6096841ce41a39be4a370",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T030206Z-af661460",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "e5cf0b1ab23174e908d509791653d2289a85770476381931384ea2f7308a867b",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "00d1a6b0375232be753f771b37f28117aa6d370778d16bb9b14ad2892c6a4c2f",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "b93fed706dd205197e9e068aec62d8fe552b822be150218dff5601a1a5eec183",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T031324Z-bf91502b",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "a482c2acca1698cad7c278b72e6ffbbe54a14c2af66ab50b332863d8d1f55236",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "3073f478683c42ab92c213888d32764b325fab0bedbf5fd93ff82901fdce5180",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "7730cbe226c9ef0e5cf5edc4e1a7628d68c1358568ef3c4de885100c493fd7fd",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T031518Z-34bff0dd",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "5425ba00e12a1a1c4b2d1ce08980cca88fa48c69c8e92d5c63f9b59a5e1fdd11",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "640891f5a23e357ceb896082b9709c8994b55997ce6678e130f2a4f9d6b80b76",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "7d52ecadd85988453ebc7d9c12f318e9c9a4387a752f5508436d2546e4ed5a54",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T032440Z-f728a18c",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "8a48dc2b00dd1a56c94696407e8a3aaf6690aa0e63c9eb1b2bd0a1a21b63de67",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "ff75cb153e65a911f5ab40e3cfee14146a645c803dbe4ad784173676a7398262",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "b5a8f7c708c409dbcdb0d6fb5f0f988d3608a4f4980cc0a74e7d284e46f4fd70",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T035413Z-5ab5603f",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "e85ed5b0c9ac1b42cd3ecea6f1eccb29def3b3f46326df464613475da395f9e9",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "bc555046b7f3d6c3cb11b08c8185b5ace14dc73a6e20a69d6b55be663fba4bdd",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "c3ac0a0cd511d6728d73980279a20260e4f89657c3c2daeb197ccd54336afb26",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T032935Z-66894edc",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "2307c79a7bbb8ef7bc5fe04a1f09fe79550ea8e005f713e11ebf84cb038ab006",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "8960203559f69a47f4b35305c5a60a0489a41306571d3bcf5e659bb67816b88b",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "f8e7a5629b35ca718836837716298aa68fe0a376e04d2943af3a8560d4bc16d6",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T032531Z-06be393c",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "00c4866bfad75926ab76ec2abcf1e149ceeb860f64a9d992bc7ee6da948f3713",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "c6de589e4e5883f295608b10d07367783f24b7e57da12c2b11351510f4eaa837",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "2fa05cc1c065c3aef4e30cf67b7e029a7effabfcc7b126529e57f8f973dca3d1",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T032853Z-1ee203e8",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "e0605b185b805c46eff952d5d822727024e0b94c125166e6dbe15f2959b8d02c",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "bb272674590b66d3ad9e01f7a5418fd5f9fdf5abe2deeb2a1d650df73583e5d5",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "7b77747478e8a33e48e3de30ffbbdf132e6c05827468b3ab16c3757d7e4aa71b",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T031615Z-0e058ca2",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "4ac5db651f0cf14bccbd605818036ef75f434b7058d296c3d52ddc79e99b08a1",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "0c97a8abe1e940c743b8150805055d79a9693d8703ed70f64814d6b81226774e",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "5cd8bcf817302d9cd85ae9c966ca08be7a5e84d6a8eae63261f0211312b49434",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T031715Z-61ebb199",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "conflict_folder_label_vs_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "b3fe1f4b99b1bd7697695c8ed9093ccef8d08da22cdb889ee1a3f460af6d2081",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "03e883b919bf6c754685dc9023677569f662116d4e383132c17886e3bf64f631",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "11be4473baba000566a7d7147fb99144e6302cdfd9258fcdfdd7c59531ca2a70",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T032620Z-0c7e3d86",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "682f755bf95b55c7e0d0e2dff31b76dcfc67451a1eab7732bd5da2134e63b720",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "f507d7b9cd44a7bb3e66a84370e7f3d4c6b1e5ba0a139d63b6f28ca2a6089459",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "6245ea196130a6be208f1091fadc3b1745bc8ccf1d020d427850fb08cc3bc633",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T032810Z-9e623c5e",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    },
+    {
+      "asset_availability": {
+        "recording_receipt": false,
+        "samples": false
+      },
+      "catalog_bound_asset_integrity": {
+        "overhead_video": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "418d4b2d7a1fc60265076cd88d85577c2ba74f49307232ebcfbfe446ba531640",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/overhead_c922.mp4",
+          "present": false,
+          "required_for_joint_replay": false
+        },
+        "recording_receipt": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "0297ebefa1c9316f87d6c045de727122df808c478862b30a3e33b0fca6aa6af0",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/recording_receipt.json",
+          "present": false,
+          "required_for_joint_replay": true
+        },
+        "samples": {
+          "actual_sha256": null,
+          "catalog_bound": true,
+          "expected_sha256": "59a1199bf5be966d5e8163aff20306cf15bcfc608d4e176f2bf545d2ddbb2f30",
+          "matches_catalog": false,
+          "path": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/samples.jsonl",
+          "present": false,
+          "required_for_joint_replay": true
+        }
+      },
+      "episode_id": "20260719T031813Z-b147b429",
+      "full_catalog_receipt_sample_provenance_bound": false,
+      "joint_limit_validation": null,
+      "joint_transform_calibration_approved": false,
+      "measured_observables": {
+        "command_joint_position": "unverified_payload_missing_or_invalid",
+        "contact_active": "unavailable_not_recorded",
+        "contact_force": "unavailable_not_recorded",
+        "end_effector_orientation": "unavailable_not_recorded",
+        "end_effector_position": "unavailable_not_recorded",
+        "gripper_position": "unverified_payload_missing_or_invalid",
+        "initial_object_state": "unavailable_no_measured_body_free_joint_pose_binding",
+        "joint_position": "unverified_payload_missing_or_invalid",
+        "pawn_orientation": "unavailable_no_reviewed_metric_pose_source",
+        "pawn_position": "unavailable_no_reviewed_metric_pose_source"
+      },
+      "metadata_status": "consistent_folder_label_and_receipt",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "ready_for_joint_replay": false,
+      "receipt_samples_chain_error": null,
+      "receipt_samples_chain_valid": false,
+      "required_assets": {
+        "recording_receipt": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/recording_receipt.json",
+        "samples": "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/samples.jsonl"
+      },
+      "sample_semantics_error": null,
+      "sample_semantics_valid": false
+    }
+  ],
+  "full_provenance_chain_episode_count": 0,
+  "geometry_stage_ready": false,
+  "input_report_exit_semantics": "the CLI returns zero only when every catalog episode is integrity-verified and ready for joint/timing replay; this never implies full calibration readiness",
+  "inspection_scope": {
+    "canonical_checkout_inspected": false,
+    "canonical_checkout_state": "not_assessed_by_this_receipt",
+    "kind": "isolated_codex_worktree",
+    "provided_root_inspected": true,
+    "requested_kind": "isolated_codex_worktree",
+    "root_at_generation": "/Users/kelly/.codex/worktrees/5307ce13-4971-4a6c-abf3-abd28e179148/sim2claw",
+    "root_path_semantics": "runtime_local_not_portable_project_contract",
+    "scope_source": "caller_supplied_repo_root"
+  },
+  "joint_range_valid_episode_count": 0,
+  "joint_replay_ready_episode_count": 0,
+  "joint_timing_replay_ready": false,
+  "metadata_conflict_episode_count": 11,
+  "mismatched_required_asset_count": 0,
+  "mismatched_required_assets": [],
+  "missing_required_asset_count": 36,
+  "missing_required_assets": [
+    "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/recording_receipt.json",
+    "datasets/manipulation_source_recordings/b1-to-b2__20260719T030059Z-a26f8400/samples.jsonl",
+    "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/recording_receipt.json",
+    "datasets/manipulation_source_recordings/b2-to-b1__20260719T032315Z-d3c3cf0b/samples.jsonl",
+    "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/recording_receipt.json",
+    "datasets/manipulation_source_recordings/b2-to-c2__20260719T033023Z-fd7005f3/samples.jsonl",
+    "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/recording_receipt.json",
+    "datasets/manipulation_source_recordings/c1-to-c2__20260719T032400Z-052d5137/samples.jsonl",
+    "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/recording_receipt.json",
+    "datasets/manipulation_source_recordings/c1-to-d2__20260719T035317Z-2a332ab7/samples.jsonl",
+    "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/recording_receipt.json",
+    "datasets/manipulation_source_recordings/c2-to-c1__20260719T030206Z-af661460/samples.jsonl",
+    "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/recording_receipt.json",
+    "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/samples.jsonl",
+    "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/recording_receipt.json",
+    "datasets/manipulation_source_recordings/d1-to-d2__20260719T031518Z-34bff0dd/samples.jsonl",
+    "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/recording_receipt.json",
+    "datasets/manipulation_source_recordings/d2-to-d1__20260719T032440Z-f728a18c/samples.jsonl",
+    "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/recording_receipt.json",
+    "datasets/manipulation_source_recordings/d2-to-e1__20260719T035413Z-5ab5603f/samples.jsonl",
+    "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/recording_receipt.json",
+    "datasets/manipulation_source_recordings/d2-to-e2__20260719T032935Z-66894edc/samples.jsonl",
+    "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/recording_receipt.json",
+    "datasets/manipulation_source_recordings/e1-to-e2__20260719T032531Z-06be393c/samples.jsonl",
+    "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/recording_receipt.json",
+    "datasets/manipulation_source_recordings/e1-to-f1__20260719T032853Z-1ee203e8/samples.jsonl",
+    "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/recording_receipt.json",
+    "datasets/manipulation_source_recordings/e2-to-e1__20260719T031615Z-0e058ca2/samples.jsonl",
+    "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/recording_receipt.json",
+    "datasets/manipulation_source_recordings/f1-to-f2__20260719T031715Z-61ebb199/samples.jsonl",
+    "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/recording_receipt.json",
+    "datasets/manipulation_source_recordings/f2-to-f1__20260719T032620Z-0c7e3d86/samples.jsonl",
+    "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/recording_receipt.json",
+    "datasets/manipulation_source_recordings/g1-to-g2-redo__20260719T032810Z-9e623c5e/samples.jsonl",
+    "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/recording_receipt.json",
+    "datasets/manipulation_source_recordings/g2-to-g1__20260719T031813Z-b147b429/samples.jsonl"
+  ],
+  "physical_joint_transform": {
+    "calibration_approved": false,
+    "exact_formula": "sim = sign * source * scale + zero_offset",
+    "initial_velocity_source_field": "follower_actual_velocity_degrees_s",
+    "joint_identity_and_order": [
+      "left_shoulder_pan",
+      "left_shoulder_lift",
+      "left_elbow_flex",
+      "left_wrist_flex",
+      "left_wrist_roll",
+      "left_gripper"
+    ],
+    "review_status": "provisional_range_audit_blocked",
+    "schema_version": "sim2claw.physical_joint_transform.v1",
+    "sha256": "72812016bfa9dba2ba97fe448724394ad290a2b22458177bcbdec95aae0689e6",
+    "transform_id": "so101_physical_degrees_to_current_scene_provisional_v1",
+    "velocity_exact_formula": "sim_velocity = sign * source_velocity * scale",
+    "velocity_zero_offset_applied": false
+  },
+  "physical_motion": false,
+  "post_cherry_pick_canonical_commands": [
+    "cd /Users/kelly/Developer/sim2claw",
+    "uv sync --frozen",
+    "uv run --frozen sim2claw sysid-input-report --catalog configs/data/physical_pawn_move_catalog_20260719.json --config configs/sysid/recorded_action_sysid_v1.json --repo-root /Users/kelly/Developer/sim2claw --inspection-scope canonical_checkout --output runs/sysid/physical_pawn_input_capability_post_cherry_pick.json"
+  ],
+  "post_cherry_pick_fit_exit_semantics": "do not run sysid-fit while joint_timing_replay_ready is false; the current provisional transform and any range violations are calibration blockers",
+  "schema_version": "sim2claw.sysid_input_capability.v1",
+  "strict_sample_semantics_valid_episode_count": 0,
+  "sysid_config": {
+    "config_id": "so101_recorded_action_sysid_v1",
+    "identity": {
+      "kind": "content_addressed",
+      "sha256": "ebbcbee27555a767f40f347a36d1c54cb6faba2e1e843c197968f41dd1d9227d"
+    },
+    "sha256": "ebbcbee27555a767f40f347a36d1c54cb6faba2e1e843c197968f41dd1d9227d"
+  },
+  "timing_control_fit_ready": false,
+  "video_used_for_metric_observables": false
+}

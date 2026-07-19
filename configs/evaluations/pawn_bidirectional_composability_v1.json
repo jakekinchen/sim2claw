@@ -1,0 +1,108 @@
+{
+  "schema_version": "sim2claw.pawn_bidirectional_composability_eval.v1",
+  "evaluation_set_id": "pawn_bidirectional_composability_b_to_g_v1",
+  "status": "diagnostic_non_promoting_companion_to_pawn_rank12_bidirectional_v1",
+  "frozen_at": "2026-07-19T00:19:56-05:00",
+  "mutation_policy": "never_edit_skills_axes_or_thresholds_in_place_create_a_new_version",
+  "proof_class": "evaluation_contract_only_no_policy_or_physical_result",
+  "question": "Do the recorded B-G rank-1/rank-2 transitions self-center, preserve offset, add bias, or amplify error under forward/reverse composition?",
+  "relationship_to_product_benchmark": {
+    "product_contract": "configs/evaluations/pawn_rank12_bidirectional_v1.json",
+    "product_contract_is_unchanged": true,
+    "scope_difference": "This diagnostic uses the requested 12 B-G directed skills and measures endpoint quality and composability. It neither replaces nor promotes against the frozen 16-case A-H product benchmark.",
+    "can_promote_policy": false
+  },
+  "board_coordinate_system": {
+    "origin": "outer_corner_of_a1_playing_area",
+    "x_axis": "positive_from_file_a_toward_file_h",
+    "y_axis": "positive_from_rank_1_toward_rank_8",
+    "units": "meter",
+    "playing_side_m": 0.3556,
+    "square_side_m": 0.04445,
+    "physical_pawn_base_radius_m": 0.0138,
+    "coordinate_source_priority": [
+      "reviewed_metric_base_center_annotation",
+      "reviewed_pixel_base_center_plus_hash_bound_homography",
+      "reject"
+    ]
+  },
+  "pose_measurement": {
+    "required_point": "pawn_base_center_on_board_plane",
+    "visual_bounding_box_center_allowed": false,
+    "minimum_homography_correspondences": 4,
+    "maximum_homography_board_rms_m": 0.003,
+    "require_image_sha256_when_pixels_are_used": true,
+    "automatic_task_label_repair_allowed": false
+  },
+  "grading": {
+    "require_upright": true,
+    "require_stable": true,
+    "coarse_success": "entire circular pawn base securely inside the destination square",
+    "central_region_radius_m": 0.0198,
+    "composable_center_tolerance_m": 0.006,
+    "precision_center_tolerance_m": 0.003,
+    "ordinary_square_success_is_reported_separately": true
+  },
+  "regression": {
+    "model": "delta_final = A * delta_initial + b + epsilon",
+    "minimum_episode_count": 4,
+    "minimum_design_rank": 3,
+    "a_near_zero_frobenius": 0.35,
+    "a_near_identity_frobenius": 0.35,
+    "small_bias_m": 0.003,
+    "large_residual_rms_m": 0.006,
+    "descriptive_sample_count": 10
+  },
+  "precondition_envelope": {
+    "minimum_episode_count": 5,
+    "axis_aligned_margin_m": 0.002,
+    "meaning": "measured demonstrated input-offset support only; not physical authorization"
+  },
+  "trajectory_repeatability": {
+    "normalized_sample_count": 101,
+    "minimum_trajectory_count": 2,
+    "trajectory_signal": "pawn_base_center_in_board_coordinates"
+  },
+  "composition_diagnostic": {
+    "move_counts": [1, 2, 5, 10, 20],
+    "monte_carlo_rollouts": 5000,
+    "seed": 190719,
+    "stabilizing_spectral_radius_max": 0.95,
+    "neutral_spectral_radius_max": 1.05,
+    "claim_boundary": "affine endpoint-model diagnostic only; not closed-loop ACT or calibrated-physics evidence"
+  },
+  "skills": [
+    {"skill_id": "pawn_b1_to_b2", "column": "b", "direction": "rank1_to_rank2", "source_square": "b1", "destination_square": "b2", "reverse_skill_id": "pawn_b2_to_b1"},
+    {"skill_id": "pawn_b2_to_b1", "column": "b", "direction": "rank2_to_rank1", "source_square": "b2", "destination_square": "b1", "reverse_skill_id": "pawn_b1_to_b2"},
+    {"skill_id": "pawn_c1_to_c2", "column": "c", "direction": "rank1_to_rank2", "source_square": "c1", "destination_square": "c2", "reverse_skill_id": "pawn_c2_to_c1"},
+    {"skill_id": "pawn_c2_to_c1", "column": "c", "direction": "rank2_to_rank1", "source_square": "c2", "destination_square": "c1", "reverse_skill_id": "pawn_c1_to_c2"},
+    {"skill_id": "pawn_d1_to_d2", "column": "d", "direction": "rank1_to_rank2", "source_square": "d1", "destination_square": "d2", "reverse_skill_id": "pawn_d2_to_d1"},
+    {"skill_id": "pawn_d2_to_d1", "column": "d", "direction": "rank2_to_rank1", "source_square": "d2", "destination_square": "d1", "reverse_skill_id": "pawn_d1_to_d2"},
+    {"skill_id": "pawn_e1_to_e2", "column": "e", "direction": "rank1_to_rank2", "source_square": "e1", "destination_square": "e2", "reverse_skill_id": "pawn_e2_to_e1"},
+    {"skill_id": "pawn_e2_to_e1", "column": "e", "direction": "rank2_to_rank1", "source_square": "e2", "destination_square": "e1", "reverse_skill_id": "pawn_e1_to_e2"},
+    {"skill_id": "pawn_f1_to_f2", "column": "f", "direction": "rank1_to_rank2", "source_square": "f1", "destination_square": "f2", "reverse_skill_id": "pawn_f2_to_f1"},
+    {"skill_id": "pawn_f2_to_f1", "column": "f", "direction": "rank2_to_rank1", "source_square": "f2", "destination_square": "f1", "reverse_skill_id": "pawn_f1_to_f2"},
+    {"skill_id": "pawn_g1_to_g2", "column": "g", "direction": "rank1_to_rank2", "source_square": "g1", "destination_square": "g2", "reverse_skill_id": "pawn_g2_to_g1"},
+    {"skill_id": "pawn_g2_to_g1", "column": "g", "direction": "rank2_to_rank1", "source_square": "g2", "destination_square": "g1", "reverse_skill_id": "pawn_g1_to_g2"}
+  ],
+  "required_outputs": [
+    "endpoint_metrics.csv",
+    "per_skill_bias.json",
+    "per_skill_covariance.json",
+    "initial_to_final_offset_regression.json",
+    "precondition_envelopes.json",
+    "trajectory_repeatability.json",
+    "composition_stability.json",
+    "board_coordinate_overlays",
+    "summary.json",
+    "report.md"
+  ],
+  "authority": {
+    "recording_operator_success_can_promote": false,
+    "llm_or_vlm_annotation_can_promote": false,
+    "training_can_promote": false,
+    "physical_authority": false,
+    "held_out_rows_opened": 0,
+    "brev_required": false
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": "sim2claw.pawn_composability_annotations.v1",
+  "annotation_set_id": "replace_with_hash_bound_reviewed_annotation_set",
+  "proof_class": "physical_recording_annotations_unqualified",
+  "contract_path": "configs/evaluations/pawn_bidirectional_composability_v1.json",
+  "source_catalog_path": "configs/data/physical_pawn_move_catalog_20260719.json",
+  "source_catalog_sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e",
+  "source_catalog_is_pose_evidence": false,
+  "calibrations": [],
+  "episodes": [],
+  "claim_boundary": "This empty template intentionally yields an incomplete evaluation. Catalog labels and operator outcomes do not substitute for reviewed pawn base-center poses."
+}

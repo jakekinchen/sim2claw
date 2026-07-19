@@ -38,7 +38,7 @@
   "sources": {
     "capture_config_sha256": "0dbe0c95fe50f84a8ff8e60f9727f7123c15c921ace55a0460b49ffa4c34dc05",
     "mass_profile_py_sha256": "e176f49413b42e6d27b427062573df1fa85f7691c7c1051b800d3abac0d5d08d",
-    "scene_py_sha256": "5247d7ef694ef56721124d7e8a1fbb832e29789bcc1842cdfd1340ee980293ee",
+    "scene_py_sha256": "01366394bb10cc789956e59965b32b3f8d009df5ccba9390894b139b02639206",
     "so101_mass_profile_sha256": "bc0443d2411e7fa61a59bcde33327d0eb1e505f9224bab98c1ab2d51ed3c1648",
     "so101_model_sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
   },

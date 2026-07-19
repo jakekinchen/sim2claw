@@ -6,11 +6,17 @@ import unittest
 from pathlib import Path
 
 
-CONTRACT_PATH = (
+HISTORICAL_CONTRACT_PATH = (
     Path(__file__).parents[1]
     / "configs"
     / "evaluations"
     / "pawn_rank12_bidirectional_v1.json"
+)
+CONTRACT_PATH = (
+    Path(__file__).parents[1]
+    / "configs"
+    / "evaluations"
+    / "pawn_rank12_bidirectional_v2.json"
 )
 
 
@@ -19,63 +25,59 @@ class PawnRank12EvaluationContractTest(unittest.TestCase):
         self.contract = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
 
     def test_core_cases_are_exhaustive_and_bidirectional(self) -> None:
-        cases = self.contract["cases"]
-        self.assertEqual(len(cases), 16)
+        cases = self.contract["skills"]
+        self.assertEqual(len(cases), 12)
         expected = {
             (file_name, source_rank, destination_rank)
-            for file_name in "abcdefgh"
+            for file_name in "bcdefg"
             for source_rank, destination_rank in (("1", "2"), ("2", "1"))
         }
         actual = {
             (
-                case["file"],
+                case["column"],
                 case["source_square"][1],
                 case["destination_square"][1],
             )
             for case in cases
         }
         self.assertEqual(actual, expected)
-        self.assertEqual(len({case["case_id"] for case in cases}), 16)
+        self.assertEqual(len({case["skill_id"] for case in cases}), 12)
         self.assertEqual(
             {case["source_square"] for case in cases},
-            {f"{file_name}{rank}" for file_name in "abcdefgh" for rank in "12"},
+            {f"{file_name}{rank}" for file_name in "bcdefg" for rank in "12"},
         )
         self.assertEqual(
             {case["destination_square"] for case in cases},
-            {f"{file_name}{rank}" for file_name in "abcdefgh" for rank in "12"},
+            {f"{file_name}{rank}" for file_name in "bcdefg" for rank in "12"},
         )
 
-    def test_simulation_realizations_are_frozen_zero_row_held_outs(self) -> None:
-        cases = self.contract["cases"]
-        seeds = [seed for case in cases for seed in case["simulation_seeds"]]
-        self.assertEqual(len(seeds), 48)
-        self.assertEqual(len(set(seeds)), 48)
-        self.assertEqual(
-            len(self.contract["simulation_realization_slots"]),
-            3,
-        )
-        self.assertTrue(all(case["training_rows"] == 0 for case in cases))
+    def test_retrospective_corpus_is_not_a_checkpoint_held_out(self) -> None:
         scope = self.contract["benchmark_scope"]
-        self.assertEqual(scope["simulation_episode_count"], 48)
-        self.assertEqual(scope["evaluation_training_rows"], 0)
-        self.assertFalse(scope["exact_evaluation_realizations_may_appear_in_training"])
+        self.assertEqual(scope["directed_skill_count"], 12)
+        self.assertTrue(scope["retrospective_source_episodes_may_populate_scorecard"])
+        self.assertFalse(scope["retrospective_source_episodes_are_held_out"])
+        self.assertFalse(scope["retrospective_source_episodes_can_promote_a_checkpoint"])
+        self.assertTrue(scope["future_checkpoint_promotion_requires_separately_frozen_trials"])
 
     def test_strategy_and_promotion_boundaries_are_explicit(self) -> None:
-        strategy = self.contract["strategy_policy"]
-        self.assertFalse(strategy["lift_required"])
-        self.assertTrue(strategy["push_allowed"])
-        self.assertTrue(strategy["pick_lift_place_allowed"])
-        evaluator = self.contract["consequence_evaluator"]
+        authority = self.contract["authority"]
+        self.assertTrue(authority["runner_is_product_scorecard"])
+        self.assertFalse(authority["retrospective_source_episode_can_promote"])
+        self.assertTrue(authority["separate_cpu_fp32_evaluator_required_for_checkpoint_promotion"])
+        self.assertFalse(authority["physical_authority"])
         self.assertEqual(
-            evaluator["owner"],
-            "separate_cpu_fp32_consequence_evaluator",
+            self.contract["scorecard"]["primary_metric"],
+            "macro_composable_success_rate_across_12_directed_skills",
         )
-        self.assertTrue(evaluator["training_cannot_promote"])
-        self.assertTrue(evaluator["diagnostic_reward_cannot_promote"])
+
+    def test_historical_v1_is_immutable_and_explicitly_superseded(self) -> None:
         self.assertEqual(
-            self.contract["scorecard"]["physical_denominator"],
-            16,
+            hashlib.sha256(HISTORICAL_CONTRACT_PATH.read_bytes()).hexdigest(),
+            "f3dac8b86cd7b0252153d25c0d5c09204079003ac9780642992fd10bc08e0d43",
         )
+        supersession = self.contract["supersession"]
+        self.assertEqual(supersession["supersedes_evaluation_set_id"], "pawn_rank12_bidirectional_v1")
+        self.assertTrue(supersession["superseded_file_is_immutable_historical_evidence"])
 
     def test_project_state_binds_the_frozen_contract_hash(self) -> None:
         project_state_path = (

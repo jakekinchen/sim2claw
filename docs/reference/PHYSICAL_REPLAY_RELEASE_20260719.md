@@ -34,6 +34,27 @@ the record.
 The D405 asset is ordinary visible diagnostic video. It does not establish
 metric depth, intrinsics, hand-eye calibration, or task success.
 
+## Tracked Studio browser derivatives
+
+Studio uses three byte-exact MP4 container derivatives because browsers do not
+seek the source MKV containers consistently. Each derivative copies the
+existing H.264 video stream without re-encoding, strips source metadata, and is
+part of the tracked release contract rather than being authorized by the
+ignored local integration receipt.
+
+| Browser asset | Source asset / SHA-256 | Bytes | SHA-256 |
+| --- | --- | ---: | --- |
+| `replay-overhead-c922.browser.mp4` | `replay-overhead-c922.mkv` / `9278defb1a2dfdfbad1c465fe30305e680a15bc71b522ce3332f841b94557c9f` | 32,059,369 | `25ce9624194c0b36aaed5a6695327294eac1e34c5350b27d4aa118b88da34736` |
+| `replay-side-logitech.browser.mp4` | `replay-side-logitech.mkv` / `dc840c46bc91ea760da052b51f114374c2ade7c5d45b05c69fde0cb2a5e63950` | 33,027,592 | `f852b64e2ae0fca8a23925641a03c0e4534379f66c4a4dd857fcae4baaa6d679` |
+| `replay-wrist-d405.browser.mp4` | `replay-wrist-d405.mkv` / `19f2d6f853d8145ba1b6239b41cf31182778bc69e5bd4518069694af48780c2b` | 19,991,203 | `decb50a17c589640369785091e7c348b60d2264fd9d229e6c21bd60d6ec11f15` |
+
+Derivation operation: `container_remux_h264_copy_to_mp4`. Producer identity:
+FFmpeg 8.0.1, executable SHA-256
+`0a96da2735695308d964e25fa6f4a0db2e9d24031390360f4c5ff96a4f8938e5`.
+The ignored `studio-integration-receipt.json` may confirm and locate only these
+three contracts; it cannot admit a filename, operation, producer, size, hash,
+or source identity that is absent from or differs from the tracked JSON index.
+
 ## Proof boundary
 
 This is evidence that a saved physical-teleoperation command trace was issued

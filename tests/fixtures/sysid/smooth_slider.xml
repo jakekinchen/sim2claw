@@ -1,0 +1,20 @@
+<mujoco model="smooth_slider_sysid_fixture">
+  <compiler angle="radian" autolimits="true"/>
+  <option timestep="0.01" gravity="0 0 0" integrator="implicitfast">
+    <flag contact="disable"/>
+  </option>
+  <worldbody>
+    <body name="slider_body" pos="0 0 0.1">
+      <joint name="slider" type="slide" axis="1 0 0" range="-1 1" damping="0.4"/>
+      <geom name="slider_geom" type="box" size="0.02 0.02 0.02" mass="0.25"/>
+      <site name="tool_site" pos="0.1 0 0"/>
+    </body>
+    <body name="fixture_object" pos="0 0 0.2">
+      <freejoint name="fixture_object_free"/>
+      <geom name="fixture_object_geom" type="box" size="0.01 0.01 0.01" mass="0.1"/>
+    </body>
+  </worldbody>
+  <actuator>
+    <position name="slider_position" joint="slider" kp="18"/>
+  </actuator>
+</mujoco>

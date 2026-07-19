@@ -1,0 +1,3 @@
+# Preserve exact reviewed vendor bytes; upstream Spark 2.1.0 contains two
+# whitespace-only lines that are part of the recorded adopted-file hash.
+src/sim2claw/studio_web/vendor/spark/spark.module.js -whitespace

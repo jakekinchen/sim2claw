@@ -6,10 +6,11 @@ import tempfile
 import threading
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-from sim2claw import studio_assets
+from sim2claw import studio_assets, studio_catalog as studio_catalog_module
 from sim2claw.paths import (
     DEFAULT_CAPTURE_CONFIG,
     DEFAULT_SO101_MASS_PROFILE,
@@ -23,7 +24,7 @@ from sim2claw.studio_catalog import (
     resolve_media_token,
 )
 from sim2claw.studio_events import StudioActivity
-from sim2claw.studio_server import create_server
+from sim2claw.studio_server import STATIC_ROOT, create_server
 
 
 class StudioCatalogTest(unittest.TestCase):
@@ -304,6 +305,420 @@ class StudioCatalogTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "limited to episode state traces"):
             resolve_media_token(media_token(private_receipt, self.root), self.root)
 
+    def test_private_releases_are_hash_gated_and_catalogued(self) -> None:
+        def write_asset(relative: str, payload: bytes, **metadata: object) -> dict[str, object]:
+            path = self.root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(payload)
+            return {
+                "name": path.name,
+                "size_bytes": len(payload),
+                "sha256": hashlib.sha256(payload).hexdigest(),
+                **metadata,
+            }
+
+        splat_root = (
+            self.root / "artifacts" / "private" / "releases" / "img5349-3dgs-20260719"
+        )
+        splat_specs = [
+            write_asset(
+                str(splat_root.relative_to(self.root) / "IMG_5349-primary-real-splat.ply"),
+                b"ply\nfixture-splats",
+                splat_count=3,
+                spherical_harmonics_degree=3,
+            ),
+            write_asset(
+                str(splat_root.relative_to(self.root) / "IMG_5349-preview.png"),
+                b"fixture-preview",
+            ),
+            write_asset(
+                str(splat_root.relative_to(self.root) / "IMG_5349-orbit.mp4"),
+                b"fixture-orbit",
+            ),
+        ]
+        self._write_json(
+            self.root / "docs" / "reference" / "IPHONE_VIDEO_3DGS_RELEASE_20260719.json",
+            {
+                "schema_version": "sim2claw.private_3dgs_release_manifest.v1",
+                "release_tag": "fixture-3dgs",
+                "source": {
+                    "name": "IMG_5349.MOV",
+                    "sha256": "a" * 64,
+                    "proof_class": "owner_provided_monocular_video",
+                },
+                "assets": splat_specs,
+                "authority": {"metric_scale": False, "robot_control": False},
+            },
+        )
+
+        replay_root = (
+            self.root
+            / "artifacts"
+            / "private"
+            / "releases"
+            / "physical-replay-evidence-20260719"
+        )
+        source_receipt_payload = json.dumps(
+            {
+                "sample_count": 42,
+                "sample_hz": 20,
+                "saved_at": "2026-07-18T23:04:16Z",
+                "overhead_video": {
+                    "teleoperation_start_video_offset_seconds": 1.0,
+                    "teleoperation_stop_video_offset_seconds": 3.0,
+                },
+            }
+        ).encode()
+        replay_specs = [
+            write_asset(
+                str(replay_root.relative_to(self.root) / "source-episode-overhead-c922.mp4"),
+                b"source-video",
+                camera_role="overhead_board",
+                teleoperation_start_video_offset_seconds=1.0,
+                teleoperation_stop_video_offset_seconds=3.0,
+            ),
+            write_asset(
+                str(replay_root.relative_to(self.root) / "replay-overhead-c922.mkv"),
+                b"overhead-mkv",
+                camera_role="overhead_board",
+                replay_window_start_seconds=4.0,
+                replay_window_end_seconds=6.0,
+            ),
+            write_asset(
+                str(replay_root.relative_to(self.root) / "replay-side-logitech.mkv"),
+                b"side-mkv",
+                camera_role="side_arm",
+                replay_window_start_seconds=5.0,
+                replay_window_end_seconds=7.0,
+            ),
+            write_asset(
+                str(replay_root.relative_to(self.root) / "replay-wrist-d405.mkv"),
+                b"wrist-mkv",
+                camera_role="wrist_gripper_upward",
+                replay_window_start_seconds=3.0,
+                replay_window_end_seconds=5.0,
+                view_limitation="Fixture wrist limitation.",
+            ),
+            write_asset(
+                str(replay_root.relative_to(self.root) / "source-episode-recording-receipt.json"),
+                source_receipt_payload,
+            ),
+        ]
+        replay_spec_by_name = {
+            str(spec["name"]): spec for spec in replay_specs
+        }
+        ffmpeg_sha256 = "f" * 64
+        derivative_operation = "container_remux_h264_copy_to_mp4"
+        derived_rows: list[dict[str, object]] = []
+        derivative_specs: list[dict[str, object]] = []
+        for source_name, output_name in (
+            ("replay-overhead-c922.mkv", "replay-overhead-c922.browser.mp4"),
+            ("replay-side-logitech.mkv", "replay-side-logitech.browser.mp4"),
+            ("replay-wrist-d405.mkv", "replay-wrist-d405.browser.mp4"),
+        ):
+            payload = f"browser-{source_name}".encode()
+            source_sha256 = replay_spec_by_name[source_name]["sha256"]
+            spec = write_asset(
+                str(replay_root.relative_to(self.root) / output_name),
+                payload,
+                kind="studio_browser_derivative",
+                source_name=source_name,
+                source_sha256=source_sha256,
+                operation=derivative_operation,
+                ffmpeg_identity={
+                    "version": "fixture",
+                    "executable_sha256": ffmpeg_sha256,
+                },
+            )
+            derivative_specs.append(spec)
+            derived_rows.append(
+                {
+                    key: spec[key]
+                    for key in (
+                        "name",
+                        "source_name",
+                        "source_sha256",
+                        "operation",
+                        "size_bytes",
+                        "sha256",
+                    )
+                }
+            )
+        self._write_json(
+            self.root / "docs" / "reference" / "PHYSICAL_REPLAY_RELEASE_20260719.json",
+            {
+                "schema_version": "sim2claw.github_release_evidence_manifest.v1",
+                "release_tag": "fixture-physical",
+                "source_episode": {
+                    "recording_id": "fixture-release",
+                    "structured_source_square": "e2",
+                    "structured_destination_square": "e1",
+                    "display_label": "F2 to F1",
+                    "operator_note": "Fixture annotation.",
+                    "proof_class": "physical_teleoperation_source_unqualified",
+                },
+                "physical_replay": {
+                    "completed_sample_count": 42,
+                    "exact_command_sample_count": 40,
+                },
+                "assets": replay_specs + derivative_specs,
+            },
+        )
+        integration_receipt_path = replay_root / "studio-integration-receipt.json"
+        valid_integration_receipt = {
+            "schema_version": "sim2claw.studio_private_release_import.v1",
+            "source_release_tag": "fixture-physical",
+            "ffmpeg_sha256": ffmpeg_sha256,
+            "derived_assets": derived_rows,
+        }
+        self._write_json(integration_receipt_path, valid_integration_receipt)
+
+        catalog = build_catalog(self.root)
+        calibration = catalog["calibrations"][0]
+        self.assertEqual(calibration["status"], "ready")
+        self.assertEqual(calibration["proof_class"], "monocular_video_relative_scale_3dgs")
+        self.assertEqual(calibration["model"]["splat_count"], 3)
+        self.assertEqual(
+            resolve_media_token(calibration["model"]["url"].split("/")[-1], self.root).suffix,
+            ".ply",
+        )
+        physical = next(
+            episode for episode in catalog["episodes"]
+            if episode["id"].endswith("physical-release-fixture-release")
+        )
+        self.assertEqual(physical["status"], "recorded")
+        self.assertNotIn("evaluator_verdict", physical)
+        self.assertEqual(len(physical["recording_feeds"]), 4)
+        self.assertIn("disagrees", physical["notes"])
+
+        arbitrary = replay_root / "arbitrary.browser.mp4"
+        arbitrary.write_bytes(b"receipt-must-not-authorize-this")
+        overhead_source = replay_spec_by_name["replay-overhead-c922.mkv"]
+        fake_receipt = {
+            "schema_version": "sim2claw.studio_private_release_import.v1",
+            "source_release_tag": "fixture-physical",
+            "ffmpeg_sha256": ffmpeg_sha256,
+            "derived_assets": [
+                {
+                    "name": arbitrary.name,
+                    "source_name": "replay-overhead-c922.mkv",
+                    "source_sha256": overhead_source["sha256"],
+                    "operation": derivative_operation,
+                    "size_bytes": arbitrary.stat().st_size,
+                    "sha256": hashlib.sha256(arbitrary.read_bytes()).hexdigest(),
+                }
+            ],
+        }
+        self._write_json(integration_receipt_path, fake_receipt)
+        fake_receipt_catalog = build_catalog(self.root)
+        fake_receipt_episode = next(
+            episode for episode in fake_receipt_catalog["episodes"]
+            if episode["id"].endswith("physical-release-fixture-release")
+        )
+        self.assertEqual(len(fake_receipt_episode["recording_feeds"]), 1)
+        with self.assertRaisesRegex(ValueError, "not admitted by a verified release"):
+            resolve_media_token(media_token(arbitrary, self.root), self.root)
+
+        mismatched_row = dict(derived_rows[0])
+        mismatched_row["operation"] = "reencode_or_replace_bytes"
+        self._write_json(
+            integration_receipt_path,
+            {
+                "schema_version": "sim2claw.studio_private_release_import.v1",
+                "source_release_tag": "fixture-physical",
+                "ffmpeg_sha256": ffmpeg_sha256,
+                "derived_assets": [mismatched_row],
+            },
+        )
+        mismatched_catalog = build_catalog(self.root)
+        mismatched_episode = next(
+            episode for episode in mismatched_catalog["episodes"]
+            if episode["id"].endswith("physical-release-fixture-release")
+        )
+        self.assertEqual(len(mismatched_episode["recording_feeds"]), 1)
+
+        tracked_derivative = replay_root / str(derived_rows[0]["name"])
+        trusted_derivative_bytes = tracked_derivative.read_bytes()
+        arbitrary_derivative_bytes = b"z" * len(trusted_derivative_bytes)
+        tracked_derivative.write_bytes(arbitrary_derivative_bytes)
+        forged_tracked_row = dict(derived_rows[0])
+        forged_tracked_row["sha256"] = hashlib.sha256(
+            arbitrary_derivative_bytes
+        ).hexdigest()
+        self._write_json(
+            integration_receipt_path,
+            {
+                "schema_version": "sim2claw.studio_private_release_import.v1",
+                "source_release_tag": "fixture-physical",
+                "ffmpeg_sha256": ffmpeg_sha256,
+                "derived_assets": [forged_tracked_row],
+            },
+        )
+        forged_bytes_catalog = build_catalog(self.root)
+        forged_bytes_episode = next(
+            episode for episode in forged_bytes_catalog["episodes"]
+            if episode["id"].endswith("physical-release-fixture-release")
+        )
+        self.assertEqual(len(forged_bytes_episode["recording_feeds"]), 1)
+        with self.assertRaisesRegex(ValueError, "not admitted by a verified release"):
+            resolve_media_token(media_token(tracked_derivative, self.root), self.root)
+        tracked_derivative.write_bytes(trusted_derivative_bytes)
+
+        unverified = splat_root / "not-in-release.png"
+        unverified.write_bytes(b"not admitted")
+        with self.assertRaisesRegex(ValueError, "not admitted by a verified release"):
+            resolve_media_token(media_token(unverified, self.root), self.root)
+
+        escaped = replay_root.parent / "escaped.browser.mp4"
+        escaped.write_bytes(b"escaped-derived")
+        self._write_json(
+            integration_receipt_path,
+            {
+                "schema_version": "sim2claw.studio_private_release_import.v1",
+                "source_release_tag": "fixture-physical",
+                "ffmpeg_sha256": ffmpeg_sha256,
+                "derived_assets": [
+                    {
+                        "source_name": "replay-overhead-c922.mkv",
+                        "source_sha256": overhead_source["sha256"],
+                        "name": "../escaped.browser.mp4",
+                        "operation": derivative_operation,
+                        "size_bytes": escaped.stat().st_size,
+                        "sha256": hashlib.sha256(escaped.read_bytes()).hexdigest(),
+                    }
+                ],
+            },
+        )
+        traversal_gated = build_catalog(self.root)
+        traversal_episode = next(
+            episode for episode in traversal_gated["episodes"]
+            if episode["id"].endswith("physical-release-fixture-release")
+        )
+        self.assertEqual(len(traversal_episode["recording_feeds"]), 1)
+
+        symlink_target = replay_root.parent / "symlink-target.browser.mp4"
+        symlink_target.write_bytes(b"symlink-derived")
+        symlink = replay_root / "linked.browser.mp4"
+        symlink.symlink_to(symlink_target)
+        self._write_json(
+            integration_receipt_path,
+            {
+                "schema_version": "sim2claw.studio_private_release_import.v1",
+                "source_release_tag": "fixture-physical",
+                "ffmpeg_sha256": ffmpeg_sha256,
+                "derived_assets": [
+                    {
+                        "source_name": "replay-overhead-c922.mkv",
+                        "source_sha256": overhead_source["sha256"],
+                        "name": symlink.name,
+                        "operation": derivative_operation,
+                        "size_bytes": symlink_target.stat().st_size,
+                        "sha256": hashlib.sha256(symlink_target.read_bytes()).hexdigest(),
+                    }
+                ],
+            },
+        )
+        symlink_gated = build_catalog(self.root)
+        symlink_episode = next(
+            episode for episode in symlink_gated["episodes"]
+            if episode["id"].endswith("physical-release-fixture-release")
+        )
+        self.assertEqual(len(symlink_episode["recording_feeds"]), 1)
+
+        self._write_json(integration_receipt_path, valid_integration_receipt)
+
+        (splat_root / "IMG_5349-primary-real-splat.ply").write_bytes(
+            b"ply\nfixture-splatX"
+        )
+        (replay_root / "source-episode-overhead-c922.mp4").write_bytes(
+            b"tamper-video"
+        )
+        with self.assertRaisesRegex(ValueError, "not admitted by a verified release"):
+            resolve_media_token(calibration["model"]["url"].split("/")[-1], self.root)
+        gated = build_catalog(self.root)
+        self.assertEqual(gated["calibrations"][0]["status"], "asset_missing")
+        self.assertIsNone(gated["calibrations"][0]["model"])
+        self.assertFalse(
+            any(episode["id"].endswith("physical-release-fixture-release") for episode in gated["episodes"])
+        )
+
+    def test_private_media_streams_the_single_verified_open_descriptor(self) -> None:
+        release_root = (
+            self.root
+            / "artifacts"
+            / "private"
+            / "releases"
+            / "physical-replay-evidence-20260719"
+        )
+        release_root.mkdir(parents=True)
+        trusted = b"tracked-private-media"
+        attacker = b"x" * len(trusted)
+        media_path = release_root / "tracked.mp4"
+        media_path.write_bytes(trusted)
+        self._write_json(
+            self.root / "docs" / "reference" / "PHYSICAL_REPLAY_RELEASE_20260719.json",
+            {
+                "schema_version": "sim2claw.github_release_evidence_manifest.v1",
+                "release_tag": "fixture-toctou",
+                "assets": [
+                    {
+                        "name": media_path.name,
+                        "size_bytes": len(trusted),
+                        "sha256": hashlib.sha256(trusted).hexdigest(),
+                    }
+                ],
+            },
+        )
+        token = media_token(media_path, self.root)
+        original_open = studio_catalog_module._open_relative_no_follow
+
+        server = create_server("127.0.0.1", 0, repo_root=self.root)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        url = f"http://127.0.0.1:{server.server_address[1]}/media/{token}"
+        try:
+            for replacement_kind in ("regular", "symlink"):
+                with self.subTest(replacement_kind=replacement_kind):
+                    if media_path.exists() or media_path.is_symlink():
+                        media_path.unlink()
+                    media_path.write_bytes(trusted)
+                    symlink_target = release_root / "replacement-target.mp4"
+                    symlink_target.unlink(missing_ok=True)
+
+                    def replace_after_open(repo_root: Path, relative: Path) -> int:
+                        descriptor = original_open(repo_root, relative)
+                        media_path.unlink()
+                        if replacement_kind == "regular":
+                            media_path.write_bytes(attacker)
+                        else:
+                            symlink_target.write_bytes(attacker)
+                            media_path.symlink_to(symlink_target)
+                        return descriptor
+
+                    with patch.object(
+                        studio_catalog_module,
+                        "_open_relative_no_follow",
+                        side_effect=replace_after_open,
+                    ):
+                        with urlopen(url, timeout=3) as response:
+                            self.assertEqual(response.read(), trusted)
+                            self.assertEqual(
+                                int(response.headers["Content-Length"]), len(trusted)
+                            )
+
+            if media_path.exists() or media_path.is_symlink():
+                media_path.unlink()
+            symlink_target = release_root / "preexisting-target.mp4"
+            symlink_target.write_bytes(attacker)
+            media_path.symlink_to(symlink_target)
+            with self.assertRaises(HTTPError) as raised:
+                urlopen(url, timeout=3)
+            self.assertEqual(raised.exception.code, 404)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
     def test_activity_progress_is_catalogued(self) -> None:
         run_root = self.root / "runs" / "studio" / "processes"
         activity = StudioActivity(
@@ -335,6 +750,42 @@ class StudioCatalogTest(unittest.TestCase):
                 scene = json.load(response)
             self.assertEqual(scene["schema_version"], "sim2claw.mujoco_scene_manifest.v1")
             self.assertFalse(scene["authority"]["physical_authority"])
+            self.assertNotIn("scene_synthesis", scene)
+            with urlopen(f"{base}/api/scene-synthesis", timeout=3) as response:
+                synthesis = json.load(response)
+            self.assertEqual(
+                synthesis["schema_version"],
+                "sim2claw.studio_scene_synthesis_proposal.v1",
+            )
+            self.assertEqual(synthesis["proposal"]["hierarchy"]["id"], "workcell")
+            self.assertEqual(len(synthesis["proposal_sha256"]), 64)
+            proposal = synthesis["proposal"]
+            provenance = proposal["provenance"]
+            self.assertEqual(
+                hashlib.sha256(provenance["prompt"].encode("utf-8")).hexdigest(),
+                provenance["prompt_sha256"],
+            )
+            proposal_output = json.dumps(
+                {
+                    "analysis": proposal["analysis"],
+                    "hierarchy": proposal["hierarchy"],
+                },
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+            self.assertEqual(
+                hashlib.sha256(proposal_output).hexdigest(),
+                provenance["output_sha256"],
+            )
+            self.assertFalse(
+                proposal["analysis"]["evidence_views"][0][
+                    "hash_verifiable_in_repository"
+                ]
+            )
+            self.assertFalse(proposal["representations"]["json_compiles_or_drives_geometry"])
+            self.assertFalse(
+                synthesis["authority"]["included_in_mujoco_manifest_revision"]
+            )
             with urlopen(
                 f"{base}{scene['meshes'][0]['asset_url']}", timeout=3
             ) as response:
@@ -393,6 +844,9 @@ class StudioCatalogTest(unittest.TestCase):
         try:
             with urlopen(f"{base}/", timeout=3) as response:
                 html = response.read().decode("utf-8")
+                content_security_policy = response.headers.get(
+                    "Content-Security-Policy", ""
+                )
             self.assertIn('data-view="replay"', html)
             self.assertIn('id="timeline-shell"', html)
             self.assertIn('id="process-drawer"', html)
@@ -405,6 +859,15 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('role="group"', html)
             self.assertIn('id="sync-follower"', html)
             self.assertIn('id="three-canvas"', html)
+            self.assertIn('data-route="calibration"', html)
+            self.assertIn('id="calibration-canvas"', html)
+            self.assertIn('id="recording-feed-switch"', html)
+            self.assertIn('src="/studio3dgs.js"', html)
+            self.assertIn("Robo Scanner + LLM scene calibration", html)
+            self.assertIn('id="calibration-scene-toggle"', html)
+            self.assertIn('id="scene-synthesis-status"', html)
+            self.assertIn('id="scene-hierarchy"', html)
+            self.assertIn("this JSON is not compiled, promoted, or used to drive either geometry layer", html)
             self.assertIn('id="live-simulation-canvas"', html)
             self.assertIn('id="live-simulation-status"', html)
             self.assertIn('id="live-workspace-drawer"', html)
@@ -425,6 +888,8 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('<span id="pawn-preview-target">B2</span>', html)
             self.assertIn("tan pawns mirrored on A8, B7, C8", html)
             self.assertNotIn('id="record-piece"', html)
+            self.assertIn("script-src 'self' 'wasm-unsafe-eval'", content_security_policy)
+            self.assertIn("worker-src 'self' blob:", content_security_policy)
 
             with urlopen(f"{base}/studio.css", timeout=3) as response:
                 css = response.read().decode("utf-8")
@@ -434,6 +899,10 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('scroll-behavior: auto', css)
             self.assertIn('data-recorder-status="awaiting_label"', css)
             self.assertIn('.pawn-board-cell.is-selectable', css)
+            self.assertIn('.calibration-crosshair', css)
+            self.assertIn('.scene-synthesis-card', css)
+            self.assertIn('.scene-hierarchy', css)
+            self.assertIn('.recording-feed-switch', css)
 
             with urlopen(f"{base}/studio.js", timeout=3) as response:
                 javascript = response.read().decode("utf-8")
@@ -453,9 +922,29 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn("new AbortController()", javascript)
             self.assertNotIn("for (const count of [3, 2, 1])", javascript)
             self.assertIn('episode.inspection?.kind === "threejs_state_trace"', javascript)
+            self.assertIn('episodeRecordingFeeds(episode)', javascript)
+            self.assertIn('window.Sim2ClawCalibration?.setActive', javascript)
+            self.assertIn('episode.evaluator_verdict ? "Evaluator result" : "Evidence status"', javascript)
             self.assertIn('"Operator notes"', javascript)
             self.assertIn('fetch("/api/recorder/live-simulation"', javascript)
             self.assertIn("viewer.applyLiveState(liveState)", javascript)
+
+            spark_license = (STATIC_ROOT / "vendor" / "spark" / "LICENSE").read_bytes()
+            self.assertEqual(
+                hashlib.sha256(spark_license).hexdigest(),
+                "51829693e5dccd9ca1daa093991faac3aaa93238eb8fd5f5cb4130af85791d64",
+            )
+            self.assertIn(b"WORLD LABS TECHNOLOGIES, INC.", spark_license)
+            spark_source = (
+                STATIC_ROOT / "vendor" / "spark" / "SOURCE.md"
+            ).read_text(encoding="utf-8")
+            self.assertIn("@sparkjsdev/spark", spark_source)
+            self.assertIn("Adoption reason", spark_source)
+            three_source = (
+                STATIC_ROOT / "vendor" / "three" / "SOURCE.md"
+            ).read_text(encoding="utf-8")
+            self.assertIn("three add-ons", three_source)
+            self.assertIn("postprocessing/Pass.js", three_source)
             self.assertIn("refreshLiveSimulation(), 50", javascript)
             self.assertIn('fetch("/api/live/session"', javascript)
             self.assertIn("/api/live/cameras/", javascript)

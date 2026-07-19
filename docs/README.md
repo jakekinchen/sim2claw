@@ -2,6 +2,16 @@
 
 ## Active documents
 
+- [`decisions/0010-recorded-action-replay-and-staged-sysid.md`](./decisions/0010-recorded-action-replay-and-staged-sysid.md)
+  — strict recorded-action replay, staged bounded system identification,
+  whole-episode splits, and held-out acceptance boundary.
+- [`run-logs/2026-07-19-recorded-action-replay-sysid.md`](./run-logs/2026-07-19-recorded-action-replay-sysid.md)
+  — implementation, verification, isolated input capability, and canonical
+  post-cherry-pick commands.
+- [`reference/SYSID_INPUT_CAPABILITY_20260719.json`](./reference/SYSID_INPUT_CAPABILITY_20260719.json)
+  — fail-closed input inventory for this isolated checkout only.
+- [`reference/MUJOCO_SYSID_CAPABILITY_20260719.json`](./reference/MUJOCO_SYSID_CAPABILITY_20260719.json)
+  — pinned official toolbox exports and exercised bounded-fit receipt.
 - [`../GOAL.md`](../GOAL.md) — current clean-room objective and first gate.
 - [`BUILD_PLAN.md`](./BUILD_PLAN.md) — dependency-ordered manual construction
   plan.

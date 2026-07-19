@@ -20,6 +20,7 @@
         <nav class="view-switch" aria-label="Studio views">
           <button class="view-button is-active" type="button" data-route="replay">Replay</button>
           <button class="view-button" type="button" data-route="library">Library</button>
+          <button class="view-button" type="button" data-route="calibration">Calibration</button>
           <button class="view-button" type="button" data-route="robots">Robots</button>
           <button class="view-button record-route" type="button" data-route="record"><span class="record-route-dot" aria-hidden="true"></span>Record</button>
         </nav>
@@ -85,6 +86,7 @@
                 <p id="stage-subtitle">The newest replayable evidence will appear here.</p>
               </div>
               <div class="stage-actions">
+                <div class="recording-feed-switch" id="recording-feed-switch" hidden aria-label="Recorded camera feed"></div>
                 <div class="replay-mode-switch" id="replay-mode-switch" hidden aria-label="Replay view">
                   <button type="button" data-replay-mode="three" aria-pressed="true">3D inspect</button>
                   <button type="button" data-replay-mode="recorded" aria-pressed="false">Recorded</button>
@@ -171,6 +173,91 @@
           </header>
           <article class="simulation-card" id="simulation-card"></article>
           <div class="robot-grid" id="robot-grid"></div>
+        </section>
+
+        <section class="view-panel calibration-view" data-view-panel="calibration" aria-labelledby="calibration-heading">
+          <header class="view-heading calibration-heading">
+            <div>
+              <span class="section-label">Robo Scanner + LLM scene calibration</span>
+              <h1 id="calibration-heading">Align capture and accepted scene</h1>
+              <p>Inspect the video-and-3DGS scene proposal, its JSON hierarchy, and the accepted Three.js projection together. Move the splat against the simulation datum; LLM proposals cannot define metric scale, collision geometry, task coordinates, or robot motion.</p>
+            </div>
+            <span class="neutral-tag calibration-boundary"><span class="lock-icon" aria-hidden="true"></span> visual layer only</span>
+          </header>
+
+          <div class="calibration-layout">
+            <section class="calibration-stage" aria-label="Interactive Gaussian splat calibration view">
+              <canvas id="calibration-canvas"></canvas>
+              <div class="calibration-ruler calibration-ruler-x" aria-hidden="true"></div>
+              <div class="calibration-ruler calibration-ruler-y" aria-hidden="true"></div>
+              <div class="calibration-crosshair" aria-hidden="true"><i></i><i></i></div>
+              <div class="calibration-stage-toolbar">
+                <span id="calibration-status">Waiting for the verified splat…</span>
+                <div>
+                  <button id="calibration-scene-toggle" type="button" aria-pressed="true">Accepted scene on</button>
+                  <button id="calibration-frame-toggle" type="button" aria-pressed="true">Simulation datum on</button>
+                  <button id="calibration-fit" type="button">Fit splat</button>
+                  <button id="calibration-reset" type="button">Reset transform</button>
+                </div>
+              </div>
+              <div class="calibration-axis-key" aria-hidden="true"><span class="axis-x">X</span><span class="axis-y">Y</span><span class="axis-z">Z</span></div>
+            </section>
+
+            <aside class="calibration-console" aria-label="Calibration controls and source evidence">
+              <div class="calibration-console-heading">
+                <span class="section-label">Verified private release</span>
+                <h2 id="calibration-title">IMG_5349 workcell splat</h2>
+                <p id="calibration-subtitle">Loading Robo Scanner release metadata…</p>
+              </div>
+
+              <dl class="calibration-facts">
+                <div><dt>Splats</dt><dd id="calibration-splats">—</dd></div>
+                <div><dt>Source</dt><dd id="calibration-source">—</dd></div>
+                <div><dt>Renderer</dt><dd id="calibration-renderer">—</dd></div>
+                <div><dt>Scale</dt><dd>Relative visual</dd></div>
+              </dl>
+
+              <section class="scene-synthesis-card" aria-labelledby="scene-synthesis-heading">
+                <header>
+                  <div><span class="section-label">LLM scene proposal</span><h3 id="scene-synthesis-heading">Hierarchy beside accepted geometry</h3></div>
+                  <b id="scene-synthesis-status">Loading proposal…</b>
+                </header>
+                <p>Video and the 3D Gaussian Splat inform a display-only hierarchy. Studio shows it beside a Three.js layer built independently from the accepted MuJoCo manifest; this JSON is not compiled, promoted, or used to drive either geometry layer.</p>
+                <dl class="scene-synthesis-facts">
+                  <div><dt>Analysis</dt><dd id="scene-synthesis-method">—</dd></div>
+                  <div><dt>Outputs</dt><dd id="scene-synthesis-outputs">—</dd></div>
+                  <div><dt>Scene</dt><dd id="calibration-scene-state">Loading accepted scene…</dd></div>
+                  <div><dt>Revision</dt><dd><code id="scene-synthesis-revision">—</code></dd></div>
+                </dl>
+                <details open>
+                  <summary>JSON scene hierarchy</summary>
+                  <ul class="scene-hierarchy" id="scene-hierarchy"><li>Loading hierarchy…</li></ul>
+                </details>
+                <small>Proposal boundary · the hierarchy has no metric, collision, evaluator, or physical-control authority.</small>
+              </section>
+
+              <fieldset class="transform-controls">
+                <legend>Relative placement</legend>
+                <label><span>X offset <output data-transform-output="position-x">0.00</output></span><input type="range" min="-5" max="5" step="0.01" value="0" data-transform="position-x"></label>
+                <label><span>Y offset <output data-transform-output="position-y">0.00</output></span><input type="range" min="-5" max="5" step="0.01" value="0" data-transform="position-y"></label>
+                <label><span>Z offset <output data-transform-output="position-z">0.00</output></span><input type="range" min="-5" max="5" step="0.01" value="0" data-transform="position-z"></label>
+                <label><span>Pitch <output data-transform-output="rotation-x">0°</output></span><input type="range" min="-180" max="180" step="1" value="0" data-transform="rotation-x"></label>
+                <label><span>Yaw <output data-transform-output="rotation-y">0°</output></span><input type="range" min="-180" max="180" step="1" value="0" data-transform="rotation-y"></label>
+                <label><span>Roll <output data-transform-output="rotation-z">0°</output></span><input type="range" min="-180" max="180" step="1" value="0" data-transform="rotation-z"></label>
+                <label><span>Visual scale <output data-transform-output="scale">1.00×</output></span><input type="range" min="0.1" max="3" step="0.01" value="1" data-transform="scale"></label>
+              </fieldset>
+
+              <div class="calibration-proof-notice" id="calibration-proof-notice">
+                <span class="lock-icon" aria-hidden="true"></span>
+                <p>Robo Scanner output is appearance and calibration context. MuJoCo remains the physics and collision source of truth.</p>
+              </div>
+
+              <div class="calibration-evidence">
+                <figure><img id="calibration-preview" alt="Exact-camera preview of the Robo Scanner Gaussian splat"><figcaption>Exact-camera preview</figcaption></figure>
+                <figure><video id="calibration-orbit" playsinline muted loop controls preload="metadata"></video><figcaption>Recorded bounded orbit</figcaption></figure>
+              </div>
+            </aside>
+          </div>
         </section>
 
         <section class="view-panel record-view" data-view-panel="record" aria-labelledby="record-heading">
@@ -403,6 +490,7 @@
     </template>
 
     <script type="module" src="/studio3d.js"></script>
+    <script type="module" src="/studio3dgs.js"></script>
     <script src="/studio.js" defer></script>
   </body>
 </html>

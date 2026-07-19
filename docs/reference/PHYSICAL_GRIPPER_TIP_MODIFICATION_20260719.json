@@ -1,0 +1,49 @@
+{
+  "schema_version": "sim2claw.physical_gripper_tip_observation.v1",
+  "observation_id": "so101_rubber_band_fingertip_wraps_owner_report_20260719",
+  "reported_at": "2026-07-19T02:25:00-05:00",
+  "proof_class": "owner_reported_physical_configuration_observation",
+  "status": "unmeasured_unverified_configuration_prior",
+  "hardware": {
+    "robot_family": "SO-101",
+    "location": "tip_of_each_gripper_claw",
+    "modification": "rubber_band_wrapped_around_each_tip",
+    "reported_wrap_count_per_side": {
+      "minimum": 4,
+      "maximum": 5,
+      "certainty": "approximate_owner_recollection"
+    },
+    "reported_effect": "grippier_than_the_unmodified_claws"
+  },
+  "episode_applicability": {
+    "applies_to_all_18_recovered_recordings": "unknown",
+    "required_resolution": "bind_each_episode_or_acquisition_session_to_a_named_hardware_profile_before_contact_calibration"
+  },
+  "simulator_implications": {
+    "nominal_unmodified_finger_contact_is_physical_authority": false,
+    "affected_quantities": [
+      "effective_fingertip_collision_geometry",
+      "finger_to_pawn_friction",
+      "contact_patch_compliance",
+      "contact_damping",
+      "effective_grip_force_and_release_threshold"
+    ],
+    "confounding_warning": "friction_compliance_contact_geometry_and_closing_force_may_produce_similar_trajectories_and_must_not_be_reported_as_uniquely_identified_without_supporting_observables",
+    "current_model_treatment": "unmodeled_hardware_delta_and_future_contact_parameter_prior_not_a_calibrated_value"
+  },
+  "minimum_next_measurements": [
+    "close_up_photos_of_both_tips_with_a_scale_reference",
+    "rubber_band_material_width_and_unstretched_thickness",
+    "actual_wrap_count_and_outer_tip_dimensions_per_side",
+    "hardware_profile_timestamps_or_episode_session_mapping",
+    "repeatable normal_force_or_gripper_closure_measurement",
+    "simple pawn_slip_or_drag_trials_with_synchronized_contact_and_object_motion"
+  ],
+  "authority": {
+    "may_calibrate_contact_parameters": false,
+    "may_promote_a_policy": false,
+    "may_authorize_physical_motion": false,
+    "may_be_used_as_a_domain_randomization_center": false,
+    "may_define_a_future_prior_range_after_review": true
+  }
+}
