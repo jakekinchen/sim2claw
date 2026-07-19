@@ -196,45 +196,12 @@ input:focus-visible,
   position: relative;
   width: 28px;
   height: 28px;
-  border: 1.5px solid var(--carbon);
-  overflow: hidden;
+  display: inline-flex;
 }
 
-.wordmark-mark::before,
-.wordmark-mark::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: -4px;
-  width: 1px;
-  height: 36px;
-  background: var(--carbon);
-  transform: rotate(45deg);
-}
-
-.wordmark-mark::after {
-  transform: rotate(-45deg);
-}
-
-.wordmark-mark i {
-  position: absolute;
-  z-index: 1;
-  width: 7px;
-  height: 7px;
-  border: 2px solid var(--carbon);
-  border-radius: 50%;
-  background: var(--chalk);
-}
-
-.wordmark-mark i:first-child {
-  top: 3px;
-  left: 3px;
-}
-
-.wordmark-mark i:last-child {
-  right: 3px;
-  bottom: 3px;
-  border-color: var(--carbon);
+.wordmark-mark img {
+  width: 100%;
+  height: 100%;
 }
 
 .view-switch {
