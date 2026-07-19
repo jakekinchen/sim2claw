@@ -41,16 +41,22 @@ from .source_episode import (
 EVALUATOR_PATH_V1 = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_pawn_evaluator_v1.json"
 )
-EVALUATOR_PATH = (
+EVALUATOR_PATH_V2 = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_pawn_evaluator_v2.json"
 )
-KNOWN_EVALUATOR_PATHS = (EVALUATOR_PATH, EVALUATOR_PATH_V1)
+EVALUATOR_PATH = (
+    REPO_ROOT / "configs" / "tasks" / "chess_pick_place_pawn_evaluator_v3.json"
+)
+KNOWN_EVALUATOR_PATHS = (EVALUATOR_PATH, EVALUATOR_PATH_V2, EVALUATOR_PATH_V1)
 EVALUATOR_SCHEMAS = {
     "chess_pick_place_pawn_evaluator_v1": (
         "sim2claw.chess_pick_place_pawn_evaluator.v1"
     ),
     "chess_pick_place_pawn_evaluator_v2": (
         "sim2claw.chess_pick_place_pawn_evaluator.v2"
+    ),
+    "chess_pick_place_pawn_evaluator_v3": (
+        "sim2claw.chess_pick_place_pawn_evaluator.v3"
     ),
 }
 
@@ -78,6 +84,11 @@ def load_pawn_evaluator_contract(path: Path = EVALUATOR_PATH) -> dict[str, Any]:
             [0.04, -0.093],
         ),
         "chess_pick_place_pawn_evaluator_v2": (
+            CURRENT_SCENE_ID,
+            CURRENT_BOARD_POSE_ID,
+            [0.04, -0.065],
+        ),
+        "chess_pick_place_pawn_evaluator_v3": (
             CURRENT_SCENE_ID,
             CURRENT_BOARD_POSE_ID,
             [0.04, -0.065],
@@ -130,13 +141,26 @@ def load_pawn_evaluator_contract(path: Path = EVALUATOR_PATH) -> dict[str, Any]:
         raise ValueError("pawn evaluator references an unknown source contract")
     if source["contract_id"] != execution["source_contract_id"]:
         raise ValueError("pawn evaluator references the wrong source contract")
+    if evaluator_id == "chess_pick_place_pawn_evaluator_v3":
+        reset = source["simulation_reset"]
+        if execution.get("simulation_reset_id") != reset["reset_id"]:
+            raise ValueError("pawn evaluator references the wrong simulation reset")
     return contract
 
 
-def evaluator_path_for_scene(scene_id: str) -> Path:
+def evaluator_path_for_scene(
+    scene_id: str, *, source_contract_id: str | None = None
+) -> Path:
     for path in KNOWN_EVALUATOR_PATHS:
         contract = json.loads(path.read_text(encoding="utf-8"))
-        if contract.get("scene", {}).get("scene_id") == scene_id:
+        if (
+            contract.get("scene", {}).get("scene_id") == scene_id
+            and (
+                source_contract_id is None
+                or contract.get("execution", {}).get("source_contract_id")
+                == source_contract_id
+            )
+        ):
             return path
     raise ValueError("source scene has no frozen pawn evaluator")
 
@@ -291,7 +315,10 @@ def evaluate_source_episode(
 
     directory = directory.resolve()
     receipt, rows = load_source_episode(directory)
-    evaluator_path = evaluator_path_for_scene(str(receipt.get("scene_id") or ""))
+    evaluator_path = evaluator_path_for_scene(
+        str(receipt.get("scene_id") or ""),
+        source_contract_id=str(receipt.get("task_id") or ""),
+    )
     evaluator = load_pawn_evaluator_contract(evaluator_path)
     evaluator_scene = evaluator["scene"]
     if receipt.get("scene_id") != evaluator_scene["scene_id"]:
@@ -483,10 +510,19 @@ def evaluate_source_episode(
         "exact_sample_hold_state_replay": all(replay_state_matches),
     }
     scored = score_pawn_consequences(measurements, evaluator)
+    evaluator_identity = {
+        "evaluator_module_sha256": sha256_file(Path(__file__)),
+        "grasp_module_sha256": sha256_file(REPO_ROOT / "src/sim2claw/grasp.py"),
+        "scene_module_sha256": sha256_file(REPO_ROOT / "src/sim2claw/scene.py"),
+        "source_episode_module_sha256": sha256_file(
+            REPO_ROOT / "src/sim2claw/source_episode.py"
+        ),
+    }
     verdict = {
         "schema_version": ADMISSION_SCHEMA,
         "evaluator_contract_schema": evaluator["schema_version"],
         "evaluator_contract_sha256": pawn_evaluator_sha256(evaluator_path),
+        "evaluator_identity": evaluator_identity,
         "source_contract_sha256": receipt["source_contract_sha256"],
         "source_recording_id": receipt["recording_id"],
         "source_receipt_sha256": sha256_file(directory / "recording_receipt.json"),

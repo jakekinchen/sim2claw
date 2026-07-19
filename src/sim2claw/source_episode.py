@@ -20,16 +20,22 @@ from .scene import CURRENT_TASK_LAYOUT_ID, CURRENT_TASK_PIECE_LAYOUT, ROBOT_JOIN
 CONTRACT_PATH_V1 = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_source_episode_v1.json"
 )
+CONTRACT_PATH_V3 = (
+    REPO_ROOT / "configs" / "tasks" / "chess_pick_place_source_episode_v3.json"
+)
 CONTRACT_PATH = (
     REPO_ROOT / "configs" / "tasks" / "chess_pick_place_source_episode_v2.json"
 )
-KNOWN_CONTRACT_PATHS = (CONTRACT_PATH, CONTRACT_PATH_V1)
+KNOWN_CONTRACT_PATHS = (CONTRACT_PATH_V3, CONTRACT_PATH, CONTRACT_PATH_V1)
 CONTRACT_SCHEMAS = {
     "chess_pick_place_source_episode_v1": (
         "sim2claw.canonical_manipulation_source_contract.v1"
     ),
     "chess_pick_place_source_episode_v2": (
         "sim2claw.canonical_manipulation_source_contract.v2"
+    ),
+    "chess_pick_place_source_episode_v3": (
+        "sim2claw.canonical_manipulation_source_contract.v3"
     ),
 }
 EPISODE_SCHEMA = "sim2claw.manipulation_source_episode.v1"
@@ -68,6 +74,31 @@ _SCENE_CONTRACTS: dict[str, dict[str, Any]] = {
             *(f"{file_name}5" for file_name in "abcdefgh"),
             *(f"{file_name}6" for file_name in "abcdefgh"),
         },
+    },
+    "chess_pick_place_source_episode_v3": {
+        "scene_id": CURRENT_SCENE_ID,
+        "board_pose_id": CURRENT_BOARD_POSE_ID,
+        "board_center": [0.04, -0.065],
+        "displacement_field": "robotward_displacement_from_reference_pose_m",
+        "displacement_m": 0.1,
+        "workspace_pose_id": (
+            "workspace_board_fiducial_robotward_100mm_20260718_v3"
+        ),
+        "fiducial_pose_id": "fiducial_robotward_100mm_20260718_v2",
+        "fiducial_center": [0.02, 0.18],
+        "destination_squares": {
+            *(f"{file_name}5" for file_name in "abcdefgh"),
+            *(f"{file_name}6" for file_name in "abcdefgh"),
+        },
+        "reset_id": "c8_standoff_collision_free_reset_v1",
+        "left_arm_joint_pose_radians": [
+            0.013117630259065333,
+            -0.10199701741066777,
+            0.1534035836475657,
+            1.4968274683932468,
+            2.013538628193459,
+            1.35,
+        ],
     },
 }
 
@@ -164,7 +195,10 @@ def validate_source_contract(contract: dict[str, Any]) -> dict[str, Any]:
         abs_tol=1e-12,
     ):
         raise ValueError("canonical source contract does not bind its board shift")
-    if contract_id == "chess_pick_place_source_episode_v2":
+    if contract_id in {
+        "chess_pick_place_source_episode_v2",
+        "chess_pick_place_source_episode_v3",
+    }:
         if scene.get("workspace_pose_id") != expected_scene["workspace_pose_id"]:
             raise ValueError("canonical source workspace pose identity changed")
         if scene.get("fiducial_pose_id") != expected_scene["fiducial_pose_id"]:
@@ -173,6 +207,30 @@ def validate_source_contract(contract: dict[str, Any]) -> dict[str, Any]:
             "fiducial_center"
         ]:
             raise ValueError("canonical source fiducial center changed")
+    if contract_id == "chess_pick_place_source_episode_v3":
+        reset = contract.get("simulation_reset")
+        if not isinstance(reset, dict):
+            raise ValueError("source v3 requires a simulation reset contract")
+        if reset.get("reset_id") != expected_scene["reset_id"]:
+            raise ValueError("source v3 reset identity changed")
+        if reset.get("left_arm_joint_pose_radians") != expected_scene[
+            "left_arm_joint_pose_radians"
+        ]:
+            raise ValueError("source v3 reset joint pose changed")
+        if int(reset.get("settle_physics_steps", 0)) != 300:
+            raise ValueError("source v3 settle duration changed")
+        if reset.get("zero_robot_piece_contact_required_during_settle") is not True:
+            raise ValueError("source v3 must prohibit reset robot-piece contact")
+        if reset.get("all_sixteen_pawns_upright_after_settle_required") is not True:
+            raise ValueError("source v3 must require an upright pawn reset")
+        if not math.isclose(
+            float(reset.get("maximum_piece_displacement_after_settle_m", -1.0)),
+            0.002,
+            abs_tol=1e-12,
+        ):
+            raise ValueError("source v3 reset displacement bound changed")
+        if reset.get("physical_robot_motion_authority") is not False:
+            raise ValueError("source v3 reset may not create physical authority")
     if int(scene.get("active_piece_count", 0)) != 16:
         raise ValueError("pawn workcell must protect all sixteen pieces")
     expected_sources = {

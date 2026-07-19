@@ -21,6 +21,7 @@ from sim2claw.source_episode import (
     ADMISSION_SCHEMA,
     CURRENT_BOARD_POSE_ID,
     CURRENT_SCENE_ID,
+    CONTRACT_PATH_V3,
     CONTRACT_PATH_V1,
     EPISODE_SCHEMA,
     GROOT_ADAPTER_SCHEMA,
@@ -85,6 +86,32 @@ def _sample(index: int) -> dict:
 
 
 class CanonicalSourceEpisodeTest(unittest.TestCase):
+    def test_v3_contract_freezes_collision_free_current_scene_reset(self) -> None:
+        contract = load_source_contract(CONTRACT_PATH_V3)
+        self.assertEqual(
+            contract["scene"]["workspace_pose_id"],
+            "workspace_board_fiducial_robotward_100mm_20260718_v3",
+        )
+        self.assertEqual(
+            contract["scene"]["board_center_in_table_frame_xy_m"],
+            [0.04, -0.065],
+        )
+        self.assertEqual(
+            contract["simulation_reset"]["reset_id"],
+            "c8_standoff_collision_free_reset_v1",
+        )
+        self.assertTrue(
+            contract["simulation_reset"][
+                "zero_robot_piece_contact_required_during_settle"
+            ]
+        )
+        self.assertEqual(
+            contract["simulation_reset"][
+                "maximum_piece_displacement_after_settle_m"
+            ],
+            0.002,
+        )
+
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.directory = Path(self.temporary.name) / "episode"

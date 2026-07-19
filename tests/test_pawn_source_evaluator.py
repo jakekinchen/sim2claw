@@ -47,6 +47,14 @@ class PawnSourceEvaluatorTest(unittest.TestCase):
         self.assertEqual(len(contract["scene"]["protected_piece_ids"]), 16)
         self.assertEqual(contract["scene"]["scene_id"], CURRENT_SCENE_ID)
         self.assertEqual(contract["scene"]["board_pose_id"], CURRENT_BOARD_POSE_ID)
+        self.assertEqual(
+            contract["execution"]["source_contract_id"],
+            "chess_pick_place_source_episode_v3",
+        )
+        self.assertEqual(
+            contract["execution"]["simulation_reset_id"],
+            "c8_standoff_collision_free_reset_v1",
+        )
         self.assertEqual(contract["execution"]["physics_steps_per_action"], 10)
         self.assertEqual(contract["execution"]["action_dtype"], "float32")
 

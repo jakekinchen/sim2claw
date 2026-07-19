@@ -39,6 +39,7 @@ from .scene import (
     registered_board_center,
 )
 from .source_episode import (
+    CONTRACT_PATH_V3,
     CURRENT_BOARD_POSE_ID,
     CURRENT_SCENE_ID,
     EPISODE_SCHEMA,
@@ -55,13 +56,14 @@ from .source_episode import (
 
 SOURCE_PIECE_ID = "tan_pawn_c8"
 SOURCE_SQUARE = "c8"
-DESTINATION_SQUARE = "c6"
+DESTINATION_SQUARE = "a6"
 SAMPLE_HZ = 20
 PHYSICS_STEPS_PER_ACTION = 10
 SETTLE_PHYSICS_STEPS = 300
-EXPERT_MECHANISM_ID = "air_recenter_partial_release_vertical_extract_v1"
-PAWN_JAW_SHUT_RAD = -0.10
-PAWN_NECK_HEIGHT_M = 0.041
+EXPERT_MECHANISM_ID = "c8_a6_camera_clear_strict_candidate_v10"
+PAWN_JAW_SHUT_RAD = -0.15
+PAWN_NECK_HEIGHT_M = 0.038
+LIFT_CLEARANCE_M = 0.09
 
 
 def expert_phase_counts() -> dict[str, int]:
@@ -152,7 +154,7 @@ def collect_pawn_source_expert_candidate(
     pending admission until a separate evaluator replay passes every gate.
     """
 
-    contract = load_source_contract()
+    contract = load_source_contract(CONTRACT_PATH_V3)
     training_sources = set(contract["splits"]["training_source_piece_ids"])
     destinations = set(contract["scene"]["destination_squares"])
     if SOURCE_PIECE_ID not in training_sources:
@@ -179,8 +181,64 @@ def collect_pawn_source_expert_candidate(
         raise ValueError("runtime MuJoCo timestep changed")
     data = mujoco.MjData(model)
     initialize_robot_poses(model, data)
+    reset = contract["simulation_reset"]
+    reset_pose = np.asarray(reset["left_arm_joint_pose_radians"], dtype=np.float64)
+    if reset_pose.shape != (6,) or not np.isfinite(reset_pose).all():
+        raise ValueError("source reset pose is not a finite six-vector")
+    for joint_name, value in zip(ROBOT_JOINTS, reset_pose, strict=True):
+        joint_id = mujoco.mj_name2id(
+            model, mujoco.mjtObj.mjOBJ_JOINT, f"left_{joint_name}"
+        )
+        actuator_id = mujoco.mj_name2id(
+            model, mujoco.mjtObj.mjOBJ_ACTUATOR, f"left_{joint_name}"
+        )
+        data.qpos[model.jnt_qposadr[joint_id]] = value
+        data.ctrl[actuator_id] = value
+    mujoco.mj_forward(model, data)
+    piece_bodies = _piece_bodies(model)
+    pre_settle_piece_positions = {
+        name: np.asarray(data.xpos[body_id], dtype=np.float64).copy()
+        for name, body_id in piece_bodies.items()
+    }
+    robot_body_ids = {
+        body_id
+        for body_id in range(model.nbody)
+        if str(
+            mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, body_id) or ""
+        ).startswith(("left_", "right_"))
+    }
+    reset_robot_piece_contact = False
     for _ in range(SETTLE_PHYSICS_STEPS):
         mujoco.mj_step(model, data)
+        for contact_index in range(data.ncon):
+            contact = data.contact[contact_index]
+            bodies = {
+                int(model.geom_bodyid[contact.geom1]),
+                int(model.geom_bodyid[contact.geom2]),
+            }
+            if bodies & robot_body_ids and bodies & set(piece_bodies.values()):
+                reset_robot_piece_contact = True
+                break
+    reset_piece_displacements = {
+        name: float(
+            np.linalg.norm(data.xpos[body_id] - pre_settle_piece_positions[name])
+        )
+        for name, body_id in piece_bodies.items()
+    }
+    reset_piece_upright_cosines = {
+        name: float(
+            np.asarray(data.xmat[body_id], dtype=np.float64).reshape(3, 3)[2, 2]
+        )
+        for name, body_id in piece_bodies.items()
+    }
+    if reset_robot_piece_contact:
+        raise RuntimeError("source reset contacted a pawn")
+    if min(reset_piece_upright_cosines.values()) < 0.95:
+        raise RuntimeError("source reset left a pawn toppled")
+    if max(reset_piece_displacements.values()) > float(
+        reset["maximum_piece_displacement_after_settle_m"]
+    ):
+        raise RuntimeError("source reset displaced a pawn beyond its bound")
 
     actuators = _actuator_map(model, "left")
     actuator_ids = np.asarray(
@@ -202,7 +260,6 @@ def collect_pawn_source_expert_candidate(
     dof_addresses = np.asarray(
         [model.jnt_dofadr[joint_id] for joint_id in joint_ids], dtype=np.int32
     )
-    piece_bodies = _piece_bodies(model)
     piece_body = piece_bodies[SOURCE_PIECE_ID]
     gripper_body = mujoco.mj_name2id(
         model, mujoco.mjtObj.mjOBJ_BODY, "left_gripper"
@@ -273,10 +330,29 @@ def collect_pawn_source_expert_candidate(
         SOURCE_PIECE_ID, SOURCE_SQUARE, DESTINATION_SQUARE
     )
 
-    def solve_goal(point: np.ndarray, jaw: float) -> np.ndarray:
+    def solve_goal(
+        point: np.ndarray,
+        jaw: float,
+        *,
+        seed_action: np.ndarray | None = None,
+    ) -> np.ndarray:
         nonlocal maximum_ik_residual
+        seed_data = data
+        if seed_action is not None:
+            seed = np.asarray(seed_action, dtype=np.float64)
+            if seed.shape != (6,) or not np.isfinite(seed).all():
+                raise ValueError("expert IK seed must be a finite six-vector")
+            seed_data = mujoco.MjData(model)
+            seed_data.qpos[:] = data.qpos
+            seed_data.qvel[:] = 0.0
+            seed_data.qpos[qpos_addresses] = seed
+            mujoco.mj_forward(model, seed_data)
         pose, residual = _solve_reach(
-            model, data, "left", np.asarray(point, dtype=np.float64), pinch_local
+            model,
+            seed_data,
+            "left",
+            np.asarray(point, dtype=np.float64),
+            pinch_local,
         )
         maximum_ik_residual = max(maximum_ik_residual, float(residual))
         if residual > 0.003:
@@ -418,28 +494,31 @@ def collect_pawn_source_expert_candidate(
         close = advance.copy()
         close[-1] = PAWN_JAW_SHUT_RAD
         execute_phase("close", close, 42)
-        execute_phase(
-            "lift",
-            solve_goal(
-                neck + np.asarray([0.0, 0.0, 0.10]), PAWN_JAW_SHUT_RAD
-            ),
-            60,
+        lift_goal = solve_goal(
+            neck + np.asarray([0.0, 0.0, LIFT_CLEARANCE_M]),
+            PAWN_JAW_SHUT_RAD,
         )
+        execute_phase("lift", lift_goal, 60)
+        if float(data.xpos[piece_body][2] - initial_piece_position[2]) < 0.04:
+            raise RuntimeError("expert grasp did not retain the target through lift")
 
         held_offset = _pinch_point(model, data, "left", pinch_local) - data.xpos[
             piece_body
         ]
         start_pinch = _pinch_point(model, data, "left", pinch_local).copy()
-        target_pinch = target_position + held_offset + np.asarray([0.0, 0.0, 0.10])
+        target_pinch = target_position + held_offset + np.asarray(
+            [0.0, 0.0, LIFT_CLEARANCE_M]
+        )
         transit_start = len(rows)
+        planned_action = lift_goal
         for waypoint in range(1, 41):
             point = start_pinch + (waypoint / 40.0) * (target_pinch - start_pinch)
-            execute_phase(
-                "transit",
-                solve_goal(point, PAWN_JAW_SHUT_RAD),
-                3,
-                ramp=3,
+            planned_action = solve_goal(
+                point,
+                PAWN_JAW_SHUT_RAD,
+                seed_action=planned_action,
             )
+            execute_phase("transit", planned_action, 3, ramp=3)
         phase_runs[:] = [run for run in phase_runs if run["phase"] != "transit"]
         phase_runs.append(
             {
@@ -449,6 +528,8 @@ def collect_pawn_source_expert_candidate(
                 "sample_count": 120,
             }
         )
+        if float(data.xpos[piece_body][2] - initial_piece_position[2]) < 0.04:
+            raise RuntimeError("expert transit lost the lifted target")
 
         correction = np.asarray(
             [
@@ -457,12 +538,14 @@ def collect_pawn_source_expert_candidate(
                 0.0,
             ]
         )
+        air_recenter_goal = solve_goal(
+            _pinch_point(model, data, "left", pinch_local) + correction,
+            PAWN_JAW_SHUT_RAD,
+            seed_action=planned_action,
+        )
         execute_phase(
             "air_recenter",
-            solve_goal(
-                _pinch_point(model, data, "left", pinch_local) + correction,
-                PAWN_JAW_SHUT_RAD,
-            ),
+            air_recenter_goal,
             20,
             ramp=12,
         )
@@ -471,11 +554,17 @@ def collect_pawn_source_expert_candidate(
         held_offset = start_pinch - data.xpos[piece_body]
         target_pinch = target_position + held_offset + np.asarray([0.0, 0.0, 0.005])
         lower_start = len(rows)
+        planned_action = air_recenter_goal
         for waypoint in range(1, 31):
             point = start_pinch + (waypoint / 30.0) * (target_pinch - start_pinch)
+            planned_action = solve_goal(
+                point,
+                PAWN_JAW_SHUT_RAD,
+                seed_action=planned_action,
+            )
             execute_phase(
                 "lower",
-                solve_goal(point, PAWN_JAW_SHUT_RAD),
+                planned_action,
                 3,
                 ramp=3,
             )
@@ -495,7 +584,11 @@ def collect_pawn_source_expert_candidate(
         current_pinch = _pinch_point(model, data, "left", pinch_local)
         execute_phase(
             "vertical_extract",
-            solve_goal(current_pinch + np.asarray([0.0, 0.0, 0.08]), 0.15),
+            solve_goal(
+                current_pinch + np.asarray([0.0, 0.0, 0.08]),
+                0.15,
+                seed_action=planned_action,
+            ),
             35,
             ramp=20,
         )
@@ -533,7 +626,7 @@ def collect_pawn_source_expert_candidate(
         "schema_version": RECEIPT_SCHEMA,
         "source_episode_schema": EPISODE_SCHEMA,
         "source_sample_schema": SAMPLE_SCHEMA,
-        "source_contract_sha256": source_contract_sha256(),
+        "source_contract_sha256": source_contract_sha256(CONTRACT_PATH_V3),
         "recording_id": recording_id,
         "label": (
             f"tan pawn {SOURCE_SQUARE} to {DESTINATION_SQUARE} "
@@ -581,6 +674,14 @@ def collect_pawn_source_expert_candidate(
         "initial_evaluator_privileged_state_sha256": sha256_file(initial_path),
         "rgb_streams": tree_manifest(output_directory / "rgb"),
         "scene_reset_seed": 0,
+        "simulation_reset": {
+            "reset_id": reset["reset_id"],
+            "left_arm_joint_pose_radians": reset_pose.astype(float).tolist(),
+            "settle_physics_steps": SETTLE_PHYSICS_STEPS,
+            "robot_piece_contact_during_settle": reset_robot_piece_contact,
+            "piece_displacements_after_settle_m": reset_piece_displacements,
+            "piece_upright_cosines_after_settle": reset_piece_upright_cosines,
+        },
         "language_instruction": instruction,
         "source_identity": {
             "kind": "deterministic_geometric_expert",
@@ -624,6 +725,9 @@ def collect_pawn_source_expert_candidate(
             "partial_release_joint_target_rad": 0.15,
             "closed_jaw_joint_target_rad": PAWN_JAW_SHUT_RAD,
             "pawn_neck_height_m": PAWN_NECK_HEIGHT_M,
+            "lift_clearance_m": LIFT_CLEARANCE_M,
+            "transit_path": "cartesian_waypoints_with_previous_planned_ik_seed",
+            "capture_guard_minimum_current_rise_m": 0.04,
             "vertical_extract_m": 0.08,
         },
         "generator_diagnostics_not_evaluator_authority": {
