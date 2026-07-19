@@ -56,7 +56,8 @@
     "offline_processor_patch_sha256": "379890dba26c5ccc0750cadd3e0057af9c3d0a9543fd327a60f99212a68869e6",
     "patched_processor_file_sha256": "674f2354418e3ea982c9b34f6cdb0c43284e57ab09ac559b459789b3c557e78b",
     "modality_config_sha256": "915ab13c911052b596fbd2cf735f1cbc9a4f6336e70c507c1b7b849fdf656753",
-    "training_wrapper_sha256": "2b8b0ef9c64c04ad3db55ef9838e277f66d2fc787fbb78deecb73fb068607cca"
+    "training_wrapper_sha256": "66f77296f952c9da8ff24cb92940268123961f1673d801d872ec7a7aa1c368a0",
+    "training_launcher_sha256": "cd7e6566abf9fdfbc0fb28882091046d3b9a21500a8eb52bca3ac93659506a6a"
   },
   "dataset": {
     "path": "/home/shadeform/chess_pick_place_pawn_groot_v1",

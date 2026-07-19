@@ -58,6 +58,7 @@ if [[ "$(jq -r '.task_scope.historical_72mm_authority' "$EXPERIMENT")" != "false
 fi
 
 require_hash "$TRAINING_WRAPPER" "$(jq -r '.frozen_identities.training_wrapper_sha256' "$EXPERIMENT")" "training wrapper"
+require_hash "${SIM2CLAW_ROOT}/scripts/brev/launch_groot_n17_pawn_100mm_train.sh" "$(jq -r '.frozen_identities.training_launcher_sha256' "$EXPERIMENT")" "training launcher"
 require_hash "${SIM2CLAW_ROOT}/configs/tasks/chess_pick_place_pawn_groot_dataset_v1.json" "$(jq -r '.frozen_identities.dataset_contract_sha256' "$EXPERIMENT")" "dataset contract"
 require_hash "${DATASET_ROOT}/dataset_receipt.json" "$(jq -r '.frozen_identities.dataset_receipt_sha256' "$EXPERIMENT")" "dataset receipt"
 require_hash "$REMOTE_LOADER_RECEIPT" "$(jq -r '.frozen_identities.remote_loader_receipt_sha256' "$EXPERIMENT")" "remote loader receipt"
