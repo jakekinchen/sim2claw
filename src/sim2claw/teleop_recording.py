@@ -60,6 +60,7 @@ from .state_trace import EpisodeStateTraceRecorder
 
 
 SOURCE_SCHEMA = SAMPLE_SCHEMA
+PHYSICAL_SAMPLE_SCHEMA = "sim2claw.physical_teleoperation_sample.v1"
 DEFAULT_LEADER_SERIAL_SUFFIX = "0448141"
 DEFAULT_FOLLOWER_SERIAL_SUFFIX = "0406411"
 DEFAULT_SAMPLE_HZ = 20
@@ -148,6 +149,78 @@ def _canonical_source_row(
         action_owner=action_owner,
         assistance=assistance,
         intervention=intervention,
+    )
+
+
+def _physical_source_row(
+    *,
+    episode_id: str,
+    sample_index: int,
+    timestamp_monotonic_seconds: float,
+    instruction: str,
+    raw_sample: dict[str, Any],
+    action_owner: str,
+    assistance: bool,
+    intervention: bool,
+) -> dict[str, Any]:
+    """Build a physical command trace without claiming simulator observations."""
+
+    row = {
+        **raw_sample,
+        "schema_version": PHYSICAL_SAMPLE_SCHEMA,
+        "episode_id": episode_id,
+        "recording_id": episode_id,
+        "sample_index": sample_index,
+        "timestamp_monotonic_seconds": timestamp_monotonic_seconds,
+        "language_instruction": instruction,
+        "action_owner": action_owner,
+        "assistance": int(assistance),
+        "intervention": int(intervention),
+        "visual_observation": {
+            "kind": "overhead_diagnostic_video_only",
+            "path": "overhead_c922.mp4",
+            "training_data": False,
+        },
+    }
+    if len(row.get("follower_command_degrees") or []) != 6:
+        raise ValueError(
+            "physical teleoperation sample requires six follower command joints"
+        )
+    if len(row.get("follower_actual_position_degrees") or []) != 6:
+        raise ValueError(
+            "physical teleoperation sample requires six follower position joints"
+        )
+    for field in ("follower_command_degrees", "follower_actual_position_degrees"):
+        values = np.asarray(row[field], dtype=np.float64)
+        if not np.all(np.isfinite(values)):
+            raise ValueError(f"physical teleoperation sample has invalid {field}")
+    if not np.isfinite(float(timestamp_monotonic_seconds)) or timestamp_monotonic_seconds < 0:
+        raise ValueError("physical teleoperation sample timestamp is invalid")
+    return row
+
+
+def _validate_physical_source_row(row: dict[str, Any]) -> dict[str, Any]:
+    if row.get("schema_version") != PHYSICAL_SAMPLE_SCHEMA:
+        raise ValueError("unsupported physical teleoperation sample schema")
+    if int(row.get("sample_index", -1)) < 0:
+        raise ValueError("physical teleoperation sample index must be non-negative")
+    if not str(row.get("language_instruction") or "").strip():
+        raise ValueError("physical teleoperation sample language instruction is required")
+    visual_observation = row.get("visual_observation")
+    if (
+        not isinstance(visual_observation, dict)
+        or visual_observation.get("kind") != "overhead_diagnostic_video_only"
+    ):
+        raise ValueError("physical teleoperation sample visual evidence is invalid")
+    return _physical_source_row(
+        episode_id=str(row.get("episode_id") or ""),
+        sample_index=int(row["sample_index"]),
+        timestamp_monotonic_seconds=float(row["timestamp_monotonic_seconds"]),
+        instruction=str(row["language_instruction"]),
+        raw_sample=row,
+        action_owner=str(row.get("action_owner") or ""),
+        assistance=bool(row.get("assistance", False)),
+        intervention=bool(row.get("intervention", False)),
     )
 
 
@@ -1050,45 +1123,61 @@ class TeleopRecordingManager:
                             "elapsed_seconds", tick - action_started_monotonic
                         )
                     )
-                    rgb_references: dict[str, Any] = {}
-                    for stream in ("top", "wrist"):
-                        frame = (
-                            rgb_frames.get(stream)
-                            if isinstance(rgb_frames, dict)
-                            else None
+                    raw_sample = {
+                        "overhead_video_time_seconds": tick
+                        - video_started_monotonic,
+                        **sample,
+                    }
+                    if request["mode"] == "physical_follower":
+                        row = _physical_source_row(
+                            episode_id=str(self.state["recording_id"]),
+                            sample_index=index,
+                            timestamp_monotonic_seconds=timestamp,
+                            instruction=str(self.state["language_instruction"]),
+                            raw_sample=raw_sample,
+                            action_owner=str(self.state["action_owner"]),
+                            assistance=False,
+                            intervention=False,
                         )
-                        relative_path = Path("rgb") / stream / f"{index:06d}.png"
-                        frame_path = draft / relative_path
-                        if frame is None:
-                            rgb_references[stream] = {
-                                "available": False,
-                                "path": relative_path.as_posix(),
-                                "timestamp_monotonic_seconds": timestamp,
-                                "sha256": None,
-                            }
-                        else:
-                            write_rgb_png(frame_path, np.asarray(frame, dtype=np.uint8))
-                            rgb_references[stream] = {
-                                "available": True,
-                                "path": relative_path.as_posix(),
-                                "timestamp_monotonic_seconds": timestamp,
-                                "sha256": _sha256(frame_path),
-                            }
-                    row = _canonical_source_row(
-                        episode_id=str(self.state["recording_id"]),
-                        sample_index=index,
-                        timestamp_monotonic_seconds=timestamp,
-                        instruction=str(self.state["language_instruction"]),
-                        raw_sample={
-                            "overhead_video_time_seconds": tick
-                            - video_started_monotonic,
-                            **sample,
-                        },
-                        rgb=rgb_references,
-                        action_owner=str(self.state["action_owner"]),
-                        assistance=False,
-                        intervention=False,
-                    )
+                    else:
+                        rgb_references: dict[str, Any] = {}
+                        for stream in ("top", "wrist"):
+                            frame = (
+                                rgb_frames.get(stream)
+                                if isinstance(rgb_frames, dict)
+                                else None
+                            )
+                            relative_path = Path("rgb") / stream / f"{index:06d}.png"
+                            frame_path = draft / relative_path
+                            if frame is None:
+                                rgb_references[stream] = {
+                                    "available": False,
+                                    "path": relative_path.as_posix(),
+                                    "timestamp_monotonic_seconds": timestamp,
+                                    "sha256": None,
+                                }
+                            else:
+                                write_rgb_png(
+                                    frame_path,
+                                    np.asarray(frame, dtype=np.uint8),
+                                )
+                                rgb_references[stream] = {
+                                    "available": True,
+                                    "path": relative_path.as_posix(),
+                                    "timestamp_monotonic_seconds": timestamp,
+                                    "sha256": _sha256(frame_path),
+                                }
+                        row = _canonical_source_row(
+                            episode_id=str(self.state["recording_id"]),
+                            sample_index=index,
+                            timestamp_monotonic_seconds=timestamp,
+                            instruction=str(self.state["language_instruction"]),
+                            raw_sample=raw_sample,
+                            rgb=rgb_references,
+                            action_owner=str(self.state["action_owner"]),
+                            assistance=False,
+                            intervention=False,
+                        )
                     handle.write(json.dumps(row, separators=(",", ":"), sort_keys=True) + "\n")
                     handle.flush()
                     privileged_handle.write(
@@ -1306,19 +1395,23 @@ class TeleopRecordingManager:
                 if len(source_rows) != int(self.state["sample_count"]):
                     raise ValueError("sample count changed before finalization")
                 for expected_index, row in enumerate(source_rows):
-                    validate_source_sample(row)
+                    if self.state["mode"] == "physical_follower":
+                        _validate_physical_source_row(row)
+                    else:
+                        validate_source_sample(row)
                     if int(row["sample_index"]) != expected_index:
                         raise ValueError("sample indices are not contiguous")
-                    for stream in ("top", "wrist"):
-                        reference = row["rgb"][stream]
-                        frame_path = draft / str(reference["path"])
-                        if not frame_path.is_file():
-                            raise ValueError(f"missing {stream} RGB frame")
-                        if _sha256(frame_path) != reference["sha256"]:
-                            raise ValueError(f"{stream} RGB frame hash mismatch")
+                    if self.state["mode"] != "physical_follower":
+                        for stream in ("top", "wrist"):
+                            reference = row["rgb"][stream]
+                            frame_path = draft / str(reference["path"])
+                            if not frame_path.is_file():
+                                raise ValueError(f"missing {stream} RGB frame")
+                            if _sha256(frame_path) != reference["sha256"]:
+                                raise ValueError(f"{stream} RGB frame hash mismatch")
             except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
                 raise RecorderError(
-                    f"Canonical source validation failed; draft retained: {error}"
+                    f"Source recording validation failed; draft retained: {error}"
                 ) from error
             overhead_video = draft / "overhead_c922.mp4"
             overhead_metadata = draft / "overhead_video.json"
@@ -1349,7 +1442,11 @@ class TeleopRecordingManager:
             receipt = {
                 "schema_version": RECEIPT_SCHEMA,
                 "source_episode_schema": EPISODE_SCHEMA,
-                "source_sample_schema": SAMPLE_SCHEMA,
+                "source_sample_schema": (
+                    PHYSICAL_SAMPLE_SCHEMA
+                    if self.state["mode"] == "physical_follower"
+                    else SAMPLE_SCHEMA
+                ),
                 "source_contract_sha256": self.state["source_contract_sha256"],
                 "recording_id": self.state["recording_id"],
                 "label": label,
@@ -1390,7 +1487,11 @@ class TeleopRecordingManager:
                 "initial_evaluator_privileged_state_sha256": _sha256(
                     destination / "initial_evaluator_privileged_state.json"
                 ),
-                "rgb_streams": tree_manifest(destination / "rgb"),
+                "rgb_streams": (
+                    None
+                    if self.state["mode"] == "physical_follower"
+                    else tree_manifest(destination / "rgb")
+                ),
                 "state_trace_path": (
                     "state_trace.json" if (destination / "state_trace.json").is_file() else None
                 ),

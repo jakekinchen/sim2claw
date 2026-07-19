@@ -19,11 +19,13 @@ from sim2claw.source_episode import (
     source_contract_sha256,
 )
 from sim2claw.teleop_recording import (
+    PHYSICAL_SAMPLE_SCHEMA,
     RecorderError,
     TeleopRecordingManager,
     discover_so101_devices,
 )
 from sim2claw.physical_gateway import PhysicalGatewayError
+from sim2claw.physical_sim_replay import replay_physical_recording
 from sim2claw.scene import CURRENT_TASK_LAYOUT_ID
 
 
@@ -105,6 +107,42 @@ class FakeBackend:
 
     def close(self) -> None:
         self.closed = True
+
+
+class FakePhysicalBackend(FakeBackend):
+    def open(self) -> dict[str, Any]:
+        return {
+            "proof_class": "physical_teleoperation_source_unqualified",
+            "leader_port": "fixture-leader",
+            "follower": "fixture-physical",
+            "physical_follower_torque_enabled": True,
+            "pose_inputs_available": False,
+        }
+
+    def sample(self, elapsed_seconds: float) -> dict[str, Any]:
+        self.sample_index += 1
+        position = [float(self.sample_index) * 0.1] * 6
+        return {
+            "elapsed_seconds": elapsed_seconds,
+            "leader_target_degrees": position,
+            "leader_relative_delta": [0.0] * 6,
+            "follower_requested_degrees": position,
+            "follower_command_degrees": position,
+            "follower_actual_position_degrees": position,
+            "follower_actual_velocity_degrees_s": [0.0] * 6,
+            "leader_follower_error_degrees": [0.0] * 6,
+            "selected_piece_pose_world": None,
+            "continuous_target_pose_world": None,
+            "pose_inputs_available": False,
+            "available_motor_current_raw": None,
+            "physical_follower_torque_enabled": True,
+            "safety_clamped": False,
+            "rate_limited": False,
+            "stalled": False,
+            "stalled_joints": [],
+            "consecutive_stall_samples_by_joint": {},
+            "stall_duration_seconds_by_joint": {},
+        }
 
 
 class FakeVideoRecorder:
@@ -359,6 +397,61 @@ class TeleopRecordingTest(unittest.TestCase):
         rows = [json.loads(line) for line in (draft / "samples.jsonl").read_text().splitlines()]
         self.assertGreaterEqual(len(rows), 1)
         self.assertNotIn("_live_simulation_frame", rows[0])
+
+    def test_physical_record_uses_command_trace_schema_without_fake_rgb(self) -> None:
+        self.manager.shutdown()
+        self.manager = TeleopRecordingManager(
+            repo_root=self.repo_root,
+            backend_factory=lambda request, preflight: FakePhysicalBackend(
+                request, preflight
+            ),
+            video_recorder_factory=lambda draft: FakeVideoRecorder(draft),
+            dev_root=self.dev_root,
+            calibration_root=self.calibration_root,
+        )
+        started = self.manager.start(
+            {
+                "mode": "physical_follower",
+                "source_square": "b1",
+                "target_square": "b2",
+                "sample_hz": 20,
+                "physical_safety_acknowledged": True,
+                "server_owned_prestart_sequence": True,
+            }
+        )
+        self.assertEqual(started["status"], "recording")
+        deadline = time.monotonic() + 2
+        while self.manager.snapshot()["sample_count"] < 2 and time.monotonic() < deadline:
+            time.sleep(0.02)
+        stopped = self.manager.stop()
+        self.assertEqual(stopped["status"], "awaiting_label")
+        saved = self.manager.finalize(
+            {
+                "label": "Physical brown pawn trace",
+                "skill": "full_episode",
+                "outcome": "unreviewed",
+            }
+        )
+        destination = self.repo_root / saved["saved_path"]
+        rows = [
+            json.loads(line)
+            for line in (destination / "samples.jsonl").read_text().splitlines()
+        ]
+        receipt = json.loads((destination / "recording_receipt.json").read_text())
+        self.assertGreaterEqual(len(rows), 2)
+        self.assertEqual(rows[0]["schema_version"], PHYSICAL_SAMPLE_SCHEMA)
+        self.assertNotIn("rgb", rows[0])
+        self.assertEqual(
+            rows[0]["visual_observation"]["kind"],
+            "overhead_diagnostic_video_only",
+        )
+        self.assertEqual(receipt["source_sample_schema"], PHYSICAL_SAMPLE_SCHEMA)
+        self.assertIsNone(receipt["rgb_streams"])
+        self.assertTrue(receipt["physical_motion_recorded"])
+        self.assertTrue((destination / "overhead_c922.mp4").is_file())
+        replay = replay_physical_recording(destination)
+        self.assertEqual(replay["sample_count"], len(rows))
+        self.assertFalse(replay["task_success_verified"])
 
     def test_physical_mode_is_ready_but_requires_operator_acknowledgement(self) -> None:
         preflight = self.manager.preflight()
