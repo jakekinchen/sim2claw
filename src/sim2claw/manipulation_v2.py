@@ -31,6 +31,7 @@ import mujoco
 import numpy as np
 
 from .act_evaluator import evaluate_act
+from .act_model import ACTCheckpointSnapshot, read_act_checkpoint_snapshot
 from .chess_task import ChessRookLiftEnv
 from .paths import DEFAULT_OUTPUT_ROOT
 
@@ -57,12 +58,22 @@ def manipulation_contract_sha256(path: Path = DEFAULT_V2_CONTRACT) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def _sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
+def _accepted_checkpoint_snapshot(
+    checkpoint_source: Path | ACTCheckpointSnapshot,
+    *,
+    expected_checkpoint_sha256: str | None,
+) -> ACTCheckpointSnapshot:
+    """Resolve exactly one authenticated byte snapshot before ACT loads it."""
+
+    if expected_checkpoint_sha256 is None:
+        raise ValueError("honest manipulation evaluation requires an accepted digest")
+    if isinstance(checkpoint_source, ACTCheckpointSnapshot):
+        if checkpoint_source.sha256 != expected_checkpoint_sha256:
+            raise ValueError("checkpoint snapshot does not match the accepted digest")
+        return checkpoint_source
+    return read_act_checkpoint_snapshot(
+        checkpoint_source, expected_sha256=expected_checkpoint_sha256
+    )
 
 
 def _piece_bodies(model: mujoco.MjModel) -> dict[str, int]:
@@ -105,8 +116,9 @@ def _target_speed_mps(model: mujoco.MjModel, data: mujoco.MjData, body: int) -> 
 
 
 def evaluate_manipulation(
-    checkpoint_path: Path,
+    checkpoint_source: Path | ACTCheckpointSnapshot,
     *,
+    expected_checkpoint_sha256: str | None = None,
     output_directory: Path | None = None,
     contract_path: Path = DEFAULT_V2_CONTRACT,
 ) -> dict[str, Any]:
@@ -115,6 +127,10 @@ def evaluate_manipulation(
     output = output_directory or DEFAULT_OUTPUT_ROOT / "manipulation_v2" / "eval"
     output.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
+    checkpoint_snapshot = _accepted_checkpoint_snapshot(
+        checkpoint_source,
+        expected_checkpoint_sha256=expected_checkpoint_sha256,
+    )
 
     # 1. Canonical rollout: reuse the FROZEN v1 evaluator verbatim as the single
     #    source of truth for the policy trajectory and the v1 gates. Re-running
@@ -122,7 +138,9 @@ def evaluate_manipulation(
     #    chaotically sensitive, flip the outcome. evaluate_act writes the exact
     #    executed action trace.
     v1_dir = output / "v1_rollout"
-    v1_receipt = evaluate_act(checkpoint_path, output_directory=v1_dir, render_video=False)
+    v1_receipt = evaluate_act(
+        checkpoint_snapshot, output_directory=v1_dir, render_video=False
+    )
     actions = json.loads((v1_dir / "action_trace.json").read_text())["actions_rad"]
 
     # 2. Replay that EXACT trajectory, measuring what v1 never did: collateral
@@ -206,12 +224,14 @@ def evaluate_manipulation(
     success_v2 = success_v1 and all(g["passed"] for g in v2_gates.values())
 
     receipt = {
-        "schema_version": "sim2claw.manipulation_v2_evaluation_receipt.v1",
+        "schema_version": "sim2claw.manipulation_v2_evaluation_receipt.v2",
         "task_id": task["task_id"],
         "proof_class": "simulation_honest_manipulation_evaluation",
-        "checkpoint": str(checkpoint_path),
-        "checkpoint_sha256": _sha256_file(checkpoint_path),
-        "checkpoint_stored_contract_sha256": v1_receipt.get("policy", {}).get("checkpoint_sha256"),
+        "checkpoint_source_path_informational": str(checkpoint_snapshot.source_path),
+        "checkpoint_snapshot_sha256": checkpoint_snapshot.sha256,
+        "checkpoint_snapshot_bytes": len(checkpoint_snapshot.data),
+        "checkpoint_snapshot_immutable": True,
+        "v1_task_contract_sha256": v1_receipt["task_contract_sha256"],
         "manipulation_contract_sha256": manipulation_contract_sha256(contract_path),
         "trajectory_source": "frozen_v1_evaluator_action_trace",
         "seed": seed,
