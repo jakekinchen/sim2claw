@@ -20,6 +20,15 @@ const state = {
   liveSimViewer: null,
   liveSimViewerPromise: null,
   liveSimFetchActive: false,
+  liveWorkspace: null,
+  liveWorkspaceSession: null,
+  liveWorkspaceMode: "simulator",
+  liveWorkspaceViewer: null,
+  liveWorkspaceViewerPromise: null,
+  liveWorkspaceFetchActive: false,
+  liveWorkspaceStatusFetchActive: false,
+  liveWorkspaceLastFetchAt: 0,
+  liveWorkspaceGeneration: 0,
   expandedTasks: new Set(),
   processHistory: new Map(),
   thumbnailObserver: null,
@@ -95,6 +104,15 @@ const elements = {
   metrics: document.querySelector("#metric-strip"),
   evidenceTrigger: document.querySelector("#evidence-trigger"),
   evidenceContent: document.querySelector("#evidence-content"),
+  liveWorkspaceDrawer: document.querySelector("#live-workspace-drawer"),
+  liveArmState: document.querySelector("#live-arm-state"),
+  liveArmTitle: document.querySelector("#live-arm-title"),
+  liveArmDetail: document.querySelector("#live-arm-detail"),
+  liveCameraCount: document.querySelector("#live-camera-count"),
+  liveWorkspaceCanvas: document.querySelector("#live-workspace-canvas"),
+  liveWorkspaceStatus: document.querySelector("#live-workspace-status"),
+  liveWorkspaceReset: document.querySelector("#live-workspace-reset"),
+  liveJointReadout: document.querySelector("#live-joint-readout"),
   processDrawer: document.querySelector("#process-drawer"),
   evidenceDrawer: document.querySelector("#evidence-drawer"),
   drawerBackdrop: document.querySelector("#drawer-backdrop"),
@@ -336,8 +354,6 @@ function renderSummary() {
   text(elements.campaign, formatCampaign(project.active_campaign || "Local simulation workspace"));
   text(elements.passRatio, `${summary.passed_episodes}/${summary.episodes} passed`);
   const active = processes.filter((process) => process.status === "running");
-  text(elements.liveCount, `${active.length} live`);
-  elements.liveTrigger.classList.toggle("has-live", active.length > 0);
   elements.liveStrip.hidden = active.length === 0;
   if (active.length) {
     const primary = active[0];
@@ -749,6 +765,7 @@ async function ensureThreeViewer() {
     elements.play.setAttribute("aria-label", playing ? "Pause episode" : "Play episode");
   };
   viewer.setRate(state.playbackRate);
+  viewer.setActive(state.view === "replay" && state.replayMode === "three");
   state.threeViewer = viewer;
   return viewer;
 }
@@ -762,6 +779,9 @@ async function ensureLiveSimulationViewer() {
       canvas: elements.liveSimulationCanvas,
       status: elements.liveSimulationStatus,
     });
+    viewer.setActive(
+      state.view === "record" && selectedRecorderMode() === "simulation_follower",
+    );
     state.liveSimViewer = viewer;
     return viewer;
   })();
@@ -804,6 +824,258 @@ async function refreshLiveSimulation() {
   }
 }
 
+function liveCameraRows(live = state.liveWorkspace) {
+  return live?.cameras?.cameras || [];
+}
+
+function renderLiveWorkspace(live = state.liveWorkspace) {
+  const arm = live?.arm || {};
+  const status = arm.status || "checking";
+  const title = {
+    live: "Physical arm live",
+    connected: "Physical arm ready",
+    error: "Arm connection error",
+    offline: "Physical arm offline",
+    checking: "Checking arm",
+  }[status] || "Arm unavailable";
+  let detail = "No motor bus has been opened.";
+  if (status === "live") {
+    detail = `${arm.follower_port || "Follower bus"} · ${arm.physical_follower_torque_enabled ? "torque enabled by recorder" : "torque off / read only"}`;
+  } else if (status === "connected") {
+    detail = "Detected and calibrated · open Live to read the torque-off pose.";
+  } else if (status === "error") {
+    detail = arm.error || "The read-only gateway could not sample the arm.";
+  } else if (status === "offline") {
+    detail = "Both SO-101 buses and matching calibrations are required.";
+  }
+
+  elements.liveArmState.dataset.status = status;
+  text(elements.liveArmTitle, title);
+  text(elements.liveArmDetail, detail);
+  elements.liveTrigger.classList.toggle("has-live", status === "live");
+  text(elements.liveCount, status === "live" ? "Arm live" : status === "connected" ? "Arm ready" : status === "checking" ? "Checking arm" : "Arm offline");
+
+  const cameras = liveCameraRows(live);
+  const available = cameras.filter((camera) => camera.available).length;
+  text(elements.liveCameraCount, cameras.length ? `${available}/${cameras.length} cameras ready` : "Checking cameras");
+  cameras.forEach((camera) => {
+    const card = document.querySelector(`.live-camera-card[data-camera-id="${camera.id}"]`);
+    if (!card) return;
+    card.dataset.available = String(Boolean(camera.available));
+    text(card.querySelector("figcaption b"), camera.label);
+    text(card.querySelector("figcaption small"), camera.device_name || camera.detail);
+    const badge = card.querySelector("figcaption em");
+    if (!card.classList.contains("is-streaming")) {
+      text(badge, camera.available ? "Ready" : "Offline");
+    }
+    const placeholder = card.querySelector(".live-camera-frame > span");
+    if (!camera.available) text(placeholder, camera.error || "Camera unavailable");
+    else if (!card.classList.contains("is-streaming")) text(placeholder, "Waiting for stream");
+  });
+
+  const names = arm.joint_names || [];
+  const positions = arm.follower_degrees || [];
+  elements.liveJointReadout.replaceChildren();
+  names.forEach((name, index) => {
+    const wrapper = document.createElement("span");
+    const label = document.createElement("small");
+    const value = document.createElement("b");
+    text(label, formatIdentifier(name));
+    text(value, Number.isFinite(Number(positions[index])) ? `${Number(positions[index]).toFixed(1)}°` : "—");
+    wrapper.append(label, value);
+    elements.liveJointReadout.append(wrapper);
+  });
+}
+
+async function ensureLiveWorkspaceViewer() {
+  if (state.liveWorkspaceViewer) return state.liveWorkspaceViewer;
+  if (state.liveWorkspaceViewerPromise) return state.liveWorkspaceViewerPromise;
+  state.liveWorkspaceViewerPromise = (async () => {
+    const { ThreeReplayViewer } = await whenThreeReady();
+    const viewer = new ThreeReplayViewer({
+      canvas: elements.liveWorkspaceCanvas,
+      status: elements.liveWorkspaceStatus,
+    });
+    viewer.setActive(state.drawer === "live" && state.liveWorkspaceMode === "simulator");
+    state.liveWorkspaceViewer = viewer;
+    return viewer;
+  })();
+  try {
+    return await state.liveWorkspaceViewerPromise;
+  } finally {
+    state.liveWorkspaceViewerPromise = null;
+  }
+}
+
+function stopLiveCameraStreams() {
+  document.querySelectorAll(".live-camera-card").forEach((card) => {
+    const image = card.querySelector("img");
+    image.removeAttribute("src");
+    delete image.dataset.session;
+    card.classList.remove("is-streaming");
+    const camera = liveCameraRows().find((row) => row.id === card.dataset.cameraId);
+    text(card.querySelector("figcaption em"), camera?.available ? "Ready" : "Offline");
+    text(card.querySelector(".live-camera-frame > span"), camera?.available ? "Waiting for stream" : camera?.error || "Camera unavailable");
+  });
+}
+
+function startLiveCameraStreams() {
+  const token = state.liveWorkspaceSession;
+  if (!token || state.drawer !== "live" || state.liveWorkspaceMode !== "cameras") return;
+  liveCameraRows().forEach((camera) => {
+    const card = document.querySelector(`.live-camera-card[data-camera-id="${camera.id}"]`);
+    if (!card) return;
+    const image = card.querySelector("img");
+    if (!camera.available) {
+      image.removeAttribute("src");
+      text(card.querySelector("figcaption em"), "Offline");
+      return;
+    }
+    if (image.dataset.session === token && image.hasAttribute("src")) return;
+    card.classList.add("is-streaming");
+    text(card.querySelector("figcaption em"), "Connecting");
+    text(card.querySelector(".live-camera-frame > span"), "Opening on-demand stream");
+    image.dataset.session = token;
+    image.src = `/api/live/cameras/${encodeURIComponent(camera.id)}.mjpeg?session=${encodeURIComponent(token)}&v=${Date.now()}`;
+  });
+}
+
+function setLiveWorkspaceMode(mode) {
+  const next = mode === "cameras" ? "cameras" : "simulator";
+  state.liveWorkspaceMode = next;
+  document.querySelectorAll("[data-live-mode]").forEach((button) => {
+    button.setAttribute("aria-selected", String(button.dataset.liveMode === next));
+  });
+  document.querySelectorAll("[data-live-panel]").forEach((panel) => {
+    panel.hidden = panel.dataset.livePanel !== next;
+  });
+  state.liveWorkspaceViewer?.setActive(state.drawer === "live" && next === "simulator");
+  if (next === "cameras") startLiveCameraStreams();
+  else {
+    stopLiveCameraStreams();
+    refreshLiveWorkspace({ force: true });
+  }
+}
+
+async function endLiveWorkspaceToken(token, { useBeacon = false } = {}) {
+  if (!token) return;
+  const body = JSON.stringify({ action: "stop", session_id: token });
+  if (useBeacon && navigator.sendBeacon) {
+    navigator.sendBeacon("/api/live/session", new Blob([body], { type: "application/json" }));
+    return;
+  }
+  try {
+    await fetch("/api/live/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+    });
+  } catch (_error) {
+    // The server lease is also self-expiring; closing the UI remains immediate.
+  }
+}
+
+function stopLiveWorkspace({ useBeacon = false } = {}) {
+  state.liveWorkspaceGeneration += 1;
+  const token = state.liveWorkspaceSession;
+  state.liveWorkspaceSession = null;
+  state.liveWorkspaceFetchActive = false;
+  stopLiveCameraStreams();
+  state.liveWorkspaceViewer?.setActive(false);
+  if (state.liveWorkspace?.arm) {
+    state.liveWorkspace.arm.fresh = false;
+    state.liveWorkspace.arm.follower_degrees = null;
+    state.liveWorkspace.arm.leader_degrees = null;
+    state.liveWorkspace.arm.status = state.liveWorkspace.arm.connected ? "connected" : "offline";
+  }
+  renderLiveWorkspace();
+  if (token) void endLiveWorkspaceToken(token, { useBeacon });
+}
+
+async function startLiveWorkspace() {
+  if (state.liveWorkspaceSession) return;
+  const generation = ++state.liveWorkspaceGeneration;
+  text(elements.liveWorkspaceStatus, "Opening torque-off arm observation…");
+  try {
+    const response = await fetch("/api/live/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "start" }),
+    });
+    const payload = await response.json();
+    if (!response.ok || !payload.ok) throw new Error(payload.error || `live workspace returned ${response.status}`);
+    const live = payload.live;
+    const token = live.session_id;
+    if (generation !== state.liveWorkspaceGeneration || state.drawer !== "live") {
+      void endLiveWorkspaceToken(token);
+      return;
+    }
+    state.liveWorkspace = live;
+    state.liveWorkspaceSession = token;
+    state.liveWorkspaceLastFetchAt = 0;
+    renderLiveWorkspace(live);
+    setLiveWorkspaceMode(state.liveWorkspaceMode);
+    await refreshLiveWorkspace({ force: true });
+  } catch (error) {
+    if (generation !== state.liveWorkspaceGeneration) return;
+    text(elements.liveWorkspaceStatus, `Live workspace unavailable · ${error.message || String(error)}`);
+  }
+}
+
+async function fetchLiveWorkspaceStatus() {
+  if (state.liveWorkspaceStatusFetchActive || state.drawer === "live" || state.liveWorkspaceSession) return;
+  state.liveWorkspaceStatusFetchActive = true;
+  try {
+    const response = await fetch("/api/live/status", { cache: "no-store" });
+    if (!response.ok) throw new Error(`live status returned ${response.status}`);
+    state.liveWorkspace = await response.json();
+    renderLiveWorkspace();
+  } catch (_error) {
+    state.liveWorkspace = {
+      arm: { status: "offline", connected: false },
+      cameras: { cameras: [] },
+    };
+    renderLiveWorkspace();
+  } finally {
+    state.liveWorkspaceStatusFetchActive = false;
+  }
+}
+
+async function refreshLiveWorkspace({ force = false } = {}) {
+  const token = state.liveWorkspaceSession;
+  if (!token || state.drawer !== "live" || state.liveWorkspaceFetchActive) return;
+  const now = performance.now();
+  const minimumInterval = state.liveWorkspaceMode === "simulator" ? 125 : 1000;
+  if (!force && now - state.liveWorkspaceLastFetchAt < minimumInterval) return;
+  state.liveWorkspaceLastFetchAt = now;
+  state.liveWorkspaceFetchActive = true;
+  try {
+    const response = await fetch(`/api/live/state?session=${encodeURIComponent(token)}`, { cache: "no-store" });
+    const live = await response.json();
+    if (!response.ok) throw new Error(live.error || `live state returned ${response.status}`);
+    if (token !== state.liveWorkspaceSession || state.drawer !== "live") return;
+    state.liveWorkspace = live;
+    renderLiveWorkspace(live);
+    if (state.liveWorkspaceMode === "simulator") {
+      if (live.simulator) {
+        const viewer = await ensureLiveWorkspaceViewer();
+        viewer.setActive(true);
+        await viewer.loadLive(live.simulator);
+        viewer.applyLiveState(live.simulator);
+      } else {
+        text(elements.liveWorkspaceStatus, live.arm?.error || "Connected arm has no fresh joint observation.");
+      }
+    }
+  } catch (error) {
+    if (token !== state.liveWorkspaceSession) return;
+    text(elements.liveWorkspaceStatus, `Live observation paused · ${error.message || String(error)}`);
+    stopLiveWorkspace();
+  } finally {
+    state.liveWorkspaceFetchActive = false;
+  }
+}
+
 async function loadThreeEpisode(episode, loadId) {
   try {
     const viewer = await ensureThreeViewer();
@@ -828,6 +1100,7 @@ function setReplayMode(mode, { pauseCurrent = true } = {}) {
   }
   state.replayMode = next;
   elements.stage.dataset.replayMode = next;
+  state.threeViewer?.setActive(state.view === "replay" && next === "three");
   elements.replayModeSwitch.querySelectorAll("[data-replay-mode]").forEach((button) => {
     button.setAttribute("aria-pressed", String(button.dataset.replayMode === next));
   });
@@ -1710,6 +1983,10 @@ function setActiveView(view, { updateRoute = true } = {}) {
   const safeView = ["replay", "library", "robots", "record"].includes(view) ? view : "replay";
   state.view = safeView;
   document.body.dataset.view = safeView;
+  state.threeViewer?.setActive(safeView === "replay" && state.replayMode === "three");
+  state.liveSimViewer?.setActive(
+    safeView === "record" && selectedRecorderMode() === "simulation_follower",
+  );
   document.querySelectorAll("[data-route]").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.route === safeView && button.classList.contains("view-button"));
   });
@@ -1752,22 +2029,35 @@ function restoreRoute() {
 }
 
 function openDrawer(name) {
-  const drawer = name === "process" ? elements.processDrawer : elements.evidenceDrawer;
-  const other = name === "process" ? elements.evidenceDrawer : elements.processDrawer;
-  other.classList.remove("is-open");
-  other.setAttribute("aria-hidden", "true");
+  const drawers = {
+    live: elements.liveWorkspaceDrawer,
+    process: elements.processDrawer,
+    evidence: elements.evidenceDrawer,
+  };
+  const drawer = drawers[name];
+  if (!drawer) return;
+  if (state.drawer === "live" && name !== "live") stopLiveWorkspace();
+  Object.entries(drawers).forEach(([key, item]) => {
+    if (key === name) return;
+    item.classList.remove("is-open");
+    item.setAttribute("aria-hidden", "true");
+  });
   drawer.classList.add("is-open");
   drawer.setAttribute("aria-hidden", "false");
   elements.drawerBackdrop.hidden = false;
   state.drawer = name;
-  elements.liveTrigger.setAttribute("aria-expanded", String(name === "process"));
+  elements.liveTrigger.setAttribute("aria-expanded", String(name === "live"));
   elements.evidenceTrigger.setAttribute("aria-expanded", String(name === "evidence"));
+  if (name === "live") void startLiveWorkspace();
   drawer.querySelector("button")?.focus({ preventScroll: true });
 }
 
 function closeDrawer() {
+  if (state.drawer === "live") stopLiveWorkspace();
+  elements.liveWorkspaceDrawer.classList.remove("is-open");
   elements.processDrawer.classList.remove("is-open");
   elements.evidenceDrawer.classList.remove("is-open");
+  elements.liveWorkspaceDrawer.setAttribute("aria-hidden", "true");
   elements.processDrawer.setAttribute("aria-hidden", "true");
   elements.evidenceDrawer.setAttribute("aria-hidden", "true");
   elements.drawerBackdrop.hidden = true;
@@ -1839,11 +2129,35 @@ elements.replayModeSwitch.querySelectorAll("[data-replay-mode]").forEach((button
 });
 elements.threeReset.addEventListener("click", () => state.threeViewer?.resetCamera());
 elements.liveSimulationReset.addEventListener("click", () => state.liveSimViewer?.resetCamera());
+elements.liveWorkspaceReset.addEventListener("click", () => state.liveWorkspaceViewer?.resetCamera());
+document.querySelectorAll("[data-live-mode]").forEach((button) => {
+  button.addEventListener("click", () => setLiveWorkspaceMode(button.dataset.liveMode));
+});
+document.querySelectorAll(".live-camera-card").forEach((card) => {
+  const image = card.querySelector("img");
+  image.addEventListener("load", () => {
+    if (
+      state.drawer !== "live"
+      || state.liveWorkspaceMode !== "cameras"
+      || image.dataset.session !== state.liveWorkspaceSession
+      || !image.src.includes("/api/live/cameras/")
+    ) return;
+    card.classList.add("is-streaming");
+    text(card.querySelector("figcaption em"), "Live");
+    text(card.querySelector(".live-camera-frame > span"), "Live stream");
+  });
+  image.addEventListener("error", () => {
+    if (!image.hasAttribute("src")) return;
+    card.classList.remove("is-streaming");
+    text(card.querySelector("figcaption em"), "Unavailable");
+    text(card.querySelector(".live-camera-frame > span"), "Stream unavailable");
+  });
+});
 elements.timeline.addEventListener("pointermove", updateTimelinePreview);
 elements.timeline.addEventListener("pointerleave", () => { elements.preview.hidden = true; });
 elements.search.addEventListener("input", () => setQuery(elements.search.value));
 elements.librarySearch.addEventListener("input", () => setQuery(elements.librarySearch.value));
-elements.liveTrigger.addEventListener("click", () => openDrawer("process"));
+elements.liveTrigger.addEventListener("click", () => openDrawer("live"));
 document.querySelector("#live-strip-open").addEventListener("click", () => openDrawer("process"));
 elements.evidenceTrigger.addEventListener("click", () => openDrawer("evidence"));
 elements.drawerBackdrop.addEventListener("click", closeDrawer);
@@ -1861,6 +2175,9 @@ elements.railClose.addEventListener("click", () => {
 document.querySelectorAll('input[name="recorder-mode"]').forEach((input) => input.addEventListener("change", () => {
   persistRecorderSettings();
   renderRecorder();
+  state.liveSimViewer?.setActive(
+    state.view === "record" && selectedRecorderMode() === "simulation_follower",
+  );
   refreshLiveSimulation();
 }));
 elements.physicalSafetyAck.addEventListener("change", renderRecorder);
@@ -1924,11 +2241,15 @@ document.addEventListener("keydown", (event) => {
   }
 });
 window.addEventListener("hashchange", restoreRoute);
+window.addEventListener("pagehide", () => stopLiveWorkspace({ useBeacon: true }));
 
 initializeRecorderForm();
 fetchCatalog({ initial: true }).then(restoreRoute);
 fetchRecorder();
+fetchLiveWorkspaceStatus();
 refreshLiveSimulation();
 window.setInterval(() => fetchCatalog(), 2000);
 window.setInterval(() => fetchRecorder(), 500);
+window.setInterval(() => fetchLiveWorkspaceStatus(), 5000);
+window.setInterval(() => refreshLiveWorkspace(), 100);
 window.setInterval(() => refreshLiveSimulation(), 50);

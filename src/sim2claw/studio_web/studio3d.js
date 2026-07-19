@@ -54,6 +54,8 @@ class ThreeReplayViewer {
     this.cameraHome = null;
     this.renderWidth = 0;
     this.renderHeight = 0;
+    this.active = true;
+    this.animationFrame = null;
 
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2();
@@ -67,7 +69,7 @@ class ThreeReplayViewer {
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas.parentElement);
     this.animate = this.animate.bind(this);
-    requestAnimationFrame(this.animate);
+    this.animationFrame = requestAnimationFrame(this.animate);
   }
 
   setStatus(message) {
@@ -117,7 +119,12 @@ class ThreeReplayViewer {
 
   async loadLive({ scene_url: sceneUrl, manifest_revision_sha256: expectedRevision }) {
     if (!sceneUrl) throw new Error("The live simulator did not publish a scene URL.");
-    if (this.liveSceneUrl === sceneUrl && this.manifest) return;
+    if (
+      this.liveSceneUrl === sceneUrl
+      && this.trace === null
+      && this.manifest
+      && (!expectedRevision || this.manifest.revision_sha256 === expectedRevision)
+    ) return;
     this.pause();
     this.setStatus("Loading live MuJoCo scene…");
     const response = await fetch(sceneUrl, { cache: "no-store" });
@@ -389,6 +396,19 @@ class ThreeReplayViewer {
     this.playbackRate = Number(rate) || 1;
   }
 
+  setActive(active) {
+    const next = Boolean(active);
+    if (next === this.active) return;
+    this.active = next;
+    if (!next) {
+      if (this.animationFrame !== null) cancelAnimationFrame(this.animationFrame);
+      this.animationFrame = null;
+      return;
+    }
+    this.lastWallTime = performance.now();
+    this.animationFrame = requestAnimationFrame(this.animate);
+  }
+
   pick(event) {
     if (!this.pointerStart || !this.trace) return;
     if (Math.hypot(event.clientX - this.pointerStart[0], event.clientY - this.pointerStart[1]) > 4) return;
@@ -416,6 +436,10 @@ class ThreeReplayViewer {
   }
 
   animate(wallTime) {
+    if (!this.active) {
+      this.animationFrame = null;
+      return;
+    }
     const delta = Math.min(0.1, Math.max(0, (wallTime - this.lastWallTime) / 1000));
     this.lastWallTime = wallTime;
     if (this.playing && this.trace) {
@@ -431,7 +455,7 @@ class ThreeReplayViewer {
     this.controls.update();
     this.resize();
     this.renderer.render(this.scene, this.camera);
-    requestAnimationFrame(this.animate);
+    this.animationFrame = requestAnimationFrame(this.animate);
   }
 }
 

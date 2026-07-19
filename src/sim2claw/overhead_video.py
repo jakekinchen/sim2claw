@@ -50,6 +50,32 @@ def discover_avfoundation_camera(
 ) -> dict[str, Any]:
     """Resolve an AVFoundation video index by camera name, not index order."""
 
+    discovery = list_avfoundation_cameras(ffmpeg_path=ffmpeg_path)
+    cameras = discovery["cameras"]
+    exact = next((row for row in cameras if row["name"] == camera_name), None)
+    selected = exact or next(
+        (row for row in cameras if camera_name.lower() in row["name"].lower()),
+        None,
+    )
+    if selected is None:
+        found = ", ".join(row["name"] for row in cameras) or "none"
+        raise OverheadVideoError(
+            f"Required overhead camera '{camera_name}' was not found; detected: {found}."
+        )
+    return {
+        "camera_name": selected["name"],
+        "camera_index": selected["index"],
+        "ffmpeg_path": discovery["ffmpeg_path"],
+        "detected_cameras": cameras,
+    }
+
+
+def list_avfoundation_cameras(
+    *,
+    ffmpeg_path: str | None = None,
+) -> dict[str, Any]:
+    """Enumerate AVFoundation video inputs without opening a capture stream."""
+
     ffmpeg = ffmpeg_path or shutil.which("ffmpeg")
     if not ffmpeg:
         raise OverheadVideoError("ffmpeg is required for overhead camera recording.")
@@ -89,22 +115,9 @@ def discover_avfoundation_camera(
         match = DEVICE_PATTERN.search(raw_line)
         if match:
             cameras.append({"index": int(match.group(1)), "name": match.group(2)})
-
-    exact = next((row for row in cameras if row["name"] == camera_name), None)
-    selected = exact or next(
-        (row for row in cameras if camera_name.lower() in row["name"].lower()),
-        None,
-    )
-    if selected is None:
-        found = ", ".join(row["name"] for row in cameras) or "none"
-        raise OverheadVideoError(
-            f"Required overhead camera '{camera_name}' was not found; detected: {found}."
-        )
     return {
-        "camera_name": selected["name"],
-        "camera_index": selected["index"],
         "ffmpeg_path": ffmpeg,
-        "detected_cameras": cameras,
+        "cameras": cameras,
     }
 
 

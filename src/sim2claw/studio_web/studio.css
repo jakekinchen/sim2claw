@@ -3059,6 +3059,363 @@ body[data-view="record"] [data-view-panel="record"] {
   opacity: 1;
 }
 
+.live-workspace-drawer {
+  display: flex;
+  width: min(1200px, calc(100vw - 20px));
+  overflow: hidden;
+  flex-direction: column;
+  background: var(--chalk);
+}
+
+.live-workspace-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+.live-arm-state {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.live-arm-state > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.live-arm-state b,
+.live-arm-state small,
+.live-camera-count {
+  font-family: var(--utility);
+}
+
+.live-arm-state b {
+  font-size: 12px;
+}
+
+.live-arm-state small {
+  overflow: hidden;
+  color: var(--graphite);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-arm-light {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--rule-dark);
+}
+
+.live-arm-state[data-status="connected"] .live-arm-light {
+  background: var(--motion);
+  box-shadow: 0 0 0 4px rgb(255 90 31 / 14%);
+}
+
+.live-arm-state[data-status="live"] .live-arm-light {
+  background: var(--ok);
+  box-shadow: 0 0 0 4px rgb(52 156 112 / 14%);
+}
+
+.live-arm-state[data-status="error"] .live-arm-light,
+.live-arm-state[data-status="offline"] .live-arm-light {
+  background: var(--fail);
+}
+
+.live-camera-count {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--graphite-dark);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.live-view-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--chalk);
+}
+
+.live-view-switch button {
+  min-height: 38px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--graphite);
+  cursor: pointer;
+  font-family: var(--utility);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.live-view-switch button[aria-selected="true"] {
+  border-color: var(--rule-dark);
+  background: var(--paper);
+  color: var(--carbon);
+  box-shadow: var(--shadow-soft);
+}
+
+.live-workspace-panel {
+  min-height: 0;
+  padding: 14px 18px 18px;
+}
+
+.live-workspace-panel[hidden] {
+  display: none;
+}
+
+.live-twin-panel:not([hidden]) {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.live-camera-panel:not([hidden]) {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  flex: 1;
+  overflow: hidden;
+}
+
+.live-workspace-stage {
+  position: relative;
+  height: clamp(330px, 54vh, 520px);
+  overflow: hidden;
+  border: 1px solid #303633;
+  border-radius: 6px;
+  background: #111315;
+}
+
+.live-workspace-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.live-workspace-stage canvas:active {
+  cursor: grabbing;
+}
+
+.live-workspace-toolbar {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  left: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: rgb(255 255 255 / 76%);
+  font-family: var(--utility);
+  font-size: 9px;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+
+.live-workspace-toolbar span,
+.live-workspace-toolbar button,
+.live-workspace-stage > small {
+  border: 1px solid rgb(255 255 255 / 16%);
+  background: rgb(17 19 21 / 84%);
+  backdrop-filter: blur(7px);
+}
+
+.live-workspace-toolbar span {
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-workspace-toolbar button {
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  border-radius: 3px;
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  pointer-events: auto;
+  text-transform: uppercase;
+}
+
+.live-workspace-stage > small {
+  position: absolute;
+  right: 9px;
+  bottom: 9px;
+  padding: 6px 8px;
+  color: rgb(255 255 255 / 60%);
+  font-family: var(--utility);
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.live-joint-readout {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin-top: 10px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  background: var(--paper);
+}
+
+.live-joint-readout span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 9px 7px;
+  border-right: 1px solid var(--rule);
+  text-align: center;
+}
+
+.live-joint-readout span:last-child {
+  border-right: 0;
+}
+
+.live-joint-readout small,
+.live-joint-readout b {
+  overflow: hidden;
+  font-family: var(--utility);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-joint-readout small {
+  color: var(--graphite);
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.live-joint-readout b {
+  font-size: 11px;
+}
+
+.live-camera-intro {
+  margin-bottom: 10px;
+}
+
+.live-camera-intro b {
+  font-family: var(--display);
+  font-size: 20px;
+}
+
+.live-camera-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  min-height: 0;
+}
+
+.live-camera-card {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--rule-dark);
+  border-radius: 6px;
+  background: var(--paper);
+}
+
+.live-camera-frame {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  place-items: center;
+  overflow: hidden;
+  background: #111315;
+}
+
+.live-camera-frame img {
+  position: absolute;
+  inset: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.live-camera-card.is-streaming .live-camera-frame img {
+  display: block;
+}
+
+.live-camera-frame > span {
+  color: rgb(255 255 255 / 50%);
+  font-family: var(--utility);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.live-camera-card figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+}
+
+.live-camera-card figcaption > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.live-camera-card figcaption b {
+  font-family: var(--display);
+  font-size: 17px;
+}
+
+.live-camera-card figcaption small {
+  overflow: hidden;
+  color: var(--graphite);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-camera-card figcaption em {
+  flex: 0 0 auto;
+  color: var(--graphite);
+  font-family: var(--utility);
+  font-size: 8px;
+  font-style: normal;
+  text-transform: uppercase;
+}
+
+.live-camera-card.is-streaming figcaption em {
+  color: var(--ok);
+}
+
+.live-camera-slot {
+  display: grid;
+  min-height: 0;
+  border: 1px dashed var(--rule-dark);
+  border-radius: 6px;
+  background:
+    linear-gradient(135deg, transparent 0 49.7%, rgb(107 113 109 / 12%) 50% 50.3%, transparent 50.6%),
+    var(--ceramic);
+  place-items: center;
+}
+
 .drawer-heading {
   position: sticky;
   top: 0;
@@ -3336,6 +3693,53 @@ body[data-view="record"] [data-view-panel="record"] {
     border-radius: 8px;
     background: rgb(248 249 246 / 98%);
     box-shadow: 0 14px 36px rgb(21 24 22 / 24%);
+  }
+}
+
+@media (max-width: 720px) {
+  .live-workspace-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .live-workspace-drawer {
+    overflow-y: auto;
+  }
+
+  .live-camera-panel:not([hidden]) {
+    display: block;
+    overflow: visible;
+    flex: none;
+  }
+
+  .live-camera-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    height: auto;
+  }
+
+  .live-camera-frame {
+    aspect-ratio: 4 / 3;
+  }
+
+  .live-camera-card[data-camera-id="d405-wrist"] .live-camera-frame {
+    aspect-ratio: 16 / 9;
+  }
+
+  .live-camera-slot {
+    display: none;
+  }
+
+  .live-joint-readout {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .live-joint-readout span:nth-child(3n) {
+    border-right: 0;
+  }
+
+  .live-joint-readout span:nth-child(-n + 3) {
+    border-bottom: 1px solid var(--rule);
   }
 }
 

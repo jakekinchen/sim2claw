@@ -21,6 +21,7 @@ from .scene import (
     ROBOT_JOINTS,
     build_scene_spec,
     initialize_robot_poses,
+    scene_summary,
 )
 from .state_trace import EpisodeStateTraceRecorder
 
@@ -156,6 +157,8 @@ def replay_physical_recording(recording_directory: Path) -> dict[str, Any]:
     body_max_deg = np.rad2deg(maximum[:5])
     visual_trace_path = recording_directory / "sim_replay_state_trace.json"
     visual_trace = state_trace.write(visual_trace_path)
+    current_scene = scene_summary(piece_layout=CURRENT_TASK_PIECE_LAYOUT)
+    current_board = current_scene["board"]
     report = {
         "schema_version": SIM_REPLAY_SCHEMA,
         "source_recording_id": receipt["recording_id"],
@@ -181,7 +184,12 @@ def replay_physical_recording(recording_directory: Path) -> dict[str, Any]:
         "state_trace_duration_seconds": visual_trace["duration_seconds"],
         "state_trace_piece_layout": visual_trace["scene"]["piece_layout"],
         "state_trace_manifest_url": visual_trace["scene"]["manifest_url"],
-        "simulator_scene": "photo_aligned_chess_workcell_v1:left_so101",
+        "state_trace_manifest_revision_sha256": visual_trace["scene"][
+            "manifest_revision_sha256"
+        ],
+        "simulator_scene_id": current_board["scene_id"],
+        "simulator_board_pose_id": current_board["pose_id"],
+        "simulator_scene": f"{current_board['scene_id']}:left_so101",
         "comparison_scope": "joint_space_command_response_only",
         "learned_policy_verified": False,
         "object_or_contact_dynamics_verified": False,

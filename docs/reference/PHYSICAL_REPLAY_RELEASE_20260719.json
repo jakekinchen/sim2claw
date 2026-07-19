@@ -1,0 +1,131 @@
+{
+  "schema_version": "sim2claw.github_release_evidence_manifest.v1",
+  "release_tag": "physical-replay-evidence-20260719",
+  "repository": "jakekinchen/sim2claw",
+  "repository_visibility": "private",
+  "release_url": "https://github.com/jakekinchen/sim2claw/releases/tag/physical-replay-evidence-20260719",
+  "git_media_policy": "Video files and generated receipts are release assets only and are not committed to Git history.",
+  "source_episode": {
+    "recording_id": "20260718T230416Z-573f2320",
+    "display_label": "F 2 to f 1",
+    "operator_note": "That's cool. Pass with flying colors.",
+    "structured_source_square": "e2",
+    "structured_destination_square": "e1",
+    "annotation_disagreement_preserved": true,
+    "proof_class": "physical_teleoperation_source_unqualified",
+    "is_training_data": false,
+    "training_admission": "pending_deterministic_replay_and_separate_evaluator"
+  },
+  "physical_replay": {
+    "run_id": "20260719T010448Z-20260718T230416Z-573f2320-8e655391",
+    "status": "completed",
+    "completed_sample_count": 243,
+    "exact_command_sample_count": 233,
+    "safety_clamped_sample_count": 51,
+    "failure_type": null,
+    "shutdown_failure_type": null,
+    "physical_follower_torque_enabled_after_replay": false,
+    "learned_policy_verified": false,
+    "task_success_verified": false,
+    "operator_reported_outcome": null
+  },
+  "alignment": {
+    "basis": "camera file creation time compared with the gateway UTC receipt",
+    "estimated_uncertainty_seconds": 1.0,
+    "instruction": "Use replay_window_start_seconds and replay_window_end_seconds to locate the replay within each full camera asset."
+  },
+  "assets": [
+    {
+      "name": "source-episode-overhead-c922.mp4",
+      "kind": "source_episode_diagnostic_video",
+      "camera_role": "overhead_board",
+      "sha256": "b7347eac49420ee4a40bfdd022f915470624b540d6764fcfd0bf8fd803518125",
+      "size_bytes": 16472346,
+      "codec": "h264",
+      "width": 640,
+      "height": 480,
+      "nominal_frame_rate": 30.0,
+      "duration_seconds": 32.566667,
+      "teleoperation_start_video_offset_seconds": 7.73401225003181,
+      "teleoperation_stop_video_offset_seconds": 32.01280200004112
+    },
+    {
+      "name": "replay-overhead-c922.mkv",
+      "kind": "physical_replay_diagnostic_video",
+      "camera_role": "overhead_board",
+      "sha256": "9278defb1a2dfdfbad1c465fe30305e680a15bc71b522ce3332f841b94557c9f",
+      "size_bytes": 32059462,
+      "codec": "h264_videotoolbox",
+      "width": 640,
+      "height": 480,
+      "nominal_frame_rate": 30.0,
+      "duration_seconds": 85.633,
+      "replay_window_start_seconds": 40.64,
+      "replay_window_end_seconds": 69.553,
+      "decoded_replay_frame_verified": true
+    },
+    {
+      "name": "replay-side-logitech.mkv",
+      "kind": "physical_replay_diagnostic_video",
+      "camera_role": "side_arm",
+      "sha256": "dc840c46bc91ea760da052b51f114374c2ade7c5d45b05c69fde0cb2a5e63950",
+      "size_bytes": 33034544,
+      "codec": "h264_videotoolbox",
+      "width": 640,
+      "height": 480,
+      "nominal_frame_rate": 14.917,
+      "duration_seconds": 87.687,
+      "replay_window_start_seconds": 45.64,
+      "replay_window_end_seconds": 74.553,
+      "decoded_replay_frame_verified": true
+    },
+    {
+      "name": "replay-wrist-d405.mkv",
+      "kind": "physical_replay_diagnostic_video",
+      "camera_role": "wrist_gripper_upward",
+      "sha256": "19f2d6f853d8145ba1b6239b41cf31182778bc69e5bd4518069694af48780c2b",
+      "size_bytes": 19991349,
+      "codec": "h264_videotoolbox",
+      "width": 480,
+      "height": 270,
+      "nominal_frame_rate": 15.0,
+      "duration_seconds": 80.667,
+      "replay_window_start_seconds": 33.64,
+      "replay_window_end_seconds": 62.553,
+      "decoded_replay_frame_verified": true,
+      "view_limitation": "The decoded frame primarily shows the gripper and ceiling, not the chessboard."
+    },
+    {
+      "name": "source-episode-recording-receipt.json",
+      "kind": "source_episode_receipt",
+      "sha256": "1ea97cd3ebb53694802b8b7f120625419c10e778ea133f85cb1f7da7c5fe1221",
+      "size_bytes": 8911
+    },
+    {
+      "name": "source-episode-overhead-video.json",
+      "kind": "source_episode_video_receipt",
+      "sha256": "9ab82795266795dac48828704c5fc2276ffcc8dd167c34713a2abe3b21942732",
+      "size_bytes": 1471
+    },
+    {
+      "name": "multicamera-capture-receipt.json",
+      "kind": "multicamera_capture_receipt",
+      "sha256": "f894bd4d152576c24990683bc921ef64da35c08b287f72eae83f9e03bf56dfc8",
+      "size_bytes": 2901
+    },
+    {
+      "name": "physical-replay-receipt.json",
+      "kind": "physical_replay_receipt",
+      "sha256": "49bd08bbee310138f7e9c1430945eef5dc850c5394a64fab8241cf6a79c7250a",
+      "size_bytes": 5039
+    }
+  ],
+  "proof_boundary": {
+    "recorded_command_trace_replayed": true,
+    "learned_act_checkpoint_executed": false,
+    "physical_chess_task_success_verified": false,
+    "object_or_contact_dynamics_verified": false,
+    "metric_depth_verified": false,
+    "training_admission_granted": false
+  }
+}

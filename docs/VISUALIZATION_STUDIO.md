@@ -1,6 +1,6 @@
 # Browser Visualization Studio
 
-Status: implemented for local replay, process observation, and gated ACT source recording
+Status: implemented for local replay, on-demand live inspection, process observation, and gated ACT source recording
 
 Date: 2026-07-18 America/Chicago
 
@@ -15,6 +15,8 @@ is to make repo-native simulation evidence legible:
   evaluator result, and selected metrics;
 - the live rail observes training, evaluation, dataset export, and simulation
   processes;
+- the arm-status control opens a leased physical-joint mirror or three
+  on-demand workcell camera previews;
 - the robot bench shows which embodiments are present in the MuJoCo scene;
 - all views preserve the difference between a convincing replay and authority.
 
@@ -81,6 +83,47 @@ and Check buttons are optional torque-off controls. Failed attempts move to
 ignored diagnostic storage and the recorder becomes ready again without a
 native browser dialog or reset step.
 
+## Live workspace contract
+
+The masthead arm control is separate from the process heartbeat. While closed,
+Studio checks only the existing device/calibration preflight and camera
+inventory: it does not hold a motor bus or camera stream. `Arm ready` therefore
+means the expected leader and follower paths and their calibration identities
+are present, not that a joint sample or motion capability has been established.
+
+Opening Live creates a five-second renewable loopback lease. The service opens
+the reviewed SO-101 gateway with configuration rewriting disabled and follower
+torque disabled, verifies torque remains off, and reads both calibrated joint
+vectors. The browser projects the observed follower vector through the current
+sparse-pawn MuJoCo model with `mj_forward`; it does not step dynamics, infer
+contact, or send a physical command. If the physical recorder already owns the
+gateway, the mirror may consume its last observed follower state without
+opening a second bus owner. Closing the drawer, starting a recorder gateway
+operation, losing the browser heartbeat, or shutting down Studio releases the
+telemetry gateway and all preview processes.
+
+The Live Feed tab enumerates the current AVFoundation indexes by exact camera
+identity immediately before use and opens independent 640x480 inputs capped at
+a 10 fps MJPEG browser preview:
+
+| Stable Studio role | Current device identity | Display treatment |
+| --- | --- | --- |
+| D405 wrist | `Intel(R) RealSense(TM) Depth Camera 405  Depth` | Raw AVFoundation diagnostic display; no metric-depth claim |
+| Logitech overhead | `C922 Pro Stream Webcam` | Operator-requested orientation; no additional ffmpeg flip |
+| Logitech workspace | `USB Camera VID:1133 PID:2075` | Wide workcell context |
+
+No camera process starts in the Simulator tab. Switching away from Live Feed
+removes all three image sources, causing their server-side ffmpeg processes to
+terminate. The lease reaper is a second fail-safe for a closed or abandoned
+browser. The recorder remains the exclusive owner of the C922 when diagnostic
+episode capture is active.
+
+The D405 endpoint is intentionally labeled as visible diagnostic video only.
+This path does not expose librealsense metric depth, intrinsics, a calibrated
+camera-to-gripper transform, AprilTag family/ID observations, or hand-eye
+residuals. Those calibration artifacts must be frozen and evaluated separately
+before camera pixels can be used to claim robot/board coordinate registration.
+
 Every admitted recording starts the exact-name `C922 Pro Stream Webcam` in a
 separate ffmpeg process before the selected follower opens. The camera uses the
 stable AVFoundation NV12 mode at 640x480 and a requested 30 fps; the observed
@@ -121,6 +164,8 @@ The catalog is rebuilt from current local truth every two seconds:
 | MuJoCo scene manifest | `/api/scene?layout=standard` or the sparse task layout, plus allowlisted SO-101 STL assets | Browser geometry and initial pose contract; MuJoCo owns physics |
 | Episode state trace | `state_trace.json` from grasp, ACT evaluation, GR00T export, or simulated teleoperation | World body poses and contacts sampled from `MjData`; browser interpolation is visual only |
 | Live process rail | `runs/studio/processes/*.json` plus a bounded local `ps` scan | Observability only; it never controls the process |
+| Live physical mirror | Leased torque-off gateway observation projected through current MuJoCo forward kinematics | Joint-pose inspection only; no contact, task, or motion authority |
+| Live camera previews | Exact-identity D405, C922, and second Logitech AVFoundation inputs | On-demand display only; no evaluator, depth, or calibration claim |
 | Robot bench | Versioned `studio_*` MuJoCo cameras plus the current scene contract | Simulated embodiment presence and alignment, not connected hardware |
 | ACT source recorder | Expected SO-101 leader bus, frozen ACT state/goal contract, MuJoCo follower | Raw simulated teleoperation source; never learned-policy or physical-task proof |
 | Physical gateway | Expected leader/follower buses and calibration hashes | Operator-gated raw physical trace; unavailable pose fields keep it out of ACT training |
@@ -157,8 +202,9 @@ The interface is an evidence and collection workbench, not an admin dashboard.
 Replay, Library, Robots, and Record are distinct views; tasks are filters within
 Replay and Library.
 The selected episode, semantic filmstrip, and evaluator metrics fit in one
-desktop viewport. An idle live rail consumes no layout space; active work opens
-from a compact status control into an observational drawer.
+desktop viewport. An idle process rail consumes no layout space. The compact
+arm-status control opens a separate observational drawer with Simulator and
+Live Feed tabs.
 
 The palette is disciplined around ceramic `#ecefed`, chalk `#f8f9f6`, carbon
 `#151816`, graphite `#6b716d`, and motion orange `#ff5a1f`. Orange is reserved
