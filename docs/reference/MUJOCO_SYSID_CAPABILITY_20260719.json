@@ -1,0 +1,59 @@
+{
+  "actionable_resolution": null,
+  "claim": "official_sysid_exercised",
+  "compatible": true,
+  "declared_sysid_extra_requirements": [
+    "absl-py; extra == \"sysid\"",
+    "colorama; extra == \"sysid\"",
+    "imageio[ffmpeg]; extra == \"sysid\"",
+    "jinja2; extra == \"sysid\"",
+    "matplotlib; extra == \"sysid\"",
+    "plotly; extra == \"sysid\"",
+    "pyyaml; extra == \"sysid\"",
+    "scipy; extra == \"sysid\"",
+    "tabulate; extra == \"sysid\"",
+    "typing_extensions; extra == \"sysid\""
+  ],
+  "distribution": "mujoco",
+  "exercise": {
+    "absolute_error": 0.0,
+    "backend": "mujoco.sysid.optimize",
+    "fitted": 0.375,
+    "optimizer": "mujoco",
+    "optimizer_trace_line_count": 4,
+    "passed": true,
+    "result_has_jacobian": true,
+    "target": 0.375
+  },
+  "exercise_error": null,
+  "expected_version": "3.10.0",
+  "import_error": null,
+  "importable": true,
+  "local_fallback": {
+    "allowed_only_when_fallback_supported": true,
+    "allowed_only_when_parameter_smooth": true,
+    "contact_or_object_parameters_supported": false,
+    "deterministic": true,
+    "implementation": "local_bounded_gauss_newton",
+    "official_sysid_claim": false
+  },
+  "missing_exports": [],
+  "module": "mujoco.sysid",
+  "module_present": true,
+  "official_surface_exercised": true,
+  "primary_documentation": [
+    "https://github.com/google-deepmind/mujoco/blob/3.10.0/python/mujoco/sysid/README.md",
+    "https://mujoco.readthedocs.io/en/3.10.0/changelog.html"
+  ],
+  "required_exports": [
+    "Parameter",
+    "ParameterDict",
+    "TimeSeries",
+    "ModelSequences",
+    "build_residual_fn",
+    "optimize"
+  ],
+  "schema_version": "sim2claw.mujoco_sysid_capability.v1",
+  "version": "3.10.0",
+  "version_matches_pin": true
+}
