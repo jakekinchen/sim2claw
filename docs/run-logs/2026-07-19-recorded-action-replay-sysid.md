@@ -52,6 +52,37 @@ official optimizer surface are unavailable.
    API, and checked in its isolated capability receipt.
 7. Froze the 18 catalog episode identities as 15 train and 3 held-out. This
    manifest contains no recording data.
+8. Repaired frozen-split authority: validation now recomputes deterministic or
+   LOCO assignments, fractions, columns, counts, and a canonical assignment
+   digest. LOCO additionally requires reviewed, hash-bound per-episode column
+   adjudication; the current conflicted catalog is not LOCO-ready.
+9. Extended episode v1 with an explicit measured object body/free-joint state
+   or an unavailable reason. Pawn/contact replay and fitting remain blocked
+   without that binding.
+10. Added parameter-to-observable declarations and finite perturbation
+    sensitivity gates. Zero-sensitivity parameters never reach an optimizer.
+11. Made quaternion alignment semantic-driven, added physically consistent
+    mass/inertia scaling, and made requested/applied control diagnostics exact.
+12. Added the hash-bound `sim2claw.physical_joint_transform.v1` contract and a
+    strict physical parser/range audit. Initial state, every measured row, and
+    every command must be in range; clipping is forbidden.
+13. Made replay and fit identities portable and bound the physical catalog,
+    receipt, and sample provenance chain, including relocation and tamper tests.
+14. Bound split validation to the exact loaded config authority. A changed seed,
+    fraction, owner, strategy, column rule, or config hash is rejected even when
+    all assignments, counts, and the internal digest are recomputed.
+15. Removed the false implication that a caller-supplied root proves canonical
+    checkout identity. The compatibility scope spelling now means only that the
+    supplied root was inspected.
+16. Required the physical loader itself to open the hash-bound catalog and
+    resolve its recording entry before a replay receipt can claim a complete
+    provenance chain.
+17. Recomputed MuJoCo derived constants after mass/inertia scaling and verified
+    the changed `body_subtreemass`, not only the directly mutated arrays.
+18. Required and parsed measured physical joint velocity, initialized `qvel`
+    from the first row with sign/scale only, and bound its schema, units,
+    transform semantics, and sample provenance. Empty range audits now report
+    incomplete/false instead of vacuous success.
 
 Implementation commits:
 
@@ -59,6 +90,20 @@ Implementation commits:
   fixtures/tests.
 - `a32f6e7` — staged system identification, official adapter/fallback, split,
   CLI, dependency lock, and focused tests.
+- `4d0fb09409b579887b2626638154f6053f6ee482` — independent-review repair for
+  split authority, object binding, sensitivity, semantic alignment, strict
+  physical transforms/ranges, exact controls, portable provenance, and
+  mass/inertia consistency.
+- `aaadce2112574af5210847327f7aca3e93b98d52` — binds the split to evaluator
+  config authority, downgrades caller-supplied checkout identity, verifies the
+  catalog entry inside the physical loader, and refreshes derived MuJoCo mass
+  constants.
+- `58e6a50d1e9d1b0c0e9d36dfb8930e94308b9327` — binds measured initial joint
+  velocity and makes empty joint-range audits explicitly incomplete.
+
+The coordinator's independent reviewer formally recommended holding the three
+original commits until this repair is integrated and rerun. This log does not
+override that integration hold.
 
 ## Input-capability state
 
@@ -73,6 +118,8 @@ this isolated worktree. It reports:
 - 11 catalog/receipt metadata conflicts that cannot be resolved without those
   ignored assets.
 - no measured EE, pawn, or contact trajectories.
+- the checked-in physical transform is provisional and
+  `calibration_approved=false`.
 
 The coordinator separately reported 18 recovered canonical directories and 54
 verified catalog-bound hashes. That statement is recorded as externally
@@ -80,42 +127,53 @@ reported context only; this receipt did not inspect canonical and does not
 verify it. Endpoint visual proposals remain unreviewed and are not admitted as
 telemetry.
 
+The coordinator also reported a canonical read-only range audit: all 18
+episodes begin out of range in three mapped joints; 2,255 of 7,741 measured rows
+and 2,231 command rows are out of range, with maximum exceedance 0.1235 rad.
+Those numbers were not reproduced in this isolated checkout. The repaired
+canonical input command must regenerate them through the strict adapter. Until
+that report is green with a separately reviewed transform, timing/control
+fitting is forbidden.
+
 ## Verification ledger
 
 | Check | Result | Proof class |
 | --- | --- | --- |
-| Focused replay and sysid tests | 15 passed in 0.73 seconds | Synthetic |
+| Focused replay and sysid tests | 36 passed and 14 subtests passed in 1.35 seconds | Synthetic |
 | Official `mujoco.sysid` bounded exercise | Passed; fitted `0.375` to target `0.375`, absolute error `0.0` | Dependency capability |
 | Deterministic replay CLI smoke | Passed; 5 synchronized rows with joint/EE/gripper metrics and explicit pawn/contact absence | Synthetic replay |
 | Isolated physical input report | Expected exit 1; 0/18 joint/timing-ready, 36 required inputs and 54 catalog-bound assets absent, full calibration readiness false | Physical read-only capability |
-| Physical whole-episode split | 15 train / 3 held-out identities | Contract |
-| Full repository tests | 179 passed and 30 subtests passed in 16.47 seconds | Mixed repository test proof |
-| Package build | sdist and wheel built successfully under `/tmp/sim2claw-build-5307ce13` | Packaging |
+| Physical whole-episode split | 15 train / 3 held-out identities; assignment digest `370581db3fa383e6a36a77de6463db401c384ecbf5ef46314abb939158a14d95`; exact config authority plus 18 full catalog/receipt/sample bindings | Contract |
+| Full repository tests | 200 passed and 44 subtests passed in 16.92 seconds | Mixed repository test proof |
+| Package build | sdist and wheel built successfully under `/tmp/sim2claw-w4-velocity-final.Jt38JE` | Packaging |
 | Lock, JSON, CLI, and whitespace checks | `uv lock --check`, `jq empty`, sysid input help, and `git diff --check` passed | Source hygiene |
 
 ## Result and limitations
 
-The dependency-ready foundation and verification ledger are complete. No
-physical calibration was performed in this worktree. Joint/timing
-calibration must be rerun in canonical after integration. Geometry and
-contact/object stages must remain skipped or rejected until measured identifying
-observables are supplied. Even after a fit, calibration success requires the
-frozen held-out gate; optimizer convergence alone is insufficient.
+The repaired dependency-ready foundation and verification ledger are complete.
+No physical calibration was performed in this worktree. Canonical must first
+regenerate the strict input capability report; it must not run joint/timing
+fitting with the provisional transform or any range violation. Geometry and
+contact/object stages remain skipped or rejected until measured identifying
+observables and the episode-specific object binding are supplied. Even after a
+future eligible fit, calibration success requires the frozen held-out gate;
+optimizer convergence alone is insufficient.
 
 ## Canonical post-cherry-pick commands
 
 ```bash
 cd /Users/kelly/Developer/sim2claw
 uv sync --frozen
-uv run --frozen sim2claw sysid-input-report --catalog configs/data/physical_pawn_move_catalog_20260719.json --repo-root /Users/kelly/Developer/sim2claw --inspection-scope canonical_checkout --output runs/sysid/physical_pawn_input_capability_post_cherry_pick.json
-uv run --frozen sim2claw sysid-fit --split configs/sysid/physical_pawn_sysid_split_v1.json --config configs/sysid/recorded_action_sysid_v1.json --output runs/sysid/physical_pawn_joint_timing_v1 --backend auto
+uv run --frozen sim2claw sysid-input-report --catalog configs/data/physical_pawn_move_catalog_20260719.json --config configs/sysid/recorded_action_sysid_v1.json --repo-root /Users/kelly/Developer/sim2claw --inspection-scope canonical_checkout --output runs/sysid/physical_pawn_input_capability_post_cherry_pick.json
 ```
 
-The input report returns zero only for complete integrity-verified joint/timing
-inputs; full calibration readiness remains false without geometry and
-contact/object observables. The fit remains nonzero when the complete
-held-out/stage calibration-success gate does not pass. Preserve and inspect the
-generated ignored receipts rather than treating optimizer completion as
-promotion.
+The expected current input-report result is nonzero and
+`joint_timing_replay_ready=false`, with exact range diagnostics and the
+provisional-transform blocker. Do not invoke `sysid-fit` until a reviewed,
+hash-bound transform resolves the mismatch and the regenerated report returns
+zero. Full calibration readiness still requires geometry, object-pose, pawn,
+and contact observables. The legacy `canonical_checkout` scope spelling records
+that this caller-supplied root was inspected; it does not independently prove
+that the root is the coordinator's canonical checkout.
 
-Completed: 2026-07-19T06:17:06Z.
+Repair completed: 2026-07-19T07:20:45Z.
