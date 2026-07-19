@@ -220,6 +220,28 @@ class StudioLiveTest(unittest.TestCase):
         finally:
             service.shutdown()
 
+    def test_cold_gateway_handshake_starts_lease_after_open(self) -> None:
+        clock = [0.0]
+
+        class SlowGateway(FakeGateway):
+            def open(self, *, enable_motion: bool) -> dict[str, Any]:
+                clock[0] += 6.0
+                return super().open(enable_motion=enable_motion)
+
+        service = LiveWorkspaceService(
+            FakeRecorder(),
+            camera_discovery=_camera_inventory,
+            gateway_factory=SlowGateway,
+            clock=lambda: clock[0],
+        )
+        service.mirror = FakeMirror()  # type: ignore[assignment]
+        try:
+            live = service.start_session()
+            self.assertEqual(live["arm"]["status"], "live")
+            self.assertGreater(service.leases[live["session_id"]], clock[0])
+        finally:
+            service.shutdown()
+
     def test_offline_status_does_not_open_a_gateway(self) -> None:
         service = LiveWorkspaceService(
             FakeRecorder(ready=False),

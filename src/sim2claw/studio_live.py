@@ -385,6 +385,9 @@ class LiveWorkspaceService:
             self.leases[token] = self.clock() + LIVE_SESSION_TTL_SECONDS
             preflight = self._preflight()
             self._ensure_gateway(preflight)
+            # A cold serial gateway handshake can itself exceed the nominal
+            # lease. Begin the browser-facing lease after that handshake.
+            self.leases[token] = self.clock() + LIVE_SESSION_TTL_SECONDS
             payload = self._snapshot_locked(token, preflight=preflight, sample=True)
             payload["session_id"] = token
             payload["lease_ttl_seconds"] = LIVE_SESSION_TTL_SECONDS

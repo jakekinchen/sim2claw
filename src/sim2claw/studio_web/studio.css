@@ -3060,8 +3060,10 @@ body[data-view="record"] [data-view-panel="record"] {
 }
 
 .live-workspace-drawer {
-  width: min(840px, calc(100vw - 20px));
-  overflow-y: auto;
+  display: flex;
+  width: min(1200px, calc(100vw - 20px));
+  overflow: hidden;
+  flex-direction: column;
   background: var(--chalk);
 }
 
@@ -3170,11 +3172,24 @@ body[data-view="record"] [data-view-panel="record"] {
 }
 
 .live-workspace-panel {
+  min-height: 0;
   padding: 14px 18px 18px;
 }
 
 .live-workspace-panel[hidden] {
   display: none;
+}
+
+.live-twin-panel:not([hidden]) {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.live-camera-panel:not([hidden]) {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  flex: 1;
+  overflow: hidden;
 }
 
 .live-workspace-stage {
@@ -3293,35 +3308,8 @@ body[data-view="record"] [data-view-panel="record"] {
   font-size: 11px;
 }
 
-.live-boundary {
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-  margin: 10px 0 0;
-  padding: 11px;
-  border: 1px solid var(--rule);
-  border-radius: 5px;
-  background: var(--ceramic);
-  color: var(--graphite-dark);
-  font-size: 11px;
-}
-
-.live-boundary .lock-icon {
-  flex: 0 0 auto;
-  margin-top: 3px;
-}
-
 .live-camera-intro {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
   margin-bottom: 10px;
-}
-
-.live-camera-intro > div {
-  display: grid;
-  gap: 3px;
 }
 
 .live-camera-intro b {
@@ -3329,27 +3317,12 @@ body[data-view="record"] [data-view-panel="record"] {
   font-size: 20px;
 }
 
-.live-camera-intro small {
-  color: var(--graphite);
-  font-size: 11px;
-}
-
-.live-camera-intro > span {
-  padding: 5px 7px;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  color: var(--graphite);
-  font-family: var(--utility);
-  font-size: 8px;
-  text-transform: uppercase;
-}
-
 .live-camera-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  height: clamp(430px, calc(100vh - 380px), 620px);
+  min-height: 0;
 }
 
 .live-camera-card {
@@ -3441,18 +3414,6 @@ body[data-view="record"] [data-view-panel="record"] {
     linear-gradient(135deg, transparent 0 49.7%, rgb(107 113 109 / 12%) 50% 50.3%, transparent 50.6%),
     var(--ceramic);
   place-items: center;
-}
-
-.live-camera-slot span {
-  padding: 5px 8px;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  background: var(--chalk);
-  color: var(--graphite);
-  font-family: var(--utility);
-  font-size: 8px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .drawer-heading {
@@ -3736,10 +3697,19 @@ body[data-view="record"] [data-view-panel="record"] {
 }
 
 @media (max-width: 720px) {
-  .live-workspace-summary,
-  .live-camera-intro {
+  .live-workspace-summary {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .live-workspace-drawer {
+    overflow-y: auto;
+  }
+
+  .live-camera-panel:not([hidden]) {
+    display: block;
+    overflow: visible;
+    flex: none;
   }
 
   .live-camera-grid {
