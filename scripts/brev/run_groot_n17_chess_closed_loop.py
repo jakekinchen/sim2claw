@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 
 import mujoco
@@ -20,7 +21,16 @@ from sim2claw.groot_chess import (
     _piece_bodies,
     _write_video,
     evaluate_episode,
+    groot_task_contract_sha256,
     load_groot_task_contract,
+    resolve_execution_horizon,
+)
+from sim2claw.groot_execution import (
+    ACTION_EXECUTION_ADAPTERS,
+    TEMPORAL_ACTION_AGGREGATIONS,
+    aggregate_temporal_action,
+    physics_targets_from_waypoints,
+    rate_limit_action,
 )
 from sim2claw.scene import board_square_center
 
@@ -35,15 +45,111 @@ def sha256_file(path: Path) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--episode-split",
+        choices=("training", "held_out"),
+        default="held_out",
+    )
     parser.add_argument("--episode-index", type=int, default=0)
+    parser.add_argument("--rollout-replicate", type=int, default=0)
+    parser.add_argument("--inference-seed", type=int, default=0)
+    parser.add_argument(
+        "--policy-server-mode",
+        choices=("official_unseeded", "seeded_reset"),
+        default="official_unseeded",
+    )
+    parser.add_argument("--checkpoint-id", required=True)
+    parser.add_argument("--checkpoint-manifest-sha256", required=True)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=5555)
+    parser.add_argument("--proposal-count", type=int, default=1)
+    parser.add_argument(
+        "--action-aggregation",
+        choices=("mean", "median", "medoid", "trimmed_mean"),
+        default="medoid",
+    )
+    parser.add_argument("--noise-scale", type=float, default=1.0)
+    parser.add_argument("--num-inference-timesteps", type=int)
+    parser.add_argument(
+        "--physics-action-adapter",
+        choices=sorted(ACTION_EXECUTION_ADAPTERS),
+        default="sample_hold",
+    )
+    parser.add_argument(
+        "--render-cadence",
+        choices=("all_samples", "policy_queries"),
+        default="all_samples",
+        help="Policy-query rendering is a training-development diagnostic only.",
+    )
+    parser.add_argument(
+        "--execution-horizon",
+        type=int,
+        default=None,
+        help=(
+            "Number of predicted actions to execute before querying again. "
+            "Defaults to the model action horizon."
+        ),
+    )
+    parser.add_argument(
+        "--temporal-action-aggregation",
+        choices=sorted(TEMPORAL_ACTION_AGGREGATIONS),
+        default="latest",
+        help="Causally aggregate overlapping model chunks for each sample step.",
+    )
+    parser.add_argument(
+        "--temporal-decay",
+        type=float,
+        default=0.5,
+        help="Newest-to-older decay used by exponential temporal aggregation.",
+    )
+    parser.add_argument(
+        "--action-rate-limits",
+        type=float,
+        nargs=6,
+        metavar=("J0", "J1", "J2", "J3", "J4", "GRIPPER"),
+        help="Positive maximum absolute target delta per 20 Hz action sample.",
+    )
+    parser.add_argument(
+        "--action-rate-limit-source",
+        help="Frozen provenance identifier required when rate limits are enabled.",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if args.proposal_count < 1:
+        parser.error("--proposal-count must be positive")
+    if args.action_aggregation == "trimmed_mean" and args.proposal_count < 5:
+        parser.error("trimmed_mean requires --proposal-count of at least 5")
+    if not 0.0 <= args.noise_scale <= 1.0:
+        parser.error("--noise-scale must be between 0 and 1")
+    if args.num_inference_timesteps is not None and not (
+        1 <= args.num_inference_timesteps <= 16
+    ):
+        parser.error("--num-inference-timesteps must be between 1 and 16")
+    if not 0.0 < args.temporal_decay <= 1.0:
+        parser.error("--temporal-decay must be in (0, 1]")
+    if args.action_rate_limits is not None and not all(
+        value > 0.0 for value in args.action_rate_limits
+    ):
+        parser.error("--action-rate-limits values must be positive")
+    if (args.action_rate_limits is None) != (args.action_rate_limit_source is None):
+        parser.error("rate-limit values and source must be provided together")
+    if args.policy_server_mode == "official_unseeded" and (
+        args.proposal_count != 1
+        or args.action_aggregation != "medoid"
+        or args.noise_scale != 1.0
+        or args.num_inference_timesteps is not None
+    ):
+        parser.error("consensus controls require --policy-server-mode seeded_reset")
 
     contract = load_groot_task_contract()
-    episode_row = contract["held_out_episodes"][args.episode_index]
-    case = _case_map(contract, "held_out")[episode_row["case_id"]]
+    episode_rows = contract[f"{args.episode_split}_episodes"]
+    if not 0 <= args.episode_index < len(episode_rows):
+        parser.error(
+            f"--episode-index must be between 0 and {len(episode_rows) - 1} "
+            f"for split {args.episode_split}"
+        )
+    episode_row = episode_rows[args.episode_index]
+    case = _case_map(contract, args.episode_split)[episode_row["case_id"]]
     offset = tuple(float(value) for value in episode_row["piece_planar_offset_m"])
     env = ChessRookLiftEnv(
         _episode_shim(contract, case),
@@ -66,6 +172,13 @@ def main() -> None:
         + int(contract["episode"]["settle_steps_after"])
     ) // sample_stride
     action_horizon = int(contract["model"]["action_horizon"])
+    try:
+        execution_horizon = resolve_execution_horizon(
+            args.execution_horizon,
+            model_action_horizon=action_horizon,
+        )
+    except ValueError as exc:
+        parser.error(str(exc))
 
     args.output.mkdir(parents=True, exist_ok=True)
     renderer = mujoco.Renderer(
@@ -81,7 +194,36 @@ def main() -> None:
     )
     if not client.ping():
         raise RuntimeError("GR00T policy server did not answer ping")
-    client.reset()
+    reset_options: dict[str, object] = {
+        "inference_seed": args.inference_seed,
+        "proposal_count": args.proposal_count,
+        "action_aggregation": args.action_aggregation,
+        "noise_scale": args.noise_scale,
+    }
+    if args.num_inference_timesteps is not None:
+        reset_options["num_inference_timesteps"] = args.num_inference_timesteps
+    reset_info = client.reset(options=reset_options)
+    if args.policy_server_mode == "seeded_reset":
+        if reset_info.get("rng_reset") is not True:
+            raise RuntimeError("seeded policy server did not acknowledge RNG reset")
+        if int(reset_info.get("inference_seed", -1)) != args.inference_seed:
+            raise RuntimeError("seeded policy server acknowledged the wrong seed")
+        expected_reset = {
+            "proposal_count": args.proposal_count,
+            "action_aggregation": args.action_aggregation,
+            "noise_scale": args.noise_scale,
+        }
+        for key, expected in expected_reset.items():
+            if reset_info.get(key) != expected:
+                raise RuntimeError(f"seeded policy server acknowledged wrong {key}")
+        if (
+            args.num_inference_timesteps is not None
+            and reset_info.get("num_inference_timesteps")
+            != args.num_inference_timesteps
+        ):
+            raise RuntimeError(
+                "seeded policy server acknowledged wrong num_inference_timesteps"
+            )
 
     frames: list[np.ndarray] = []
     states: list[np.ndarray] = []
@@ -89,16 +231,39 @@ def main() -> None:
     chunks_requested = 0
     physics_actions = 0
     action_chunk = np.empty((0, 6), dtype=np.float32)
+    action_chunk_history: list[tuple[int, np.ndarray]] = []
+    policy_queries: list[dict[str, object]] = []
+    physics_control_digest = hashlib.sha256()
+    interpolated_sample_intervals = 0
+    temporal_candidate_counts: list[int] = []
+    previous_applied_action = np.asarray(env.controls(), dtype=np.float32).copy()
+    action_rate_limits = (
+        None
+        if args.action_rate_limits is None
+        else np.asarray(args.action_rate_limits, dtype=np.float32)
+    )
+    rate_limited_sample_count = 0
+    rate_limited_coordinate_count = 0
+    maximum_requested_abs_delta = np.zeros(6, dtype=np.float32)
+    maximum_applied_abs_delta = np.zeros(6, dtype=np.float32)
 
     try:
         for sample_step in range(sample_count):
-            renderer.update_scene(env.data, camera=str(contract["scene"]["camera"]))
-            frame = renderer.render().copy()
+            needs_policy_query = sample_step % execution_horizon == 0
+            frame: np.ndarray | None = None
+            if args.render_cadence == "all_samples" or needs_policy_query:
+                renderer.update_scene(
+                    env.data,
+                    camera=str(contract["scene"]["camera"]),
+                )
+                frame = renderer.render().copy()
+                frames.append(frame)
             state = np.asarray(env.data.qpos[env.qpos_addresses], dtype=np.float32).copy()
-            frames.append(frame)
             states.append(state)
 
-            if sample_step % action_horizon == 0:
+            if needs_policy_query:
+                if frame is None:
+                    raise RuntimeError("policy query is missing its rendered frame")
                 observation = {
                     "video": {"front": frame[None, None, ...]},
                     "state": {
@@ -109,20 +274,98 @@ def main() -> None:
                         "annotation.human.task_description": [[str(case["instruction"])]]
                     },
                 }
-                predicted, _ = client.get_action(observation)
+                predicted, action_info = client.get_action(
+                    observation,
+                    options={"sample_step": sample_step},
+                )
+                if args.policy_server_mode == "seeded_reset":
+                    if int(action_info.get("sample_step", -1)) != sample_step:
+                        raise RuntimeError("seeded policy server acknowledged wrong sample step")
+                    if "query_seed" not in action_info:
+                        raise RuntimeError("seeded policy server omitted query seed")
+                    query_receipt = dict(action_info)
+                    query_receipt.update(
+                        {
+                            "frame_sha256": hashlib.sha256(
+                                np.ascontiguousarray(frame).tobytes()
+                            ).hexdigest(),
+                            "state_sha256": hashlib.sha256(
+                                np.ascontiguousarray(state).tobytes()
+                            ).hexdigest(),
+                        }
+                    )
+                    policy_queries.append(query_receipt)
                 arm = np.asarray(predicted["single_arm"], dtype=np.float32)[0]
                 gripper = np.asarray(predicted["gripper"], dtype=np.float32)[0]
                 action_chunk = np.concatenate([arm, gripper], axis=-1)
                 if action_chunk.ndim != 2 or action_chunk.shape[1] != 6:
                     raise RuntimeError(f"unexpected action chunk shape: {action_chunk.shape}")
+                if action_chunk.shape[0] < execution_horizon:
+                    raise RuntimeError(
+                        "policy returned fewer actions than the requested execution "
+                        f"horizon: {action_chunk.shape[0]} < {execution_horizon}"
+                    )
                 if not np.isfinite(action_chunk).all():
                     raise RuntimeError("policy returned a non-finite action")
+                action_chunk_history.append((sample_step, action_chunk.copy()))
                 chunks_requested += 1
 
-            action = action_chunk[sample_step % action_horizon].copy()
+            model_action, temporal_info = aggregate_temporal_action(
+                action_chunk_history,
+                sample_step=sample_step,
+                method=args.temporal_action_aggregation,
+                exponential_decay=args.temporal_decay,
+            )
+            temporal_candidate_counts.append(int(temporal_info["candidate_count"]))
+            if action_rate_limits is None:
+                action = model_action
+            else:
+                action, rate_info = rate_limit_action(
+                    model_action,
+                    previous=previous_applied_action,
+                    max_abs_delta=action_rate_limits,
+                )
+                clipped_count = int(rate_info["clipped_coordinate_count"])
+                rate_limited_sample_count += int(clipped_count > 0)
+                rate_limited_coordinate_count += clipped_count
+                maximum_requested_abs_delta = np.maximum(
+                    maximum_requested_abs_delta,
+                    np.asarray(rate_info["requested_abs_delta"], dtype=np.float32),
+                )
+                maximum_applied_abs_delta = np.maximum(
+                    maximum_applied_abs_delta,
+                    np.asarray(rate_info["applied_abs_delta"], dtype=np.float32),
+                )
             actions.append(action)
-            for _ in range(sample_stride):
-                env.step(action)
+            model_next_waypoint, _ = aggregate_temporal_action(
+                action_chunk_history,
+                sample_step=sample_step + 1,
+                method=args.temporal_action_aggregation,
+                exponential_decay=args.temporal_decay,
+            )
+            next_waypoint = model_next_waypoint
+            if action_rate_limits is not None:
+                next_waypoint, _ = rate_limit_action(
+                    model_next_waypoint,
+                    previous=action,
+                    max_abs_delta=action_rate_limits,
+                )
+            previous_applied_action = action.copy()
+            physics_targets, adapter_info = physics_targets_from_waypoints(
+                contract,
+                sample_step=sample_step,
+                current=action,
+                next_waypoint=next_waypoint,
+                adapter=args.physics_action_adapter,
+            )
+            interpolated_sample_intervals += int(
+                bool(adapter_info["interpolated_to_next_waypoint"])
+            )
+            for physics_target in physics_targets:
+                physics_control_digest.update(
+                    np.ascontiguousarray(physics_target).tobytes()
+                )
+                env.step(physics_target)
                 physics_actions += 1
                 maximum_height = max(maximum_height, float(env.piece_position()[2]))
     finally:
@@ -139,7 +382,10 @@ def main() -> None:
     )
     video_path = args.output / "episode.mp4"
     arrays_path = args.output / "trajectory.npz"
-    _write_video(video_path, frames, int(contract["episode"]["sample_fps"]))
+    video_fps = int(contract["episode"]["sample_fps"])
+    if args.render_cadence == "policy_queries":
+        video_fps = max(1, video_fps // execution_horizon)
+    _write_video(video_path, frames, video_fps)
     np.savez_compressed(
         arrays_path,
         states=np.asarray(states, dtype=np.float32),
@@ -148,13 +394,93 @@ def main() -> None:
     receipt = {
         "schema_version": "sim2claw.groot_n17_closed_loop_episode.v1",
         "proof_class": "learned_policy_simulation",
-        "split": "held_out",
+        "split": args.episode_split,
         "episode_index": args.episode_index,
+        "rollout_replicate": args.rollout_replicate,
+        "inference_seed": args.inference_seed,
+        "policy_server_mode": args.policy_server_mode,
+        "policy_reset_info": reset_info,
+        "action_consensus": {
+            "proposal_count": args.proposal_count,
+            "action_aggregation": args.action_aggregation,
+            "noise_scale": args.noise_scale,
+            "num_inference_timesteps": reset_info.get(
+                "num_inference_timesteps"
+            ),
+        },
         "case_id": str(case["case_id"]),
         "instruction": str(case["instruction"]),
         "seed": int(episode_row["seed"]),
+        "checkpoint_id": args.checkpoint_id,
+        "checkpoint_manifest_sha256": args.checkpoint_manifest_sha256,
+        "groot_source_commit": str(contract["model"]["source_commit"]),
+        "task_contract_sha256": groot_task_contract_sha256(),
         "policy_transport": f"GR00T PolicyClient tcp://{args.host}:{args.port}",
+        "render_backend": {
+            "mujoco_gl": os.environ.get("MUJOCO_GL", "unspecified"),
+            "pyopengl_platform": os.environ.get(
+                "PYOPENGL_PLATFORM", "unspecified"
+            ),
+        },
+        "model_action_horizon": action_horizon,
+        "execution_horizon": execution_horizon,
+        "temporal_action_aggregation": {
+            "schema_version": "sim2claw.groot_n17_temporal_action_aggregation.v1",
+            "method": args.temporal_action_aggregation,
+            "exponential_decay": args.temporal_decay,
+            "maximum_overlapping_predictions": max(temporal_candidate_counts),
+            "candidate_count_histogram": {
+                str(count): temporal_candidate_counts.count(count)
+                for count in sorted(set(temporal_candidate_counts))
+            },
+            "model_chunks_only": True,
+            "causal": True,
+            "assistance_frames": 0,
+        },
+        "action_rate_limiter": {
+            "schema_version": "sim2claw.groot_n17_action_rate_limiter.v1",
+            "enabled": action_rate_limits is not None,
+            "maximum_abs_delta_per_sample": (
+                None
+                if action_rate_limits is None
+                else action_rate_limits.astype(float).tolist()
+            ),
+            "source": args.action_rate_limit_source,
+            "initial_reference": "env.controls_before_first_policy_action",
+            "rate_limited_sample_count": rate_limited_sample_count,
+            "rate_limited_coordinate_count": rate_limited_coordinate_count,
+            "maximum_requested_abs_delta": maximum_requested_abs_delta.astype(
+                float
+            ).tolist(),
+            "maximum_applied_abs_delta": maximum_applied_abs_delta.astype(
+                float
+            ).tolist(),
+            "model_targets_only": True,
+            "task_geometry_used": False,
+            "reward_used": False,
+            "assistance_frames": 0,
+        },
+        "render_cadence": {
+            "method": args.render_cadence,
+            "rendered_frame_count": len(frames),
+            "video_fps": video_fps,
+            "policy_observation_frames_omitted": False,
+            "promotion_evidence_eligible": args.render_cadence == "all_samples",
+        },
+        "action_execution_adapter": {
+            "schema_version": "sim2claw.groot_n17_action_execution_adapter.v1",
+            "method": args.physics_action_adapter,
+            "sample_stride_physics_steps": sample_stride,
+            "linear_blend_convention": "physics_substep/sample_stride",
+            "phase_boundary_behavior": "hold_current_waypoint",
+            "phase_schedule_source": "frozen_base_task_contract",
+            "interpolated_sample_intervals": interpolated_sample_intervals,
+            "physics_controls_sha256": physics_control_digest.hexdigest(),
+            "model_waypoints_only": True,
+            "assistance_frames": 0,
+        },
         "chunks_requested": chunks_requested,
+        "policy_queries": policy_queries,
         "sampled_actions": len(actions),
         "physics_actions": physics_actions,
         "all_actions_model_owned": True,

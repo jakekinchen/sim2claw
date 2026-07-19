@@ -7,6 +7,19 @@ import numpy as np
 from sim2claw.groot_chess import (
     collect_groot_expert_episode,
     load_groot_task_contract,
+    resolve_execution_horizon,
+)
+from sim2claw.groot_consensus import (
+    action_sha256,
+    aggregate_action_proposals,
+    proposal_seed,
+    query_seed,
+)
+from sim2claw.groot_execution import (
+    aggregate_temporal_action,
+    physics_targets_from_waypoints,
+    rate_limit_action,
+    sample_phase,
 )
 from sim2claw.scene import (
     board_square_center,
@@ -82,6 +95,203 @@ class GrootChessContractTest(unittest.TestCase):
                 "sim2claw.mujoco_body_state_trace.v1",
             )
             self.assertGreater(episode.state_trace["frame_count"], 250)
+
+    def test_execution_horizon_cannot_exceed_model_prediction(self) -> None:
+        self.assertEqual(
+            resolve_execution_horizon(None, model_action_horizon=16),
+            16,
+        )
+        self.assertEqual(
+            resolve_execution_horizon(8, model_action_horizon=16),
+            8,
+        )
+        for invalid in (0, 17):
+            with self.assertRaises(ValueError):
+                resolve_execution_horizon(invalid, model_action_horizon=16)
+
+
+class GrootConsensusTest(unittest.TestCase):
+    @staticmethod
+    def _proposal(value: float) -> dict[str, np.ndarray]:
+        return {
+            "single_arm": np.full((1, 16, 5), value, dtype=np.float32),
+            "gripper": np.full((1, 16, 1), value, dtype=np.float32),
+        }
+
+    def test_first_proposal_retains_original_query_seed(self) -> None:
+        baseline = query_seed(9301, 16)
+        self.assertEqual(proposal_seed(9301, 16, 0), baseline)
+        self.assertEqual(proposal_seed(9301, 16, 1), proposal_seed(9301, 16, 1))
+        self.assertNotEqual(proposal_seed(9301, 16, 1), baseline)
+        self.assertNotEqual(
+            proposal_seed(9301, 16, 1),
+            proposal_seed(9301, 16, 2),
+        )
+
+    def test_medoid_selects_a_complete_model_proposal(self) -> None:
+        proposals = [
+            self._proposal(0.0),
+            self._proposal(1.0),
+            self._proposal(10.0),
+        ]
+        aggregate, diagnostics = aggregate_action_proposals(
+            proposals,
+            method="medoid",
+        )
+        self.assertEqual(diagnostics["selected_proposal_index"], 1)
+        self.assertEqual(
+            diagnostics["aggregate_action_sha256"],
+            action_sha256(proposals[1]),
+        )
+        np.testing.assert_array_equal(aggregate["single_arm"], 1.0)
+
+    def test_median_and_trimmed_mean_reject_outlier(self) -> None:
+        proposals = [
+            self._proposal(value) for value in (0.0, 1.0, 2.0, 3.0, 100.0)
+        ]
+        median, median_diagnostics = aggregate_action_proposals(
+            proposals,
+            method="median",
+        )
+        trimmed, trimmed_diagnostics = aggregate_action_proposals(
+            proposals,
+            method="trimmed_mean",
+        )
+        np.testing.assert_array_equal(median["gripper"], 2.0)
+        np.testing.assert_array_equal(trimmed["gripper"], 2.0)
+        self.assertIsNone(median_diagnostics["selected_proposal_index"])
+        self.assertIsNone(trimmed_diagnostics["selected_proposal_index"])
+
+    def test_aggregation_rejects_nonfinite_and_mismatched_actions(self) -> None:
+        invalid = self._proposal(0.0)
+        invalid["gripper"][0, 0, 0] = np.nan
+        with self.assertRaises(ValueError):
+            aggregate_action_proposals([invalid], method="mean")
+        with self.assertRaises(ValueError):
+            aggregate_action_proposals(
+                [self._proposal(0.0), {"single_arm": np.zeros((1, 16, 5))}],
+                method="mean",
+            )
+
+
+class GrootExecutionAdapterTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.contract = load_groot_task_contract()
+
+    def test_sample_phase_respects_frozen_phase_boundaries(self) -> None:
+        self.assertEqual(sample_phase(self.contract, 0), "stand_off")
+        self.assertEqual(sample_phase(self.contract, 41), "stand_off")
+        self.assertEqual(sample_phase(self.contract, 42), "advance")
+        self.assertEqual(sample_phase(self.contract, 322), "retreat")
+        self.assertEqual(sample_phase(self.contract, 323), "settle")
+        self.assertEqual(sample_phase(self.contract, 362), "settle")
+        with self.assertRaises(ValueError):
+            sample_phase(self.contract, 363)
+
+    def test_linear_adapter_reconstructs_internal_ramp_without_reaching_next(self) -> None:
+        current = np.zeros(6, dtype=np.float32)
+        next_waypoint = np.full(6, 10.0, dtype=np.float32)
+        targets, info = physics_targets_from_waypoints(
+            self.contract,
+            sample_step=0,
+            current=current,
+            next_waypoint=next_waypoint,
+            adapter="linear_same_phase",
+        )
+        self.assertTrue(info["interpolated_to_next_waypoint"])
+        np.testing.assert_array_equal(targets[0], 0.0)
+        np.testing.assert_array_equal(targets[-1], 9.0)
+
+    def test_linear_adapter_holds_at_phase_boundary(self) -> None:
+        current = np.full(6, 2.0, dtype=np.float32)
+        targets, info = physics_targets_from_waypoints(
+            self.contract,
+            sample_step=41,
+            current=current,
+            next_waypoint=np.full(6, 4.0, dtype=np.float32),
+            adapter="linear_same_phase",
+        )
+        self.assertFalse(info["interpolated_to_next_waypoint"])
+        np.testing.assert_array_equal(targets, 2.0)
+
+    def test_temporal_latest_matches_receding_horizon_replacement(self) -> None:
+        old = np.arange(16 * 2, dtype=np.float32).reshape(16, 2)
+        new = np.full((16, 2), 100.0, dtype=np.float32)
+        before_query, _ = aggregate_temporal_action(
+            [(0, old)], sample_step=7, method="latest"
+        )
+        after_query, info = aggregate_temporal_action(
+            [(0, old), (8, new)], sample_step=8, method="latest"
+        )
+        np.testing.assert_array_equal(before_query, old[7])
+        np.testing.assert_array_equal(after_query, new[0])
+        self.assertEqual(info["source_query_steps"], [0, 8])
+
+    def test_temporal_mean_and_median_use_only_covering_chunks(self) -> None:
+        first = np.zeros((16, 2), dtype=np.float32)
+        second = np.full((16, 2), 2.0, dtype=np.float32)
+        third = np.full((16, 2), 10.0, dtype=np.float32)
+        chunks = [(0, first), (4, second), (8, third)]
+        mean, mean_info = aggregate_temporal_action(
+            chunks, sample_step=8, method="mean"
+        )
+        median, median_info = aggregate_temporal_action(
+            chunks, sample_step=8, method="median"
+        )
+        np.testing.assert_array_equal(mean, 4.0)
+        np.testing.assert_array_equal(median, 2.0)
+        self.assertEqual(mean_info["candidate_count"], 3)
+        self.assertEqual(median_info["source_query_steps"], [0, 4, 8])
+
+    def test_temporal_exponential_favors_newer_predictions(self) -> None:
+        chunks = [
+            (0, np.zeros((16, 1), dtype=np.float32)),
+            (8, np.full((16, 1), 3.0, dtype=np.float32)),
+        ]
+        action, info = aggregate_temporal_action(
+            chunks,
+            sample_step=8,
+            method="exponential",
+            exponential_decay=0.5,
+        )
+        np.testing.assert_allclose(action, 2.0)
+        self.assertEqual(
+            info["normalized_weights_oldest_to_newest"],
+            [1.0 / 3.0, 2.0 / 3.0],
+        )
+
+    def test_temporal_aggregation_rejects_future_or_invalid_inputs(self) -> None:
+        chunk = np.zeros((4, 2), dtype=np.float32)
+        with self.assertRaises(ValueError):
+            aggregate_temporal_action(
+                [(4, chunk)], sample_step=3, method="latest"
+            )
+        with self.assertRaises(ValueError):
+            aggregate_temporal_action(
+                [(0, chunk), (0, chunk)], sample_step=0, method="mean"
+            )
+        with self.assertRaises(ValueError):
+            aggregate_temporal_action(
+                [(0, chunk)], sample_step=0, method="unknown"
+            )
+
+    def test_rate_limiter_clamps_each_coordinate_from_previous_action(self) -> None:
+        action, info = rate_limit_action(
+            np.asarray([2.0, -3.0, 0.25], dtype=np.float32),
+            previous=np.asarray([1.0, -1.0, 0.0], dtype=np.float32),
+            max_abs_delta=np.asarray([0.5, 1.0, 0.5], dtype=np.float32),
+        )
+        np.testing.assert_array_equal(action, [1.5, -2.0, 0.25])
+        self.assertEqual(info["coordinate_clipped"], [True, True, False])
+        self.assertEqual(info["clipped_coordinate_count"], 2)
+
+    def test_rate_limiter_rejects_invalid_limits(self) -> None:
+        with self.assertRaises(ValueError):
+            rate_limit_action(
+                np.ones(2, dtype=np.float32),
+                previous=np.zeros(2, dtype=np.float32),
+                max_abs_delta=np.asarray([0.1, 0.0], dtype=np.float32),
+            )
 
 
 if __name__ == "__main__":

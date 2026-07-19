@@ -88,6 +88,26 @@ def groot_task_contract_sha256(
     return hashlib.sha256(payload).hexdigest()
 
 
+def resolve_execution_horizon(
+    requested_horizon: int | None,
+    *,
+    model_action_horizon: int,
+) -> int:
+    """Validate how many predicted actions may execute before re-observation."""
+
+    execution_horizon = (
+        model_action_horizon
+        if requested_horizon is None
+        else int(requested_horizon)
+    )
+    if not 1 <= execution_horizon <= model_action_horizon:
+        raise ValueError(
+            "execution horizon must be between 1 and the model action horizon "
+            f"({model_action_horizon})"
+        )
+    return execution_horizon
+
+
 def _case_map(contract: dict[str, Any], split: str) -> dict[str, dict[str, Any]]:
     return {
         str(case["case_id"]): case

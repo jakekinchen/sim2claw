@@ -9,7 +9,8 @@ sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
   cuda-nvcc-12-8 \
   ffmpeg \
-  git-lfs
+  git-lfs \
+  libosmesa6
 git lfs install --skip-repo
 
 if [ ! -d "$GROOT_ROOT/.git" ]; then
@@ -35,6 +36,7 @@ if [ ! -x "$UV_BIN" ]; then
   exit 1
 fi
 "$UV_BIN" sync --python 3.10
+"$UV_BIN" pip install --python .venv/bin/python mujoco==3.10.0
 
 "$UV_BIN" run python - <<'PY'
 import json
@@ -62,3 +64,4 @@ PY
 
 nvidia-smi --query-gpu=name,uuid,memory.total,driver_version,compute_cap --format=csv,noheader
 ffmpeg -version | head -n 1
+dpkg-query -W -f='libosmesa6=${Version}\n' libosmesa6
