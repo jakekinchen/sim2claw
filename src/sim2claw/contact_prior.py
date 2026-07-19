@@ -4,21 +4,243 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import mujoco
+import numpy as np
 
 from .paths import DEFAULT_RUBBER_TIP_CONTACT_PRIOR
 
 
 SCHEMA_VERSION = "sim2claw.rubber_tip_contact_prior.v1"
+EXPECTED_CONTRACT_SHA256 = (
+    "e32112b1edd4b966aca65b25bf6ddfd68ef7b3fa0875bf2447c9355c4f345bac"
+)
+VARIANT_ORDER = (
+    "nominal_uncalibrated",
+    "rubber_tip_low",
+    "rubber_tip_nominal_prior",
+    "rubber_tip_high",
+)
+TOP_LEVEL_KEYS = {
+    "schema_version",
+    "analysis_id",
+    "task_id",
+    "task_contract_sha256",
+    "frozen_before_evaluation",
+    "proof_class",
+    "purpose",
+    "policy",
+    "reported_modification",
+    "collision_approximation",
+    "evaluation_order",
+    "variants",
+    "fixed_evaluation",
+    "limitations",
+}
+RUBBER_VARIANT_KEYS = {
+    "label",
+    "rubber_tip_enabled",
+    "evidence_class",
+    "effective_wrap_thickness_m",
+    "effective_box_half_width_m",
+    "distal_coverage_length_m",
+    "contact_friction",
+    "contact_softness",
+    "parameter_provenance",
+}
+DYNAMICS_ARRAY_FIELDS = (
+    "body_parentid",
+    "body_weldid",
+    "body_mocapid",
+    "body_jntnum",
+    "body_jntadr",
+    "body_dofnum",
+    "body_dofadr",
+    "body_geomnum",
+    "body_geomadr",
+    "body_pos",
+    "body_quat",
+    "body_ipos",
+    "body_iquat",
+    "body_mass",
+    "body_subtreemass",
+    "body_inertia",
+    "jnt_type",
+    "jnt_qposadr",
+    "jnt_dofadr",
+    "jnt_bodyid",
+    "jnt_group",
+    "jnt_limited",
+    "jnt_solref",
+    "jnt_solimp",
+    "jnt_pos",
+    "jnt_axis",
+    "jnt_stiffness",
+    "jnt_range",
+    "jnt_margin",
+    "dof_bodyid",
+    "dof_jntid",
+    "dof_parentid",
+    "dof_Madr",
+    "dof_simplenum",
+    "dof_solref",
+    "dof_solimp",
+    "dof_frictionloss",
+    "dof_armature",
+    "dof_damping",
+    "dof_invweight0",
+    "dof_M0",
+    "geom_type",
+    "geom_contype",
+    "geom_conaffinity",
+    "geom_condim",
+    "geom_bodyid",
+    "geom_priority",
+    "geom_solmix",
+    "geom_solref",
+    "geom_solimp",
+    "geom_size",
+    "geom_pos",
+    "geom_quat",
+    "geom_friction",
+    "geom_margin",
+    "geom_gap",
+    "actuator_trntype",
+    "actuator_dyntype",
+    "actuator_gaintype",
+    "actuator_biastype",
+    "actuator_trnid",
+    "actuator_actadr",
+    "actuator_actnum",
+    "actuator_group",
+    "actuator_ctrllimited",
+    "actuator_forcelimited",
+    "actuator_dynprm",
+    "actuator_gainprm",
+    "actuator_biasprm",
+    "actuator_ctrlrange",
+    "actuator_forcerange",
+    "actuator_gear",
+    "qpos0",
+    "qpos_spring",
+)
+INERTIAL_CONTROL_ARRAY_FIELDS = (
+    "body_parentid",
+    "body_weldid",
+    "body_mocapid",
+    "body_jntnum",
+    "body_jntadr",
+    "body_dofnum",
+    "body_dofadr",
+    "body_pos",
+    "body_quat",
+    "body_ipos",
+    "body_iquat",
+    "body_mass",
+    "body_subtreemass",
+    "body_inertia",
+    "jnt_type",
+    "jnt_qposadr",
+    "jnt_dofadr",
+    "jnt_bodyid",
+    "jnt_group",
+    "jnt_limited",
+    "jnt_solref",
+    "jnt_solimp",
+    "jnt_pos",
+    "jnt_axis",
+    "jnt_stiffness",
+    "jnt_range",
+    "jnt_margin",
+    "dof_bodyid",
+    "dof_jntid",
+    "dof_parentid",
+    "dof_Madr",
+    "dof_simplenum",
+    "dof_solref",
+    "dof_solimp",
+    "dof_frictionloss",
+    "dof_armature",
+    "dof_damping",
+    "dof_invweight0",
+    "dof_M0",
+    "actuator_trntype",
+    "actuator_dyntype",
+    "actuator_gaintype",
+    "actuator_biastype",
+    "actuator_trnid",
+    "actuator_actadr",
+    "actuator_actnum",
+    "actuator_group",
+    "actuator_ctrllimited",
+    "actuator_forcelimited",
+    "actuator_dynprm",
+    "actuator_gainprm",
+    "actuator_biasprm",
+    "actuator_ctrlrange",
+    "actuator_forcerange",
+    "actuator_gear",
+    "qpos0",
+    "qpos_spring",
+)
+
+
+def _canonical_bytes(value: Any) -> bytes:
+    return json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
 def _canonical_sha256(value: Any) -> str:
-    payload = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    return hashlib.sha256(payload).hexdigest()
+    return hashlib.sha256(_canonical_bytes(value)).hexdigest()
+
+
+def _require_exact_keys(value: Any, keys: set[str], context: str) -> dict[str, Any]:
+    if type(value) is not dict:
+        raise ValueError(f"{context} must be an object")
+    actual = set(value)
+    if actual != keys:
+        missing = sorted(keys - actual)
+        extra = sorted(actual - keys)
+        raise ValueError(f"{context} keys drifted; missing={missing}, extra={extra}")
+    return value
+
+
+def _require_string(value: Any, context: str) -> str:
+    if type(value) is not str or not value:
+        raise ValueError(f"{context} must be a non-empty string")
+    return value
+
+
+def _require_bool(value: Any, expected: bool, context: str) -> None:
+    if type(value) is not bool or value is not expected:
+        raise ValueError(f"{context} must be exactly {expected}")
+
+
+def _require_number(value: Any, context: str, *, positive: bool = True) -> float:
+    if type(value) not in (int, float) or not math.isfinite(value):
+        raise ValueError(f"{context} must be a finite number, not bool or string")
+    number = float(value)
+    if positive and number <= 0.0:
+        raise ValueError(f"{context} must be positive")
+    return number
+
+
+def _require_equal(value: Any, expected: Any, context: str) -> None:
+    if type(value) is not type(expected) or value != expected:
+        raise ValueError(f"{context} drifted from the frozen value")
+
+
+@dataclass(frozen=True)
+class ContactPriorSnapshot:
+    source_path: Path
+    sha256: str
+    canonical_json: bytes
+
+    def payload(self) -> dict[str, Any]:
+        return json.loads(self.canonical_json)
 
 
 @dataclass(frozen=True)
@@ -37,85 +259,344 @@ class SimulatorVariant:
         return bool(self.payload["rubber_tip_enabled"])
 
 
-def load_contact_prior_contract(
-    path: Path = DEFAULT_RUBBER_TIP_CONTACT_PRIOR,
-) -> dict[str, Any]:
-    contract = json.loads(path.read_text(encoding="utf-8"))
-    if contract.get("schema_version") != SCHEMA_VERSION:
-        raise ValueError("unsupported rubber-tip contact prior contract")
-    if not contract.get("frozen_before_evaluation"):
-        raise ValueError("contact prior contract must be frozen before evaluation")
-    order = contract.get("evaluation_order")
-    variants = contract.get("variants")
-    if not isinstance(order, list) or not order or not isinstance(variants, dict):
-        raise ValueError("contact prior contract must declare ordered variants")
-    if order[0] != "nominal_uncalibrated" or set(order) != set(variants):
-        raise ValueError("contact prior evaluation order must cover every variant once")
-    nominal = variants["nominal_uncalibrated"]
-    if nominal.get("rubber_tip_enabled") is not False:
-        raise ValueError("nominal simulator variant must remain unchanged")
-    fixed = contract.get("fixed_evaluation", {})
-    if fixed.get("held_out_seeds") != [9101] or fixed.get("repetitions_per_variant") != 1:
-        raise ValueError("rubber-tip benchmark is frozen to one held-out seed per variant")
-    immutable_fields = (
+def _validate_contract(contract: Any) -> dict[str, Any]:
+    contract = _require_exact_keys(contract, TOP_LEVEL_KEYS, "contact prior")
+    _require_equal(contract["schema_version"], SCHEMA_VERSION, "schema_version")
+    _require_equal(
+        contract["analysis_id"],
+        "rubber_tip_contact_sensitivity_v1",
+        "analysis_id",
+    )
+    _require_equal(contract["task_id"], "chess_rook_lift_v1", "task_id")
+    _require_equal(
+        contract["task_contract_sha256"],
+        "4c3c4f95a9a7d72acebaed993091c576baf125f9ed0454a960dfd2d5906c518f",
+        "task_contract_sha256",
+    )
+    _require_bool(contract["frozen_before_evaluation"], True, "frozen_before_evaluation")
+    _require_equal(
+        contract["proof_class"],
+        "simulation_contact_prior_sensitivity",
+        "proof_class",
+    )
+    _require_string(contract["purpose"], "purpose")
+
+    policy = _require_exact_keys(
+        contract["policy"],
+        {
+            "type",
+            "checkpoint_schema_version",
+            "accepted_checkpoint_sha256",
+            "checkpoint_location_authority",
+            "weights_mutable",
+        },
+        "policy",
+    )
+    _require_equal(policy["type"], "ACT", "policy.type")
+    _require_equal(
+        policy["checkpoint_schema_version"],
+        "sim2claw.act_checkpoint.v1",
+        "policy.checkpoint_schema_version",
+    )
+    _require_equal(
+        policy["accepted_checkpoint_sha256"],
+        "f0a58e49dcaa320d3d0b86ef839b2e39893b65cf26a738954e2bb833dd3144fc",
+        "policy.accepted_checkpoint_sha256",
+    )
+    _require_equal(
+        policy["checkpoint_location_authority"],
+        "existing_same_repository_ignored_output_read_only",
+        "policy.checkpoint_location_authority",
+    )
+    _require_bool(policy["weights_mutable"], False, "policy.weights_mutable")
+
+    reported = _require_exact_keys(
+        contract["reported_modification"],
+        {
+            "material_description",
+            "wrap_count_per_fingertip",
+            "applies_to",
+            "physical_measurements_available",
+        },
+        "reported_modification",
+    )
+    material = _require_exact_keys(
+        reported["material_description"], {"value", "provenance"}, "material_description"
+    )
+    _require_equal(material["value"], "rubber_band", "material_description.value")
+    _require_equal(
+        material["provenance"],
+        "owner_reported_unmeasured",
+        "material_description.provenance",
+    )
+    wraps = _require_exact_keys(
+        reported["wrap_count_per_fingertip"],
+        {"range", "unit", "provenance"},
+        "wrap_count_per_fingertip",
+    )
+    _require_equal(wraps["range"], [4, 5], "wrap_count_per_fingertip.range")
+    _require_equal(wraps["unit"], "wraps", "wrap_count_per_fingertip.unit")
+    _require_equal(
+        wraps["provenance"],
+        "owner_reported_unmeasured",
+        "wrap_count_per_fingertip.provenance",
+    )
+    applies = _require_exact_keys(
+        reported["applies_to"], {"value", "provenance"}, "applies_to"
+    )
+    _require_equal(
+        applies["value"],
+        "each_fixed_and_moving_gripper_fingertip",
+        "applies_to.value",
+    )
+    _require_equal(
+        applies["provenance"],
+        "owner_reported_unmeasured",
+        "applies_to.provenance",
+    )
+    _require_bool(
+        reported["physical_measurements_available"],
+        False,
+        "physical_measurements_available",
+    )
+
+    collision = _require_exact_keys(
+        contract["collision_approximation"],
+        {
+            "type",
+            "reason",
+            "task_arm",
+            "fingers",
+            "geometry_provenance",
+            "mass_effect_mode",
+            "physical_mass_acknowledgement",
+        },
+        "collision_approximation",
+    )
+    _require_equal(collision["type"], "added_distal_box_sleeve", "collision.type")
+    _require_string(collision["reason"], "collision.reason")
+    _require_equal(collision["task_arm"], "left", "collision.task_arm")
+    _require_equal(
+        collision["geometry_provenance"],
+        "estimated_collision_prior_not_measured_geometry",
+        "collision.geometry_provenance",
+    )
+    _require_equal(
+        collision["mass_effect_mode"],
+        "excluded_as_negligible_unmeasured_owner_assessment",
+        "collision.mass_effect_mode",
+    )
+    _require_equal(
+        collision["physical_mass_acknowledgement"],
+        "nonzero_unmeasured_intentionally_approximated_as_zero_for_dynamics",
+        "collision.physical_mass_acknowledgement",
+    )
+    if type(collision["fingers"]) is not list or len(collision["fingers"]) != 2:
+        raise ValueError("collision.fingers must contain exactly fixed then moving")
+    expected_fingers = (
+        ("fixed", "fixed_jaw_box5", 2, 1, 0),
+        ("moving", "moving_jaw_box3", 1, 2, 0),
+    )
+    for index, expected in enumerate(expected_fingers):
+        finger = _require_exact_keys(
+            collision["fingers"][index],
+            {
+                "finger_id",
+                "anchor_geom_suffix",
+                "coverage_axis_index",
+                "width_axis_index",
+                "normal_axis_index",
+            },
+            f"collision.fingers[{index}]",
+        )
+        for key, expected_value in zip(
+            (
+                "finger_id",
+                "anchor_geom_suffix",
+                "coverage_axis_index",
+                "width_axis_index",
+                "normal_axis_index",
+            ),
+            expected,
+            strict=True,
+        ):
+            _require_equal(finger[key], expected_value, f"collision.fingers[{index}].{key}")
+
+    if type(contract["evaluation_order"]) is not list:
+        raise ValueError("evaluation_order must be a list")
+    _require_equal(contract["evaluation_order"], list(VARIANT_ORDER), "evaluation_order")
+    if len(set(contract["evaluation_order"])) != len(VARIANT_ORDER):
+        raise ValueError("evaluation_order must contain four unique variants")
+    variants = _require_exact_keys(contract["variants"], set(VARIANT_ORDER), "variants")
+    if tuple(variants) != VARIANT_ORDER:
+        raise ValueError("variants must be declared in the frozen evaluation order")
+    nominal = _require_exact_keys(
+        variants["nominal_uncalibrated"],
+        {"label", "rubber_tip_enabled", "evidence_class", "parameter_provenance"},
+        "variants.nominal_uncalibrated",
+    )
+    _require_equal(
+        nominal["label"],
+        "Current nominal uncalibrated simulator",
+        "nominal.label",
+    )
+    _require_bool(nominal["rubber_tip_enabled"], False, "nominal.rubber_tip_enabled")
+    _require_equal(
+        nominal["evidence_class"],
+        "nominal_uncalibrated_simulation",
+        "nominal.evidence_class",
+    )
+    _require_equal(
+        nominal["parameter_provenance"],
+        "existing_frozen_task_simulator_unchanged",
+        "nominal.parameter_provenance",
+    )
+    expected_variant_metadata = {
+        "rubber_tip_low": (
+            "Rubber-tip low-effect prior",
+            "estimated_low_effect_prior_not_measured",
+        ),
+        "rubber_tip_nominal_prior": (
+            "Rubber-tip nominal prior",
+            "estimated_midpoint_prior_not_measured",
+        ),
+        "rubber_tip_high": (
+            "Rubber-tip high-effect prior",
+            "estimated_high_effect_prior_not_measured",
+        ),
+    }
+    for variant_id in VARIANT_ORDER[1:]:
+        _validate_rubber_variant(
+            variant_id,
+            variants[variant_id],
+            expected_variant_metadata[variant_id],
+        )
+
+    fixed = _require_exact_keys(
+        contract["fixed_evaluation"],
+        {
+            "held_out_seeds",
+            "repetitions_per_variant",
+            "policy_weights_mutable",
+            "observations_mutable",
+            "actions_mutable",
+            "evaluator_thresholds_mutable",
+            "training_rows_from_evaluator",
+        },
+        "fixed_evaluation",
+    )
+    _require_equal(fixed["held_out_seeds"], [9101], "fixed_evaluation.held_out_seeds")
+    _require_equal(
+        fixed["repetitions_per_variant"], 1, "fixed_evaluation.repetitions_per_variant"
+    )
+    for field in (
         "policy_weights_mutable",
         "observations_mutable",
         "actions_mutable",
         "evaluator_thresholds_mutable",
+    ):
+        _require_bool(fixed[field], False, f"fixed_evaluation.{field}")
+    _require_equal(
+        fixed["training_rows_from_evaluator"],
+        0,
+        "fixed_evaluation.training_rows_from_evaluator",
     )
-    if any(fixed.get(field) is not False for field in immutable_fields):
-        raise ValueError("policy, observation, action, and evaluator contracts are immutable")
-    if fixed.get("training_rows_from_evaluator") != 0:
-        raise ValueError("evaluator rows cannot enter training")
-    for variant_id in order[1:]:
-        variant = variants[variant_id]
-        _validate_rubber_variant(variant_id, variant)
+    limitations = contract["limitations"]
+    if (
+        type(limitations) is not list
+        or len(limitations) != 3
+        or any(type(value) is not str or not value for value in limitations)
+    ):
+        raise ValueError("limitations must contain exactly three non-empty strings")
     return contract
 
 
-def _validate_rubber_variant(variant_id: str, variant: dict[str, Any]) -> None:
-    if variant.get("rubber_tip_enabled") is not True:
-        raise ValueError(f"{variant_id} must enable the rubber-tip prior")
+def _validate_rubber_variant(
+    variant_id: str,
+    value: Any,
+    expected_metadata: tuple[str, str],
+) -> None:
+    variant = _require_exact_keys(value, RUBBER_VARIANT_KEYS, f"variants.{variant_id}")
+    _require_equal(variant["label"], expected_metadata[0], f"{variant_id}.label")
+    _require_bool(variant["rubber_tip_enabled"], True, f"{variant_id}.rubber_tip_enabled")
+    _require_equal(
+        variant["evidence_class"],
+        "rubber_tip_prior_sensitivity_simulation",
+        f"{variant_id}.evidence_class",
+    )
     for field in (
         "effective_wrap_thickness_m",
-        "effective_outer_radius_m",
+        "effective_box_half_width_m",
         "distal_coverage_length_m",
-        "added_mass_per_finger_kg",
     ):
-        value = variant.get(field)
-        if not isinstance(value, (int, float)) or float(value) <= 0.0:
-            raise ValueError(f"{variant_id}.{field} must be positive")
-    friction = variant.get("contact_friction", {})
-    if any(
-        float(friction.get(field, 0.0)) <= 0.0
-        for field in ("sliding_dimensionless", "torsional_m", "rolling_m")
-    ):
-        raise ValueError(f"{variant_id} must define three positive friction dimensions")
-    softness = variant.get("contact_softness", {})
-    solimp = softness.get("solimp")
-    if (
-        float(softness.get("solref_time_constant_s", 0.0)) <= 0.0
-        or float(softness.get("solref_damping_ratio", 0.0)) <= 0.0
-        or not isinstance(solimp, list)
-        or len(solimp) != 5
-    ):
-        raise ValueError(f"{variant_id} must define MuJoCo contact softness")
-    if "not_measured" not in str(variant.get("parameter_provenance", "")):
-        raise ValueError(f"{variant_id} must remain explicitly unmeasured")
+        _require_number(variant[field], f"{variant_id}.{field}")
+    friction = _require_exact_keys(
+        variant["contact_friction"],
+        {"sliding_dimensionless", "torsional_m", "rolling_m"},
+        f"{variant_id}.contact_friction",
+    )
+    for field in ("sliding_dimensionless", "torsional_m", "rolling_m"):
+        _require_number(friction[field], f"{variant_id}.contact_friction.{field}")
+    softness = _require_exact_keys(
+        variant["contact_softness"],
+        {"solref_time_constant_s", "solref_damping_ratio", "solimp"},
+        f"{variant_id}.contact_softness",
+    )
+    _require_number(
+        softness["solref_time_constant_s"],
+        f"{variant_id}.contact_softness.solref_time_constant_s",
+    )
+    _require_number(
+        softness["solref_damping_ratio"],
+        f"{variant_id}.contact_softness.solref_damping_ratio",
+    )
+    if type(softness["solimp"]) is not list or len(softness["solimp"]) != 5:
+        raise ValueError(f"{variant_id}.contact_softness.solimp must have five values")
+    for index, item in enumerate(softness["solimp"]):
+        _require_number(item, f"{variant_id}.contact_softness.solimp[{index}]")
+    _require_equal(
+        variant["parameter_provenance"],
+        expected_metadata[1],
+        f"{variant_id}.parameter_provenance",
+    )
+
+
+def read_contact_prior_snapshot(
+    path: Path = DEFAULT_RUBBER_TIP_CONTACT_PRIOR,
+) -> ContactPriorSnapshot:
+    raw = path.read_bytes()
+    try:
+        contract = json.loads(raw)
+    except (json.JSONDecodeError, UnicodeDecodeError) as error:
+        raise ValueError("contact prior contract is not valid UTF-8 JSON") from error
+    validated = _validate_contract(contract)
+    canonical = _canonical_bytes(validated)
+    digest = hashlib.sha256(canonical).hexdigest()
+    if digest != EXPECTED_CONTRACT_SHA256:
+        raise ValueError("contact prior contract digest drifted from the reviewed contract")
+    return ContactPriorSnapshot(path, digest, canonical)
+
+
+def load_contact_prior_contract(
+    path: Path = DEFAULT_RUBBER_TIP_CONTACT_PRIOR,
+) -> dict[str, Any]:
+    return read_contact_prior_snapshot(path).payload()
 
 
 def contact_prior_contract_sha256(
     path: Path = DEFAULT_RUBBER_TIP_CONTACT_PRIOR,
 ) -> str:
-    return _canonical_sha256(load_contact_prior_contract(path))
+    return read_contact_prior_snapshot(path).sha256
 
 
 def load_simulator_variant(
     variant_id: str,
     *,
     path: Path = DEFAULT_RUBBER_TIP_CONTACT_PRIOR,
+    contract_snapshot: ContactPriorSnapshot | None = None,
 ) -> SimulatorVariant:
-    contract = load_contact_prior_contract(path)
+    snapshot = contract_snapshot or read_contact_prior_snapshot(path)
+    contract = snapshot.payload()
     if variant_id not in contract["variants"]:
         raise ValueError(f"unknown contact prior variant: {variant_id}")
     identity_payload = {
@@ -128,8 +609,8 @@ def load_simulator_variant(
         "variant": contract["variants"][variant_id],
     }
     return SimulatorVariant(
-        contract_path=path,
-        contract_sha256=_canonical_sha256(contract),
+        contract_path=snapshot.source_path,
+        contract_sha256=snapshot.sha256,
         task_id=str(contract["task_id"]),
         task_contract_sha256=str(contract["task_contract_sha256"]),
         variant_id=variant_id,
@@ -151,15 +632,17 @@ def apply_contact_variant(
             "variant_sha256": variant.variant_sha256,
             "nominal_unchanged": True,
             "added_geoms": [],
+            "bindings": [],
         }
 
     arm = str(variant.collision_approximation["task_arm"])
     thickness = float(variant.payload["effective_wrap_thickness_m"])
-    radius = float(variant.payload["effective_outer_radius_m"])
+    half_width = float(variant.payload["effective_box_half_width_m"])
     coverage = float(variant.payload["distal_coverage_length_m"])
     friction = variant.payload["contact_friction"]
     softness = variant.payload["contact_softness"]
-    added_names: list[str] = []
+    added_geoms: list[str] = []
+    bindings: list[dict[str, Any]] = []
     for finger in variant.collision_approximation["fingers"]:
         anchor_name = f"{arm}_{finger['anchor_geom_suffix']}"
         anchor = spec.geom(anchor_name)
@@ -167,11 +650,11 @@ def apply_contact_variant(
             raise ValueError(f"rubber-tip anchor geom is missing or not a box: {anchor_name}")
         size = [float(value) for value in anchor.size]
         size[int(finger["normal_axis_index"])] += thickness
-        size[int(finger["width_axis_index"])] = radius
+        size[int(finger["width_axis_index"])] = half_width
         size[int(finger["coverage_axis_index"])] = coverage / 2.0
-        name = f"{arm}_rubber_tip_{finger['finger_id']}_{variant.variant_id}"
+        geom_name = f"{arm}_rubber_tip_{finger['finger_id']}_{variant.variant_id}_geom"
         anchor.parent.add_geom(
-            name=name,
+            name=geom_name,
             type=mujoco.mjtGeom.mjGEOM_BOX,
             pos=[float(value) for value in anchor.pos],
             quat=[float(value) for value in anchor.quat],
@@ -190,15 +673,111 @@ def apply_contact_variant(
                 float(softness["solref_damping_ratio"]),
             ],
             solimp=[float(value) for value in softness["solimp"]],
-            mass=float(variant.payload["added_mass_per_finger_kg"]),
+            mass=0.0,
             rgba=[0.08, 0.08, 0.08, 1.0],
             group=3,
         )
-        added_names.append(name)
+        added_geoms.append(geom_name)
+        bindings.append(
+            {
+                "finger_id": finger["finger_id"],
+                "anchor_geom": anchor_name,
+                "parent_body": anchor.parent.name,
+                "added_geom": geom_name,
+                "modeled_added_mass_kg": 0.0,
+                "mass_effect_mode": variant.collision_approximation[
+                    "mass_effect_mode"
+                ],
+            }
+        )
     return {
         "variant_id": variant.variant_id,
         "variant_sha256": variant.variant_sha256,
         "nominal_unchanged": False,
-        "added_geoms": added_names,
+        "added_geoms": added_geoms,
+        "bindings": bindings,
         "parameter_provenance": variant.payload["parameter_provenance"],
     }
+
+
+def compiled_dynamics_sha256(model: mujoco.MjModel) -> str:
+    digest = hashlib.sha256()
+    option_values = (
+        float(model.opt.timestep),
+        int(model.opt.integrator),
+        int(model.opt.cone),
+        int(model.opt.iterations),
+        int(model.opt.ls_iterations),
+        float(model.opt.impratio),
+    )
+    digest.update(repr(option_values).encode("ascii"))
+    for name in DYNAMICS_ARRAY_FIELDS:
+        array = np.asarray(getattr(model, name))
+        digest.update(name.encode("ascii"))
+        digest.update(array.dtype.str.encode("ascii"))
+        digest.update(repr(array.shape).encode("ascii"))
+        digest.update(array.tobytes(order="C"))
+    return digest.hexdigest()
+
+
+def compiled_inertial_control_sha256(model: mujoco.MjModel) -> str:
+    digest = hashlib.sha256()
+    for name in INERTIAL_CONTROL_ARRAY_FIELDS:
+        array = np.asarray(getattr(model, name))
+        digest.update(name.encode("ascii"))
+        digest.update(array.dtype.str.encode("ascii"))
+        digest.update(repr(array.shape).encode("ascii"))
+        digest.update(array.tobytes(order="C"))
+    return digest.hexdigest()
+
+
+def compiled_contact_identity(
+    model: mujoco.MjModel,
+    application: dict[str, Any] | None,
+) -> dict[str, Any]:
+    identity = {
+        "compiled_dynamics_sha256": compiled_dynamics_sha256(model),
+        "compiled_inertial_control_sha256": compiled_inertial_control_sha256(
+            model
+        ),
+        "compiled_total_body_mass_kg": float(np.sum(model.body_mass)),
+        "modeled_added_mass_kg": 0.0,
+        "mass_effect_mode": "excluded_as_negligible_unmeasured_owner_assessment",
+        "bindings": [],
+    }
+    if application is None or application["nominal_unchanged"]:
+        return identity
+    compiled_bindings: list[dict[str, Any]] = []
+    for binding in application["bindings"]:
+        geom_id = mujoco.mj_name2id(
+            model, mujoco.mjtObj.mjOBJ_GEOM, binding["added_geom"]
+        )
+        parent_body_id = mujoco.mj_name2id(
+            model, mujoco.mjtObj.mjOBJ_BODY, binding["parent_body"]
+        )
+        if geom_id < 0 or parent_body_id < 0:
+            raise ValueError("compiled rubber-tip geom or parent body identity is missing")
+        compiled = {
+            **binding,
+            "added_geom_id": geom_id,
+            "parent_body_id": parent_body_id,
+            "compiled_geom_body_id": int(model.geom_bodyid[geom_id]),
+            "parent_body_mass_kg": float(model.body_mass[parent_body_id]),
+            "parent_body_subtree_mass_kg": float(model.body_subtreemass[parent_body_id]),
+            "geom_size_half_extents_m": model.geom_size[geom_id].astype(float).tolist(),
+            "geom_friction": model.geom_friction[geom_id].astype(float).tolist(),
+            "geom_solref": model.geom_solref[geom_id].astype(float).tolist(),
+            "geom_solimp": model.geom_solimp[geom_id].astype(float).tolist(),
+            "geom_condim": int(model.geom_condim[geom_id]),
+            "geom_priority": int(model.geom_priority[geom_id]),
+        }
+        compiled["identity_checks_passed"] = bool(
+            compiled["compiled_geom_body_id"] == parent_body_id
+            and binding["modeled_added_mass_kg"] == 0.0
+        )
+        compiled_bindings.append(compiled)
+    identity["bindings"] = compiled_bindings
+    identity["identity_checks_passed"] = all(
+        binding["identity_checks_passed"] for binding in compiled_bindings
+    )
+    return identity

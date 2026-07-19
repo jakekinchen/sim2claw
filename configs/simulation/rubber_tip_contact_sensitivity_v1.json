@@ -52,7 +52,9 @@
         "normal_axis_index": 0
       }
     ],
-    "geometry_provenance": "estimated_collision_prior_not_measured_geometry"
+    "geometry_provenance": "estimated_collision_prior_not_measured_geometry",
+    "mass_effect_mode": "excluded_as_negligible_unmeasured_owner_assessment",
+    "physical_mass_acknowledgement": "nonzero_unmeasured_intentionally_approximated_as_zero_for_dynamics"
   },
   "evaluation_order": [
     "nominal_uncalibrated",
@@ -72,7 +74,7 @@
       "rubber_tip_enabled": true,
       "evidence_class": "rubber_tip_prior_sensitivity_simulation",
       "effective_wrap_thickness_m": 0.0005,
-      "effective_outer_radius_m": 0.0055,
+      "effective_box_half_width_m": 0.0055,
       "distal_coverage_length_m": 0.012,
       "contact_friction": {
         "sliding_dimensionless": 0.8,
@@ -90,7 +92,6 @@
           2.0
         ]
       },
-      "added_mass_per_finger_kg": 0.0002,
       "parameter_provenance": "estimated_low_effect_prior_not_measured"
     },
     "rubber_tip_nominal_prior": {
@@ -98,7 +99,7 @@
       "rubber_tip_enabled": true,
       "evidence_class": "rubber_tip_prior_sensitivity_simulation",
       "effective_wrap_thickness_m": 0.001,
-      "effective_outer_radius_m": 0.006,
+      "effective_box_half_width_m": 0.006,
       "distal_coverage_length_m": 0.018,
       "contact_friction": {
         "sliding_dimensionless": 1.2,
@@ -116,7 +117,6 @@
           2.0
         ]
       },
-      "added_mass_per_finger_kg": 0.0005,
       "parameter_provenance": "estimated_midpoint_prior_not_measured"
     },
     "rubber_tip_high": {
@@ -124,7 +124,7 @@
       "rubber_tip_enabled": true,
       "evidence_class": "rubber_tip_prior_sensitivity_simulation",
       "effective_wrap_thickness_m": 0.0015,
-      "effective_outer_radius_m": 0.0065,
+      "effective_box_half_width_m": 0.0065,
       "distal_coverage_length_m": 0.024,
       "contact_friction": {
         "sliding_dimensionless": 1.8,
@@ -142,7 +142,6 @@
           2.0
         ]
       },
-      "added_mass_per_finger_kg": 0.001,
       "parameter_provenance": "estimated_high_effect_prior_not_measured"
     }
   },
