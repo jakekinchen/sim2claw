@@ -1,0 +1,85 @@
+{
+  "schema_version": "sim2claw.groot_multisource_intake.v1",
+  "intake_id": "groot_multisource_intake_20260719",
+  "current_workspace": {
+    "scene_id": "operator_updated_chess_workcell_v3",
+    "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "board_pose_id": "board_robotward_100mm_20260718_v3",
+    "board_center_in_table_frame_xy_m": [0.04, -0.065]
+  },
+  "admitted_training_sources": {
+    "unique_episode_count": 73,
+    "source_frame_count": 28162,
+    "video_aligned_episode_count": 73,
+    "cohorts": [
+      {
+        "cohort_id": "historical_nominal_rook_king_v1",
+        "episodes": 24,
+        "frames": 8712,
+        "video": "front_256x256_h264_20fps",
+        "labels": ["rook_a8_to_b6", "king_e8_to_d6", "king_e8_to_c6"],
+        "disposition": "train_skill_prior_historical_geometry"
+      },
+      {
+        "cohort_id": "historical_recovery_rook_king_v2",
+        "episodes": 48,
+        "frames": 18888,
+        "video": "front_256x256_h264_20fps",
+        "strategy_counts": {
+          "nominal": 12,
+          "pose_error": 12,
+          "distractor_proximity": 12,
+          "contact_recovery": 12
+        },
+        "disposition": "train_evaluator_passing_recovery_skill_prior"
+      },
+      {
+        "cohort_id": "current_100mm_pawn_v1",
+        "episodes": 1,
+        "frames": 562,
+        "video": "front_224x224_h264_20fps",
+        "label": "tan_pawn_c8_to_a6",
+        "source_recording_id": "pawn-source-20260719T011500Z-d6e847dd",
+        "disposition": "train_current_geometry_pawn_anchor"
+      }
+    ]
+  },
+  "quarantined_or_excluded_sources": {
+    "current_100mm_counterexamples": {
+      "episode_count": 4,
+      "training_rows": 0,
+      "disposition": "failure_analysis_and_future_evaluator_passing_corrective_suffixes_only"
+    },
+    "historical_72mm_physical": {
+      "intake_contract": "configs/data/physical_teleop_episode_intake_20260718.json",
+      "episode_count": 5,
+      "sample_count": 2186,
+      "overhead_video_count": 5,
+      "training_rows": 0,
+      "disposition": "quarantine_until_metadata_outcomes_pose_and_versioned_rgb_action_admission_are_reconciled"
+    },
+    "held_out": {
+      "nominal_episode_count": 4,
+      "recovery_episode_count": 24,
+      "pawn_rank12_episode_count": 48,
+      "training_rows": 0,
+      "disposition": "sealed_evaluator_only"
+    }
+  },
+  "derived_training_mixture": {
+    "contract": "configs/tasks/chess_manipulation_groot_multisource_v2.json",
+    "source_episode_count": 73,
+    "dataset_episode_count": 96,
+    "dataset_frame_count": 41088,
+    "current_100mm_pawn_repetitions": 24,
+    "repetitions_are_sampling_weight_not_new_evidence": true,
+    "all_training_rows_have_synchronized_video_proprioception_language_and_actions": true,
+    "physical_video_included": false
+  },
+  "failure_learning_boundary": {
+    "llm_vlm_role": "propose_failure_labels_first_broken_gate_and_candidate_corrective_plan",
+    "llm_vlm_may_declare_success": false,
+    "raw_failed_actions_may_enter_training": false,
+    "admission_rule": "only_expert_or_teleoperator_corrective_suffix_from_exact_pre_failure_state_after_full_replay_passes_unchanged_evaluator"
+  }
+}

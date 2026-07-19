@@ -149,6 +149,22 @@ def build_parser() -> argparse.ArgumentParser:
     pawn_groot_preflight.add_argument("--dataset", type=Path, required=True)
     pawn_groot_preflight.add_argument("--output", type=Path, required=True)
 
+    multisource_export = subparsers.add_parser(
+        "groot-multisource-export",
+        help="merge only receipt-admitted GR00T datasets into the frozen video mixture",
+    )
+    multisource_export.add_argument("--output", type=Path, required=True)
+    multisource_export.add_argument("--nominal-dataset", type=Path, required=True)
+    multisource_export.add_argument("--recovery-dataset", type=Path, required=True)
+    multisource_export.add_argument("--pawn-dataset", type=Path, required=True)
+
+    multisource_preflight = subparsers.add_parser(
+        "groot-multisource-preflight",
+        help="verify multisource hashes, row/video alignment, and frozen H16 counts",
+    )
+    multisource_preflight.add_argument("--dataset", type=Path, required=True)
+    multisource_preflight.add_argument("--output", type=Path, required=True)
+
     sim_real = subparsers.add_parser(
         "sim-real-bridge",
         help="verify physical-source availability and freeze the 72mm-to-100mm comparison boundary",
@@ -447,6 +463,26 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .pawn_groot_dataset import preflight_pawn_groot_dataset
 
         report = preflight_pawn_groot_dataset(
+            args.dataset,
+            output_path=args.output,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "groot-multisource-export":
+        from .groot_multisource_dataset import export_groot_multisource_dataset
+
+        report = export_groot_multisource_dataset(
+            args.output,
+            nominal_dataset=args.nominal_dataset,
+            recovery_dataset=args.recovery_dataset,
+            pawn_dataset=args.pawn_dataset,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "groot-multisource-preflight":
+        from .groot_multisource_dataset import preflight_groot_multisource_dataset
+
+        report = preflight_groot_multisource_dataset(
             args.dataset,
             output_path=args.output,
         )
