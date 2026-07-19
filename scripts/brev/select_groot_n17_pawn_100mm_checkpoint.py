@@ -210,6 +210,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--contract", type=Path, required=True)
     parser.add_argument("--expected-contract-sha256", required=True)
+    parser.add_argument("--preflight-only", action="store_true")
     args = parser.parse_args()
     if sha256_file(args.contract) != args.expected_contract_sha256:
         raise SystemExit("selector contract hash drifted")
@@ -224,11 +225,6 @@ def main() -> int:
     dataset = Path(contract["selection"]["dataset_path"])
     validate_dataset(dataset, contract)
 
-    output = Path(contract["selection"]["output_root"])
-    if output.exists():
-        raise SystemExit("selector output already exists")
-    output.mkdir(parents=True)
-
     candidates = contract["selection"]["candidate_manifests"]
     checkpoint_parent = Path(contract["selection"]["checkpoint_parent"])
     actual_steps = sorted(
@@ -239,6 +235,24 @@ def main() -> int:
     expected_steps = [int(step) for step in contract["selection"]["candidate_steps"]]
     if actual_steps != expected_steps:
         raise SystemExit(f"checkpoint inventory drifted: {actual_steps}")
+    candidate_inventories = {}
+    for step in expected_steps:
+        checkpoint = checkpoint_parent / f"checkpoint-{step}"
+        manifest_sha256, manifest = checkpoint_manifest(checkpoint)
+        expected_manifest = candidates[str(step)]
+        if manifest_sha256 != expected_manifest["manifest_sha256"]:
+            raise SystemExit(f"checkpoint-{step} manifest drifted")
+        if len(manifest) != int(expected_manifest["file_count"]):
+            raise SystemExit(f"checkpoint-{step} file count drifted")
+        candidate_inventories[step] = (manifest_sha256, manifest)
+    if args.preflight_only:
+        print("pawn GR00T selector no-query preflight passed")
+        return 0
+
+    output = Path(contract["selection"]["output_root"])
+    if output.exists():
+        raise SystemExit("selector output already exists")
+    output.mkdir(parents=True)
 
     import torch
     from gr00t.data.dataset.lerobot_episode_loader import LeRobotEpisodeLoader
@@ -256,12 +270,7 @@ def main() -> int:
     results = []
     for step in expected_steps:
         checkpoint = checkpoint_parent / f"checkpoint-{step}"
-        manifest_sha256, manifest = checkpoint_manifest(checkpoint)
-        expected_manifest = candidates[str(step)]
-        if manifest_sha256 != expected_manifest["manifest_sha256"]:
-            raise SystemExit(f"checkpoint-{step} manifest drifted")
-        if len(manifest) != int(expected_manifest["file_count"]):
-            raise SystemExit(f"checkpoint-{step} file count drifted")
+        manifest_sha256, manifest = candidate_inventories[step]
 
         seed = int(contract["selection"]["inference_seed"])
         random.seed(seed)

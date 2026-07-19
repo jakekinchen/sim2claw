@@ -16,7 +16,7 @@
     "physical_authority": false
   },
   "identities": {
-    "selector_sha256": "51320544071ecb3aa9c54bb632807085893e79b5a891c56954dcd7043385f0bf",
+    "selector_sha256": "fff1d77e1cbc1909361251818b8619a4a3e23245bdb631c16061e03dd250fd5a",
     "experiment_sha256": "ea6184ba10bd7803ac8e839ae3aebc4de079621afe03f43b6505a61e86622507",
     "dataset_receipt_sha256": "0a1ee253147186330c618d36131ce84b9ccb07707e8b8b1e72c22c22559c77be",
     "dataset_manifest_sha256": "0fa5095a5976186825d03a6728797785e5d8ecbe7b918b752ab5a12cca673394",
