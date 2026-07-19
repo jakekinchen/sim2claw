@@ -8,7 +8,9 @@ Proof class: simulation contact-prior sensitivity using one frozen learned ACT
 policy. Physical authority remained closed.
 
 The first receipt from this branch was marked NO-INTEGRATE by independent
-review. This log now describes the repaired v2 receipt only.
+review because a caller could forge an in-memory snapshot's declared digest.
+The accepted rerun described here recomputes SHA-256 from the immutable bytes
+before any deserialization and rejects declared-digest/byte disagreement.
 
 ## Question and boundary
 
@@ -83,9 +85,9 @@ Variant identities:
 ## Execution
 
 ```bash
-uv run sim2claw act-contact-sensitivity \
+uv run --frozen sim2claw act-contact-sensitivity \
   --checkpoint /Users/kelly/Developer/sim2claw/outputs/polycam_chess_table/act/chess_rook_lift_v1/checkpoint.pt \
-  --output-directory outputs/polycam_chess_table/act/chess_rook_lift_v1/contact_sensitivity_v1
+  --output-directory outputs/polycam_chess_table/act/chess_rook_lift_v1/contact_sensitivity_v1-rerun-20260719
 ```
 
 Generated checkpoints and run artifacts remain ignored. Videos were disabled;
@@ -157,10 +159,10 @@ identity hashes.
 
 | Variant | Action trace SHA-256 | State trace SHA-256 |
 |---|---|---|
-| nominal | `ae05cd5923203ca4e253a3fecb971c4a876e876864a1505dd8b7eacd41f58d58` | `58b441ca743274643b28d47a5da773803d877c9e7352e67933b3513b7ca9d34b` |
-| low | `c16b46bdfda2bbeceaa4c58c6430481adf25d44f75a0bcaabdcc0f73f4fb1d4d` | `f770c02a72436c734b9e5d704b8cc92a740b530f14f2228ec9cee36ec38d75f2` |
-| midpoint | `7357aed7b6a2d5f96a513c7dfa6fa4771cbc7f26a2c0e933a2c1ba19053b0173` | `28970b41ce87c6bab721bd2c82788676fc52d23e9a849239c5ffed5fb0f02d58` |
-| high | `54b169299de4581fd4af254d735e35710b46a1a3321c36c25701e9b4d43152af` | `6eb84aca67ef474efa0f1f1c49a90188e486703fa51de275c885582d33754b36` |
+| nominal | `ae05cd5923203ca4e253a3fecb971c4a876e876864a1505dd8b7eacd41f58d58` | `a2060457bbc9e6c141fe00232ba2c604ad1051edf473d2b11e3202aee31b021f` |
+| low | `c16b46bdfda2bbeceaa4c58c6430481adf25d44f75a0bcaabdcc0f73f4fb1d4d` | `b022258ce01be275c7ef79cecbbd77e50df09971ca442b03f2acb76f590e123a` |
+| midpoint | `7357aed7b6a2d5f96a513c7dfa6fa4771cbc7f26a2c0e933a2c1ba19053b0173` | `89209a22f99736bc5737ac24bd52ff2b2759be8da1f71f66bef19b26dead41a7` |
+| high | `54b169299de4581fd4af254d735e35710b46a1a3321c36c25701e9b4d43152af` | `fe793996b5834d47e219284b3fbf49ce1f55e6a851469fcfcc4c7d28bc1471ad` |
 
 The nominal action trace and rise/contact values exactly reproduce the accepted
 2026-07-17 episode. Contact-state feedback changes later ACT actions in every
@@ -177,20 +179,21 @@ test model error or calibrate any setting.
 ## Receipts
 
 - ignored benchmark receipt:
-  `outputs/polycam_chess_table/act/chess_rook_lift_v1/contact_sensitivity_v1/benchmark_receipt.json`
+  `outputs/polycam_chess_table/act/chess_rook_lift_v1/contact_sensitivity_v1-rerun-20260719/benchmark_receipt.json`
 - benchmark receipt SHA-256:
-  `281245836bfd4b2f41a14f73c3b247137ecc9a77c294435b0dcdb4bd27db4d68`
+  `3e32a60bc0a6225768ae5d830728e5c86ed6628b4a8b638e0d00937fd4b85f05`
 - preflight receipt SHA-256:
-  `2240f7e62cf35cd24cef2fac6fa86f264d5aa977365cf754dbc4169f4af86533`
+  `a0984d0155e5d3cef8fdc34e78a83a5de053a1e9d88970cdd81480635dd9ee4a`
 
 ## Verification and implementation commits
 
-- focused contract, evaluator, and ACT tests: `16 passed, 254 subtests passed`
+- focused contract, evaluator, and ACT tests: `19 passed, 254 subtests passed`
 - negative regressions cover missing checkpoint, rejected hash before
-  deserialization, unaccepted evaluator snapshot, post-preflight path
-  replacement, contract/provenance/type/order/cardinality tamper, anchor
-  mismatch, compiled contact identities, and cross-variant inertial identity
-- full suite: `197 passed, 284 subtests passed` in `15.87 s`
+  deserialization, a forged snapshot with the accepted declared digest,
+  unaccepted evaluator snapshot, post-preflight path replacement,
+  contract/provenance/type/order/cardinality tamper, anchor mismatch, compiled
+  contact identities, and cross-variant inertial identity
+- full suite: `379 passed, 306 subtests passed` in `21.54 s`
 - `uv lock --check`: passed
 - `uv build`: built the source distribution and wheel successfully
 - `git diff --check`: passed
@@ -199,6 +202,7 @@ test model error or calibrate any setting.
 - `d24ac47` — exclude rubber mass and harden the contact contract
 - `db4f5bd` — pin ACT evaluation to immutable checkpoint bytes
 - `bcc9cda` — reject unaccepted contact benchmark snapshots
+- `893f7ac` — recompute and authenticate snapshot bytes before deserialization
 
 ## Proof-wording audit
 

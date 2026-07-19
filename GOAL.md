@@ -205,10 +205,12 @@ substituted for the B--G benchmark.
   tested.
 - BLOCKED PRODUCT CHALLENGER: no compatible B--G learned checkpoint or admitted
   current-scope training dataset exists.
-- REJECTED ANCILLARY DIAGNOSTIC: the unmeasured rook-lift rubber-wrap run is not
+- ACCEPTED ANCILLARY DIAGNOSTIC: the unmeasured rook-lift rubber-wrap run is not
   B--G evidence. Its first result was rejected because checkpoint snapshot
-  bytes were not rehashed before deserialization. The task-independent contact
-  prior may be reviewed separately, but no sensitivity result is accepted.
+  bytes were not rehashed before deserialization. That bypass is repaired and
+  covered by a forged-snapshot regression; a fresh authenticated rerun accepts
+  only the narrow conclusion that this rook policy's simulated outcome changes
+  across the declared mass-neutral contact-prior ensemble.
 
 The robot geometry/composition slice, one narrow frozen ACT simulation task,
 and the local GR00T data/evaluator foundation are complete. The goal-conditioned

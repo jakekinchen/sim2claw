@@ -185,7 +185,7 @@ separately admissible reconciliation.
 | Contact/object calibration | Blocked | No admitted pawn/contact/grasp/release trajectories |
 | Isolated GR00T challenger | Terminal negative for this bounded served process only | Off-product C8→A6 smoke case: 0 mm lift, 125.724 mm final XY error; not a GR00T-model-class or B--G result; held-outs sealed |
 | B--G language/data gate | Frozen semantics, no launch | Twelve exact meanings and 24 deterministic prompt strings; zero admitted source groups and zero behavioral training rows |
-| Rubber-tip ACT diagnostic | Rejected ancillary result | The rook-lift run is not B--G evidence, and snapshot bytes were not rehashed before deserialization; only a future task-independent contact prior may be reconsidered |
+| Rubber-tip ACT diagnostic | Accepted ancillary sensitivity result | A forged-snapshot bypass was repaired and the exact run repeated; the narrow rook policy changes outcome across an unmeasured, mass-neutral contact-prior ensemble. This is neither B--G evidence nor physical calibration |
 | Closed-loop B--G ACT replay | Unsupported | No compatible checkpoint exists |
 | Alternating-cycle stability | Unsupported | No paired claim-eligible endpoint regressions; this blocks affine composition. Calibrated closed-loop policy replay is a separate unavailable lane |
 | Bias compensation / retargeted placement | Not opened | Correction must not precede measurement and calibration |

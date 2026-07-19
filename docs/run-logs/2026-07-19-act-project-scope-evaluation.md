@@ -77,15 +77,19 @@ contact settings. It does not pass the honest chess-manipulation evaluator.
 
 ## Receipts and verification
 
-Generated artifacts remain ignored under
-`outputs/polycam_chess_table/act/project_scope_eval_20260719/`.
+Generated artifacts remain ignored under the two rerun directories bound
+below.
 
 - contact benchmark receipt SHA-256:
-  `6a4560c225c0d8ce7f0275df90775208f81e1e80295cb2defd4d0bc8b111c25e`
+  `3e32a60bc0a6225768ae5d830728e5c86ed6628b4a8b638e0d00937fd4b85f05`
 - manipulation-v2 receipt SHA-256:
-  `8a5167c13d5fd62ade48f27cffb50b9f625b0fa27b520b87618092ba3b4d427c`
-- focused snapshot/contact tests: `11 passed`
-- full suite: `201 passed, 284 subtests passed` in `15.73 s`
+  `5259b397d611f91ea8fb08d9f3b2af1e45496d621bd198e602d89a5f88bde6f8`
+- contact output:
+  `outputs/polycam_chess_table/act/chess_rook_lift_v1/contact_sensitivity_v1-rerun-20260719/`
+- manipulation-v2 output:
+  `outputs/polycam_chess_table/act/chess_rook_lift_v1/manipulation_v2-rerun-20260719/`
+- focused snapshot/contact tests: `19 passed, 254 subtests passed`
+- full suite: `379 passed, 306 subtests passed` in `21.54 s`
 - `uv lock --check`: passed
 - `uv build`: source distribution and wheel built successfully
 - `git diff --check`: passed

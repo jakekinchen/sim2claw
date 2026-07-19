@@ -1,6 +1,6 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-19T04:27:09-05:00",
+  "updated_at": "2026-07-19T04:40:00-05:00",
   "active_campaign": "pawn_composability_replay_and_simulator_validation",
   "current_milestone": "QUALITATIVE_ENDPOINT_REVIEW_COMPLETE_METRIC_REPLAY_AND_CALIBRATION_BLOCKED",
   "training_lock": "closed_until_m7_candidates_replay_and_pass_separate_evaluator",
@@ -224,8 +224,12 @@
     "mass_effect_mode": "excluded_as_negligible_unmeasured_owner_assessment",
     "contact_geometry_friction_compliance_calibrated": false,
     "recording_session_applicability_known": false,
-    "simulation_benchmark_status": "isolated_narrow_rook_lift_result_rejected_not_b_to_g_evidence",
-    "contact_prior_integration_status": "not_integrated_pending_task_independent_review"
+    "simulation_benchmark_status": "accepted_authenticated_narrow_rook_lift_sensitivity_not_b_to_g_evidence",
+    "contact_prior_integration_status": "integrated_mass_neutral_uncalibrated_contact_prior",
+    "contact_prior_contract_sha256": "e89eb1084e7e1dee64aaebfbc18b816b5bf58aefa98b18d38ef2e9a81b6ee499",
+    "accepted_rerun_receipt_sha256": "3e32a60bc0a6225768ae5d830728e5c86ed6628b4a8b638e0d00937fd4b85f05",
+    "checkpoint_snapshot_bytes_rehashed_before_deserialization": true,
+    "claim_boundary": "uncalibrated ancillary simulation sensitivity only_not_b_to_g_policy_evidence_or_physical_validation"
   },
   "nemoclaw_deployment": {
     "project": "configs/projects/pawn_rank12_reachable_bg_hackathon_v1.json",
@@ -245,7 +249,7 @@
     "may_be_evolved_into_general_policy": false,
     "broad_pick_place_claim": false,
     "accepted_receipt_environment": "pre_owner_measured_mass_profile",
-    "current_mass_profile_requalification": "no_accepted_result_narrow_rook_lift_contact_probe_rejected_as_ancillary"
+    "current_mass_profile_requalification": "accepted_only_as_narrow_authenticated_current_simulator_contact_sensitivity_not_broad_manipulation_or_b_to_g_evidence"
   },
   "physical_mass_model": {
     "profile": "calibration/so101/follower_mass_profile_v1.json",

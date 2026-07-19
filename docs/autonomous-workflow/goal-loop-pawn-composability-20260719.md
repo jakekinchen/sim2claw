@@ -184,9 +184,11 @@ evidence, and promotion authority.
   zero-source-group no-launch snapshot. Prompt rows add no behavioral evidence.
 - `254bed9` preserves the owner-confirmed Studio simplification: no generic
   grid, rulers, crosshair, axes, boundary, or default reviewed-geometry overlay.
-- The isolated rook-lift rubber-tip result is rejected and is not B--G
-  evidence. Its snapshot bytes were not rehashed before deserialization; only
-  a future task-independent contact prior may be reconsidered.
+- The first rook-lift rubber-tip receipt was rejected because snapshot bytes
+  were not rehashed before deserialization. Commit `893f7ac` closes that
+  bypass, and a fresh authenticated rerun accepts only ancillary simulated
+  contact-prior sensitivity. It remains unrelated to B--G policy evidence or
+  physical calibration.
 - `d0c4491` integrates the reviewed NemoClaw repository/deployment contracts.
   Runtime deployment remains stopped, and its Brev lifecycle follows the
   owner's explicit 20-hour reservation rather than coordinator teardown
