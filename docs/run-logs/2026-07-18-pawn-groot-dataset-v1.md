@@ -14,13 +14,13 @@ does not promote a learned policy.
 
 - dataset contract: `chess_pick_place_pawn_groot_dataset_v1`
 - dataset contract SHA-256:
-  `19b2a17e3a45e908ffba79814971b6149601ecccd4c33eaa4e1232ac00230ed8`
+  `0e3f40313d0429366d6d1cab7ae372f7b2cb34d6339b15a81724f5d2c6c2885a`
 - dataset receipt SHA-256:
-  `594d316ec8b99534a868f0c3b6b4c973eaceb6664d0250d587ff3417bc350c3e`
+  `1f82d4e25f5b396f954c149122c894c629e309244d08983627597eddb86095a8`
 - payload manifest SHA-256:
-  `324be03202c0eccd6c984f7e6312f951e83d1ba8052f9221ae29d87733907c8d`
+  `0fa5095a5976186825d03a6728797785e5d8ecbe7b918b752ab5a12cca673394`
 - builder module SHA-256:
-  `b32a1074c0c7c4dc7a4504e42c1b8223f66a5f2acbd6f9ba665451d93fd3e013`
+  `ed150ac6d022d90e7c89bd88b6337bf8369c5fb19bbb2d6c4f14ee6067c533a1`
 - source recording: `pawn-source-20260719T011500Z-d6e847dd`
 - source admission verdict SHA-256:
   `0f0b2026b2bf13a416286b6f65ebccd7260b44bed0e690e2dc7409a22e690587`
@@ -52,7 +52,7 @@ camera hashes, its source action owner, and the admission payload.
 ## Local loader proof
 
 - local preflight receipt SHA-256:
-  `c3deb13a09a9f033d1dcaea32fc8729fc6654e57e3a7c2953df5986d2aaf6f1c`
+  `2553a4aeba909829f776213fc7beb49f10e6d4fd451a68e398b90626efa598eb`
 - effective 16-step starts: 547
 - action target slots: 8,752
 - action scalars: 52,512
@@ -62,6 +62,8 @@ camera hashes, its source action owner, and the admission payload.
 - padding: none
 - cross-language-boundary targets: zero
 - encoded video: 562 frames at 20 FPS
+- canonical empty absolute-action relative stats SHA-256:
+  `44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a`
 
 The preflight rehashes the exact payload inventory, reads the Parquet data,
 constructs the full action-index matrix independently, and checks the encoded

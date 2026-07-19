@@ -86,6 +86,7 @@
       "left_gripper_target_rad"
     ],
     "action_representation": "absolute_joint_position_target",
+    "relative_stats_payload": "canonical_empty_json_object_for_absolute_actions",
     "language_key": "annotation.human.task_description",
     "language_schedule": "one_constant_full_instruction_per_episode",
     "reward_semantics": "one_on_final_row_zero_elsewhere",

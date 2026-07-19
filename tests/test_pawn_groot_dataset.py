@@ -28,6 +28,10 @@ class PawnGrootDatasetTest(unittest.TestCase):
         self.assertEqual(contract["dataset"]["episode_count"], 1)
         self.assertEqual(contract["dataset"]["frame_count"], 562)
         self.assertEqual(contract["dataset"]["held_out_rows"], 0)
+        self.assertEqual(
+            contract["dataset"]["relative_stats_payload"],
+            "canonical_empty_json_object_for_absolute_actions",
+        )
         self.assertEqual(contract["splits"]["held_out_training_rows"], 0)
         source = contract["source"]["episodes"][0]
         self.assertEqual(source["piece_id"], "tan_pawn_c8")

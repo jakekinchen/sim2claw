@@ -435,6 +435,11 @@ def export_pawn_groot_dataset(
             "next.reward": _stats(np.concatenate(all_rewards)),
         },
     )
+    # NVIDIA's DatasetFactory unconditionally calls generate_rel_stats. For an
+    # absolute-action embodiment that function writes the canonical empty JSON
+    # object. Include it before the payload manifest so training cannot create
+    # an unreceipted cache file after preflight.
+    (meta_dir / "relative_stats.json").write_text("{}", encoding="utf-8")
     manifest = _payload_manifest(output)
     receipt: dict[str, Any] = {
         "schema_version": RECEIPT_SCHEMA,
