@@ -298,12 +298,14 @@ class SO101PhysicalGateway:
         *,
         device_factory: DeviceFactory = _lerobot_devices,
         sleep: SleepFunction = time.sleep,
+        configure_devices: bool = True,
     ):
         if identity.leader_port == identity.follower_port:
             raise PhysicalGatewayError("Leader and follower must use distinct buses.")
         self.identity = identity
         self.leader, self.follower = device_factory(identity)
         self.sleep = sleep
+        self.configure_devices = configure_devices
         self.leader_start: np.ndarray | None = None
         self.follower_start: np.ndarray | None = None
         self.lower_limits = np.asarray([-180.0] * 5 + [0.0], dtype=np.float64)
@@ -363,10 +365,21 @@ class SO101PhysicalGateway:
                 raise PhysicalGatewayError(
                     "Follower calibration does not match the connected arm."
                 )
-            self.leader.configure()
-            self.leader.bus.disable_torque()
-            self.follower.configure()
-            self.follower.bus.disable_torque()
+            if self.configure_devices:
+                self.leader.configure()
+                self.leader.bus.disable_torque()
+                self.follower.configure()
+                self.follower.bus.disable_torque()
+            else:
+                operating_modes = self.follower.bus.sync_read(
+                    "Operating_Mode",
+                    normalize=False,
+                    num_retry=BUS_READ_RETRIES,
+                )
+                if any(int(value) != 0 for value in operating_modes.values()):
+                    raise PhysicalGatewayError(
+                        "Follower replay requires every motor to remain in position mode."
+                    )
             self.lower_limits, self.upper_limits = self._calibrated_position_limits()
         except Exception:
             self.close()
@@ -514,6 +527,7 @@ class SO101PhysicalGateway:
             "follower_calibrated_minimum": self.lower_limits.tolist(),
             "follower_calibrated_maximum": self.upper_limits.tolist(),
             "physical_follower_torque_enabled": self.torque_enabled,
+            "device_configuration_rewritten": self.configure_devices,
             **registration,
             **registration_state,
         }

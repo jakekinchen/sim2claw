@@ -48,7 +48,14 @@ class FakeBus:
         self.is_connected = False
         self.disconnect_calls += 1
 
-    def sync_read(self, register: str) -> dict[str, float]:
+    def sync_read(
+        self,
+        register: str,
+        *,
+        normalize: bool = True,
+        num_retry: int = 0,
+    ) -> dict[str, float]:
+        del normalize, num_retry
         if register == "Torque_Enable":
             return {joint: float(self.torque) for joint in ROBOT_JOINTS}
         if register == "Present_Current":
@@ -56,6 +63,8 @@ class FakeBus:
             if self.fail_next_current_read:
                 self.fail_next_current_read = False
                 raise ConnectionError("diagnostic packet missed")
+            return {joint: 0.0 for joint in ROBOT_JOINTS}
+        if register == "Operating_Mode":
             return {joint: 0.0 for joint in ROBOT_JOINTS}
         raise KeyError(register)
 
@@ -73,8 +82,10 @@ class FakeLeader:
         self.values = values
         self.is_calibrated = calibrated
         self.failed_reads_remaining = 0
+        self.configure_calls = 0
 
     def configure(self) -> None:
+        self.configure_calls += 1
         self.bus.disable_torque()
 
     def get_action(self) -> dict[str, float]:
@@ -93,8 +104,10 @@ class FakeFollower:
         self.frozen_indices: set[int] = set()
         self.command_history: list[np.ndarray] = []
         self.failed_reads_remaining = 0
+        self.configure_calls = 0
 
     def configure(self) -> None:
+        self.configure_calls += 1
         self.bus.disable_torque()
 
     def get_observation(self) -> dict[str, float]:
@@ -208,6 +221,20 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertFalse(self.follower.bus.torque)
         self.assertFalse(self.follower.bus.is_connected)
         self.assertFalse(self.leader.bus.is_connected)
+
+    def test_recorded_replay_can_validate_without_rewriting_configuration(self) -> None:
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            configure_devices=False,
+        )
+        opened = gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        self.assertFalse(opened["device_configuration_rewritten"])
+        self.assertEqual(self.leader.configure_calls, 0)
+        self.assertEqual(self.follower.configure_calls, 0)
+        self.assertTrue(self.follower.bus.torque)
+        gateway.close()
+        self.assertFalse(self.follower.bus.torque)
 
     def test_rate_limited_motion_does_not_fail_while_follower_advances(self) -> None:
         gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)

@@ -96,6 +96,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="open both identified buses torque-off and verify physical gateway state",
     )
 
+    physical_replay = subparsers.add_parser(
+        "physical-replay",
+        help="replay one finalized physical command trace through the guarded follower",
+    )
+    physical_replay.add_argument("--recording", type=Path, required=True)
+    physical_replay.add_argument(
+        "--yes",
+        action="store_true",
+        help="acknowledge that the powered follower workcell is clear for motion",
+    )
+
     studio_assets = subparsers.add_parser(
         "studio-assets",
         help="regenerate inspection-only workcell posters from the current scene",
@@ -206,6 +217,39 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .teleop_recording import physical_gateway_preflight
 
         print(json.dumps(physical_gateway_preflight(), indent=2, sort_keys=True))
+        return 0
+    if args.command == "physical-replay":
+        from .physical_trace_replay import (
+            PhysicalTraceReplayError,
+            run_physical_trace_replay,
+        )
+
+        try:
+            report = run_physical_trace_replay(
+                args.recording,
+                operator_acknowledged=args.yes,
+                progress=lambda row: print(
+                    json.dumps(row, separators=(",", ":"), sort_keys=True),
+                    flush=True,
+                ),
+            )
+        except PhysicalTraceReplayError as error:
+            print(
+                json.dumps(
+                    {
+                        "error": str(error),
+                        "run_directory": (
+                            str(error.run_directory)
+                            if error.run_directory is not None
+                            else None
+                        ),
+                    },
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
         return 0
     if args.command == "studio-assets":
         from .studio_assets import render_studio_assets

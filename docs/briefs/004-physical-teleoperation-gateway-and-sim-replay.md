@@ -49,6 +49,29 @@ current MuJoCo SO-101 and reports joint RMSE/max error. It is a command-response
 comparison, not a learned-policy evaluation, object/contact validation, or task
 success result.
 
+An operator-acknowledged physical command replay is also available through the
+same gateway:
+
+```bash
+uv run sim2claw physical-replay \
+  --recording datasets/act_source_recordings/<finalized-recording> \
+  --yes
+```
+
+This path accepts only a finalized, hash-matching physical-follower recording.
+It verifies position mode and calibration limits with torque off, holds the
+follower at its current position, refuses more than 45 degrees of travel to the
+recorded start pose, approaches that pose at 10 degrees per second, and then
+requests the saved commands at their original timestamps. The ordinary gateway
+rate, tracking, telemetry, stall, USB-failure, and shutdown guards remain in
+force. A receipt and per-sample trace are retained under
+`runs/physical_replays/`, including any safety limiting and an explicit
+torque-off result.
+
+Completing this replay proves command-trajectory delivery only. It does not
+inherit the source label as a physical evaluator verdict and does not prove
+piece motion, placement accuracy, learned-policy behavior, or task success.
+
 ## Stop conditions
 
 Calibration mismatch, missing/distinct-bus failure, Sync mismatch outside the
