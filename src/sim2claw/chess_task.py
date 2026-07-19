@@ -24,7 +24,11 @@ from .grasp import (
     _select_piece,
     _solve_reach,
 )
-from .contact_prior import SimulatorVariant, apply_contact_variant
+from .contact_prior import (
+    SimulatorVariant,
+    apply_contact_variant,
+    compiled_contact_identity,
+)
 from .paths import DEFAULT_CHESS_TASK_CONFIG
 from .scene import (
     ROBOT_JOINTS,
@@ -111,6 +115,9 @@ class ChessRookLiftEnv:
             else None
         )
         self.model = spec.compile()
+        self.compiled_variant_identity = compiled_contact_identity(
+            self.model, self.variant_application
+        )
         self.data = mujoco.MjData(self.model)
         initialize_robot_poses(self.model, self.data)
         for _ in range(int(contract["episode"]["settle_steps"])):
