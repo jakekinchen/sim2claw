@@ -28,13 +28,227 @@ from .learning_factory_artifacts import atomic_write_json, canonical_digest, sha
 from .learning_factory_goal_data import _relative_pose
 from .goal_act_training import TRAINING_RECEIPT_SCHEMA
 from .paths import REPO_ROOT
-from .scene import CURRENT_TASK_PIECE_LAYOUT, ROBOT_JOINTS, build_scene_spec, registered_board_center
-from .source_episode import CURRENT_SCENE_ID, load_source_episode
+from .render import write_rgb_png
+from .scene import (
+    CURRENT_TASK_PIECE_LAYOUT,
+    ROBOT_JOINTS,
+    TELEOP_PAWN_SOURCE_SQUARES,
+    board_square_center,
+    build_scene_spec,
+    initialize_robot_poses,
+    registered_board_center,
+)
+from .source_episode import (
+    CONTRACT_PATH_V4,
+    CURRENT_BOARD_POSE_ID,
+    CURRENT_SCENE_ID,
+    EPISODE_SCHEMA,
+    RECEIPT_SCHEMA,
+    build_source_sample,
+    load_source_episode,
+    source_contract_sha256,
+    tree_manifest,
+)
 
 
 COHORT_SCHEMA = "sim2claw.goal_act_evaluation_cohort.v1"
 EVALUATION_SCHEMA = "sim2claw.goal_act_evaluation_receipt.v1"
 SKILL_PATTERN = re.compile(r"^pawn_([b-g][12])_to_([b-g][12])$")
+
+
+def _integration_state(model: mujoco.MjModel, data: mujoco.MjData) -> list[float]:
+    size = mujoco.mj_stateSize(model, mujoco.mjtState.mjSTATE_INTEGRATION)
+    state = np.empty(size, dtype=np.float64)
+    mujoco.mj_getState(model, data, state, mujoco.mjtState.mjSTATE_INTEGRATION)
+    return state.astype(float).tolist()
+
+
+def _write_evaluation_reset_episode(
+    *,
+    output_directory: Path,
+    runtime_skill_id: str,
+    scene_piece_id: str,
+) -> dict[str, Any]:
+    """Create a sealed simulator reset, not a demonstration or success claim."""
+
+    match = SKILL_PATTERN.fullmatch(runtime_skill_id)
+    if match is None:
+        raise ValueError("evaluation runtime skill identity is malformed")
+    source_square, destination_square = match.groups()
+    output_directory.mkdir(parents=True, exist_ok=False)
+    model = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT).compile()
+    data = mujoco.MjData(model)
+    initialize_robot_poses(model, data)
+    piece_body = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, scene_piece_id)
+    piece_joint = mujoco.mj_name2id(
+        model, mujoco.mjtObj.mjOBJ_JOINT, f"{scene_piece_id}_free"
+    )
+    if piece_body < 0 or piece_joint < 0:
+        raise ValueError(f"evaluation carrier piece is missing: {scene_piece_id}")
+    piece_qpos = int(model.jnt_qposadr[piece_joint])
+    source_xyz = np.asarray(board_square_center(source_square), dtype=np.float64)
+    source_xyz[2] = float(data.qpos[piece_qpos + 2])
+    data.qpos[piece_qpos : piece_qpos + 3] = source_xyz
+    data.qvel[int(model.jnt_dofadr[piece_joint]) : int(model.jnt_dofadr[piece_joint]) + 6] = 0.0
+    mujoco.mj_forward(model, data)
+
+    episode_id = f"evaluation-reset-{runtime_skill_id}"
+    target_xyz = np.asarray(board_square_center(destination_square), dtype=np.float64)
+    target_xyz[2] = source_xyz[2]
+    target_pose = [*target_xyz.astype(float).tolist(), *data.xquat[piece_body].astype(float).tolist()]
+    gripper_body = mujoco.mj_name2id(
+        model, mujoco.mjtObj.mjOBJ_BODY, "left_gripper"
+    )
+    joint_ids = [
+        mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, f"left_{name}")
+        for name in ROBOT_JOINTS
+    ]
+    joint_qpos = [int(model.jnt_qposadr[joint]) for joint in joint_ids]
+    joint_qvel = [int(model.jnt_dofadr[joint]) for joint in joint_ids]
+    action = [float(data.qpos[address]) for address in joint_qpos]
+    rgb: dict[str, dict[str, Any]] = {}
+    for stream in ("top", "wrist"):
+        frame = output_directory / "rgb" / stream / "000000.png"
+        write_rgb_png(frame, np.zeros((2, 2, 3), dtype=np.uint8))
+        rgb[stream] = {
+            "available": True,
+            "path": frame.relative_to(output_directory).as_posix(),
+            "sha256": sha256_file(frame),
+            "timestamp_monotonic_seconds": 0.0,
+        }
+    row = build_source_sample(
+        episode_id=episode_id,
+        sample_index=0,
+        timestamp_monotonic_seconds=0.0,
+        instruction=(
+            f"Evaluate the pawn move from {source_square} to {destination_square}; "
+            "this row supplies reset state only."
+        ),
+        raw_sample={
+            "follower_actual_position_rad": action,
+            "follower_actual_velocity_rad_s": [float(data.qvel[address]) for address in joint_qvel],
+            "end_effector_pose_world": [
+                *data.xpos[gripper_body].astype(float).tolist(),
+                *data.xquat[gripper_body].astype(float).tolist(),
+            ],
+            "gripper_joint_position_rad": action[-1],
+            "selected_piece_pose_world": [
+                *data.xpos[piece_body].astype(float).tolist(),
+                *data.xquat[piece_body].astype(float).tolist(),
+            ],
+            "continuous_target_pose_world": target_pose,
+            "follower_command_rad": action,
+            "contacts": [],
+            "simulator_events": [{"type": "expert_phase", "phase": "stand_off"}],
+        },
+        rgb=rgb,
+        action_owner="planner",
+        assistance=False,
+        intervention=False,
+    )
+    samples_path = output_directory / "samples.jsonl"
+    samples_path.write_text(
+        json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    integration = _integration_state(model, data)
+    privileged = {
+        "episode_id": episode_id,
+        "sample_index": 0,
+        "policy_adapter_access": False,
+        "state": {"integration_state_float64": integration},
+    }
+    privileged_path = output_directory / "evaluator_privileged_state.jsonl"
+    privileged_path.write_text(json.dumps(privileged, sort_keys=True) + "\n", encoding="utf-8")
+    initial_path = output_directory / "initial_evaluator_privileged_state.json"
+    atomic_write_json(
+        initial_path,
+        {
+            "schema_version": "sim2claw.evaluator_initial_privileged_state.v1",
+            "episode_id": episode_id,
+            "policy_adapter_access": False,
+            "state": {
+                "available": True,
+                "mj_state_spec": "mjSTATE_INTEGRATION",
+                "integration_state_float64": integration,
+            },
+        },
+    )
+    receipt = {
+        "schema_version": RECEIPT_SCHEMA,
+        "source_episode_schema": EPISODE_SCHEMA,
+        "source_contract_sha256": source_contract_sha256(CONTRACT_PATH_V4),
+        "task_id": "chess_pick_place_source_episode_v4",
+        "scene_id": CURRENT_SCENE_ID,
+        "board_pose_id": CURRENT_BOARD_POSE_ID,
+        "recording_id": episode_id,
+        "proof_class": "sealed_simulation_evaluation_reset_only",
+        "piece_id": scene_piece_id,
+        "source_square": source_square,
+        "destination_square": destination_square,
+        "sample_count": 1,
+        "samples_sha256": sha256_file(samples_path),
+        "evaluator_privileged_state_path": privileged_path.name,
+        "evaluator_privileged_state_sha256": sha256_file(privileged_path),
+        "initial_evaluator_privileged_state_path": initial_path.name,
+        "initial_evaluator_privileged_state_sha256": sha256_file(initial_path),
+        "rgb_streams": tree_manifest(output_directory / "rgb"),
+        "training_rows_authorized": 0,
+    }
+    atomic_write_json(output_directory / "recording_receipt.json", receipt)
+    return receipt
+
+
+def generate_goal_act_evaluation_cohort(
+    *,
+    output_directory: Path,
+    task_contract_path: Path = REPO_ROOT / "configs/tasks/chess_pick_place_act_state_v1.json",
+    minimum_success_rate: float = 0.75,
+) -> dict[str, Any]:
+    """Generate one sealed simulator reset for every frozen B-G runtime skill."""
+
+    task = load_act_pick_place_task_contract(task_contract_path)
+    held_seeds = [int(value) for value in task["splits"]["held_out_seeds"]]
+    held_layouts = list(task["splits"]["distractor_layouts"]["held_out"])
+    carrier_by_file = {square[0]: f"brown_pawn_{square}" for square in TELEOP_PAWN_SOURCE_SQUARES}
+    cases = []
+    for index, skill_id in enumerate(task["runtime_scope"]["eligible_skill_ids"]):
+        match = SKILL_PATTERN.fullmatch(skill_id)
+        assert match is not None
+        source_square, destination_square = match.groups()
+        scene_piece_id = carrier_by_file[source_square[0]]
+        episode_directory = output_directory / "episodes" / skill_id
+        _write_evaluation_reset_episode(
+            output_directory=episode_directory,
+            runtime_skill_id=skill_id,
+            scene_piece_id=scene_piece_id,
+        )
+        cases.append(
+            {
+                "case_id": f"heldout-{skill_id}",
+                "candidate_seed": held_seeds[index % len(held_seeds)],
+                "runtime_skill_id": skill_id,
+                "object_destination_pair": (
+                    f"brown_pawn_{source_square}:runtime_{destination_square}"
+                ),
+                "scene_piece_id": scene_piece_id,
+                "distractor_layout": held_layouts[index % len(held_layouts)],
+                "episode_directory": str(episode_directory),
+                "object_dimensions_m": [0.03, 0.03, 0.053],
+                "gripper_aperture_mapping": {
+                    "mapping_id": "so101_parallel_jaw_affine_v1",
+                    "scale_m_per_rad": 0.02,
+                    "offset_m": 0.01,
+                },
+                "horizon_actions": 1,
+            }
+        )
+    return freeze_goal_act_evaluation_cohort(
+        cases=cases,
+        output_path=output_directory / "cohort.json",
+        minimum_success_rate=minimum_success_rate,
+        task_contract_path=task_contract_path,
+    )
 
 
 def freeze_goal_act_evaluation_cohort(
@@ -71,8 +285,9 @@ def freeze_goal_act_evaluation_cohort(
             raise ValueError(f"evaluation episode is missing: {episode}")
         receipt, _ = load_source_episode(episode)
         piece_id, target_cell_id = pair.split(":", 1)
-        if receipt.get("piece_id") != piece_id:
-            raise ValueError("evaluation source piece differs from the held-out pair")
+        scene_piece_id = str(case.get("scene_piece_id") or piece_id)
+        if receipt.get("piece_id") != scene_piece_id:
+            raise ValueError("evaluation reset carrier differs from its receipt")
         match = SKILL_PATTERN.fullmatch(runtime_skill_id)
         if match is None:
             raise ValueError("evaluation runtime skill identity is malformed")
@@ -108,6 +323,7 @@ def freeze_goal_act_evaluation_cohort(
                 "object_destination_pair": pair,
                 "runtime_skill_id": runtime_skill_id,
                 "piece_id": piece_id,
+                "scene_piece_id": scene_piece_id,
                 "target_cell_id": target_cell_id,
                 "distractor_layout": layout,
                 "episode_directory": str(episode),
@@ -237,7 +453,7 @@ def _run_case(
     mujoco.mj_setState(model, data, initial_state, mujoco.mjtState.mjSTATE_INTEGRATION)
     mujoco.mj_forward(model, data)
     pieces = _piece_bodies(model)
-    piece_id = str(case["piece_id"])
+    piece_id = str(case["scene_piece_id"])
     if piece_id not in pieces:
         raise ValueError("held-out piece is absent from the evaluation scene")
     piece_body = pieces[piece_id]

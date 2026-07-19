@@ -34,7 +34,16 @@ from .learning_factory_artifacts import (
 )
 from .recorded_replay import load_sysid_config, simulate_and_align, write_replay_receipt
 from .render import write_rgb_png
-from .scene import build_scene_spec, initialize_robot_poses, scene_summary
+from .scene import (
+    CURRENT_TASK_PIECE_LAYOUT,
+    ROBOT_JOINTS,
+    TELEOP_PAWN_SOURCE_SQUARES,
+    TELEOP_TAN_PAWN_SQUARES,
+    board_square_center,
+    build_scene_spec,
+    initialize_robot_poses,
+    scene_summary,
+)
 from .source_episode import load_source_episode, tree_manifest
 from .system_identification import (
     freeze_episode_split,
@@ -280,6 +289,7 @@ def validate_twin_candidate(
     spec = build_scene_spec(
         config_path=capture_path,
         mass_profile_path=mass_path,
+        piece_layout=CURRENT_TASK_PIECE_LAYOUT,
         scan_overlay=False,
     )
     model = spec.compile()
@@ -315,6 +325,49 @@ def validate_twin_candidate(
         and np.isfinite(ctrlrange).all()
         and (ctrlrange[:, 0] < ctrlrange[:, 1]).all()
     )
+    robot_joints = [f"left_{name}" for name in ROBOT_JOINTS]
+    articulation_complete = all(
+        mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name) >= 0
+        and mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, name) >= 0
+        for name in robot_joints
+    )
+    task_pieces = [
+        *(f"brown_pawn_{square}" for square in TELEOP_PAWN_SOURCE_SQUARES),
+        *(f"tan_pawn_{square}" for square in TELEOP_TAN_PAWN_SQUARES),
+    ]
+    task_fixtures_complete = all(
+        mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, name) >= 0
+        and mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, f"{name}_free") >= 0
+        for name in task_pieces
+    )
+    task_targets_finite = all(
+        np.isfinite(np.asarray(board_square_center(square), dtype=np.float64)).all()
+        for square in (
+            *TELEOP_PAWN_SOURCE_SQUARES,
+            *TELEOP_TAN_PAWN_SQUARES,
+        )
+    )
+    baseline_qacc = np.asarray(data.qacc, dtype=np.float64).copy()
+    actuation_response_delta = 0.0
+    if control_ranges_ordered and model.nu:
+        original_control = np.asarray(data.ctrl, dtype=np.float64).copy()
+        actuator = 0
+        span = float(ctrlrange[actuator, 1] - ctrlrange[actuator, 0])
+        data.ctrl[actuator] = float(
+            np.clip(
+                original_control[actuator] + 0.05 * span,
+                ctrlrange[actuator, 0],
+                ctrlrange[actuator, 1],
+            )
+        )
+        if data.ctrl[actuator] == original_control[actuator]:
+            data.ctrl[actuator] = float(original_control[actuator] - 0.05 * span)
+        mujoco.mj_forward(model, data)
+        actuation_response_delta = float(
+            np.max(np.abs(np.asarray(data.qacc, dtype=np.float64) - baseline_qacc))
+        )
+        data.ctrl[:] = original_control
+        mujoco.mj_forward(model, data)
     cameras = [
         mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_CAMERA, index)
         for index in range(model.ncam)
@@ -343,18 +396,40 @@ def validate_twin_candidate(
                 "distance_m": float(contact.dist),
             }
         )
-    summary = scene_summary(config_path=capture_path, mass_profile_path=mass_path)
+    summary = scene_summary(
+        config_path=capture_path,
+        mass_profile_path=mass_path,
+        piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+    )
     scene_identity_matches = (
         summary["board"]["scene_id"] == candidate.get("scene_id")
+    )
+    maximum_penetration_m = max(
+        (max(0.0, -float(row["distance_m"])) for row in contact_pairs),
+        default=0.0,
+    )
+    provenance_complete = bool(
+        candidate.get("schema_version") == "sim2claw.factory_twin_candidate.v1"
+        and len(str(candidate.get("implementation_sha256") or "")) == 64
+        and candidate.get("measured_values_remain_distinct_from_estimates") is True
+        and candidate.get("accepted") is False
+        and candidate.get("acceptance_owned_by") == "twin_validator"
+        and candidate.get("physical_authority") is False
     )
     gates = {
         "compile_and_finite_dynamics": finite_state,
         "geometry_arrays_finite": geom_sizes_finite,
         "body_masses_finite_nonnegative": body_mass_finite_nonnegative,
         "actuator_ranges_finite_and_ordered": control_ranges_ordered,
+        "robot_articulation_complete": articulation_complete,
+        "task_piece_fixtures_complete": task_fixtures_complete,
+        "task_target_coordinates_finite": task_targets_finite,
+        "actuation_sensitivity_nonzero": actuation_response_delta > 1e-9,
+        "collision_penetration_bounded": maximum_penetration_m <= 0.01,
         "required_render_cameras_present": cameras_complete,
         "scene_identity_matches": scene_identity_matches,
         "render_nonempty": render_path.stat().st_size > 0,
+        "provenance_and_authority_complete": provenance_complete,
     }
     return {
         "schema_version": "sim2claw.factory_twin_validation.v1",
@@ -386,6 +461,22 @@ def validate_twin_candidate(
         },
         "cameras": cameras,
         "contacts_after_settle": contact_pairs,
+        "sensitivity": {
+            "actuator_index": 0,
+            "maximum_absolute_qacc_delta": actuation_response_delta,
+            "minimum_required_delta": 1e-9,
+        },
+        "collision": {
+            "maximum_penetration_m": maximum_penetration_m,
+            "maximum_allowed_penetration_m": 0.01,
+        },
+        "task_fixtures": {
+            "piece_body_ids": task_pieces,
+            "target_squares": sorted(
+                set(TELEOP_PAWN_SOURCE_SQUARES)
+                | set(TELEOP_TAN_PAWN_SQUARES)
+            ),
+        },
         "scene_summary": summary,
         "uncertainties_preserved": list(candidate.get("uncertainties", [])),
         "validation_owner": "twin_validator",
@@ -683,6 +774,16 @@ def run_independent_promotion(
 ) -> dict[str, Any]:
     """Join factory evidence in a separate promotion/rejection process."""
 
+    resolved_root = repo_root.resolve()
+    resolved_project = (
+        project_path.resolve()
+        if project_path.is_absolute()
+        else (resolved_root / project_path).resolve()
+    )
+    try:
+        subprocess_project = resolved_project.relative_to(resolved_root).as_posix()
+    except ValueError as error:
+        raise ValueError("promotion project path escapes the repository") from error
     output_directory.mkdir(parents=True, exist_ok=True)
     input_manifest_path = output_directory / "promotion_inputs.json"
     atomic_write_json(
@@ -706,7 +807,7 @@ def run_independent_promotion(
             "-m",
             "sim2claw.learning_factory_promotion",
             "--project",
-            str(project_path),
+            subprocess_project,
             "--input-manifest",
             str(input_manifest_path),
             "--task-contract",
@@ -725,9 +826,11 @@ def run_independent_promotion(
     stderr_path.write_text(completed.stderr, encoding="utf-8")
     receipt_path = process_output / "promotion_receipt.json"
     if completed.returncode not in {0, 2} or not receipt_path.is_file():
+        stderr_tail = completed.stderr.strip()[-2000:] or "<empty stderr>"
         raise RuntimeError(
             "independent promotion process failed; "
-            f"see {stderr_path.relative_to(repo_root.resolve())}"
+            f"see {stderr_path.relative_to(repo_root.resolve())}; "
+            f"exit_code={completed.returncode}; stderr_tail={stderr_tail}"
         )
     receipt = load_json_object(receipt_path, label="independent promotion receipt")
     unsigned = dict(receipt)

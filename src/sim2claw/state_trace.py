@@ -14,7 +14,7 @@ from typing import Any
 import mujoco
 import numpy as np
 
-from .paths import DEFAULT_CAPTURE_CONFIG, SO101_MODEL_PATH
+from .paths import DEFAULT_CAPTURE_CONFIG, REPO_ROOT, SO101_MODEL_PATH
 from .scene import build_scene_spec, initialize_robot_poses
 
 
@@ -165,7 +165,7 @@ def build_scene_manifest(
         "source": {
             "physics_engine": "MuJoCo",
             "mujoco_version": mujoco.__version__,
-            "robot_model": str(SO101_MODEL_PATH),
+            "robot_model": SO101_MODEL_PATH.relative_to(REPO_ROOT).as_posix(),
             "robot_model_sha256": _sha256(SO101_MODEL_PATH),
             "capture_config_sha256": _sha256(DEFAULT_CAPTURE_CONFIG),
         },

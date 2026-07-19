@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -15,6 +16,8 @@ from sim2claw.learning_factory_components import (
     validate_reconstruction_receipt,
     validate_twin_candidate,
 )
+from sim2claw.learning_factory import LearningFactory
+from sim2claw.scene import board_square_center
 from sim2claw.system_identification import _hash_fraction
 
 
@@ -37,6 +40,7 @@ def _canonical(payload: dict[str, object]) -> str:
 
 
 def test_reused_iphone_3dgs_receipt_revalidates_every_bound_file() -> None:
+    (REPO_ROOT / "artifacts/private").mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(
         dir=REPO_ROOT / "artifacts/private",
         prefix="learning-factory-3dgs-test-",
@@ -126,6 +130,11 @@ def test_real_twin_validator_compiles_settles_renders_and_hashes_trace() -> None
         )
     assert result["passed"] is True
     assert all(result["gates"].values())
+    assert result["gates"]["robot_articulation_complete"] is True
+    assert result["gates"]["task_piece_fixtures_complete"] is True
+    assert result["gates"]["collision_penetration_bounded"] is True
+    assert result["gates"]["actuation_sensitivity_nonzero"] is True
+    assert result["gates"]["provenance_and_authority_complete"] is True
     assert result["model_dimensions"]["ngeom"] > 0
     assert len(result["trace_sha256"]) == 64
     assert result["physical_authority"] is False
@@ -206,3 +215,222 @@ def test_real_split_and_exact_replay_chain_uses_payload_bytes() -> None:
         assert evaluation["verdict"] == "rejected"
         assert "required_parameter_stage_not_valid" in evaluation["reasons"]
         assert evaluation["process"]["exit_code"] == 0
+
+
+def test_real_component_campaign_executes_lf00_through_lf13() -> None:
+    runtime_parent = REPO_ROOT / "runs"
+    runtime_parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(
+        dir=runtime_parent, prefix="learning-factory-component-campaign-"
+    ) as temporary:
+        root = Path(temporary)
+        project_id = f"component-campaign-{root.name[-8:]}"
+        model_path = root / "smooth_slider.xml"
+        model_path.write_bytes(
+            (SYSID_FIXTURE_ROOT / "smooth_slider.xml").read_bytes()
+        )
+        config = json.loads(SYSID_CONFIG.read_text(encoding="utf-8"))
+        config["optimizer"].update(
+            {"multi_start_count": 1, "maximum_iterations": 4}
+        )
+        contact = config["parameter_stages"][2]
+        contact["requires_any_observable"] = ["joint_position"]
+        contact["parameters"] = [
+            {
+                "name": "contact_proxy_damping_scale",
+                "target": "joint_damping_scale",
+                "nominal": 1.0,
+                "minimum": 0.8,
+                "maximum": 1.2,
+                "supports_observables": [
+                    "joint_position",
+                    "end_effector_position",
+                    "end_effector_orientation",
+                    "gripper_position",
+                ],
+                "smooth": True,
+                "fallback_supported": True,
+            }
+        ]
+        config_path = root / "sysid_config.json"
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+        source = json.loads(SYSID_EPISODE.read_text(encoding="utf-8"))
+        ids_by_role: dict[str, list[str]] = {"train": [], "held_out": []}
+        index = 0
+        while any(len(values) < 2 for values in ids_by_role.values()):
+            episode_id = f"component-slider-{index:03d}"
+            role = (
+                "held_out"
+                if _hash_fraction("fixture", episode_id) < 0.5
+                else "train"
+            )
+            if len(ids_by_role[role]) < 2:
+                ids_by_role[role].append(episode_id)
+            index += 1
+        episodes = []
+        for episode_id in sorted(ids_by_role["train"] + ids_by_role["held_out"]):
+            payload = copy.deepcopy(source)
+            payload["episode_id"] = episode_id
+            path = root / f"{episode_id}.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            episodes.append(
+                {
+                    "recording_id": episode_id,
+                    "source_path": str(path),
+                    "samples_sha256": _sha256(path),
+                    "proof_class": "synthetic_recorded_action_fixture",
+                    "assets": {"samples": str(path)},
+                }
+            )
+        catalog_path = root / "synthetic_catalog.json"
+        catalog_path.write_text(
+            json.dumps({"catalog_id": project_id, "episodes": episodes}),
+            encoding="utf-8",
+        )
+
+        task = json.loads(
+            (
+                REPO_ROOT / "configs/tasks/chess_pick_place_act_state_v1.json"
+            ).read_text(encoding="utf-8")
+        )
+        target_xy = board_square_center("a6")[:2]
+        task["splits"]["object_destination_pairs"]["training"] = [
+            "tan_pawn_c8:target_left_train"
+        ]
+        task["splits"]["target_pose_cells"]["training"][0]["x_m"] = [
+            float(target_xy[0]),
+            float(target_xy[0]),
+        ]
+        task["splits"]["target_pose_cells"]["training"][0]["y_m"] = [
+            float(target_xy[1]),
+            float(target_xy[1]),
+        ]
+        task_path = root / "goal_act_component_task.json"
+        task_path.write_text(json.dumps(task), encoding="utf-8")
+        recipe = json.loads(
+            (
+                REPO_ROOT / "configs/training/goal_act_recipe_v1.json"
+            ).read_text(encoding="utf-8")
+        )
+        recipe.update(
+            {
+                "recipe_id": "goal-act-component-acceptance-v1",
+                "chunk_size": 4,
+                "n_action_steps": 2,
+                "model_dimension": 16,
+                "attention_heads": 4,
+                "encoder_layers": 1,
+                "decoder_layers": 1,
+                "feedforward_dimension": 32,
+                "latent_dimension": 4,
+                "batch_size": 16,
+                "optimizer_updates": 2,
+                "checkpoint_interval_updates": 1,
+                "maximum_wall_seconds": 120,
+            }
+        )
+        recipe_path = root / "goal_act_component_recipe.json"
+        recipe_path.write_text(json.dumps(recipe), encoding="utf-8")
+
+        project = json.loads(
+            (
+                REPO_ROOT
+                / "configs/projects/pawn_rank12_reachable_bg_hackathon_v1.json"
+            ).read_text(encoding="utf-8")
+        )
+        project["project_id"] = project_id
+        project["title"] = "Synthetic real-component learning-factory acceptance"
+        project["learning_factory"].update(
+            {
+                "profile": "component_fixture",
+                "campaign": {
+                    "campaign_id": "component-acceptance",
+                    "generation": 0,
+                    "parent_generation": None,
+                },
+                "component_fixture": {
+                    "synthetic_catalog": catalog_path.relative_to(REPO_ROOT).as_posix(),
+                    "sysid_config": config_path.relative_to(REPO_ROOT).as_posix(),
+                    "split_strategy": "deterministic_hash",
+                },
+                "replay": {
+                    "sysid_config": config_path.relative_to(REPO_ROOT).as_posix(),
+                    "minimum_ready_episodes": 2,
+                    "split_strategy": "deterministic_hash",
+                    "held_out_column": None,
+                    "sysid_backend": "official",
+                },
+                "curriculum": {
+                    "task_contract": task_path.relative_to(REPO_ROOT).as_posix(),
+                    "maximum_candidates": 1,
+                    "admitted_source_episodes": [
+                        {
+                            "source_episode_id": "strict-c8-source-mechanism",
+                            "source_proof_class": "simulation_strict_success",
+                            "source_segment_ids": ["full_episode"],
+                        }
+                    ],
+                    "candidate_executions": [],
+                    "candidate_generation": {
+                        "mode": "repo_native_pawn_source_expert_v1",
+                        "maximum_executions": 1,
+                        "object_dimensions_m": [0.03, 0.03, 0.053],
+                        "gripper_aperture_mapping": {
+                            "mapping_id": "so101_parallel_jaw_affine_v1",
+                            "scale_m_per_rad": 0.02,
+                            "offset_m": 0.01,
+                        },
+                    },
+                },
+                "training": {
+                    "recipe": recipe_path.relative_to(REPO_ROOT).as_posix(),
+                    "evaluation_cohort": "auto",
+                },
+                "recursion": {
+                    "previous_registry": None,
+                    "correction_candidates": [],
+                    "raw_failures_are_training_data": False,
+                },
+            }
+        )
+        project_path = root / "project.json"
+        project_path.write_text(
+            json.dumps(project, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        relative_project = project_path.relative_to(REPO_ROOT)
+        factory = LearningFactory(relative_project, repo_root=REPO_ROOT)
+        try:
+            report = factory.run_range("LF-00", "LF-13")
+            assert [row["stage_id"] for row in report["results"]] == [
+                f"LF-{index:02d}" for index in range(14)
+            ]
+            assert report["results"][7]["output"]["verdict"] == "admitted"
+            assert report["results"][9]["output"]["accepted_count"] == 1
+            assert report["results"][9]["output"]["held_out_training_rows"] == 0
+            assert report["results"][10]["output"]["dataset_sha256"] == (
+                report["results"][9]["output"]["dataset_sha256"]
+            )
+            evaluation = report["results"][11]
+            assert evaluation["status"] == "terminal_negative"
+            assert set(evaluation["output"]["b_g_scorecard"]) == {
+                f"pawn_{file_name}{source}_to_{file_name}{destination}"
+                for file_name in "bcdefg"
+                for source, destination in ((1, 2), (2, 1))
+            }
+            assert all(
+                row["case_count"] == 1
+                for row in evaluation["output"]["b_g_scorecard"].values()
+            )
+            assert report["results"][12]["output"]["counterexample_count"] >= 1
+            assert report["results"][13]["status"] == "passed", report["results"][
+                13
+            ].get("diagnostics")
+            assert report["results"][13]["output"]["state"] == "rejected"
+            assert report["results"][13]["output"]["skill_package"] is None
+        finally:
+            shutil.rmtree(
+                REPO_ROOT
+                / "runs/learning-factory/projects"
+                / project_id,
+                ignore_errors=True,
+            )

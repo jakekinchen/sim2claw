@@ -53,7 +53,11 @@ class StateTraceTest(unittest.TestCase):
         self.assertEqual(baseline["revision_sha256"], rebuilt["revision_sha256"])
         self.assertEqual(
             baseline["revision_sha256"],
-            "ddee05c5a692986f76351db2ef69e966247d65c205a2cd8759cb3ccca15ff8c0",
+            "e4709a0a963abfc545cb7f669fbf8e385c313bc87bbc05a19aea7bd10368fe90",
+        )
+        self.assertEqual(
+            baseline["source"]["robot_model"],
+            "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
         )
 
     def test_recorder_samples_mujoco_world_poses_and_writes_compact_trace(self) -> None:

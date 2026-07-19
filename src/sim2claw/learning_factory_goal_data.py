@@ -25,6 +25,7 @@ from .act_pick_place import (
 )
 from .learning_factory_artifacts import atomic_write_json, canonical_digest, sha256_file
 from .pawn_source_evaluator import evaluate_source_episode
+from .scene import board_square_center
 from .source_episode import adapt_source_episode, load_source_episode, tree_manifest
 
 
@@ -32,6 +33,7 @@ CURRICULUM_SCHEMA = "sim2claw.goal_act_curriculum.v1"
 DATASET_SCHEMA = "sim2claw.goal_act_dataset.v1"
 ROW_SCHEMA = "sim2claw.goal_act_dataset_row.v1"
 REJECTION_SCHEMA = "sim2claw.goal_act_candidate_rejection.v1"
+EXECUTION_BATCH_SCHEMA = "sim2claw.goal_act_candidate_execution_batch.v1"
 
 
 def _canonical_bytes(value: Any) -> bytes:
@@ -208,6 +210,104 @@ def compile_goal_act_curriculum(
         "split_manifest": split_manifest,
         "candidates": candidates,
         "admission_authority": "none_plan_only",
+    }
+    return {**unsigned, "artifact_sha256": canonical_digest(unsigned)}
+
+
+def generate_goal_act_candidate_executions(
+    curriculum: dict[str, Any],
+    *,
+    output_directory: Path,
+    task_contract_path: Path | None = None,
+    maximum_executions: int = 1,
+    object_dimensions_m: Iterable[float],
+    gripper_aperture_mapping: dict[str, Any],
+) -> dict[str, Any]:
+    """Execute bounded curriculum candidates with the repo-native source expert.
+
+    This generator owns actions and scene creation only. The returned episodes
+    remain pending until ``build_goal_act_dataset`` reruns the independent
+    strict evaluator. Unsupported planned poses fail closed instead of being
+    relabelled to match the expert.
+    """
+
+    from .pawn_source_expert import (
+        DESTINATION_SQUARE,
+        SOURCE_PIECE_ID,
+        collect_pawn_source_expert_candidate,
+    )
+
+    if curriculum.get("schema_version") != CURRICULUM_SCHEMA:
+        raise ValueError("unsupported goal ACT curriculum")
+    unsigned_curriculum = {
+        key: value for key, value in curriculum.items() if key != "artifact_sha256"
+    }
+    if curriculum.get("artifact_sha256") != canonical_digest(unsigned_curriculum):
+        raise ValueError("curriculum digest does not match its content")
+    task_path = (
+        task_contract_path
+        if task_contract_path is not None
+        else Path(__file__).parents[2]
+        / "configs/tasks/chess_pick_place_act_state_v1.json"
+    )
+    if curriculum.get("task_contract_sha256") != task_contract_sha256(task_path):
+        raise ValueError("curriculum uses another task contract")
+    dimensions = [float(value) for value in object_dimensions_m]
+    if len(dimensions) != 3 or not all(value > 0 and math.isfinite(value) for value in dimensions):
+        raise ValueError("candidate generator requires three positive object dimensions")
+    if gripper_aperture_mapping.get("mapping_id") != "so101_parallel_jaw_affine_v1":
+        raise ValueError("candidate generator requires a reviewed aperture mapping")
+    if maximum_executions < 1:
+        raise ValueError("candidate generator maximum_executions must be positive")
+    output_directory = output_directory.resolve()
+    output_directory.mkdir(parents=True, exist_ok=False)
+    executions: list[dict[str, Any]] = []
+    unsupported: list[dict[str, Any]] = []
+    expert_target_xy = np.asarray(board_square_center(DESTINATION_SQUARE)[:2], dtype=np.float64)
+    for candidate in curriculum["candidates"][:maximum_executions]:
+        planned_xy = np.asarray(candidate["continuous_target_xy_m"], dtype=np.float64)
+        if candidate.get("piece_id") != SOURCE_PIECE_ID or not np.allclose(
+            planned_xy, expert_target_xy, atol=1e-12
+        ):
+            unsupported.append(
+                {
+                    "candidate_id": candidate["candidate_id"],
+                    "reason": "repo_native_expert_does_not_cover_planned_piece_or_target",
+                    "training_rows_authorized": 0,
+                }
+            )
+            continue
+        episode_directory = output_directory / str(candidate["candidate_id"])
+        generated = collect_pawn_source_expert_candidate(
+            episode_directory,
+            render_size=64,
+        )
+        receipt = json.loads(
+            (episode_directory / "recording_receipt.json").read_text(encoding="utf-8")
+        )
+        executions.append(
+            {
+                "candidate_id": candidate["candidate_id"],
+                "episode_directory": str(episode_directory),
+                "generated_recording_id": receipt["recording_id"],
+                "object_dimensions_m": dimensions,
+                "gripper_aperture_mapping": dict(gripper_aperture_mapping),
+                "generator_id": "repo_native_pawn_source_expert_v1",
+                "generator_receipt_sha256": generated["receipt_sha256"],
+                "planner_id": candidate["planner_id"],
+                "ik_solver_id": candidate["ik_solver_id"],
+            }
+        )
+    unsigned = {
+        "schema_version": EXECUTION_BATCH_SCHEMA,
+        "curriculum_sha256": curriculum["artifact_sha256"],
+        "task_contract_sha256": task_contract_sha256(task_path),
+        "execution_count": len(executions),
+        "unsupported_count": len(unsupported),
+        "executions": executions,
+        "unsupported": unsupported,
+        "admission_authority": "none_pending_strict_lf09_evaluator",
+        "physical_authority": False,
     }
     return {**unsigned, "artifact_sha256": canonical_digest(unsigned)}
 

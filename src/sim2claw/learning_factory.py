@@ -227,7 +227,11 @@ class LearningFactory:
                 "local_act_fixture is quarantined: its ACT checkpoint was trained on an "
                 "internally generated rook dataset rather than the LF-09 dataset receipt"
             )
-        if profile not in {"physical_campaign", "deterministic_fixture"}:
+        if profile not in {
+            "physical_campaign",
+            "component_fixture",
+            "deterministic_fixture",
+        }:
             raise LearningFactoryError(f"unsupported learning-factory profile: {profile!r}")
         campaign = declaration.get("campaign", {})
         if not isinstance(campaign, dict):
@@ -414,10 +418,72 @@ class LearningFactory:
         )
         return str(result.get("status")) in accepted
 
-    def _input_digest(self, stage_id: str) -> str:
+    def _content_identity(self, path: Path) -> dict[str, Any]:
+        """Hash one declared input without depending on its checkout path."""
+        resolved = path.resolve()
+        try:
+            label = resolved.relative_to(self.repo_root).as_posix()
+        except ValueError:
+            label = resolved.as_posix()
+        if resolved.is_file():
+            return {"path": label, "kind": "file", "sha256": sha256_file(resolved)}
+        if not resolved.is_dir():
+            raise LearningFactoryError(f"input is not a file or directory: {label}")
+        entries: list[dict[str, Any]] = []
+        for item in sorted(resolved.rglob("*"), key=lambda candidate: candidate.as_posix()):
+            relative = item.relative_to(resolved).as_posix()
+            if item.is_symlink():
+                entries.append(
+                    {"path": relative, "kind": "symlink", "target": str(item.readlink())}
+                )
+            elif item.is_file():
+                entries.append(
+                    {"path": relative, "kind": "file", "sha256": sha256_file(item)}
+                )
+        return {
+            "path": label,
+            "kind": "directory",
+            "tree_sha256": canonical_digest(entries),
+            "file_count": sum(entry["kind"] == "file" for entry in entries),
+        }
+
+    def _declared_content_identities(self, value: Any) -> list[dict[str, Any]]:
+        """Resolve path-like values and record their current content."""
+        candidates: set[Path] = {self.context.project_path, self.context.graph_path}
+
+        def visit(item: Any, *, key: str | None = None) -> None:
+            if isinstance(item, dict):
+                for nested_key, nested in item.items():
+                    visit(nested, key=str(nested_key))
+                return
+            if isinstance(item, (list, tuple)):
+                if key == "generated_roots":
+                    return
+                for nested in item:
+                    visit(nested, key=key)
+                return
+            if not isinstance(item, str) or not item or "\n" in item:
+                return
+            raw = Path(item).expanduser()
+            candidate = raw if raw.is_absolute() else self.repo_root / raw
+            try:
+                resolved = candidate.resolve()
+                exists = resolved.exists()
+            except (OSError, ValueError):
+                return
+            if not exists or resolved in {Path("/"), Path.home().resolve(), self.repo_root}:
+                return
+            candidates.add(resolved)
+
+        visit(value)
+        return [
+            self._content_identity(path)
+            for path in sorted(candidates, key=lambda candidate: candidate.as_posix())
+        ]
+
+    def _input_payload(self, stage_id: str) -> dict[str, Any]:
         dependencies = self._dependency_results(stage_id)
-        declaration = self.context.project_manifest["learning_factory"]
-        payload = {
+        return {
             "project_manifest_sha256": self.context.project["project_manifest_sha256"],
             "evaluation_contract_sha256": self.context.project[
                 "evaluation_contract_sha256"
@@ -427,13 +493,27 @@ class LearningFactory:
             "generation": self.context.generation,
             "parent_generation": self.context.parent_generation,
             "stage": self._specs[stage_id],
-            "factory_declaration": declaration,
+            "declaration": self.context.project_manifest["learning_factory"],
+            "declared_content_identities": self._declared_content_identities(
+                {
+                    "project_manifest": self.context.project_manifest,
+                    "dependency_outputs": {
+                        key: value.get("output") for key, value in dependencies.items()
+                    },
+                }
+            ),
             "dependencies": {
-                key: value["result_sha256"] for key, value in sorted(dependencies.items())
+                key: {
+                    "result_sha256": value["result_sha256"],
+                    "current_input_sha256": self._input_digest(key),
+                }
+                for key, value in sorted(dependencies.items())
             },
             "implementation": self._implementation_identity(stage_id)["sha256"],
         }
-        return canonical_digest(payload)
+
+    def _input_digest(self, stage_id: str) -> str:
+        return canonical_digest(self._input_payload(stage_id))
 
     def _card(self, stage_id: str) -> dict[str, Any]:
         spec = self._specs[stage_id]
@@ -743,6 +823,15 @@ class LearningFactory:
             result = self.run_stage(stage_id)
             results.append(result)
             if result["status"] != "passed":
+                next_index = STAGE_IDS.index(stage_id) + 1
+                if (
+                    result["status"] == "terminal_negative"
+                    and next_index <= end_index
+                    and self._dependency_passed(
+                        STAGE_IDS[next_index], stage_id, result
+                    )
+                ):
+                    continue
                 break
         return self._run_summary("range", results)
 
@@ -870,10 +959,21 @@ class LearningFactory:
         }
         return {**unsigned, "run_sha256": canonical_digest(unsigned)}
 
-    def _dependency_output(self, stage_id: str) -> dict[str, Any]:
+    def _dependency_output(
+        self,
+        stage_id: str,
+        *,
+        accepted_statuses: frozenset[str] = frozenset({"passed"}),
+    ) -> dict[str, Any]:
         result = self._load_latest(stage_id)
-        if result is None or result["status"] != "passed" or not isinstance(result.get("output"), dict):
-            raise LearningFactoryError(f"dependency {stage_id} has no passed object output")
+        if (
+            result is None
+            or result["status"] not in accepted_statuses
+            or not isinstance(result.get("output"), dict)
+        ):
+            raise LearningFactoryError(
+                f"dependency {stage_id} has no accepted object output"
+            )
         return result["output"]
 
     def _execute_adapter(self, stage_id: str, attempt_dir: Path) -> dict[str, Any]:
@@ -900,7 +1000,89 @@ class LearningFactory:
             }
         if self.context.profile == "physical_campaign":
             return self._execute_physical(stage_id, attempt_dir)
+        if self.context.profile == "component_fixture":
+            return self._execute_component_fixture(stage_id, attempt_dir)
         return self._execute_fixture(stage_id, attempt_dir)
+
+    def _execute_component_fixture(
+        self, stage_id: str, attempt_dir: Path
+    ) -> dict[str, Any]:
+        """Run committed synthetic payloads through the production adapters."""
+
+        if stage_id not in {"LF-04", "LF-05"}:
+            return self._execute_physical(stage_id, attempt_dir)
+        declaration = self.context.project_manifest["learning_factory"]
+        fixture = declaration.get("component_fixture")
+        if not isinstance(fixture, dict):
+            raise LearningFactoryError("component_fixture declaration is required")
+        catalog_path = _inside(
+            self.repo_root,
+            str(fixture.get("synthetic_catalog", "")),
+            label="component fixture catalog",
+        )
+        config_path = _inside(
+            self.repo_root,
+            str(fixture.get("sysid_config", "")),
+            label="component fixture sysid config",
+        )
+        if stage_id == "LF-04":
+            from .recorded_replay import load_recorded_episode, load_sysid_config
+
+            config = load_sysid_config(config_path)
+            catalog = load_json_object(catalog_path, label="component fixture catalog")
+            rows = []
+            for entry in catalog.get("episodes", []):
+                source = Path(str(entry.get("source_path") or ""))
+                source = source if source.is_absolute() else self.repo_root / source
+                episode = load_recorded_episode(source, config)
+                rows.append(
+                    {
+                        "episode_id": episode.episode_id,
+                        "source_path": str(source.resolve()),
+                        "source_sha256": sha256_file(source),
+                        "sample_count": len(episode.timestamps),
+                        "available_observables": sorted(
+                            episode.available_observables()
+                        ),
+                        "proof_class": episode.proof_class,
+                    }
+                )
+            if len(rows) < 2:
+                raise LearningFactoryError(
+                    "component fixture requires at least two validated episodes"
+                )
+            output = {
+                "schema_version": "sim2claw.factory_component_source_inventory.v1",
+                "catalog_path": catalog_path.relative_to(self.repo_root).as_posix(),
+                "catalog_sha256": sha256_file(catalog_path),
+                "sysid_config_path": config_path.relative_to(self.repo_root).as_posix(),
+                "sysid_config_sha256": sha256_file(config_path),
+                "episode_count": len(rows),
+                "episodes": rows,
+                "all_payloads_strictly_parsed": True,
+                "training_admitted": False,
+            }
+            return {
+                "status": "passed",
+                "summary": "Synthetic recorded-action payloads passed the production parser and unit/timing contracts.",
+                "output": output,
+                "proof_class": "synthetic_component_integration",
+            }
+        from .learning_factory_components import freeze_and_replay_ready_episodes
+
+        output = freeze_and_replay_ready_episodes(
+            catalog_path=catalog_path,
+            config_path=config_path,
+            output_directory=attempt_dir / "replay",
+            repo_root=self.repo_root,
+            strategy=str(fixture.get("split_strategy", "deterministic_hash")),
+        )
+        return {
+            "status": "passed",
+            "summary": "Production exact replay passed and an evaluator-owned whole-episode split was frozen.",
+            "output": output,
+            "proof_class": "synthetic_component_integration",
+        }
 
     def _execute_physical(self, stage_id: str, attempt_dir: Path) -> dict[str, Any]:
         declaration = self.context.project_manifest["learning_factory"]
@@ -1209,6 +1391,31 @@ class LearningFactory:
                 generation=self.context.generation,
                 task_contract_path=task_path,
             )
+            training_declaration = declaration.get("training") or {}
+            if training_declaration.get("evaluation_cohort") == "auto":
+                from .goal_act_evaluator import generate_goal_act_evaluation_cohort
+
+                cohort_root = attempt_dir / "sealed_evaluation_cohort"
+                cohort = generate_goal_act_evaluation_cohort(
+                    output_directory=cohort_root,
+                    task_contract_path=task_path,
+                )
+                unsigned_output = {
+                    key: value for key, value in output.items() if key != "artifact_sha256"
+                }
+                unsigned_output.update(
+                    {
+                        "evaluation_cohort_path": (
+                            cohort_root / "cohort.json"
+                        ).relative_to(self.repo_root).as_posix(),
+                        "evaluation_cohort_sha256": cohort["cohort_sha256"],
+                        "evaluation_case_count": cohort["case_count"],
+                    }
+                )
+                output = {
+                    **unsigned_output,
+                    "artifact_sha256": canonical_digest(unsigned_output),
+                }
             return {
                 "status": "passed",
                 "summary": "Training-only pose, target, seed, and distractor coverage was compiled without opening held-outs.",
@@ -1216,20 +1423,45 @@ class LearningFactory:
                 "proof_class": "simulation_curriculum_plan",
             }
         if stage_id == "LF-09":
-            from .learning_factory_goal_data import build_goal_act_dataset
+            from .learning_factory_goal_data import (
+                build_goal_act_dataset,
+                generate_goal_act_candidate_executions,
+            )
 
             curriculum_declaration = declaration.get("curriculum") or {}
             executions = curriculum_declaration.get("candidate_executions")
             if not isinstance(executions, list) or not executions:
-                return {
-                    "status": "blocked",
-                    "summary": "The curriculum has no generated candidate episodes to replay and evaluate.",
-                    "blockers": [
-                        "candidate_executions must bind generated episode directories and planner/IK lineage"
-                    ],
-                    "output": None,
-                    "proof_class": "simulation_dataset_admission",
-                }
+                generation = curriculum_declaration.get("candidate_generation")
+                if not isinstance(generation, dict) or generation.get("mode") != (
+                    "repo_native_pawn_source_expert_v1"
+                ):
+                    return {
+                        "status": "blocked",
+                        "summary": "The curriculum has no generated candidate episodes to replay and evaluate.",
+                        "blockers": [
+                            "candidate_executions or a supported candidate_generation declaration is required"
+                        ],
+                        "output": None,
+                        "proof_class": "simulation_dataset_admission",
+                    }
+                batch = generate_goal_act_candidate_executions(
+                    self._dependency_output("LF-08"),
+                    output_directory=attempt_dir / "candidate_executions",
+                    task_contract_path=_inside(
+                        self.repo_root,
+                        str(curriculum_declaration.get("task_contract", "")),
+                        label="goal-conditioned ACT task contract",
+                    ),
+                    maximum_executions=int(generation.get("maximum_executions", 1)),
+                    object_dimensions_m=generation.get("object_dimensions_m", []),
+                    gripper_aperture_mapping=generation.get(
+                        "gripper_aperture_mapping", {}
+                    ),
+                )
+                atomic_write_json(
+                    attempt_dir / "candidate_execution_batch.json", batch
+                )
+                executions = batch["executions"]
             output = build_goal_act_dataset(
                 self._dependency_output("LF-08"),
                 executions=executions,
@@ -1290,6 +1522,12 @@ class LearningFactory:
             training = self._dependency_output("LF-10")
             declaration_training = declaration.get("training") or {}
             cohort_text = str(declaration_training.get("evaluation_cohort", ""))
+            if cohort_text == "auto":
+                cohort_text = str(
+                    self._dependency_output("LF-08").get(
+                        "evaluation_cohort_path", ""
+                    )
+                )
             if not cohort_text:
                 return {
                     "status": "blocked",
@@ -1335,7 +1573,10 @@ class LearningFactory:
                 persist_counterexample_registry,
             )
 
-            evaluation = self._dependency_output("LF-11")
+            evaluation = self._dependency_output(
+                "LF-11",
+                accepted_statuses=frozenset({"passed", "terminal_negative"}),
+            )
             recursion_declaration = declaration.get("recursion") or {}
             previous_text = str(recursion_declaration.get("previous_registry") or "")
             registry = persist_counterexample_registry(

@@ -302,6 +302,26 @@ def test_factory_resume_reuses_unchanged_passed_stages(tmp_path: Path) -> None:
     assert all(item["reused"] is True for item in second["results"])
 
 
+def test_referenced_input_mutation_supersedes_stage_without_manifest_edit(
+    tmp_path: Path,
+) -> None:
+    project = _write_factory_project(tmp_path)
+    factory = LearningFactory(project, repo_root=tmp_path)
+    assert factory.run_range("LF-00", "LF-02")["final_status"] == "passed"
+    capture_path = tmp_path / "configs/polycam/fixture.json"
+    original_project_sha256 = _sha256(tmp_path / project)
+    _write_json(
+        capture_path,
+        {"simulation_estimates": {"board": {"scene_id": "mutated-in-place"}}},
+    )
+    reopened = LearningFactory(project, repo_root=tmp_path)
+    assert _sha256(tmp_path / project) == original_project_sha256
+    assert reopened.explain("LF-02")["status"] == "superseded"
+    rerun = reopened.run_stage("LF-02")
+    assert rerun["status"] == "passed"
+    assert rerun.get("reused") is not True
+
+
 def test_factory_lease_prevents_concurrent_stage_owner(tmp_path: Path) -> None:
     project = _write_factory_project(tmp_path)
     factory = LearningFactory(project, repo_root=tmp_path)
