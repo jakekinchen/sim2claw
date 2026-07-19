@@ -7,6 +7,38 @@ Machine-readable snapshot:
 
 ![Sequential simulator spatial-error progression](2026-07-19-simulator-accuracy-progression.svg)
 
+## Figure guide
+
+The figure has three aligned panels.
+
+**Panel 1 — spatial-error progression.** Each point is one simulator
+optimization action, annotated with what changed and its relative RMS
+reduction. The actions group into three phases: *diagnose* (freeze the B-G
+evaluator, replay the owner-reviewed commands, record the terminal negative),
+*fit and reject* (the free-sign source adapter cut RMS 61.7% but was rejected
+because its multi-radian offsets were physically implausible and produced no
+contact), and the *staged workcell fit* (a categorical 180-degree board
+relabel, a bounded planar board fit at yaw 184.9 degrees, bounded identity-sign
+joint offsets, height/timing nuisance terms, and the selected lift-dominant
+candidate with an 18.7-degree shoulder-lift offset). The diamond is the
+one-time held-out check of the frozen candidate (23.5 mm against a 327.5 mm
+held-out baseline), plotted against the declared 60 mm kinematic-admission
+threshold. The held-out set is now opened and must not be reused as fresh
+evidence.
+
+**Panel 2 — task consequences.** Selected-piece contact and lift fractions
+under each candidate. Contact moves from 0/11 to 9/11 and lift to 1/11 only at
+the final candidate; full pawn-move success remains 0 everywhere. This panel is
+the reason spatial fit alone grants no training authority.
+
+**Panel 3 — path to normalized GR00T training data.** The planned lane from
+the frozen workcell candidate through committed receipts and tests,
+regenerated B-G rank-1/rank-2 episodes, and a SHA-bound dataset with per-joint
+normalization statistics, to a GR00T N1.7 fine-tune that would replace the
+current mixture (one current-geometry pawn episode repeated 24 times as
+sampling weight). Only the first stage has working-receipt evidence today; the
+remaining stages are planned and carry no authority.
+
 ## Metric boundary
 
 This ledger deliberately separates four metric families:
