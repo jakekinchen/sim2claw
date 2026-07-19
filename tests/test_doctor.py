@@ -24,6 +24,24 @@ class NvidiaPreflightTest(unittest.TestCase):
         )
         self.assertTrue(all(check["passed"] for check in checks))
 
+    def test_nvidia_preflight_accepts_jetson_device_without_nvidia_smi(self) -> None:
+        checks = nvidia_preflight_requirements(
+            platform_name="Linux",
+            nvidia_smi_path=None,
+            mujoco_gl="egl",
+            jetson_gpu_path="/dev/nvidia0",
+        )
+        self.assertTrue(all(check["passed"] for check in checks))
+
+    def test_nvidia_preflight_fails_without_smi_or_jetson_device(self) -> None:
+        checks = nvidia_preflight_requirements(
+            platform_name="Linux",
+            nvidia_smi_path=None,
+            mujoco_gl="egl",
+            jetson_gpu_path=None,
+        )
+        self.assertFalse(checks[1]["passed"])
+
 
 if __name__ == "__main__":
     unittest.main()
