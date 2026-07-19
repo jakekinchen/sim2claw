@@ -22,6 +22,10 @@
   — completed M6 contract slice: the observation/action, transition, split,
   lineage, evaluator, and negative-fixture contract is frozen; data generation
   and learned-policy milestones remain pending.
+- [`briefs/006-studio-task-orchestrator.md`](./briefs/006-studio-task-orchestrator.md)
+  — proposed Studio Task Orchestrator: Silicon overhead-frame intake,
+  deduplication, B--G base-case restoration, bounded model decisions, promoted
+  ACT skill dispatch, inactivity pause, and physical-authority tiers.
 - [`research/2026-07-19-pawn-composability-study.md`](./research/2026-07-19-pawn-composability-study.md)
   — current B--G endpoint, exact-replay, calibration, composition, language,
   and checkpoint evidence boundary.
