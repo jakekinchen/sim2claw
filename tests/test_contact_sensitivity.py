@@ -11,10 +11,16 @@ from unittest import mock
 import torch
 
 from sim2claw.act_model import (
+    ACTCheckpointSnapshot,
     load_act_checkpoint_snapshot,
     read_act_checkpoint_snapshot,
 )
-from sim2claw.contact_prior import ContactPriorSnapshot, load_contact_prior_contract
+from sim2claw.act_evaluator import evaluate_act
+from sim2claw.contact_prior import (
+    ContactPriorSnapshot,
+    load_contact_prior_contract,
+    load_simulator_variant,
+)
 from sim2claw.contact_sensitivity import (
     run_contact_sensitivity,
     summarize_contact_sensitivity,
@@ -70,6 +76,22 @@ class CheckpointSnapshotTest(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "accepted digest"):
                     read_act_checkpoint_snapshot(path, expected_sha256="0" * 64)
                 torch_load.assert_not_called()
+
+    def test_variant_evaluator_rejects_unaccepted_snapshot_before_deserialization(self) -> None:
+        snapshot = ACTCheckpointSnapshot(Path("rejected.pt"), "0" * 64, b"rejected")
+        variant = load_simulator_variant("rubber_tip_low")
+        with tempfile.TemporaryDirectory() as directory:
+            with mock.patch(
+                "sim2claw.act_evaluator.load_act_checkpoint_snapshot"
+            ) as deserialize:
+                with self.assertRaisesRegex(ValueError, "not accepted"):
+                    evaluate_act(
+                        snapshot,
+                        output_directory=Path(directory),
+                        render_video=False,
+                        simulator_variant=variant,
+                    )
+                deserialize.assert_not_called()
 
     def test_path_replacement_after_snapshot_cannot_change_deserialized_bytes(self) -> None:
         accepted = b"accepted immutable snapshot"

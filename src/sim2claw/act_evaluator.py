@@ -128,11 +128,21 @@ def evaluate_act(
     torch.set_num_threads(1)
     torch.manual_seed(int(task["held_out_split"]["seeds"][0]))
     device = torch.device("cpu")
+    if simulator_variant is not None and not isinstance(
+        checkpoint_source, ACTCheckpointSnapshot
+    ):
+        raise ValueError("contact sensitivity evaluation requires an accepted snapshot")
     checkpoint_snapshot = (
         checkpoint_source
         if isinstance(checkpoint_source, ACTCheckpointSnapshot)
         else read_act_checkpoint_snapshot(checkpoint_source)
     )
+    if (
+        simulator_variant is not None
+        and checkpoint_snapshot.sha256
+        != simulator_variant.accepted_checkpoint_sha256
+    ):
+        raise ValueError("contact sensitivity checkpoint snapshot is not accepted")
     model, statistics, checkpoint = load_act_checkpoint_snapshot(
         checkpoint_snapshot, device=device
     )

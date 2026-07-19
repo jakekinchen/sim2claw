@@ -249,6 +249,7 @@ class SimulatorVariant:
     contract_sha256: str
     task_id: str
     task_contract_sha256: str
+    accepted_checkpoint_sha256: str
     variant_id: str
     variant_sha256: str
     payload: dict[str, Any]
@@ -613,6 +614,9 @@ def load_simulator_variant(
         contract_sha256=snapshot.sha256,
         task_id=str(contract["task_id"]),
         task_contract_sha256=str(contract["task_contract_sha256"]),
+        accepted_checkpoint_sha256=str(
+            contract["policy"]["accepted_checkpoint_sha256"]
+        ),
         variant_id=variant_id,
         variant_sha256=_canonical_sha256(identity_payload),
         payload=contract["variants"][variant_id],
@@ -741,6 +745,13 @@ def compiled_contact_identity(
             model
         ),
         "compiled_total_body_mass_kg": float(np.sum(model.body_mass)),
+        "compiled_counts": {
+            "nbody": int(model.nbody),
+            "njnt": int(model.njnt),
+            "nq": int(model.nq),
+            "nv": int(model.nv),
+            "nu": int(model.nu),
+        },
         "modeled_added_mass_kg": 0.0,
         "mass_effect_mode": "excluded_as_negligible_unmeasured_owner_assessment",
         "bindings": [],
