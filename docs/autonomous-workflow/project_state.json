@@ -313,7 +313,11 @@
     "owner_reserved_nemoclaw_lane": {
       "workspace_name": "nemoclaw-e3fca7",
       "reservation_hours": 20,
-      "status_at_this_state_update": "not_live_verified_by_coordinator",
+      "status_at_this_state_update": "live_verified_stopped_healthy_and_reserved_do_not_delete",
+      "live_verified_at": "2026-07-19T04:40:00-05:00",
+      "workspace_id": "b7kee8ww2",
+      "instance_type": "n2d-highmem-4",
+      "instance_kind": "cpu",
       "lifecycle_owner": "originating_nemoclaw_thread",
       "coordinator_may_stop_or_delete": false
     }
