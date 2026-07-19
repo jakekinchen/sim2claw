@@ -419,6 +419,30 @@ def build_parser() -> argparse.ArgumentParser:
     )
     pawn_source_fit.add_argument("--output", type=Path, required=True)
 
+    pawn_workcell_fit_v2 = subparsers.add_parser(
+        "pawn-bg-workcell-fit-v2",
+        help="fit the bounded workcell candidate on every recorded pawn move, "
+        "including cross-file and diagonal recordings",
+    )
+    pawn_workcell_fit_v2.add_argument(
+        "--source-repository-root",
+        type=Path,
+        required=True,
+        help="read-only repository root containing the hash-bound physical source assets",
+    )
+    pawn_workcell_fit_v2.add_argument("--output", type=Path, required=True)
+
+    pawn_workcell_holdout_v2 = subparsers.add_parser(
+        "pawn-bg-workcell-holdout-v2",
+        help="open the never-opened held-out recordings once against a frozen "
+        "move-suite candidate",
+    )
+    pawn_workcell_holdout_v2.add_argument(
+        "--source-repository-root", type=Path, required=True
+    )
+    pawn_workcell_holdout_v2.add_argument("--receipt", type=Path, required=True)
+    pawn_workcell_holdout_v2.add_argument("--output", type=Path, required=True)
+
     pawn_source_fit_visuals = subparsers.add_parser(
         "pawn-bg-source-fit-visuals",
         help="render a synchronized source/sim episode and source-fit score history",
@@ -1025,6 +1049,45 @@ def main(argv: Sequence[str] | None = None) -> int:
                 for key, value in report["final_contact_variants"].items()
             },
             "claim_boundary": report["claim_boundary"],
+        }
+        print(json.dumps(summary, indent=2, sort_keys=True))
+        return 0
+    if args.command == "pawn-bg-workcell-fit-v2":
+        from .pawn_bg_workcell_fit_v2 import run_move_suite_fit
+
+        receipt = run_move_suite_fit(
+            source_repository_root=args.source_repository_root,
+            output_path=args.output,
+        )
+        summary = {
+            "train_episode_count": receipt["train_episode_count"],
+            "train_event_count": receipt["train_event_count"],
+            "kinematic_by_move_class": receipt["kinematic_by_move_class"],
+            "selected_candidate": receipt["selected_candidate"],
+            "train_replay_candidates": {
+                name: value["summary"]
+                for name, value in receipt["train_replay_candidates"].items()
+            },
+            "claim_boundary": receipt["claim_boundary"],
+        }
+        print(json.dumps(summary, indent=2, sort_keys=True))
+        return 0
+    if args.command == "pawn-bg-workcell-holdout-v2":
+        from .pawn_bg_workcell_fit_v2 import run_move_suite_held_out
+
+        validation = run_move_suite_held_out(
+            source_repository_root=args.source_repository_root,
+            receipt_path=args.receipt,
+            output_path=args.output,
+        )
+        summary = {
+            "fresh_held_out_episodes": validation["fresh_held_out_episodes"],
+            "held_out_kinematic_candidate": validation["held_out_kinematic_candidate"],
+            "held_out_kinematic_frozen_baseline": validation[
+                "held_out_kinematic_frozen_baseline"
+            ],
+            "admitted": validation["admitted"],
+            "claim_boundary": validation["claim_boundary"],
         }
         print(json.dumps(summary, indent=2, sort_keys=True))
         return 0

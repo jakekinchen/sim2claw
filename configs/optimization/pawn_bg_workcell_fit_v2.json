@@ -1,0 +1,64 @@
+{
+  "schema_version": "sim2claw.pawn_bg_workcell_fit.v2",
+  "optimization_id": "pawn_bg_workcell_fit_v2_move_suite",
+  "rationale": {
+    "diagnosis": [
+      "The v1 fit constrained the workcell with 22 events from 11 same-file rank moves only; the frozen catalog also holds three cross-file recordings and one diagonal training recording that were excluded by the v1 product-scope filter and never constrained the fit.",
+      "Cross-file and diagonal moves span the board laterally, so their events add leverage on board yaw and board center that the rank-only event set cannot provide, and they exercise arm poses that can distinguish the v1 candidate's 18.70-degree shoulder-lift zero offset from an unmodeled geometry error.",
+      "The v1 held-out episodes d1-to-d2 and g1-to-g2-redo were opened once and are burned as fresh evidence; the frozen sysid split still holds one never-opened held-out recording, the diagonal c1-to-d2, which supports one fresh kinematic-generalization admission on a move class absent from v1 training."
+    ],
+    "extends_not_replaces": "pawn_bg_workcell_fit_v1 remains the frozen record of the rank-move fit; this contract widens data scope only and reuses the v1 staged bounded parameterization unchanged"
+  },
+  "fit": {
+    "frozen_board_center_in_table_frame_xy_m": [0.04, -0.065],
+    "frozen_board_yaw_relative_to_table_degrees": 1.55,
+    "stage_a": "categorical 180-degree board relabel (no free parameters)",
+    "stage_b": "planar board center/yaw refit, xy residuals only, bounds +/-0.08 m and +/-15 degrees",
+    "stage_c": "bounded per-joint zero offsets for shoulder_pan, shoulder_lift, elbow_flex, wrist_flex, full 3D residuals, jointly with stage-B parameters",
+    "joint_zero_offset_bound_degrees": 15.0,
+    "joint_zero_offset_prior_sigma_degrees": 5.0,
+    "stage_c_prime": "stage C plus a bounded base-height correction and a bounded non-negative reopen-phase timing z nuisance",
+    "base_z_offset_bound_m": 0.03,
+    "reopen_timing_z_bound_m": 0.03,
+    "stage_d": "lift-dominant hypothesis: a single shoulder-lift zero offset (bounded 25 degrees) explains the vertical residual; pan/elbow/wrist keep a 3-degree prior; includes the reopen timing nuisance",
+    "stage_d_lift_offset_bound_degrees": 25.0,
+    "stage_d_other_offset_prior_sigma_degrees": 3.0,
+    "candidate_selection_rule": "among stage C, stage C-prime, and stage D, select the candidate with more train episodes showing selected-piece jaw contact in command-driven replay; tie broken by lower train event RMS; declared before the fresh held-out episode is opened",
+    "wrist_roll_offset_fixed_zero_reason": "rotation about the gripper axis is unobservable in pinch-point position",
+    "estimated_pawn_neck_height_m": 0.038,
+    "joint_signs_frozen_identity": [1, 1, 1, 1, 1],
+    "range_envelope": "per-joint union of the LeRobot calibration sweep and training-episode command/actual excursions, plus 2 degrees margin, applied to the compiled model in memory",
+    "event_extractor": "frozen pawn_bg_source_fit_v1 gripper-close proxy, unchanged"
+  },
+  "data_binding": {
+    "catalog": "configs/data/physical_pawn_move_catalog_20260719.json",
+    "split": "configs/sysid/physical_pawn_sysid_split_v1.json",
+    "train_scope": "every catalog recording whose folder label parses as a square-to-square pawn move and whose recording id is in the frozen sysid train partition; rank, file, and diagonal move classes all participate",
+    "minimum_train_scope": {"rank": 11, "file": 3, "diagonal": 1},
+    "held_out_scope": "sysid held-out recordings in move-suite scope, minus the recordings already opened by the v1 workcell fit",
+    "previously_opened_held_out_recording_ids": [
+      "20260719T031518Z-34bff0dd",
+      "20260719T032810Z-9e623c5e"
+    ],
+    "fresh_held_out_minimum_episodes": 1,
+    "calibration_reference": "calibration/so101/follower_arm.json"
+  },
+  "replay_scoring": {
+    "method": "diagnostic consequence metrics computed directly from the frozen trace-row schema; thresholds are read from the frozen pawn_bg_sim_reward_v1 hard gates so numbers stay comparable, but no frozen gate result or task-success claim is emitted for moves outside the frozen 12-skill table",
+    "board_state_caveat": "replays place only the selected piece at the recorded source square; episodes whose destination square is occupied by a different piece in the baseline sparse layout are flagged baseline_destination_square_occupied and summarized separately, because the physical board state of those recordings is not modeled"
+  },
+  "admission": {
+    "declared_before_held_out_opened": true,
+    "maximum_held_out_event_rms_m": 0.06,
+    "require_no_candidate_command_clipping": true,
+    "consequence_scores_are_diagnostic_only": true,
+    "previously_opened_episodes_are_reference_only": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "training": false,
+    "promotion": false,
+    "physical_calibration_claimed": false,
+    "sim_to_real_error_measured": false
+  }
+}

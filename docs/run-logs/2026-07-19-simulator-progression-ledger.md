@@ -58,6 +58,15 @@ recipe 3 has higher final loss (`0.03175`) and passed only the narrow rook-lift
 v1 evaluator. GR00T likewise reduced optimization loss substantially while
 the separately owned task evaluators remained terminal-negative.
 
+## Next optimization action
+
+The move-suite workcell fit v2
+(`docs/run-logs/2026-07-19-pawn-bg-move-suite-workcell-fit-v2.md`) widens the
+fit from 11 rank-move recordings to all 15 in-scope training recordings,
+adding the three cross-file and one diagonal move the v1 filter discarded,
+and reserves the never-opened diagonal `c1-to-d2` for one fresh held-out
+admission. Its receipt should append new rows here with per-move-class RMS.
+
 ## Required fields for future rows
 
 - timestamp and Git commit or explicit `uncommitted` state;
