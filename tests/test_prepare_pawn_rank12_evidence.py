@@ -158,6 +158,17 @@ class PreparePawnRank12EvidenceTest(unittest.TestCase):
                 catalog["episodes"]
             )
         ]
+        final_e2_episode = next(
+            episode
+            for episode in episodes
+            if episode["recording_id"] == "20260719T032935Z-66894edc"
+        )
+        final_e2_episode["visual_fiducial_proposals"]["final"].update(
+            {
+                "center_px": [408.5, 213.5],
+                "radius_px": 12.199999809265137,
+            }
+        )
         summary = PREPARE.apply_owner_visual_adjustments(episodes)
         self.assertEqual(summary["adjustment_count"], 8)
         self.assertEqual(summary["unambiguous_remap_count"], 8)
@@ -174,7 +185,10 @@ class PreparePawnRank12EvidenceTest(unittest.TestCase):
             ("20260719T030206Z-af661460", "initial"): ([-3.0, 3.0], 0.80),
             ("20260719T031518Z-34bff0dd", "initial"): ([2.0, 3.0], 1.15),
             ("20260719T031518Z-34bff0dd", "final"): ([-2.0, -3.0], 1.00),
-            ("20260719T032935Z-66894edc", "final"): ([-4.0, 3.0], 1.25),
+            ("20260719T032935Z-66894edc", "final"): (
+                [5.0, 6.0],
+                12.100000381469727 / 12.199999809265137,
+            ),
             ("20260719T031615Z-0e058ca2", "final"): ([-2.0, 2.0], 1.15),
         }
         actual_adjustments = {
@@ -185,6 +199,23 @@ class PreparePawnRank12EvidenceTest(unittest.TestCase):
             for row in summary["adjustments"]
         }
         self.assertEqual(actual_adjustments, expected_adjustments)
+        final_e2_adjustment = next(
+            row
+            for row in summary["adjustments"]
+            if row["recording_id"] == "20260719T032935Z-66894edc"
+            and row["phase"] == "final"
+        )
+        self.assertEqual(
+            final_e2_adjustment["adjusted_center_px"], [413.5, 219.5]
+        )
+        self.assertAlmostEqual(
+            final_e2_adjustment["adjusted_radius_px"], 12.100000381469727
+        )
+        self.assertIn("panel_specific_redo", final_e2_adjustment)
+        self.assertIn(
+            "completely off",
+            final_e2_adjustment["panel_specific_redo"]["reason"],
+        )
         actual_grid_remap = {
             (
                 row["prior_mistargeted_panel"]["recording_id"],

@@ -124,9 +124,19 @@ OWNER_VISUAL_ADJUSTMENT_REMAP = (
         "corrected_phase": "final",
         "corrected_grid_position": [6, 2],
         "corrected_title": "outside_product_scope 66894edc final e2",
-        "center_delta_px": [-4.0, 3.0],
-        "radius_scale": 1.25,
-        "directive": "enlarge and retarget down-left",
+        "absolute_center_px": [413.5, 219.5],
+        "absolute_radius_px": 12.100000381469727,
+        "directive": (
+            "panel-specific redo using the strongest compact paired-frame "
+            "difference candidate"
+        ),
+        "panel_specific_redo": {
+            "supersedes_directive": "enlarge and retarget down-left",
+            "reason": "owner reported the remapped final E2 ring was completely off",
+            "candidate_basis": (
+                "highest paired-frame difference score among compact Hough candidates"
+            ),
+        },
     },
     {
         "prior_recording_id": "20260719T032620Z-0c7e3d86",
@@ -646,11 +656,20 @@ def apply_owner_visual_adjustments(
         fiducial = episode["visual_fiducial_proposals"][phase]
         baseline_center = np.asarray(fiducial["center_px"], dtype=np.float64)
         baseline_radius = float(fiducial["radius_px"])
-        center_delta = np.asarray(
-            adjustment["center_delta_px"], dtype=np.float64
-        )
-        adjusted_center = baseline_center + center_delta
-        adjusted_radius = baseline_radius * float(adjustment["radius_scale"])
+        if "absolute_center_px" in adjustment:
+            adjusted_center = np.asarray(
+                adjustment["absolute_center_px"], dtype=np.float64
+            )
+            adjusted_radius = float(adjustment["absolute_radius_px"])
+            center_delta = adjusted_center - baseline_center
+            radius_scale = adjusted_radius / baseline_radius
+        else:
+            center_delta = np.asarray(
+                adjustment["center_delta_px"], dtype=np.float64
+            )
+            radius_scale = float(adjustment["radius_scale"])
+            adjusted_center = baseline_center + center_delta
+            adjusted_radius = baseline_radius * radius_scale
         fiducial["center_px"] = adjusted_center.astype(float).tolist()
         fiducial["radius_px"] = adjusted_radius
         fiducial["selection_method"] = (
@@ -665,7 +684,7 @@ def apply_owner_visual_adjustments(
             "baseline_center_px": baseline_center.astype(float).tolist(),
             "baseline_radius_px": baseline_radius,
             "center_delta_px": center_delta.astype(float).tolist(),
-            "radius_scale": float(adjustment["radius_scale"]),
+            "radius_scale": radius_scale,
             "adjusted_center_px": adjusted_center.astype(float).tolist(),
             "adjusted_radius_px": adjusted_radius,
             "prior_mistargeted_panel": {
@@ -682,6 +701,10 @@ def apply_owner_visual_adjustments(
                 "directional_owner_feedback_not_exact_coordinate_acceptance"
             ),
         }
+        if "panel_specific_redo" in adjustment:
+            fiducial["owner_visual_adjustment"]["panel_specific_redo"] = dict(
+                adjustment["panel_specific_redo"]
+            )
         applied.append(
             {
                 "recording_id": recording_id,

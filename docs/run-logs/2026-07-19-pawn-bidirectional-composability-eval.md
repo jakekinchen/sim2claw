@@ -55,7 +55,7 @@ paid compute left running
 
 | Proof Surface | Command/URL | Result | Artifact |
 | --- | --- | --- | --- |
-| Focused unit/contract/preparation tests | `uv run --frozen pytest -q tests/test_pawn_composability_eval.py tests/test_pawn_rank12_evaluation.py tests/test_prepare_pawn_rank12_evidence.py` | 22 scoped tests passed; includes proof-class/provenance gates, outcome completeness, collinear regression rejection, duplicate retention, adjudication retention, proposal-calibration boundaries, and grid-remapped owner-retarget non-admission | Test output |
+| Focused unit/contract/preparation tests | `uv run --frozen pytest -q tests/test_pawn_composability_eval.py tests/test_pawn_rank12_evaluation.py tests/test_prepare_pawn_rank12_evidence.py` | 24 focused tests passed; includes proof-class/provenance gates, outcome completeness, collinear regression rejection, duplicate retention, adjudication retention, proposal-calibration boundaries, grid-remapped owner-retarget non-admission, and the panel-specific final-E2 redo | Test output |
 | Earlier full repository suite | `uv run --frozen pytest -q` | 169 passed, 30 subtests passed before product-v2 replacement patch | Test output; not represented as post-v2 full-suite proof |
 | JSON syntax | `jq empty` on the contract, template, and project state | Passed | Tracked JSON files |
 | Patch hygiene | `git diff --check` | Passed | Working tree diff |
@@ -113,6 +113,12 @@ paid compute left running
 | R5C4 `5ab5603f final E1` | R4C4 `34bff0dd final D2` |
 | R7C2 `1ee203e8 final F1` | R6C2 `66894edc final E2` |
 | R8C4 `0c7e3d86 final F1` | R7C4 `0e058ca2 final E1` |
+
+- After inspecting the remapped R6C2 result, the owner rejected its inherited
+  down-left/expanded ring as completely off. The final E2 visual fiducial was
+  redone at `[413.5, 219.5] px`, radius `12.1000 px`, using the highest
+  paired-frame-difference compact Hough candidate. This panel-specific redo
+  remains an unreviewed proposal and supersedes only that inherited directive.
 - The proposal-only pixel-to-board homography is identified as
   `c922_board_grid_homography_proposal_20260719_v1`, hash-bound to its matrix and
   reference frame, and explicitly prohibited from evaluator calibration. Every
@@ -127,9 +133,9 @@ paid compute left running
 - Policies promoted: 0.
 - Brev instances created or used: 0.
 - Recovered frame-selection SHA-256:
-  `34a86ee1389b8e1b169801817240b9247c80a6ecebfac7b0571ab1f2b118ac59`.
+  `16cf00d03205cd9f52e269e9707f6acf0b23d39319e0a449a6f9900e1a5297be`.
 - Proposal review-sheet SHA-256:
-  `55e82019d462dbfec7172adff3d66e84e2347806da75c431ee622ab783de1037`.
+  `42aeb310061a0c4c7c0610ec7d9be932cb4ab979a2e680e4572b4623d8987da8`.
 - Task-label adjudication queue SHA-256:
   `718f155a40c301058291b597938a0a10e74380ae152f15f9e33850ecaab4c516`.
 - Fail-closed summary SHA-256:
