@@ -365,6 +365,12 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('id="three-canvas"', html)
             self.assertIn('id="live-simulation-canvas"', html)
             self.assertIn('id="live-simulation-status"', html)
+            self.assertIn('id="live-workspace-drawer"', html)
+            self.assertIn('id="live-workspace-canvas"', html)
+            self.assertIn('data-camera-id="d405-wrist"', html)
+            self.assertIn('data-camera-id="logitech-overhead"', html)
+            self.assertIn('data-camera-id="logitech-workspace"', html)
+            self.assertIn("Open camera slot", html)
             self.assertIn('src="/studio3d.js"', html)
             self.assertIn('src="/assets/workcell/studio-left.png"', html)
             self.assertIn('src="/assets/workcell/studio-right.png"', html)
@@ -395,6 +401,10 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('fetch("/api/recorder/live-simulation"', javascript)
             self.assertIn("viewer.applyLiveState(liveState)", javascript)
             self.assertIn("refreshLiveSimulation(), 50", javascript)
+            self.assertIn('fetch("/api/live/session"', javascript)
+            self.assertIn("/api/live/cameras/", javascript)
+            self.assertIn("stopLiveCameraStreams()", javascript)
+            self.assertIn("refreshLiveWorkspace(), 100", javascript)
             self.assertNotIn("window.confirm", javascript)
 
             font_path = (

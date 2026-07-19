@@ -541,6 +541,32 @@ class SO101PhysicalGateway:
         except (KeyError, NotImplementedError):
             return None
 
+    def sample_read_only(self) -> dict[str, Any]:
+        """Read both calibrated poses while preserving the torque-off contract."""
+
+        if not self.connected or self.torque_enabled:
+            raise PhysicalGatewayError(
+                "Read-only telemetry requires one connected, torque-off gateway session."
+            )
+        torque = self._read_optional("Torque_Enable")
+        if torque is not None and any(float(value) != 0.0 for value in torque.values()):
+            raise PhysicalGatewayError(
+                "Follower torque changed during read-only telemetry; the session was stopped."
+            )
+        leader = self._motion_read("read-only leader position", self.leader.get_action)
+        follower = self._motion_read(
+            "read-only follower position", self.follower.get_observation
+        )
+        return {
+            "schema_version": "sim2claw.so101_read_only_telemetry.v1",
+            "leader_degrees": leader.tolist(),
+            "follower_degrees": follower.tolist(),
+            "available_motor_current_raw": self._read_optional("Present_Current"),
+            "physical_follower_torque_enabled": False,
+            "physical_motion_commanded": False,
+            **paired_pose_registration_report(leader, follower),
+        }
+
     def _runtime_current(
         self, elapsed_seconds: float
     ) -> tuple[dict[str, float] | None, bool]:

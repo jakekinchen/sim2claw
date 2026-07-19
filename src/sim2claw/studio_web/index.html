@@ -27,9 +27,9 @@
         <div class="status-line" aria-label="Workspace status">
           <span class="campaign-name" id="campaign-label">Loading workspace</span>
           <span class="pass-ratio" id="pass-ratio">—</span>
-          <button class="live-trigger" id="live-trigger" type="button" aria-controls="process-drawer" aria-expanded="false">
+          <button class="live-trigger" id="live-trigger" type="button" aria-controls="live-workspace-drawer" aria-expanded="false" title="Open the connected workcell viewer">
             <span class="live-dot" aria-hidden="true"></span>
-            <b id="live-count">0 live</b>
+            <b id="live-count">Arm offline</b>
           </button>
           <span class="authority-state" title="Recorder controls are loopback-only; physical follower control remains gated">
             <span class="lock-icon" aria-hidden="true"></span>
@@ -301,6 +301,62 @@
     </div>
 
     <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+
+    <aside class="side-drawer live-workspace-drawer" id="live-workspace-drawer" aria-labelledby="live-workspace-heading" aria-hidden="true">
+      <header class="drawer-heading">
+        <div>
+          <span class="section-label">Connected workcell</span>
+          <h2 id="live-workspace-heading">Live workspace</h2>
+        </div>
+        <button class="drawer-close" type="button" data-close-drawer aria-label="Close live workspace">Close</button>
+      </header>
+
+      <div class="live-workspace-summary">
+        <div class="live-arm-state" id="live-arm-state" data-status="checking">
+          <span class="live-arm-light" aria-hidden="true"></span>
+          <div><b id="live-arm-title">Checking arm</b><small id="live-arm-detail">No bus has been opened.</small></div>
+        </div>
+        <span class="live-camera-count" id="live-camera-count">Checking cameras</span>
+      </div>
+
+      <div class="live-view-switch" role="tablist" aria-label="Live workspace view">
+        <button type="button" role="tab" data-live-mode="simulator" aria-selected="true">Simulator</button>
+        <button type="button" role="tab" data-live-mode="cameras" aria-selected="false">Live feed</button>
+      </div>
+
+      <section class="live-workspace-panel live-twin-panel" data-live-panel="simulator" aria-label="Physical arm simulator mirror">
+        <div class="live-workspace-stage">
+          <canvas id="live-workspace-canvas" aria-label="Connected SO-101 projected into the current MuJoCo workcell"></canvas>
+          <div class="live-workspace-toolbar">
+            <span id="live-workspace-status">Open Live to begin torque-off joint observation.</span>
+            <button id="live-workspace-reset" type="button">Reset view</button>
+          </div>
+          <small>Observed joints → MuJoCo forward kinematics · no contact claim</small>
+        </div>
+        <div class="live-joint-readout" id="live-joint-readout" aria-label="Observed follower joints"></div>
+        <p class="live-boundary"><span class="lock-icon" aria-hidden="true"></span>This is an inspection-only kinematic mirror. It cannot command motion, prove physical contact, or promote an episode.</p>
+      </section>
+
+      <section class="live-workspace-panel live-camera-panel" data-live-panel="cameras" aria-label="Live camera feeds" hidden>
+        <div class="live-camera-intro"><div><b>Three physical views</b><small>Capture starts only while this tab is open and stops when you leave it.</small></div><span>10 FPS preview</span></div>
+        <div class="live-camera-grid">
+          <figure class="live-camera-card" data-camera-id="d405-wrist">
+            <div class="live-camera-frame"><img alt="Live D405 wrist-camera view"><span>Waiting for stream</span></div>
+            <figcaption><div><b>D405 wrist</b><small>Wrist-mounted display stream</small></div><em>Checking</em></figcaption>
+          </figure>
+          <figure class="live-camera-card" data-camera-id="logitech-overhead">
+            <div class="live-camera-frame"><img alt="Live Logitech overhead-camera view"><span>Waiting for stream</span></div>
+            <figcaption><div><b>Logitech overhead</b><small>Board and arm overview</small></div><em>Checking</em></figcaption>
+          </figure>
+          <figure class="live-camera-card" data-camera-id="logitech-workspace">
+            <div class="live-camera-frame"><img alt="Live Logitech workspace-camera view"><span>Waiting for stream</span></div>
+            <figcaption><div><b>Logitech workspace</b><small>Wide workcell context</small></div><em>Checking</em></figcaption>
+          </figure>
+          <div class="live-camera-slot" aria-hidden="true"><span>Open camera slot</span></div>
+        </div>
+        <p class="live-boundary"><span class="lock-icon" aria-hidden="true"></span>The D405 preview is visible video only. Metric depth, intrinsics, AprilTag pose, and hand-eye calibration remain unverified.</p>
+      </section>
+    </aside>
 
     <aside class="side-drawer process-drawer" id="process-drawer" aria-labelledby="process-heading" aria-hidden="true">
       <header class="drawer-heading">

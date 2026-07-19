@@ -236,6 +236,25 @@ class PhysicalGatewayTest(unittest.TestCase):
         gateway.close()
         self.assertFalse(self.follower.bus.torque)
 
+    def test_read_only_sample_reports_pose_without_commanding_motion(self) -> None:
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            configure_devices=False,
+        )
+        gateway.open(enable_motion=False)
+        sample = gateway.sample_read_only()
+        self.assertEqual(
+            sample["schema_version"],
+            "sim2claw.so101_read_only_telemetry.v1",
+        )
+        self.assertEqual(sample["follower_degrees"], [5, 4, 3, 2, 1, 5])
+        self.assertFalse(sample["physical_follower_torque_enabled"])
+        self.assertFalse(sample["physical_motion_commanded"])
+        self.assertEqual(self.follower.command_history, [])
+        self.assertFalse(self.follower.bus.torque)
+        gateway.close()
+
     def test_rate_limited_motion_does_not_fail_while_follower_advances(self) -> None:
         gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)
         gateway.open(enable_motion=True, paired_pose_confirmed=True)

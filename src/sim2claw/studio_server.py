@@ -16,6 +16,7 @@ from urllib.parse import parse_qs, unquote, urlsplit
 from .paths import REPO_ROOT
 from .physical_gateway import PhysicalGatewayError
 from .studio_catalog import build_catalog, resolve_media_token
+from .studio_live import LiveWorkspaceError, LiveWorkspaceService, MJPEG_BOUNDARY
 from .state_trace import build_scene_manifest
 from .teleop_recording import RecorderConflict, RecorderError, TeleopRecordingManager
 from .scene import CURRENT_TASK_PIECE_LAYOUT
@@ -38,10 +39,12 @@ class StudioServer(ThreadingHTTPServer):
         except ValueError:
             self.recorder_control_enabled = address[0] == "localhost"
         self.recorder = TeleopRecordingManager(repo_root=self.repo_root)
+        self.live_workspace = LiveWorkspaceService(self.recorder)
         self.scene_manifests: dict[str, dict[str, Any]] = {}
         super().__init__(address, StudioRequestHandler)
 
     def server_close(self) -> None:
+        self.live_workspace.shutdown()
         self.recorder.shutdown()
         super().server_close()
 
@@ -49,6 +52,14 @@ class StudioServer(ThreadingHTTPServer):
 class StudioRequestHandler(BaseHTTPRequestHandler):
     server: StudioServer
     protocol_version = "HTTP/1.1"
+
+    def handle_one_request(self) -> None:
+        """Treat an abandoned browser poll as a normal loopback disconnect."""
+
+        try:
+            super().handle_one_request()
+        except (BrokenPipeError, ConnectionResetError):
+            self.close_connection = True
 
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
         request = urlsplit(self.path)
@@ -88,6 +99,44 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                 return
             self._send_json(self.server.recorder.live_simulation_snapshot())
             return
+        if path == "/api/live/status":
+            if not self.server.recorder_control_enabled:
+                self._send_json(
+                    {"ok": False, "error": "Live device state is available only on loopback."},
+                    HTTPStatus.FORBIDDEN,
+                )
+                return
+            self._send_json(self.server.live_workspace.snapshot())
+            return
+        if path == "/api/live/state":
+            if not self.server.recorder_control_enabled:
+                self._send_json(
+                    {"ok": False, "error": "Live device state is available only on loopback."},
+                    HTTPStatus.FORBIDDEN,
+                )
+                return
+            token = parse_qs(request.query).get("session", [""])[0]
+            try:
+                self._send_json(
+                    self.server.live_workspace.snapshot(token, sample=True)
+                )
+            except LiveWorkspaceError as error:
+                self._send_json(
+                    {"ok": False, "error": str(error)},
+                    HTTPStatus.GONE,
+                )
+            return
+        if path.startswith("/api/live/cameras/") and path.endswith(".mjpeg"):
+            if not self.server.recorder_control_enabled:
+                self._send_json(
+                    {"ok": False, "error": "Live camera feeds are available only on loopback."},
+                    HTTPStatus.FORBIDDEN,
+                )
+                return
+            camera_id = path.removeprefix("/api/live/cameras/").removesuffix(".mjpeg")
+            token = parse_qs(request.query).get("session", [""])[0]
+            self._send_camera_stream(camera_id, token)
+            return
         if path == "/api/health":
             self._send_json(
                 {
@@ -99,6 +148,11 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                     ),
                     "recorder_control": (
                         "loopback_only" if self.server.recorder_control_enabled else "disabled"
+                    ),
+                    "live_workspace": (
+                        "loopback_on_demand"
+                        if self.server.recorder_control_enabled
+                        else "disabled"
                     ),
                 }
             )
@@ -127,6 +181,25 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
             return
         try:
             payload = self._read_json_body()
+            if path == "/api/live/session":
+                action = str(payload.get("action") or "start")
+                if action == "start":
+                    result = self.server.live_workspace.start_session()
+                elif action == "stop":
+                    result = self.server.live_workspace.end_session(
+                        str(payload.get("session_id") or "")
+                    )
+                else:
+                    raise LiveWorkspaceError("Unknown live workspace session action.")
+                self._send_json({"ok": True, "live": result})
+                return
+            if path in {
+                "/api/recorder/gateway-preflight",
+                "/api/recorder/gateway-sync",
+                "/api/recorder/start",
+            }:
+                # The recorder/gateway becomes the sole camera and bus owner.
+                self.server.live_workspace.release_hardware(clear_sessions=True)
             if path == "/api/recorder/preflight":
                 result = self.server.recorder.snapshot()
             elif path == "/api/recorder/gateway-preflight":
@@ -155,6 +228,7 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
         except (
             RecorderError,
             PhysicalGatewayError,
+            LiveWorkspaceError,
             ConnectionError,
             OSError,
             ValueError,
@@ -172,6 +246,39 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
             )
             return
         self._send_json({"ok": True, "recorder": result})
+
+    def _send_camera_stream(self, camera_id: str, token: str) -> None:
+        try:
+            process = self.server.live_workspace.open_camera(camera_id, token)
+        except (LiveWorkspaceError, OSError) as error:
+            self._send_json(
+                {"ok": False, "error": str(error)},
+                HTTPStatus.SERVICE_UNAVAILABLE,
+            )
+            return
+        self.send_response(HTTPStatus.OK)
+        self._security_headers()
+        self.send_header(
+            "Content-Type",
+            f"multipart/x-mixed-replace; boundary={MJPEG_BOUNDARY}",
+        )
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Connection", "close")
+        self.end_headers()
+        self.close_connection = True
+        try:
+            if process.stdout is None:
+                raise LiveWorkspaceError("Live camera process did not expose a stream.")
+            while True:
+                block = process.stdout.read(64 * 1024)
+                if not block:
+                    break
+                self.wfile.write(block)
+                self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError, LiveWorkspaceError):
+            pass
+        finally:
+            self.server.live_workspace.close_camera(process)
 
     def _read_json_body(self) -> dict[str, Any]:
         raw_length = self.headers.get("Content-Length", "0")

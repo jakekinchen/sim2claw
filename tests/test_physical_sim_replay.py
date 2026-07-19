@@ -83,6 +83,18 @@ class PhysicalSimulationReplayTest(unittest.TestCase):
             self.assertEqual(
                 report["state_trace_path"], "sim_replay_state_trace.json"
             )
+            self.assertEqual(
+                report["simulator_scene_id"],
+                "operator_updated_chess_workcell_v2",
+            )
+            self.assertEqual(
+                report["simulator_board_pose_id"],
+                "board_robotward_72mm_20260718_v2",
+            )
+            self.assertEqual(
+                report["state_trace_manifest_revision_sha256"],
+                state_trace["scene"]["manifest_revision_sha256"],
+            )
 
 
 if __name__ == "__main__":
