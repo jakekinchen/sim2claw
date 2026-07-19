@@ -168,15 +168,32 @@ history, not physical calibration history or held-out validation.
 - score plot SHA-256:
   `11dc9bd3d62b3a9c88e81801d330dfaf17d16ebe1dd673aa780295c8c9a0d911`
 - synchronized B1 physical-overhead/simulator video SHA-256:
-  `3b3b322cfc39d8c2b0c46439c33217e5a9f0c3f3de667605d6a3bebbc3320718`
+  `8aace54e3ba0245fd69970012928a119e18c8895162e8094fb4c9747aeb912d5`
 - comparison poster SHA-256:
-  `d52ab0c8dc45932e3bb2b3be0a9495bcf2e51d692485e876451ce6fbdba797dd`
+  `bed85515ef66c1b41877d5b74baf31138967bf4b3915759471e12609322dbdf1`
 - visual receipt SHA-256:
-  `62f016614448193a18c8847f802d034bbb6913a77b76468e273644c72c1fa8e0`
+  `84594ff47e0f91535e7283e4018e73c120fcf0d7b76a3bd2807769360f299ea9`
 
 The simulator panel deliberately uses the best **rejected** adapter and labels
 every frame `NOT CALIBRATED`; it is shown to diagnose the remaining spatial
 gap, not to present accepted replay equivalence.
+
+The first comparison used the scene's top-down camera. It was superseded at the
+owner's request by a C922-angle render frozen in
+`configs/experiments/pawn_bg_c922_angle_transfer_v1.json`, SHA-256
+`16b7da2bfca9bdeed7a721fb054b1f82de52f609b4723c6d7a3dd4f6c32d1be4`.
+The visual transfer uses the proposal-only current B1 board homography
+`3252c0a3aa8b57d643880ed17ff589db56670be3522cd2f92d288ce9b6c442e1`,
+a `635.3212940802823 px` square-pixel focal approximation, and a
+`41.38928095678845 degree` vertical field of view. Simulated board corners
+reproduce the raw C922 perspective with `1.9442390799611005 px` RMS and
+`3.003278728572313 px` maximum residual; both panels then receive the source
+receipt's 180-degree orientation correction.
+
+This aligns the board perspective without moving the simulated robot. The
+remaining arm-side disagreement is kept visible and remains evidence of the
+unresolved robot/board/joint-frame registration. The angle transfer is
+visual-only, not an accepted camera calibration or evaluator input.
 
 ## Commands
 
@@ -189,6 +206,7 @@ uv run sim2claw pawn-bg-source-fit-visuals \
   --source-repository-root /Users/kelly/Developer/sim2claw \
   --receipt outputs/pawn_bg_act_v1/pawn_bg_source_fit_v1/receipt.json \
   --folder-label b1-to-b2 \
+  --simulation-camera c922-angle-transfer \
   --output-directory outputs/pawn_bg_act_v1/pawn_bg_source_fit_v1/visuals
 ```
 
@@ -200,9 +218,8 @@ ignored.
 
 ## Verification
 
-- focused source-fit/reward/contact/ACT regression set:
-  `39 passed, 254 subtests passed` in `2.26 s`
-- full suite: `400 passed, 306 subtests passed` in `21.49 s`
+- focused camera/source-fit regression set: `21 passed` in `0.39 s`
+- full suite: `402 passed, 306 subtests passed` in `21.45 s`
 - `uv lock --check`: passed (`94` packages resolved)
 - source distribution and wheel: built successfully
 - `git diff --check`: passed
@@ -214,6 +231,8 @@ ignored.
   `6245c9c4e61a9a79ac54293625b9a257b6a928e4`
 - comparison/history tooling commit:
   `849499e414d0348ca52e40896063880a3deb6009`
+- C922-angle comparison commit:
+  `86bcb7236cafd545554248d4fff0f2e1d1f28563`
 
 ## Independent proof-wording audit
 
