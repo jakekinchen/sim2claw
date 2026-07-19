@@ -57,6 +57,10 @@ steps per action.
 3. Moderate close (`-0.15 rad`): the generator aborted fail-closed during lower
    when the IK residual reached `5.093 mm`, above the frozen `3 mm` bound. It
    has no completed receipt and contributes zero rows.
+4. Narrow bracket (`-0.12 rad`): the generator likewise aborted during lower at
+   `3.272 mm` IK residual. It has no completed receipt and contributes zero
+   rows. The checked-in source mechanism is restored to the complete, diagnostic
+   `-0.10 rad` baseline; no close-value sweep is opened.
 
 These are geometric-expert mechanism diagnostics, not learned-policy passes.
 
