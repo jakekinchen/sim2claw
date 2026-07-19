@@ -1,0 +1,132 @@
+{
+  "schema_version": "sim2claw.pawn_bg_source_fit_contract.v1",
+  "optimization_id": "pawn_bg_joint_adapter_source_fit_v1",
+  "frozen_at": "2026-07-19T05:30:00-05:00",
+  "proof_class": "physical_teleoperation_source_fit_diagnostic_not_calibration",
+  "purpose": "Fit a separate physical-joint-to-simulator adapter by aligning source grasp and destination release pinch points to task-labeled B-G square centers, then score unchanged simulated consequences with the frozen reward.",
+  "bindings": {
+    "reward_contract": {
+      "path": "configs/evaluations/pawn_bg_sim_reward_v1.json",
+      "sha256": "e702ad7fa3a366bc24c552c4cd0e5df66842d5fe7f6ef824266b8cfb2ee8d0c7"
+    },
+    "physical_catalog": {
+      "path": "configs/data/physical_pawn_move_catalog_20260719.json",
+      "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
+    },
+    "source_split": {
+      "path": "configs/sysid/physical_pawn_sysid_split_v1.json",
+      "sha256": "1aa839a31b896a26a000ed27ff649232427e3406403c66d7fe79c60b0a0acb08",
+      "allowed_partition": "train"
+    },
+    "baseline_adapter": {
+      "path": "configs/sysid/recorded_action_sysid_v1.json",
+      "sha256": "ebbcbee27555a767f40f347a36d1c54cb6faba2e1e843c197968f41dd1d9227d",
+      "joint_transform_sha256": "72812016bfa9dba2ba97fe448724394ad290a2b22458177bcbdec95aae0689e6"
+    },
+    "owner_visual_review": {
+      "config_path": "configs/evaluations/pawn_rank12_owner_visual_review_20260719_v1.json",
+      "config_sha256": "7be42682f63747ae382c65bd4ee26ed5076dbfd9649d74a190fcfcfa859603fb",
+      "generated_manifest_path": "outputs/pawn_composability/recovered_corpus_v2/product_scope_owner_visual_review.json",
+      "generated_manifest_sha256": "3fab56dbf83e1a152f44f0daf88c0d43c44bfbc0ce3c23c0c2e0aa603797101e",
+      "use": "qualitative_episode_and_initial_final_phase_admission_only",
+      "metric_pose_admission": false
+    },
+    "wrist_cross_view": {
+      "release_manifest_path": "artifacts/private/releases/physical-replay-evidence-20260719/release-manifest.json",
+      "release_manifest_sha256": "50bd9205a45d852cb9edb4ba143d899660adbc41ad16dc0f3d4be14750360fdf",
+      "source_receipt_path": "artifacts/private/releases/physical-replay-evidence-20260719/source-episode-recording-receipt.json",
+      "source_receipt_sha256": "1ea97cd3ebb53694802b8b7f120625419c10e778ea133f85cb1f7da7c5fe1221",
+      "video_path": "artifacts/private/releases/physical-replay-evidence-20260719/replay-wrist-d405.mkv",
+      "video_sha256": "19f2d6f853d8145ba1b6239b41cf31182778bc69e5bd4518069694af48780c2b",
+      "source_recording_id": "20260718T230416Z-573f2320",
+      "camera_role": "wrist_gripper_upward",
+      "held_out_membership": false,
+      "use": "qualitative_gripper_open_close_phase_corroboration_only",
+      "quantitative_object_or_endpoint_weight": 0.0
+    }
+  },
+  "evidence_policy": {
+    "episode_selector": "owner_reviewed_product_scope_intersect_existing_train_partition",
+    "expected_episode_count": 11,
+    "expected_distinct_skill_count": 10,
+    "expected_qualitative_marker_count": 22,
+    "require_catalog_hashes_for_samples_receipt_and_overhead_video": true,
+    "held_out_episode_assets_may_be_read": false,
+    "footage_is_metric_camera_calibration": false,
+    "task_labels_are_measured_object_trajectories": false
+  },
+  "event_extraction": {
+    "joint_signal": "follower_actual_position_degrees",
+    "gripper_joint_index": 5,
+    "first_open_search_fraction": 0.55,
+    "destination_open_search_start_fraction": 0.55,
+    "near_close_fraction_of_source_open_to_valley_range": 0.15,
+    "joint_average_window_radius_samples": 2,
+    "source_event": "first_descent_crossing_within_fifteen_percent_of_the_pre_release_gripper_valley",
+    "destination_event": "maximum_reopen_in_final_search_window",
+    "target_xy": "task_labeled_square_center_in_frozen_simulator_scene",
+    "target_z": "board_square_z_plus_estimated_pawn_neck_height",
+    "estimated_pawn_neck_height_m": 0.038,
+    "event_targets_are_physical_measurements": false
+  },
+  "parameter_space": {
+    "body_joint_names": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll"
+    ],
+    "sign_values": [-1, 1],
+    "scale_radians_per_degree": 0.017453292519943295,
+    "zero_offset_unit": "radian",
+    "zero_offset_bounds": "exact_intersection_that_keeps_every_allowed_training_command_and_actual_row_inside_unchanged_simulator_limits",
+    "gripper_transform": "unchanged_linear_physical_percent_to_current_actuator_ctrlrange",
+    "optimized_fields": ["body_joint_signs", "body_joint_zero_offsets"],
+    "simulator_geometry_optimized": false,
+    "contact_parameters_optimized": false,
+    "mass_or_inertia_optimized": false,
+    "actuator_or_joint_limits_optimized": false,
+    "reward_or_evaluator_optimized": false
+  },
+  "search": {
+    "discrete_sign_hypothesis_count": 32,
+    "offset_solver": "scipy.optimize.least_squares",
+    "offset_initialization": "midpoint_of_no_clipping_interval",
+    "maximum_function_evaluations": 300,
+    "function_tolerance": 1e-11,
+    "parameter_tolerance": 1e-11,
+    "gradient_tolerance": 1e-11,
+    "kinematic_shortlist_count": 3,
+    "frozen_seed": 190719
+  },
+  "selection": {
+    "shortlist_full_physics_variant": "nominal_uncalibrated",
+    "lexicographic_metrics": [
+      "maximize_task_consequence_success_count",
+      "maximize_selected_piece_contact_episode_count",
+      "maximize_mean_diagnostic_reward",
+      "minimize_mean_final_center_distance_m",
+      "minimize_kinematic_event_rms_m"
+    ],
+    "acceptance_rule": "candidate_must_be_no_clipping_and_strictly_beat_the_provisional_baseline_on_the_frozen_lexicographic_consequence_metric_else_no_adapter_is_accepted",
+    "selected_adapter_final_contact_variants": [
+      "nominal_uncalibrated",
+      "rubber_tip_low",
+      "rubber_tip_nominal_prior",
+      "rubber_tip_high"
+    ],
+    "reward_thresholds_changed": false,
+    "simulated_seed_changed": false
+  },
+  "authority": {
+    "training_performed": false,
+    "learned_b_g_act_checkpoint_evaluated": false,
+    "source_demonstrations_are_act_policy_weights": false,
+    "physical_calibration_claimed": false,
+    "sim_to_real_error_measured": false,
+    "held_out_validation_performed": false,
+    "promotion_allowed": false,
+    "claim_boundary": "This bounded optimization can improve source-fit of a separate joint adapter and its simulated demonstration replay score. It cannot validate intermediate physical object motion, calibrate contact or camera geometry, measure sim-to-real error, prove a B-G ACT policy, or establish real-robot transfer."
+  }
+}

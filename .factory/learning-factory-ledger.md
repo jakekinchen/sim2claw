@@ -281,3 +281,8 @@ created, started, or used.
 Remaining blockers are external campaign evidence only: the selected physical
 project remains truthfully blocked at LF-05, and no successful B--G learned
 policy or physical authority is claimed.
+
+Pre-push mainline integration: the already-published B--G fidelity history from
+`origin/main` was merged in the release checkout without operating on its
+Claude worktree. Conflict-focused tests passed 51/51; the unified full suite
+passed 480 tests and 328 subtests in 145.98 seconds.

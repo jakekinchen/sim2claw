@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">Simulator spatial error across sequential optimization actions</title>
+  <desc id="desc">Training-side event RMS error falls from 309.6 millimeters for the provisional identity mapping to 17.4 millimeters for the lift-dominant offset candidate, a 94.4 percent reduction. The first two points are committed evidence and the remaining five are uncommitted working receipts.</desc>
+  <style>
+    :root { color-scheme: light dark; }
+    .bg { fill: #ffffff; }
+    .grid { stroke: #d7dde5; stroke-width: 1; }
+    .axis { stroke: #637083; stroke-width: 1.5; }
+    .text { fill: #172033; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .muted { fill: #5d6878; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .committed-line { fill: none; stroke: #2563eb; stroke-width: 5; stroke-linecap: round; }
+    .working-line { fill: none; stroke: #2563eb; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 11 9; }
+    .committed-point { fill: #2563eb; stroke: #ffffff; stroke-width: 3; }
+    .working-point { fill: #ffffff; stroke: #2563eb; stroke-width: 4; }
+    .improvement { fill: #e9f0ff; stroke: #b9cdfb; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #111827; }
+      .grid { stroke: #344155; }
+      .axis { stroke: #7d899b; }
+      .text { fill: #edf2f7; }
+      .muted { fill: #aeb8c7; }
+      .committed-line, .working-line { stroke: #79a7ff; }
+      .committed-point { fill: #79a7ff; stroke: #111827; }
+      .working-point { fill: #111827; stroke: #79a7ff; }
+      .improvement { fill: #172b4d; stroke: #365b91; }
+    }
+  </style>
+
+  <rect class="bg" width="1200" height="680" rx="18"/>
+  <text class="text" x="72" y="58" font-size="29" font-weight="600">Sequential simulator spatial-error progression</text>
+  <text class="muted" x="72" y="88" font-size="17">Training-side event RMS · millimeters · lower is better</text>
+
+  <rect class="improvement" x="890" y="35" width="238" height="69" rx="12"/>
+  <text class="muted" x="1009" y="61" text-anchor="middle" font-size="14">TOTAL ERROR REDUCTION</text>
+  <text class="text" x="1009" y="90" text-anchor="middle" font-size="27" font-weight="600">94.4%</text>
+
+  <line class="grid" x1="98" y1="144" x2="1130" y2="144"/>
+  <line class="grid" x1="98" y1="243" x2="1130" y2="243"/>
+  <line class="grid" x1="98" y1="342" x2="1130" y2="342"/>
+  <line class="grid" x1="98" y1="441" x2="1130" y2="441"/>
+  <line class="axis" x1="98" y1="144" x2="98" y2="540"/>
+  <line class="axis" x1="98" y1="540" x2="1130" y2="540"/>
+
+  <text class="muted" x="82" y="150" text-anchor="end" font-size="14">320</text>
+  <text class="muted" x="82" y="249" text-anchor="end" font-size="14">240</text>
+  <text class="muted" x="82" y="348" text-anchor="end" font-size="14">160</text>
+  <text class="muted" x="82" y="447" text-anchor="end" font-size="14">80</text>
+  <text class="muted" x="82" y="546" text-anchor="end" font-size="14">0</text>
+
+  <path class="committed-line" d="M130 157 L294 393"/>
+  <path class="working-line" d="M294 393 L458 408 L622 429 L786 491 L950 508 L1114 518"/>
+
+  <circle class="committed-point" cx="130" cy="157" r="8"/>
+  <circle class="committed-point" cx="294" cy="393" r="8"/>
+  <circle class="working-point" cx="458" cy="408" r="8"/>
+  <circle class="working-point" cx="622" cy="429" r="8"/>
+  <circle class="working-point" cx="786" cy="491" r="8"/>
+  <circle class="working-point" cx="950" cy="508" r="8"/>
+  <circle class="working-point" cx="1114" cy="518" r="8"/>
+
+  <text class="text" x="130" y="136" text-anchor="middle" font-size="17" font-weight="600">309.6</text>
+  <text class="text" x="294" y="371" text-anchor="middle" font-size="17" font-weight="600">118.4</text>
+  <text class="text" x="458" y="386" text-anchor="middle" font-size="17" font-weight="600">106.7</text>
+  <text class="text" x="622" y="407" text-anchor="middle" font-size="17" font-weight="600">89.4</text>
+  <text class="text" x="786" y="469" text-anchor="middle" font-size="17" font-weight="600">39.7</text>
+  <text class="text" x="950" y="486" text-anchor="middle" font-size="17" font-weight="600">26.1</text>
+  <text class="text" x="1114" y="496" text-anchor="middle" font-size="17" font-weight="600">17.4</text>
+
+  <text class="muted" x="130" y="573" text-anchor="middle" font-size="14">1 · Identity</text>
+  <text class="muted" x="294" y="573" text-anchor="middle" font-size="14">2 · Source</text>
+  <text class="muted" x="294" y="592" text-anchor="middle" font-size="14">adapter</text>
+  <text class="muted" x="458" y="573" text-anchor="middle" font-size="14">3 · Board</text>
+  <text class="muted" x="458" y="592" text-anchor="middle" font-size="14">relabel</text>
+  <text class="muted" x="622" y="573" text-anchor="middle" font-size="14">4 · Planar</text>
+  <text class="muted" x="622" y="592" text-anchor="middle" font-size="14">board fit</text>
+  <text class="muted" x="786" y="573" text-anchor="middle" font-size="14">5 · Joint</text>
+  <text class="muted" x="786" y="592" text-anchor="middle" font-size="14">offsets</text>
+  <text class="muted" x="950" y="573" text-anchor="middle" font-size="14">6 · Height +</text>
+  <text class="muted" x="950" y="592" text-anchor="middle" font-size="14">timing</text>
+  <text class="muted" x="1114" y="573" text-anchor="middle" font-size="14">7 · Lift-</text>
+  <text class="muted" x="1114" y="592" text-anchor="middle" font-size="14">dominant</text>
+
+  <line class="committed-line" x1="98" y1="634" x2="132" y2="634"/>
+  <circle class="committed-point" cx="115" cy="634" r="6"/>
+  <text class="muted" x="143" y="640" font-size="14">Committed evidence</text>
+  <line class="working-line" x1="323" y1="634" x2="357" y2="634"/>
+  <circle class="working-point" cx="340" cy="634" r="6"/>
+  <text class="muted" x="368" y="640" font-size="14">Working receipt</text>
+  <text class="muted" x="1130" y="640" text-anchor="end" font-size="14">Full pawn-move success remains 0/11</text>
+</svg>

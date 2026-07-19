@@ -399,6 +399,49 @@ def build_parser() -> argparse.ArgumentParser:
     pawn_composability.add_argument("--annotations", type=Path, required=True)
     pawn_composability.add_argument("--output", type=Path, required=True)
 
+    pawn_demo_sim = subparsers.add_parser(
+        "pawn-bg-demo-sim-eval",
+        help="diagnostically replay owner-reviewed B-G teleoperation commands in simulation",
+    )
+    pawn_demo_sim.add_argument("--catalog", type=Path, required=True)
+    pawn_demo_sim.add_argument("--source-root", type=Path, required=True)
+    pawn_demo_sim.add_argument("--output", type=Path, required=True)
+
+    pawn_source_fit = subparsers.add_parser(
+        "pawn-bg-source-fit",
+        help="fit and score a bounded non-calibrating B-G physical joint adapter",
+    )
+    pawn_source_fit.add_argument(
+        "--source-repository-root",
+        type=Path,
+        required=True,
+        help="read-only repository root containing the hash-bound physical source assets",
+    )
+    pawn_source_fit.add_argument("--output", type=Path, required=True)
+
+    pawn_source_fit_visuals = subparsers.add_parser(
+        "pawn-bg-source-fit-visuals",
+        help="render a synchronized source/sim episode and source-fit score history",
+    )
+    pawn_source_fit_visuals.add_argument(
+        "--source-repository-root", type=Path, required=True
+    )
+    pawn_source_fit_visuals.add_argument("--receipt", type=Path, required=True)
+    pawn_source_fit_visuals.add_argument("--folder-label", required=True)
+    pawn_source_fit_visuals.add_argument("--output-directory", type=Path, required=True)
+    pawn_source_fit_visuals.add_argument(
+        "--simulation-camera",
+        choices=("c922-angle-transfer", "scene-overhead"),
+        default="c922-angle-transfer",
+        help="render from the proposal-derived C922 perspective or the legacy scene overhead",
+    )
+    pawn_source_fit_visuals.add_argument(
+        "--trajectory-mode",
+        choices=("measured-actual-state", "command-driven-physics"),
+        default="measured-actual-state",
+        help="render measured follower encoder states kinematically or unchanged command-driven physics",
+    )
+
     camera_overlay = subparsers.add_parser(
         "camera-overlay",
         help="fit the physical camera to the board and render robot-anchored comparison views",
@@ -950,6 +993,64 @@ def main(argv: Sequence[str] | None = None) -> int:
         report = evaluate_composability(args.annotations, args.output)
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["status"] == "complete_descriptive_evaluation" else 2
+    if args.command == "pawn-bg-demo-sim-eval":
+        from .pawn_bg_demo_sim import evaluate_demo_catalog
+
+        report = evaluate_demo_catalog(
+            catalog_path=args.catalog,
+            source_root=args.source_root,
+            output_path=args.output,
+        )
+        print(json.dumps(report["by_variant"], indent=2, sort_keys=True))
+        return 0
+    if args.command == "pawn-bg-source-fit":
+        from .pawn_bg_source_fit import optimize_pawn_bg_source_fit
+
+        report = optimize_pawn_bg_source_fit(
+            source_repository_root=args.source_repository_root,
+            output_path=args.output,
+        )
+        summary = {
+            "baseline": report["baseline"]["nominal_physics"]["aggregate"],
+            "optimization_status": report["optimization_status"],
+            "candidate_accepted": report["candidate_accepted"],
+            "accepted_adapter": report["accepted_adapter"],
+            "best_candidate_adapter": report["best_candidate_adapter"],
+            "best_candidate_kinematic": {
+                key: value for key, value in report["best_candidate_kinematic"].items()
+                if key != "events"
+            },
+            "final_contact_variants": {
+                key: value["aggregate"]
+                for key, value in report["final_contact_variants"].items()
+            },
+            "claim_boundary": report["claim_boundary"],
+        }
+        print(json.dumps(summary, indent=2, sort_keys=True))
+        return 0
+    if args.command == "pawn-bg-source-fit-visuals":
+        from .pawn_bg_source_fit_visuals import (
+            render_episode_comparison,
+            render_score_history,
+        )
+
+        comparison = render_episode_comparison(
+            source_repository_root=args.source_repository_root,
+            source_fit_receipt_path=args.receipt,
+            folder_label=args.folder_label,
+            output_directory=args.output_directory,
+            simulation_camera_mode=args.simulation_camera.replace("-", "_"),
+            trajectory_mode=args.trajectory_mode.replace("-", "_"),
+        )
+        history = render_score_history(
+            source_fit_receipt_path=args.receipt,
+            output_directory=args.output_directory,
+        )
+        print(json.dumps({
+            "comparison": comparison,
+            "score_history": history,
+        }, indent=2, sort_keys=True))
+        return 0
     if args.command == "camera-overlay":
         from .robot_anchored_overlay import build_robot_anchored_overlay
 

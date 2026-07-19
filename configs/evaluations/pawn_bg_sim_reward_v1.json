@@ -1,0 +1,114 @@
+{
+  "schema_version": "sim2claw.pawn_bg_sim_reward.v1",
+  "reward_id": "pawn_bg_rank12_sim_reward_v1",
+  "frozen_at": "2026-07-19T18:30:00-05:00",
+  "proof_class": "simulation_evaluator_contract_only",
+  "product_binding": {
+    "path": "configs/evaluations/pawn_rank12_bidirectional_v2.json",
+    "sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3",
+    "evaluation_set_id": "pawn_rank12_bidirectional_b_to_g_v2"
+  },
+  "language_binding": {
+    "path": "configs/tasks/pawn_b_g_language_semantics_v1.json",
+    "sha256": "8e1b1a863b02ce6f8ff2d446bfceda4202d35eb5e6346eb1988cf759b61eed8c",
+    "contract_id": "pawn_b_g_language_semantics_v1"
+  },
+  "contact_sensitivity_binding": {
+    "path": "configs/simulation/rubber_tip_contact_sensitivity_v1.json",
+    "canonical_sha256": "e89eb1084e7e1dee64aaebfbc18b816b5bf58aefa98b18d38ef2e9a81b6ee499",
+    "analysis_id": "rubber_tip_contact_sensitivity_v1",
+    "parameter_use_mode": "reuse_same_unmeasured_prior_ensemble_for_b_g_diagnostic_not_source_task_evaluator",
+    "ordered_variants": ["nominal_uncalibrated", "rubber_tip_low", "rubber_tip_nominal_prior", "rubber_tip_high"]
+  },
+  "scene_binding": {
+    "scene_id": "operator_updated_chess_workcell_v3",
+    "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "board_pose_id": "board_robotward_100mm_20260718_v3",
+    "piece_layout": "sparse_two_sided_pawns",
+    "piece_family": "pawn",
+    "piece_color": "brown",
+    "task_arm": "left",
+    "square_side_m": 0.04445,
+    "pawn_base_radius_m": 0.0138
+  },
+  "ordered_skills": [
+    {"skill_id": "pawn_b1_to_b2", "source_square": "b1", "destination_square": "b2"},
+    {"skill_id": "pawn_b2_to_b1", "source_square": "b2", "destination_square": "b1"},
+    {"skill_id": "pawn_c1_to_c2", "source_square": "c1", "destination_square": "c2"},
+    {"skill_id": "pawn_c2_to_c1", "source_square": "c2", "destination_square": "c1"},
+    {"skill_id": "pawn_d1_to_d2", "source_square": "d1", "destination_square": "d2"},
+    {"skill_id": "pawn_d2_to_d1", "source_square": "d2", "destination_square": "d1"},
+    {"skill_id": "pawn_e1_to_e2", "source_square": "e1", "destination_square": "e2"},
+    {"skill_id": "pawn_e2_to_e1", "source_square": "e2", "destination_square": "e1"},
+    {"skill_id": "pawn_f1_to_f2", "source_square": "f1", "destination_square": "f2"},
+    {"skill_id": "pawn_f2_to_f1", "source_square": "f2", "destination_square": "f1"},
+    {"skill_id": "pawn_g1_to_g2", "source_square": "g1", "destination_square": "g2"},
+    {"skill_id": "pawn_g2_to_g1", "source_square": "g2", "destination_square": "g1"}
+  ],
+  "hard_gates": {
+    "minimum_piece_rise_m": 0.04,
+    "maximum_final_center_distance_for_whole_base_inside_m": 0.008425,
+    "maximum_final_center_distance_composable_m": 0.006,
+    "maximum_final_center_distance_precision_m": 0.003,
+    "minimum_final_upright_cosine": 0.95,
+    "maximum_final_linear_speed_m_s": 0.02,
+    "maximum_other_piece_displacement_m": 0.006,
+    "require_selected_piece_jaw_contact": true,
+    "require_release_before_terminal": true,
+    "forbid_wrong_piece_robot_contact": true,
+    "require_finite_state": true
+  },
+  "diagnostic_reward": {
+    "promotion_authority": false,
+    "range": [-1.0, 1.0],
+    "weights": {
+      "destination_progress": 0.25,
+      "lift_progress": 0.2,
+      "destination_centering": 0.2,
+      "upright": 0.1,
+      "settled": 0.1,
+      "released": 0.15
+    },
+    "penalties": {
+      "no_selected_piece_contact": 0.25,
+      "wrong_piece_contact": 0.5,
+      "collateral_displacement": 0.5,
+      "nonfinite_state": 1.0
+    }
+  },
+  "evaluation_modes": {
+    "learned_policy": {
+      "require_model_owned_actions": true,
+      "require_zero_assistance": true,
+      "can_report_policy_success": true
+    },
+    "source_demonstration_replay": {
+      "require_model_owned_actions": false,
+      "require_zero_assistance": true,
+      "can_report_policy_success": false
+    }
+  },
+  "fixed_evaluation": {
+    "seeds": [190719],
+    "skill_order_is_frozen": true,
+    "thresholds_are_frozen": true,
+    "no_held_out_search": true,
+    "no_action_clipping_for_admissible_policy_evaluation": true
+  },
+  "provenance": {
+    "method": "clean_room_engineering_reward_derived_from_frozen_product_thresholds",
+    "measured_physical_trajectory_used_to_set_reward_weights": false,
+    "held_out_data_used": false,
+    "network_used": false,
+    "physical_calibration_claimed": false
+  },
+  "authority": {
+    "hard_gates_own_pass_fail": true,
+    "diagnostic_reward_can_promote": false,
+    "source_demonstration_replay_can_promote": false,
+    "training_can_promote": false,
+    "physical_authority": false,
+    "sim_to_real_error_measured": false
+  },
+  "claim_boundary": "This contract scores the narrow simulated B-G rank-1/rank-2 pawn consequence and manipulation trace. It does not prove an ACT policy exists, measure sim-to-real error, calibrate contact, or validate physical execution."
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": "sim2claw.pawn_bg_c922_angle_transfer.v1",
+  "camera_id": "pawn_bg_c922_b1_board_angle_transfer_v1",
+  "purpose": "Render the B-G source-fit diagnostic from the same visual perspective as the hash-bound C922 overhead source episode.",
+  "source_proposal": {
+    "calibration_id": "c922_board_grid_homography_proposal_20260719_v1",
+    "reference_recording_id": "20260719T030059Z-a26f8400",
+    "reference_video_sha256": "fe07e303759c2d0aef0959c0e33524c11c7f4231aa7affc037a1d8a585265967",
+    "reference_frame_path": "outputs/pawn_composability/recovered_corpus_v2/evidence_frames/20260719T030059Z-a26f8400__initial.png",
+    "reference_frame_sha256": "7291df264b49fe42053a545bd7321f0c19373a83263eba9fbfb9cc8951ce3c1d",
+    "pixel_to_board_homography": [
+      [-0.0011119492862807605, 0.0009387084938256955, 0.4844076785803095],
+      [0.0006171569868056414, 0.0012405124668525833, -0.4359867660673936],
+      [0.001396167788577278, -0.0021385245007049768, 1.0]
+    ],
+    "homography_sha256": "3252c0a3aa8b57d643880ed17ff589db56670be3522cd2f92d288ce9b6c442e1",
+    "proposal_fit_board_rms_m": 0.0013448643994074436,
+    "independently_reviewed_metric_calibration": false,
+    "held_out_validated": false
+  },
+  "pinhole_angle_transfer": {
+    "image_size_px": [640, 480],
+    "principal_point_px": [320.0, 240.0],
+    "focal_length_px": 635.3212940802823,
+    "vertical_fov_degrees": 41.38928095678845,
+    "focal_fit_method": "square_pixel_planar_homography_orthogonality_with_fixed_image_center_principal_point",
+    "homography_orthogonality_objective": 0.0000887747187657968,
+    "lens_distortion_mode": "excluded_visual_transfer_approximation"
+  },
+  "render_contract": {
+    "mujoco_camera_name": "workcell",
+    "board_coordinate_origin": "file_a_rank_1_outer_playing_surface_corner",
+    "physical_board_axes_to_simulation_yaw_degrees": 180.0,
+    "apply_source_receipt_orientation_to_both_panels": true,
+    "comparison_camera_mode": "c922_angle_transfer_visual_only"
+  },
+  "authority": {
+    "visual_comparison_only": true,
+    "physical_camera_calibration_claimed": false,
+    "metric_pose_authority": false,
+    "reward_or_evaluator_input": false,
+    "training_rows_authorized": 0,
+    "held_out_rows_used": 0,
+    "claim_boundary": "The transferred pinhole angle is an unreviewed visual diagnostic derived from a proposal-only board homography. It does not calibrate the camera, robot, board, gripper, contact model, or evaluator."
+  }
+}

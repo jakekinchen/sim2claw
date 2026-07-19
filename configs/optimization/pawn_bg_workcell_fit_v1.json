@@ -1,0 +1,54 @@
+{
+  "schema_version": "sim2claw.pawn_bg_workcell_fit.v1",
+  "optimization_id": "pawn_bg_workcell_fit_v1",
+  "rationale": {
+    "diagnosis": [
+      "All 22 frozen training-side source-fit events land within ~2 cm of the square obtained by rotating the labeled square 180 degrees about the board center; a single planar rigid transform (rotation 176.8 degrees) reduces the frozen 0.310 m identity event RMS to 0.018 m.",
+      "The owner video review states the robot-side sparse row is B1/C2/D1/E2/F1/G2, while the frozen scene places ranks 7/8 on the robot side; the display-only correction in commit ade3fff confirmed the mismatch without changing the frozen evaluator scene.",
+      "The repeatable folded rest pose (stdev ~0.1 degree across 18 episodes) sits a few degrees outside the vendored model's conservative ranges on exactly the joints that clip, so joint signs are identity and the frozen no-clipping admission rule mathematically excluded the near-identity mapping.",
+      "The remaining +0.0875 m mean vertical residual is consistent with constant per-joint zero offsets from the user-eyeballed LeRobot calibration middle pose, not with the rejected multi-radian adapter offsets."
+    ],
+    "supersedes_interpretation_of": "pawn_bg_source_fit_v1 terminal negative"
+  },
+  "fit": {
+    "frozen_board_center_in_table_frame_xy_m": [0.04, -0.065],
+    "frozen_board_yaw_relative_to_table_degrees": 1.55,
+    "stage_a": "categorical 180-degree board relabel (no free parameters)",
+    "stage_b": "planar board center/yaw refit, xy residuals only, bounds +/-0.08 m and +/-15 degrees",
+    "stage_c": "bounded per-joint zero offsets for shoulder_pan, shoulder_lift, elbow_flex, wrist_flex, full 3D residuals, jointly with stage-B parameters",
+    "joint_zero_offset_bound_degrees": 15.0,
+    "joint_zero_offset_prior_sigma_degrees": 5.0,
+    "stage_c_prime": "stage C plus a bounded base-height correction (the overhead photo cannot observe base z) and a bounded non-negative reopen-phase timing z nuisance (the frozen extractor's reopen event fires after retreat begins)",
+    "base_z_offset_bound_m": 0.03,
+    "reopen_timing_z_bound_m": 0.03,
+    "stage_d": "lift-dominant hypothesis: a single shoulder-lift zero offset (bounded 25 degrees) explains the vertical residual as one horn-spline tooth reseat or a badly eyeballed calibration middle on that joint; pan/elbow/wrist keep a 3-degree prior; includes the reopen timing nuisance",
+    "stage_d_lift_offset_bound_degrees": 25.0,
+    "stage_d_other_offset_prior_sigma_degrees": 3.0,
+    "candidate_selection_rule": "among stage C, stage C-prime, and stage D, select the candidate with more train episodes showing selected-piece jaw contact in command-driven replay; tie broken by lower train event RMS; declared before held-out episodes are opened",
+    "wrist_roll_offset_fixed_zero_reason": "rotation about the gripper axis is unobservable in pinch-point position",
+    "estimated_pawn_neck_height_m": 0.038,
+    "joint_signs_frozen_identity": [1, 1, 1, 1, 1],
+    "range_envelope": "per-joint union of the LeRobot calibration sweep ((ticks-2048)*360/4096 degrees) and training-episode command/actual excursions, plus 2 degrees margin, applied to the compiled model in memory",
+    "event_extractor": "frozen pawn_bg_source_fit_v1 gripper-close proxy, unchanged"
+  },
+  "data_binding": {
+    "catalog": "configs/data/physical_pawn_move_catalog_20260719.json",
+    "split": "configs/sysid/physical_pawn_sysid_split_v1.json",
+    "train_scope": "frozen sysid train partition intersected with the 13 owner-reviewed product recordings (11 episodes, 22 events)",
+    "held_out_scope": "product held-out episodes d1-to-d2 and g1-to-g2-redo, opened exactly once after the candidate is frozen",
+    "calibration_reference": "calibration/so101/follower_arm.json"
+  },
+  "admission": {
+    "declared_before_held_out_opened": true,
+    "maximum_held_out_event_rms_m": 0.06,
+    "require_no_candidate_command_clipping": true,
+    "consequence_scores_are_diagnostic_only": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "training": false,
+    "promotion": false,
+    "physical_calibration_claimed": false,
+    "sim_to_real_error_measured": false
+  }
+}

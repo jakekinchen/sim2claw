@@ -121,6 +121,11 @@ entry unavailable.
   authenticated rejection with no skill package
 - paid/Brev resources: none created, started, or used
 
+After merging the already-published `origin/main` B--G fidelity history into
+the release checkout, the unified pre-push suite passed 480 tests and 328
+subtests in 145.98 seconds. The merge retained the newer authenticated ACT
+snapshot boundary and incorporated the upstream task piece-layout support.
+
 The clean clone was created at `/tmp/sim2claw-release-clean-p64ZFe` from Git
 object bytes. Ignored project-bundle mount points were provisioned by the test;
 the result did not depend on development-checkout residue.

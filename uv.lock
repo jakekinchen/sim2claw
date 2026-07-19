@@ -1110,6 +1110,7 @@ dependencies = [
     { name = "opencv-python-headless" },
     { name = "pillow" },
     { name = "pyarrow" },
+    { name = "scipy" },
     { name = "torch" },
 ]
 
@@ -1126,6 +1127,7 @@ requires-dist = [
     { name = "opencv-python-headless", specifier = "==4.13.0.92" },
     { name = "pillow", specifier = "==12.3.0" },
     { name = "pyarrow", specifier = "==23.0.1" },
+    { name = "scipy", specifier = "==1.18.0" },
     { name = "torch", specifier = "==2.11.0" },
 ]
 
