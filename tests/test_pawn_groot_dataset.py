@@ -39,6 +39,11 @@ class PawnGrootDatasetTest(unittest.TestCase):
         self.assertTrue(source["strict_success_required"])
         self.assertEqual(source["assistance_frames"], 0)
         self.assertFalse(source["held_out_membership"])
+        shard = contract["loader_proof"]["nvidia_shard_preflight"]
+        self.assertEqual(shard["shard_size"], 64)
+        self.assertEqual(shard["episode_sampling_rate"], 0.1)
+        self.assertEqual(shard["expected_shard_count"], 9)
+        self.assertEqual(shard["expected_sharded_start_count"], 547)
 
     def test_action_chunks_cover_the_exact_unpadded_denominator(self) -> None:
         indices = _target_index_matrix(562, 16)

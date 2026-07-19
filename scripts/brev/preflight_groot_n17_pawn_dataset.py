@@ -205,19 +205,24 @@ def main() -> int:
         action_digest.update(np.ascontiguousarray(action_chunk).tobytes())
         state_digest.update(np.ascontiguousarray(state_row).tobytes())
 
+    shard_contract = json.loads(contract_path.read_text())["loader_proof"][
+        "nvidia_shard_preflight"
+    ]
     sharded = ShardedSingleStepDataset(
         dataset_path=dataset_root,
         embodiment_tag=EmbodimentTag.NEW_EMBODIMENT,
         modality_configs=configs,
-        shard_size=64,
-        episode_sampling_rate=1.0,
-        seed=1703,
+        shard_size=int(shard_contract["shard_size"]),
+        episode_sampling_rate=float(shard_contract["episode_sampling_rate"]),
+        seed=int(shard_contract["seed"]),
         allow_padding=False,
     )
     if sharded.get_effective_episode_length(0) != effective_starts:
         raise ValueError("pinned NVIDIA sharded effective length changed")
     if int(sum(sharded.shard_lengths)) != effective_starts:
         raise ValueError("pinned NVIDIA sharded start denominator changed")
+    if len(sharded) != int(shard_contract["expected_shard_count"]):
+        raise ValueError("pinned NVIDIA shard count changed")
 
     after_manifest = payload_manifest(dataset_root)
     if after_manifest != before_manifest:
@@ -257,8 +262,11 @@ def main() -> int:
         "decoded_video_frame_shapes": [list(shape) for shape in sorted(image_shapes)],
         "distinct_prompt_count": 1,
         "allow_padding": False,
-        "shard_size": 64,
-        "shard_seed": 1703,
+        "shard_size": int(shard_contract["shard_size"]),
+        "shard_episode_sampling_rate": float(
+            shard_contract["episode_sampling_rate"]
+        ),
+        "shard_seed": int(shard_contract["seed"]),
         "shard_count": len(sharded),
         "sharded_start_count": int(sum(sharded.shard_lengths)),
         "held_out_rows": 0,

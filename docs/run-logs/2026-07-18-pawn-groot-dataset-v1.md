@@ -14,9 +14,9 @@ does not promote a learned policy.
 
 - dataset contract: `chess_pick_place_pawn_groot_dataset_v1`
 - dataset contract SHA-256:
-  `0e3f40313d0429366d6d1cab7ae372f7b2cb34d6339b15a81724f5d2c6c2885a`
+  `8561c6b15ec565e724c9aaab272c84ac897c1a442cd69ab2f4fa91c22243bffa`
 - dataset receipt SHA-256:
-  `1f82d4e25f5b396f954c149122c894c629e309244d08983627597eddb86095a8`
+  `0a1ee253147186330c618d36131ce84b9ccb07707e8b8b1e72c22c22559c77be`
 - payload manifest SHA-256:
   `0fa5095a5976186825d03a6728797785e5d8ecbe7b918b752ab5a12cca673394`
 - builder module SHA-256:
@@ -52,7 +52,7 @@ camera hashes, its source action owner, and the admission payload.
 ## Local loader proof
 
 - local preflight receipt SHA-256:
-  `2553a4aeba909829f776213fc7beb49f10e6d4fd451a68e398b90626efa598eb`
+  `1114091fea651f99ff2940d0219e11d407f83b7aea5d960bb028a6ee4692f284`
 - effective 16-step starts: 547
 - action target slots: 8,752
 - action scalars: 52,512
