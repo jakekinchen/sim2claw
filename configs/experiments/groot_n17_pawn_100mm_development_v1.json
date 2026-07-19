@@ -29,8 +29,20 @@
     "rollout_actions": 0,
     "gpu_processes_stopped": true
   },
+  "superseded_osmesa_no_query_launch": {
+    "parent_contract_sha256": "ed1bc4b92032588bdfb774839a444f0c07f3ffb7b3fc57f59ed0badbf233ea1b",
+    "failure": "MuJoCo Python package was present but the worker lacked libOSMesa; runner failed during import before PolicyClient construction",
+    "outer_log_sha256": "42d99330c2ce01cbbc0b4ba7c678dc890b424631a22362c7e94584a7ea985799",
+    "runner_log_sha256": "3017383ee11ec5f8918779440b9d6a7d0a8cb4747fcdeeaab9c1107034b0e252",
+    "server_runtime_receipt_sha256": "9b46cb44c1e6bb8e133333eb067e6c689fe44af0c009a6fb6392f0b68b8d3ca3",
+    "server_exit_receipt_sha256": "c47f62b2e32a5fac988ff9caf0ba041154913bcb0220c72816a0d0bfdd163eb9",
+    "server_log_sha256": "e0fc656426bfe86201c3c0e7ac66957a283a099d2a11840ebfb516490a7a82d4",
+    "model_queries": 0,
+    "rollout_actions": 0,
+    "gpu_processes_stopped": true
+  },
   "identities": {
-    "orchestrator_sha256": "0261b839eceb7d4afba7e90c3e797aa7503f891660547ac2880fab1ab475d7b4",
+    "orchestrator_sha256": "e9f91b4143c23a4a956cb3cca50e84fb2773ce0eaad4a0d5bf0551455372d2ed",
     "experiment_sha256": "ea6184ba10bd7803ac8e839ae3aebc4de079621afe03f43b6505a61e86622507",
     "selector_contract_sha256": "22a6d834902b32b17763578a82704c280aecfc783f0a3dfbc7158981cac447df",
     "source_contract_sha256": "737a368916643d083d400c42176ae044d0cd4a5e4697c9902e0b7e6b32367fda",
@@ -45,7 +57,7 @@
       "scripts/brev/evaluate_groot_n17_pawn_100mm_development.py": "5716a89e014c4e118914c774f7188d0977569240d88a4f2f11ea09f3a6d106da",
       "src/sim2claw/groot_consensus.py": "7fd23d357e6123f7343dcab027a3ad2dfa91410c0eb68a02c39de83f9e5c572e",
       "src/sim2claw/groot_execution.py": "b5d3fc588801ff886d34a0e21c6b58c5a7084bce1a762f7a01aacdc4bff10f32",
-      "src/sim2claw/pawn_policy_evaluator.py": "64dd74753f1a317836bbc7b30e01ff1c8aa76d1ddc7d80515852ab2f8e48294f",
+      "src/sim2claw/pawn_policy_evaluator.py": "a1775694031e0503be0494b68736095ffe143a2181b8b9d6ec0ca110210919c5",
       "src/sim2claw/pawn_source_evaluator.py": "21887167c3b0725a9421326425aa4bd86099816fb201b4f3c3a331e0f0a736d4",
       "src/sim2claw/scene.py": "5247d7ef694ef56721124d7e8a1fbb832e29789bcc1842cdfd1340ee980293ee",
       "src/sim2claw/grasp.py": "c4c0d4382c8319e0dec25d0e1d740fd92fdd7fdd6e8717e99a4aaa6c37e2e313",
@@ -75,7 +87,9 @@
     "processor_path": "/home/shadeform/.cache/huggingface/hub/models--nvidia--Cosmos-Reason2-2B/snapshots/9ce19a195e423419c349abfc86fd07178b230561",
     "expected_nvidia_tracked_dirtiness": " M gr00t/model/gr00t_n1d7/processing_gr00t_n1d7.py",
     "device": "cuda",
+    "python_version": "3.10",
     "mujoco_version": "3.10.0",
+    "osmesa_soname": "libOSMesa.so.8",
     "renderer": "osmesa"
   },
   "server": {
@@ -89,7 +103,7 @@
   },
   "rollout": {
     "output_directory": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/development-v1",
-    "evidence_directory": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/evidence/development-v1-attempt2",
+    "evidence_directory": "/home/shadeform/runs/groot-n17-pawn-100mm-v1/evidence/development-v1-attempt3",
     "scene_reset_seed": 0,
     "inference_seed": 0,
     "sample_count": 562,

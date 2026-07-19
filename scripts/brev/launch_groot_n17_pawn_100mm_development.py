@@ -167,6 +167,38 @@ def validate_inputs(contract_path: Path, expected_hash: str) -> dict[str, Any]:
         raise SystemExit("MuJoCo runtime version drifted")
     if not Path("/usr/bin/ffmpeg").is_file():
         raise SystemExit("frozen rollout video encoder is missing")
+    render_env = os.environ.copy()
+    render_env.update(
+        {
+            "PYTHONPATH": str(repo / "src"),
+            "MUJOCO_GL": "osmesa",
+            "PYOPENGL_PLATFORM": "osmesa",
+        }
+    )
+    render_probe = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "import mujoco; "
+                "from sim2claw.pawn_policy_evaluator import "
+                "build_frozen_pawn_development_runtime; "
+                "r=build_frozen_pawn_development_runtime(); "
+                "v=mujoco.Renderer(r.model,height=64,width=64); "
+                "v.update_scene(r.data,camera='overhead'); "
+                "f=v.render(); v.close(); "
+                "assert f.shape==(64,64,3)"
+            ),
+        ],
+        env=render_env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    if render_probe.returncode != 0:
+        raise SystemExit(f"OSMesa scene render preflight failed: {render_probe.stdout}")
 
     output = Path(contract["rollout"]["output_directory"])
     if output.exists():

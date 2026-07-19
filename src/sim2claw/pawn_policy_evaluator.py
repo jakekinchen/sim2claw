@@ -10,13 +10,20 @@ from __future__ import annotations
 
 import hashlib
 import json
+import datetime as _datetime
 from dataclasses import dataclass
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 import mujoco
 import numpy as np
+
+# NVIDIA GR00T N1.7 currently runs under Python 3.10, while the clean-room
+# project runtime is Python 3.12.  Install the standard 3.11+ alias before
+# importing evaluator modules that use ``from datetime import UTC``.
+if not hasattr(_datetime, "UTC"):
+    _datetime.UTC = _datetime.timezone.utc  # type: ignore[attr-defined]
+from datetime import UTC, datetime  # noqa: E402
 
 from .grasp import _jaw_body_ids, _piece_bodies, _pinch_offset, _pinch_point
 from .groot_execution import aggregate_temporal_action
