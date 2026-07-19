@@ -43,6 +43,50 @@
     "training_lock_source": "docs/autonomous-workflow/project_state.json",
     "promotion_owner": "separate_cpu_fp32_consequence_evaluator"
   },
+  "learning_factory": {
+    "graph": "configs/learning_factory/graph_v1.json",
+    "profile": "physical_campaign",
+    "campaign": {
+      "campaign_id": "pawn-rank12-bg",
+      "generation": 0,
+      "parent_generation": null
+    },
+    "visual_context": {
+      "required": false,
+      "reason": "The current repo-native baseline twin predates this campaign; a 3DGS remains visual context only."
+    },
+    "twin_candidate": {
+      "scene_id": "operator_updated_chess_workcell_v3",
+      "capture_config": "configs/polycam/8873B66C-774C-48B1-B51D-338645867009.json",
+      "mass_profile": "calibration/so101/follower_mass_profile_v1.json",
+      "proof_class": "operator_updated_simulation_scene"
+    },
+    "source_mode": "canonical_physical_catalog",
+    "canonical_source_episodes": [],
+    "replay": {
+      "sysid_config": "configs/sysid/recorded_action_sysid_v1.json",
+      "minimum_ready_episodes": 2,
+      "split_strategy": "deterministic_hash",
+      "held_out_column": null
+    },
+    "curriculum": {
+      "task_contract": "configs/tasks/chess_pick_place_act_state_v1.json",
+      "maximum_candidates": 8,
+      "admitted_source_episodes": [],
+      "candidate_executions": [],
+      "live_blocker": "No evaluator-admitted B-G-compatible source episode exists; lower-side B-G cells are outside the frozen left-arm IK envelope and physical episodes remain replay-unqualified."
+    },
+    "training": {
+      "recipe": "configs/training/goal_act_recipe_v1.json",
+      "evaluation_cohort": null,
+      "live_blocker": "A B-G-compatible frozen evaluation cohort cannot be sealed until compatible simulation source/reset episodes exist."
+    },
+    "recursion": {
+      "previous_registry": null,
+      "correction_candidates": [],
+      "raw_failures_are_training_data": false
+    }
+  },
   "authority": {
     "physical_authority": false,
     "robot_motion_allowed": false,

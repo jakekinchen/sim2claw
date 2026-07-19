@@ -31,6 +31,14 @@
 - [`run-logs/2026-07-19-studio-task-orchestrator.md`](./run-logs/2026-07-19-studio-task-orchestrator.md)
   — implementation, synthetic-proof boundary, visual audit, 435-test receipt,
   package build, exact-model live proof, and explicit Silicon/physical limits.
+- [`briefs/007-learning-factory-automation-map.md`](./briefs/007-learning-factory-automation-map.md)
+  — implemented stage-by-stage learning-factory inputs, outputs, proof
+  ownership, bounded Codex roles, automation readiness, and current physical
+  blocker.
+- [`autonomous-workflow/goal-loop-learning-factory.md`](./autonomous-workflow/goal-loop-learning-factory.md)
+  — completed Codex execution task and evidence closeout for the resumable
+  twin-calibration, curriculum, training, counterexample, evaluation, and
+  promotion factory without a secondary LLM provider.
 - [`research/2026-07-19-pawn-composability-study.md`](./research/2026-07-19-pawn-composability-study.md)
   — current B--G endpoint, exact-replay, calibration, composition, language,
   and checkpoint evidence boundary.

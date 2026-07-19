@@ -133,6 +133,20 @@ def validate_task_contract(contract: dict[str, Any]) -> dict[str, Any]:
     ):
         if not evaluator[requirement]:
             raise ValueError(f"evaluator requirement disabled: {requirement}")
+    runtime_scope = contract.get("runtime_scope")
+    if not isinstance(runtime_scope, dict):
+        raise ValueError("goal-conditioned ACT runtime scope is missing")
+    expected_skills = {
+        f"pawn_{file_name}{source}_to_{file_name}{destination}"
+        for file_name in "bcdefg"
+        for source, destination in ((1, 2), (2, 1))
+    }
+    if set(runtime_scope.get("eligible_skill_ids", [])) != expected_skills:
+        raise ValueError("goal-conditioned ACT runtime scope is not the frozen B-G set")
+    if int(runtime_scope.get("minimum_held_out_cases_per_skill", 0)) < 1:
+        raise ValueError("every runtime skill requires a held-out evaluation case")
+    if runtime_scope.get("all_skills_must_pass_before_registry_publication") is not True:
+        raise ValueError("partial runtime-skill publication is forbidden")
     if any(contract["authority"][key] for key in ("physical_authority", "camera_hardware_access", "serial_access", "gateway_access")):
         raise ValueError("M6 contract cannot grant hardware authority")
     return contract

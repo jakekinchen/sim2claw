@@ -1,0 +1,151 @@
+{
+  "schema_version": "sim2claw.learning_factory_graph.v1",
+  "graph_id": "sim2claw_learning_factory_lf00_lf13_v1",
+  "stages": [
+    {
+      "stage_id": "LF-00",
+      "name": "Inspect project",
+      "purpose": "Verify the project, evaluator, authority, and selected execution path.",
+      "dependencies": [],
+      "output_contract": "sim2claw.factory_project_inspection.v1",
+      "verdict_owner": "project_contract_validator",
+      "codex_action": "Repair the smallest missing or inconsistent project input.",
+      "next_stage": "LF-01"
+    },
+    {
+      "stage_id": "LF-01",
+      "name": "Reconstruct visual context",
+      "purpose": "Produce or verify relative-scale visual context without granting metric authority.",
+      "dependencies": ["LF-00"],
+      "output_contract": "sim2claw.factory_visual_context_result.v1",
+      "verdict_owner": "reconstruction_inventory_validator",
+      "codex_action": "Run or repair the hash-bound reconstruction adapter.",
+      "next_stage": "LF-02"
+    },
+    {
+      "stage_id": "LF-02",
+      "name": "Author twin candidate",
+      "purpose": "Create a versioned scene candidate with uncertainty and provenance.",
+      "dependencies": ["LF-01"],
+      "output_contract": "sim2claw.factory_twin_candidate.v1",
+      "verdict_owner": "codex_authorship_contract",
+      "codex_action": "Author or repair the repo-native twin candidate.",
+      "next_stage": "LF-03"
+    },
+    {
+      "stage_id": "LF-03",
+      "name": "Validate baseline twin",
+      "purpose": "Compile, step, and validate the baseline scene candidate.",
+      "dependencies": ["LF-02"],
+      "output_contract": "sim2claw.factory_twin_validation.v1",
+      "verdict_owner": "twin_validator",
+      "codex_action": "Repair structured scene-validation failures.",
+      "next_stage": "LF-04"
+    },
+    {
+      "stage_id": "LF-04",
+      "name": "Normalize demonstrations",
+      "purpose": "Inventory and normalize demonstrations without silently repairing source evidence.",
+      "dependencies": ["LF-03"],
+      "output_contract": "sim2claw.factory_source_catalog.v1",
+      "verdict_owner": "source_contract_validator",
+      "codex_action": "Resolve explicit source conflicts or missing observables.",
+      "next_stage": "LF-05"
+    },
+    {
+      "stage_id": "LF-05",
+      "name": "Freeze replay-ready splits",
+      "purpose": "Prove exact replay readiness and freeze disjoint episode roles before fitting.",
+      "dependencies": ["LF-04"],
+      "output_contract": "sim2claw.factory_replay_readiness.v1",
+      "verdict_owner": "split_and_replay_validator",
+      "codex_action": "Repair transforms, timing, state observables, or cohort sufficiency.",
+      "next_stage": "LF-06"
+    },
+    {
+      "stage_id": "LF-06",
+      "name": "Fit calibrated twin",
+      "purpose": "Fit bounded identifiable parameters using calibration episodes only.",
+      "dependencies": ["LF-05"],
+      "output_contract": "sim2claw.factory_calibration_fit.v1",
+      "verdict_owner": "system_identification_runner",
+      "codex_action": "Propose a bounded identifiable calibration experiment.",
+      "next_stage": "LF-07"
+    },
+    {
+      "stage_id": "LF-07",
+      "name": "Compare twin fidelity",
+      "purpose": "Compare baseline and calibrated twins on frozen validation and policy probes.",
+      "dependencies": ["LF-06"],
+      "output_contract": "sim2claw.factory_calibration_comparison.v1",
+      "verdict_owner": "calibration_evaluator",
+      "codex_action": "Inspect held-out fidelity, sensitivity, and failure-agreement evidence.",
+      "next_stage": "LF-08"
+    },
+    {
+      "stage_id": "LF-08",
+      "name": "Compile cousin curriculum",
+      "purpose": "Compile the smallest bounded pose/layout cousin batch from declared envelopes.",
+      "dependencies": ["LF-07"],
+      "output_contract": "sim2claw.goal_act_curriculum.v1",
+      "verdict_owner": "cousin_contract_compiler",
+      "codex_action": "Propose bounded cousins for the largest coverage gaps.",
+      "next_stage": "LF-09"
+    },
+    {
+      "stage_id": "LF-09",
+      "name": "Admit dataset",
+      "purpose": "Replay, separately evaluate, and adapt accepted candidates into an immutable dataset.",
+      "dependencies": ["LF-08"],
+      "output_contract": "sim2claw.goal_act_dataset.v1",
+      "verdict_owner": "strict_success_evaluator",
+      "codex_action": "Repair rejected candidates without changing held-outs.",
+      "next_stage": "LF-10"
+    },
+    {
+      "stage_id": "LF-10",
+      "name": "Train policy candidates",
+      "purpose": "Train immutable candidates from one admitted dataset without promotion authority.",
+      "dependencies": ["LF-09"],
+      "output_contract": "sim2claw.goal_act_training_receipt.v1",
+      "verdict_owner": "trainer",
+      "codex_action": "Run the bounded local or paid-compute training recipe.",
+      "next_stage": "LF-11"
+    },
+    {
+      "stage_id": "LF-11",
+      "name": "Evaluate policy candidates",
+      "purpose": "Run the frozen independent evaluator and compare candidate consequences.",
+      "dependencies": ["LF-10"],
+      "output_contract": "sim2claw.goal_act_evaluation_receipt.v1",
+      "verdict_owner": "separate_cpu_fp32_consequence_evaluator",
+      "codex_action": "Inspect evaluator-owned candidate verdicts and failure cases.",
+      "next_stage": "LF-12"
+    },
+    {
+      "stage_id": "LF-12",
+      "name": "Route counterexamples",
+      "purpose": "Deduplicate failures and route guarded repairs without automatic training admission.",
+      "dependencies": ["LF-11"],
+      "output_contract": "sim2claw.factory_counterexample_registry.v2",
+      "verdict_owner": "counterexample_contract_validator",
+      "codex_action": "Diagnose mechanisms and propose separately evaluated corrections.",
+      "next_stage": "LF-13"
+    },
+    {
+      "stage_id": "LF-13",
+      "name": "Publish evidence and promotion state",
+      "purpose": "Join immutable identities and publish an evaluator-owned final state.",
+      "dependencies": ["LF-12"],
+      "output_contract": "sim2claw.factory_promotion_receipt.v2",
+      "verdict_owner": "independent_promotion_engine",
+      "codex_action": "Publish the evidence map and downstream skill package only when eligible.",
+      "next_stage": null
+    }
+  ],
+  "recursive_edges": [
+    {"from": "LF-12", "to": "LF-06", "reason": "calibration counterexample"},
+    {"from": "LF-12", "to": "LF-08", "reason": "coverage counterexample"},
+    {"from": "LF-12", "to": "LF-09", "reason": "validated correction candidate"}
+  ]
+}

@@ -161,6 +161,79 @@ def build_parser() -> argparse.ArgumentParser:
     )
     pipeline_status.add_argument("--project", type=Path, required=True)
 
+    factory_inspect = subparsers.add_parser(
+        "factory-inspect",
+        help="verify a project and resolve its complete learning-factory graph",
+    )
+    factory_inspect.add_argument("--project", type=Path, required=True)
+    factory_inspect.add_argument("--generation", type=int, default=None)
+    factory_inspect.add_argument("--parent-generation", type=int, default=None)
+
+    factory_status = subparsers.add_parser(
+        "factory-status",
+        help="show every learning-factory stage, blocker, and next action",
+    )
+    factory_status.add_argument("--project", type=Path, required=True)
+    factory_status.add_argument("--generation", type=int, default=None)
+    factory_status.add_argument("--parent-generation", type=int, default=None)
+
+    factory_run = subparsers.add_parser(
+        "factory-run",
+        help="run the next stage, a bounded stage range, or a resumable attempt",
+    )
+    factory_run.add_argument("--project", type=Path, required=True)
+    factory_run.add_argument("--generation", type=int, default=None)
+    factory_run.add_argument("--parent-generation", type=int, default=None)
+    factory_mode = factory_run.add_mutually_exclusive_group(required=True)
+    factory_mode.add_argument("--next", action="store_true", dest="run_next")
+    factory_mode.add_argument("--resume", action="store_true")
+    factory_mode.add_argument("--from", choices=tuple(f"LF-{index:02d}" for index in range(14)), dest="from_stage")
+    factory_run.add_argument(
+        "--through",
+        choices=tuple(f"LF-{index:02d}" for index in range(14)),
+        dest="through_stage",
+    )
+
+    factory_explain = subparsers.add_parser(
+        "factory-explain",
+        help="explain one learning-factory stage and its latest evidence",
+    )
+    factory_explain.add_argument("--project", type=Path, required=True)
+    factory_explain.add_argument("--generation", type=int, default=None)
+    factory_explain.add_argument("--parent-generation", type=int, default=None)
+    factory_explain.add_argument(
+        "--stage",
+        choices=tuple(f"LF-{index:02d}" for index in range(14)),
+        required=True,
+    )
+
+    factory_recurse = subparsers.add_parser(
+        "factory-recurse",
+        help="fork an immutable child generation from LF-12 counterexample routes",
+    )
+    factory_recurse.add_argument("--project", type=Path, required=True)
+    factory_recurse.add_argument("--generation", type=int, default=None)
+    factory_recurse.add_argument("--parent-generation", type=int, default=None)
+    factory_recurse.add_argument(
+        "--target",
+        action="append",
+        choices=("LF-06", "LF-08", "LF-09"),
+        default=None,
+    )
+    factory_recurse.add_argument(
+        "--through",
+        choices=tuple(f"LF-{index:02d}" for index in range(6, 14)),
+        default="LF-11",
+    )
+
+    factory_act_evidence = subparsers.add_parser(
+        "factory-act-evidence",
+        help="bind a narrow ACT training/evaluation pair without widening its claim",
+    )
+    factory_act_evidence.add_argument("--training-receipt", type=Path, required=True)
+    factory_act_evidence.add_argument("--evaluation-receipt", type=Path, required=True)
+    factory_act_evidence.add_argument("--output", type=Path, default=None)
+
     subparsers.add_parser(
         "teleop-preflight",
         help="inspect SO-101 buses, calibrations, and recorder mode gates",
@@ -551,6 +624,107 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         inspect_project(args.project)
         print(json.dumps(pipeline_status(args.project), indent=2, sort_keys=True))
+        return 0
+    if args.command == "factory-inspect":
+        from .learning_factory import LearningFactory
+
+        print(
+            json.dumps(
+                LearningFactory(
+                    args.project,
+                    generation=args.generation,
+                    parent_generation=args.parent_generation,
+                ).inspect(),
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+    if args.command == "factory-status":
+        from .learning_factory import LearningFactory
+
+        print(
+            json.dumps(
+                LearningFactory(
+                    args.project,
+                    generation=args.generation,
+                    parent_generation=args.parent_generation,
+                ).status(),
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+    if args.command == "factory-run":
+        from .learning_factory import LearningFactory, LearningFactoryError
+
+        factory = LearningFactory(
+            args.project,
+            generation=args.generation,
+            parent_generation=args.parent_generation,
+        )
+        if args.run_next:
+            if args.through_stage is not None:
+                raise LearningFactoryError("--through requires --from")
+            report = factory.run_next()
+        elif args.resume:
+            if args.through_stage is not None:
+                raise LearningFactoryError("--through cannot be combined with --resume")
+            report = factory.resume()
+        else:
+            if args.through_stage is None:
+                raise LearningFactoryError("--through is required with --from")
+            report = factory.run_range(args.from_stage, args.through_stage)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "factory-explain":
+        from .learning_factory import LearningFactory
+
+        print(
+            json.dumps(
+                LearningFactory(
+                    args.project,
+                    generation=args.generation,
+                    parent_generation=args.parent_generation,
+                ).explain(args.stage),
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+    if args.command == "factory-recurse":
+        from .learning_factory import LearningFactory, LearningFactoryError
+
+        factory = LearningFactory(
+            args.project,
+            generation=args.generation,
+            parent_generation=args.parent_generation,
+        )
+        targets = args.target
+        if targets is None:
+            latest = factory._load_latest("LF-12")
+            if latest is None or latest["status"] != "passed":
+                raise LearningFactoryError(
+                    "LF-12 must pass before inferred counterexample recursion"
+                )
+            targets = list((latest.get("output") or {}).get("route_targets") or [])
+        report = factory.fork_generation(
+            route_targets=list(targets), through=args.through
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "factory-act-evidence":
+        from .learning_factory_artifacts import (
+            atomic_write_json,
+            bind_narrow_act_evidence,
+        )
+
+        report = bind_narrow_act_evidence(
+            args.training_receipt, args.evaluation_receipt
+        )
+        if args.output is not None:
+            atomic_write_json(args.output, report)
+        print(json.dumps(report, indent=2, sort_keys=True))
         return 0
     if args.command == "teleop-preflight":
         from .teleop_recording import recorder_preflight

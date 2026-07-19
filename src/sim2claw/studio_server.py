@@ -15,6 +15,8 @@ from typing import Any
 from urllib.parse import parse_qs, unquote, urlsplit
 
 from .paths import REPO_ROOT
+from .learning_factory import LearningFactoryError
+from .learning_factory_studio import DEFAULT_FACTORY_PROJECT, build_factory_navigation
 from .physical_gateway import PhysicalGatewayError
 from .studio_catalog import build_catalog, open_media_token
 from .studio_live import LiveWorkspaceError, LiveWorkspaceService, MJPEG_BOUNDARY
@@ -112,6 +114,56 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
         path = unquote(request.path)
         if path == "/api/catalog":
             self._send_json(build_catalog(self.server.repo_root))
+            return
+        if path == "/api/learning-factory":
+            declared_project = parse_qs(request.query).get(
+                "project", [DEFAULT_FACTORY_PROJECT.as_posix()]
+            )[0]
+            try:
+                self._send_json(
+                    build_factory_navigation(
+                        repo_root=self.server.repo_root,
+                        project_path=Path(declared_project),
+                    )
+                )
+            except (LearningFactoryError, OSError, ValueError) as error:
+                self._send_json(
+                    {"ok": False, "error": str(error)}, HTTPStatus.BAD_REQUEST
+                )
+            return
+        if path == "/api/learning-factory/artifact":
+            declared = parse_qs(request.query).get("path", [""])[0]
+            try:
+                candidate = (self.server.repo_root / declared).resolve()
+                allowed_root = (
+                    self.server.repo_root / "runs/learning-factory"
+                ).resolve()
+                if (
+                    not declared
+                    or Path(declared).is_absolute()
+                    or ".." in Path(declared).parts
+                    or not candidate.is_relative_to(allowed_root)
+                    or candidate.suffix != ".json"
+                    or not candidate.is_file()
+                    or candidate.stat().st_size > 2 * 1024 * 1024
+                ):
+                    raise ValueError("artifact path is not an allowed factory JSON receipt")
+                payload = json.loads(candidate.read_text(encoding="utf-8"))
+                if not isinstance(payload, dict):
+                    raise ValueError("factory artifact is not a JSON object")
+                self._send_json(
+                    {
+                        "schema_version": "sim2claw.studio_factory_artifact.v1",
+                        "read_only": True,
+                        "path": candidate.relative_to(self.server.repo_root).as_posix(),
+                        "byte_count": candidate.stat().st_size,
+                        "artifact": payload,
+                    }
+                )
+            except (OSError, ValueError, json.JSONDecodeError) as error:
+                self._send_json(
+                    {"ok": False, "error": str(error)}, HTTPStatus.BAD_REQUEST
+                )
             return
         if path == "/api/scene-synthesis":
             if self.server.scene_synthesis_proposal is None:

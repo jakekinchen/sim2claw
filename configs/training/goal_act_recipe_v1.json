@@ -1,0 +1,31 @@
+{
+  "schema_version": "sim2claw.goal_act_training_recipe.v1",
+  "recipe_id": "goal_act_local_cpu_v1",
+  "architecture": "ACT",
+  "training_seed": 3407,
+  "device": "cpu",
+  "dtype": "float32",
+  "chunk_size": 16,
+  "n_action_steps": 4,
+  "model_dimension": 64,
+  "attention_heads": 4,
+  "encoder_layers": 2,
+  "decoder_layers": 2,
+  "feedforward_dimension": 128,
+  "latent_dimension": 16,
+  "dropout": 0.0,
+  "optimizer": "adamw",
+  "learning_rate": 0.0003,
+  "weight_decay": 0.0001,
+  "batch_size": 32,
+  "optimizer_updates": 200,
+  "kl_weight": 10.0,
+  "gradient_clip_norm": 10.0,
+  "checkpoint_interval_updates": 100,
+  "maximum_wall_seconds": 900,
+  "resource": {
+    "provider": "local",
+    "paid_compute": false,
+    "cleanup_required": false
+  }
+}

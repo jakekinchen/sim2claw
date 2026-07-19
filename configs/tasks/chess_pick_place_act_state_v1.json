@@ -169,6 +169,25 @@
     "training_cannot_promote": true,
     "diagnostic_reward_cannot_promote": true
   },
+  "runtime_scope": {
+    "scope_id": "pawn_rank12_reachable_bg_hackathon_v1",
+    "eligible_skill_ids": [
+      "pawn_b1_to_b2", "pawn_b2_to_b1",
+      "pawn_c1_to_c2", "pawn_c2_to_c1",
+      "pawn_d1_to_d2", "pawn_d2_to_d1",
+      "pawn_e1_to_e2", "pawn_e2_to_e1",
+      "pawn_f1_to_f2", "pawn_f2_to_f1",
+      "pawn_g1_to_g2", "pawn_g2_to_g1"
+    ],
+    "minimum_held_out_cases_per_skill": 1,
+    "evaluation_generalization_axes": [
+      "held_out_seed",
+      "held_out_source_pose_cell",
+      "held_out_target_pose_cell",
+      "held_out_distractor_layout"
+    ],
+    "all_skills_must_pass_before_registry_publication": true
+  },
   "negative_fixture_rejections": [
     "timing_leakage",
     "split_leakage",

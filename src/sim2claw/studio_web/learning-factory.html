@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Learning factory · Sim2Claw Studio</title>
+    <link rel="stylesheet" href="/learning-factory.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#stage-rail">Skip to stage rail</a>
+    <header class="factory-header">
+      <div class="header-copy">
+        <p class="eyebrow">Sim2Claw / evidence studio</p>
+        <h1>Learning factory</h1>
+        <p class="dek">
+          One project. Fourteen gates. The rail shows what Codex can run next
+          and why everything else is waiting.
+        </p>
+      </div>
+      <div class="header-status" aria-live="polite">
+        <span class="pulse" aria-hidden="true"></span>
+        <div>
+          <span class="utility-label">Factory state</span>
+          <strong id="overall-status">Loading…</strong>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="project-strip" aria-label="Selected project">
+        <div>
+          <span class="utility-label">Project</span>
+          <strong id="project-id">Resolving contract…</strong>
+        </div>
+        <div>
+          <span class="utility-label">Current gate</span>
+          <strong id="current-stage">—</strong>
+        </div>
+        <div>
+          <span class="utility-label">Next ready</span>
+          <strong id="next-stage">—</strong>
+        </div>
+        <div>
+          <span class="utility-label">Campaign / generation</span>
+          <strong id="campaign-generation">—</strong>
+        </div>
+        <div class="readonly-stamp">Read-only evidence</div>
+      </section>
+
+      <section class="rail-intro">
+        <p>
+          A green gate has passed. Blue is ready. Amber names a real blocker.
+          Select any gate to inspect its evidence boundary and copy the exact
+          Codex resume command.
+        </p>
+        <a href="/" class="studio-link">Back to Studio</a>
+      </section>
+
+      <ol id="stage-rail" class="stage-rail" aria-label="Learning factory stages"></ol>
+
+      <section class="history-section" aria-labelledby="history-title">
+        <div class="section-heading">
+          <div>
+            <span class="utility-label">Immutable lineage</span>
+            <h2 id="history-title">Campaign history</h2>
+          </div>
+          <p>Each generation keeps its own attempts and inherits parent evidence by digest.</p>
+        </div>
+        <ol id="campaign-history" class="campaign-history"></ol>
+      </section>
+
+      <section id="artifact-viewer" class="artifact-viewer" hidden aria-labelledby="artifact-title">
+        <div class="artifact-heading">
+          <div>
+            <span class="utility-label">Read-only immutable JSON</span>
+            <h2 id="artifact-title">Artifact drilldown</h2>
+            <code id="artifact-path"></code>
+          </div>
+          <button id="close-artifact" type="button">Close</button>
+        </div>
+        <pre id="artifact-json"></pre>
+      </section>
+
+      <section id="factory-error" class="factory-error" hidden>
+        <span class="utility-label">Factory unavailable</span>
+        <p id="factory-error-message"></p>
+      </section>
+    </main>
+
+    <template id="stage-template">
+      <li class="stage-card">
+        <div class="rail-node" aria-hidden="true"><span></span></div>
+        <article>
+          <button class="stage-summary" type="button" aria-expanded="false">
+            <span class="stage-index"></span>
+            <span class="stage-title-group">
+              <span class="stage-name"></span>
+              <span class="stage-purpose"></span>
+            </span>
+            <span class="stage-status"></span>
+            <span class="disclosure" aria-hidden="true">+</span>
+          </button>
+          <div class="stage-details" hidden>
+            <dl>
+              <div><dt>Verdict owner</dt><dd class="stage-owner"></dd></div>
+              <div><dt>Output contract</dt><dd class="stage-output"></dd></div>
+              <div><dt>Latest evidence</dt><dd class="stage-evidence"></dd></div>
+              <div><dt>Codex action</dt><dd class="stage-action"></dd></div>
+              <div><dt>Proof class</dt><dd class="stage-proof"></dd></div>
+              <div><dt>Output digest</dt><dd class="stage-output-digest"></dd></div>
+              <div><dt>Result digest</dt><dd class="stage-result-digest"></dd></div>
+              <div><dt>Finished</dt><dd class="stage-finished"></dd></div>
+            </dl>
+            <div class="blocker-panel" hidden>
+              <span class="utility-label">Blocking advancement</span>
+              <ul class="stage-blockers"></ul>
+            </div>
+            <div class="command-row">
+              <code class="stage-command"></code>
+              <button class="copy-command" type="button">Copy resume command</button>
+            </div>
+            <button class="view-artifact" type="button" hidden>Inspect immutable output</button>
+          </div>
+        </article>
+      </li>
+    </template>
+
+    <script src="/learning-factory.js" defer></script>
+  </body>
+</html>
