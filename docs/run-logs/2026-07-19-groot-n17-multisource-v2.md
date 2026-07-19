@@ -125,7 +125,9 @@ The completed-run receipt's rank-12 SHA-256 identifies historical
 `pawn_rank12_bidirectional_v1`. It remains historical evidence and is not
 rewritten as the current product contract. The current v2 product identity is
 the B-G, rank-1/rank-2 contract and must be recorded beside v1 in future run
-receipts; it was not used to grade this C8-to-A6 rollout.
+receipts; it was not used to grade this C8-to-A6 rollout. Its committed source
+identity is commit `36f1ebc5f66e63317b1fba84ba9aaabf66a5ff2d` and file
+SHA-256 `8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3`.
 
 ## Future-run evidence gate
 

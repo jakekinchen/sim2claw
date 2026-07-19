@@ -4,6 +4,7 @@ import importlib.util
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 MODULE_PATH = (
@@ -60,7 +61,19 @@ class GrootMultisourceRunRecorderTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            identities = rank12_contract_identities(root)
+            with (
+                mock.patch.object(
+                    RECORDER,
+                    "HISTORICAL_RANK12_SHA256",
+                    sha256_file(historical),
+                ),
+                mock.patch.object(
+                    RECORDER,
+                    "CURRENT_RANK12_SHA256",
+                    sha256_file(current),
+                ),
+            ):
+                identities = rank12_contract_identities(root)
 
             self.assertEqual(
                 identities["historical_completed_run_contract"]["sha256"],
@@ -69,6 +82,11 @@ class GrootMultisourceRunRecorderTests(unittest.TestCase):
             self.assertEqual(
                 identities["current_product_contract"]["sha256"],
                 sha256_file(current),
+            )
+            self.assertTrue(
+                identities["current_product_contract"][
+                    "payload_verified_in_code_root"
+                ]
             )
             self.assertTrue(
                 identities["completed_run_contract_was_not_rewritten"]
@@ -87,7 +105,15 @@ class GrootMultisourceRunRecorderTests(unittest.TestCase):
                 '{"evaluation_set_id":"wrong-scope"}\n',
                 encoding="utf-8",
             )
-            with self.assertRaisesRegex(ValueError, "current rank-12 v2"):
+            historical = evaluations / "pawn_rank12_bidirectional_v1.json"
+            with (
+                mock.patch.object(
+                    RECORDER,
+                    "HISTORICAL_RANK12_SHA256",
+                    sha256_file(historical),
+                ),
+                self.assertRaisesRegex(ValueError, "current rank-12 v2"),
+            ):
                 rank12_contract_identities(root)
 
 

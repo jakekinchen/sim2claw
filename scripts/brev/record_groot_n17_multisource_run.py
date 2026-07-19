@@ -20,6 +20,15 @@ HISTORICAL_RANK12_PATH = Path(
 CURRENT_RANK12_PATH = Path(
     "configs/evaluations/pawn_rank12_bidirectional_v2.json"
 )
+HISTORICAL_RANK12_SHA256 = (
+    "f3dac8b86cd7b0252153d25c0d5c09204079003ac9780642992fd10bc08e0d43"
+)
+CURRENT_RANK12_SHA256 = (
+    "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3"
+)
+CURRENT_RANK12_SOURCE_COMMIT = (
+    "36f1ebc5f66e63317b1fba84ba9aaabf66a5ff2d"
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -79,17 +88,23 @@ def rank12_contract_identities(code_root: Path) -> dict[str, Any]:
     historical = code_root / HISTORICAL_RANK12_PATH
     current = code_root / CURRENT_RANK12_PATH
     historical_payload = json.loads(historical.read_text(encoding="utf-8"))
+    historical_sha256 = sha256_file(historical)
     if (
         historical_payload.get("evaluation_set_id")
         != "pawn_rank12_bidirectional_v1"
     ):
         raise ValueError("historical rank-12 v1 identity changed")
+    if historical_sha256 != HISTORICAL_RANK12_SHA256:
+        raise ValueError("historical rank-12 v1 payload changed")
     current_identity: dict[str, Any] = {
         "path": CURRENT_RANK12_PATH.as_posix(),
         "expected_evaluation_set_id": "pawn_rank12_bidirectional_b_to_g_v2",
         "expected_scope": "brown_pawns_b_through_g_rank1_rank2_bidirectional",
+        "sha256": CURRENT_RANK12_SHA256,
+        "source_commit": CURRENT_RANK12_SOURCE_COMMIT,
         "role": "current_product_contract_not_used_by_completed_run",
         "available_in_code_root": current.is_file(),
+        "payload_verified_in_code_root": False,
     }
     if current.is_file():
         current_payload = json.loads(current.read_text(encoding="utf-8"))
@@ -98,12 +113,14 @@ def rank12_contract_identities(code_root: Path) -> dict[str, Any]:
             != current_identity["expected_evaluation_set_id"]
         ):
             raise ValueError("current rank-12 v2 identity changed")
-        current_identity["sha256"] = sha256_file(current)
+        if sha256_file(current) != CURRENT_RANK12_SHA256:
+            raise ValueError("current rank-12 v2 payload changed")
+        current_identity["payload_verified_in_code_root"] = True
     return {
         "historical_completed_run_contract": {
             "path": HISTORICAL_RANK12_PATH.as_posix(),
             "evaluation_set_id": historical_payload["evaluation_set_id"],
-            "sha256": sha256_file(historical),
+            "sha256": historical_sha256,
             "role": "historical_identity_used_by_completed_run",
         },
         "current_product_contract": current_identity,
