@@ -4,6 +4,34 @@ LeRobot calibration captured on Kelly's Mac (2026-07-03) for the SO-101
 follower (robot) and leader (teleoperator) arms. Reference/provenance
 artifact only — it is data, not physical-transfer authority.
 
+## Physical mass profile
+
+`follower_mass_profile_v1.json` maps the owner's June 28 scale measurements
+and inline photos to the MuJoCo rigid bodies. It uses the Feetech C001
+manufacturer value of `55 +/- 1 g` per STS3215, not the unverified `28 g`
+heading in the note. It also records a bounded estimate for the exact custom
+library-printed D405 support, the official `60 g` D405 mass, arm hardware, and
+the routed camera cable.
+
+The default chess scene applies the profile in memory. The vendored Menagerie
+XML remains unchanged. The resulting nominal masses are `907 g` without the
+D405 payload and `1,006 g` for the left board-reaching arm with that payload;
+the component-bounded total is `977--1,035 g`. The reported conservative range
+is `965--1,047 g` after an additional `12 g` margin for rounded or nominal
+source values that do not carry a stated tolerance.
+
+The already-frozen ACT and GR00T contracts continue to instantiate
+`ChessRookLiftEnv` with its legacy default (`mass_profile_path=None`) so their
+receipts remain reproducible. New requalification runs can opt into this model
+with `mass_profile_path=DEFAULT_SO101_MASS_PROFILE`; their results must receive
+new receipts and cannot inherit promotion from the legacy dynamics.
+
+Only mass is measurement-led at this boundary. Existing CAD centers of mass
+are retained and inertia tensors are scaled linearly per rigid body; the D405
+uses an explicit `42 x 42 x 23 mm` box at the vendored camera pose. This is a
+better dynamics prior, not an identified inertia model. Gravity-hold fitting is
+still required before claiming calibrated centers of mass or inertias.
+
 ## What these files encode
 
 Per motor: `homing_offset` (the raw encoder tick LeRobot treats as zero) and

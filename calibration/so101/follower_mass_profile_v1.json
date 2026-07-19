@@ -1,0 +1,260 @@
+{
+  "schema_version": "sim2claw.so101_mass_profile.v1",
+  "profile_id": "so101-follower-owner-measured-d405-v1",
+  "created_at": "2026-07-18T13:45:00-05:00",
+  "proof_class": "owner_measured_printed_parts_plus_specified_and_bounded_estimated_attachments",
+  "applies_to": {
+    "robot": "SO-101 follower geometry used by sim2claw",
+    "physical_authority": false,
+    "notes": "This improves simulation dynamics but is not a hardware calibration, gateway authorization, or physical-transfer proof."
+  },
+  "sources": {
+    "owner_measurement_note": {
+      "application": "Apple Notes",
+      "created_at": "2026-06-28T17:06:00-05:00",
+      "title": "servo motor 28g",
+      "use": "Printed-part masses and inline-photo ordering only. The title's servo value is rejected below."
+    },
+    "part_identity": {
+      "url": "https://github.com/TheRobotStudio/SO-ARM100",
+      "use": "Public SO-101 part names and rigid-link assembly mapping. No implementation file was copied."
+    },
+    "servo_specification": {
+      "url": "https://files.seeedstudio.com/products/Feetech/108090023_STS3215-C001_Datasheet.pdf",
+      "model": "Feetech STS3215 C001",
+      "mass_g": 55,
+      "tolerance_g": 1
+    },
+    "camera_specification": {
+      "url": "https://www.realsenseai.com/products/stereo-depth-camera-d405/",
+      "model": "RealSense D405 peripheral",
+      "mass_g": 60,
+      "dimensions_mm": [42, 42, 23]
+    },
+    "custom_mount": {
+      "local_evidence_path": "/Users/kelly/Downloads/D405_wrist_support.stl",
+      "sha256": "f85cfdb88ab0314bb5b5c46bb02f349d499eb8edbae1d2b9295496f7d885ac02",
+      "library_submission_verified_at": "2026-07-02T13:34:26-05:00",
+      "library_submission": "black filament at 100 percent scale",
+      "closed_mesh_volume_cm3": 13.592463307638618,
+      "fully_dense_pla_mass_g_at_1_24_g_cm3": 16.854654501471886,
+      "material_and_slicer": "unknown basic library filament and unknown shell/infill settings"
+    }
+  },
+  "conflicts": [
+    {
+      "field": "servo_unit_mass_g",
+      "owner_note_value_g": 28,
+      "selected_value_g": 55,
+      "status": "owner_note_value_rejected",
+      "reason": "The owner said this may not have been individually weighed. The manufacturer C001 datasheet specifies 55 +/- 1 g; 28 g is not used in dynamics or totals."
+    }
+  ],
+  "printed_groups": [
+    {
+      "sequence": 1,
+      "id": "base_group",
+      "owner_label": "base",
+      "mass_g": 145,
+      "identified_parts": ["Base_SO101", "Base_motor_holder_SO101"],
+      "rigid_body": "base",
+      "evidence": "owner_scale_and_inline_photo"
+    },
+    {
+      "sequence": 2,
+      "id": "piece_2",
+      "owner_label": "second piece",
+      "mass_g": 28,
+      "identified_parts": ["Motor_holder_SO101_Base"],
+      "rigid_body": "shoulder",
+      "evidence": "owner_scale_photo_plus_assembly_order"
+    },
+    {
+      "sequence": 3,
+      "id": "piece_3",
+      "owner_label": "third piece",
+      "mass_g": 51,
+      "identified_parts": ["Rotation_Pitch_SO101"],
+      "rigid_body": "shoulder",
+      "evidence": "owner_scale_photo_plus_assembly_order"
+    },
+    {
+      "sequence": 4,
+      "id": "piece_4",
+      "owner_label": "4th piece",
+      "mass_g": 16,
+      "identified_parts": ["WaveShare_Mounting_Plate_SO101"],
+      "rigid_body": "base",
+      "evidence": "owner_scale_photo_plus_part_shape"
+    },
+    {
+      "sequence": 5,
+      "id": "piece_5",
+      "owner_label": "5th piece",
+      "mass_g": 87,
+      "identified_parts": ["Upper_arm_SO101"],
+      "rigid_body": "upper_arm",
+      "evidence": "owner_scale_photo_plus_assembly_order"
+    },
+    {
+      "sequence": 6,
+      "id": "piece_6",
+      "owner_label": "6th piece",
+      "mass_g": 87,
+      "identified_parts": ["Under_arm_SO101"],
+      "rigid_body": "lower_arm",
+      "evidence": "owner_scale_photo_plus_assembly_order"
+    },
+    {
+      "sequence": 7,
+      "id": "piece_7",
+      "owner_label": "7th piece",
+      "mass_g": 16,
+      "identified_parts": ["Motor_holder_SO101_Wrist"],
+      "rigid_body": "lower_arm",
+      "evidence": "owner_scale_photo_plus_part_shape"
+    },
+    {
+      "sequence": 8,
+      "id": "piece_8",
+      "owner_label": "8th piece",
+      "mass_g": 51,
+      "identified_parts": ["Wrist_Roll_Pitch_SO101"],
+      "rigid_body": "wrist",
+      "evidence": "owner_scale_photo_plus_part_shape"
+    },
+    {
+      "sequence": 9,
+      "id": "piece_9",
+      "owner_label": "9th piece",
+      "mass_g": 48,
+      "identified_parts": ["Wrist_Roll_Follower_SO101"],
+      "rigid_body": "gripper",
+      "evidence": "owner_scale_photo_plus_fixed_jaw_shape"
+    },
+    {
+      "sequence": 10,
+      "id": "piece_10",
+      "owner_label": "10th piece",
+      "mass_g": 18,
+      "identified_parts": ["Moving_Jaw_SO101"],
+      "rigid_body": "moving_jaw_so101_v1",
+      "evidence": "owner_scale_photo_plus_moving_jaw_shape"
+    }
+  ],
+  "specified_components": {
+    "servo": {
+      "model": "Feetech STS3215 C001",
+      "count": 6,
+      "unit_mass_g": 55,
+      "unit_tolerance_g": 1,
+      "includes": "manufacturer servo assembly and attached 150 mm servo lead"
+    },
+    "d405": {
+      "count": 1,
+      "unit_mass_g": 60,
+      "dimensions_mm": [42, 42, 23]
+    }
+  },
+  "estimated_components": {
+    "arm_fasteners_horns_and_passive_hardware": {
+      "mass_g": 30,
+      "range_g": [20, 40],
+      "allocation_g": {
+        "base": 5,
+        "shoulder": 5,
+        "upper_arm": 5,
+        "lower_arm": 5,
+        "wrist": 4,
+        "gripper": 5,
+        "moving_jaw_so101_v1": 1
+      },
+      "status": "lumped_estimate_pending_assembled_arm_scale_measurement"
+    },
+    "custom_library_mount": {
+      "mass_g": 13,
+      "range_g": [9, 17],
+      "status": "mesh_volume_bounded_estimate_pending_direct_scale_measurement"
+    },
+    "d405_mount_fasteners": {
+      "description": "two DIN 912 M3x6 or M3x8 screws",
+      "mass_g": 2,
+      "range_g": [1, 3]
+    },
+    "d405_usb_cable": {
+      "mass_g": 24,
+      "range_g": [16, 32],
+      "allocation_g": {
+        "base": 1,
+        "shoulder": 2,
+        "upper_arm": 3,
+        "lower_arm": 4,
+        "wrist": 6,
+        "camera_mount": 8
+      },
+      "status": "distributed_load_estimate_pending_exact_cable_and_routing_measurement"
+    }
+  },
+  "derived": {
+    "printed_parts_total_g": 547,
+    "servos_total_g": 330,
+    "arm_hardware_total_g": 30,
+    "rigid_body_masses_g": {
+      "base": 221,
+      "shoulder": 139,
+      "upper_arm": 147,
+      "lower_arm": 163,
+      "wrist": 110,
+      "gripper": 108,
+      "moving_jaw_so101_v1": 19
+    },
+    "bare_arm_total_g": 907,
+    "left_arm_with_payload_total_g": 1006,
+    "left_arm_total_range_g": [965, 1047],
+    "articulated_mass_excluding_fixed_base_g": 784,
+    "upstream_menagerie_total_including_12g_mount_g": 644.006,
+    "com_and_inertia_status": "CAD centers retained and full inertia tensors scaled linearly by rigid-body mass; D405 uses an explicit 42x42x23 mm box at the vendored camera pose. Recompute from measured assembly COM before claiming identified inertials."
+  },
+  "uncertainty": {
+    "component_bounded_left_total_range_g": [977, 1035],
+    "additional_conservative_margin_g": 12,
+    "reported_left_total_range_g": [965, 1047],
+    "reason": "The extra margin covers integer-rounded owner scale entries, a nominal camera product-page mass without a stated tolerance, and hardware/cable composition uncertainty beyond the explicit component bounds."
+  },
+  "payloads": {
+    "d405_wrist_v1": {
+      "total_g": 99,
+      "rigid_body_additions_g": {
+        "base": 1,
+        "shoulder": 2,
+        "upper_arm": 3,
+        "lower_arm": 4,
+        "wrist": 6,
+        "camera_mount": 83
+      },
+      "camera_mount_breakdown_g": {
+        "custom_library_mount": 13,
+        "d405": 60,
+        "d405_mount_fasteners": 2,
+        "distal_usb_cable_segment": 8
+      }
+    }
+  },
+  "scene_defaults": {
+    "robot_payloads": {
+      "left": "d405_wrist_v1",
+      "right": null
+    }
+  },
+  "excluded_from_articulated_dynamics": [
+    "table clamp",
+    "fixed motor-control board",
+    "base USB/power leads after their strain-relief point"
+  ],
+  "next_measurements": [
+    "Weigh one complete assembled arm without the D405 cable, then with the routed D405 payload.",
+    "Weigh the printed D405 support by itself.",
+    "Weigh the exact USB cable and record its strain-relief/routing points.",
+    "Run slow gravity-hold sweeps to identify assembly centers of mass instead of relying on scaled CAD tensors."
+  ]
+}

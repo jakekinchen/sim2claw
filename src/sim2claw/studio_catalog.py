@@ -510,9 +510,15 @@ def _grasp_episodes(repo_root: Path) -> list[dict[str, Any]]:
 def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
     episodes: list[dict[str, Any]] = []
     receipt_paths = sorted(
-        (repo_root / "datasets" / "act_source_recordings").glob(
-            "*/recording_receipt.json"
-        )
+        [
+            *(
+                repo_root / "datasets" / "manipulation_source_recordings"
+            ).glob("*/recording_receipt.json"),
+            # Historical ACT-named raw recordings remain inspectable evidence.
+            *(repo_root / "datasets" / "act_source_recordings").glob(
+                "*/recording_receipt.json"
+            ),
+        ]
     )
     for sequence, receipt_path in enumerate(receipt_paths):
         receipt = _read_json(receipt_path)
@@ -598,7 +604,9 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
         episodes.append(
             {
                 "id": f"{receipt.get('task_id', 'teleop')}:{receipt.get('recording_id', sequence)}",
-                "task_id": str(receipt.get("task_id") or "act_source_recordings"),
+                "task_id": str(
+                    receipt.get("task_id") or "manipulation_source_recordings"
+                ),
                 "title": str(receipt.get("label") or f"Teleop recording {sequence + 1}"),
                 "subtitle": (
                     f"{_title(str(receipt.get('piece_id', 'piece')))} · "
@@ -858,6 +866,8 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     capture_config = _read_json(capture_paths[0]) if capture_paths else {}
     scene_estimates = capture_config.get("simulation_estimates", {})
     board_estimate = scene_estimates.get("board", {})
+    background_estimate = scene_estimates.get("background", {})
+    workspace_pose = scene_estimates.get("workspace_pose", {})
     board_local = board_estimate.get(
         "center_in_table_frame_xy_m", [0.0, 0.0]
     )
@@ -882,14 +892,29 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
             "piece_layout": "sparse_two_sided_pawns",
             "piece_layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
             "workcell_pose_id": board_estimate.get("pose_id"),
+            "workspace_pose_id": workspace_pose.get("pose_id"),
             "board_center_in_table_frame_xy_m": board_local,
             "board_pose_label": board_pose_label,
+            "fiducial_pose_id": background_estimate.get("fiducial_pose_id"),
+            "fiducial_center_in_table_frame_xy_m": background_estimate.get(
+                "fiducial_center_in_table_frame_xy_m"
+            ),
             "status": "simulation_ready",
             "task_count": len(tasks),
             "robot_count": 2,
             "physical_authority": False,
             "poster_url": "/assets/workcell/studio-overview.png",
             "poster_camera": "studio_overview",
+            "mug_inspection_url": "/assets/workcell/studio-mug.png",
+            "mug_inspection_camera": "studio_mug",
+            "visual_props": [
+                {
+                    "id": "antler_mug",
+                    "title": "Antler mug",
+                    "placement": "left_window_sill",
+                    "physical_authority": False,
+                }
+            ],
             "asset_revision": asset_revision,
         }
     ]

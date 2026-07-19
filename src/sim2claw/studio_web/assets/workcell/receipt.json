@@ -4,21 +4,28 @@
       "camera": "studio_overview",
       "height": 720,
       "path": "studio-overview.png",
-      "sha256": "4f1d001813ee99f5a8bc8cfd2415fd1e3de1e765d996e618f322271a664f8e3e",
+      "sha256": "905da927f95029f4d8c03ebd8915ff6d37cb703035eccbd80b5659d61b30b265",
       "width": 1280
     },
     {
       "camera": "studio_left",
       "height": 720,
       "path": "studio-left.png",
-      "sha256": "dd04c5de1663d22666f0acc1271b881eb8c4085b67fd0a03a5983319fbc73a78",
+      "sha256": "e683f81bcaa3616ffd2d2b2a8eecba5c8799fcdb3c37b5ee5c4c61acaeebaef4",
       "width": 960
     },
     {
       "camera": "studio_right",
       "height": 720,
       "path": "studio-right.png",
-      "sha256": "a37a8e1a34665cb35a013c0fe01ba9a95cbc27dc7f7ea26c5183b7d99a1527e0",
+      "sha256": "4fbfa2b370bbcba1b4df98e145cfd7a92f9cb712f33be5d26698606aa2ef01b0",
+      "width": 960
+    },
+    {
+      "camera": "studio_mug",
+      "height": 720,
+      "path": "studio-mug.png",
+      "sha256": "f11d288e1b1673e5882ee354d6c91cff3c15212d869f267c4c52b71a16060ebf",
       "width": 960
     }
   ],
@@ -29,8 +36,10 @@
   "schema_version": "sim2claw.studio_assets.v1",
   "settle_steps": 500,
   "sources": {
-    "capture_config_sha256": "c0cd8769349f8d3f61e7af14c3eb01d43306c34e5ca232a710b32d09068e6107",
-    "scene_py_sha256": "c4bf964145b8acf77ebc7074cc886b3e06b8d9a63215d5d140822c5502aa729e",
+    "capture_config_sha256": "0dbe0c95fe50f84a8ff8e60f9727f7123c15c921ace55a0460b49ffa4c34dc05",
+    "mass_profile_py_sha256": "e176f49413b42e6d27b427062573df1fa85f7691c7c1051b800d3abac0d5d08d",
+    "scene_py_sha256": "5247d7ef694ef56721124d7e8a1fbb832e29789bcc1842cdfd1340ee980293ee",
+    "so101_mass_profile_sha256": "bc0443d2411e7fa61a59bcde33327d0eb1e505f9224bab98c1ab2d51ed3c1648",
     "so101_model_sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
   },
   "training_input": false

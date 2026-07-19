@@ -14,6 +14,10 @@ repo-native implementation and evidence for every capability.
 - A new MuJoCo scene builds the measured table, a configurable chessboard, and
   32 dynamic pieces plus two articulated SO-101 arms; it compiles, steps, and
   renders on this Apple Silicon Mac.
+- The chess scene now applies an owner-measured SO-101 mass profile in memory:
+  `907 g` bare and `1,006 g` for the left arm with its D405 payload, with a
+  conservative `965--1,047 g` bound while hardware, mount, and cable masses
+  remain estimated. CAD centers and scaled inertia tensors remain priors.
 - The scene is compositionally aligned to the owner-provided photo with the
   fiducial sheet, tripod, rear window/blinds, and portrait viewpoint. Estimated
   mounts and poses remain distinct from measured geometry.
@@ -44,6 +48,9 @@ state-based ACT program. The governing design sentence is:
 `chess_rook_lift_v1` and its accepted checkpoint remain frozen as narrow proof
 that the clean-room ACT implementation can learn one fixed rook-lift task. They
 must not be revised into, relabeled as, or used to claim the general policy.
+That receipt predates the owner-measured mass profile and is not evidence that
+the checkpoint passes under the heavier current dynamics; requalification must
+be separately invoked and recorded.
 The replacement contract will be `chess_pick_place_act_state_v1`: continuous
 selected-piece and destination poses, relative transforms, robot state, object
 geometry, and observable skill state in; six absolute SO-101 joint targets out.

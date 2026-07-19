@@ -56,6 +56,19 @@
     }
   },
   "simulation_estimates": {
+    "workspace_pose": {
+      "pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+      "status": "operator_reported_current_physical_layout",
+      "reference_pose": "2026-07-17_overhead_photo_registration",
+      "previous_board_pose_id": "board_robotward_72mm_20260718_v2",
+      "robotward_axis_in_table_frame": "+y",
+      "total_robotward_displacement_from_reference_pose_m": 0.1,
+      "additional_board_displacement_from_previous_pose_m": 0.028,
+      "fiducial_displacement_from_reference_pose_m": 0.1,
+      "fiducial_had_prior_72mm_update": false,
+      "moved_components": ["chessboard", "fiducial_sheet"],
+      "physical_authority": false
+    },
     "photo_reference": {
       "confidence": "owner_provided_single_view_visual_reference",
       "sha256": "b673f959ddf608e1c64098e8c1194196741c5cbd938f2756c3bf2b20b1901889",
@@ -93,15 +106,15 @@
       "note": "The board pose in the Polycam capture differs from the later overhead photo, so scan pose is retained only as a comparison reference."
     },
     "board": {
-      "scene_id": "operator_updated_chess_workcell_v2",
-      "pose_id": "board_robotward_72mm_20260718_v2",
-      "confidence": "operator_measured_72mm_robotward_displacement_from_photo_registered_pose",
+      "scene_id": "operator_updated_chess_workcell_v3",
+      "pose_id": "board_robotward_100mm_20260718_v3",
+      "confidence": "operator_measured_100mm_total_robotward_displacement_from_photo_registered_pose",
       "side_m": 0.3556,
       "frame_width_m": 0.0254,
       "thickness_m": 0.016,
-      "center_in_table_frame_xy_m": [0.04, -0.093],
+      "center_in_table_frame_xy_m": [0.04, -0.065],
       "previous_center_in_table_frame_xy_m": [0.04, -0.165],
-      "robotward_displacement_from_previous_pose_m": 0.072,
+      "robotward_displacement_from_previous_pose_m": 0.1,
       "robotward_axis_in_table_frame": "+y",
       "historical_registrations": [
         {
@@ -110,6 +123,13 @@
           "center_in_table_frame_xy_m": [0.04, -0.165],
           "status": "frozen_historical_simulation_scene",
           "source": "2026-07-17_overhead_photo_registration"
+        },
+        {
+          "scene_id": "operator_updated_chess_workcell_v2",
+          "pose_id": "board_robotward_72mm_20260718_v2",
+          "center_in_table_frame_xy_m": [0.04, -0.093],
+          "status": "frozen_historical_simulation_scene",
+          "source": "2026-07-18_operator_72mm_board_only_update"
         }
       ],
       "yaw_relative_to_table_degrees": 1.55,
@@ -137,8 +157,12 @@
     ],
     "background": {
       "confidence": "photo_estimated_not_metric_scan_evidence",
-      "elements": ["window wall", "window sill", "horizontal blinds", "left tripod", "fiducial sheet"],
-      "fiducial_center_in_table_frame_xy_m": [0.02, 0.08],
+      "elements": ["window wall", "window sill", "horizontal blinds", "left tripod", "fiducial sheet", "Antler mug visual prop"],
+      "fiducial_pose_id": "fiducial_robotward_100mm_20260718_v2",
+      "fiducial_center_in_table_frame_xy_m": [0.02, 0.18],
+      "previous_fiducial_center_in_table_frame_xy_m": [0.02, 0.08],
+      "fiducial_robotward_displacement_from_previous_pose_m": 0.1,
+      "fiducial_robotward_axis_in_table_frame": "+y",
       "fiducial_size_xy_m": [0.27, 0.19],
       "tripod_column_in_table_frame_xy_m": [0.43, 0.16],
       "ledge": {
@@ -147,6 +171,17 @@
         "bottom_above_table_m": 0.14,
         "depth_m": 0.20,
         "thickness_m": 0.07
+      },
+      "antler_mug": {
+        "proof_class": "user_photo_referenced_visual_prop",
+        "physical_authority": false,
+        "reference_sha256": "330f3786dca33650d3552506294b35b026df466f4bd02bc770210e8119ef4e5a",
+        "reference_description": "User-provided Photo 1.jpg showing a white ceramic Antler-logo mug on a windowsill",
+        "placement_confidence": "requested_left_windowsill_visual_estimate",
+        "center_in_sill_frame_xy_m": [0.72, 0.015],
+        "outer_radius_m": 0.043,
+        "height_m": 0.1,
+        "logo": "procedural_red_antler_wordmark_from_user_photo"
       }
     }
   }

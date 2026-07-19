@@ -12,6 +12,7 @@ from sim2claw.scene import (
     TELEOP_TAN_PAWN_SQUARES,
     build_scene_spec,
     initialize_robot_poses,
+    registered_board_center,
     scene_geometry,
     scene_summary,
 )
@@ -25,19 +26,37 @@ class SceneContractTest(unittest.TestCase):
         self.assertEqual(summary["table"]["measurement_confidence"], "high")
         self.assertEqual(
             summary["board"]["measurement_confidence"],
-            "operator_measured_72mm_robotward_displacement_from_photo_registered_pose",
+            "operator_measured_100mm_total_robotward_displacement_from_photo_registered_pose",
         )
         self.assertEqual(
             summary["board"]["pose_id"],
-            "board_robotward_72mm_20260718_v2",
+            "board_robotward_100mm_20260718_v3",
         )
         self.assertEqual(
             summary["board"]["center_in_table_frame_xy_m"],
-            [0.04, -0.093],
+            [0.04, -0.065],
         )
         self.assertAlmostEqual(
             summary["board"]["robotward_displacement_from_previous_pose_m"],
-            0.072,
+            0.1,
+        )
+        self.assertEqual(
+            summary["fiducial"]["pose_id"],
+            "fiducial_robotward_100mm_20260718_v2",
+        )
+        self.assertEqual(
+            summary["fiducial"]["center_in_table_frame_xy_m"],
+            [0.02, 0.18],
+        )
+        self.assertAlmostEqual(
+            summary["fiducial"][
+                "robotward_displacement_from_previous_pose_m"
+            ],
+            0.1,
+        )
+        self.assertEqual(
+            summary["workspace_pose"]["pose_id"],
+            "workspace_board_fiducial_robotward_100mm_20260718_v3",
         )
         self.assertFalse(summary["physical_authority"])
 
@@ -68,6 +87,96 @@ class SceneContractTest(unittest.TestCase):
         self.assertLess(geometry.board_side, geometry.table_width)
         self.assertAlmostEqual(geometry.square_size, 0.04445)
         self.assertAlmostEqual(geometry.board_total_side, 0.4064)
+
+    def test_previous_72mm_board_registration_remains_resolvable(self) -> None:
+        self.assertEqual(
+            registered_board_center("operator_updated_chess_workcell_v2"),
+            (0.04, -0.093),
+        )
+
+    def test_antler_mug_is_visual_only_and_seated_on_left_windowsill(self) -> None:
+        config = load_capture_config()
+        mug_config = config["simulation_estimates"]["background"]["antler_mug"]
+        self.assertEqual(
+            mug_config["reference_sha256"],
+            "330f3786dca33650d3552506294b35b026df466f4bd02bc770210e8119ef4e5a",
+        )
+        self.assertFalse(mug_config["physical_authority"])
+
+        model = build_scene_spec(include_robots=False).compile()
+        mug_body = mujoco.mj_name2id(
+            model, mujoco.mjtObj.mjOBJ_BODY, "antler_mug"
+        )
+        self.assertGreaterEqual(mug_body, 0)
+
+        self.assertGreater(float(model.body_pos[mug_body][0]), 0.5)
+
+        mug_geoms = [
+            geom_id
+            for geom_id in range(model.ngeom)
+            if int(model.geom_bodyid[geom_id]) == mug_body
+        ]
+        self.assertGreaterEqual(len(mug_geoms), 70)
+        self.assertTrue(all(int(model.geom_contype[row]) == 0 for row in mug_geoms))
+        self.assertTrue(
+            all(int(model.geom_conaffinity[row]) == 0 for row in mug_geoms)
+        )
+        self.assertTrue(all(int(model.geom_group[row]) == 0 for row in mug_geoms))
+        for name in (
+            "antler_mug_ceramic",
+            "antler_mug_handle_1",
+            "antler_logo_red_square",
+            "antler_logo_a_0",
+            "antler_wordmark_N_0_0",
+            "antler_wordmark_R_4_2",
+        ):
+            self.assertGreaterEqual(
+                mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name),
+                0,
+            )
+
+        sill = mujoco.mj_name2id(
+            model, mujoco.mjtObj.mjOBJ_GEOM, "window_sill"
+        )
+        sill_top = float(model.geom_pos[sill][2] + model.geom_size[sill][2])
+        mug_bottom = float(model.body_pos[mug_body][2]) - (
+            float(mug_config["height_m"]) / 2.0
+        )
+        self.assertAlmostEqual(mug_bottom, sill_top)
+
+    def test_historical_scene_can_omit_new_visual_prop_state(self) -> None:
+        current = build_scene_spec(
+            piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+            include_visual_props=True,
+        ).compile()
+        historical = build_scene_spec(
+            piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+            board_center_in_table_frame_xy_m=registered_board_center(
+                "operator_updated_chess_workcell_v2"
+            ),
+            include_visual_props=False,
+        ).compile()
+        self.assertGreaterEqual(
+            mujoco.mj_name2id(
+                current, mujoco.mjtObj.mjOBJ_BODY, "antler_mug"
+            ),
+            0,
+        )
+        self.assertEqual(
+            mujoco.mj_name2id(
+                historical, mujoco.mjtObj.mjOBJ_BODY, "antler_mug"
+            ),
+            -1,
+        )
+        self.assertEqual(
+            mujoco.mj_stateSize(
+                current, mujoco.mjtState.mjSTATE_INTEGRATION
+            ),
+            mujoco.mj_stateSize(
+                historical, mujoco.mjtState.mjSTATE_INTEGRATION
+            )
+            + 6,
+        )
 
     def test_current_task_layout_contains_two_mirrored_sparse_pawn_sides(self) -> None:
         model = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT).compile()

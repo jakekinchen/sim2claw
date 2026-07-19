@@ -1,0 +1,81 @@
+{
+  "schema_version": "sim2claw.chess_pick_place_pawn_evaluator.v1",
+  "evaluator_id": "chess_pick_place_pawn_evaluator_v1",
+  "frozen_before_training": true,
+  "owner": "separate_cpu_fp32_consequence_evaluator",
+  "device": "cpu",
+  "dtype": "float32",
+  "scene": {
+    "scene_id": "operator_updated_chess_workcell_v2",
+    "board_pose_id": "board_robotward_72mm_20260718_v2",
+    "board_center_in_table_frame_xy_m": [0.04, -0.093],
+    "piece_layout": "sparse_two_sided_pawns",
+    "piece_layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
+    "protected_piece_ids": [
+      "brown_pawn_a2",
+      "brown_pawn_b1",
+      "brown_pawn_c2",
+      "brown_pawn_d1",
+      "brown_pawn_e2",
+      "brown_pawn_f1",
+      "brown_pawn_g2",
+      "brown_pawn_h1",
+      "tan_pawn_a8",
+      "tan_pawn_b7",
+      "tan_pawn_c8",
+      "tan_pawn_d7",
+      "tan_pawn_e8",
+      "tan_pawn_f7",
+      "tan_pawn_g8",
+      "tan_pawn_h7"
+    ]
+  },
+  "execution": {
+    "source_contract_id": "chess_pick_place_source_episode_v1",
+    "sample_hold_hz": 20,
+    "physics_timestep_seconds": 0.005,
+    "physics_steps_per_action": 10,
+    "action_dtype": "float32",
+    "exact_final_mjstate_match_required_for_replay_admission": true
+  },
+  "gates": {
+    "minimum_piece_rise_m": 0.04,
+    "maximum_final_xy_error_m": 0.015,
+    "maximum_final_height_error_m": 0.005,
+    "minimum_final_upright_cosine": 0.95,
+    "maximum_final_linear_speed_m_s": 0.02,
+    "minimum_gripper_clearance_m": 0.035,
+    "maximum_other_piece_displacement_m": 0.006,
+    "target_ejection_displacement_m": 0.5,
+    "require_selected_piece_identity": true,
+    "require_no_wrong_piece_contact": true,
+    "require_no_final_jaw_contact": true,
+    "require_no_assistance": true,
+    "require_declared_action_owner": true,
+    "require_all_recorded_actions_executed": true
+  },
+  "negative_fixtures": [
+    "wrong_piece_contact",
+    "distractor_displacement",
+    "target_ejection",
+    "insufficient_lift",
+    "bad_final_xy",
+    "bad_final_height",
+    "toppled_target",
+    "unsettled_target",
+    "jaw_contact_after_release",
+    "insufficient_gripper_clearance",
+    "assisted_actions",
+    "undeclared_action_owner",
+    "sample_hold_state_mismatch"
+  ],
+  "authority": {
+    "source_recorder_cannot_change_gates": true,
+    "training_cannot_promote": true,
+    "diagnostic_reward_cannot_promote": true,
+    "held_out_rows": 0,
+    "physical_authority": false,
+    "pawn_authority_requires_this_evaluator": true,
+    "old_rook_or_king_evaluator_has_no_pawn_authority": true
+  }
+}

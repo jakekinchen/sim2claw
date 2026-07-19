@@ -1,0 +1,98 @@
+{
+  "schema_version": "sim2claw.pawn_sim_real_bridge.v1",
+  "experiment_id": "pawn_sim_real_bridge_v1",
+  "frozen_before_policy_comparison": true,
+  "current_simulation": {
+    "workcell_source_commit": "7acd8b4",
+    "capture_config_path": "configs/polycam/8873B66C-774C-48B1-B51D-338645867009.json",
+    "capture_config_sha256": "0dbe0c95fe50f84a8ff8e60f9727f7123c15c921ace55a0460b49ffa4c34dc05",
+    "scene_id": "operator_updated_chess_workcell_v3",
+    "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "board_pose_id": "board_robotward_100mm_20260718_v3",
+    "board_center_in_table_frame_xy_m": [0.04, -0.065],
+    "source_contract_path": "configs/tasks/chess_pick_place_source_episode_v2.json",
+    "source_contract_sha256": "215cec284096aab58881a1151b828c6a883c324de8f5e904a74213a9df72ed4b",
+    "pawn_evaluator_path": "configs/tasks/chess_pick_place_pawn_evaluator_v2.json",
+    "pawn_evaluator_sha256": "fa086802099d4da26263d02b32d70868df67f9dd034d4aa0fdc2aa2fd33c5e60"
+  },
+  "physical_source_cohort": {
+    "ledger_path": "configs/data/physical_teleop_episode_intake_20260718.json",
+    "ledger_sha256": "22de7ec867448f8a3b524775bf586dc7fd013dc266d741e77b31a57d8bc87870",
+    "cohort_id": "physical_pawn_teleop_20260718_evening_v1",
+    "recorded_scene_id": "operator_updated_chess_workcell_v2",
+    "recorded_board_pose_id": "board_robotward_72mm_20260718_v2",
+    "recorded_board_center_in_table_frame_xy_m": [0.04, -0.093],
+    "expected_episode_count": 5,
+    "expected_sample_count": 2186,
+    "expected_training_rows_admitted": 0,
+    "raw_root": "datasets/act_source_recordings",
+    "required_raw_files": [
+      "recording_receipt.json",
+      "samples.jsonl",
+      "overhead_c922.mp4",
+      "sim_replay_receipt.json",
+      "sim_replay_state_trace.json"
+    ]
+  },
+  "policy_lineage": {
+    "physical_source_action_owner": "human_teleoperator",
+    "physical_source_is_a_learned_policy": false,
+    "physical_trained_checkpoint_present": false,
+    "historical_groot_checkpoint": {
+      "artifact_id": "groot_n17_phase_progress_v3_checkpoint_1000",
+      "manifest_sha256": "d5b0f78b98e0b598e79da6a3ef9a95ade8a0f2331324b5ec18ff60c80d1bb8b6",
+      "task": "chess_pick_place_groot_v1",
+      "scene": "photo_aligned_chess_workcell_v1",
+      "layout": "standard_sparse_rook_king",
+      "strict_development_passes": 0,
+      "strict_development_denominator": 6,
+      "pawn_authority": false,
+      "allowed_use": "warm_start_initialization_and_negative_baseline_only"
+    }
+  },
+  "comparison": {
+    "transferable_from_72mm_cohort": [
+      "joint_command_to_actual_tracking_error",
+      "joint_response_lag",
+      "joint_rate_limit_frequency",
+      "joint_observed_velocity_envelope"
+    ],
+    "not_transferable_without_new_100mm_evidence": [
+      "board_pixel_registration",
+      "piece_and_target_pose_labels",
+      "contact_and_friction_calibration",
+      "task_success",
+      "behavior_cloning_rows"
+    ],
+    "joint_fields": {
+      "command": "follower_command_degrees",
+      "actual": "follower_actual_position_degrees",
+      "rate_limited": "rate_limited",
+      "units": ["degree", "degree", "degree", "degree", "degree", "percent"]
+    },
+    "maximum_lag_search_seconds": 0.5,
+    "required_policy_matrix": [
+      "100mm_nominal_simulation",
+      "100mm_simulation_with_measured_joint_response",
+      "100mm_real_workcell"
+    ]
+  },
+  "admission": {
+    "raw_hashes_must_match_ledger": true,
+    "metadata_conflicts_must_be_reconciled_in_new_ledger": true,
+    "old_72mm_video_may_not_be_relabelled_as_100mm": true,
+    "physical_task_success_requires_separate_evaluator": true,
+    "failed_actions_may_enter_behavior_cloning": false,
+    "held_out_rows": 0,
+    "groot_training_requires_new_pawn_dataset_receipt_and_loader_proof": true,
+    "simulator_parameter_changes_require_before_after_receipts": true
+  },
+  "authority": {
+    "policy_comparison_can_promote": false,
+    "training_can_promote": false,
+    "physical_authority": false,
+    "serial_authority": false,
+    "gateway_authority": false,
+    "brev_may_start_before_local_preflight_passes": false
+  }
+}

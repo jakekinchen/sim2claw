@@ -1,0 +1,123 @@
+{
+  "schema_version": "sim2claw.pawn_groot_dataset_contract.v1",
+  "contract_id": "chess_pick_place_pawn_groot_dataset_v1",
+  "frozen_before_export": true,
+  "proof_class": "evaluator_admitted_simulation_source_to_groot_dataset",
+  "scene": {
+    "scene_id": "operator_updated_chess_workcell_v3",
+    "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "board_pose_id": "board_robotward_100mm_20260718_v3",
+    "board_center_in_table_frame_xy_m": [0.04, -0.065],
+    "robotward_displacement_from_reference_pose_m": 0.1,
+    "piece_layout": "sparse_two_sided_pawns",
+    "piece_layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
+    "active_piece_count": 16,
+    "simulation_reset_id": "c8_standoff_collision_free_reset_v1"
+  },
+  "model": {
+    "family": "NVIDIA Isaac GR00T N1.7",
+    "base_checkpoint": "nvidia/GR00T-N1.7-3B",
+    "base_checkpoint_authority": "initialization_only",
+    "source_repository": "https://github.com/NVIDIA/Isaac-GR00T",
+    "source_commit": "23ace64f17aa5015259b8609d371eb61a357c776",
+    "source_tag": "n1.7-release",
+    "embodiment_tag": "NEW_EMBODIMENT",
+    "action_horizon": 16
+  },
+  "source": {
+    "contract_id": "chess_pick_place_source_episode_v3",
+    "contract_sha256": "737a368916643d083d400c42176ae044d0cd4a5e4697c9902e0b7e6b32367fda",
+    "evaluator_contract_id": "chess_pick_place_pawn_evaluator_v3",
+    "evaluator_contract_sha256": "727daccd3ffece443742dd09a2a30f5e2a4db95c98de40f65efe65d6bf294a45",
+    "episodes": [
+      {
+        "dataset_episode_index": 0,
+        "recording_id": "pawn-source-20260719T011500Z-d6e847dd",
+        "piece_id": "tan_pawn_c8",
+        "source_square": "c8",
+        "destination_square": "a6",
+        "instruction": "Pick up the tan pawn on c8 and place it upright on the empty square a6.",
+        "source_receipt_sha256": "4fbe40bea0f177866f8d72a59323f1d7200e6aa7565533e9db2298bf1b3e1088",
+        "source_samples_sha256": "fcf8153859a8b6d08eaa919b6c4ad1cc78ddb9b06fa9a1d884541ae6ac82bd94",
+        "source_rgb_manifest_sha256": "42a7dd17d3836ea6856d050325c1809702d4be6ad35a307dd537a473bb36c2db",
+        "admission_verdict_sha256": "0f0b2026b2bf13a416286b6f65ebccd7260b44bed0e690e2dc7409a22e690587",
+        "admission_canonical_payload_sha256": "888d55399b55096034b98f4df58552cf890ce8d41794523da034088952ac9791",
+        "groot_adapter_sha256": "5826644376b2980986a8a338d5173bece1a48467d7d8ecf36082dea8b2cdc701",
+        "source_row_count": 562,
+        "strict_success_required": true,
+        "assistance_frames": 0,
+        "held_out_membership": false
+      }
+    ]
+  },
+  "dataset": {
+    "format": "GR00T LeRobot v2.1",
+    "fps": 20,
+    "episode_count": 1,
+    "frame_count": 562,
+    "task_count": 1,
+    "state_dimension": 6,
+    "action_dimension": 6,
+    "video": {
+      "modality_key": "front",
+      "original_key": "observation.images.front",
+      "source_stream": "top",
+      "height": 224,
+      "width": 224,
+      "codec": "h264",
+      "pixel_format": "yuv420p",
+      "wrist_stream_retained_in_canonical_source": true,
+      "wrist_stream_used_by_this_dataset": false
+    },
+    "state_features": [
+      "left_shoulder_pan_position_rad",
+      "left_shoulder_lift_position_rad",
+      "left_elbow_flex_position_rad",
+      "left_wrist_flex_position_rad",
+      "left_wrist_roll_position_rad",
+      "left_gripper_position_rad"
+    ],
+    "action_features": [
+      "left_shoulder_pan_target_rad",
+      "left_shoulder_lift_target_rad",
+      "left_elbow_flex_target_rad",
+      "left_wrist_flex_target_rad",
+      "left_wrist_roll_target_rad",
+      "left_gripper_target_rad"
+    ],
+    "action_representation": "absolute_joint_position_target",
+    "language_key": "annotation.human.task_description",
+    "language_schedule": "one_constant_full_instruction_per_episode",
+    "reward_semantics": "one_on_final_row_zero_elsewhere",
+    "held_out_rows": 0
+  },
+  "loader_proof": {
+    "action_horizon": 16,
+    "effective_start_rule": "source_row_count_minus_action_horizon_plus_one",
+    "expected_effective_start_count": 547,
+    "expected_action_target_slot_count": 8752,
+    "expected_action_scalar_count": 52512,
+    "cross_language_boundary_target_count": 0,
+    "padding_used": false,
+    "all_source_action_rows_appear_in_at_least_one_target": true,
+    "local_payload_preflight_required": true,
+    "pinned_nvidia_loader_preflight_required_before_training": true
+  },
+  "splits": {
+    "training_recording_ids": ["pawn-source-20260719T011500Z-d6e847dd"],
+    "held_out_source_piece_ids": ["tan_pawn_g8", "tan_pawn_h7"],
+    "held_out_training_rows": 0
+  },
+  "authority": {
+    "only_evaluator_admitted_rows_may_enter": true,
+    "raw_failures_may_enter_behavior_cloning": false,
+    "dataset_builder_cannot_declare_task_success": true,
+    "training_cannot_promote": true,
+    "held_out_remains_sealed": true,
+    "physical_authority": false,
+    "serial_authority": false,
+    "old_rook_or_king_checkpoint_is_transfer_provenance_only": true,
+    "old_72mm_physical_video_is_not_current_100mm_spatial_authority": true,
+    "this_dataset_has_pawn_training_authority_only_for_the_frozen_c8_to_a6_case": true
+  }
+}
