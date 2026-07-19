@@ -17,7 +17,7 @@
 
 - [ ]  **Repo link** (Make sure it’s public!).
   - https://github.com/jakekinchen/sim2claw
-    - <todo> verify repo is public
+    - [ ] Verify or change repository visibility before submission.
         - [ ]  Must include a **README** with:
             - [ ]  Quick start (commands to run)
             - [ ]  Tech stack & architecture diagram (simple is fine)
@@ -39,6 +39,26 @@
 **Solution.** sim2claw is a clean-room simulation-to-robot stack. A photo-aligned MuJoCo workcell (measured table, chessboard, 32 dynamic pieces, two articulated SO-101 arms) runs entirely in-process on Apple Silicon. Its governing idea: teleoperate only grasp styles and corrections, then generate task instances combinatorially in simulation via object- and target-relative trajectory retargeting. A frozen ACT (Action Chunking Transformer) policy learns the contact-sensitive skills; a separate CPU/fp32 evaluator on a held-out seed decides pass/fail — a policy can never promote itself. A read-only visualization studio replays every episode with phase-aligned video and receipts.
 
 **Impact.** It reaches a verifiable milestone — a fresh 957K-parameter ACT policy trained locally and lifted a held-out rook 94.88 mm — while rigorously refusing to overclaim: no gateway, no physical-robot authority, no "it generalized" without frozen held-out proof. The payoff is a trustworthy, reproducible foundation for learned manipulation, where each capability is backed by fresh code and its own evidence.
+
+## Pipeline diagram
+
+```mermaid
+flowchart LR
+    A["1. Scan & Photo\n(Polycam capture,\nmeasured table)"] --> B["2. Simulated Workcell\n(MuJoCo: table, board,\n32 pieces, 2 robot arms)"]
+    B --> C["3. Demonstrations\n(scripted expert\npick & lift episodes)"]
+    C --> D["4. Train Policy\n(ACT neural network,\nlearns from demos)"]
+    D --> E["5. Independent Exam\n(held-out test the policy\nnever saw in training)"]
+    E -->|pass / fail| F["6. Receipts & Replay\n(JSON verdicts, videos,\nviewable in Studio)"]
+```
+
+1. **Scan & Photo** — A real table is measured with a Polycam scan and an overhead photo.
+2. **Simulated workcell** — That geometry becomes a physics simulation with a chessboard and two SO-101 robot arms.
+3. **Demonstrations** — Scripted experts perform the task (e.g., lift a rook) to generate training examples.
+4. **Train policy** — A small ACT neural network learns to imitate those demonstrations.
+5. **Independent exam** — A separate evaluator tests the policy on a scenario it never trained on; training can never grade itself.
+6. **Receipts & replay** — Every result is written as a verdict file with video, browsable in the read-only Studio.
+
+The key safety rule throughout: the robot-hardware path stays closed — everything runs in simulation, and a policy is only "good" if the independent exam says so.
 
 ## Pipeline poster
 
@@ -96,7 +116,7 @@ Aim for a confident pace of about 140 words per minute. Text in brackets is an o
 
 “The workflow starts with a real table captured using Polycam. We use its glTF geometry, RoomPlan measurements, and an overhead photograph to construct a photo-aligned MuJoCo workcell.
 
-The scene contains a measured table, a complete chessboard with thirty-two dynamic pieces, and two articulated SO-101 robot arms. This is not merely a visual reconstruction. MuJoCo simulates joints, collisions, friction, contact, and grasp behavior.”
+The scene contains a measured table, versioned chessboard workcells, and two articulated SO-101 robot arms. The current operator workcell uses sixteen pawns. This is not merely a visual reconstruction. MuJoCo simulates joints, collisions, friction, contact, and grasp behavior.”
 
 ### 0:55–1:30 — Technical depth
 
@@ -133,6 +153,10 @@ We also export a separate LeRobot version-two-point-one dataset lane using Parqu
 Successful evidence can advance a frozen milestone. Failed runs remain counterexamples and identify where targeted correction demonstrations are needed. They are never silently converted into successful imitation data.
 
 A researcher can clone the public repository, bootstrap it with `uv`, reproduce the simulation, and inspect results in the read-only Studio.”
+
+### Optional multi-view cutaway
+
+[Within the existing timing, briefly show three labeled simulation clips and the physical command-replay clip. Keep the proof class visible; do not describe command replay as autonomous pawn capture.]
 
 ### 2:48–3:00 — Close
 
