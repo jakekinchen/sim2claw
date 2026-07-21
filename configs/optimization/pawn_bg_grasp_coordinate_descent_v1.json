@@ -1,0 +1,131 @@
+{
+  "schema_version": "sim2claw.pawn_bg_grasp_coordinate_descent.v1",
+  "purpose": "Run a bounded one-coordinate-at-a-time simulator sensitivity campaign over gripper response, fingertip contact geometry, contact dynamics, and pawn dynamics while replaying byte-identical retained teleoperation actions.",
+  "source": {
+    "partition": "owner-reviewed product-scope train episodes",
+    "expected_episode_count": 11,
+    "advancement_receipt": {
+      "path": "outputs/pawn_bg_fidelity_advancement_v1/advancement_receipt.json",
+      "schema_version": "sim2claw.pawn_bg_fidelity_advancement_receipt.v1",
+      "sha256": "d16367bee2a3ee7e8847d1845b0dcb891608f62822b53c784633dc6d7f9dc7e2"
+    },
+    "contact_prior_path": "configs/simulation/rubber_tip_contact_sensitivity_v1.json",
+    "expected_contact_prior_canonical_sha256": "e89eb1084e7e1dee64aaebfbc18b816b5bf58aefa98b18d38ef2e9a81b6ee499",
+    "application_delay_seconds": 0.11,
+    "arm_response": {
+      "shoulder_lift_deadband_degrees": 1.5,
+      "elbow_flex_deadband_degrees": 2.0,
+      "elbow_load_bias_coefficient": -1.5
+    },
+    "trace_guardrail": {
+      "baseline_joint_rms_degrees": 1.2118496819539561,
+      "baseline_ee_rms_m": 0.011343683857572692,
+      "maximum_relative_regression": 0.01
+    }
+  },
+  "episode_roles": {
+    "adaptive_sentinel_recording_ids": [
+      "20260719T031324Z-bf91502b",
+      "20260719T032440Z-f728a18c",
+      "20260719T032620Z-0c7e3d86"
+    ],
+    "campaign_held_evaluation_recording_ids": [
+      "20260719T030059Z-a26f8400",
+      "20260719T030206Z-af661460",
+      "20260719T031615Z-0e058ca2",
+      "20260719T031715Z-61ebb199",
+      "20260719T031813Z-b147b429",
+      "20260719T032315Z-d3c3cf0b",
+      "20260719T032400Z-052d5137",
+      "20260719T032531Z-06be393c"
+    ],
+    "already_opened_confirmation_selection_use": "none_regression_only"
+  },
+  "initial_composite": {
+    "rubber_tip_enabled": true,
+    "tip_thickness_m": 0.0015,
+    "tip_half_width_m": 0.0065,
+    "tip_coverage_m": 0.024,
+    "sliding_friction": 1.8,
+    "torsional_friction_m": 0.012,
+    "rolling_friction_m": 0.0012,
+    "solref_time_constant_s": 0.006,
+    "solref_damping_ratio": 1.2,
+    "gripper_servo_gain_multiplier": 1.0,
+    "gripper_force_limit_multiplier": 1.0,
+    "gripper_joint_damping_multiplier": 1.0,
+    "gripper_joint_frictionloss_multiplier": 1.0,
+    "pawn_mass_multiplier": 1.0,
+    "pawn_friction_multiplier": 1.0
+  },
+  "coordinates": [
+    {"name": "gripper_force_limit_multiplier", "values": [0.5, 1.0, 1.5, 2.0, 3.0, 4.0]},
+    {"name": "gripper_servo_gain_multiplier", "values": [0.5, 1.0, 1.5, 2.0, 3.0]},
+    {"name": "gripper_joint_damping_multiplier", "values": [0.25, 0.5, 1.0, 2.0, 4.0]},
+    {"name": "gripper_joint_frictionloss_multiplier", "values": [0.25, 0.5, 1.0, 2.0, 4.0]},
+    {"name": "tip_thickness_m", "values": [0.0005, 0.001, 0.0015, 0.002, 0.003]},
+    {"name": "tip_coverage_m", "values": [0.012, 0.018, 0.024, 0.03, 0.036]},
+    {"name": "tip_half_width_m", "values": [0.0045, 0.0055, 0.0065, 0.0075, 0.009]},
+    {"name": "sliding_friction", "values": [0.6, 1.2, 1.8, 2.5, 3.5]},
+    {"name": "torsional_friction_m", "values": [0.003, 0.006, 0.012, 0.024, 0.04]},
+    {"name": "rolling_friction_m", "values": [0.0003, 0.0006, 0.0012, 0.0024, 0.004]},
+    {"name": "solref_time_constant_s", "values": [0.003, 0.006, 0.01, 0.015, 0.025]},
+    {"name": "solref_damping_ratio", "values": [0.6, 0.9, 1.2, 1.5, 2.0]},
+    {"name": "pawn_friction_multiplier", "values": [0.5, 1.0, 1.5, 2.0, 3.0]},
+    {"name": "pawn_mass_multiplier", "values": [0.5, 0.75, 1.0, 1.25, 1.5]}
+  ],
+  "search": {
+    "coordinate_passes": 2,
+    "selection_order": [
+      "strict_successes",
+      "lift_and_transport",
+      "lifted",
+      "bilateral_lift_retention",
+      "mean_transport_progress_after_lift",
+      "mean_maximum_piece_rise_m",
+      "negative_mean_final_target_distance_m",
+      "negative_mean_post_grasp_slip_m"
+    ],
+    "candidate_must_include_current_value": true,
+    "only_strict_lexicographic_improvements_are_accepted": true,
+    "adaptive_search_uses_only_sentinels": true,
+    "held_evaluation_runs_once_after_composite_freeze": true
+  },
+  "dense_metric_thresholds": {
+    "lift_rise_m": 0.04,
+    "transport_progress_fraction_after_lift": 0.5,
+    "minimum_bilateral_contact_span_m": 0.005,
+    "minimum_opposing_normal_score": 0.0,
+    "minimum_bilateral_lift_retention_seconds": 0.02
+  },
+  "acceptance": {
+    "minimum_all_episode_lift_and_transport": 6,
+    "minimum_campaign_held_evaluation_lift_and_transport": 4,
+    "minimum_strict_successes": 1,
+    "require_byte_identical_action_arrays": true,
+    "require_trace_guardrails": true,
+    "require_paired_bootstrap_improvement_interval_lower_bound_above_zero": true,
+    "bootstrap_seed": 21072027,
+    "bootstrap_replicates": 10000,
+    "confidence_level": 0.95
+  },
+  "action_invariance": {
+    "no_ik_corrections": true,
+    "no_post_policy_offsets": true,
+    "no_corrective_suffix": true,
+    "no_assistance": true,
+    "no_clipping": true,
+    "no_action_value_or_order_changes": true,
+    "only_simulator_model_parameters_change": true
+  },
+  "authority": {
+    "physical_gripper_calibration": false,
+    "physical_contact_calibration": false,
+    "physical_object_dynamics_identification": false,
+    "fresh_physical_validation": false,
+    "policy_improvement": false,
+    "training_admission": false,
+    "simulator_composite_promotion": false,
+    "physical_transfer": false
+  }
+}
