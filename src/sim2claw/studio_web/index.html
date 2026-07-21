@@ -23,7 +23,12 @@
           <span><b>sim2claw</b><small>visual studio</small></span>
         </button>
 
-        <nav class="view-switch" aria-label="Studio views">
+        <button class="mobile-nav-toggle" id="mobile-nav-toggle" type="button" aria-controls="studio-view-switch" aria-expanded="false">
+          <span id="mobile-nav-label">Replay</span>
+          <i aria-hidden="true"></i>
+        </button>
+
+        <nav class="view-switch" id="studio-view-switch" aria-label="Studio views">
           <button class="view-button is-active" type="button" data-route="replay">Replay</button>
           <button class="view-button" type="button" data-route="library">Library</button>
           <button class="view-button" type="button" data-route="calibration">Calibration</button>
@@ -132,6 +137,8 @@
                 <button class="step-button" id="jump-forward" type="button" aria-label="Go forward">+5 sec</button>
               </div>
 
+              <span class="transport-phase" id="transport-phase" aria-live="polite">Initial</span>
+
               <div class="timeline-shell" id="timeline-shell">
                 <div class="phase-rail" id="phase-rail" aria-label="Episode phases"></div>
                 <div class="timeline-ticks" id="timeline-ticks" aria-hidden="true"></div>
@@ -149,7 +156,7 @@
 
             <div class="metric-strip" id="metric-strip" aria-label="Selected evaluator metrics"></div>
             <button class="mobile-browser-toggle" id="mobile-browser-toggle" type="button" aria-controls="browser-rail" aria-expanded="false">
-              Browse task episodes <span aria-hidden="true">＋</span>
+              <span id="mobile-browser-label">Browse task episodes</span><span aria-hidden="true">＋</span>
             </button>
           </section>
         </section>
@@ -233,7 +240,7 @@
                   <div><dt>Scene</dt><dd id="calibration-scene-state">Loading accepted scene…</dd></div>
                   <div><dt>Revision</dt><dd><code id="scene-synthesis-revision">—</code></dd></div>
                 </dl>
-                <details open>
+                <details>
                   <summary>JSON scene hierarchy</summary>
                   <ul class="scene-hierarchy" id="scene-hierarchy"><li>Loading hierarchy…</li></ul>
                 </details>

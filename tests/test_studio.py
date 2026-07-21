@@ -936,6 +936,10 @@ class StudioCatalogTest(unittest.TestCase):
                 )
             self.assertIn('data-view="replay"', html)
             self.assertIn('id="timeline-shell"', html)
+            self.assertIn('id="mobile-nav-toggle"', html)
+            self.assertIn('aria-controls="studio-view-switch"', html)
+            self.assertIn('id="transport-phase"', html)
+            self.assertIn('id="mobile-browser-label"', html)
             self.assertIn('id="process-drawer"', html)
             self.assertIn('data-view-panel="record"', html)
             self.assertIn('id="start-recording"', html)
@@ -1002,6 +1006,9 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('.scene-synthesis-card', css)
             self.assertIn('.scene-hierarchy', css)
             self.assertIn('.recording-feed-switch', css)
+            self.assertIn('/* Phone layout: the replay is an evidence instrument', css)
+            self.assertIn('.masthead.nav-open .view-switch', css)
+            self.assertIn('.transport-phase', css)
 
             with urlopen(f"{base}/studio.js", timeout=3) as response:
                 javascript = response.read().decode("utf-8")
@@ -1027,6 +1034,18 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('"Operator notes"', javascript)
             self.assertIn('fetch("/api/recorder/live-simulation"', javascript)
             self.assertIn("viewer.applyLiveState(liveState)", javascript)
+            self.assertIn('elements.mobileNavToggle?.addEventListener', javascript)
+            self.assertIn('elements.mobileBrowserLabel', javascript)
+            self.assertIn('elements.transportPhase', javascript)
+            self.assertIn('elements.browserRail.dataset.taskId', javascript)
+            self.assertIn('"Ranked replays"', javascript)
+
+            with urlopen(f"{base}/studio3d.js", timeout=3) as response:
+                replay_javascript = response.read().decode("utf-8")
+            self.assertIn("portraitInspection", replay_javascript)
+            self.assertIn("addScaledVector(portraitOffset, 0.96)", replay_javascript)
+            self.assertIn("photoBackground.visible = !portraitInspection", replay_javascript)
+            self.assertIn("portraitInspection ? 0xd7d7d5 : 0x111315", replay_javascript)
 
             spark_license = (STATIC_ROOT / "vendor" / "spark" / "LICENSE").read_bytes()
             self.assertEqual(

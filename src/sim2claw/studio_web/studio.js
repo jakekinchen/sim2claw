@@ -1,6 +1,8 @@
 "use strict";
 
 const state = {
+  serverHealth: null,
+  readOnly: null,
   catalog: null,
   selectedEpisodeId: null,
   taskFilter: null,
@@ -51,6 +53,8 @@ const state = {
 
 const elements = {
   connection: document.querySelector("#connection-state"),
+  mobileNavToggle: document.querySelector("#mobile-nav-toggle"),
+  mobileNavLabel: document.querySelector("#mobile-nav-label"),
   campaign: document.querySelector("#campaign-label"),
   passRatio: document.querySelector("#pass-ratio"),
   liveTrigger: document.querySelector("#live-trigger"),
@@ -61,11 +65,13 @@ const elements = {
   taskFilterList: document.querySelector("#task-filter-list"),
   taskFilterTemplate: document.querySelector("#task-filter-template"),
   railContext: document.querySelector("#rail-context"),
+  browserHeading: document.querySelector("#browser-heading"),
   railResultCount: document.querySelector("#rail-result-count"),
   railEpisodeList: document.querySelector("#rail-episode-list"),
   railEpisodeTemplate: document.querySelector("#rail-episode-template"),
   browserRail: document.querySelector("#browser-rail"),
   mobileBrowserToggle: document.querySelector("#mobile-browser-toggle"),
+  mobileBrowserLabel: document.querySelector("#mobile-browser-label"),
   railClose: document.querySelector("#rail-close"),
   search: document.querySelector("#episode-search"),
   librarySearch: document.querySelector("#library-search"),
@@ -109,6 +115,7 @@ const elements = {
   speed: document.querySelector("#speed-toggle"),
   scrubber: document.querySelector("#scrubber"),
   phaseRail: document.querySelector("#phase-rail"),
+  transportPhase: document.querySelector("#transport-phase"),
   metrics: document.querySelector("#metric-strip"),
   evidenceTrigger: document.querySelector("#evidence-trigger"),
   evidenceContent: document.querySelector("#evidence-content"),
@@ -336,6 +343,19 @@ function setConnection(online, label) {
   text(elements.connection.lastElementChild, label);
 }
 
+async function fetchHealth() {
+  try {
+    const response = await fetch("/api/health", { cache: "no-store" });
+    if (!response.ok) throw new Error(`health returned ${response.status}`);
+    state.serverHealth = await response.json();
+    state.readOnly = Boolean(state.serverHealth.read_only);
+    document.body.dataset.studioMode = state.serverHealth.mode || "interactive";
+  } catch (_error) {
+    state.serverHealth = null;
+    state.readOnly = null;
+  }
+}
+
 function recordProcessHistory(processes) {
   const now = Date.now();
   processes.forEach((process) => {
@@ -498,8 +518,19 @@ function renderRailEpisodes() {
   if (!state.catalog) return;
   const episodes = filteredEpisodes();
   const task = taskById(state.taskFilter);
+  elements.browserRail.dataset.taskId = task?.id || "";
+  text(
+    elements.browserHeading,
+    task?.id === "pawn_bg_ranked_grasp_v3" ? "Ranked replays" : "Choose evidence",
+  );
   text(elements.railContext, task ? task.title : state.query ? "Search results" : "All episodes");
   text(elements.railResultCount, task || state.query ? episodes.length : "");
+  text(
+    elements.mobileBrowserLabel,
+    task
+      ? `Browse ${episodes.length} ${task.id === "pawn_bg_ranked_grasp_v3" ? "ranked replays" : "task episodes"}`
+      : `Browse ${episodes.length} episodes`,
+  );
   elements.railEpisodeList.replaceChildren();
 
   episodes.forEach((episode, index) => {
@@ -513,7 +544,11 @@ function renderRailEpisodes() {
     text(row.querySelector(".rail-copy small"), [move ? formatIdentifier(episode.case_id.split("_")[0]) : "", salient ? `${salient.label} ${formatMetric(salient)}` : formatDuration(episode.duration_seconds) || episode.proof_label].filter(Boolean).join(" \u00b7 "));
     row.setAttribute("aria-label", `Open ${episode.title}: ${episode.subtitle}`);
     mountThumbnail(row.querySelector(".rail-thumb"), episode, index < 8);
-    row.addEventListener("click", () => selectEpisode(episode.id));
+    row.addEventListener("click", () => {
+      selectEpisode(episode.id);
+      elements.browserRail.classList.remove("is-mobile-open");
+      elements.mobileBrowserToggle.setAttribute("aria-expanded", "false");
+    });
     elements.railEpisodeList.append(row);
   });
 }
@@ -932,6 +967,8 @@ async function ensureLiveSimulationViewer() {
 
 async function refreshLiveSimulation() {
   if (
+    state.readOnly !== false
+    ||
     state.liveSimFetchActive
     || state.view !== "record"
     || selectedRecorderMode() !== "simulation_follower"
@@ -1162,7 +1199,7 @@ async function startLiveWorkspace() {
 }
 
 async function fetchLiveWorkspaceStatus() {
-  if (state.liveWorkspaceStatusFetchActive || state.drawer === "live" || state.liveWorkspaceSession) return;
+  if (state.readOnly !== false || state.liveWorkspaceStatusFetchActive || state.drawer === "live" || state.liveWorkspaceSession) return;
   state.liveWorkspaceStatusFetchActive = true;
   try {
     const response = await fetch("/api/live/status", { cache: "no-store" });
@@ -1291,6 +1328,7 @@ function renderMetrics(episode) {
 function renderPhases(phases) {
   elements.phaseRail.replaceChildren();
   const rows = phases.length ? phases : [{ name: "Replay", start: 0, end: 1 }];
+  text(elements.transportPhase, rows[0].name);
   rows.forEach((phase) => {
     const segment = document.createElement("button");
     segment.type = "button";
@@ -1425,7 +1463,9 @@ function updateProgress(fraction, seconds) {
   document.querySelectorAll(".phase-segment").forEach((segment) => {
     const start = Number(segment.dataset.start);
     const end = Number(segment.dataset.end);
-    segment.classList.toggle("is-active", safeFraction >= start && (safeFraction < end || end === 1 && safeFraction === 1));
+    const active = safeFraction >= start && (safeFraction < end || end === 1 && safeFraction === 1);
+    segment.classList.toggle("is-active", active);
+    if (active) text(elements.transportPhase, segment.textContent.trim());
   });
 }
 
@@ -2036,7 +2076,7 @@ function renderRecorder() {
 }
 
 async function fetchRecorder() {
-  if (state.recorderRequestActive) return;
+  if (state.readOnly !== false || state.recorderRequestActive) return;
   try {
     const response = await fetch("/api/recorder", { cache: "no-store" });
     if (!response.ok) throw new Error(`recorder returned ${response.status}`);
@@ -2515,6 +2555,9 @@ function setActiveView(view, { updateRoute = true } = {}) {
   const safeView = ["replay", "library", "calibration", "robots", "orchestrator", "record"].includes(view) ? view : "replay";
   state.view = safeView;
   document.body.dataset.view = safeView;
+  text(elements.mobileNavLabel, safeView === "orchestrator" ? "Tasks" : formatIdentifier(safeView));
+  document.querySelector(".masthead")?.classList.remove("nav-open");
+  elements.mobileNavToggle?.setAttribute("aria-expanded", "false");
   state.threeViewer?.setActive(safeView === "replay" && state.replayMode === "three");
   state.liveSimViewer?.setActive(
     safeView === "record" && selectedRecorderMode() === "simulation_follower",
@@ -2726,6 +2769,12 @@ elements.mobileBrowserToggle.addEventListener("click", () => {
   elements.mobileBrowserToggle.setAttribute("aria-expanded", String(open));
   if (open) elements.browserRail.scrollIntoView({ behavior: "smooth", block: "start" });
 });
+elements.mobileNavToggle?.addEventListener("click", () => {
+  const masthead = document.querySelector(".masthead");
+  const open = !masthead.classList.contains("nav-open");
+  masthead.classList.toggle("nav-open", open);
+  elements.mobileNavToggle.setAttribute("aria-expanded", String(open));
+});
 elements.railClose.addEventListener("click", () => {
   elements.browserRail.classList.remove("is-mobile-open");
   elements.mobileBrowserToggle.setAttribute("aria-expanded", "false");
@@ -2856,11 +2905,13 @@ window.addEventListener("hashchange", restoreRoute);
 window.addEventListener("pagehide", () => stopLiveWorkspace({ useBeacon: true }));
 
 initializeRecorderForm();
-fetchCatalog({ initial: true }).then(restoreRoute);
-fetchRecorder();
-fetchLiveWorkspaceStatus();
-fetchOrchestrator();
-refreshLiveSimulation();
+fetchHealth().finally(() => {
+  fetchCatalog({ initial: true }).then(restoreRoute);
+  fetchRecorder();
+  fetchLiveWorkspaceStatus();
+  fetchOrchestrator();
+  refreshLiveSimulation();
+});
 window.setInterval(() => fetchCatalog(), 2000);
 window.setInterval(() => fetchRecorder(), 500);
 window.setInterval(() => fetchLiveWorkspaceStatus(), 5000);
