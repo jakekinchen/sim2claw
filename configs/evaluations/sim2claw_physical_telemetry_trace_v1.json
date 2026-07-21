@@ -1,0 +1,94 @@
+{
+  "schema_version": "sim2claw.physical_telemetry_trace_contract.v1",
+  "contract_id": "sim2claw-physical-telemetry-trace-20260720-v1",
+  "proof_class": "retrospective_physical_teleoperation_observation",
+  "source_gate": {
+    "path": "configs/evaluations/sim2claw_retrospective_publication_gate_v1.json",
+    "sha256": "6757dc70a2cbe37dab64067a042fa4cc13584b508e69f0db4a039bb5ed172376"
+  },
+  "artifact_bindings": {
+    "core_sha256": "c9ba2c270261070b39fb580e69021f318963f2df7243efb64ea8b411557a3e23",
+    "inspect_agents_sha256": "f3c4e386e6055bac4e600f4760574ef0f2a2688bffd03895f52698794f39445b",
+    "inspect_dataset_sha256": "5aab058276c0f1286d0a8a329e1322470d5234b6431ed8ce99634cda9ceb64d7",
+    "inspect_tools_sha256": "df2d6960830fc6994e327f634dbbedf27eb88b49702c2b567afa56338aad80b5",
+    "inspect_approvers_sha256": "d38084fff3c38249ba58ceda1ecb4f2bad889b4e5617cb30477770088c6ed8e6",
+    "inspect_scorers_sha256": "6b8130781b5b095e884ff118d86b54a0418ca28fd940e62dddbd4755079578b3",
+    "inspect_task_sha256": "a491d1a58a0d233f3c577d2f985c2f78236bf139e24a146da5b0fb58098dd6ba",
+    "telemetry_skill_bundle_sha256": "e72d2813047ac81e614f084ea4517490eebf21988464cc3a4f765d432a6da4c0",
+    "sandbox_oci_digest": null
+  },
+  "expected_inventory": {
+    "episode_count": 18,
+    "sample_count": 7741,
+    "joint_count": 6,
+    "endpoint_frame_count": 36
+  },
+  "joint_names": [
+    "shoulder_pan",
+    "shoulder_lift",
+    "elbow_flex",
+    "wrist_flex",
+    "wrist_roll",
+    "gripper"
+  ],
+  "extractable_observations": {
+    "requested_joint_position": {"source_field": "follower_requested_degrees", "unit": "recorded_source_degree_or_gripper_percent"},
+    "commanded_joint_position": {"source_field": "follower_command_degrees", "unit": "recorded_source_degree_or_gripper_percent"},
+    "measured_joint_position": {"source_field": "follower_actual_position_degrees", "unit": "recorded_source_degree_or_gripper_percent"},
+    "measured_joint_velocity": {"source_field": "follower_actual_velocity_degrees_s", "unit": "recorded_source_degree_per_second_or_gripper_percent_per_second"},
+    "motor_current_proxy": {"source_field": "available_motor_current_raw", "unit": "device_raw_present_current", "calibrated_effort": false},
+    "sample_timestamp": {"source_field": "timestamp_monotonic_seconds", "unit": "second"},
+    "control_interval": {"source_field": "control_dt_seconds", "unit": "second"},
+    "camera_timeline": {"source_field": "overhead_video_time_seconds", "unit": "second"},
+    "camera_endpoint_frames": {"source": "publication_gate.frame_selection", "phases": ["initial", "final"]},
+    "episode_outcome": {"source": "recording_receipt.outcome_label", "actor": "human_teleoperator"}
+  },
+  "unavailable_observations": {
+    "metric_object_trajectory": "selected_piece_pose_world_and_continuous_target_pose_world_are_null",
+    "physical_contact_state": "no_contact_sensor_or_contact_state_was_recorded",
+    "physical_contact_force": "no_force_or_torque_sensor_measurement_was_recorded",
+    "instrumented_grasp_outcome": "receipt_success_is_operator_episode_outcome_not_a_contact_or_grasp_measurement",
+    "command_to_actuation_latency": "command_write_and_actuation_observation_timestamps_are_not_separately_recorded",
+    "camera_capture_latency": "video_timeline_alignment_does_not_identify_capture_latency",
+    "simulator_trace": "zero_episodes_are_exact_simulator_replay_eligible"
+  },
+  "comparison": {
+    "primary_residual": "measured_minus_commanded_position",
+    "secondary_residual": "commanded_minus_requested_position",
+    "statistics": ["bias", "mae", "rmse", "p95_absolute", "maximum_absolute"],
+    "cached_motor_current_samples_included": true,
+    "fresh_motor_current_read_indicator_available": false,
+    "camera_alignment": "relative_video_time_minus_relative_monotonic_time",
+    "episode_is_independent_unit_for_inference": true,
+    "per_sample_statistics_are_descriptive_only": true,
+    "real_sim_comparison": false
+  },
+  "inspect_tools": {
+    "names": [
+      "telemetry_status",
+      "read_joint_trace",
+      "read_camera_frame",
+      "read_object_trajectory",
+      "read_contact_and_grasp_outcomes",
+      "read_execution_timing",
+      "read_episode_outcome",
+      "read_trace_comparison",
+      "submit_telemetry_audit"
+    ],
+    "maximum_trace_rows_per_call": 200,
+    "maximum_trace_reads": 8,
+    "maximum_camera_frame_reads": 2,
+    "terminal_submissions": 1,
+    "physical_actions": 0
+  },
+  "authority": {
+    "mutate_source_recordings": false,
+    "infer_unobserved_measurements": false,
+    "simulator_calibration": false,
+    "domain_randomization_admission": false,
+    "training_admission": false,
+    "promotion_authority": false,
+    "physical_authority": false,
+    "physical_transfer_proof": false
+  }
+}
