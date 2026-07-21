@@ -1,0 +1,39 @@
+{
+  "schema_version": "sim2claw.pawn_bg_workcell_fit.v2",
+  "optimization_id": "pawn_bg_workcell_fit_v2_base_pose",
+  "parent_contract": {
+    "path": "configs/optimization/pawn_bg_workcell_fit_v1.json",
+    "sha256": "a1cd0f7d53b22420536396eb724e4dcd877ea74206ae23442fe5b933efa7f69f"
+  },
+  "candidate": {
+    "name": "stage_e_base_pose",
+    "description": "Stage D lift-dominant joint offsets plus bounded robot-base roll, pitch, and height offsets",
+    "base_roll_bound_degrees": 5.0,
+    "base_pitch_bound_degrees": 5.0,
+    "base_z_bound_m": 0.03,
+    "base_roll_pitch_prior_sigma_degrees": 2.0,
+    "base_z_prior_sigma_m": 0.01,
+    "finite_difference_step": 0.001
+  },
+  "train_acceptance": {
+    "minimum_event_rms_relative_reduction_from_stage_d": 0.02,
+    "require_zero_clipped_episodes": true,
+    "minimum_selected_piece_contact_episodes": 9,
+    "minimum_lifted_episodes": 1,
+    "minimum_task_successes": 0,
+    "selection_uses_held_out": false
+  },
+  "confirmation_policy": {
+    "held_out_was_previously_opened": true,
+    "held_out_cannot_select_or_tune_stage_e": true,
+    "report_stage_d_and_stage_e_side_by_side": true
+  },
+  "authority": {
+    "physical_calibration": false,
+    "exact_replay": false,
+    "training_admission": false,
+    "promotion_authority": false,
+    "physical_authority": false,
+    "physical_transfer_proof": false
+  }
+}
