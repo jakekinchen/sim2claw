@@ -49,8 +49,15 @@ def grade_episode(
     ignore_bodies: set[str] | None = None,
     disp_gates_m: list[float] = DEFAULT_DISP_GATES_M,
     eject_gate_m: float = DEFAULT_EJECT_GATE_M,
+    baseline_frame: int = 0,
 ) -> dict:
-    """Pure-numpy collateral grading of one episode."""
+    """Pure-numpy collateral grading of one episode.
+
+    baseline_frame: displacement is measured against this frame, and only
+    frames >= it are graded. Public datasets whose first state is not settled
+    (objects still dropping into place) pollute a mm-scale gate; grading from
+    a few frames in ("settled baseline") removes that bias.
+    """
     ignore = ignore_bodies or set()
     nontarget = {
         n: p for n, p in body_positions.items()
@@ -73,7 +80,9 @@ def grade_episode(
         }
     max_disp = {}
     for name, pos in nontarget.items():
-        pos = np.asarray(pos, dtype=np.float64)
+        pos = np.asarray(pos, dtype=np.float64)[baseline_frame:]
+        if len(pos) == 0:
+            raise ValueError(f"baseline_frame {baseline_frame} beyond episode length")
         max_disp[name] = float(np.linalg.norm(pos - pos[0], axis=1).max())
     worst = max(max_disp, key=max_disp.get)
     ejected = sorted(n for n, d in max_disp.items() if d > eject_gate_m)
@@ -164,12 +173,14 @@ def iter_robomimic_episodes(hdf5_path: Path, target_hint: str):
             yield demo, positions, targets, ignore
 
 
-def grade_robomimic(hdf5_path: Path, target_hint: str, disp_gates, eject_gate, limit=None) -> dict:
+def grade_robomimic(hdf5_path: Path, target_hint: str, disp_gates, eject_gate, limit=None,
+                    baseline_frame: int = 0) -> dict:
     episodes = []
     for demo, positions, targets, ignore in iter_robomimic_episodes(hdf5_path, target_hint):
         if not targets:
             raise ValueError(f"--target-hint '{target_hint}' matched no bodies; bodies: {sorted(positions)[:20]}")
-        row = grade_episode(positions, targets, ignore, disp_gates, eject_gate)
+        row = grade_episode(positions, targets, ignore, disp_gates, eject_gate,
+                            baseline_frame=baseline_frame)
         row["episode"] = demo
         episodes.append(row)
         if row.get("vacuous"):
@@ -182,6 +193,7 @@ def grade_robomimic(hdf5_path: Path, target_hint: str, disp_gates, eject_gate, l
     return {
         "dataset": str(hdf5_path),
         "target_hint": target_hint,
+        "baseline_frame": baseline_frame,
         "summary": summarize(episodes, disp_gates),
         "episodes": episodes,
     }
@@ -288,6 +300,9 @@ def main() -> None:
     ap.add_argument("--disp-gates-mm", type=float, nargs="+", default=[g * 1000 for g in DEFAULT_DISP_GATES_M])
     ap.add_argument("--eject-gate-mm", type=float, default=DEFAULT_EJECT_GATE_M * 1000)
     ap.add_argument("--limit", type=int, help="grade only first N episodes (smoke run)")
+    ap.add_argument("--baseline-frame", type=int, default=10,
+                    help="measure displacement from this frame on (settled baseline); "
+                         "0 = raw first state")
     ap.add_argument("--selftest", action="store_true")
     args = ap.parse_args()
 
@@ -298,7 +313,8 @@ def main() -> None:
         download(args.download, args.dest)
     if args.grade:
         gates = [g / 1000 for g in args.disp_gates_mm]
-        result = grade_robomimic(args.grade, args.target_hint, gates, args.eject_gate_mm / 1000, args.limit)
+        result = grade_robomimic(args.grade, args.target_hint, gates, args.eject_gate_mm / 1000, args.limit,
+                                 baseline_frame=args.baseline_frame)
         out = Path(f"grade_results_{args.grade.stem}.json")
         out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
         print(f"\nSummary → {out}")
