@@ -1,0 +1,101 @@
+{
+  "schema_version": "sim2claw.retrospective_publication_gate.v1",
+  "gate_id": "sim2claw-retrospective-publication-gate-20260720-v1",
+  "proof_class": "retrospective_physical_source_audit",
+  "inputs": {
+    "catalog": {
+      "path": "configs/data/physical_pawn_move_catalog_20260719.json",
+      "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
+    },
+    "frame_selection": {
+      "path": "outputs/pawn_composability/recovered_corpus_v2/frame_selection.json",
+      "sha256": "20c5dbdef2306f79cd24ed2bf7fae2353fa38a94a409ac3ca152014614aca0ea"
+    },
+    "owner_visual_review": {
+      "path": "outputs/pawn_composability/recovered_corpus_v2/product_scope_owner_visual_review.json",
+      "sha256": "3fab56dbf83e1a152f44f0daf88c0d43c44bfbc0ce3c23c0c2e0aa603797101e"
+    },
+    "sysid_config": {
+      "path": "configs/sysid/recorded_action_sysid_v1.json",
+      "sha256": "ebbcbee27555a767f40f347a36d1c54cb6faba2e1e843c197968f41dd1d9227d"
+    }
+  },
+  "expected_inventory": {
+    "episode_count": 18,
+    "sample_count": 7741,
+    "catalog_bound_asset_count": 54,
+    "evidence_frame_count": 36,
+    "owner_accepted_visual_marker_count": 26,
+    "directed_skill_count": 12
+  },
+  "replay_anchor": {
+    "required_catalog_assets": ["samples", "receipt", "overhead_video"],
+    "required_sample_schema": "sim2claw.physical_teleoperation_sample.v1",
+    "require_strictly_increasing_timestamps": true,
+    "require_contiguous_sample_indices": true,
+    "required_vector_length": 6,
+    "anchor_semantics": "immutable_real_recording_bytes_and_replay_intent_not_simulator_replay_eligibility"
+  },
+  "posterior": {
+    "model": "normal_inverse_gamma_over_episode_level_summaries",
+    "credible_mass": 0.95,
+    "episode_is_independent_unit": true,
+    "tracking_prior": {
+      "mean": 0.0,
+      "mean_strength": 0.001,
+      "shape": 2.0,
+      "scale": 1.0
+    },
+    "sample_interval_prior": {
+      "mean": 0.05,
+      "mean_strength": 0.001,
+      "shape": 2.0,
+      "scale": 0.0001
+    },
+    "joint_names": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "tracking_residual": "follower_actual_position_minus_follower_command_in_recorded_source_joint_units",
+    "sample_interval": "successive_timestamp_monotonic_seconds_difference",
+    "allowed_uses": [
+      "diagnostic_tracking_bias_report",
+      "future_domain_randomization_proposal_after_transform_approval"
+    ],
+    "forbidden_uses": [
+      "simulator_parameter_calibration",
+      "direct_randomization_injection_before_transform_approval",
+      "contact_or_friction_inference",
+      "physical_transfer_claim"
+    ]
+  },
+  "gate_rules": {
+    "asset_lineage": "pass_only_if_every_catalog_hash_matches",
+    "real_replay_anchors": "pass_only_if_every_sample_trace_is_strict_and_hash_bound",
+    "physical_tracking_posterior": "pass_as_diagnostic_only_if_all_episode_summaries_are_available",
+    "qualitative_image_fit": "descriptive_only_never_metric",
+    "metric_endpoint_calibration": "blocked_until_independent_homography_and_metric_annotations_exist",
+    "exact_simulator_replay": "blocked_until_joint_transform_is_approved_and_ranges_validate_without_clipping",
+    "geometry_sysid": "blocked_without_measured_end_effector_position",
+    "timing_control_sysid": "blocked_until_exact_simulator_replay_is_eligible",
+    "contact_object_sysid": "blocked_without_measured_object_pose_or_contact",
+    "physical_transfer": "requires_new_hardware_evaluation"
+  },
+  "provider_campaign": {
+    "path": "configs/evaluations/sim2claw_corrective_subscription_pilot_v1.json"
+  },
+  "authority": {
+    "mutate_source_recordings": false,
+    "infer_unobserved_measurements": false,
+    "approve_joint_transform": false,
+    "approve_metric_homography": false,
+    "training_admission": false,
+    "promotion_authority": false,
+    "physical_authority": false,
+    "physical_transfer_proof": false
+  }
+}

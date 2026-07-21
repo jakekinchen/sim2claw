@@ -1,0 +1,200 @@
+{
+  "schema_version": "sim2claw.corrective_provider_campaign.v1",
+  "campaign_id": "sim2claw-corrective-provider-factorial-20260720-v1",
+  "frozen_at": "2026-07-20",
+  "benchmark": {
+    "contract_path": "configs/evaluations/sim2claw_corrective_repair_benchmark_v1.json",
+    "contract_sha256": "b4f52bd08dbcd18f92e48731ebd06d3168b7c3979f1bfcafb71e1aa0cc83e08d",
+    "inspect_task": "evals/inspect_gapbench/corrective_task.py@sim2claw_corrective_repair",
+    "task_sha256": "afd9a4f1040e425409bea90a6ccf4c7fab975af7260d45abefa6530e8dd31880",
+    "cases": [
+      "center_x_pos",
+      "center_xy_neg",
+      "center_y_pos",
+      "center_z_pos"
+    ],
+    "case_order_seed": 20260720,
+    "epochs": 3,
+    "attempts_per_case": 3,
+    "controls_required": [
+      "unchanged",
+      "random_nudge",
+      "bounded_search",
+      "oracle"
+    ]
+  },
+  "factorial_design": {
+    "harnesses": [
+      "codex_cli",
+      "claude_code"
+    ],
+    "cross_every_model_treatment_with_every_harness": true,
+    "primary_unit": "model_treatment_x_harness_x_case_x_epoch",
+    "analysis_rule": "Treat each model, provider-native reasoning setting, and harness as one system configuration. Do not equate provider-native effort labels across providers.",
+    "model_treatments": [
+      {
+        "treatment_id": "openai-gpt-5.6-sol-medium",
+        "provider": "openai",
+        "inspect_model": "openai/gpt-5.6-sol",
+        "exact_model_id": "gpt-5.6-sol",
+        "reasoning": {"parameter": "reasoning_effort", "value": "medium"},
+        "api_mode": "responses",
+        "base_url": null,
+        "credential_env": "OPENAI_API_KEY"
+      },
+      {
+        "treatment_id": "openai-gpt-5.6-sol-high",
+        "provider": "openai",
+        "inspect_model": "openai/gpt-5.6-sol",
+        "exact_model_id": "gpt-5.6-sol",
+        "reasoning": {"parameter": "reasoning_effort", "value": "high"},
+        "api_mode": "responses",
+        "base_url": null,
+        "credential_env": "OPENAI_API_KEY"
+      },
+      {
+        "treatment_id": "openai-gpt-5.6-sol-max",
+        "provider": "openai",
+        "inspect_model": "openai/gpt-5.6-sol",
+        "exact_model_id": "gpt-5.6-sol",
+        "reasoning": {"parameter": "reasoning_effort", "value": "max"},
+        "api_mode": "responses",
+        "base_url": null,
+        "credential_env": "OPENAI_API_KEY"
+      },
+      {
+        "treatment_id": "anthropic-claude-fable-5-medium",
+        "provider": "anthropic",
+        "inspect_model": "anthropic/claude-fable-5",
+        "exact_model_id": "claude-fable-5",
+        "reasoning": {"parameter": "effort", "value": "medium"},
+        "api_mode": "messages",
+        "base_url": null,
+        "credential_env": "ANTHROPIC_API_KEY"
+      },
+      {
+        "treatment_id": "anthropic-claude-fable-5-high",
+        "provider": "anthropic",
+        "inspect_model": "anthropic/claude-fable-5",
+        "exact_model_id": "claude-fable-5",
+        "reasoning": {"parameter": "effort", "value": "high"},
+        "api_mode": "messages",
+        "base_url": null,
+        "credential_env": "ANTHROPIC_API_KEY"
+      },
+      {
+        "treatment_id": "anthropic-claude-fable-5-max",
+        "provider": "anthropic",
+        "inspect_model": "anthropic/claude-fable-5",
+        "exact_model_id": "claude-fable-5",
+        "reasoning": {"parameter": "effort", "value": "max"},
+        "api_mode": "messages",
+        "base_url": null,
+        "credential_env": "ANTHROPIC_API_KEY"
+      },
+      {
+        "treatment_id": "moonshot-kimi-k3-low",
+        "provider": "moonshot",
+        "inspect_model": "openai/kimi-k3",
+        "exact_model_id": "kimi-k3",
+        "reasoning": {"parameter": "reasoning_effort", "value": "low"},
+        "api_mode": "openai_chat_completions_compatible",
+        "base_url": "https://api.moonshot.ai/v1",
+        "credential_env": "MOONSHOT_API_KEY"
+      },
+      {
+        "treatment_id": "moonshot-kimi-k3-high",
+        "provider": "moonshot",
+        "inspect_model": "openai/kimi-k3",
+        "exact_model_id": "kimi-k3",
+        "reasoning": {"parameter": "reasoning_effort", "value": "high"},
+        "api_mode": "openai_chat_completions_compatible",
+        "base_url": "https://api.moonshot.ai/v1",
+        "credential_env": "MOONSHOT_API_KEY"
+      },
+      {
+        "treatment_id": "moonshot-kimi-k3-max",
+        "provider": "moonshot",
+        "inspect_model": "openai/kimi-k3",
+        "exact_model_id": "kimi-k3",
+        "reasoning": {"parameter": "reasoning_effort", "value": "max"},
+        "api_mode": "openai_chat_completions_compatible",
+        "base_url": "https://api.moonshot.ai/v1",
+        "credential_env": "MOONSHOT_API_KEY"
+      },
+      {
+        "treatment_id": "alibaba-qwen3.7-max-2026-05-20-thinking",
+        "provider": "alibaba_model_studio",
+        "inspect_model": "openai/qwen3.7-max-2026-05-20",
+        "exact_model_id": "qwen3.7-max-2026-05-20",
+        "reasoning": {"parameter": "enable_thinking", "value": true},
+        "api_mode": "openai_chat_completions_compatible",
+        "base_url": "https://dashscope-us.aliyuncs.com/compatible-mode/v1",
+        "credential_env": "DASHSCOPE_API_KEY"
+      }
+    ]
+  },
+  "fixed_execution": {
+    "default_temperature": 0.0,
+    "temperature_policy": "use_zero_where_supported_and_omit_for_claude_fable_5_adaptive_thinking",
+    "max_connections": 1,
+    "max_samples": 1,
+    "max_retries": 0,
+    "retry_on_error": false,
+    "fail_on_error": false,
+    "score_on_error": true,
+    "log_model_api": true,
+    "log_refusals": true,
+    "fallback_model_allowed": false,
+    "model_alias_allowed": false,
+    "per_sample": {
+      "message_limit": 60,
+      "token_limit": 80000,
+      "turn_limit": 30,
+      "time_limit_seconds": 1200,
+      "working_limit_seconds": 1000,
+      "cost_limit_usd": 20.0
+    },
+    "campaign_maximum_cost_usd": 1200.0,
+    "cost_limit_is_ceiling_not_budget_forecast": true
+  },
+  "artifact_bindings": {
+    "corrective_skill_bundle_sha256": "e3106ac6ddf3251b3b9c8962e2851be3c4c18d62d02a52d88c947469d736cce8",
+    "agents_sha256": "22a601aa379f0396e916d429406d8674fc492d80887a7f6e9c8673b3904ee4bd",
+    "corrective_dataset_sha256": "e9c9a618f0bb0170346748385437b6b359dc936d74f6f0bad0db4a137814bfde",
+    "corrective_tools_sha256": "6ae1cec8830dfaf882d2dfd1df1926267b424a69b7c9a634d1793090c905244a",
+    "dockerfile_sha256": "86878fcab464e084531c3d59b06deeeff57e23eda807fb84ba33374f26adb6f5",
+    "compose_sha256": "df33c77d8dc98d85b5c409021e3db6cd786eda77fa0a8d3115e06a59f0cc3409",
+    "uv_lock_sha256": "9515d5c178cddf9cbee0a93cf9daddbdf641c06ef869b41fa0e1a7e07873532a",
+    "sandbox_image_tag": "sim2claw-gapbench:0.1.0",
+    "sandbox_oci_digest": "sha256:d5c8ac00e039c9ea1fa99f817d8506417d64d70f29774cfc1c1334d05c81c821",
+    "sandbox_digest_required_before_execution": true
+  },
+  "publication_policy": {
+    "preserve_every_attempt": true,
+    "preserve_refusals_and_provider_errors": true,
+    "exclude_failed_attempts_from_denominator": false,
+    "report_cost_latency_tokens_and_tool_calls": true,
+    "report_controls_beside_models": true,
+    "paired_case_analysis": true,
+    "harness_main_effect_is_separate_from_model_main_effect": true,
+    "provider_effort_labels_are_not_assumed_equivalent": true,
+    "model_judge": false,
+    "claim_boundary": "synthetic_corrective_reasoning_benchmark_only"
+  },
+  "sources_checked_2026_07_20": {
+    "openai": "https://developers.openai.com/api/docs/guides/latest-model",
+    "anthropic": "https://platform.claude.com/docs/en/about-claude/models/introducing-claude-fable-5-and-claude-mythos-5",
+    "moonshot": "https://platform.kimi.ai/docs/overview",
+    "alibaba": "https://www.alibabacloud.com/help/en/model-studio/models"
+  },
+  "authority": {
+    "execution_authorized": false,
+    "provider_calls_authorized": false,
+    "spend_authorized": false,
+    "training_admission": false,
+    "promotion_authority": false,
+    "physical_authority": false,
+    "physical_transfer_proof": false
+  }
+}

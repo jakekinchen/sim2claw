@@ -1,0 +1,130 @@
+{
+  "schema_version": "sim2claw.corrective_subscription_pilot.v1",
+  "campaign_id": "sim2claw-corrective-subscription-triad-20260720-v1",
+  "frozen_at": "2026-07-20",
+  "campaign_mode": "one_shot_static_public_packet",
+  "benchmark": {
+    "contract_path": "configs/evaluations/sim2claw_corrective_repair_benchmark_v1.json",
+    "contract_sha256": "b4f52bd08dbcd18f92e48731ebd06d3168b7c3979f1bfcafb71e1aa0cc83e08d",
+    "core_path": "src/sim2claw/corrective_benchmark.py",
+    "core_sha256": "b1b7199d857dce814024bcacfeb9c669ebedea2710ef00d241ae4fa4921601bc",
+    "cases": [
+      "center_x_pos",
+      "center_xy_neg",
+      "center_z_pos"
+    ],
+    "excluded_case": {
+      "case_id": "center_y_pos",
+      "reason": "redundant_single_axis_lateral_case_under_three_case_budget"
+    },
+    "case_order_seed": 20260720,
+    "attempts_per_case": 1,
+    "public_evaluations_visible_to_model": 0,
+    "host_scoring_evaluations_after_commit": 1,
+    "controls_required": [
+      "unchanged",
+      "random_nudge",
+      "bounded_search",
+      "oracle"
+    ]
+  },
+  "protocol": {
+    "common_prompt": true,
+    "common_public_evidence": true,
+    "interactive_tools": false,
+    "model_output": "one_hypothesis_and_one_bounded_translation_before_any_score",
+    "host_compiles_typed_proposal": true,
+    "sealed_terminal_score_after_commit": true,
+    "no_model_judge": true,
+    "claim_boundary": "synthetic_corrective_reasoning_pilot_only",
+    "analysis_unit": "system_configuration_x_case",
+    "comparison_rule": "Compare systems, not bare models, because native subscription CLIs and the open-model API use different harness surfaces."
+  },
+  "systems": [
+    {
+      "system_id": "codex-subscription-gpt-5.6-sol-high",
+      "runner": "native_codex_cli",
+      "binary_version": "codex-cli 0.144.6",
+      "exact_model_id": "gpt-5.6-sol",
+      "reasoning": {"parameter": "model_reasoning_effort", "value": "high"},
+      "authentication": "chatgpt_subscription_cached_login",
+      "credential_env": null,
+      "incremental_dollar_cost": 0.0,
+      "usage_constraint": "chatgpt_subscription_quota",
+      "access_verified": false
+    },
+    {
+      "system_id": "claude-subscription-claude-fable-5-high",
+      "runner": "native_claude_code",
+      "binary_version": "2.1.199 (Claude Code)",
+      "exact_model_id": "claude-fable-5",
+      "reasoning": {"parameter": "effort", "value": "high"},
+      "authentication": "claude_subscription_cached_login",
+      "credential_env": null,
+      "incremental_dollar_cost": 0.0,
+      "usage_constraint": "claude_subscription_quota",
+      "access_verified": false
+    },
+    {
+      "system_id": "groq-gpt-oss-120b-high",
+      "runner": "groq_openai_compatible_api",
+      "binary_version": null,
+      "exact_model_id": "openai/gpt-oss-120b",
+      "reasoning": {"parameter": "reasoning_effort", "value": "high"},
+      "authentication": "api_key",
+      "credential_env": "GROQ_API_KEY",
+      "base_url": "https://api.groq.com/openai/v1",
+      "input_usd_per_million_tokens": 0.15,
+      "cached_input_usd_per_million_tokens": 0.075,
+      "output_usd_per_million_tokens": 0.60,
+      "maximum_completion_tokens_per_case": 8192,
+      "access_verified": false
+    }
+  ],
+  "budgets": {
+    "system_count": 3,
+    "case_count": 3,
+    "total_case_attempts": 9,
+    "subscription_case_attempts": 6,
+    "paid_api_case_attempts": 3,
+    "paid_api_retry_count": 0,
+    "paid_api_maximum_cost_usd": 1.0,
+    "campaign_maximum_incremental_cost_usd": 1.0,
+    "stop_before_request_if_declared_cap_would_be_exceeded": true
+  },
+  "artifact_bindings": {
+    "corrective_skill_bundle_sha256": "e3106ac6ddf3251b3b9c8962e2851be3c4c18d62d02a52d88c947469d736cce8",
+    "pilot_runner_path": "src/sim2claw/subscription_pilot.py",
+    "pilot_runner_sha256": "eca4aed047d08e10cc0f6962a527d76071f8d7bc4c786c828c83426b563eaccd",
+    "sandbox_image_digest": null,
+    "sandbox_image_not_used_by_subscription_runners": true
+  },
+  "source_checks_2026_07_20": {
+    "codex_subscription": "https://learn.chatgpt.com/docs/pricing",
+    "claude_code_subscription": "https://code.claude.com/docs/en/getting-started",
+    "gpt_oss_model": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
+    "groq_model": "https://console.groq.com/docs/model/openai/gpt-oss-120b",
+    "groq_pricing": "https://groq.com/pricing"
+  },
+  "publication_policy": {
+    "preserve_every_attempt": true,
+    "preserve_refusals_and_errors": true,
+    "exclude_failed_attempts_from_denominator": false,
+    "report_subscription_quota_failures": true,
+    "report_api_cost_latency_and_tokens": true,
+    "report_controls_beside_systems": true,
+    "provider_effort_labels_are_not_assumed_equivalent": true,
+    "model_judge": false,
+    "claim_boundary": "synthetic_corrective_reasoning_pilot_only"
+  },
+  "authority": {
+    "execution_authorized": false,
+    "subscription_usage_authorized": false,
+    "provider_calls_authorized": false,
+    "spend_authorized": false,
+    "training_admission": false,
+    "promotion_authority": false,
+    "physical_authority": false,
+    "physical_transfer_proof": false
+  }
+}
