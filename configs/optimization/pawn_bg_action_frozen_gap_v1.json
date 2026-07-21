@@ -1,0 +1,83 @@
+{
+  "schema_version": "sim2claw.pawn_bg_action_frozen_gap.v1",
+  "purpose": "Attribute dataset-to-simulator error while keeping the mapped recorded-action stream or retained model-produced action stream byte-identical across simulator variants.",
+  "parent_workcell_contract": {
+    "path": "configs/optimization/pawn_bg_workcell_fit_v1.json",
+    "sha256": "a1cd0f7d53b22420536396eb724e4dcd877ea74206ae23442fe5b933efa7f69f",
+    "fixed_action_adapter": "stage_d_lift"
+  },
+  "action_invariance": {
+    "no_ik_corrections": true,
+    "no_post_policy_offsets": true,
+    "no_corrective_suffix": true,
+    "no_assistance": true,
+    "no_candidate_specific_action_mapping": true,
+    "no_clipping": true,
+    "require_identical_shape_dtype_and_sha256": true,
+    "recorded_source_rule": "map physical commands once with the frozen Stage-D adapter, then feed the exact float64 array to every simulator variant",
+    "policy_rule": "load the retained unassisted model-produced applied_actions array and feed the exact float64 bytes to every simulator variant without invoking or modifying the policy"
+  },
+  "geometry_candidate": {
+    "candidate_id": "geometry_only_board_pitch",
+    "parameters": [
+      "board_center_in_table_frame_xy_m",
+      "board_yaw_relative_to_table_degrees",
+      "board_side_m"
+    ],
+    "frozen_joint_zero_offsets": "exact Stage-D selected offsets",
+    "frozen_joint_range_envelope": "exact Stage-D selected envelope",
+    "frozen_reopen_timing_z_bias": "exact Stage-D selected value",
+    "playing_side_bounds_m": [
+      0.2921,
+      0.4191
+    ],
+    "finite_difference_step": 0.001,
+    "minimum_train_event_rms_relative_reduction": 0.02
+  },
+  "retained_unassisted_policy_actions": {
+    "policy_family": "groot_n17_rgb_language_challenger",
+    "report_relative_to_policy_root": "pawn-centering-checkpoint5000-full-v1/report.json",
+    "report_sha256": "6611818631950ba3643e50178fadf3e0ebc999a68d4c82deb37f5b077bff0056",
+    "required_case_count": 12,
+    "required_action_rows_per_case": 317,
+    "required_action_columns": 6,
+    "required_action_rows_clipped": 0,
+    "interpretation": "frozen open-loop replay of previously produced policy actions; not a new closed-loop policy evaluation"
+  },
+  "trace_observability": {
+    "persist_every_aligned_sample": true,
+    "signals": [
+      "mapped_encoder_end_effector_xyz_m",
+      "command_sim_end_effector_xyz_m",
+      "time_aligned_end_effector_error_m",
+      "end_effector_to_source_neck_m",
+      "end_effector_to_destination_neck_m",
+      "mapped_encoder_joint_state",
+      "command_sim_joint_state",
+      "applied_action",
+      "phase"
+    ],
+    "required_visuals": [
+      "relative_distance_overlay_png",
+      "end_effector_xy_path_png"
+    ]
+  },
+  "confirmation": {
+    "held_out_status": "already opened by prior Stage-D work",
+    "selection_use": "none",
+    "policy_action_replay_use": "downstream diagnostic only"
+  },
+  "excluded_evidence": {
+    "stage_e_base_pose": "joint offsets were jointly refit",
+    "stage_f_board_pitch": "joint offsets were jointly refit even though the dominant new parameter was geometry",
+    "stage_d_aligned_policy_smoke": "assistance_used was true and a post-policy fixed-offset bridge changed actions"
+  },
+  "authority": {
+    "physical_calibration": false,
+    "physical_transfer": false,
+    "policy_promotion": false,
+    "task_success": false,
+    "training_admission": false,
+    "evaluator_promotion": false
+  }
+}
