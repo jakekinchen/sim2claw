@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.pawn_bg_servo_deadband.v1",
+  "purpose": "Test whether bounded shoulder-lift and elbow position-servo deadband can explain the remaining action-frozen sag and same-row flat-response evidence after fixing timestamp alignment and simulator-side application delay.",
+  "source": {
+    "partition": "owner-reviewed product-scope train episodes",
+    "expected_train_episode_count": 11,
+    "expected_already_opened_confirmation_episode_count": 2,
+    "upstream_timing_receipt": "outputs/pawn_bg_timing_ablation_v1/timing_ablation_receipt.json",
+    "required_application_delay_seconds": 0.11,
+    "candidate_board_playing_side_m": 0.3556,
+    "board_scale_status": "nominal_print_conditioned_physically_plausible_not_metric_authority"
+  },
+  "mechanism": {
+    "target_joints": ["shoulder_lift", "elbow_flex"],
+    "shared_deadband_grid_degrees": [0.0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 2.5, 3.0],
+    "inside_deadband": "set only the target actuator position gain and matching position bias coefficient to zero for that physics step",
+    "outside_deadband": "restore the unmodified model position gain and bias coefficient",
+    "interpretation": "bounded actuator-model-class hypothesis for compliance, backlash, controller deadband, and gravity sag; not an identified physical firmware parameter"
+  },
+  "grouped_cross_validation": {
+    "unit": "whole_episode",
+    "selection_rule": "minimum pooled body-joint RMS among candidates satisfying fit shoulder-lift and elbow stall-reproduction constraints and the fit RMS ceiling",
+    "folds": [
+      ["20260719T030059Z-a26f8400", "20260719T031324Z-bf91502b", "20260719T032440Z-f728a18c"],
+      ["20260719T032315Z-d3c3cf0b", "20260719T032531Z-06be393c", "20260719T031615Z-0e058ca2"],
+      ["20260719T032400Z-052d5137", "20260719T031715Z-61ebb199", "20260719T032620Z-0c7e3d86"],
+      ["20260719T030206Z-af661460", "20260719T031813Z-b147b429"]
+    ],
+    "confirmation_selection_use": "none_already_opened_regression_only"
+  },
+  "stall_probe": {
+    "real_stationary_maximum_step_degrees": 0.5,
+    "command_measurement_minimum_gap_degrees": 2.0,
+    "sim_reproduction_minimum_gap_degrees": 2.0,
+    "interpretation": "same-row gap reproduction diagnostic; not calibrated torque, measured current, or physical stall truth"
+  },
+  "acceptance": {
+    "fit_minimum_stall_reproduction_fraction_per_target_joint": 0.4,
+    "fit_maximum_overall_joint_rms_degrees": 1.7,
+    "minimum_cross_validated_stall_reproduction_fraction_per_target_joint": 0.4,
+    "maximum_cross_validated_overall_joint_rms_degrees": 1.7,
+    "require_cross_validated_joint_rms_no_regression_from_zero_deadband": true,
+    "require_byte_identical_action_arrays": true,
+    "require_task_consequence_success_for_composite_promotion": true
+  },
+  "action_invariance": {
+    "no_ik_corrections": true,
+    "no_post_policy_offsets": true,
+    "no_corrective_suffix": true,
+    "no_assistance": true,
+    "no_clipping": true,
+    "no_action_value_or_order_changes": true,
+    "only_simulator_actuator_response_changes": true
+  },
+  "authority": {
+    "physical_calibration": false,
+    "physical_servo_parameter_identification": false,
+    "metric_board_scale": false,
+    "contact_identification": false,
+    "task_success": false,
+    "training_admission": false,
+    "policy_promotion": false,
+    "simulator_composite_promotion": false,
+    "physical_transfer": false
+  }
+}

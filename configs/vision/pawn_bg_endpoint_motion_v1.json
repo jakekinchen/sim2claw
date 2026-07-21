@@ -1,0 +1,64 @@
+{
+  "schema_version": "sim2claw.pawn_bg_endpoint_motion.v1",
+  "purpose": "Compile training-only endpoint appearance transitions from the retained C922 videos and owner-reviewed image-space endpoint markers, then compare those intervals with gripper kinematic candidates without claiming metric trajectory, contact, grasp, or lift.",
+  "bindings": {
+    "catalog": {
+      "path": "configs/data/physical_pawn_move_catalog_20260719.json",
+      "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
+    },
+    "split": {
+      "path": "configs/sysid/physical_pawn_sysid_split_v1.json",
+      "sha256": "1aa839a31b896a26a000ed27ff649232427e3406403c66d7fe79c60b0a0acb08"
+    },
+    "owner_endpoint_manifest": {
+      "path": "outputs/pawn_composability/recovered_corpus_v2/product_scope_owner_visual_review.json",
+      "sha256": "3fab56dbf83e1a152f44f0daf88c0d43c44bfbc0ce3c23c0c2e0aa603797101e",
+      "use": "training-only qualitative image-space endpoint anchors"
+    },
+    "event_contract": {
+      "path": "configs/evaluations/sim2claw_fixed_data_event_pipeline_v1.json",
+      "sha256": "dd974ce26f3577db7b0eba130e7cf9a829c8b621ff38c08226036a2f262106f6"
+    }
+  },
+  "episode_selection": {
+    "partition": "train",
+    "product_scope_only": true,
+    "expected_episode_count": 11,
+    "held_out_video_reads_allowed": false,
+    "whole_episode_only": true
+  },
+  "appearance_model": {
+    "raw_video_coordinate_system": true,
+    "apply_receipt_orientation_rotation": false,
+    "reason_no_rotation": "owner-reviewed marker pixels bind raw decoded C922 frames",
+    "grayscale_roi_radius_px": 18,
+    "source_loss_maximum_normalized_correlation": 0.65,
+    "destination_appearance_minimum_normalized_correlation": 0.9,
+    "minimum_sustained_samples": 6,
+    "source_search_start_fraction": 0.1,
+    "destination_search_start_fraction": 0.5,
+    "reference_source": "owner-reviewed initial endpoint frame and marker",
+    "reference_destination": "owner-reviewed final endpoint frame and marker",
+    "calibration": "none_image_space_only"
+  },
+  "interpretation": {
+    "source_loss_semantics": "selected endpoint becomes visually dissimilar because of pawn departure, arm occlusion, lighting, or their combination",
+    "destination_appearance_semantics": "destination ROI becomes sustainedly similar to the final owner-reviewed endpoint appearance",
+    "contact_claim_allowed": false,
+    "grasp_claim_allowed": false,
+    "lift_claim_allowed": false,
+    "metric_trajectory_claim_allowed": false,
+    "event_is_interval_evidence_only": true
+  },
+  "authority": {
+    "mutate_source_data": false,
+    "open_held_out_in_development": false,
+    "metric_camera_calibration": false,
+    "metric_object_trajectory": false,
+    "measured_contact": false,
+    "simulator_calibration": false,
+    "training_admission": false,
+    "promotion": false,
+    "physical_transfer": false
+  }
+}

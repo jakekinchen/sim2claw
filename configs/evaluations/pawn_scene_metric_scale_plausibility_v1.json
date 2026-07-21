@@ -1,0 +1,94 @@
+{
+  "schema_version": "sim2claw.pawn_scene_metric_scale_plausibility.v1",
+  "purpose": "Test whether the owner-provided IMG_5349 chess workcell video is metrically consistent with the 355.6 mm simulator playing-side hypothesis when conditioned on the nominal printed AprilTag design. This is a physical-plausibility test, not a physical measurement or calibration admission.",
+  "source_bindings": {
+    "source_video_name": "IMG_5349.MOV",
+    "source_video_sha256": "0079c19d5a321dd3613924f4a7e0838a4f99943b0833a0b8bed81a12d303dfa8",
+    "frame_name": "frame-000001.jpg",
+    "frame_sha256": "0ada1e8d9459fd66e826a38e48125a2c3cda611253eeaae4f4b842060d2a1e7d",
+    "image_size_px": [1600, 2844],
+    "real_splat_name": "IMG_5349-primary-real-splat.ply",
+    "real_splat_sha256": "f8f3bfe0a0f1fa13d54e47602dbf43f8e0448178c0e85f0f22a5f2115530443b",
+    "real_splat_count": 334537,
+    "scene_identity_only": true
+  },
+  "camera": {
+    "source": "IMG_5349 exhaustive global SfM fixed OPENCV camera",
+    "width_px": 1600,
+    "height_px": 2844,
+    "fx_px": 1243.0211443987573,
+    "fy_px": 1242.3651074269553,
+    "cx_px": 800.0,
+    "cy_px": 1422.0,
+    "distortion": [-0.0004636091107864625, 0.0004843399343450712, -0.000471167141940296, -0.0002416547618928053],
+    "registered_images": 46,
+    "sparse_points": 5016,
+    "mean_reprojection_error_px": 1.0028417249841144,
+    "intrinsics_are_metric_scale_authority": false
+  },
+  "tag": {
+    "family": "tag36h11",
+    "id": 0,
+    "detected_black_border_nominal_side_m": 0.08,
+    "full_printed_nominal_side_m": 0.1,
+    "nominal_design_source": "source-traced vector PDF design",
+    "physical_print_dimension_measured": false,
+    "detector_downscale": 0.5,
+    "minimum_mean_detected_edge_px": 80.0,
+    "maximum_pnp_reprojection_rms_px": 2.0
+  },
+  "board_grid_measurement": {
+    "method": "reviewed Hough segment families followed by total-least-squares line fits",
+    "gaussian_kernel_px": 5,
+    "canny_low": 35,
+    "canny_high": 100,
+    "hough_rho_px": 1.0,
+    "hough_theta_degrees": 0.5,
+    "hough_threshold": 25,
+    "hough_min_line_length_px": 35,
+    "hough_max_line_gap_px": 20,
+    "segment_assignment_tolerance_px": 10.0,
+    "row_family": {
+      "angle_degrees": [8.0, 30.0],
+      "reference_x_px": 400.0,
+      "intercept_targets_px": [1184.0, 1228.0, 1271.0, 1317.0, 1369.0, 1425.0, 1487.0, 1554.0, 1629.0]
+    },
+    "column_family": {
+      "angle_degrees": [-70.0, -25.0],
+      "reference_y_px": 1400.0,
+      "intercept_targets_px": [61.0, 115.0, 203.0, 282.0, 362.0, 441.0, 517.0, 594.0, 671.0]
+    },
+    "expected_grid_line_count_per_axis": 9
+  },
+  "plane_sensitivity": {
+    "board_surface_above_tag_plane_m": [0.0, 0.016, 0.025],
+    "candidate_height_interval_m": [0.016, 0.025],
+    "height_16mm_source": "existing simulator board thickness estimate",
+    "height_25mm_status": "conservative sensitivity endpoint, not a measurement",
+    "parallel_plane_assumption": true
+  },
+  "candidate_hypotheses": [
+    {
+      "id": "registered_355p6mm",
+      "playing_side_m": 0.3556,
+      "origin": "existing photo and Polycam table-alignment estimate"
+    },
+    {
+      "id": "train_trace_fit_301p3mm",
+      "playing_side_m": 0.3013,
+      "origin": "action-frozen train-event residual optimizer"
+    }
+  ],
+  "decision_thresholds": {
+    "maximum_nominal_tag_rescale_for_consistency_fraction": 0.03,
+    "minimum_nominal_tag_rescale_for_material_inconsistency_fraction": 0.1
+  },
+  "authority": {
+    "direct_physical_measurement": false,
+    "physical_metric_scale": false,
+    "physical_calibration": false,
+    "simulator_parameter_promotion": false,
+    "policy_promotion": false,
+    "physical_transfer": false
+  }
+}

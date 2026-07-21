@@ -1,0 +1,97 @@
+{
+  "schema_version": "sim2claw.pawn_bg_publication_gate.v1",
+  "purpose": "Bind the retained-data, action-frozen B--G fidelity evidence into one publication-safe vector verdict with deterministic episode bootstrap intervals and a fail-closed training gate.",
+  "evidence": [
+    {
+      "id": "action_frozen_train",
+      "path": "runs/pawn-bg-action-frozen-gap-v1/train_fit.json",
+      "schema_version": "sim2claw.pawn_bg_action_frozen_gap_receipt.v1",
+      "role": "regenerated_action_frozen_geometry_diagnostic"
+    },
+    {
+      "id": "action_frozen_confirmation",
+      "path": "runs/pawn-bg-action-frozen-gap-v1/confirmation.json",
+      "schema_version": "sim2claw.pawn_bg_action_frozen_gap_confirmation.v1",
+      "role": "already_opened_regression_only"
+    },
+    {
+      "id": "policy_replay",
+      "path": "runs/pawn-bg-action-frozen-gap-v1/policy_action_replay.json",
+      "schema_version": "sim2claw.pawn_bg_action_frozen_policy_replay.v1",
+      "role": "separate_retained_policy_failure_lane"
+    },
+    {
+      "id": "metric_scale",
+      "path": "outputs/pawn_scene_metric_scale_plausibility_v1/metric_scale_plausibility_receipt.json",
+      "schema_version": "sim2claw.pawn_scene_metric_scale_plausibility_receipt.v1",
+      "role": "nominal_print_conditioned_scale_plausibility"
+    },
+    {
+      "id": "endpoint_motion",
+      "path": "outputs/pawn_bg_endpoint_motion_v1/train/endpoint_motion_receipt.json",
+      "schema_version": "sim2claw.pawn_bg_endpoint_motion_receipt.v1",
+      "role": "training_only_contact_interval_bounds"
+    },
+    {
+      "id": "timing",
+      "path": "outputs/pawn_bg_timing_ablation_v1/timing_ablation_receipt.json",
+      "schema_version": "sim2claw.pawn_bg_timing_ablation_receipt.v1",
+      "role": "episode_cross_validated_timing_diagnostic"
+    },
+    {
+      "id": "reset_reference",
+      "path": "outputs/pawn_bg_reset_reference_v1/reset_reference_receipt.json",
+      "schema_version": "sim2claw.pawn_bg_reset_reference_receipt.v1",
+      "role": "episode_cross_validated_reset_reference_diagnostic"
+    },
+    {
+      "id": "servo_deadband",
+      "path": "outputs/pawn_bg_servo_deadband_v1/servo_deadband_receipt.json",
+      "schema_version": "sim2claw.pawn_bg_servo_deadband_receipt.v1",
+      "role": "episode_cross_validated_actuator_model_diagnostic"
+    },
+    {
+      "id": "contact_sensitivity",
+      "path": "outputs/pawn_bg_contact_sensitivity_v1/contact_sensitivity_receipt.json",
+      "schema_version": "sim2claw.pawn_bg_contact_sensitivity_receipt.v1",
+      "role": "frozen_unmeasured_prior_sensitivity_no_selection"
+    }
+  ],
+  "bootstrap": {
+    "seed": 20072026,
+    "replicates": 10000,
+    "confidence_level": 0.95,
+    "resampling_unit": "whole_episode"
+  },
+  "gates": {
+    "required_product_train_episodes": 11,
+    "minimum_lift_and_transport_episodes_to_open_training": 6,
+    "require_observed_transport_outcome": true,
+    "require_action_invariance": true,
+    "require_timing_diagnostic_acceptance": true,
+    "require_actuator_model_diagnostic_acceptance": true,
+    "require_composite_simulator_candidate": true,
+    "require_fresh_physical_holdout_for_transfer_claim": true
+  },
+  "regeneration_commands": [
+    "uv run --offline python scripts/run_pawn_scene_metric_scale.py",
+    "uv run --offline python scripts/run_pawn_bg_endpoint_motion.py --partition train",
+    "uv run --offline python scripts/run_pawn_bg_action_frozen_gap.py",
+    "uv run --offline python scripts/run_pawn_bg_timing_ablation.py",
+    "uv run --offline python scripts/run_pawn_bg_reset_reference.py",
+    "uv run --offline python scripts/run_pawn_bg_servo_deadband.py",
+    "uv run --offline python scripts/run_pawn_bg_contact_sensitivity.py",
+    "uv run --offline python scripts/run_pawn_bg_publication_gate.py"
+  ],
+  "authority": {
+    "physical_calibration": false,
+    "physical_metric_scale": false,
+    "contact_parameter_identification": false,
+    "fresh_physical_validation": false,
+    "task_success": false,
+    "training_admission": false,
+    "policy_promotion": false,
+    "simulator_composite_promotion": false,
+    "physical_transfer": false
+  }
+}
