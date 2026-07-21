@@ -2459,6 +2459,28 @@ body[data-view="record"] [data-view-panel="record"] {
   padding-top: 5px;
 }
 
+.grasp-gallery-shortcut {
+  display: inline-grid;
+  place-items: center;
+  min-height: 30px;
+  padding: 0 11px;
+  border: 1px solid color-mix(in srgb, var(--motion) 60%, var(--rule));
+  border-radius: 4px;
+  background: var(--motion-soft);
+  color: #8f2a08;
+  font-family: var(--utility);
+  font-size: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.grasp-gallery-shortcut:hover,
+.grasp-gallery-shortcut:focus-visible {
+  border-color: var(--motion);
+  outline: none;
+}
+
 .replay-mode-switch {
   display: inline-flex;
   align-items: center;
@@ -2554,6 +2576,18 @@ body[data-view="record"] [data-view-panel="record"] {
   border-color: color-mix(in srgb, var(--fail) 35%, var(--rule));
   background: var(--fail-soft);
   color: var(--fail);
+}
+
+.stage-verdict.partial {
+  border-color: color-mix(in srgb, var(--motion) 40%, var(--rule));
+  background: var(--motion-soft);
+  color: #8f2a08;
+}
+
+.stage-verdict.near-miss {
+  border-color: color-mix(in srgb, var(--warn) 35%, var(--rule));
+  background: #f7edd5;
+  color: #76500f;
 }
 
 .detail-button,

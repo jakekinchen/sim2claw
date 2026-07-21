@@ -624,6 +624,7 @@ function mountThumbnail(container, episode, priority = false) {
 }
 
 function episodeSpecialLabel(episode) {
+  if (Number.isInteger(episode.rank)) return `Rank ${String(episode.rank).padStart(2, "0")}`;
   if (episode.case_id === "held_out_evaluation") return "Evaluation";
   if (episode.case_id === "scripted_probe") return "Probe";
   return "";
@@ -2539,6 +2540,10 @@ function restoreRoute() {
   if (route === "tasks" && parts[1] && taskById(parts[1])) {
     setActiveView("replay", { updateRoute: false });
     selectTask(parts[1], { selectLatest: false, updateRoute: false });
+    if (parts[1] === "pawn_bg_ranked_grasp_v3") {
+      const firstRankedEpisode = filteredEpisodes()[0];
+      if (firstRankedEpisode) selectEpisode(firstRankedEpisode.id, { updateRoute: false });
+    }
     return;
   }
   if (route === "episodes" && parts[1] && episodeById(parts[1])) {
