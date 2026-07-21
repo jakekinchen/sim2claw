@@ -7,10 +7,29 @@ UV_BIN="${UV_BIN:-/home/shadeform/.local/bin/uv}"
 
 sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-  cuda-nvcc-12-8 \
+  curl \
   ffmpeg \
   git-lfs \
   libosmesa6
+
+# Some Brev provider images do not preconfigure NVIDIA's CUDA apt repository.
+# Follow the pinned upstream dGPU installer and add the official repository
+# before installing the exact CUDA 12.8 toolkit used by the locked runtime.
+if ! apt-cache show cuda-toolkit-12-8 >/dev/null 2>&1; then
+  ubuntu_version="$(. /etc/os-release && printf '%s' "${VERSION_ID//./}")"
+  case "$(uname -m)" in
+    x86_64) cuda_repo_arch="x86_64" ;;
+    aarch64) cuda_repo_arch="sbsa" ;;
+    *) echo "unsupported CUDA repository architecture: $(uname -m)" >&2; exit 1 ;;
+  esac
+  cuda_keyring_url="https://developer.download.nvidia.com/compute/cuda/repos/ubuntu${ubuntu_version}/${cuda_repo_arch}/cuda-keyring_1.1-1_all.deb"
+  curl -fsSL "$cuda_keyring_url" -o /tmp/cuda-keyring.deb
+  sudo dpkg -i /tmp/cuda-keyring.deb
+  rm /tmp/cuda-keyring.deb
+  sudo apt-get update
+fi
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  cuda-toolkit-12-8
 git lfs install --skip-repo
 
 if [ ! -d "$GROOT_ROOT/.git" ]; then
@@ -35,6 +54,8 @@ if [ ! -x "$UV_BIN" ]; then
   echo "uv executable missing: $UV_BIN" >&2
   exit 1
 fi
+export CUDA_HOME="${CUDA_HOME:-/usr/local/cuda-12.8}"
+export PATH="$CUDA_HOME/bin:$PATH"
 "$UV_BIN" sync --python 3.10
 "$UV_BIN" pip install \
   --python "$GROOT_ROOT/.venv/bin/python" \
