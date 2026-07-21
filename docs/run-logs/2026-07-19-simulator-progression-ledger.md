@@ -45,6 +45,23 @@ working candidate finally produced contact. It has not produced a complete
 pawn move. Its held-out admission is kinematic-only and does not grant policy,
 training, physical-calibration, or physical-motion authority.
 
+## 2026-07-20 dynamics continuation (metric family 3: joint-tracking degrees)
+
+Appended per the required-fields rule; details and receipts in
+`docs/run-logs/2026-07-20-pawn-bg-dynamics-grasp-observability.md`.
+
+| Revision | Proof state | Split | Joint-tracking RMS | Stall reproduction (lift/elbow) | Contact | Full success |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| Frozen candidate, nominal dynamics | working receipt | train | 2.041 deg | 3% / 1% | 9/11 | 0/11 |
+| Global scale fit (gain/damping/force) | working receipt, near-null | train | 2.032 deg | unchanged | not rerun | 0/11 |
+| Per-joint bounded fit (latency identified, 50.6 ms) | working receipt | train | 1.622 deg | 9% / 6% | 9/11 | 0/11 |
+| Per-joint bounded fit | working receipt, held-out reuse labeled (already opened) | held out | 1.640 deg (from 2.132) | 27% / 3% | 2/2 | 0/2 |
+
+The identified latency is the only dynamics parameter the recorded episodes
+support; the hold-sag that gates grasp retention needs either a
+deadband-capable actuator model or measured object trajectories before it can
+be fitted honestly.
+
 ## Policy-loss evidence
 
 Full per-step GR00T histories exist for the nominal 5,000-step chess run, the

@@ -220,6 +220,190 @@ def tracking_metrics(
     }
 
 
+PER_JOINT_BOUNDS = {
+    "command_latency_seconds": (0.0, 0.15),
+    "forcerange_scale": (0.15, 1.5),
+    "frictionloss_nm": (0.0, 0.6),
+    "damping_scale": (0.25, 4.0),
+}
+PER_JOINT_NOMINAL = {
+    "command_latency_seconds": 0.05,
+    "forcerange_scale": 1.0,
+    "frictionloss_nm": 0.052,
+    "damping_scale": 1.0,
+}
+
+
+def _per_joint_parameters_from_vector(x: np.ndarray) -> dict[str, Any]:
+    return {
+        "command_latency_seconds": float(x[0]),
+        "forcerange_scale_per_joint": x[1:6].tolist(),
+        "frictionloss_nm_per_joint": x[6:11].tolist(),
+        "damping_scale_per_joint": x[11:16].tolist(),
+    }
+
+
+def make_per_joint_binding(
+    candidate: WorkcellCandidate, parameters: dict[str, Any]
+) -> dict[str, Any]:
+    """Per-joint variant: absolute frictionloss, per-joint force/damping scales.
+
+    The observed stall evidence (real elbow/lift park degrees away from the
+    command under gravity while the simulated 2.94 Nm servo snaps to it) is
+    only reproducible by lowering the effective torque limit per joint, not by
+    global scales, so this stage owns per-joint parameters. Gripper untouched.
+    """
+
+    binding = build_workcell_model(candidate)
+    model = binding["model"]
+    force = parameters["forcerange_scale_per_joint"]
+    friction = parameters["frictionloss_nm_per_joint"]
+    damping = parameters["damping_scale_per_joint"]
+    for index in range(5):
+        actuator_id = binding["actuator_ids"][index]
+        joint_id = binding["joint_ids"][index]
+        dof = int(model.jnt_dofadr[joint_id])
+        model.actuator_forcerange[actuator_id] *= float(force[index])
+        model.dof_frictionloss[dof] = float(friction[index])
+        model.dof_damping[dof] *= float(damping[index])
+    binding["parameters"] = {
+        "command_latency_seconds": parameters["command_latency_seconds"],
+    }
+    return binding
+
+
+def per_joint_tracking_metrics(
+    episodes: list[TrackedEpisode],
+    candidate: WorkcellCandidate,
+    parameters: dict[str, Any],
+) -> dict[str, Any]:
+    binding = make_per_joint_binding(candidate, parameters)
+    per_joint_sim = np.zeros(5)
+    rows = 0
+    stall_rows = np.zeros(5)
+    stall_reproduced = np.zeros(5)
+    for episode in episodes:
+        sim = simulate_tracking(episode, binding)
+        sim_err = sim[:, :5] - episode.measured[:, :5]
+        per_joint_sim += np.sum(sim_err**2, axis=0)
+        rows += len(episode.timestamps)
+        measured_step = np.abs(np.diff(episode.measured[:, :5], axis=0))
+        command_gap = np.abs(episode.commands[:, :5] - episode.measured[:, :5])
+        stall = np.vstack([
+            np.zeros((1, 5), dtype=bool),
+            (measured_step < np.radians(0.5)) & (command_gap[1:] > np.radians(2.0)),
+        ])
+        sim_gap = np.abs(episode.commands[:, :5] - sim[:, :5])
+        stall_rows += stall.sum(axis=0)
+        stall_reproduced += (stall & (sim_gap > np.radians(2.0))).sum(axis=0)
+    sim_rms = np.degrees(np.sqrt(per_joint_sim / rows))
+    with np.errstate(invalid="ignore", divide="ignore"):
+        repro = stall_reproduced / stall_rows
+    return {
+        "episode_count": len(episodes),
+        "sample_rows": rows,
+        "per_joint_sim_vs_measured_rms_deg": dict(zip(BODY_JOINT_NAMES, sim_rms.tolist())),
+        "overall_sim_vs_measured_rms_deg": float(np.sqrt(np.mean(sim_rms**2))),
+        "per_joint_stall_rows": dict(zip(BODY_JOINT_NAMES, stall_rows.tolist())),
+        "per_joint_stall_reproduction": dict(zip(BODY_JOINT_NAMES, repro.tolist())),
+    }
+
+
+def fit_per_joint_parameters(
+    train: list[TrackedEpisode],
+    candidate: WorkcellCandidate,
+) -> dict[str, Any]:
+    lower = np.concatenate([
+        [PER_JOINT_BOUNDS["command_latency_seconds"][0]],
+        np.full(5, PER_JOINT_BOUNDS["forcerange_scale"][0]),
+        np.full(5, PER_JOINT_BOUNDS["frictionloss_nm"][0]),
+        np.full(5, PER_JOINT_BOUNDS["damping_scale"][0]),
+    ])
+    upper = np.concatenate([
+        [PER_JOINT_BOUNDS["command_latency_seconds"][1]],
+        np.full(5, PER_JOINT_BOUNDS["forcerange_scale"][1]),
+        np.full(5, PER_JOINT_BOUNDS["frictionloss_nm"][1]),
+        np.full(5, PER_JOINT_BOUNDS["damping_scale"][1]),
+    ])
+    x0 = np.concatenate([
+        [PER_JOINT_NOMINAL["command_latency_seconds"]],
+        np.full(5, PER_JOINT_NOMINAL["forcerange_scale"]),
+        np.full(5, PER_JOINT_NOMINAL["frictionloss_nm"]),
+        np.full(5, PER_JOINT_NOMINAL["damping_scale"]),
+    ])
+
+    def residual(x: np.ndarray) -> np.ndarray:
+        parameters = _per_joint_parameters_from_vector(x)
+        binding = make_per_joint_binding(candidate, parameters)
+        blocks = []
+        for episode in train:
+            sim = simulate_tracking(episode, binding)
+            blocks.append((sim[:, :5] - episode.measured[:, :5]).ravel())
+        return np.concatenate(blocks)
+
+    fit = least_squares(
+        residual, x0=x0, bounds=(lower, upper), method="trf",
+        diff_step=0.08, xtol=1e-4, ftol=1e-5, max_nfev=200,
+    )
+    return {
+        "fitted_parameters": _per_joint_parameters_from_vector(fit.x),
+        "optimizer_status": int(fit.status),
+        "optimizer_nfev": int(fit.nfev),
+        "train_cost": float(fit.cost),
+    }
+
+
+def run_per_joint_sysid(
+    *,
+    source_repository_root: Path,
+    workcell_receipt_path: Path,
+    output_path: Path,
+    fit_train_limit: int | None = None,
+) -> dict[str, Any]:
+    candidate = load_candidate(workcell_receipt_path)
+    episodes = load_tracked_episodes(source_repository_root, candidate)
+    train = [episode for episode in episodes if episode.split == "train"]
+    held_out = [episode for episode in episodes if episode.split == "held_out"]
+    fit_train = train[:fit_train_limit] if fit_train_limit else train
+
+    nominal = {
+        "command_latency_seconds": 0.0,
+        "forcerange_scale_per_joint": [1.0] * 5,
+        "frictionloss_nm_per_joint": [0.052] * 5,
+        "damping_scale_per_joint": [1.0] * 5,
+    }
+    baseline_train = per_joint_tracking_metrics(train, candidate, nominal)
+    fit_result = fit_per_joint_parameters(fit_train, candidate)
+    fitted = fit_result["fitted_parameters"]
+    candidate_train = per_joint_tracking_metrics(train, candidate, fitted)
+    baseline_held_out = per_joint_tracking_metrics(held_out, candidate, nominal)
+    candidate_held_out = per_joint_tracking_metrics(held_out, candidate, fitted)
+
+    receipt = {
+        "schema_version": "sim2claw.pawn_bg_per_joint_sysid_receipt.v1",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "workcell_receipt_sha256": sha256_file(workcell_receipt_path),
+        "split_sha256": sha256_file(SPLIT_PATH),
+        "catalog_sha256": sha256_file(CATALOG_PATH),
+        "parameter_bounds": PER_JOINT_BOUNDS,
+        "fit_train_episode_count": len(fit_train),
+        "fit": fit_result,
+        "train_baseline": baseline_train,
+        "train_candidate": candidate_train,
+        "held_out_baseline": baseline_held_out,
+        "held_out_candidate": candidate_held_out,
+        "claim_boundary": (
+            "Per-joint bounded actuator candidate fitted on frozen train split "
+            "joint tracking; held-out split evaluated once. The held-out "
+            "episodes were already opened by the workcell lane and this reuse "
+            "is labeled accordingly. Joint-space evidence only; no promotion."
+        ),
+    }
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+    return receipt
+
+
 def fit_actuator_parameters(
     train: list[TrackedEpisode],
     candidate: WorkcellCandidate,

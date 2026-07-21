@@ -574,6 +574,7 @@ def replay_episode_with_candidate(
     frozen_board_center: tuple[float, float],
     frozen_board_yaw: float,
     contact_variant: Any | None = None,
+    dynamics_parameters: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Command-driven physics replay scored with the frozen reward thresholds.
 
@@ -601,6 +602,22 @@ def replay_episode_with_candidate(
         board_yaw = candidate.board_yaw_relative_to_table_degrees
         adapter = candidate.adapter()
         binding = build_workcell_model(candidate, contact_variant=contact_variant)
+
+    command_latency = 0.0
+    if dynamics_parameters is not None:
+        command_latency = float(
+            dynamics_parameters.get("command_latency_seconds", 0.0)
+        )
+        force = dynamics_parameters["forcerange_scale_per_joint"]
+        friction = dynamics_parameters["frictionloss_nm_per_joint"]
+        damping = dynamics_parameters["damping_scale_per_joint"]
+        for index in range(5):
+            actuator_id = binding["actuator_ids"][index]
+            joint_id = binding["joint_ids"][index]
+            dof = int(binding["model"].jnt_dofadr[joint_id])
+            binding["model"].actuator_forcerange[actuator_id] *= float(force[index])
+            binding["model"].dof_frictionloss[dof] = float(friction[index])
+            binding["model"].dof_damping[dof] *= float(damping[index])
 
     model, data = binding["model"], binding["data"]
     actuator_ids = binding["actuator_ids"]
@@ -662,14 +679,16 @@ def replay_episode_with_candidate(
     clipped_command_rows = 0
     previous_timestamp: float | None = None
     nominal_dt = 1.0 / max(1, int(episode["sample_hz"]))
-    for sample in samples:
+    latency_samples = int(round(command_latency / nominal_dt))
+    for sample_index, sample in enumerate(samples):
         timestamp = float(sample["timestamp_monotonic_seconds"])
         dt = nominal_dt if previous_timestamp is None else timestamp - previous_timestamp
         if not math.isfinite(dt) or dt <= 0.0 or dt > 1.0:
             dt = nominal_dt
         previous_timestamp = timestamp
+        delayed = samples[max(0, sample_index - latency_samples)]
         raw_command = physical_values_to_sim_with_adapter(
-            sample["follower_command_degrees"], bounds[-1], adapter
+            delayed["follower_command_degrees"], bounds[-1], adapter
         )
         command = np.clip(raw_command, bounds[:, 0], bounds[:, 1])
         clipped_command_rows += int(not np.array_equal(raw_command, command))
@@ -700,12 +719,26 @@ def replay_episode_with_candidate(
         action_owner="physical_teleoperator", assistance_used=False,
     )
     contact_rows = sum(int(row["selected_piece_jaw_contact"]) for row in trace)
+    longest_streak = streak = 0
+    carried_rise = 0.0
+    initial_z = trace[0]["piece_position_xyz_m"][2]
+    for row in trace:
+        if row["selected_piece_jaw_contact"]:
+            streak += 1
+            longest_streak = max(longest_streak, streak)
+            carried_rise = max(
+                carried_rise, float(row["piece_position_xyz_m"][2]) - initial_z
+            )
+        else:
+            streak = 0
     return {
         "recording_id": episode["recording_id"],
         "folder_label": episode["folder_label"],
         "skill_id": f"pawn_{source}_to_{destination}",
         "clipped_command_rows": clipped_command_rows,
         "minimum_pinch_to_selected_piece_m": float(minimum_pinch_to_piece),
+        "longest_contact_streak_rows": int(longest_streak),
+        "maximum_rise_while_in_contact_m": float(carried_rise),
         "selected_piece_contact_rows": contact_rows,
         "selected_piece_contact_observed": bool(
             score["gate_results"]["selected_piece_contact_observed"]
