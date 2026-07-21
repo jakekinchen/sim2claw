@@ -1,0 +1,4 @@
+interface:
+  display_name: "Localize Reality Gap"
+  short_description: "Find the first causal sim-data divergence"
+  default_prompt: "Use $localize-gap to rank causal reality-gap hypotheses from the evidence."

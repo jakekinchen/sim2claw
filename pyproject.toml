@@ -24,7 +24,13 @@ dependencies = [
 sim2claw = "sim2claw.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/sim2claw"]
+packages = ["src/sim2claw", "evals"]
 
 [dependency-groups]
 dev = ["pytest>=8"]
+inspect = [
+  "anthropic==0.117.0",
+  "inspect-ai==0.3.248",
+  "inspect-swe==0.2.66",
+  "openai==2.46.0",
+]

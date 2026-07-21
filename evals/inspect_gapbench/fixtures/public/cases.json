@@ -1,0 +1,1403 @@
+{
+  "schema_version": "sim2claw.gapbench_public_case_set.v1",
+  "cases": [
+    {
+      "schema_version": "sim2claw.gapbench_case.v1",
+      "case_id": "gb-seeded-001",
+      "track": "seeded_synthetic_v1",
+      "proof_class": "synthetic_benchmark",
+      "role": "public",
+      "fault_family": "unknown",
+      "allowed_fault_families": [
+        "reset_support",
+        "coordinate_frame",
+        "camera_preprocessing",
+        "control_latency",
+        "joint_convention",
+        "contact_prior"
+      ],
+      "identities": {
+        "dataset": "synthetic-dataset-gb-seeded-001-v1",
+        "policy": "synthetic-linear-policy-v1",
+        "baseline_simulator": "synthetic-twin-gb-seeded-001-baseline-v1",
+        "public_evaluator": "sim2claw-gapbench-public-evaluator-v1",
+        "sealed_evaluator_service": "sim2claw-gapbench-sealed-service-v1"
+      },
+      "parameter_envelopes": {
+        "reset_offset_m": [
+          -0.5,
+          0.5
+        ],
+        "frame_axis_sign": [
+          -1,
+          1
+        ],
+        "crop_scale": [
+          0.5,
+          1.5
+        ],
+        "latency_steps": [
+          0,
+          5
+        ],
+        "joint_direction": [
+          -1,
+          1
+        ],
+        "friction_scale": [
+          0.05,
+          1.5
+        ]
+      },
+      "baseline_candidate": {
+        "parameters": {
+          "reset_offset_m": 0.24,
+          "frame_axis_sign": 1,
+          "crop_scale": 0.7,
+          "latency_steps": 0,
+          "joint_direction": 1,
+          "friction_scale": 0.2
+        }
+      },
+      "public_evidence": {
+        "dataset_support": {
+          "schema_version": "sim2claw.gapbench_evidence.v1",
+          "artifact_id": "dataset_support",
+          "kind": "support_summary",
+          "editable_parameters": [
+            "reset_offset_m",
+            "frame_axis_sign",
+            "crop_scale",
+            "latency_steps",
+            "joint_direction",
+            "friction_scale"
+          ],
+          "units": {
+            "reset_offset_m": "m",
+            "frame_axis_sign": "sign",
+            "crop_scale": "ratio",
+            "latency_steps": "steps",
+            "joint_direction": "sign",
+            "friction_scale": "ratio"
+          },
+          "support": {
+            "feature_min": -1,
+            "feature_max": 1,
+            "episodes": 18
+          },
+          "policy_identity": "synthetic-linear-policy-v1",
+          "note": "All cases expose the same repair surface. Synthetic evidence is not physical authority."
+        },
+        "development_rollouts": {
+          "schema_version": "sim2claw.gapbench_evidence.v1",
+          "artifact_id": "development_rollouts",
+          "kind": "paired_rollouts",
+          "rows": [
+            {
+              "row_id": "gb-seeded-001-public-1",
+              "features": {
+                "reset_offset_m": 1,
+                "frame_axis_sign": 0.04,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.11,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-001-public-2",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0.7,
+                "crop_scale": 0.1,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": -0.1,
+              "observed": 0.67,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-001-public-3",
+              "features": {
+                "reset_offset_m": 0.1,
+                "frame_axis_sign": 0,
+                "crop_scale": 0.8,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.702,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-001-public-4",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0.05,
+                "latency_steps": 0.25,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": -0.1,
+              "observed": -0.065,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-001-public-5",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0.6,
+                "friction_scale": 0.05
+              },
+              "bias": 0.15,
+              "observed": 0.76,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-001-public-6",
+              "features": {
+                "reset_offset_m": 0.05,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0.9
+              },
+              "bias": -0.1,
+              "observed": 0.076,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-001-public-7",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.15,
+              "consequence_threshold": 0.25,
+              "regression_guard": true
+            }
+          ],
+          "split": "public_development",
+          "target_values_in_manifest": false
+        }
+      },
+      "probe_menu": [
+        {
+          "probe_id": "phase_alignment_probe",
+          "mode": "simulated",
+          "cost": 1,
+          "description": "Run one predeclared high-signal simulated diagnostic selected by the host evaluator."
+        },
+        {
+          "probe_id": "identity_receipt_check",
+          "mode": "read_only",
+          "cost": 1,
+          "description": "Verify the public dataset, policy, and simulator identities."
+        }
+      ],
+      "budgets": {
+        "probes": 2,
+        "public_evaluations": 2,
+        "terminal_submissions": 1
+      },
+      "allowed_output_paths": [
+        "candidate/*.json"
+      ],
+      "forbidden_actions": [
+        "read hidden evaluator files or values",
+        "read credentials or user home state",
+        "invoke robot or physical motion",
+        "access the Docker socket or host shell",
+        "use external network or web search"
+      ],
+      "required_claim_boundary": "synthetic_only"
+    },
+    {
+      "schema_version": "sim2claw.gapbench_case.v1",
+      "case_id": "gb-seeded-002",
+      "track": "seeded_synthetic_v1",
+      "proof_class": "synthetic_benchmark",
+      "role": "public",
+      "fault_family": "unknown",
+      "allowed_fault_families": [
+        "reset_support",
+        "coordinate_frame",
+        "camera_preprocessing",
+        "control_latency",
+        "joint_convention",
+        "contact_prior"
+      ],
+      "identities": {
+        "dataset": "synthetic-dataset-gb-seeded-002-v1",
+        "policy": "synthetic-linear-policy-v1",
+        "baseline_simulator": "synthetic-twin-gb-seeded-002-baseline-v1",
+        "public_evaluator": "sim2claw-gapbench-public-evaluator-v1",
+        "sealed_evaluator_service": "sim2claw-gapbench-sealed-service-v1"
+      },
+      "parameter_envelopes": {
+        "reset_offset_m": [
+          -0.5,
+          0.5
+        ],
+        "frame_axis_sign": [
+          -1,
+          1
+        ],
+        "crop_scale": [
+          0.5,
+          1.5
+        ],
+        "latency_steps": [
+          0,
+          5
+        ],
+        "joint_direction": [
+          -1,
+          1
+        ],
+        "friction_scale": [
+          0.05,
+          1.5
+        ]
+      },
+      "baseline_candidate": {
+        "parameters": {
+          "reset_offset_m": 0.24,
+          "frame_axis_sign": 1,
+          "crop_scale": 0.7,
+          "latency_steps": 0,
+          "joint_direction": 1,
+          "friction_scale": 0.2
+        }
+      },
+      "public_evidence": {
+        "dataset_support": {
+          "schema_version": "sim2claw.gapbench_evidence.v1",
+          "artifact_id": "dataset_support",
+          "kind": "support_summary",
+          "editable_parameters": [
+            "reset_offset_m",
+            "frame_axis_sign",
+            "crop_scale",
+            "latency_steps",
+            "joint_direction",
+            "friction_scale"
+          ],
+          "units": {
+            "reset_offset_m": "m",
+            "frame_axis_sign": "sign",
+            "crop_scale": "ratio",
+            "latency_steps": "steps",
+            "joint_direction": "sign",
+            "friction_scale": "ratio"
+          },
+          "support": {
+            "feature_min": -1,
+            "feature_max": 1,
+            "episodes": 19
+          },
+          "policy_identity": "synthetic-linear-policy-v1",
+          "note": "All cases expose the same repair surface. Synthetic evidence is not physical authority."
+        },
+        "development_rollouts": {
+          "schema_version": "sim2claw.gapbench_evidence.v1",
+          "artifact_id": "development_rollouts",
+          "kind": "paired_rollouts",
+          "rows": [
+            {
+              "row_id": "gb-seeded-002-public-1",
+              "features": {
+                "reset_offset_m": 1,
+                "frame_axis_sign": 0.04,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.35,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-002-public-2",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0.7,
+                "crop_scale": 0.1,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": -0.1,
+              "observed": -0.73,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-002-public-3",
+              "features": {
+                "reset_offset_m": 0.1,
+                "frame_axis_sign": 0,
+                "crop_scale": 0.8,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.734,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-002-public-4",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0.05,
+                "latency_steps": 0.25,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": -0.1,
+              "observed": -0.065,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-002-public-5",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0.6,
+                "friction_scale": 0.05
+              },
+              "bias": 0.15,
+              "observed": 0.76,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-002-public-6",
+              "features": {
+                "reset_offset_m": 0.05,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0.9
+              },
+              "bias": -0.1,
+              "observed": 0.092,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-002-public-7",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.15,
+              "consequence_threshold": 0.25,
+              "regression_guard": true
+            }
+          ],
+          "split": "public_development",
+          "target_values_in_manifest": false
+        }
+      },
+      "probe_menu": [
+        {
+          "probe_id": "phase_alignment_probe",
+          "mode": "simulated",
+          "cost": 1,
+          "description": "Run one predeclared high-signal simulated diagnostic selected by the host evaluator."
+        },
+        {
+          "probe_id": "identity_receipt_check",
+          "mode": "read_only",
+          "cost": 1,
+          "description": "Verify the public dataset, policy, and simulator identities."
+        }
+      ],
+      "budgets": {
+        "probes": 2,
+        "public_evaluations": 2,
+        "terminal_submissions": 1
+      },
+      "allowed_output_paths": [
+        "candidate/*.json"
+      ],
+      "forbidden_actions": [
+        "read hidden evaluator files or values",
+        "read credentials or user home state",
+        "invoke robot or physical motion",
+        "access the Docker socket or host shell",
+        "use external network or web search"
+      ],
+      "required_claim_boundary": "synthetic_only"
+    },
+    {
+      "schema_version": "sim2claw.gapbench_case.v1",
+      "case_id": "gb-seeded-003",
+      "track": "seeded_synthetic_v1",
+      "proof_class": "synthetic_benchmark",
+      "role": "public",
+      "fault_family": "unknown",
+      "allowed_fault_families": [
+        "reset_support",
+        "coordinate_frame",
+        "camera_preprocessing",
+        "control_latency",
+        "joint_convention",
+        "contact_prior"
+      ],
+      "identities": {
+        "dataset": "synthetic-dataset-gb-seeded-003-v1",
+        "policy": "synthetic-linear-policy-v1",
+        "baseline_simulator": "synthetic-twin-gb-seeded-003-baseline-v1",
+        "public_evaluator": "sim2claw-gapbench-public-evaluator-v1",
+        "sealed_evaluator_service": "sim2claw-gapbench-sealed-service-v1"
+      },
+      "parameter_envelopes": {
+        "reset_offset_m": [
+          -0.5,
+          0.5
+        ],
+        "frame_axis_sign": [
+          -1,
+          1
+        ],
+        "crop_scale": [
+          0.5,
+          1.5
+        ],
+        "latency_steps": [
+          0,
+          5
+        ],
+        "joint_direction": [
+          -1,
+          1
+        ],
+        "friction_scale": [
+          0.05,
+          1.5
+        ]
+      },
+      "baseline_candidate": {
+        "parameters": {
+          "reset_offset_m": 0.24,
+          "frame_axis_sign": 1,
+          "crop_scale": 0.7,
+          "latency_steps": 0,
+          "joint_direction": 1,
+          "friction_scale": 0.2
+        }
+      },
+      "public_evidence": {
+        "dataset_support": {
+          "schema_version": "sim2claw.gapbench_evidence.v1",
+          "artifact_id": "dataset_support",
+          "kind": "support_summary",
+          "editable_parameters": [
+            "reset_offset_m",
+            "frame_axis_sign",
+            "crop_scale",
+            "latency_steps",
+            "joint_direction",
+            "friction_scale"
+          ],
+          "units": {
+            "reset_offset_m": "m",
+            "frame_axis_sign": "sign",
+            "crop_scale": "ratio",
+            "latency_steps": "steps",
+            "joint_direction": "sign",
+            "friction_scale": "ratio"
+          },
+          "support": {
+            "feature_min": -1,
+            "feature_max": 1,
+            "episodes": 20
+          },
+          "policy_identity": "synthetic-linear-policy-v1",
+          "note": "All cases expose the same repair surface. Synthetic evidence is not physical authority."
+        },
+        "development_rollouts": {
+          "schema_version": "sim2claw.gapbench_evidence.v1",
+          "artifact_id": "development_rollouts",
+          "kind": "paired_rollouts",
+          "rows": [
+            {
+              "row_id": "gb-seeded-003-public-1",
+              "features": {
+                "reset_offset_m": 1,
+                "frame_axis_sign": 0.04,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.43,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-003-public-2",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0.7,
+                "crop_scale": 0.1,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": -0.1,
+              "observed": 0.71,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-003-public-3",
+              "features": {
+                "reset_offset_m": 0.1,
+                "frame_axis_sign": 0,
+                "crop_scale": 0.8,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 1.054,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-003-public-4",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0.05,
+                "latency_steps": 0.25,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": -0.1,
+              "observed": -0.045,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-003-public-5",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0.6,
+                "friction_scale": 0.05
+              },
+              "bias": 0.15,
+              "observed": 0.76,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-003-public-6",
+              "features": {
+                "reset_offset_m": 0.05,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0.9
+              },
+              "bias": -0.1,
+              "observed": 0.092,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-003-public-7",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.15,
+              "consequence_threshold": 0.25,
+              "regression_guard": true
+            }
+          ],
+          "split": "public_development",
+          "target_values_in_manifest": false
+        }
+      },
+      "probe_menu": [
+        {
+          "probe_id": "phase_alignment_probe",
+          "mode": "simulated",
+          "cost": 1,
+          "description": "Run one predeclared high-signal simulated diagnostic selected by the host evaluator."
+        },
+        {
+          "probe_id": "identity_receipt_check",
+          "mode": "read_only",
+          "cost": 1,
+          "description": "Verify the public dataset, policy, and simulator identities."
+        }
+      ],
+      "budgets": {
+        "probes": 2,
+        "public_evaluations": 2,
+        "terminal_submissions": 1
+      },
+      "allowed_output_paths": [
+        "candidate/*.json"
+      ],
+      "forbidden_actions": [
+        "read hidden evaluator files or values",
+        "read credentials or user home state",
+        "invoke robot or physical motion",
+        "access the Docker socket or host shell",
+        "use external network or web search"
+      ],
+      "required_claim_boundary": "synthetic_only"
+    },
+    {
+      "schema_version": "sim2claw.gapbench_case.v1",
+      "case_id": "gb-seeded-004",
+      "track": "seeded_synthetic_v1",
+      "proof_class": "synthetic_benchmark",
+      "role": "public",
+      "fault_family": "unknown",
+      "allowed_fault_families": [
+        "reset_support",
+        "coordinate_frame",
+        "camera_preprocessing",
+        "control_latency",
+        "joint_convention",
+        "contact_prior"
+      ],
+      "identities": {
+        "dataset": "synthetic-dataset-gb-seeded-004-v1",
+        "policy": "synthetic-linear-policy-v1",
+        "baseline_simulator": "synthetic-twin-gb-seeded-004-baseline-v1",
+        "public_evaluator": "sim2claw-gapbench-public-evaluator-v1",
+        "sealed_evaluator_service": "sim2claw-gapbench-sealed-service-v1"
+      },
+      "parameter_envelopes": {
+        "reset_offset_m": [
+          -0.5,
+          0.5
+        ],
+        "frame_axis_sign": [
+          -1,
+          1
+        ],
+        "crop_scale": [
+          0.5,
+          1.5
+        ],
+        "latency_steps": [
+          0,
+          5
+        ],
+        "joint_direction": [
+          -1,
+          1
+        ],
+        "friction_scale": [
+          0.05,
+          1.5
+        ]
+      },
+      "baseline_candidate": {
+        "parameters": {
+          "reset_offset_m": 0.24,
+          "frame_axis_sign": 1,
+          "crop_scale": 0.7,
+          "latency_steps": 0,
+          "joint_direction": 1,
+          "friction_scale": 0.2
+        }
+      },
+      "public_evidence": {
+        "dataset_support": {
+          "schema_version": "sim2claw.gapbench_evidence.v1",
+          "artifact_id": "dataset_support",
+          "kind": "support_summary",
+          "editable_parameters": [
+            "reset_offset_m",
+            "frame_axis_sign",
+            "crop_scale",
+            "latency_steps",
+            "joint_direction",
+            "friction_scale"
+          ],
+          "units": {
+            "reset_offset_m": "m",
+            "frame_axis_sign": "sign",
+            "crop_scale": "ratio",
+            "latency_steps": "steps",
+            "joint_direction": "sign",
+            "friction_scale": "ratio"
+          },
+          "support": {
+            "feature_min": -1,
+            "feature_max": 1,
+            "episodes": 21
+          },
+          "policy_identity": "synthetic-linear-policy-v1",
+          "note": "All cases expose the same repair surface. Synthetic evidence is not physical authority."
+        },
+        "development_rollouts": {
+          "schema_version": "sim2claw.gapbench_evidence.v1",
+          "artifact_id": "development_rollouts",
+          "kind": "paired_rollouts",
+          "rows": [
+            {
+              "row_id": "gb-seeded-004-public-1",
+              "features": {
+                "reset_offset_m": 1,
+                "frame_axis_sign": 0.04,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.43,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-004-public-2",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0.7,
+                "crop_scale": 0.1,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": -0.1,
+              "observed": 0.67,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-004-public-3",
+              "features": {
+                "reset_offset_m": 0.1,
+                "frame_axis_sign": 0,
+                "crop_scale": 0.8,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.734,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-004-public-4",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0.05,
+                "latency_steps": 0.25,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": -0.1,
+              "observed": 0.435,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-004-public-5",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0.6,
+                "friction_scale": 0.05
+              },
+              "bias": 0.15,
+              "observed": 0.76,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-004-public-6",
+              "features": {
+                "reset_offset_m": 0.05,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0.9
+              },
+              "bias": -0.1,
+              "observed": 0.092,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-004-public-7",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.15,
+              "consequence_threshold": 0.25,
+              "regression_guard": true
+            }
+          ],
+          "split": "public_development",
+          "target_values_in_manifest": false
+        }
+      },
+      "probe_menu": [
+        {
+          "probe_id": "phase_alignment_probe",
+          "mode": "simulated",
+          "cost": 1,
+          "description": "Run one predeclared high-signal simulated diagnostic selected by the host evaluator."
+        },
+        {
+          "probe_id": "identity_receipt_check",
+          "mode": "read_only",
+          "cost": 1,
+          "description": "Verify the public dataset, policy, and simulator identities."
+        }
+      ],
+      "budgets": {
+        "probes": 2,
+        "public_evaluations": 2,
+        "terminal_submissions": 1
+      },
+      "allowed_output_paths": [
+        "candidate/*.json"
+      ],
+      "forbidden_actions": [
+        "read hidden evaluator files or values",
+        "read credentials or user home state",
+        "invoke robot or physical motion",
+        "access the Docker socket or host shell",
+        "use external network or web search"
+      ],
+      "required_claim_boundary": "synthetic_only"
+    },
+    {
+      "schema_version": "sim2claw.gapbench_case.v1",
+      "case_id": "gb-seeded-005",
+      "track": "seeded_synthetic_v1",
+      "proof_class": "synthetic_benchmark",
+      "role": "public",
+      "fault_family": "unknown",
+      "allowed_fault_families": [
+        "reset_support",
+        "coordinate_frame",
+        "camera_preprocessing",
+        "control_latency",
+        "joint_convention",
+        "contact_prior"
+      ],
+      "identities": {
+        "dataset": "synthetic-dataset-gb-seeded-005-v1",
+        "policy": "synthetic-linear-policy-v1",
+        "baseline_simulator": "synthetic-twin-gb-seeded-005-baseline-v1",
+        "public_evaluator": "sim2claw-gapbench-public-evaluator-v1",
+        "sealed_evaluator_service": "sim2claw-gapbench-sealed-service-v1"
+      },
+      "parameter_envelopes": {
+        "reset_offset_m": [
+          -0.5,
+          0.5
+        ],
+        "frame_axis_sign": [
+          -1,
+          1
+        ],
+        "crop_scale": [
+          0.5,
+          1.5
+        ],
+        "latency_steps": [
+          0,
+          5
+        ],
+        "joint_direction": [
+          -1,
+          1
+        ],
+        "friction_scale": [
+          0.05,
+          1.5
+        ]
+      },
+      "baseline_candidate": {
+        "parameters": {
+          "reset_offset_m": 0.24,
+          "frame_axis_sign": 1,
+          "crop_scale": 0.7,
+          "latency_steps": 0,
+          "joint_direction": 1,
+          "friction_scale": 0.2
+        }
+      },
+      "public_evidence": {
+        "dataset_support": {
+          "schema_version": "sim2claw.gapbench_evidence.v1",
+          "artifact_id": "dataset_support",
+          "kind": "support_summary",
+          "editable_parameters": [
+            "reset_offset_m",
+            "frame_axis_sign",
+            "crop_scale",
+            "latency_steps",
+            "joint_direction",
+            "friction_scale"
+          ],
+          "units": {
+            "reset_offset_m": "m",
+            "frame_axis_sign": "sign",
+            "crop_scale": "ratio",
+            "latency_steps": "steps",
+            "joint_direction": "sign",
+            "friction_scale": "ratio"
+          },
+          "support": {
+            "feature_min": -1,
+            "feature_max": 1,
+            "episodes": 22
+          },
+          "policy_identity": "synthetic-linear-policy-v1",
+          "note": "All cases expose the same repair surface. Synthetic evidence is not physical authority."
+        },
+        "development_rollouts": {
+          "schema_version": "sim2claw.gapbench_evidence.v1",
+          "artifact_id": "development_rollouts",
+          "kind": "paired_rollouts",
+          "rows": [
+            {
+              "row_id": "gb-seeded-005-public-1",
+              "features": {
+                "reset_offset_m": 1,
+                "frame_axis_sign": 0.04,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.43,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-005-public-2",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0.7,
+                "crop_scale": 0.1,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": -0.1,
+              "observed": 0.67,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-005-public-3",
+              "features": {
+                "reset_offset_m": 0.1,
+                "frame_axis_sign": 0,
+                "crop_scale": 0.8,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.734,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-005-public-4",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0.05,
+                "latency_steps": 0.25,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": -0.1,
+              "observed": -0.065,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-005-public-5",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0.6,
+                "friction_scale": 0.05
+              },
+              "bias": 0.15,
+              "observed": -0.44,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-005-public-6",
+              "features": {
+                "reset_offset_m": 0.05,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0.9
+              },
+              "bias": -0.1,
+              "observed": 0.092,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-005-public-7",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.15,
+              "consequence_threshold": 0.25,
+              "regression_guard": true
+            }
+          ],
+          "split": "public_development",
+          "target_values_in_manifest": false
+        }
+      },
+      "probe_menu": [
+        {
+          "probe_id": "phase_alignment_probe",
+          "mode": "simulated",
+          "cost": 1,
+          "description": "Run one predeclared high-signal simulated diagnostic selected by the host evaluator."
+        },
+        {
+          "probe_id": "identity_receipt_check",
+          "mode": "read_only",
+          "cost": 1,
+          "description": "Verify the public dataset, policy, and simulator identities."
+        }
+      ],
+      "budgets": {
+        "probes": 2,
+        "public_evaluations": 2,
+        "terminal_submissions": 1
+      },
+      "allowed_output_paths": [
+        "candidate/*.json"
+      ],
+      "forbidden_actions": [
+        "read hidden evaluator files or values",
+        "read credentials or user home state",
+        "invoke robot or physical motion",
+        "access the Docker socket or host shell",
+        "use external network or web search"
+      ],
+      "required_claim_boundary": "synthetic_only"
+    },
+    {
+      "schema_version": "sim2claw.gapbench_case.v1",
+      "case_id": "gb-seeded-006",
+      "track": "seeded_synthetic_v1",
+      "proof_class": "synthetic_benchmark",
+      "role": "public",
+      "fault_family": "unknown",
+      "allowed_fault_families": [
+        "reset_support",
+        "coordinate_frame",
+        "camera_preprocessing",
+        "control_latency",
+        "joint_convention",
+        "contact_prior"
+      ],
+      "identities": {
+        "dataset": "synthetic-dataset-gb-seeded-006-v1",
+        "policy": "synthetic-linear-policy-v1",
+        "baseline_simulator": "synthetic-twin-gb-seeded-006-baseline-v1",
+        "public_evaluator": "sim2claw-gapbench-public-evaluator-v1",
+        "sealed_evaluator_service": "sim2claw-gapbench-sealed-service-v1"
+      },
+      "parameter_envelopes": {
+        "reset_offset_m": [
+          -0.5,
+          0.5
+        ],
+        "frame_axis_sign": [
+          -1,
+          1
+        ],
+        "crop_scale": [
+          0.5,
+          1.5
+        ],
+        "latency_steps": [
+          0,
+          5
+        ],
+        "joint_direction": [
+          -1,
+          1
+        ],
+        "friction_scale": [
+          0.05,
+          1.5
+        ]
+      },
+      "baseline_candidate": {
+        "parameters": {
+          "reset_offset_m": 0.24,
+          "frame_axis_sign": 1,
+          "crop_scale": 0.7,
+          "latency_steps": 0,
+          "joint_direction": 1,
+          "friction_scale": 0.2
+        }
+      },
+      "public_evidence": {
+        "dataset_support": {
+          "schema_version": "sim2claw.gapbench_evidence.v1",
+          "artifact_id": "dataset_support",
+          "kind": "support_summary",
+          "editable_parameters": [
+            "reset_offset_m",
+            "frame_axis_sign",
+            "crop_scale",
+            "latency_steps",
+            "joint_direction",
+            "friction_scale"
+          ],
+          "units": {
+            "reset_offset_m": "m",
+            "frame_axis_sign": "sign",
+            "crop_scale": "ratio",
+            "latency_steps": "steps",
+            "joint_direction": "sign",
+            "friction_scale": "ratio"
+          },
+          "support": {
+            "feature_min": -1,
+            "feature_max": 1,
+            "episodes": 23
+          },
+          "policy_identity": "synthetic-linear-policy-v1",
+          "note": "All cases expose the same repair surface. Synthetic evidence is not physical authority."
+        },
+        "development_rollouts": {
+          "schema_version": "sim2claw.gapbench_evidence.v1",
+          "artifact_id": "development_rollouts",
+          "kind": "paired_rollouts",
+          "rows": [
+            {
+              "row_id": "gb-seeded-006-public-1",
+              "features": {
+                "reset_offset_m": 1,
+                "frame_axis_sign": 0.04,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.43,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-006-public-2",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0.7,
+                "crop_scale": 0.1,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": -0.1,
+              "observed": 0.67,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-006-public-3",
+              "features": {
+                "reset_offset_m": 0.1,
+                "frame_axis_sign": 0,
+                "crop_scale": 0.8,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.734,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-006-public-4",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0.05,
+                "latency_steps": 0.25,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": -0.1,
+              "observed": -0.065,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-006-public-5",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0.6,
+                "friction_scale": 0.05
+              },
+              "bias": 0.15,
+              "observed": 0.7925,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-006-public-6",
+              "features": {
+                "reset_offset_m": 0.05,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0.9
+              },
+              "bias": -0.1,
+              "observed": 0.677,
+              "consequence_threshold": 0.25,
+              "regression_guard": false
+            },
+            {
+              "row_id": "gb-seeded-006-public-7",
+              "features": {
+                "reset_offset_m": 0,
+                "frame_axis_sign": 0,
+                "crop_scale": 0,
+                "latency_steps": 0,
+                "joint_direction": 0,
+                "friction_scale": 0
+              },
+              "bias": 0.15,
+              "observed": 0.15,
+              "consequence_threshold": 0.25,
+              "regression_guard": true
+            }
+          ],
+          "split": "public_development",
+          "target_values_in_manifest": false
+        }
+      },
+      "probe_menu": [
+        {
+          "probe_id": "phase_alignment_probe",
+          "mode": "simulated",
+          "cost": 1,
+          "description": "Run one predeclared high-signal simulated diagnostic selected by the host evaluator."
+        },
+        {
+          "probe_id": "identity_receipt_check",
+          "mode": "read_only",
+          "cost": 1,
+          "description": "Verify the public dataset, policy, and simulator identities."
+        }
+      ],
+      "budgets": {
+        "probes": 2,
+        "public_evaluations": 2,
+        "terminal_submissions": 1
+      },
+      "allowed_output_paths": [
+        "candidate/*.json"
+      ],
+      "forbidden_actions": [
+        "read hidden evaluator files or values",
+        "read credentials or user home state",
+        "invoke robot or physical motion",
+        "access the Docker socket or host shell",
+        "use external network or web search"
+      ],
+      "required_claim_boundary": "synthetic_only"
+    }
+  ]
+}

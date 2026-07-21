@@ -1,0 +1,40 @@
+{
+  "schema_version": "sim2claw.gapbench_campaign.v1",
+  "campaign_id": "sim2claw-gapbench-six-case-v1",
+  "proof_class": "synthetic_benchmark",
+  "public_case_source": "evals/inspect_gapbench/fixtures/public/cases.json",
+  "sealed_case_source_env": "SIM2CLAW_GAPBENCH_SEALED_SOURCE",
+  "sealed_case_source_sha256": "04c5d8e077ebcdc0fbee3f6dba1f44063299c8a76d66833bb71bd7c1eace7990",
+  "sealed_case_source_schema": "sim2claw.gapbench_sealed_case_set.v1",
+  "sealed_case_count": 6,
+  "case_ids": [
+    "gb-seeded-001",
+    "gb-seeded-002",
+    "gb-seeded-003",
+    "gb-seeded-004",
+    "gb-seeded-005",
+    "gb-seeded-006"
+  ],
+  "agent_harnesses": [
+    "codex_cli",
+    "claude_code"
+  ],
+  "skills": [
+    "freeze-case",
+    "localize-gap",
+    "design-probe",
+    "implement-repair",
+    "submit-evidence"
+  ],
+  "tools": [
+    "case_status",
+    "read_evidence",
+    "submit_hypotheses",
+    "request_probe",
+    "run_public_evaluation",
+    "submit_candidate"
+  ],
+  "model_calls_authorized": false,
+  "physical_authority": false,
+  "promotion_authority": false
+}

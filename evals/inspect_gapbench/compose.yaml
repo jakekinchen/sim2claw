@@ -1,0 +1,20 @@
+services:
+  default:
+    image: sim2claw-gapbench:0.1.0
+    init: true
+    network_mode: none
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    tmpfs:
+      - /tmp:rw,exec,nosuid,size=256m
+    environment:
+      SIM2CLAW_PROOF_CLASS: synthetic_benchmark
+      SIM2CLAW_PHYSICAL_AUTHORITY: "false"
+    command: ["sleep", "infinity"]
