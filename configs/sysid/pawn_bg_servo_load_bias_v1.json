@@ -1,0 +1,79 @@
+{
+  "schema_version": "sim2claw.pawn_bg_servo_load_bias.v1",
+  "purpose": "Test whether a bounded elbow load-bias torque inside joint-specific servo deadbands explains the remaining pose-dependent stationary residual after timestamp alignment, without changing any policy action value or order.",
+  "source": {
+    "partition": "owner-reviewed product-scope train episodes",
+    "expected_train_episode_count": 11,
+    "expected_already_opened_confirmation_episode_count": 2,
+    "upstream_deadband_receipt": "outputs/pawn_bg_servo_deadband_v1/servo_deadband_receipt.json",
+    "required_application_delay_seconds": 0.11,
+    "baseline_joint_rms_degrees": 1.2955576824267467,
+    "baseline_ee_rms_m": 0.012936396427477485,
+    "baseline_deadband_degrees": {"shoulder_lift": 2.0, "elbow_flex": 2.0}
+  },
+  "residual_hypothesis": {
+    "dominant_joint": "elbow_flex",
+    "observed_selected_baseline_signed_mean_error_degrees": -1.6394297863710963,
+    "observed_selected_baseline_rms_degrees": 2.333801947704865,
+    "observed_signature": "negative pose-dependent bias strongest in stationary load-bearing rows",
+    "candidate_mechanism": "bounded simulator load-bias torque applied on the elbow DOF only while the position servo is inside its declared deadband",
+    "physical_interpretation": "controller/load/compliance model class only; coefficient is not a measured motor, firmware, torque, or gravity-compensation parameter"
+  },
+  "candidate_grid": {
+    "shoulder_lift_deadband_degrees": [1.25, 1.5, 1.75],
+    "elbow_flex_deadband_degrees": [2.0, 2.25, 2.5],
+    "elbow_load_bias_coefficient": [-1.5, -1.25, -1.0, -0.75, -0.5, -0.25, 0.0],
+    "coefficient_semantics": "qfrc_applied[elbow_dof] = coefficient * previous_step_qfrc_bias[elbow_dof] while abs(ctrl_elbow - qpos_elbow) is within the elbow deadband; zero otherwise",
+    "initial_settle_steps": 100
+  },
+  "grouped_cross_validation": {
+    "unit": "whole_episode",
+    "selection_rule": "minimum pooled body-joint RMS among fit candidates satisfying target-joint stall reproduction and fit EE non-regression",
+    "folds": [
+      ["20260719T030059Z-a26f8400", "20260719T031324Z-bf91502b", "20260719T032440Z-f728a18c"],
+      ["20260719T032315Z-d3c3cf0b", "20260719T032531Z-06be393c", "20260719T031615Z-0e058ca2"],
+      ["20260719T032400Z-052d5137", "20260719T031715Z-61ebb199", "20260719T032620Z-0c7e3d86"],
+      ["20260719T030206Z-af661460", "20260719T031813Z-b147b429"]
+    ],
+    "confirmation_selection_use": "none_already_opened_regression_only"
+  },
+  "stall_probe": {
+    "real_stationary_maximum_step_degrees": 0.5,
+    "command_measurement_minimum_gap_degrees": 2.0,
+    "sim_reproduction_minimum_gap_degrees": 2.0,
+    "interpretation": "same-row gap reproduction diagnostic; not calibrated torque, current, or physical stall truth"
+  },
+  "acceptance": {
+    "fit_minimum_stall_reproduction_fraction_per_target_joint": 0.4,
+    "fit_maximum_ee_rms_relative_to_current_baseline": 1.0,
+    "minimum_cross_validated_joint_rms_relative_improvement": 0.05,
+    "maximum_cross_validated_ee_rms_m": 0.012936396427477485,
+    "minimum_cross_validated_stall_reproduction_fraction_per_target_joint": 0.4,
+    "require_all_validation_folds_joint_rms_improve": true,
+    "require_byte_identical_action_arrays": true,
+    "consequence_significance": {
+      "minimum_lift_and_transport_episodes": 6,
+      "minimum_strict_successes": 1
+    }
+  },
+  "action_invariance": {
+    "no_ik_corrections": true,
+    "no_post_policy_offsets": true,
+    "no_corrective_suffix": true,
+    "no_assistance": true,
+    "no_clipping": true,
+    "no_action_value_or_order_changes": true,
+    "only_simulator_servo_and_load_response_changes": true
+  },
+  "authority": {
+    "physical_calibration": false,
+    "physical_torque_identification": false,
+    "physical_gravity_compensation_identification": false,
+    "contact_parameter_identification": false,
+    "task_success": false,
+    "training_admission": false,
+    "policy_promotion": false,
+    "simulator_composite_promotion": false,
+    "physical_transfer": false
+  }
+}
