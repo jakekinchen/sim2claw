@@ -44,6 +44,14 @@ def main() -> int:
         ),
     )
     parser.add_argument("--output", type=Path)
+    parser.add_argument(
+        "--retention-trace",
+        action="store_true",
+        help=(
+            "record source-frame contact geometry, simulated contact forces, "
+            "gripper state, and contact-loss ordering"
+        ),
+    )
     parser.add_argument("--compact", action="store_true")
     args = parser.parse_args()
     if args.parameters_json is not None:
@@ -93,6 +101,7 @@ def main() -> int:
         source_repository_root=REPO_ROOT,
         recording_id=args.recording_id,
         parameters=parameters,
+        retention_trace_enabled=args.retention_trace,
     )
     output = args.output or (
         REPO_ROOT

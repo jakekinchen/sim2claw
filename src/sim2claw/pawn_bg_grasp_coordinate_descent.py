@@ -683,7 +683,7 @@ def _jaw_contact_geometry(
     fixed_jaw_body: int,
     moving_jaw_body: int,
 ) -> dict[str, Any]:
-    contacts: dict[int, list[tuple[np.ndarray, np.ndarray]]] = {
+    contacts: dict[int, list[dict[str, Any]]] = {
         fixed_jaw_body: [],
         moving_jaw_body: [],
     }
@@ -704,8 +704,22 @@ def _jaw_contact_geometry(
         norm = float(np.linalg.norm(normal))
         if norm > 0.0:
             normal = normal / norm
+        constraint_force = np.zeros(6, dtype=np.float64)
+        mujoco.mj_contactForce(model, data, contact_index, constraint_force)
         contacts[jaw_body].append(
-            (np.asarray(contact.pos, dtype=np.float64).copy(), normal.copy())
+            {
+                "position_m": np.asarray(
+                    contact.pos, dtype=np.float64
+                ).copy(),
+                "normal": normal.copy(),
+                # These are MuJoCo constraint-space magnitudes. They diagnose
+                # the simulated mechanism; they are not calibrated force-sensor
+                # measurements and cannot establish physical contact force.
+                "normal_force_n": max(0.0, float(constraint_force[0])),
+                "tangential_force_n": float(
+                    np.linalg.norm(constraint_force[1:3])
+                ),
+            }
         )
     fixed = contacts[fixed_jaw_body]
     moving = contacts[moving_jaw_body]
@@ -713,25 +727,56 @@ def _jaw_contact_geometry(
     maximum_span = 0.0
     maximum_opposition = -1.0
     if bilateral:
-        for fixed_position, fixed_normal in fixed:
-            for moving_position, moving_normal in moving:
+        for fixed_contact in fixed:
+            for moving_contact in moving:
                 maximum_span = max(
                     maximum_span,
-                    float(np.linalg.norm(fixed_position - moving_position)),
+                    float(
+                        np.linalg.norm(
+                            fixed_contact["position_m"]
+                            - moving_contact["position_m"]
+                        )
+                    ),
                 )
                 maximum_opposition = max(
                     maximum_opposition,
-                    float(-np.dot(fixed_normal, moving_normal)),
+                    float(
+                        -np.dot(
+                            fixed_contact["normal"], moving_contact["normal"]
+                        )
+                    ),
                 )
+    fixed_normal_force = float(
+        sum(contact["normal_force_n"] for contact in fixed)
+    )
+    moving_normal_force = float(
+        sum(contact["normal_force_n"] for contact in moving)
+    )
+    fixed_tangential_force = float(
+        sum(contact["tangential_force_n"] for contact in fixed)
+    )
+    moving_tangential_force = float(
+        sum(contact["tangential_force_n"] for contact in moving)
+    )
     return {
         "fixed_contact": bool(fixed),
         "moving_contact": bool(moving),
         "bilateral_contact": bilateral,
+        "fixed_contact_count": len(fixed),
+        "moving_contact_count": len(moving),
         "maximum_contact_span_m": maximum_span,
         "maximum_opposing_normal_score": maximum_opposition,
+        "fixed_normal_force_n": fixed_normal_force,
+        "moving_normal_force_n": moving_normal_force,
+        "total_normal_force_n": fixed_normal_force + moving_normal_force,
+        "fixed_tangential_force_n": fixed_tangential_force,
+        "moving_tangential_force_n": moving_tangential_force,
+        "total_tangential_force_n": (
+            fixed_tangential_force + moving_tangential_force
+        ),
         "mean_contact_position_m": (
             np.mean(
-                [position for position, _normal in fixed + moving], axis=0
+                [contact["position_m"] for contact in fixed + moving], axis=0
             ).tolist()
             if bilateral
             else None
@@ -826,6 +871,121 @@ def _run_length_update(active: bool, current: int, maximum: int) -> tuple[int, i
     return current, max(maximum, current)
 
 
+def _summarize_retention_trace(
+    trace: list[dict[str, Any]], *, lift_threshold_m: float
+) -> dict[str, Any]:
+    """Localize contact loss and drop ordering without changing evaluation."""
+
+    lift_index = next(
+        (
+            index
+            for index, row in enumerate(trace)
+            if bool(row["qualified_bilateral_contact"])
+            and float(row["piece_rise_m"]) >= lift_threshold_m
+        ),
+        None,
+    )
+
+    def event_after(field: str, *, expected: bool) -> int | None:
+        if lift_index is None:
+            return None
+        return next(
+            (
+                index
+                for index in range(lift_index + 1, len(trace))
+                if bool(trace[index][field]) is expected
+            ),
+            None,
+        )
+
+    qualified_loss_index = event_after(
+        "qualified_bilateral_contact", expected=False
+    )
+    bilateral_loss_index = event_after("bilateral_contact", expected=False)
+    first_drop_after_lift_index = (
+        None
+        if lift_index is None
+        else next(
+            (
+                index
+                for index in range(lift_index + 1, len(trace))
+                if float(trace[index]["piece_rise_m"]) < lift_threshold_m
+            ),
+            None,
+        )
+    )
+
+    def first_drop_at_or_after(index: int | None) -> int | None:
+        if index is None:
+            return None
+        return next(
+            (
+                candidate
+                for candidate in range(index, len(trace))
+                if float(trace[candidate]["piece_rise_m"]) < lift_threshold_m
+            ),
+            None,
+        )
+
+    drop_after_qualified_loss_index = first_drop_at_or_after(
+        qualified_loss_index
+    )
+    drop_after_bilateral_loss_index = first_drop_at_or_after(
+        bilateral_loss_index
+    )
+
+    def snapshot(index: int | None) -> dict[str, Any] | None:
+        if index is None:
+            return None
+        return copy.deepcopy(trace[index])
+
+    def before(index: int | None) -> dict[str, Any] | None:
+        if index is None or index <= 0:
+            return None
+        return copy.deepcopy(trace[index - 1])
+
+    def elapsed(start: int | None, end: int | None) -> float | None:
+        if start is None or end is None:
+            return None
+        return float(
+            trace[end]["episode_time_s"] - trace[start]["episode_time_s"]
+        )
+
+    return {
+        "lift_threshold_m": float(lift_threshold_m),
+        "first_qualified_lift": snapshot(lift_index),
+        "pre_qualified_contact_loss": before(qualified_loss_index),
+        "first_qualified_contact_loss_after_lift": snapshot(
+            qualified_loss_index
+        ),
+        "pre_bilateral_contact_loss": before(bilateral_loss_index),
+        "first_bilateral_contact_loss_after_lift": snapshot(
+            bilateral_loss_index
+        ),
+        "first_drop_below_lift_threshold_after_lift": snapshot(
+            first_drop_after_lift_index
+        ),
+        "first_drop_below_lift_threshold_after_qualified_loss": snapshot(
+            drop_after_qualified_loss_index
+        ),
+        "first_drop_below_lift_threshold_after_bilateral_loss": snapshot(
+            drop_after_bilateral_loss_index
+        ),
+        "qualified_lift_to_qualified_loss_seconds": elapsed(
+            lift_index, qualified_loss_index
+        ),
+        "qualified_lift_to_bilateral_loss_seconds": elapsed(
+            lift_index, bilateral_loss_index
+        ),
+        "qualified_loss_to_drop_seconds": elapsed(
+            qualified_loss_index, drop_after_qualified_loss_index
+        ),
+        "bilateral_loss_to_drop_seconds": elapsed(
+            bilateral_loss_index, drop_after_bilateral_loss_index
+        ),
+    }
+
+
 def _run_episode(
     *,
     mapped: dict[str, Any],
@@ -837,6 +997,7 @@ def _run_episode(
     parameters: dict[str, Any],
     contract_path: Path,
     state_trace_output_directory: Path | None = None,
+    retention_trace_enabled: bool = False,
 ) -> dict[str, Any]:
     effective_workcell = replace(
         workcell,
@@ -1141,6 +1302,9 @@ def _run_episode(
         "first_collateral_threshold_crossing": None,
     }
     minimum_pinch = float("inf")
+    retention_trace: list[dict[str, Any]] = []
+    last_retention_source_index: int | None = None
+    last_retention_state_signature: tuple[Any, ...] | None = None
     collateral_threshold = float(
         reward_contract["hard_gates"]["maximum_other_piece_displacement_m"]
     )
@@ -1149,6 +1313,8 @@ def _run_episode(
         *, episode_time_s: float, source_index: int | None, replay_phase: str
     ) -> None:
         nonlocal minimum_pinch
+        nonlocal last_retention_source_index
+        nonlocal last_retention_state_signature
         piece_position = np.asarray(data.xpos[selected_body], dtype=np.float64)
         pinch = _pinch_point(model, data, "left", pinch_local)
         minimum_pinch = min(
@@ -1191,7 +1357,8 @@ def _run_episode(
             if rise >= lift_threshold
             else (
                 "after_qualified_grasp"
-                if dense["first_qualified_local_piece_offset"] is not None
+                if qualified
+                or dense["first_qualified_local_piece_offset"] is not None
                 else replay_phase
             )
         )
@@ -1296,10 +1463,10 @@ def _run_episode(
                 dense["maximum_post_grasp_slip_m"],
                 float(np.linalg.norm(local_offset - first_offset)),
             )
+        target_distance = float(
+            np.linalg.norm(piece_position[:2] - target_xyz[:2])
+        )
         if rise >= lift_threshold and initial_target_distance > 0.0:
-            target_distance = float(
-                np.linalg.norm(piece_position[:2] - target_xyz[:2])
-            )
             progress = float(
                 np.clip(
                     (initial_target_distance - target_distance)
@@ -1311,6 +1478,119 @@ def _run_episode(
             dense["maximum_transport_progress_after_lift"] = max(
                 dense["maximum_transport_progress_after_lift"], progress
             )
+        if retention_trace_enabled:
+            state_signature = (
+                bool(contact["fixed_contact"]),
+                bool(contact["moving_contact"]),
+                qualified,
+                rise >= lift_threshold,
+                mechanism_phase,
+            )
+            if (
+                source_index != last_retention_source_index
+                or state_signature != last_retention_state_signature
+            ):
+                resolved_source_index = (
+                    None
+                    if source_index is None
+                    else int(np.clip(source_index, 0, len(mapped["actions"]) - 1))
+                )
+                mean_contact = contact["mean_contact_position_m"]
+                retention_trace.append(
+                    {
+                        "episode_time_s": float(episode_time_s),
+                        "source_index": resolved_source_index,
+                        "replay_phase": replay_phase,
+                        "mechanism_phase": mechanism_phase,
+                        "piece_rise_m": rise,
+                        "piece_position_xyz_m": piece_position.astype(
+                            float
+                        ).tolist(),
+                        "piece_linear_speed_m_s": float(
+                            np.linalg.norm(
+                                data.qvel[selected_dof : selected_dof + 3]
+                            )
+                        ),
+                        "piece_angular_speed_rad_s": float(
+                            np.linalg.norm(
+                                data.qvel[selected_dof + 3 : selected_dof + 6]
+                            )
+                        ),
+                        "target_distance_m": target_distance,
+                        "pinch_position_xyz_m": pinch.astype(float).tolist(),
+                        "pinch_to_piece_m": float(
+                            np.linalg.norm(pinch - piece_position)
+                        ),
+                        "piece_offset_in_fixed_tip_frame_xyz_m": (
+                            local_offset.astype(float).tolist()
+                        ),
+                        "fixed_contact": bool(contact["fixed_contact"]),
+                        "moving_contact": bool(contact["moving_contact"]),
+                        "bilateral_contact": bilateral,
+                        "qualified_bilateral_contact": qualified,
+                        "fixed_contact_count": int(
+                            contact["fixed_contact_count"]
+                        ),
+                        "moving_contact_count": int(
+                            contact["moving_contact_count"]
+                        ),
+                        "maximum_contact_span_m": float(
+                            contact["maximum_contact_span_m"]
+                        ),
+                        "maximum_opposing_normal_score": float(
+                            contact["maximum_opposing_normal_score"]
+                        ),
+                        "mean_contact_position_xyz_m": mean_contact,
+                        "contact_height_relative_piece_center_m": (
+                            None
+                            if mean_contact is None
+                            else float(mean_contact[2] - piece_position[2])
+                        ),
+                        "fixed_normal_force_n": float(
+                            contact["fixed_normal_force_n"]
+                        ),
+                        "moving_normal_force_n": float(
+                            contact["moving_normal_force_n"]
+                        ),
+                        "total_normal_force_n": float(
+                            contact["total_normal_force_n"]
+                        ),
+                        "fixed_tangential_force_n": float(
+                            contact["fixed_tangential_force_n"]
+                        ),
+                        "moving_tangential_force_n": float(
+                            contact["moving_tangential_force_n"]
+                        ),
+                        "total_tangential_force_n": float(
+                            contact["total_tangential_force_n"]
+                        ),
+                        "simulated_gripper_qpos_rad": float(
+                            data.qpos[qpos_addresses[-1]]
+                        ),
+                        "simulated_gripper_qvel_rad_s": float(
+                            data.qvel[dof_addresses[-1]]
+                        ),
+                        "simulated_gripper_ctrl_rad": float(
+                            data.ctrl[actuator_ids[-1]]
+                        ),
+                        "source_commanded_gripper_rad": (
+                            None
+                            if resolved_source_index is None
+                            else float(
+                                mapped["actions"][resolved_source_index, -1]
+                            )
+                        ),
+                        "source_measured_gripper_rad": (
+                            None
+                            if resolved_source_index is None
+                            else float(
+                                mapped["measured"][resolved_source_index, -1]
+                            )
+                        ),
+                    }
+                )
+                last_retention_source_index = source_index
+                last_retention_state_signature = state_signature
 
     trace = [trace_row()]
     observe_dense(episode_time_s=0.0, source_index=0, replay_phase="initial")
@@ -1555,6 +1835,13 @@ def _run_episode(
         retained_seconds
         >= float(thresholds["minimum_bilateral_lift_retention_seconds"])
     )
+    retention_event_summary = (
+        _summarize_retention_trace(
+            retention_trace, lift_threshold_m=lift_threshold
+        )
+        if retention_trace_enabled
+        else None
+    )
     return {
         "recording_id": str(mapped["episode"]["recording_id"]),
         "folder_label": str(mapped["episode"]["folder_label"]),
@@ -1671,6 +1958,21 @@ def _run_episode(
         "trace_metrics": trace_metrics,
         "gripper_trace_metrics": gripper_trace,
         "event_aligned_gripper_metrics": event_aligned_gripper,
+        "retention_trace_enabled": retention_trace_enabled,
+        "retention_trace_semantics": {
+            "sampling": (
+                "source-frame changes plus contact, lift-gate, and replay-phase "
+                "transitions"
+            ),
+            "contact_force": (
+                "MuJoCo constraint-space magnitudes for simulator diagnosis; "
+                "not calibrated sensor measurements"
+            ),
+            "source_actions_mutated": False,
+            "metric_or_physical_authority": False,
+        },
+        "retention_event_summary": retention_event_summary,
+        "retention_trace": retention_trace if retention_trace_enabled else None,
         "load_sensitive_gripper_response": {
             "piece_contact_force_limit_multiplier": float(
                 parameters.get(
@@ -1966,6 +2268,7 @@ def run_grasp_episode_probe(
     parameters: dict[str, Any],
     contract_path: Path = CONTRACT_PATH,
     state_trace_output_directory: Path | None = None,
+    retention_trace_enabled: bool = False,
 ) -> dict[str, Any]:
     """Replay one retained episode with diagnostic mechanism instrumentation."""
 
@@ -2002,6 +2305,7 @@ def run_grasp_episode_probe(
         parameters=copy.deepcopy(parameters),
         contract_path=contract_path,
         state_trace_output_directory=state_trace_output_directory,
+        retention_trace_enabled=retention_trace_enabled,
     )
     receipt = {
         "schema_version": "sim2claw.pawn_bg_grasp_episode_probe.v1",
