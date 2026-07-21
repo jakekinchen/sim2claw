@@ -1,0 +1,93 @@
+{
+  "schema_version": "sim2claw.similar_scene_revalidation_protocol.v1",
+  "protocol_id": "sim2claw-similar-scene-revalidation-20260720-v1",
+  "status": "protocol_only_not_authorized_for_setup_capture_or_motion",
+  "purpose": "Use the same SO-101 hardware in a recreated or similar chess scene to validate retrospective interaction proxies and future simulator transfer without rewriting the retired workcell evidence.",
+  "identity_decision": {
+    "same_workcell_requires_all": [
+      "same_robot_hardware_and_servo_identity",
+      "same_gripper_tip_hardware_profile",
+      "same_board_physical_identity_and_square_dimensions",
+      "same_board_to_robot_transform_with_independent_measurement",
+      "same_camera_hardware_intrinsics_extrinsics_and_mounts",
+      "same table and fixture geometry",
+      "same control firmware calibration and joint mapping"
+    ],
+    "default_when_any_item_is_unknown": "new_related_workcell",
+    "old_and_new_evidence_may_be_pooled_automatically": false,
+    "new_workcell_requires_separate_profile_split_and_evaluator": true
+  },
+  "high_signal_minimum_collection": {
+    "static_identity": [
+      "robot and servo identifiers",
+      "firmware versions and calibration hashes",
+      "gripper-tip photographs and measured aperture",
+      "board dimensions identity and fiducial layout",
+      "camera identifiers modes intrinsics extrinsics and orientation",
+      "wide setup photographs and measured board-to-base transform"
+    ],
+    "read_only_baseline": [
+      "joint positions velocities and raw current at rest",
+      "camera timestamp alignment target",
+      "board and object detections without motion"
+    ],
+    "empty_gripper_baseline_after_motion_authorization": {
+      "cycles": 5,
+      "signals": [
+        "commanded and measured aperture",
+        "velocity",
+        "fresh-read current with explicit read timestamp",
+        "command-write bus-ack and observation timestamps",
+        "synchronized overhead and side or depth frames"
+      ],
+      "purpose": "Separate object-loaded closure from mechanical hard-stop and controller-load signatures.",
+      "task_motion": false
+    },
+    "three_task_scenarios_after_separate_authorization": [
+      {
+        "scenario": "interior_vertical",
+        "retired_reference": "c2_to_c1",
+        "new_scene_coordinates_must_be_measured": true
+      },
+      {
+        "scenario": "edge_vertical",
+        "retired_reference": "g1_to_g2",
+        "new_scene_coordinates_must_be_measured": true
+      },
+      {
+        "scenario": "horizontal",
+        "retired_reference": "e1_to_f1",
+        "new_scene_coordinates_must_be_measured": true
+      }
+    ]
+  },
+  "required_new_observables": [
+    "per-read motor-current timestamp and freshness",
+    "command-write timestamp",
+    "bus-ack timestamp",
+    "joint-observation timestamp",
+    "camera-capture timestamp",
+    "metric board registration",
+    "metric object keypoints or pose with uncertainty",
+    "empty-close reference",
+    "operator and policy identity",
+    "success and failure consequence labels"
+  ],
+  "promotion_gates": [
+    "new source bytes are immutable and hash bound",
+    "train validation and held-out episodes are frozen before fitting",
+    "exact replay uses approved transforms and no clipping",
+    "event proxy is validated against independently annotated video or instrumentation",
+    "candidate simulator improves event-conditioned held-out fidelity",
+    "physical transfer is evaluated only in the new workcell under separate authority"
+  ],
+  "authority": {
+    "physical_setup_authorized": false,
+    "camera_capture_authorized": false,
+    "robot_motion_authorized": false,
+    "empty_gripper_motion_authorized": false,
+    "task_execution_authorized": false,
+    "training_admission": false,
+    "promotion_authority": false
+  }
+}
