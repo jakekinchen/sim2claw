@@ -6,6 +6,10 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .corrective_intervention import (
+    validate_compiled_trajectory,
+    validate_intervention_proposal,
+)
 from .learning_factory_artifacts import atomic_write_json, canonical_digest, sha256_file
 from .pawn_source_evaluator import evaluate_source_episode
 from .source_episode import adapt_source_episode, load_source_episode
@@ -13,6 +17,7 @@ from .source_episode import adapt_source_episode, load_source_episode
 
 REGISTRY_SCHEMA = "sim2claw.factory_counterexample_registry.v2"
 CORRECTION_SCHEMA = "sim2claw.factory_correction_candidate.v1"
+LLM_INTERVENTION_SCHEMA = "sim2claw.corrective_intervention_lineage.v1"
 
 
 CALIBRATION_FAILURES = {
@@ -56,6 +61,61 @@ def _validate_evaluation(evaluation: dict[str, Any]) -> None:
         raise ValueError("counterexample source evaluation digest mismatch")
     if evaluation.get("evaluator_owner") != "separate_cpu_fp32_consequence_evaluator":
         raise ValueError("counterexample source is not evaluator-owned")
+
+
+def _validate_llm_compiled_intervention_rows(
+    intervention: dict[str, Any],
+    *,
+    source_rows: list[dict[str, Any]],
+    suffix_start: int,
+    suffix_end: int,
+) -> None:
+    """Bind v1 LLM proposal bytes to the canonical corrective episode rows."""
+
+    if intervention.get("schema_version") != LLM_INTERVENTION_SCHEMA:
+        return
+    if intervention.get("llm_direct_control") is not False:
+        raise ValueError("LLM intervention improperly owns direct control")
+    if intervention.get("owner") != "geometric_expert":
+        raise ValueError("LLM proposal must compile through the geometric expert")
+    proposal_path = Path(str(intervention.get("proposal_path") or "")).resolve()
+    compiled_path = Path(
+        str(intervention.get("compiled_trajectory_path") or "")
+    ).resolve()
+    if (
+        not proposal_path.is_file()
+        or sha256_file(proposal_path) != intervention.get("proposal_sha256")
+    ):
+        raise ValueError("LLM intervention proposal evidence is missing or changed")
+    if (
+        not compiled_path.is_file()
+        or sha256_file(compiled_path)
+        != intervention.get("compiled_trajectory_sha256")
+    ):
+        raise ValueError("LLM intervention compiled evidence is missing or changed")
+    proposal = json.loads(proposal_path.read_text(encoding="utf-8"))
+    compiled = json.loads(compiled_path.read_text(encoding="utf-8"))
+    proposal = validate_intervention_proposal(proposal)
+    compiled = validate_compiled_trajectory(compiled)
+    if compiled["proposal_sha256"] != canonical_digest(proposal):
+        raise ValueError("compiled intervention references another LLM proposal")
+    actions = compiled["actions_rad"]
+    if int(intervention.get("compiled_action_count", -1)) != len(actions):
+        raise ValueError("intervention action count differs from compiled evidence")
+    if suffix_start + len(actions) > suffix_end:
+        raise ValueError("compiled intervention escapes the admitted suffix")
+    episode_actions = [
+        row["action"]["joint_target_rad"]
+        for row in source_rows[suffix_start : suffix_start + len(actions)]
+    ]
+    if episode_actions != actions:
+        raise ValueError("compiled intervention actions differ from corrective episode rows")
+    for row in source_rows[suffix_start : suffix_start + len(actions)]:
+        if (
+            row["action"].get("owner") != "geometric_expert"
+            or int(row["action"].get("intervention", 0)) != 1
+        ):
+            raise ValueError("compiled intervention row ownership or marker changed")
 
 
 def _route(failure_codes: list[str]) -> list[str]:
@@ -250,6 +310,12 @@ def admit_correction_candidate(
         raise ValueError("correction branch state differs from replay state")
     if int(intervention.get("start_sample_index", -1)) != start:
         raise ValueError("correction intervention starts at another sample")
+    _validate_llm_compiled_intervention_rows(
+        intervention,
+        source_rows=source_rows,
+        suffix_start=start,
+        suffix_end=end,
+    )
     evidence_bindings = {
         "parent_counterexample_id": parent_id,
         "failed_prefix_sha256": artifacts["failed_prefix"]["sha256"],

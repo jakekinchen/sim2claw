@@ -14,7 +14,7 @@ import sys
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping, Sequence
 
 import mujoco
 import numpy as np
@@ -27,6 +27,7 @@ from .grasp import (
     _pinch_point,
     _solve_reach,
 )
+from .learning_factory_artifacts import canonical_digest
 from .paths import REPO_ROOT
 from .render import write_rgb_png
 from .scene import (
@@ -147,6 +148,8 @@ def collect_pawn_source_expert_candidate(
     output_directory: Path,
     *,
     render_size: int = 224,
+    corrective_action_overrides: Mapping[int, Sequence[float]] | None = None,
+    correction_lineage: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Write the bounded current-scene source candidate.
 
@@ -163,6 +166,55 @@ def collect_pawn_source_expert_candidate(
         raise ValueError("the frozen expert destination is no longer declared")
     if render_size < 64:
         raise ValueError("source RGB render size must be at least 64 pixels")
+
+    normalized_overrides: dict[int, np.ndarray] = {}
+    if corrective_action_overrides is not None:
+        for index, raw_action in corrective_action_overrides.items():
+            if type(index) is not int or not 0 <= index < expected_action_count():
+                raise ValueError("corrective action override index is invalid")
+            action = np.asarray(raw_action, dtype=np.float32)
+            if action.shape != (6,) or not np.isfinite(action).all():
+                raise ValueError("corrective action override must be a finite six-vector")
+            normalized_overrides[index] = action
+    if normalized_overrides:
+        indices = sorted(normalized_overrides)
+        if len(indices) > 20 or indices != list(range(indices[0], indices[-1] + 1)):
+            raise ValueError("corrective action overrides must be one contiguous 20-row-or-shorter suffix segment")
+        if not isinstance(correction_lineage, Mapping):
+            raise ValueError("corrective action overrides require immutable correction lineage")
+        required_lineage = {
+            "parent_counterexample_id",
+            "parent_source_episode_id",
+            "branch_state_sha256",
+            "proposal_sha256",
+            "compiled_trajectory_sha256",
+            "intervention_start_sample_index",
+            "intervention_end_sample_index_exclusive",
+        }
+        if set(correction_lineage) != required_lineage:
+            raise ValueError("corrective action lineage keys differ")
+        for field in (
+            "parent_counterexample_id",
+            "parent_source_episode_id",
+        ):
+            if not isinstance(correction_lineage[field], str) or not correction_lineage[field]:
+                raise ValueError(f"corrective action lineage lacks {field}")
+        for field in (
+            "branch_state_sha256",
+            "proposal_sha256",
+            "compiled_trajectory_sha256",
+        ):
+            digest = correction_lineage[field]
+            if not isinstance(digest, str) or len(digest) != 64:
+                raise ValueError(f"corrective action lineage has invalid {field}")
+        if (
+            correction_lineage["intervention_start_sample_index"] != indices[0]
+            or correction_lineage["intervention_end_sample_index_exclusive"]
+            != indices[-1] + 1
+        ):
+            raise ValueError("corrective action lineage range differs from overrides")
+    elif correction_lineage is not None:
+        raise ValueError("correction lineage without corrective actions is forbidden")
 
     output_directory = output_directory.resolve()
     if output_directory.exists():
@@ -365,12 +417,20 @@ def collect_pawn_source_expert_candidate(
     def execute_action(action: np.ndarray, phase: str) -> None:
         nonlocal maximum_piece_height
         sample_index = len(rows)
-        float32_action = np.asarray(action, dtype=np.float32)
+        intervention = sample_index in normalized_overrides
+        float32_action = np.asarray(
+            normalized_overrides[sample_index] if intervention else action,
+            dtype=np.float32,
+        )
         if float32_action.shape != (6,) or not np.isfinite(float32_action).all():
             raise ValueError("expert emitted an invalid action")
         clipped = np.clip(
             float32_action, bounds[:, 0], bounds[:, 1]
         ).astype(np.float64)
+        if intervention and not np.array_equal(
+            clipped.astype(np.float32), float32_action
+        ):
+            raise ValueError("corrective action override would require clipping")
         contacts: dict[tuple[str, str], dict[str, Any]] = {}
         data.ctrl[actuator_ids] = clipped
         for substep in range(PHYSICS_STEPS_PER_ACTION):
@@ -429,8 +489,17 @@ def collect_pawn_source_expert_candidate(
                 "contacts": list(contacts.values()),
                 "simulator_events": [
                     {
-                        "type": "expert_phase",
+                        "type": (
+                            "corrective_intervention"
+                            if intervention
+                            else "expert_phase"
+                        ),
                         "phase": phase,
+                        "proposal_sha256": (
+                            correction_lineage["proposal_sha256"]
+                            if intervention and correction_lineage is not None
+                            else None
+                        ),
                         "phase_start": (
                             not rows or rows[-1].get("expert_phase") != phase
                         ),
@@ -440,7 +509,7 @@ def collect_pawn_source_expert_candidate(
             rgb=rgb,
             action_owner="geometric_expert",
             assistance=False,
-            intervention=False,
+            intervention=intervention,
         )
         rows.append(row)
         privileged_rows.append(
@@ -630,13 +699,25 @@ def collect_pawn_source_expert_candidate(
         "recording_id": recording_id,
         "label": (
             f"tan pawn {SOURCE_SQUARE} to {DESTINATION_SQUARE} "
-            "scene-v3 geometric expert"
+            + (
+                "scene-v3 corrective geometric expert"
+                if normalized_overrides
+                else "scene-v3 geometric expert"
+            )
         ),
         "skill": "full_episode",
         "outcome_label": "pending_independent_evaluator",
         "task_id": contract["contract_id"],
-        "mode": "simulation_geometric_expert",
-        "proof_class": "simulation_geometric_expert_source_candidate",
+        "mode": (
+            "simulation_geometric_expert_corrective_candidate"
+            if normalized_overrides
+            else "simulation_geometric_expert"
+        ),
+        "proof_class": (
+            "simulation_corrective_source_candidate"
+            if normalized_overrides
+            else "simulation_geometric_expert_source_candidate"
+        ),
         "piece_id": SOURCE_PIECE_ID,
         "piece_type": "pawn",
         "piece_color": "tan",
@@ -685,7 +766,21 @@ def collect_pawn_source_expert_candidate(
         "language_instruction": instruction,
         "source_identity": {
             "kind": "deterministic_geometric_expert",
-            "mechanism_id": EXPERT_MECHANISM_ID,
+            "mechanism_id": (
+                f"{EXPERT_MECHANISM_ID}+bounded_corrective_override_v1"
+                if normalized_overrides
+                else EXPERT_MECHANISM_ID
+            ),
+            "corrective_action_overrides_sha256": (
+                canonical_digest(
+                    {
+                        str(index): action.astype(float).tolist()
+                        for index, action in sorted(normalized_overrides.items())
+                    }
+                )
+                if normalized_overrides
+                else None
+            ),
             "generator_path": "src/sim2claw/pawn_source_expert.py",
             "generator_sha256": sha256_file(Path(__file__)),
             "source_episode_module_sha256": sha256_file(
@@ -702,13 +797,38 @@ def collect_pawn_source_expert_candidate(
         "checkpoint_identity": None,
         "action_owner": "geometric_expert",
         "assistance_frames": 0,
-        "intervention_frames": 0,
-        "lineage": {
-            "parent_source_episode_id": None,
-            "failed_prefix_source_episode_id": None,
-            "corrective_suffix_parent_state_sha256": None,
-            "collection_kind": "original_source_episode",
-        },
+        "intervention_frames": len(normalized_overrides),
+        "lineage": (
+            {
+                "parent_source_episode_id": correction_lineage[
+                    "parent_source_episode_id"
+                ],
+                "failed_prefix_source_episode_id": correction_lineage[
+                    "parent_counterexample_id"
+                ],
+                "corrective_suffix_parent_state_sha256": correction_lineage[
+                    "branch_state_sha256"
+                ],
+                "proposal_sha256": correction_lineage["proposal_sha256"],
+                "compiled_trajectory_sha256": correction_lineage[
+                    "compiled_trajectory_sha256"
+                ],
+                "intervention_start_sample_index": correction_lineage[
+                    "intervention_start_sample_index"
+                ],
+                "intervention_end_sample_index_exclusive": correction_lineage[
+                    "intervention_end_sample_index_exclusive"
+                ],
+                "collection_kind": "corrective_suffix_candidate",
+            }
+            if normalized_overrides and correction_lineage is not None
+            else {
+                "parent_source_episode_id": None,
+                "failed_prefix_source_episode_id": None,
+                "corrective_suffix_parent_state_sha256": None,
+                "collection_kind": "original_source_episode",
+            }
+        ),
         "execution": {
             "action_representation": "absolute_joint_position_target",
             "action_dtype": "float32",
@@ -729,6 +849,12 @@ def collect_pawn_source_expert_candidate(
             "transit_path": "cartesian_waypoints_with_previous_planned_ik_seed",
             "capture_guard_minimum_current_rise_m": 0.04,
             "vertical_extract_m": 0.08,
+            "corrective_override_start_sample_index": (
+                min(normalized_overrides) if normalized_overrides else None
+            ),
+            "corrective_override_end_sample_index_exclusive": (
+                max(normalized_overrides) + 1 if normalized_overrides else None
+            ),
         },
         "generator_diagnostics_not_evaluator_authority": {
             "maximum_piece_rise_m": maximum_piece_height
