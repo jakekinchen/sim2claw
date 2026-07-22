@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02E COMPLETE; B2-02F IN PROGRESS`
+Status: `ACTIVE — B2-02F COMPLETE; B2-02G IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -21,7 +21,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02C | complete, terminal negative | direct 2x cap preserved C2 transport and 100% rubber load path but lost at frame 299 with 3.01 degree overclosure |
 | B2-02D | complete, terminal negative | force-friction cross exposed contact-trigger chatter; no full pass |
 | B2-02E | complete, terminal negative | latch earns retained transport through release at force 0.04 but fails aperture, slip, and rubber-path gates |
-| B2-02F | in progress | continuous fixed wrap across box4--box6 crossed narrowly around the force 0.02 aperture frontier |
+| B2-02F | complete, terminal negative | long wrap earns retained transport to frame 523 but overlapping rigid collision still bypasses rubber |
+| B2-02G | in progress | rubber collision skin encloses collision-disabled core primitives; narrow torque cross frozen |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -91,3 +92,12 @@ aperture and slip with 97.7% rubber participation but loses at frame 280.
 B2-02F covers the newly observed fixed box4 bypass with one continuous wrap
 spanning the distal box4--box6 stack and searches only the narrow force range
 around the aperture-valid branch.
+
+B2-02F shows that the long wrap can retain and transport through the full replay
+(force 0.024, contact through frame 523), but every post-lift pair still mixes
+fixed plastic with moving rubber. The wrap geometrically encloses box4--box6;
+the bypass occurs because both the soft skin and its overlapping rigid core are
+collision-enabled. B2-02G keeps the skin rigidly attached to the jaw body but
+disables the enclosed primitive collision geoms. This represents a backed
+rubber collision surface without allowing the pawn to tunnel into a second
+exposed contact layer.

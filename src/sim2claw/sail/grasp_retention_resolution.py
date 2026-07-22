@@ -42,6 +42,9 @@ TORQUE_LATCH_SCHEMA = (
 LONG_WRAP_TORQUE_SCHEMA = (
     "sim2claw.sail_grasp_retention_long_wrap_torque_campaign.v1"
 )
+COLLISION_SKIN_SCHEMA = (
+    "sim2claw.sail_grasp_retention_collision_skin_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -95,6 +98,7 @@ def load_grasp_retention_contract(
         CORE_CAP_LOAD_SCHEMA,
         TORQUE_LATCH_SCHEMA,
         LONG_WRAP_TORQUE_SCHEMA,
+        COLLISION_SKIN_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -113,6 +117,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-core-cap-load-response-v1",
         "sail-grasp-retention-torque-latch-v1",
         "sail-grasp-retention-long-wrap-torque-v1",
+        "sail-grasp-retention-collision-skin-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 

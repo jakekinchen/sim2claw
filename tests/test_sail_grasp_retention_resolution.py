@@ -280,6 +280,27 @@ def test_long_wrap_family_covers_observed_fixed_bypass_path() -> None:
     )
 
 
+def test_collision_skin_hides_enclosed_rigid_primitives() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_collision_skin_v1.json"
+        )
+    )
+
+    assert len(contract["frozen_candidate_family"]) == 18
+    assert not contract["base_parameters"][
+        "fixed_jaw_primitive_collision_enabled"
+    ]
+    assert not contract["base_parameters"][
+        "moving_jaw_primitive_collision_enabled"
+    ]
+    assert contract["acceptance"][
+        "anchor_minimum_rubber_load_pair_fraction_after_lift"
+    ] == 1.0
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]
