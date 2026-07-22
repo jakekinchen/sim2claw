@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02A COMPLETE; B2-02B IN PROGRESS`
+Status: `ACTIVE — B2-02B COMPLETE; B2-02C IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -17,7 +17,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-01 | complete | compliant segment bodies/joints implemented; 20 focused tests and 254 legacy subtests pass |
 | B2-02 | complete, terminal negative | all 18 C2 actions matched; zero passes; every candidate failed retention, aperture, and transport |
 | B2-02A | complete, terminal negative | all 18 widened free-surface candidates matched actions; zero passed; one lifted without retained bilateral load |
-| B2-02B | in progress | layered plastic-backing plus continuous compliant-cap family frozen with an explicit post-lift rubber-load-path gate |
+| B2-02B | complete, terminal negative | one candidate lifted with 83.3% rubber load-pair participation but lost at frame 328; zero complete passes |
+| B2-02C | in progress | caps anchored directly to fixed box6 and moving box3 with asymmetric core-matched footprints |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -55,3 +56,10 @@ now preserves the physical construction's rigid plastic core while making the
 continuous cap large enough to enclose it. A new evaluator diagnostic requires
 at least 90% of observed post-lift load-pair sides to be rubber geoms, preventing
 the core from earning a decorative-pad pass.
+
+B2-02B retained the plastic backing but still placed the fixed cap by offsetting
+the historical box5 anchor. Its best result lifted, but 1/6 observed load-pair
+sides bypassed rubber and contact failed at frame 328. B2-02C removes that
+surrogate: the fixed cap is generated directly from box6 and the moving cap
+from box3, with separate coverage and width scales matching their actual distal
+cores.

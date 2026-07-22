@@ -197,6 +197,26 @@ def test_layered_cap_family_requires_rubber_load_path() -> None:
     ] == 0.9
 
 
+def test_core_anchored_cap_uses_true_distal_primitives() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_core_anchored_cap_v1.json"
+        )
+    )
+
+    assert len(contract["frozen_candidate_family"]) == 18
+    assert contract["base_parameters"][
+        "rubber_tip_fixed_anchor_geom_suffix"
+    ] == "fixed_jaw_box6"
+    assert contract["base_parameters"][
+        "rubber_tip_moving_anchor_geom_suffix"
+    ] == "moving_jaw_box3"
+    assert not contract["base_parameters"]["gripper_load_hold_enabled"]
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

@@ -320,6 +320,22 @@ def _custom_variant(
         "parameters": parameters,
         "source_contact_prior_canonical_sha256": contact_snapshot.sha256,
     }
+    collision_approximation = copy.deepcopy(base.collision_approximation)
+    anchor_parameter_by_finger = {
+        "fixed": "rubber_tip_fixed_anchor_geom_suffix",
+        "moving": "rubber_tip_moving_anchor_geom_suffix",
+    }
+    for finger in collision_approximation["fingers"]:
+        parameter_name = anchor_parameter_by_finger[str(finger["finger_id"])]
+        if parameter_name not in parameters:
+            continue
+        suffix = str(parameters[parameter_name])
+        required_prefix = f"{finger['finger_id']}_jaw_box"
+        if not suffix.startswith(required_prefix):
+            raise GraspCoordinateDescentError(
+                f"{parameter_name} must name a {required_prefix} primitive"
+            )
+        finger["anchor_geom_suffix"] = suffix
     return SimulatorVariant(
         contract_path=contract_path.resolve(),
         contract_sha256=sha256_file(contract_path),
@@ -329,7 +345,7 @@ def _custom_variant(
         variant_id=f"coordinate_{canonical_digest(identity)[:16]}",
         variant_sha256=canonical_digest(identity),
         payload=payload,
-        collision_approximation=copy.deepcopy(base.collision_approximation),
+        collision_approximation=collision_approximation,
     )
 
 

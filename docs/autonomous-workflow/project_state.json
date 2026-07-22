@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_layered_cap_v1",
-  "current_milestone": "B2_02B_FROZEN_LAYERED_CAP_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_core_anchored_cap_v1",
+  "current_milestone": "B2_02C_FROZEN_CORE_ANCHORED_CAP_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "free_compliant_surfaces_terminal_negative_layered_cap_followup_frozen",
+    "status": "offset_layered_cap_terminal_negative_core_anchored_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -642,7 +642,8 @@
       "B2-01": "completed",
       "B2-02": "completed_terminal_negative",
       "B2-02A": "completed_terminal_negative",
-      "B2-02B": "in_progress",
+      "B2-02B": "completed_terminal_negative",
+      "B2-02C": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -667,6 +668,12 @@
     "footprint_followup_receipt_sha256": "c4ad610dccb4d30648300e9229154b63fa851354fc816b56c0ce2e3fa995d958",
     "footprint_followup_receipt_digest": "ee8771be1e256407c0a136bda7593442a7446a3f3f9d8a4a6c8f6587ffded81b",
     "layered_cap_contract": "configs/sail/grasp_retention_layered_cap_v1.json",
+    "layered_cap_anchor_pass_count": 0,
+    "layered_cap_best_contact_loss_source_index": 328,
+    "layered_cap_best_rubber_load_pair_fraction_after_lift": 0.8333333333333334,
+    "layered_cap_receipt_sha256": "51d16c9e0bc1183f876134739ad69939411ed90c1f9422fdce9cac4415c974dc",
+    "layered_cap_receipt_digest": "d8208a6aa3dd34c9e585773686218040050241f86546238f38564574b4f60503",
+    "core_anchored_cap_contract": "configs/sail/grasp_retention_core_anchored_cap_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false
