@@ -135,8 +135,8 @@ Last triage: 2026-07-21T21:57:01-05:00
 | Milestone | Status | Proof target | Proof result | Blocker |
 | --- | --- | --- | --- | --- |
 | P1-00 | completed | Cutover, authority reconciliation, Brief 016 | Reviewer 007 CONTINUE | none |
-| P1-01 | in_progress | Schemas, goldens, frozen benchmark/certificate contracts | pending | none |
-| P1-02 | pending | Deterministic retained evidence catalog | pending | dependency |
+| P1-01 | completed | Schemas, goldens, frozen benchmark/certificate contracts | 5 schemas, 25 cases, 6 tiers, 29 fast tests | none |
+| P1-02 | in_progress | Deterministic retained evidence catalog | pending | none |
 | P1-03 | pending | Phase-aligned residual receipt | pending | dependency |
 | P1-04 | pending | Deterministic belief graph | pending | dependency |
 | P1-05 | pending | Surprise/debt triggers | pending | dependency |
@@ -169,3 +169,8 @@ goal. External provider campaigns and spending remain separately gated.
 - 2026-07-21T22:22:00-05:00 — P1-00 cutover checks and workflow audit passed;
   the broad suite's sole strict-binding failure was repaired, 95 related tests
   passed, and the LF00-through-LF13 component campaign passed 1/1.
+- 2026-07-21T22:58:35-05:00 — P1-01 froze five schemas, 25 golden cases, six CI
+  tiers, TwinWorthiness thresholds, public/sealed benchmark seeds, proof
+  vocabulary, and hardware/provider authority guards. Fast tier passed 29/29;
+  two broad lock-binding failures were refreshed and their targeted checks
+  passed. P1-02 opened.

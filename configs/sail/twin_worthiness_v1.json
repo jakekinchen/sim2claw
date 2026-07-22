@@ -1,0 +1,86 @@
+{
+  "schema_version": "sim2claw.twin_worthiness_contract.v1",
+  "contract_id": "twin-worthiness-v1",
+  "evaluator_owner": "deterministic_sail_evaluator",
+  "status_semantics": {
+    "pass": "all required observations are present and every frozen threshold passes",
+    "fail": "required observations are present and at least one frozen threshold fails",
+    "not_evaluable": "one or more required observations or identities are absent; this never counts as pass"
+  },
+  "gates": {
+    "TW-G0": {
+      "name": "replay_integrity",
+      "required": ["action_shape", "action_dtype", "action_ordering", "action_sha256", "evaluator_sha256"],
+      "thresholds": {
+        "require_action_identity": true,
+        "require_evaluator_identity": true,
+        "require_no_ik_offsets_clipping_suffix_or_assistance": true
+      }
+    },
+    "TW-G1": {
+      "name": "trace_fidelity",
+      "required": ["joint_position", "gripper_position", "end_effector_position", "timing"],
+      "thresholds": {
+        "minimum_episode_count": 3,
+        "maximum_joint_rms_relative_regression": 0.01,
+        "maximum_end_effector_rms_relative_regression": 0.01,
+        "require_whole_episode_grouping": true,
+        "require_units_frames_masks_and_provenance": true
+      }
+    },
+    "TW-G2": {
+      "name": "interaction_fidelity",
+      "required": ["contact", "retention", "lift", "transport", "placement", "release", "failure_mode"],
+      "thresholds": {
+        "minimum_episode_count": 5,
+        "minimum_consequence_macro_f1": 0.8,
+        "maximum_event_timing_absolute_error_seconds": 0.1,
+        "allow_heuristic_contact_as_measured": false
+      }
+    },
+    "TW-G3": {
+      "name": "policy_concordance",
+      "required": ["policy_candidate_ids", "simulator_ranking", "separate_outcomes"],
+      "thresholds": {
+        "minimum_policy_candidate_count": 3,
+        "minimum_independent_outcome_count": 3,
+        "minimum_kendall_tau": 0.5,
+        "maximum_directional_error_rate": 0.25
+      }
+    },
+    "TW-G4": {
+      "name": "structural_robustness",
+      "required": ["posterior_samples", "context_groups", "invariance_verdicts", "mechanism_particles"],
+      "thresholds": {
+        "minimum_context_group_count": 3,
+        "minimum_posterior_pass_fraction": 0.9,
+        "maximum_context_failure_fraction": 0.1,
+        "require_multimodal_structure_preservation": true
+      }
+    }
+  },
+  "levels": {
+    "NONE": [],
+    "TW-DIAGNOSTIC": ["TW-G0"],
+    "TW-REPLAY": ["TW-G0", "TW-G1"],
+    "TW-DATA": ["TW-G0", "TW-G1", "TW-G2"],
+    "TW-SELECTION": ["TW-G0", "TW-G1", "TW-G2", "TW-G3", "TW-G4"],
+    "TW-PHYSICAL-CANARY": ["TW-G0", "TW-G1", "TW-G2", "TW-G3", "TW-G4"]
+  },
+  "capabilities": {
+    "TW-DIAGNOSTIC": {"diagnostics": true, "data_generation": false, "policy_selection": false, "physical_canary": false},
+    "TW-REPLAY": {"diagnostics": true, "data_generation": false, "policy_selection": false, "physical_canary": false},
+    "TW-DATA": {"diagnostics": true, "data_generation": true, "policy_selection": false, "physical_canary": false},
+    "TW-SELECTION": {"diagnostics": true, "data_generation": true, "policy_selection": true, "physical_canary": false},
+    "TW-PHYSICAL-CANARY": {"diagnostics": true, "data_generation": true, "policy_selection": true, "physical_canary": true}
+  },
+  "physical_canary_requires": [
+    "TW-SELECTION",
+    "owner_task_authority",
+    "reviewed_gateway_preflight",
+    "hash_bound_new_related_workcell_identity",
+    "frozen_hardware_protocol"
+  ],
+  "robot_motion_authority": false,
+  "threshold_change_policy": "new_contract_version_required"
+}

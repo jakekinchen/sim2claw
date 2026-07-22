@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/sail/twin_worthiness_certificate_v1.json",
+  "title": "TwinWorthinessCertificate.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "certificate_id", "campaign_id", "identities", "gates", "level", "authority", "issued_at", "canonical_digest"],
+  "properties": {
+    "schema_version": {"const": "sim2claw.twin_worthiness_certificate.v1"},
+    "certificate_id": {"type": "string", "minLength": 1},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "identities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence", "graph", "posterior", "simulator", "evaluator", "policy_candidates"],
+      "properties": {
+        "evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+        "graph": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "posterior": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "simulator": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "evaluator": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "policy_candidates": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+      }
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["TW-G0", "TW-G1", "TW-G2", "TW-G3", "TW-G4"],
+      "properties": {
+        "TW-G0": {"$ref": "#/$defs/gate"},
+        "TW-G1": {"$ref": "#/$defs/gate"},
+        "TW-G2": {"$ref": "#/$defs/gate"},
+        "TW-G3": {"$ref": "#/$defs/gate"},
+        "TW-G4": {"$ref": "#/$defs/gate"}
+      }
+    },
+    "level": {"enum": ["NONE", "TW-DIAGNOSTIC", "TW-REPLAY", "TW-DATA", "TW-SELECTION", "TW-PHYSICAL-CANARY"]},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["data_generation", "policy_selection", "physical_canary", "robot_motion"],
+      "properties": {
+        "data_generation": {"type": "boolean"},
+        "policy_selection": {"type": "boolean"},
+        "physical_canary": {"type": "boolean"},
+        "robot_motion": {"const": false}
+      }
+    },
+    "issued_at": {"type": "string", "format": "date-time"},
+    "canonical_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason", "evidence_ids"],
+      "properties": {
+        "status": {"enum": ["pass", "fail", "not_evaluable"]},
+        "reason": {"type": "string", "minLength": 1},
+        "evidence_ids": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}

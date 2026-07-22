@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.calibration_evidence.v1",
+  "evidence_id": "fixture-evidence-001",
+  "session_id": "fixture-session-001",
+  "workcell_id": "fixture-workcell-001",
+  "proof_class": "fixture",
+  "source_owner": "test_fixture",
+  "source": {"path": "tests/fixtures/sail/source.bin", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+  "identities": {
+    "simulator": "sim-v1",
+    "scene": "scene-v1",
+    "robot": "robot-v1",
+    "geometry": "geometry-v1",
+    "hardware_profile": null,
+    "evaluator": "evaluator-v1"
+  },
+  "action": {
+    "shape": [2, 6],
+    "dtype": "float64",
+    "ordering": "time_joint_c",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "application_time_seconds": [0.0, 0.1]
+  },
+  "observations": {
+    "joint_position": {
+      "unit": "radian",
+      "frame": "robot_joint",
+      "values": [[0, 0, 0, 0, 0, 0], [0.1, 0, 0, 0, 0, 0]],
+      "available": [true, true],
+      "provenance": "fixture"
+    }
+  },
+  "camera_frames": [],
+  "outcomes": {},
+  "missing_channels": ["physical_contact_force"],
+  "abstentions": ["physical_contact_force_not_recorded"],
+  "split_role": "train",
+  "parent_evidence_ids": [],
+  "intervention_ids": [],
+  "canonical_digest": "7174ee7b3bea8bdf28b5db0c3cf5e5bb082283e6c05ff6182895d23dd4678b81"
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/sail/residual_field_v1.json",
+  "title": "ResidualField.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "residual_id", "evidence_ids", "axes", "samples", "summaries", "canonical_digest"],
+  "properties": {
+    "schema_version": {"const": "sim2claw.residual_field.v1"},
+    "residual_id": {"type": "string", "minLength": 1},
+    "evidence_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "axes": {"const": ["episode", "phase", "time", "channel", "frame", "provenance"]},
+    "samples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["episode_id", "phase", "time_seconds", "channel", "unit", "frame", "provenance", "available", "value"],
+        "properties": {
+          "episode_id": {"type": "string", "minLength": 1},
+          "phase": {"type": "string", "minLength": 1},
+          "time_seconds": {"type": "number"},
+          "channel": {"type": "string", "minLength": 1},
+          "unit": {"type": "string", "minLength": 1},
+          "frame": {"type": ["string", "null"]},
+          "provenance": {"type": "string", "minLength": 1},
+          "available": {"type": "boolean"},
+          "value": {"type": ["number", "null"]}
+        },
+        "allOf": [
+          {"if": {"properties": {"available": {"const": false}}}, "then": {"properties": {"value": {"type": "null"}}}},
+          {"if": {"properties": {"available": {"const": true}}}, "then": {"properties": {"value": {"type": "number"}}}}
+        ]
+      }
+    },
+    "summaries": {"type": "array", "items": {"type": "object"}},
+    "bootstrap": {"type": ["object", "null"]},
+    "canonical_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/sail/intervention_v1.json",
+  "title": "Intervention.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "intervention_id", "primary_question", "competing_hypotheses",
+    "allowed_mutations", "frozen_action", "expected_signatures", "predicted_information_gain",
+    "estimated_cost", "required_observables", "evaluation_gates", "regression_gates",
+    "budget", "stop_conditions", "proof_class", "authority", "canonical_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "sim2claw.intervention.v1"},
+    "intervention_id": {"type": "string", "minLength": 1},
+    "primary_question": {"type": "string", "minLength": 1},
+    "competing_hypotheses": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 1}},
+    "allowed_mutations": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "frozen_action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "shape", "dtype", "ordering", "sha256"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1},
+        "shape": {"type": "array", "minItems": 1, "items": {"type": "integer", "minimum": 1}},
+        "dtype": {"enum": ["float32", "float64"]},
+        "ordering": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "expected_signatures": {"type": "object", "minProperties": 2},
+    "predicted_information_gain": {"type": "number", "minimum": 0},
+    "estimated_cost": {"type": "number", "minimum": 0},
+    "required_observables": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "evaluation_gates": {"type": "array", "items": {"type": "object"}},
+    "regression_gates": {"type": "array", "items": {"type": "object"}},
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maximum_trials", "maximum_wall_seconds", "maximum_provider_calls", "maximum_cost_usd"],
+      "properties": {
+        "maximum_trials": {"type": "integer", "minimum": 0},
+        "maximum_wall_seconds": {"type": "integer", "minimum": 0},
+        "maximum_provider_calls": {"type": "integer", "minimum": 0},
+        "maximum_cost_usd": {"type": "number", "minimum": 0}
+      }
+    },
+    "stop_conditions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "proof_class": {"enum": ["synthetic", "retained_replay", "prospective_simulator", "physical_read_only", "physical_motion"]},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["physical_capture", "robot_motion", "agent_can_promote"],
+      "properties": {
+        "physical_capture": {"type": "boolean"},
+        "robot_motion": {"type": "boolean"},
+        "agent_can_promote": {"const": false}
+      }
+    },
+    "canonical_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"proof_class": {"enum": ["synthetic", "retained_replay", "prospective_simulator", "physical_read_only"]}}},
+      "then": {"properties": {"authority": {"properties": {"robot_motion": {"const": false}}}}}
+    }
+  ]
+}

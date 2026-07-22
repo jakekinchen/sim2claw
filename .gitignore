@@ -20,6 +20,7 @@ runs/
 .inspect_ai/
 .codex/visualizations/
 /evals/inspect_gapbench/fixtures/sealed/
+/evals/sail/fixtures/sealed/
 checkpoints/
 tmp/
 *.mp4

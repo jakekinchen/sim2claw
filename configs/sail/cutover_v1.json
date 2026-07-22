@@ -5,6 +5,7 @@
   "program": {
     "plan": "docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md",
     "plan_sha256": "495c9403c1a47e4a19db4401e53bf582a44a6546ab4bddb13716f2a65da13150",
+    "plan_sha256_scope": "activation_snapshot_before_live_milestone_status_updates",
     "phase": 1,
     "physical_data_policy": "no_new_physical_observations_or_robot_trials",
     "retrospective_backfill_policy": "minimal_decision_graph_recovery_only",

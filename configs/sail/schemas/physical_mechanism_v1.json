@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/sail/physical_mechanism_v1.json",
+  "title": "PhysicalMechanism.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "mechanism_id", "version", "family", "physical_interpretation",
+    "affected_components", "parameters", "predicted_residual_signatures",
+    "required_observables", "non_identifiabilities", "candidate_interventions",
+    "simulator_mutation", "graph_factors", "influence_edges", "invalidation_rules",
+    "invariance_scope", "action_immutability_tests", "canonical_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "sim2claw.physical_mechanism.v1"},
+    "mechanism_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]+$"},
+    "version": {"type": "integer", "minimum": 1},
+    "family": {"enum": ["timing", "reset_reference", "joint_response", "deadband_hysteresis", "load_compliance", "camera", "geometry_scale", "gripper_aperture", "fingertip_contact", "contact_friction", "object_dynamics"]},
+    "physical_interpretation": {"type": "string", "minLength": 1},
+    "affected_components": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "unit", "prior", "minimum", "maximum"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "unit": {"type": "string", "minLength": 1},
+          "prior": {"type": "object"},
+          "minimum": {"type": "number"},
+          "maximum": {"type": "number"}
+        }
+      }
+    },
+    "predicted_residual_signatures": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+    "required_observables": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "non_identifiabilities": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "candidate_interventions": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "simulator_mutation": {"type": "string", "minLength": 1},
+    "graph_factors": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "influence_edges": {"type": "array", "items": {"type": "object"}},
+    "invalidation_rules": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "invariance_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["invariant_parameters", "allowed_context_covariates"],
+      "properties": {
+        "invariant_parameters": {"type": "array", "items": {"type": "string"}},
+        "allowed_context_covariates": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "action_immutability_tests": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "canonical_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

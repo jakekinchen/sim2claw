@@ -1,0 +1,30 @@
+{
+  "schema_version": "sim2claw.sail_golden_case_registry.v1",
+  "cases": [
+    {"id": "GOLD-00", "case": "missing_or_changed_source_artifact", "expected": "fail_closed_before_fitting", "test": "tests/test_sail_contracts.py::test_gold_00_source_binding_fails_closed"},
+    {"id": "GOLD-01", "case": "same_numeric_actions_changed_bytes_dtype_or_order", "expected": "action_invariance_fails", "test": "tests/test_sail_contracts.py::test_gold_01_action_bytes_dtype_and_order_are_identity"},
+    {"id": "GOLD-02", "case": "calibration_evidence_round_trip", "expected": "digest_and_masks_stable", "test": "tests/test_sail_contracts.py::test_gold_02_valid_contract_round_trip"},
+    {"id": "GOLD-03", "case": "missing_camera_object_or_contact_channels", "expected": "not_evaluable", "test": "tests/test_sail_twin_worthiness.py::test_gold_03_missing_channels_are_not_evaluable"},
+    {"id": "GOLD-04", "case": "phase_shift_with_equal_trajectory_minimum", "expected": "timing_error_detected", "test": "tests/test_sail_contracts.py::test_gold_04_phase_shift_cannot_hide_behind_minimum"},
+    {"id": "GOLD-05", "case": "parameter_compensation_without_delay_mechanism", "expected": "structural_surprise", "test": "tests/test_sail_surprise.py::test_gold_05_compensation_debt_triggers"},
+    {"id": "GOLD-06", "case": "seeded_missing_load_compliance", "expected": "correct_structure_outranks_parameter_only", "test": "tests/test_sail_mechanisms.py::test_gold_06_load_structure_recovery"},
+    {"id": "GOLD-07", "case": "seeded_fingertip_contact_fault", "expected": "contact_structure_recovered_actions_unchanged", "test": "tests/test_sail_mechanisms.py::test_gold_07_contact_structure_recovery"},
+    {"id": "GOLD-08", "case": "seeded_camera_timing_extrinsic_fault", "expected": "not_misattributed_to_robot_geometry", "test": "tests/test_sail_mechanisms.py::test_gold_08_camera_fault_attribution"},
+    {"id": "GOLD-09", "case": "influence_set_with_distractors", "expected": "minimal_set_matches_oracle", "test": "tests/test_sail_influence.py::test_gold_09_influence_set"},
+    {"id": "GOLD-10", "case": "sparse_loop_closure_vs_full_batch", "expected": "comparable_fit_less_recomputation", "test": "tests/test_sail_loop_closure.py::test_gold_10_sparse_vs_full"},
+    {"id": "GOLD-11", "case": "mechanism_valid_in_one_context_only", "expected": "scope_pass_outside_fail", "test": "tests/test_sail_invariance.py::test_gold_11_context_scope"},
+    {"id": "GOLD-12", "case": "ambiguous_and_discriminating_probes", "expected": "discriminating_probe_ranked_first", "test": "tests/test_sail_acquisition.py::test_gold_12_structural_acquisition"},
+    {"id": "GOLD-13", "case": "agent_reads_or_mutates_sealed_evaluator", "expected": "attempt_fails_without_leakage", "test": "tests/test_sail_contracts.py::test_gold_13_sealed_access_is_evaluator_only"},
+    {"id": "GOLD-14", "case": "out_of_bounds_mechanism_parameter", "expected": "candidate_rejected", "test": "tests/test_sail_contracts.py::test_gold_14_parameter_bounds_fail_closed"},
+    {"id": "GOLD-15", "case": "failed_corrective_prefix_or_suffix", "expected": "zero_training_rows", "test": "tests/test_sail_contracts.py::test_gold_15_failed_correction_admits_zero_rows"},
+    {"id": "GOLD-16", "case": "retained_bg_evidence_compiler", "expected": "exact_hashes_and_safe_metrics_reproduced", "test": "tests/test_sail_evidence.py::test_gold_16_retained_inventory"},
+    {"id": "GOLD-17", "case": "retained_contact_evidence", "expected": "tw_g2_closed", "test": "tests/test_sail_twin_worthiness.py::test_gold_17_retained_interaction_gate"},
+    {"id": "GOLD-18", "case": "insufficient_policy_rank_data", "expected": "tw_g3_not_evaluable", "test": "tests/test_sail_twin_worthiness.py::test_gold_18_policy_concordance_missing"},
+    {"id": "GOLD-19", "case": "certificate_modified_after_issue", "expected": "capability_unavailable", "test": "tests/test_sail_twin_worthiness.py::test_gold_19_modified_certificate_revokes_capability"},
+    {"id": "GOLD-20", "case": "hardware_protocol_without_authority", "expected": "no_capture_or_motion", "test": "tests/test_sail_hardware_protocol.py::test_gold_20_no_authority_no_io"},
+    {"id": "GOLD-21", "case": "new_setup_missing_identity", "expected": "new_related_workcell", "test": "tests/test_sail_hardware_protocol.py::test_gold_21_missing_identity_is_new_related_workcell"},
+    {"id": "GOLD-22", "case": "wrist_camera_evaluator_only", "expected": "policy_schema_remains_overhead_only", "test": "tests/test_sail_hardware_protocol.py::test_gold_22_evaluator_camera_not_policy_input"},
+    {"id": "GOLD-23", "case": "hardware_evaluation_trial_in_training", "expected": "split_rejected", "test": "tests/test_sail_hardware_protocol.py::test_gold_23_hardware_evaluation_leakage_rejected"},
+    {"id": "GOLD-24", "case": "provider_identity_changes_mid_campaign", "expected": "attempts_not_pooled", "test": "tests/test_sail_contracts.py::test_gold_24_provider_identity_must_be_stable"}
+  ]
+}

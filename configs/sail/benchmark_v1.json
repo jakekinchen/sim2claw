@@ -1,0 +1,62 @@
+{
+  "schema_version": "sim2claw.sail_structural_benchmark.v1",
+  "benchmark_id": "sail-structural-recovery-v1",
+  "frozen_at": "2026-07-21T22:30:00-05:00",
+  "proof_class": "synthetic_benchmark",
+  "fault_families": [
+    {"id": "timing_latency", "public_seeds": [711101, 711102], "sealed_case_count": 2},
+    {"id": "load_compliance", "public_seeds": [712101, 712102], "sealed_case_count": 2},
+    {"id": "joint_backlash_deadband", "public_seeds": [713101, 713102], "sealed_case_count": 2},
+    {"id": "fingertip_contact", "public_seeds": [714101, 714102], "sealed_case_count": 2},
+    {"id": "camera_timing_extrinsics", "public_seeds": [715101, 715102], "sealed_case_count": 2},
+    {"id": "metric_geometry", "public_seeds": [716101, 716102], "sealed_case_count": 2},
+    {"id": "object_dynamics", "public_seeds": [717101, 717102], "sealed_case_count": 2}
+  ],
+  "split": {
+    "public_case_count": 14,
+    "sealed_case_count": 14,
+    "sealed_seed_source_env": "SIM2CLAW_SAIL_SEALED_SEED_SOURCE",
+    "sealed_seed_manifest_schema": "sim2claw.sail_sealed_seed_manifest.v1",
+    "sealed_seed_manifest_sha256": "4e868d331734cfefa33bd6c195226a187a40fd8bb37bea637c61ddcb83c1eb9d",
+    "agent_can_read_sealed_seed_source": false,
+    "implementation_can_read_sealed_expected_structure": false,
+    "evaluator_owner": "deterministic_sail_evaluator"
+  },
+  "budgets_per_case": {
+    "maximum_candidate_structures": 8,
+    "maximum_interventions": 4,
+    "maximum_optimizer_evaluations": 200,
+    "maximum_wall_seconds": 120,
+    "maximum_provider_calls": 0,
+    "maximum_cost_usd": 0.0
+  },
+  "primary_metrics": [
+    "top1_structure_recovery_accuracy",
+    "true_structure_posterior_mass",
+    "held_out_residual_reduction",
+    "influence_set_f1",
+    "interventions_to_recovery",
+    "recomputation_fraction_vs_full_batch",
+    "abstention_calibration"
+  ],
+  "negative_controls": [
+    "parameter_only_no_revisit",
+    "random_intervention",
+    "cheapest_intervention",
+    "pooled_residual_no_phase",
+    "oracle_structure",
+    "full_batch_refit"
+  ],
+  "acceptance": {
+    "minimum_top1_structure_recovery_accuracy": 0.7,
+    "minimum_influence_set_f1": 0.75,
+    "maximum_sparse_to_full_batch_score_loss_fraction": 0.02,
+    "maximum_recomputation_fraction_vs_full_batch": 0.6,
+    "minimum_gain_over_parameter_only_accuracy": 0.15,
+    "maximum_false_structural_trigger_rate_on_parameter_only_cases": 0.1
+  },
+  "provider_campaign_authorized": false,
+  "physical_authority": false,
+  "promotion_authority": false,
+  "change_policy": "new_benchmark_version_required"
+}

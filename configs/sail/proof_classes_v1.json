@@ -1,0 +1,26 @@
+{
+  "schema_version": "sim2claw.sail_proof_classes.v1",
+  "classes": [
+    {"id": "fixture", "physical": false, "policy": false, "promotion_authority": false},
+    {"id": "synthetic", "physical": false, "policy": false, "promotion_authority": false},
+    {"id": "synthetic_benchmark", "physical": false, "policy": false, "promotion_authority": false},
+    {"id": "simulation", "physical": false, "policy": false, "promotion_authority": false},
+    {"id": "prospective_simulator_experiment", "physical": false, "policy": false, "promotion_authority": false},
+    {"id": "retained_action_frozen_simulator_replay", "physical": false, "policy": false, "promotion_authority": false},
+    {"id": "retrospective_reanalysis", "physical": false, "policy": false, "promotion_authority": false},
+    {"id": "learned_policy_simulation", "physical": false, "policy": true, "promotion_authority": false},
+    {"id": "retrospective_physical_teleoperation_observation", "physical": true, "policy": false, "promotion_authority": false},
+    {"id": "physical_teleoperation_source_unqualified", "physical": true, "policy": false, "promotion_authority": false},
+    {"id": "physical_read_only", "physical": true, "policy": false, "promotion_authority": false},
+    {"id": "physical_task", "physical": true, "policy": true, "promotion_authority": false}
+  ],
+  "rules": {
+    "missing_observation_status": "not_evaluable",
+    "generated_prompt_is_behavioral_evidence": false,
+    "simulation_can_prove_physical_transfer": false,
+    "retrospective_open_data_can_be_fresh_held_out": false,
+    "training_can_promote_itself": false,
+    "agent_can_promote": false,
+    "physical_gateway_authority_is_separate": true
+  }
+}

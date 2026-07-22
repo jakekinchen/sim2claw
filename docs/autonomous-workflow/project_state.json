@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-21T21:57:01-05:00",
+  "updated_at": "2026-07-21T22:58:35-05:00",
   "active_campaign": "sail_clawloop_phase1_v1",
-  "current_milestone": "P1-01_CONTRACTS_AND_GOLDEN_ORACLES_IN_PROGRESS",
+  "current_milestone": "P1-02_RETAINED_EVIDENCE_INVENTORY_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -10,7 +10,7 @@
     "schema_version": "sim2claw.sail_clawloop_campaign_state.v1",
     "master_plan": "docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md",
     "cutover_contract": "configs/sail/cutover_v1.json",
-    "active_brief": "docs/briefs/016-sail-contracts-and-golden-oracles.md",
+    "active_brief": "docs/briefs/017-sail-retained-evidence-inventory.md",
     "phase": 1,
     "phase_1_status": "active",
     "new_physical_data_allowed": false,
@@ -21,8 +21,8 @@
     "policy_selection_admission": "closed",
     "milestones": {
       "P1-00": "completed",
-      "P1-01": "in_progress",
-      "P1-02": "pending",
+      "P1-01": "completed",
+      "P1-02": "in_progress",
       "P1-03": "pending",
       "P1-04": "pending",
       "P1-05": "pending",
@@ -39,7 +39,25 @@
       "P1-16": "pending",
       "P1-17": "pending"
     },
-    "current_safe_claim": "retained action-frozen trace fidelity improved, but contact and task evidence remain underidentified; no current TwinWorthiness certificate opens data generation, policy selection, or physical transfer"
+    "current_safe_claim": "retained action-frozen trace fidelity improved, but contact and task evidence remain underidentified; no current TwinWorthiness certificate opens data generation, policy selection, or physical transfer",
+    "contract_freeze": {
+      "schema_version": "sim2claw.sail_contract_freeze.v1",
+      "schema_sha256": {
+        "CalibrationEvidence.v1": "1806dc96b1d14f97d307b41d3247669368b71167387816d162d50f6ef44395b2",
+        "ResidualField.v1": "5e659fb5a5a402f94ba446bb3f6df5b8919ac87aa3926878b50ac44f79f7b6b1",
+        "PhysicalMechanism.v1": "0192cd393cf2a94c91838eb1c8d81c34712b9a562d551aa6ab896db45eff3df5",
+        "Intervention.v1": "b2c8251b99d1ecdf48d5541338c5c549c3f001c81b7d1aec620540c3710d6d40",
+        "TwinWorthinessCertificate.v1": "0cf6abb6472310106ddbe945a2d444994bf2d2d87d733ca077e304f629852c10"
+      },
+      "benchmark_sha256": "fe93329c09c76032a0192ef79d4edea6a989e9c27a825747202a1d5a8079a0cc",
+      "twin_worthiness_sha256": "0e4828802daa54301779621a8af1ff48e99920a84d594fa12a6c72d5ede7c9e1",
+      "proof_classes_sha256": "53b6889fd0dc5ae04c668869649b0f0aca7ed8eb28d6bc2fedede8529a63a046",
+      "ci_tiers_sha256": "fb5edbec8cd7593a7520ac1556a7cea07f5f1b45706668ddadd684f08b01e471",
+      "golden_registry_sha256": "a727a189285703dde745991979f856ca23ed1fa47b8cd08c071e6c8ba09ca514",
+      "golden_case_count": 25,
+      "ci_tier_count": 6,
+      "threshold_change_requires_new_version": true
+    }
   },
   "strategic_program": {
     "decision": "docs/decisions/0004-goal-conditioned-act-pick-place.md",
