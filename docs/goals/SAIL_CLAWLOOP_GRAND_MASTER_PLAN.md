@@ -1497,8 +1497,8 @@ Only one milestone should be `in_progress` in the active goal loop.
 | P1-08 Invariance | P1-06, P1-07 | completed | plugin-declared whole-episode evaluator; stable seeded control passes, context-specific mechanism fails universal scope, single-context case abstains; all 10 retained mechanisms honestly `not_evaluable`; GOLD-11 |
 | P1-09 Acquisition | P1-05–P1-08 | completed | six sealed unexecuted plans; signature-separating load/frequency simulator probe wins structural ranking, load-only probe wins parameter refinement, all four frozen baselines have positive regret, two hardware plans unavailable with zero budgets; GOLD-12 |
 | P1-10 Seeded benchmark | P1-01, P1-05–P1-09 | completed | eight required fault families/cases, disjoint public/sealed seed domains, oracle controls, ten methods/ablations, 25 exact golden entrypoints, immutable actions/evaluator, deterministic SAIL 0.75 top-1 and 0.818 influence precision/recall |
-| P1-11 Inspect agents | P1-10 | in_progress | frozen provider attempts/costs |
-| P1-12 Retrospective case | P1-02–P1-09 | pending | graph closure/current certificate |
+| P1-11 Inspect agents | P1-10 | completed | existing GapBench extended with eight structural packets/eight typed tools; three deterministic development cases complete; six unequal-transport provider attempts retained as zero-cost scored failures; exact runtime/usage receipts; GOLD-13/14/24 |
+| P1-12 Retrospective case | P1-02–P1-09 | in_progress | graph closure/current certificate |
 | P1-13 Prospective sim | P1-09, P1-12 | pending | pre-registered sim results |
 | P1-14 TwinWorthiness wiring | P1-01, P1-03, P1-08 | pending | fail-closed LF integration |
 | P1-15 Policy flywheel | P1-14 | pending | fixture proof; real lane gated |

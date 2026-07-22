@@ -1,0 +1,139 @@
+{
+  "schema_version": "sim2claw.sail_inspect_campaign.v1",
+  "campaign_id": "sail-governed-inspect-development-v1",
+  "frozen_at": "2026-07-22T05:20:00-05:00",
+  "proof_class": "synthetic_benchmark",
+  "case_order": [
+    "fault-timing",
+    "fault-reset",
+    "fault-deadband",
+    "fault-load-timing",
+    "fault-camera",
+    "fault-gripper",
+    "fault-contact",
+    "fault-object-support"
+  ],
+  "development_cases": [
+    "fault-timing",
+    "fault-load-timing",
+    "fault-contact"
+  ],
+  "development_case_rationale": [
+    "single_fault",
+    "compensating_two_fault",
+    "missing_observable"
+  ],
+  "prompt_bundle": {
+    "identity": "sail-structural-gapbench-prompt-v1",
+    "instructions": "Use only bridged public tools, submit ranked typed hypotheses with uncertainty, then make exactly one terminal synthetic-only submission.",
+    "agent_prose_scoring_authority": false
+  },
+  "budgets": {
+    "probes_per_case": 1,
+    "public_evaluations_per_case": 1,
+    "terminal_submissions_per_case": 1,
+    "provider_retries": 0,
+    "provider_cost_ceiling_usd": 0.0,
+    "message_limit": 80,
+    "token_limit": 120000,
+    "turn_limit": 40,
+    "time_limit_seconds": 1800,
+    "working_limit_seconds": 1500
+  },
+  "conditions": [
+    {
+      "condition_id": "deterministic-sail",
+      "harness": "deterministic",
+      "provider": "local",
+      "model": "none",
+      "model_revision": "deterministic-v1",
+      "reasoning_configuration": "fixed_least_squares_and_probe_family_map_v1",
+      "binary_version": "python-locked-by-uv-lock",
+      "retry_count": 0,
+      "harness_sha256": "1f7a7a93300aa9b6c608f2b2e9076f9867f900295c9fcad87db15878fd9ca33f",
+      "semantic_surface_sha256": "163b5edcc414b26976087b5f9e576a0bba685a595954e33d86a01ae69bac1113",
+      "tool_names": ["case_status", "read_evidence", "inspect_residuals", "inspect_belief_graph", "submit_hypotheses", "request_probe", "run_public_evaluation", "submit_candidate"],
+      "case_order": ["fault-timing", "fault-reset", "fault-deadband", "fault-load-timing", "fault-camera", "fault-gripper", "fault-contact", "fault-object-support"]
+    },
+    {
+      "condition_id": "codex-cli-runtime",
+      "harness": "codex_cli",
+      "provider": "openai_subscription_transport_unavailable_to_inspect",
+      "model": null,
+      "model_revision": null,
+      "reasoning_configuration": "not_invoked",
+      "binary_version": "codex-cli 0.144.6",
+      "retry_count": 0,
+      "harness_sha256": "8a03b21d12019c10eaf4806fa76ce479c221f613debde1d2b45529afdefc0ebd",
+      "semantic_surface_sha256": "163b5edcc414b26976087b5f9e576a0bba685a595954e33d86a01ae69bac1113",
+      "tool_names": ["case_status", "read_evidence", "inspect_residuals", "inspect_belief_graph", "submit_hypotheses", "request_probe", "run_public_evaluation", "submit_candidate"],
+      "case_order": ["fault-timing", "fault-reset", "fault-deadband", "fault-load-timing", "fault-camera", "fault-gripper", "fault-contact", "fault-object-support"]
+    },
+    {
+      "condition_id": "claude-code-runtime",
+      "harness": "claude_code",
+      "provider": "anthropic_subscription_transport_unavailable_to_inspect",
+      "model": null,
+      "model_revision": null,
+      "reasoning_configuration": "not_invoked",
+      "binary_version": "2.1.199 (Claude Code)",
+      "retry_count": 0,
+      "harness_sha256": "1e3b4ccaaf9a7c82402c5848d0a277cca0a4291e5b43c13233c43f8b4eb5fbbe",
+      "semantic_surface_sha256": "163b5edcc414b26976087b5f9e576a0bba685a595954e33d86a01ae69bac1113",
+      "tool_names": ["case_status", "read_evidence", "inspect_residuals", "inspect_belief_graph", "submit_hypotheses", "request_probe", "run_public_evaluation", "submit_candidate"],
+      "case_order": ["fault-timing", "fault-reset", "fault-deadband", "fault-load-timing", "fault-camera", "fault-gripper", "fault-contact", "fault-object-support"]
+    }
+  ],
+  "execution_policy": {
+    "development_scenarios_before_provider_attempts": true,
+    "score_failures_timeouts_and_invalid_outputs": true,
+    "selective_retry": false,
+    "fallback_model": false,
+    "provider_attempt_requires_equivalent_inspect_transport": true,
+    "native_cli_one_shot_is_not_equivalent": true,
+    "smallest_frozen_campaign": "three_cases_per_condition",
+    "provider_call_authorized": false,
+    "provider_spend_authorized": false
+  },
+  "source_bindings": {
+    "benchmark_config": {
+      "path": "configs/sail/seeded_benchmark_v1.json",
+      "sha256": "5c277fd032a11b448f19b2d2c15983c31b474a7a6fd49bd02cc811b4ea07e6a5"
+    },
+    "golden_registry": {
+      "path": "tests/fixtures/sail/golden_cases_v1.json",
+      "sha256": "a727a189285703dde745991979f856ca23ed1fa47b8cd08c071e6c8ba09ca514"
+    },
+    "inspect_agents": {
+      "path": "evals/inspect_gapbench/agents.py",
+      "sha256": "22a601aa379f0396e916d429406d8674fc492d80887a7f6e9c8673b3904ee4bd"
+    },
+    "dockerfile": {
+      "path": "evals/inspect_gapbench/Dockerfile",
+      "sha256": "86878fcab464e084531c3d59b06deeeff57e23eda807fb84ba33374f26adb6f5"
+    },
+    "compose": {
+      "path": "evals/inspect_gapbench/compose.yaml",
+      "sha256": "df33c77d8dc98d85b5c409021e3db6cd786eda77fa0a8d3115e06a59f0cc3409"
+    }
+  },
+  "sandbox": {
+    "image_tag": "sim2claw-gapbench:0.1.0",
+    "image_digest": "sha256:d5c8ac00e039c9ea1fa99f817d8506417d64d70f29774cfc1c1334d05c81c821",
+    "network_mode": "none",
+    "privileged": false,
+    "host_mounts": false,
+    "pids_limit": 256
+  },
+  "authority": {
+    "sealed_access_by_agent": false,
+    "provider_calls": false,
+    "provider_spend": false,
+    "training_admission": false,
+    "policy_selection": false,
+    "promotion_authority": false,
+    "physical_capture": false,
+    "robot_motion": false,
+    "physical_transfer": false
+  }
+}
