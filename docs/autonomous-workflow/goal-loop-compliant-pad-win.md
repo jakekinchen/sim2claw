@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02V COMPLETE; B2-02W IN PROGRESS`
+Status: `ACTIVE — B2-02W COMPLETE; B2-02X IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -38,7 +38,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02T | complete, terminal negative | bounded flexure finds a retained/slip branch, but no valid task transport; 4 mm branch never releases and is rejected for 0.310 m rise |
 | B2-02U | complete, diagnostic negative | near-exact measured state has 1.1 mm EE RMS but only fixed-pad C2 contact, zero bilateral span, and 6.1 mm rise |
 | B2-02V | complete, terminal negative | jaw zero changes contact regimes; best aperture/slip branch loses at 377 and reaches 1.8% transport progress |
-| B2-02W | in progress | empirical 80--120 ms per-joint phase alignment across retained and aperture-valid branches |
+| B2-02W | complete, terminal negative | timing is bifurcated; 120 ms is aperture/slip valid but loses at 385, while 100 ms launches to 0.318 m |
+| B2-02X | in progress | moderate sliding/torsional release sweep with explicit release gate |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -265,3 +266,11 @@ telemetry fitting estimated 105 ms gripper, 115 ms elbow, 120 ms shoulder-lift,
 and 105 ms shoulder-pan/wrist-flex delays. The frozen family crosses 80--120 ms
 gripper delays and those empirical joint-delay combinations on both the clean
 retained and aperture-valid contact branches.
+
+B2-02W is terminal negative and confirms a timing bifurcation. At 120 ms the
+0.09 / 3 mm branch has -0.333 degrees aperture bias and 13.4% less slip but
+loses at source 385; at 100 ms it launches to 0.318 m. B2-02X instead targets
+the unreleased 0.10 / 4 mm branch's excessive low-load friction. It crosses
+sliding friction 0.4--3.5 and lower torsional friction at 1.2, 1.8, and 2.6,
+and tightens the evaluator with a required-release gate. Staying attached to
+the gripper can no longer satisfy the campaign even below the energy ceiling.

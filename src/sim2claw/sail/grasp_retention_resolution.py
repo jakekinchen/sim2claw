@@ -91,6 +91,9 @@ KINEMATIC_JAW_SCHEMA = (
 PHASE_ALIGNMENT_SCHEMA = (
     "sim2claw.sail_grasp_retention_phase_alignment_campaign.v1"
 )
+FRICTION_RELEASE_SCHEMA = (
+    "sim2claw.sail_grasp_retention_friction_release_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -161,6 +164,7 @@ def load_grasp_retention_contract(
         ARM_TRACKING_UPPER_BOUND_SCHEMA,
         KINEMATIC_JAW_SCHEMA,
         PHASE_ALIGNMENT_SCHEMA,
+        FRICTION_RELEASE_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -196,6 +200,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-arm-tracking-upper-bound-v1",
         "sail-grasp-retention-kinematic-jaw-v1",
         "sail-grasp-retention-phase-alignment-v1",
+        "sail-grasp-retention-friction-release-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 
@@ -314,6 +319,9 @@ def _anchor_result(
         reasons.append("loaded_aperture_mismatch")
     if not episode["lift_and_transport"]:
         reasons.append("anchor_transport_failure")
+    released = bool(episode.get("released", False))
+    if acceptance.get("anchor_release_required") and not released:
+        reasons.append("anchor_release_failure")
     if reduction < float(
         acceptance["anchor_post_grasp_slip_relative_reduction_minimum"]
     ):
@@ -358,6 +366,7 @@ def _anchor_result(
         "loaded_aperture_bias_degrees": bias,
         "absolute_loaded_aperture_bias_degrees": abs(bias),
         "lift_and_transport": bool(episode["lift_and_transport"]),
+        "released": released,
         "piece_lifted": bool(episode["piece_lifted"]),
         "bilateral_lift_retention": bool(episode["bilateral_lift_retention"]),
         "bilateral_lift_retention_seconds": float(
