@@ -488,6 +488,37 @@ def test_force_trigger_family_arms_only_in_recorded_closure_phase() -> None:
     assert contract["proof_boundary"]["simulator_ctrl_mutable"] is False
 
 
+def test_constant_force_family_removes_contact_trigger() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_constant_force_v1.json"
+        )
+    )
+
+    family = contract["frozen_candidate_family"]
+    assert len(family) == 18
+    assert contract["base_parameters"]["gripper_piece_contact_force_limit_multiplier"] == 1.0
+    assert contract["base_parameters"]["gripper_contact_force_limit_latch_enabled"] is False
+    assert contract["base_parameters"]["gripper_contact_force_limit_ramp_seconds"] == 0.0
+    assert min(
+        row["overrides"].get(
+            "gripper_force_limit_multiplier",
+            contract["base_parameters"]["gripper_force_limit_multiplier"],
+        )
+        for row in family
+    ) == 0.04
+    assert max(
+        row["overrides"].get(
+            "gripper_force_limit_multiplier",
+            contract["base_parameters"]["gripper_force_limit_multiplier"],
+        )
+        for row in family
+    ) == 0.3
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

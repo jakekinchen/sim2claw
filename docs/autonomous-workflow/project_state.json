@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_force_trigger_v1",
-  "current_milestone": "B2_02N_FROZEN_FORCE_TRIGGER_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_constant_force_v1",
+  "current_milestone": "B2_02O_FROZEN_CONSTANT_FORCE_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "force_ramp_one_gate_frontier_contact_chatter_diagnosed_closure_trigger_followup_frozen",
+    "status": "closure_trigger_removes_chatter_and_exposes_retention_loss_constant_force_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -654,7 +654,8 @@
       "B2-02K": "completed_terminal_negative",
       "B2-02L": "completed_terminal_negative",
       "B2-02M": "completed_terminal_negative",
-      "B2-02N": "in_progress",
+      "B2-02N": "completed_terminal_negative",
+      "B2-02O": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -847,6 +848,19 @@
       "lift_and_transport": false
     },
     "force_trigger_contract": "configs/sail/grasp_retention_force_trigger_v1.json",
+    "force_trigger_anchor_pass_count": 0,
+    "force_trigger_receipt_sha256": "96728d2908a7fb6afc0357ecddb1cc7638a45fdffd26437fa330b54f9be92491",
+    "force_trigger_receipt_digest": "6e6e278019084d8cb4b339d6fd5c9f0f04b5a9a4412c9bdf2946a6fc8248c741",
+    "force_trigger_clean_frontier": {
+      "candidate_id": "threshold_000_dwell_0025_ramp_025",
+      "force_target_transition_count": 7,
+      "contact_loss_source_index": 385,
+      "loaded_aperture_bias_degrees": 0.005683879609445707,
+      "post_grasp_slip_relative_reduction": 0.44978117767943754,
+      "maximum_transport_progress_after_lift": 0.0,
+      "classification": "chatter_repaired_but_task_retention_terminal_negative"
+    },
+    "constant_force_contract": "configs/sail/grasp_retention_constant_force_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false

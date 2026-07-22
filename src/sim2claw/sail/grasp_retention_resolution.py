@@ -64,6 +64,9 @@ FORCE_RAMP_SCHEMA = "sim2claw.sail_grasp_retention_force_ramp_campaign.v1"
 FORCE_TRIGGER_SCHEMA = (
     "sim2claw.sail_grasp_retention_force_trigger_campaign.v1"
 )
+CONSTANT_FORCE_SCHEMA = (
+    "sim2claw.sail_grasp_retention_constant_force_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -125,6 +128,7 @@ def load_grasp_retention_contract(
         VERTICAL_CONTACT_SCHEMA,
         FORCE_RAMP_SCHEMA,
         FORCE_TRIGGER_SCHEMA,
+        CONSTANT_FORCE_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -151,6 +155,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-vertical-contact-v1",
         "sail-grasp-retention-force-ramp-v1",
         "sail-grasp-retention-force-trigger-v1",
+        "sail-grasp-retention-constant-force-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 

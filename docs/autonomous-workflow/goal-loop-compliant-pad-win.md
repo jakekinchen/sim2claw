@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02M COMPLETE; B2-02N IN PROGRESS`
+Status: `ACTIVE — B2-02N COMPLETE; B2-02O IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -29,7 +29,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02K | complete, terminal negative | coverage-axis offsets change the sleeve footprint but not the vertical pawn contact point |
 | B2-02L | complete, terminal negative | vertical offsets preserve the same pawn-relative manifold; force bifurcation dominates |
 | B2-02M | complete, terminal negative | ramp removes most launches; best valid branch still makes 688 target transitions and misses transport |
-| B2-02N | in progress | closure-phase-gated current limit with ramp/latch cross around valid frontier |
+| B2-02N | complete, terminal negative | phase gate cuts chatter to 5 transitions and exposes loss at source 385 |
+| B2-02O | in progress | constant motor force/current limit with no contact-triggered switching |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -175,3 +176,13 @@ start when the open jaw brushes non-target pawns. B2-02N optionally arms the
 load limit only after the immutable source gripper command crosses a frozen
 closure threshold. It crosses threshold, latch dwell, and ramp duration without
 changing the action or control arrays, and retains the excessive-energy gate.
+
+B2-02N reduces force-target transitions from 688 to five at threshold 0 rad and
+short latch dwell, with valid aperture and improved slip. Once chatter is
+removed, however, contact ends at source 385 and transport progress is zero.
+This demonstrates that the apparent late retention in the hybrid model was an
+energy artifact. B2-02O removes the contact trigger entirely: the actuator has
+one constant force range throughout replay, as a fixed motor current/torque
+limit would. The frozen 0.04--0.30 absolute multiplier sweep is centered on
+0.0645, equal to the prior 3.0 nominal multiplier times the 0.0215 loaded
+multiplier, and crosses bounded joint damping only.
