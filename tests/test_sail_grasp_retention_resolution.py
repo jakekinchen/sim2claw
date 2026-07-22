@@ -724,6 +724,51 @@ def test_kinematic_jaw_family_crosses_declared_contact_frontiers() -> None:
     } == {(0.09, 0.003), (0.095, 0.0035), (0.1, 0.004)}
 
 
+def test_phase_alignment_family_uses_only_declared_joint_delays() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_phase_alignment_v1.json"
+        )
+    )
+
+    family = contract["frozen_candidate_family"]
+    assert len(family) == 18
+    assert {
+        row["overrides"].get(
+            "gripper_force_limit_multiplier",
+            contract["base_parameters"]["gripper_force_limit_multiplier"],
+        )
+        for row in family
+    } == {0.09, 0.1}
+    assert {
+        row["overrides"].get(
+            "rubber_tip_compliance_travel_m",
+            contract["base_parameters"]["rubber_tip_compliance_travel_m"],
+        )
+        for row in family
+    } == {0.003, 0.004}
+    allowed = {
+        "gripper_force_limit_multiplier",
+        "rubber_tip_compliance_travel_m",
+        "application_delay_gripper_seconds",
+        "application_delay_elbow_flex_seconds",
+        "application_delay_shoulder_lift_seconds",
+        "application_delay_shoulder_pan_seconds",
+        "application_delay_wrist_flex_seconds",
+        "application_delay_wrist_roll_seconds",
+    }
+    assert all(set(row["overrides"]) <= allowed for row in family)
+    assert all(
+        0.08 <= float(value) <= 0.12
+        for row in family
+        for key, value in row["overrides"].items()
+        if key.startswith("application_delay_")
+    )
+
+
 def test_anchor_result_rejects_measured_state_replay() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

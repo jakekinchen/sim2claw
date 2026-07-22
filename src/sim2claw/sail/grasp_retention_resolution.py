@@ -88,6 +88,9 @@ ARM_TRACKING_UPPER_BOUND_SCHEMA = (
 KINEMATIC_JAW_SCHEMA = (
     "sim2claw.sail_grasp_retention_kinematic_jaw_campaign.v1"
 )
+PHASE_ALIGNMENT_SCHEMA = (
+    "sim2claw.sail_grasp_retention_phase_alignment_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -157,6 +160,7 @@ def load_grasp_retention_contract(
         FLEXURAL_RUBBER_SCHEMA,
         ARM_TRACKING_UPPER_BOUND_SCHEMA,
         KINEMATIC_JAW_SCHEMA,
+        PHASE_ALIGNMENT_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -191,6 +195,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-flexural-rubber-v1",
         "sail-grasp-retention-arm-tracking-upper-bound-v1",
         "sail-grasp-retention-kinematic-jaw-v1",
+        "sail-grasp-retention-phase-alignment-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 

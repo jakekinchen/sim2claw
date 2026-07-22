@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_kinematic_jaw_v1",
-  "current_milestone": "B2_02V_KINEMATIC_JAW_C2_SCREEN_FROZEN",
+  "active_campaign": "sail_grasp_retention_phase_alignment_v1",
+  "current_milestone": "B2_02W_PHASE_ALIGNMENT_C2_SCREEN_FROZEN",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "arm_tracking_upper_bound_negative_kinematic_jaw_followup_frozen",
+    "status": "kinematic_jaw_terminal_negative_phase_alignment_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -662,7 +662,8 @@
       "B2-02S": "completed_terminal_negative",
       "B2-02T": "completed_terminal_negative",
       "B2-02U": "completed_diagnostic_negative",
-      "B2-02V": "in_progress",
+      "B2-02V": "completed_terminal_negative",
+      "B2-02W": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -959,6 +960,18 @@
       "simulator_candidate_promotion_allowed": false
     },
     "kinematic_jaw_contract": "configs/sail/grasp_retention_kinematic_jaw_v1.json",
+    "kinematic_jaw_anchor_pass_count": 0,
+    "kinematic_jaw_receipt_sha256": "33fcd36f5c045a7ebb08385bb9da5e87a9d618e72b588fd818e5b9ad9b2ad3a9",
+    "kinematic_jaw_receipt_digest": "af7884513f16736c8eef0a436d1a86a939724eddf3b57eec95c86cd77f6727ee",
+    "kinematic_jaw_frontier": {
+      "candidate_id": "force_0095_travel_0035_zero_m03",
+      "contact_loss_source_index": 377,
+      "loaded_aperture_bias_degrees": 0.4051467194115885,
+      "post_grasp_slip_relative_reduction": 0.39511473211566633,
+      "maximum_transport_progress_after_lift": 0.018101241986480773,
+      "lift_and_transport": false
+    },
+    "phase_alignment_contract": "configs/sail/grasp_retention_phase_alignment_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false
