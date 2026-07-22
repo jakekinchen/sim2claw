@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_arm_tracking_upper_bound_v1",
-  "current_milestone": "B2_02U_ARM_TRACKING_CAUSAL_UPPER_BOUND_FROZEN",
+  "active_campaign": "sail_grasp_retention_kinematic_jaw_v1",
+  "current_milestone": "B2_02V_KINEMATIC_JAW_C2_SCREEN_FROZEN",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "flexural_terminal_negative_arm_tracking_upper_bound_frozen",
+    "status": "arm_tracking_upper_bound_negative_kinematic_jaw_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -661,7 +661,8 @@
       "B2-02R": "completed_terminal_negative",
       "B2-02S": "completed_terminal_negative",
       "B2-02T": "completed_terminal_negative",
-      "B2-02U": "in_progress",
+      "B2-02U": "completed_diagnostic_negative",
+      "B2-02V": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -943,6 +944,21 @@
       "rejected_as_excessive_simulated_energy": true
     },
     "arm_tracking_upper_bound_contract": "configs/sail/grasp_retention_arm_tracking_upper_bound_v1.json",
+    "arm_tracking_upper_bound_anchor_pass_count": 0,
+    "arm_tracking_upper_bound_receipt_sha256": "cac5e4b821df44a591ba1253e8bc278c96d37deb86b912f5f0af2d7985c20f59",
+    "arm_tracking_upper_bound_receipt_digest": "743f6c2e04b4cb7e1caffb04e283cf1e3fcff32ea5393eb1b10a38b52c67d2b1",
+    "arm_tracking_upper_bound_finding": {
+      "candidate_id": "measured_state_upper_bound",
+      "ee_rms_m": 0.0011341023167553363,
+      "loaded_aperture_bias_degrees": -0.0000031434797363755658,
+      "maximum_piece_rise_m": 0.006139506555901786,
+      "bilateral_contact_observed": false,
+      "maximum_contact_span_m": 0.0,
+      "fixed_pad_contact_observed": true,
+      "moving_pad_contact_observed": false,
+      "simulator_candidate_promotion_allowed": false
+    },
+    "kinematic_jaw_contract": "configs/sail/grasp_retention_kinematic_jaw_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false

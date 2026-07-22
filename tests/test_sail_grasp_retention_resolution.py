@@ -685,6 +685,45 @@ def test_arm_tracking_upper_bound_is_explicitly_nonpromotable() -> None:
     assert not contract["proof_boundary"]["simulator_candidate_promotion_allowed"]
 
 
+def test_kinematic_jaw_family_crosses_declared_contact_frontiers() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_kinematic_jaw_v1.json"
+        )
+    )
+
+    family = contract["frozen_candidate_family"]
+    assert len(family) == 18
+    assert not any(
+        row["overrides"].get("diagnostic_measured_joint_state_replay", False)
+        for row in family
+    )
+    zeros = {
+        row["overrides"].get(
+            "gripper_kinematic_zero_offset_degrees",
+            contract["base_parameters"]["gripper_kinematic_zero_offset_degrees"],
+        )
+        for row in family
+    }
+    assert zeros == {-6.0, -5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0}
+    assert {
+        (
+            row["overrides"].get(
+                "gripper_force_limit_multiplier",
+                contract["base_parameters"]["gripper_force_limit_multiplier"],
+            ),
+            row["overrides"].get(
+                "rubber_tip_compliance_travel_m",
+                contract["base_parameters"]["rubber_tip_compliance_travel_m"],
+            ),
+        )
+        for row in family
+    } == {(0.09, 0.003), (0.095, 0.0035), (0.1, 0.004)}
+
+
 def test_anchor_result_rejects_measured_state_replay() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

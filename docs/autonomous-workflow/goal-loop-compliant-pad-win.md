@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02T COMPLETE; B2-02U IN PROGRESS`
+Status: `ACTIVE — B2-02U COMPLETE; B2-02V IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -36,7 +36,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02R | complete, terminal negative | compiled normal offsets are dynamically absorbed by slide-mounted pads |
 | B2-02S | complete, terminal negative | stiction changes regimes; transport branches still lose early with aperture mismatch |
 | B2-02T | complete, terminal negative | bounded flexure finds a retained/slip branch, but no valid task transport; 4 mm branch never releases and is rejected for 0.310 m rise |
-| B2-02U | in progress | measured-joint-state causal upper bound, explicitly non-promotable |
+| B2-02U | complete, diagnostic negative | near-exact measured state has 1.1 mm EE RMS but only fixed-pad C2 contact, zero bilateral span, and 6.1 mm rise |
+| B2-02V | in progress | bounded moving-jaw kinematic-zero sweep across retained and aperture-valid force-flexure frontiers |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -245,3 +246,12 @@ returns upward, reaching a rejected 0.310 m rise. B2-02U freezes a two-member
 causal upper bound: the non-launching 0.09 / 3 mm contact model normally, then
 with measured joint state forced. The latter is explicitly non-promotable and
 can only determine whether arm-response mismatch blocks the task consequence.
+
+B2-02U rejects arm-response tuning as the next lever. Forcing measured joint
+state reduces EE RMS to 1.1 mm and gripper bias to effectively zero, yet the
+pawn rises only 6.1 mm. During physical closure the simulated fixed pad touches
+C2 but the moving pad never does, so bilateral span remains exactly zero.
+B2-02V therefore tests a bounded -6 to +2 degree moving-jaw kinematic zero
+across the retained 0.09 / 3 mm, interpolated 0.095 / 3.5 mm, and aperture-valid
+0.10 / 4 mm branches. Unlike B2-02U, every B2-02V candidate is a normal dynamic
+replay and can advance only by passing the unchanged composite gates.
