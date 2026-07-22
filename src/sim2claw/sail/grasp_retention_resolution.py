@@ -79,6 +79,9 @@ INWARD_RUBBER_SCHEMA = (
 NOSLIP_RUBBER_SCHEMA = (
     "sim2claw.sail_grasp_retention_noslip_rubber_campaign.v1"
 )
+FLEXURAL_RUBBER_SCHEMA = (
+    "sim2claw.sail_grasp_retention_flexural_rubber_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -145,6 +148,7 @@ def load_grasp_retention_contract(
         ROUNDED_RUBBER_SCHEMA,
         INWARD_RUBBER_SCHEMA,
         NOSLIP_RUBBER_SCHEMA,
+        FLEXURAL_RUBBER_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -176,6 +180,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-rounded-rubber-v1",
         "sail-grasp-retention-inward-rubber-v1",
         "sail-grasp-retention-noslip-rubber-v1",
+        "sail-grasp-retention-flexural-rubber-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 

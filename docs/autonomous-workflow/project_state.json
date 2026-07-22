@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_noslip_rubber_v1",
-  "current_milestone": "B2_02S_FROZEN_NOSLIP_RUBBER_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_flexural_rubber_v1",
+  "current_milestone": "B2_02T_FROZEN_FLEXURAL_RUBBER_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "inward_offset_nonidentifying_noslip_stiction_followup_frozen",
+    "status": "noslip_terminal_negative_explicit_flexural_travel_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -659,7 +659,8 @@
       "B2-02P": "completed_terminal_negative",
       "B2-02Q": "completed_terminal_negative",
       "B2-02R": "completed_terminal_negative",
-      "B2-02S": "in_progress",
+      "B2-02S": "completed_terminal_negative",
+      "B2-02T": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -907,6 +908,18 @@
     "inward_rubber_receipt_digest": "1d9896f5092be3beace2eb90933cb8bd1fcd95e3db6fadec1b2d781fc887608d",
     "inward_rubber_finding": "normal_offsets_compile_but_are_dynamically_absorbed_by_slide_mounted_pad_at_fixed_force",
     "noslip_rubber_contract": "configs/sail/grasp_retention_noslip_rubber_v1.json",
+    "noslip_rubber_anchor_pass_count": 0,
+    "noslip_rubber_receipt_sha256": "5c424105507504286e0222b10fb30eee8621a462849e0dfd3dc64f2fd1283b41",
+    "noslip_rubber_receipt_digest": "77a66c71e924339852d3dc1668b47add7a6b308346467d420f03d29ddf2e6f8f",
+    "noslip_rubber_transport_frontier": {
+      "candidate_id": "pyramidal_noslip_005",
+      "contact_loss_source_index": 322,
+      "loaded_aperture_bias_degrees": -3.224059388491569,
+      "post_grasp_slip_relative_reduction": 0.6441063951932172,
+      "maximum_transport_progress_after_lift": 0.5420693495646497,
+      "lift_and_transport": true
+    },
+    "flexural_rubber_contract": "configs/sail/grasp_retention_flexural_rubber_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false

@@ -635,6 +635,37 @@ def test_noslip_rubber_family_crosses_solver_stiction() -> None:
     assert contract["acceptance"]["anchor_maximum_force_target_transition_count"] == 0
 
 
+def test_flexural_rubber_family_declares_long_unilateral_travel() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_flexural_rubber_v1.json"
+        )
+    )
+
+    family = contract["frozen_candidate_family"]
+    assert len(family) == 18
+    assert contract["base_parameters"]["rubber_tip_compliance_compression_only"]
+    travels = {
+        row["overrides"].get(
+            "rubber_tip_compliance_travel_m",
+            contract["base_parameters"]["rubber_tip_compliance_travel_m"],
+        )
+        for row in family
+    }
+    assert travels == {0.0015, 0.002, 0.003, 0.004}
+    forces = {
+        row["overrides"].get(
+            "gripper_force_limit_multiplier",
+            contract["base_parameters"]["gripper_force_limit_multiplier"],
+        )
+        for row in family
+    }
+    assert forces == {0.07, 0.08, 0.09, 0.1, 0.11, 0.12}
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

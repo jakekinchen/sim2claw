@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02R COMPLETE; B2-02S IN PROGRESS`
+Status: `ACTIVE — B2-02S COMPLETE; B2-02T IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -34,7 +34,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02P | complete, terminal negative | unilateral range fixes 3x overtravel; flat boxes still lose before transport |
 | B2-02Q | complete, terminal negative | only 3 mm capsule contacts; transport branch loses at 318 with aperture mismatch |
 | B2-02R | complete, terminal negative | compiled normal offsets are dynamically absorbed by slide-mounted pads |
-| B2-02S | in progress | no-slip/stiction solver cross on constant-force unilateral rubber model |
+| B2-02S | complete, terminal negative | stiction changes regimes; transport branches still lose early with aperture mismatch |
+| B2-02T | in progress | explicit 1.5--4 mm one-sided flexural band travel with constant force |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -226,3 +227,11 @@ stiction directly. The current model uses zero MuJoCo no-slip iterations. The
 frozen family crosses 1--50 no-slip passes, friction improvement ratios,
 Newton/CG/PGS solvers, and elliptic/pyramidal cones while holding geometry,
 constant motor force, unilateral travel, actions, controls, and gates fixed.
+
+B2-02S does not solve the gap. Its pyramidal 5-iteration branch transports but
+loses contact at source 322 and over-closes by 3.22 degrees; high-impratio
+elliptic contact is aperture-valid but loses at 301. B2-02T interprets the
+earlier ~3 mm motion as effective wrapped-band flexure rather than permitting a
+soft 1 mm joint to overrun. It explicitly freezes unilateral travel at
+1.5--4 mm and crosses constant force 0.07--0.12. Thus any larger pad motion is
+bounded, recorded, and physically interpretable as a different contact model.
