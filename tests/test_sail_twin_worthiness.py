@@ -59,6 +59,27 @@ def test_capabilities_require_the_declared_level() -> None:
     assert not capabilities_for_level("TW-SELECTION")["physical_canary"]
 
 
+def test_gold_17_retained_interaction_gate() -> None:
+    verdict = gate_verdict(
+        required=["physical_contact_state", "physical_contact_force"],
+        available={"physical_contact_state": False, "physical_contact_force": False},
+        threshold_failures=[],
+    )
+    assert verdict["status"] == "not_evaluable"
+    assert resolve_level({"TW-G0": {"status": "pass"}, "TW-G1": {"status": "pass"}, "TW-G2": verdict}) == "TW-REPLAY"
+
+
+def test_gold_18_policy_concordance_missing() -> None:
+    verdict = gate_verdict(
+        required=["policy_rank_concordance"],
+        available={"policy_rank_concordance": False},
+        threshold_failures=[],
+    )
+    assert verdict["status"] == "not_evaluable"
+    gates = {"TW-G0": {"status": "pass"}, "TW-G1": {"status": "pass"}, "TW-G2": {"status": "pass"}, "TW-G3": verdict}
+    assert resolve_level(gates) == "TW-DATA"
+
+
 def test_gold_19_modified_certificate_revokes_capability() -> None:
     certificate = json.loads(FIXTURE.read_text())
     assert certificate_is_available(certificate)

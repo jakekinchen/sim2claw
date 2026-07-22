@@ -1,0 +1,25 @@
+{
+  "schema_version": "sim2claw.sail_seeded_benchmark_campaign.v1",
+  "campaign_id": "sail-seeded-benchmark-v1",
+  "generated_at": "2026-07-22T03:35:00-05:00",
+  "public_seed": 2026072201,
+  "sealed_seed": 2026072202,
+  "samples_per_split": 48,
+  "source_bindings": {
+    "golden_registry": {"path": "tests/fixtures/sail/golden_cases_v1.json", "sha256": "a727a189285703dde745991979f856ca23ed1fa47b8cd08c071e6c8ba09ca514"},
+    "acquisition_config": {"path": "configs/sail/acquisition_v1.json", "sha256": "02bc19d8d8851fdc0199f8cb70025fea589260a36aac6cf480625b1f592e3411"},
+    "acquisition_ranking": {"path": "outputs/sail/retired-bg-v1/acquisition/acquisition_ranking.json", "sha256": "a59b2a9b242c35425515973edee9807a0dfdd7c8bd4daa385b12b1cf71e7fb56"}
+  },
+  "fault_cases": [
+    {"case_id": "fault-timing", "family": "timing_delay", "case_type": "single_fault", "hidden_mechanisms": ["timing_delay"], "parameter_envelope": [-0.2, 0.2], "true_parameter": 0.12, "allowed_probes": ["command_frequency"], "oracle_influence_set": ["timing_schedule"]},
+    {"case_id": "fault-reset", "family": "reset_reference", "case_type": "single_fault", "hidden_mechanisms": ["reset_reference"], "parameter_envelope": [-0.1, 0.1], "true_parameter": -0.04, "allowed_probes": ["reset_reference"], "oracle_influence_set": ["initial_state"]},
+    {"case_id": "fault-deadband", "family": "deadband_hysteresis", "case_type": "missing_observable", "hidden_mechanisms": ["deadband_hysteresis"], "parameter_envelope": [0.0, 5.0], "true_parameter": 2.0, "allowed_probes": ["small_amplitude_sweep"], "oracle_influence_set": ["joint_actuator"]},
+    {"case_id": "fault-load-timing", "family": "load_compliance", "case_type": "compensating_two_fault", "hidden_mechanisms": ["load_compliance", "timing_delay"], "parameter_envelope": [-2.0, 2.0], "true_parameter": -0.8, "allowed_probes": ["simulated_load", "command_frequency"], "oracle_influence_set": ["load_candidate", "timing_candidate"]},
+    {"case_id": "fault-camera", "family": "camera_timing_extrinsics", "case_type": "distractor_history", "hidden_mechanisms": ["camera_timing_extrinsics"], "parameter_envelope": [-0.5, 0.5], "true_parameter": 0.18, "allowed_probes": ["camera_motion", "static_extrinsic"], "oracle_influence_set": ["camera_observation"]},
+    {"case_id": "fault-gripper", "family": "gripper_contact_geometry", "case_type": "context_specific", "hidden_mechanisms": ["gripper_contact_geometry"], "parameter_envelope": [0.0, 0.01], "true_parameter": 0.003, "allowed_probes": ["aperture", "tip_geometry"], "oracle_influence_set": ["gripper", "jaw_collision"]},
+    {"case_id": "fault-contact", "family": "contact_friction_compliance", "case_type": "missing_observable", "hidden_mechanisms": ["contact_friction_compliance"], "parameter_envelope": [0.1, 4.0], "true_parameter": 1.7, "allowed_probes": ["sliding_friction"], "oracle_influence_set": ["contact_material"]},
+    {"case_id": "fault-object-support", "family": "object_dynamics_support_height", "case_type": "compensating_two_fault", "hidden_mechanisms": ["object_dynamics", "support_height"], "parameter_envelope": [-0.05, 4.0], "true_parameter": 1.2, "allowed_probes": ["object_mass", "support_height"], "oracle_influence_set": ["pawn_body", "support_geometry"]}
+  ],
+  "methods": ["parameter_only", "sequential_no_revisit", "full_batch_oracle", "random_probe", "residual_magnitude", "sail_without_invariance", "sail_without_loop_closure", "sail_without_structural_acquisition", "sail_deterministic", "sail_plus_agent_fixture"],
+  "authority": {"sealed_access_by_method": false, "evaluator_mutation": false, "action_mutation": false, "training_admission": false, "policy_selection": false, "physical_capture": false, "robot_motion": false, "physical_transfer": false}
+}

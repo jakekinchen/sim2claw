@@ -18,6 +18,7 @@ from .influence import discover_influence_set
 from .loop_closure import compile_loop_closure, run_gold_10_fixture
 from .invariance import compile_invariance, evaluate_invariance
 from .acquisition import compile_acquisition, rank_acquisition
+from .benchmark import build_benchmark, compile_benchmark
 
 __all__ = [
     "SailContractError",
@@ -46,4 +47,6 @@ __all__ = [
     "evaluate_invariance",
     "compile_acquisition",
     "rank_acquisition",
+    "build_benchmark",
+    "compile_benchmark",
 ]

@@ -1,6 +1,6 @@
 # SAIL/ClawLoop Phase 1 Goal
 
-Status: `ACTIVE — P1-00 THROUGH P1-09 COMPLETE; P1-10 IN PROGRESS`
+Status: `ACTIVE — P1-00 THROUGH P1-10 COMPLETE; P1-11 IN PROGRESS`
 
 The active program authority is
 [`docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md`](docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md).
@@ -14,10 +14,10 @@ simulator evidence, and all ACT/GR00T data generation or policy selection stays
 closed unless an evaluator-owned TwinWorthiness certificate opens the declared
 capability. Source actions remain byte-identical in the action-frozen lane.
 
-Current milestone: **P1-10 — Build the seeded SAIL benchmark**.
+Current milestone: **P1-11 — Add the governed Inspect agent campaign**.
 
 Active brief:
-[`docs/briefs/025-sail-seeded-and-sealed-benchmark.md`](docs/briefs/025-sail-seeded-and-sealed-benchmark.md).
+[`docs/briefs/026-sail-governed-inspect-campaign.md`](docs/briefs/026-sail-governed-inspect-campaign.md).
 
 Live milestone status is maintained in the master plan's Section 12 ledger and
 in `docs/autonomous-workflow/project_state.json`. The research documents named

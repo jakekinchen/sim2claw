@@ -25,7 +25,7 @@ def ranking(config: dict) -> dict:
     return rank_acquisition(config)
 
 
-def test_gold_12_prefers_structural_discriminator(ranking: dict) -> None:
+def test_gold_12_structural_acquisition(ranking: dict) -> None:
     assert ranking["golden_cases"] == {"GOLD-12": True}
     assert ranking["selected_simulator_probe"] == "sim_load_frequency_discriminator"
     by_id = {row["candidate_id"]: row for row in ranking["rows"]}

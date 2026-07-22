@@ -32,7 +32,7 @@ def benchmarks(config: dict) -> dict:
     return run_seeded_invariance_benchmarks(config)
 
 
-def test_gold_11_context_specific_not_universal(benchmarks: dict) -> None:
+def test_gold_11_context_scope(benchmarks: dict) -> None:
     by_id = {row["mechanism_id"]: row for row in benchmarks["cases"]}
     assert benchmarks["golden_cases"] == {"GOLD-11": True}
     assert by_id["timing_delay_v1"]["verdict"] == "pass_declared_scope"

@@ -385,7 +385,7 @@ def test_repeated_compilation_is_byte_deterministic(tmp_path: Path) -> None:
     not (REPO_ROOT / "datasets" / "manipulation_source_recordings").is_dir(),
     reason="owner-local retained evidence is unavailable",
 )
-def test_gold_16_retained_evidence_exists_and_inventory_reconciles() -> None:
+def test_gold_16_retained_inventory() -> None:
     inventory = inventory_campaign(RETAINED_CAMPAIGN)
     assert inventory["status"] == "ready"
     assert inventory["counts"] == {
