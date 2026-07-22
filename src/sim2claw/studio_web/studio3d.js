@@ -53,6 +53,7 @@ class ThreeReplayViewer {
     this.onTime = null;
     this.onPlayState = null;
     this.cameraHome = null;
+    this.portraitInspection = null;
     this.renderWidth = 0;
     this.renderHeight = 0;
     this.active = true;
@@ -210,6 +211,17 @@ class ThreeReplayViewer {
     }
   }
 
+  isPortraitInspection() {
+    const parent = this.canvas.parentElement;
+    const viewportWidth = Math.max(1, parent?.clientWidth || 1);
+    const viewportHeight = Math.max(1, parent?.clientHeight || 1);
+    return Boolean(
+      this.trace
+      && viewportWidth <= 720
+      && viewportWidth / viewportHeight < 0.95
+    );
+  }
+
   resetCamera() {
     if (!this.manifest) return;
     const suggested = this.manifest.suggested_camera;
@@ -220,14 +232,8 @@ class ThreeReplayViewer {
     const position = suggested
       ? new THREE.Vector3().fromArray(suggested.position)
       : center.clone().add(new THREE.Vector3(0.8, -1.25, 0.72).multiplyScalar(extent));
-    const parent = this.canvas.parentElement;
-    const viewportWidth = Math.max(1, parent?.clientWidth || 1);
-    const viewportHeight = Math.max(1, parent?.clientHeight || 1);
-    const portraitInspection = (
-      this.trace
-      && viewportWidth <= 720
-      && viewportWidth / viewportHeight < 0.95
-    );
+    const portraitInspection = this.isPortraitInspection();
+    this.portraitInspection = portraitInspection;
     const photoBackground = this.bodyGroups.get("photo_background");
     if (photoBackground) photoBackground.visible = !portraitInspection;
     this.scene.background.setHex(portraitInspection ? 0xd7d7d5 : 0x111315);
@@ -368,6 +374,12 @@ class ThreeReplayViewer {
       this.renderer.setSize(width, height, false);
       this.camera.aspect = width / height;
       this.camera.updateProjectionMatrix();
+    }
+    if (
+      this.manifest
+      && this.portraitInspection !== this.isPortraitInspection()
+    ) {
+      this.resetCamera();
     }
   }
 
