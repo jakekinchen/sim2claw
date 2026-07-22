@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_core_cap_load_response_v1",
-  "current_milestone": "B2_02D_FROZEN_CORE_CAP_LOAD_RESPONSE_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_torque_latch_v1",
+  "current_milestone": "B2_02E_FROZEN_TORQUE_LATCH_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "core_anchored_cap_task_frontier_found_load_response_followup_frozen",
+    "status": "load_response_chatter_diagnosed_torque_latch_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -644,7 +644,8 @@
       "B2-02A": "completed_terminal_negative",
       "B2-02B": "completed_terminal_negative",
       "B2-02C": "completed_terminal_negative",
-      "B2-02D": "in_progress",
+      "B2-02D": "completed_terminal_negative",
+      "B2-02E": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -687,6 +688,26 @@
     "core_anchored_cap_receipt_sha256": "a32aa4f5e9a36d2f9c5565069d4a50b5f116fd747f7bb35bc420ccb4e58f87be",
     "core_anchored_cap_receipt_digest": "ede34f5ed869b1e1e450477f484dc22d9afa735540f56cba13695df530a4018b",
     "core_cap_load_response_contract": "configs/sail/grasp_retention_core_cap_load_response_v1.json",
+    "core_cap_load_response_anchor_pass_count": 0,
+    "core_cap_load_response_frontiers": {
+      "aperture_slip_rubber": {
+        "candidate_id": "force_002_mu_350",
+        "loaded_aperture_bias_degrees": 0.25436059200355765,
+        "post_grasp_slip_relative_reduction": 0.164170713244738,
+        "rubber_load_pair_fraction_after_lift": 0.9761904761904762,
+        "contact_loss_source_index": 280,
+        "lift_and_transport": false
+      },
+      "retention": {
+        "candidate_id": "force_005_mu_250",
+        "contact_loss_source_index": 407,
+        "loaded_aperture_bias_degrees": 5.581093613827735,
+        "lift_and_transport": false
+      }
+    },
+    "core_cap_load_response_receipt_sha256": "cb5da273ab43eecdf7797c15fb9b8620569b4aa93b491914352b34966fb62718",
+    "core_cap_load_response_receipt_digest": "173e38c437aa41eeb8dff98ade86e3be5f2bbcce1ffd06e666b62c8e769d3e58",
+    "torque_latch_contract": "configs/sail/grasp_retention_torque_latch_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false

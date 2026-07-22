@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02C COMPLETE; B2-02D IN PROGRESS`
+Status: `ACTIVE — B2-02D COMPLETE; B2-02E IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -19,7 +19,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02A | complete, terminal negative | all 18 widened free-surface candidates matched actions; zero passed; one lifted without retained bilateral load |
 | B2-02B | complete, terminal negative | one candidate lifted with 83.3% rubber load-pair participation but lost at frame 328; zero complete passes |
 | B2-02C | complete, terminal negative | direct 2x cap preserved C2 transport and 100% rubber load path but lost at frame 299 with 3.01 degree overclosure |
-| B2-02D | in progress | frozen contact-load force by rubber-friction cross on the direct core cap |
+| B2-02D | complete, terminal negative | force-friction cross exposed contact-trigger chatter; no full pass |
+| B2-02E | in progress | sustained-bilateral torque latch frozen; force ceiling persists until recorded opening without ctrl mutation |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -71,3 +72,12 @@ on rubber. Its remaining failures are early loss (frame 299), 3.01 degrees of
 overclosure, and only 4.7% slip improvement. B2-02D crosses a contact-conditioned
 force ceiling with bounded rubber friction on exactly that geometry, leaving
 source actions and the gripper command unchanged.
+
+B2-02D separates two sides of the target: force 0.02 / friction 3.5 passes
+aperture, slip, and rubber-dominance gates but loses contact at frame 280 and
+does not transport; force 0.05 / friction 2.5 retains past release to frame 407
+but swings to a 5.58-degree aperture bias and mostly rigid loading. The current
+force ceiling toggles with instantaneous contact, creating a discontinuity.
+B2-02E latches only the actuator force ceiling after sustained bilateral
+contact and releases it on the recorded opening command. It never overwrites
+the action or simulator control target.

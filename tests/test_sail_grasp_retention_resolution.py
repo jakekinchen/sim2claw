@@ -239,6 +239,26 @@ def test_core_cap_load_response_cross_is_bounded() -> None:
     ) == 3.5
 
 
+def test_torque_latch_family_never_mutates_control_target() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_torque_latch_v1.json"
+        )
+    )
+
+    assert len(contract["frozen_candidate_family"]) == 18
+    assert not contract["base_parameters"]["gripper_load_hold_enabled"]
+    assert all(
+        row["candidate_id"] == "baseline"
+        or row["overrides"]["gripper_contact_force_limit_latch_enabled"]
+        for row in contract["frozen_candidate_family"]
+    )
+    assert contract["proof_boundary"]["simulator_ctrl_mutable"] is False
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

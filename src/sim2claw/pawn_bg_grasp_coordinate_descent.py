@@ -1504,6 +1504,34 @@ def _run_episode(
         "latch_simulation_time_s": None,
         "release_simulation_time_s": None,
     }
+    force_latch_enabled = bool(
+        parameters.get("gripper_contact_force_limit_latch_enabled", False)
+    )
+    force_latch_dwell_seconds = float(
+        parameters.get("gripper_contact_force_limit_latch_dwell_seconds", 0.01)
+    )
+    force_latch_release_margin_degrees = float(
+        parameters.get("gripper_contact_force_limit_latch_release_margin_degrees", 2.0)
+    )
+    if not 0.0 <= force_latch_dwell_seconds <= 0.25:
+        raise GraspCoordinateDescentError(
+            "gripper_contact_force_limit_latch_dwell_seconds exceeds bounds"
+        )
+    if not 0.0 <= force_latch_release_margin_degrees <= 15.0:
+        raise GraspCoordinateDescentError(
+            "gripper_contact_force_limit_latch_release_margin_degrees exceeds bounds"
+        )
+    force_latch_dwell_steps = max(
+        1, round(force_latch_dwell_seconds / float(model.opt.timestep))
+    )
+    force_latch_state: dict[str, Any] = {
+        "armed": force_latch_enabled,
+        "active": False,
+        "bilateral_steps": 0,
+        "latch_action_rad": None,
+        "latch_simulation_time_s": None,
+        "release_simulation_time_s": None,
+    }
 
     def apply_response(action: np.ndarray) -> None:
         data.ctrl[actuator_ids] = action
@@ -1519,7 +1547,11 @@ def _run_episode(
         loaded_by_piece = False
         fixed_selected_contact = False
         moving_selected_contact = False
-        if gripper_load_multiplier != 1.0 or load_hold_enabled:
+        if (
+            gripper_load_multiplier != 1.0
+            or load_hold_enabled
+            or force_latch_enabled
+        ):
             for contact_index in range(data.ncon):
                 contact = data.contact[contact_index]
                 body1 = int(model.geom_bodyid[contact.geom1])
@@ -1540,6 +1572,37 @@ def _run_episode(
                     (body1 in moving_jaw_bodies and body2 == selected_body)
                     or (body2 in moving_jaw_bodies and body1 == selected_body)
                 )
+        force_limit_active = loaded_by_piece
+        if force_latch_enabled:
+            gripper_action = float(action[-1])
+            latch_action = force_latch_state["latch_action_rad"]
+            if force_latch_state["active"]:
+                if gripper_action > float(latch_action) + math.radians(
+                    force_latch_release_margin_degrees
+                ):
+                    force_latch_state["active"] = False
+                    force_latch_state["armed"] = False
+                    force_latch_state["release_simulation_time_s"] = float(
+                        data.time
+                    )
+                    force_limit_active = False
+                else:
+                    force_limit_active = True
+            elif force_latch_state["armed"]:
+                if fixed_selected_contact and moving_selected_contact:
+                    force_latch_state["bilateral_steps"] += 1
+                else:
+                    force_latch_state["bilateral_steps"] = 0
+                if (
+                    force_latch_state["bilateral_steps"]
+                    >= force_latch_dwell_steps
+                ):
+                    force_latch_state["active"] = True
+                    force_latch_state["latch_action_rad"] = gripper_action
+                    force_latch_state["latch_simulation_time_s"] = float(
+                        data.time
+                    )
+                    force_limit_active = True
         if load_hold_enabled:
             gripper_action = float(action[-1])
             target = load_hold_state["target_rad"]
@@ -1578,7 +1641,7 @@ def _run_episode(
                     data.ctrl[gripper_actuator_id] = target
         model.actuator_forcerange[gripper_actuator_id] = (
             nominal_force_range[gripper_actuator_id]
-            * (gripper_load_multiplier if loaded_by_piece else 1.0)
+            * (gripper_load_multiplier if force_limit_active else 1.0)
         )
         for joint_name in ("shoulder_lift", "elbow_flex"):
             index = BODY_JOINT_NAMES.index(joint_name)
@@ -2412,6 +2475,26 @@ def _run_episode(
                     "release_simulation_time_s"
                 ],
                 "simulator_actuator_transfer_mutated": load_hold_enabled,
+                "source_actions_mutated": False,
+            },
+            "force_limit_latch": {
+                "enabled": force_latch_enabled,
+                "trigger": (
+                    "sustained_bilateral_selected_pawn_contact"
+                    if force_latch_enabled
+                    else None
+                ),
+                "dwell_seconds": force_latch_dwell_seconds,
+                "release_margin_degrees": force_latch_release_margin_degrees,
+                "latched": force_latch_state["latch_action_rad"] is not None,
+                "latch_action_rad": force_latch_state["latch_action_rad"],
+                "latch_simulation_time_s": force_latch_state[
+                    "latch_simulation_time_s"
+                ],
+                "release_simulation_time_s": force_latch_state[
+                    "release_simulation_time_s"
+                ],
+                "simulator_ctrl_mutated": False,
                 "source_actions_mutated": False,
             },
         },
