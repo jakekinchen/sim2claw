@@ -295,6 +295,21 @@ def _custom_variant(
                 "modeled_mass_per_finger_kg": float(
                     parameters.get("rubber_tip_modeled_mass_per_finger_kg", 0.001)
                 ),
+                "compression_only": bool(
+                    parameters.get(
+                        "rubber_tip_compliance_compression_only", False
+                    )
+                ),
+                "limit_time_constant_s": float(
+                    parameters.get(
+                        "rubber_tip_compliance_limit_time_constant_s", 0.002
+                    )
+                ),
+                "limit_damping_ratio": float(
+                    parameters.get(
+                        "rubber_tip_compliance_limit_damping_ratio", 1.0
+                    )
+                ),
             },
             "contact_friction": {
                 "sliding_dimensionless": float(parameters["sliding_friction"]),

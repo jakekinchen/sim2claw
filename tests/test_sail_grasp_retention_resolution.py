@@ -519,6 +519,33 @@ def test_constant_force_family_removes_contact_trigger() -> None:
     ) == 0.3
 
 
+def test_compression_only_family_bounds_rubber_to_inward_travel() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_compression_only_v1.json"
+        )
+    )
+
+    family = contract["frozen_candidate_family"]
+    assert len(family) == 18
+    assert contract["base_parameters"]["rubber_tip_compliance_compression_only"]
+    assert contract["base_parameters"]["gripper_piece_contact_force_limit_multiplier"] == 1.0
+    assert contract["base_parameters"]["gripper_contact_force_limit_latch_enabled"] is False
+    assert contract["acceptance"]["anchor_maximum_force_target_transition_count"] == 0
+    assert {
+        row["overrides"].get(
+            "rubber_tip_compliance_stiffness_n_per_m",
+            contract["base_parameters"][
+                "rubber_tip_compliance_stiffness_n_per_m"
+            ],
+        )
+        for row in family
+    } == {200.0, 300.0, 500.0}
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02N COMPLETE; B2-02O IN PROGRESS`
+Status: `ACTIVE — B2-02O COMPLETE; B2-02P IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -30,7 +30,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02L | complete, terminal negative | vertical offsets preserve the same pawn-relative manifold; force bifurcation dominates |
 | B2-02M | complete, terminal negative | ramp removes most launches; best valid branch still makes 688 target transitions and misses transport |
 | B2-02N | complete, terminal negative | phase gate cuts chatter to 5 transitions and exposes loss at source 385 |
-| B2-02O | in progress | constant motor force/current limit with no contact-triggered switching |
+| B2-02O | complete, terminal negative | constant force eliminates chatter but no aperture-valid retained transport exists |
+| B2-02P | in progress | compression-only opposed pad joints with hard 0.5--1 mm inward travel |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -186,3 +187,14 @@ one constant force range throughout replay, as a fixed motor current/torque
 limit would. The frozen 0.04--0.30 absolute multiplier sweep is centered on
 0.0645, equal to the prior 3.0 nominal multiplier times the 0.0215 loaded
 multiplier, and crosses bounded joint damping only.
+
+B2-02O confirms zero force-target transitions across the family. Force 0.10
+retains to release source 401 but over-closes by 3.31 degrees and does not
+transport; force 0.08 / damping 2.0 transports but loses contact at 355 and
+over-closes by 1.59 degrees. Inspection of the compliant-pad trace reveals that
+the nominal 1 mm pads can extend roughly 3 mm because their slide ranges are
+symmetric and softly limited. B2-02P makes the fixed pad compress only in the
+negative local-normal direction and the moving pad only in the positive
+direction, each from its undeformed zero. It gives the joint limit an explicit
+0.5--4 ms response and crosses 0.5--1 mm travel, 0.2--0.5 kN/m stiffness, and
+the clean constant-force frontier.

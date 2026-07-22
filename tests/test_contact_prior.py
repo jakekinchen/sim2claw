@@ -262,6 +262,39 @@ class RubberTipContactPriorTest(unittest.TestCase):
             self.assertEqual(float(model.dof_damping[dof_id]), 2.0)
             self.assertAlmostEqual(binding["modeled_added_mass_kg"], 1 / 3000)
 
+    def test_compression_only_normal_compliance_uses_opposed_unilateral_ranges(self) -> None:
+        base = load_simulator_variant("rubber_tip_high")
+        payload = copy.deepcopy(base.payload)
+        payload["normal_compliance"] = {
+            "enabled": True,
+            "travel_m": 0.001,
+            "stiffness_n_per_m": 300.0,
+            "damping_n_s_per_m": 1.095,
+            "modeled_mass_per_finger_kg": 0.001,
+            "compression_only": True,
+            "limit_time_constant_s": 0.002,
+            "limit_damping_ratio": 1.0,
+        }
+        variant = replace(base, payload=payload, variant_id="compression_only_test")
+        spec = build_scene_spec(mass_profile_path=None)
+        application = apply_contact_variant(spec, variant)
+        model = spec.compile()
+
+        for binding in application["bindings"]:
+            joint_id = mujoco.mj_name2id(
+                model, mujoco.mjtObj.mjOBJ_JOINT, binding["added_joint"]
+            )
+            expected = (
+                [-0.001, 0.0]
+                if binding["finger_id"] == "fixed"
+                else [0.0, 0.001]
+            )
+            self.assertTrue(np.allclose(model.jnt_range[joint_id], expected))
+            self.assertTrue(binding["normal_compliance"]["compression_only"])
+            self.assertEqual(
+                binding["normal_compliance"]["joint_range_m"], expected
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

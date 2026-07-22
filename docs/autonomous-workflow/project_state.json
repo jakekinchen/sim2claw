@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_constant_force_v1",
-  "current_milestone": "B2_02O_FROZEN_CONSTANT_FORCE_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_compression_only_v1",
+  "current_milestone": "B2_02P_FROZEN_COMPRESSION_ONLY_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "closure_trigger_removes_chatter_and_exposes_retention_loss_constant_force_followup_frozen",
+    "status": "constant_force_terminal_negative_pad_overtravel_diagnosed_compression_only_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -655,7 +655,8 @@
       "B2-02L": "completed_terminal_negative",
       "B2-02M": "completed_terminal_negative",
       "B2-02N": "completed_terminal_negative",
-      "B2-02O": "in_progress",
+      "B2-02O": "completed_terminal_negative",
+      "B2-02P": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -861,6 +862,18 @@
       "classification": "chatter_repaired_but_task_retention_terminal_negative"
     },
     "constant_force_contract": "configs/sail/grasp_retention_constant_force_v1.json",
+    "constant_force_anchor_pass_count": 0,
+    "constant_force_receipt_sha256": "707157fa7708f80bf47d30b99f35549388e2a116da84db359c69264a489f1af3",
+    "constant_force_receipt_digest": "ec2820d4f78c0e70cac64f57ca398b699d57972f6ed2390bfc16693ac7e4f2c5",
+    "constant_force_findings": {
+      "force_0100_contact_loss_source_index": 401,
+      "force_0100_loaded_aperture_bias_degrees": -3.308231076424693,
+      "force_0080_damping_200_lift_and_transport": true,
+      "force_0080_damping_200_contact_loss_source_index": 355,
+      "force_0080_damping_200_loaded_aperture_bias_degrees": -1.585779579758538,
+      "force_target_transition_count": 0
+    },
+    "compression_only_contract": "configs/sail/grasp_retention_compression_only_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false

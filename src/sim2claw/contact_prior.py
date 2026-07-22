@@ -682,6 +682,13 @@ def apply_contact_variant(
     compliance_mass_per_finger = float(
         normal_compliance.get("modeled_mass_per_finger_kg", 0.0)
     )
+    compression_only = bool(normal_compliance.get("compression_only", False))
+    compliance_limit_time_constant = float(
+        normal_compliance.get("limit_time_constant_s", 0.002)
+    )
+    compliance_limit_damping_ratio = float(
+        normal_compliance.get("limit_damping_ratio", 1.0)
+    )
     if compliant:
         if not 0.00025 <= compliance_travel <= 0.005:
             raise ValueError(
@@ -698,6 +705,14 @@ def apply_contact_variant(
         if not 0.0001 <= compliance_mass_per_finger <= 0.02:
             raise ValueError(
                 "rubber-tip modeled mass per finger must be within [0.0001, 0.02] kg"
+            )
+        if not 0.0005 <= compliance_limit_time_constant <= 0.02:
+            raise ValueError(
+                "rubber-tip compliance limit time constant must be within [0.0005, 0.02] s"
+            )
+        if not 0.5 <= compliance_limit_damping_ratio <= 2.0:
+            raise ValueError(
+                "rubber-tip compliance limit damping ratio must be within [0.5, 2]"
             )
     added_geoms: list[str] = []
     added_bodies: list[str] = []
@@ -744,15 +759,26 @@ def apply_contact_variant(
                 )
                 axis = [0.0, 0.0, 0.0]
                 axis[int(finger["normal_axis_index"])] = 1.0
+                joint_range = (
+                    [-compliance_travel, 0.0]
+                    if compression_only and finger["finger_id"] == "fixed"
+                    else [0.0, compliance_travel]
+                    if compression_only
+                    else [-compliance_travel, compliance_travel]
+                )
                 geom_parent.add_joint(
                     name=joint_name,
                     type=mujoco.mjtJoint.mjJNT_SLIDE,
                     axis=axis,
                     limited=True,
-                    range=[-compliance_travel, compliance_travel],
+                    range=joint_range,
                     stiffness=compliance_stiffness,
                     damping=compliance_damping,
                     springref=0.0,
+                    solref_limit=[
+                        compliance_limit_time_constant,
+                        compliance_limit_damping_ratio,
+                    ],
                 )
                 geom_position = [0.0, 0.0, 0.0]
                 geom_quat = [1.0, 0.0, 0.0, 0.0]
@@ -804,6 +830,10 @@ def apply_contact_variant(
                             "stiffness_n_per_m": compliance_stiffness,
                             "damping_n_s_per_m": compliance_damping,
                             "joint_axis_index": int(finger["normal_axis_index"]),
+                            "compression_only": compression_only,
+                            "joint_range_m": joint_range,
+                            "limit_time_constant_s": compliance_limit_time_constant,
+                            "limit_damping_ratio": compliance_limit_damping_ratio,
                         }
                         if compliant
                         else None
