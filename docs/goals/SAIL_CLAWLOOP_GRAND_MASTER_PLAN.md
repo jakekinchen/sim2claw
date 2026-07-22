@@ -1500,8 +1500,8 @@ Only one milestone should be `in_progress` in the active goal loop.
 | P1-11 Inspect agents | P1-10 | completed | existing GapBench extended with eight structural packets/eight typed tools; three deterministic development cases complete; six unequal-transport provider attempts retained as zero-cost scored failures; exact runtime/usage receipts; GOLD-13/14/24 |
 | P1-12 Retrospective case | P1-02–P1-09 | completed | 12 source-bound history triads, five boundary/reversal/coverage findings, two influence-bound graph edits, five reconstruction conditions, two vector figures, evaluator-owned TW-REPLAY certificate with TW-G2/TW-DATA closed |
 | P1-13 Prospective sim | P1-09, P1-12 | completed | preregistered four-trial load/frequency factorial, exact 368x6 action identity, full-vector retained results, graph delta/posterior/Phase-2 freeze; loop selects timing-rate probe without physical promotion |
-| P1-14 TwinWorthiness wiring | P1-01, P1-03, P1-08 | in_progress | fail-closed LF integration |
-| P1-15 Policy flywheel | P1-14 | pending | fixture proof; real lane gated |
+| P1-14 TwinWorthiness wiring | P1-01, P1-03, P1-08 | completed | exact-scope expiring capability envelopes; LF-08/09/11/13 recompute fail-closed decisions; seven revocation paths denied; current TW-REPLAY opens diagnostics only; synthetic higher-level branch reachability; GOLD-17/18/19 |
+| P1-15 Policy flywheel | P1-14 | in_progress | fixture proof; real lane gated |
 | P1-16 Studio | P1-03, P1-04, P1-14 | pending | phone-friendly bound views |
 | P1-17 Publication freeze | P1-10–P1-16 | pending | tables, figures, reproduction map |
 | P2-00 Hardware identity | Phase 1 exit, authority | blocked_external | new-workcell receipt |

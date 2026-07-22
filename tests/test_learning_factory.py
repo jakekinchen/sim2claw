@@ -28,6 +28,7 @@ from sim2claw.learning_factory_artifacts import (
     capture_training_candidate,
     compare_calibration_candidates,
     compile_cousin_batch,
+    canonical_digest,
     normalize_counterexamples,
     update_counterexample_registry,
 )
@@ -41,6 +42,8 @@ from sim2claw.project_bundle import (
     PROJECT_TRAINING_LOCK,
 )
 from sim2claw.studio_server import create_server
+from sim2claw.sail.contracts import seal_contract
+from sim2claw.sail.twin_worthiness import issue_capability_certificate
 
 
 def _write_json(path: Path, value: object) -> None:
@@ -128,6 +131,65 @@ def _write_factory_project(
         {"schema_version": "sim2claw.so101_mass_profile.v1", "fixture": True},
     )
     _write_json(sysid_path, {"fixture": True})
+    task_path = repo / "configs/tasks/fixture_goal_task.json"
+    distribution_path = repo / "configs/evaluations/fixture_distribution.json"
+    _write_json(task_path, {"task_id": "fixture_pose_conditioned_contact_skill"})
+    _write_json(
+        distribution_path,
+        {"distribution_id": "fixture-cousin-distribution-v1"},
+    )
+    identities = {
+        "evidence": ["a" * 64],
+        "graph": "b" * 64,
+        "posterior": "c" * 64,
+        "simulator": "d" * 64,
+        "evaluator": "e" * 64,
+        "policy_candidates": ["f" * 64],
+    }
+    base_certificate = seal_contract(
+        {
+            "schema_version": "sim2claw.twin_worthiness_certificate.v1",
+            "certificate_id": "learning-factory-selection-fixture",
+            "campaign_id": "learning-factory-fixture",
+            "identities": identities,
+            "gates": {
+                f"TW-G{index}": {
+                    "status": "pass",
+                    "reason": "synthetic learning-factory fixture",
+                    "evidence_ids": ["fixture"],
+                }
+                for index in range(5)
+            },
+            "level": "TW-SELECTION",
+            "authority": {
+                "data_generation": True,
+                "policy_selection": True,
+                "physical_canary": False,
+                "robot_motion": False,
+            },
+            "issued_at": "2026-07-22T00:00:00Z",
+        }
+    )
+    capability_scope = {
+        "twin_id": "fixture-calibrated-twin-v2",
+        "workcell_id": "fixture-workcell-v1",
+        "task_id": "fixture_pose_conditioned_contact_skill",
+        "distribution_id": "fixture-cousin-distribution-v1",
+        "task_contract_sha256": _sha256(task_path),
+        "distribution_sha256": _sha256(distribution_path),
+    }
+    capability_certificate = issue_capability_certificate(
+        base_certificate=base_certificate,
+        scope=capability_scope,
+        not_before="2026-07-22T00:00:00Z",
+        expires_at="2027-07-22T00:00:00Z",
+        issuance_request={
+            "issuer_owner": "deterministic_sail_evaluator",
+            "request_id": "learning-factory-selection-fixture",
+        },
+    )
+    capability_path = repo / "configs/sail/fixture_capability_certificate.json"
+    _write_json(capability_path, capability_certificate)
     _write_json(
         repo / project_path,
         {
@@ -147,6 +209,7 @@ def _write_factory_project(
                 "directed_skill_count": 12,
                 "directed_skill_ids": list(EXPECTED_BG_SKILL_IDS),
                 "include_a_or_h": False,
+                "workcell_registration": "fixture-workcell-v1",
             },
             "bundle_entries": list(PROJECT_BUNDLE_ENTRIES),
             "pipeline": copy.deepcopy(PROJECT_PIPELINE_CONTRACT),
@@ -166,6 +229,17 @@ def _write_factory_project(
                     "minimum_ready_episodes": 2,
                     "split_strategy": "deterministic_hash",
                     "held_out_column": None,
+                },
+                "curriculum": {
+                    "task_contract": task_path.relative_to(repo).as_posix()
+                },
+                "twin_worthiness": {
+                    "capability_certificate": capability_path.relative_to(repo).as_posix(),
+                    "decision_time": "2026-07-22T12:00:00Z",
+                    "distribution_contract": distribution_path.relative_to(repo).as_posix(),
+                    "scope": capability_scope,
+                    "expected_identities": identities,
+                    "external_authority": {},
                 },
             },
             "authority": dict(PROJECT_AUTHORITY_CONTRACT),
@@ -246,6 +320,43 @@ def test_factory_fixture_completes_all_stages_and_preserves_negative(tmp_path: P
     promotion = factory.explain("LF-13")["latest_result"]["output"]
     assert promotion["state"] == "promoted"
     assert promotion["physical_authority"] is False
+
+
+def test_lf08_stops_before_generation_when_capability_is_missing(tmp_path: Path) -> None:
+    project = _write_factory_project(tmp_path)
+    manifest = json.loads((tmp_path / project).read_text(encoding="utf-8"))
+    certificate = tmp_path / manifest["learning_factory"]["twin_worthiness"][
+        "capability_certificate"
+    ]
+    certificate.unlink()
+    factory = LearningFactory(project, repo_root=tmp_path)
+    assert factory.run_range("LF-00", "LF-07")["final_status"] == "passed"
+    result = factory.run_stage("LF-08")
+    assert result["status"] == "blocked"
+    assert result["proof_class"] == "twin_worthiness_capability_gate"
+    assert result["blockers"] == ["missing_capability_certificate"]
+    assert result["output"]["rows_generated"] == 0
+    assert result["output"]["training_rows_admitted"] == 0
+    assert result["output"]["policy_comparisons_published"] == 0
+
+
+def test_lf08_rechecks_scope_and_revokes_after_certificate_mutation(tmp_path: Path) -> None:
+    project = _write_factory_project(tmp_path)
+    manifest = json.loads((tmp_path / project).read_text(encoding="utf-8"))
+    certificate_path = tmp_path / manifest["learning_factory"]["twin_worthiness"][
+        "capability_certificate"
+    ]
+    certificate = json.loads(certificate_path.read_text(encoding="utf-8"))
+    certificate.pop("canonical_digest")
+    certificate["scope"]["distribution_id"] = "wrong-distribution"
+    certificate["canonical_digest"] = canonical_digest(certificate)
+    _write_json(certificate_path, certificate)
+    factory = LearningFactory(project, repo_root=tmp_path)
+    assert factory.run_range("LF-00", "LF-07")["final_status"] == "passed"
+    result = factory.run_stage("LF-08")
+    assert result["status"] == "blocked"
+    assert result["blockers"] == ["scope_mismatch"]
+    assert result["output"]["physical_actions"] == 0
 
 
 def test_false_lineage_local_act_profile_is_quarantined(tmp_path: Path) -> None:

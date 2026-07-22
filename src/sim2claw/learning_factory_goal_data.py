@@ -93,6 +93,7 @@ def compile_goal_act_curriculum(
     maximum_candidates: int,
     generation: int = 0,
     task_contract_path: Path | None = None,
+    twin_capability_context: dict[str, Any],
 ) -> dict[str, Any]:
     """Select the smallest deterministic training-only pose/layout batch.
 
@@ -101,6 +102,11 @@ def compile_goal_act_curriculum(
     LF-09 before candidate lineage can validate.
     """
 
+    from .sail.twin_worthiness import require_capability_context
+
+    capability = require_capability_context(
+        twin_capability_context, capability="data_generation"
+    )
     if maximum_candidates <= 0:
         raise ValueError("curriculum must contain at least one bounded candidate")
     if not parent_twin_id:
@@ -210,6 +216,7 @@ def compile_goal_act_curriculum(
         "split_manifest": split_manifest,
         "candidates": candidates,
         "admission_authority": "none_plan_only",
+        "twin_capability_decision_digest": capability["decision_digest"],
     }
     return {**unsigned, "artifact_sha256": canonical_digest(unsigned)}
 
@@ -222,6 +229,7 @@ def generate_goal_act_candidate_executions(
     maximum_executions: int = 1,
     object_dimensions_m: Iterable[float],
     gripper_aperture_mapping: dict[str, Any],
+    twin_capability_context: dict[str, Any],
 ) -> dict[str, Any]:
     """Execute bounded curriculum candidates with the repo-native source expert.
 
@@ -235,6 +243,11 @@ def generate_goal_act_candidate_executions(
         DESTINATION_SQUARE,
         SOURCE_PIECE_ID,
         collect_pawn_source_expert_candidate,
+    )
+    from .sail.twin_worthiness import require_capability_context
+
+    capability = require_capability_context(
+        twin_capability_context, capability="data_generation"
     )
 
     if curriculum.get("schema_version") != CURRICULUM_SCHEMA:
@@ -307,6 +320,7 @@ def generate_goal_act_candidate_executions(
         "executions": executions,
         "unsupported": unsupported,
         "admission_authority": "none_pending_strict_lf09_evaluator",
+        "twin_capability_decision_digest": capability["decision_digest"],
         "physical_authority": False,
     }
     return {**unsigned, "artifact_sha256": canonical_digest(unsigned)}
@@ -507,6 +521,7 @@ def build_goal_act_dataset(
     executions: list[dict[str, Any]],
     output_directory: Path,
     task_contract_path: Path | None = None,
+    twin_capability_context: dict[str, Any],
 ) -> dict[str, Any]:
     """Evaluate candidate episodes and write an immutable ACT/GR00T dataset.
 
@@ -515,6 +530,11 @@ def build_goal_act_dataset(
     a caller-reported replay or success boolean.
     """
 
+    from .sail.twin_worthiness import require_capability_context
+
+    capability = require_capability_context(
+        twin_capability_context, capability="data_generation"
+    )
     if curriculum.get("schema_version") != CURRICULUM_SCHEMA:
         raise ValueError("unsupported goal ACT curriculum")
     unsigned_curriculum = {key: value for key, value in curriculum.items() if key != "artifact_sha256"}
@@ -680,6 +700,7 @@ def build_goal_act_dataset(
             "privileged_state_in_policy_payload": False,
         },
         "admission_owner": "separate_cpu_fp32_consequence_evaluator",
+        "twin_capability_decision_digest": capability["decision_digest"],
         "dataset_receipt_path": str(output_directory / "dataset_receipt.json"),
     }
     dataset_sha256 = canonical_digest(unsigned)

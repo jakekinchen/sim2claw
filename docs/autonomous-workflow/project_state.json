@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-22T08:24:00-05:00",
+  "updated_at": "2026-07-22T09:30:00-05:00",
   "active_campaign": "sail_clawloop_phase1_v1",
-  "current_milestone": "P1-14_TWIN_WORTHINESS_AND_DOWNSTREAM_KILL_SWITCHES_IN_PROGRESS",
+  "current_milestone": "P1-15_GATED_SELF_IMPROVEMENT_FLYWHEEL_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -10,7 +10,7 @@
     "schema_version": "sim2claw.sail_clawloop_campaign_state.v1",
     "master_plan": "docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md",
     "cutover_contract": "configs/sail/cutover_v1.json",
-    "active_brief": "docs/briefs/029-sail-twinworthiness-kill-switches.md",
+    "active_brief": "docs/briefs/030-sail-gated-policy-flywheel.md",
     "phase": 1,
     "phase_1_status": "active",
     "new_physical_data_allowed": false,
@@ -34,12 +34,12 @@
       "P1-11": "completed",
       "P1-12": "completed",
       "P1-13": "completed",
-      "P1-14": "in_progress",
-      "P1-15": "pending",
+      "P1-14": "completed",
+      "P1-15": "in_progress",
       "P1-16": "pending",
       "P1-17": "pending"
     },
-    "current_safe_claim": "a preregistered action-frozen simulator factorial favored the timing signature score over load locality and selected a timing-rate probe next; both families remain simulator diagnostics, contact/task evidence remain underidentified, and no current TwinWorthiness certificate opens data generation, policy selection, canary, motion, or transfer",
+    "current_safe_claim": "an evaluator-issued exact-scope capability layer denies all seven missing, legacy, tampered, mismatched, expired, and revoked cases; the current TW-REPLAY retained-workcell envelope opens diagnostics only, while higher downstream branches are reachable solely in explicitly synthetic fixtures and no current evidence opens data generation, policy selection, canary, motion, or transfer",
     "contract_freeze": {
       "schema_version": "sim2claw.sail_contract_freeze.v1",
       "schema_sha256": {
@@ -381,6 +381,50 @@
       "tw_data_open": false,
       "training_admitted": false,
       "policy_selection_authority": false,
+      "physical_authority": false
+    },
+    "twinworthiness_downstream_kill_switches": {
+      "schema_version": "sim2claw.sail_twin_capability_state.v1",
+      "campaign": "configs/sail/twin_capability_campaign_v1.json",
+      "campaign_sha256": "930896ea0f6e88e6399ad4733ef8a9d40fb9423ace1d071f37a42907467e524b",
+      "operational_contract": "configs/sail/twin_capability_v1.json",
+      "operational_contract_sha256": "c03cf1b3115b79f60992286b92676d46bd8c938d2ab63fb10b1f143d4ef986f8",
+      "operational_schema": "configs/sail/schemas/twin_worthiness_capability_certificate_v1.json",
+      "operational_schema_sha256": "1259016e7c9ad40b82ab9c348d25f9d966675532094ba8ca8f087c9c08053ba3",
+      "ignored_output_root": "outputs/sail/twin-capability-v1",
+      "report_sha256": "db5f568fefbaf69d48507da480296301de3d147a76c79a7bf6c0fba29591357a",
+      "report_digest": "a4502d0372c996575266b53097ded16dbbaba8ec687153d24c82f79ee55db56c",
+      "current_capability_certificate_sha256": "aed30c62f08cd069ba946009be4290a1b96ba083134240c37d94f31cf37956f9",
+      "current_capability_certificate_digest": "eb38b8538a40bc8af5d3e99f2a5c6deda9cbb8ce967403ad271cf67442421537",
+      "receipt_sha256": "031f8b09f4f6555c0f0034aa3d10c11cbad0f7e5337c90d33ba25a5728c099b8",
+      "receipt_digest": "fd63f006eff36ea91428526fa702b650996fc1ead94daf71e52c050ddd8e3bc9",
+      "current_level": "TW-REPLAY",
+      "current_allowed_capabilities": [
+        "diagnostics"
+      ],
+      "current_denied_capabilities": [
+        "data_generation",
+        "policy_selection",
+        "physical_canary",
+        "robot_motion"
+      ],
+      "learning_factory_stage_requirements": {
+        "LF-08": "data_generation",
+        "LF-09": "data_generation",
+        "LF-11": "policy_selection",
+        "LF-13": "policy_selection"
+      },
+      "negative_scenario_count": 7,
+      "all_negative_scenarios_denied": true,
+      "direct_mutators_recompute_certificate_decision": true,
+      "synthetic_selection_branch_reachable": true,
+      "synthetic_physical_branches_reachable": true,
+      "synthetic_reachability_is_real_authority": false,
+      "gold_17_passed": true,
+      "gold_18_passed": true,
+      "gold_19_passed": true,
+      "training_admitted": false,
+      "policy_selection_admitted": false,
       "physical_authority": false
     }
   },

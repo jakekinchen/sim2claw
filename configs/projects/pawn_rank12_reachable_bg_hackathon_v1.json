@@ -5,7 +5,7 @@
   "purpose": "Run one evidence-aware Sim2Claw reference workflow inside one NemoClaw/OpenShell sandbox.",
   "source_of_truth": {
     "project_state": "docs/autonomous-workflow/project_state.json",
-    "project_state_sha256": "458bb4017d443871d8d138229356b892ae57dd2980ac9f05f834ee099424b55b",
+    "project_state_sha256": "1931bea468da59b7a78b2b65d16f6360d47edf77c67221e6d0257fa5551df510",
     "evaluation_contract": "configs/evaluations/pawn_rank12_bidirectional_v2.json",
     "evaluation_contract_sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3",
     "physical_source_catalog": "configs/data/physical_pawn_move_catalog_20260719.json",
@@ -80,6 +80,40 @@
       "recipe": "configs/training/goal_act_recipe_v1.json",
       "evaluation_cohort": null,
       "live_blocker": "A B-G-compatible frozen evaluation cohort cannot be sealed until compatible simulation source/reset episodes exist."
+    },
+    "twin_worthiness": {
+      "capability_certificate": "outputs/sail/twin-capability-v1/current_capability_certificate.json",
+      "decision_time": "2026-07-22T09:01:00-05:00",
+      "distribution_contract": "configs/evaluations/pawn_rank12_bidirectional_v2.json",
+      "scope": {
+        "twin_id": "resolved_from_lf07_candidate_before_any_gated_stage",
+        "workcell_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+        "task_id": "chess_pick_place_act_state_v1",
+        "distribution_id": "pawn_rank12_bidirectional_b_to_g_v2",
+        "task_contract_sha256": "b8e527286caacfb13b3b4ca6bd2352c2f0704e9d5054d164e416bd1b2f24299c",
+        "distribution_sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3"
+      },
+      "expected_identities": {
+        "evidence": [
+          "e79dc7a3e6f684644fa18d77e5a1a4f11126829176a14e3c7c247d3daec02ed2",
+          "38a78aa325ccb978e131ac087e6820c35faa4473172387d5f738261ff1889c71",
+          "c8f414252314b498c9c9d0f29c68b86531e20708b65c0dc92ec4d2e7c75ea10c",
+          "6d02eba1e18c1566aaf6113c3a60b9e6122dc82a0dc8d05704a9a06de4654e88"
+        ],
+        "graph": "a5cf6e19214fe4406f798189e30c9fb3f9dbbe1fb662130d3904b1e55486c4e0",
+        "posterior": "c7fa9b0fe616ba4e4afe9fe8007b4073e67ce93ccbbb03629aec3f977e1d8fd3",
+        "simulator": "d16367bee2a3ee7e8847d1845b0dcb891608f62822b53c784633dc6d7f9dc7e2",
+        "evaluator": "a4fa5357d4462ba047758b97438cdbe9e2f0c446cd38d27fafb330637faf9a79",
+        "policy_candidates": []
+      },
+      "external_authority": {
+        "owner_task_authority": false,
+        "reviewed_gateway_preflight": false,
+        "hash_bound_new_related_workcell_identity": false,
+        "frozen_hardware_protocol": false,
+        "reviewed_motion_authority": false,
+        "motion_authority_digest_present": false
+      }
     },
     "recursion": {
       "previous_registry": null,

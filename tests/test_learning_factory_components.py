@@ -24,6 +24,8 @@ from sim2claw.learning_factory_recursion import (
     admit_correction_candidate,
 )
 from sim2claw.scene import board_square_center
+from sim2claw.sail.contracts import seal_contract
+from sim2claw.sail.twin_worthiness import issue_capability_certificate
 from sim2claw.source_episode import admission_payload_sha256
 from sim2claw.system_identification import _hash_fraction
 
@@ -345,6 +347,44 @@ def test_real_component_campaign_executes_lf00_through_lf13() -> None:
         recipe_path = root / "goal_act_component_recipe.json"
         recipe_path.write_text(json.dumps(recipe), encoding="utf-8")
 
+        distribution_path = (
+            REPO_ROOT / "configs/evaluations/pawn_rank12_bidirectional_v2.json"
+        )
+        capability_path = root / "twin_capability.json"
+        capability_path.write_text("{}\n", encoding="utf-8")
+        capability_identities = {
+            "evidence": ["5" * 64],
+            "graph": "6" * 64,
+            "posterior": "7" * 64,
+            "simulator": "8" * 64,
+            "evaluator": "9" * 64,
+            "policy_candidates": ["a" * 64, "b" * 64, "c" * 64],
+        }
+        capability_base = seal_contract(
+            {
+                "schema_version": "sim2claw.twin_worthiness_certificate.v1",
+                "certificate_id": "component-selection-reachability-v1",
+                "campaign_id": "component-acceptance",
+                "identities": capability_identities,
+                "gates": {
+                    f"TW-G{index}": {
+                        "status": "pass",
+                        "reason": "synthetic component branch-reachability fixture",
+                        "evidence_ids": ["component-fixture"],
+                    }
+                    for index in range(5)
+                },
+                "level": "TW-SELECTION",
+                "authority": {
+                    "data_generation": True,
+                    "policy_selection": True,
+                    "physical_canary": False,
+                    "robot_motion": False,
+                },
+                "issued_at": "2026-07-22T00:00:00Z",
+            }
+        )
+
         project = json.loads(
             (
                 REPO_ROOT
@@ -399,6 +439,25 @@ def test_real_component_campaign_executes_lf00_through_lf13() -> None:
                     "recipe": recipe_path.relative_to(REPO_ROOT).as_posix(),
                     "evaluation_cohort": "auto",
                 },
+                "twin_worthiness": {
+                    "capability_certificate": capability_path.relative_to(
+                        REPO_ROOT
+                    ).as_posix(),
+                    "decision_time": "2026-07-22T12:00:00Z",
+                    "distribution_contract": distribution_path.relative_to(
+                        REPO_ROOT
+                    ).as_posix(),
+                    "scope": {
+                        "twin_id": "resolved-after-lf07",
+                        "workcell_id": project["scope"]["workcell_registration"],
+                        "task_id": task["task_id"],
+                        "distribution_id": "pawn_rank12_bidirectional_b_to_g_v2",
+                        "task_contract_sha256": _sha256(task_path),
+                        "distribution_sha256": _sha256(distribution_path),
+                    },
+                    "expected_identities": capability_identities,
+                    "external_authority": {},
+                },
                 "recursion": {
                     "previous_registry": None,
                     "correction_candidates": [],
@@ -413,6 +472,29 @@ def test_real_component_campaign_executes_lf00_through_lf13() -> None:
         relative_project = project_path.relative_to(REPO_ROOT)
         factory = LearningFactory(relative_project, repo_root=REPO_ROOT)
         try:
+            pre_capability = factory.run_range("LF-00", "LF-07")
+            candidate_twin_id = pre_capability["results"][-1]["output"][
+                "candidate_twin_id"
+            ]
+            capability_scope = copy.deepcopy(
+                project["learning_factory"]["twin_worthiness"]["scope"]
+            )
+            capability_scope["twin_id"] = candidate_twin_id
+            capability = issue_capability_certificate(
+                base_certificate=capability_base,
+                scope=capability_scope,
+                not_before="2026-07-22T00:00:00Z",
+                expires_at="2027-07-22T00:00:00Z",
+                issuance_request={
+                    "issuer_owner": "deterministic_sail_evaluator",
+                    "request_id": "component-selection-reachability-v1",
+                },
+            )
+            capability_path.write_text(
+                json.dumps(capability, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            factory = LearningFactory(relative_project, repo_root=REPO_ROOT)
             report = factory.run_range("LF-00", "LF-13")
             assert [row["stage_id"] for row in report["results"]] == [
                 f"LF-{index:02d}" for index in range(14)

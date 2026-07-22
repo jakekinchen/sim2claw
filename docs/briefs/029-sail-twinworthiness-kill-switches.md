@@ -37,3 +37,30 @@ remaining fail-closed at `TW-REPLAY`.
   robot motion, or transfer authority.
 - The slice trains a policy, generates admitted data, invokes hardware, or
   changes the frozen Phase 2 prediction packet.
+
+## Result
+
+Status: `COMPLETE`
+
+An operational, content-addressed capability envelope now wraps the immutable
+scientific TwinWorthiness verdict without modifying the five frozen P1-01
+schemas. It binds the exact twin, workcell, task, distribution, task and
+distribution hashes, evidence, graph, posterior, simulator, evaluator, policy
+identities, validity window, and evaluator-only issuance request. Missing,
+legacy-unscoped, tampered, scope-mismatched, identity-mismatched, expired, and
+revoked envelopes all deny capability.
+
+Learning Factory stages LF-08 and LF-09 recompute `data_generation` before
+curriculum or dataset mutation; LF-11 and LF-13 recompute `policy_selection`
+before comparison or promotion state. The direct mutating helpers repeat the
+verification, so a caller cannot forge an allowed decision object. Denials
+publish stable codes, failed gates, and the minimum new evidence needed.
+
+The current retained-workcell base verdict remains `TW-REPLAY`: diagnostics is
+the only allowed capability. Data generation, policy selection, physical
+canary, and robot motion remain closed. Synthetic `TW-SELECTION` and
+`TW-PHYSICAL-CANARY` certificates exercise the downstream branches but carry
+the explicit proof class `synthetic_capability_fixture_not_real_authority`.
+GOLD-17, GOLD-18, and GOLD-19 pass. No data were admitted, no policy was
+trained or selected, no hardware was invoked, and no physical authority was
+created.

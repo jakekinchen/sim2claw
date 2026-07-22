@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import platform
 import re
 import uuid
@@ -86,6 +87,7 @@ STAGE_COMPONENT_MODULES: dict[str, tuple[str, ...]] = {
     "LF-08": (
         "sim2claw.act_pick_place",
         "sim2claw.learning_factory_goal_data",
+        "sim2claw.sail.twin_worthiness",
     ),
     "LF-09": (
         "sim2claw.act_pick_place",
@@ -93,12 +95,14 @@ STAGE_COMPONENT_MODULES: dict[str, tuple[str, ...]] = {
         "sim2claw.pawn_source_evaluator",
         "sim2claw.pawn_groot_dataset",
         "sim2claw.groot_multisource_dataset",
+        "sim2claw.sail.twin_worthiness",
     ),
     "LF-10": ("sim2claw.goal_act_training", "sim2claw.act_model"),
     "LF-11": (
         "sim2claw.goal_act_evaluator",
         "sim2claw.learning_factory_components",
         "sim2claw.act_model",
+        "sim2claw.sail.twin_worthiness",
     ),
     "LF-12": (
         "sim2claw.learning_factory_artifacts",
@@ -109,6 +113,7 @@ STAGE_COMPONENT_MODULES: dict[str, tuple[str, ...]] = {
         "sim2claw.learning_factory_promotion",
         "sim2claw.learning_factory_components",
         "sim2claw.orchestrator_skills",
+        "sim2claw.sail.twin_worthiness",
     ),
 }
 STAGE_EXTERNAL_TOOLS: dict[str, tuple[str, ...]] = {
@@ -285,6 +290,8 @@ class LearningFactory:
         )
         self._specs = {item["stage_id"]: item for item in graph["stages"]}
         self._identity_cache: dict[str, dict[str, Any]] = {}
+        self._capability_decisions: dict[str, dict[str, Any]] = {}
+        self._capability_contexts: dict[str, dict[str, Any]] = {}
         self._artifact_store = ContentAddressedArtifactStore(
             self.root / "artifacts", path_root=self.repo_root
         )
@@ -307,6 +314,133 @@ class LearningFactory:
             descriptor=descriptor,
             function=lambda attempt_dir: self._execute_adapter(stage_id, attempt_dir),
         )
+
+    def _twin_capability_decision(self, stage_id: str) -> dict[str, Any] | None:
+        """Resolve the exact certificate, scope, and identities for a gated stage."""
+
+        from .sail.twin_worthiness import (
+            capability_decision,
+            load_capability_contract,
+        )
+
+        capability = load_capability_contract()[
+            "learning_factory_stage_requirements"
+        ].get(stage_id)
+        if capability is None:
+            return None
+        cached = self._capability_decisions.get(stage_id)
+        if cached is not None:
+            return cached
+        declaration = self.context.project_manifest["learning_factory"]
+        tw = declaration.get("twin_worthiness")
+        tw = dict(tw) if isinstance(tw, dict) else {}
+        scope = dict(tw.get("scope") or {})
+
+        comparison = self._load_latest("LF-07")
+        if comparison is not None and isinstance(comparison.get("output"), dict):
+            actual_twin_id = str(comparison["output"].get("candidate_twin_id") or "")
+            if actual_twin_id:
+                scope["twin_id"] = actual_twin_id
+        project_scope = self.context.project_manifest.get("scope") or {}
+        if project_scope.get("workcell_registration"):
+            scope["workcell_id"] = str(project_scope["workcell_registration"])
+
+        curriculum = declaration.get("curriculum") or {}
+        task_text = str(curriculum.get("task_contract") or "")
+        if task_text:
+            try:
+                task_path = _inside(
+                    self.repo_root,
+                    task_text,
+                    label="TwinWorthiness task contract",
+                )
+                task = load_json_object(task_path, label="TwinWorthiness task contract")
+                scope["task_id"] = str(task.get("task_id") or scope.get("task_id") or "")
+                scope["task_contract_sha256"] = sha256_file(task_path)
+            except (LearningFactoryError, FactoryArtifactError, OSError, ValueError):
+                pass
+
+        distribution_text = str(tw.get("distribution_contract") or "")
+        if distribution_text:
+            try:
+                distribution_path = _inside(
+                    self.repo_root,
+                    distribution_text,
+                    label="TwinWorthiness distribution contract",
+                )
+                distribution = load_json_object(
+                    distribution_path, label="TwinWorthiness distribution contract"
+                )
+                scope["distribution_id"] = str(
+                    distribution.get("distribution_id")
+                    or distribution.get("evaluation_set_id")
+                    or scope.get("distribution_id")
+                    or ""
+                )
+                scope["distribution_sha256"] = sha256_file(distribution_path)
+            except (LearningFactoryError, FactoryArtifactError, OSError, ValueError):
+                pass
+
+        request = {
+            "capability": capability,
+            "stage_id": stage_id,
+            "consumer": "learning_factory",
+            "scope": scope,
+            "expected_identities": tw.get("expected_identities"),
+            "external_authority": tw.get("external_authority") or {},
+        }
+        certificate: dict[str, Any] | None = None
+        certificate_text = str(tw.get("capability_certificate") or "")
+        if certificate_text:
+            try:
+                certificate_path = _inside(
+                    self.repo_root,
+                    certificate_text,
+                    label="TwinWorthiness capability certificate",
+                )
+                if certificate_path.is_file():
+                    certificate = load_json_object(
+                        certificate_path, label="TwinWorthiness capability certificate"
+                    )
+            except (LearningFactoryError, FactoryArtifactError, OSError, ValueError):
+                certificate = {}
+        at_time = str(tw.get("decision_time") or _utc_now())
+        decision = capability_decision(
+            certificate,
+            request,
+            at_time=at_time,
+        )
+        self._capability_contexts[stage_id] = {
+            "certificate": certificate,
+            "request": request,
+            "at_time": at_time,
+        }
+        self._capability_decisions[stage_id] = decision
+        return decision
+
+    @staticmethod
+    def _capability_block(stage_id: str, decision: dict[str, Any]) -> dict[str, Any]:
+        capability = decision["capability"]
+        return {
+            "status": "blocked",
+            "summary": (
+                f"{stage_id} stopped before {capability.replace('_', ' ')} because "
+                "the evaluator-owned TwinWorthiness capability is unavailable."
+            ),
+            "blockers": list(decision["denial_codes"]),
+            "output": {
+                "schema_version": "sim2claw.factory_twin_capability_blocker.v1",
+                "stage_id": stage_id,
+                "required_capability": capability,
+                "decision": decision,
+                "minimum_new_evidence": list(decision["minimum_new_evidence"]),
+                "rows_generated": 0,
+                "training_rows_admitted": 0,
+                "policy_comparisons_published": 0,
+                "physical_actions": 0,
+            },
+            "proof_class": "twin_worthiness_capability_gate",
+        }
 
     def _implementation_identity(self, stage_id: str | None = None) -> dict[str, Any]:
         cache_key = stage_id or "all"
@@ -483,6 +617,11 @@ class LearningFactory:
 
     def _input_payload(self, stage_id: str) -> dict[str, Any]:
         dependencies = self._dependency_results(stage_id)
+        manifest_for_content = copy.deepcopy(self.context.project_manifest)
+        if STAGE_IDS.index(stage_id) < STAGE_IDS.index("LF-08"):
+            learning_factory = manifest_for_content.get("learning_factory")
+            if isinstance(learning_factory, dict):
+                learning_factory.pop("twin_worthiness", None)
         return {
             "project_manifest_sha256": self.context.project["project_manifest_sha256"],
             "evaluation_contract_sha256": self.context.project[
@@ -493,10 +632,10 @@ class LearningFactory:
             "generation": self.context.generation,
             "parent_generation": self.context.parent_generation,
             "stage": self._specs[stage_id],
-            "declaration": self.context.project_manifest["learning_factory"],
+            "declaration": manifest_for_content["learning_factory"],
             "declared_content_identities": self._declared_content_identities(
                 {
-                    "project_manifest": self.context.project_manifest,
+                    "project_manifest": manifest_for_content,
                     "dependency_outputs": {
                         key: value.get("output") for key, value in dependencies.items()
                     },
@@ -998,11 +1137,20 @@ class LearningFactory:
                 "output": inspection,
                 "proof_class": "contract_inspection",
             }
+        capability = self._twin_capability_decision(stage_id)
+        if capability is not None and capability["allowed"] is not True:
+            return self._capability_block(stage_id, capability)
         if self.context.profile == "physical_campaign":
-            return self._execute_physical(stage_id, attempt_dir)
-        if self.context.profile == "component_fixture":
-            return self._execute_component_fixture(stage_id, attempt_dir)
-        return self._execute_fixture(stage_id, attempt_dir)
+            result = self._execute_physical(stage_id, attempt_dir)
+        elif self.context.profile == "component_fixture":
+            result = self._execute_component_fixture(stage_id, attempt_dir)
+        else:
+            result = self._execute_fixture(stage_id, attempt_dir)
+        if capability is not None:
+            diagnostics = dict(result.get("diagnostics") or {})
+            diagnostics["twin_capability_decision"] = capability
+            result["diagnostics"] = diagnostics
+        return result
 
     def _execute_component_fixture(
         self, stage_id: str, attempt_dir: Path
@@ -1390,6 +1538,7 @@ class LearningFactory:
                 maximum_candidates=int(curriculum.get("maximum_candidates", 8)),
                 generation=self.context.generation,
                 task_contract_path=task_path,
+                twin_capability_context=self._capability_contexts[stage_id],
             )
             training_declaration = declaration.get("training") or {}
             if training_declaration.get("evaluation_cohort") == "auto":
@@ -1457,6 +1606,7 @@ class LearningFactory:
                     gripper_aperture_mapping=generation.get(
                         "gripper_aperture_mapping", {}
                     ),
+                    twin_capability_context=self._capability_contexts[stage_id],
                 )
                 atomic_write_json(
                     attempt_dir / "candidate_execution_batch.json", batch
@@ -1471,6 +1621,7 @@ class LearningFactory:
                     str(curriculum_declaration.get("task_contract", "")),
                     label="goal-conditioned ACT task contract",
                 ),
+                twin_capability_context=self._capability_contexts[stage_id],
             )
             accepted = int(output["accepted_count"])
             return {
@@ -1740,6 +1891,7 @@ class LearningFactory:
                     {"candidate_id": "fixture-candidate-v2", "checkpoint_sha256": trained["checkpoint_sha256"], "success_rate": success_rate, "minimum_success_rate": 0.75},
                     {"candidate_id": "fixture-terminal-negative-v1", "checkpoint_sha256": "0" * 64, "success_rate": 0.25, "minimum_success_rate": 0.75},
                 ],
+                twin_capability_context=self._capability_contexts[stage_id],
             )
         elif stage_id == "LF-12":
             scorecard = self._dependency_output("LF-11")
@@ -1758,6 +1910,7 @@ class LearningFactory:
                 twin_id="fixture-calibrated-twin-v2",
                 dataset_sha256=dataset["dataset_sha256"],
                 scope_compatible=True,
+                twin_capability_context=self._capability_contexts[stage_id],
             )
         else:
             raise LearningFactoryError(f"fixture adapter does not implement {stage_id}")

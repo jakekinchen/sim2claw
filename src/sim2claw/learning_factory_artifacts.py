@@ -294,7 +294,13 @@ def evaluate_policy_candidates(
     task_id: str,
     evaluator_id: str,
     candidates: Iterable[dict[str, Any]],
+    twin_capability_context: dict[str, Any],
 ) -> dict[str, Any]:
+    from .sail.twin_worthiness import require_capability_context
+
+    capability = require_capability_context(
+        twin_capability_context, capability="policy_selection"
+    )
     if not evaluator_id or evaluator_id == "trainer":
         raise FactoryArtifactError("policy evaluation must have a separate evaluator")
     rows: list[dict[str, Any]] = []
@@ -322,6 +328,7 @@ def evaluate_policy_candidates(
         "candidates": rows,
         "eligible_candidate_ids": [row["candidate_id"] for row in rows if row["verdict"] == "eligible"],
         "terminal_negative_candidate_ids": [row["candidate_id"] for row in rows if row["verdict"] == "terminal_negative"],
+        "twin_capability_decision_digest": capability["decision_digest"],
     }
     return {**unsigned, "artifact_sha256": canonical_digest(unsigned)}
 
@@ -422,7 +429,13 @@ def promotion_state(
     twin_id: str,
     dataset_sha256: str,
     scope_compatible: bool = True,
+    twin_capability_context: dict[str, Any],
 ) -> dict[str, Any]:
+    from .sail.twin_worthiness import require_capability_context
+
+    capability = require_capability_context(
+        twin_capability_context, capability="policy_selection"
+    )
     eligible = list(scorecard.get("eligible_candidate_ids", []))
     state = (
         "rejected"
@@ -442,6 +455,7 @@ def promotion_state(
         "promoted_candidate_id": eligible[0] if state == "promoted" else None,
         "physical_authority": False,
         "robot_motion_allowed": False,
+        "twin_capability_decision_digest": capability["decision_digest"],
     }
     return {**unsigned, "artifact_sha256": canonical_digest(unsigned)}
 

@@ -22,11 +22,80 @@ from sim2claw.learning_factory_recursion import persist_counterexample_registry
 from sim2claw.orchestrator_skills import SkillRegistry
 from sim2claw.project_bundle import EXPECTED_BG_SKILL_IDS
 from sim2claw.paths import REPO_ROOT
+from sim2claw.sail.contracts import seal_contract
+from sim2claw.sail.twin_worthiness import (
+    TwinCapabilityDenied,
+    issue_capability_certificate,
+)
 
 
 def _write_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _data_capability_context() -> dict:
+    identities = {
+        "evidence": ["a" * 64],
+        "graph": "b" * 64,
+        "posterior": "c" * 64,
+        "simulator": "d" * 64,
+        "evaluator": "e" * 64,
+        "policy_candidates": [],
+    }
+    base = seal_contract(
+        {
+            "schema_version": "sim2claw.twin_worthiness_certificate.v1",
+            "certificate_id": "goal-loop-data-fixture",
+            "campaign_id": "goal-loop-fixture",
+            "identities": identities,
+            "gates": {
+                f"TW-G{index}": {
+                    "status": "pass" if index <= 2 else "not_evaluable",
+                    "reason": "synthetic fixture",
+                    "evidence_ids": ["fixture"] if index <= 2 else [],
+                }
+                for index in range(5)
+            },
+            "level": "TW-DATA",
+            "authority": {
+                "data_generation": True,
+                "policy_selection": False,
+                "physical_canary": False,
+                "robot_motion": False,
+            },
+            "issued_at": "2026-07-22T00:00:00Z",
+        }
+    )
+    scope = {
+        "twin_id": "calibrated-twin",
+        "workcell_id": "goal-loop-fixture",
+        "task_id": "chess_pick_place_act_state_v1",
+        "distribution_id": "goal-loop-training-fixture",
+        "task_contract_sha256": task_contract_sha256(),
+        "distribution_sha256": "1" * 64,
+    }
+    certificate = issue_capability_certificate(
+        base_certificate=base,
+        scope=scope,
+        not_before="2026-07-22T00:00:00Z",
+        expires_at="2027-07-22T00:00:00Z",
+        issuance_request={
+            "issuer_owner": "deterministic_sail_evaluator",
+            "request_id": "goal-loop-data-fixture",
+        },
+    )
+    return {
+        "certificate": certificate,
+        "request": {
+            "capability": "data_generation",
+            "stage_id": "LF-08",
+            "scope": scope,
+            "expected_identities": identities,
+            "external_authority": {},
+        },
+        "at_time": "2026-07-22T12:00:00Z",
+    }
 
 
 def _dataset_fixture(root: Path) -> Path:
@@ -90,6 +159,7 @@ def test_curriculum_covers_training_axes_without_opening_heldout() -> None:
             }
         ],
         maximum_candidates=8,
+        twin_capability_context=_data_capability_context(),
     )
     task = load_act_pick_place_task_contract()
     held_seeds = set(task["splits"]["held_out_seeds"])
@@ -113,6 +183,22 @@ def test_curriculum_covers_training_axes_without_opening_heldout() -> None:
     )
     assert result["split_manifest"]["held_out_training_rows"] == 0
     assert result["admission_authority"] == "none_plan_only"
+
+
+def test_curriculum_helper_fails_closed_without_recomputed_capability() -> None:
+    with pytest.raises(TwinCapabilityDenied):
+        compile_goal_act_curriculum(
+            parent_twin_id="calibrated-twin",
+            source_episodes=[
+                {
+                    "source_episode_id": "admitted-source",
+                    "source_proof_class": "simulation_strict_success",
+                    "source_segment_ids": ["all"],
+                }
+            ],
+            maximum_candidates=1,
+            twin_capability_context={},
+        )
 
 
 def test_source_observable_encoder_is_exactly_61d_and_rejects_timing_phase() -> None:
