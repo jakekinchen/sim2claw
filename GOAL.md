@@ -1,4 +1,32 @@
-# Clean-Room Build Goal
+# SAIL/ClawLoop Phase 1 Goal
+
+Status: `ACTIVE — P1-00 COMPLETE; P1-01 IN PROGRESS`
+
+The active program authority is
+[`docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md`](docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md).
+Complete Phase 1 milestones P1-00 through P1-17 in dependency order. Only one
+milestone may be `in_progress`; its acceptance criteria, tests, receipts, run
+log, and reviewer verdict must be satisfied before the next milestone begins.
+
+Phase 1 uses no new physical observations or robot trials. Retained physical
+evidence is retrospective, new causal evidence is synthetic or prospective
+simulator evidence, and all ACT/GR00T data generation or policy selection stays
+closed unless an evaluator-owned TwinWorthiness certificate opens the declared
+capability. Source actions remain byte-identical in the action-frozen lane.
+
+Current milestone: **P1-01 — Freeze contracts and golden oracles**.
+
+Active brief:
+[`docs/briefs/016-sail-contracts-and-golden-oracles.md`](docs/briefs/016-sail-contracts-and-golden-oracles.md).
+
+Live milestone status is maintained in the master plan's Section 12 ledger and
+in `docs/autonomous-workflow/project_state.json`. The research documents named
+by the plan are rationale, not competing execution plans.
+
+## Preserved historical achieved evidence
+
+The following closed loops and achieved slices retain their original evidence
+and claim boundaries. They do not override the active SAIL/ClawLoop sequence.
 
 ## Closed continuation loop: grasp coordinate descent
 

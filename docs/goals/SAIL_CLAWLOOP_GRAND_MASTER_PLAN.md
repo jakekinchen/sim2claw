@@ -1,6 +1,6 @@
 # SAIL/ClawLoop Grand Master Plan
 
-Status: `READY_FOR_OWNER_REVIEW_AND_ACTIVATION`
+Status: `ACTIVE — PHASE 1`
 
 Program type: two-phase, evidence-gated research and implementation program
 
@@ -1484,10 +1484,10 @@ hardware/compute resources are safely closed, whether or not the policy wins.
 
 Only one milestone should be `in_progress` in the active goal loop.
 
-| Milestone | Depends on | Initial status | Completion evidence |
+| Milestone | Depends on | Live status | Completion evidence |
 |---|---|---|---|
-| P1-00 Activate/reconcile | master plan | pending | cutover, GOAL/state update, brief |
-| P1-01 Contracts/goldens | P1-00 | pending | schemas, golden docs/tests |
+| P1-00 Activate/reconcile | master plan | completed | `configs/sail/cutover_v1.json`, GOAL/state update, Brief 016, session/reviewer logs |
+| P1-01 Contracts/goldens | P1-00 | in_progress | schemas, golden docs/tests |
 | P1-02 Evidence compiler | P1-01 | pending | retained evidence receipt |
 | P1-03 Residual field | P1-02 | pending | aligned residual receipt/plots |
 | P1-04 Belief graph | P1-02 | pending | deterministic graph/timeline |

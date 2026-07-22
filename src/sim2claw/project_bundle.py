@@ -66,7 +66,9 @@ PROJECT_PIPELINE_CONTRACT = {
     "training_lock_source": "docs/autonomous-workflow/project_state.json",
     "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
 }
-PROJECT_TRAINING_LOCK = "closed_until_m7_candidates_replay_and_pass_separate_evaluator"
+PROJECT_TRAINING_LOCK = (
+    "closed_until_evaluator_owned_twinworthiness_opens_declared_capability"
+)
 
 
 def _expected_bg_skill_specs() -> tuple[dict[str, str], ...]:
