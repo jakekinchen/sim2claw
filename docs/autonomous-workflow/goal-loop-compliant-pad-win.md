@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02B COMPLETE; B2-02C IN PROGRESS`
+Status: `ACTIVE — B2-02C COMPLETE; B2-02D IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -18,7 +18,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02 | complete, terminal negative | all 18 C2 actions matched; zero passes; every candidate failed retention, aperture, and transport |
 | B2-02A | complete, terminal negative | all 18 widened free-surface candidates matched actions; zero passed; one lifted without retained bilateral load |
 | B2-02B | complete, terminal negative | one candidate lifted with 83.3% rubber load-pair participation but lost at frame 328; zero complete passes |
-| B2-02C | in progress | caps anchored directly to fixed box6 and moving box3 with asymmetric core-matched footprints |
+| B2-02C | complete, terminal negative | direct 2x cap preserved C2 transport and 100% rubber load path but lost at frame 299 with 3.01 degree overclosure |
+| B2-02D | in progress | frozen contact-load force by rubber-friction cross on the direct core cap |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -63,3 +64,10 @@ sides bypassed rubber and contact failed at frame 328. B2-02C removes that
 surrogate: the fixed cap is generated directly from box6 and the moving cap
 from box3, with separate coverage and width scales matching their actual distal
 cores.
+
+B2-02C proves that direct cap anchoring can preserve the task consequence: the
+rigid 2x cap lifts and transports C2 with all observed post-lift load-pair sides
+on rubber. Its remaining failures are early loss (frame 299), 3.01 degrees of
+overclosure, and only 4.7% slip improvement. B2-02D crosses a contact-conditioned
+force ceiling with bounded rubber friction on exactly that geometry, leaving
+source actions and the gripper command unchanged.

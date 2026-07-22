@@ -217,6 +217,28 @@ def test_core_anchored_cap_uses_true_distal_primitives() -> None:
     assert not contract["base_parameters"]["gripper_load_hold_enabled"]
 
 
+def test_core_cap_load_response_cross_is_bounded() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_core_cap_load_response_v1.json"
+        )
+    )
+
+    assert len(contract["frozen_candidate_family"]) == 18
+    assert contract["diagnosis_anchor"]["core_cap_transport_preserved"]
+    assert {
+        row["overrides"].get("gripper_piece_contact_force_limit_multiplier")
+        for row in contract["frozen_candidate_family"][1:13]
+    } == {0.02, 0.05, 0.1, 0.2}
+    assert max(
+        row["overrides"].get("sliding_friction", 1.8)
+        for row in contract["frozen_candidate_family"]
+    ) == 3.5
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]
