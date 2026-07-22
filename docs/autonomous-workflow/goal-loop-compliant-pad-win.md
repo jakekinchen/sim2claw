@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02J COMPLETE; B2-02K IN PROGRESS`
+Status: `ACTIVE — B2-02K COMPLETE; B2-02L IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -26,7 +26,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02H | complete, terminal negative | overhang earns rubber-only retained transport but rigid-skin energy makes aperture/slip invalid |
 | B2-02I | complete, terminal negative | high-stiffness 2.25 ms pads unstable; stable frontier loses at frame 329 |
 | B2-02J | complete, terminal negative | stable 0.5 ms pad retains through release with valid aperture/slip but misses transport |
-| B2-02K | in progress | distal contact-height cross around the stable 0.3 kN/m pad and 0.022 force frontier |
+| B2-02K | complete, terminal negative | coverage-axis offsets change the sleeve footprint but not the vertical pawn contact point |
+| B2-02L | in progress | world-frame fingertip-axis diagnosis followed by a frozen vertical-contact cross |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -138,3 +139,12 @@ whether placing the modeled rubber band 2--20 mm farther along the fingertip
 lowers contact toward the historical ~33 mm transport region. It crosses only
 the local 0.0215--0.0225 contact-force neighborhood; actions, controls,
 compliance, timestep, collision path, and acceptance stay frozen.
+
+B2-02K proves that the assumed axis was wrong: moving the sleeve 2--20 mm
+along its coverage axis leaves the contact height and outcome byte-for-byte
+unchanged while the sleeve continues to overlap the pawn. A 0.0215 force
+branch improves aperture bias to +0.075 degrees, retains contact to source 407,
+and extends the lift-plane window by three source frames, but maximum transport
+progress while lifted remains only 5.8%. B2-02L records each jaw geom's
+world-frame basis at contact so the next frozen family can shift the rubber
+along the actual vertical width axis with the correct sign per jaw.

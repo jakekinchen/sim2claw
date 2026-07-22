@@ -899,6 +899,7 @@ def _jaw_contact_geometry(
                 "jaw_geom_size_m": np.asarray(
                     model.geom_size[jaw_geom], dtype=np.float64
                 ).copy(),
+                "jaw_geom_world_basis_rows": jaw_rotation.copy(),
                 "contact_position_in_jaw_geom_frame_m": (
                     jaw_rotation.T
                     @ (position - np.asarray(data.geom_xpos[jaw_geom]))

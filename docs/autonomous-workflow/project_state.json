@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_contact_height_v1",
-  "current_milestone": "B2_02K_FROZEN_CONTACT_HEIGHT_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_vertical_contact_diagnostic_v1",
+  "current_milestone": "B2_02L_FINGERTIP_WORLD_AXIS_DIAGNOSTIC_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "stable_compliance_one_gate_frontier_contact_height_followup_frozen",
+    "status": "coverage_axis_falsified_world_vertical_axis_diagnostic_in_progress",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -651,7 +651,8 @@
       "B2-02H": "completed_terminal_negative",
       "B2-02I": "completed_terminal_negative",
       "B2-02J": "completed_terminal_negative",
-      "B2-02K": "in_progress",
+      "B2-02K": "completed_terminal_negative",
+      "B2-02L": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -798,6 +799,18 @@
     "stable_compliance_receipt_sha256": "38d77d245a48db35152d530101a5d75d962617ffd4319a95f778cc477c5004c3",
     "stable_compliance_receipt_digest": "ace7ba1ff902c77a56c2fa7a6c181272277177b43d3bdda0e487554e1c946f6e",
     "contact_height_contract": "configs/sail/grasp_retention_contact_height_v1.json",
+    "contact_height_anchor_pass_count": 0,
+    "contact_height_finding": "coverage_axis_offsets_through_20_mm_did_not_change_vertical_contact_height_or_outcome",
+    "contact_height_lower_force_frontier": {
+      "candidate_id": "force_0215_offset_m004",
+      "contact_loss_source_index": 407,
+      "loaded_aperture_bias_degrees": 0.07505454490090928,
+      "post_grasp_slip_relative_reduction": 0.18699316374255653,
+      "maximum_transport_progress_after_lift": 0.058298998050649406,
+      "lift_and_transport": false
+    },
+    "contact_height_receipt_sha256": "87f1843fbe2605b564308a7145d079c2cdc30789d5d001aef388ca6f54c6032e",
+    "contact_height_receipt_digest": "1b2e3ffcfaf0abe26ae6236c48a94f1f85266d6f46431c69c09daf2ee2906f62",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false
