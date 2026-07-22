@@ -2287,6 +2287,24 @@ def _run_episode(
         if retention_trace_enabled
         else None
     )
+    warning_rows = [
+        {
+            "warning": mujoco.mjtWarning(index).name,
+            "count": int(data.warning[index].number),
+            "last_info": int(data.warning[index].lastinfo),
+        }
+        for index in range(int(mujoco.mjtWarning.mjNWARNING))
+        if int(data.warning[index].number) > 0
+    ]
+    unstable_warning_names = {
+        mujoco.mjtWarning.mjWARN_BADQPOS.name,
+        mujoco.mjtWarning.mjWARN_BADQVEL.name,
+        mujoco.mjtWarning.mjWARN_BADQACC.name,
+        mujoco.mjtWarning.mjWARN_BADCTRL.name,
+    }
+    unstable_warning_count = sum(
+        row["count"] for row in warning_rows if row["warning"] in unstable_warning_names
+    )
     return {
         "recording_id": str(mapped["episode"]["recording_id"]),
         "folder_label": str(mapped["episode"]["folder_label"]),
@@ -2300,6 +2318,11 @@ def _run_episode(
             mapped["action_receipt"]["sha256"] == _array_sha256(actions)
         ),
         "clipped_action_rows": 0,
+        "simulation_stability": {
+            "passed": unstable_warning_count == 0,
+            "unstable_warning_count": unstable_warning_count,
+            "warning_rows": warning_rows,
+        },
         "application_delay_seconds_by_joint": dict(
             zip(
                 BODY_JOINT_NAMES + ("gripper",),

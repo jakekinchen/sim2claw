@@ -351,6 +351,37 @@ def test_compliant_skin_cross_uses_corrected_footprint() -> None:
         for row in contract["frozen_candidate_family"]
     } == {0.022, 0.024}
 
+
+def test_stable_compliance_family_requires_clean_solver_state() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_stable_compliance_v1.json"
+        )
+    )
+
+    assert len(contract["frozen_candidate_family"]) == 18
+    assert contract["acceptance"]["anchor_simulation_stability_required"]
+    assert min(
+        row["overrides"].get(
+            "simulation_timestep_multiplier",
+            contract["base_parameters"]["simulation_timestep_multiplier"],
+        )
+        for row in contract["frozen_candidate_family"]
+    ) == 0.1
+    assert max(
+        row["overrides"].get(
+            "rubber_tip_compliance_stiffness_n_per_m",
+            contract["base_parameters"][
+                "rubber_tip_compliance_stiffness_n_per_m"
+            ],
+        )
+        for row in contract["frozen_candidate_family"]
+    ) == 1000.0
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

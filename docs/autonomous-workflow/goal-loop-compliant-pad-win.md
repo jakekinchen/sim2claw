@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02H COMPLETE; B2-02I IN PROGRESS`
+Status: `ACTIVE — B2-02I COMPLETE; B2-02J IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -24,7 +24,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02F | complete, terminal negative | long wrap earns retained transport to frame 523 but overlapping rigid collision still bypasses rubber |
 | B2-02G | complete, terminal negative | 100% rubber aperture/slip frontier reaches frame 339; moving contact exits at two footprint edges |
 | B2-02H | complete, terminal negative | overhang earns rubber-only retained transport but rigid-skin energy makes aperture/slip invalid |
-| B2-02I | in progress | corrected collision skin crossed with bounded spring-damper travel/stiffness at force 0.022/0.024 |
+| B2-02I | complete, terminal negative | high-stiffness 2.25 ms pads unstable; stable frontier loses at frame 329 |
+| B2-02J | in progress | 0.5--1.5 ms stable-compliance cross with 0.3--1 kN/m springs and explicit warning gate |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -118,3 +119,10 @@ This is the remaining rigid-skin approximation. B2-02I keeps that corrected
 footprint and crosses 0.25--1 mm normal travel with 3--12 kN/m springs and
 near-critical damping at both the aperture-valid and retained-transport force
 frontiers.
+
+B2-02I rejects the high-stiffness branch: MuJoCo reports bad qpos/qvel/qacc in
+multiple 12 kN/m cases, and the stable 3 kN/m / 0.25 mm frontier loses at frame
+329 without transport. B2-02J records simulator warning counters in every
+episode and makes zero unstable warnings an explicit anchor gate. It reduces
+the replay step from 2.25 ms to 0.5--1.5 ms and uses 0.3--1 kN/m springs whose
+natural timescale is resolvable at those steps.

@@ -51,6 +51,9 @@ MOVING_OVERHANG_SCHEMA = (
 COMPLIANT_SKIN_SCHEMA = (
     "sim2claw.sail_grasp_retention_compliant_skin_campaign.v1"
 )
+STABLE_COMPLIANCE_SCHEMA = (
+    "sim2claw.sail_grasp_retention_stable_compliance_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -107,6 +110,7 @@ def load_grasp_retention_contract(
         COLLISION_SKIN_SCHEMA,
         MOVING_OVERHANG_SCHEMA,
         COMPLIANT_SKIN_SCHEMA,
+        STABLE_COMPLIANCE_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -128,6 +132,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-collision-skin-v1",
         "sail-grasp-retention-moving-overhang-v1",
         "sail-grasp-retention-compliant-skin-v1",
+        "sail-grasp-retention-stable-compliance-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 
@@ -252,6 +257,11 @@ def _anchor_result(
         minimum_rubber_fraction
     ):
         reasons.append("rigid_or_missing_post_lift_load_path")
+    stability = episode.get("simulation_stability")
+    if acceptance.get("anchor_simulation_stability_required") and (
+        not isinstance(stability, dict) or not stability.get("passed")
+    ):
+        reasons.append("simulation_instability")
     return {
         "status": "anchor_pass" if not reasons else "rejected",
         "reasons": reasons,
@@ -270,6 +280,7 @@ def _anchor_result(
         "post_grasp_slip_relative_reduction": reduction,
         "post_lift_load_pair_count": len(post_lift_pairs),
         "rubber_load_pair_fraction_after_lift": rubber_pair_fraction,
+        "simulation_stability": stability,
         "trace_metrics": {
             "overall_joint_rms_degrees": float(
                 episode["trace_metrics"]["overall_joint_rms_degrees"]
