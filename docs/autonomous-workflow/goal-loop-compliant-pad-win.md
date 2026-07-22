@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02F COMPLETE; B2-02G IN PROGRESS`
+Status: `ACTIVE — B2-02G COMPLETE; B2-02H IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -22,7 +22,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02D | complete, terminal negative | force-friction cross exposed contact-trigger chatter; no full pass |
 | B2-02E | complete, terminal negative | latch earns retained transport through release at force 0.04 but fails aperture, slip, and rubber-path gates |
 | B2-02F | complete, terminal negative | long wrap earns retained transport to frame 523 but overlapping rigid collision still bypasses rubber |
-| B2-02G | in progress | rubber collision skin encloses collision-disabled core primitives; narrow torque cross frozen |
+| B2-02G | complete, terminal negative | 100% rubber aperture/slip frontier reaches frame 339; moving contact exits at two footprint edges |
+| B2-02H | in progress | moving-cap coverage/width overhang crossed around force 0.022--0.024 |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -101,3 +102,10 @@ collision-enabled. B2-02G keeps the skin rigidly attached to the jaw body but
 disables the enclosed primitive collision geoms. This represents a backed
 rubber collision surface without allowing the pawn to tunnel into a second
 exposed contact layer.
+
+B2-02G removes core bypass successfully. Its force 0.022 / fixed coverage 1.1
+candidate passes loaded-aperture bias (-0.24 degrees), slip reduction (24.9%),
+lift, and 100% rubber-load gates, but loses at frame 339 before transport. The
+last stable moving contact lies at 5.89 mm of a 6 mm coverage half-length and
+4.99 mm of a 5 mm width half-span. B2-02H expands only those moving-cap
+dimensions while retaining the now-valid fixed skin and torque branch.

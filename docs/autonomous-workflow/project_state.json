@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_collision_skin_v1",
-  "current_milestone": "B2_02G_FROZEN_COLLISION_SKIN_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_moving_overhang_v1",
+  "current_milestone": "B2_02H_FROZEN_MOVING_OVERHANG_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "long_wrap_retained_transport_frontier_collision_skin_followup_frozen",
+    "status": "collision_skin_aperture_slip_frontier_moving_overhang_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -647,7 +647,8 @@
       "B2-02D": "completed_terminal_negative",
       "B2-02E": "completed_terminal_negative",
       "B2-02F": "completed_terminal_negative",
-      "B2-02G": "in_progress",
+      "B2-02G": "completed_terminal_negative",
+      "B2-02H": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -742,6 +743,20 @@
     "long_wrap_receipt_sha256": "60c6929192b025e37c3c7de440dfe2e80524671f0088f40fe687f0ce5aaae7c9",
     "long_wrap_receipt_digest": "0b93628067ef67b90d296e8f4ab1c6355ffd33dc217419fa217de74eafbe8c7a",
     "collision_skin_contract": "configs/sail/grasp_retention_collision_skin_v1.json",
+    "collision_skin_anchor_pass_count": 0,
+    "collision_skin_aperture_slip_frontier": {
+      "candidate_id": "force_022_coverage_110",
+      "contact_loss_source_index": 339,
+      "loaded_aperture_bias_degrees": -0.23903448840853928,
+      "post_grasp_slip_relative_reduction": 0.2490375432045154,
+      "rubber_load_pair_fraction_after_lift": 1.0,
+      "lift_and_transport": false,
+      "moving_contact_abs_coverage_m": 0.005894695854863581,
+      "moving_contact_abs_width_m": 0.004994930728249168
+    },
+    "collision_skin_receipt_sha256": "72d60a10a44e60b4eb2329eaaa213ad5ee9c1ae6cf5c2635150284cabdec1902",
+    "collision_skin_receipt_digest": "54bb2dbeadf3855e1878e1c38b0ec0a37567c432c9f8ff20acb0bbae4176e86d",
+    "moving_overhang_contract": "configs/sail/grasp_retention_moving_overhang_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false

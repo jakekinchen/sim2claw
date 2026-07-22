@@ -301,6 +301,29 @@ def test_collision_skin_hides_enclosed_rigid_primitives() -> None:
         "anchor_minimum_rubber_load_pair_fraction_after_lift"
     ] == 1.0
 
+
+def test_moving_overhang_family_targets_two_edge_corner() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_moving_overhang_v1.json"
+        )
+    )
+
+    assert len(contract["frozen_candidate_family"]) == 18
+    assert contract["diagnosis_anchor"]["moving_contact_abs_coverage_m"] > 0.0058
+    assert contract["diagnosis_anchor"]["moving_contact_abs_width_m"] > 0.0049
+    assert max(
+        row["overrides"].get("tip_moving_coverage_multiplier", 0.3)
+        for row in contract["frozen_candidate_family"]
+    ) == 0.48
+    assert max(
+        row["overrides"].get("tip_moving_half_width_multiplier", 0.8333333333333334)
+        for row in contract["frozen_candidate_family"]
+    ) == 1.3333333333333333
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]
