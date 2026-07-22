@@ -14,6 +14,8 @@ from .residuals import build_residual_field, compile_residuals
 from .structural_surprise import compile_structural_surprise, evaluate_surprise
 from .mechanisms import load_mechanism_registry
 from .posterior import compile_mechanisms, fit_structure_particle
+from .influence import discover_influence_set
+from .loop_closure import compile_loop_closure, run_gold_10_fixture
 
 __all__ = [
     "SailContractError",
@@ -35,4 +37,7 @@ __all__ = [
     "load_mechanism_registry",
     "compile_mechanisms",
     "fit_structure_particle",
+    "discover_influence_set",
+    "compile_loop_closure",
+    "run_gold_10_fixture",
 ]
