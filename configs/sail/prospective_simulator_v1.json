@@ -1,0 +1,278 @@
+{
+  "schema_version": "sim2claw.sail_prospective_simulator_campaign.v1",
+  "campaign_id": "sail-prospective-load-frequency-v1",
+  "preregistered_at": "2026-07-22T08:00:00-05:00",
+  "proof_class": "action_frozen_prospective_simulator_experiment",
+  "claim_boundary": "Prospective MuJoCo discrimination on one retained action-frozen trace. Results may update simulator mechanism-family belief only; they do not identify physical parameters, interaction fidelity, task success, TwinWorthiness data authority, or transfer.",
+  "source_bindings": {
+    "acquisition_contract": {
+      "path": "configs/sail/acquisition_v1.json",
+      "sha256": "02bc19d8d8851fdc0199f8cb70025fea589260a36aac6cf480625b1f592e3411"
+    },
+    "action_evidence": {
+      "path": "outputs/sail/retired-bg-v1/evidence/calibration/sim-replay__20260719T030059Z-a26f8400.json",
+      "sha256": "fc2166a17b939e143b30e94a86555fcf77c634e0ea4c96be11829416d13a49c8"
+    },
+    "retained_trace": {
+      "path": "outputs/pawn_bg_servo_load_bias_v1/traces/20260719T030059Z-a26f8400.json",
+      "sha256": "d2250c86d31ca4b71073d168322f2e0a816a6afa32037c986af6db604934900a"
+    },
+    "workcell_and_load_receipt": {
+      "path": "outputs/pawn_bg_servo_load_bias_v1/servo_load_bias_receipt.json",
+      "sha256": "1ea4a84a509e320bece0f4797c1e2ae6a824ce72946528b95b7af04a561d4357"
+    },
+    "parent_belief_graph": {
+      "path": "outputs/sail/retired-bg-v1/belief-graph/belief_graph.json",
+      "sha256": "a5cf6e19214fe4406f798189e30c9fb3f9dbbe1fb662130d3904b1e55486c4e0"
+    }
+  },
+  "acquisition_decision": {
+    "selected_probe_id": "sim_load_frequency_discriminator",
+    "selected_from_structural_rank": 1,
+    "competing_mechanism_ids": [
+      "timing_delay",
+      "load_compliance"
+    ],
+    "declared_intervention_dimensions": [
+      "simulator_command_update_stride",
+      "simulator_deadband_conditioned_elbow_load_bias"
+    ],
+    "hardware_probe_executed": false
+  },
+  "action_contract": {
+    "source_id": "sim-replay:20260719T030059Z-a26f8400",
+    "recording_id": "20260719T030059Z-a26f8400",
+    "shape": [
+      368,
+      6
+    ],
+    "dtype": "float64",
+    "ordering": "C_row_major_time_joint;columns=shoulder_pan,shoulder_lift,elbow_flex,wrist_flex,wrist_roll,gripper;units=radian;frozen_stage_d_adapter",
+    "sha256": "c4acc4dca04e30c9d3031e326496a7c1d46777e7a1bd87b8d6968d2174e575bc",
+    "require_exact_evidence_trace_equality": true,
+    "no_resampling": true,
+    "no_reordering": true,
+    "no_value_change": true,
+    "no_clipping": true,
+    "no_ik": true,
+    "no_offsets": true,
+    "no_corrective_suffix": true,
+    "no_assistance": true
+  },
+  "mechanism_preregistration": {
+    "timing_delay": {
+      "status_before_run": "retained_competing_family",
+      "mechanism_scope": "simulator-side command application timing only",
+      "predicted_signatures": [
+        {
+          "signature_id": "timing-dynamic-rate-sensitivity",
+          "contrast": "stride2_load0_minus_stride1_load0",
+          "metric": "dynamic_elbow_flex_rms_degrees",
+          "direction": "increase",
+          "minimum_relative_magnitude": 0.02
+        },
+        {
+          "signature_id": "timing-common-dynamic-sensitivity",
+          "contrast": "stride2_load0_minus_stride1_load0",
+          "metric": "dynamic_overall_joint_rms_degrees",
+          "direction": "increase",
+          "minimum_relative_magnitude": 0.01
+        },
+        {
+          "signature_id": "timing-load-nonspecific",
+          "contrast": "stride1_loadm1500_minus_stride1_load0",
+          "metric": "stationary_elbow_flex_rms_degrees",
+          "direction": "not_required_for_timing_support",
+          "minimum_relative_magnitude": 0.0
+        }
+      ],
+      "measured_physical_latency": false
+    },
+    "load_compliance": {
+      "status_before_run": "retained_competing_family",
+      "mechanism_scope": "simulator-side deadband-conditioned elbow load response only",
+      "predicted_signatures": [
+        {
+          "signature_id": "load-stationary-elbow-rms",
+          "contrast": "stride1_loadm1500_minus_stride1_load0",
+          "metric": "stationary_elbow_flex_rms_degrees",
+          "direction": "decrease",
+          "minimum_relative_magnitude": 0.02
+        },
+        {
+          "signature_id": "load-stationary-elbow-bias",
+          "contrast": "stride1_loadm1500_minus_stride1_load0",
+          "metric": "stationary_elbow_flex_absolute_signed_mean_error_degrees",
+          "direction": "decrease",
+          "minimum_relative_magnitude": 0.02
+        },
+        {
+          "signature_id": "load-locality",
+          "contrast": "stride1_loadm1500_minus_stride1_load0",
+          "metric": "stationary_elbow_improvement_exceeds_dynamic_elbow_improvement",
+          "direction": "true",
+          "minimum_relative_magnitude": 0.0
+        }
+      ],
+      "measured_physical_compliance": false
+    }
+  },
+  "simulator_protocol": {
+    "engine": "MuJoCo",
+    "semantics": "record_at_retained_timestamp_then_apply_zero_order_hold_over_next_interval",
+    "application_delay_seconds": 0.11,
+    "initial_settle_steps": 100,
+    "deadband_degrees": {
+      "shoulder_lift": 2.0,
+      "elbow_flex": 2.0
+    },
+    "load_bias_semantics": "qfrc_applied[elbow_dof] = coefficient * previous_step_qfrc_bias[elbow_dof] only while abs(ctrl_elbow - qpos_elbow) is within the frozen elbow deadband; zero otherwise",
+    "command_stride_semantics": "The immutable source tensor remains intact; the simulator-side ZOH schedule selects the latest source index rounded down to a multiple of command_update_stride.",
+    "stall_probe": {
+      "real_stationary_maximum_step_degrees": 0.5,
+      "command_measurement_minimum_gap_degrees": 2.0,
+      "sim_reproduction_minimum_gap_degrees": 2.0,
+      "interpretation": "same-row gap reproduction diagnostic; not calibrated torque, current, or physical stall truth"
+    },
+    "dynamic_probe": {
+      "minimum_action_speed_degrees_per_second": 8.0,
+      "interpretation": "preregistered action-derivative subgroup, evaluated without changing source rows"
+    }
+  },
+  "declared_trials": [
+    {
+      "trial_id": "stride1_load0",
+      "command_update_stride": 1,
+      "elbow_load_bias_coefficient": 0.0,
+      "role": "frozen_factorial_baseline"
+    },
+    {
+      "trial_id": "stride2_load0",
+      "command_update_stride": 2,
+      "elbow_load_bias_coefficient": 0.0,
+      "role": "timing_frequency_intervention"
+    },
+    {
+      "trial_id": "stride1_loadm1500",
+      "command_update_stride": 1,
+      "elbow_load_bias_coefficient": -1.5,
+      "role": "load_response_intervention"
+    },
+    {
+      "trial_id": "stride2_loadm1500",
+      "command_update_stride": 2,
+      "elbow_load_bias_coefficient": -1.5,
+      "role": "declared_interaction_and_compensating_fit_check"
+    }
+  ],
+  "budget_and_stops": {
+    "maximum_episode_count": 1,
+    "exact_trial_count": 4,
+    "maximum_trial_count": 4,
+    "maximum_retries_per_trial": 0,
+    "post_hoc_grid_expansion_allowed": false,
+    "stop_before_execution_if": [
+      "any source binding hash changes",
+      "action shape dtype order values or hash changes",
+      "declared trial inventory changes",
+      "evaluator metric inventory or decision rule changes",
+      "any physical observation is requested"
+    ],
+    "stop_during_execution_if": [
+      "an undeclared candidate is requested",
+      "a trial cannot retain its negative or stopped result",
+      "a simulator exception prevents exact declared execution"
+    ]
+  },
+  "evaluator": {
+    "full_vector_metrics": [
+      "overall_joint_rms_degrees",
+      "per_joint_rms_degrees",
+      "per_joint_signed_mean_error_degrees",
+      "stationary_elbow_flex_rms_degrees",
+      "stationary_elbow_flex_signed_mean_error_degrees",
+      "dynamic_elbow_flex_rms_degrees",
+      "dynamic_overall_joint_rms_degrees",
+      "ee_rms_m",
+      "ee_max_m",
+      "stall_reproduction_fraction",
+      "command_transition_count",
+      "load_torque_summary"
+    ],
+    "missing_consequence_channels": [
+      "physical_contact_state",
+      "physical_contact_force",
+      "metric_object_trajectory",
+      "instrumented_physical_grasp_outcome"
+    ],
+    "missing_channel_policy": "explicit_not_evaluable_no_imputation",
+    "compensating_fit_rejection": {
+      "candidate_trial_id": "stride2_loadm1500",
+      "reference_trial_id": "stride1_loadm1500",
+      "trigger_requires_aggregate_joint_rms_improvement": true,
+      "reject_on_ee_rms_relative_regression_over": 0.02,
+      "reject_on_any_per_joint_rms_relative_regression_over": 0.02,
+      "reject_on_dynamic_elbow_rms_relative_regression_over": 0.02
+    },
+    "mechanism_score": "matched_required_signatures_divided_by_required_signature_count; not_required signatures are disclosed but excluded",
+    "tie_policy": "retain_both_equal_score_families",
+    "next_probe_policy": {
+      "load_compliance": "sim_parameter_refine_load",
+      "timing_delay": "sim_timing_rate_probe",
+      "tie": "sim_timing_rate_probe"
+    }
+  },
+  "phase2_prediction_freeze": {
+    "freeze_id": "phase2-load-timing-predictions-v1",
+    "frozen_before_any_phase2_physical_observation": true,
+    "predictions": [
+      {
+        "prediction_id": "P2-TIMING-RATE",
+        "probe": "instrumented command-to-observation timing at multiple declared command rates",
+        "timing_delay": "lag-correlated dynamic residual changes systematically with command rate across moving joints",
+        "load_compliance": "command-rate effect is secondary after conditioning on pose and load proxy"
+      },
+      {
+        "prediction_id": "P2-LOAD-PROXY",
+        "probe": "read-only synchronized elbow current or load proxy during held poses",
+        "timing_delay": "held-pose signed error does not track load proxy after timestamp alignment",
+        "load_compliance": "held-pose elbow signed error co-varies with synchronized load proxy and pose"
+      },
+      {
+        "prediction_id": "P2-CONTACT-OBSERVABILITY",
+        "probe": "read-only gripper contact retention and slip instrumentation",
+        "timing_delay": "no interaction-fidelity claim from joint or EE residuals alone",
+        "load_compliance": "no interaction-fidelity claim from joint or EE residuals alone"
+      }
+    ],
+    "physical_observations_consumed": 0,
+    "physical_parameter_values_frozen": false
+  },
+  "acceptance": {
+    "required_trial_ids": [
+      "stride1_load0",
+      "stride2_load0",
+      "stride1_loadm1500",
+      "stride2_loadm1500"
+    ],
+    "expected_action_sha256": "c4acc4dca04e30c9d3031e326496a7c1d46777e7a1bd87b8d6968d2174e575bc",
+    "require_graph_native_outputs": true,
+    "require_all_trials_retained": true,
+    "require_no_post_hoc_expansion": true,
+    "require_phase2_prediction_freeze": true,
+    "require_physical_observation_count": 0
+  },
+  "authority": {
+    "physical_observation": false,
+    "physical_parameter_identification": false,
+    "simulator_composite_promotion": false,
+    "interaction_fidelity": false,
+    "task_success": false,
+    "twin_worthiness_data": false,
+    "training_admission": false,
+    "policy_selection": false,
+    "physical_canary": false,
+    "robot_motion": false,
+    "physical_transfer": false
+  }
+}
