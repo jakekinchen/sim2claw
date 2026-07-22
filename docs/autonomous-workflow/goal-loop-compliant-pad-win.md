@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02P COMPLETE; B2-02Q IN PROGRESS`
+Status: `ACTIVE — B2-02Q COMPLETE; B2-02R IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -32,7 +32,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02N | complete, terminal negative | phase gate cuts chatter to 5 transitions and exposes loss at source 385 |
 | B2-02O | complete, terminal negative | constant force eliminates chatter but no aperture-valid retained transport exists |
 | B2-02P | complete, terminal negative | unilateral range fixes 3x overtravel; flat boxes still lose before transport |
-| B2-02Q | in progress | rounded capsule rubber surfaces across radius, force, and mounting compliance |
+| B2-02Q | complete, terminal negative | only 3 mm capsule contacts; transport branch loses at 318 with aperture mismatch |
+| B2-02R | in progress | paired inward rubber-surface offsets around aperture-valid unilateral model |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -207,3 +208,12 @@ conformal, whereas the current sleeve remains a box with face/edge transitions.
 B2-02Q uses the existing deterministic capsule path with 2--6 mm radii. It
 crosses constant force 0.06--0.08 and compares unilateral 0.5 mm mounting
 compliance with rigidly mounted rounded rubber, retaining all tightened gates.
+
+B2-02Q finds no rounded-surface composite: radius 3 mm / force 0.06 transports
+but loses bilateral contact at source 318 and over-closes by 1.59 degrees; other
+radii usually miss opposing contact. B2-02R models the reported rubber-band
+thickness directly by translating both opposing surfaces into the grasp gap.
+At first qualified contact, fixed local +X aligns with its jaw-to-pawn normal
+while moving local +X is opposed, so matched inward motion is fixed positive
+and moving negative. The frozen family crosses 0.25--4 mm paired offsets and a
+0.06--0.08 constant-force neighborhood on the aperture-valid unilateral pad.

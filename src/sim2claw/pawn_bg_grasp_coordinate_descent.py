@@ -489,6 +489,12 @@ def _apply_model_coordinates(
             raise GraspCoordinateDescentError(
                 f"{name} exceeds diagnostic bounds"
             )
+    for name in ("tip_fixed_normal_offset_m", "tip_moving_normal_offset_m"):
+        value = float(parameters.get(name, 0.0))
+        if not -0.01 <= value <= 0.01:
+            raise GraspCoordinateDescentError(
+                f"{name} exceeds diagnostic bounds"
+            )
     for name in (
         "tip_coverage_offset_m",
         "tip_fixed_coverage_offset_m",

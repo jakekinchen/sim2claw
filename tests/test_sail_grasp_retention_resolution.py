@@ -575,6 +575,31 @@ def test_rounded_rubber_family_crosses_capsule_mounting_model() -> None:
     ) == 3
 
 
+def test_inward_rubber_family_uses_opposed_normal_offsets() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_inward_rubber_v1.json"
+        )
+    )
+
+    family = contract["frozen_candidate_family"]
+    assert len(family) == 18
+    shifted = family[1:]
+    assert all(row["overrides"]["tip_fixed_normal_offset_m"] > 0.0 for row in shifted)
+    assert all(row["overrides"]["tip_moving_normal_offset_m"] < 0.0 for row in shifted)
+    assert all(
+        row["overrides"]["tip_fixed_normal_offset_m"]
+        == -row["overrides"]["tip_moving_normal_offset_m"]
+        for row in shifted
+    )
+    assert max(
+        row["overrides"]["tip_fixed_normal_offset_m"] for row in shifted
+    ) == 0.004
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]
