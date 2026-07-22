@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-22T09:30:00-05:00",
-  "active_campaign": "sail_clawloop_phase1_v1",
-  "current_milestone": "PHASE_1_COMPLETE_PHASE_2_BLOCKED_EXTERNAL_PENDING_HARDWARE_AND_AUTHORITY",
+  "updated_at": "2026-07-22T10:50:00-05:00",
+  "active_campaign": "sail_project_application_v1_complete",
+  "current_milestone": "POST_PHASE1_PROJECT_APPLICATION_COMPLETE_TERMINAL_NEGATIVE_WITH_OBSERVABILITY_GAINS_PHASE2_BLOCKED_EXTERNAL",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -538,6 +538,97 @@
       "policy_selection_admitted": false,
       "physical_authority": false
     }
+  },
+  "sail_project_application": {
+    "schema_version": "sim2claw.sail_project_application_state.v1",
+    "status": "completed_terminal_negative_with_observability_and_diagnostic_metric_gains",
+    "contract": "configs/sail/project_application_v1.json",
+    "contract_sha256": "1142884783ee198c0facb350cce0f65dca06df5d95de9330a5b13eafa9216013",
+    "candidate_freeze": "configs/sail/project_application_candidate_freeze_v1.json",
+    "candidate_freeze_sha256": "e1b96609770d9760952be084dc34800f0a4c7892384a8ac78d20d61e4338a834",
+    "ignored_output_root": "outputs/sail/project-application-v1",
+    "receipt_sha256": "a2345ac50c8de15905a0ef1ecc03bf7b8803cb49fca27ada5874ce6037fdedf8",
+    "receipt_digest": "3cc16bedfed379ac5348b6051b7ade68faf9434e84a9cc533d8e7fabb0675550",
+    "milestones": {
+      "A1-00": "completed",
+      "A1-01": "completed",
+      "A1-02": "completed",
+      "A1-03": "completed",
+      "A1-04": "completed",
+      "A1-05": "completed",
+      "A1-06": "completed"
+    },
+    "phase_1_milestones_applied": 18,
+    "retained_evidence_items_reconciled": 31,
+    "action_frozen_episode_count": 11,
+    "adaptive_candidate_count_including_baseline": 12,
+    "previously_opened_evaluation_episode_count": 8,
+    "failure_class_count": 10,
+    "selected_contact_candidate": "rubber_contact_condim_4",
+    "baseline_task_counts": {
+      "lifted": 4,
+      "lift_and_transport": 1,
+      "strict_successes": 0,
+      "whole_base_inside_destination": 0
+    },
+    "candidate_task_counts": {
+      "lifted": 4,
+      "lift_and_transport": 1,
+      "strict_successes": 0,
+      "whole_base_inside_destination": 1
+    },
+    "candidate_diagnostic_deltas": {
+      "qualified_bilateral_contact_count": 1,
+      "whole_base_inside_destination_count": 1,
+      "mean_final_target_distance_relative": -0.15528536336816628,
+      "mean_post_grasp_slip_relative": -0.06546683634968901,
+      "c2_bilateral_contact_loss_source_frame_delta": -9,
+      "c2_post_grasp_slip_relative_reduction": 0.07734229672074733
+    },
+    "candidate_joint_rms_degrees": 1.2228385577614695,
+    "candidate_ee_rms_m": 0.011646569370483785,
+    "maximum_joint_rms_degrees": 1.2239681787734957,
+    "maximum_ee_rms_m": 0.01145712069614842,
+    "task_advancement_admitted": false,
+    "mechanism_advancement_admitted": false,
+    "simulator_composite_promoted": false,
+    "contact_localization": {
+      "c2_contact_loss_source_frame": 323,
+      "source_frames_before_release": 78,
+      "gripper_opened": false,
+      "baseline_load_bearing_pair": "fixed_rigid_primitive_to_moving_rubber_sleeve",
+      "surface_migration": "upper_collar_and_head_to_head_sphere_with_opposition_and_load_collapse",
+      "physical_cause_identified": false
+    },
+    "observability_advancement": {
+      "post_first_lift_task_diagnostic_added": true,
+      "destination_entry_episode_ids": [
+        "20260719T031324Z-bf91502b",
+        "20260719T032440Z-f728a18c",
+        "20260719T032620Z-0c7e3d86"
+      ],
+      "hidden_below_instantaneous_lift_gate_episode_count": 2,
+      "frozen_evaluator_changed": false,
+      "promotion_authority": false
+    },
+    "studio_surface": {
+      "route": "/project-application.html",
+      "manifest": "src/sim2claw/studio_web/publication/sail_project_application_v1/manifest.json",
+      "phase_1_studio_receipt_unchanged": true,
+      "read_only": true
+    },
+    "final_verification": {
+      "focused_test_count": 25,
+      "full_suite_passed": 792,
+      "full_suite_skipped": 3,
+      "full_suite_subtests_passed": 328,
+      "studio_routes_http_200": true,
+      "brev_inventory_empty": true,
+      "running_container_count": 0
+    },
+    "training_admitted": false,
+    "physical_authority": false,
+    "current_safe_claim": "Phase 1 was applied to the full retained evidence compilation and all 11 action-frozen pawn episodes. The bounded contact-model campaign did not repair or promote the simulator, but it localized the visible C2 drop to unilateral rubber contact plus surface-migration and opposing-load collapse, compiled 10 failure classes, and added a non-promoting post-first-lift task diagnostic that reveals three destination entries."
   },
   "strategic_program": {
     "decision": "docs/decisions/0004-goal-conditioned-act-pick-place.md",

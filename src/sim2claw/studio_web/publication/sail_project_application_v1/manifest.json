@@ -1,0 +1,82 @@
+{
+  "schema_version": "sim2claw.sail_project_application_studio_manifest.v1",
+  "proof_class": "retrospective_action_frozen_simulator_mechanism_diagnostic",
+  "source_receipt": {
+    "path": "outputs/sail/project-application-v1/receipt.json",
+    "sha256": "a2345ac50c8de15905a0ef1ecc03bf7b8803cb49fca27ada5874ce6037fdedf8",
+    "receipt_digest": "3cc16bedfed379ac5348b6051b7ade68faf9434e84a9cc533d8e7fabb0675550"
+  },
+  "safe_claim": "Phase 1 was applied to 31 retained evidence items and all 11 action-frozen pawn episodes. The bounded contact-model campaign did not repair or promote the simulator, but it localized the C2 drop and added a non-promoting post-first-lift task diagnostic.",
+  "candidate": {
+    "candidate_id": "condim4",
+    "task_counts": {
+      "lifted": 4,
+      "lift_and_transport": 1,
+      "strict_successes": 0,
+      "whole_base_inside_destination": 1
+    },
+    "diagnostic_deltas": {
+      "qualified_bilateral_contact_count": 1,
+      "whole_base_inside_destination_count": 1,
+      "mean_final_target_distance_relative": -0.15528536336816628,
+      "mean_post_grasp_slip_relative": -0.06546683634968901,
+      "c2_bilateral_contact_loss_source_frame_delta": -9,
+      "c2_post_grasp_slip_relative_reduction": 0.07734229672074733
+    },
+    "gates": {
+      "action_invariance": true,
+      "joint_trace_guard": true,
+      "ee_trace_guard": false,
+      "minimum_two_lift_and_transport": false,
+      "no_new_wrong_piece_contact": true,
+      "no_worse_maximum_collateral": true,
+      "mechanism_advancement": false,
+      "task_advancement": false
+    }
+  },
+  "contact_localization": {
+    "findings": [
+      "The gripper remains closed; bilateral contact is lost at source frame 323, 78 frames before intended release.",
+      "The load-bearing pair is moving-rubber to fixed-rigid, not rubber-to-rubber.",
+      "Contact migrates from the upper-collar/head transition onto the head sphere while opposing load collapses.",
+      "Corrected fixed-rubber placements regress the sentinel consequence vector, so the physical rubber profile remains unidentified."
+    ],
+    "physical_cause_identified": false
+  },
+  "failure_counts": {
+    "terminal_destination_containment_failure": 11,
+    "wrong_piece_robot_contact": 8,
+    "no_40mm_lift": 7,
+    "terminal_upright_failure": 6,
+    "collateral_displacement": 5,
+    "terminal_settle_failure": 3,
+    "no_transport_while_above_lift_gate": 3,
+    "no_bilateral_contact": 2,
+    "no_qualified_pinch": 2,
+    "destination_entry_hidden_below_instantaneous_lift_gate": 2
+  },
+  "resolved_inconsistencies": [
+    {
+      "id": "metric_post_first_lift_blind_spot",
+      "status": "resolved_observability_only",
+      "finding": "C2, D2, and F2 enter the destination after first lift; D2 and F2 do so below the instantaneous 40 mm gate while bilateral contact remains."
+    },
+    {
+      "id": "rubber_mirroring_geometry",
+      "status": "localized_not_physically_resolved",
+      "finding": "The baseline fixed sleeve never enters the C2 contact witness, and corrected placements regress consequence metrics."
+    },
+    {
+      "id": "c2_premature_drop",
+      "status": "localized_terminal_negative_for_bounded_contact_models",
+      "finding": "The selected contact-dimensionality candidate loses contact nine source frames earlier and fails the EE guard."
+    }
+  ],
+  "authority": {
+    "read_only": true,
+    "source_actions_modified": false,
+    "simulator_promotion": false,
+    "training_admission": false,
+    "physical_authority": false
+  }
+}

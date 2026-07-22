@@ -1,0 +1,214 @@
+{
+  "schema_version": "sim2claw.sail_project_application_campaign.v1",
+  "campaign_id": "sail-project-application-v1",
+  "objective": "Apply the completed Phase 1 SAIL system across retained physical-action simulator evidence, localize reproducible failures, and test bounded contact-model mechanisms without changing source actions or claiming physical identification.",
+  "source_bindings": {
+    "phase_1_publication_receipt": {
+      "path": "outputs/sail/publication-v1/receipt.json",
+      "sha256": "5067d9932503af14fb9a972037b006a51b23deed571137d78fff9fdffce017e0"
+    },
+    "grasp_coordinate_contract": {
+      "path": "configs/optimization/pawn_bg_grasp_coordinate_descent_v1.json",
+      "sha256": "6f39692ede95e1fc581826699ba107b6b9814a776a0751dbc6a13ce25e6e9847"
+    },
+    "reward_contract": {
+      "path": "configs/evaluations/pawn_bg_sim_reward_v1.json",
+      "sha256": "e702ad7fa3a366bc24c552c4cd0e5df66842d5fe7f6ef824266b8cfb2ee8d0c7"
+    },
+    "accepted_v3_group_receipt": {
+      "path": "outputs/pawn_bg_grasp_group_probes/frozen_v3_timestep045_all.json",
+      "sha256": "5763e0be1f1ff6d1e535f13af36289eabb07f219220ac2c95b7c8bdf4158eb29"
+    },
+    "rejected_rubber_friction_2_group_receipt": {
+      "path": "outputs/pawn_bg_grasp_group_probes/frozen_v3_rubber_sliding2_all.json",
+      "sha256": "52811e86bfdc164d726d7f900570650b57f67c6fb193929a222d4b456be7f24c"
+    },
+    "phase_1_ci_contract": {
+      "path": "configs/sail/ci_tiers_v2.json",
+      "sha256": "21fe8a7baae51ca2d24974f4c40bee85d161d2377d5f11fd0f0bd6ef83984e74"
+    },
+    "retained_evidence_receipt": {
+      "path": "outputs/sail/retired-bg-v1/evidence/receipt.json",
+      "sha256": "50f8eae5244ded8092ecd4921bab5667f910c788121d2c7cd95fbd918984b563"
+    },
+    "phase_aligned_residual_receipt": {
+      "path": "outputs/sail/retired-bg-v1/residuals/receipt.json",
+      "sha256": "4022b6a1f11b326cdc980f022d2c1fd6eaaa279ab28ae152ac4b4675326c6203"
+    },
+    "deterministic_belief_graph_receipt": {
+      "path": "outputs/sail/retired-bg-v1/belief-graph/receipt.json",
+      "sha256": "da1ad4de3f3b1139376bda47e45d0b14f4805d25035e7809d007a7ee6f2aee59"
+    }
+  },
+  "proof_boundary": {
+    "proof_class": "retrospective_action_frozen_simulator_mechanism_diagnostic",
+    "all_episodes_previously_opened": true,
+    "fresh_held_out_evidence": false,
+    "fresh_physical_evidence": false,
+    "physical_parameter_identification": false,
+    "training_admission": false,
+    "policy_selection_admission": false,
+    "simulator_composite_promotion": false,
+    "physical_authority": false,
+    "claim": "Candidate results may establish deterministic simulator sensitivity or task-metric advancement only. They do not establish the physical rubber friction, physical contact force, simulator truth, policy improvement, or transfer."
+  },
+  "episode_roles": {
+    "diagnosis_anchor": "20260719T031324Z-bf91502b",
+    "adaptive_sentinels": [
+      "20260719T031324Z-bf91502b",
+      "20260719T032440Z-f728a18c",
+      "20260719T032620Z-0c7e3d86"
+    ],
+    "previously_opened_evaluation_once_after_family_freeze": [
+      "20260719T030059Z-a26f8400",
+      "20260719T030206Z-af661460",
+      "20260719T031615Z-0e058ca2",
+      "20260719T031715Z-61ebb199",
+      "20260719T031813Z-b147b429",
+      "20260719T032315Z-d3c3cf0b",
+      "20260719T032400Z-052d5137",
+      "20260719T032531Z-06be393c"
+    ],
+    "evaluation_semantics": "retrospective_previously_opened_episode_evaluation_not_independent_holdout"
+  },
+  "action_sha256_by_recording_id": {
+    "20260719T030059Z-a26f8400": "c4acc4dca04e30c9d3031e326496a7c1d46777e7a1bd87b8d6968d2174e575bc",
+    "20260719T030206Z-af661460": "9a550296ddabd75cb43c4d4e0320396603a0fc6b2ea9c8de227dd6ed4aef6c06",
+    "20260719T031324Z-bf91502b": "402a29e4cdc0c4cb90d41a83327ad8df5685544851b4e4d659129b3239744fd6",
+    "20260719T031615Z-0e058ca2": "a8121830d7a3284094ca0e109d621b7585e4692b86fe33f3fe42cd5c1f412bcc",
+    "20260719T031715Z-61ebb199": "bd72889c43b58ead67f1acab3617ef13c0734354f7475aa1cac80bbb920c081c",
+    "20260719T031813Z-b147b429": "843565b9f7bad57bb96e35e7b73fc8974b47abe9c2401925ed6474f2077cad53",
+    "20260719T032315Z-d3c3cf0b": "757e5a7b4aecac8e5e8588bea69606fe8249af9e2cd723843a8d31decbcb5606",
+    "20260719T032400Z-052d5137": "6e737551377da7c18a84979a5bf83fdebaa62fa4b5ffa29d75adb0586d1b0137",
+    "20260719T032440Z-f728a18c": "c46518d41d5b912243119aa3fff92eb2e6b922dcb0b14a573ae862e7dc3b3ae2",
+    "20260719T032531Z-06be393c": "c968cc4a9140f911d28972d144d6af1d7794cd79b432038eb8f35f3d919f307d",
+    "20260719T032620Z-0c7e3d86": "ff5845e886aa7f6e65ffa978f758ccb2777fcaac8a71bd51cd02171f61ebdb34"
+  },
+  "accepted_baseline_parameters": {
+    "fixed_jaw_mesh_collision_enabled": false,
+    "gripper_force_limit_multiplier": 3.0,
+    "gripper_joint_damping_multiplier": 1.0,
+    "gripper_joint_frictionloss_multiplier": 1.0,
+    "gripper_servo_gain_multiplier": 1.0,
+    "moving_jaw_mesh_collision_enabled": false,
+    "pawn_friction_multiplier": 1.0,
+    "pawn_mass_multiplier": 1.0,
+    "rolling_friction_m": 0.0012,
+    "rubber_tip_enabled": true,
+    "simulation_timestep_multiplier": 0.45,
+    "sliding_friction": 1.8,
+    "solref_damping_ratio": 1.2,
+    "solref_time_constant_s": 0.006,
+    "tip_coverage_m": 0.02,
+    "tip_coverage_offset_m": -0.03,
+    "tip_half_width_m": 0.0065,
+    "tip_moving_coverage_offset_m": 0.025,
+    "tip_thickness_m": 0.001,
+    "torsional_friction_m": 0.012
+  },
+  "frozen_metrics": {
+    "primary_task_counts": [
+      "strict_successes",
+      "lift_and_transport",
+      "lifted"
+    ],
+    "hard_gate_vector": [
+      "selected_piece_contact",
+      "piece_lifted",
+      "whole_base_inside_destination",
+      "upright",
+      "settled",
+      "released",
+      "no_wrong_piece_robot_contact",
+      "collateral_within_threshold"
+    ],
+    "mechanism_metrics": [
+      "bilateral_lift_retention_seconds",
+      "maximum_post_grasp_slip_m",
+      "contact_loss_source_index",
+      "load_bearing_pair_normal_force_n",
+      "load_bearing_pair_opposition",
+      "contact_height_relative_piece_center_m",
+      "pawn_surface_identity"
+    ],
+    "trace_guardrails": {
+      "baseline_joint_rms_degrees": 1.2118496819539561,
+      "maximum_joint_rms_degrees": 1.2239681787734957,
+      "baseline_ee_rms_m": 0.011343683857572692,
+      "maximum_ee_rms_m": 0.01145712069614842,
+      "maximum_relative_regression": 0.01
+    },
+    "collateral_guardrail_m": 0.006
+  },
+  "mechanism_hypotheses": [
+    {
+      "id": "H1_solver_creep",
+      "probe": "no-slip solver iterations and solver algorithm",
+      "distinguishing_prediction": "contact-force and surface position remain stable without changing initial contact geometry"
+    },
+    {
+      "id": "H2_friction_constraint_model",
+      "probe": "elliptic versus pyramidal cone and rubber contact dimensionality",
+      "distinguishing_prediction": "tangential or torsional constraint behavior changes at the same contact surfaces"
+    },
+    {
+      "id": "H3_contact_compliance_distribution",
+      "probe": "bounded contact impedance and reference families",
+      "distinguishing_prediction": "load shares across both jaws without upward surface migration"
+    },
+    {
+      "id": "H4_surface_migration_geometry",
+      "probe": "identity-rich contact witnesses followed by one bounded pad-surface geometry family",
+      "distinguishing_prediction": "the load-bearing pair remains below the pawn head-collar transition and retention rises"
+    },
+    {
+      "id": "H5_gripper_squeeze_dynamics",
+      "probe": "existing gripper response witnesses only unless H1-H4 fail",
+      "distinguishing_prediction": "simulated jaw separation grows under load despite an unchanged closed command"
+    },
+    {
+      "id": "H6_scene_path_inconsistency",
+      "probe": "wrong-piece contact and collateral event ledger",
+      "distinguishing_prediction": "task failure is caused before or independently of selected-pawn retention"
+    }
+  ],
+  "prior_falsification": {
+    "higher_scalar_sliding_friction_as_single_fix": "rejected",
+    "reason": "Sliding friction 2.0 did not improve lift or lift-and-transport counts and violated the full-set end-effector RMS guardrail."
+  },
+  "experiment_budget": {
+    "maximum_adaptive_candidate_composites": 12,
+    "maximum_sentinel_episode_runs_per_candidate": 3,
+    "maximum_frozen_families_opened_on_evaluation_once": 2,
+    "maximum_evaluation_episode_runs_per_family": 8,
+    "minimum_mechanism_discrimination_before_geometry_change": 1,
+    "post_hoc_grid_expansion": false
+  },
+  "acceptance": {
+    "source_actions_must_match_all_frozen_sha256": true,
+    "existing_promotion_thresholds_may_not_be_weakened": true,
+    "simulator_promotion_requires_minimum_all_episode_lift_and_transport": 6,
+    "simulator_promotion_alternative_minimum_strict_successes": 1,
+    "diagnostic_task_advancement_requires": {
+      "minimum_all_episode_lift_and_transport": 2,
+      "minimum_strict_successes": 0,
+      "trace_guardrails_pass": true,
+      "no_new_wrong_piece_contact": true,
+      "no_worse_maximum_collateral_displacement": true
+    },
+    "mechanism_advancement_requires": {
+      "diagnosis_anchor_contact_loss_delayed_source_frames": 10,
+      "diagnosis_anchor_post_grasp_slip_relative_reduction": 0.1,
+      "trace_guardrails_pass": true,
+      "no_task_count_regression": true
+    }
+  },
+  "stop_conditions": [
+    "Stop and report a terminal negative when the adaptive candidate budget is exhausted without a frozen family meeting either advancement lane.",
+    "Stop any candidate immediately on action-hash mismatch, non-finite state, evaluator drift, or a trace guardrail violation visible on sentinels.",
+    "Do not open the eight evaluation episodes until the candidate family and tie-break rule are frozen.",
+    "Do not infer a physical contact parameter from simulator-only improvement.",
+    "Do not open ACT or GR00T training unless a separately owned TwinWorthiness certificate admits the exact capability."
+  ],
+  "output_root": "outputs/sail/project-application-v1"
+}

@@ -4,10 +4,15 @@ import pytest
 
 from sim2claw.pawn_bg_grasp_coordinate_descent import (
     _rank,
+    _pawn_surface_label,
     _run_length_update,
+    _select_load_bearing_contact_pair,
     _summarize_retention_trace,
     load_grasp_coordinate_contract,
 )
+
+import numpy as np
+import mujoco
 
 
 def test_grasp_coordinate_contract_is_bounded_action_frozen_and_non_authoritative() -> None:
@@ -106,3 +111,59 @@ def test_retention_trace_summary_handles_never_lifted_episode() -> None:
     assert summary["first_qualified_lift"] is None
     assert summary["first_qualified_contact_loss_after_lift"] is None
     assert summary["first_drop_below_lift_threshold_after_lift"] is None
+
+
+def test_load_bearing_pair_prioritizes_the_weaker_jaw_and_is_deterministic() -> None:
+    fixed = [
+        {
+            "contact_index": 4,
+            "jaw_geom_id": 8,
+            "position_m": np.asarray([0.0, 0.0, 0.0]),
+            "normal": np.asarray([1.0, 0.0, 0.0]),
+            "normal_force_n": 8.0,
+        },
+        {
+            "contact_index": 3,
+            "jaw_geom_id": 7,
+            "position_m": np.asarray([0.0, 0.0, 0.0]),
+            "normal": np.asarray([1.0, 0.0, 0.0]),
+            "normal_force_n": 4.0,
+        },
+    ]
+    moving = [
+        {
+            "contact_index": 9,
+            "jaw_geom_id": 12,
+            "position_m": np.asarray([0.02, 0.0, 0.0]),
+            "normal": np.asarray([-1.0, 0.0, 0.0]),
+            "normal_force_n": 5.0,
+        }
+    ]
+
+    pair = _select_load_bearing_contact_pair(fixed, moving)
+
+    assert pair is not None
+    assert pair["fixed"]["jaw_geom_id"] == 8
+    assert pair["moving"]["jaw_geom_id"] == 12
+    assert pair["minimum_normal_force_n"] == 5.0
+    assert pair["opposing_normal_score"] == 1.0
+
+
+def test_pawn_surface_label_names_detailed_head_and_collar() -> None:
+    model = mujoco.MjModel.from_xml_string(
+        """
+        <mujoco>
+          <worldbody>
+            <body>
+              <geom name="collar" type="ellipsoid" pos="0 0 .034" size=".01 .01 .003"/>
+              <geom name="head" type="sphere" pos="0 0 .0445" size=".0087"/>
+            </body>
+          </worldbody>
+        </mujoco>
+        """
+    )
+    collar = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "collar")
+    head = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "head")
+
+    assert _pawn_surface_label(model, collar) == "upper_collar_ellipsoid"
+    assert _pawn_surface_label(model, head) == "head_sphere"

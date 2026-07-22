@@ -1,6 +1,32 @@
-# SAIL/ClawLoop Phase 1 Goal
+# SAIL/ClawLoop Goal
 
-Status: `COMPLETE — P1-00 THROUGH P1-17 COMPLETE; PHASE 2 BLOCKED EXTERNAL`
+Status: `PHASE 1 COMPLETE; POST-PHASE-1 PROJECT APPLICATION A1-00 THROUGH A1-06 COMPLETE`
+
+## Active post-Phase-1 application loop
+
+Apply the completed Phase 1 system to the full retained project evidence and
+determine whether it can produce evaluator-owned simulator gains or resolve
+reproducible inconsistencies. The immediate diagnosis anchor is the best
+C2-to-C1 pawn transport replay, whose action-frozen simulated grasp loses the
+pawn before intended release.
+
+Current milestone: **A1-06 complete — terminal negative for bounded contact-model
+promotion, with contact localization and post-first-lift observability gains**.
+
+Active brief:
+[`docs/briefs/033-sail-project-application-and-grasp-retention.md`](docs/briefs/033-sail-project-application-and-grasp-retention.md).
+
+Goal-loop ledger:
+[`docs/autonomous-workflow/goal-loop-sail-project-application.md`](docs/autonomous-workflow/goal-loop-sail-project-application.md).
+
+All eleven retained action episodes were opened by earlier campaigns. Three
+declared sentinels may guide bounded acquisition; the other eight may be run
+once only after a candidate family is frozen and remain retrospective
+evaluation, not fresh hold-out evidence. Existing task thresholds and trace
+guards are immutable. Training, physical calibration, simulator promotion,
+and robot authority stay closed unless their separately owned gates pass.
+
+## Completed Phase 1 authority
 
 The active program authority is
 [`docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md`](docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md).
@@ -14,9 +40,11 @@ simulator evidence, and all ACT/GR00T data generation or policy selection stays
 closed unless an evaluator-owned TwinWorthiness certificate opens the declared
 capability. Source actions remain byte-identical in the action-frozen lane.
 
-Current milestone: **Phase 1 complete — Phase 2 awaits a related workcell and separately granted capture/motion authority**.
+Phase 1 remains complete. Phase 2 still awaits a related workcell and
+separately granted capture/motion authority; the active application loop does
+not substitute for those prerequisites.
 
-Active brief:
+Phase 1 freeze brief:
 [`docs/briefs/032-sail-publication-freeze.md`](docs/briefs/032-sail-publication-freeze.md).
 
 Live milestone status is maintained in the master plan's Section 12 ledger and
