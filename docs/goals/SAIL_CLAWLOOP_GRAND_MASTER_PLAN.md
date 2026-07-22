@@ -1501,8 +1501,8 @@ Only one milestone should be `in_progress` in the active goal loop.
 | P1-12 Retrospective case | P1-02–P1-09 | completed | 12 source-bound history triads, five boundary/reversal/coverage findings, two influence-bound graph edits, five reconstruction conditions, two vector figures, evaluator-owned TW-REPLAY certificate with TW-G2/TW-DATA closed |
 | P1-13 Prospective sim | P1-09, P1-12 | completed | preregistered four-trial load/frequency factorial, exact 368x6 action identity, full-vector retained results, graph delta/posterior/Phase-2 freeze; loop selects timing-rate probe without physical promotion |
 | P1-14 TwinWorthiness wiring | P1-01, P1-03, P1-08 | completed | exact-scope expiring capability envelopes; LF-08/09/11/13 recompute fail-closed decisions; seven revocation paths denied; current TW-REPLAY opens diagnostics only; synthetic higher-level branch reachability; GOLD-17/18/19 |
-| P1-15 Policy flywheel | P1-14 | in_progress | fixture proof; real lane gated |
-| P1-16 Studio | P1-03, P1-04, P1-14 | pending | phone-friendly bound views |
+| P1-15 Policy flywheel | P1-14 | completed | production LF-00–LF-13 synthetic component path; 18-field posterior/teacher/simulator/evaluator lineage; strict failure/suffix matrix; ACT terminal-negative and independent rejection; overhead-only GR00T explicit compute skip; real lane zero rows/comparisons |
+| P1-16 Studio | P1-03, P1-04, P1-14 | in_progress | phone-friendly bound views |
 | P1-17 Publication freeze | P1-10–P1-16 | pending | tables, figures, reproduction map |
 | P2-00 Hardware identity | Phase 1 exit, authority | blocked_external | new-workcell receipt |
 | P2-01 Read-only package | P2-00 capture authority | blocked_external | calibration/static receipt |

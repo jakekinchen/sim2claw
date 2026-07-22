@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-22T09:30:00-05:00",
+  "updated_at": "2026-07-22T11:00:00-05:00",
   "active_campaign": "sail_clawloop_phase1_v1",
-  "current_milestone": "P1-15_GATED_SELF_IMPROVEMENT_FLYWHEEL_IN_PROGRESS",
+  "current_milestone": "P1-16_STUDIO_OBSERVABILITY_AND_VISUALIZATION_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -10,7 +10,7 @@
     "schema_version": "sim2claw.sail_clawloop_campaign_state.v1",
     "master_plan": "docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md",
     "cutover_contract": "configs/sail/cutover_v1.json",
-    "active_brief": "docs/briefs/030-sail-gated-policy-flywheel.md",
+    "active_brief": "docs/briefs/031-sail-studio-observability.md",
     "phase": 1,
     "phase_1_status": "active",
     "new_physical_data_allowed": false,
@@ -35,11 +35,11 @@
       "P1-12": "completed",
       "P1-13": "completed",
       "P1-14": "completed",
-      "P1-15": "in_progress",
-      "P1-16": "pending",
+      "P1-15": "completed",
+      "P1-16": "in_progress",
       "P1-17": "pending"
     },
-    "current_safe_claim": "an evaluator-issued exact-scope capability layer denies all seven missing, legacy, tampered, mismatched, expired, and revoked cases; the current TW-REPLAY retained-workcell envelope opens diagnostics only, while higher downstream branches are reachable solely in explicitly synthetic fixtures and no current evidence opens data generation, policy selection, canary, motion, or transfer",
+    "current_safe_claim": "the production LF-00 through LF-13 flywheel executes on a synthetic component fixture with complete posterior, teacher, simulator, action, and evaluator lineage; the ACT candidate is terminal-negative, GR00T is an overhead-only explicit no-compute challenger, and the current real TW-REPLAY lane generates and admits zero rows and publishes zero policy comparisons",
     "contract_freeze": {
       "schema_version": "sim2claw.sail_contract_freeze.v1",
       "schema_sha256": {
@@ -425,6 +425,44 @@
       "gold_19_passed": true,
       "training_admitted": false,
       "policy_selection_admitted": false,
+      "physical_authority": false
+    },
+    "gated_policy_self_improvement_flywheel": {
+      "schema_version": "sim2claw.sail_policy_flywheel_state.v1",
+      "campaign": "configs/sail/policy_flywheel_campaign_v1.json",
+      "campaign_sha256": "39c579df3004403828f51a06e13022cf6df04ae56176df39ec2c0f849b0a7f73",
+      "ignored_output_root": "outputs/sail/policy-flywheel-v1",
+      "report_sha256": "3dd24d6f3057b5dd46b95c4da41da853684a701fe0ccfccdec4cdf8cb0fab4eb",
+      "report_digest": "2eec0b4658afa5d87b8775c9c63ac4a3ea704d2e80f996a7d0437486287e6c4d",
+      "receipt_sha256": "3d01c39088c07bb8e3f7279730113686bebbd5f170e112521e2430a2376bbfad",
+      "receipt_digest": "6094be3db589408470d5142a053199f9b81fc7f5702e84134d4f5d79b58bd15e",
+      "fixture_passed_test_count": 13,
+      "full_component_lf00_lf13_path_executed": true,
+      "gated_policy_stage_count": 6,
+      "required_lineage_identity_count": 18,
+      "failure_admission_case_count": 7,
+      "posterior_sampling_policy": "identified_posterior_only",
+      "arbitrary_domain_randomization": false,
+      "object_and_target_relative_segments": true,
+      "strict_full_replay_and_evaluator_admission": true,
+      "act_primary_policy": true,
+      "act_fixture_evaluation": "terminal_negative",
+      "independent_promotion_state": "rejected_no_skill_package",
+      "groot_challenger_status": "skipped_compute_unavailable",
+      "groot_policy_camera_ids": [
+        "overhead"
+      ],
+      "groot_evaluator_only_camera_ids": [
+        "wrist"
+      ],
+      "failed_or_held_out_training_rows": 0,
+      "failed_prefix_training_rows": 0,
+      "corrective_suffix_rows_bind_base_generation_lineage": true,
+      "current_real_generated_rows": 0,
+      "current_real_admitted_rows": 0,
+      "current_real_training_invocations": 0,
+      "current_real_policy_comparisons": 0,
+      "training_can_promote": false,
       "physical_authority": false
     }
   },
