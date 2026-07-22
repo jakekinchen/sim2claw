@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02I COMPLETE; B2-02J IN PROGRESS`
+Status: `ACTIVE — B2-02J COMPLETE; B2-02K IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -25,7 +25,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02G | complete, terminal negative | 100% rubber aperture/slip frontier reaches frame 339; moving contact exits at two footprint edges |
 | B2-02H | complete, terminal negative | overhang earns rubber-only retained transport but rigid-skin energy makes aperture/slip invalid |
 | B2-02I | complete, terminal negative | high-stiffness 2.25 ms pads unstable; stable frontier loses at frame 329 |
-| B2-02J | in progress | 0.5--1.5 ms stable-compliance cross with 0.3--1 kN/m springs and explicit warning gate |
+| B2-02J | complete, terminal negative | stable 0.5 ms pad retains through release with valid aperture/slip but misses transport |
+| B2-02K | in progress | distal contact-height cross around the stable 0.3 kN/m pad and 0.022 force frontier |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -126,3 +127,14 @@ multiple 12 kN/m cases, and the stable 3 kN/m / 0.25 mm frontier loses at frame
 episode and makes zero unstable warnings an explicit anchor gate. It reduces
 the replay step from 2.25 ms to 0.5--1.5 ms and uses 0.3--1 kN/m springs whose
 natural timescale is resolvable at those steps.
+
+B2-02J isolates a one-gate frontier: its 0.5 ms, 0.3 kN/m baseline has zero
+bad-state warnings, 100% rubber load pairs, contact loss at source index 402,
+-0.262 degrees loaded-aperture bias, and 59.3% less slip, but it misses the
+transport predicate. The pawn first crosses the 40 mm lift plane at source
+index 280 and drops back below it at 289 while bilateral contact continues to
+402. Its first qualified contact is 39.1 mm above the pawn center. B2-02K tests
+whether placing the modeled rubber band 2--20 mm farther along the fingertip
+lowers contact toward the historical ~33 mm transport region. It crosses only
+the local 0.0215--0.0225 contact-force neighborhood; actions, controls,
+compliance, timestep, collision path, and acceptance stay frozen.

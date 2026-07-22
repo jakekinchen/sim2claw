@@ -382,6 +382,33 @@ def test_stable_compliance_family_requires_clean_solver_state() -> None:
     ) == 1000.0
 
 
+def test_contact_height_family_moves_stable_rubber_surface_distally() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_contact_height_v1.json"
+        )
+    )
+
+    assert len(contract["frozen_candidate_family"]) == 18
+    assert contract["acceptance"]["anchor_simulation_stability_required"]
+    assert contract["base_parameters"]["tip_coverage_offset_m"] == 0.0
+    offsets = {
+        row["overrides"].get("tip_coverage_offset_m", 0.0)
+        for row in contract["frozen_candidate_family"]
+    }
+    assert min(offsets) == -0.02
+    assert max(offsets) == 0.0
+    assert {
+        row["overrides"].get(
+            "gripper_piece_contact_force_limit_multiplier", 0.022
+        )
+        for row in contract["frozen_candidate_family"]
+    } == {0.0215, 0.022, 0.0225}
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

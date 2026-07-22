@@ -54,6 +54,9 @@ COMPLIANT_SKIN_SCHEMA = (
 STABLE_COMPLIANCE_SCHEMA = (
     "sim2claw.sail_grasp_retention_stable_compliance_campaign.v1"
 )
+CONTACT_HEIGHT_SCHEMA = (
+    "sim2claw.sail_grasp_retention_contact_height_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -111,6 +114,7 @@ def load_grasp_retention_contract(
         MOVING_OVERHANG_SCHEMA,
         COMPLIANT_SKIN_SCHEMA,
         STABLE_COMPLIANCE_SCHEMA,
+        CONTACT_HEIGHT_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -133,6 +137,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-moving-overhang-v1",
         "sail-grasp-retention-compliant-skin-v1",
         "sail-grasp-retention-stable-compliance-v1",
+        "sail-grasp-retention-contact-height-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 
@@ -281,6 +286,13 @@ def _anchor_result(
         "post_lift_load_pair_count": len(post_lift_pairs),
         "rubber_load_pair_fraction_after_lift": rubber_pair_fraction,
         "simulation_stability": stability,
+        "first_qualified_contact_height_relative_piece_center_m": episode.get(
+            "first_qualified_contact_height_relative_piece_center_m"
+        ),
+        "maximum_piece_rise_m": episode.get("maximum_piece_rise_m"),
+        "maximum_transport_progress_after_lift": episode.get(
+            "maximum_transport_progress_after_lift"
+        ),
         "trace_metrics": {
             "overall_joint_rms_degrees": float(
                 episode["trace_metrics"]["overall_joint_rms_degrees"]

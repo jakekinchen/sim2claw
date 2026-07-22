@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_stable_compliance_v1",
-  "current_milestone": "B2_02J_FROZEN_STABLE_COMPLIANCE_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_contact_height_v1",
+  "current_milestone": "B2_02K_FROZEN_CONTACT_HEIGHT_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "high_stiffness_compliance_instability_diagnosed_stable_compliance_followup_frozen",
+    "status": "stable_compliance_one_gate_frontier_contact_height_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -650,7 +650,8 @@
       "B2-02G": "completed_terminal_negative",
       "B2-02H": "completed_terminal_negative",
       "B2-02I": "completed_terminal_negative",
-      "B2-02J": "in_progress",
+      "B2-02J": "completed_terminal_negative",
+      "B2-02K": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -783,6 +784,20 @@
     "compliant_skin_receipt_sha256": "29385ba3e8973589b0f298479278618c36db27ee2df2f100b53a31f1fe74ac98",
     "compliant_skin_receipt_digest": "bb107a7341fb7d4a291009c4b355a77e6e7ed0f186e2825ac171df8005bcb27f",
     "stable_compliance_contract": "configs/sail/grasp_retention_stable_compliance_v1.json",
+    "stable_compliance_anchor_pass_count": 0,
+    "stable_compliance_best_frontier": {
+      "candidate_id": "baseline",
+      "contact_loss_source_index": 402,
+      "loaded_aperture_bias_degrees": -0.26192933887388264,
+      "post_grasp_slip_relative_reduction": 0.5931400900840396,
+      "rubber_load_pair_fraction_after_lift": 1.0,
+      "simulation_stability_passed": true,
+      "lift_and_transport": false,
+      "first_drop_below_lift_threshold_source_index": 289
+    },
+    "stable_compliance_receipt_sha256": "38d77d245a48db35152d530101a5d75d962617ffd4319a95f778cc477c5004c3",
+    "stable_compliance_receipt_digest": "ace7ba1ff902c77a56c2fa7a6c181272277177b43d3bdda0e487554e1c946f6e",
+    "contact_height_contract": "configs/sail/grasp_retention_contact_height_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false
