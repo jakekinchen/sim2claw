@@ -160,6 +160,25 @@ def test_normal_compliance_family_is_frozen_and_action_invariant() -> None:
     )
 
 
+def test_compliant_footprint_followup_is_bound_to_first_negative() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_compliant_footprint_v1.json"
+        )
+    )
+
+    assert len(contract["frozen_candidate_family"]) == 18
+    assert contract["diagnosis_anchor"]["first_compliance_anchor_pass_count"] == 0
+    assert contract["diagnosis_anchor"]["fixed_edge_contact_abs_y_m"] > 0.0064
+    assert max(
+        row["overrides"].get("tip_fixed_half_width_multiplier", 1.0)
+        for row in contract["frozen_candidate_family"]
+    ) == 1.75
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

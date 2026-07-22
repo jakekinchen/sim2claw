@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_normal_compliance_v1",
-  "current_milestone": "B2_02_FROZEN_COMPLIANT_PAD_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_compliant_footprint_v1",
+  "current_milestone": "B2_02A_FROZEN_COMPLIANT_FOOTPRINT_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "active_frozen_anchor_screen",
+    "status": "first_compliance_family_terminal_negative_footprint_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -640,7 +640,8 @@
     "milestones": {
       "B2-00": "completed",
       "B2-01": "completed",
-      "B2-02": "in_progress",
+      "B2-02": "completed_terminal_negative",
+      "B2-02A": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -651,7 +652,16 @@
     "source_actions_mutable": false,
     "load_hold_enabled": false,
     "existing_evaluator_thresholds_mutable": false,
-    "anchor_pass_count": null,
+    "anchor_pass_count": 0,
+    "first_screen_receipt_sha256": "2231d1e0ef89ee08f7a4b4b7b82250a9c662c30ccfc3237d350bb88b5a239636",
+    "first_screen_receipt_digest": "f89475d067217419b0b7b31f3233e86d8a94622d85cf68dfb0b54d91f788a105",
+    "first_screen_all_actions_byte_identical": true,
+    "first_screen_rejection_counts": {
+      "bilateral_contact_lost_before_release": 18,
+      "loaded_aperture_mismatch": 18,
+      "anchor_transport_failure": 18
+    },
+    "footprint_followup_contract": "configs/sail/grasp_retention_compliant_footprint_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false
