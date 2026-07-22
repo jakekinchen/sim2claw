@@ -180,3 +180,9 @@ goal. External provider campaigns and spending remain separately gated.
   identities. Six context artifacts and seven omission classes are bound;
   deterministic repeat, GOLD-16, 22 focused tests, and the uninterrupted
   642-test/328-subtest broad suite passed. P1-03 opened.
+- 2026-07-22T00:13:01-05:00 — P1-03 compiled 213,897 unit/frame/mask/provenance-
+  bound residual samples and 3,630 summaries across 11 episodes/4,743 aligned
+  rows. Event timing remains explicit, six unavailable channel families
+  abstain, the 10,000-replicate whole-episode bootstrap is deterministic, and
+  the heatmap/drilldowns are receipt-bound. GOLD-03/04, 30 focused tests, and
+  the uninterrupted 650-test/328-subtest broad suite passed. P1-04 opened.

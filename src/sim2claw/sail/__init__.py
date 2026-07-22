@@ -9,6 +9,7 @@ from .contracts import (
     verify_source_binding,
 )
 from .evidence import compile_campaign, inventory_campaign, load_campaign
+from .residuals import build_residual_field, compile_residuals
 
 __all__ = [
     "SailContractError",
@@ -20,4 +21,6 @@ __all__ = [
     "compile_campaign",
     "inventory_campaign",
     "load_campaign",
+    "build_residual_field",
+    "compile_residuals",
 ]
