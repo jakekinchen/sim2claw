@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_compression_only_v1",
-  "current_milestone": "B2_02P_FROZEN_COMPRESSION_ONLY_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_rounded_rubber_v1",
+  "current_milestone": "B2_02Q_FROZEN_ROUNDED_RUBBER_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "constant_force_terminal_negative_pad_overtravel_diagnosed_compression_only_followup_frozen",
+    "status": "compression_overtravel_fixed_flat_surface_terminal_negative_rounded_rubber_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -656,7 +656,8 @@
       "B2-02M": "completed_terminal_negative",
       "B2-02N": "completed_terminal_negative",
       "B2-02O": "completed_terminal_negative",
-      "B2-02P": "in_progress",
+      "B2-02P": "completed_terminal_negative",
+      "B2-02Q": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -874,6 +875,19 @@
       "force_target_transition_count": 0
     },
     "compression_only_contract": "configs/sail/grasp_retention_compression_only_v1.json",
+    "compression_only_anchor_pass_count": 0,
+    "compression_only_receipt_sha256": "d26fbf179c68d2270b3aaf781442577994679d8ab06f84dc12c3dc9930c7a6c3",
+    "compression_only_receipt_digest": "148094a48239d3aa4373d329ea18995a41bfc805ce3596f6b38c62ff75c4848a",
+    "compression_only_best_aperture_frontier": {
+      "candidate_id": "force_0070_travel_050",
+      "maximum_pad_displacement_m": 0.0008004341027331809,
+      "contact_loss_source_index": 324,
+      "loaded_aperture_bias_degrees": -0.4832806396772476,
+      "post_grasp_slip_relative_reduction": 0.4845906071732336,
+      "maximum_transport_progress_after_lift": 0.0,
+      "lift_and_transport": false
+    },
+    "rounded_rubber_contract": "configs/sail/grasp_retention_rounded_rubber_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false

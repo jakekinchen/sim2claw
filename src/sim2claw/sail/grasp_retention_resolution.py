@@ -70,6 +70,9 @@ CONSTANT_FORCE_SCHEMA = (
 COMPRESSION_ONLY_SCHEMA = (
     "sim2claw.sail_grasp_retention_compression_only_campaign.v1"
 )
+ROUNDED_RUBBER_SCHEMA = (
+    "sim2claw.sail_grasp_retention_rounded_rubber_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -133,6 +136,7 @@ def load_grasp_retention_contract(
         FORCE_TRIGGER_SCHEMA,
         CONSTANT_FORCE_SCHEMA,
         COMPRESSION_ONLY_SCHEMA,
+        ROUNDED_RUBBER_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -161,6 +165,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-force-trigger-v1",
         "sail-grasp-retention-constant-force-v1",
         "sail-grasp-retention-compression-only-v1",
+        "sail-grasp-retention-rounded-rubber-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 

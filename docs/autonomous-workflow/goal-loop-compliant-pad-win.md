@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02O COMPLETE; B2-02P IN PROGRESS`
+Status: `ACTIVE — B2-02P COMPLETE; B2-02Q IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -31,7 +31,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02M | complete, terminal negative | ramp removes most launches; best valid branch still makes 688 target transitions and misses transport |
 | B2-02N | complete, terminal negative | phase gate cuts chatter to 5 transitions and exposes loss at source 385 |
 | B2-02O | complete, terminal negative | constant force eliminates chatter but no aperture-valid retained transport exists |
-| B2-02P | in progress | compression-only opposed pad joints with hard 0.5--1 mm inward travel |
+| B2-02P | complete, terminal negative | unilateral range fixes 3x overtravel; flat boxes still lose before transport |
+| B2-02Q | in progress | rounded capsule rubber surfaces across radius, force, and mounting compliance |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -198,3 +199,11 @@ negative local-normal direction and the moving pad only in the positive
 direction, each from its undeformed zero. It gives the joint limit an explicit
 0.5--4 ms response and crosses 0.5--1 mm travel, 0.2--0.5 kN/m stiffness, and
 the clean constant-force frontier.
+
+B2-02P reduces worst recorded pad displacement from about 2.99 mm to
+0.8--1.4 mm. Its aperture-valid 0.5 mm / force 0.07 candidate still loses at
+source 324 and never transports. The physical rubber band is rounded and
+conformal, whereas the current sleeve remains a box with face/edge transitions.
+B2-02Q uses the existing deterministic capsule path with 2--6 mm radii. It
+crosses constant force 0.06--0.08 and compares unilateral 0.5 mm mounting
+compliance with rigidly mounted rounded rubber, retaining all tightened gates.
