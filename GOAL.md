@@ -1,6 +1,6 @@
 # SAIL/ClawLoop Phase 1 Goal
 
-Status: `ACTIVE — P1-00 THROUGH P1-15 COMPLETE; P1-16 IN PROGRESS`
+Status: `ACTIVE — P1-00 THROUGH P1-16 COMPLETE; P1-17 IN PROGRESS`
 
 The active program authority is
 [`docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md`](docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md).
@@ -14,10 +14,10 @@ simulator evidence, and all ACT/GR00T data generation or policy selection stays
 closed unless an evaluator-owned TwinWorthiness certificate opens the declared
 capability. Source actions remain byte-identical in the action-frozen lane.
 
-Current milestone: **P1-16 — Build Studio observability and visualization**.
+Current milestone: **P1-17 — Freeze the publication campaign and paper package**.
 
 Active brief:
-[`docs/briefs/031-sail-studio-observability.md`](docs/briefs/031-sail-studio-observability.md).
+[`docs/briefs/032-sail-publication-freeze.md`](docs/briefs/032-sail-publication-freeze.md).
 
 Live milestone status is maintained in the master plan's Section 12 ledger and
 in `docs/autonomous-workflow/project_state.json`. The research documents named

@@ -358,6 +358,13 @@ def build_parser() -> argparse.ArgumentParser:
     sail_policy_flywheel.add_argument("--config", type=Path, required=True)
     sail_policy_flywheel.add_argument("--output", type=Path, required=True)
 
+    sail_studio_observatory = subparsers.add_parser(
+        "sail-compile-studio-observatory",
+        help="compile the receipt-bound read-only SAIL Studio investigation surface",
+    )
+    sail_studio_observatory.add_argument("--config", type=Path, required=True)
+    sail_studio_observatory.add_argument("--output", type=Path, required=True)
+
     recorded_replay = subparsers.add_parser(
         "replay-recorded",
         help="replay one recorded command episode in MuJoCo and emit synchronized metrics",
@@ -1071,6 +1078,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .sail.policy_flywheel_campaign import compile_campaign
         try:
             report = compile_campaign(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-studio-observatory":
+        from .sail.contracts import SailContractError
+        from .sail.studio import compile_studio_observatory
+
+        try:
+            report = compile_studio_observatory(args.config, output_root=args.output)
         except SailContractError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1

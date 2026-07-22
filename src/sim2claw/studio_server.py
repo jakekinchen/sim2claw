@@ -25,6 +25,11 @@ from .task_orchestrator import TaskOrchestratorError, TaskOrchestratorService
 from .teleop_recording import RecorderConflict, RecorderError, TeleopRecordingManager
 from .scene import CURRENT_TASK_PIECE_LAYOUT
 from .paths import SO101_MODEL_PATH
+from .sail.studio import (
+    StudioObservatoryError,
+    load_studio_observatory,
+    open_studio_figure,
+)
 
 
 STATIC_ROOT = Path(__file__).with_name("studio_web")
@@ -112,6 +117,44 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
         request = urlsplit(self.path)
         path = unquote(request.path)
+        if path == "/api/sail-observatory":
+            try:
+                self._send_json(
+                    load_studio_observatory(repo_root=self.server.repo_root)
+                )
+            except (StudioObservatoryError, OSError, ValueError, json.JSONDecodeError) as error:
+                self._send_json(
+                    {
+                        "available": False,
+                        "read_only": True,
+                        "physical_authority": False,
+                        "error": str(error),
+                    },
+                    HTTPStatus.SERVICE_UNAVAILABLE,
+                )
+            return
+        if path.startswith("/api/sail-observatory/figures/"):
+            name = path.removeprefix("/api/sail-observatory/figures/")
+            try:
+                _, payload, digest = open_studio_figure(
+                    name, repo_root=self.server.repo_root
+                )
+            except (StudioObservatoryError, OSError, ValueError, json.JSONDecodeError):
+                self.send_error(HTTPStatus.NOT_FOUND)
+                return
+            self.send_response(HTTPStatus.OK)
+            self._security_headers()
+            self.send_header("Content-Type", "image/svg+xml; charset=utf-8")
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("ETag", f'"{digest}"')
+            self.send_header("Content-Disposition", f'inline; filename="{name}"')
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            try:
+                self.wfile.write(payload)
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+            return
         if path == "/api/catalog":
             self._send_json(build_catalog(self.server.repo_root))
             return
