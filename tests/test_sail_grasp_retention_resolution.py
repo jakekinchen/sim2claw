@@ -259,6 +259,27 @@ def test_torque_latch_family_never_mutates_control_target() -> None:
     assert contract["proof_boundary"]["simulator_ctrl_mutable"] is False
 
 
+def test_long_wrap_family_covers_observed_fixed_bypass_path() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_long_wrap_torque_v1.json"
+        )
+    )
+
+    assert len(contract["frozen_candidate_family"]) == 18
+    assert contract["base_parameters"][
+        "rubber_tip_fixed_anchor_geom_suffix"
+    ] == "fixed_jaw_box5"
+    assert contract["base_parameters"]["tip_coverage_m"] == 0.04
+    assert contract["base_parameters"]["tip_moving_coverage_multiplier"] == 0.3
+    assert contract["diagnosis_anchor"]["retained_transport_fixed_bypass_geom"] == (
+        "left_fixed_jaw_box4"
+    )
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

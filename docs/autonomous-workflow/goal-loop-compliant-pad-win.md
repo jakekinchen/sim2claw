@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02D COMPLETE; B2-02E IN PROGRESS`
+Status: `ACTIVE — B2-02E COMPLETE; B2-02F IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -20,7 +20,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02B | complete, terminal negative | one candidate lifted with 83.3% rubber load-pair participation but lost at frame 328; zero complete passes |
 | B2-02C | complete, terminal negative | direct 2x cap preserved C2 transport and 100% rubber load path but lost at frame 299 with 3.01 degree overclosure |
 | B2-02D | complete, terminal negative | force-friction cross exposed contact-trigger chatter; no full pass |
-| B2-02E | in progress | sustained-bilateral torque latch frozen; force ceiling persists until recorded opening without ctrl mutation |
+| B2-02E | complete, terminal negative | latch earns retained transport through release at force 0.04 but fails aperture, slip, and rubber-path gates |
+| B2-02F | in progress | continuous fixed wrap across box4--box6 crossed narrowly around the force 0.02 aperture frontier |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -81,3 +82,12 @@ force ceiling toggles with instantaneous contact, creating a discontinuity.
 B2-02E latches only the actuator force ceiling after sustained bilateral
 contact and releases it on the recorded opening command. It never overwrites
 the action or simulator control target.
+
+B2-02E validates the non-chattering actuator transfer: force 0.04 with a 20 ms
+dwell retains and transports the pawn through release. It is not a certified
+win because the loaded aperture is 6.13 degrees too open, slip worsens, and 92
+of 93 post-lift load pairs use fixed box4 instead of rubber. Force 0.02 passes
+aperture and slip with 97.7% rubber participation but loses at frame 280.
+B2-02F covers the newly observed fixed box4 bypass with one continuous wrap
+spanning the distal box4--box6 stack and searches only the narrow force range
+around the aperture-valid branch.
