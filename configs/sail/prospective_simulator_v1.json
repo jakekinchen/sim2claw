@@ -9,6 +9,10 @@
       "path": "configs/sail/acquisition_v1.json",
       "sha256": "02bc19d8d8851fdc0199f8cb70025fea589260a36aac6cf480625b1f592e3411"
     },
+    "acquisition_ranking": {
+      "path": "outputs/sail/retired-bg-v1/acquisition/acquisition_ranking.json",
+      "sha256": "a59b2a9b242c35425515973edee9807a0dfdd7c8bd4daa385b12b1cf71e7fb56"
+    },
     "action_evidence": {
       "path": "outputs/sail/retired-bg-v1/evidence/calibration/sim-replay__20260719T030059Z-a26f8400.json",
       "sha256": "fc2166a17b939e143b30e94a86555fcf77c634e0ea4c96be11829416d13a49c8"
