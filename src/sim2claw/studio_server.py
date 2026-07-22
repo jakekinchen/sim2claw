@@ -318,6 +318,7 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
             self._send_json(
                 {"ok": False, "error": "Recorder control is available only on loopback."},
                 HTTPStatus.FORBIDDEN,
+                close_connection=True,
             )
             return
         if self.headers.get_content_type() != "application/json":
@@ -490,12 +491,18 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
         self,
         payload: dict[str, Any],
         status: HTTPStatus = HTTPStatus.OK,
+        *,
+        close_connection: bool = False,
     ) -> None:
         encoded = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+        if close_connection:
+            self.close_connection = True
         self.send_response(status)
         self._security_headers()
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Cache-Control", "no-store")
+        if close_connection:
+            self.send_header("Connection", "close")
         self.send_header("Content-Length", str(len(encoded)))
         self.end_headers()
         try:

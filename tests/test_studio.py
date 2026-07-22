@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import socket
 import tempfile
 import threading
 import unittest
@@ -918,6 +919,46 @@ class StudioCatalogTest(unittest.TestCase):
             with urlopen(request, timeout=3) as response:
                 self.assertEqual(response.status, 206)
                 self.assertEqual(response.read(), b"2345")
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+    def test_read_only_rejection_closes_connection_before_unread_body(self) -> None:
+        server = create_server("127.0.0.1", 0, repo_root=self.root, read_only=True)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        host, port = server.server_address
+        try:
+            with socket.create_connection((host, port), timeout=3) as connection:
+                connection.sendall(
+                    b"POST /api/recorder/start HTTP/1.1\r\n"
+                    b"Host: localhost\r\n"
+                    b"Content-Type: application/json\r\n"
+                    b"Content-Length: 2\r\n"
+                    b"Connection: keep-alive\r\n"
+                    b"\r\n"
+                    b"{}"
+                    b"GET /api/health HTTP/1.1\r\n"
+                    b"Host: localhost\r\n"
+                    b"Connection: close\r\n"
+                    b"\r\n"
+                )
+                response = bytearray()
+                while chunk := connection.recv(4096):
+                    response.extend(chunk)
+
+            raw_response = bytes(response)
+            self.assertTrue(raw_response.startswith(b"HTTP/1.1 403 Forbidden\r\n"))
+            self.assertIn(b"Connection: close\r\n", raw_response)
+            self.assertEqual(raw_response.count(b"HTTP/1.1 "), 1)
+            self.assertNotIn(b'"service":"sim2claw-studio"', raw_response)
+
+            with urlopen(f"http://{host}:{port}/api/health", timeout=3) as health:
+                payload = json.load(health)
+            self.assertTrue(payload["read_only"])
+            self.assertEqual(payload["recorder_control"], "disabled")
+            self.assertEqual(payload["live_workspace"], "disabled")
         finally:
             server.shutdown()
             server.server_close()
