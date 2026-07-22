@@ -1,5 +1,33 @@
 # Orchestration Ledger
 
+## Current control plane — SAIL live operator integration
+
+- Repo and branch: `/Users/kelly/Developer/sim2claw` on
+  `codex/sail-live-operator-integration` at pushed baseline `c407f8e`.
+- Queue source: user-approved objective in Codex task
+  `019f8b9d-67ee-7801-9be3-f7cca45e8e3e`, classified 2026-07-22 16:55 CDT.
+- Worker: this Codex task; no subdelegation requested or active.
+- Allowed actions: scoped local implementation, tests, receipts, commit, and
+  push to the named branch; no merge, training, physical I/O, or promotion.
+- Status: complete; terminal measurement-acquisition abstention accepted and
+  verification/publication closed.
+- Proof target: every acceptance criterion in
+  `docs/autonomous-workflow/goal-loop-sail-live-operator-integration.md`.
+- Global budget: zero of one new SAIL-selected family and zero of eighteen new
+  C2 anchor replays used. B2-02X remains paused at 17 incomplete artifacts.
+- Stop conditions: terminal evaluator verdict, sealed measurement-acquisition
+  abstention, auth/proof/safety blocker, or completed verification and push.
+- Current blocker: the selected synchronized jaw-force/rubber-deformation
+  measurement is unavailable. This is an accepted terminal outcome and grants
+  no capture or robot authority.
+- Result: the generic operator used zero interventions and zero C2 anchor
+  replays; it retained two structures at 0.5/0.5, produced the exact manual
+  32-campaign/514-replay/0-pass ablation, and emitted receipt SHA-256
+  `e4aac1ce3cbf100902e71afc2be834a54a4b83555b51fb94196cd9e505490c23`.
+- Verification: 60 focused; automatic SAIL tiers 36, 58, and 74 plus two
+  subtests; retained-evidence tier 6; full suite 841 passed, 3 skipped, 328
+  subtests. Provider and hardware tiers were not opened.
+
 Repo: `/Users/kelly/Developer/sim2claw`
 
 Branch: `main` at baseline `13a6dfd5eda97010c8967d97294a4d95a06e9b11`

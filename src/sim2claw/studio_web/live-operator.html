@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0d1715">
+    <title>SAIL live operator evidence</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/branding/logo-mark.svg">
+    <link rel="stylesheet" href="/live-operator.css">
+  </head>
+  <body>
+    <main>
+      <header class="masthead">
+        <a class="back" href="/#/sail" aria-label="Return to SAIL Studio">← Studio</a>
+        <div class="identity"><span>SAIL</span><b>Live operator evidence</b></div>
+        <div class="authority"><i></i>read-only · no authority</div>
+      </header>
+
+      <section class="hero" aria-labelledby="operator-title">
+        <div class="hero-copy">
+          <p class="eyebrow">RETAINED C2 · ACTION-FROZEN · TERMINAL DECISION</p>
+          <h1 id="operator-title">The next useful move is a measurement, not another sweep.</h1>
+          <p id="summary">Loading the receipt-bound operator result…</p>
+          <div class="verdict-row">
+            <span class="verdict" id="verdict">LOADING</span>
+            <code id="receipt">receipt pending</code>
+          </div>
+        </div>
+        <div class="budget-dial" aria-label="Intervention budget used">
+          <div><strong id="budget-used">0</strong><span>/</span><b id="budget-max">1</b></div>
+          <p>interventions spent</p>
+          <small id="anchor-budget">0 / 18 anchor replays</small>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="Manual versus SAIL ablation">
+        <article><span>Manual campaigns</span><strong id="manual-campaigns">—</strong><small>complete receipts</small></article>
+        <article><span>Manual C2 replays</span><strong id="manual-replays">—</strong><small>simulator evaluations</small></article>
+        <article><span>Accepted anchor passes</span><strong id="anchor-passes">—</strong><small>frozen evaluator</small></article>
+        <article class="accent"><span>SAIL C2 replays</span><strong id="sail-replays">—</strong><small>abstained pre-execution</small></article>
+      </section>
+
+      <section class="operator-flow" aria-labelledby="flow-title">
+        <header><div><p class="eyebrow">COMPOSITION TRACE</p><h2 id="flow-title">One operator, one auditable path</h2></div><p>Every stage is receipt-bound. A stage may revise belief; none may grant promotion.</p></header>
+        <ol id="operator-stages"></ol>
+      </section>
+
+      <div class="evidence-grid">
+        <section class="panel" aria-labelledby="mechanisms-title">
+          <p class="eyebrow">POSTERIOR</p>
+          <h2 id="mechanisms-title">Competing mechanisms retained</h2>
+          <div id="mechanisms"></div>
+          <p class="fineprint" id="posterior-note"></p>
+        </section>
+
+        <section class="panel measurement" aria-labelledby="measurement-title">
+          <p class="eyebrow">SEALED ACQUISITION PACKET</p>
+          <h2 id="measurement-title">Synchronized force + deformation</h2>
+          <p id="measurement-summary"></p>
+          <dl id="measurement-details"></dl>
+        </section>
+      </div>
+
+      <section class="ablation" aria-labelledby="ablation-title">
+        <header><div><p class="eyebrow">MANUAL VS SAIL</p><h2 id="ablation-title">Efficiency is not task success</h2></div><p id="ablation-note"></p></header>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Method</th><th>Complete campaigns</th><th>C2 evaluations</th><th>Anchor passes</th><th>Terminal behavior</th></tr></thead>
+            <tbody id="ablation-body"></tbody>
+          </table>
+        </div>
+        <p class="wip" id="wip-note"></p>
+      </section>
+
+      <footer>
+        <p><b>Proof boundary:</b> retrospective action-frozen simulator diagnosis and operator abstention. No training, physical, task-success, or promotion authority.</p>
+        <code id="action-hash"></code>
+      </footer>
+    </main>
+    <script src="/live-operator.js" type="module"></script>
+  </body>
+</html>

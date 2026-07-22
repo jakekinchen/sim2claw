@@ -1,0 +1,84 @@
+{
+  "schema_version": "sim2claw.sail_live_operator_publication.v1",
+  "title": "SAIL live operator: retained C2 terminal decision",
+  "summary": "A generic SAIL operator composed the retained causal surfaces, ranked a synchronized force/deformation measurement above another simulator family, and abstained because the identifying measurement is unavailable. No C2 replay, promotion, training, or physical action was opened.",
+  "verdict": "abstain_measurement_acquisition_required",
+  "selected_intervention": "measurement_synchronized_force_deformation_probe",
+  "action_sha256": "402a29e4cdc0c4cb90d41a83327ad8df5685544851b4e4d659129b3239744fd6",
+  "evaluator_digest": "906165a7faf334182a5d3bbee5189ef689c660a3f58b2d572a257b83d55bc359",
+  "receipt": {
+    "source_path": "outputs/sail/live-operator-c2-v1/receipt.json",
+    "sha256": "e4aac1ce3cbf100902e71afc2be834a54a4b83555b51fb94196cd9e505490c23",
+    "receipt_digest": "caa30fdcf4592f52fdc02c94181e75bbf24bd413a3310fbeb4d06707d431036f",
+    "operator_trace_sha256": "98dfd3e24da68e6d023ee2320875ad4b90bf44f3c162f4d44e23b30d8db7481d",
+    "ablation_sha256": "39596e54063503865aede2d42387730ac133256f74068a061e9a979a17061dde",
+    "measurement_packet_sha256": "fd52e5e882b277259c7f5449e62abda8373ebe85a689ce9b7c7fc527671807bd"
+  },
+  "budget": {
+    "used_interventions": 0,
+    "maximum_interventions": 1,
+    "used_anchor_replays": 0,
+    "maximum_anchor_replays": 18
+  },
+  "operator_trace": [
+    {"stage": "residual_evidence", "status": "verified"},
+    {"stage": "structural_surprise", "status": "triggered"},
+    {"stage": "belief_before", "status": "verified"},
+    {"stage": "competing_mechanisms", "status": "retained"},
+    {"stage": "acquisition", "status": "ranked_before_result"},
+    {"stage": "global_budget", "status": "enforced"},
+    {"stage": "influence", "status": "discovered"},
+    {"stage": "posterior_update", "status": "not_updated_no_observation"},
+    {"stage": "sparse_loop_closure", "status": "no_refit_abstained_before_observation"},
+    {"stage": "invariance_and_consequence", "status": "not_evaluable"},
+    {"stage": "terminal_verdict", "status": "abstain_measurement_acquisition_required"}
+  ],
+  "posterior": {
+    "status": "not_updated_no_observation",
+    "entropy_before_bits": 1.0,
+    "entropy_after_bits": 1.0,
+    "observed_information_gain_bits": null,
+    "note": "No result was opened, so the honest posterior remains 50/50 and observed information gain is unavailable.",
+    "mechanisms": [
+      {"mechanism_id": "actuator_load_path_v1", "probability": 0.5},
+      {"mechanism_id": "flexural_rubber_contact_v1", "probability": 0.5}
+    ]
+  },
+  "measurement": {
+    "summary": "The selected intervention requires direct, synchronized evidence capable of separating load-path error from flexural contact behavior.",
+    "measurements": [
+      "jaw force",
+      "rubber-cap deformation and contact profile",
+      "gripper joint angle",
+      "gripper motor current"
+    ],
+    "minimum_sampling_hz": 100,
+    "synchronization": "one monotonic timestamp domain, aligned to no worse than one sample",
+    "packet_digest": "65eac72810ca85bbde30664b5595bff7d00cf699443728134111861db5bb7e91"
+  },
+  "ablation": {
+    "note": "SAIL avoided 514 additional simulator evaluations, but that efficiency is not a task-success claim and no accepted task gain was earned.",
+    "manual": {
+      "completed_campaigns": 32,
+      "simulator_evaluations": 514,
+      "anchor_passes": 0,
+      "abstention_quality": "no_global_abstention_incomplete_family_interrupted"
+    },
+    "sail": {
+      "completed_operators": 1,
+      "simulator_evaluations": 0,
+      "anchor_passes": 0,
+      "abstention_quality": "pre_execution_missing_identifying_measurement"
+    },
+    "incomplete_work_note": "B2-02X remains preserved as 17 work-in-progress artifacts with no complete screen receipt; it is excluded from the 32 completed campaigns and 514 replays."
+  },
+  "authority": {
+    "read_only": true,
+    "promotion": false,
+    "training_admitted": false,
+    "physical_capture": false,
+    "physical_authority": false,
+    "robot_motion": false
+  },
+  "proof_class": "retrospective_action_frozen_c2_live_operator_abstention"
+}

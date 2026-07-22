@@ -1,0 +1,24 @@
+{
+  "schema_version": "sim2claw.static_publication_receipt.v1",
+  "route": "/live-operator.html",
+  "proof_class": "retrospective_action_frozen_c2_live_operator_abstention",
+  "source_operator_receipt": {
+    "path": "outputs/sail/live-operator-c2-v1/receipt.json",
+    "sha256": "e4aac1ce3cbf100902e71afc2be834a54a4b83555b51fb94196cd9e505490c23",
+    "receipt_digest": "caa30fdcf4592f52fdc02c94181e75bbf24bd413a3310fbeb4d06707d431036f"
+  },
+  "authority": {
+    "read_only": true,
+    "training_admitted": false,
+    "promotion": false,
+    "physical_authority": false,
+    "robot_motion": false
+  },
+  "files": {
+    "src/sim2claw/studio_web/live-operator.html": "2546368e0fb0190e60a55f60be22b9856d04ac6b195a44c689f61208ac345e04",
+    "src/sim2claw/studio_web/live-operator.css": "ff39fefb349d174c57f74ace370d537a5b09f678ceffd99bf9a2e38d05b980a1",
+    "src/sim2claw/studio_web/live-operator.js": "7e019586a0328ac0fa6a4df80943c8bd03e9a10c386973ab82056a2b20a4b789",
+    "src/sim2claw/studio_web/publication/sail_live_operator_v1/manifest.json": "a47126c194e926bd3a6c92301525871e70b8bf15ad7cad01bbe14b6de69e3c87",
+    "docs/research/2026-07-22-sail-live-operator-ablation.md": "826ec02de740c07f7652603364327dd8fd95973905377b2443ed3221d521eed6"
+  }
+}

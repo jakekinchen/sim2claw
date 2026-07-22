@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_friction_release_v1",
-  "current_milestone": "B2_02X_FRICTION_RELEASE_C2_SCREEN_FROZEN",
+  "updated_at": "2026-07-22T17:43:52-05:00",
+  "active_campaign": "none_terminal_sail_live_operator_abstention",
+  "current_milestone": "L1_COMPLETE_TERMINAL_MEASUREMENT_ABSTENTION",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -630,9 +630,90 @@
     "physical_authority": false,
     "current_safe_claim": "Phase 1 was applied to the full retained evidence compilation and all 11 action-frozen pawn episodes. The bounded contact-model campaign did not repair or promote the simulator, but it localized the visible C2 drop to unilateral rubber contact plus surface-migration and opposing-load collapse, compiled 10 failure classes, and added a non-promoting post-first-lift task diagnostic that reveals three destination entries."
   },
+  "sail_live_operator": {
+    "schema_version": "sim2claw.sail_live_operator_state.v1",
+    "status": "completed_terminal_measurement_acquisition_abstention",
+    "goal_loop": "docs/autonomous-workflow/goal-loop-sail-live-operator-integration.md",
+    "branch": "codex/sail-live-operator-integration",
+    "baseline_commit": "c407f8eefd07322cef47fbecf729e4218d5989bf",
+    "milestones": {
+      "L1-00": "completed_authority_and_branch_reconciliation",
+      "L1-01": "completed_generic_live_campaign_contract",
+      "L1-02": "completed_composed_operator",
+      "L1-03": "completed_c2_binding_and_ablation",
+      "L1-04": "completed_terminal_measurement_acquisition_abstention",
+      "L1-05": "completed_verification_publication_and_closeout"
+    },
+    "progress_ledger": {
+      "current_state": "complete_terminal_measurement_acquisition_abstention",
+      "completed": [
+        "authoritative_goal_prompt_read",
+        "effectiveness_audit_task_read",
+        "interrupted_predecessor_recent_and_relevant_older_turns_read",
+        "clean_pushed_branch_verified_at_c407f8e",
+        "manual_ablation_baseline_frozen",
+        "generic_typed_contract_implemented_without_task_id_whitelist",
+        "existing_sail_surfaces_composed_into_one_live_operator",
+        "retained_c2_competing_mechanisms_and_signatures_bound",
+        "global_budget_and_fail_closed_result_validation_enforced",
+        "manual_vs_sail_ablation_completed",
+        "sealed_measurement_acquisition_abstention_emitted",
+        "read_only_studio_surface_published",
+        "focused_sail_ci_retained_and_full_suite_verification_completed"
+      ],
+      "evidence": {
+        "completed_manual_campaign_receipts": 32,
+        "completed_manual_c2_candidate_replays": 514,
+        "completed_manual_anchor_passes": 0,
+        "incomplete_b2_02x_anchor_artifacts": 17,
+        "incomplete_b2_02x_complete_receipt": false,
+        "operator_receipt_path": "outputs/sail/live-operator-c2-v1/receipt.json",
+        "operator_receipt_sha256": "e4aac1ce3cbf100902e71afc2be834a54a4b83555b51fb94196cd9e505490c23",
+        "operator_receipt_digest": "caa30fdcf4592f52fdc02c94181e75bbf24bd413a3310fbeb4d06707d431036f",
+        "operator_trace_sha256": "98dfd3e24da68e6d023ee2320875ad4b90bf44f3c162f4d44e23b30d8db7481d",
+        "measurement_packet_sha256": "fd52e5e882b277259c7f5449e62abda8373ebe85a689ce9b7c7fc527671807bd",
+        "selected_intervention": "measurement_synchronized_force_deformation_probe",
+        "terminal_verdict": "abstain_measurement_acquisition_required",
+        "observed_information_gain_bits": null
+      },
+      "interventions_used": 0,
+      "intervention_budget": 1,
+      "c2_anchor_replays_opened": 0,
+      "c2_anchor_replay_budget": 18,
+      "hypotheses_retained": [
+        "flexural_rubber_contact_v1",
+        "actuator_load_path_v1"
+      ],
+      "hypotheses_rejected": [],
+      "remaining": [],
+      "blockers": [
+        "identifying_synchronized_jaw_force_and_rubber_deformation_measurement_unavailable_terminal_abstention"
+      ],
+      "next_step": "stop_no_new_c2_family_future_measurement_requires_separate_authority"
+    },
+    "final_verification": {
+      "focused_test_count": 60,
+      "sail_ci_fast_contract_passed": 36,
+      "sail_ci_synthetic_golden_passed": 58,
+      "sail_ci_integration_passed": 74,
+      "sail_ci_integration_subtests_passed": 2,
+      "sail_ci_retained_evidence_passed": 6,
+      "sail_ci_provider_campaign_opened": false,
+      "sail_ci_hardware_opened": false,
+      "full_suite_passed": 841,
+      "full_suite_skipped": 3,
+      "full_suite_subtests_passed": 328,
+      "studio_live_operator_route_http_200": true,
+      "paid_compute_touched": false,
+      "brev_inventory_required": false
+    },
+    "training_admitted": false,
+    "physical_authority": false,
+    "simulator_promotion_authority": false
+  },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "phase_alignment_terminal_negative_friction_release_followup_frozen",
+    "status": "paused_incomplete_superseded_by_live_operator_integration",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -664,7 +745,7 @@
       "B2-02U": "completed_diagnostic_negative",
       "B2-02V": "completed_terminal_negative",
       "B2-02W": "completed_terminal_negative",
-      "B2-02X": "in_progress",
+      "B2-02X": "paused_incomplete_17_of_18_artifacts_no_complete_receipt",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"

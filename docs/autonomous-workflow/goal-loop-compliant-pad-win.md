@@ -1,6 +1,11 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02W COMPLETE; B2-02X IN PROGRESS`
+Status: `PAUSED — B2-02W COMPLETE; B2-02X INCOMPLETE AT 17/18 AND SUPERSEDED BY LIVE SAIL OPERATOR`
+
+The open-ended family search was paused by the user before B2-02X produced a
+complete screen receipt. Its 17 artifacts remain preserved as work-in-progress
+diagnostics and are excluded from completed-campaign counts. Do not restart
+this loop unless a later authority surface explicitly reopens it.
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -39,7 +44,7 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02U | complete, diagnostic negative | near-exact measured state has 1.1 mm EE RMS but only fixed-pad C2 contact, zero bilateral span, and 6.1 mm rise |
 | B2-02V | complete, terminal negative | jaw zero changes contact regimes; best aperture/slip branch loses at 377 and reaches 1.8% transport progress |
 | B2-02W | complete, terminal negative | timing is bifurcated; 120 ms is aperture/slip valid but loses at 385, while 100 ms launches to 0.318 m |
-| B2-02X | in progress | moderate sliding/torsional release sweep with explicit release gate |
+| B2-02X | paused, incomplete | 17 of 18 moderate sliding/torsional release artifacts preserved; no complete receipt |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |

@@ -1,0 +1,292 @@
+{
+  "schema_version": "sim2claw.sail_live_campaign.v1",
+  "campaign_id": "sail-live-c2-operator-v1",
+  "created_at": "2026-07-22T17:20:00-05:00",
+  "subject": {
+    "workcell_id": "workcell:retained-bg",
+    "session_id": "session:20260719T031324Z-bf91502b",
+    "context_id": "context:action-frozen-c2",
+    "label": "Retained C2-to-C1 grasp-retention twin-error case"
+  },
+  "source_bindings": {
+    "c2_action_trace": {
+      "path": "outputs/sail/project-application-v1/c2-v3-retention-trace.json",
+      "sha256": "ef3b2fb5b60e9df22f731f9e572e68b8fd85f25b71a59d68d9acef67542c8428"
+    },
+    "project_application_receipt": {
+      "path": "outputs/sail/project-application-v1/receipt.json",
+      "sha256": "a2345ac50c8de15905a0ef1ecc03bf7b8803cb49fca27ada5874ce6037fdedf8"
+    },
+    "phase_aligned_residual_receipt": {
+      "path": "outputs/sail/retired-bg-v1/residuals/receipt.json",
+      "sha256": "4022b6a1f11b326cdc980f022d2c1fd6eaaa279ab28ae152ac4b4675326c6203"
+    },
+    "task_evaluator_contract": {
+      "path": "configs/evaluations/pawn_bg_sim_reward_v1.json",
+      "sha256": "e702ad7fa3a366bc24c552c4cd0e5df66842d5fe7f6ef824266b8cfb2ee8d0c7"
+    },
+    "trace_guard_contract": {
+      "path": "configs/optimization/pawn_bg_grasp_coordinate_descent_v1.json",
+      "sha256": "6f39692ede95e1fc581826699ba107b6b9814a776a0751dbc6a13ce25e6e9847"
+    },
+    "grasp_screen_evaluator": {
+      "path": "src/sim2claw/sail/grasp_retention_resolution.py",
+      "sha256": "42f9443b12ecc85aa72e81055d3c822661d5f25ca01f6f57f1b3721287bdc0eb"
+    },
+    "simulator_implementation": {
+      "path": "src/sim2claw/pawn_bg_grasp_coordinate_descent.py",
+      "sha256": "fe938637ceb106faadcb85bcb04db0847c69943e2c5fe3f72f1d4cc2b6b867bf"
+    },
+    "b1_closeout_receipt": {
+      "path": "outputs/sail/grasp-retention-closeout-v1/receipt.json",
+      "sha256": "479e87231df4579b817ac8bd2fd62363c2a15f974e3467802aa0809e35ec3d26"
+    }
+  },
+  "action_identity": {
+    "source_binding": "c2_action_trace",
+    "sha256_pointer": "/episode/action_array_sha256",
+    "byte_identical_pointer": "/episode/action_byte_identical",
+    "sha256": "402a29e4cdc0c4cb90d41a83327ad8df5685544851b4e4d659129b3239744fd6"
+  },
+  "evaluator": {
+    "evaluator_id": "c2-grasp-consequence-evaluator-v1",
+    "owner": "independent_cpu_fp32_consequence_evaluator",
+    "source_bindings": [
+      "task_evaluator_contract",
+      "trace_guard_contract",
+      "grasp_screen_evaluator",
+      "simulator_implementation"
+    ],
+    "release_index": 401
+  },
+  "proof_boundary": {
+    "proof_class": "retrospective_action_frozen_c2_live_operator_abstention",
+    "physical_authority": false,
+    "training_admitted": false,
+    "agent_can_promote": false,
+    "simulator_can_promote": false,
+    "operator_can_promote": false
+  },
+  "budget": {
+    "maximum_interventions": 1,
+    "maximum_anchor_replays": 18,
+    "used_interventions": 0,
+    "used_anchor_replays": 0
+  },
+  "residual_evidence": [
+    {
+      "residual_id": "residual:bilateral-contact-retention",
+      "label": "Bilateral contact retention through release",
+      "value": 1.0,
+      "available": true,
+      "source_binding": "c2_action_trace",
+      "provenance": "C2 loses qualified bilateral contact before immutable release index 401 across every completed campaign."
+    },
+    {
+      "residual_id": "residual:loaded-aperture-load-path",
+      "label": "Loaded aperture versus retained task consequence",
+      "value": 0.95,
+      "available": true,
+      "source_binding": "b1_closeout_receipt",
+      "provenance": "Aperture-valid branches and retained-transport branches remain mutually inconsistent under completed bounded families."
+    },
+    {
+      "residual_id": "residual:rubber-contact-patch",
+      "label": "Rubber contact patch and deformation",
+      "value": 1.0,
+      "available": true,
+      "source_binding": "b1_closeout_receipt",
+      "provenance": "Rigid box, capsule, widened, compliant, stiction, and flexural approximations do not identify the physical distributed contact patch."
+    },
+    {
+      "residual_id": "residual:task-consequence",
+      "label": "Immutable C2 consequence vector",
+      "value": 1.0,
+      "available": true,
+      "source_binding": "project_application_receipt",
+      "provenance": "Thirty-two complete families and 514 candidate replays produced zero anchor passes."
+    }
+  ],
+  "structural_surprise": {
+    "components": [
+      {"id": "boundary_pressure", "weight": 0.18, "uncertainty_class": "parameter_uncertainty"},
+      {"id": "cross_family_regression", "weight": 0.18, "uncertainty_class": "structural_uncertainty"},
+      {"id": "parameter_reversal_or_drift", "weight": 0.10, "uncertainty_class": "structural_uncertainty"},
+      {"id": "phase_or_context_inconsistency", "weight": 0.10, "uncertainty_class": "structural_uncertainty"},
+      {"id": "persistent_structured_residual", "weight": 0.14, "uncertainty_class": "structural_uncertainty"},
+      {"id": "posterior_correlation", "weight": 0.10, "uncertainty_class": "parameter_uncertainty"},
+      {"id": "sim_success_trace_regression", "weight": 0.10, "uncertainty_class": "structural_uncertainty"},
+      {"id": "ensemble_without_single_winner", "weight": 0.10, "uncertainty_class": "structural_uncertainty"}
+    ],
+    "signals": {
+      "boundary_pressure": {"value": 1.0, "available": true, "provenance": "Repeated best candidates lie on aperture/force/contact boundaries.", "reason": "bounded families repeatedly terminate at declared limits"},
+      "cross_family_regression": {"value": 1.0, "available": true, "provenance": "Retention, aperture, transport, slip, and release trade across families.", "reason": "one-gate gains regress other immutable consequences"},
+      "parameter_reversal_or_drift": {"value": 0.8, "available": true, "provenance": "Adjacent force and timing points enter different contact regimes.", "reason": "bifurcating local response"},
+      "phase_or_context_inconsistency": {"value": 1.0, "available": true, "provenance": "Measured-state replay eliminates tracking error without reproducing bilateral lift.", "reason": "context-specific explanation fails"},
+      "persistent_structured_residual": {"value": 1.0, "available": true, "provenance": "514 completed action-identical C2 replays retain the composite residual.", "reason": "persistent structured negative"},
+      "posterior_correlation": {"value": null, "available": false, "provenance": "No direct jaw-force/deformation posterior exists.", "reason": "required observables missing"},
+      "sim_success_trace_regression": {"value": 1.0, "available": true, "provenance": "Visually retained or transported branches fail aperture, release, energy, trace, or rubber-path guards.", "reason": "raw success conflicts with frozen evaluator"},
+      "ensemble_without_single_winner": {"value": 1.0, "available": true, "provenance": "Flexural contact and actuator/load-path structures remain plausible.", "reason": "no identifying intervention has been observed"}
+    },
+    "trigger": {
+      "score_threshold": 0.60,
+      "component_threshold": 0.60,
+      "minimum_triggered_components": 2,
+      "minimum_available_weight": 0.50,
+      "require_structural_component": true,
+      "missing_components_are_zero": false
+    }
+  },
+  "observables": [
+    {"observable_id": "joint_angle", "unit": "radian", "available": true},
+    {"observable_id": "joint_current", "unit": "ampere_derived_from_retained_raw_units", "available": true},
+    {"observable_id": "contact_loss_index", "unit": "source_index", "available": true},
+    {"observable_id": "task_consequence", "unit": "frozen_boolean_vector", "available": true},
+    {"observable_id": "jaw_force", "unit": "newton", "available": false},
+    {"observable_id": "rubber_cap_deformation_profile", "unit": "millimeter_profile", "available": false}
+  ],
+  "mechanisms": [
+    {
+      "prior_probability": 0.5,
+      "mechanism_id": "flexural_rubber_contact_v1",
+      "family": "fingertip_contact",
+      "physical_interpretation": "The real rubber cap deforms into a distributed load-bearing patch that rigid and low-order compliant primitives cannot reproduce.",
+      "affected_components": ["rubber_tip_collision", "contact_patch", "pawn_neck_load_path"],
+      "parameters": [{"name": "deformation_gain", "unit": "normalized", "prior": {"mean": 0.5}, "minimum": 0.0, "maximum": 1.0}],
+      "predicted_residual_signatures": [{"id": "force_deformation_coupling_dominates_contact_retention"}],
+      "required_observables": ["jaw_force", "rubber_cap_deformation_profile"],
+      "non_identifiabilities": ["joint angle and low-rate current cannot recover local force or contact-patch geometry"],
+      "candidate_interventions": ["simulator_ambiguous_flexure_load_path_probe", "measurement_synchronized_force_deformation_probe"],
+      "simulator_mutation": "bounded deformable contact family only after acquisition authorizes",
+      "graph_factors": ["residual:bilateral-contact-retention", "residual:rubber-contact-patch", "residual:task-consequence"],
+      "influence_edges": [],
+      "invalidation_rules": ["deformation remains negligible while measured force explains retention and release"],
+      "invariance_scope": {"invariant_parameters": ["deformation_gain"], "allowed_context_covariates": ["gap", "load_phase", "trial"]},
+      "action_immutability_tests": ["source action SHA-256 unchanged"],
+      "prediction_model": {"kind": "linear", "features": ["feature"]}
+    },
+    {
+      "prior_probability": 0.5,
+      "mechanism_id": "actuator_load_path_v1",
+      "family": "load_compliance",
+      "physical_interpretation": "The geared servo and jaw load path produce hysteretic force-angle behavior absent from the plain simulator actuator.",
+      "affected_components": ["gripper_actuator", "gearbox_hold", "jaw_load_path"],
+      "parameters": [{"name": "load_path_gain", "unit": "normalized", "prior": {"mean": 0.5}, "minimum": 0.0, "maximum": 1.0}],
+      "predicted_residual_signatures": [{"id": "current_force_angle_hysteresis_dominates_retention"}],
+      "required_observables": ["joint_angle", "joint_current", "jaw_force"],
+      "non_identifiabilities": ["current without synchronized force calibration cannot separate gearbox hold from cap deformation"],
+      "candidate_interventions": ["simulator_ambiguous_flexure_load_path_probe", "measurement_synchronized_force_deformation_probe"],
+      "simulator_mutation": "bounded load-path family only after acquisition authorizes",
+      "graph_factors": ["residual:loaded-aperture-load-path", "residual:bilateral-contact-retention", "residual:task-consequence"],
+      "influence_edges": [],
+      "invalidation_rules": ["force-deformation signature explains retention without load-path hysteresis"],
+      "invariance_scope": {"invariant_parameters": ["load_path_gain"], "allowed_context_covariates": ["gap", "load_phase", "trial"]},
+      "action_immutability_tests": ["source action SHA-256 unchanged"],
+      "prediction_model": {"kind": "linear", "features": ["feature"]}
+    }
+  ],
+  "interventions": [
+    {
+      "intervention_id": "simulator_ambiguous_flexure_load_path_probe",
+      "kind": "simulator_family",
+      "availability": "available_simulator",
+      "allowed_mutations": ["one preregistered bounded simulator mechanism family"],
+      "required_observables": ["joint_angle", "joint_current", "contact_loss_index", "task_consequence"],
+      "declared_scopes": ["fingertip_contact", "load_compliance"],
+      "residual_node_ids": ["residual:bilateral-contact-retention", "residual:loaded-aperture-load-path", "residual:rubber-contact-patch", "residual:task-consequence"],
+      "maximum_trials": 18,
+      "cost": 0.8,
+      "risk": 0.8,
+      "gate_relevance": 0.6,
+      "compensation_debt_reduction": 0.2,
+      "parameter_information_gain": 0.2,
+      "predicted_signatures": {
+        "flexural_rubber_contact_v1": {"retention_aperture_tradeoff": {"normalized_response": 0.55}, "task_consequence": {"normalized_response": 0.50}},
+        "actuator_load_path_v1": {"retention_aperture_tradeoff": {"normalized_response": 0.45}, "task_consequence": {"normalized_response": 0.50}}
+      }
+    },
+    {
+      "intervention_id": "measurement_synchronized_force_deformation_probe",
+      "kind": "measurement_acquisition",
+      "availability": "unavailable_measurement",
+      "allowed_mutations": [],
+      "required_observables": ["jaw_force", "rubber_cap_deformation_profile", "joint_angle", "joint_current"],
+      "declared_scopes": ["fingertip_contact", "load_compliance"],
+      "residual_node_ids": ["residual:bilateral-contact-retention", "residual:loaded-aperture-load-path", "residual:rubber-contact-patch", "residual:task-consequence"],
+      "maximum_trials": 0,
+      "cost": 0.2,
+      "risk": 0.1,
+      "gate_relevance": 1.0,
+      "compensation_debt_reduction": 1.0,
+      "parameter_information_gain": 1.0,
+      "predicted_signatures": {
+        "flexural_rubber_contact_v1": {"force_deformation_coupling": {"normalized_response": 0.95}, "current_force_hysteresis": {"normalized_response": 0.35}, "loaded_patch_change": {"normalized_response": 0.95}},
+        "actuator_load_path_v1": {"force_deformation_coupling": {"normalized_response": 0.20}, "current_force_hysteresis": {"normalized_response": 0.95}, "loaded_patch_change": {"normalized_response": 0.20}}
+      }
+    }
+  ],
+  "acquisition": {
+    "weights": {"predicted_information_gain": 0.60, "compensation_debt_reduction": 0.20, "gate_relevance": 0.20, "cost": -0.05, "risk": -0.05},
+    "minimum_predicted_information_gain": 0.50
+  },
+  "factor_beliefs": [
+    {"factor_id": "factor:rubber_contact_patch", "value": 0.5, "status": "retained_competing", "affected_by_mechanisms": ["flexural_rubber_contact_v1"]},
+    {"factor_id": "factor:actuator_load_path", "value": 0.5, "status": "retained_competing", "affected_by_mechanisms": ["actuator_load_path_v1"]},
+    {"factor_id": "factor:arm_tracking", "value": 0.0, "status": "unaffected_frozen", "affected_by_mechanisms": []},
+    {"factor_id": "factor:source_actions", "value": 0.0, "status": "immutable", "affected_by_mechanisms": []}
+  ],
+  "influence_thresholds": {
+    "require_declared_scope": true,
+    "require_predicts_path": true,
+    "minimum_residual_overlap": 1,
+    "minimum_local_sensitivity": 0.25,
+    "minimum_precision": 0.0,
+    "minimum_recall": 0.0
+  },
+  "invariance": {
+    "mechanism_id": "flexural_rubber_contact_v1",
+    "invariant_parameter": "deformation_gain",
+    "context_covariate": "episode_context",
+    "episode_contexts": [{"episode_id": "20260719T031324Z-bf91502b", "level": "retained_c2_only"}],
+    "thresholds": {"minimum_context_levels": 2, "minimum_episodes_per_level": 1, "maximum_invariant_parameter_range": 0.10, "minimum_residual_signature_consistency": 0.90}
+  },
+  "ablation": {
+    "manual_receipt_glob": "outputs/sail/grasp-retention-*/anchor-screen-receipt.json",
+    "incomplete_artifact_glob": "outputs/sail/grasp-retention-friction-release-v1/anchor/*.json",
+    "expected_completed_campaigns": 32,
+    "expected_candidate_replays": 514,
+    "expected_anchor_passes": 0,
+    "manual_hypotheses_rejected_or_narrowed": [
+      "higher scalar friction alone",
+      "actuator zero shift alone",
+      "finite or binary force limit alone",
+      "4D versus 6D contact dimensionality alone",
+      "softened rigid contact alone",
+      "box versus capsule rigid pad shape alone",
+      "free widened contact footprint alone",
+      "rigid backed cap geometry alone",
+      "torque latch alone",
+      "contact-height and normal offsets alone",
+      "force ramp and phase gating alone",
+      "constant force alone",
+      "solver stiction alone",
+      "measured arm-state replay alone",
+      "phase alignment alone"
+    ],
+    "manual_hypotheses_retained": ["flexural_rubber_contact_v1", "actuator_load_path_v1"]
+  },
+  "measurement_acquisition_packet": {
+    "measurements": ["synchronized jaw force", "rubber-cap deformation and contact profile", "gripper joint angle", "gripper motor current"],
+    "minimum_sampling_hz": 100,
+    "calibration": ["force-sensor zero before every trial", "three unloaded closures", "three blocked closures at each of two known gaps", "metric profile scale and camera intrinsics recorded"],
+    "synchronization": "single monotonic timestamp domain with force, profile, angle, and current aligned to no worse than one sample",
+    "required_phases": ["unloaded close", "first contact", "loaded hold", "transport-equivalent dwell", "release"],
+    "robot_motion_authority": false
+  },
+  "authority": {
+    "physical_capture": false,
+    "robot_motion": false,
+    "training": false,
+    "self_promotion": false
+  }
+}

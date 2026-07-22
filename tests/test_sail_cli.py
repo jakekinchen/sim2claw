@@ -55,6 +55,7 @@ def test_all_phase_one_sail_cli_routes_are_parseable() -> None:
         "sail-compile-loop-closure",
         "sail-compile-invariance",
         "sail-compile-acquisition",
+        "sail-run-live-operator",
         "sail-compile-benchmark",
         "sail-compile-inspect-campaign",
         "sail-compile-retrospective-case",
