@@ -1,6 +1,6 @@
 # SAIL/ClawLoop Phase 1 Goal
 
-Status: `ACTIVE — P1-00 THROUGH P1-05 COMPLETE; P1-06 IN PROGRESS`
+Status: `ACTIVE — P1-00 THROUGH P1-06 COMPLETE; P1-07 IN PROGRESS`
 
 The active program authority is
 [`docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md`](docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md).
@@ -14,10 +14,10 @@ simulator evidence, and all ACT/GR00T data generation or policy selection stays
 closed unless an evaluator-owned TwinWorthiness certificate opens the declared
 capability. Source actions remain byte-identical in the action-frozen lane.
 
-Current milestone: **P1-06 — Implement mechanism plugins and posterior fitting**.
+Current milestone: **P1-07 — Implement influence discovery and sparse loop closure**.
 
 Active brief:
-[`docs/briefs/021-sail-mechanism-plugins-and-posteriors.md`](docs/briefs/021-sail-mechanism-plugins-and-posteriors.md).
+[`docs/briefs/022-sail-influence-discovery-and-sparse-loop-closure.md`](docs/briefs/022-sail-influence-discovery-and-sparse-loop-closure.md).
 
 Live milestone status is maintained in the master plan's Section 12 ledger and
 in `docs/autonomous-workflow/project_state.json`. The research documents named

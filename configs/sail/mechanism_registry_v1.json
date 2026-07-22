@@ -1,0 +1,102 @@
+{
+  "schema_version": "sim2claw.sail_mechanism_registry.v1",
+  "registry_id": "sail-mechanism-registry-v1",
+  "generated_at": "2026-07-22T01:28:00-05:00",
+  "source_bindings": {
+    "mechanism_schema": {"path": "configs/sail/schemas/physical_mechanism_v1.json", "sha256": "0192cd393cf2a94c91838eb1c8d81c34712b9a562d551aa6ab896db45eff3df5"},
+    "timing_receipt": {"path": "outputs/pawn_bg_timing_ablation_v1/timing_ablation_receipt.json", "sha256": "ef50f7c09379f7aa8449cc74cdbb1738251e059835a79f9547fa7874bf4437d9"},
+    "deadband_receipt": {"path": "outputs/pawn_bg_servo_deadband_v1/servo_deadband_receipt.json", "sha256": "bd867a8fb66dc0b26ff11957e16c86850c4e53a0d388312b94cf01cc80da125d"},
+    "load_receipt": {"path": "outputs/pawn_bg_servo_load_bias_v1/servo_load_bias_receipt.json", "sha256": "1ea4a84a509e320bece0f4797c1e2ae6a824ce72946528b95b7af04a561d4357"},
+    "grasp_receipt": {"path": "outputs/pawn_bg_grasp_coordinate_descent_v1/grasp_coordinate_descent_receipt.json", "sha256": "129ee9d8549f5fa78ef23d39321aa6f3755390e1cf2e63cabc72d46c498e5538"},
+    "grasp_closeout": {"path": "outputs/pawn_bg_grasp_campaign_closeout_v1/grasp_campaign_closeout_receipt.json", "sha256": "b5ca10583d32d9f4e829d63d3c94dd3a88d72f559931882f9534a269652991c2"},
+    "rubber_closeout": {"path": "outputs/pawn_bg_rubber_retention_closeout_v1/rubber_retention_closeout_receipt.json", "sha256": "7c4b0ae1918ef67cfdb23874b1285de2bf976a52a3e82d0b49eb5a1202261d25"},
+    "camera_contract": {"path": "configs/experiments/robot_anchored_camera_overlay_v1.json", "sha256": "c888f345025b2f6beedf27e66e683707183dbdb4457c439422d5ff1954a37587"},
+    "residual_field": {"path": "outputs/sail/retired-bg-v1/residuals/residual_field.json", "sha256": "38a78aa325ccb978e131ac087e6820c35faa4473172387d5f738261ff1889c71"},
+    "surprise": {"path": "outputs/sail/retired-bg-v1/structural-surprise/structural_surprise.json", "sha256": "ce8aae9a9f68a9958fd50e2efd0cd8b4bd20e7dab41d91b5d2369ba206912f54"}
+  },
+  "current_observables": ["action_array", "elapsed_time", "commanded_joint_position", "measured_joint_position", "measured_joint_velocity", "mapped_measured_end_effector", "simulated_end_effector", "simulated_joint_state", "gripper_aperture", "simulated_consequence"],
+  "bootstrap": {"seed": 20260722, "replicates": 200, "confidence_level": 0.95},
+  "plugins": [
+    {
+      "mechanism_id": "timing_delay_v1", "family": "timing", "physical_interpretation": "Bounded simulator-side sample/hold delay hypothesis, not physical latency identification.",
+      "affected_components": ["control_schedule"], "required_observables": ["action_array", "elapsed_time"], "non_identifiabilities": ["delay_vs_actuator_response"], "candidate_interventions": ["timestamp_aligned_sample_hold"], "simulator_mutation": "apply bounded sample-hold delay to simulator schedule only", "graph_factors": ["residual:event_timing", "residual:joint_velocity"],
+      "parameters": [{"name": "delay_s", "unit": "second", "prior": {"kind": "normal", "mean": 0.0, "std": 0.1}, "minimum": -0.5, "maximum": 0.5}],
+      "prediction_model": {"kind": "linear", "features": ["command_slope"]},
+      "predicted_residual_signatures": [{"channel": "selected_event_timing:", "direction": "phase_shift"}], "influence_edges": [{"scope": "timing", "residual_family": "event_timing"}], "invalidation_rules": ["action_bytes_change"], "invariance_scope": {"invariant_parameters": ["delay_s"], "allowed_context_covariates": ["sample_rate"]}, "action_immutability_tests": ["sha256_before_equals_after"],
+      "historical_binding": {"source_id": "timing_receipt", "parameters": [{"name": "delay_s", "pointer": "/selected_delay_seconds", "expected": 0.11}]}
+    },
+    {
+      "mechanism_id": "servo_deadband_v1", "family": "deadband_hysteresis", "physical_interpretation": "Bounded simulator actuator deadband model class, not firmware identification.",
+      "affected_components": ["joint_actuator"], "required_observables": ["commanded_joint_position", "measured_joint_position"], "non_identifiabilities": ["deadband_vs_friction"], "candidate_interventions": ["joint_deadband_sweep"], "simulator_mutation": "apply symmetric joint deadband in simulator actuator", "graph_factors": ["residual:joint_position", "residual:joint_velocity"],
+      "parameters": [{"name": "deadband_degrees", "unit": "degree", "prior": {"kind": "half_normal", "std": 2.0}, "minimum": 0.0, "maximum": 5.0}],
+      "prediction_model": {"kind": "linear", "features": ["stall_fraction"]},
+      "predicted_residual_signatures": [{"channel": "selected_sim_minus_mapped_real_joint:", "direction": "stall_local"}], "influence_edges": [{"scope": "deadband_hysteresis", "residual_family": "joint_position"}], "invalidation_rules": ["no_command_measurement_pair"], "invariance_scope": {"invariant_parameters": ["deadband_degrees"], "allowed_context_covariates": ["joint_name"]}, "action_immutability_tests": ["sha256_before_equals_after"],
+      "historical_binding": {"source_id": "deadband_receipt", "parameters": [{"name": "deadband_degrees", "pointer": "/selected_deadband_degrees", "expected": 2.0}]}
+    },
+    {
+      "mechanism_id": "load_compliance_v1", "family": "load_compliance", "physical_interpretation": "Bounded load-conditioned response hypothesis, not torque or gravity-compensation identification.",
+      "affected_components": ["joint_actuator"], "required_observables": ["load_proxy", "measured_joint_position", "measured_joint_velocity"], "non_identifiabilities": ["load_vs_contact_force", "load_vs_unmodeled_delay"], "candidate_interventions": ["load_conditioned_joint_response"], "simulator_mutation": "apply bounded load-conditioned simulator torque term", "graph_factors": ["residual:joint_position", "residual:joint_velocity"],
+      "parameters": [{"name": "load_bias_coefficient", "unit": "dimensionless", "prior": {"kind": "normal", "mean": 0.0, "std": 1.0}, "minimum": -2.0, "maximum": 2.0}],
+      "prediction_model": {"kind": "linear", "features": ["load"]},
+      "predicted_residual_signatures": [{"channel": "selected_sim_minus_mapped_real_joint:elbow_flex", "direction": "load_correlated"}], "influence_edges": [{"scope": "load_compliance", "residual_family": "joint_position"}], "invalidation_rules": ["required_load_proxy_absent_for_physical_claim"], "invariance_scope": {"invariant_parameters": ["load_bias_coefficient"], "allowed_context_covariates": ["joint_name", "phase"]}, "action_immutability_tests": ["sha256_before_equals_after"],
+      "historical_binding": {"source_id": "load_receipt", "parameters": [{"name": "load_bias_coefficient", "pointer": "/selected_candidate/elbow_load_bias_coefficient", "expected": -1.5}]}
+    },
+    {
+      "mechanism_id": "metric_geometry_v1", "family": "geometry_scale", "physical_interpretation": "Nominal-print-conditioned board-scale hypothesis without metric physical authority.",
+      "affected_components": ["board_geometry"], "required_observables": ["mapped_measured_end_effector"], "non_identifiabilities": ["scale_vs_camera_extrinsics"], "candidate_interventions": ["board_scale_sweep"], "simulator_mutation": "set bounded simulator board playing-side length", "graph_factors": ["residual:end_effector"],
+      "parameters": [{"name": "board_playing_side_m", "unit": "meter", "prior": {"kind": "normal", "mean": 0.3556, "std": 0.02}, "minimum": 0.30, "maximum": 0.40}],
+      "prediction_model": {"kind": "linear", "features": ["ones"]},
+      "predicted_residual_signatures": [{"channel": "selected_end_effector_", "direction": "spatial_scale"}], "influence_edges": [{"scope": "geometry_scale", "residual_family": "end_effector"}], "invalidation_rules": ["metric_source_absent"], "invariance_scope": {"invariant_parameters": ["board_playing_side_m"], "allowed_context_covariates": ["camera"]}, "action_immutability_tests": ["sha256_before_equals_after"],
+      "historical_binding": {"source_id": "timing_receipt", "parameters": [{"name": "board_playing_side_m", "pointer": "/board_playing_side_m", "expected": 0.3556}]}
+    },
+    {
+      "mechanism_id": "gripper_aperture_v1", "family": "gripper_aperture", "physical_interpretation": "Simulator gripper response/force hypothesis, not physical force calibration.",
+      "affected_components": ["gripper_actuator"], "required_observables": ["gripper_aperture"], "non_identifiabilities": ["force_limit_vs_contact_geometry"], "candidate_interventions": ["gripper_force_limit_sweep"], "simulator_mutation": "scale simulator gripper force limit", "graph_factors": ["residual:aperture"],
+      "parameters": [{"name": "force_limit_multiplier", "unit": "ratio", "prior": {"kind": "log_normal", "median": 1.0}, "minimum": 0.5, "maximum": 5.0}],
+      "prediction_model": {"kind": "linear", "features": ["aperture_command"]},
+      "predicted_residual_signatures": [{"channel": "selected_aperture_residual", "direction": "closure_gain"}], "influence_edges": [{"scope": "gripper_aperture", "residual_family": "aperture"}], "invalidation_rules": ["aperture_unavailable"], "invariance_scope": {"invariant_parameters": ["force_limit_multiplier"], "allowed_context_covariates": ["phase"]}, "action_immutability_tests": ["sha256_before_equals_after"],
+      "historical_binding": {"source_id": "grasp_receipt", "parameters": [{"name": "force_limit_multiplier", "pointer": "/frozen_composite_parameters/gripper_force_limit_multiplier", "expected": 3.0}]}
+    },
+    {
+      "mechanism_id": "fingertip_contact_v1", "family": "fingertip_contact", "physical_interpretation": "Bounded fingertip onset/gain hypothesis requiring contact observables.",
+      "affected_components": ["jaw_collision_geometry"], "required_observables": ["physical_contact_state", "physical_contact_force_or_proxy"], "non_identifiabilities": ["tip_geometry_vs_force_limit", "contact_onset_vs_object_pose"], "candidate_interventions": ["tip_geometry_probe"], "simulator_mutation": "set bounded contact onset and gain in simulator-only fixture", "graph_factors": ["residual:contact_consequence", "residual:aperture"],
+      "parameters": [{"name": "contact_threshold_m", "unit": "meter", "prior": {"kind": "uniform"}, "minimum": 0.0, "maximum": 0.01}, {"name": "contact_gain", "unit": "ratio", "prior": {"kind": "log_normal", "median": 3.0}, "minimum": 0.1, "maximum": 10.0}],
+      "prediction_model": {"kind": "hinge", "feature": "penetration", "threshold_parameter": "contact_threshold_m", "gain_parameter": "contact_gain"},
+      "predicted_residual_signatures": [{"channel": "physical_contact", "direction": "onset_and_slope"}], "influence_edges": [{"scope": "fingertip_contact", "residual_family": "contact_consequence"}], "invalidation_rules": ["contact_observable_absent"], "invariance_scope": {"invariant_parameters": ["contact_threshold_m", "contact_gain"], "allowed_context_covariates": ["object_geometry"]}, "action_immutability_tests": ["sha256_before_equals_after"],
+      "historical_binding": {"source_id": "grasp_receipt", "parameters": [{"name": "contact_threshold_m", "pointer": "/frozen_composite_parameters/tip_thickness_m", "expected": 0.001}, {"name": "contact_gain", "pointer": "/frozen_composite_parameters/gripper_force_limit_multiplier", "expected": 3.0}]}
+    },
+    {
+      "mechanism_id": "contact_friction_v1", "family": "contact_friction", "physical_interpretation": "Simulator sliding-friction sensitivity, not physical friction calibration.",
+      "affected_components": ["contact_material"], "required_observables": ["physical_contact_state", "metric_object_trajectory"], "non_identifiabilities": ["friction_vs_normal_force"], "candidate_interventions": ["sliding_friction_sweep"], "simulator_mutation": "set bounded simulator contact friction", "graph_factors": ["residual:contact_consequence"],
+      "parameters": [{"name": "sliding_friction", "unit": "coefficient", "prior": {"kind": "log_normal", "median": 1.0}, "minimum": 0.1, "maximum": 4.0}],
+      "prediction_model": {"kind": "linear", "features": ["slip_speed"]},
+      "predicted_residual_signatures": [{"channel": "physical_consequence", "direction": "retention"}], "influence_edges": [{"scope": "contact_friction", "residual_family": "contact_consequence"}], "invalidation_rules": ["contact_or_object_trajectory_absent"], "invariance_scope": {"invariant_parameters": ["sliding_friction"], "allowed_context_covariates": ["contact_material"]}, "action_immutability_tests": ["sha256_before_equals_after"],
+      "historical_binding": {"source_id": "rubber_closeout", "parameters": [{"name": "sliding_friction", "pointer": "/frozen_full_set_candidate/parameters/sliding_friction", "expected": 2.0}]}
+    },
+    {
+      "mechanism_id": "simulation_timestep_v1", "family": "joint_response", "physical_interpretation": "Simulator integration-timestep sensitivity, not a physical parameter.",
+      "affected_components": ["simulator_integrator"], "required_observables": ["simulated_joint_state", "simulated_consequence"], "non_identifiabilities": ["timestep_vs_contact_solver"], "candidate_interventions": ["timestep_sweep"], "simulator_mutation": "scale simulator timestep within declared stability bounds", "graph_factors": ["residual:joint_velocity", "residual:contact_consequence"],
+      "parameters": [{"name": "timestep_multiplier", "unit": "ratio", "prior": {"kind": "normal", "mean": 1.0, "std": 0.25}, "minimum": 0.25, "maximum": 1.5}],
+      "prediction_model": {"kind": "linear", "features": ["integration_rate"]},
+      "predicted_residual_signatures": [{"channel": "selected_sim_minus_mapped_real_velocity:", "direction": "integration_error"}], "influence_edges": [{"scope": "timestep", "residual_family": "joint_velocity"}], "invalidation_rules": ["unstable_simulation"], "invariance_scope": {"invariant_parameters": ["timestep_multiplier"], "allowed_context_covariates": ["contact_phase"]}, "action_immutability_tests": ["sha256_before_equals_after"],
+      "historical_binding": {"source_id": "grasp_closeout", "parameters": [{"name": "timestep_multiplier", "pointer": "/candidates/v3_timestep045/parameters/simulation_timestep_multiplier", "expected": 0.45}]}
+    },
+    {
+      "mechanism_id": "object_dynamics_v1", "family": "object_dynamics", "physical_interpretation": "Bounded object-mass dynamics hypothesis requiring metric object motion.",
+      "affected_components": ["pawn_body"], "required_observables": ["metric_object_trajectory", "physical_contact_state"], "non_identifiabilities": ["mass_vs_contact_force", "mass_vs_friction"], "candidate_interventions": ["pawn_mass_sweep"], "simulator_mutation": "scale simulator pawn mass", "graph_factors": ["residual:contact_consequence"],
+      "parameters": [{"name": "pawn_mass_multiplier", "unit": "ratio", "prior": {"kind": "log_normal", "median": 1.0}, "minimum": 0.25, "maximum": 4.0}],
+      "prediction_model": {"kind": "linear", "features": ["acceleration_load"]},
+      "predicted_residual_signatures": [{"channel": "physical_consequence", "direction": "acceleration_response"}], "influence_edges": [{"scope": "object_dynamics", "residual_family": "contact_consequence"}], "invalidation_rules": ["metric_object_trajectory_absent"], "invariance_scope": {"invariant_parameters": ["pawn_mass_multiplier"], "allowed_context_covariates": ["object_identity"]}, "action_immutability_tests": ["sha256_before_equals_after"],
+      "historical_binding": {"source_id": "grasp_receipt", "parameters": [{"name": "pawn_mass_multiplier", "pointer": "/frozen_composite_parameters/pawn_mass_multiplier", "expected": 1.0}]}
+    },
+    {
+      "mechanism_id": "camera_timing_extrinsics_v1", "family": "camera", "physical_interpretation": "Joint camera-latency/extrinsic hypothesis kept separate from robot geometry.",
+      "affected_components": ["camera_observation"], "required_observables": ["camera_timestamp", "metric_camera_extrinsics", "image_feature_track"], "non_identifiabilities": ["latency_vs_motion_blur", "yaw_vs_board_homography"], "candidate_interventions": ["camera_motion_probe", "static_extrinsic_probe"], "simulator_mutation": "change evaluator-side camera timing/extrinsics only", "graph_factors": ["residual:end_effector"],
+      "parameters": [{"name": "camera_latency_s", "unit": "second", "prior": {"kind": "normal", "mean": 0.0, "std": 0.05}, "minimum": -0.2, "maximum": 0.2}, {"name": "camera_yaw_rad", "unit": "radian", "prior": {"kind": "normal", "mean": 0.0, "std": 0.1}, "minimum": -0.5, "maximum": 0.5}],
+      "prediction_model": {"kind": "linear", "features": ["temporal_gradient", "image_x"]},
+      "predicted_residual_signatures": [{"channel": "visual_reprojection", "direction": "motion_correlated_plus_spatial"}], "influence_edges": [{"scope": "camera", "residual_family": "visual"}], "invalidation_rules": ["camera_metric_identity_absent"], "invariance_scope": {"invariant_parameters": ["camera_latency_s", "camera_yaw_rad"], "allowed_context_covariates": ["camera_identity"]}, "action_immutability_tests": ["sha256_before_equals_after"],
+      "historical_binding": {"source_id": "camera_contract", "parameters": [], "status": "contract_only_no_retained_metric_fit"}
+    }
+  ],
+  "authority": {"historical_result_mutation": false, "physical_mechanism_identification": false, "simulator_promotion": false, "training_admission": false, "policy_selection": false, "physical_capture": false, "robot_motion": false, "physical_transfer": false}
+}

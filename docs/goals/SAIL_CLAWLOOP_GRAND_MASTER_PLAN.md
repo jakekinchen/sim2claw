@@ -1492,8 +1492,8 @@ Only one milestone should be `in_progress` in the active goal loop.
 | P1-03 Residual field | P1-02 | completed | 11 episodes/4,743 rows, 213,897 phase-aligned samples, 3,630 summaries, 57 deterministic bootstrap channels, six explicit abstentions, receipt/heatmap/drilldowns, GOLD-03/04 |
 | P1-04 Belief graph | P1-02 | completed | 71 nodes/191 edges, 13 order-stable revisions, 12 declared-scope influence sets, 20 queryable negative/verdict nodes, action-to-terminal-verdict traversal, before/after views |
 | P1-05 Surprise/debt | P1-03, P1-04 | completed | 0.9429 normalized retained debt over 0.70 available weight, five contributors, six explicit missing observables, deterministic no-agent request, 0/256 clean false triggers, GOLD-05 |
-| P1-06 Mechanisms/posterior | P1-01, P1-03 | in_progress | plugin registry/fits |
-| P1-07 Influence/loop closure | P1-04–P1-06 | pending | oracle and sparse/full comparisons |
+| P1-06 Mechanisms/posterior | P1-01, P1-03 | completed | 10 ABI-valid plugins/wrappers, bounded conditional Laplace plus 200-replicate bootstrap fits, six separate seeded particles, five honest retained abstentions, immutable actions/results, GOLD-06/07/08 |
+| P1-07 Influence/loop closure | P1-04–P1-06 | in_progress | oracle and sparse/full comparisons |
 | P1-08 Invariance | P1-06, P1-07 | pending | scoped invariance results |
 | P1-09 Acquisition | P1-05–P1-08 | pending | ranked intervention receipts |
 | P1-10 Seeded benchmark | P1-01, P1-05–P1-09 | pending | public/sealed campaign |

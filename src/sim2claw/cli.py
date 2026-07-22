@@ -288,6 +288,13 @@ def build_parser() -> argparse.ArgumentParser:
     sail_surprise.add_argument("--config", type=Path, required=True)
     sail_surprise.add_argument("--output", type=Path, required=True)
 
+    sail_mechanisms = subparsers.add_parser(
+        "sail-compile-mechanisms",
+        help="compile bounded SAIL mechanism plugins and seeded posteriors",
+    )
+    sail_mechanisms.add_argument("--config", type=Path, required=True)
+    sail_mechanisms.add_argument("--output", type=Path, required=True)
+
     recorded_replay = subparsers.add_parser(
         "replay-recorded",
         help="replay one recorded command episode in MuJoCo and emit synchronized metrics",
@@ -897,6 +904,17 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         try:
             report = compile_structural_surprise(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-mechanisms":
+        from .sail.contracts import SailContractError
+        from .sail.posterior import compile_mechanisms
+
+        try:
+            report = compile_mechanisms(args.config, output_root=args.output)
         except SailContractError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
