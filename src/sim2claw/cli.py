@@ -330,6 +330,13 @@ def build_parser() -> argparse.ArgumentParser:
     sail_inspect_campaign.add_argument("--config", type=Path, required=True)
     sail_inspect_campaign.add_argument("--output", type=Path, required=True)
 
+    sail_retrospective_case = subparsers.add_parser(
+        "sail-compile-retrospective-case",
+        help="compile the retired-workcell SAIL loop-closure case and certificate",
+    )
+    sail_retrospective_case.add_argument("--config", type=Path, required=True)
+    sail_retrospective_case.add_argument("--output", type=Path, required=True)
+
     recorded_replay = subparsers.add_parser(
         "replay-recorded",
         help="replay one recorded command episode in MuJoCo and emit synchronized metrics",
@@ -1003,6 +1010,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .sail.contracts import SailContractError
         try:
             report = compile_campaign(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-retrospective-case":
+        from .sail.contracts import SailContractError
+        from .sail.retrospective_case import compile_case
+        try:
+            report = compile_case(args.config, output_root=args.output)
         except SailContractError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1

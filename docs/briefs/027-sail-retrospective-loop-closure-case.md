@@ -30,3 +30,21 @@ certificate without relabeling retrospective evidence as fresh validation.
 - Action bytes, evaluator state, or certificate authority changes.
 - The case attempts new physical capture, robot motion, training, or policy
   selection.
+
+## Result
+
+Completed. The case compiles 12 source-bound historical intervention/candidate/
+verdict triads through the fixed-pad, 2.25 ms timestep, and sliding-friction
+closeouts. Five explicit findings cover the load-bias boundary, RMS-versus-lift
+reversal, bounded timestep win, friction mixed-vector reversal, and six-lift/
+five-transport family coverage without single-model success. Frozen influence
+discovery selects exactly the RMS closeout and load-boundary interventions; two
+graph edits are bound to their original candidate and evaluator verdict.
+
+Chronological, seeded shuffled-order, sequential-no-revisit, full-batch, and
+SAIL sparse reconstructions are compared. The numerical recovery comparison is
+explicitly the frozen mechanism fixture, not retained physical truth. Scale,
+timing, deadband, load, and contact conclusions all remain explanatory
+simulator statements rather than measured physical parameters. The current
+certificate is `TW-REPLAY`: TW-G0/G1 pass, TW-G2/G3/G4 are not evaluable,
+`TW-DATA` stays closed, and no downstream authority opens.
