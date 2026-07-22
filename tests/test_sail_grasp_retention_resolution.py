@@ -435,6 +435,29 @@ def test_vertical_contact_family_uses_opposed_local_width_signs() -> None:
     ) == -0.02
 
 
+def test_force_ramp_family_tightens_energy_plausibility() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_force_ramp_v1.json"
+        )
+    )
+
+    family = contract["frozen_candidate_family"]
+    assert len(family) == 18
+    assert contract["acceptance"]["anchor_maximum_piece_rise_m"] == 0.1
+    durations = {
+        row["overrides"].get("gripper_contact_force_limit_ramp_seconds", 0.0)
+        for row in family
+    }
+    assert min(durations) == 0.0
+    assert max(durations) == 0.2
+    assert contract["proof_boundary"]["policy_actions_mutable"] is False
+    assert contract["proof_boundary"]["simulator_ctrl_mutable"] is False
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]
@@ -452,6 +475,7 @@ def test_anchor_result_rejects_aperture_only_false_fit() -> None:
         "piece_lifted": True,
         "bilateral_lift_retention": True,
         "maximum_bilateral_lift_retention_seconds": 1.0,
+        "maximum_piece_rise_m": 0.05,
         "trace_metrics": {"overall_joint_rms_degrees": 1.0, "ee_rms_m": 0.01},
     }
 

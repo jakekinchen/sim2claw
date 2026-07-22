@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02K COMPLETE; B2-02L IN PROGRESS`
+Status: `ACTIVE — B2-02L COMPLETE; B2-02M IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -27,7 +27,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02I | complete, terminal negative | high-stiffness 2.25 ms pads unstable; stable frontier loses at frame 329 |
 | B2-02J | complete, terminal negative | stable 0.5 ms pad retains through release with valid aperture/slip but misses transport |
 | B2-02K | complete, terminal negative | coverage-axis offsets change the sleeve footprint but not the vertical pawn contact point |
-| B2-02L | in progress | diagnosed width-axis signs; symmetric 1--20 mm downward-contact cross frozen |
+| B2-02L | complete, terminal negative | vertical offsets preserve the same pawn-relative manifold; force bifurcation dominates |
+| B2-02M | in progress | smooth contact-triggered current-limit ramp with excessive-energy rejection |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -155,3 +156,12 @@ motion is fixed negative and moving positive. The frozen family crosses
 1--20 mm symmetric shifts around the aperture-valid 0.0215 force point, with a
 narrow 0.02125/0.02175 force check at 3, 5, and 8 mm. All other parameters and
 all acceptance gates remain fixed.
+
+B2-02L confirms that translating the wide collision sleeves does not select a
+lower pawn-relative contact manifold. More importantly, force 0.02125 produces
+a 0.314 m numerical launch and transport while force 0.0215 produces a normal
+0.057 m rise. The code changes actuator force range discontinuously from 100%
+to about 2.1% on any jaw/pawn contact and back on separation. B2-02M replaces
+that optional switch with a bounded linear ramp over 2.5--200 ms. It also adds
+a 0.1 m maximum-rise rejection; this tightens, rather than relaxes, the frozen
+C2 gates and prevents an energy-injection artifact from being promoted.

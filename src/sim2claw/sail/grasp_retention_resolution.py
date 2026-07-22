@@ -60,6 +60,7 @@ CONTACT_HEIGHT_SCHEMA = (
 VERTICAL_CONTACT_SCHEMA = (
     "sim2claw.sail_grasp_retention_vertical_contact_campaign.v1"
 )
+FORCE_RAMP_SCHEMA = "sim2claw.sail_grasp_retention_force_ramp_campaign.v1"
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -119,6 +120,7 @@ def load_grasp_retention_contract(
         STABLE_COMPLIANCE_SCHEMA,
         CONTACT_HEIGHT_SCHEMA,
         VERTICAL_CONTACT_SCHEMA,
+        FORCE_RAMP_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -143,6 +145,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-stable-compliance-v1",
         "sail-grasp-retention-contact-height-v1",
         "sail-grasp-retention-vertical-contact-v1",
+        "sail-grasp-retention-force-ramp-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 
@@ -272,6 +275,12 @@ def _anchor_result(
         not isinstance(stability, dict) or not stability.get("passed")
     ):
         reasons.append("simulation_instability")
+    maximum_piece_rise = float(episode["maximum_piece_rise_m"])
+    maximum_allowed_rise = acceptance.get("anchor_maximum_piece_rise_m")
+    if maximum_allowed_rise is not None and maximum_piece_rise > float(
+        maximum_allowed_rise
+    ):
+        reasons.append("excessive_simulated_energy")
     return {
         "status": "anchor_pass" if not reasons else "rejected",
         "reasons": reasons,
@@ -294,7 +303,7 @@ def _anchor_result(
         "first_qualified_contact_height_relative_piece_center_m": episode.get(
             "first_qualified_contact_height_relative_piece_center_m"
         ),
-        "maximum_piece_rise_m": episode.get("maximum_piece_rise_m"),
+        "maximum_piece_rise_m": maximum_piece_rise,
         "maximum_transport_progress_after_lift": episode.get(
             "maximum_transport_progress_after_lift"
         ),

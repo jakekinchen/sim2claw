@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_vertical_contact_v1",
-  "current_milestone": "B2_02L_FROZEN_VERTICAL_CONTACT_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_force_ramp_v1",
+  "current_milestone": "B2_02M_FROZEN_FORCE_RAMP_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "world_vertical_axis_diagnosed_vertical_contact_followup_frozen",
+    "status": "vertical_contact_terminal_negative_hybrid_force_discontinuity_diagnosed_ramp_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -652,7 +652,8 @@
       "B2-02I": "completed_terminal_negative",
       "B2-02J": "completed_terminal_negative",
       "B2-02K": "completed_terminal_negative",
-      "B2-02L": "in_progress",
+      "B2-02L": "completed_terminal_negative",
+      "B2-02M": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -818,6 +819,19 @@
       "matched_downward_signs": "fixed_negative_moving_positive"
     },
     "vertical_contact_contract": "configs/sail/grasp_retention_vertical_contact_v1.json",
+    "vertical_contact_anchor_pass_count": 0,
+    "vertical_contact_receipt_sha256": "e90ffe881f7143473eeed19664eb819363ecbb6841d9cf461b14fc76cf994860",
+    "vertical_contact_receipt_digest": "15f201599f84ee4d30c2fe2a02a5abd64ac652e7c23071cdeee24e14cb8aa5f5",
+    "vertical_contact_force_bifurcation": {
+      "candidate_id": "force_02125_down_003",
+      "maximum_piece_rise_m": 0.31423162813337535,
+      "maximum_transport_progress_after_lift": 0.8013533571476376,
+      "contact_loss_source_index": 385,
+      "loaded_aperture_bias_degrees": 0.05558512089042384,
+      "post_grasp_slip_relative_reduction": -0.04727748803377744,
+      "classification": "nonphysical_energy_injection_not_a_win"
+    },
+    "force_ramp_contract": "configs/sail/grasp_retention_force_ramp_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false

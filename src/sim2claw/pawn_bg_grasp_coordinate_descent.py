@@ -1533,6 +1533,19 @@ def _run_episode(
         "latch_simulation_time_s": None,
         "release_simulation_time_s": None,
     }
+    force_limit_ramp_seconds = float(
+        parameters.get("gripper_contact_force_limit_ramp_seconds", 0.0)
+    )
+    if not 0.0 <= force_limit_ramp_seconds <= 0.5:
+        raise GraspCoordinateDescentError(
+            "gripper_contact_force_limit_ramp_seconds exceeds bounds"
+        )
+    force_limit_ramp_state: dict[str, Any] = {
+        "effective_multiplier": 1.0,
+        "minimum_effective_multiplier": 1.0,
+        "target_active": False,
+        "target_transition_count": 0,
+    }
 
     def apply_response(action: np.ndarray) -> None:
         data.ctrl[actuator_ids] = action
@@ -1640,9 +1653,35 @@ def _run_episode(
                     load_hold_state["active"] = True
                     load_hold_state["latch_simulation_time_s"] = float(data.time)
                     data.ctrl[gripper_actuator_id] = target
+        target_multiplier = gripper_load_multiplier if force_limit_active else 1.0
+        if force_limit_active != force_limit_ramp_state["target_active"]:
+            force_limit_ramp_state["target_active"] = force_limit_active
+            force_limit_ramp_state["target_transition_count"] += 1
+        if force_limit_ramp_seconds == 0.0:
+            effective_multiplier = target_multiplier
+        else:
+            previous_multiplier = float(
+                force_limit_ramp_state["effective_multiplier"]
+            )
+            maximum_delta = (
+                (1.0 - gripper_load_multiplier)
+                * float(model.opt.timestep)
+                / force_limit_ramp_seconds
+            )
+            effective_multiplier = previous_multiplier + float(
+                np.clip(
+                    target_multiplier - previous_multiplier,
+                    -maximum_delta,
+                    maximum_delta,
+                )
+            )
+        force_limit_ramp_state["effective_multiplier"] = effective_multiplier
+        force_limit_ramp_state["minimum_effective_multiplier"] = min(
+            float(force_limit_ramp_state["minimum_effective_multiplier"]),
+            effective_multiplier,
+        )
         model.actuator_forcerange[gripper_actuator_id] = (
-            nominal_force_range[gripper_actuator_id]
-            * (gripper_load_multiplier if force_limit_active else 1.0)
+            nominal_force_range[gripper_actuator_id] * effective_multiplier
         )
         for joint_name in ("shoulder_lift", "elbow_flex"):
             index = BODY_JOINT_NAMES.index(joint_name)
@@ -2518,6 +2557,23 @@ def _run_episode(
                 "release_simulation_time_s": force_latch_state[
                     "release_simulation_time_s"
                 ],
+                "simulator_ctrl_mutated": False,
+                "source_actions_mutated": False,
+            },
+            "force_limit_ramp": {
+                "duration_seconds": force_limit_ramp_seconds,
+                "effective_multiplier_at_end": float(
+                    force_limit_ramp_state["effective_multiplier"]
+                ),
+                "minimum_effective_multiplier": float(
+                    force_limit_ramp_state["minimum_effective_multiplier"]
+                ),
+                "target_transition_count": int(
+                    force_limit_ramp_state["target_transition_count"]
+                ),
+                "simulator_actuator_transfer_mutated": (
+                    force_limit_ramp_seconds > 0.0
+                ),
                 "simulator_ctrl_mutated": False,
                 "source_actions_mutated": False,
             },
