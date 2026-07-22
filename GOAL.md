@@ -1,6 +1,6 @@
 # SAIL/ClawLoop Phase 1 Goal
 
-Status: `ACTIVE — P1-00 THROUGH P1-03 COMPLETE; P1-04 IN PROGRESS`
+Status: `ACTIVE — P1-00 THROUGH P1-04 COMPLETE; P1-05 IN PROGRESS`
 
 The active program authority is
 [`docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md`](docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md).
@@ -14,10 +14,10 @@ simulator evidence, and all ACT/GR00T data generation or policy selection stays
 closed unless an evaluator-owned TwinWorthiness certificate opens the declared
 capability. Source actions remain byte-identical in the action-frozen lane.
 
-Current milestone: **P1-04 — Implement the deterministic belief graph**.
+Current milestone: **P1-05 — Implement structural surprise and compensation debt**.
 
 Active brief:
-[`docs/briefs/019-sail-deterministic-belief-graph.md`](docs/briefs/019-sail-deterministic-belief-graph.md).
+[`docs/briefs/020-sail-structural-surprise-and-compensation-debt.md`](docs/briefs/020-sail-structural-surprise-and-compensation-debt.md).
 
 Live milestone status is maintained in the master plan's Section 12 ledger and
 in `docs/autonomous-workflow/project_state.json`. The research documents named

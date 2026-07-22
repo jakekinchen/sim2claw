@@ -186,3 +186,10 @@ goal. External provider campaigns and spending remain separately gated.
   abstain, the 10,000-replicate whole-episode bootstrap is deterministic, and
   the heatmap/drilldowns are receipt-bound. GOLD-03/04, 30 focused tests, and
   the uninterrupted 650-test/328-subtest broad suite passed. P1-04 opened.
+- 2026-07-22T00:49:34-05:00 — P1-04 compiled an order-stable 71-node/191-edge
+  belief graph with all 16 node families, the 11-edge vocabulary, 13
+  chronological revisions, 12 declared-scope influence sets, and 20 queryable
+  negative/verdict nodes. Exact receipt proof/evaluator identities survive,
+  no `admitted-to` edge exists, and source action evidence traverses to the
+  terminal verdict. Thirty-nine SAIL tests and the uninterrupted
+  659-test/328-subtest broad suite passed. P1-05 opened.
