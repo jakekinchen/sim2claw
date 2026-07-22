@@ -1,6 +1,6 @@
 # SAIL/ClawLoop Grand Master Plan
 
-Status: `READY_FOR_OWNER_REVIEW_AND_ACTIVATION`
+Status: `ACTIVE — PHASE 1`
 
 Program type: two-phase, evidence-gated research and implementation program
 
@@ -1276,6 +1276,14 @@ Phase 1 is complete when:
 - the Phase 2 operator packet is executable without redesign; and
 - no paid compute, container, device lease, or Brev resource remains active.
 
+Phase 1 completion verdict (2026-07-22): **satisfied**. P1-00 through P1-17
+are complete; P1-15 is explicitly terminal-negative/fail-closed on current
+evidence; all automatic tiers and the 787-test broad gate pass; proof lanes and
+hardware predictions are frozen; the Phase 2 packet is executable but opens no
+authority; authenticated Brev inventory and running-container inventory are
+empty. P2-00 through P2-07 remain `blocked_external` pending a related workcell
+and separately granted capture and motion authority.
+
 ---
 
 ## 11. Phase 2 — related-workcell hardware verification
@@ -1484,26 +1492,26 @@ hardware/compute resources are safely closed, whether or not the policy wins.
 
 Only one milestone should be `in_progress` in the active goal loop.
 
-| Milestone | Depends on | Initial status | Completion evidence |
+| Milestone | Depends on | Live status | Completion evidence |
 |---|---|---|---|
-| P1-00 Activate/reconcile | master plan | pending | cutover, GOAL/state update, brief |
-| P1-01 Contracts/goldens | P1-00 | pending | schemas, golden docs/tests |
-| P1-02 Evidence compiler | P1-01 | pending | retained evidence receipt |
-| P1-03 Residual field | P1-02 | pending | aligned residual receipt/plots |
-| P1-04 Belief graph | P1-02 | pending | deterministic graph/timeline |
-| P1-05 Surprise/debt | P1-03, P1-04 | pending | trigger metrics and tests |
-| P1-06 Mechanisms/posterior | P1-01, P1-03 | pending | plugin registry/fits |
-| P1-07 Influence/loop closure | P1-04–P1-06 | pending | oracle and sparse/full comparisons |
-| P1-08 Invariance | P1-06, P1-07 | pending | scoped invariance results |
-| P1-09 Acquisition | P1-05–P1-08 | pending | ranked intervention receipts |
-| P1-10 Seeded benchmark | P1-01, P1-05–P1-09 | pending | public/sealed campaign |
-| P1-11 Inspect agents | P1-10 | pending | frozen provider attempts/costs |
-| P1-12 Retrospective case | P1-02–P1-09 | pending | graph closure/current certificate |
-| P1-13 Prospective sim | P1-09, P1-12 | pending | pre-registered sim results |
-| P1-14 TwinWorthiness wiring | P1-01, P1-03, P1-08 | pending | fail-closed LF integration |
-| P1-15 Policy flywheel | P1-14 | pending | fixture proof; real lane gated |
-| P1-16 Studio | P1-03, P1-04, P1-14 | pending | phone-friendly bound views |
-| P1-17 Publication freeze | P1-10–P1-16 | pending | tables, figures, reproduction map |
+| P1-00 Activate/reconcile | master plan | completed | `configs/sail/cutover_v1.json`, GOAL/state update, Brief 016, session/reviewer logs |
+| P1-01 Contracts/goldens | P1-00 | completed | five schemas, 25-case registry, six CI tiers, TwinWorthiness/benchmark freeze, 29 focused tests |
+| P1-02 Evidence compiler | P1-01 | completed | 31 verified evidence items, 18 physical/7,741 rows, 11 development plus 2 regression-only simulator items, deterministic catalog/omissions/receipt, GOLD-16 |
+| P1-03 Residual field | P1-02 | completed | 11 episodes/4,743 rows, 213,897 phase-aligned samples, 3,630 summaries, 57 deterministic bootstrap channels, six explicit abstentions, receipt/heatmap/drilldowns, GOLD-03/04 |
+| P1-04 Belief graph | P1-02 | completed | 71 nodes/191 edges, 13 order-stable revisions, 12 declared-scope influence sets, 20 queryable negative/verdict nodes, action-to-terminal-verdict traversal, before/after views |
+| P1-05 Surprise/debt | P1-03, P1-04 | completed | 0.9429 normalized retained debt over 0.70 available weight, five contributors, six explicit missing observables, deterministic no-agent request, 0/256 clean false triggers, GOLD-05 |
+| P1-06 Mechanisms/posterior | P1-01, P1-03 | completed | 10 ABI-valid plugins/wrappers, bounded conditional Laplace plus 200-replicate bootstrap fits, six separate seeded particles, five honest retained abstentions, immutable actions/results, GOLD-06/07/08 |
+| P1-07 Influence/loop closure | P1-04–P1-06 | completed | 12 retained candidates to exact two-decision oracle at 1.0 precision/recall; seeded sparse closure reassigns credit, preserves unaffected posterior digests, matches full score within 5.3e-15, and recomputes 2/8 while no-revisit fails; GOLD-09/10 |
+| P1-08 Invariance | P1-06, P1-07 | completed | plugin-declared whole-episode evaluator; stable seeded control passes, context-specific mechanism fails universal scope, single-context case abstains; all 10 retained mechanisms honestly `not_evaluable`; GOLD-11 |
+| P1-09 Acquisition | P1-05–P1-08 | completed | six sealed unexecuted plans; signature-separating load/frequency simulator probe wins structural ranking, load-only probe wins parameter refinement, all four frozen baselines have positive regret, two hardware plans unavailable with zero budgets; GOLD-12 |
+| P1-10 Seeded benchmark | P1-01, P1-05–P1-09 | completed | eight required fault families/cases, disjoint public/sealed seed domains, oracle controls, ten methods/ablations, 25 exact golden entrypoints, immutable actions/evaluator, deterministic SAIL 0.75 top-1 and 0.818 influence precision/recall |
+| P1-11 Inspect agents | P1-10 | completed | existing GapBench extended with eight structural packets/eight typed tools; three deterministic development cases complete; six unequal-transport provider attempts retained as zero-cost scored failures; exact runtime/usage receipts; GOLD-13/14/24 |
+| P1-12 Retrospective case | P1-02–P1-09 | completed | 12 source-bound history triads, five boundary/reversal/coverage findings, two influence-bound graph edits, five reconstruction conditions, two vector figures, evaluator-owned TW-REPLAY certificate with TW-G2/TW-DATA closed |
+| P1-13 Prospective sim | P1-09, P1-12 | completed | preregistered four-trial load/frequency factorial, exact 368x6 action identity, full-vector retained results, graph delta/posterior/Phase-2 freeze; loop selects timing-rate probe without physical promotion |
+| P1-14 TwinWorthiness wiring | P1-01, P1-03, P1-08 | completed | exact-scope expiring capability envelopes; LF-08/09/11/13 recompute fail-closed decisions; seven revocation paths denied; current TW-REPLAY opens diagnostics only; synthetic higher-level branch reachability; GOLD-17/18/19 |
+| P1-15 Policy flywheel | P1-14 | completed | production LF-00–LF-13 synthetic component path; 18-field posterior/teacher/simulator/evaluator lineage; strict failure/suffix matrix; ACT terminal-negative and independent rejection; overhead-only GR00T explicit compute skip; real lane zero rows/comparisons |
+| P1-16 Studio | P1-03, P1-04, P1-14 | completed | native read-only evidence spine; 11 explicit-missingness episodes, 4 bound figures, phone WebKit audit |
+| P1-17 Publication freeze | P1-10–P1-16 | completed | receipt-bound 6-question/10-ablation campaign; 9 tables, 7 figures, reproduction map, Phase 2 operator packet, broad gate/resource closeout |
 | P2-00 Hardware identity | Phase 1 exit, authority | blocked_external | new-workcell receipt |
 | P2-01 Read-only package | P2-00 capture authority | blocked_external | calibration/static receipt |
 | P2-02 Empty probes | P2-01 motion authority | blocked_external | synchronized probe receipt |

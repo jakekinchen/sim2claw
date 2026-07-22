@@ -47,6 +47,8 @@
   --fail: #a62b2b;
   --fail-soft: #f4dddd;
   --warn: #9a6713;
+  --diagnostic: #145c70;
+  --diagnostic-soft: #d8ecef;
   --display: "Barlow Semi Condensed", "Arial Narrow", sans-serif;
   --utility: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -408,11 +410,826 @@ body[data-view="replay"] [data-view-panel="replay"] {
 }
 
 body[data-view="library"] [data-view-panel="library"],
+body[data-view="sail"] [data-view-panel="sail"],
 body[data-view="calibration"] [data-view-panel="calibration"],
 body[data-view="robots"] [data-view-panel="robots"],
 body[data-view="orchestrator"] [data-view-panel="orchestrator"],
 body[data-view="record"] [data-view-panel="record"] {
   display: block;
+}
+
+/* SAIL observatory: a forensic instrument whose layout follows evidence lineage. */
+.sail-view {
+  width: min(100%, 1580px);
+  min-height: calc(100vh - var(--masthead-height));
+  margin: 0 auto;
+  background: var(--ceramic);
+}
+
+.sail-heading {
+  align-items: end;
+  border-bottom: 1px solid var(--rule-dark);
+}
+
+.sail-heading-status {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+  font-family: var(--utility);
+  font-size: 10px;
+}
+
+.sail-heading-status b {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--diagnostic);
+  color: white;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sail-heading-status code {
+  max-width: 220px;
+  overflow: hidden;
+  color: var(--graphite);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sail-authority-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--carbon);
+  color: white;
+}
+
+.sail-authority-notice .lock-icon {
+  flex: 0 0 auto;
+  color: #ff9a74;
+}
+
+.sail-authority-notice p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.sail-rank-band {
+  padding: 16px 18px 13px;
+  border-bottom: 1px solid var(--rule-dark);
+  background: var(--chalk);
+}
+
+.sail-rank-band > header,
+.sail-section-heading,
+.sail-publication-card > header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.sail-rank-band h2,
+.sail-section-heading h2,
+.sail-publication-card h2,
+.sail-verdict-grid h2,
+.sail-investigation-grid h2 {
+  margin: 2px 0 0;
+  font-family: var(--display);
+  font-size: 26px;
+  line-height: 1;
+}
+
+.sail-rank-band header p,
+.sail-section-heading p,
+.sail-publication-card header p {
+  max-width: 620px;
+  margin: 0;
+  color: var(--graphite);
+  font-size: 12px;
+}
+
+.sail-episode-list {
+  display: grid;
+  grid-auto-columns: minmax(140px, 1fr);
+  grid-auto-flow: column;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 3px;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+
+.sail-episode-button {
+  position: relative;
+  display: grid;
+  align-content: space-between;
+  min-height: 88px;
+  padding: 11px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  background: var(--paper);
+  cursor: pointer;
+  scroll-snap-align: start;
+  text-align: left;
+}
+
+.sail-episode-button::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--diagnostic);
+}
+
+.sail-episode-button[data-ranking="retained_lower_signal_partial"]::before {
+  background: var(--rule-dark);
+}
+
+.sail-episode-button.is-active {
+  border-color: var(--motion);
+  box-shadow: inset 0 0 0 1px var(--motion);
+}
+
+.sail-episode-button b {
+  font-family: var(--display);
+  font-size: 19px;
+}
+
+.sail-episode-button small,
+.sail-episode-button em {
+  color: var(--graphite);
+  font-family: var(--utility);
+  font-size: 9px;
+  font-style: normal;
+}
+
+.sail-investigation-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.85fr) minmax(310px, 0.72fr);
+  gap: 10px;
+  padding: 10px;
+}
+
+.sail-trace-card,
+.sail-residual-card,
+.sail-graph-card,
+.sail-debt-card,
+.sail-intervention-card,
+.sail-posterior-card,
+.sail-twin-card,
+.sail-publication-card {
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  background: var(--paper);
+  box-shadow: var(--shadow-soft);
+}
+
+.sail-trace-card > header,
+.sail-residual-card > header,
+.sail-graph-card > header,
+.sail-debt-card > header,
+.sail-intervention-card > header,
+.sail-posterior-card > header,
+.sail-twin-card > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.sail-trace-card > header button {
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid var(--rule-dark);
+  border-radius: 4px;
+  background: var(--chalk);
+  cursor: pointer;
+  font-family: var(--utility);
+  font-size: 10px;
+}
+
+.sail-trace-summary,
+.sail-residual-card > p,
+.sail-debt-card > p {
+  margin: 0;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--graphite-dark);
+  font-size: 12px;
+}
+
+.sail-phase-frame {
+  padding: 11px 14px 8px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--chalk);
+}
+
+.sail-phase-readout {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto 1fr;
+  align-items: baseline;
+  gap: 6px 10px;
+  margin-bottom: 8px;
+  color: var(--graphite);
+  font-family: var(--utility);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.sail-phase-readout b {
+  color: var(--carbon);
+  font-size: 11px;
+}
+
+.sail-phase-rail {
+  display: flex;
+  height: 18px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--rule);
+}
+
+.sail-phase-segment {
+  display: grid;
+  min-width: 2px;
+  place-items: center;
+  border-right: 1px solid rgb(255 255 255 / 42%);
+  background: color-mix(in srgb, var(--diagnostic) 68%, white);
+  color: white;
+  font-family: var(--utility);
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.sail-phase-segment:nth-child(2n) {
+  background: var(--diagnostic);
+}
+
+.sail-phase-frame input {
+  width: 100%;
+  margin: 6px 0 0;
+  accent-color: var(--motion);
+}
+
+.sail-signal-shell {
+  position: relative;
+  min-height: 300px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--rule);
+  background:
+    linear-gradient(rgb(21 24 22 / 5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(21 24 22 / 5%) 1px, transparent 1px),
+    var(--paper);
+  background-size: 32px 32px;
+}
+
+.sail-signal-shell svg {
+  display: block;
+  width: 100%;
+  min-height: 300px;
+}
+
+.sail-evidence-spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  transform: translateX(-1px);
+  background: var(--motion);
+  box-shadow: 0 0 0 3px rgb(255 90 31 / 12%);
+  pointer-events: none;
+}
+
+.sail-frame-readouts {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-bottom: 1px solid var(--rule);
+}
+
+.sail-frame-readout {
+  min-width: 0;
+  padding: 9px 11px;
+  border-right: 1px solid var(--rule);
+}
+
+.sail-frame-readout:last-child {
+  border-right: 0;
+}
+
+.sail-frame-readout span,
+.sail-frame-readout small {
+  display: block;
+  overflow: hidden;
+  color: var(--graphite);
+  font-family: var(--utility);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.sail-frame-readout b {
+  display: block;
+  margin: 3px 0;
+  overflow: hidden;
+  font-family: var(--display);
+  font-size: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sail-availability-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 8px;
+  gap: 5px;
+}
+
+.sail-availability {
+  min-height: 58px;
+  padding: 7px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--chalk);
+}
+
+.sail-availability b,
+.sail-availability span,
+.sail-availability small {
+  display: block;
+}
+
+.sail-availability b {
+  font-family: var(--display);
+  font-size: 15px;
+}
+
+.sail-availability span,
+.sail-availability small {
+  color: var(--graphite);
+  font-family: var(--utility);
+  font-size: 8px;
+}
+
+.sail-availability[data-status="missing"] {
+  border-style: dashed;
+  background: repeating-linear-gradient(135deg, var(--chalk), var(--chalk) 6px, var(--ceramic) 6px, var(--ceramic) 12px);
+}
+
+.sail-availability[data-status="simulation_only"] {
+  border-color: color-mix(in srgb, var(--diagnostic) 45%, var(--rule));
+}
+
+.sail-heatmap {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+}
+
+.sail-heatmap-row {
+  display: grid;
+  grid-template-columns: minmax(105px, 1fr) 70px;
+  align-items: center;
+  gap: 8px;
+}
+
+.sail-heatmap-row span {
+  overflow: hidden;
+  font-family: var(--utility);
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sail-heatmap-cell {
+  display: grid;
+  min-height: 27px;
+  place-items: center;
+  border-radius: 3px;
+  color: white;
+  font-family: var(--utility);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.sail-heatmap-cell.is-missing {
+  border: 1px dashed var(--rule-dark);
+  background: var(--chalk) !important;
+  color: var(--graphite);
+}
+
+.sail-receipt-facts,
+.sail-minimum-evidence {
+  margin: 0;
+  padding: 10px 12px;
+  border-top: 1px solid var(--rule);
+}
+
+.sail-receipt-facts div,
+.sail-minimum-evidence div {
+  display: grid;
+  grid-template-columns: minmax(90px, 0.3fr) minmax(0, 1fr);
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--utility);
+  font-size: 9px;
+}
+
+.sail-receipt-facts dd,
+.sail-minimum-evidence dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.sail-causal-section {
+  position: relative;
+  padding: 10px;
+  border-top: 1px solid var(--rule-dark);
+}
+
+.sail-causal-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  z-index: 0;
+  background: var(--motion);
+  opacity: 0.32;
+}
+
+.sail-section-heading,
+.sail-causal-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.sail-causal-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr) minmax(320px, 0.9fr);
+  gap: 10px;
+}
+
+.sail-graph-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--rule);
+}
+
+.sail-graph-pair figure {
+  min-width: 0;
+  margin: 0;
+  background: var(--carbon);
+}
+
+.sail-graph-pair img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 11;
+  object-fit: contain;
+}
+
+.sail-graph-pair figcaption {
+  padding: 7px 9px;
+  color: white;
+  font-family: var(--utility);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.sail-revision-strip {
+  display: flex;
+  align-items: end;
+  gap: 3px;
+  min-height: 84px;
+  padding: 10px;
+  overflow-x: auto;
+}
+
+.sail-revision {
+  display: grid;
+  min-width: 36px;
+  place-items: end center;
+  border-bottom: 3px solid var(--diagnostic);
+  color: var(--graphite);
+  font-family: var(--utility);
+  font-size: 8px;
+}
+
+.sail-debt-meter {
+  position: relative;
+  height: 30px;
+  margin: 14px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--ceramic);
+}
+
+.sail-debt-meter i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.sail-debt-meter #sail-debt-before {
+  background: var(--motion);
+  opacity: 0.35;
+}
+
+.sail-debt-meter #sail-debt-after {
+  top: 8px;
+  bottom: 8px;
+  background: var(--diagnostic);
+}
+
+.sail-debt-components,
+.sail-intervention-list,
+.sail-posterior-list,
+.sail-gate-matrix {
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+}
+
+.sail-debt-component,
+.sail-intervention,
+.sail-posterior,
+.sail-gate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--chalk);
+}
+
+.sail-debt-component small,
+.sail-intervention small,
+.sail-posterior small,
+.sail-gate small {
+  display: block;
+  color: var(--graphite);
+  font-size: 9px;
+}
+
+.sail-debt-component em,
+.sail-intervention em,
+.sail-posterior em,
+.sail-gate em {
+  font-family: var(--utility);
+  font-size: 9px;
+  font-style: normal;
+}
+
+.sail-intervention.is-selected {
+  border-color: var(--motion);
+  background: var(--motion-soft);
+}
+
+.sail-verdict-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  padding: 0 10px 10px;
+}
+
+.sail-posterior-list,
+.sail-gate-matrix {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sail-posterior[data-verdict="not_evaluable"],
+.sail-gate[data-allowed="false"] {
+  border-style: dashed;
+}
+
+.sail-gate[data-allowed="true"] {
+  border-color: color-mix(in srgb, var(--ok) 55%, var(--rule));
+  background: var(--ok-soft);
+}
+
+.sail-twin-card details {
+  margin: 0 10px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+.sail-twin-card summary {
+  padding: 9px;
+  cursor: pointer;
+  font-family: var(--utility);
+  font-size: 10px;
+}
+
+.sail-publication-card {
+  margin: 0 10px 10px;
+  padding: 14px;
+}
+
+.sail-figure-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.sail-figure-link {
+  display: grid;
+  min-height: 88px;
+  align-content: space-between;
+  padding: 10px;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  background: var(--chalk);
+  color: inherit;
+  text-decoration: none;
+}
+
+.sail-figure-link b {
+  font-family: var(--display);
+  font-size: 19px;
+}
+
+.sail-figure-link code {
+  overflow: hidden;
+  color: var(--graphite);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sail-proof-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+}
+
+.sail-proof-token {
+  padding: 5px 8px;
+  border: 1px solid var(--rule-dark);
+  border-radius: 999px;
+  background: var(--paper);
+  font-family: var(--utility);
+  font-size: 8px;
+}
+
+.sail-empty {
+  margin: 18px;
+  padding: 24px;
+  border: 1px dashed var(--rule-dark);
+  background: var(--chalk);
+}
+
+.sail-empty b {
+  font-family: var(--display);
+  font-size: 24px;
+}
+
+.sail-empty p {
+  margin-bottom: 0;
+  color: var(--graphite);
+}
+
+@media (max-width: 1080px) {
+  .sail-investigation-grid,
+  .sail-verdict-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sail-causal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sail-graph-card {
+    grid-column: 1 / -1;
+  }
+
+  .sail-frame-readouts,
+  .sail-availability-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .sail-heading {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .sail-heading p,
+  .sail-heading-status code,
+  .sail-rank-band header p,
+  .sail-section-heading p,
+  .sail-publication-card header p {
+    display: none;
+  }
+
+  .sail-heading-status b {
+    max-width: 96px;
+    padding-inline: 8px;
+    line-height: 1.05;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .sail-authority-notice {
+    align-items: flex-start;
+    padding: 10px 12px;
+  }
+
+  .sail-rank-band {
+    padding: 12px 10px 9px;
+  }
+
+  .sail-rank-band > header,
+  .sail-section-heading,
+  .sail-publication-card > header {
+    display: block;
+  }
+
+  .sail-episode-list {
+    grid-auto-columns: 148px;
+  }
+
+  .sail-investigation-grid,
+  .sail-causal-section,
+  .sail-verdict-grid {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .sail-trace-card,
+  .sail-residual-card,
+  .sail-graph-card,
+  .sail-debt-card,
+  .sail-intervention-card,
+  .sail-posterior-card,
+  .sail-twin-card,
+  .sail-publication-card {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .sail-signal-shell,
+  .sail-signal-shell svg {
+    min-height: 250px;
+  }
+
+  .sail-phase-readout {
+    grid-template-columns: auto auto auto auto;
+  }
+
+  .sail-phase-readout span:nth-of-type(3),
+  #sail-time {
+    display: none;
+  }
+
+  .sail-phase-segment {
+    color: transparent;
+    font-size: 0;
+  }
+
+  .sail-frame-readouts,
+  .sail-availability-grid,
+  .sail-posterior-list,
+  .sail-gate-matrix {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sail-causal-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sail-graph-card {
+    grid-column: auto;
+  }
+
+  .sail-graph-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sail-figure-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sail-publication-card {
+    margin: 0 8px 8px;
+  }
 }
 
 .orchestrator-view {

@@ -1,0 +1,134 @@
+{
+  "schema_version": "sim2claw.sail_studio_observatory_config.v1",
+  "campaign_id": "sail-studio-observatory-v1",
+  "evidence_root": "outputs/sail/retired-bg-v1/evidence",
+  "determinism": {
+    "generated_at": "2026-07-22T12:30:00-05:00"
+  },
+  "ranking": {
+    "selected_episode_count": 7,
+    "development_episode_count": 11,
+    "retain_lower_signal_episodes": true,
+    "omit_only_explicit_no_signal": true
+  },
+  "source_bindings": {
+    "evidence_catalog": {
+      "path": "outputs/sail/retired-bg-v1/evidence/catalog.json",
+      "sha256": "e79dc7a3e6f684644fa18d77e5a1a4f11126829176a14e3c7c247d3daec02ed2"
+    },
+    "evidence_receipt": {
+      "path": "outputs/sail/retired-bg-v1/evidence/receipt.json",
+      "sha256": "50f8eae5244ded8092ecd4921bab5667f910c788121d2c7cd95fbd918984b563"
+    },
+    "evidence_omissions": {
+      "path": "outputs/sail/retired-bg-v1/evidence/omissions.json",
+      "sha256": "32dc9b7fc63bed6f403888cb3185731efb6f46f3a169dd06a233aa91d92c98b2"
+    },
+    "residual_receipt": {
+      "path": "outputs/sail/retired-bg-v1/residuals/receipt.json",
+      "sha256": "4022b6a1f11b326cdc980f022d2c1fd6eaaa279ab28ae152ac4b4675326c6203"
+    },
+    "residual_heatmap": {
+      "path": "outputs/sail/retired-bg-v1/residuals/heatmap.json",
+      "sha256": "f7f7a281e41c76adeca4108dc3d82bb8ec0d6bb0cc38b839c0179e119ede3e49"
+    },
+    "residual_heatmap_svg": {
+      "path": "outputs/sail/retired-bg-v1/residuals/heatmap.svg",
+      "sha256": "4af7b75b76c60bab4498af619a0161c21793008ec501b11fc1cdb91a14b28dae"
+    },
+    "residual_drilldowns": {
+      "path": "outputs/sail/retired-bg-v1/residuals/episode_drilldowns.json",
+      "sha256": "9714c9b508dec122ac124b8b09b56c7050a25c32cc144e5a98eced4db4b710be"
+    },
+    "belief_receipt": {
+      "path": "outputs/sail/retired-bg-v1/belief-graph/receipt.json",
+      "sha256": "da1ad4de3f3b1139376bda47e45d0b14f4805d25035e7809d007a7ee6f2aee59"
+    },
+    "belief_graph": {
+      "path": "outputs/sail/retired-bg-v1/belief-graph/belief_graph.json",
+      "sha256": "a5cf6e19214fe4406f798189e30c9fb3f9dbbe1fb662130d3904b1e55486c4e0"
+    },
+    "belief_revision_timeline": {
+      "path": "outputs/sail/retired-bg-v1/belief-graph/revision_timeline.json",
+      "sha256": "170c2f2929937009080847c687e726ccfd4114db694b17c29d432db280a194b5"
+    },
+    "belief_before_svg": {
+      "path": "outputs/sail/retired-bg-v1/belief-graph/graph_before.svg",
+      "sha256": "d3bb8d0844cd3be41a50e622139fd43fcffdae795f43231d5a13e40fff113048"
+    },
+    "belief_after_svg": {
+      "path": "outputs/sail/retired-bg-v1/belief-graph/graph_after.svg",
+      "sha256": "16f60ada65e94eda5fd7f94ed0d4d988a132ac9e25a5bacacda97d9c63ce7b21"
+    },
+    "structural_surprise_receipt": {
+      "path": "outputs/sail/retired-bg-v1/structural-surprise/receipt.json",
+      "sha256": "8738ec571193a02e7b5ef753e7becddae3f0ee32462f564290c435faf599763c"
+    },
+    "structural_surprise": {
+      "path": "outputs/sail/retired-bg-v1/structural-surprise/structural_surprise.json",
+      "sha256": "ce8aae9a9f68a9958fd50e2efd0cd8b4bd20e7dab41d91b5d2369ba206912f54"
+    },
+    "loop_closure_receipt": {
+      "path": "outputs/sail/retired-bg-v1/loop-closure/receipt.json",
+      "sha256": "9f7bef6aba4d233e5d727c3015f328b715b2c9660828cb7d4c3f7b89f137c64a"
+    },
+    "loop_closure": {
+      "path": "outputs/sail/retired-bg-v1/loop-closure/sparse_loop_closure.json",
+      "sha256": "249c93e4cb077ca545e4012a553dd72081eda0b2e871d21c48e639fd3a420fe0"
+    },
+    "mechanism_receipt": {
+      "path": "outputs/sail/retired-bg-v1/mechanisms/receipt.json",
+      "sha256": "7468813ffc5d82ce07e74f1277f4cd2ded61468ab6f2ee1a2bc38a77330817b9"
+    },
+    "retained_particles": {
+      "path": "outputs/sail/retired-bg-v1/mechanisms/retained_particles.json",
+      "sha256": "c7fa9b0fe616ba4e4afe9fe8007b4073e67ce93ccbbb03629aec3f977e1d8fd3"
+    },
+    "invariance_receipt": {
+      "path": "outputs/sail/retired-bg-v1/invariance/receipt.json",
+      "sha256": "16eb4ded87e476f48ce60be49fb2fa970983f0cdbf4e50b6b1953c74c4c1c753"
+    },
+    "retained_invariance": {
+      "path": "outputs/sail/retired-bg-v1/invariance/retained_invariance.json",
+      "sha256": "6d02eba1e18c1566aaf6113c3a60b9e6122dc82a0dc8d05704a9a06de4654e88"
+    },
+    "acquisition_receipt": {
+      "path": "outputs/sail/retired-bg-v1/acquisition/receipt.json",
+      "sha256": "9203137c954da58e1e0bbd3eaaf6674e0bb263af717abf86efe48e91fa322db6"
+    },
+    "acquisition_ranking": {
+      "path": "outputs/sail/retired-bg-v1/acquisition/acquisition_ranking.json",
+      "sha256": "a59b2a9b242c35425515973edee9807a0dfdd7c8bd4daa385b12b1cf71e7fb56"
+    },
+    "prospective_receipt": {
+      "path": "outputs/sail/prospective-sim-v1/receipt.json",
+      "sha256": "1054dde57e738668d4055841396b9f786abeec700f165d99212b15c9db30ac31"
+    },
+    "prospective_experiment": {
+      "path": "outputs/sail/prospective-sim-v1/prospective_experiment.json",
+      "sha256": "01972714591ec706033a114446509443c3f0626d4ea5362f41d9e876161debf5"
+    },
+    "twin_capability_receipt": {
+      "path": "outputs/sail/twin-capability-v1/receipt.json",
+      "sha256": "031f8b09f4f6555c0f0034aa3d10c11cbad0f7e5337c90d33ba25a5728c099b8"
+    },
+    "twin_capability_report": {
+      "path": "outputs/sail/twin-capability-v1/capability_report.json",
+      "sha256": "db5f568fefbaf69d48507da480296301de3d147a76c79a7bf6c0fba29591357a"
+    },
+    "ranked_gallery": {
+      "path": "src/sim2claw/studio_web/publication/pawn_bg_ranked_grasp_v1/gallery_manifest.json",
+      "sha256": "bb1c0c146b34cd881cca264a81a6aadc36f6bf814b3afb5b5ffca826161f9442"
+    }
+  },
+  "authority": {
+    "physical_capture": false,
+    "source_mutation": false,
+    "training_admission": false,
+    "policy_selection": false,
+    "simulator_promotion": false,
+    "physical_transfer": false,
+    "robot_motion": false,
+    "physical_authority": false
+  }
+}

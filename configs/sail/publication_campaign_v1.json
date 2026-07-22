@@ -1,0 +1,90 @@
+{
+  "schema_version": "sim2claw.sail_publication_campaign.v1",
+  "campaign_id": "sail-clawloop-phase1-publication-v1",
+  "frozen_at": "2026-07-22T14:15:00-05:00",
+  "source_bindings": {
+    "golden_registry": {"path": "tests/fixtures/sail/golden_cases_v1.json", "sha256": "a727a189285703dde745991979f856ca23ed1fa47b8cd08c071e6c8ba09ca514"},
+    "ci_tiers": {"path": "configs/sail/ci_tiers_v2.json", "sha256": "21fe8a7baae51ca2d24974f4c40bee85d161d2377d5f11fd0f0bd6ef83984e74"},
+    "benchmark_scorecard": {"path": "outputs/sail/seeded-benchmark-v1/scorecard.json", "sha256": "11370ae8ed4876d88cee654baa77676e8b6f7cc2c6381a57f459e5fc7fb43367"},
+    "benchmark_sealed": {"path": "outputs/sail/seeded-benchmark-v1/sealed.json", "sha256": "9b9b36cce3465ad276f94fd1e0a23b99280e86699dfe2c7f829dc486b65e812f"},
+    "benchmark_receipt": {"path": "outputs/sail/seeded-benchmark-v1/receipt.json", "sha256": "a608e86df348196c01475e7d8387e6bfa450d58725a7fd21908224483ad9028d"},
+    "agent_summary": {"path": "outputs/sail/inspect-campaign-v1/campaign_summary.json", "sha256": "d01351095daf9a1ca7a32e245fba5f30b3e505b8ad39f8eb7199f04825a304a9"},
+    "agent_receipt": {"path": "outputs/sail/inspect-campaign-v1/receipt.json", "sha256": "83726e410257e86ad4263fccbc81498d7cbd4b98e0f5979437fff8f02cd38531"},
+    "retrospective_case": {"path": "outputs/sail/retired-workcell-case-v1/retrospective_case.json", "sha256": "df0985e767d7d7a9501642f0149aad890e83ba7f53f38a82469acaa3972ed7d0"},
+    "retrospective_receipt": {"path": "outputs/sail/retired-workcell-case-v1/receipt.json", "sha256": "e455ef16e16cf8d9043caed8c8b01cd9454b609c722ec607c47160f71baa0e95"},
+    "prospective_experiment": {"path": "outputs/sail/prospective-sim-v1/prospective_experiment.json", "sha256": "01972714591ec706033a114446509443c3f0626d4ea5362f41d9e876161debf5"},
+    "phase2_prediction_freeze": {"path": "outputs/sail/prospective-sim-v1/phase2_prediction_freeze.json", "sha256": "73510a0ab4e4d840576ea0de364e0a8f08064831fd2820ce8005de2b179baa4c"},
+    "prospective_receipt": {"path": "outputs/sail/prospective-sim-v1/receipt.json", "sha256": "1054dde57e738668d4055841396b9f786abeec700f165d99212b15c9db30ac31"},
+    "twin_report": {"path": "outputs/sail/twin-capability-v1/capability_report.json", "sha256": "db5f568fefbaf69d48507da480296301de3d147a76c79a7bf6c0fba29591357a"},
+    "twin_certificate": {"path": "outputs/sail/twin-capability-v1/current_capability_certificate.json", "sha256": "aed30c62f08cd069ba946009be4290a1b96ba083134240c37d94f31cf37956f9"},
+    "twin_receipt": {"path": "outputs/sail/twin-capability-v1/receipt.json", "sha256": "031f8b09f4f6555c0f0034aa3d10c11cbad0f7e5337c90d33ba25a5728c099b8"},
+    "policy_report": {"path": "outputs/sail/policy-flywheel-v1/policy_flywheel_report.json", "sha256": "3dd24d6f3057b5dd46b95c4da41da853684a701fe0ccfccdec4cdf8cb0fab4eb"},
+    "policy_receipt": {"path": "outputs/sail/policy-flywheel-v1/receipt.json", "sha256": "3d01c39088c07bb8e3f7279730113686bebbd5f170e112521e2430a2376bbfad"},
+    "policy_run_log": {"path": "docs/run-logs/2026-07-22-sail-policy-flywheel.md", "sha256": "3fe6c9c852f337e6a17520dd810c3d02cede9fc8490f5996007be803d208bb51"},
+    "studio_manifest": {"path": "outputs/sail/studio-observatory-v1/studio_observatory.json", "sha256": "127b2faa0fbfcff3b946184920b3c3d324d5bcc62ff6745940499be4f0bf0422"},
+    "studio_receipt": {"path": "outputs/sail/studio-observatory-v1/receipt.json", "sha256": "b0c8e98f3219e572a274d008c4a3c4d0e3fdad3bb220abf1f998d2864084b1d6"},
+    "structural_surprise": {"path": "outputs/sail/retired-bg-v1/structural-surprise/structural_surprise.json", "sha256": "ce8aae9a9f68a9958fd50e2efd0cd8b4bd20e7dab41d91b5d2369ba206912f54"},
+    "structural_surprise_receipt": {"path": "outputs/sail/retired-bg-v1/structural-surprise/receipt.json", "sha256": "8738ec571193a02e7b5ef753e7becddae3f0ee32462f564290c435faf599763c"},
+    "loop_closure": {"path": "outputs/sail/retired-bg-v1/loop-closure/sparse_loop_closure.json", "sha256": "249c93e4cb077ca545e4012a553dd72081eda0b2e871d21c48e639fd3a420fe0"},
+    "loop_closure_receipt": {"path": "outputs/sail/retired-bg-v1/loop-closure/receipt.json", "sha256": "9f7bef6aba4d233e5d727c3015f328b715b2c9660828cb7d4c3f7b89f137c64a"},
+    "phase2_operator_packet": {"path": "configs/sail/phase2_operator_packet_v1.json", "sha256": "f79fd55bd00761b2920c2f4db9285e5280bab7ebcd44175e27e285959738f7c4"}
+  },
+  "research_questions": [
+    {"id": "RQ1", "question": "Does SAIL recover missing mechanism structure more accurately than parameter-only or sequential calibration?", "primary_metric": "mechanism_family_top1_accuracy"},
+    {"id": "RQ2", "question": "Does loop closure correct historical compensation with less recomputation than full-batch refitting?", "primary_metric": "graph_recomputation_cost"},
+    {"id": "RQ3", "question": "Does mechanism-specific invariance reduce false promotion?", "primary_metric": "false_promotion_rate"},
+    {"id": "RQ4", "question": "Does structural acquisition reduce probes or evaluations to threshold?", "primary_metric": "probes_to_threshold"},
+    {"id": "RQ5", "question": "Do governed coding or reasoning agents improve recovery or implementation efficiency over the deterministic system?", "primary_metric": "mechanism_family_top1_accuracy"},
+    {"id": "RQ6", "question": "Does TwinWorthiness predict when simulator data generation or policy ranking is harmful?", "primary_metric": "false_promotion_rate"}
+  ],
+  "ablation_ids": [
+    "no_residual_phase_alignment",
+    "no_compensation_debt",
+    "no_mechanism_plugins",
+    "no_influence_discovery",
+    "no_invariance",
+    "no_loop_closure",
+    "no_structural_acquisition",
+    "no_twinworthiness_gate",
+    "deterministic_only",
+    "agent_only_vs_deterministic_plus_agent"
+  ],
+  "statistics": {
+    "unit": "paired_seeded_case",
+    "retained_unit": "whole_episode",
+    "bootstrap_seed": 2026072217,
+    "bootstrap_replicates": 10000,
+    "confidence_level": 0.95,
+    "primary_metrics": [
+      "mechanism_family_top1_accuracy",
+      "influence_f1",
+      "graph_recomputation_cost",
+      "probes_to_threshold",
+      "false_promotion_rate"
+    ],
+    "effect_sizes": ["paired_risk_difference", "matched_rank_biserial"],
+    "secondary_correction": "holm_bonferroni",
+    "missing_result_policy": "not_evaluable_never_zero",
+    "provider_pooling_requires_equal_transport_and_model_identity": true
+  },
+  "paper_slots": [
+    {"id": "FIG-01", "title": "ClawLoop architecture and authority boundary", "phase1_status": "available"},
+    {"id": "FIG-02", "title": "SAIL algorithm and belief graph", "phase1_status": "available"},
+    {"id": "FIG-03", "title": "Structural benchmark recovery and probe efficiency", "phase1_status": "available"},
+    {"id": "FIG-04", "title": "Compensation debt and loop closure", "phase1_status": "available"},
+    {"id": "FIG-05", "title": "Retained calibration timeline and residual field", "phase1_status": "available"},
+    {"id": "FIG-06", "title": "TwinWorthiness ladder and current verdict", "phase1_status": "available"},
+    {"id": "FIG-07", "title": "Governed agent comparison with cost and runtime", "phase1_status": "available_terminal_negative"},
+    {"id": "TAB-08", "title": "Related-workcell warm-start replication", "phase1_status": "unavailable_future_phase2"},
+    {"id": "TAB-09", "title": "Downstream policy result", "phase1_status": "available_terminal_negative_optional"}
+  ],
+  "authority": {
+    "sealed_access_by_agent": false,
+    "training_admission": false,
+    "policy_selection": false,
+    "simulator_promotion": false,
+    "physical_capture": false,
+    "robot_motion": false,
+    "physical_transfer": false
+  }
+}

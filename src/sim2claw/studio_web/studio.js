@@ -49,6 +49,11 @@ const state = {
   orchestratorRequestActive: false,
   orchestratorRequestError: null,
   orchestratorFrameHash: null,
+  sail: null,
+  sailError: null,
+  sailFetchActive: false,
+  sailSelectedEpisodeId: null,
+  sailFrameIndex: 0,
 };
 
 const elements = {
@@ -62,6 +67,46 @@ const elements = {
   liveStrip: document.querySelector("#live-strip"),
   liveStripTitle: document.querySelector("#live-strip-title"),
   liveStripPhase: document.querySelector("#live-strip-phase"),
+  sailStatus: document.querySelector("#sail-status"),
+  sailReceipt: document.querySelector("#sail-receipt"),
+  sailRankingNote: document.querySelector("#sail-ranking-note"),
+  sailEpisodeList: document.querySelector("#sail-episode-list"),
+  sailEpisodeProof: document.querySelector("#sail-episode-proof"),
+  sailTraceHeading: document.querySelector("#sail-trace-heading"),
+  sailTraceSummary: document.querySelector("#sail-trace-summary"),
+  sailOpenReplay: document.querySelector("#sail-open-replay"),
+  sailFrameIndex: document.querySelector("#sail-frame-index"),
+  sailPhase: document.querySelector("#sail-phase"),
+  sailTime: document.querySelector("#sail-time"),
+  sailPhaseRail: document.querySelector("#sail-phase-rail"),
+  sailScrubber: document.querySelector("#sail-scrubber"),
+  sailSignalPlot: document.querySelector("#sail-signal-plot"),
+  sailEvidenceSpine: document.querySelector("#sail-evidence-spine"),
+  sailFrameReadouts: document.querySelector("#sail-frame-readouts"),
+  sailAvailabilityGrid: document.querySelector("#sail-availability-grid"),
+  sailHeatmap: document.querySelector("#sail-heatmap"),
+  sailResidualStatus: document.querySelector("#sail-residual-status"),
+  sailResidualFacts: document.querySelector("#sail-residual-facts"),
+  sailGraphDelta: document.querySelector("#sail-graph-delta"),
+  sailGraphBefore: document.querySelector("#sail-graph-before"),
+  sailGraphAfter: document.querySelector("#sail-graph-after"),
+  sailRevisionStrip: document.querySelector("#sail-revision-strip"),
+  sailDebtScore: document.querySelector("#sail-debt-score"),
+  sailDebtBoundary: document.querySelector("#sail-debt-boundary"),
+  sailDebtBefore: document.querySelector("#sail-debt-before"),
+  sailDebtAfter: document.querySelector("#sail-debt-after"),
+  sailDebtComponents: document.querySelector("#sail-debt-components"),
+  sailSelectedProbe: document.querySelector("#sail-selected-probe"),
+  sailInterventionList: document.querySelector("#sail-intervention-list"),
+  sailInvarianceCount: document.querySelector("#sail-invariance-count"),
+  sailPosteriorList: document.querySelector("#sail-posterior-list"),
+  sailTwinLevel: document.querySelector("#sail-twin-level"),
+  sailGateMatrix: document.querySelector("#sail-gate-matrix"),
+  sailMinimumEvidence: document.querySelector("#sail-minimum-evidence"),
+  sailFigureList: document.querySelector("#sail-figure-list"),
+  sailProofLegend: document.querySelector("#sail-proof-legend"),
+  sailEmpty: document.querySelector("#sail-empty"),
+  sailEmptyDetail: document.querySelector("#sail-empty-detail"),
   taskFilterList: document.querySelector("#task-filter-list"),
   taskFilterTemplate: document.querySelector("#task-filter-template"),
   railContext: document.querySelector("#rail-context"),
@@ -422,6 +467,384 @@ async function fetchCatalog({ initial = false } = {}) {
       text(elements.stageTitle, "Viewer unavailable");
       text(elements.stageSubtitle, "Start the studio server from this repository and reload.");
     }
+  }
+}
+
+function selectedSailEpisode() {
+  return state.sail?.episodes?.find((episode) => episode.id === state.sailSelectedEpisodeId) || null;
+}
+
+function sailVector(value, digits = 2) {
+  if (!Array.isArray(value)) return "Missing";
+  return value.map((item) => Number(item).toFixed(digits)).join(" · ");
+}
+
+function sailScalar(value, unit = "", digits = 2) {
+  return Number.isFinite(Number(value)) ? `${Number(value).toFixed(digits)}${unit}` : "Missing";
+}
+
+function sailNorm(left, right) {
+  if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return null;
+  return Math.sqrt(left.reduce((total, value, index) => total + (Number(value) - Number(right[index])) ** 2, 0));
+}
+
+function sailElement(tag, className, value) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (value != null) text(node, value);
+  return node;
+}
+
+function sailDlRow(term, value) {
+  const wrapper = document.createElement("div");
+  wrapper.append(sailElement("dt", "", term), sailElement("dd", "", value));
+  return wrapper;
+}
+
+function renderSailInventory() {
+  if (!state.sail) return;
+  elements.sailEpisodeList.replaceChildren();
+  state.sail.episodes.forEach((episode) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "sail-episode-button";
+    button.dataset.ranking = episode.ranking_status;
+    button.dataset.episodeId = episode.id;
+    button.setAttribute("role", "option");
+    button.setAttribute("aria-selected", String(episode.id === state.sailSelectedEpisodeId));
+    button.classList.toggle("is-active", episode.id === state.sailSelectedEpisodeId);
+    const rank = sailElement("small", "", episode.ranking_status === "ranked_strongest_partial" ? `RANK ${String(episode.rank).padStart(2, "0")}` : "LOWER SIGNAL · RETAINED");
+    const move = sailElement("b", "", episode.move);
+    const outcome = sailElement("em", "", episode.relative_success_label);
+    button.append(rank, move, outcome);
+    button.addEventListener("click", () => selectSailEpisode(episode.id));
+    elements.sailEpisodeList.append(button);
+  });
+  const ranking = state.sail.ranking;
+  text(
+    elements.sailRankingNote,
+    `${ranking.selected_episode_count} strongest lead · ${ranking.lower_signal_retained_count} lower-signal partials retained · ${ranking.omitted_episode_count} omitted`,
+  );
+}
+
+function sailSvgNode(tag, attributes = {}) {
+  const node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  Object.entries(attributes).forEach(([name, value]) => node.setAttribute(name, String(value)));
+  return node;
+}
+
+function sailSeriesValues(episode) {
+  const channels = episode.channels;
+  const pawn = channels.simulated_pawn_rise_m;
+  const contact = channels.simulated_pawn_contact_count;
+  return [
+    { label: "ACTION · elbow", color: "#ff5a1f", values: channels.action.map((row) => Number(row[2])) },
+    { label: "MEASURED · elbow", color: "#6b716d", values: channels.mapped_measured_joint.map((row) => Number(row[2])) },
+    { label: "SIM · elbow", color: "#145c70", values: channels.selected_simulated_joint.map((row) => Number(row[2])) },
+    {
+      label: "EE GAP · norm",
+      color: "#8a4d95",
+      values: channels.selected_simulated_end_effector_m.map((row, index) => sailNorm(row, channels.mapped_measured_end_effector_m[index])),
+    },
+    { label: "APERTURE · residual", color: "#9a6713", values: channels.simulated_aperture_radian.map((value, index) => Number(value) - Number(channels.mapped_measured_joint[index][5])) },
+    { label: "PAWN · rise", color: "#0b6847", values: Array.isArray(pawn) ? pawn.map(Number) : null },
+    { label: "CONTACT · count", color: "#a62b2b", values: Array.isArray(contact) ? contact.map(Number) : null },
+  ];
+}
+
+function renderSailSignalPlot(episode) {
+  const svg = elements.sailSignalPlot;
+  svg.replaceChildren();
+  const width = 960;
+  const height = 300;
+  const left = 126;
+  const right = 14;
+  const laneHeight = 38;
+  const series = sailSeriesValues(episode);
+  series.forEach((row, lane) => {
+    const yTop = 12 + lane * laneHeight;
+    const label = sailSvgNode("text", { x: 8, y: yTop + 19, fill: row.color, "font-size": 10, "font-family": "ui-monospace, monospace" });
+    label.textContent = row.label;
+    svg.append(label);
+    svg.append(sailSvgNode("line", { x1: left, x2: width - right, y1: yTop + 18, y2: yTop + 18, stroke: "#cdd2cf", "stroke-width": 1 }));
+    if (!Array.isArray(row.values) || !row.values.length || row.values.every((value) => !Number.isFinite(value))) {
+      const missing = sailSvgNode("text", { x: left + 8, y: yTop + 22, fill: "#6b716d", "font-size": 10, "font-family": "ui-monospace, monospace" });
+      missing.textContent = "MISSING — not imputed";
+      svg.append(missing);
+      return;
+    }
+    const finite = row.values.filter(Number.isFinite);
+    const minimum = Math.min(...finite);
+    const maximum = Math.max(...finite);
+    const span = maximum - minimum || 1;
+    const points = row.values.map((value, index) => {
+      const x = left + index / Math.max(1, row.values.length - 1) * (width - left - right);
+      const normalized = Number.isFinite(value) ? (value - minimum) / span : 0.5;
+      const y = yTop + 31 - normalized * 26;
+      return `${x.toFixed(2)},${y.toFixed(2)}`;
+    }).join(" ");
+    svg.append(sailSvgNode("polyline", { points, fill: "none", stroke: row.color, "stroke-width": 1.6, "vector-effect": "non-scaling-stroke" }));
+  });
+}
+
+function renderSailPhaseRail(episode) {
+  elements.sailPhaseRail.replaceChildren();
+  episode.phase_intervals.forEach((interval) => {
+    const segment = sailElement("span", "sail-phase-segment", formatIdentifier(interval.phase));
+    const width = Number(interval.sample_count) / Number(episode.sample_count) * 100;
+    segment.style.width = `${width}%`;
+    segment.title = `${formatIdentifier(interval.phase)} · samples ${interval.start_sample_index_inclusive}–${interval.end_sample_index_exclusive - 1}`;
+    elements.sailPhaseRail.append(segment);
+  });
+}
+
+function renderSailAvailability(episode) {
+  elements.sailAvailabilityGrid.replaceChildren();
+  episode.availability.forEach((row) => {
+    const card = document.createElement("div");
+    card.className = "sail-availability";
+    card.dataset.status = row.status;
+    card.title = row.detail;
+    card.append(
+      sailElement("b", "", formatIdentifier(row.id)),
+      sailElement("span", "", formatIdentifier(row.status)),
+      sailElement("small", "", formatIdentifier(row.proof_class)),
+    );
+    elements.sailAvailabilityGrid.append(card);
+  });
+}
+
+function renderSailHeatmap(episode) {
+  elements.sailHeatmap.replaceChildren();
+  episode.residual_cells.forEach((cell) => {
+    const row = document.createElement("div");
+    row.className = "sail-heatmap-row";
+    const label = sailElement("span", "", formatIdentifier(cell.channel));
+    label.title = cell.channel;
+    const value = document.createElement("div");
+    value.className = "sail-heatmap-cell";
+    if (cell.rmse == null || cell.normalized_within_channel == null) {
+      value.classList.add("is-missing");
+      text(value, "MISSING");
+    } else {
+      const normalized = Math.max(0, Math.min(1, Number(cell.normalized_within_channel)));
+      value.style.background = `color-mix(in srgb, var(--motion) ${Math.round(18 + normalized * 78)}%, var(--diagnostic))`;
+      text(value, `${Number(cell.rmse).toPrecision(3)} ${cell.unit || ""}`);
+    }
+    row.append(label, value);
+    elements.sailHeatmap.append(row);
+  });
+  elements.sailResidualFacts.replaceChildren(
+    sailDlRow("Episode", episode.id),
+    sailDlRow("Action", episode.action_array_sha256),
+    sailDlRow("Residual receipt", state.sail.residuals.receipt_sha256),
+    sailDlRow("Missingness", "Explicit masks · no imputation"),
+  );
+}
+
+function renderSailFrame() {
+  const episode = selectedSailEpisode();
+  if (!episode) return;
+  const count = episode.sample_count;
+  const index = Math.max(0, Math.min(count - 1, Number(state.sailFrameIndex || 0)));
+  state.sailFrameIndex = index;
+  elements.sailScrubber.value = String(index);
+  text(elements.sailFrameIndex, `${index + 1} / ${count}`);
+  text(elements.sailPhase, formatIdentifier(episode.channels.phase[index]));
+  text(elements.sailTime, formatTime(Number(episode.channels.time_seconds[index])));
+  elements.sailEvidenceSpine.style.left = `${count > 1 ? index / (count - 1) * 100 : 0}%`;
+
+  const action = episode.channels.action[index];
+  const measured = episode.channels.mapped_measured_joint[index];
+  const simulated = episode.channels.selected_simulated_joint[index];
+  const measuredEe = episode.channels.mapped_measured_end_effector_m[index];
+  const simulatedEe = episode.channels.selected_simulated_end_effector_m[index];
+  const pawn = episode.channels.simulated_pawn_xyz_m?.[index];
+  const contact = episode.channels.simulated_pawn_contact_count?.[index];
+  const rise = episode.channels.simulated_pawn_rise_m?.[index];
+  const targetGap = episode.channels.simulated_pawn_to_target_m?.[index];
+  const values = [
+    ["Action", sailVector(action, 2), "rad · 6 joints"],
+    ["Measured / sim", `${sailScalar(measured?.[2], " rad")} / ${sailScalar(simulated?.[2], " rad")}`, "elbow flex"],
+    ["End-effector gap", sailScalar(sailNorm(measuredEe, simulatedEe) * 1000, " mm", 2), "mapped physical ↔ sim"],
+    ["Pawn / contact", pawn ? `${sailScalar(pawn[2], " m", 3)} · ${contact ?? 0} contacts` : "Missing", pawn ? "simulator only" : "no retained trace"],
+    ["Consequence", Number.isFinite(rise) ? `${sailScalar(rise * 1000, " mm", 1)} rise · ${sailScalar(targetGap * 1000, " mm", 1)} gap` : "Missing", `target ${episode.target_square.toUpperCase()} · simulator only`],
+  ];
+  elements.sailFrameReadouts.replaceChildren();
+  values.forEach(([label, value, note]) => {
+    const card = document.createElement("div");
+    card.className = "sail-frame-readout";
+    card.append(sailElement("span", "", label), sailElement("b", "", value), sailElement("small", "", note));
+    elements.sailFrameReadouts.append(card);
+  });
+}
+
+function renderSailEpisode() {
+  const episode = selectedSailEpisode();
+  if (!episode) return;
+  text(elements.sailEpisodeProof, episode.proof_label);
+  text(elements.sailTraceHeading, `${episode.move} · ${episode.ranking_status === "ranked_strongest_partial" ? `rank ${episode.rank}` : "lower-signal retained"}`);
+  text(elements.sailTraceSummary, `${episode.relative_success_summary}. Source actions remain byte-identical; physical contact, force, object trajectory, and consequence are unavailable.`);
+  elements.sailScrubber.max = String(Math.max(0, episode.sample_count - 1));
+  elements.sailScrubber.value = "0";
+  elements.sailOpenReplay.disabled = !episode.inspection;
+  text(elements.sailOpenReplay, episode.inspection ? "Open 3D replay" : "3D replay missing");
+  renderSailPhaseRail(episode);
+  renderSailSignalPlot(episode);
+  renderSailAvailability(episode);
+  renderSailHeatmap(episode);
+  renderSailFrame();
+}
+
+function selectSailEpisode(identifier) {
+  if (!state.sail?.episodes?.some((episode) => episode.id === identifier)) return;
+  state.sailSelectedEpisodeId = identifier;
+  state.sailFrameIndex = 0;
+  renderSailInventory();
+  renderSailEpisode();
+}
+
+function renderSailCausalViews() {
+  if (!state.sail) return;
+  const figures = state.sail.figures;
+  elements.sailGraphBefore.src = figures.belief_before.url;
+  elements.sailGraphAfter.src = figures.belief_after.url;
+  const belief = state.sail.belief_revision;
+  text(elements.sailGraphDelta, `${belief.before.node_count}→${belief.after.node_count} nodes · ${belief.before.edge_count}→${belief.after.edge_count} edges`);
+  elements.sailRevisionStrip.replaceChildren();
+  const maximumNodes = Math.max(...belief.timeline.map((row) => Number(row.node_count || 0)), 1);
+  belief.timeline.forEach((row) => {
+    const item = sailElement("span", "sail-revision", `R${row.revision}`);
+    item.style.height = `${28 + Number(row.node_count) / maximumNodes * 42}px`;
+    item.title = `${formatIdentifier(row.event_id)} · ${row.node_count} nodes · ${row.edge_count} edges · ${row.graph_digest}`;
+    elements.sailRevisionStrip.append(item);
+  });
+
+  const debt = state.sail.compensation_debt;
+  text(elements.sailDebtScore, `${Number(debt.score).toFixed(3)} · ${debt.triggered ? "triggered" : "clear"}`);
+  text(elements.sailDebtBoundary, debt.claim_boundary);
+  const before = Number(debt.before_sparse_closure || 0);
+  const after = Number(debt.after_sparse_closure || 0);
+  elements.sailDebtBefore.style.width = `${Math.min(100, before / Math.max(before, after, 1e-9) * 100)}%`;
+  elements.sailDebtAfter.style.width = `${Math.min(100, after / Math.max(before, after, 1e-9) * 100)}%`;
+  elements.sailDebtComponents.replaceChildren();
+  debt.components.forEach((component) => {
+    const card = document.createElement("div");
+    card.className = "sail-debt-component";
+    const copy = document.createElement("div");
+    copy.append(sailElement("b", "", formatIdentifier(component.id)), sailElement("small", "", component.available ? formatIdentifier(component.reason) : "Not evaluable · missing posterior evidence"));
+    card.append(copy, sailElement("em", "", component.available ? Number(component.weighted_contribution).toFixed(3) : "MISSING"));
+    elements.sailDebtComponents.append(card);
+  });
+
+  const interventions = state.sail.interventions;
+  text(elements.sailSelectedProbe, formatIdentifier(interventions.selected_simulator_probe));
+  elements.sailInterventionList.replaceChildren();
+  [...interventions.rows]
+    .sort((left, right) => Number(left.structural_rank || 999) - Number(right.structural_rank || 999))
+    .forEach((row) => {
+      const card = document.createElement("div");
+      card.className = "sail-intervention";
+      card.classList.toggle("is-selected", row.candidate_id === interventions.selected_simulator_probe);
+      const copy = document.createElement("div");
+      const signatures = Object.entries(row.predicted_signatures || {}).map(([name, value]) => `${formatIdentifier(name)} ${Number(value).toFixed(2)}`).join(" · ");
+      copy.append(sailElement("b", "", formatIdentifier(row.candidate_id)), sailElement("small", "", `${formatIdentifier(row.availability)} · ${signatures}`));
+      card.append(copy, sailElement("em", "", row.structural_rank ? `S${row.structural_rank} · ${Number(row.structural_score).toFixed(3)}` : "PLAN"));
+      elements.sailInterventionList.append(card);
+    });
+}
+
+function renderSailVerdicts() {
+  if (!state.sail) return;
+  const posterior = state.sail.posterior_and_invariance;
+  const invarianceByMechanism = new Map(posterior.invariance_results.map((row) => [row.mechanism_id, row]));
+  text(elements.sailInvarianceCount, `${posterior.invariance_counts.not_evaluable_count}/${posterior.invariance_counts.mechanism_count} not evaluable`);
+  elements.sailPosteriorList.replaceChildren();
+  posterior.particles.forEach((particle) => {
+    const verdict = invarianceByMechanism.get(particle.mechanism_id) || {};
+    const card = document.createElement("div");
+    card.className = "sail-posterior";
+    card.dataset.verdict = verdict.verdict || "missing";
+    const copy = document.createElement("div");
+    const missing = particle.missing_observables?.length ? `missing ${particle.missing_observables.map(formatIdentifier).join(", ")}` : formatIdentifier(verdict.reason || particle.status);
+    copy.append(sailElement("b", "", formatIdentifier(particle.family)), sailElement("small", "", missing));
+    card.append(copy, sailElement("em", "", formatIdentifier(verdict.verdict || particle.status)));
+    elements.sailPosteriorList.append(card);
+  });
+
+  const twin = state.sail.twin_worthiness;
+  text(elements.sailTwinLevel, twin.level);
+  elements.sailGateMatrix.replaceChildren();
+  Object.entries(twin.matrix).forEach(([name, decision]) => {
+    const card = document.createElement("div");
+    card.className = "sail-gate";
+    card.dataset.allowed = String(Boolean(decision.allowed));
+    const copy = document.createElement("div");
+    const detail = decision.allowed ? "Evaluator allowed · diagnostics only" : `${(decision.failed_gates || []).join(", ") || "gate closed"} · ${(decision.denial_codes || []).map(formatIdentifier).join(", ")}`;
+    copy.append(sailElement("b", "", formatIdentifier(name)), sailElement("small", "", detail));
+    card.append(copy, sailElement("em", "", decision.allowed ? "OPEN" : "DENIED"));
+    elements.sailGateMatrix.append(card);
+  });
+  elements.sailMinimumEvidence.replaceChildren();
+  Object.entries(twin.minimum_new_evidence).forEach(([gate, requirement]) => elements.sailMinimumEvidence.append(sailDlRow(gate, requirement)));
+}
+
+function renderSailPublication() {
+  if (!state.sail) return;
+  elements.sailFigureList.replaceChildren();
+  Object.entries(state.sail.figures).forEach(([name, figure]) => {
+    const link = document.createElement("a");
+    link.className = "sail-figure-link";
+    link.href = figure.url;
+    link.target = "_blank";
+    link.rel = "noreferrer";
+    link.append(sailElement("b", "", formatIdentifier(name)), sailElement("span", "", "Open bound SVG ↗"), sailElement("code", "", figure.sha256));
+    elements.sailFigureList.append(link);
+  });
+  elements.sailProofLegend.replaceChildren();
+  state.sail.proof_legend.forEach((row) => {
+    const token = sailElement("span", "sail-proof-token", `${row.label} · ${formatIdentifier(row.authority)}`);
+    token.title = row.id;
+    elements.sailProofLegend.append(token);
+  });
+}
+
+function renderSail() {
+  if (!elements.sailEmpty) return;
+  if (!state.sail) {
+    elements.sailEmpty.hidden = false;
+    text(elements.sailStatus, state.sailFetchActive ? "Loading evidence" : "Unavailable");
+    text(elements.sailReceipt, "no verified receipt");
+    text(elements.sailEmptyDetail, state.sailError || "Compile the bound observatory assets and reload Studio.");
+    return;
+  }
+  elements.sailEmpty.hidden = true;
+  text(elements.sailStatus, `${state.sail.episodes.length} episodes · read only`);
+  text(elements.sailReceipt, state.sail.receipt_sha256);
+  if (!selectedSailEpisode()) state.sailSelectedEpisodeId = state.sail.episodes[0]?.id || null;
+  renderSailInventory();
+  renderSailEpisode();
+  renderSailCausalViews();
+  renderSailVerdicts();
+  renderSailPublication();
+}
+
+async function fetchSailObservatory() {
+  if (state.sailFetchActive) return;
+  state.sailFetchActive = true;
+  renderSail();
+  try {
+    const response = await fetch("/api/sail-observatory", { cache: "no-store" });
+    const payload = await response.json();
+    if (!response.ok || !payload.available) throw new Error(payload.error || `SAIL observatory returned ${response.status}`);
+    state.sail = payload;
+    state.sailError = null;
+  } catch (error) {
+    state.sail = null;
+    state.sailError = String(error.message || error);
+  } finally {
+    state.sailFetchActive = false;
+    renderSail();
   }
 }
 
@@ -2552,7 +2975,7 @@ async function postOrchestrator(path, payload) {
 }
 
 function setActiveView(view, { updateRoute = true } = {}) {
-  const safeView = ["replay", "library", "calibration", "robots", "orchestrator", "record"].includes(view) ? view : "replay";
+  const safeView = ["replay", "sail", "library", "calibration", "robots", "orchestrator", "record"].includes(view) ? view : "replay";
   state.view = safeView;
   document.body.dataset.view = safeView;
   text(elements.mobileNavLabel, safeView === "orchestrator" ? "Tasks" : formatIdentifier(safeView));
@@ -2564,6 +2987,7 @@ function setActiveView(view, { updateRoute = true } = {}) {
   );
   window.Sim2ClawCalibration?.setActive(safeView === "calibration");
   if (safeView === "orchestrator") fetchOrchestrator();
+  if (safeView === "sail" && !state.sail && !state.sailFetchActive) fetchSailObservatory();
   document.querySelectorAll("[data-route]").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.route === safeView && button.classList.contains("view-button"));
   });
@@ -2598,6 +3022,10 @@ function restoreRoute() {
   }
   if (route === "library" || route === "episodes") {
     setActiveView("library", { updateRoute: false });
+    return;
+  }
+  if (route === "sail") {
+    setActiveView("sail", { updateRoute: false });
     return;
   }
   if (route === "robots") {
@@ -2727,6 +3155,19 @@ elements.jumpBack.addEventListener("click", () => performPrimaryStep(-1));
 elements.jumpForward.addEventListener("click", () => performPrimaryStep(1));
 elements.speed.addEventListener("click", cycleSpeed);
 elements.scrubber.addEventListener("input", () => seekFraction(Number(elements.scrubber.value) / 1000));
+elements.sailScrubber?.addEventListener("input", () => {
+  state.sailFrameIndex = Number(elements.sailScrubber.value);
+  renderSailFrame();
+});
+elements.sailOpenReplay?.addEventListener("click", () => {
+  const sailEpisode = selectedSailEpisode();
+  if (!sailEpisode?.inspection || !state.catalog) return;
+  const replay = state.catalog.episodes.find((episode) => episode.action_array_sha256 === sailEpisode.action_array_sha256);
+  if (!replay) return;
+  setActiveView("replay", { updateRoute: false });
+  selectTask(replay.task_id, { selectLatest: false, updateRoute: false });
+  selectEpisode(replay.id);
+});
 elements.replayModeSwitch.querySelectorAll("[data-replay-mode]").forEach((button) => {
   button.addEventListener("click", () => setReplayMode(button.dataset.replayMode));
 });
@@ -2909,6 +3350,7 @@ window.addEventListener("pagehide", () => stopLiveWorkspace({ useBeacon: true })
 initializeRecorderForm();
 fetchHealth().finally(() => {
   fetchCatalog({ initial: true }).then(restoreRoute);
+  fetchSailObservatory();
   fetchRecorder();
   fetchLiveWorkspaceStatus();
   fetchOrchestrator();

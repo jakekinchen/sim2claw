@@ -1,0 +1,28 @@
+{
+  "schema_version": "sim2claw.intervention.v1",
+  "intervention_id": "fixture-frequency-sweep-001",
+  "primary_question": "Is the residual caused by delay or load compliance?",
+  "competing_hypotheses": ["timing_delay", "load_compliance"],
+  "allowed_mutations": ["command_frequency"],
+  "frozen_action": {
+    "source_id": "fixture-action-001",
+    "shape": [2, 6],
+    "dtype": "float64",
+    "ordering": "time_joint_c",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "expected_signatures": {
+    "timing_delay": {"phase_shift_scales_with_frequency": true},
+    "load_compliance": {"pose_dependence_increases": true}
+  },
+  "predicted_information_gain": 0.6,
+  "estimated_cost": 2.0,
+  "required_observables": ["command_time", "joint_position"],
+  "evaluation_gates": [{"id": "action_identity", "required": true}],
+  "regression_gates": [{"id": "trace_guard", "maximum_relative_regression": 0.01}],
+  "budget": {"maximum_trials": 4, "maximum_wall_seconds": 60, "maximum_provider_calls": 0, "maximum_cost_usd": 0.0},
+  "stop_conditions": ["budget_exhausted", "one_hypothesis_dominates"],
+  "proof_class": "synthetic",
+  "authority": {"physical_capture": false, "robot_motion": false, "agent_can_promote": false},
+  "canonical_digest": "e8dad876e1058244ae0e5df3a03fb7ac486809e86be394cd279f759a55a948ed"
+}

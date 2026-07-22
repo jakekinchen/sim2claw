@@ -1,0 +1,24 @@
+{
+  "schema_version": "sim2claw.twin_worthiness_certificate.v1",
+  "certificate_id": "fixture-certificate-001",
+  "campaign_id": "fixture-campaign-001",
+  "identities": {
+    "evidence": ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"],
+    "graph": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "posterior": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "simulator": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "evaluator": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "policy_candidates": []
+  },
+  "gates": {
+    "TW-G0": {"status": "pass", "reason": "fixture identity passes", "evidence_ids": ["fixture-evidence-001"]},
+    "TW-G1": {"status": "not_evaluable", "reason": "trace fixture absent", "evidence_ids": []},
+    "TW-G2": {"status": "not_evaluable", "reason": "interaction fixture absent", "evidence_ids": []},
+    "TW-G3": {"status": "not_evaluable", "reason": "policy fixture absent", "evidence_ids": []},
+    "TW-G4": {"status": "not_evaluable", "reason": "invariance fixture absent", "evidence_ids": []}
+  },
+  "level": "TW-DIAGNOSTIC",
+  "authority": {"data_generation": false, "policy_selection": false, "physical_canary": false, "robot_motion": false},
+  "issued_at": "2026-07-21T22:30:00-05:00",
+  "canonical_digest": "e38887f2e4f524492419e194403a9ece828c9c1a8b4cb44410a67725ee7c817c"
+}

@@ -1,0 +1,104 @@
+{
+  "schema_version": "sim2claw.twin_capability_contract.v1",
+  "contract_id": "twin-capability-v1",
+  "purpose": "Operational, exact-scope, expiring capability envelope around the frozen TwinWorthinessCertificate.v1 scientific verdict. This is a new operational contract, not an in-place threshold change to the five frozen P1-01 scientific schemas.",
+  "evaluator_owner": "deterministic_sail_evaluator",
+  "learning_factory_verdict_owner": "learning_factory",
+  "base_contract": {
+    "path": "configs/sail/twin_worthiness_v1.json",
+    "sha256": "0e4828802daa54301779621a8af1ff48e99920a84d594fa12a6c72d5ede7c9e1"
+  },
+  "schema": {
+    "path": "configs/sail/schemas/twin_worthiness_capability_certificate_v1.json"
+  },
+  "required_scope_fields": [
+    "twin_id",
+    "workcell_id",
+    "task_id",
+    "distribution_id",
+    "task_contract_sha256",
+    "distribution_sha256"
+  ],
+  "maximum_validity_seconds": 31622400,
+  "capability_requirements": {
+    "diagnostics": {
+      "minimum_level": "TW-DIAGNOSTIC",
+      "base_authority_field": null,
+      "external_authority_fields": []
+    },
+    "data_generation": {
+      "minimum_level": "TW-DATA",
+      "base_authority_field": "data_generation",
+      "external_authority_fields": []
+    },
+    "policy_selection": {
+      "minimum_level": "TW-SELECTION",
+      "base_authority_field": "policy_selection",
+      "external_authority_fields": []
+    },
+    "physical_canary": {
+      "minimum_level": "TW-PHYSICAL-CANARY",
+      "base_authority_field": "physical_canary",
+      "external_authority_fields": [
+        "owner_task_authority",
+        "reviewed_gateway_preflight",
+        "hash_bound_new_related_workcell_identity",
+        "frozen_hardware_protocol"
+      ]
+    },
+    "robot_motion": {
+      "minimum_level": "TW-PHYSICAL-CANARY",
+      "base_authority_field": "physical_canary",
+      "external_authority_fields": [
+        "owner_task_authority",
+        "reviewed_gateway_preflight",
+        "hash_bound_new_related_workcell_identity",
+        "frozen_hardware_protocol",
+        "reviewed_motion_authority",
+        "motion_authority_digest_present"
+      ]
+    }
+  },
+  "learning_factory_stage_requirements": {
+    "LF-08": "data_generation",
+    "LF-09": "data_generation",
+    "LF-11": "policy_selection",
+    "LF-13": "policy_selection"
+  },
+  "minimum_new_evidence": {
+    "TW-G0": "Restore exact source-action shape, dtype, order, value hash, simulator identity, and evaluator identity with no IK, offsets, clipping, suffix, or assistance.",
+    "TW-G1": "Provide at least three whole-episode joint, gripper, end-effector, and timing traces with units, frames, availability masks, provenance, and no frozen-threshold regression.",
+    "TW-G2": "Provide at least five episodes with measured contact, retention, lift, transport, placement, release, failure-mode, and event-timing evidence; heuristic contact cannot count as measured.",
+    "TW-G3": "Provide at least three independently evaluated policy candidates with separately owned simulator rankings and physical or otherwise declared target-domain outcomes meeting concordance thresholds.",
+    "TW-G4": "Provide posterior samples, mechanism particles, at least three context groups, and mechanism-specific invariance verdicts meeting the frozen robustness thresholds.",
+    "physical_authority": "Provide owner task authority, reviewed gateway preflight, a hash-bound new-related-workcell identity, and the frozen hardware protocol; robot motion additionally requires a reviewed motion-authority digest."
+  },
+  "revocation_conditions": [
+    "missing capability certificate",
+    "malformed or noncanonical certificate",
+    "modified base certificate",
+    "scope mismatch",
+    "identity mismatch",
+    "not-yet-valid certificate",
+    "expired certificate",
+    "explicit revocation",
+    "insufficient TwinWorthiness level",
+    "base authority field false",
+    "missing external physical authority"
+  ],
+  "legacy_v1_certificate_without_capability_envelope_can_authorize_downstream": false,
+  "proof_classes": [
+    "fixture",
+    "synthetic",
+    "simulation",
+    "retained_replay",
+    "prospective_simulator",
+    "learned_policy_simulation",
+    "physical_read_only",
+    "physical_canary",
+    "physical_task"
+  ],
+  "proof_class_promotion_is_implicit": false,
+  "training_code_can_issue_or_widen_certificate": false,
+  "threshold_change_policy": "new_contract_version_required"
+}

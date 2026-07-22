@@ -1,0 +1,50 @@
+{
+  "schema_version": "sim2claw.sail_retrospective_case_campaign.v1",
+  "campaign_id": "sail-retired-workcell-loop-closure-v1",
+  "generated_at": "2026-07-22T06:10:00-05:00",
+  "proof_class": "development_informed_retrospective_case_study",
+  "shuffled_order_seed": 2026072212,
+  "reconstruction_order": [
+    "chronological",
+    "shuffled_order",
+    "sequential_no_revisit",
+    "full_batch",
+    "sail_sparse_loop_closure"
+  ],
+  "conclusion_families": ["scale", "timing", "deadband", "load", "contact"],
+  "source_bindings": {
+    "evidence_catalog": {"path": "outputs/sail/retired-bg-v1/evidence/catalog.json", "sha256": "e79dc7a3e6f684644fa18d77e5a1a4f11126829176a14e3c7c247d3daec02ed2"},
+    "residual_field": {"path": "outputs/sail/retired-bg-v1/residuals/residual_field.json", "sha256": "38a78aa325ccb978e131ac087e6820c35faa4473172387d5f738261ff1889c71"},
+    "belief_graph": {"path": "outputs/sail/retired-bg-v1/belief-graph/belief_graph.json", "sha256": "a5cf6e19214fe4406f798189e30c9fb3f9dbbe1fb662130d3904b1e55486c4e0"},
+    "structural_surprise": {"path": "outputs/sail/retired-bg-v1/structural-surprise/structural_surprise.json", "sha256": "ce8aae9a9f68a9958fd50e2efd0cd8b4bd20e7dab41d91b5d2369ba206912f54"},
+    "retained_particles": {"path": "outputs/sail/retired-bg-v1/mechanisms/retained_particles.json", "sha256": "c7fa9b0fe616ba4e4afe9fe8007b4073e67ce93ccbbb03629aec3f977e1d8fd3"},
+    "influence_set": {"path": "outputs/sail/retired-bg-v1/loop-closure/influence_set.json", "sha256": "c8f414252314b498c9c9d0f29c68b86531e20708b65c0dc92ec4d2e7c75ea10c"},
+    "sparse_loop_closure": {"path": "outputs/sail/retired-bg-v1/loop-closure/sparse_loop_closure.json", "sha256": "249c93e4cb077ca545e4012a553dd72081eda0b2e871d21c48e639fd3a420fe0"},
+    "retained_invariance": {"path": "outputs/sail/retired-bg-v1/invariance/retained_invariance.json", "sha256": "6d02eba1e18c1566aaf6113c3a60b9e6122dc82a0dc8d05704a9a06de4654e88"},
+    "fidelity_closeout": {"path": "outputs/pawn_bg_fidelity_advancement_v1/advancement_receipt.json", "sha256": "d16367bee2a3ee7e8847d1845b0dcb891608f62822b53c784633dc6d7f9dc7e2"},
+    "grasp_closeout": {"path": "outputs/pawn_bg_grasp_campaign_closeout_v1/grasp_campaign_closeout_receipt.json", "sha256": "b5ca10583d32d9f4e829d63d3c94dd3a88d72f559931882f9534a269652991c2"},
+    "friction_closeout": {"path": "outputs/pawn_bg_rubber_retention_closeout_v1/rubber_retention_closeout_receipt.json", "sha256": "7c4b0ae1918ef67cfdb23874b1285de2bf976a52a3e82d0b49eb5a1202261d25"},
+    "twin_worthiness_contract": {"path": "configs/sail/twin_worthiness_v1.json", "sha256": "0e4828802daa54301779621a8af1ff48e99920a84d594fa12a6c72d5ede7c9e1"}
+  },
+  "acceptance": {
+    "expected_intervention_count": 12,
+    "expected_graph_edit_count": 2,
+    "expected_influence_precision": 1.0,
+    "expected_influence_recall": 1.0,
+    "maximum_sparse_full_score_loss_fraction": 1e-9,
+    "expected_current_twin_worthiness_level": "TW-REPLAY",
+    "require_tw_g2_closed": true,
+    "require_tw_data_closed": true
+  },
+  "authority": {
+    "retrospective_relabeling": false,
+    "historical_result_mutation": false,
+    "physical_parameter_identification": false,
+    "simulator_promotion": false,
+    "training_admission": false,
+    "policy_selection": false,
+    "physical_capture": false,
+    "robot_motion": false,
+    "physical_transfer": false
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "schema_version": "sim2claw.sail_twin_capability_campaign.v1",
+  "campaign_id": "sail-twin-capability-kill-switches-v1",
+  "generated_at": "2026-07-22T09:00:00-05:00",
+  "proof_class": "deterministic_capability_gate_evaluation",
+  "claim_boundary": "The current certificate is retained-workcell TW-REPLAY evidence and opens diagnostics only. Synthetic higher-level certificates prove reachability of software branches, not twin worthiness, data authority, policy quality, hardware authority, or transfer.",
+  "source_bindings": {
+    "operational_contract": {
+      "path": "configs/sail/twin_capability_v1.json",
+      "sha256": "c03cf1b3115b79f60992286b92676d46bd8c938d2ab63fb10b1f143d4ef986f8"
+    },
+    "operational_schema": {
+      "path": "configs/sail/schemas/twin_worthiness_capability_certificate_v1.json",
+      "sha256": "1259016e7c9ad40b82ab9c348d25f9d966675532094ba8ca8f087c9c08053ba3"
+    },
+    "base_contract": {
+      "path": "configs/sail/twin_worthiness_v1.json",
+      "sha256": "0e4828802daa54301779621a8af1ff48e99920a84d594fa12a6c72d5ede7c9e1"
+    },
+    "current_base_certificate": {
+      "path": "outputs/sail/retired-workcell-case-v1/twin_worthiness_certificate.json",
+      "sha256": "726966d4275c6133420f9b79a2768a1e9455f0dc008dde4762318fd7d10fafad"
+    },
+    "task_contract": {
+      "path": "configs/tasks/chess_pick_place_act_state_v1.json",
+      "sha256": "b8e527286caacfb13b3b4ca6bd2352c2f0704e9d5054d164e416bd1b2f24299c"
+    },
+    "distribution_contract": {
+      "path": "configs/evaluations/pawn_rank12_bidirectional_v2.json",
+      "sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3"
+    }
+  },
+  "current_scope": {
+    "twin_id": "retired-workcell-current-20260722-v1",
+    "workcell_id": "retired-workcell-closed-session-v1",
+    "task_id": "chess_pick_place_act_state_v1",
+    "distribution_id": "pawn_rank12_bidirectional_b_to_g_v2",
+    "task_contract_sha256": "b8e527286caacfb13b3b4ca6bd2352c2f0704e9d5054d164e416bd1b2f24299c",
+    "distribution_sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3"
+  },
+  "validity": {
+    "not_before": "2026-07-22T09:00:00-05:00",
+    "expires_at": "2027-07-22T09:00:00-05:00",
+    "decision_time": "2026-07-22T09:01:00-05:00"
+  },
+  "capability_order": [
+    "diagnostics",
+    "data_generation",
+    "policy_selection",
+    "physical_canary",
+    "robot_motion"
+  ],
+  "negative_scenarios": [
+    "missing_certificate",
+    "legacy_unscoped_certificate",
+    "tampered_certificate",
+    "scope_mismatch",
+    "identity_mismatch",
+    "expired_certificate",
+    "revoked_certificate"
+  ],
+  "synthetic_fixture": {
+    "selection_scope": {
+      "twin_id": "synthetic-selection-twin-v1",
+      "workcell_id": "synthetic-fixture-workcell-v1",
+      "task_id": "synthetic-fixture-task-v1",
+      "distribution_id": "synthetic-fixture-distribution-v1",
+      "task_contract_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "distribution_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "physical_scope": {
+      "twin_id": "synthetic-physical-canary-twin-v1",
+      "workcell_id": "synthetic-new-related-workcell-v1",
+      "task_id": "synthetic-canary-task-v1",
+      "distribution_id": "synthetic-canary-distribution-v1",
+      "task_contract_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "distribution_sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "external_physical_authority": {
+      "owner_task_authority": true,
+      "reviewed_gateway_preflight": true,
+      "hash_bound_new_related_workcell_identity": true,
+      "frozen_hardware_protocol": true,
+      "reviewed_motion_authority": true,
+      "motion_authority_digest_present": true
+    }
+  },
+  "acceptance": {
+    "expected_current_level": "TW-REPLAY",
+    "expected_current_allowed_capabilities": ["diagnostics"],
+    "expected_current_denied_capabilities": [
+      "data_generation",
+      "policy_selection",
+      "physical_canary",
+      "robot_motion"
+    ],
+    "required_golden_cases": ["GOLD-17", "GOLD-18", "GOLD-19"],
+    "require_all_negative_scenarios_denied": true,
+    "require_selection_fixture_data_and_policy_reachable": true,
+    "require_physical_fixture_canary_and_motion_reachable": true,
+    "require_learning_factory_stage_bindings": ["LF-08", "LF-09", "LF-11", "LF-13"],
+    "require_current_training_closed": true,
+    "require_current_policy_selection_closed": true,
+    "require_current_physical_authority_closed": true
+  },
+  "authority": {
+    "data_generation": false,
+    "training_admission": false,
+    "policy_selection": false,
+    "physical_canary": false,
+    "robot_motion": false,
+    "physical_transfer": false
+  }
+}

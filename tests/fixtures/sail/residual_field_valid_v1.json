@@ -1,0 +1,33 @@
+{
+  "schema_version": "sim2claw.residual_field.v1",
+  "residual_id": "fixture-residual-001",
+  "evidence_ids": ["fixture-evidence-001"],
+  "axes": ["episode", "phase", "time", "channel", "frame", "provenance"],
+  "samples": [
+    {
+      "episode_id": "episode-001",
+      "phase": "approach",
+      "time_seconds": 0.0,
+      "channel": "joint_position_error",
+      "unit": "radian",
+      "frame": "robot_joint",
+      "provenance": "fixture",
+      "available": true,
+      "value": 0.01
+    },
+    {
+      "episode_id": "episode-001",
+      "phase": "approach",
+      "time_seconds": 0.0,
+      "channel": "contact_force_error",
+      "unit": "newton",
+      "frame": "gripper",
+      "provenance": "missing_fixture_channel",
+      "available": false,
+      "value": null
+    }
+  ],
+  "summaries": [],
+  "bootstrap": null,
+  "canonical_digest": "f54310d6a31100da72ad3b569876f563ce21d96fdfed5528aa01ae2890064de4"
+}

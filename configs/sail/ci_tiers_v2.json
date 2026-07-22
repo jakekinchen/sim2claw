@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.sail_ci_tiers.v2",
+  "supersedes": "configs/sail/ci_tiers_v1.json",
+  "change_rationale": "Repair historical test-module path aliases without changing the six tier semantics, and add the receipt-bound P1-16 Studio observatory to the automatic integration tier.",
+  "tiers": [
+    {
+      "id": "fast_contract",
+      "ordinal": 1,
+      "mode": "automatic",
+      "network": false,
+      "provider_calls": false,
+      "hardware": false,
+      "command": "uv run pytest tests/test_sail_contracts.py tests/test_sail_twin_worthiness.py tests/test_sail_hardware_protocol.py -q"
+    },
+    {
+      "id": "synthetic_golden",
+      "ordinal": 2,
+      "mode": "automatic",
+      "network": false,
+      "provider_calls": false,
+      "hardware": false,
+      "command": "uv run pytest tests/test_sail_mechanisms.py tests/test_sail_belief_graph.py tests/test_sail_influence.py tests/test_sail_invariance.py tests/test_sail_acquisition.py tests/test_sail_loop_closure.py tests/test_sail_benchmark.py -q"
+    },
+    {
+      "id": "integration",
+      "ordinal": 3,
+      "mode": "automatic",
+      "network": false,
+      "provider_calls": false,
+      "hardware": false,
+      "command": "uv run pytest tests/test_sail_agent_campaign.py tests/test_sail_capability_campaign.py tests/test_sail_policy_flywheel_campaign.py tests/test_learning_factory.py tests/test_sail_cli.py tests/test_studio.py tests/test_sail_studio_observatory.py tests/test_sail_publication.py -q"
+    },
+    {
+      "id": "retained_evidence",
+      "ordinal": 4,
+      "mode": "opt_in",
+      "network": false,
+      "provider_calls": false,
+      "hardware": false,
+      "required_environment": ["SIM2CLAW_SAIL_RETAINED_EVIDENCE_ROOT"],
+      "absent_behavior": "skip_with_explicit_reason",
+      "command": "uv run pytest tests/test_sail_evidence.py -q"
+    },
+    {
+      "id": "provider_campaign",
+      "ordinal": 5,
+      "mode": "manual_budgeted",
+      "network": true,
+      "provider_calls": true,
+      "hardware": false,
+      "required_environment": ["SIM2CLAW_SAIL_PROVIDER_CAMPAIGN_CONFIG"],
+      "command": "SIM2CLAW_RUN_PROVIDER_CAMPAIGN=1 uv run pytest tests/test_sail_agent_campaign.py -q"
+    },
+    {
+      "id": "hardware",
+      "ordinal": 6,
+      "mode": "manual_separately_authorized",
+      "network": false,
+      "provider_calls": false,
+      "hardware": true,
+      "gateway_only": true,
+      "required_environment": ["SIM2CLAW_HARDWARE_AUTHORITY_PACKET"],
+      "command": "SIM2CLAW_RUN_HARDWARE=1 uv run pytest tests/test_sail_hardware_protocol.py -q"
+    }
+  ],
+  "broad_command": "uv run pytest",
+  "change_policy": "new_ci_tier_contract_version_required"
+}

@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/sail/twin_worthiness_capability_certificate_v1.json",
+  "title": "TwinWorthinessCapabilityCertificate.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "capability_certificate_id",
+    "base_certificate",
+    "scope",
+    "validity",
+    "issuance",
+    "canonical_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "sim2claw.twin_worthiness_capability_certificate.v1"
+    },
+    "capability_certificate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_certificate": {
+      "type": "object"
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "twin_id",
+        "workcell_id",
+        "task_id",
+        "distribution_id",
+        "task_contract_sha256",
+        "distribution_sha256"
+      ],
+      "properties": {
+        "twin_id": {"type": "string", "minLength": 1},
+        "workcell_id": {"type": "string", "minLength": 1},
+        "task_id": {"type": "string", "minLength": 1},
+        "distribution_id": {"type": "string", "minLength": 1},
+        "task_contract_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "distribution_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "validity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not_before", "expires_at", "revoked", "revocation_reason"],
+      "properties": {
+        "not_before": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "revoked": {"type": "boolean"},
+        "revocation_reason": {"type": ["string", "null"]}
+      }
+    },
+    "issuance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuer_owner",
+        "request_digest",
+        "base_certificate_digest",
+        "base_contract_sha256",
+        "operational_contract_sha256"
+      ],
+      "properties": {
+        "issuer_owner": {"const": "deterministic_sail_evaluator"},
+        "request_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "base_certificate_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "base_contract_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "operational_contract_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "canonical_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

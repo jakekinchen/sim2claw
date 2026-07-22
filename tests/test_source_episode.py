@@ -323,6 +323,7 @@ class CanonicalSourceEpisodeTest(unittest.TestCase):
         self.assertNotIn("evaluator_privileged_state", json.dumps(act_rows))
         self.assertNotIn("evaluator_privileged_state", json.dumps(groot_rows))
         self.assertIn("top_rgb_path", groot_rows[0]["observation"])
+        self.assertNotIn("wrist_rgb_path", groot_rows[0]["observation"])
         self.assertNotIn("top_rgb_path", act_rows[0]["observation"])
 
     def test_failure_and_assistance_contribute_zero_adapter_rows(self) -> None:

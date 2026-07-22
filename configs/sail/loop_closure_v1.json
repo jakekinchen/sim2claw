@@ -1,0 +1,64 @@
+{
+  "schema_version": "sim2claw.sail_loop_closure_campaign.v1",
+  "campaign_id": "sail-loop-closure-v1",
+  "generated_at": "2026-07-22T02:08:00-05:00",
+  "source_bindings": {
+    "belief_graph": {"path": "outputs/sail/retired-bg-v1/belief-graph/belief_graph.json", "sha256": "a5cf6e19214fe4406f798189e30c9fb3f9dbbe1fb662130d3904b1e55486c4e0"},
+    "influence_candidates": {"path": "outputs/sail/retired-bg-v1/belief-graph/influence_candidates.json", "sha256": "228e716418f14efb2349c57b5175effc9a8499233f32162f709a714caef839a6"},
+    "mechanism_registry": {"path": "outputs/sail/retired-bg-v1/mechanisms/registry.json", "sha256": "fbda9c716f9a266850fc39b28d6dc8dbc897564e80ed658075ce3fd7e2ef0428"},
+    "retained_particles": {"path": "outputs/sail/retired-bg-v1/mechanisms/retained_particles.json", "sha256": "c7fa9b0fe616ba4e4afe9fe8007b4073e67ce93ccbbb03629aec3f977e1d8fd3"},
+    "structural_surprise": {"path": "outputs/sail/retired-bg-v1/structural-surprise/structural_surprise.json", "sha256": "ce8aae9a9f68a9958fd50e2efd0cd8b4bd20e7dab41d91b5d2369ba206912f54"}
+  },
+  "influence_thresholds": {
+    "minimum_precision": 1.0,
+    "minimum_recall": 1.0,
+    "minimum_residual_overlap": 1,
+    "minimum_local_sensitivity": 0.25,
+    "require_declared_scope": true,
+    "require_predicts_path": true
+  },
+  "gold_09": {
+    "mechanism_id": "load_compliance_v1",
+    "mechanism_family": "load_compliance",
+    "graph_factors": ["residual:joint_position", "residual:joint_velocity"],
+    "interventions": [
+      {"intervention_id": "intervention:load-bias-boundary", "declared_scopes": ["load_compliance"], "residual_node_ids": ["residual:end_effector", "residual:joint_position", "residual:joint_velocity"]},
+      {"intervention_id": "intervention:fidelity-rms-closeout", "declared_scopes": ["deadband_hysteresis", "load_compliance", "timing"], "residual_node_ids": ["residual:aperture", "residual:end_effector", "residual:event_timing", "residual:joint_position", "residual:joint_velocity"]},
+      {"intervention_id": "intervention:timing-110ms", "declared_scopes": ["timing"], "residual_node_ids": ["residual:end_effector", "residual:event_timing", "residual:joint_position", "residual:joint_velocity"]},
+      {"intervention_id": "intervention:deadband-2deg", "declared_scopes": ["deadband_hysteresis"], "residual_node_ids": ["residual:aperture", "residual:event_timing", "residual:joint_position", "residual:joint_velocity"]},
+      {"intervention_id": "intervention:metric-scale", "declared_scopes": ["geometry_scale"], "residual_node_ids": ["residual:end_effector"]},
+      {"intervention_id": "intervention:rubber-friction-20", "declared_scopes": ["contact_friction"], "residual_node_ids": ["residual:aperture", "residual:contact_consequence"]}
+    ],
+    "graph_edges": [
+      {"source": "mechanism:load_compliance", "type": "predicts", "target": "intervention:load-bias-boundary"},
+      {"source": "mechanism:load_compliance", "type": "predicts", "target": "intervention:fidelity-rms-closeout"},
+      {"source": "mechanism:timing", "type": "predicts", "target": "intervention:timing-110ms"},
+      {"source": "mechanism:deadband_hysteresis", "type": "predicts", "target": "intervention:deadband-2deg"},
+      {"source": "mechanism:geometry_scale", "type": "predicts", "target": "intervention:metric-scale"},
+      {"source": "mechanism:contact_friction", "type": "predicts", "target": "intervention:rubber-friction-20"}
+    ],
+    "oracle_affected_intervention_ids": ["intervention:fidelity-rms-closeout", "intervention:load-bias-boundary"]
+  },
+  "gold_10": {
+    "seed": 20260722,
+    "sample_count": 160,
+    "true_parameters": {"timing": 0.15, "load_compliance": 0.8, "geometry": -0.3},
+    "existing_decisions": ["timing", "geometry", "deadband", "timestep", "contact", "object", "camera"],
+    "affected_decisions": ["timing", "load_compliance"],
+    "total_full_batch_decisions": 8,
+    "parameter_tolerance": 0.05,
+    "maximum_score_loss_fraction": 1e-9,
+    "maximum_sparse_recomputation_fraction": 0.5,
+    "noise_norm": 0.01
+  },
+  "authority": {
+    "historical_result_mutation": false,
+    "physical_mechanism_identification": false,
+    "simulator_promotion": false,
+    "training_admission": false,
+    "policy_selection": false,
+    "physical_capture": false,
+    "robot_motion": false,
+    "physical_transfer": false
+  }
+}

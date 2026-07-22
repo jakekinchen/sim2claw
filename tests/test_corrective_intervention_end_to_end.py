@@ -323,7 +323,26 @@ def test_full_corrective_episode_replays_and_admits_suffix_only(tmp_path: Path) 
             "source_sample_index": int(source_row["sample_index"]),
             "observation": observation.astype(float).tolist(),
             "action_joint_target_rad": adapted_row["action_joint_target_rad"],
-            "lineage": adapted_row["lineage"],
+            "lineage": {
+                **adapted_row["lineage"],
+                "candidate": {
+                    "candidate_seed": 2101,
+                    "flywheel": {
+                        "generation_lineage_digest": "4" * 64,
+                        "posterior_particle_id": "synthetic-correction-particle-v1",
+                        "teacher_id": "repo-native-source-expert-v1",
+                        "teacher_action_owner": "geometric_expert",
+                        "simulator_id": "synthetic-correction-simulator-v1",
+                        "simulator_implementation_sha256": "5" * 64,
+                        "source_action_trace_sha256": nominal_receipt[
+                            "samples_sha256"
+                        ],
+                        "evaluator_verdict_sha256": nominal_verdict[
+                            "canonical_payload_sha256"
+                        ],
+                    },
+                },
+            },
         }
         for source_row, adapted_row, observation in zip(
             nominal_rows,
@@ -352,10 +371,19 @@ def test_full_corrective_episode_replays_and_admits_suffix_only(tmp_path: Path) 
         "training_row_count": len(base_rows),
         "held_out_training_rows": 0,
         "rejected_training_rows": 0,
+        "generation_lineage_digest": "4" * 64,
         "act_payload": {
             "path": base_payload_path.name,
             "sha256": sha256_file(base_payload_path),
             "row_count": len(base_rows),
+        },
+        "preflight": {
+            "all_rows_bind_posterior_teacher_simulator": True,
+            "posterior_sampling_policy": "identified_posterior_only",
+            "arbitrary_domain_randomization": False,
+            "groot_policy_camera_ids": ["overhead"],
+            "evaluator_only_camera_ids": ["wrist"],
+            "wrist_main_policy_input": False,
         },
     }
     base_receipt = {**base_unsigned, "dataset_sha256": canonical_digest(base_unsigned)}
@@ -364,7 +392,19 @@ def test_full_corrective_episode_replays_and_admits_suffix_only(tmp_path: Path) 
     mixture_directory = tmp_path / "correction-mixture"
     mixture = build_goal_act_correction_mixture(
         base_dataset_receipt_path=base_receipt_path,
-        corrections=[{"admitted_correction": admitted}],
+        corrections=[
+            {
+                "admitted_correction": admitted,
+                "flywheel_lineage": {
+                    "generation_lineage_digest": "4" * 64,
+                    "posterior_particle_id": "synthetic-correction-particle-v1",
+                    "teacher_id": "geometric-correction-expert-v1",
+                    "teacher_action_owner": "geometric_expert",
+                    "simulator_id": "synthetic-correction-simulator-v1",
+                    "simulator_implementation_sha256": "5" * 64,
+                },
+            }
+        ],
         output_directory=mixture_directory,
         object_dimensions_m=dimensions,
         gripper_aperture_mapping=aperture_mapping,

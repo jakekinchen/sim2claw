@@ -1,0 +1,96 @@
+{
+  "schema_version": "sim2claw.sail_project_application_candidate_freeze.v1",
+  "campaign_id": "sail-project-application-v1",
+  "frozen_at": "2026-07-22T10:28:00-05:00",
+  "selection_data": "three_declared_adaptive_sentinels_only",
+  "evaluation_data_opened_after_this_freeze": false,
+  "evaluation_data_status": "previously_opened_by_prior_campaigns_not_independent_holdout",
+  "adaptive_candidate_count_including_baseline": 12,
+  "candidate_budget_exhausted": true,
+  "baseline_sentinel_receipt": {
+    "path": "outputs/sail/project-application-v1/sentinels/baseline.json",
+    "sha256": "fb5851fdd1d3eeaf46504f45f6d3b541165802897a36495fd1542994f487acf1",
+    "parameter_digest": "689cc4e245b3b7d500f9ea5ecb16003599cbcc0de9f0ca2a3d30b3f7b60389f7"
+  },
+  "selected_family": {
+    "family_id": "H2_rubber_contact_dimensionality",
+    "candidate_id": "condim4",
+    "sentinel_receipt": {
+      "path": "outputs/sail/project-application-v1/sentinels/condim4.json",
+      "sha256": "a8a6303facaeb42d58133e31304c355de268a7bd8f4f68885f18eb7cb4731acf",
+      "parameter_digest": "a0e2b77b48a692e3d3012b4a06247850b4be2837d3e921c57e6593a7125fc836"
+    },
+    "parameters": {
+      "fixed_jaw_mesh_collision_enabled": false,
+      "gripper_force_limit_multiplier": 3.0,
+      "gripper_joint_damping_multiplier": 1.0,
+      "gripper_joint_frictionloss_multiplier": 1.0,
+      "gripper_servo_gain_multiplier": 1.0,
+      "moving_jaw_mesh_collision_enabled": false,
+      "pawn_friction_multiplier": 1.0,
+      "pawn_mass_multiplier": 1.0,
+      "rolling_friction_m": 0.0012,
+      "rubber_contact_condim": 4,
+      "rubber_tip_enabled": true,
+      "simulation_timestep_multiplier": 0.45,
+      "sliding_friction": 1.8,
+      "solref_damping_ratio": 1.2,
+      "solref_time_constant_s": 0.006,
+      "tip_coverage_m": 0.02,
+      "tip_coverage_offset_m": -0.03,
+      "tip_half_width_m": 0.0065,
+      "tip_moving_coverage_offset_m": 0.025,
+      "tip_thickness_m": 0.001,
+      "torsional_friction_m": 0.012
+    },
+    "sentinel_metrics": {
+      "strict_successes": 0,
+      "lift_and_transport": 1,
+      "lifted": 3,
+      "whole_base_inside_destination": 1,
+      "mean_final_target_distance_m": 0.05738200132992811,
+      "mean_post_grasp_slip_m": 0.021742954397458547,
+      "joint_rms_degrees": 1.2162987334003872,
+      "ee_rms_m": 0.011244277167039412
+    },
+    "selection_reason": "Only bounded candidate to preserve all three sentinel lifts and the one sentinel lift-and-transport while adding one whole-base destination crossing and reducing mean final target distance under sentinel trace guards.",
+    "negative_mechanism_result": "It is not a retained-grasp fix: C2 bilateral contact loss moves from source frame 323 to 314, retention falls from 0.6345 s to 0.62325 s, and slip reduction is 7.73%, below the frozen 10% mechanism-advancement threshold.",
+    "allowed_claim_before_evaluation": "sentinel_selected_contact_formulation_sensitivity_only"
+  },
+  "tie_break_rule": [
+    "strict_successes_descending",
+    "lift_and_transport_descending",
+    "lifted_descending",
+    "whole_base_inside_destination_descending",
+    "mean_final_target_distance_m_ascending",
+    "mean_post_grasp_slip_m_ascending",
+    "parameter_digest_ascending"
+  ],
+  "evaluation_recording_ids": [
+    "20260719T030059Z-a26f8400",
+    "20260719T030206Z-af661460",
+    "20260719T031615Z-0e058ca2",
+    "20260719T031715Z-61ebb199",
+    "20260719T031813Z-b147b429",
+    "20260719T032315Z-d3c3cf0b",
+    "20260719T032400Z-052d5137",
+    "20260719T032531Z-06be393c"
+  ],
+  "evaluation_run_limit": 1,
+  "evaluation_output": "outputs/sail/project-application-v1/evaluation/condim4.json",
+  "evaluation_acceptance": {
+    "minimum_all_episode_lift_and_transport": 2,
+    "minimum_strict_successes": 0,
+    "maximum_joint_rms_degrees": 1.2239681787734957,
+    "maximum_ee_rms_m": 0.01145712069614842,
+    "no_new_wrong_piece_contact": true,
+    "no_worse_maximum_collateral_displacement": true
+  },
+  "authority": {
+    "fresh_holdout": false,
+    "physical_contact_calibration": false,
+    "simulator_composite_promotion": false,
+    "training_admission": false,
+    "physical_authority": false
+  }
+}

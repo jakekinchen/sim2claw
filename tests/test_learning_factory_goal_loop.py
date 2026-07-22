@@ -22,6 +22,11 @@ from sim2claw.learning_factory_recursion import persist_counterexample_registry
 from sim2claw.orchestrator_skills import SkillRegistry
 from sim2claw.project_bundle import EXPECTED_BG_SKILL_IDS
 from sim2claw.paths import REPO_ROOT
+from sim2claw.sail.contracts import seal_contract
+from sim2claw.sail.twin_worthiness import (
+    TwinCapabilityDenied,
+    issue_capability_certificate,
+)
 
 
 def _write_json(path: Path, value: object) -> None:
@@ -29,10 +34,115 @@ def _write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _data_capability_context() -> dict:
+    identities = {
+        "evidence": ["a" * 64],
+        "graph": "b" * 64,
+        "posterior": "c" * 64,
+        "simulator": "d" * 64,
+        "evaluator": "e" * 64,
+        "policy_candidates": [],
+    }
+    base = seal_contract(
+        {
+            "schema_version": "sim2claw.twin_worthiness_certificate.v1",
+            "certificate_id": "goal-loop-data-fixture",
+            "campaign_id": "goal-loop-fixture",
+            "identities": identities,
+            "gates": {
+                f"TW-G{index}": {
+                    "status": "pass" if index <= 2 else "not_evaluable",
+                    "reason": "synthetic fixture",
+                    "evidence_ids": ["fixture"] if index <= 2 else [],
+                }
+                for index in range(5)
+            },
+            "level": "TW-DATA",
+            "authority": {
+                "data_generation": True,
+                "policy_selection": False,
+                "physical_canary": False,
+                "robot_motion": False,
+            },
+            "issued_at": "2026-07-22T00:00:00Z",
+        }
+    )
+    scope = {
+        "twin_id": "calibrated-twin",
+        "workcell_id": "goal-loop-fixture",
+        "task_id": "chess_pick_place_act_state_v1",
+        "distribution_id": "goal-loop-training-fixture",
+        "task_contract_sha256": task_contract_sha256(),
+        "distribution_sha256": "1" * 64,
+    }
+    certificate = issue_capability_certificate(
+        base_certificate=base,
+        scope=scope,
+        not_before="2026-07-22T00:00:00Z",
+        expires_at="2027-07-22T00:00:00Z",
+        issuance_request={
+            "issuer_owner": "deterministic_sail_evaluator",
+            "request_id": "goal-loop-data-fixture",
+        },
+    )
+    return {
+        "certificate": certificate,
+        "request": {
+            "capability": "data_generation",
+            "stage_id": "LF-08",
+            "scope": scope,
+            "expected_identities": identities,
+            "external_authority": {},
+        },
+        "at_time": "2026-07-22T12:00:00Z",
+    }
+
+
+def _generation_lineage(context: dict) -> dict:
+    request = context["request"]
+    scope = request["scope"]
+    identities = request["expected_identities"]
+    return {
+        "schema_version": "sim2claw.policy_flywheel_generation_lineage.v1",
+        "source_segment_representation": "object_and_target_relative",
+        "posterior": {
+            "artifact_sha256": identities["posterior"],
+            "posterior_digest": "2" * 64,
+            "eligible_particle_ids": ["synthetic-particle-a", "synthetic-particle-b"],
+            "sampling_policy": "identified_posterior_only",
+            "arbitrary_domain_randomization": False,
+            "physical_parameter_claim": False,
+        },
+        "teacher": {
+            "teacher_id": "fixture-geometric-expert-v1",
+            "action_owner": "geometric_expert",
+            "admission_authority": False,
+        },
+        "simulator": {
+            "simulator_id": "fixture-mujoco-v1",
+            "implementation_sha256": identities["simulator"],
+        },
+        "task_distribution": {
+            "task_id": scope["task_id"],
+            "task_contract_sha256": scope["task_contract_sha256"],
+            "distribution_id": scope["distribution_id"],
+            "distribution_sha256": scope["distribution_sha256"],
+        },
+        "policy_modalities": {
+            "act_policy_inputs": ["state_goal"],
+            "groot_policy_camera_ids": ["overhead"],
+            "evaluator_only_camera_ids": ["wrist"],
+            "wrist_is_main_policy_input": False,
+        },
+        "physical_authority": False,
+    }
+
+
 def _dataset_fixture(root: Path) -> Path:
     root.mkdir(parents=True, exist_ok=True)
     payload_path = root / "act_train.jsonl"
     rows = []
+    generation_lineage_digest = "4" * 64
     for episode_index, source_id in enumerate(("source-a", "source-b")):
         for sample_index in range(8):
             observation = np.linspace(0.0, 1.0, 61, dtype=np.float32)
@@ -49,7 +159,19 @@ def _dataset_fixture(root: Path) -> Path:
                     "lineage": {
                         "source_recording_id": source_id,
                         "source_sample_index": sample_index,
-                        "candidate": {"candidate_seed": 2101 + episode_index},
+                        "candidate": {
+                            "candidate_seed": 2101 + episode_index,
+                            "flywheel": {
+                                "generation_lineage_digest": generation_lineage_digest,
+                                "posterior_particle_id": "synthetic-particle-a",
+                                "teacher_id": "fixture-geometric-expert-v1",
+                                "teacher_action_owner": "geometric_expert",
+                                "simulator_id": "fixture-mujoco-v1",
+                                "simulator_implementation_sha256": "5" * 64,
+                                "source_action_trace_sha256": "6" * 64,
+                                "evaluator_verdict_sha256": "7" * 64,
+                            },
+                        },
                     },
                 }
             )
@@ -67,10 +189,19 @@ def _dataset_fixture(root: Path) -> Path:
         "training_row_count": len(rows),
         "held_out_training_rows": 0,
         "rejected_training_rows": 0,
+        "generation_lineage_digest": generation_lineage_digest,
         "act_payload": {
             "path": payload_path.name,
             "sha256": sha256_file(payload_path),
             "row_count": len(rows),
+        },
+        "preflight": {
+            "all_rows_bind_posterior_teacher_simulator": True,
+            "posterior_sampling_policy": "identified_posterior_only",
+            "arbitrary_domain_randomization": False,
+            "groot_policy_camera_ids": ["overhead"],
+            "evaluator_only_camera_ids": ["wrist"],
+            "wrist_main_policy_input": False,
         },
     }
     receipt = {**unsigned, "dataset_sha256": canonical_digest(unsigned)}
@@ -80,6 +211,7 @@ def _dataset_fixture(root: Path) -> Path:
 
 
 def test_curriculum_covers_training_axes_without_opening_heldout() -> None:
+    capability = _data_capability_context()
     result = compile_goal_act_curriculum(
         parent_twin_id="calibrated-twin",
         source_episodes=[
@@ -90,6 +222,8 @@ def test_curriculum_covers_training_axes_without_opening_heldout() -> None:
             }
         ],
         maximum_candidates=8,
+        twin_capability_context=capability,
+        generation_lineage=_generation_lineage(capability),
     )
     task = load_act_pick_place_task_contract()
     held_seeds = set(task["splits"]["held_out_seeds"])
@@ -113,6 +247,30 @@ def test_curriculum_covers_training_axes_without_opening_heldout() -> None:
     )
     assert result["split_manifest"]["held_out_training_rows"] == 0
     assert result["admission_authority"] == "none_plan_only"
+    assert result["generation_lineage"]["posterior"]["sampling_policy"] == (
+        "identified_posterior_only"
+    )
+    assert {row["posterior_particle_id"] for row in result["candidates"]} == {
+        "synthetic-particle-a",
+        "synthetic-particle-b",
+    }
+
+
+def test_curriculum_helper_fails_closed_without_recomputed_capability() -> None:
+    with pytest.raises(TwinCapabilityDenied):
+        compile_goal_act_curriculum(
+            parent_twin_id="calibrated-twin",
+            source_episodes=[
+                {
+                    "source_episode_id": "admitted-source",
+                    "source_proof_class": "simulation_strict_success",
+                    "source_segment_ids": ["all"],
+                }
+            ],
+            maximum_candidates=1,
+            twin_capability_context={},
+            generation_lineage={},
+        )
 
 
 def test_source_observable_encoder_is_exactly_61d_and_rejects_timing_phase() -> None:

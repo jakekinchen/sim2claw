@@ -104,3 +104,100 @@ Last triage: 2026-07-19T04:40:00-05:00
 - 2026-07-19T04:40:00-05:00 - Integrated the mass-neutral rubber-tip contact prior, repaired the forged declared-digest bypass in `893f7ac`, and reran both the four-variant contact diagnostic and strict manipulation-v2 evaluator from authenticated checkpoint bytes. The ancillary rook result is accepted only as contact-prior sensitivity; it remains unrelated to the B--G product benchmark, and the strict manipulation score remains negative.
 - 2026-07-19T04:38:00-05:00 - Repository-wide closeout validation passed 379 tests plus 306 subtests; the lock, Python compilation, Bash syntax, JSON parsing, package build, and whitespace checks passed. Repo-wide ShellCheck reported only previously tracked warnings in unchanged scripts.
 - 2026-07-19T04:40:00-05:00 - Authenticated read-only Brev inventory shows only the owner-reserved NemoClaw CPU workspace `nemoclaw-e3fca7` (`b7kee8ww2`), STOPPED and healthy. Per direct owner instruction, no lifecycle mutation was made.
+
+---
+
+## SAIL/ClawLoop Phase 1 Continuation
+
+Repo: `/Users/kelly/Developer/sim2claw`
+
+Branch: `codex/SAIL-integration`
+
+Coordinator: primary Codex goal loop
+
+Cadence: one acceptance-gated milestone slice at a time
+
+Authorized public mutations: none; local implementation, tests, receipts, logs,
+and scoped commits only
+
+Last triage: 2026-07-21T21:57:01-05:00
+
+### Queue Summary
+
+- Autonomous: P1-01 through P1-17 under the master-plan dependency ledger.
+- Needs owner: only explicit authority, external spend, credential, public
+  release, or future hardware decisions.
+- Defer/close/supersede: Phase 2 is `blocked_external`; older goal loops are
+  preserved evidence and no longer define program order.
+
+### Milestones
+
+| Milestone | Status | Proof target | Proof result | Blocker |
+| --- | --- | --- | --- | --- |
+| P1-00 | completed | Cutover, authority reconciliation, Brief 016 | Reviewer 007 CONTINUE | none |
+| P1-01 | completed | Schemas, goldens, frozen benchmark/certificate contracts | 5 schemas, 25 cases, 6 tiers, 29 fast tests | none |
+| P1-02 | completed | Deterministic retained evidence catalog | 31 items; 18/7,741 physical; 11+2 simulator; GOLD-16; 642 broad tests | none |
+| P1-03 | in_progress | Phase-aligned residual receipt | pending | none |
+| P1-04 | pending | Deterministic belief graph | pending | dependency |
+| P1-05 | pending | Surprise/debt triggers | pending | dependency |
+| P1-06 | pending | Plugin registry and bounded posteriors | pending | dependency |
+| P1-07 | pending | Sparse/full loop-closure comparison | pending | dependency |
+| P1-08 | pending | Mechanism-scoped invariance verdicts | pending | dependency |
+| P1-09 | pending | Ranked discriminating interventions | pending | dependency |
+| P1-10 | pending | Seeded public/sealed benchmark | pending | dependency |
+| P1-11 | pending | Governed Inspect campaign | pending | dependency |
+| P1-12 | pending | Retired-workcell retrospective case | pending | dependency |
+| P1-13 | pending | Pre-registered prospective simulator case | pending | dependency |
+| P1-14 | pending | TwinWorthiness kill-switch wiring | pending | dependency |
+| P1-15 | pending | Fixture-complete gated policy flywheel | pending | dependency |
+| P1-16 | pending | Phone-friendly Studio evidence views | pending | dependency |
+| P1-17 | pending | Frozen publication/reproduction package | pending | dependency |
+
+### Owner Decisions
+
+None. Current work is local, hardware-free, and inside the approved Phase 1
+goal. External provider campaigns and spending remain separately gated.
+
+### Event Log
+
+- 2026-07-21T21:57:01-05:00 — Goal loop activated for all Phase 1 milestones.
+- 2026-07-21T21:57:01-05:00 — Repo-native retained-evidence stack integrated by
+  fast-forward to `origin/main@5ecd2fb`; ignored sealed/generated artifacts
+  preserved.
+- 2026-07-21T21:57:01-05:00 — P1-00 completed and P1-01 opened as the sole
+  in-progress milestone, pending verification commands.
+- 2026-07-21T22:22:00-05:00 — P1-00 cutover checks and workflow audit passed;
+  the broad suite's sole strict-binding failure was repaired, 95 related tests
+  passed, and the LF00-through-LF13 component campaign passed 1/1.
+- 2026-07-21T22:58:35-05:00 — P1-01 froze five schemas, 25 golden cases, six CI
+  tiers, TwinWorthiness thresholds, public/sealed benchmark seeds, proof
+  vocabulary, and hardware/provider authority guards. Fast tier passed 29/29;
+  two broad lock-binding failures were refreshed and their targeted checks
+  passed. P1-02 opened.
+- 2026-07-21T23:35:34-05:00 — P1-02 compiled 31 proof-separated
+  `CalibrationEvidence.v1` items from 18 physical episodes/7,741 rows, 11
+  action-frozen development traces, and two already-open regression-only action
+  identities. Six context artifacts and seven omission classes are bound;
+  deterministic repeat, GOLD-16, 22 focused tests, and the uninterrupted
+  642-test/328-subtest broad suite passed. P1-03 opened.
+- 2026-07-22T00:13:01-05:00 — P1-03 compiled 213,897 unit/frame/mask/provenance-
+  bound residual samples and 3,630 summaries across 11 episodes/4,743 aligned
+  rows. Event timing remains explicit, six unavailable channel families
+  abstain, the 10,000-replicate whole-episode bootstrap is deterministic, and
+  the heatmap/drilldowns are receipt-bound. GOLD-03/04, 30 focused tests, and
+  the uninterrupted 650-test/328-subtest broad suite passed. P1-04 opened.
+- 2026-07-22T00:49:34-05:00 — P1-04 compiled an order-stable 71-node/191-edge
+  belief graph with all 16 node families, the 11-edge vocabulary, 13
+  chronological revisions, 12 declared-scope influence sets, and 20 queryable
+  negative/verdict nodes. Exact receipt proof/evaluator identities survive,
+  no `admitted-to` edge exists, and source action evidence traverses to the
+  terminal verdict. Thirty-nine SAIL tests and the uninterrupted
+  659-test/328-subtest broad suite passed. P1-05 opened.
+- 2026-07-22T01:22:03-05:00 — P1-05 computed 0.9429 normalized compensation
+  debt over 0.70 available weight from five source-bound contributors. Three
+  posterior-dependent components remain unavailable rather than zero; six
+  missing physical/object channels make `missing_observable` primary. A
+  deterministic no-agent packet requests candidate mechanism families while
+  selecting none and asserting no physical cause. GOLD-05 passed, 0/256 clean
+  seeded cases falsely triggered, 48 SAIL tests and the uninterrupted
+  668-test/328-subtest broad suite passed. P1-06 opened.

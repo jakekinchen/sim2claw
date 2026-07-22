@@ -12,11 +12,14 @@ from sim2claw.paths import REPO_ROOT
 from sim2claw.pawn_bg_grasp_coordinate_descent import run_grasp_group_probe
 
 
-def _value(raw: str) -> float | bool:
+def _value(raw: str) -> float | bool | str:
     normalized = raw.strip().lower()
     if normalized in {"true", "false"}:
         return normalized == "true"
-    return float(raw)
+    try:
+        return float(raw)
+    except ValueError:
+        return raw.strip()
 
 
 def main() -> int:

@@ -5,7 +5,7 @@
   "purpose": "Run one evidence-aware Sim2Claw reference workflow inside one NemoClaw/OpenShell sandbox.",
   "source_of_truth": {
     "project_state": "docs/autonomous-workflow/project_state.json",
-    "project_state_sha256": "e2015e6d4e149c4e917b271b49efc945a1438749045914bf99894fb4f15f378f",
+    "project_state_sha256": "b8e2b8856586c2ebdfba81933589a654e2dd613b69b667e7b5ba16e769f62f52",
     "evaluation_contract": "configs/evaluations/pawn_rank12_bidirectional_v2.json",
     "evaluation_contract_sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3",
     "physical_source_catalog": "configs/data/physical_pawn_move_catalog_20260719.json",
@@ -72,6 +72,41 @@
     "curriculum": {
       "task_contract": "configs/tasks/chess_pick_place_act_state_v1.json",
       "maximum_candidates": 8,
+      "generation_lineage": {
+        "schema_version": "sim2claw.policy_flywheel_generation_lineage.v1",
+        "source_segment_representation": "object_and_target_relative",
+        "posterior": {
+          "artifact_sha256": "c7fa9b0fe616ba4e4afe9fe8007b4073e67ce93ccbbb03629aec3f977e1d8fd3",
+          "posterior_digest": "c7fa9b0fe616ba4e4afe9fe8007b4073e67ce93ccbbb03629aec3f977e1d8fd3",
+          "eligible_particle_ids": [],
+          "availability": "closed_no_identified_retained_particle",
+          "sampling_policy": "identified_posterior_only",
+          "arbitrary_domain_randomization": false,
+          "physical_parameter_claim": false
+        },
+        "teacher": {
+          "teacher_id": "repo_native_pawn_source_expert_v1",
+          "action_owner": "geometric_expert",
+          "admission_authority": false
+        },
+        "simulator": {
+          "simulator_id": "retired_workcell_prospective_simulator_family_v1",
+          "implementation_sha256": "d16367bee2a3ee7e8847d1845b0dcb891608f62822b53c784633dc6d7f9dc7e2"
+        },
+        "task_distribution": {
+          "task_id": "chess_pick_place_act_state_v1",
+          "task_contract_sha256": "b8e527286caacfb13b3b4ca6bd2352c2f0704e9d5054d164e416bd1b2f24299c",
+          "distribution_id": "pawn_rank12_bidirectional_b_to_g_v2",
+          "distribution_sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3"
+        },
+        "policy_modalities": {
+          "act_policy_inputs": ["state_goal"],
+          "groot_policy_camera_ids": ["overhead"],
+          "evaluator_only_camera_ids": ["wrist"],
+          "wrist_is_main_policy_input": false
+        },
+        "physical_authority": false
+      },
       "admitted_source_episodes": [],
       "candidate_executions": [],
       "live_blocker": "No evaluator-admitted B-G-compatible source episode exists; lower-side B-G cells are outside the frozen left-arm IK envelope and physical episodes remain replay-unqualified."
@@ -79,7 +114,48 @@
     "training": {
       "recipe": "configs/training/goal_act_recipe_v1.json",
       "evaluation_cohort": null,
+      "groot_challenger": {
+        "mode": "deterministic_skip",
+        "compute_available": false,
+        "reason": "no_compatible_local_groot_runtime_or_authorized_bounded_compute",
+        "policy_camera_ids": ["overhead"],
+        "evaluator_only_camera_ids": ["wrist"]
+      },
       "live_blocker": "A B-G-compatible frozen evaluation cohort cannot be sealed until compatible simulation source/reset episodes exist."
+    },
+    "twin_worthiness": {
+      "capability_certificate": "outputs/sail/twin-capability-v1/current_capability_certificate.json",
+      "decision_time": "2026-07-22T09:01:00-05:00",
+      "distribution_contract": "configs/evaluations/pawn_rank12_bidirectional_v2.json",
+      "scope": {
+        "twin_id": "resolved_from_lf07_candidate_before_any_gated_stage",
+        "workcell_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+        "task_id": "chess_pick_place_act_state_v1",
+        "distribution_id": "pawn_rank12_bidirectional_b_to_g_v2",
+        "task_contract_sha256": "b8e527286caacfb13b3b4ca6bd2352c2f0704e9d5054d164e416bd1b2f24299c",
+        "distribution_sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3"
+      },
+      "expected_identities": {
+        "evidence": [
+          "e79dc7a3e6f684644fa18d77e5a1a4f11126829176a14e3c7c247d3daec02ed2",
+          "38a78aa325ccb978e131ac087e6820c35faa4473172387d5f738261ff1889c71",
+          "c8f414252314b498c9c9d0f29c68b86531e20708b65c0dc92ec4d2e7c75ea10c",
+          "6d02eba1e18c1566aaf6113c3a60b9e6122dc82a0dc8d05704a9a06de4654e88"
+        ],
+        "graph": "a5cf6e19214fe4406f798189e30c9fb3f9dbbe1fb662130d3904b1e55486c4e0",
+        "posterior": "c7fa9b0fe616ba4e4afe9fe8007b4073e67ce93ccbbb03629aec3f977e1d8fd3",
+        "simulator": "d16367bee2a3ee7e8847d1845b0dcb891608f62822b53c784633dc6d7f9dc7e2",
+        "evaluator": "a4fa5357d4462ba047758b97438cdbe9e2f0c446cd38d27fafb330637faf9a79",
+        "policy_candidates": []
+      },
+      "external_authority": {
+        "owner_task_authority": false,
+        "reviewed_gateway_preflight": false,
+        "hash_bound_new_related_workcell_identity": false,
+        "frozen_hardware_protocol": false,
+        "reviewed_motion_authority": false,
+        "motion_authority_digest_present": false
+      }
     },
     "recursion": {
       "previous_registry": null,

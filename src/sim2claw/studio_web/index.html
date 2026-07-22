@@ -30,6 +30,7 @@
 
         <nav class="view-switch" id="studio-view-switch" aria-label="Studio views">
           <button class="view-button is-active" type="button" data-route="replay">Replay</button>
+          <button class="view-button" type="button" data-route="sail">SAIL</button>
           <button class="view-button" type="button" data-route="library">Library</button>
           <button class="view-button" type="button" data-route="calibration">Calibration</button>
           <button class="view-button" type="button" data-route="robots">Robots</button>
@@ -159,6 +160,121 @@
               <span id="mobile-browser-label">Browse task episodes</span><span aria-hidden="true">＋</span>
             </button>
           </section>
+        </section>
+
+        <section class="view-panel sail-view" data-view-panel="sail" aria-labelledby="sail-heading">
+          <header class="view-heading sail-heading">
+            <div>
+              <span class="section-label">Receipt-bound investigation</span>
+              <h1 id="sail-heading">SAIL evidence spine</h1>
+              <p>Scrub one retained episode across actions, measured and simulated state, residual structure, causal revision, and the current TwinWorthiness boundary.</p>
+            </div>
+            <div class="sail-heading-status">
+              <b id="sail-status">Loading evidence</b>
+              <code id="sail-receipt">receipt pending</code>
+            </div>
+          </header>
+
+          <div class="sail-authority-notice" role="note">
+            <span class="lock-icon" aria-hidden="true"></span>
+            <p><b>Diagnosis only.</b> Retained physical telemetry, simulator replay, prospective simulation, learned-policy simulation, and visual context remain separate proof classes. This surface cannot write, train, promote, or move a robot.</p>
+          </div>
+
+          <section class="sail-rank-band" aria-labelledby="sail-ranking-heading">
+            <header>
+              <div><span class="section-label">Consequence-ranked evidence</span><h2 id="sail-ranking-heading">All interpretable partial episodes</h2></div>
+              <p id="sail-ranking-note">The seven strongest episodes lead; lower-signal partials remain visible.</p>
+            </header>
+            <div class="sail-episode-list" id="sail-episode-list" role="listbox" aria-label="Retained SAIL episodes"></div>
+          </section>
+
+          <div class="sail-investigation-grid">
+            <section class="sail-trace-card" aria-labelledby="sail-trace-heading">
+              <header>
+                <div><span class="section-label" id="sail-episode-proof">Retained replay</span><h2 id="sail-trace-heading">Choose an episode</h2></div>
+                <button type="button" id="sail-open-replay">Open 3D replay</button>
+              </header>
+              <p class="sail-trace-summary" id="sail-trace-summary">Waiting for the bound episode inventory.</p>
+
+              <div class="sail-phase-frame">
+                <div class="sail-phase-readout"><span>Frame</span><b id="sail-frame-index">—</b><span>Phase</span><b id="sail-phase">—</b><span>Time</span><b id="sail-time">—</b></div>
+                <div class="sail-phase-rail" id="sail-phase-rail" aria-label="Detected episode phases"></div>
+                <input id="sail-scrubber" type="range" min="0" max="0" value="0" aria-label="Synchronized SAIL evidence frame">
+              </div>
+
+              <div class="sail-signal-shell">
+                <svg id="sail-signal-plot" viewBox="0 0 960 300" role="img" aria-label="Synchronized action, joint, end-effector, aperture, pawn, contact, and consequence traces"></svg>
+                <i class="sail-evidence-spine" id="sail-evidence-spine" aria-hidden="true"></i>
+              </div>
+
+              <div class="sail-frame-readouts" id="sail-frame-readouts" aria-live="polite"></div>
+              <div class="sail-availability-grid" id="sail-availability-grid" aria-label="Channel availability and proof classes"></div>
+            </section>
+
+            <aside class="sail-residual-card" aria-labelledby="sail-residual-heading">
+              <header><div><span class="section-label">Phase-aligned mismatch</span><h2 id="sail-residual-heading">Residual field</h2></div><b id="sail-residual-status">Bound</b></header>
+              <p>Cell color is normalized only within its channel. Raw RMSE and units remain visible; missing values never become zero.</p>
+              <div class="sail-heatmap" id="sail-heatmap"></div>
+              <dl class="sail-receipt-facts" id="sail-residual-facts"></dl>
+            </aside>
+          </div>
+
+          <section class="sail-causal-section" aria-labelledby="sail-causal-heading">
+            <header class="sail-section-heading">
+              <div><span class="section-label">Evidence → revision → intervention</span><h2 id="sail-causal-heading">Structural diagnosis</h2></div>
+              <p>The orange evidence spine continues through the exact receipts that revise the graph and rank the next probe.</p>
+            </header>
+
+            <div class="sail-causal-grid">
+              <article class="sail-graph-card">
+                <header><h3>Belief graph · before / after</h3><b id="sail-graph-delta">—</b></header>
+                <div class="sail-graph-pair">
+                  <figure><img id="sail-graph-before" alt="Initial receipt-bound SAIL belief graph"><figcaption>Before</figcaption></figure>
+                  <figure><img id="sail-graph-after" alt="Revised receipt-bound SAIL belief graph"><figcaption>After</figcaption></figure>
+                </div>
+                <div class="sail-revision-strip" id="sail-revision-strip" aria-label="Belief graph revisions"></div>
+              </article>
+
+              <article class="sail-debt-card">
+                <header><h3>Compensation debt</h3><b id="sail-debt-score">—</b></header>
+                <p id="sail-debt-boundary">Loading structural-surprise boundary.</p>
+                <div class="sail-debt-meter"><i id="sail-debt-before"></i><i id="sail-debt-after"></i></div>
+                <div class="sail-debt-components" id="sail-debt-components"></div>
+              </article>
+
+              <article class="sail-intervention-card">
+                <header><h3>Intervention signatures</h3><b id="sail-selected-probe">—</b></header>
+                <div class="sail-intervention-list" id="sail-intervention-list"></div>
+              </article>
+            </div>
+          </section>
+
+          <div class="sail-verdict-grid">
+            <section class="sail-posterior-card" aria-labelledby="sail-posterior-heading">
+              <header><div><span class="section-label">Structure stays separate</span><h2 id="sail-posterior-heading">Posterior + invariance</h2></div><b id="sail-invariance-count">—</b></header>
+              <div class="sail-posterior-list" id="sail-posterior-list"></div>
+            </section>
+
+            <section class="sail-twin-card" aria-labelledby="sail-twin-heading">
+              <header><div><span class="section-label">Evaluator-owned kill switches</span><h2 id="sail-twin-heading">TwinWorthiness</h2></div><b id="sail-twin-level">—</b></header>
+              <div class="sail-gate-matrix" id="sail-gate-matrix"></div>
+              <details><summary>Minimum new evidence</summary><dl class="sail-minimum-evidence" id="sail-minimum-evidence"></dl></details>
+            </section>
+          </div>
+
+          <section class="sail-publication-card" aria-labelledby="sail-publication-heading">
+            <header>
+              <div><span class="section-label">Same artifacts, publication scale</span><h2 id="sail-publication-heading">Figure exports</h2></div>
+              <p>Every SVG below is hash-bound by the same Studio receipt; there is no parallel charting data path.</p>
+            </header>
+            <div class="sail-figure-list" id="sail-figure-list"></div>
+            <div class="sail-proof-legend" id="sail-proof-legend"></div>
+          </section>
+
+          <div class="sail-empty" id="sail-empty" hidden>
+            <b>SAIL observatory unavailable</b>
+            <p id="sail-empty-detail">Compile the bound observatory assets and reload Studio.</p>
+          </div>
         </section>
 
         <section class="view-panel library-view" data-view-panel="library" aria-labelledby="library-heading">

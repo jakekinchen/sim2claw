@@ -1,0 +1,58 @@
+{
+  "schema_version": "sim2claw.sail_structural_surprise_campaign.v1",
+  "campaign_id": "retired-bg-structural-surprise-v1",
+  "generated_at": "2026-07-22T00:55:00-05:00",
+  "purpose": "Detect when retained parameter fitting is likely compensating for omitted structure without asserting a physical cause.",
+  "source_bindings": {
+    "golden_registry": {"path": "tests/fixtures/sail/golden_cases_v1.json", "sha256": "a727a189285703dde745991979f856ca23ed1fa47b8cd08c071e6c8ba09ca514"},
+    "residual_field": {"path": "outputs/sail/retired-bg-v1/residuals/residual_field.json", "sha256": "38a78aa325ccb978e131ac087e6820c35faa4473172387d5f738261ff1889c71"},
+    "residual_receipt": {"path": "outputs/sail/retired-bg-v1/residuals/receipt.json", "sha256": "4022b6a1f11b326cdc980f022d2c1fd6eaaa279ab28ae152ac4b4675326c6203"},
+    "belief_graph": {"path": "outputs/sail/retired-bg-v1/belief-graph/belief_graph.json", "sha256": "a5cf6e19214fe4406f798189e30c9fb3f9dbbe1fb662130d3904b1e55486c4e0"},
+    "belief_receipt": {"path": "outputs/sail/retired-bg-v1/belief-graph/receipt.json", "sha256": "da1ad4de3f3b1139376bda47e45d0b14f4805d25035e7809d007a7ee6f2aee59"},
+    "fidelity_closeout": {"path": "outputs/pawn_bg_fidelity_advancement_v1/advancement_receipt.json", "sha256": "d16367bee2a3ee7e8847d1845b0dcb891608f62822b53c784633dc6d7f9dc7e2"},
+    "grasp_closeout": {"path": "outputs/pawn_bg_grasp_campaign_closeout_v1/grasp_campaign_closeout_receipt.json", "sha256": "b5ca10583d32d9f4e829d63d3c94dd3a88d72f559931882f9534a269652991c2"},
+    "rubber_closeout": {"path": "outputs/pawn_bg_rubber_retention_closeout_v1/rubber_retention_closeout_receipt.json", "sha256": "7c4b0ae1918ef67cfdb23874b1285de2bf976a52a3e82d0b49eb5a1202261d25"},
+    "twin_worthiness_contract": {"path": "configs/sail/twin_worthiness_v1.json", "sha256": "0e4828802daa54301779621a8af1ff48e99920a84d594fa12a6c72d5ede7c9e1"}
+  },
+  "components": [
+    {"id": "boundary_pressure", "weight": 0.18, "uncertainty_class": "parameter_uncertainty"},
+    {"id": "cross_family_regression", "weight": 0.18, "uncertainty_class": "structural_uncertainty"},
+    {"id": "parameter_reversal_or_drift", "weight": 0.10, "uncertainty_class": "structural_uncertainty"},
+    {"id": "phase_or_context_inconsistency", "weight": 0.10, "uncertainty_class": "structural_uncertainty"},
+    {"id": "persistent_structured_residual", "weight": 0.14, "uncertainty_class": "structural_uncertainty"},
+    {"id": "posterior_correlation", "weight": 0.10, "uncertainty_class": "parameter_uncertainty"},
+    {"id": "sim_success_trace_regression", "weight": 0.10, "uncertainty_class": "structural_uncertainty"},
+    {"id": "ensemble_without_single_winner", "weight": 0.10, "uncertainty_class": "structural_uncertainty"}
+  ],
+  "trigger": {
+    "score_threshold": 0.60,
+    "component_threshold": 0.60,
+    "minimum_triggered_components": 2,
+    "minimum_available_weight": 0.50,
+    "require_structural_component": true,
+    "missing_components_are_zero": false
+  },
+  "retained_rules": {
+    "material_trace_improvement_fraction": 0.05,
+    "event_timing_material_seconds": 0.10,
+    "load_absorber_parameter": "elbow_load_bias_coefficient",
+    "required_missing_observable_channels": ["end_effector_to_source", "end_effector_to_target", "pawn_to_target", "physical_contact", "physical_contact_force", "physical_consequence"],
+    "posterior_dependent_components": ["parameter_reversal_or_drift", "phase_or_context_inconsistency", "posterior_correlation"]
+  },
+  "clean_seeded_calibration": {
+    "seed": 20260722,
+    "case_count": 256,
+    "maximum_false_trigger_rate": 0.01,
+    "maximum_clean_component_value": 0.25
+  },
+  "mechanism_request": {
+    "agent_allowed": false,
+    "request_kind": "deterministic_no_agent_mechanism_request",
+    "suspected_absorber_wording": "historical_parameter_probably_absorbing_missing_structure_not_a_physical_cause",
+    "candidate_families": ["phase_dependent_actuation", "fingertip_contact", "contact_friction", "object_dynamics"],
+    "required_discriminating_observables": ["metric_object_trajectory", "physical_contact_state", "physical_contact_force_or_proxy", "formal_physical_consequence"],
+    "physical_cause_asserted": false
+  },
+  "determinism": {"component_sort": "id", "json_encoding": "utf8_indent2_sort_keys_trailing_newline"},
+  "authority": {"physical_cause_identification": false, "mechanism_selection": false, "simulator_promotion": false, "training_admission": false, "policy_selection": false, "physical_capture": false, "robot_motion": false, "physical_transfer": false}
+}

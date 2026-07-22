@@ -35,10 +35,11 @@
     "verified_at": "2026-07-19T22:21:06-05:00",
     "worktree_head_before_receipt_refresh": "f6eecb74b20ba2a6d77ee4bae9593fc610d290d3",
     "command": "PYTHONPATH=src python scripts/audit_physical_replay_joint_limits.py --repo-root /Users/kelly/Developer/sim2claw --catalog configs/data/physical_pawn_move_catalog_20260719.json --output <scratch>/replay-audit-workcell-fit.json",
-    "current_lockfile_sha256": "9515d5c178cddf9cbee0a93cf9daddbdf641c06ef869b41fa0e1a7e07873532a",
+    "current_lockfile_sha256": "9c7b001bea367c3bf3aca156cf0f7d59a0cc5709b3b9ca47f2eefefd7a6ee3db",
+    "current_lockfile_refreshed_at": "2026-07-21T22:52:00-05:00",
     "runner_output_sha256": "40dc058e817cdc652297b32d92c37dd7abd63edd74851204f5ebaadb8426cb49",
     "semantic_core_matches_historical_receipt": true,
-    "proof_note": "The workcell-fit lane added optional board-yaw override parameters to scene.py with None defaults; no frozen code path changes behavior. The later GapBench lane added an optional Inspect dependency group without changing the replay runtime or inputs. The audit runner was re-executed with current worktree code and read-only canonical physical assets and reproduced the exact prior runner-output hash byte-for-byte, including the control-contract hash, counts, bounds, exceedances, and fail-closed interpretation."
+    "proof_note": "The workcell-fit lane added optional board-yaw override parameters to scene.py with None defaults; no frozen code path changes behavior. The later GapBench lane added an optional Inspect dependency group without changing the replay runtime or inputs. P1-01 later made the already-resolved JSON Schema validator explicit for SAIL contract validation; the replay runner does not import it, and the historical generation lock remains separately preserved. The audit runner was re-executed with current worktree code and read-only canonical physical assets and reproduced the exact prior runner-output hash byte-for-byte, including the control-contract hash, counts, bounds, exceedances, and fail-closed interpretation."
   },
   "compiled_control_contract_sha256": "0094a3671dd0e1f5e516d3603bd9b6fc37776b5e688ac1bb1f53e963a3629fec",
   "simulator_joint_order": [

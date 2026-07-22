@@ -372,6 +372,46 @@ def _apply_model_coordinates(
             "solver_iterations exceeds diagnostic bounds"
         )
     model.opt.iterations = solver_iterations
+    solver_name = str(parameters.get("contact_solver", "newton")).lower()
+    solver_by_name = {
+        "pgs": mujoco.mjtSolver.mjSOL_PGS,
+        "cg": mujoco.mjtSolver.mjSOL_CG,
+        "newton": mujoco.mjtSolver.mjSOL_NEWTON,
+    }
+    if solver_name not in solver_by_name:
+        raise GraspCoordinateDescentError(
+            "contact_solver must be one of pgs, cg, or newton"
+        )
+    model.opt.solver = solver_by_name[solver_name]
+    cone_name = str(parameters.get("contact_cone", "elliptic")).lower()
+    cone_by_name = {
+        "pyramidal": mujoco.mjtCone.mjCONE_PYRAMIDAL,
+        "elliptic": mujoco.mjtCone.mjCONE_ELLIPTIC,
+    }
+    if cone_name not in cone_by_name:
+        raise GraspCoordinateDescentError(
+            "contact_cone must be pyramidal or elliptic"
+        )
+    model.opt.cone = cone_by_name[cone_name]
+    noslip_iterations = int(
+        round(
+            float(
+                parameters.get(
+                    "contact_noslip_iterations", model.opt.noslip_iterations
+                )
+            )
+        )
+    )
+    if not 0 <= noslip_iterations <= 50:
+        raise GraspCoordinateDescentError(
+            "contact_noslip_iterations exceeds diagnostic bounds"
+        )
+    model.opt.noslip_iterations = noslip_iterations
+    rubber_contact_condim = int(parameters.get("rubber_contact_condim", 6))
+    if rubber_contact_condim not in (1, 3, 4, 6):
+        raise GraspCoordinateDescentError(
+            "rubber_contact_condim must be one of 1, 3, 4, or 6"
+        )
     friction_impratio = float(
         parameters.get("friction_impratio", model.opt.impratio)
     )
@@ -398,6 +438,16 @@ def _apply_model_coordinates(
     for name in ("tip_fixed_width_offset_m", "tip_moving_width_offset_m"):
         value = float(parameters.get(name, 0.0))
         if not -0.02 <= value <= 0.02:
+            raise GraspCoordinateDescentError(
+                f"{name} exceeds diagnostic bounds"
+            )
+    for name in (
+        "tip_coverage_offset_m",
+        "tip_fixed_coverage_offset_m",
+        "tip_moving_coverage_offset_m",
+    ):
+        value = float(parameters.get(name, 0.0))
+        if not -0.05 <= value <= 0.05:
             raise GraspCoordinateDescentError(
                 f"{name} exceeds diagnostic bounds"
             )
@@ -563,6 +613,7 @@ def _apply_model_coordinates(
             model.geom_contype[geom_id] = 0
             model.geom_conaffinity[geom_id] = 0
         if "_rubber_tip_fixed_" in name:
+            model.geom_condim[geom_id] = rubber_contact_condim
             if capsule_shape:
                 model.geom_type[geom_id] = int(mujoco.mjtGeom.mjGEOM_CAPSULE)
                 model.geom_quat[geom_id] = np.asarray(
@@ -593,6 +644,7 @@ def _apply_model_coordinates(
                 parameters.get("tip_fixed_coverage_multiplier", 1.0)
             )
         elif "_rubber_tip_moving_" in name:
+            model.geom_condim[geom_id] = rubber_contact_condim
             if capsule_shape:
                 model.geom_type[geom_id] = int(mujoco.mjtGeom.mjGEOM_CAPSULE)
                 root_half = math.sqrt(0.5)
@@ -675,6 +727,79 @@ def _apply_model_coordinates(
     mujoco.mj_setConst(model, data)
 
 
+def _select_load_bearing_contact_pair(
+    fixed: list[dict[str, Any]], moving: list[dict[str, Any]]
+) -> dict[str, Any] | None:
+    """Choose one deterministic opposing pair without changing evaluation.
+
+    The weakest side bounds a pinch, so minimum normal force is the primary
+    load-bearing score. Opposition and span break physically relevant ties;
+    stable geom/contact ids make the final tie-break deterministic.
+    """
+
+    if not fixed or not moving:
+        return None
+    ranked: list[tuple[tuple[float, ...], dict[str, Any]]] = []
+    for fixed_contact in fixed:
+        for moving_contact in moving:
+            opposition = float(
+                -np.dot(fixed_contact["normal"], moving_contact["normal"])
+            )
+            span = float(
+                np.linalg.norm(
+                    fixed_contact["position_m"] - moving_contact["position_m"]
+                )
+            )
+            minimum_normal_force = min(
+                float(fixed_contact["normal_force_n"]),
+                float(moving_contact["normal_force_n"]),
+            )
+            total_normal_force = float(fixed_contact["normal_force_n"]) + float(
+                moving_contact["normal_force_n"]
+            )
+            pair = {
+                "fixed": fixed_contact,
+                "moving": moving_contact,
+                "minimum_normal_force_n": minimum_normal_force,
+                "total_normal_force_n": total_normal_force,
+                "opposing_normal_score": opposition,
+                "contact_span_m": span,
+            }
+            key = (
+                minimum_normal_force,
+                opposition,
+                span,
+                total_normal_force,
+                -float(fixed_contact["jaw_geom_id"]),
+                -float(moving_contact["jaw_geom_id"]),
+                -float(fixed_contact["contact_index"]),
+                -float(moving_contact["contact_index"]),
+            )
+            ranked.append((key, pair))
+    return max(ranked, key=lambda item: item[0])[1]
+
+
+def _contact_witness_json(contact: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: (value.astype(float).tolist() if isinstance(value, np.ndarray) else value)
+        for key, value in contact.items()
+    }
+
+
+def _pawn_surface_label(model: mujoco.MjModel, geom_id: int) -> str:
+    """Return a stable semantic label for the current detailed pawn surfaces."""
+
+    geom_type = mujoco.mjtGeom(int(model.geom_type[geom_id]))
+    local_z = float(model.geom_pos[geom_id, 2])
+    if geom_type == mujoco.mjtGeom.mjGEOM_SPHERE:
+        return "head_sphere"
+    if geom_type == mujoco.mjtGeom.mjGEOM_ELLIPSOID:
+        return "upper_collar_ellipsoid" if local_z >= 0.025 else "lower_body_ellipsoid"
+    if geom_type == mujoco.mjtGeom.mjGEOM_CYLINDER:
+        return f"body_ring_z_{local_z:.4f}_m"
+    return f"unclassified_{geom_type.name.lower()}_z_{local_z:.4f}_m"
+
+
 def _jaw_contact_geometry(
     model: mujoco.MjModel,
     data: mujoco.MjData,
@@ -706,12 +831,62 @@ def _jaw_contact_geometry(
             normal = normal / norm
         constraint_force = np.zeros(6, dtype=np.float64)
         mujoco.mj_contactForce(model, data, contact_index, constraint_force)
+        jaw_geom = int(contact.geom2 if jaw_body == body2 else contact.geom1)
+        pawn_geom = int(contact.geom1 if jaw_body == body2 else contact.geom2)
+        position = np.asarray(contact.pos, dtype=np.float64).copy()
+        jaw_rotation = np.asarray(data.geom_xmat[jaw_geom], dtype=np.float64).reshape(
+            3, 3
+        )
+        pawn_rotation = np.asarray(
+            data.geom_xmat[pawn_geom], dtype=np.float64
+        ).reshape(3, 3)
         contacts[jaw_body].append(
             {
-                "position_m": np.asarray(
-                    contact.pos, dtype=np.float64
-                ).copy(),
+                "contact_index": int(contact_index),
+                "position_m": position,
                 "normal": normal.copy(),
+                "jaw_body_id": int(jaw_body),
+                "jaw_body_name": (
+                    mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, jaw_body)
+                    or f"body_{jaw_body}"
+                ),
+                "jaw_geom_id": jaw_geom,
+                "jaw_geom_name": (
+                    mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, jaw_geom)
+                    or f"geom_{jaw_geom}"
+                ),
+                "jaw_geom_type": mujoco.mjtGeom(
+                    int(model.geom_type[jaw_geom])
+                ).name,
+                "jaw_geom_local_position_m": np.asarray(
+                    model.geom_pos[jaw_geom], dtype=np.float64
+                ).copy(),
+                "jaw_geom_size_m": np.asarray(
+                    model.geom_size[jaw_geom], dtype=np.float64
+                ).copy(),
+                "contact_position_in_jaw_geom_frame_m": (
+                    jaw_rotation.T
+                    @ (position - np.asarray(data.geom_xpos[jaw_geom]))
+                ),
+                "pawn_geom_id": pawn_geom,
+                "pawn_geom_name": (
+                    mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, pawn_geom)
+                    or f"geom_{pawn_geom}"
+                ),
+                "pawn_geom_type": mujoco.mjtGeom(
+                    int(model.geom_type[pawn_geom])
+                ).name,
+                "pawn_surface_label": _pawn_surface_label(model, pawn_geom),
+                "pawn_geom_local_position_m": np.asarray(
+                    model.geom_pos[pawn_geom], dtype=np.float64
+                ).copy(),
+                "pawn_geom_size_m": np.asarray(
+                    model.geom_size[pawn_geom], dtype=np.float64
+                ).copy(),
+                "contact_position_in_pawn_geom_frame_m": (
+                    pawn_rotation.T
+                    @ (position - np.asarray(data.geom_xpos[pawn_geom]))
+                ),
                 # These are MuJoCo constraint-space magnitudes. They diagnose
                 # the simulated mechanism; they are not calibrated force-sensor
                 # measurements and cannot establish physical contact force.
@@ -758,6 +933,7 @@ def _jaw_contact_geometry(
     moving_tangential_force = float(
         sum(contact["tangential_force_n"] for contact in moving)
     )
+    load_bearing_pair = _select_load_bearing_contact_pair(fixed, moving)
     return {
         "fixed_contact": bool(fixed),
         "moving_contact": bool(moving),
@@ -780,6 +956,28 @@ def _jaw_contact_geometry(
             ).tolist()
             if bilateral
             else None
+        ),
+        "contact_witnesses": {
+            "fixed": [_contact_witness_json(contact) for contact in fixed],
+            "moving": [_contact_witness_json(contact) for contact in moving],
+        },
+        "load_bearing_pair": (
+            None
+            if load_bearing_pair is None
+            else {
+                "fixed": _contact_witness_json(load_bearing_pair["fixed"]),
+                "moving": _contact_witness_json(load_bearing_pair["moving"]),
+                "minimum_normal_force_n": float(
+                    load_bearing_pair["minimum_normal_force_n"]
+                ),
+                "total_normal_force_n": float(
+                    load_bearing_pair["total_normal_force_n"]
+                ),
+                "opposing_normal_score": float(
+                    load_bearing_pair["opposing_normal_score"]
+                ),
+                "contact_span_m": float(load_bearing_pair["contact_span_m"]),
+            }
         ),
     }
 
@@ -1287,6 +1485,10 @@ def _run_episode(
         "maximum_contact_span_m": 0.0,
         "maximum_opposing_normal_score": -1.0,
         "maximum_transport_progress_after_lift": 0.0,
+        "maximum_transport_progress_after_first_lift": 0.0,
+        "minimum_target_distance_after_first_lift_m": float("inf"),
+        "first_lift_source_index": None,
+        "first_post_lift_destination_entry": None,
         "maximum_post_grasp_slip_m": 0.0,
         "first_qualified_local_piece_offset": None,
         "first_qualified_contact_height_relative_piece_center_m": None,
@@ -1466,6 +1668,43 @@ def _run_episode(
         target_distance = float(
             np.linalg.norm(piece_position[:2] - target_xyz[:2])
         )
+        if rise >= lift_threshold and dense["first_lift_source_index"] is None:
+            dense["first_lift_source_index"] = source_index
+        if dense["first_lift_source_index"] is not None:
+            dense["minimum_target_distance_after_first_lift_m"] = min(
+                dense["minimum_target_distance_after_first_lift_m"],
+                target_distance,
+            )
+            if initial_target_distance > 0.0:
+                post_lift_progress = float(
+                    np.clip(
+                        (initial_target_distance - target_distance)
+                        / initial_target_distance,
+                        -1.0,
+                        1.0,
+                    )
+                )
+                dense["maximum_transport_progress_after_first_lift"] = max(
+                    dense["maximum_transport_progress_after_first_lift"],
+                    post_lift_progress,
+                )
+            if (
+                target_distance
+                <= float(
+                    reward_contract["hard_gates"][
+                        "maximum_final_center_distance_for_whole_base_inside_m"
+                    ]
+                )
+                and dense["first_post_lift_destination_entry"] is None
+            ):
+                dense["first_post_lift_destination_entry"] = {
+                    "episode_time_s": float(episode_time_s),
+                    "source_index": source_index,
+                    "target_distance_m": target_distance,
+                    "piece_rise_m": rise,
+                    "qualified_bilateral_contact": qualified,
+                    "bilateral_contact": bilateral,
+                }
         if rise >= lift_threshold and initial_target_distance > 0.0:
             progress = float(
                 np.clip(
@@ -1564,6 +1803,8 @@ def _run_episode(
                         "total_tangential_force_n": float(
                             contact["total_tangential_force_n"]
                         ),
+                        "contact_witnesses": contact["contact_witnesses"],
+                        "load_bearing_pair": contact["load_bearing_pair"],
                         "simulated_gripper_qpos_rad": float(
                             data.qpos[qpos_addresses[-1]]
                         ),
@@ -1923,6 +2164,26 @@ def _run_episode(
         "maximum_transport_progress_after_lift": float(
             dense["maximum_transport_progress_after_lift"]
         ),
+        "post_first_lift_task_diagnostic": {
+            "first_lift_source_index": dense["first_lift_source_index"],
+            "maximum_transport_progress": float(
+                dense["maximum_transport_progress_after_first_lift"]
+            ),
+            "minimum_target_distance_m": (
+                None
+                if not math.isfinite(
+                    dense["minimum_target_distance_after_first_lift_m"]
+                )
+                else float(dense["minimum_target_distance_after_first_lift_m"])
+            ),
+            "destination_entry": dense["first_post_lift_destination_entry"],
+            "semantics": (
+                "Secondary diagnostic observed after the first 40 mm rise even "
+                "if the pawn later travels below that instantaneous lift gate; "
+                "it does not change lift_and_transport or the frozen evaluator."
+            ),
+            "promotion_authority": False,
+        },
         "whole_base_inside_destination": bool(
             score["gate_results"]["whole_base_inside_destination"]
         ),
@@ -1970,6 +2231,11 @@ def _run_episode(
             ),
             "source_actions_mutated": False,
             "metric_or_physical_authority": False,
+            "load_bearing_pair": (
+                "deterministic diagnostic pair ranked by minimum jaw normal "
+                "force, opposing-normal score, span, and stable ids; it does "
+                "not alter the frozen evaluator"
+            ),
         },
         "retention_event_summary": retention_event_summary,
         "retention_trace": retention_trace if retention_trace_enabled else None,

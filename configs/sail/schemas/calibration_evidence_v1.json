@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/sail/calibration_evidence_v1.json",
+  "title": "CalibrationEvidence.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evidence_id",
+    "session_id",
+    "workcell_id",
+    "proof_class",
+    "source_owner",
+    "source",
+    "identities",
+    "action",
+    "observations",
+    "outcomes",
+    "missing_channels",
+    "split_role",
+    "parent_evidence_ids",
+    "intervention_ids",
+    "canonical_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "sim2claw.calibration_evidence.v1"},
+    "evidence_id": {"$ref": "#/$defs/non_empty"},
+    "session_id": {"$ref": "#/$defs/non_empty"},
+    "workcell_id": {"$ref": "#/$defs/non_empty"},
+    "proof_class": {"$ref": "#/$defs/proof_class"},
+    "source_owner": {"$ref": "#/$defs/non_empty"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/non_empty"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "identities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["simulator", "scene", "robot", "geometry", "hardware_profile", "evaluator"],
+      "properties": {
+        "simulator": {"$ref": "#/$defs/nullable_identity"},
+        "scene": {"$ref": "#/$defs/nullable_identity"},
+        "robot": {"$ref": "#/$defs/nullable_identity"},
+        "geometry": {"$ref": "#/$defs/nullable_identity"},
+        "hardware_profile": {"$ref": "#/$defs/nullable_identity"},
+        "evaluator": {"$ref": "#/$defs/nullable_identity"}
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shape", "dtype", "ordering", "sha256", "application_time_seconds"],
+      "properties": {
+        "shape": {"type": "array", "minItems": 1, "items": {"type": "integer", "minimum": 1}},
+        "dtype": {"enum": ["float32", "float64"]},
+        "ordering": {"$ref": "#/$defs/non_empty"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "application_time_seconds": {
+          "type": "array",
+          "items": {"type": "number"}
+        }
+      }
+    },
+    "observations": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/channel"}
+    },
+    "camera_frames": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["camera_id", "frame_id", "sha256", "calibration_uncertainty"],
+        "properties": {
+          "camera_id": {"$ref": "#/$defs/non_empty"},
+          "frame_id": {"$ref": "#/$defs/non_empty"},
+          "sha256": {"$ref": "#/$defs/sha256"},
+          "calibration_uncertainty": {"type": ["number", "null"], "minimum": 0}
+        }
+      }
+    },
+    "outcomes": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/outcome"}
+    },
+    "missing_channels": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/non_empty"}
+    },
+    "abstentions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/non_empty"}
+    },
+    "split_role": {
+      "enum": ["train", "validation", "held_out", "already_open_regression", "prospective_simulator", "future_hardware"]
+    },
+    "parent_evidence_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/non_empty"}},
+    "intervention_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/non_empty"}},
+    "canonical_digest": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "non_empty": {"type": "string", "minLength": 1},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullable_identity": {"type": ["string", "null"], "minLength": 1},
+    "proof_class": {
+      "enum": [
+        "fixture",
+        "synthetic",
+        "synthetic_benchmark",
+        "simulation",
+        "prospective_simulator_experiment",
+        "retained_action_frozen_simulator_replay",
+        "retrospective_reanalysis",
+        "learned_policy_simulation",
+        "retrospective_physical_teleoperation_observation",
+        "physical_teleoperation_source_unqualified",
+        "physical_read_only",
+        "physical_task"
+      ]
+    },
+    "channel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit", "frame", "values", "available", "provenance"],
+      "properties": {
+        "unit": {"$ref": "#/$defs/non_empty"},
+        "frame": {"type": ["string", "null"]},
+        "values": {"type": "array"},
+        "available": {"type": "array", "items": {"type": "boolean"}},
+        "provenance": {"$ref": "#/$defs/non_empty"}
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observed", "value", "provenance", "confidence"],
+      "properties": {
+        "observed": {"type": "boolean"},
+        "value": {},
+        "provenance": {"$ref": "#/$defs/non_empty"},
+        "confidence": {"enum": ["none", "low", "medium", "high", "measured"]}
+      }
+    }
+  }
+}

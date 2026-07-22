@@ -1,0 +1,52 @@
+"""Structure-Adaptive Interventional Loop Closure contracts and safeguards."""
+
+from .contracts import (
+    SailContractError,
+    assert_action_invariant,
+    seal_contract,
+    validate_contract,
+    verify_contract,
+    verify_source_binding,
+)
+from .belief_graph import build_belief_graph, compile_belief_graph, validate_graph
+from .evidence import compile_campaign, inventory_campaign, load_campaign
+from .residuals import build_residual_field, compile_residuals
+from .structural_surprise import compile_structural_surprise, evaluate_surprise
+from .mechanisms import load_mechanism_registry
+from .posterior import compile_mechanisms, fit_structure_particle
+from .influence import discover_influence_set
+from .loop_closure import compile_loop_closure, run_gold_10_fixture
+from .invariance import compile_invariance, evaluate_invariance
+from .acquisition import compile_acquisition, rank_acquisition
+from .benchmark import build_benchmark, compile_benchmark
+
+__all__ = [
+    "SailContractError",
+    "assert_action_invariant",
+    "seal_contract",
+    "validate_contract",
+    "verify_contract",
+    "verify_source_binding",
+    "compile_campaign",
+    "inventory_campaign",
+    "load_campaign",
+    "build_residual_field",
+    "compile_residuals",
+    "build_belief_graph",
+    "compile_belief_graph",
+    "validate_graph",
+    "compile_structural_surprise",
+    "evaluate_surprise",
+    "load_mechanism_registry",
+    "compile_mechanisms",
+    "fit_structure_particle",
+    "discover_influence_set",
+    "compile_loop_closure",
+    "run_gold_10_fixture",
+    "compile_invariance",
+    "evaluate_invariance",
+    "compile_acquisition",
+    "rank_acquisition",
+    "build_benchmark",
+    "compile_benchmark",
+]

@@ -1,0 +1,26 @@
+{
+  "schema_version": "sim2claw.sail_acquisition_campaign.v1",
+  "campaign_id": "sail-acquisition-v1",
+  "generated_at": "2026-07-22T03:05:00-05:00",
+  "source_bindings": {
+    "structural_surprise": {"path": "outputs/sail/retired-bg-v1/structural-surprise/structural_surprise.json", "sha256": "ce8aae9a9f68a9958fd50e2efd0cd8b4bd20e7dab41d91b5d2369ba206912f54"},
+    "mechanism_registry": {"path": "outputs/sail/retired-bg-v1/mechanisms/registry.json", "sha256": "fbda9c716f9a266850fc39b28d6dc8dbc897564e80ed658075ce3fd7e2ef0428"},
+    "loop_closure": {"path": "outputs/sail/retired-bg-v1/loop-closure/sparse_loop_closure.json", "sha256": "249c93e4cb077ca545e4012a553dd72081eda0b2e871d21c48e639fd3a420fe0"},
+    "retained_invariance": {"path": "outputs/sail/retired-bg-v1/invariance/retained_invariance.json", "sha256": "6d02eba1e18c1566aaf6113c3a60b9e6122dc82a0dc8d05704a9a06de4654e88"},
+    "frozen_action_evidence": {"path": "outputs/sail/retired-bg-v1/evidence/calibration/sim-replay__20260719T030059Z-a26f8400.json", "sha256": "fc2166a17b939e143b30e94a86555fcf77c634e0ea4c96be11829416d13a49c8"}
+  },
+  "frozen_action": {"source_id": "sim-replay:20260719T030059Z-a26f8400", "shape": [368, 6], "dtype": "float64", "ordering": "C_row_major_time_joint;columns=shoulder_pan,shoulder_lift,elbow_flex,wrist_flex,wrist_roll,gripper;units=radian;frozen_stage_d_adapter", "sha256": "c4acc4dca04e30c9d3031e326496a7c1d46777e7a1bd87b8d6968d2174e575bc"},
+  "competing_hypotheses": ["timing_delay", "load_compliance"],
+  "structural_weights": {"structure_entropy_reduction": 0.5, "compensation_debt_reduction": 0.25, "gate_relevance": 0.2, "cost": -0.025, "risk": -0.025},
+  "parameter_weights": {"parameter_information_gain": 0.9, "cost": -0.05, "risk": -0.05},
+  "baseline_seed": 20260722,
+  "candidates": [
+    {"candidate_id": "sim_common_mode_rms", "availability": "available_simulator", "proof_class": "prospective_simulator", "allowed_mutations": ["global_response_gain"], "required_observables": ["joint_position"], "signatures": {"timing_delay": 0.8, "load_compliance": 0.8}, "compensation_debt_reduction": 0.95, "gate_relevance": 0.7, "parameter_information_gain": 0.4, "cost": 0.1, "risk": 0.05, "maximum_trials": 2},
+    {"candidate_id": "sim_load_frequency_discriminator", "availability": "available_simulator", "proof_class": "prospective_simulator", "allowed_mutations": ["command_frequency", "simulated_load"], "required_observables": ["command_time", "joint_position", "load_proxy"], "signatures": {"timing_delay": -0.9, "load_compliance": 0.9}, "compensation_debt_reduction": 0.75, "gate_relevance": 0.9, "parameter_information_gain": 0.65, "cost": 0.15, "risk": 0.05, "maximum_trials": 4},
+    {"candidate_id": "sim_timing_rate_probe", "availability": "available_simulator", "proof_class": "prospective_simulator", "allowed_mutations": ["command_frequency"], "required_observables": ["command_time", "joint_position"], "signatures": {"timing_delay": -0.7, "load_compliance": 0.2}, "compensation_debt_reduction": 0.55, "gate_relevance": 0.8, "parameter_information_gain": 0.7, "cost": 0.1, "risk": 0.05, "maximum_trials": 3},
+    {"candidate_id": "sim_parameter_refine_load", "availability": "available_simulator", "proof_class": "prospective_simulator", "allowed_mutations": ["simulated_load"], "required_observables": ["joint_position", "load_proxy"], "signatures": {"timing_delay": 0.45, "load_compliance": 0.5}, "compensation_debt_reduction": 0.6, "gate_relevance": 0.5, "parameter_information_gain": 0.98, "cost": 0.1, "risk": 0.05, "maximum_trials": 4},
+    {"candidate_id": "hardware_instrumented_load_probe", "availability": "unavailable_hardware_plan", "proof_class": "physical_motion", "allowed_mutations": ["joint_pose_load_probe"], "required_observables": ["physical_load_proxy", "joint_position"], "signatures": {"timing_delay": -1.0, "load_compliance": 1.0}, "compensation_debt_reduction": 0.95, "gate_relevance": 1.0, "parameter_information_gain": 0.95, "cost": 0.9, "risk": 0.8, "maximum_trials": 0},
+    {"candidate_id": "hardware_camera_sync_probe", "availability": "unavailable_hardware_plan", "proof_class": "physical_read_only", "allowed_mutations": [], "required_observables": ["camera_timestamp", "joint_position"], "signatures": {"timing_delay": -0.8, "load_compliance": 0.1}, "compensation_debt_reduction": 0.5, "gate_relevance": 0.8, "parameter_information_gain": 0.75, "cost": 0.7, "risk": 0.2, "maximum_trials": 0}
+  ],
+  "authority": {"hardware_execution": false, "historical_result_mutation": false, "physical_mechanism_identification": false, "simulator_promotion": false, "training_admission": false, "policy_selection": false, "physical_capture": false, "robot_motion": false, "physical_transfer": false}
+}

@@ -1,0 +1,217 @@
+{
+  "schema_version": "sim2claw.sail_cutover.v1",
+  "cutover_id": "sail-clawloop-phase1-20260721-v1",
+  "activated_at": "2026-07-21T21:57:01-05:00",
+  "program": {
+    "plan": "docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md",
+    "plan_sha256": "495c9403c1a47e4a19db4401e53bf582a44a6546ab4bddb13716f2a65da13150",
+    "plan_sha256_scope": "activation_snapshot_before_live_milestone_status_updates",
+    "phase": 1,
+    "physical_data_policy": "no_new_physical_observations_or_robot_trials",
+    "retrospective_backfill_policy": "minimal_decision_graph_recovery_only",
+    "prospective_cutover": "new_simulator_and_synthetic_runs_only_after_contracts_hypotheses_splits_and_evaluators_are_frozen"
+  },
+  "repository_snapshot": {
+    "branch": "codex/SAIL-integration",
+    "base_commit": "5ecd2fb932661ef0026921557e42b5bd1f91bf95",
+    "base_ref": "origin/main",
+    "tracked_dirty_paths_at_cutover": [],
+    "preserved_ignored_roots": [
+      ".inspect_ai/",
+      ".codex/visualizations/",
+      "artifacts/",
+      "datasets/",
+      "evals/inspect_gapbench/fixtures/sealed/",
+      "outputs/",
+      "runs/"
+    ]
+  },
+  "runtime": {
+    "python": "3.12.12",
+    "uv": "0.9.29",
+    "pyproject_sha256": "091e59c1102fc32ff9edd4225ca9ff79bbd8aaf434d9569c29cd8aa5fd16f00c",
+    "uv_lock_sha256": "9515d5c178cddf9cbee0a93cf9daddbdf641c06ef869b41fa0e1a7e07873532a"
+  },
+  "research_rationale": [
+    {
+      "path": "docs/research/2026-07-21-sail-structure-adaptive-interventional-loop-closure.md",
+      "sha256": "9031a4ba9ac85291bab3905ab29d769d92c6756891b1534a2a9c7dfcc16e57e5"
+    },
+    {
+      "path": "docs/research/2026-07-21-agentic-twin-self-improvement-paper-plan.md",
+      "sha256": "ca191ec16b9891cc0715b520d0d84abdcd2d4c4cca36dec64a1dab0f7608e47e"
+    },
+    {
+      "path": "docs/research/2026-07-21-zero-new-data-implementation-split.md",
+      "sha256": "c7d62100459cfef6dab4e68ac576735330e7f2313d46978c3b04b87a08765aeb"
+    },
+    {
+      "path": "docs/research/2026-07-21-physics-loop-closure-practicality-ranking.md",
+      "sha256": "862a1586f4aa5bc7f72434856191add61a27bd2bb8e732e6fdb7b1a268913db0"
+    }
+  ],
+  "rationale_authority": "method_context_only_not_program_order_or_capability_authority",
+  "cohorts": [
+    {
+      "cohort_id": "retired_bg_physical_teleoperation_18",
+      "role": "already_open_regression",
+      "proof_class": "retrospective_physical_teleoperation_observation",
+      "episode_count": 18,
+      "sample_count": 7741,
+      "source": "configs/data/physical_pawn_move_catalog_20260719.json",
+      "source_sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e",
+      "claim_boundary": "human_teleoperation_source_not_learned_policy_or_fresh_validation"
+    },
+    {
+      "cohort_id": "retired_bg_sysid_train_15",
+      "role": "training",
+      "proof_class": "retrospective_physical_teleoperation_observation",
+      "episode_count": 15,
+      "source": "configs/sysid/physical_pawn_sysid_split_v1.json",
+      "source_sha256": "1aa839a31b896a26a000ed27ff649232427e3406403c66d7fe79c60b0a0acb08"
+    },
+    {
+      "cohort_id": "retired_bg_sysid_held_out_3",
+      "role": "already_open_regression",
+      "proof_class": "retrospective_physical_teleoperation_observation",
+      "episode_count": 3,
+      "source": "configs/sysid/physical_pawn_sysid_split_v1.json",
+      "source_sha256": "1aa839a31b896a26a000ed27ff649232427e3406403c66d7fe79c60b0a0acb08",
+      "selection_use": "forbidden"
+    },
+    {
+      "cohort_id": "retained_action_frozen_replay_11",
+      "role": "already_open_regression",
+      "proof_class": "retained_action_frozen_simulator_replay",
+      "episode_count": 11,
+      "source": "configs/optimization/pawn_bg_action_frozen_gap_v1.json",
+      "source_sha256": "ee7ab8e18e2ba3e3d64e1664f3e50894b97e35a762a4c4bf457d70c4fdd165a3",
+      "action_policy": "byte_identical_shape_dtype_order_and_sha256_across_variants"
+    },
+    {
+      "cohort_id": "retained_action_frozen_confirmation_2",
+      "role": "already_open_regression",
+      "proof_class": "retained_action_frozen_simulator_replay",
+      "episode_count": 2,
+      "source": "configs/optimization/pawn_bg_action_frozen_gap_v1.json",
+      "source_sha256": "ee7ab8e18e2ba3e3d64e1664f3e50894b97e35a762a4c4bf457d70c4fdd165a3",
+      "selection_use": "forbidden"
+    },
+    {
+      "cohort_id": "retained_mechanism_and_contact_candidates",
+      "role": "already_open_regression",
+      "proof_class": "retained_simulator_sensitivity",
+      "families": [
+        "geometry_scale",
+        "reset_reference",
+        "timing",
+        "deadband",
+        "load_response",
+        "contact_ensemble",
+        "timestep",
+        "fixed_pad",
+        "rubber_tip_friction"
+      ],
+      "claim_boundary": "candidate_fit_or_lower_error_does_not_identify_physical_mechanism"
+    },
+    {
+      "cohort_id": "legacy_gapbench_six_case_public_and_sealed",
+      "role": "already_open_regression",
+      "proof_class": "synthetic_benchmark",
+      "public_case_count": 6,
+      "sealed_case_count": 6,
+      "source": "configs/evaluations/sim2claw_gapbench_v1.json",
+      "source_sha256": "2eb32399ec8aa2e76199c9269b3082f44e04382bf52b0fc784c0e736e7b911ad"
+    },
+    {
+      "cohort_id": "legacy_corrective_repair_four_case",
+      "role": "already_open_regression",
+      "proof_class": "synthetic_benchmark",
+      "case_count": 4,
+      "development_perturbations_per_case": 16,
+      "sealed_perturbations_per_case": 16,
+      "source": "configs/evaluations/sim2claw_corrective_repair_benchmark_v1.json",
+      "source_sha256": "b4f52bd08dbcd18f92e48731ebd06d3168b7c3979f1bfcafb71e1aa0cc83e08d"
+    },
+    {
+      "cohort_id": "legacy_fixed_data_interaction_events",
+      "role": "already_open_regression",
+      "proof_class": "retrospective_physical_multimodal_derived_candidates",
+      "training_episode_count": 15,
+      "already_open_held_out_episode_count": 3,
+      "source": "configs/evaluations/sim2claw_fixed_data_event_pipeline_v1.json",
+      "source_sha256": "dd974ce26f3577db7b0eba130e7cf9a829c8b621ff38c08226036a2f262106f6"
+    },
+    {
+      "cohort_id": "legacy_rook_act_simulation",
+      "role": "already_open_regression",
+      "proof_class": "simulation_learned_policy",
+      "training_episode_count": 8,
+      "already_open_held_out_episode_count": 1,
+      "source": "configs/tasks/chess_rook_lift_v1.json",
+      "source_sha256": "cbd590e144b5b2a7d3c2a520ed76334bc0696b6e25003290e90a7064aca21587",
+      "claim_boundary": "narrow_fixed_rook_lift_only"
+    },
+    {
+      "cohort_id": "legacy_chess_groot_simulation",
+      "role": "already_open_regression",
+      "proof_class": "simulation_synthetic_vla_demonstration",
+      "training_episode_count": 24,
+      "already_open_held_out_episode_count": 4,
+      "source": "configs/tasks/chess_pick_place_groot_v1.json",
+      "source_sha256": "988a5a93d26358770c2dc3731602ba1dc11f723974758659d4cb05392f63ef58"
+    },
+    {
+      "cohort_id": "legacy_physical_bg_groot_exploratory",
+      "role": "training",
+      "proof_class": "physical_teleoperation_source_unqualified",
+      "episode_count": 18,
+      "held_out_episode_count": 0,
+      "source": "configs/experiments/groot_n17_physical_bg_exploratory_v1.json",
+      "source_sha256": "c48f62230ca08c3753c661f249fdecc42f0e2406f5cd2898472894847b76c497",
+      "claim_boundary": "in_sample_open_loop_diagnostic_not_policy_or_transfer_result"
+    },
+    {
+      "cohort_id": "sail_seeded_structural_benchmark_v1",
+      "role": "prospective_simulator",
+      "proof_class": "synthetic_benchmark",
+      "status": "reserved_until_P1-01_and_P1-10_contract_freeze"
+    },
+    {
+      "cohort_id": "sail_retired_bg_case_v1",
+      "role": "already_open_regression",
+      "proof_class": "retrospective_reanalysis",
+      "status": "reserved_for_P1-12_no_fresh_held_out_claim"
+    },
+    {
+      "cohort_id": "sail_prospective_simulator_case_v1",
+      "role": "prospective_simulator",
+      "proof_class": "prospective_simulator_experiment",
+      "status": "sealed_until_P1-09_hypothesis_and_intervention_freeze"
+    },
+    {
+      "cohort_id": "related_workcell_hardware_v1",
+      "role": "future_hardware",
+      "proof_class": "no_evidence",
+      "status": "blocked_external_until_phase1_exit_hardware_presence_and_owner_authority"
+    }
+  ],
+  "prospective_hypotheses": [
+    "Sparse structure-adaptive loop closure recovers seeded missing mechanisms more often than sequential parameter fitting without revisit.",
+    "Declared-scope influence discovery matches full-batch credit reassignment within frozen tolerance while recomputing fewer graph factors.",
+    "Mechanism-specific invariance rejects context-local compensation that pooled residual minimization accepts.",
+    "Structural-discrimination acquisition ranks the intervention that separates competing mechanism structures above cheaper non-discriminating sweeps.",
+    "A governed coding or reasoning agent improves bounded hypothesis generation on representative cases but cannot read sealed bytes or own evaluator truth.",
+    "Retained B-G evidence can support at most a trace-scoped TwinWorthiness level; interaction, data-generation, policy-selection, and physical-transfer gates remain closed unless separately proved."
+  ],
+  "authority": {
+    "agent_can_promote": false,
+    "trainer_can_promote": false,
+    "new_physical_capture": false,
+    "robot_motion": false,
+    "camera_or_serial_authority": false,
+    "downstream_training_admission": false,
+    "downstream_policy_selection": false,
+    "physical_transfer_claim": false
+  }
+}

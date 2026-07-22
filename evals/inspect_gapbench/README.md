@@ -141,6 +141,35 @@ Raw `.eval` logs, generated packets, state, and candidate workspaces are ignored
 Publish only redacted campaign summaries with configuration, image and skill
 digests, all attempts, costs, and the synthetic-only claim boundary.
 
+## Structural SAIL campaign
+
+The structural task extends this package with eight P1-10 SAIL packets and an
+eight-tool bridge for public evidence, residual and belief-graph inspection,
+typed hypotheses, one simulator-only probe, one public evaluation, and one
+terminal candidate. Codex and Claude receive the same ordered packets, skill
+bundle, Docker image, semantic tools, and budgets. Sealed rows remain in the
+host evaluator and agent prose is never scored.
+
+Run the three provider-independent development scenarios and materialize exact
+receipts without making a model call:
+
+```bash
+uv run sim2claw sail-compile-inspect-campaign \
+  --config configs/sail/inspect_campaign_v1.json \
+  --output outputs/sail/inspect-campaign-v1
+```
+
+Enumerate both adapters without authorizing a provider call:
+
+```bash
+uv run --group inspect inspect list tasks evals/inspect_gapbench/sail_task.py
+```
+
+The frozen native subscription transports cannot be substituted for Inspect's
+proxied bridged-tool transport. Until an equivalent authenticated route exists,
+those provider attempts are retained as zero-cost scored failures with no
+retry, rather than being presented as model results.
+
 ## Corrective-repair task
 
 The companion task measures whether an agent can turn repeated

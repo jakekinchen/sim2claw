@@ -1,0 +1,127 @@
+{
+  "schema_version": "sim2claw.sail_phase2_operator_packet.v1",
+  "packet_id": "sail-related-workcell-phase2-v1",
+  "frozen_at": "2026-07-22T14:00:00-05:00",
+  "default_workcell_class": "new_related_workcell",
+  "retired_workcell_may_be_overwritten_or_pooled": false,
+  "required_identity_fields": [
+    "robot_serials",
+    "servo_ids",
+    "firmware",
+    "calibration_sha256",
+    "fingertip_profile",
+    "board_identity",
+    "board_dimensions",
+    "board_to_base_transform",
+    "camera_identities",
+    "camera_intrinsics",
+    "camera_extrinsics",
+    "table_fixture_geometry",
+    "joint_mapping"
+  ],
+  "identity_values": {
+    "robot_serials": null,
+    "servo_ids": null,
+    "firmware": null,
+    "calibration_sha256": null,
+    "fingertip_profile": null,
+    "board_identity": null,
+    "board_dimensions": null,
+    "board_to_base_transform": null,
+    "camera_identities": null,
+    "camera_intrinsics": null,
+    "camera_extrinsics": null,
+    "table_fixture_geometry": null,
+    "joint_mapping": null
+  },
+  "authority": {
+    "owner": false,
+    "capture": false,
+    "motion": false,
+    "gateway": false,
+    "claim_same_workcell": false
+  },
+  "policy_camera_ids": ["overhead"],
+  "evaluator_only_camera_ids": ["wrist", "side", "depth"],
+  "split_roles": {
+    "calibration": [],
+    "validation": [],
+    "held_out": [],
+    "hardware_evaluation": []
+  },
+  "static_read_only_measurements": [
+    "wide_setup_photographs",
+    "overhead_apriltag_corners_and_calibration_frames",
+    "optional_evaluator_only_wrist_side_depth_calibration_frames",
+    "printed_tag_edge_and_board_dimensions_metric",
+    "pawn_reference_dimensions_metric",
+    "board_to_base_transform_with_uncertainty",
+    "camera_to_board_transforms_with_uncertainty",
+    "joint_position_velocity_and_fresh_current_at_rest",
+    "camera_timestamps_and_clock_alignment_target",
+    "gripper_aperture_and_geometry",
+    "background_and_lighting_descriptors"
+  ],
+  "motion_probe_matrix": {
+    "empty_arm_and_gripper": [
+      "five_empty_close_open_cycles_at_declared_speeds",
+      "low_amplitude_implicated_joint_steps_or_chirps_at_two_frequencies_both_directions",
+      "stationary_pose_load_holds_at_two_or_more_elbow_lift_configurations",
+      "repeated_home_reset_observations",
+      "camera_robot_timestamp_flash_or_visible_motion_alignment"
+    ],
+    "instrumented_interaction": [
+      "approach_without_closure",
+      "empty_close_adjacent_to_pawn",
+      "closure_around_pawn_without_lift",
+      "short_vertical_retention_lift",
+      "short_horizontal_transport",
+      "release_over_known_board_region"
+    ]
+  },
+  "required_sample_fields": [
+    "commanded_joint_positions",
+    "measured_joint_positions",
+    "measured_joint_velocities",
+    "fresh_motor_current_or_effort_proxy_with_read_timestamp",
+    "command_write_timestamp",
+    "bus_ack_timestamp",
+    "joint_observation_timestamp",
+    "camera_capture_timestamp",
+    "commanded_and_measured_gripper_position_or_aperture",
+    "synchronized_overhead_and_evaluator_only_frames",
+    "safety_stop_and_failure_events"
+  ],
+  "frozen_prediction_source": {
+    "path": "outputs/sail/prospective-sim-v1/phase2_prediction_freeze.json",
+    "sha256": "73510a0ab4e4d840576ea0de364e0a8f08064831fd2820ce8005de2b179baa4c"
+  },
+  "frozen_prediction_ids": [
+    "P2-TIMING-RATE",
+    "P2-LOAD-PROXY",
+    "P2-CONTACT-OBSERVABILITY"
+  ],
+  "stop_conditions": [
+    "missing_owner_authority",
+    "missing_or_unbound_workcell_identity",
+    "gateway_preflight_not_reviewed",
+    "stale_current_or_timestamp_freshness_unknown",
+    "policy_and_evaluator_camera_roles_overlap",
+    "calibration_or_training_ids_overlap_hardware_evaluation_ids",
+    "source_bytes_or_safety_receipt_not_immutable",
+    "phase1_prediction_or_method_changed_after_physical_observation",
+    "twinworthiness_capability_not_open_for_requested_operation"
+  ],
+  "operator_sequence": [
+    "bind_authority_and_all_identity_fields",
+    "classify_new_related_workcell_unless_every_sameness_condition_is_proved",
+    "freeze_calibration_validation_and_held_out_roles",
+    "run_gateway_preflight_torque_off",
+    "collect_static_read_only_package",
+    "score_phase1_predictions_before_method_revision",
+    "request_separate_motion_authority",
+    "run_minimum_discriminating_empty_probes",
+    "run_minimum_instrumented_interaction_probes",
+    "open_held_out_evidence_once_after_candidate_freeze"
+  ]
+}

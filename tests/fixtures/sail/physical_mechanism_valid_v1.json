@@ -1,0 +1,22 @@
+{
+  "schema_version": "sim2claw.physical_mechanism.v1",
+  "mechanism_id": "fixture_timing_delay",
+  "version": 1,
+  "family": "timing",
+  "physical_interpretation": "A bounded command-observation delay hypothesis.",
+  "affected_components": ["actuator_timing"],
+  "parameters": [
+    {"name": "delay_seconds", "unit": "second", "prior": {"family": "uniform"}, "minimum": 0.0, "maximum": 0.2}
+  ],
+  "predicted_residual_signatures": [{"phase": "all", "channel": "joint_position", "signature": "time_shift"}],
+  "required_observables": ["command_time", "joint_position"],
+  "non_identifiabilities": ["camera_delay_without_camera_timestamp"],
+  "candidate_interventions": ["frequency_sweep"],
+  "simulator_mutation": "sim2claw.sail.fixture_timing_delay",
+  "graph_factors": ["actuator_timing"],
+  "influence_edges": [{"from": "timing", "to": "joint_residual"}],
+  "invalidation_rules": ["reopen_joint_response_if_delay_changes"],
+  "invariance_scope": {"invariant_parameters": ["delay_seconds"], "allowed_context_covariates": ["direction", "frequency"]},
+  "action_immutability_tests": ["GOLD-01"],
+  "canonical_digest": "c065fb4cf9640f21cf14cd124890aee0d25795d827f7b30aeb588de37662f8d6"
+}

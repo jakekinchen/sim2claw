@@ -254,6 +254,124 @@ def build_parser() -> argparse.ArgumentParser:
         help="acknowledge that the powered follower workcell is clear for motion",
     )
 
+    sail_inventory = subparsers.add_parser(
+        "sail-inventory",
+        help="verify the hash-bound retained SAIL evidence inventory",
+    )
+    sail_inventory.add_argument("--campaign", type=Path, required=True)
+
+    sail_compile = subparsers.add_parser(
+        "sail-compile-evidence",
+        help="compile retained sources into ignored CalibrationEvidence.v1 artifacts",
+    )
+    sail_compile.add_argument("--campaign", type=Path, required=True)
+    sail_compile.add_argument("--output", type=Path, required=True)
+
+    sail_residuals = subparsers.add_parser(
+        "sail-compile-residuals",
+        help="compile phase-aligned ResidualField.v1 artifacts from retained evidence",
+    )
+    sail_residuals.add_argument("--config", type=Path, required=True)
+    sail_residuals.add_argument("--output", type=Path, required=True)
+
+    sail_belief_graph = subparsers.add_parser(
+        "sail-compile-belief-graph",
+        help="compile the deterministic retained SAIL belief graph and revisions",
+    )
+    sail_belief_graph.add_argument("--config", type=Path, required=True)
+    sail_belief_graph.add_argument("--output", type=Path, required=True)
+
+    sail_surprise = subparsers.add_parser(
+        "sail-compile-structural-surprise",
+        help="compile normalized SAIL compensation debt and mechanism request",
+    )
+    sail_surprise.add_argument("--config", type=Path, required=True)
+    sail_surprise.add_argument("--output", type=Path, required=True)
+
+    sail_mechanisms = subparsers.add_parser(
+        "sail-compile-mechanisms",
+        help="compile bounded SAIL mechanism plugins and seeded posteriors",
+    )
+    sail_mechanisms.add_argument("--config", type=Path, required=True)
+    sail_mechanisms.add_argument("--output", type=Path, required=True)
+
+    sail_loop_closure = subparsers.add_parser(
+        "sail-compile-loop-closure",
+        help="compile deterministic SAIL influence discovery and sparse loop closure",
+    )
+    sail_loop_closure.add_argument("--config", type=Path, required=True)
+    sail_loop_closure.add_argument("--output", type=Path, required=True)
+
+    sail_invariance = subparsers.add_parser(
+        "sail-compile-invariance",
+        help="compile plugin-declared whole-episode SAIL invariance verdicts",
+    )
+    sail_invariance.add_argument("--config", type=Path, required=True)
+    sail_invariance.add_argument("--output", type=Path, required=True)
+
+    sail_acquisition = subparsers.add_parser(
+        "sail-compile-acquisition",
+        help="compile deterministic SAIL structural-discrimination probe plans",
+    )
+    sail_acquisition.add_argument("--config", type=Path, required=True)
+    sail_acquisition.add_argument("--output", type=Path, required=True)
+
+    sail_benchmark = subparsers.add_parser(
+        "sail-compile-benchmark",
+        help="compile the disjoint public/sealed seeded SAIL benchmark",
+    )
+    sail_benchmark.add_argument("--config", type=Path, required=True)
+    sail_benchmark.add_argument("--output", type=Path, required=True)
+
+    sail_inspect_campaign = subparsers.add_parser(
+        "sail-compile-inspect-campaign",
+        help="compile the governed structural Inspect development campaign",
+    )
+    sail_inspect_campaign.add_argument("--config", type=Path, required=True)
+    sail_inspect_campaign.add_argument("--output", type=Path, required=True)
+
+    sail_retrospective_case = subparsers.add_parser(
+        "sail-compile-retrospective-case",
+        help="compile the retired-workcell SAIL loop-closure case and certificate",
+    )
+    sail_retrospective_case.add_argument("--config", type=Path, required=True)
+    sail_retrospective_case.add_argument("--output", type=Path, required=True)
+
+    sail_prospective_simulator = subparsers.add_parser(
+        "sail-run-prospective-simulator",
+        help="run the preregistered action-frozen prospective simulator campaign",
+    )
+    sail_prospective_simulator.add_argument("--config", type=Path, required=True)
+    sail_prospective_simulator.add_argument("--output", type=Path, required=True)
+
+    sail_twin_capability = subparsers.add_parser(
+        "sail-compile-twin-capability",
+        help="compile exact-scope TwinWorthiness kill-switch evidence",
+    )
+    sail_twin_capability.add_argument("--config", type=Path, required=True)
+    sail_twin_capability.add_argument("--output", type=Path, required=True)
+
+    sail_policy_flywheel = subparsers.add_parser(
+        "sail-run-policy-flywheel",
+        help="run and compile the gated synthetic policy-flywheel campaign",
+    )
+    sail_policy_flywheel.add_argument("--config", type=Path, required=True)
+    sail_policy_flywheel.add_argument("--output", type=Path, required=True)
+
+    sail_studio_observatory = subparsers.add_parser(
+        "sail-compile-studio-observatory",
+        help="compile the receipt-bound read-only SAIL Studio investigation surface",
+    )
+    sail_studio_observatory.add_argument("--config", type=Path, required=True)
+    sail_studio_observatory.add_argument("--output", type=Path, required=True)
+
+    sail_publication = subparsers.add_parser(
+        "sail-compile-publication",
+        help="compile the receipt-bound Phase 1 SAIL paper and reproduction package",
+    )
+    sail_publication.add_argument("--config", type=Path, required=True)
+    sail_publication.add_argument("--output", type=Path, required=True)
+
     recorded_replay = subparsers.add_parser(
         "replay-recorded",
         help="replay one recorded command episode in MuJoCo and emit synchronized metrics",
@@ -810,6 +928,187 @@ def main(argv: Sequence[str] | None = None) -> int:
                     sort_keys=True,
                 )
             )
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-inventory":
+        from .sail.contracts import SailContractError
+        from .sail.evidence import inventory_campaign
+
+        try:
+            report = inventory_campaign(args.campaign)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-evidence":
+        from .sail.contracts import SailContractError
+        from .sail.evidence import compile_campaign
+
+        try:
+            report = compile_campaign(args.campaign, args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-residuals":
+        from .sail.contracts import SailContractError
+        from .sail.residuals import compile_residuals
+
+        try:
+            report = compile_residuals(args.config, args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-belief-graph":
+        from .sail.belief_graph import compile_belief_graph
+        from .sail.contracts import SailContractError
+
+        try:
+            report = compile_belief_graph(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-structural-surprise":
+        from .sail.contracts import SailContractError
+        from .sail.structural_surprise import compile_structural_surprise
+
+        try:
+            report = compile_structural_surprise(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-mechanisms":
+        from .sail.contracts import SailContractError
+        from .sail.posterior import compile_mechanisms
+
+        try:
+            report = compile_mechanisms(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-loop-closure":
+        from .sail.contracts import SailContractError
+        from .sail.loop_closure import compile_loop_closure
+
+        try:
+            report = compile_loop_closure(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-invariance":
+        from .sail.contracts import SailContractError
+        from .sail.invariance import compile_invariance
+
+        try:
+            report = compile_invariance(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-acquisition":
+        from .sail.acquisition import compile_acquisition
+        from .sail.contracts import SailContractError
+
+        try:
+            report = compile_acquisition(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-benchmark":
+        from .sail.benchmark import compile_benchmark
+        from .sail.contracts import SailContractError
+        try:
+            report = compile_benchmark(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-inspect-campaign":
+        from .sail.agent_campaign import compile_campaign
+        from .sail.contracts import SailContractError
+        try:
+            report = compile_campaign(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-retrospective-case":
+        from .sail.contracts import SailContractError
+        from .sail.retrospective_case import compile_case
+        try:
+            report = compile_case(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-run-prospective-simulator":
+        from .sail.contracts import SailContractError
+        from .sail.prospective_simulator import run_campaign
+        try:
+            report = run_campaign(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-twin-capability":
+        from .sail.capability_campaign import compile_campaign
+        from .sail.contracts import SailContractError
+        try:
+            report = compile_campaign(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-run-policy-flywheel":
+        from .sail.contracts import SailContractError
+        from .sail.policy_flywheel_campaign import compile_campaign
+        try:
+            report = compile_campaign(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-studio-observatory":
+        from .sail.contracts import SailContractError
+        from .sail.studio import compile_studio_observatory
+
+        try:
+            report = compile_studio_observatory(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-publication":
+        from .sail.contracts import SailContractError
+        from .sail.publication import compile_publication
+
+        try:
+            report = compile_publication(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0

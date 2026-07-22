@@ -1954,6 +1954,7 @@ name = "sim2claw"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "jsonschema" },
     { name = "lerobot", extra = ["feetech"] },
     { name = "mujoco", extra = ["sysid"] },
     { name = "numpy" },
@@ -1977,6 +1978,7 @@ inspect = [
 
 [package.metadata]
 requires-dist = [
+    { name = "jsonschema", specifier = "==4.26.0" },
     { name = "lerobot", extras = ["feetech"], specifier = "==0.6.0" },
     { name = "mujoco", extras = ["sysid"], specifier = "==3.10.0" },
     { name = "numpy", specifier = "==2.2.6" },
