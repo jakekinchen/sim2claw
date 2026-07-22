@@ -458,6 +458,36 @@ def test_force_ramp_family_tightens_energy_plausibility() -> None:
     assert contract["proof_boundary"]["simulator_ctrl_mutable"] is False
 
 
+def test_force_trigger_family_arms_only_in_recorded_closure_phase() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_force_trigger_v1.json"
+        )
+    )
+
+    family = contract["frozen_candidate_family"]
+    assert len(family) == 18
+    thresholds = {
+        row["overrides"].get(
+            "gripper_contact_force_limit_activation_action_max_rad"
+        )
+        for row in family
+    }
+    assert thresholds == {None, 0.1, 0.05, 0.0, -0.02, -0.04}
+    assert contract["acceptance"]["anchor_maximum_piece_rise_m"] == 0.1
+    assert (
+        contract["acceptance"][
+            "anchor_maximum_force_target_transition_count"
+        ]
+        == 50
+    )
+    assert contract["proof_boundary"]["policy_actions_mutable"] is False
+    assert contract["proof_boundary"]["simulator_ctrl_mutable"] is False
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

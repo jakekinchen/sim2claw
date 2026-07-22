@@ -61,6 +61,9 @@ VERTICAL_CONTACT_SCHEMA = (
     "sim2claw.sail_grasp_retention_vertical_contact_campaign.v1"
 )
 FORCE_RAMP_SCHEMA = "sim2claw.sail_grasp_retention_force_ramp_campaign.v1"
+FORCE_TRIGGER_SCHEMA = (
+    "sim2claw.sail_grasp_retention_force_trigger_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -121,6 +124,7 @@ def load_grasp_retention_contract(
         CONTACT_HEIGHT_SCHEMA,
         VERTICAL_CONTACT_SCHEMA,
         FORCE_RAMP_SCHEMA,
+        FORCE_TRIGGER_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -146,6 +150,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-contact-height-v1",
         "sail-grasp-retention-vertical-contact-v1",
         "sail-grasp-retention-force-ramp-v1",
+        "sail-grasp-retention-force-trigger-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 
@@ -281,6 +286,19 @@ def _anchor_result(
         maximum_allowed_rise
     ):
         reasons.append("excessive_simulated_energy")
+    force_target_transitions = int(
+        episode.get("load_sensitive_gripper_response", {})
+        .get("force_limit_ramp", {})
+        .get("target_transition_count", 0)
+    )
+    maximum_force_target_transitions = acceptance.get(
+        "anchor_maximum_force_target_transition_count"
+    )
+    if (
+        maximum_force_target_transitions is not None
+        and force_target_transitions > int(maximum_force_target_transitions)
+    ):
+        reasons.append("force_limit_chatter")
     return {
         "status": "anchor_pass" if not reasons else "rejected",
         "reasons": reasons,
@@ -307,6 +325,7 @@ def _anchor_result(
         "maximum_transport_progress_after_lift": episode.get(
             "maximum_transport_progress_after_lift"
         ),
+        "force_target_transition_count": force_target_transitions,
         "trace_metrics": {
             "overall_joint_rms_degrees": float(
                 episode["trace_metrics"]["overall_joint_rms_degrees"]

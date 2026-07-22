@@ -1546,6 +1546,20 @@ def _run_episode(
         "target_active": False,
         "target_transition_count": 0,
     }
+    raw_force_activation_action = parameters.get(
+        "gripper_contact_force_limit_activation_action_max_rad"
+    )
+    force_activation_action_max_rad = (
+        None
+        if raw_force_activation_action is None
+        else float(raw_force_activation_action)
+    )
+    if force_activation_action_max_rad is not None and not (
+        -0.2 <= force_activation_action_max_rad <= 0.4
+    ):
+        raise GraspCoordinateDescentError(
+            "gripper_contact_force_limit_activation_action_max_rad exceeds bounds"
+        )
 
     def apply_response(action: np.ndarray) -> None:
         data.ctrl[actuator_ids] = action
@@ -1586,9 +1600,14 @@ def _run_episode(
                     (body1 in moving_jaw_bodies and body2 == selected_body)
                     or (body2 in moving_jaw_bodies and body1 == selected_body)
                 )
+        gripper_action = float(action[-1])
+        activation_action_ready = (
+            force_activation_action_max_rad is None
+            or gripper_action <= force_activation_action_max_rad
+        )
+        loaded_by_piece = loaded_by_piece and activation_action_ready
         force_limit_active = loaded_by_piece
         if force_latch_enabled:
-            gripper_action = float(action[-1])
             latch_action = force_latch_state["latch_action_rad"]
             if force_latch_state["active"]:
                 if gripper_action > float(latch_action) + math.radians(
@@ -1603,7 +1622,11 @@ def _run_episode(
                 else:
                     force_limit_active = True
             elif force_latch_state["armed"]:
-                if fixed_selected_contact and moving_selected_contact:
+                if (
+                    activation_action_ready
+                    and fixed_selected_contact
+                    and moving_selected_contact
+                ):
                     force_latch_state["bilateral_steps"] += 1
                 else:
                     force_latch_state["bilateral_steps"] = 0
@@ -2513,6 +2536,7 @@ def _run_episode(
                 )
             ),
             "trigger": "any_jaw_body_contact_with_any_pawn_body",
+            "activation_action_max_rad": force_activation_action_max_rad,
             "source_actions_mutated": False,
             "load_hold": {
                 "enabled": load_hold_enabled,

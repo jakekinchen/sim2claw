@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02L COMPLETE; B2-02M IN PROGRESS`
+Status: `ACTIVE — B2-02M COMPLETE; B2-02N IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -28,7 +28,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02J | complete, terminal negative | stable 0.5 ms pad retains through release with valid aperture/slip but misses transport |
 | B2-02K | complete, terminal negative | coverage-axis offsets change the sleeve footprint but not the vertical pawn contact point |
 | B2-02L | complete, terminal negative | vertical offsets preserve the same pawn-relative manifold; force bifurcation dominates |
-| B2-02M | in progress | smooth contact-triggered current-limit ramp with excessive-energy rejection |
+| B2-02M | complete, terminal negative | ramp removes most launches; best valid branch still makes 688 target transitions and misses transport |
+| B2-02N | in progress | closure-phase-gated current limit with ramp/latch cross around valid frontier |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -165,3 +166,12 @@ to about 2.1% on any jaw/pawn contact and back on separation. B2-02M replaces
 that optional switch with a bounded linear ramp over 2.5--200 ms. It also adds
 a 0.1 m maximum-rise rejection; this tightens, rather than relaxes, the frozen
 C2 gates and prevents an energy-injection artifact from being promoted.
+
+B2-02M removes the launch for most candidates and exposes a valid one-gate
+frontier at force 0.0215 / ramp 20 ms: contact loss 406, +0.496 degrees aperture
+bias, 14.2% slip improvement, and 12.3% transport progress, but no transport
+pass. The episode still makes 688 force-target transitions. Those transitions
+start when the open jaw brushes non-target pawns. B2-02N optionally arms the
+load limit only after the immutable source gripper command crosses a frozen
+closure threshold. It crosses threshold, latch dwell, and ramp duration without
+changing the action or control arrays, and retains the excessive-energy gate.

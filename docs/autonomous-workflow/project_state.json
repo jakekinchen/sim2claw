@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_force_ramp_v1",
-  "current_milestone": "B2_02M_FROZEN_FORCE_RAMP_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_force_trigger_v1",
+  "current_milestone": "B2_02N_FROZEN_FORCE_TRIGGER_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "vertical_contact_terminal_negative_hybrid_force_discontinuity_diagnosed_ramp_followup_frozen",
+    "status": "force_ramp_one_gate_frontier_contact_chatter_diagnosed_closure_trigger_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -653,7 +653,8 @@
       "B2-02J": "completed_terminal_negative",
       "B2-02K": "completed_terminal_negative",
       "B2-02L": "completed_terminal_negative",
-      "B2-02M": "in_progress",
+      "B2-02M": "completed_terminal_negative",
+      "B2-02N": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -832,6 +833,20 @@
       "classification": "nonphysical_energy_injection_not_a_win"
     },
     "force_ramp_contract": "configs/sail/grasp_retention_force_ramp_v1.json",
+    "force_ramp_anchor_pass_count": 0,
+    "force_ramp_receipt_sha256": "6c012118b7e6bb68804e106f0dca76d714583e742fa10041674d8b78a65c4ab2",
+    "force_ramp_receipt_digest": "ac064f4d358f043d9ec84d2030d98147a0efd9aa43c1d48622b77f5fb095a6f6",
+    "force_ramp_best_valid_frontier": {
+      "candidate_id": "force_0215_ramp_020",
+      "maximum_piece_rise_m": 0.05891184611397138,
+      "maximum_transport_progress_after_lift": 0.1230516928059152,
+      "contact_loss_source_index": 406,
+      "loaded_aperture_bias_degrees": 0.49585437814540295,
+      "post_grasp_slip_relative_reduction": 0.1416054974976468,
+      "force_target_transition_count": 688,
+      "lift_and_transport": false
+    },
+    "force_trigger_contract": "configs/sail/grasp_retention_force_trigger_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false
