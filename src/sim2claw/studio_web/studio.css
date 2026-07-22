@@ -5716,8 +5716,12 @@ body[data-studio-mode="read_only_evidence"] .live-trigger {
   }
 
   .metric b {
+    min-width: 0;
+    overflow: hidden;
     font-size: 20px;
-    line-height: 1;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
 
   .mobile-browser-toggle {
@@ -5924,6 +5928,10 @@ body[data-studio-mode="read_only_evidence"] .live-trigger {
 
   .orchestrator-command-bar {
     padding: 10px;
+  }
+
+  body[data-studio-mode="read_only_evidence"] .orchestrator-command-bar {
+    display: none;
   }
 
   .orchestrator-controls {

@@ -2590,7 +2590,9 @@ function restoreRoute() {
     return;
   }
   if (route === "episodes" && parts[1] && episodeById(parts[1])) {
+    const episode = episodeById(parts[1]);
     setActiveView("replay", { updateRoute: false });
+    selectTask(episode.task_id, { selectLatest: false, updateRoute: false });
     selectEpisode(parts[1], { updateRoute: false });
     return;
   }
