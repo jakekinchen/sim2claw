@@ -193,3 +193,11 @@ goal. External provider campaigns and spending remain separately gated.
   no `admitted-to` edge exists, and source action evidence traverses to the
   terminal verdict. Thirty-nine SAIL tests and the uninterrupted
   659-test/328-subtest broad suite passed. P1-05 opened.
+- 2026-07-22T01:22:03-05:00 — P1-05 computed 0.9429 normalized compensation
+  debt over 0.70 available weight from five source-bound contributors. Three
+  posterior-dependent components remain unavailable rather than zero; six
+  missing physical/object channels make `missing_observable` primary. A
+  deterministic no-agent packet requests candidate mechanism families while
+  selecting none and asserting no physical cause. GOLD-05 passed, 0/256 clean
+  seeded cases falsely triggered, 48 SAIL tests and the uninterrupted
+  668-test/328-subtest broad suite passed. P1-06 opened.

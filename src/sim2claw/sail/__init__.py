@@ -11,6 +11,7 @@ from .contracts import (
 from .belief_graph import build_belief_graph, compile_belief_graph, validate_graph
 from .evidence import compile_campaign, inventory_campaign, load_campaign
 from .residuals import build_residual_field, compile_residuals
+from .structural_surprise import compile_structural_surprise, evaluate_surprise
 
 __all__ = [
     "SailContractError",
@@ -27,4 +28,6 @@ __all__ = [
     "build_belief_graph",
     "compile_belief_graph",
     "validate_graph",
+    "compile_structural_surprise",
+    "evaluate_surprise",
 ]

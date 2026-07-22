@@ -1,6 +1,6 @@
 # SAIL/ClawLoop Phase 1 Goal
 
-Status: `ACTIVE — P1-00 THROUGH P1-04 COMPLETE; P1-05 IN PROGRESS`
+Status: `ACTIVE — P1-00 THROUGH P1-05 COMPLETE; P1-06 IN PROGRESS`
 
 The active program authority is
 [`docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md`](docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md).
@@ -14,10 +14,10 @@ simulator evidence, and all ACT/GR00T data generation or policy selection stays
 closed unless an evaluator-owned TwinWorthiness certificate opens the declared
 capability. Source actions remain byte-identical in the action-frozen lane.
 
-Current milestone: **P1-05 — Implement structural surprise and compensation debt**.
+Current milestone: **P1-06 — Implement mechanism plugins and posterior fitting**.
 
 Active brief:
-[`docs/briefs/020-sail-structural-surprise-and-compensation-debt.md`](docs/briefs/020-sail-structural-surprise-and-compensation-debt.md).
+[`docs/briefs/021-sail-mechanism-plugins-and-posteriors.md`](docs/briefs/021-sail-mechanism-plugins-and-posteriors.md).
 
 Live milestone status is maintained in the master plan's Section 12 ledger and
 in `docs/autonomous-workflow/project_state.json`. The research documents named
