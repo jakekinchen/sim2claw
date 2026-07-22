@@ -179,6 +179,24 @@ def test_compliant_footprint_followup_is_bound_to_first_negative() -> None:
     ) == 1.75
 
 
+def test_layered_cap_family_requires_rubber_load_path() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_layered_cap_v1.json"
+        )
+    )
+
+    assert len(contract["frozen_candidate_family"]) == 18
+    assert contract["diagnosis_anchor"]["free_surface_anchor_pass_count"] == 0
+    assert contract["base_parameters"]["tip_segment_count"] == 1
+    assert contract["acceptance"][
+        "anchor_minimum_rubber_load_pair_fraction_after_lift"
+    ] == 0.9
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

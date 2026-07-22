@@ -29,6 +29,7 @@ NORMAL_COMPLIANCE_SCHEMA = (
 COMPLIANT_FOOTPRINT_SCHEMA = (
     "sim2claw.sail_grasp_retention_compliant_footprint_campaign.v1"
 )
+LAYERED_CAP_SCHEMA = "sim2claw.sail_grasp_retention_layered_cap_campaign.v1"
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -77,6 +78,7 @@ def load_grasp_retention_contract(
         CAPSULE_SCHEMA,
         NORMAL_COMPLIANCE_SCHEMA,
         COMPLIANT_FOOTPRINT_SCHEMA,
+        LAYERED_CAP_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -90,6 +92,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-capsule-pad-v1",
         "sail-grasp-retention-normal-compliance-v1",
         "sail-grasp-retention-compliant-footprint-v1",
+        "sail-grasp-retention-layered-cap-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 
@@ -173,6 +176,22 @@ def _anchor_result(
     )
     slip = float(episode["maximum_post_grasp_slip_m"])
     reduction = 0.0 if baseline_slip_m == 0.0 else (baseline_slip_m - slip) / baseline_slip_m
+    post_lift_pairs = [
+        row["load_bearing_pair"]
+        for row in episode.get("retention_trace") or []
+        if row.get("mechanism_phase") == "after_lift"
+        and row.get("load_bearing_pair") is not None
+    ]
+    rubber_pair_count = sum(
+        "_rubber_tip_" in str(pair[side]["jaw_geom_name"])
+        for pair in post_lift_pairs
+        for side in ("fixed", "moving")
+    )
+    rubber_pair_fraction = (
+        0.0
+        if not post_lift_pairs
+        else rubber_pair_count / (2.0 * len(post_lift_pairs))
+    )
     reasons: list[str] = []
     if (
         episode.get("action_array_sha256") != expected_action
@@ -191,6 +210,13 @@ def _anchor_result(
         acceptance["anchor_post_grasp_slip_relative_reduction_minimum"]
     ):
         reasons.append("insufficient_slip_reduction")
+    minimum_rubber_fraction = acceptance.get(
+        "anchor_minimum_rubber_load_pair_fraction_after_lift"
+    )
+    if minimum_rubber_fraction is not None and rubber_pair_fraction < float(
+        minimum_rubber_fraction
+    ):
+        reasons.append("rigid_or_missing_post_lift_load_path")
     return {
         "status": "anchor_pass" if not reasons else "rejected",
         "reasons": reasons,
@@ -207,6 +233,8 @@ def _anchor_result(
         ),
         "post_grasp_slip_m": slip,
         "post_grasp_slip_relative_reduction": reduction,
+        "post_lift_load_pair_count": len(post_lift_pairs),
+        "rubber_load_pair_fraction_after_lift": rubber_pair_fraction,
         "trace_metrics": {
             "overall_joint_rms_degrees": float(
                 episode["trace_metrics"]["overall_joint_rms_degrees"]

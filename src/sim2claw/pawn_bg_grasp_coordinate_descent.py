@@ -1402,6 +1402,15 @@ def _run_episode(
         elif "_rubber_tip_moving_" in body_name:
             moving_jaw_bodies.add(body_id)
     jaw_body_ids = fixed_jaw_bodies | moving_jaw_bodies
+    compliant_pad_qpos_addresses: dict[str, int] = {}
+    for joint_id in range(model.njnt):
+        joint_name = (
+            mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, joint_id) or ""
+        )
+        if "_rubber_tip_" in joint_name and joint_name.endswith("_normal_joint"):
+            compliant_pad_qpos_addresses[joint_name] = int(
+                model.jnt_qposadr[joint_id]
+            )
     piece_body_ids = set(piece_bodies.values())
     fixed_tip_geom = mujoco.mj_name2id(
         model, mujoco.mjtObj.mjOBJ_GEOM, "left_fixed_jaw_sph_tip2"
@@ -1938,6 +1947,12 @@ def _run_episode(
                                 mapped["measured"][resolved_source_index, -1]
                             )
                         ),
+                        "compliant_pad_normal_displacement_m": {
+                            name: float(data.qpos[address])
+                            for name, address in sorted(
+                                compliant_pad_qpos_addresses.items()
+                            )
+                        },
                     }
                 )
                 last_retention_source_index = source_index
