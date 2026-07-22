@@ -62,6 +62,7 @@ def test_all_phase_one_sail_cli_routes_are_parseable() -> None:
         "sail-compile-twin-capability",
         "sail-run-policy-flywheel",
         "sail-compile-studio-observatory",
+        "sail-compile-publication",
     ]
     for command in commands:
         source_flag = "--campaign" if command in campaign_commands else "--config"

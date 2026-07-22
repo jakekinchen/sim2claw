@@ -1276,6 +1276,14 @@ Phase 1 is complete when:
 - the Phase 2 operator packet is executable without redesign; and
 - no paid compute, container, device lease, or Brev resource remains active.
 
+Phase 1 completion verdict (2026-07-22): **satisfied**. P1-00 through P1-17
+are complete; P1-15 is explicitly terminal-negative/fail-closed on current
+evidence; all automatic tiers and the 787-test broad gate pass; proof lanes and
+hardware predictions are frozen; the Phase 2 packet is executable but opens no
+authority; authenticated Brev inventory and running-container inventory are
+empty. P2-00 through P2-07 remain `blocked_external` pending a related workcell
+and separately granted capture and motion authority.
+
 ---
 
 ## 11. Phase 2 — related-workcell hardware verification
@@ -1503,7 +1511,7 @@ Only one milestone should be `in_progress` in the active goal loop.
 | P1-14 TwinWorthiness wiring | P1-01, P1-03, P1-08 | completed | exact-scope expiring capability envelopes; LF-08/09/11/13 recompute fail-closed decisions; seven revocation paths denied; current TW-REPLAY opens diagnostics only; synthetic higher-level branch reachability; GOLD-17/18/19 |
 | P1-15 Policy flywheel | P1-14 | completed | production LF-00–LF-13 synthetic component path; 18-field posterior/teacher/simulator/evaluator lineage; strict failure/suffix matrix; ACT terminal-negative and independent rejection; overhead-only GR00T explicit compute skip; real lane zero rows/comparisons |
 | P1-16 Studio | P1-03, P1-04, P1-14 | completed | native read-only evidence spine; 11 explicit-missingness episodes, 4 bound figures, phone WebKit audit |
-| P1-17 Publication freeze | P1-10–P1-16 | in_progress | tables, figures, reproduction map |
+| P1-17 Publication freeze | P1-10–P1-16 | completed | receipt-bound 6-question/10-ablation campaign; 9 tables, 7 figures, reproduction map, Phase 2 operator packet, broad gate/resource closeout |
 | P2-00 Hardware identity | Phase 1 exit, authority | blocked_external | new-workcell receipt |
 | P2-01 Read-only package | P2-00 capture authority | blocked_external | calibration/static receipt |
 | P2-02 Empty probes | P2-01 motion authority | blocked_external | synchronized probe receipt |

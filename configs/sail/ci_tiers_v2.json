@@ -28,7 +28,7 @@
       "network": false,
       "provider_calls": false,
       "hardware": false,
-      "command": "uv run pytest tests/test_sail_agent_campaign.py tests/test_sail_capability_campaign.py tests/test_sail_policy_flywheel_campaign.py tests/test_learning_factory.py tests/test_sail_cli.py tests/test_studio.py tests/test_sail_studio_observatory.py -q"
+      "command": "uv run pytest tests/test_sail_agent_campaign.py tests/test_sail_capability_campaign.py tests/test_sail_policy_flywheel_campaign.py tests/test_learning_factory.py tests/test_sail_cli.py tests/test_studio.py tests/test_sail_studio_observatory.py tests/test_sail_publication.py -q"
     },
     {
       "id": "retained_evidence",
