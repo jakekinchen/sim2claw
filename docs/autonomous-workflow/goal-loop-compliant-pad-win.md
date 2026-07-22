@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02G COMPLETE; B2-02H IN PROGRESS`
+Status: `ACTIVE — B2-02H COMPLETE; B2-02I IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -23,7 +23,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02E | complete, terminal negative | latch earns retained transport through release at force 0.04 but fails aperture, slip, and rubber-path gates |
 | B2-02F | complete, terminal negative | long wrap earns retained transport to frame 523 but overlapping rigid collision still bypasses rubber |
 | B2-02G | complete, terminal negative | 100% rubber aperture/slip frontier reaches frame 339; moving contact exits at two footprint edges |
-| B2-02H | in progress | moving-cap coverage/width overhang crossed around force 0.022--0.024 |
+| B2-02H | complete, terminal negative | overhang earns rubber-only retained transport but rigid-skin energy makes aperture/slip invalid |
+| B2-02I | in progress | corrected collision skin crossed with bounded spring-damper travel/stiffness at force 0.022/0.024 |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -109,3 +110,11 @@ lift, and 100% rubber-load gates, but loses at frame 339 before transport. The
 last stable moving contact lies at 5.89 mm of a 6 mm coverage half-length and
 4.99 mm of a 5 mm width half-span. B2-02H expands only those moving-cap
 dimensions while retaining the now-valid fixed skin and torque branch.
+
+B2-02H prevents the moving-edge exit. Force 0.024, coverage 0.36, and width
+1.33 retain and transport with 100% rubber participation through frame 418,
+but loaded aperture is +7.39 degrees and maximum slip is physically unstable.
+This is the remaining rigid-skin approximation. B2-02I keeps that corrected
+footprint and crosses 0.25--1 mm normal travel with 3--12 kN/m springs and
+near-critical damping at both the aperture-valid and retained-transport force
+frontiers.

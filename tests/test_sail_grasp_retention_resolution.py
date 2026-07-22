@@ -324,6 +324,33 @@ def test_moving_overhang_family_targets_two_edge_corner() -> None:
         for row in contract["frozen_candidate_family"]
     ) == 1.3333333333333333
 
+
+def test_compliant_skin_cross_uses_corrected_footprint() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_compliant_skin_v1.json"
+        )
+    )
+
+    assert len(contract["frozen_candidate_family"]) == 18
+    assert contract["base_parameters"]["rubber_tip_normal_compliance_enabled"]
+    assert contract["base_parameters"]["tip_moving_coverage_multiplier"] == 0.36
+    assert contract["base_parameters"]["tip_moving_half_width_multiplier"] == (
+        1.3333333333333333
+    )
+    assert {
+        row["overrides"].get(
+            "gripper_piece_contact_force_limit_multiplier",
+            contract["base_parameters"][
+                "gripper_piece_contact_force_limit_multiplier"
+            ],
+        )
+        for row in contract["frozen_candidate_family"]
+    } == {0.022, 0.024}
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

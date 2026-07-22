@@ -48,6 +48,9 @@ COLLISION_SKIN_SCHEMA = (
 MOVING_OVERHANG_SCHEMA = (
     "sim2claw.sail_grasp_retention_moving_overhang_campaign.v1"
 )
+COMPLIANT_SKIN_SCHEMA = (
+    "sim2claw.sail_grasp_retention_compliant_skin_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -103,6 +106,7 @@ def load_grasp_retention_contract(
         LONG_WRAP_TORQUE_SCHEMA,
         COLLISION_SKIN_SCHEMA,
         MOVING_OVERHANG_SCHEMA,
+        COMPLIANT_SKIN_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -123,6 +127,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-long-wrap-torque-v1",
         "sail-grasp-retention-collision-skin-v1",
         "sail-grasp-retention-moving-overhang-v1",
+        "sail-grasp-retention-compliant-skin-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 
