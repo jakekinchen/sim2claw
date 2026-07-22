@@ -16,6 +16,7 @@ from .mechanisms import load_mechanism_registry
 from .posterior import compile_mechanisms, fit_structure_particle
 from .influence import discover_influence_set
 from .loop_closure import compile_loop_closure, run_gold_10_fixture
+from .invariance import compile_invariance, evaluate_invariance
 
 __all__ = [
     "SailContractError",
@@ -40,4 +41,6 @@ __all__ = [
     "discover_influence_set",
     "compile_loop_closure",
     "run_gold_10_fixture",
+    "compile_invariance",
+    "evaluate_invariance",
 ]

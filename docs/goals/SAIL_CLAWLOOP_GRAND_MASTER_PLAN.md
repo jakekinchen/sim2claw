@@ -1494,8 +1494,8 @@ Only one milestone should be `in_progress` in the active goal loop.
 | P1-05 Surprise/debt | P1-03, P1-04 | completed | 0.9429 normalized retained debt over 0.70 available weight, five contributors, six explicit missing observables, deterministic no-agent request, 0/256 clean false triggers, GOLD-05 |
 | P1-06 Mechanisms/posterior | P1-01, P1-03 | completed | 10 ABI-valid plugins/wrappers, bounded conditional Laplace plus 200-replicate bootstrap fits, six separate seeded particles, five honest retained abstentions, immutable actions/results, GOLD-06/07/08 |
 | P1-07 Influence/loop closure | P1-04–P1-06 | completed | 12 retained candidates to exact two-decision oracle at 1.0 precision/recall; seeded sparse closure reassigns credit, preserves unaffected posterior digests, matches full score within 5.3e-15, and recomputes 2/8 while no-revisit fails; GOLD-09/10 |
-| P1-08 Invariance | P1-06, P1-07 | in_progress | scoped invariance results |
-| P1-09 Acquisition | P1-05–P1-08 | pending | ranked intervention receipts |
+| P1-08 Invariance | P1-06, P1-07 | completed | plugin-declared whole-episode evaluator; stable seeded control passes, context-specific mechanism fails universal scope, single-context case abstains; all 10 retained mechanisms honestly `not_evaluable`; GOLD-11 |
+| P1-09 Acquisition | P1-05–P1-08 | in_progress | ranked intervention receipts |
 | P1-10 Seeded benchmark | P1-01, P1-05–P1-09 | pending | public/sealed campaign |
 | P1-11 Inspect agents | P1-10 | pending | frozen provider attempts/costs |
 | P1-12 Retrospective case | P1-02–P1-09 | pending | graph closure/current certificate |

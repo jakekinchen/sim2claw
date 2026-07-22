@@ -1,6 +1,6 @@
 # SAIL/ClawLoop Phase 1 Goal
 
-Status: `ACTIVE — P1-00 THROUGH P1-07 COMPLETE; P1-08 IN PROGRESS`
+Status: `ACTIVE — P1-00 THROUGH P1-08 COMPLETE; P1-09 IN PROGRESS`
 
 The active program authority is
 [`docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md`](docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md).
@@ -14,10 +14,10 @@ simulator evidence, and all ACT/GR00T data generation or policy selection stays
 closed unless an evaluator-owned TwinWorthiness certificate opens the declared
 capability. Source actions remain byte-identical in the action-frozen lane.
 
-Current milestone: **P1-08 — Implement mechanism-specific invariance**.
+Current milestone: **P1-09 — Implement structural-discrimination acquisition**.
 
 Active brief:
-[`docs/briefs/023-sail-mechanism-specific-invariance.md`](docs/briefs/023-sail-mechanism-specific-invariance.md).
+[`docs/briefs/024-sail-structural-discrimination-acquisition.md`](docs/briefs/024-sail-structural-discrimination-acquisition.md).
 
 Live milestone status is maintained in the master plan's Section 12 ledger and
 in `docs/autonomous-workflow/project_state.json`. The research documents named

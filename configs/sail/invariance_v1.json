@@ -1,0 +1,38 @@
+{
+  "schema_version": "sim2claw.sail_invariance_campaign.v1",
+  "campaign_id": "sail-invariance-v1",
+  "generated_at": "2026-07-22T02:45:00-05:00",
+  "source_bindings": {
+    "evidence_catalog": {"path": "outputs/sail/retired-bg-v1/evidence/catalog.json", "sha256": "e79dc7a3e6f684644fa18d77e5a1a4f11126829176a14e3c7c247d3daec02ed2"},
+    "residual_field": {"path": "outputs/sail/retired-bg-v1/residuals/residual_field.json", "sha256": "38a78aa325ccb978e131ac087e6820c35faa4473172387d5f738261ff1889c71"},
+    "mechanism_registry": {"path": "outputs/sail/retired-bg-v1/mechanisms/registry.json", "sha256": "fbda9c716f9a266850fc39b28d6dc8dbc897564e80ed658075ce3fd7e2ef0428"},
+    "loop_closure": {"path": "outputs/sail/retired-bg-v1/loop-closure/sparse_loop_closure.json", "sha256": "249c93e4cb077ca545e4012a553dd72081eda0b2e871d21c48e639fd3a420fe0"}
+  },
+  "context_vocabulary": ["direction", "frequency", "joint_pose_load", "board_region", "object_identity", "camera_condition", "workcell_identity", "session_identity"],
+  "plugin_covariate_aliases": {
+    "direction": "direction", "sample_rate": "frequency", "joint_name": "joint_pose_load", "phase": "joint_pose_load", "contact_phase": "joint_pose_load", "camera": "camera_condition", "camera_identity": "camera_condition", "object_geometry": "object_identity", "object_identity": "object_identity", "contact_material": "object_identity"
+  },
+  "thresholds": {
+    "minimum_context_levels": 2,
+    "minimum_episodes_per_level": 3,
+    "maximum_invariant_parameter_range": 0.15,
+    "minimum_residual_signature_consistency": 0.95
+  },
+  "retained_context_inventory": {
+    "episode_count": 11,
+    "whole_episode_groups": true,
+    "group_posteriors_available": false,
+    "coverage": {
+      "direction": ["rank1_to_rank2", "rank2_to_rank1", "other_transition"],
+      "frequency": ["recorded_native_rate"],
+      "joint_pose_load": ["approach_open", "descend_open", "close", "lift_closed", "transport_closed", "release"],
+      "board_region": ["b_to_d", "e_to_g"],
+      "object_identity": ["pawn"],
+      "camera_condition": ["retained_overhead_c922"],
+      "workcell_identity": ["retired_bg_workcell"],
+      "session_identity": ["20260719"]
+    }
+  },
+  "seeded_fixture": {"seed": 20260722, "episodes_per_level": 4, "samples_per_episode": 40, "noise_std": 0.002},
+  "authority": {"historical_result_mutation": false, "physical_mechanism_identification": false, "simulator_promotion": false, "training_admission": false, "policy_selection": false, "physical_capture": false, "robot_motion": false, "physical_transfer": false}
+}
