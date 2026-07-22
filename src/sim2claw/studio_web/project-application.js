@@ -66,4 +66,29 @@ async function load() {
   });
 }
 
+async function loadRetentionCloseout() {
+  const response = await fetch("/publication/sail_grasp_retention_resolution_v1/manifest.json", { cache: "no-store" });
+  if (!response.ok) throw new Error(`Retention manifest returned ${response.status}`);
+  const data = await response.json();
+  text(document.querySelector("#retention-claim"), data.safe_claim);
+  text(document.querySelector("#retention-measurement"), data.required_measurement);
+  const result = data.result;
+  const metrics = [
+    ["Candidate replays", result.candidate_runs],
+    ["Anchor passes", result.anchor_passes],
+    ["Baseline loss", `frame ${result.baseline_contact_loss_source_index}`],
+    ["Aligned-pad loss", `frame ${result.aligned_pad_contact_loss_source_index}`],
+    ["Best retention", `frame ${result.best_retention_contact_loss_source_index}/401`],
+    ["Best aperture error", `${result.best_loaded_aperture_error_degrees.toFixed(2)}°`],
+  ];
+  document.querySelector("#retention-metrics").append(...metrics.map(([label, value]) => card("metric", label, value)));
+  const diagnosis = document.querySelector("#retention-diagnosis");
+  data.diagnosis.forEach((finding) => {
+    const item = document.createElement("li");
+    text(item, finding);
+    diagnosis.append(item);
+  });
+}
+
 load().catch((error) => text(document.querySelector("#safe-claim"), `Publication unavailable: ${error.message}`));
+loadRetentionCloseout().catch((error) => text(document.querySelector("#retention-claim"), `Retention publication unavailable: ${error.message}`));

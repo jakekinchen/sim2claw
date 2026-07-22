@@ -1,8 +1,38 @@
 # SAIL/ClawLoop Goal
 
-Status: `PHASE 1 COMPLETE; POST-PHASE-1 PROJECT APPLICATION A1-00 THROUGH A1-06 COMPLETE`
+Status: `PHASE 1, A1, AND B1 COMPLETE; B1 TERMINAL NEGATIVE WITH EXACT MEASUREMENT BOUNDARY`
 
-## Active post-Phase-1 application loop
+## Completed B1 grasp-retention resolution loop
+
+Continue from the project-wide terminal negative and resolve the specific C2
+physical-retention versus simulated-drop gap. The retained physical video,
+joint position, command, and current traces now constrain the candidate family:
+the real gripper remains mechanically loaded about 3.33 degrees short of its
+closed command, while the simulator closes through that loaded aperture and
+loses bilateral contact.
+
+Final milestone: **B1-06 complete — 98 action-frozen candidate replays produced
+zero anchor passes; simulator promotion remains closed**.
+
+Active brief:
+[`docs/briefs/034-grasp-retention-physical-trace-resolution.md`](docs/briefs/034-grasp-retention-physical-trace-resolution.md).
+
+Goal-loop ledger:
+[`docs/autonomous-workflow/goal-loop-grasp-retention-resolution.md`](docs/autonomous-workflow/goal-loop-grasp-retention-resolution.md).
+
+Closeout:
+[`docs/research/2026-07-22-c2-grasp-retention-resolution.md`](docs/research/2026-07-22-c2-grasp-retention-resolution.md).
+
+The source action array, evaluator thresholds, trace guards, and policy remain
+immutable. The loop localized the fixed-pad placement bug, reproduced the
+loaded mapped joint position to within 0.03 degrees, and delayed bilateral
+contact loss from source frame 323 to 399 in the best retention frontier. No
+candidate also preserved transport, slip, and release retention. The exact
+remaining acquisition is direct jaw force plus rubber-cap profile/deformation
+under load; no robot, training, simulator-promotion, or physical authority is
+opened.
+
+## Completed post-Phase-1 application loop
 
 Apply the completed Phase 1 system to the full retained project evidence and
 determine whether it can produce evaluator-owned simulator gains or resolve

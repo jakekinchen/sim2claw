@@ -6,9 +6,9 @@
     "sha256": "a2345ac50c8de15905a0ef1ecc03bf7b8803cb49fca27ada5874ce6037fdedf8"
   },
   "files": {
-    "src/sim2claw/studio_web/project-application.html": "7c233dd6bd150d5306de831093b866c53638d27b8ac6794c9686d66848cf58c3",
+    "src/sim2claw/studio_web/project-application.html": "ffa2bad4079022c7058126e24fa49462df9b73e216e5f319f426c7e124557b0e",
     "src/sim2claw/studio_web/project-application.css": "a194dc407fa60c0039c2a5772b286750f2dad9e0cf4e6e3364cb81eed3137298",
-    "src/sim2claw/studio_web/project-application.js": "3a34afac3bbcd4358bc88a23d27ffcf61dd6ffc6a53a896459d7501653682940",
+    "src/sim2claw/studio_web/project-application.js": "6cd8f4cb37615fe6c5ef90b53b5772f4c564965832de103613b9f5ede2a4f38b",
     "src/sim2claw/studio_web/publication/sail_project_application_v1/manifest.json": "21ab3e404ac16be92f50df78fad68779fb508570ef79509164d47f3628e03e32"
   },
   "route": "/project-application.html",

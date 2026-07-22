@@ -1,0 +1,12 @@
+{
+  "schema_version": "sim2claw.static_publication_receipt.v1",
+  "route": "/project-application.html#retention-closeout",
+  "proof_class": "retrospective_action_frozen_simulator_mechanism_resolution",
+  "physical_authority": false,
+  "files": {
+    "src/sim2claw/studio_web/publication/sail_grasp_retention_resolution_v1/manifest.json": "2c9b98bd1204fca08cbb4039237ca7e9e522d072c73231d45544ec649af5cf2e",
+    "src/sim2claw/studio_web/project-application.html": "ffa2bad4079022c7058126e24fa49462df9b73e216e5f319f426c7e124557b0e",
+    "src/sim2claw/studio_web/project-application.js": "6cd8f4cb37615fe6c5ef90b53b5772f4c564965832de103613b9f5ede2a4f38b",
+    "docs/research/2026-07-22-c2-grasp-retention-resolution.md": "2ed106fcb2f838c2f097cc2400bb237dab4001584f604214c6b9b4ef50d121e7"
+  }
+}

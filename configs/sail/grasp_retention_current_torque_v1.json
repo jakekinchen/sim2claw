@@ -1,0 +1,160 @@
+{
+  "schema_version": "sim2claw.sail_grasp_retention_current_torque_campaign.v1",
+  "campaign_id": "sail-grasp-retention-current-torque-v1",
+  "objective": "Test the gripper force range implied by retained STS3215 current telemetry and the manufacturer current/torque conversion under aligned two-sided rubber contact and byte-identical actions.",
+  "source_bindings": {
+    "project_application_contract": {
+      "path": "configs/sail/project_application_v1.json",
+      "sha256": "1142884783ee198c0facb350cce0f65dca06df5d95de9330a5b13eafa9216013"
+    },
+    "project_application_receipt": {
+      "path": "outputs/sail/project-application-v1/receipt.json",
+      "sha256": "a2345ac50c8de15905a0ef1ecc03bf7b8803cb49fca27ada5874ce6037fdedf8"
+    },
+    "c2_surface_witness": {
+      "path": "outputs/sail/project-application-v1/c2-v3-surface-witness.json",
+      "sha256": "99dd528bf76e07fda729ac1e343814524908780813d0843b15a48765f8ad27d3"
+    },
+    "physical_c2_recording_receipt": {
+      "path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/recording_receipt.json",
+      "sha256": "00d1a6b0375232be753f771b37f28117aa6d370778d16bb9b14ad2892c6a4c2f"
+    },
+    "physical_c2_samples": {
+      "path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/samples.jsonl",
+      "sha256": "b93fed706dd205197e9e068aec62d8fe552b822be150218dff5601a1a5eec183"
+    },
+    "compliance_contract": {
+      "path": "configs/sail/grasp_retention_contact_compliance_v1.json",
+      "sha256": "c529dc698917725817aac51986137bc5f59244c195048412dc16b3fb093267db"
+    },
+    "compliance_receipt": {
+      "path": "outputs/sail/grasp-retention-contact-compliance-v1/anchor-screen-receipt.json",
+      "sha256": "1e83f8c40b2f1685ad4c813b4ba2e7a7d909184a80052ff4b7914e44cc242c4e"
+    },
+    "mujoco_so101_model": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+      "sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+    }
+  },
+  "external_primary_sources": [
+    {
+      "source": "Feetech STS3215 product specification A/1",
+      "url": "https://files.seeedstudio.com/products/Feetech/108090023_STS3215-C001_Datasheet.pdf",
+      "facts": {
+        "torque_constant_kg_cm_per_amp": 7.8,
+        "stall_current_amp_at_7_4v": 2.5,
+        "stall_torque_kg_cm_at_7_4v": 19.5
+      }
+    },
+    {
+      "source": "Feetech STS3215 manufacturer evaluation",
+      "url": "https://www.feetech.cn/en/2020-05-13_56655.html",
+      "facts": {
+        "present_current_amp_per_raw_unit": 0.0065
+      }
+    }
+  ],
+  "proof_boundary": {
+    "proof_class": "retrospective_manufacturer_scaled_current_anchored_action_frozen_simulator_torque_fit",
+    "physical_source_qualification": "unqualified_diagnostic_video_and_joint_telemetry",
+    "fresh_physical_observation": false,
+    "physical_force_calibration": "manufacturer_scaled_current_not_direct_jaw_force",
+    "rubber_compliance_calibration": false,
+    "independent_holdout": false,
+    "policy_actions_mutable": false,
+    "physical_authority": false,
+    "claim": "Manufacturer scaling converts retained current into an output-shaft torque proxy. Gear efficiency, jaw leverage, cached 5 Hz sampling, and pad force remain unmeasured."
+  },
+  "diagnosis_anchor": {
+    "recording_id": "20260719T031324Z-bf91502b",
+    "action_array_sha256": "402a29e4cdc0c4cb90d41a83327ad8df5685544851b4e4d659129b3239744fd6",
+    "release_onset_source_index": 401,
+    "physical_loaded_interval_source_indices": [246, 401],
+    "physical_loaded_median_raw_current": 7.0,
+    "current_amp_per_raw_unit": 0.0065,
+    "physical_loaded_current_amp": 0.0455,
+    "torque_constant_kg_cm_per_amp": 7.8,
+    "physical_loaded_output_torque_kg_cm": 0.3549,
+    "physical_loaded_output_torque_nm": 0.03480672825,
+    "mujoco_nominal_gripper_force_limit_nm": 2.94,
+    "physical_to_mujoco_nominal_force_ratio": 0.011839023214285714,
+    "accepted_model_force_multiplier": 3.0,
+    "accepted_model_force_limit_nm": 8.82,
+    "accepted_to_observed_torque_ratio": 253.39784410962095,
+    "remaining_mechanism": "manufacturer_scaled_loaded_servo_output_torque"
+  },
+  "base_parameters": {
+    "fixed_jaw_mesh_collision_enabled": false,
+    "gripper_force_limit_multiplier": 0.012,
+    "gripper_joint_damping_multiplier": 1.0,
+    "gripper_joint_frictionloss_multiplier": 1.0,
+    "gripper_servo_gain_multiplier": 1.0,
+    "moving_jaw_mesh_collision_enabled": false,
+    "pawn_friction_multiplier": 1.0,
+    "pawn_mass_multiplier": 1.0,
+    "rolling_friction_m": 0.0012,
+    "rubber_contact_condim": 4,
+    "rubber_tip_enabled": true,
+    "simulation_timestep_multiplier": 0.45,
+    "sliding_friction": 1.8,
+    "solref_damping_ratio": 1.2,
+    "solref_time_constant_s": 0.006,
+    "tip_coverage_m": 0.02,
+    "tip_coverage_offset_m": -0.03,
+    "tip_fixed_coverage_offset_m": 0.04,
+    "tip_half_width_m": 0.0065,
+    "tip_moving_coverage_offset_m": 0.025,
+    "tip_thickness_m": 0.001,
+    "torsional_friction_m": 0.012
+  },
+  "frozen_candidate_family": [
+    {"candidate_id": "baseline", "overrides": {}},
+    {"candidate_id": "condim4_force_008", "overrides": {"gripper_force_limit_multiplier": 0.008}},
+    {"candidate_id": "condim4_force_010", "overrides": {"gripper_force_limit_multiplier": 0.01}},
+    {"candidate_id": "condim4_force_015", "overrides": {"gripper_force_limit_multiplier": 0.015}},
+    {"candidate_id": "condim4_force_020", "overrides": {"gripper_force_limit_multiplier": 0.02}},
+    {"candidate_id": "condim4_force_030", "overrides": {"gripper_force_limit_multiplier": 0.03}},
+    {"candidate_id": "condim6_force_008", "overrides": {"rubber_contact_condim": 6, "gripper_force_limit_multiplier": 0.008}},
+    {"candidate_id": "condim6_force_010", "overrides": {"rubber_contact_condim": 6, "gripper_force_limit_multiplier": 0.01}},
+    {"candidate_id": "condim6_force_012", "overrides": {"rubber_contact_condim": 6}},
+    {"candidate_id": "condim6_force_015", "overrides": {"rubber_contact_condim": 6, "gripper_force_limit_multiplier": 0.015}},
+    {"candidate_id": "condim6_force_020", "overrides": {"rubber_contact_condim": 6, "gripper_force_limit_multiplier": 0.02}},
+    {"candidate_id": "condim6_force_030", "overrides": {"rubber_contact_condim": 6, "gripper_force_limit_multiplier": 0.03}}
+  ],
+  "selection": {
+    "anchor_screen_first": true,
+    "maximum_anchor_candidates": 12,
+    "maximum_candidates_advanced_to_three_sentinels": 4,
+    "maximum_frozen_composites_evaluated_on_all_eleven": 1,
+    "tie_break_order": [
+      "contact_retained_through_release_onset",
+      "absolute_loaded_aperture_bias_degrees",
+      "bilateral_lift_retention_seconds",
+      "lift_and_transport",
+      "post_grasp_slip_m",
+      "trace_guard_margin"
+    ],
+    "post_hoc_candidate_expansion": false
+  },
+  "acceptance": {
+    "anchor_action_sha256_must_match": true,
+    "anchor_contact_loss_source_index_minimum": 401,
+    "anchor_absolute_loaded_aperture_bias_degrees_maximum": 0.5,
+    "anchor_lift_and_transport_required": true,
+    "anchor_post_grasp_slip_relative_reduction_minimum": 0.1,
+    "three_sentinel_no_task_count_regression": true,
+    "all_episode_trace_guardrails_required": true,
+    "all_episode_no_new_wrong_piece_contacts": true,
+    "all_episode_no_worse_maximum_collateral": true,
+    "simulator_promotion_minimum_lift_and_transport": 6,
+    "simulator_promotion_alternative_minimum_strict_successes": 1
+  },
+  "stop_conditions": [
+    "Reject action, evaluator, source-binding, or candidate-family drift.",
+    "Reject torque-derived candidates that cannot close, lift, transport, and retain C2.",
+    "Do not interpret output-shaft torque as measured jaw force.",
+    "If no candidate passes, direct pad force and deformation measurement is required; do not infer it from the retained recording.",
+    "Do not open policy training, robot motion, or paid compute."
+  ],
+  "output_root": "outputs/sail/grasp-retention-current-torque-v1"
+}

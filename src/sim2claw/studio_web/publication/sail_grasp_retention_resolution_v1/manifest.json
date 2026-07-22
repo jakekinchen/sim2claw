@@ -1,0 +1,31 @@
+{
+  "schema_version": "sim2claw.sail_grasp_retention_publication.v1",
+  "title": "C2 grasp-retention resolution",
+  "safe_claim": "Terminal negative: the loop localized fixed-pad placement and actuator overclosure, but no rigid contact candidate jointly reproduced physical loaded aperture, transport, slip, and retention through release.",
+  "authority": {
+    "read_only": true,
+    "physical_authority": false,
+    "simulator_promotion": false,
+    "policy_training_opened": false
+  },
+  "source_receipt": {
+    "path": "outputs/sail/grasp-retention-closeout-v1/receipt.json",
+    "sha256": "479e87231df4579b817ac8bd2fd62363c2a15f974e3467802aa0809e35ec3d26",
+    "receipt_digest": "3887636e0a04b09289337e09a06c82867fcd6beb13b46b27fcfed8e6f73d2f14"
+  },
+  "result": {
+    "candidate_runs": 98,
+    "anchor_passes": 0,
+    "baseline_contact_loss_source_index": 323,
+    "aligned_pad_contact_loss_source_index": 381,
+    "best_retention_contact_loss_source_index": 399,
+    "release_onset_source_index": 401,
+    "best_loaded_aperture_error_degrees": 0.029556033328078594
+  },
+  "diagnosis": [
+    "Fixed-side rubber was not aligned with the rigid jaw surface carrying the C2 pawn.",
+    "The plain position actuator overcloses instead of holding the retained loaded joint position.",
+    "Rigid box and capsule pads cannot reproduce the real cap's force-dependent deformation and distributed patch."
+  ],
+  "required_measurement": "Direct jaw force plus rubber-cap profile and deformation under synchronized high-rate angle/current capture."
+}

@@ -1,0 +1,142 @@
+{
+  "schema_version": "sim2claw.sail_grasp_retention_resolution_campaign.v1",
+  "campaign_id": "sail-grasp-retention-resolution-v1",
+  "objective": "Resolve the C2 physical-retention versus simulated-drop gap by reproducing the real loaded jaw aperture and sustained two-sided rubber contact under byte-identical source actions.",
+  "source_bindings": {
+    "project_application_contract": {
+      "path": "configs/sail/project_application_v1.json",
+      "sha256": "1142884783ee198c0facb350cce0f65dca06df5d95de9330a5b13eafa9216013"
+    },
+    "project_application_receipt": {
+      "path": "outputs/sail/project-application-v1/receipt.json",
+      "sha256": "a2345ac50c8de15905a0ef1ecc03bf7b8803cb49fca27ada5874ce6037fdedf8"
+    },
+    "c2_surface_witness": {
+      "path": "outputs/sail/project-application-v1/c2-v3-surface-witness.json",
+      "sha256": "99dd528bf76e07fda729ac1e343814524908780813d0843b15a48765f8ad27d3"
+    },
+    "grasp_coordinate_contract": {
+      "path": "configs/optimization/pawn_bg_grasp_coordinate_descent_v1.json",
+      "sha256": "6f39692ede95e1fc581826699ba107b6b9814a776a0751dbc6a13ce25e6e9847"
+    },
+    "physical_c2_recording_receipt": {
+      "path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/recording_receipt.json",
+      "sha256": "00d1a6b0375232be753f771b37f28117aa6d370778d16bb9b14ad2892c6a4c2f"
+    },
+    "physical_c2_samples": {
+      "path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/samples.jsonl",
+      "sha256": "b93fed706dd205197e9e068aec62d8fe552b822be150218dff5601a1a5eec183"
+    },
+    "physical_c2_overhead_video": {
+      "path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/overhead_c922.mp4",
+      "sha256": "e5cf0b1ab23174e908d509791653d2289a85770476381931384ea2f7308a867b"
+    }
+  },
+  "proof_boundary": {
+    "proof_class": "retrospective_physical_trace_anchored_action_frozen_simulator_mechanism_fit",
+    "physical_source_qualification": "unqualified_diagnostic_video_and_joint_telemetry",
+    "fresh_physical_observation": false,
+    "physical_force_calibration": false,
+    "rubber_geometry_calibration": false,
+    "independent_holdout": false,
+    "policy_actions_mutable": false,
+    "physical_authority": false,
+    "claim": "The retained recording can constrain loaded aperture, timing, and qualitative grasp retention. It cannot identify rubber friction, force, or exact three-dimensional contact geometry."
+  },
+  "diagnosis_anchor": {
+    "recording_id": "20260719T031324Z-bf91502b",
+    "action_array_sha256": "402a29e4cdc0c4cb90d41a83327ad8df5685544851b4e4d659129b3239744fd6",
+    "release_onset_source_index": 401,
+    "physical_loaded_interval_source_indices": [246, 401],
+    "physical_commanded_median_degrees": 1.0688836104513064,
+    "physical_measured_median_degrees": 4.394299287410926,
+    "physical_median_command_measurement_gap_degrees": 3.32541567695962,
+    "physical_closed_minus_open_median_raw_current": 7.0,
+    "physical_flat_measured_velocity_fraction": 0.9161290322580645,
+    "physical_video_observation": "pawn_retained_through_transport_until_intended_release",
+    "baseline_simulated_median_minus_measured_degrees": -3.1162623707013193,
+    "baseline_bilateral_contact_loss_source_index": 323,
+    "baseline_fixed_load_surface": "left_fixed_jaw_box6_rigid",
+    "baseline_moving_load_surface": "left_rubber_tip_moving",
+    "baseline_fixed_rubber_center_local_z_m": -0.1205,
+    "baseline_fixed_box6_center_local_z_m": -0.0727
+  },
+  "base_parameters": {
+    "fixed_jaw_mesh_collision_enabled": false,
+    "gripper_force_limit_multiplier": 3.0,
+    "gripper_joint_damping_multiplier": 1.0,
+    "gripper_joint_frictionloss_multiplier": 1.0,
+    "gripper_servo_gain_multiplier": 1.0,
+    "moving_jaw_mesh_collision_enabled": false,
+    "pawn_friction_multiplier": 1.0,
+    "pawn_mass_multiplier": 1.0,
+    "rolling_friction_m": 0.0012,
+    "rubber_tip_enabled": true,
+    "simulation_timestep_multiplier": 0.45,
+    "sliding_friction": 1.8,
+    "solref_damping_ratio": 1.2,
+    "solref_time_constant_s": 0.006,
+    "tip_coverage_m": 0.02,
+    "tip_coverage_offset_m": -0.03,
+    "tip_half_width_m": 0.0065,
+    "tip_moving_coverage_offset_m": 0.025,
+    "tip_thickness_m": 0.001,
+    "torsional_friction_m": 0.012
+  },
+  "frozen_candidate_family": [
+    {"candidate_id": "baseline", "overrides": {}},
+    {"candidate_id": "fixed_cover_040", "overrides": {"tip_fixed_coverage_offset_m": 0.04}},
+    {"candidate_id": "fixed_cover_045", "overrides": {"tip_fixed_coverage_offset_m": 0.045}},
+    {"candidate_id": "fixed_cover_050", "overrides": {"tip_fixed_coverage_offset_m": 0.05}},
+    {"candidate_id": "cover_040_thick_2", "overrides": {"tip_fixed_coverage_offset_m": 0.04, "tip_fixed_thickness_multiplier": 2.0, "tip_moving_thickness_multiplier": 2.0}},
+    {"candidate_id": "cover_045_thick_2", "overrides": {"tip_fixed_coverage_offset_m": 0.045, "tip_fixed_thickness_multiplier": 2.0, "tip_moving_thickness_multiplier": 2.0}},
+    {"candidate_id": "cover_050_thick_2", "overrides": {"tip_fixed_coverage_offset_m": 0.05, "tip_fixed_thickness_multiplier": 2.0, "tip_moving_thickness_multiplier": 2.0}},
+    {"candidate_id": "cover_045_thick_3", "overrides": {"tip_fixed_coverage_offset_m": 0.045, "tip_fixed_thickness_multiplier": 3.0, "tip_moving_thickness_multiplier": 3.0}},
+    {"candidate_id": "cover_050_thick_3", "overrides": {"tip_fixed_coverage_offset_m": 0.05, "tip_fixed_thickness_multiplier": 3.0, "tip_moving_thickness_multiplier": 3.0}},
+    {"candidate_id": "cover_045_thick_2_load_010", "overrides": {"tip_fixed_coverage_offset_m": 0.045, "tip_fixed_thickness_multiplier": 2.0, "tip_moving_thickness_multiplier": 2.0, "gripper_piece_contact_force_limit_multiplier": 0.1}},
+    {"candidate_id": "cover_045_thick_2_load_005", "overrides": {"tip_fixed_coverage_offset_m": 0.045, "tip_fixed_thickness_multiplier": 2.0, "tip_moving_thickness_multiplier": 2.0, "gripper_piece_contact_force_limit_multiplier": 0.05}},
+    {"candidate_id": "cover_050_thick_2_load_010", "overrides": {"tip_fixed_coverage_offset_m": 0.05, "tip_fixed_thickness_multiplier": 2.0, "tip_moving_thickness_multiplier": 2.0, "gripper_piece_contact_force_limit_multiplier": 0.1}},
+    {"candidate_id": "cover_050_thick_3_load_010", "overrides": {"tip_fixed_coverage_offset_m": 0.05, "tip_fixed_thickness_multiplier": 3.0, "tip_moving_thickness_multiplier": 3.0, "gripper_piece_contact_force_limit_multiplier": 0.1}},
+    {"candidate_id": "cover_045_thick_2_load_010_condim4", "overrides": {"tip_fixed_coverage_offset_m": 0.045, "tip_fixed_thickness_multiplier": 2.0, "tip_moving_thickness_multiplier": 2.0, "gripper_piece_contact_force_limit_multiplier": 0.1, "rubber_contact_condim": 4}},
+    {"candidate_id": "cover_050_thick_2_load_010_condim4", "overrides": {"tip_fixed_coverage_offset_m": 0.05, "tip_fixed_thickness_multiplier": 2.0, "tip_moving_thickness_multiplier": 2.0, "gripper_piece_contact_force_limit_multiplier": 0.1, "rubber_contact_condim": 4}},
+    {"candidate_id": "cover_050_thick_3_load_010_condim4", "overrides": {"tip_fixed_coverage_offset_m": 0.05, "tip_fixed_thickness_multiplier": 3.0, "tip_moving_thickness_multiplier": 3.0, "gripper_piece_contact_force_limit_multiplier": 0.1, "rubber_contact_condim": 4}},
+    {"candidate_id": "covered_box6_thick_2_load_010_condim4", "overrides": {"tip_fixed_coverage_offset_m": 0.045, "tip_fixed_thickness_multiplier": 2.0, "tip_moving_thickness_multiplier": 2.0, "gripper_piece_contact_force_limit_multiplier": 0.1, "rubber_contact_condim": 4, "fixed_jaw_box6_collision_enabled": false, "moving_jaw_box3_collision_enabled": false}},
+    {"candidate_id": "covered_box6_thick_3_load_010_condim4", "overrides": {"tip_fixed_coverage_offset_m": 0.05, "tip_fixed_thickness_multiplier": 3.0, "tip_moving_thickness_multiplier": 3.0, "gripper_piece_contact_force_limit_multiplier": 0.1, "rubber_contact_condim": 4, "fixed_jaw_box6_collision_enabled": false, "moving_jaw_box3_collision_enabled": false}}
+  ],
+  "selection": {
+    "anchor_screen_first": true,
+    "maximum_anchor_candidates": 18,
+    "maximum_candidates_advanced_to_three_sentinels": 4,
+    "maximum_frozen_composites_evaluated_on_all_eleven": 1,
+    "tie_break_order": [
+      "contact_retained_through_release_onset",
+      "absolute_loaded_aperture_bias_degrees",
+      "bilateral_lift_retention_seconds",
+      "lift_and_transport",
+      "post_grasp_slip_m",
+      "trace_guard_margin"
+    ],
+    "post_hoc_candidate_expansion": false
+  },
+  "acceptance": {
+    "anchor_action_sha256_must_match": true,
+    "anchor_contact_loss_source_index_minimum": 401,
+    "anchor_absolute_loaded_aperture_bias_degrees_maximum": 0.5,
+    "anchor_lift_and_transport_required": true,
+    "anchor_post_grasp_slip_relative_reduction_minimum": 0.1,
+    "three_sentinel_no_task_count_regression": true,
+    "all_episode_trace_guardrails_required": true,
+    "all_episode_no_new_wrong_piece_contacts": true,
+    "all_episode_no_worse_maximum_collateral": true,
+    "simulator_promotion_minimum_lift_and_transport": 6,
+    "simulator_promotion_alternative_minimum_strict_successes": 1
+  },
+  "stop_conditions": [
+    "Reject any candidate with action, evaluator, or source-binding drift.",
+    "Reject any candidate that matches loaded aperture by merely shifting the unloaded actuator equilibrium while losing squeeze or task consequences.",
+    "Reject rubber geometry that is not supported by the visible wrapped fingertip region or that exposes a covered rigid primitive as the load-bearing surface.",
+    "If all frozen candidates fail, name the remaining unmeasured parameter and do not claim physical calibration.",
+    "Do not open policy training, robot motion, or paid compute from this campaign."
+  ],
+  "output_root": "outputs/sail/grasp-retention-resolution-v1"
+}

@@ -1414,6 +1414,42 @@ def _run_episode(
             response["elbow_load_bias_coefficient"],
         )
     )
+    load_hold_enabled = bool(parameters.get("gripper_load_hold_enabled", False))
+    load_hold_dwell_seconds = float(
+        parameters.get("gripper_load_hold_dwell_seconds", 0.02)
+    )
+    load_hold_release_margin_degrees = float(
+        parameters.get("gripper_load_hold_release_margin_degrees", 2.0)
+    )
+    raw_load_hold_target = parameters.get("gripper_load_hold_latch_target_rad")
+    load_hold_latch_target_rad = (
+        None if raw_load_hold_target is None else float(raw_load_hold_target)
+    )
+    if not 0.0 <= load_hold_dwell_seconds <= 0.25:
+        raise GraspCoordinateDescentError(
+            "gripper_load_hold_dwell_seconds exceeds diagnostic bounds"
+        )
+    if not 0.0 <= load_hold_release_margin_degrees <= 15.0:
+        raise GraspCoordinateDescentError(
+            "gripper_load_hold_release_margin_degrees exceeds diagnostic bounds"
+        )
+    if load_hold_latch_target_rad is not None and not (
+        -0.174533 <= load_hold_latch_target_rad <= 1.7453292
+    ):
+        raise GraspCoordinateDescentError(
+            "gripper_load_hold_latch_target_rad exceeds gripper joint range"
+        )
+    load_hold_dwell_steps = max(
+        1, round(load_hold_dwell_seconds / float(model.opt.timestep))
+    )
+    load_hold_state: dict[str, Any] = {
+        "armed": load_hold_enabled,
+        "active": False,
+        "bilateral_steps": 0,
+        "target_rad": None,
+        "latch_simulation_time_s": None,
+        "release_simulation_time_s": None,
+    }
 
     def apply_response(action: np.ndarray) -> None:
         data.ctrl[actuator_ids] = action
@@ -1427,7 +1463,9 @@ def _run_episode(
             )
         gripper_actuator_id = int(actuator_ids[-1])
         loaded_by_piece = False
-        if gripper_load_multiplier != 1.0:
+        fixed_selected_contact = False
+        moving_selected_contact = False
+        if gripper_load_multiplier != 1.0 or load_hold_enabled:
             for contact_index in range(data.ncon):
                 contact = data.contact[contact_index]
                 body1 = int(model.geom_bodyid[contact.geom1])
@@ -1440,7 +1478,50 @@ def _run_episode(
                     and body1 in piece_body_ids
                 ):
                     loaded_by_piece = True
-                    break
+                fixed_selected_contact = fixed_selected_contact or (
+                    (body1 == fixed_jaw_body and body2 == selected_body)
+                    or (body2 == fixed_jaw_body and body1 == selected_body)
+                )
+                moving_selected_contact = moving_selected_contact or (
+                    (body1 == moving_jaw_body and body2 == selected_body)
+                    or (body2 == moving_jaw_body and body1 == selected_body)
+                )
+        if load_hold_enabled:
+            gripper_action = float(action[-1])
+            target = load_hold_state["target_rad"]
+            if load_hold_state["active"]:
+                if gripper_action > float(target) + math.radians(
+                    load_hold_release_margin_degrees
+                ):
+                    load_hold_state["active"] = False
+                    load_hold_state["armed"] = False
+                    load_hold_state["release_simulation_time_s"] = float(data.time)
+                else:
+                    data.ctrl[gripper_actuator_id] = float(target)
+            elif load_hold_state["armed"]:
+                closure_ready = (
+                    load_hold_latch_target_rad is None
+                    or float(data.qpos[qpos_addresses[-1]])
+                    <= load_hold_latch_target_rad
+                )
+                if (
+                    fixed_selected_contact
+                    and moving_selected_contact
+                    and closure_ready
+                ):
+                    load_hold_state["bilateral_steps"] += 1
+                else:
+                    load_hold_state["bilateral_steps"] = 0
+                if load_hold_state["bilateral_steps"] >= load_hold_dwell_steps:
+                    target = (
+                        float(data.qpos[qpos_addresses[-1]])
+                        if load_hold_latch_target_rad is None
+                        else load_hold_latch_target_rad
+                    )
+                    load_hold_state["target_rad"] = target
+                    load_hold_state["active"] = True
+                    load_hold_state["latch_simulation_time_s"] = float(data.time)
+                    data.ctrl[gripper_actuator_id] = target
         model.actuator_forcerange[gripper_actuator_id] = (
             nominal_force_range[gripper_actuator_id]
             * (gripper_load_multiplier if loaded_by_piece else 1.0)
@@ -2247,6 +2328,32 @@ def _run_episode(
             ),
             "trigger": "any_jaw_body_contact_with_any_pawn_body",
             "source_actions_mutated": False,
+            "load_hold": {
+                "enabled": load_hold_enabled,
+                "trigger": (
+                    "sustained_bilateral_selected_pawn_contact"
+                    if load_hold_enabled
+                    else None
+                ),
+                "dwell_seconds": load_hold_dwell_seconds,
+                "release_margin_degrees": load_hold_release_margin_degrees,
+                "requested_latch_target_rad": load_hold_latch_target_rad,
+                "latched": load_hold_state["target_rad"] is not None,
+                "target_rad": load_hold_state["target_rad"],
+                "target_degrees": (
+                    None
+                    if load_hold_state["target_rad"] is None
+                    else math.degrees(float(load_hold_state["target_rad"]))
+                ),
+                "latch_simulation_time_s": load_hold_state[
+                    "latch_simulation_time_s"
+                ],
+                "release_simulation_time_s": load_hold_state[
+                    "release_simulation_time_s"
+                ],
+                "simulator_actuator_transfer_mutated": load_hold_enabled,
+                "source_actions_mutated": False,
+            },
         },
         "state_trace_artifact": state_trace_artifact,
     }
