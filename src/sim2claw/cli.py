@@ -254,6 +254,19 @@ def build_parser() -> argparse.ArgumentParser:
         help="acknowledge that the powered follower workcell is clear for motion",
     )
 
+    sail_inventory = subparsers.add_parser(
+        "sail-inventory",
+        help="verify the hash-bound retained SAIL evidence inventory",
+    )
+    sail_inventory.add_argument("--campaign", type=Path, required=True)
+
+    sail_compile = subparsers.add_parser(
+        "sail-compile-evidence",
+        help="compile retained sources into ignored CalibrationEvidence.v1 artifacts",
+    )
+    sail_compile.add_argument("--campaign", type=Path, required=True)
+    sail_compile.add_argument("--output", type=Path, required=True)
+
     recorded_replay = subparsers.add_parser(
         "replay-recorded",
         help="replay one recorded command episode in MuJoCo and emit synchronized metrics",
@@ -810,6 +823,28 @@ def main(argv: Sequence[str] | None = None) -> int:
                     sort_keys=True,
                 )
             )
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-inventory":
+        from .sail.contracts import SailContractError
+        from .sail.evidence import inventory_campaign
+
+        try:
+            report = inventory_campaign(args.campaign)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-evidence":
+        from .sail.contracts import SailContractError
+        from .sail.evidence import compile_campaign
+
+        try:
+            report = compile_campaign(args.campaign, args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0

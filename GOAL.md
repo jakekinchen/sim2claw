@@ -1,6 +1,6 @@
 # SAIL/ClawLoop Phase 1 Goal
 
-Status: `ACTIVE — P1-00 AND P1-01 COMPLETE; P1-02 IN PROGRESS`
+Status: `ACTIVE — P1-00 THROUGH P1-02 COMPLETE; P1-03 IN PROGRESS`
 
 The active program authority is
 [`docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md`](docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md).
@@ -14,10 +14,10 @@ simulator evidence, and all ACT/GR00T data generation or policy selection stays
 closed unless an evaluator-owned TwinWorthiness certificate opens the declared
 capability. Source actions remain byte-identical in the action-frozen lane.
 
-Current milestone: **P1-02 — Compile the retained evidence inventory**.
+Current milestone: **P1-03 — Build the phase-aligned residual field**.
 
 Active brief:
-[`docs/briefs/017-sail-retained-evidence-inventory.md`](docs/briefs/017-sail-retained-evidence-inventory.md).
+[`docs/briefs/018-sail-phase-aligned-residual-field.md`](docs/briefs/018-sail-phase-aligned-residual-field.md).
 
 Live milestone status is maintained in the master plan's Section 12 ledger and
 in `docs/autonomous-workflow/project_state.json`. The research documents named

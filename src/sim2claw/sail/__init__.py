@@ -8,6 +8,7 @@ from .contracts import (
     verify_contract,
     verify_source_binding,
 )
+from .evidence import compile_campaign, inventory_campaign, load_campaign
 
 __all__ = [
     "SailContractError",
@@ -16,4 +17,7 @@ __all__ = [
     "validate_contract",
     "verify_contract",
     "verify_source_binding",
+    "compile_campaign",
+    "inventory_campaign",
+    "load_campaign",
 ]

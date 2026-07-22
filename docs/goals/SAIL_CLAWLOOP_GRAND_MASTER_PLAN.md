@@ -1488,8 +1488,8 @@ Only one milestone should be `in_progress` in the active goal loop.
 |---|---|---|---|
 | P1-00 Activate/reconcile | master plan | completed | `configs/sail/cutover_v1.json`, GOAL/state update, Brief 016, session/reviewer logs |
 | P1-01 Contracts/goldens | P1-00 | completed | five schemas, 25-case registry, six CI tiers, TwinWorthiness/benchmark freeze, 29 focused tests |
-| P1-02 Evidence compiler | P1-01 | in_progress | retained evidence receipt |
-| P1-03 Residual field | P1-02 | pending | aligned residual receipt/plots |
+| P1-02 Evidence compiler | P1-01 | completed | 31 verified evidence items, 18 physical/7,741 rows, 11 development plus 2 regression-only simulator items, deterministic catalog/omissions/receipt, GOLD-16 |
+| P1-03 Residual field | P1-02 | in_progress | aligned residual receipt/plots |
 | P1-04 Belief graph | P1-02 | pending | deterministic graph/timeline |
 | P1-05 Surprise/debt | P1-03, P1-04 | pending | trigger metrics and tests |
 | P1-06 Mechanisms/posterior | P1-01, P1-03 | pending | plugin registry/fits |

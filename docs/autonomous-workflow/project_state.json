@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-21T22:58:35-05:00",
+  "updated_at": "2026-07-21T23:35:34-05:00",
   "active_campaign": "sail_clawloop_phase1_v1",
-  "current_milestone": "P1-02_RETAINED_EVIDENCE_INVENTORY_IN_PROGRESS",
+  "current_milestone": "P1-03_PHASE_ALIGNED_RESIDUAL_FIELD_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -10,7 +10,7 @@
     "schema_version": "sim2claw.sail_clawloop_campaign_state.v1",
     "master_plan": "docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md",
     "cutover_contract": "configs/sail/cutover_v1.json",
-    "active_brief": "docs/briefs/017-sail-retained-evidence-inventory.md",
+    "active_brief": "docs/briefs/018-sail-phase-aligned-residual-field.md",
     "phase": 1,
     "phase_1_status": "active",
     "new_physical_data_allowed": false,
@@ -22,8 +22,8 @@
     "milestones": {
       "P1-00": "completed",
       "P1-01": "completed",
-      "P1-02": "in_progress",
-      "P1-03": "pending",
+      "P1-02": "completed",
+      "P1-03": "in_progress",
       "P1-04": "pending",
       "P1-05": "pending",
       "P1-06": "pending",
@@ -57,6 +57,27 @@
       "golden_case_count": 25,
       "ci_tier_count": 6,
       "threshold_change_requires_new_version": true
+    },
+    "retained_evidence_compilation": {
+      "schema_version": "sim2claw.sail_retained_evidence_compilation_state.v1",
+      "campaign": "configs/sail/campaign_retired_bg_v1.json",
+      "campaign_sha256": "a952131392d5212f5a26903cf4c68f06399b6a9507cf4a5673072b656635d239",
+      "ignored_output_root": "outputs/sail/retired-bg-v1/evidence",
+      "catalog_sha256": "e79dc7a3e6f684644fa18d77e5a1a4f11126829176a14e3c7c247d3daec02ed2",
+      "omissions_sha256": "32dc9b7fc63bed6f403888cb3185731efb6f46f3a169dd06a233aa91d92c98b2",
+      "receipt_sha256": "50f8eae5244ded8092ecd4921bab5667f910c788121d2c7cd95fbd918984b563",
+      "receipt_digest": "d3b17946c81379f2fcefdd2a9199df5b487575c009a04a303bc39eb3ed26b97a",
+      "evidence_count": 31,
+      "physical_episode_count": 18,
+      "physical_sample_count": 7741,
+      "action_frozen_development_episode_count": 11,
+      "already_open_confirmation_episode_count": 2,
+      "context_artifact_count": 6,
+      "omission_class_count": 7,
+      "physical_and_simulator_proof_classes_separate": true,
+      "missing_channels_imputed": false,
+      "training_admitted": false,
+      "physical_authority": false
     }
   },
   "strategic_program": {

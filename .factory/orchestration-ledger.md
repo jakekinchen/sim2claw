@@ -136,8 +136,8 @@ Last triage: 2026-07-21T21:57:01-05:00
 | --- | --- | --- | --- | --- |
 | P1-00 | completed | Cutover, authority reconciliation, Brief 016 | Reviewer 007 CONTINUE | none |
 | P1-01 | completed | Schemas, goldens, frozen benchmark/certificate contracts | 5 schemas, 25 cases, 6 tiers, 29 fast tests | none |
-| P1-02 | in_progress | Deterministic retained evidence catalog | pending | none |
-| P1-03 | pending | Phase-aligned residual receipt | pending | dependency |
+| P1-02 | completed | Deterministic retained evidence catalog | 31 items; 18/7,741 physical; 11+2 simulator; GOLD-16; 642 broad tests | none |
+| P1-03 | in_progress | Phase-aligned residual receipt | pending | none |
 | P1-04 | pending | Deterministic belief graph | pending | dependency |
 | P1-05 | pending | Surprise/debt triggers | pending | dependency |
 | P1-06 | pending | Plugin registry and bounded posteriors | pending | dependency |
@@ -174,3 +174,9 @@ goal. External provider campaigns and spending remain separately gated.
   vocabulary, and hardware/provider authority guards. Fast tier passed 29/29;
   two broad lock-binding failures were refreshed and their targeted checks
   passed. P1-02 opened.
+- 2026-07-21T23:35:34-05:00 — P1-02 compiled 31 proof-separated
+  `CalibrationEvidence.v1` items from 18 physical episodes/7,741 rows, 11
+  action-frozen development traces, and two already-open regression-only action
+  identities. Six context artifacts and seven omission classes are bound;
+  deterministic repeat, GOLD-16, 22 focused tests, and the uninterrupted
+  642-test/328-subtest broad suite passed. P1-03 opened.
