@@ -1,0 +1,156 @@
+{
+  "schema_version": "sim2claw.sail_policy_flywheel_campaign.v1",
+  "campaign_id": "sail-gated-policy-flywheel-v1",
+  "generated_at": "2026-07-22T10:30:00-05:00",
+  "proof_class": "synthetic_policy_flywheel_fixture",
+  "claim_boundary": "The production Learning Factory path is executed on synthetic fixtures only. The current retained-workcell TW-REPLAY envelope opens neither data generation nor policy selection; fixture ACT/GR00T artifacts do not establish a real twin, learned-policy performance, physical transfer, hardware authority, or deployment readiness.",
+  "source_bindings": {
+    "twin_capability_report": {
+      "path": "outputs/sail/twin-capability-v1/capability_report.json",
+      "sha256": "db5f568fefbaf69d48507da480296301de3d147a76c79a7bf6c0fba29591357a"
+    },
+    "flywheel_lineage": {
+      "path": "src/sim2claw/policy_flywheel.py",
+      "sha256": "c2f0abac1cf49e4ed5cfe0d5122f0eb6c0bd2882e81e3e59a3fcae9533e714fe"
+    },
+    "goal_data": {
+      "path": "src/sim2claw/learning_factory_goal_data.py",
+      "sha256": "1c1463d0a6bb4cf3031b7a4d45f60d3ed0ee6c0023b4e2fa3cea0171f9b8cfc5"
+    },
+    "act_training": {
+      "path": "src/sim2claw/goal_act_training.py",
+      "sha256": "cf6cec5f6d0cf7dc3f154ed8e0d2d3cb9bf37c337784f12f88ec881538e74234"
+    },
+    "source_adapter": {
+      "path": "src/sim2claw/source_episode.py",
+      "sha256": "963714721c15b232b7aa9445de3632e676d29722c33f4d0171e624308cbba1b4"
+    },
+    "recursion": {
+      "path": "src/sim2claw/learning_factory_recursion.py",
+      "sha256": "1b583688b3f7ef6fc9e4dccd4f475ba9cc507a34f1ddb65a93b816be78d046d4"
+    },
+    "component_fixture": {
+      "path": "tests/test_learning_factory_components.py",
+      "sha256": "02b1dbe6505b512cdcb5a8b83c38f92a46d3cb37605dbebb24e2638e3343de18"
+    },
+    "flywheel_negatives": {
+      "path": "tests/test_policy_flywheel.py",
+      "sha256": "488e84d9a4a9cfac71133c14e4011f732861f4d7bd35bbbfd47850c55248e17a"
+    },
+    "act_task": {
+      "path": "configs/tasks/chess_pick_place_act_state_v1.json",
+      "sha256": "b8e527286caacfb13b3b4ca6bd2352c2f0704e9d5054d164e416bd1b2f24299c"
+    },
+    "groot_task": {
+      "path": "configs/tasks/chess_pick_place_groot_v1.json",
+      "sha256": "988a5a93d26358770c2dc3731602ba1dc11f723974758659d4cb05392f63ef58"
+    }
+  },
+  "fixture_execution": {
+    "maximum_wall_seconds": 300,
+    "expected_passed_test_count": 12,
+    "test_entrypoints": [
+      "tests/test_learning_factory_components.py::test_real_component_campaign_executes_lf00_through_lf13",
+      "tests/test_policy_flywheel.py",
+      "tests/test_source_episode.py::CanonicalSourceEpisodeTest::test_strict_success_adapts_to_act_and_groot_without_privileged_state",
+      "tests/test_learning_factory_goal_loop.py::test_counterexample_registry_is_trace_native_deduplicated_and_routed",
+      "tests/test_corrective_intervention_lf.py"
+    ]
+  },
+  "flywheel_stages": {
+    "LF-08": "object_target_relative_curriculum_and_identified_posterior_sampling",
+    "LF-09": "full_mujoco_replay_and_strict_act_groot_dataset_admission",
+    "LF-10": "primary_state_goal_act_training_and_explicit_groot_disposition",
+    "LF-11": "separate_cpu_fp32_policy_evaluation",
+    "LF-12": "trace_native_counterexample_routing_and_corrective_suffix_guard",
+    "LF-13": "independent_promotion_or_authenticated_rejection"
+  },
+  "required_lineage": [
+    "twin_capability_decision",
+    "twin_id",
+    "task_contract",
+    "distribution_contract",
+    "source_episode_and_segments",
+    "object_relative_transform",
+    "target_relative_transform",
+    "identified_posterior",
+    "posterior_particle",
+    "teacher_and_action_owner",
+    "simulator_implementation",
+    "initial_state",
+    "source_action_trace",
+    "strict_evaluator_contract_and_verdict",
+    "dataset",
+    "training_recipe_and_checkpoint",
+    "independent_policy_evaluation",
+    "promotion_or_rejection"
+  ],
+  "failure_admission_matrix": [
+    {
+      "case": "strict_success",
+      "training_rows": "full_evaluator_authorized_episode",
+      "admission_owner": "separate_cpu_fp32_consequence_evaluator"
+    },
+    {
+      "case": "raw_evaluator_failure",
+      "training_rows": 0,
+      "admission_owner": "none"
+    },
+    {
+      "case": "replay_failure",
+      "training_rows": 0,
+      "admission_owner": "none"
+    },
+    {
+      "case": "held_out_failure",
+      "training_rows": 0,
+      "admission_owner": "none"
+    },
+    {
+      "case": "failed_corrective_prefix",
+      "training_rows": 0,
+      "admission_owner": "none"
+    },
+    {
+      "case": "failed_corrective_suffix",
+      "training_rows": 0,
+      "admission_owner": "none"
+    },
+    {
+      "case": "successful_corrective_suffix",
+      "training_rows": "exact_suffix_only",
+      "admission_owner": "separate_cpu_fp32_consequence_evaluator"
+    }
+  ],
+  "groot_challenger": {
+    "mode": "deterministic_skip",
+    "reason": "no_compatible_local_groot_runtime_or_authorized_bounded_compute",
+    "compute_available": false,
+    "policy_camera_ids": [
+      "overhead"
+    ],
+    "evaluator_only_camera_ids": [
+      "wrist"
+    ],
+    "principal_physical_data_comparison": true,
+    "synthetic_wrist_ablation_allowed_separately": true
+  },
+  "proof_class_boundaries": {
+    "generated_dataset": "simulation_strict_evaluator_admitted",
+    "act_candidate": "simulation_goal_conditioned_policy_candidate",
+    "groot_challenger": "simulation_groot_challenger_disposition",
+    "policy_evaluation": "independent_learned_policy_simulation_evaluation",
+    "counterexample": "trace_native_nontraining_failure_evidence",
+    "correction": "independently_admitted_corrective_suffix_only",
+    "physical_read_only": "not_created",
+    "physical_task": "not_created"
+  },
+  "authority": {
+    "real_data_generation": false,
+    "real_training_admission": false,
+    "real_policy_selection": false,
+    "physical_canary": false,
+    "robot_motion": false,
+    "physical_transfer": false
+  }
+}

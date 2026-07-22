@@ -85,6 +85,23 @@ def load_goal_act_dataset(receipt_path: Path) -> tuple[dict[str, Any], list[dict
         raise ValueError("goal ACT dataset contains held-out training rows")
     if int(receipt.get("rejected_training_rows", -1)) != 0:
         raise ValueError("goal ACT dataset contains rejected training rows")
+    preflight = receipt.get("preflight")
+    if not isinstance(preflight, dict):
+        raise ValueError("goal ACT dataset lacks a flywheel preflight")
+    if preflight.get("all_rows_bind_posterior_teacher_simulator") is not True:
+        raise ValueError("goal ACT rows lack posterior/teacher/simulator lineage")
+    if preflight.get("posterior_sampling_policy") != "identified_posterior_only":
+        raise ValueError("goal ACT dataset used another posterior sampling policy")
+    if preflight.get("arbitrary_domain_randomization") is not False:
+        raise ValueError("goal ACT dataset used arbitrary domain randomization")
+    if preflight.get("groot_policy_camera_ids") != ["overhead"]:
+        raise ValueError("goal ACT sibling GR00T payload is not overhead-only")
+    if preflight.get("wrist_main_policy_input") is not False:
+        raise ValueError("wrist imagery entered the principal policy payload")
+    generation_lineage_digest = _sha256_text(
+        receipt.get("generation_lineage_digest"),
+        "generation lineage identity",
+    )
     payload = receipt["act_payload"]
     payload_path = receipt_path.parent / str(payload["path"])
     if not payload_path.is_file() or sha256_file(payload_path) != payload["sha256"]:
@@ -105,7 +122,35 @@ def load_goal_act_dataset(receipt_path: Path) -> tuple[dict[str, Any], list[dict
         lineage = row.get("lineage") or {}
         if lineage.get("source_recording_id") not in episode_ids:
             raise ValueError("goal ACT row source is not in the admitted episode set")
+        flywheel = (lineage.get("candidate") or {}).get("flywheel")
+        if not isinstance(flywheel, dict):
+            raise ValueError("goal ACT row lacks flywheel lineage")
+        if flywheel.get("generation_lineage_digest") != generation_lineage_digest:
+            raise ValueError("goal ACT row binds another generation lineage")
+        for key in (
+            "simulator_implementation_sha256",
+            "source_action_trace_sha256",
+            "evaluator_verdict_sha256",
+        ):
+            _sha256_text(flywheel.get(key), f"row {key}")
+        for key in (
+            "posterior_particle_id",
+            "teacher_id",
+            "teacher_action_owner",
+            "simulator_id",
+        ):
+            if not str(flywheel.get(key) or ""):
+                raise ValueError(f"goal ACT row lacks {key}")
     return receipt, rows
+
+
+def _sha256_text(value: object, label: str) -> str:
+    normalized = str(value or "")
+    if len(normalized) != 64 or any(
+        character not in "0123456789abcdef" for character in normalized
+    ):
+        raise ValueError(f"{label} is not a lowercase SHA-256 digest")
+    return normalized
 
 
 def _normalization(observations: np.ndarray, actions: np.ndarray) -> dict[str, np.ndarray]:
@@ -179,11 +224,19 @@ def train_goal_act(
     output_directory: Path,
     recipe_path: Path = REPO_ROOT / "configs/training/goal_act_recipe_v1.json",
     task_contract_path: Path = REPO_ROOT / "configs/tasks/chess_pick_place_act_state_v1.json",
+    groot_challenger_declaration: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Train one checkpoint from exactly one immutable LF-09 dataset receipt."""
 
     started_at = datetime.now(UTC).isoformat()
     dataset, rows = load_goal_act_dataset(dataset_receipt_path)
+    groot_disposition = None
+    if groot_challenger_declaration is not None:
+        from .policy_flywheel import compile_groot_challenger_disposition
+
+        groot_disposition = compile_groot_challenger_disposition(
+            dataset, groot_challenger_declaration
+        )
     task = load_act_pick_place_task_contract(task_contract_path)
     if dataset.get("task_id") != task["task_id"]:
         raise ValueError("dataset task identity differs from the trainer task")
@@ -324,6 +377,7 @@ def train_goal_act(
             "cleanup_complete": not bool(recipe["resource"]["cleanup_required"]),
         },
         "training_can_promote": False,
+        "groot_challenger": groot_disposition,
     }
     receipt = {**unsigned, "artifact_sha256": canonical_digest(unsigned)}
     atomic_write_json(output_directory / "training_receipt.json", receipt)

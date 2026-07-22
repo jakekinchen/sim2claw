@@ -1539,6 +1539,9 @@ class LearningFactory:
                 generation=self.context.generation,
                 task_contract_path=task_path,
                 twin_capability_context=self._capability_contexts[stage_id],
+                generation_lineage=dict(
+                    curriculum.get("generation_lineage") or {}
+                ),
             )
             training_declaration = declaration.get("training") or {}
             if training_declaration.get("evaluation_cohort") == "auto":
@@ -1659,6 +1662,9 @@ class LearningFactory:
                     self.repo_root,
                     str((declaration.get("curriculum") or {}).get("task_contract", "")),
                     label="goal ACT task contract",
+                ),
+                groot_challenger_declaration=dict(
+                    training.get("groot_challenger") or {}
                 ),
             )
             return {

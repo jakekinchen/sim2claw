@@ -416,6 +416,44 @@ def test_real_component_campaign_executes_lf00_through_lf13() -> None:
                 "curriculum": {
                     "task_contract": task_path.relative_to(REPO_ROOT).as_posix(),
                     "maximum_candidates": 1,
+                    "generation_lineage": {
+                        "schema_version": "sim2claw.policy_flywheel_generation_lineage.v1",
+                        "source_segment_representation": "object_and_target_relative",
+                        "posterior": {
+                            "artifact_sha256": capability_identities["posterior"],
+                            "posterior_digest": "c" * 64,
+                            "eligible_particle_ids": [
+                                "synthetic-component-particle-v1"
+                            ],
+                            "sampling_policy": "identified_posterior_only",
+                            "arbitrary_domain_randomization": False,
+                            "physical_parameter_claim": False,
+                        },
+                        "teacher": {
+                            "teacher_id": "repo_native_pawn_source_expert_v1",
+                            "action_owner": "geometric_expert",
+                            "admission_authority": False,
+                        },
+                        "simulator": {
+                            "simulator_id": "component-mujoco-workcell-v1",
+                            "implementation_sha256": capability_identities[
+                                "simulator"
+                            ],
+                        },
+                        "task_distribution": {
+                            "task_id": task["task_id"],
+                            "task_contract_sha256": _sha256(task_path),
+                            "distribution_id": "pawn_rank12_bidirectional_b_to_g_v2",
+                            "distribution_sha256": _sha256(distribution_path),
+                        },
+                        "policy_modalities": {
+                            "act_policy_inputs": ["state_goal"],
+                            "groot_policy_camera_ids": ["overhead"],
+                            "evaluator_only_camera_ids": ["wrist"],
+                            "wrist_is_main_policy_input": False,
+                        },
+                        "physical_authority": False,
+                    },
                     "admitted_source_episodes": [
                         {
                             "source_episode_id": "strict-c8-source-mechanism",
@@ -438,6 +476,13 @@ def test_real_component_campaign_executes_lf00_through_lf13() -> None:
                 "training": {
                     "recipe": recipe_path.relative_to(REPO_ROOT).as_posix(),
                     "evaluation_cohort": "auto",
+                    "groot_challenger": {
+                        "mode": "deterministic_skip",
+                        "compute_available": False,
+                        "reason": "no_compatible_local_groot_runtime_or_authorized_bounded_compute",
+                        "policy_camera_ids": ["overhead"],
+                        "evaluator_only_camera_ids": ["wrist"],
+                    },
                 },
                 "twin_worthiness": {
                     "capability_certificate": capability_path.relative_to(
@@ -502,9 +547,24 @@ def test_real_component_campaign_executes_lf00_through_lf13() -> None:
             assert report["results"][7]["output"]["verdict"] == "admitted"
             assert report["results"][9]["output"]["accepted_count"] == 1
             assert report["results"][9]["output"]["held_out_training_rows"] == 0
+            assert report["results"][9]["output"]["preflight"][
+                "all_rows_bind_posterior_teacher_simulator"
+            ] is True
+            assert report["results"][9]["output"]["preflight"][
+                "arbitrary_domain_randomization"
+            ] is False
+            assert report["results"][9]["output"]["preflight"][
+                "groot_policy_camera_ids"
+            ] == ["overhead"]
             assert report["results"][10]["output"]["dataset_sha256"] == (
                 report["results"][9]["output"]["dataset_sha256"]
             )
+            assert report["results"][10]["output"]["groot_challenger"][
+                "status"
+            ] == "skipped_compute_unavailable"
+            assert report["results"][10]["output"]["groot_challenger"][
+                "policy_camera_ids"
+            ] == ["overhead"]
             evaluation = report["results"][11]
             assert evaluation["status"] == "terminal_negative"
             assert set(evaluation["output"]["b_g_scorecard"]) == {

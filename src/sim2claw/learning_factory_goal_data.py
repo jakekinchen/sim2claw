@@ -94,6 +94,7 @@ def compile_goal_act_curriculum(
     generation: int = 0,
     task_contract_path: Path | None = None,
     twin_capability_context: dict[str, Any],
+    generation_lineage: dict[str, Any],
 ) -> dict[str, Any]:
     """Select the smallest deterministic training-only pose/layout batch.
 
@@ -103,6 +104,10 @@ def compile_goal_act_curriculum(
     """
 
     from .sail.twin_worthiness import require_capability_context
+    from .policy_flywheel import (
+        candidate_generation_binding,
+        validate_generation_lineage,
+    )
 
     capability = require_capability_context(
         twin_capability_context, capability="data_generation"
@@ -116,6 +121,19 @@ def compile_goal_act_curriculum(
         if task_contract_path is not None
         else Path(__file__).parents[2]
         / "configs/tasks/chess_pick_place_act_state_v1.json"
+    )
+    task_path = (
+        task_contract_path
+        if task_contract_path is not None
+        else Path(__file__).parents[2]
+        / "configs/tasks/chess_pick_place_act_state_v1.json"
+    )
+    flywheel_lineage = validate_generation_lineage(
+        generation_lineage,
+        twin_capability_context=twin_capability_context,
+        parent_twin_id=parent_twin_id,
+        task_id=task["task_id"],
+        task_contract_sha256=task_contract_sha256(task_path),
     )
     if not source_episodes:
         raise ValueError("curriculum requires at least one admitted source declaration")
@@ -174,6 +192,9 @@ def compile_goal_act_curriculum(
             "continuous_target_xy_m": target_xy,
         }
         candidate_id = f"goal-cousin-{canonical_digest(identity)[:20]}"
+        generation_binding = candidate_generation_binding(
+            flywheel_lineage, candidate_index=index
+        )
         candidates.append(
             {
                 "candidate_id": candidate_id,
@@ -182,6 +203,7 @@ def compile_goal_act_curriculum(
                 "source": source,
                 "planner_id": "repo_native_free_space_planner_v1",
                 "ik_solver_id": "mujoco_damped_least_squares_v1",
+                **generation_binding,
                 "lineage_state": "planned_pending_scene_execution",
                 "execution_bound_lineage_fields": [
                     "object_relative_transform_sha256",
@@ -214,6 +236,8 @@ def compile_goal_act_curriculum(
             "seeds": sorted({row["candidate_seed"] for row in candidates}),
         },
         "split_manifest": split_manifest,
+        "generation_lineage": flywheel_lineage,
+        "generation_lineage_digest": flywheel_lineage["lineage_digest"],
         "candidates": candidates,
         "admission_authority": "none_plan_only",
         "twin_capability_decision_digest": capability["decision_digest"],
@@ -309,6 +333,16 @@ def generate_goal_act_candidate_executions(
                 "generator_receipt_sha256": generated["receipt_sha256"],
                 "planner_id": candidate["planner_id"],
                 "ik_solver_id": candidate["ik_solver_id"],
+                "generation_lineage_digest": candidate[
+                    "generation_lineage_digest"
+                ],
+                "posterior_particle_id": candidate["posterior_particle_id"],
+                "teacher_id": candidate["teacher_id"],
+                "teacher_action_owner": candidate["teacher_action_owner"],
+                "simulator_id": candidate["simulator_id"],
+                "simulator_implementation_sha256": candidate[
+                    "simulator_implementation_sha256"
+                ],
             }
         )
     unsigned = {
@@ -445,7 +479,12 @@ def encode_goal_act_rows(
 
 
 def _validate_execution_lineage(
-    task: dict[str, Any], candidate: dict[str, Any], execution: dict[str, Any]
+    task: dict[str, Any],
+    candidate: dict[str, Any],
+    execution: dict[str, Any],
+    *,
+    receipt: dict[str, Any],
+    verdict: dict[str, Any],
 ) -> dict[str, Any]:
     source = candidate["source"]
     lineage = {
@@ -461,11 +500,54 @@ def _validate_execution_lineage(
         "candidate_seed": candidate["candidate_seed"],
         "repair_parent_id": execution.get("repair_parent_id"),
         "evaluator_contract_sha256": str(execution.get("evaluator_contract_sha256") or ""),
+        "flywheel": {
+            "generation_lineage_digest": str(
+                execution.get("generation_lineage_digest") or ""
+            ),
+            "posterior_particle_id": str(
+                execution.get("posterior_particle_id") or ""
+            ),
+            "teacher_id": str(execution.get("teacher_id") or ""),
+            "teacher_action_owner": str(
+                execution.get("teacher_action_owner") or ""
+            ),
+            "simulator_id": str(execution.get("simulator_id") or ""),
+            "simulator_implementation_sha256": str(
+                execution.get("simulator_implementation_sha256") or ""
+            ),
+            "source_action_trace_sha256": str(receipt.get("samples_sha256") or ""),
+            "evaluator_verdict_sha256": str(
+                verdict.get("canonical_payload_sha256") or ""
+            ),
+        },
     }
     validate_candidate_lineage(task, lineage)
     for field in REQUIRED_LINEAGE_FIELDS - {"repair_parent_id", "candidate_seed", "source_segment_ids"}:
         if not lineage[field]:
             raise ValueError(f"candidate lineage field is empty: {field}")
+    binding = lineage["flywheel"]
+    for field in (
+        "generation_lineage_digest",
+        "posterior_particle_id",
+        "teacher_id",
+        "teacher_action_owner",
+        "simulator_id",
+        "simulator_implementation_sha256",
+        "source_action_trace_sha256",
+        "evaluator_verdict_sha256",
+    ):
+        if not binding[field]:
+            raise ValueError(f"flywheel lineage field is empty: {field}")
+    for field in (
+        "generation_lineage_digest",
+        "posterior_particle_id",
+        "teacher_id",
+        "teacher_action_owner",
+        "simulator_id",
+        "simulator_implementation_sha256",
+    ):
+        if binding[field] != str(candidate[field]):
+            raise ValueError(f"flywheel lineage differs from candidate: {field}")
     return lineage
 
 
@@ -596,7 +678,11 @@ def build_goal_act_dataset(
                 verdict=verdict,
             )
             lineage = _validate_execution_lineage(
-                task, candidate, verified_execution
+                task,
+                candidate,
+                verified_execution,
+                receipt=receipt,
+                verdict=verdict,
             )
             act_adapted = adapt_source_episode(
                 episode_directory, adapter="act", admission_verdict=verdict
@@ -692,11 +778,23 @@ def build_goal_act_dataset(
         "rejected_training_rows": 0,
         "act_payload": act_payload,
         "groot_payload": groot_payload,
+        "generation_lineage_digest": curriculum["generation_lineage_digest"],
         "preflight": {
             "observation_dimension": 61,
             "action_dimension": 6,
             "all_rows_have_lineage": all(bool(row["lineage"]) for row in training_rows),
             "all_groot_sources_hash_bound": len(groot_rows) == len(training_rows),
+            "all_rows_bind_posterior_teacher_simulator": all(
+                bool(row["lineage"].get("candidate", {}).get("flywheel"))
+                for row in training_rows
+            ),
+            "posterior_sampling_policy": curriculum["generation_lineage"][
+                "posterior"
+            ]["sampling_policy"],
+            "arbitrary_domain_randomization": False,
+            "groot_policy_camera_ids": ["overhead"],
+            "evaluator_only_camera_ids": ["wrist"],
+            "wrist_main_policy_input": False,
             "privileged_state_in_policy_payload": False,
         },
         "admission_owner": "separate_cpu_fp32_consequence_evaluator",

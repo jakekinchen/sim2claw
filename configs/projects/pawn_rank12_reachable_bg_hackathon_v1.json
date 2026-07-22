@@ -72,6 +72,41 @@
     "curriculum": {
       "task_contract": "configs/tasks/chess_pick_place_act_state_v1.json",
       "maximum_candidates": 8,
+      "generation_lineage": {
+        "schema_version": "sim2claw.policy_flywheel_generation_lineage.v1",
+        "source_segment_representation": "object_and_target_relative",
+        "posterior": {
+          "artifact_sha256": "c7fa9b0fe616ba4e4afe9fe8007b4073e67ce93ccbbb03629aec3f977e1d8fd3",
+          "posterior_digest": "c7fa9b0fe616ba4e4afe9fe8007b4073e67ce93ccbbb03629aec3f977e1d8fd3",
+          "eligible_particle_ids": [],
+          "availability": "closed_no_identified_retained_particle",
+          "sampling_policy": "identified_posterior_only",
+          "arbitrary_domain_randomization": false,
+          "physical_parameter_claim": false
+        },
+        "teacher": {
+          "teacher_id": "repo_native_pawn_source_expert_v1",
+          "action_owner": "geometric_expert",
+          "admission_authority": false
+        },
+        "simulator": {
+          "simulator_id": "retired_workcell_prospective_simulator_family_v1",
+          "implementation_sha256": "d16367bee2a3ee7e8847d1845b0dcb891608f62822b53c784633dc6d7f9dc7e2"
+        },
+        "task_distribution": {
+          "task_id": "chess_pick_place_act_state_v1",
+          "task_contract_sha256": "b8e527286caacfb13b3b4ca6bd2352c2f0704e9d5054d164e416bd1b2f24299c",
+          "distribution_id": "pawn_rank12_bidirectional_b_to_g_v2",
+          "distribution_sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3"
+        },
+        "policy_modalities": {
+          "act_policy_inputs": ["state_goal"],
+          "groot_policy_camera_ids": ["overhead"],
+          "evaluator_only_camera_ids": ["wrist"],
+          "wrist_is_main_policy_input": false
+        },
+        "physical_authority": false
+      },
       "admitted_source_episodes": [],
       "candidate_executions": [],
       "live_blocker": "No evaluator-admitted B-G-compatible source episode exists; lower-side B-G cells are outside the frozen left-arm IK envelope and physical episodes remain replay-unqualified."
@@ -79,6 +114,13 @@
     "training": {
       "recipe": "configs/training/goal_act_recipe_v1.json",
       "evaluation_cohort": null,
+      "groot_challenger": {
+        "mode": "deterministic_skip",
+        "compute_available": false,
+        "reason": "no_compatible_local_groot_runtime_or_authorized_bounded_compute",
+        "policy_camera_ids": ["overhead"],
+        "evaluator_only_camera_ids": ["wrist"]
+      },
       "live_blocker": "A B-G-compatible frozen evaluation cohort cannot be sealed until compatible simulation source/reset episodes exist."
     },
     "twin_worthiness": {

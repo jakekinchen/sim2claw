@@ -695,7 +695,7 @@ def adapt_source_episode(
     adapter: str,
     admission_verdict: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    """Return eligible ACT or GR00T rows without privileged evaluator state."""
+    """Return eligible ACT or overhead-only GR00T rows without privileged state."""
 
     directory = directory.resolve()
     receipt, rows = load_source_episode(directory)
@@ -733,7 +733,6 @@ def adapt_source_episode(
                     "schema_version": GROOT_ADAPTER_SCHEMA,
                     "observation": {
                         "top_rgb_path": row["rgb"]["top"]["path"],
-                        "wrist_rgb_path": row["rgb"]["wrist"]["path"],
                         "language_instruction": row["language_instruction"],
                         "joint_position_rad": row["robot"]["joint_position_rad"],
                     },

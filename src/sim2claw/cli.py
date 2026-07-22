@@ -351,6 +351,13 @@ def build_parser() -> argparse.ArgumentParser:
     sail_twin_capability.add_argument("--config", type=Path, required=True)
     sail_twin_capability.add_argument("--output", type=Path, required=True)
 
+    sail_policy_flywheel = subparsers.add_parser(
+        "sail-run-policy-flywheel",
+        help="run and compile the gated synthetic policy-flywheel campaign",
+    )
+    sail_policy_flywheel.add_argument("--config", type=Path, required=True)
+    sail_policy_flywheel.add_argument("--output", type=Path, required=True)
+
     recorded_replay = subparsers.add_parser(
         "replay-recorded",
         help="replay one recorded command episode in MuJoCo and emit synchronized metrics",
@@ -1052,6 +1059,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "sail-compile-twin-capability":
         from .sail.capability_campaign import compile_campaign
         from .sail.contracts import SailContractError
+        try:
+            report = compile_campaign(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-run-policy-flywheel":
+        from .sail.contracts import SailContractError
+        from .sail.policy_flywheel_campaign import compile_campaign
         try:
             report = compile_campaign(args.config, output_root=args.output)
         except SailContractError as error:
