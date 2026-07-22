@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_flexural_rubber_v1",
-  "current_milestone": "B2_02T_FROZEN_FLEXURAL_RUBBER_C2_SCREEN_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_arm_tracking_upper_bound_v1",
+  "current_milestone": "B2_02U_ARM_TRACKING_CAUSAL_UPPER_BOUND_FROZEN",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "noslip_terminal_negative_explicit_flexural_travel_followup_frozen",
+    "status": "flexural_terminal_negative_arm_tracking_upper_bound_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -660,7 +660,8 @@
       "B2-02Q": "completed_terminal_negative",
       "B2-02R": "completed_terminal_negative",
       "B2-02S": "completed_terminal_negative",
-      "B2-02T": "in_progress",
+      "B2-02T": "completed_terminal_negative",
+      "B2-02U": "in_progress",
       "B2-03": "pending",
       "B2-04": "pending",
       "B2-05": "pending"
@@ -920,6 +921,28 @@
       "lift_and_transport": true
     },
     "flexural_rubber_contract": "configs/sail/grasp_retention_flexural_rubber_v1.json",
+    "flexural_rubber_anchor_pass_count": 0,
+    "flexural_rubber_receipt_sha256": "42f0a4705f6fb83ec563511cf09263ca98f108a783218e7c7747c536c4a5573b",
+    "flexural_rubber_receipt_digest": "09103869e3a63c85b5132cbbd9b533a938c372d621d60f4bfee3a6fa32043dbc",
+    "flexural_rubber_retained_frontier": {
+      "candidate_id": "force_0090_travel_003",
+      "contact_loss_source_index": 405,
+      "loaded_aperture_bias_degrees": 1.5634534435399647,
+      "post_grasp_slip_relative_reduction": 0.6321954549096339,
+      "maximum_transport_progress_after_lift": 0.0,
+      "post_first_lift_transport_progress": 0.7771963189180688,
+      "lift_and_transport": false
+    },
+    "flexural_rubber_false_transport_frontier": {
+      "candidate_id": "force_0100_travel_004",
+      "contact_loss_source_index": 409,
+      "loaded_aperture_bias_degrees": 0.4154169075098151,
+      "post_grasp_slip_relative_reduction": -0.28329160022921257,
+      "maximum_piece_rise_m": 0.3098240319994058,
+      "released": false,
+      "rejected_as_excessive_simulated_energy": true
+    },
+    "arm_tracking_upper_bound_contract": "configs/sail/grasp_retention_arm_tracking_upper_bound_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false

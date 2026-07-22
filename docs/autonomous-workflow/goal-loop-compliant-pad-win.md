@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02S COMPLETE; B2-02T IN PROGRESS`
+Status: `ACTIVE — B2-02T COMPLETE; B2-02U IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -35,7 +35,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02Q | complete, terminal negative | only 3 mm capsule contacts; transport branch loses at 318 with aperture mismatch |
 | B2-02R | complete, terminal negative | compiled normal offsets are dynamically absorbed by slide-mounted pads |
 | B2-02S | complete, terminal negative | stiction changes regimes; transport branches still lose early with aperture mismatch |
-| B2-02T | in progress | explicit 1.5--4 mm one-sided flexural band travel with constant force |
+| B2-02T | complete, terminal negative | bounded flexure finds a retained/slip branch, but no valid task transport; 4 mm branch never releases and is rejected for 0.310 m rise |
+| B2-02U | in progress | measured-joint-state causal upper bound, explicitly non-promotable |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -235,3 +236,12 @@ earlier ~3 mm motion as effective wrapped-band flexure rather than permitting a
 soft 1 mm joint to overrun. It explicitly freezes unilateral travel at
 1.5--4 mm and crosses constant force 0.07--0.12. Thus any larger pad motion is
 bounded, recorded, and physically interpretable as a different contact model.
+
+B2-02T finds no composite pass. Force 0.09 / 3 mm retains through release and
+reduces slip by 63.2%, but the pawn falls below the 40 mm lift plane before
+transport progress. Force 0.10 / 4 mm satisfies retention, aperture, and the
+raw transport predicate only because the pawn remains pinched when the robot
+returns upward, reaching a rejected 0.310 m rise. B2-02U freezes a two-member
+causal upper bound: the non-launching 0.09 / 3 mm contact model normally, then
+with measured joint state forced. The latter is explicitly non-promotable and
+can only determine whether arm-response mismatch blocks the task consequence.

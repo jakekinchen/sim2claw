@@ -82,6 +82,9 @@ NOSLIP_RUBBER_SCHEMA = (
 FLEXURAL_RUBBER_SCHEMA = (
     "sim2claw.sail_grasp_retention_flexural_rubber_campaign.v1"
 )
+ARM_TRACKING_UPPER_BOUND_SCHEMA = (
+    "sim2claw.sail_grasp_retention_arm_tracking_upper_bound_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -149,6 +152,7 @@ def load_grasp_retention_contract(
         INWARD_RUBBER_SCHEMA,
         NOSLIP_RUBBER_SCHEMA,
         FLEXURAL_RUBBER_SCHEMA,
+        ARM_TRACKING_UPPER_BOUND_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -181,6 +185,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-inward-rubber-v1",
         "sail-grasp-retention-noslip-rubber-v1",
         "sail-grasp-retention-flexural-rubber-v1",
+        "sail-grasp-retention-arm-tracking-upper-bound-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 
@@ -286,6 +291,11 @@ def _anchor_result(
         or not episode.get("action_byte_identical")
     ):
         reasons.append("action_identity_drift")
+    measured_state_replay = bool(
+        episode.get("diagnostic_measured_joint_state_replay", {}).get("enabled")
+    )
+    if measured_state_replay:
+        reasons.append("diagnostic_measured_state_replay_not_promotable")
     if not retained:
         reasons.append("bilateral_contact_lost_before_release")
     if abs(bias) > float(
@@ -356,6 +366,7 @@ def _anchor_result(
             "maximum_transport_progress_after_lift"
         ),
         "force_target_transition_count": force_target_transitions,
+        "diagnostic_measured_joint_state_replay": measured_state_replay,
         "trace_metrics": {
             "overall_joint_rms_degrees": float(
                 episode["trace_metrics"]["overall_joint_rms_degrees"]

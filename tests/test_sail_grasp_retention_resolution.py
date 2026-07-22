@@ -666,6 +666,57 @@ def test_flexural_rubber_family_declares_long_unilateral_travel() -> None:
     assert forces == {0.07, 0.08, 0.09, 0.1, 0.11, 0.12}
 
 
+def test_arm_tracking_upper_bound_is_explicitly_nonpromotable() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_arm_tracking_upper_bound_v1.json"
+        )
+    )
+
+    family = contract["frozen_candidate_family"]
+    assert len(family) == 2
+    assert family[0]["overrides"] == {}
+    assert family[1]["overrides"] == {
+        "diagnostic_measured_joint_state_replay": True
+    }
+    assert not contract["proof_boundary"]["simulator_candidate_promotion_allowed"]
+
+
+def test_anchor_result_rejects_measured_state_replay() -> None:
+    contract = load_grasp_retention_contract()
+    expected_action = contract["diagnosis_anchor"]["action_array_sha256"]
+    episode = {
+        "action_array_sha256": expected_action,
+        "action_byte_identical": True,
+        "diagnostic_measured_joint_state_replay": {"enabled": True},
+        "retention_event_summary": {
+            "first_bilateral_contact_loss_after_lift": {"source_index": 410}
+        },
+        "event_aligned_gripper_metrics": {
+            "simulated_minus_measured_bias_degrees": 0.1
+        },
+        "maximum_post_grasp_slip_m": 0.01,
+        "lift_and_transport": True,
+        "piece_lifted": True,
+        "bilateral_lift_retention": True,
+        "maximum_bilateral_lift_retention_seconds": 1.0,
+        "maximum_piece_rise_m": 0.05,
+        "trace_metrics": {"overall_joint_rms_degrees": 1.0, "ee_rms_m": 0.01},
+    }
+
+    result = _anchor_result(
+        episode=episode, contract=contract, baseline_slip_m=0.02
+    )
+
+    assert result["status"] == "rejected"
+    assert result["reasons"] == [
+        "diagnostic_measured_state_replay_not_promotable"
+    ]
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]
