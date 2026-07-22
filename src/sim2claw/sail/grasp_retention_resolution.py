@@ -23,6 +23,9 @@ LOAD_HOLD_SCHEMA = "sim2claw.sail_grasp_retention_load_hold_campaign.v1"
 CALIBRATED_HOLD_SCHEMA = "sim2claw.sail_grasp_retention_calibrated_hold_campaign.v1"
 COMPOSITE_SCHEMA = "sim2claw.sail_grasp_retention_composite_campaign.v1"
 CAPSULE_SCHEMA = "sim2claw.sail_grasp_retention_capsule_pad_campaign.v1"
+NORMAL_COMPLIANCE_SCHEMA = (
+    "sim2claw.sail_grasp_retention_normal_compliance_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -69,6 +72,7 @@ def load_grasp_retention_contract(
         CALIBRATED_HOLD_SCHEMA,
         COMPOSITE_SCHEMA,
         CAPSULE_SCHEMA,
+        NORMAL_COMPLIANCE_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -80,6 +84,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-calibrated-hold-v1",
         "sail-grasp-retention-composite-v1",
         "sail-grasp-retention-capsule-pad-v1",
+        "sail-grasp-retention-normal-compliance-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 

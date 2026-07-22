@@ -139,6 +139,27 @@ def test_capsule_pad_family_matches_qualitative_video_shape() -> None:
     assert len(contract["frozen_candidate_family"]) == 12
 
 
+def test_normal_compliance_family_is_frozen_and_action_invariant() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_normal_compliance_v1.json"
+        )
+    )
+
+    assert len(contract["frozen_candidate_family"]) == 18
+    assert not contract["proof_boundary"]["policy_actions_mutable"]
+    assert not contract["base_parameters"]["gripper_load_hold_enabled"]
+    assert not contract["base_parameters"]["rubber_tip_normal_compliance_enabled"]
+    assert all(
+        row["candidate_id"] == "baseline"
+        or row["overrides"]["rubber_tip_normal_compliance_enabled"]
+        for row in contract["frozen_candidate_family"]
+    )
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

@@ -219,6 +219,49 @@ class RubberTipContactPriorTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "continuous base sleeve"):
             apply_contact_variant(build_scene_spec(mass_profile_path=None), variant)
 
+    def test_segmented_normal_compliance_adds_bounded_spring_pad_bodies(self) -> None:
+        base = load_simulator_variant("rubber_tip_high")
+        payload = copy.deepcopy(base.payload)
+        payload.update(
+            {
+                "wrap_segment_count": 3,
+                "wrap_segment_fill_fraction": 0.9,
+                "normal_compliance": {
+                    "enabled": True,
+                    "travel_m": 0.002,
+                    "stiffness_n_per_m": 1000.0,
+                    "damping_n_s_per_m": 2.0,
+                    "modeled_mass_per_finger_kg": 0.001,
+                },
+            }
+        )
+        variant = replace(base, payload=payload, variant_id="compliant_test")
+        spec = build_scene_spec(mass_profile_path=None)
+        application = apply_contact_variant(spec, variant)
+        model = spec.compile()
+
+        self.assertEqual(len(application["added_geoms"]), 6)
+        self.assertEqual(len(application["added_bodies"]), 6)
+        self.assertEqual(len(application["added_joints"]), 6)
+        for binding in application["bindings"]:
+            joint_id = mujoco.mj_name2id(
+                model, mujoco.mjtObj.mjOBJ_JOINT, binding["added_joint"]
+            )
+            body_id = mujoco.mj_name2id(
+                model, mujoco.mjtObj.mjOBJ_BODY, binding["added_body"]
+            )
+            geom_id = mujoco.mj_name2id(
+                model, mujoco.mjtObj.mjOBJ_GEOM, binding["added_geom"]
+            )
+            dof_id = int(model.jnt_dofadr[joint_id])
+            self.assertGreaterEqual(joint_id, 0)
+            self.assertGreaterEqual(body_id, 0)
+            self.assertEqual(int(model.geom_bodyid[geom_id]), body_id)
+            self.assertTrue(np.allclose(model.jnt_range[joint_id], [-0.002, 0.002]))
+            self.assertEqual(float(model.jnt_stiffness[joint_id]), 1000.0)
+            self.assertEqual(float(model.dof_damping[dof_id]), 2.0)
+            self.assertAlmostEqual(binding["modeled_added_mass_kg"], 1 / 3000)
+
 
 if __name__ == "__main__":
     unittest.main()

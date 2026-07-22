@@ -279,6 +279,23 @@ def _custom_variant(
             "wrap_ridge_fill_fraction": float(
                 parameters.get("tip_ridge_fill_fraction", 0.5)
             ),
+            "normal_compliance": {
+                "enabled": bool(
+                    parameters.get("rubber_tip_normal_compliance_enabled", False)
+                ),
+                "travel_m": float(
+                    parameters.get("rubber_tip_compliance_travel_m", 0.002)
+                ),
+                "stiffness_n_per_m": float(
+                    parameters.get("rubber_tip_compliance_stiffness_n_per_m", 1000.0)
+                ),
+                "damping_n_s_per_m": float(
+                    parameters.get("rubber_tip_compliance_damping_n_s_per_m", 2.0)
+                ),
+                "modeled_mass_per_finger_kg": float(
+                    parameters.get("rubber_tip_modeled_mass_per_finger_kg", 0.001)
+                ),
+            },
             "contact_friction": {
                 "sliding_dimensionless": float(parameters["sliding_friction"]),
                 "torsional_m": float(parameters["torsional_friction_m"]),
@@ -805,13 +822,10 @@ def _jaw_contact_geometry(
     data: mujoco.MjData,
     *,
     selected_body: int,
-    fixed_jaw_body: int,
-    moving_jaw_body: int,
+    fixed_jaw_bodies: set[int],
+    moving_jaw_bodies: set[int],
 ) -> dict[str, Any]:
-    contacts: dict[int, list[dict[str, Any]]] = {
-        fixed_jaw_body: [],
-        moving_jaw_body: [],
-    }
+    contacts: dict[str, list[dict[str, Any]]] = {"fixed": [], "moving": []}
     for contact_index in range(data.ncon):
         contact = data.contact[contact_index]
         body1 = int(model.geom_bodyid[contact.geom1])
@@ -819,7 +833,12 @@ def _jaw_contact_geometry(
         if selected_body not in (body1, body2):
             continue
         jaw_body = body2 if body1 == selected_body else body1
-        if jaw_body not in contacts:
+        side = (
+            "fixed"
+            if jaw_body in fixed_jaw_bodies
+            else "moving" if jaw_body in moving_jaw_bodies else None
+        )
+        if side is None:
             continue
         normal = np.asarray(contact.frame[:3], dtype=np.float64)
         # MuJoCo's contact normal points from geom1 toward geom2. Orient every
@@ -840,7 +859,7 @@ def _jaw_contact_geometry(
         pawn_rotation = np.asarray(
             data.geom_xmat[pawn_geom], dtype=np.float64
         ).reshape(3, 3)
-        contacts[jaw_body].append(
+        contacts[side].append(
             {
                 "contact_index": int(contact_index),
                 "position_m": position,
@@ -896,8 +915,8 @@ def _jaw_contact_geometry(
                 ),
             }
         )
-    fixed = contacts[fixed_jaw_body]
-    moving = contacts[moving_jaw_body]
+    fixed = contacts["fixed"]
+    moving = contacts["moving"]
     bilateral = bool(fixed and moving)
     maximum_span = 0.0
     maximum_opposition = -1.0
@@ -1372,7 +1391,17 @@ def _run_episode(
         mujoco.mjtObj.mjOBJ_BODY,
         "left_moving_jaw_so101_v1",
     )
-    jaw_body_ids = {fixed_jaw_body, moving_jaw_body}
+    fixed_jaw_bodies = {fixed_jaw_body}
+    moving_jaw_bodies = {moving_jaw_body}
+    for body_id in range(model.nbody):
+        body_name = (
+            mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, body_id) or ""
+        )
+        if "_rubber_tip_fixed_" in body_name:
+            fixed_jaw_bodies.add(body_id)
+        elif "_rubber_tip_moving_" in body_name:
+            moving_jaw_bodies.add(body_id)
+    jaw_body_ids = fixed_jaw_bodies | moving_jaw_bodies
     piece_body_ids = set(piece_bodies.values())
     fixed_tip_geom = mujoco.mj_name2id(
         model, mujoco.mjtObj.mjOBJ_GEOM, "left_fixed_jaw_sph_tip2"
@@ -1479,12 +1508,12 @@ def _run_episode(
                 ):
                     loaded_by_piece = True
                 fixed_selected_contact = fixed_selected_contact or (
-                    (body1 == fixed_jaw_body and body2 == selected_body)
-                    or (body2 == fixed_jaw_body and body1 == selected_body)
+                    (body1 in fixed_jaw_bodies and body2 == selected_body)
+                    or (body2 in fixed_jaw_bodies and body1 == selected_body)
                 )
                 moving_selected_contact = moving_selected_contact or (
-                    (body1 == moving_jaw_body and body2 == selected_body)
-                    or (body2 == moving_jaw_body and body1 == selected_body)
+                    (body1 in moving_jaw_bodies and body2 == selected_body)
+                    or (body2 in moving_jaw_bodies and body1 == selected_body)
                 )
         if load_hold_enabled:
             gripper_action = float(action[-1])
@@ -1607,8 +1636,8 @@ def _run_episode(
             model,
             data,
             selected_body=selected_body,
-            fixed_jaw_body=fixed_jaw_body,
-            moving_jaw_body=moving_jaw_body,
+            fixed_jaw_bodies=fixed_jaw_bodies,
+            moving_jaw_bodies=moving_jaw_bodies,
         )
         bilateral = bool(contact["bilateral_contact"])
         qualified = bool(

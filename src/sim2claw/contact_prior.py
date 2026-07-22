@@ -674,7 +674,34 @@ def apply_contact_variant(
         )
     friction = variant.payload["contact_friction"]
     softness = variant.payload["contact_softness"]
+    normal_compliance = variant.payload.get("normal_compliance", {})
+    compliant = bool(normal_compliance.get("enabled", False))
+    compliance_travel = float(normal_compliance.get("travel_m", 0.0))
+    compliance_stiffness = float(normal_compliance.get("stiffness_n_per_m", 0.0))
+    compliance_damping = float(normal_compliance.get("damping_n_s_per_m", 0.0))
+    compliance_mass_per_finger = float(
+        normal_compliance.get("modeled_mass_per_finger_kg", 0.0)
+    )
+    if compliant:
+        if not 0.00025 <= compliance_travel <= 0.005:
+            raise ValueError(
+                "rubber-tip normal-compliance travel must be within [0.00025, 0.005] m"
+            )
+        if not 50.0 <= compliance_stiffness <= 20_000.0:
+            raise ValueError(
+                "rubber-tip normal-compliance stiffness must be within [50, 20000] N/m"
+            )
+        if not 0.01 <= compliance_damping <= 20.0:
+            raise ValueError(
+                "rubber-tip normal-compliance damping must be within [0.01, 20] N s/m"
+            )
+        if not 0.0001 <= compliance_mass_per_finger <= 0.02:
+            raise ValueError(
+                "rubber-tip modeled mass per finger must be within [0.0001, 0.02] kg"
+            )
     added_geoms: list[str] = []
+    added_bodies: list[str] = []
+    added_joints: list[str] = []
     bindings: list[dict[str, Any]] = []
     for finger in variant.collision_approximation["fingers"]:
         anchor_name = f"{arm}_{finger['anchor_geom_suffix']}"
@@ -701,11 +728,42 @@ def apply_contact_variant(
                 -coverage / 2.0
                 + (segment_index + 0.5) * segment_pitch
             )
-            anchor.parent.add_geom(
+            geom_parent = anchor.parent
+            geom_position = position
+            geom_quat = [float(value) for value in anchor.quat]
+            modeled_mass = 0.0
+            body_name: str | None = None
+            joint_name: str | None = None
+            if compliant:
+                body_name = geom_name.removesuffix("_geom") + "_body"
+                joint_name = geom_name.removesuffix("_geom") + "_normal_joint"
+                geom_parent = anchor.parent.add_body(
+                    name=body_name,
+                    pos=position,
+                    quat=[float(value) for value in anchor.quat],
+                )
+                axis = [0.0, 0.0, 0.0]
+                axis[int(finger["normal_axis_index"])] = 1.0
+                geom_parent.add_joint(
+                    name=joint_name,
+                    type=mujoco.mjtJoint.mjJNT_SLIDE,
+                    axis=axis,
+                    limited=True,
+                    range=[-compliance_travel, compliance_travel],
+                    stiffness=compliance_stiffness,
+                    damping=compliance_damping,
+                    springref=0.0,
+                )
+                geom_position = [0.0, 0.0, 0.0]
+                geom_quat = [1.0, 0.0, 0.0, 0.0]
+                modeled_mass = compliance_mass_per_finger / segment_count
+                added_bodies.append(body_name)
+                added_joints.append(joint_name)
+            geom_parent.add_geom(
                 name=geom_name,
                 type=mujoco.mjtGeom.mjGEOM_BOX,
-                pos=position,
-                quat=[float(value) for value in anchor.quat],
+                pos=geom_position,
+                quat=geom_quat,
                 size=size,
                 contype=1,
                 conaffinity=1,
@@ -721,7 +779,7 @@ def apply_contact_variant(
                     float(softness["solref_damping_ratio"]),
                 ],
                 solimp=[float(value) for value in softness["solimp"]],
-                mass=0.0,
+                mass=modeled_mass,
                 rgba=[0.08, 0.08, 0.08, 1.0],
                 group=3,
             )
@@ -730,13 +788,26 @@ def apply_contact_variant(
                 {
                     "finger_id": finger["finger_id"],
                     "anchor_geom": anchor_name,
-                    "parent_body": anchor.parent.name,
+                    "parent_body": geom_parent.name,
+                    "anchor_parent_body": anchor.parent.name,
                     "added_geom": geom_name,
+                    "added_body": body_name,
+                    "added_joint": joint_name,
                     "segment_index": segment_index,
                     "segment_count": segment_count,
                     "segment_fill_fraction": segment_fill_fraction,
                     "contact_layer": "base_sleeve",
-                    "modeled_added_mass_kg": 0.0,
+                    "modeled_added_mass_kg": modeled_mass,
+                    "normal_compliance": (
+                        {
+                            "travel_m": compliance_travel,
+                            "stiffness_n_per_m": compliance_stiffness,
+                            "damping_n_s_per_m": compliance_damping,
+                            "joint_axis_index": int(finger["normal_axis_index"]),
+                        }
+                        if compliant
+                        else None
+                    ),
                     "mass_effect_mode": variant.collision_approximation[
                         "mass_effect_mode"
                     ],
@@ -809,6 +880,8 @@ def apply_contact_variant(
         "variant_sha256": variant.variant_sha256,
         "nominal_unchanged": False,
         "added_geoms": added_geoms,
+        "added_bodies": added_bodies,
+        "added_joints": added_joints,
         "bindings": bindings,
         "parameter_provenance": variant.payload["parameter_provenance"],
     }

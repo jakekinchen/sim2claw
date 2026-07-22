@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-22T10:50:00-05:00",
-  "active_campaign": "sail_project_application_v1_complete",
-  "current_milestone": "POST_PHASE1_PROJECT_APPLICATION_COMPLETE_TERMINAL_NEGATIVE_WITH_OBSERVABILITY_GAINS_PHASE2_BLOCKED_EXTERNAL",
+  "updated_at": "2026-07-22T11:35:00-05:00",
+  "active_campaign": "sail_grasp_retention_normal_compliance_v1",
+  "current_milestone": "B2_02_FROZEN_COMPLIANT_PAD_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -629,6 +629,32 @@
     "training_admitted": false,
     "physical_authority": false,
     "current_safe_claim": "Phase 1 was applied to the full retained evidence compilation and all 11 action-frozen pawn episodes. The bounded contact-model campaign did not repair or promote the simulator, but it localized the visible C2 drop to unilateral rubber contact plus surface-migration and opposing-load collapse, compiled 10 failure classes, and added a non-promoting post-first-lift task diagnostic that reveals three destination entries."
+  },
+  "sail_grasp_retention_compliant_pad": {
+    "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
+    "status": "active_frozen_anchor_screen",
+    "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
+    "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
+    "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
+    "ignored_output_root": "outputs/sail/grasp-retention-normal-compliance-v1",
+    "milestones": {
+      "B2-00": "completed",
+      "B2-01": "completed",
+      "B2-02": "in_progress",
+      "B2-03": "pending",
+      "B2-04": "pending",
+      "B2-05": "pending"
+    },
+    "candidate_count": 18,
+    "candidate_family_frozen_before_anchor_results": true,
+    "compliant_segment_count_per_finger": 3,
+    "source_actions_mutable": false,
+    "load_hold_enabled": false,
+    "existing_evaluator_thresholds_mutable": false,
+    "anchor_pass_count": null,
+    "simulator_promoted": false,
+    "training_admitted": false,
+    "physical_authority": false
   },
   "strategic_program": {
     "decision": "docs/decisions/0004-goal-conditioned-act-pick-place.md",

@@ -1,6 +1,26 @@
 # SAIL/ClawLoop Goal
 
-Status: `PHASE 1, A1, AND B1 COMPLETE; B1 TERMINAL NEGATIVE WITH EXACT MEASUREMENT BOUNDARY`
+Status: `PHASE 1, A1, AND B1 COMPLETE; B2 COMPLIANT-PAD WIN LOOP ACTIVE`
+
+## Active B2 compliant-pad evaluator win loop
+
+Continue past B1's rigid-contact terminal negative by testing a bounded,
+physically motivated segmented rubber-cap model. Each pad segment has its own
+normal slide travel, stiffness, damping, and explicit modeled mass. Recorded
+actions, evaluator thresholds, trace guards, and the C2 release index remain
+immutable; contact-triggered command holding is disabled.
+
+Current milestone: **B2-01 complete; B2-02 in progress — the implementation
+proof passed and the frozen 18-candidate C2 screen is opening**.
+
+Active brief:
+[`docs/briefs/035-compliant-pad-evaluator-win.md`](docs/briefs/035-compliant-pad-evaluator-win.md).
+
+Goal-loop ledger:
+[`docs/autonomous-workflow/goal-loop-compliant-pad-win.md`](docs/autonomous-workflow/goal-loop-compliant-pad-win.md).
+
+Frozen contract:
+[`configs/sail/grasp_retention_normal_compliance_v1.json`](configs/sail/grasp_retention_normal_compliance_v1.json).
 
 ## Completed B1 grasp-retention resolution loop
 
