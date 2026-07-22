@@ -337,6 +337,13 @@ def build_parser() -> argparse.ArgumentParser:
     sail_retrospective_case.add_argument("--config", type=Path, required=True)
     sail_retrospective_case.add_argument("--output", type=Path, required=True)
 
+    sail_prospective_simulator = subparsers.add_parser(
+        "sail-run-prospective-simulator",
+        help="run the preregistered action-frozen prospective simulator campaign",
+    )
+    sail_prospective_simulator.add_argument("--config", type=Path, required=True)
+    sail_prospective_simulator.add_argument("--output", type=Path, required=True)
+
     recorded_replay = subparsers.add_parser(
         "replay-recorded",
         help="replay one recorded command episode in MuJoCo and emit synchronized metrics",
@@ -1020,6 +1027,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .sail.retrospective_case import compile_case
         try:
             report = compile_case(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-run-prospective-simulator":
+        from .sail.contracts import SailContractError
+        from .sail.prospective_simulator import run_campaign
+        try:
+            report = run_campaign(args.config, output_root=args.output)
         except SailContractError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1

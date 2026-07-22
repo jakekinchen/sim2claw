@@ -1,6 +1,6 @@
 # SAIL/ClawLoop Phase 1 Goal
 
-Status: `ACTIVE — P1-00 THROUGH P1-12 COMPLETE; P1-13 IN PROGRESS`
+Status: `ACTIVE — P1-00 THROUGH P1-13 COMPLETE; P1-14 IN PROGRESS`
 
 The active program authority is
 [`docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md`](docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md).
@@ -14,10 +14,10 @@ simulator evidence, and all ACT/GR00T data generation or policy selection stays
 closed unless an evaluator-owned TwinWorthiness certificate opens the declared
 capability. Source actions remain byte-identical in the action-frozen lane.
 
-Current milestone: **P1-13 — Run prospective simulator-native SAIL experiments**.
+Current milestone: **P1-14 — Implement TwinWorthiness and downstream kill switches**.
 
 Active brief:
-[`docs/briefs/028-sail-prospective-simulator-experiments.md`](docs/briefs/028-sail-prospective-simulator-experiments.md).
+[`docs/briefs/029-sail-twinworthiness-kill-switches.md`](docs/briefs/029-sail-twinworthiness-kill-switches.md).
 
 Live milestone status is maintained in the master plan's Section 12 ledger and
 in `docs/autonomous-workflow/project_state.json`. The research documents named

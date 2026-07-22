@@ -30,3 +30,30 @@ freezing the final simulator/posterior family before Phase 2.
 - A stopped/negative result is omitted or a boundary triggers post-hoc search.
 - The experiment claims new physical truth, opens TW-DATA, trains a policy, or
   invokes hardware.
+
+## Result
+
+Completed. The protocol and all source identities were committed before the
+first run. The acquisition router's rank-1 structural probe was executed as a
+four-trial 2x2 simulator-side command-frequency/load-response factorial on one
+retained episode. Every trial consumed the same contiguous 368x6 float64
+action tensor with SHA-256
+`c4acc4dca04e30c9d3031e326496a7c1d46777e7a1bd87b8d6968d2174e575bc`;
+no action value, row, dtype, order, clip, offset, IK correction, suffix, or
+assistance changed.
+
+All four declared trials completed with zero retries, zero undeclared trials,
+zero stopped results, and no post-hoc expansion. The timing family matched both
+required prospective signatures (score 1.0); the load family matched its
+stationary elbow RMS and signed-bias signatures but not its locality signature
+(score 2/3). Loop closure therefore selected the separately preregistered
+`sim_timing_rate_probe` next. The load-intervention trial remained the lowest-
+RMS simulator diagnostic. All controls and nonselected trials remain retained,
+and the full residual vector and explicit unavailable consequence channels are
+preserved.
+
+The graph delta, posterior family, selected simulator diagnostic, and three
+Phase 2 predictions are content-addressed. No physical observation was opened.
+The result does not identify latency, load/compliance, contact, or any other
+physical parameter; it does not promote a simulator or open TW-DATA, training,
+policy selection, canary, motion, or transfer authority.
