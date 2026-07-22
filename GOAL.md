@@ -1,8 +1,27 @@
 # SAIL/ClawLoop Goal
 
-Status: `PHASE 1, A1, AND B1 COMPLETE; B2 COMPLIANT-PAD WIN LOOP ACTIVE`
+Status: `PHASE 1, A1, AND B1 COMPLETE; B2 SEARCH PAUSED; LIVE SAIL OPERATOR INTEGRATION ACTIVE`
 
-## Active B2 compliant-pad evaluator win loop
+## Active live SAIL operator integration and ablation
+
+The user paused the open-ended B2 parameter-family search after it accumulated
+completed causal diagnostics without an evaluator-owned anchor pass. The active
+objective is now to make the existing SAIL residual, belief, acquisition,
+posterior, influence, sparse loop-closure, invariance, and consequence surfaces
+operate as one live retained-project control plane, then ablate that operator
+against the manual campaign sequence. A correct evidence-bound abstention is an
+accepted terminal outcome.
+
+Authoritative goal-loop prompt:
+[`docs/autonomous-workflow/goal-loop-sail-live-operator-integration.md`](docs/autonomous-workflow/goal-loop-sail-live-operator-integration.md).
+
+Continuation branch: `codex/sail-live-operator-integration`.
+
+The interrupted predecessor task is
+`019f87bd-5440-78b2-a74b-c447fe287cbe`. Read it for evidence and context, but
+do not resume its instruction to continue parameter families until a win.
+
+## Paused B2 compliant-pad evaluator win loop
 
 Continue past B1's rigid-contact terminal negative by testing a bounded,
 physically motivated segmented rubber-cap model. Each pad segment has its own
@@ -10,8 +29,10 @@ normal slide travel, stiffness, damping, and explicit modeled mass. Recorded
 actions, evaluator thresholds, trace guards, and the C2 release index remain
 immutable; contact-triggered command holding is disabled.
 
-Current milestone: **B2-01 complete; B2-02 in progress — the implementation
-proof passed and the frozen 18-candidate C2 screen is opening**.
+Pause snapshot: **B2-02W complete; B2-02X interrupted after 17 of 18
+friction-release anchor artifacts, before a complete screen receipt**. The
+incomplete B2-02X outputs remain diagnostic work-in-progress and are not a
+completed campaign or accepted result.
 
 Active brief:
 [`docs/briefs/035-compliant-pad-evaluator-win.md`](docs/briefs/035-compliant-pad-evaluator-win.md).
