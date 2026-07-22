@@ -67,6 +67,13 @@ def media_url(path: Path, repo_root: Path = REPO_ROOT) -> str:
 
 PRIVATE_RELEASE_PREFIX = Path("artifacts/private/releases")
 GENERATED_MEDIA_ROOTS = frozenset({"outputs", "datasets", "runs"})
+RANKED_GRASP_PUBLICATION_ROOT = Path(
+    "src/sim2claw/studio_web/publication/pawn_bg_ranked_grasp_v1"
+)
+RANKED_GRASP_OUTPUT_ROOT = Path("outputs/pawn_bg_ranked_grasp_gallery_v1")
+RANKED_GRASP_PUBLICATION_SCHEMA = (
+    "sim2claw.pawn_bg_ranked_grasp_publication_bundle.v1"
+)
 
 
 def _media_relative_path(token: str) -> Path:
@@ -101,7 +108,8 @@ def _media_relative_path(token: str) -> Path:
     }:
         raise ValueError("media type is not allowed")
     if suffix == ".json" and not (
-        relative_path.name in {"state_trace.json", "sim_replay_state_trace.json"}
+        relative_path.name
+        in {"state_trace.json", "sim_replay_state_trace.json", "scene_manifest.json"}
         or (
             relative_path.parent.name == "state_traces"
             and relative_path.name.startswith("episode_")
@@ -232,6 +240,9 @@ def _proof_label(proof_class: str) -> str:
         "physical_source_simulation_command_replay": (
             "Physical source · simulator command replay"
         ),
+        "retained_action_frozen_simulation_replay": (
+            "Action-frozen teleop replay · simulation"
+        ),
         "simulation_synthetic_vla_demonstration": "Synthetic VLA demonstrations",
         "simulation_synthetic_vla_demonstration_dataset": (
             "Evaluator-accepted synthetic demonstrations"
@@ -266,6 +277,244 @@ def _phase_segments(contract: dict[str, Any]) -> list[dict[str, Any]]:
         )
         cursor += value
     return segments
+
+
+def _ranked_grasp_episodes(
+    repo_root: Path,
+    *,
+    _gallery_override: tuple[Path, dict[str, Any]] | None = None,
+    _include_generated_alternates: bool = True,
+) -> list[dict[str, Any]]:
+    """Prefer the tracked publication bundle, with generated output fallback."""
+
+    gallery: dict[str, Any] = {}
+    gallery_path = Path()
+    publication_bundle = False
+    if _gallery_override is not None:
+        gallery_path, gallery = _gallery_override
+    else:
+        for relative_root, is_publication in (
+            (RANKED_GRASP_PUBLICATION_ROOT, True),
+            (RANKED_GRASP_OUTPUT_ROOT, False),
+        ):
+            candidate = repo_root / relative_root / "gallery_manifest.json"
+            candidate_gallery = _read_json(candidate)
+            if (
+                candidate_gallery.get("schema_version")
+                != "sim2claw.pawn_bg_ranked_grasp_gallery.v1"
+            ):
+                continue
+            if is_publication:
+                bundle = candidate_gallery.get("publication_bundle")
+                rows = candidate_gallery.get("episodes")
+                if (
+                    not isinstance(bundle, dict)
+                    or bundle.get("schema_version")
+                    != RANKED_GRASP_PUBLICATION_SCHEMA
+                    or bundle.get("source_actions_modified") is not False
+                    or bundle.get("physical_authority") is not False
+                    or not isinstance(rows, list)
+                    or len(rows) != 7
+                    or bundle.get("action_array_sha256_by_rank")
+                    != [
+                        row.get("action_array_sha256")
+                        for row in rows
+                        if isinstance(row, dict)
+                    ]
+                ):
+                    continue
+            gallery = candidate_gallery
+            gallery_path = candidate
+            publication_bundle = is_publication
+            break
+    if not gallery:
+        return []
+
+    allowed_asset_root = gallery_path.parent.resolve()
+    static_root = (repo_root / "src/sim2claw/studio_web").resolve()
+    task_id = str(gallery.get("task_id") or "pawn_bg_ranked_grasp_v3")
+    proof_class = str(
+        gallery.get("proof_class") or "retained_action_frozen_simulation_replay"
+    )
+    episodes: list[dict[str, Any]] = []
+    for row in gallery.get("episodes", []):
+        if not isinstance(row, dict):
+            continue
+        artifact = row.get("state_trace")
+        metrics = row.get("metrics")
+        if not isinstance(artifact, dict) or not isinstance(metrics, dict):
+            continue
+        trace_value = Path(str(artifact.get("state_trace_path") or ""))
+        manifest_value = Path(str(artifact.get("scene_manifest_path") or ""))
+        if trace_value.is_absolute() or manifest_value.is_absolute():
+            continue
+        trace_path = (repo_root / trace_value).resolve()
+        manifest_path = (repo_root / manifest_value).resolve()
+        if (
+            not trace_path.is_relative_to(allowed_asset_root)
+            or not manifest_path.is_relative_to(allowed_asset_root)
+            or not trace_path.is_file()
+            or not manifest_path.is_file()
+        ):
+            continue
+        if publication_bundle:
+            trace_url = f"/{trace_path.relative_to(static_root).as_posix()}"
+            scene_url = f"/{manifest_path.relative_to(static_root).as_posix()}"
+        else:
+            trace_url = media_url(trace_path, repo_root)
+            scene_url = media_url(manifest_path, repo_root)
+        rank = int(row.get("rank") or len(episodes) + 1)
+        strict_success = bool(row.get("task_consequence_success"))
+        lift_and_transport = bool(row.get("lift_and_transport"))
+        lifted = bool(row.get("piece_lifted"))
+        outcome = str(row.get("relative_success_label") or "Partial replay")
+        status = "passed" if strict_success else "partial" if lifted else "near-miss"
+        episodes.append(
+            {
+                "id": f"{task_id}:rank-{rank:02d}",
+                "task_id": task_id,
+                "title": f"Rank {rank:02d} · {row.get('move_label', 'Pawn move')}",
+                "subtitle": str(row.get("relative_success_summary") or outcome),
+                "sequence": rank,
+                "rank": rank,
+                "status": status,
+                "evaluator_verdict": "passed" if strict_success else "failed",
+                "terminal_outcome": (
+                    "strict_task_success"
+                    if strict_success
+                    else "lift_and_transport"
+                    if lift_and_transport
+                    else "piece_lifted"
+                    if lifted
+                    else "qualified_bilateral_contact_near_miss"
+                ),
+                "proof_class": proof_class,
+                "proof_label": _proof_label(proof_class),
+                "physical_authority": False,
+                "frame_count": int(artifact.get("frame_count") or 0),
+                "fps": float(artifact.get("fps") or 0),
+                "duration_seconds": float(artifact.get("duration_seconds") or 0),
+                "recorded_at": gallery.get("created_at")
+                or _iso_timestamp(gallery_path),
+                "media": {"kind": "none"},
+                "camera": "interactive 3D",
+                "inspection": {
+                    "kind": "threejs_state_trace",
+                    "trace_url": trace_url,
+                    "scene_url": scene_url,
+                    "frame_count": int(artifact.get("frame_count") or 0),
+                    "fps": float(artifact.get("fps") or 0),
+                    "duration_seconds": float(artifact.get("duration_seconds") or 0),
+                    "physics_authority": "mujoco",
+                    "renderer_authority": "inspection_only",
+                },
+                "metrics": [
+                    _metric("Outcome", outcome, tone="good" if lifted else "neutral"),
+                    _metric(
+                        "Peak rise",
+                        round(
+                            float(metrics.get("maximum_piece_rise_m", 0)) * 1000,
+                            1,
+                        ),
+                        unit="mm",
+                        tone="good" if lifted else "neutral",
+                    ),
+                    _metric(
+                        "Transport",
+                        round(
+                            float(
+                                metrics.get(
+                                    "maximum_transport_progress_after_lift", 0
+                                )
+                            )
+                            * 100,
+                            1,
+                        ),
+                        unit="%",
+                        tone="good" if lift_and_transport else "neutral",
+                    ),
+                    _metric(
+                        "Retention",
+                        round(
+                            float(
+                                metrics.get(
+                                    "maximum_bilateral_lift_retention_seconds",
+                                    0,
+                                )
+                            )
+                            * 1000,
+                            1,
+                        ),
+                        unit="ms",
+                    ),
+                    _metric(
+                        "Slip",
+                        round(
+                            float(metrics.get("maximum_post_grasp_slip_m", 0))
+                            * 1000,
+                            1,
+                        ),
+                        unit="mm",
+                    ),
+                    _metric(
+                        "Final target gap",
+                        round(
+                            float(metrics.get("final_target_distance_m", 0)) * 1000,
+                            1,
+                        ),
+                        unit="mm",
+                    ),
+                    _metric(
+                        "Joint RMS",
+                        round(float(metrics.get("joint_rms_degrees", 0)), 3),
+                        unit="deg",
+                    ),
+                    _metric(
+                        "EE RMS",
+                        round(float(metrics.get("ee_rms_m", 0)) * 1000, 2),
+                        unit="mm",
+                    ),
+                ],
+                "phases": row.get("phase_segments", []),
+                "case_id": str(row.get("folder_label") or "pawn_move"),
+                "notes": (
+                    f"{gallery.get('claim_boundary', '')} "
+                    "The action array is byte-identical to the source teleoperation trace."
+                ),
+                "action_array_sha256": row.get("action_array_sha256"),
+                "relative_success_tier": row.get("relative_success_tier"),
+                "gallery_source": (
+                    "tracked_publication_bundle"
+                    if publication_bundle
+                    else "generated_output"
+                ),
+            }
+        )
+    if _include_generated_alternates:
+        selected_task_id = str(gallery.get("task_id") or "pawn_bg_ranked_grasp_v3")
+        for alternate_path in sorted(
+            (repo_root / "outputs").glob(
+                "pawn_bg_ranked_grasp_gallery_*/gallery_manifest.json"
+            )
+        ):
+            if alternate_path.resolve() == gallery_path.resolve():
+                continue
+            alternate = _read_json(alternate_path)
+            if (
+                alternate.get("schema_version")
+                != "sim2claw.pawn_bg_ranked_grasp_gallery.v1"
+                or str(alternate.get("task_id") or "pawn_bg_ranked_grasp_v3")
+                == selected_task_id
+            ):
+                continue
+            episodes.extend(
+                _ranked_grasp_episodes(
+                    repo_root,
+                    _gallery_override=(alternate_path, alternate),
+                    _include_generated_alternates=False,
+                )
+            )
+    return episodes
 
 
 def _task_role(contract: dict[str, Any]) -> str:
@@ -887,7 +1136,8 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         config_paths[task_id] = path
 
     episodes = (
-        _dataset_episodes(repo_root, contracts)
+        _ranked_grasp_episodes(repo_root)
+        + _dataset_episodes(repo_root, contracts)
         + _act_episodes(repo_root, contracts)
         + _grasp_episodes(repo_root)
         + _teleop_episodes(repo_root)
@@ -901,6 +1151,8 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         "chess_pick_place_groot_v1": "Chess pick + place",
         "chess_rook_lift_v1": "Rook lift",
         "scripted_grasp_probe": "Scripted grasp probe",
+        "pawn_bg_ranked_grasp_v3": "Top pawn grasp replays",
+        "pawn_bg_rubber_sliding2_sensitivity": "Rubber friction sensitivity",
     }
     for task_id in sorted(task_ids):
         contract = contracts.get(task_id, {})
@@ -915,6 +1167,11 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
                 "title": title_overrides.get(task_id, _title(task_id)),
                 "role": _task_role(contract) if contract else "Simulation probe",
                 "description": (
+                    "Seven consequence-ranked, action-frozen V3 simulator replays; partial outcomes only, with zero strict task successes."
+                    if task_id == "pawn_bg_ranked_grasp_v3"
+                    else "Frozen sliding-friction 2.0 sensitivity replays; diagnostic only because the all-episode EE RMS guard fails."
+                    if task_id == "pawn_bg_rubber_sliding2_sensitivity"
+                    else
                     _task_description(contract)
                     if contract
                     else "A deterministic simulator inspection sequence."

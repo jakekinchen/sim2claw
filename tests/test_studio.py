@@ -205,6 +205,93 @@ class StudioCatalogTest(unittest.TestCase):
             [0.02, 0.18],
         )
 
+    def test_catalog_exposes_ranked_grasp_gallery_as_threejs_replays(self) -> None:
+        gallery_root = self.root / "outputs" / "pawn_bg_ranked_grasp_gallery_v1"
+        episode_root = gallery_root / "episodes" / "rank-01-fixture"
+        self._write_json(
+            episode_root / "state_trace.json",
+            {
+                "schema_version": "sim2claw.mujoco_body_state_trace.v1",
+                "frames": [],
+            },
+        )
+        self._write_json(
+            episode_root / "scene_manifest.json",
+            {"schema_version": "sim2claw.mujoco_scene_manifest.v1"},
+        )
+        self._write_json(
+            gallery_root / "gallery_manifest.json",
+            {
+                "schema_version": "sim2claw.pawn_bg_ranked_grasp_gallery.v1",
+                "created_at": "2026-07-21T00:00:00+00:00",
+                "proof_class": "retained_action_frozen_simulation_replay",
+                "episodes": [
+                    {
+                        "rank": 1,
+                        "move_label": "C2 → C1",
+                        "folder_label": "c2-to-c1",
+                        "relative_success_label": "Lift + transport",
+                        "relative_success_summary": "Lift + transport · 60% targetward progress",
+                        "relative_success_tier": 5,
+                        "piece_lifted": True,
+                        "lift_and_transport": True,
+                        "task_consequence_success": False,
+                        "action_array_sha256": "a" * 64,
+                        "metrics": {
+                            "maximum_piece_rise_m": 0.058,
+                            "maximum_transport_progress_after_lift": 0.6,
+                            "maximum_bilateral_lift_retention_seconds": 0.63,
+                            "maximum_post_grasp_slip_m": 0.025,
+                            "final_target_distance_m": 0.01,
+                            "joint_rms_degrees": 1.2,
+                            "ee_rms_m": 0.011,
+                        },
+                        "state_trace": {
+                            "state_trace_path": str(
+                                (episode_root / "state_trace.json").relative_to(
+                                    self.root
+                                )
+                            ),
+                            "scene_manifest_path": str(
+                                (episode_root / "scene_manifest.json").relative_to(
+                                    self.root
+                                )
+                            ),
+                            "frame_count": 301,
+                            "fps": 30,
+                            "duration_seconds": 10.0,
+                        },
+                        "phase_segments": [
+                            {"name": "Approach", "start": 0.0, "end": 0.5},
+                            {
+                                "name": "Lift And Transport",
+                                "start": 0.5,
+                                "end": 1.0,
+                            },
+                        ],
+                    }
+                ],
+            },
+        )
+        catalog = build_catalog(self.root)
+        episode = next(
+            row
+            for row in catalog["episodes"]
+            if row["task_id"] == "pawn_bg_ranked_grasp_v3"
+        )
+        self.assertEqual(episode["rank"], 1)
+        self.assertEqual(episode["status"], "partial")
+        self.assertEqual(episode["inspection"]["kind"], "threejs_state_trace")
+        self.assertEqual(episode["inspection"]["frame_count"], 301)
+        self.assertFalse(episode["physical_authority"])
+        task = next(
+            row
+            for row in catalog["tasks"]
+            if row["id"] == "pawn_bg_ranked_grasp_v3"
+        )
+        self.assertEqual(task["title"], "Top pawn grasp replays")
+        self.assertEqual(task["passed_count"], 0)
+
     def test_catalog_includes_physical_source_with_simulator_replay(self) -> None:
         recording = (
             self.root
@@ -849,6 +936,10 @@ class StudioCatalogTest(unittest.TestCase):
                 )
             self.assertIn('data-view="replay"', html)
             self.assertIn('id="timeline-shell"', html)
+            self.assertIn('id="mobile-nav-toggle"', html)
+            self.assertIn('aria-controls="studio-view-switch"', html)
+            self.assertIn('id="transport-phase"', html)
+            self.assertIn('id="mobile-browser-label"', html)
             self.assertIn('id="process-drawer"', html)
             self.assertIn('data-view-panel="record"', html)
             self.assertIn('id="start-recording"', html)
@@ -915,6 +1006,9 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('.scene-synthesis-card', css)
             self.assertIn('.scene-hierarchy', css)
             self.assertIn('.recording-feed-switch', css)
+            self.assertIn('/* Phone layout: the replay is an evidence instrument', css)
+            self.assertIn('.masthead.nav-open .view-switch', css)
+            self.assertIn('.transport-phase', css)
 
             with urlopen(f"{base}/studio.js", timeout=3) as response:
                 javascript = response.read().decode("utf-8")
@@ -940,6 +1034,18 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('"Operator notes"', javascript)
             self.assertIn('fetch("/api/recorder/live-simulation"', javascript)
             self.assertIn("viewer.applyLiveState(liveState)", javascript)
+            self.assertIn('elements.mobileNavToggle?.addEventListener', javascript)
+            self.assertIn('elements.mobileBrowserLabel', javascript)
+            self.assertIn('elements.transportPhase', javascript)
+            self.assertIn('elements.browserRail.dataset.taskId', javascript)
+            self.assertIn('"Ranked replays"', javascript)
+
+            with urlopen(f"{base}/studio3d.js", timeout=3) as response:
+                replay_javascript = response.read().decode("utf-8")
+            self.assertIn("portraitInspection", replay_javascript)
+            self.assertIn("addScaledVector(portraitOffset, 0.96)", replay_javascript)
+            self.assertIn("photoBackground.visible = !portraitInspection", replay_javascript)
+            self.assertIn("portraitInspection ? 0xd7d7d5 : 0x111315", replay_javascript)
 
             spark_license = (STATIC_ROOT / "vendor" / "spark" / "LICENSE").read_bytes()
             self.assertEqual(

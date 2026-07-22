@@ -1,0 +1,47 @@
+{
+  "schema_version": "sim2claw.pawn_bg_fidelity_advancement.v1",
+  "purpose": "Bind the completed action-frozen servo load-bias campaign, recover its fold-selected per-episode predictions, and quantify uncertainty without reopening model selection.",
+  "evidence": {
+    "servo_load_bias_receipt": {
+      "path": "outputs/pawn_bg_servo_load_bias_v1/servo_load_bias_receipt.json",
+      "schema_version": "sim2claw.pawn_bg_servo_load_bias_receipt.v1",
+      "sha256": "1ea4a84a509e320bece0f4797c1e2ae6a824ce72946528b95b7af04a561d4357"
+    }
+  },
+  "bootstrap": {
+    "seed": 21072026,
+    "replicates": 10000,
+    "confidence_level": 0.95,
+    "resampling_unit": "whole_episode",
+    "role": "post-selection uncertainty audit of already-frozen fold predictions; no candidate selection or threshold changes",
+    "dependence_boundary": "The 11 episodes come from one retained acquisition session. This bootstrap quantifies conditional whole-episode variability inside that session, not independent-session or physical-population generalization."
+  },
+  "gates": {
+    "minimum_point_cross_validated_joint_rms_relative_improvement": 0.05,
+    "require_joint_rms_improvement_interval_lower_bound_above_zero": true,
+    "maximum_point_cross_validated_ee_rms_m": 0.012936396427477485,
+    "require_all_validation_folds_joint_rms_improve": true,
+    "require_byte_identical_action_arrays": true,
+    "require_original_campaign_advancement_gate": true
+  },
+  "boundary_disclosure": {
+    "parameter": "elbow_load_bias_coefficient",
+    "frozen_grid_lower_bound": -1.5,
+    "selected_value": -1.5,
+    "selection_at_grid_boundary": true,
+    "interpretation": "The bounded load-response model class is supported by this retained-data diagnostic, but the coefficient magnitude is not identified. The grid must not be expanded post hoc in this campaign."
+  },
+  "claim_boundary": "A passing closeout verifies an action-frozen simulator trace-fidelity advancement conditional on the retained single-session episode set only. It does not verify independent-session generalization, a physical torque parameter, grasp improvement, contact calibration, composite simulator promotion, policy improvement, or physical transfer.",
+  "authority": {
+    "physical_calibration": false,
+    "physical_torque_identification": false,
+    "physical_gravity_compensation_identification": false,
+    "contact_parameter_identification": false,
+    "grasp_improvement": false,
+    "task_success": false,
+    "training_admission": false,
+    "policy_promotion": false,
+    "simulator_composite_promotion": false,
+    "physical_transfer": false
+  }
+}

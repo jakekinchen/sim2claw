@@ -1,0 +1,35 @@
+{
+  "schema_version": "sim2claw.pawn_bg_contact_sensitivity.v1",
+  "purpose": "Evaluate the previously frozen unmeasured rubber-tip contact prior ensemble after the selected timing and actuator mechanisms, under unchanged physical demonstration actions and with no parameter selection authority.",
+  "source": {
+    "partition": "owner-reviewed product-scope train episodes",
+    "expected_episode_count": 11,
+    "application_delay_seconds": 0.11,
+    "servo_deadband_degrees": {"shoulder_lift": 2.0, "elbow_flex": 2.0},
+    "contact_prior_path": "configs/simulation/rubber_tip_contact_sensitivity_v1.json",
+    "expected_contact_prior_canonical_sha256": "e89eb1084e7e1dee64aaebfbc18b816b5bf58aefa98b18d38ef2e9a81b6ee499",
+    "variant_order": ["nominal_uncalibrated", "rubber_tip_low", "rubber_tip_nominal_prior", "rubber_tip_high"]
+  },
+  "selection": {
+    "allowed": false,
+    "reason": "retained video provides appearance intervals but no admitted grasp, lift, retention, force, or metric object-trajectory labels"
+  },
+  "action_invariance": {
+    "no_ik_corrections": true,
+    "no_post_policy_offsets": true,
+    "no_corrective_suffix": true,
+    "no_assistance": true,
+    "no_clipping": true,
+    "no_action_value_or_order_changes": true,
+    "only_frozen_contact_prior_variant_changes": true
+  },
+  "authority": {
+    "physical_contact_calibration": false,
+    "contact_parameter_identification": false,
+    "task_success": false,
+    "simulator_composite_promotion": false,
+    "training_admission": false,
+    "policy_promotion": false,
+    "physical_transfer": false
+  }
+}

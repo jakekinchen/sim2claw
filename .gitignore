@@ -16,6 +16,10 @@ outputs/
 output/playwright/
 .playwright-cli/
 runs/
+*.eval
+.inspect_ai/
+.codex/visualizations/
+/evals/inspect_gapbench/fixtures/sealed/
 checkpoints/
 tmp/
 *.mp4

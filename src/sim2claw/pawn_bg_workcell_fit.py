@@ -40,6 +40,7 @@ from __future__ import annotations
 
 import json
 import math
+import tempfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -48,6 +49,7 @@ from typing import Any
 import mujoco
 import numpy as np
 from scipy.optimize import least_squares
+from scipy.spatial.transform import Rotation
 
 from .grasp import _pinch_offset, _pinch_point
 from .mass_profile import DEFAULT_SO101_MASS_PROFILE
@@ -72,6 +74,7 @@ from .scene import (
     build_scene_spec,
     initialize_robot_poses,
     load_capture_config,
+    scene_geometry,
 )
 
 CONTRACT_PATH = REPO_ROOT / "configs" / "optimization" / "pawn_bg_workcell_fit_v1.json"
@@ -85,6 +88,45 @@ FITTED_OFFSET_JOINTS = ("shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_fl
 
 class WorkcellFitError(RuntimeError):
     pass
+
+
+def _workcell_square_center(
+    square: str,
+    *,
+    board_center_in_table_frame_xy_m: tuple[float, float],
+    board_yaw_relative_to_table_degrees: float,
+    board_side_m: float | None = None,
+) -> tuple[float, float, float]:
+    """Resolve a candidate square without mutating the frozen scene API."""
+
+    if board_side_m is None:
+        return board_square_center(
+            square,
+            board_center_in_table_frame_xy_m=board_center_in_table_frame_xy_m,
+            board_yaw_relative_to_table_degrees=board_yaw_relative_to_table_degrees,
+        )
+    if len(square) != 2 or square[0] not in "abcdefgh" or square[1] not in "12345678":
+        raise ValueError(f"invalid chess square: {square}")
+    if not math.isfinite(board_side_m) or board_side_m <= 0.0:
+        raise ValueError("board_side_m must be finite and positive")
+    config = load_capture_config()
+    board = config["simulation_estimates"]["board"]
+    board["center_in_table_frame_xy_m"] = list(board_center_in_table_frame_xy_m)
+    board["yaw_relative_to_table_degrees"] = float(board_yaw_relative_to_table_degrees)
+    board["side_m"] = float(board_side_m)
+    geometry = scene_geometry(config)
+    file_index = ord(square[0]) - ord("a")
+    rank_index = int(square[1]) - 1
+    local_x = (file_index - 3.5) * geometry.square_size
+    local_y = (rank_index - 3.5) * geometry.square_size
+    angle = math.radians(geometry.board_yaw_degrees)
+    dx = math.cos(angle) * local_x - math.sin(angle) * local_y
+    dy = math.sin(angle) * local_x + math.cos(angle) * local_y
+    return (
+        geometry.board_center[0] + dx,
+        geometry.board_center[1] + dy,
+        geometry.table_top + geometry.board_thickness + 0.001,
+    )
 
 
 def load_workcell_contract(path: Path = CONTRACT_PATH) -> dict[str, Any]:
@@ -114,9 +156,12 @@ class WorkcellCandidate:
     joint_zero_offsets_rad: tuple[float, float, float, float, float]
     joint_range_envelope_rad: tuple[tuple[float, float], ...]
     base_z_offset_m: float = 0.0
+    base_roll_offset_degrees: float = 0.0
+    base_pitch_offset_degrees: float = 0.0
+    board_side_m: float | None = None
 
     def as_dict(self) -> dict[str, Any]:
-        return {
+        result = {
             "board_yaw_relative_to_table_degrees": self.board_yaw_relative_to_table_degrees,
             "board_center_in_table_frame_xy_m": list(self.board_center_in_table_frame_xy_m),
             "joint_zero_offsets_rad": list(self.joint_zero_offsets_rad),
@@ -125,8 +170,13 @@ class WorkcellCandidate:
             ],
             "joint_range_envelope_rad": [list(pair) for pair in self.joint_range_envelope_rad],
             "base_z_offset_m": self.base_z_offset_m,
+            "base_roll_offset_degrees": self.base_roll_offset_degrees,
+            "base_pitch_offset_degrees": self.base_pitch_offset_degrees,
             "body_joint_signs": [1, 1, 1, 1, 1],
         }
+        if self.board_side_m is not None:
+            result["board_side_m"] = self.board_side_m
+        return result
 
     def adapter(self) -> JointAdapter:
         return JointAdapter(
@@ -220,22 +270,63 @@ def build_workcell_model(
     piece_layout: str = "sparse_two_sided_pawns",
     contact_variant: Any | None = None,
 ) -> dict[str, Any]:
-    spec = build_scene_spec(
-        piece_layout=piece_layout,
-        board_center_in_table_frame_xy_m=candidate.board_center_in_table_frame_xy_m,
-        board_yaw_relative_to_table_degrees=candidate.board_yaw_relative_to_table_degrees,
-        mass_profile_path=DEFAULT_SO101_MASS_PROFILE,
-    )
+    scene_kwargs = {
+        "piece_layout": piece_layout,
+        "board_center_in_table_frame_xy_m": candidate.board_center_in_table_frame_xy_m,
+        "board_yaw_relative_to_table_degrees": candidate.board_yaw_relative_to_table_degrees,
+        "mass_profile_path": DEFAULT_SO101_MASS_PROFILE,
+    }
+    if candidate.board_side_m is None:
+        spec = build_scene_spec(**scene_kwargs)
+    else:
+        config = load_capture_config()
+        config["simulation_estimates"]["board"]["side_m"] = candidate.board_side_m
+        with tempfile.TemporaryDirectory(prefix="sim2claw-board-side-") as directory:
+            config_path = Path(directory) / "capture.json"
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            spec = build_scene_spec(config_path=config_path, **scene_kwargs)
     if contact_variant is not None:
         from .contact_prior import apply_contact_variant
 
         apply_contact_variant(spec, contact_variant)
     model = spec.compile()
-    if candidate.base_z_offset_m:
+    if (
+        candidate.base_z_offset_m
+        or candidate.base_roll_offset_degrees
+        or candidate.base_pitch_offset_degrees
+    ):
         base_body = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "left_base")
         if base_body < 0:
             raise WorkcellFitError("scene is missing the left arm base body")
         model.body_pos[base_body, 2] += candidate.base_z_offset_m
+        nominal_xyzw = np.asarray(
+            [
+                model.body_quat[base_body, 1],
+                model.body_quat[base_body, 2],
+                model.body_quat[base_body, 3],
+                model.body_quat[base_body, 0],
+            ],
+            dtype=np.float64,
+        )
+        nominal_rotation = Rotation.from_quat(nominal_xyzw)
+        local_adjustment = Rotation.from_euler(
+            "xy",
+            [
+                candidate.base_roll_offset_degrees,
+                candidate.base_pitch_offset_degrees,
+            ],
+            degrees=True,
+        )
+        adjusted_xyzw = (nominal_rotation * local_adjustment).as_quat()
+        model.body_quat[base_body] = np.asarray(
+            [
+                adjusted_xyzw[3],
+                adjusted_xyzw[0],
+                adjusted_xyzw[1],
+                adjusted_xyzw[2],
+            ],
+            dtype=np.float64,
+        )
     joint_ids = [
         mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, f"left_{joint}")
         for joint in ROBOT_JOINTS
@@ -293,13 +384,15 @@ def _event_targets(
     board_center: tuple[float, float],
     board_yaw_relative: float,
     neck_height_m: float,
+    board_side_m: float | None = None,
 ) -> np.ndarray:
     targets = []
     for event in events:
-        target = np.asarray(board_square_center(
+        target = np.asarray(_workcell_square_center(
             event.square,
             board_center_in_table_frame_xy_m=board_center,
             board_yaw_relative_to_table_degrees=board_yaw_relative,
+            board_side_m=board_side_m,
         ))
         target[2] += neck_height_m
         targets.append(target)
@@ -615,10 +708,11 @@ def replay_episode_with_candidate(
     )
     selected_qpos = int(model.jnt_qposadr[selected_joint])
     selected_dof = int(model.jnt_dofadr[selected_joint])
-    source_xyz = np.asarray(board_square_center(
+    source_xyz = np.asarray(_workcell_square_center(
         source,
         board_center_in_table_frame_xy_m=board_center,
         board_yaw_relative_to_table_degrees=board_yaw,
+        board_side_m=None if candidate is None else candidate.board_side_m,
     ))
     data.qpos[selected_qpos : selected_qpos + 3] = source_xyz
     data.qvel[selected_dof : selected_dof + 6] = 0.0
@@ -688,10 +782,11 @@ def replay_episode_with_candidate(
         piece_bodies=piece_bodies, initial_piece_positions=initial_positions,
         robot_body_ids=robot_body_ids, jaw_body_ids=jaw_body_ids,
     ))
-    target_xyz = board_square_center(
+    target_xyz = _workcell_square_center(
         destination,
         board_center_in_table_frame_xy_m=board_center,
         board_yaw_relative_to_table_degrees=board_yaw,
+        board_side_m=None if candidate is None else candidate.board_side_m,
     )
     score = score_episode(
         reward_contract, skill_id=f"pawn_{source}_to_{destination}", trace=trace,

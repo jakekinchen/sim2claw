@@ -1,0 +1,22 @@
+{
+  "schema_version": "sim2claw.pawn_bg_scene_reset_proposal.v1",
+  "recording_id": "20260719T031324Z-bf91502b",
+  "piece_file": "d",
+  "piece_square": "d1",
+  "source_frame_path": "outputs/pawn_composability/recovered_corpus_v2/evidence_frames/20260719T031324Z-bf91502b__initial.png",
+  "source_frame_sha256": "7bc80a94d808e9cabd9a01227c9ca6102fe26cab598d7330c4eb9eea478a5c17",
+  "empty_square_comparison_frame_path": "outputs/pawn_composability/recovered_corpus_v2/evidence_frames/20260719T031518Z-34bff0dd__final.png",
+  "empty_square_comparison_frame_sha256": "2087d4d1c133f7828af211309ee94ba486ae894850851003fb00867dccc2d648",
+  "visual_fiducial_center_px": [406.5, 172.5],
+  "visual_fiducial_radius_px": 9.100000381469727,
+  "visual_selection_method": "tone_adaptive_signed_darkness_hough",
+  "global_mean_initial_visual_offset_px": [-0.7945386696328095, 3.2635675517530496],
+  "inferred_contact_center_px": [407.2945386696328, 169.23643244824694],
+  "signed_board_offset_m_approximate_unreviewed": [0.0021899134874166504, -0.0012445833866341662],
+  "proposal_calibration_id": "c922_board_grid_homography_proposal_20260719_v1",
+  "proposal_homography_matrix_sha256": "3252c0a3aa8b57d643880ed17ff589db56670be3522cd2f92d288ce9b6c442e1",
+  "evaluator_pose_admission_allowed": false,
+  "physical_calibration_claim_allowed": false,
+  "physical_transfer_claim_allowed": false,
+  "intended_use": "action_frozen_simulator_initial_state_sensitivity_only"
+}

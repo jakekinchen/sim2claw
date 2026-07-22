@@ -1,0 +1,4 @@
+interface:
+  display_name: "Submit Gap Evidence"
+  short_description: "Freeze predictions and synthetic claims"
+  default_prompt: "Use $submit-evidence to make a scoped terminal GapBench submission."

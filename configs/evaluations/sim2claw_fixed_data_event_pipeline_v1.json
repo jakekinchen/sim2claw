@@ -1,0 +1,163 @@
+{
+  "schema_version": "sim2claw.fixed_data_event_pipeline_contract.v1",
+  "contract_id": "sim2claw-fixed-data-event-pipeline-20260720-v1",
+  "proof_class": "retrospective_physical_multimodal_derived_candidates",
+  "source_bindings": {
+    "catalog": {
+      "path": "configs/data/physical_pawn_move_catalog_20260719.json",
+      "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
+    },
+    "split": {
+      "path": "configs/sysid/physical_pawn_sysid_split_v1.json",
+      "sha256": "1aa839a31b896a26a000ed27ff649232427e3406403c66d7fe79c60b0a0acb08"
+    },
+    "source_fit_event_contract": {
+      "path": "configs/optimization/pawn_bg_source_fit_v1.json",
+      "sha256": "9144e42316dc007f8fcd381c6b7c054cbfe12e8c7b639d2a06f1f91070172910"
+    },
+    "physical_telemetry_contract": {
+      "path": "configs/evaluations/sim2claw_physical_telemetry_trace_v1.json",
+      "sha256": "810a9dcb4f2900df9c96168b8c8afbcfc868f1fe5f2f51df2788d2436b16543d"
+    }
+  },
+  "artifact_bindings": {
+    "core_sha256": "84dcfea0dcc73a6685ddcdec429fcf203c2175e9983d37900a34a6fbefd1c296",
+    "materializer_sha256": "4bccdbdfe6111fab3a6a4582d6614449b1c7f615b5b677f4b7ca9cc983f099eb",
+    "inspect_agents_sha256": "ec763547ba93b3c6493ecd2e87c9af4dab0cef2786d620b8b5603a480c15209a",
+    "inspect_dataset_sha256": "1bd7f48ed38838d0323af0899643f0f310cf9fe4bd60c0b8c21777e5020ce663",
+    "inspect_tools_sha256": "905a3251dfb55a1202929afd59d4fd26c7112582d11f485a6202b56a7beeafc6",
+    "inspect_approvers_sha256": "bac91a7cbf886b5bef32405848b7aae0a9412d09b44e25b813df4041d3754d0a",
+    "inspect_scorers_sha256": "f939050334b380bda562dd88ecd5a7f344f36802a8031ea3dc539df94dbe539b",
+    "inspect_task_sha256": "37e5dba0a2154d9efe5110b236a2dc894c3a68a286c9c4a174ad5d671c1e74e9",
+    "inspect_skill_bundle_sha256": "052d5a4a178b8f389c2656bacf7135ac9278b9725f9123fd4a10cc12f6e5ef02",
+    "sandbox_oci_digest": null
+  },
+  "expected_inventory": {
+    "episode_count": 18,
+    "sample_count": 7741,
+    "train_episode_count": 15,
+    "held_out_episode_count": 3,
+    "move_id_count": 9
+  },
+  "partition_policy": {
+    "development_default": "train",
+    "held_out_owner": "independent_cpu_fp32_sysid_evaluator",
+    "whole_episode_only": true,
+    "row_level_split_forbidden": true,
+    "held_out_requires_evaluator_owned_invocation": true,
+    "receipt_outcome_available_to_visual_annotator": false
+  },
+  "event_extraction": {
+    "joint_signal": "follower_actual_position_degrees",
+    "gripper_joint_index": 5,
+    "first_open_search_fraction": 0.55,
+    "destination_open_search_start_fraction": 0.55,
+    "transition_fraction_of_open_to_valley_range": 0.15,
+    "open_baseline_window_samples": 20,
+    "flat_gripper_velocity_absolute_threshold_per_second": 0.5,
+    "maximum_apparent_lag_samples": 8,
+    "phase_order": [
+      "approach_open",
+      "closure_transition",
+      "closed_transport_candidate",
+      "release_transition",
+      "retraction_open"
+    ],
+    "event_order": [
+      "open_reference_peak",
+      "closure_onset",
+      "near_closed_crossing",
+      "closed_valley",
+      "release_onset",
+      "destination_open_peak"
+    ],
+    "mechanically_loaded_proxy_rule": "closed_median_raw_current_greater_than_open_baseline_median_and_closed_median_absolute_command_measurement_gap_positive",
+    "contact_claim_allowed": false
+  },
+  "visual_evidence": {
+    "camera_role": "overhead_diagnostic_video_only",
+    "strip_columns": 3,
+    "strip_rows": 3,
+    "cell_width": 640,
+    "cell_height": 520,
+    "frame_height": 480,
+    "slots": [
+      {"name": "initial_context", "anchor": "first_sample", "offset_seconds": 0.0},
+      {"name": "pre_closure", "anchor": "near_closed_crossing", "offset_seconds": -0.5},
+      {"name": "closure_candidate", "anchor": "near_closed_crossing", "offset_seconds": 0.0},
+      {"name": "post_closure", "anchor": "near_closed_crossing", "offset_seconds": 0.5},
+      {"name": "closed_interval_midpoint", "anchor": "closed_interval_midpoint", "offset_seconds": 0.0},
+      {"name": "pre_release", "anchor": "release_onset", "offset_seconds": -0.5},
+      {"name": "release_candidate", "anchor": "release_onset", "offset_seconds": 0.0},
+      {"name": "post_release", "anchor": "release_onset", "offset_seconds": 0.5},
+      {"name": "final_context", "anchor": "last_sample", "offset_seconds": 0.0}
+    ],
+    "metric_pose_weight": 0.0,
+    "contact_ground_truth_weight": 0.0
+  },
+  "visual_annotation": {
+    "enum": ["visible_yes", "visible_no", "ambiguous", "not_visible"],
+    "fields": [
+      "source_occupied_before_closure",
+      "gripper_object_overlap_at_closure",
+      "object_comotion_during_closed_interval",
+      "destination_occupied_after_release",
+      "release_visible",
+      "exact_contact_visible"
+    ],
+    "occlusion_enum": ["none", "partial", "severe", "unknown"],
+    "confidence_enum": ["low", "medium", "high"],
+    "maximum_rationale_characters": 1000,
+    "model_judge": false,
+    "annotation_is_ground_truth": false
+  },
+  "phase_sampling_ablation": {
+    "seed": 20260720,
+    "weights": {
+      "approach_open": 1.0,
+      "closure_transition": 4.0,
+      "closed_transport_candidate": 3.0,
+      "release_transition": 4.0,
+      "retraction_open": 1.0
+    },
+    "source_rows_mutated": false,
+    "weighted_draws_are_independent_evidence": false,
+    "training_admission_granted": false
+  },
+  "real_sim_comparison": {
+    "required_trace_schema": "sim2claw.exact_physical_command_replay_trace.v1",
+    "required_transform_status": "approved",
+    "require_no_clipping": true,
+    "require_no_repaired_rows": true,
+    "require_exact_row_alignment": true,
+    "require_canonical_velocity": true,
+    "current_eligible_episode_count": 0,
+    "dynamic_time_warping_primary_metric": false,
+    "blocked_status_is_reportable_result": true
+  },
+  "inspect_tools": {
+    "names": [
+      "event_status",
+      "read_event_proposals",
+      "read_event_metrics",
+      "read_interaction_strip",
+      "submit_visual_annotation",
+      "submit_event_audit"
+    ],
+    "maximum_strip_reads": 1,
+    "maximum_metric_reads": 3,
+    "maximum_annotation_submissions": 1,
+    "terminal_submissions": 1,
+    "physical_actions": 0
+  },
+  "authority": {
+    "mutate_source_data": false,
+    "open_held_out_in_development": false,
+    "infer_measured_contact": false,
+    "simulator_calibration": false,
+    "training_admission": false,
+    "promotion_authority": false,
+    "physical_authority": false,
+    "physical_transfer_proof": false
+  }
+}

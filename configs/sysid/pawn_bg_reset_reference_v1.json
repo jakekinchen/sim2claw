@@ -1,0 +1,44 @@
+{
+  "schema_version": "sim2claw.pawn_bg_reset_reference.v1",
+  "purpose": "Determine whether initial state/reference semantics explain the remaining action-frozen B--G trace gap after fixing timestamp alignment, without altering any source action bytes.",
+  "source": {
+    "partition": "owner-reviewed product-scope train episodes",
+    "expected_episode_count": 11,
+    "application_delay_seconds": 0.11,
+    "board_playing_side_m": 0.3556
+  },
+  "variants": [
+    {"id": "first_measured_no_settle", "state": "first_mapped_measured", "control": "first_mapped_measured", "settle_steps": 0},
+    {"id": "first_measured_settle_100", "state": "first_mapped_measured", "control": "first_mapped_measured", "settle_steps": 100},
+    {"id": "first_commanded_settle_100", "state": "first_mapped_command", "control": "first_mapped_command", "settle_steps": 100},
+    {"id": "model_default_settle_100", "state": "model_qpos0", "control": "model_qpos0", "settle_steps": 100}
+  ],
+  "grouped_cross_validation": {
+    "selection_metric": "pooled_body_joint_position_rms_degrees",
+    "minimum_material_relative_improvement_over_first_measured_settle_100": 0.005,
+    "folds": [
+      ["20260719T030059Z-a26f8400", "20260719T031324Z-bf91502b", "20260719T032440Z-f728a18c"],
+      ["20260719T032315Z-d3c3cf0b", "20260719T032531Z-06be393c", "20260719T031615Z-0e058ca2"],
+      ["20260719T032400Z-052d5137", "20260719T031715Z-61ebb199", "20260719T032620Z-0c7e3d86"],
+      ["20260719T030206Z-af661460", "20260719T031813Z-b147b429"]
+    ]
+  },
+  "action_invariance": {
+    "no_ik_corrections": true,
+    "no_post_policy_offsets": true,
+    "no_corrective_suffix": true,
+    "no_assistance": true,
+    "no_clipping": true,
+    "no_action_value_or_order_changes": true,
+    "only_initial_simulator_state_and_settle_change": true
+  },
+  "authority": {
+    "physical_calibration": false,
+    "physical_reset_identification": false,
+    "task_success": false,
+    "simulator_composite_promotion": false,
+    "training_admission": false,
+    "policy_promotion": false,
+    "physical_transfer": false
+  }
+}

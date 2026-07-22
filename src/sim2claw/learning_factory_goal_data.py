@@ -357,7 +357,7 @@ def _relative_pose(reference: np.ndarray, pose: np.ndarray) -> list[float]:
 def _skill_id(row: dict[str, Any]) -> list[float]:
     phase = ""
     for event in row["events"]["simulator_events"]:
-        if event.get("type") == "expert_phase":
+        if event.get("type") in {"expert_phase", "corrective_intervention"}:
             phase = str(event.get("phase") or "")
     groups = [
         {"stand_off", "advance", "pregrasp"},

@@ -64,7 +64,11 @@ class StateTraceTest(unittest.TestCase):
         model = build_scene_spec().compile()
         data = mujoco.MjData(model)
         initialize_robot_poses(model, data)
-        recorder = EpisodeStateTraceRecorder(model, fps=30)
+        recorder = EpisodeStateTraceRecorder(
+            model,
+            fps=30,
+            manifest_url="/media/exact-scene-manifest",
+        )
         recorder.capture(data, phase="initial", force=True)
         for _ in range(25):
             mujoco.mj_step(model, data)
@@ -76,6 +80,9 @@ class StateTraceTest(unittest.TestCase):
             result = recorder.write(path)
             payload = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(payload["schema_version"], STATE_TRACE_SCHEMA)
+        self.assertEqual(
+            payload["scene"]["manifest_url"], "/media/exact-scene-manifest"
+        )
         self.assertGreaterEqual(payload["frame_count"], 4)
         self.assertEqual(len(payload["frames"][0]["p"]), model.nbody * 3)
         self.assertEqual(len(payload["frames"][0]["q"]), model.nbody * 4)

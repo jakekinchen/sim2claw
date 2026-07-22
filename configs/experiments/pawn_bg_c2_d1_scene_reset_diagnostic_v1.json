@@ -1,0 +1,27 @@
+{
+  "board_center_offset_x_m": 0.001,
+  "episode_piece_reset_offsets_m": {
+    "20260719T031324Z-bf91502b": {
+      "d": [0.0021899134874166504, -0.0012445833866341662]
+    }
+  },
+  "fixed_jaw_mesh_collision_enabled": false,
+  "gripper_force_limit_multiplier": 3.0,
+  "gripper_joint_damping_multiplier": 1.0,
+  "gripper_joint_frictionloss_multiplier": 1.0,
+  "gripper_servo_gain_multiplier": 1.0,
+  "moving_jaw_mesh_collision_enabled": false,
+  "pawn_friction_multiplier": 2.7,
+  "pawn_mass_multiplier": 1.0,
+  "rolling_friction_m": 0.0012,
+  "rubber_tip_enabled": true,
+  "sliding_friction": 1.8,
+  "solref_damping_ratio": 1.2,
+  "solref_time_constant_s": 0.006,
+  "tip_coverage_m": 0.02,
+  "tip_coverage_offset_m": -0.03,
+  "tip_half_width_m": 0.0065,
+  "tip_moving_coverage_offset_m": 0.025,
+  "tip_thickness_m": 0.001,
+  "torsional_friction_m": 0.012
+}

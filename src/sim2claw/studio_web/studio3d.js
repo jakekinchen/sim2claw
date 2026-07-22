@@ -220,6 +220,26 @@ class ThreeReplayViewer {
     const position = suggested
       ? new THREE.Vector3().fromArray(suggested.position)
       : center.clone().add(new THREE.Vector3(0.8, -1.25, 0.72).multiplyScalar(extent));
+    const parent = this.canvas.parentElement;
+    const viewportWidth = Math.max(1, parent?.clientWidth || 1);
+    const viewportHeight = Math.max(1, parent?.clientHeight || 1);
+    const portraitInspection = (
+      this.trace
+      && viewportWidth <= 720
+      && viewportWidth / viewportHeight < 0.95
+    );
+    const photoBackground = this.bodyGroups.get("photo_background");
+    if (photoBackground) photoBackground.visible = !portraitInspection;
+    this.scene.background.setHex(portraitInspection ? 0xd7d7d5 : 0x111315);
+    this.scene.fog.color.setHex(portraitInspection ? 0xd7d7d5 : 0x111315);
+    if (portraitInspection) {
+      // The manifest camera frames the full two-arm workcell for desktop. On a
+      // phone the useful evidence is the board and active left gripper, so move
+      // along the same optical axis instead of distorting or reauthoring scene
+      // geometry. The user can still orbit or reset to this deterministic view.
+      const portraitOffset = position.clone().sub(center);
+      position.copy(center).addScaledVector(portraitOffset, 0.96);
+    }
     this.camera.position.copy(position);
     this.camera.up.set(0, 0, 1);
     this.camera.fov = Number(suggested?.fov_degrees) || 38;

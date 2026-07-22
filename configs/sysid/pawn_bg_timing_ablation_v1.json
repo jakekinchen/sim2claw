@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.pawn_bg_timing_ablation.v1",
+  "purpose": "Separate legacy step-then-record trace alignment from timestamp-aligned zero-order-hold replay, then select a bounded application delay with whole-episode grouped cross-validation while keeping every source action array byte-identical.",
+  "source": {
+    "partition": "owner-reviewed product-scope train episodes",
+    "expected_train_episode_count": 11,
+    "expected_already_opened_confirmation_episode_count": 2,
+    "candidate_board_playing_side_m": 0.3556,
+    "board_scale_status": "nominal_print_conditioned_physically_plausible_not_metric_authority"
+  },
+  "variants": {
+    "legacy_step_then_record": {
+      "initial_settle_steps": 100,
+      "first_row_semantics": "apply row-0 action, integrate one nominal sample interval, then record row 0",
+      "application_delay_seconds": 0.0
+    },
+    "timestamp_aligned_zoh": {
+      "initial_settle_steps": 100,
+      "first_row_semantics": "record simulator state at row timestamp, then apply the row action over the following interval",
+      "application_delay_grid_seconds": [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.12, 0.13, 0.14, 0.15]
+    }
+  },
+  "grouped_cross_validation": {
+    "unit": "whole_episode",
+    "selection_metric": "pooled_body_joint_position_rms_degrees",
+    "folds": [
+      ["20260719T030059Z-a26f8400", "20260719T031324Z-bf91502b", "20260719T032440Z-f728a18c"],
+      ["20260719T032315Z-d3c3cf0b", "20260719T032531Z-06be393c", "20260719T031615Z-0e058ca2"],
+      ["20260719T032400Z-052d5137", "20260719T031715Z-61ebb199", "20260719T032620Z-0c7e3d86"],
+      ["20260719T030206Z-af661460", "20260719T031813Z-b147b429"]
+    ],
+    "confirmation_selection_use": "none_already_opened_regression_only"
+  },
+  "stall_probe": {
+    "real_stationary_maximum_step_degrees": 0.5,
+    "command_measurement_minimum_gap_degrees": 2.0,
+    "sim_reproduction_minimum_gap_degrees": 2.0,
+    "interpretation": "same-row gap reproduction diagnostic; not calibrated torque or physical stall truth"
+  },
+  "acceptance": {
+    "minimum_cross_validated_joint_rms_relative_improvement": 0.15,
+    "minimum_all_train_ee_rms_relative_improvement_from_legacy": 0.1,
+    "require_no_per_joint_rms_regression_from_legacy": true,
+    "require_byte_identical_action_arrays": true,
+    "composite_promotion_allowed": false
+  },
+  "action_invariance": {
+    "no_ik_corrections": true,
+    "no_post_policy_offsets": true,
+    "no_corrective_suffix": true,
+    "no_assistance": true,
+    "no_clipping": true,
+    "no_action_value_or_order_changes": true,
+    "application_timing_is_the_only_selected_mechanism": true
+  },
+  "authority": {
+    "physical_calibration": false,
+    "metric_board_scale": false,
+    "contact_identification": false,
+    "task_success": false,
+    "training_admission": false,
+    "policy_promotion": false,
+    "simulator_composite_promotion": false,
+    "physical_transfer": false
+  }
+}

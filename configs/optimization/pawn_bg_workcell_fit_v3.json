@@ -1,0 +1,46 @@
+{
+  "schema_version": "sim2claw.pawn_bg_workcell_fit.v3",
+  "purpose": "Test the train-residual-derived hypothesis that the physical chessboard square pitch differs from the frozen 44.45 mm simulator pitch, and propagate the fitted playing-side dimension into scene geometry and command-driven physics replay.",
+  "parent_contract": {
+    "path": "configs/optimization/pawn_bg_workcell_fit_v1.json",
+    "sha256": "a1cd0f7d53b22420536396eb724e4dcd877ea74206ae23442fe5b933efa7f69f",
+    "selected_candidate": "stage_d_lift"
+  },
+  "rejected_predecessor": {
+    "candidate": "stage_e_base_pose",
+    "receipt_path": "runs/pawn-bg-workcell-fit-v2/train_fit.json",
+    "observed_receipt_sha256": "9989dcf22c9905f53d22ab2badc9c4abe7808a8d8833d06693dd4047ebd82d4c",
+    "train_event_rms_relative_reduction": 0.00041527113875051703,
+    "reason": "failed the material-error and retained-lift gates"
+  },
+  "candidate": {
+    "candidate_id": "stage_f_board_pitch",
+    "mechanism": "isotropic physical chessboard playing-side dimension; square pitch is playing_side_m / 8",
+    "frozen_playing_side_m": 0.3556,
+    "playing_side_bounds_m": [0.2921, 0.4191],
+    "bounds_rationale": "bounded 11.5 to 16.5 inch playing areas cover common compact physical boards without allowing an arbitrary affine warp",
+    "joint_parameterization": "same board center, board yaw, four bounded joint zero offsets, and destination-reopen timing term as Stage D",
+    "finite_difference_step": 0.001,
+    "exploratory_disclosure": "The B-to-G train residual gradient motivated this parameter family, and an exploratory train-only kinematic fit showed that it was promising before this full replay gate was executed. It is not a pristine preregistered model-selection test."
+  },
+  "train_acceptance": {
+    "minimum_event_rms_relative_reduction_from_stage_d": 0.02,
+    "require_zero_clipped_episodes": true,
+    "minimum_selected_piece_contact_episodes": 9,
+    "minimum_lifted_episodes": 1,
+    "minimum_task_successes": 0,
+    "selection_rule": "select Stage F only if every train gate passes; otherwise retain Stage D"
+  },
+  "confirmation": {
+    "held_out_status": "the two evaluator episodes were already opened by the Stage-D study",
+    "selection_use": "none",
+    "reporting": "run Stage D and the frozen Stage-F candidate side by side after train selection; confirmation cannot change selection"
+  },
+  "authority": {
+    "physical_calibration": false,
+    "physical_transfer": false,
+    "policy_promotion": false,
+    "task_success": false,
+    "evaluator_promotion": false
+  }
+}

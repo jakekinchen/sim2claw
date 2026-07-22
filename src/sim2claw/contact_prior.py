@@ -643,6 +643,35 @@ def apply_contact_variant(
     thickness = float(variant.payload["effective_wrap_thickness_m"])
     half_width = float(variant.payload["effective_box_half_width_m"])
     coverage = float(variant.payload["distal_coverage_length_m"])
+    segment_count = int(variant.payload.get("wrap_segment_count", 1))
+    segment_fill_fraction = float(
+        variant.payload.get("wrap_segment_fill_fraction", 1.0)
+    )
+    ridge_count = int(variant.payload.get("wrap_ridge_count", 0))
+    ridge_height = float(variant.payload.get("wrap_ridge_height_m", 0.0))
+    ridge_fill_fraction = float(
+        variant.payload.get("wrap_ridge_fill_fraction", 0.5)
+    )
+    if not 1 <= segment_count <= 8:
+        raise ValueError("rubber-tip wrap segment count must be within [1, 8]")
+    if not 0.2 <= segment_fill_fraction <= 1.0:
+        raise ValueError(
+            "rubber-tip wrap segment fill fraction must be within [0.2, 1.0]"
+        )
+    if not 0 <= ridge_count <= 8:
+        raise ValueError("rubber-tip wrap ridge count must be within [0, 8]")
+    if not 0.0 <= ridge_height <= 0.005:
+        raise ValueError("rubber-tip wrap ridge height must be within [0, 0.005] m")
+    if ridge_count and ridge_height <= 0.0:
+        raise ValueError("rubber-tip wrap ridges require a positive ridge height")
+    if not 0.2 <= ridge_fill_fraction <= 1.0:
+        raise ValueError(
+            "rubber-tip wrap ridge fill fraction must be within [0.2, 1.0]"
+        )
+    if ridge_count and segment_count != 1:
+        raise ValueError(
+            "raised rubber-tip ridges require one continuous base sleeve"
+        )
     friction = variant.payload["contact_friction"]
     softness = variant.payload["contact_softness"]
     added_geoms: list[str] = []
@@ -655,45 +684,126 @@ def apply_contact_variant(
         size = [float(value) for value in anchor.size]
         size[int(finger["normal_axis_index"])] += thickness
         size[int(finger["width_axis_index"])] = half_width
-        size[int(finger["coverage_axis_index"])] = coverage / 2.0
-        geom_name = f"{arm}_rubber_tip_{finger['finger_id']}_{variant.variant_id}_geom"
-        anchor.parent.add_geom(
-            name=geom_name,
-            type=mujoco.mjtGeom.mjGEOM_BOX,
-            pos=[float(value) for value in anchor.pos],
-            quat=[float(value) for value in anchor.quat],
-            size=size,
-            contype=1,
-            conaffinity=1,
-            condim=6,
-            priority=2,
-            friction=[
-                float(friction["sliding_dimensionless"]),
-                float(friction["torsional_m"]),
-                float(friction["rolling_m"]),
-            ],
-            solref=[
-                float(softness["solref_time_constant_s"]),
-                float(softness["solref_damping_ratio"]),
-            ],
-            solimp=[float(value) for value in softness["solimp"]],
-            mass=0.0,
-            rgba=[0.08, 0.08, 0.08, 1.0],
-            group=3,
-        )
-        added_geoms.append(geom_name)
-        bindings.append(
-            {
-                "finger_id": finger["finger_id"],
-                "anchor_geom": anchor_name,
-                "parent_body": anchor.parent.name,
-                "added_geom": geom_name,
-                "modeled_added_mass_kg": 0.0,
-                "mass_effect_mode": variant.collision_approximation[
-                    "mass_effect_mode"
+        coverage_axis = int(finger["coverage_axis_index"])
+        segment_pitch = coverage / segment_count
+        size[coverage_axis] = segment_pitch * segment_fill_fraction / 2.0
+        for segment_index in range(segment_count):
+            geom_name = (
+                f"{arm}_rubber_tip_{finger['finger_id']}_{variant.variant_id}_geom"
+                if segment_count == 1
+                else (
+                    f"{arm}_rubber_tip_{finger['finger_id']}_{variant.variant_id}"
+                    f"_segment_{segment_index + 1:02d}_geom"
+                )
+            )
+            position = [float(value) for value in anchor.pos]
+            position[coverage_axis] += (
+                -coverage / 2.0
+                + (segment_index + 0.5) * segment_pitch
+            )
+            anchor.parent.add_geom(
+                name=geom_name,
+                type=mujoco.mjtGeom.mjGEOM_BOX,
+                pos=position,
+                quat=[float(value) for value in anchor.quat],
+                size=size,
+                contype=1,
+                conaffinity=1,
+                condim=6,
+                priority=2,
+                friction=[
+                    float(friction["sliding_dimensionless"]),
+                    float(friction["torsional_m"]),
+                    float(friction["rolling_m"]),
                 ],
-            }
-        )
+                solref=[
+                    float(softness["solref_time_constant_s"]),
+                    float(softness["solref_damping_ratio"]),
+                ],
+                solimp=[float(value) for value in softness["solimp"]],
+                mass=0.0,
+                rgba=[0.08, 0.08, 0.08, 1.0],
+                group=3,
+            )
+            added_geoms.append(geom_name)
+            bindings.append(
+                {
+                    "finger_id": finger["finger_id"],
+                    "anchor_geom": anchor_name,
+                    "parent_body": anchor.parent.name,
+                    "added_geom": geom_name,
+                    "segment_index": segment_index,
+                    "segment_count": segment_count,
+                    "segment_fill_fraction": segment_fill_fraction,
+                    "contact_layer": "base_sleeve",
+                    "modeled_added_mass_kg": 0.0,
+                    "mass_effect_mode": variant.collision_approximation[
+                        "mass_effect_mode"
+                    ],
+                }
+            )
+        if ridge_count:
+            ridge_pitch = coverage / ridge_count
+            ridge_size = [float(value) for value in anchor.size]
+            ridge_size[int(finger["normal_axis_index"])] += (
+                thickness + ridge_height
+            )
+            ridge_size[int(finger["width_axis_index"])] = half_width
+            ridge_size[coverage_axis] = (
+                ridge_pitch * ridge_fill_fraction / 2.0
+            )
+            for ridge_index in range(ridge_count):
+                geom_name = (
+                    f"{arm}_rubber_tip_{finger['finger_id']}_{variant.variant_id}"
+                    f"_ridge_{ridge_index + 1:02d}_geom"
+                )
+                position = [float(value) for value in anchor.pos]
+                position[coverage_axis] += (
+                    -coverage / 2.0
+                    + (ridge_index + 0.5) * ridge_pitch
+                )
+                anchor.parent.add_geom(
+                    name=geom_name,
+                    type=mujoco.mjtGeom.mjGEOM_BOX,
+                    pos=position,
+                    quat=[float(value) for value in anchor.quat],
+                    size=ridge_size,
+                    contype=1,
+                    conaffinity=1,
+                    condim=6,
+                    priority=2,
+                    friction=[
+                        float(friction["sliding_dimensionless"]),
+                        float(friction["torsional_m"]),
+                        float(friction["rolling_m"]),
+                    ],
+                    solref=[
+                        float(softness["solref_time_constant_s"]),
+                        float(softness["solref_damping_ratio"]),
+                    ],
+                    solimp=[float(value) for value in softness["solimp"]],
+                    mass=0.0,
+                    rgba=[0.45, 0.04, 0.04, 1.0],
+                    group=3,
+                )
+                added_geoms.append(geom_name)
+                bindings.append(
+                    {
+                        "finger_id": finger["finger_id"],
+                        "anchor_geom": anchor_name,
+                        "parent_body": anchor.parent.name,
+                        "added_geom": geom_name,
+                        "ridge_index": ridge_index,
+                        "ridge_count": ridge_count,
+                        "ridge_height_m": ridge_height,
+                        "ridge_fill_fraction": ridge_fill_fraction,
+                        "contact_layer": "raised_wrap_ridge",
+                        "modeled_added_mass_kg": 0.0,
+                        "mass_effect_mode": variant.collision_approximation[
+                            "mass_effect_mode"
+                        ],
+                    }
+                )
     return {
         "variant_id": variant.variant_id,
         "variant_sha256": variant.variant_sha256,

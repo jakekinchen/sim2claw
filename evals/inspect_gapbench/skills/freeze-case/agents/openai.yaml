@@ -1,0 +1,4 @@
+interface:
+  display_name: "Freeze GapBench Case"
+  short_description: "Verify case identity, scope, and budgets"
+  default_prompt: "Use $freeze-case to verify the frozen GapBench case before diagnosis."

@@ -192,6 +192,7 @@ class EpisodeStateTraceRecorder:
         piece_layout: str = "standard",
         fps: int = DEFAULT_TRACE_FPS,
         proof_class: str = "simulation_episode_state_trace",
+        manifest_url: str | None = None,
     ) -> None:
         if fps < 1:
             raise ValueError("trace fps must be positive")
@@ -199,6 +200,7 @@ class EpisodeStateTraceRecorder:
         self.piece_layout = piece_layout
         self.fps = fps
         self.proof_class = proof_class
+        self.manifest_url = manifest_url or f"/api/scene?layout={piece_layout}"
         self.body_names = [
             _name(model, mujoco.mjtObj.mjOBJ_BODY, body_id)
             for body_id in range(model.nbody)
@@ -265,7 +267,7 @@ class EpisodeStateTraceRecorder:
             "proof_class": self.proof_class,
             "scene": {
                 "piece_layout": self.piece_layout,
-                "manifest_url": f"/api/scene?layout={self.piece_layout}",
+                "manifest_url": self.manifest_url,
                 "manifest_revision_sha256": self._manifest["revision_sha256"],
             },
             "fps": self.fps,
@@ -287,7 +289,7 @@ class EpisodeStateTraceRecorder:
             "schema_version": LIVE_STATE_SCHEMA,
             "scene": {
                 "piece_layout": self.piece_layout,
-                "manifest_url": f"/api/scene?layout={self.piece_layout}",
+                "manifest_url": self.manifest_url,
                 "manifest_revision_sha256": self._manifest["revision_sha256"],
             },
             "body_names": self.body_names,

@@ -1,0 +1,71 @@
+{
+  "schema_version": "sim2claw.llm_corrective_intervention_contract.v1",
+  "contract_id": "llm_corrective_intervention_pregrasp_v1",
+  "proof_class": "simulation_data_generator_infrastructure",
+  "source_roles": ["training", "development"],
+  "held_out_training_rows": 0,
+  "failure_packet": {
+    "transfer_observable_only": true,
+    "privileged_integration_state_visible_to_proposer": false,
+    "maximum_candidate_proposals": 8,
+    "maximum_simulator_calls": 136
+  },
+  "proposal": {
+    "reference_frames": ["selected_object", "target"],
+    "maximum_waypoints": 3,
+    "maximum_translation_norm_m": 0.01,
+    "maximum_rotation_norm_rad": 0.15,
+    "maximum_gripper_delta_rad": 0.12,
+    "maximum_horizon_seconds": 1.0,
+    "raw_joint_proposals_forbidden": true
+  },
+  "compiler": {
+    "profile_id": "bounded_pregrasp_cartesian_v1",
+    "supported_phase": "pregrasp",
+    "orientation_change_supported": false,
+    "ik_solver_id": "so101_damped_least_squares_position_v1",
+    "maximum_ik_residual_m": 0.003,
+    "sample_hold_hz": 20,
+    "physics_steps_per_action": 10,
+    "maximum_action_count": 20,
+    "action_representation": "absolute_joint_position_target",
+    "silent_clipping_forbidden": true,
+    "compiled_action_owner": "geometric_expert",
+    "llm_direct_control": false
+  },
+  "posterior": {
+    "visible_to_proposer": false,
+    "development_seed_count": 16,
+    "sealed_seed_count": 16,
+    "development_and_sealed_seeds_disjoint": true,
+    "parameters_require_evidence": true,
+    "unsupported_parameters_rejected": true
+  },
+  "proposal_acceptance": {
+    "require_nominal_strict_success": true,
+    "minimum_development_successes": 12,
+    "development_sample_count": 16,
+    "minimum_robustness_rate": 0.75,
+    "maximum_safety_violations": 0,
+    "require_non_regression": true,
+    "requires_independent_full_prefix_plus_suffix_replay": true,
+    "proposal_score_can_admit_training": false,
+    "proposal_score_can_promote": false
+  },
+  "dataset": {
+    "failed_prefix_training_rows": 0,
+    "admitted_rows": "independently_evaluator_approved_corrective_suffix_only",
+    "route_target": "LF-09",
+    "training_cannot_promote": true
+  },
+  "authority": {
+    "physical_authority": false,
+    "camera_hardware_access": false,
+    "serial_access": false,
+    "gateway_access": false,
+    "paid_compute_authorized": false,
+    "generated_episode_is_policy_proof": false,
+    "posterior_is_calibration_proof": false,
+    "simulation_reward_is_sim_to_real_proof": false
+  }
+}

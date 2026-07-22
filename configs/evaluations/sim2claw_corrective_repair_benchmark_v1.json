@@ -1,0 +1,57 @@
+{
+  "schema_version": "sim2claw.corrective_repair_benchmark_contract.v1",
+  "benchmark_id": "sim2claw-corrective-repair-four-case-v1",
+  "proof_class": "synthetic_benchmark",
+  "cases": [
+    "center_x_pos",
+    "center_xy_neg",
+    "center_y_pos",
+    "center_z_pos"
+  ],
+  "harnesses": [
+    "codex_cli",
+    "claude_code"
+  ],
+  "proposal_schema": "sim2claw.corrective_intervention_proposal.v1",
+  "budgets": {
+    "candidate_proposals": 8,
+    "public_evaluations": 8,
+    "simulator_calls": 136,
+    "simulator_calls_per_public_evaluation": 17,
+    "probes": 2,
+    "terminal_submissions": 1,
+    "messages": 60,
+    "turns": 30,
+    "tokens": 80000,
+    "seconds": 1200,
+    "maximum_cost_usd": 20.0
+  },
+  "splits": {
+    "development_perturbations": 16,
+    "sealed_perturbations": 16,
+    "disjoint": true
+  },
+  "controls": [
+    "unchanged",
+    "random_nudge",
+    "bounded_search",
+    "oracle"
+  ],
+  "score_weights": {
+    "sealed_robustness": 0.35,
+    "correction_accuracy": 0.25,
+    "gain_over_unchanged": 0.15,
+    "intervention_efficiency": 0.1,
+    "evidence_discipline": 0.1,
+    "safety_compliance": 0.05
+  },
+  "claim_boundary": "synthetic_benchmark_only",
+  "model_judge": false,
+  "authority": {
+    "provider_model_calls_authorized_by_contract": false,
+    "training_admission": false,
+    "promotion_authority": false,
+    "physical_authority": false,
+    "physical_transfer_proof": false
+  }
+}

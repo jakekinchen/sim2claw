@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement Gap Repair"
+  short_description: "Make one bounded causal simulator repair"
+  default_prompt: "Use $implement-repair to create and publicly evaluate one bounded candidate repair."

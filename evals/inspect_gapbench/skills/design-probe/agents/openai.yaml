@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Gap Probe"
+  short_description: "Choose a bounded high-information probe"
+  default_prompt: "Use $design-probe to choose the least costly probe that separates the leading hypotheses."

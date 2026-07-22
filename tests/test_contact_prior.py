@@ -172,6 +172,53 @@ class RubberTipContactPriorTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "anchor geom is missing"):
             apply_contact_variant(build_scene_spec(mass_profile_path=None), tampered)
 
+    def test_rubber_wrap_ridges_layer_over_continuous_sleeve(self) -> None:
+        base = load_simulator_variant("rubber_tip_high")
+        payload = copy.deepcopy(base.payload)
+        payload.update(
+            {
+                "wrap_ridge_count": 4,
+                "wrap_ridge_height_m": 0.0005,
+                "wrap_ridge_fill_fraction": 0.5,
+            }
+        )
+        variant = replace(base, payload=payload, variant_id="ridge_test")
+        spec = build_scene_spec(mass_profile_path=None)
+        application = apply_contact_variant(spec, variant)
+        model = spec.compile()
+
+        self.assertEqual(len(application["added_geoms"]), 10)
+        self.assertEqual(
+            sum(
+                row["contact_layer"] == "raised_wrap_ridge"
+                for row in application["bindings"]
+            ),
+            8,
+        )
+        for finger in ("fixed", "moving"):
+            core_name = f"left_rubber_tip_{finger}_ridge_test_geom"
+            ridge_name = f"left_rubber_tip_{finger}_ridge_test_ridge_01_geom"
+            core_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, core_name)
+            ridge_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, ridge_name)
+            self.assertGreaterEqual(core_id, 0)
+            self.assertGreaterEqual(ridge_id, 0)
+            self.assertGreater(model.geom_size[ridge_id, 0], model.geom_size[core_id, 0])
+
+    def test_rubber_wrap_ridges_reject_gapped_base_sleeve(self) -> None:
+        base = load_simulator_variant("rubber_tip_high")
+        payload = copy.deepcopy(base.payload)
+        payload.update(
+            {
+                "wrap_segment_count": 4,
+                "wrap_segment_fill_fraction": 0.8,
+                "wrap_ridge_count": 4,
+                "wrap_ridge_height_m": 0.0005,
+            }
+        )
+        variant = replace(base, payload=payload, variant_id="invalid_ridge_test")
+        with self.assertRaisesRegex(ValueError, "continuous base sleeve"):
+            apply_contact_variant(build_scene_spec(mass_profile_path=None), variant)
+
 
 if __name__ == "__main__":
     unittest.main()

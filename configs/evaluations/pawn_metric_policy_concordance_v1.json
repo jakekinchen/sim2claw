@@ -1,0 +1,55 @@
+{
+  "schema_version": "sim2claw.pawn_metric_policy_concordance_contract.v1",
+  "experiment_id": "pawn-metric-policy-concordance-20260720-v1",
+  "proof_class": "retrospective_physical_trace_plus_simulation_policy_diagnostic",
+  "source_bindings": {
+    "workcell_fit_contract": {
+      "path": "configs/optimization/pawn_bg_workcell_fit_v1.json",
+      "sha256": "a1cd0f7d53b22420536396eb724e4dcd877ea74206ae23442fe5b933efa7f69f"
+    },
+    "pawn_reward_contract": {
+      "path": "configs/evaluations/pawn_bg_sim_reward_v1.json",
+      "sha256": "e702ad7fa3a366bc24c552c4cd0e5df66842d5fe7f6ef824266b8cfb2ee8d0c7"
+    },
+    "physical_catalog": {
+      "path": "configs/data/physical_pawn_move_catalog_20260719.json",
+      "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
+    },
+    "physical_split": {
+      "path": "configs/sysid/physical_pawn_sysid_split_v1.json",
+      "sha256": "1aa839a31b896a26a000ed27ff649232427e3406403c66d7fe79c60b0a0acb08"
+    }
+  },
+  "retained_policy_reports": {
+    "baseline": {
+      "sha256": "6611818631950ba3643e50178fadf3e0ebc999a68d4c82deb37f5b077bff0056",
+      "canonical_payload_sha256": "3a2dbcd852e723cefa1ccdc62f3c6c9aaa32ba30cd6581c96295ac520be1b597"
+    },
+    "aligned": {
+      "sha256": "e3215aa5361391117521d9a98bb8f724ff2bc566da7cbe2a9ddb6ad02b011c17",
+      "canonical_payload_sha256": "7934a4faca7539f1a690aa5b9dba1ced2918e0261dc998202eafbb1f3142ad96"
+    }
+  },
+  "paired_policy_skill_id": "pawn_b1_to_b2",
+  "candidate_name": "stage_d_lift",
+  "metric_directions": {
+    "event_rms_distance_m": "lower_is_better",
+    "clipped_episodes": "lower_is_better",
+    "selected_piece_contact": "higher_is_better",
+    "lifted": "higher_is_better",
+    "successes": "higher_is_better",
+    "maximum_other_piece_displacement_m": "lower_is_better",
+    "maximum_piece_rise_m": "higher_is_better",
+    "final_center_distance_m": "lower_is_better"
+  },
+  "minimum_policy_cases_for_correlation": 3,
+  "authority": {
+    "metric_fit_is_physical_calibration": false,
+    "source_replay_is_learned_policy_evidence": false,
+    "existing_vla_rollout_is_model_judge": false,
+    "training_admission": false,
+    "promotion_authority": false,
+    "physical_authority": false,
+    "physical_transfer_proof": false
+  }
+}
