@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T11:35:00-05:00",
-  "active_campaign": "sail_grasp_retention_vertical_contact_diagnostic_v1",
-  "current_milestone": "B2_02L_FINGERTIP_WORLD_AXIS_DIAGNOSTIC_IN_PROGRESS",
+  "active_campaign": "sail_grasp_retention_vertical_contact_v1",
+  "current_milestone": "B2_02L_FROZEN_VERTICAL_CONTACT_C2_SCREEN_IN_PROGRESS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
@@ -632,7 +632,7 @@
   },
   "sail_grasp_retention_compliant_pad": {
     "schema_version": "sim2claw.sail_grasp_retention_compliant_pad_state.v1",
-    "status": "coverage_axis_falsified_world_vertical_axis_diagnostic_in_progress",
+    "status": "world_vertical_axis_diagnosed_vertical_contact_followup_frozen",
     "contract": "configs/sail/grasp_retention_normal_compliance_v1.json",
     "brief": "docs/briefs/035-compliant-pad-evaluator-win.md",
     "goal_loop": "docs/autonomous-workflow/goal-loop-compliant-pad-win.md",
@@ -811,6 +811,13 @@
     },
     "contact_height_receipt_sha256": "87f1843fbe2605b564308a7145d079c2cdc30789d5d001aef388ca6f54c6032e",
     "contact_height_receipt_digest": "1b2e3ffcfaf0abe26ae6236c48a94f1f85266d6f46431c69c09daf2ee2906f62",
+    "vertical_contact_world_axis_diagnostic": {
+      "source_index": 243,
+      "fixed_world_z_per_local_width": 0.8090424925078157,
+      "moving_world_z_per_local_width": -0.8090424925078153,
+      "matched_downward_signs": "fixed_negative_moving_positive"
+    },
+    "vertical_contact_contract": "configs/sail/grasp_retention_vertical_contact_v1.json",
     "simulator_promoted": false,
     "training_admitted": false,
     "physical_authority": false

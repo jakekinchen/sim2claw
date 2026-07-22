@@ -409,6 +409,32 @@ def test_contact_height_family_moves_stable_rubber_surface_distally() -> None:
     } == {0.0215, 0.022, 0.0225}
 
 
+def test_vertical_contact_family_uses_opposed_local_width_signs() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_vertical_contact_v1.json"
+        )
+    )
+
+    family = contract["frozen_candidate_family"]
+    assert len(family) == 18
+    assert contract["acceptance"]["anchor_simulation_stability_required"]
+    shifted = family[1:]
+    assert all(row["overrides"]["tip_fixed_width_offset_m"] < 0.0 for row in shifted)
+    assert all(row["overrides"]["tip_moving_width_offset_m"] > 0.0 for row in shifted)
+    assert all(
+        row["overrides"]["tip_fixed_width_offset_m"]
+        == -row["overrides"]["tip_moving_width_offset_m"]
+        for row in shifted
+    )
+    assert min(
+        row["overrides"]["tip_fixed_width_offset_m"] for row in shifted
+    ) == -0.02
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

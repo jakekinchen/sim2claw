@@ -27,7 +27,7 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02I | complete, terminal negative | high-stiffness 2.25 ms pads unstable; stable frontier loses at frame 329 |
 | B2-02J | complete, terminal negative | stable 0.5 ms pad retains through release with valid aperture/slip but misses transport |
 | B2-02K | complete, terminal negative | coverage-axis offsets change the sleeve footprint but not the vertical pawn contact point |
-| B2-02L | in progress | world-frame fingertip-axis diagnosis followed by a frozen vertical-contact cross |
+| B2-02L | in progress | diagnosed width-axis signs; symmetric 1--20 mm downward-contact cross frozen |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -148,3 +148,10 @@ and extends the lift-plane window by three source frames, but maximum transport
 progress while lifted remains only 5.8%. B2-02L records each jaw geom's
 world-frame basis at contact so the next frozen family can shift the rubber
 along the actual vertical width axis with the correct sign per jaw.
+
+The B2-02L baseline replay reports world-Z projections of +0.809 for fixed-jaw
+local width and -0.809 for moving-jaw local width. Therefore matched downward
+motion is fixed negative and moving positive. The frozen family crosses
+1--20 mm symmetric shifts around the aperture-valid 0.0215 force point, with a
+narrow 0.02125/0.02175 force check at 3, 5, and 8 mm. All other parameters and
+all acceptance gates remain fixed.

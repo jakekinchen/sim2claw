@@ -57,6 +57,9 @@ STABLE_COMPLIANCE_SCHEMA = (
 CONTACT_HEIGHT_SCHEMA = (
     "sim2claw.sail_grasp_retention_contact_height_campaign.v1"
 )
+VERTICAL_CONTACT_SCHEMA = (
+    "sim2claw.sail_grasp_retention_vertical_contact_campaign.v1"
+)
 SCREEN_SCHEMA = "sim2claw.sail_grasp_retention_anchor_screen.v1"
 
 
@@ -115,6 +118,7 @@ def load_grasp_retention_contract(
         COMPLIANT_SKIN_SCHEMA,
         STABLE_COMPLIANCE_SCHEMA,
         CONTACT_HEIGHT_SCHEMA,
+        VERTICAL_CONTACT_SCHEMA,
     }:
         raise GraspRetentionResolutionError("grasp-retention schema drifted")
     if contract.get("campaign_id") not in {
@@ -138,6 +142,7 @@ def load_grasp_retention_contract(
         "sail-grasp-retention-compliant-skin-v1",
         "sail-grasp-retention-stable-compliance-v1",
         "sail-grasp-retention-contact-height-v1",
+        "sail-grasp-retention-vertical-contact-v1",
     }:
         raise GraspRetentionResolutionError("grasp-retention campaign id drifted")
 
