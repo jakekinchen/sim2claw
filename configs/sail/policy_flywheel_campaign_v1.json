@@ -29,6 +29,10 @@
       "path": "src/sim2claw/learning_factory_recursion.py",
       "sha256": "1b583688b3f7ef6fc9e4dccd4f475ba9cc507a34f1ddb65a93b816be78d046d4"
     },
+    "corrective_suffix_mixture": {
+      "path": "src/sim2claw/corrective_intervention_training.py",
+      "sha256": "265cec25969bf559f26a48d7cdd6ab0052aaaae5752dff985a9c7c314c299074"
+    },
     "component_fixture": {
       "path": "tests/test_learning_factory_components.py",
       "sha256": "02b1dbe6505b512cdcb5a8b83c38f92a46d3cb37605dbebb24e2638e3343de18"
@@ -36,6 +40,10 @@
     "flywheel_negatives": {
       "path": "tests/test_policy_flywheel.py",
       "sha256": "488e84d9a4a9cfac71133c14e4011f732861f4d7bd35bbbfd47850c55248e17a"
+    },
+    "corrective_suffix_end_to_end": {
+      "path": "tests/test_corrective_intervention_end_to_end.py",
+      "sha256": "1d074e0ac261ffa297026ede9b3e73753d99716b36c644f179497ea05a0db9d9"
     },
     "act_task": {
       "path": "configs/tasks/chess_pick_place_act_state_v1.json",
@@ -48,13 +56,14 @@
   },
   "fixture_execution": {
     "maximum_wall_seconds": 300,
-    "expected_passed_test_count": 12,
+    "expected_passed_test_count": 13,
     "test_entrypoints": [
       "tests/test_learning_factory_components.py::test_real_component_campaign_executes_lf00_through_lf13",
       "tests/test_policy_flywheel.py",
       "tests/test_source_episode.py::CanonicalSourceEpisodeTest::test_strict_success_adapts_to_act_and_groot_without_privileged_state",
       "tests/test_learning_factory_goal_loop.py::test_counterexample_registry_is_trace_native_deduplicated_and_routed",
-      "tests/test_corrective_intervention_lf.py"
+      "tests/test_corrective_intervention_lf.py",
+      "tests/test_corrective_intervention_end_to_end.py::test_full_corrective_episode_replays_and_admits_suffix_only"
     ]
   },
   "flywheel_stages": {

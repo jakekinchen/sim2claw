@@ -44,6 +44,41 @@ def _write_jsonl(path: Path, rows: Sequence[Mapping[str, Any]]) -> dict[str, Any
     return {"path": path.name, "sha256": sha256_file(path), "row_count": len(rows)}
 
 
+def _correction_flywheel_lineage(
+    declaration: Mapping[str, Any],
+    *,
+    generation_lineage_digest: str,
+    source_action_trace_sha256: str,
+    evaluator_verdict_sha256: str,
+) -> dict[str, Any]:
+    lineage = declaration.get("flywheel_lineage")
+    _require(isinstance(lineage, Mapping), "correction lacks flywheel lineage")
+    lineage = dict(lineage)
+    _require(
+        lineage.get("generation_lineage_digest") == generation_lineage_digest,
+        "correction binds another generation lineage",
+    )
+    for key in (
+        "posterior_particle_id",
+        "teacher_id",
+        "teacher_action_owner",
+        "simulator_id",
+    ):
+        _require(bool(str(lineage.get(key) or "")), f"correction lacks {key}")
+    for key in ("simulator_implementation_sha256",):
+        value = str(lineage.get(key) or "")
+        _require(
+            len(value) == 64
+            and all(character in "0123456789abcdef" for character in value),
+            f"correction {key} is invalid",
+        )
+    return {
+        **lineage,
+        "source_action_trace_sha256": source_action_trace_sha256,
+        "evaluator_verdict_sha256": evaluator_verdict_sha256,
+    }
+
+
 def build_goal_act_correction_mixture(
     *,
     base_dataset_receipt_path: Path,
@@ -55,6 +90,7 @@ def build_goal_act_correction_mixture(
     """Append independently admitted corrective suffixes to one LF-09 dataset."""
 
     base_receipt, base_rows = load_goal_act_dataset(base_dataset_receipt_path)
+    generation_lineage_digest = str(base_receipt["generation_lineage_digest"])
     _require(bool(corrections), "correction mixture requires at least one admitted suffix")
     dimensions = [float(value) for value in object_dimensions_m]
     _require(len(dimensions) == 3 and all(math.isfinite(value) and value > 0 for value in dimensions), "correction mixture object dimensions are invalid")
@@ -113,6 +149,12 @@ def build_goal_act_correction_mixture(
             object_dimensions_m=dimensions,
             gripper_aperture_mapping=mapping,
         )
+        flywheel_lineage = _correction_flywheel_lineage(
+            declaration,
+            generation_lineage_digest=generation_lineage_digest,
+            source_action_trace_sha256=str(receipt["samples_sha256"]),
+            evaluator_verdict_sha256=str(admitted["admission_verdict_sha256"]),
+        )
         row_start = len(rows)
         for source_row, adapted_row, observation in zip(
             selected_rows,
@@ -142,6 +184,13 @@ def build_goal_act_correction_mixture(
                             "artifact_sha256"
                         ],
                         "failed_prefix_training_rows": 0,
+                        "candidate": {
+                            "candidate_seed": None,
+                            "repair_parent_id": admitted[
+                                "parent_counterexample_id"
+                            ],
+                            "flywheel": flywheel_lineage,
+                        },
                     },
                 }
             )
@@ -184,12 +233,22 @@ def build_goal_act_correction_mixture(
         "correction_fraction": correction_count / len(rows),
         "held_out_training_rows": 0,
         "rejected_training_rows": 0,
+        "generation_lineage_digest": generation_lineage_digest,
         "act_payload": payload,
         "corrections": correction_receipts,
         "preflight": {
             "observation_dimension": 61,
             "action_dimension": 6,
             "all_rows_have_lineage": all(bool(row["lineage"]) for row in rows),
+            "all_rows_bind_posterior_teacher_simulator": all(
+                bool(row["lineage"].get("candidate", {}).get("flywheel"))
+                for row in rows
+            ),
+            "posterior_sampling_policy": "identified_posterior_only",
+            "arbitrary_domain_randomization": False,
+            "groot_policy_camera_ids": ["overhead"],
+            "evaluator_only_camera_ids": ["wrist"],
+            "wrist_main_policy_input": False,
             "failed_prefix_training_rows": 0,
             "privileged_state_in_policy_payload": False,
         },
