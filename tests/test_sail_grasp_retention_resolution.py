@@ -600,6 +600,41 @@ def test_inward_rubber_family_uses_opposed_normal_offsets() -> None:
     ) == 0.004
 
 
+def test_noslip_rubber_family_crosses_solver_stiction() -> None:
+    contract = load_grasp_retention_contract(
+        contract_path=(
+            REPO_ROOT
+            / "configs"
+            / "sail"
+            / "grasp_retention_noslip_rubber_v1.json"
+        )
+    )
+
+    family = contract["frozen_candidate_family"]
+    assert len(family) == 18
+    assert min(
+        row["overrides"].get(
+            "contact_noslip_iterations",
+            contract["base_parameters"]["contact_noslip_iterations"],
+        )
+        for row in family
+    ) == 0
+    assert max(
+        row["overrides"].get(
+            "contact_noslip_iterations",
+            contract["base_parameters"]["contact_noslip_iterations"],
+        )
+        for row in family
+    ) == 50
+    assert {
+        row["overrides"].get(
+            "contact_solver", contract["base_parameters"]["contact_solver"]
+        )
+        for row in family
+    } == {"newton", "pgs", "cg"}
+    assert contract["acceptance"]["anchor_maximum_force_target_transition_count"] == 0
+
+
 def test_anchor_result_rejects_aperture_only_false_fit() -> None:
     contract = load_grasp_retention_contract()
     expected_action = contract["diagnosis_anchor"]["action_array_sha256"]

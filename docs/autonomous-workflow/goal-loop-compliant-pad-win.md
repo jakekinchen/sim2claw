@@ -1,6 +1,6 @@
 # Goal loop: compliant-pad evaluator win
 
-Status: `ACTIVE — B2-02Q COMPLETE; B2-02R IN PROGRESS`
+Status: `ACTIVE — B2-02R COMPLETE; B2-02S IN PROGRESS`
 
 Authority:
 [`configs/sail/grasp_retention_normal_compliance_v1.json`](../../configs/sail/grasp_retention_normal_compliance_v1.json)
@@ -33,7 +33,8 @@ C2 action array and the candidate survives the prescribed regression gates.
 | B2-02O | complete, terminal negative | constant force eliminates chatter but no aperture-valid retained transport exists |
 | B2-02P | complete, terminal negative | unilateral range fixes 3x overtravel; flat boxes still lose before transport |
 | B2-02Q | complete, terminal negative | only 3 mm capsule contacts; transport branch loses at 318 with aperture mismatch |
-| B2-02R | in progress | paired inward rubber-surface offsets around aperture-valid unilateral model |
+| B2-02R | complete, terminal negative | compiled normal offsets are dynamically absorbed by slide-mounted pads |
+| B2-02S | in progress | no-slip/stiction solver cross on constant-force unilateral rubber model |
 | B2-03 | pending | at most four C2 winners evaluated on the three declared sentinels without task regression |
 | B2-04 | pending | at most one frozen composite evaluated on all eleven episodes and separately promoted or rejected |
 | B2-05 | pending | receipts, report, Studio evidence, full tests, resource audit, and commit complete |
@@ -217,3 +218,11 @@ At first qualified contact, fixed local +X aligns with its jaw-to-pawn normal
 while moving local +X is opposed, so matched inward motion is fixed positive
 and moving negative. The frozen family crosses 0.25--4 mm paired offsets and a
 0.06--0.08 constant-force neighborhood on the aperture-valid unilateral pad.
+
+B2-02R changes compiled geom-local normal positions by 0.25--4 mm but produces
+identical action-frozen trajectories at each force, so slide-mounted pad motion
+absorbs the offset and the lever is non-identifying. B2-02S targets rubber
+stiction directly. The current model uses zero MuJoCo no-slip iterations. The
+frozen family crosses 1--50 no-slip passes, friction improvement ratios,
+Newton/CG/PGS solvers, and elliptic/pyramidal cones while holding geometry,
+constant motor force, unilateral travel, actions, controls, and gates fixed.
