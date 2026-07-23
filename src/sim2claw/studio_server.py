@@ -20,6 +20,7 @@ from .learning_factory_studio import DEFAULT_FACTORY_PROJECT, build_factory_navi
 from .physical_gateway import PhysicalGatewayError
 from .studio_catalog import build_catalog, open_media_token
 from .studio_live import LiveWorkspaceError, LiveWorkspaceService, MJPEG_BOUNDARY
+from .studio_twin_fidelity import load_twin_fidelity_projection
 from .state_trace import build_scene_manifest
 from .task_orchestrator import TaskOrchestratorError, TaskOrchestratorService
 from .teleop_recording import RecorderConflict, RecorderError, TeleopRecordingManager
@@ -154,6 +155,35 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                 self.wfile.write(payload)
             except (BrokenPipeError, ConnectionResetError):
                 pass
+            return
+        if path == "/api/twin-fidelity":
+            episode_id = parse_qs(request.query).get("episode_id", [""])[0]
+            catalog = build_catalog(self.server.repo_root)
+            episode = next(
+                (
+                    row
+                    for row in catalog.get("episodes", [])
+                    if isinstance(row, dict) and row.get("id") == episode_id
+                ),
+                None,
+            )
+            if episode is None:
+                self._send_json(
+                    {
+                        "available": False,
+                        "read_only": True,
+                        "physical_authority": False,
+                        "reason": "selected_episode_not_found",
+                    },
+                    HTTPStatus.NOT_FOUND,
+                )
+                return
+            self._send_json(
+                load_twin_fidelity_projection(
+                    episode,
+                    repo_root=self.server.repo_root,
+                )
+            )
             return
         if path == "/api/catalog":
             self._send_json(build_catalog(self.server.repo_root))

@@ -586,6 +586,7 @@ def compile_studio_observatory(
     code_paths = (
         "src/sim2claw/sail/studio.py",
         "src/sim2claw/studio_server.py",
+        "src/sim2claw/studio_twin_fidelity.py",
         "src/sim2claw/studio_web/index.html",
         "src/sim2claw/studio_web/studio.css",
         "src/sim2claw/studio_web/studio.js",

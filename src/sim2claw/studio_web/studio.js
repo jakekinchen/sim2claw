@@ -54,6 +54,10 @@ const state = {
   sailFetchActive: false,
   sailSelectedEpisodeId: null,
   sailFrameIndex: 0,
+  twinFidelity: null,
+  twinFidelityEpisodeId: null,
+  twinFidelityFetchId: 0,
+  drawerTrigger: null,
 };
 
 const elements = {
@@ -162,6 +166,9 @@ const elements = {
   phaseRail: document.querySelector("#phase-rail"),
   transportPhase: document.querySelector("#transport-phase"),
   metrics: document.querySelector("#metric-strip"),
+  twinFidelityTrigger: document.querySelector("#twin-fidelity-trigger"),
+  twinFidelityContent: document.querySelector("#twin-fidelity-content"),
+  twinFidelityDrawer: document.querySelector("#twin-fidelity-drawer"),
   evidenceTrigger: document.querySelector("#evidence-trigger"),
   evidenceContent: document.querySelector("#evidence-content"),
   liveWorkspaceDrawer: document.querySelector("#live-workspace-drawer"),
@@ -1255,6 +1262,7 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
   renderPhases(episode.phases || []);
   renderTimelineTicks(episode);
   renderEvidence(episode);
+  void loadTwinFidelity(episode);
   updateSelectedCardState();
   if (updateRoute) history.replaceState(null, "", `#/episodes/${encodeURIComponent(identifier)}`);
 }
@@ -2028,6 +2036,210 @@ function renderEvidence(episode) {
   text(noticeText, state.catalog.project.proof_notice || "Visual replay is inspection evidence and does not grant robot or promotion authority.");
   notice.append(lock, noticeText);
   elements.evidenceContent.append(hero, table, notice);
+}
+
+function twinNode(tag, className, value) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (value !== undefined) text(node, value);
+  return node;
+}
+
+function formatTwinValue(value) {
+  if (typeof value !== "number") return value == null ? "Not observed" : String(value);
+  if (Number.isInteger(value)) return String(value);
+  return Math.abs(value) < 0.01 ? value.toFixed(4) : value.toFixed(3);
+}
+
+function renderTwinMeasurement(measurement) {
+  const row = twinNode("div", `twin-measurement ${measurement.observed ? "is-observed" : "is-missing"}`);
+  const label = twinNode("dt", "", measurement.label);
+  const value = twinNode("dd");
+  const primary = measurement.observed
+    ? `${formatTwinValue(measurement.value)} ${measurement.unit || ""}`.trim()
+    : "Not observed";
+  const threshold = measurement.threshold == null
+    ? ""
+    : ` · gate ${measurement.comparator || ""} ${formatTwinValue(measurement.threshold)} ${measurement.unit || ""}`.trimEnd();
+  value.append(
+    twinNode("b", "", `${primary}${threshold}`),
+    twinNode("small", "", measurement.source || "Source unavailable"),
+  );
+  row.append(label, value);
+  return row;
+}
+
+function updateTwinSignal(projection) {
+  const statuses = projection?.domains?.map((domain) => domain.status) || [];
+  elements.twinFidelityTrigger.querySelectorAll(".twin-fidelity-signal i").forEach((bar, index) => {
+    bar.className = statuses[index] ? `is-${statuses[index]}` : "";
+  });
+  elements.twinFidelityTrigger.dataset.status = projection?.evidence_status || "unavailable";
+}
+
+function renderTwinFidelity(projection) {
+  elements.twinFidelityContent.replaceChildren();
+  updateTwinSignal(projection);
+
+  if (!projection?.available) {
+    const unavailable = twinNode("section", "twin-unavailable");
+    unavailable.append(
+      twinNode("span", "section-label", "Evidence unavailable"),
+      twinNode("h3", "", "No verified fidelity projection"),
+      twinNode("p", "", projection?.detail || "This replay is not present in the receipt-bound observatory."),
+    );
+    elements.twinFidelityContent.append(unavailable);
+    return;
+  }
+
+  const hero = twinNode("section", `twin-summary is-${projection.evidence_status}`);
+  const eyebrow = twinNode("div", "twin-summary-topline");
+  eyebrow.append(
+    twinNode("span", "twin-proof", projection.episode.proof_label || projection.episode.proof_class),
+    twinNode("span", "twin-binding", projection.episode.action_binding === "byte_identical_campaign_match" ? "Action bytes matched" : "Replay evidence only"),
+  );
+  hero.append(
+    eyebrow,
+    twinNode("h3", "", projection.summary.label),
+    twinNode("strong", "", formatIdentifier(projection.summary.verdict)),
+    twinNode("p", "", projection.summary.detail),
+  );
+
+  const legend = twinNode("div", "twin-status-legend");
+  [
+    ["observed", "Observed"],
+    ["missing", "Missing"],
+    ["failed", "Failed gate"],
+  ].forEach(([status, label]) => {
+    const item = twinNode("span", `is-${status}`);
+    item.append(twinNode("i", ""), document.createTextNode(label));
+    legend.append(item);
+  });
+
+  const map = twinNode("section", "twin-gap-map");
+  const mapHeader = twinNode("header", "twin-section-heading");
+  const mapCopy = twinNode("div");
+  mapCopy.append(
+    twinNode("span", "section-label", "Twin gap map"),
+    twinNode("h3", "", "Where the retained twin diverges"),
+  );
+  mapHeader.append(mapCopy, twinNode("small", "", "No aggregate score · evaluator-owned evidence only"));
+  map.append(mapHeader, legend);
+  const domains = twinNode("ol", "twin-domain-list");
+  projection.domains.forEach((domain, index) => {
+    const item = twinNode("li", `twin-domain is-${domain.status}`);
+    const marker = twinNode("span", "twin-domain-marker", String(index + 1).padStart(2, "0"));
+    const copy = twinNode("div", "twin-domain-copy");
+    const header = twinNode("header");
+    header.append(
+      twinNode("h4", "", domain.label),
+      twinNode("span", `twin-domain-status is-${domain.status}`, domain.status === "failed" ? "Failed gate" : formatIdentifier(domain.status)),
+    );
+    copy.append(header, twinNode("strong", "", domain.summary), twinNode("p", "", domain.detail));
+    if (domain.measurements?.length) {
+      const measurements = twinNode("dl", "twin-measurements");
+      domain.measurements.forEach((measurement) => measurements.append(renderTwinMeasurement(measurement)));
+      copy.append(measurements);
+    }
+    if (domain.missing_evidence?.length) {
+      copy.append(twinNode("small", "twin-missing", `Missing: ${domain.missing_evidence.map(formatIdentifier).join(" · ")}`));
+    }
+    item.append(marker, copy);
+    domains.append(item);
+  });
+  map.append(domains);
+
+  const chain = twinNode("section", "twin-chain");
+  const chainHeader = twinNode("header", "twin-section-heading");
+  const chainCopy = twinNode("div");
+  chainCopy.append(
+    twinNode("span", "section-label", "SAIL causal chain"),
+    twinNode("h3", "", "What happened, in evidence order"),
+  );
+  chainHeader.append(chainCopy);
+  chain.append(chainHeader);
+  const chainList = twinNode("ol");
+  if (projection.chain?.length) {
+    projection.chain.forEach((step) => {
+      const item = twinNode("li", `is-${step.status}`);
+      item.append(
+        twinNode("span", "", step.label),
+        twinNode("b", "", formatIdentifier(step.status)),
+        twinNode("small", "", step.detail),
+      );
+      chainList.append(item);
+    });
+  } else {
+    chainList.append(twinNode("li", "is-missing", "No action-matched intervention chain is available."));
+  }
+  chain.append(chainList);
+
+  const lower = twinNode("div", "twin-lower-grid");
+  const hypotheses = twinNode("section", "twin-hypotheses");
+  hypotheses.append(
+    twinNode("span", "section-label", "Active hypotheses"),
+    twinNode("h3", "", projection.hypotheses?.length ? "Posterior remained accountable" : "No terminal posterior"),
+  );
+  if (projection.hypotheses?.length) {
+    projection.hypotheses.forEach((hypothesis) => {
+      const row = twinNode("div", "twin-hypothesis");
+      const values = hypothesis.before == null || hypothesis.after == null
+        ? "Not observed"
+        : `${formatTwinValue(hypothesis.before)} → ${formatTwinValue(hypothesis.after)}`;
+      row.append(
+        twinNode("b", "", formatIdentifier(hypothesis.family || hypothesis.id)),
+        twinNode("strong", "", values),
+        twinNode("small", "", hypothesis.status === "unchanged" ? "Unchanged · no admitted evidence" : formatIdentifier(hypothesis.status)),
+      );
+      hypotheses.append(row);
+    });
+  } else {
+    hypotheses.append(twinNode("p", "", "Receipt-bound residuals exist, but no action-matched terminal campaign owns a posterior."));
+  }
+
+  const next = twinNode("section", "twin-next-evidence");
+  next.append(
+    twinNode("span", "section-label", "Missing evidence / next"),
+    twinNode("h3", "", projection.next_evidence.intervention_id ? formatIdentifier(projection.next_evidence.intervention_id) : "Measurement prerequisite"),
+    twinNode("p", "", projection.next_evidence.summary),
+  );
+  const missing = twinNode("div", "twin-missing-list");
+  (projection.next_evidence.measurements || []).forEach((measurement) => missing.append(twinNode("span", "", formatIdentifier(measurement))));
+  if (missing.children.length) next.append(missing);
+  lower.append(hypotheses, next);
+
+  const authority = twinNode("footer", "twin-authority");
+  authority.append(
+    twinNode("span", "lock-icon"),
+    twinNode("p", "", "Read-only diagnostic surface. Training, promotion, physical capture, physical authority, and robot motion remain closed."),
+    twinNode("code", "", projection.receipt.receipt_sha256 ? `receipt ${projection.receipt.receipt_sha256.slice(0, 16)}…` : "receipt unavailable"),
+  );
+  elements.twinFidelityContent.append(hero, map, chain, lower, authority);
+}
+
+async function loadTwinFidelity(episode) {
+  const fetchId = ++state.twinFidelityFetchId;
+  state.twinFidelityEpisodeId = episode.id;
+  elements.twinFidelityTrigger.disabled = false;
+  elements.twinFidelityTrigger.dataset.status = "loading";
+  elements.twinFidelityContent.replaceChildren(twinNode("div", "twin-fidelity-loading", "Verifying replay-bound evidence…"));
+  try {
+    const response = await fetch(`/api/twin-fidelity?episode_id=${encodeURIComponent(episode.id)}`, { cache: "no-store" });
+    const projection = await response.json();
+    if (fetchId !== state.twinFidelityFetchId || episode.id !== state.selectedEpisodeId) return;
+    state.twinFidelity = projection;
+    renderTwinFidelity(projection);
+  } catch (error) {
+    if (fetchId !== state.twinFidelityFetchId) return;
+    const unavailable = {
+      available: false,
+      evidence_status: "unavailable",
+      detail: `Twin fidelity evidence could not be loaded: ${error.message}`,
+      domains: [],
+    };
+    state.twinFidelity = unavailable;
+    renderTwinFidelity(unavailable);
+  }
 }
 
 function historySparkline(process) {
@@ -3051,6 +3263,7 @@ function openDrawer(name) {
   const drawers = {
     live: elements.liveWorkspaceDrawer,
     process: elements.processDrawer,
+    twin: elements.twinFidelityDrawer,
     evidence: elements.evidenceDrawer,
   };
   const drawer = drawers[name];
@@ -3065,7 +3278,9 @@ function openDrawer(name) {
   drawer.setAttribute("aria-hidden", "false");
   elements.drawerBackdrop.hidden = false;
   state.drawer = name;
+  state.drawerTrigger = document.activeElement;
   elements.liveTrigger.setAttribute("aria-expanded", String(name === "live"));
+  elements.twinFidelityTrigger.setAttribute("aria-expanded", String(name === "twin"));
   elements.evidenceTrigger.setAttribute("aria-expanded", String(name === "evidence"));
   if (name === "live") void startLiveWorkspace();
   drawer.querySelector("button")?.focus({ preventScroll: true });
@@ -3075,14 +3290,20 @@ function closeDrawer() {
   if (state.drawer === "live") stopLiveWorkspace();
   elements.liveWorkspaceDrawer.classList.remove("is-open");
   elements.processDrawer.classList.remove("is-open");
+  elements.twinFidelityDrawer.classList.remove("is-open");
   elements.evidenceDrawer.classList.remove("is-open");
   elements.liveWorkspaceDrawer.setAttribute("aria-hidden", "true");
   elements.processDrawer.setAttribute("aria-hidden", "true");
+  elements.twinFidelityDrawer.setAttribute("aria-hidden", "true");
   elements.evidenceDrawer.setAttribute("aria-hidden", "true");
   elements.drawerBackdrop.hidden = true;
   elements.liveTrigger.setAttribute("aria-expanded", "false");
+  elements.twinFidelityTrigger.setAttribute("aria-expanded", "false");
   elements.evidenceTrigger.setAttribute("aria-expanded", "false");
+  const trigger = state.drawerTrigger;
   state.drawer = null;
+  state.drawerTrigger = null;
+  trigger?.focus({ preventScroll: true });
 }
 
 function setQuery(value) {
@@ -3203,6 +3424,7 @@ elements.search.addEventListener("input", () => setQuery(elements.search.value))
 elements.librarySearch.addEventListener("input", () => setQuery(elements.librarySearch.value));
 elements.liveTrigger.addEventListener("click", () => openDrawer("live"));
 document.querySelector("#live-strip-open").addEventListener("click", () => openDrawer("process"));
+elements.twinFidelityTrigger.addEventListener("click", () => openDrawer("twin"));
 elements.evidenceTrigger.addEventListener("click", () => openDrawer("evidence"));
 elements.drawerBackdrop.addEventListener("click", closeDrawer);
 document.querySelectorAll("[data-close-drawer]").forEach((button) => button.addEventListener("click", closeDrawer));

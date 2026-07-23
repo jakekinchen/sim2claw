@@ -35,7 +35,6 @@
           <button class="view-button" type="button" data-route="calibration">Calibration</button>
           <button class="view-button" type="button" data-route="robots">Robots</button>
           <button class="view-button" type="button" data-route="orchestrator">Task Orchestrator</button>
-          <a class="view-button" href="/learning-factory.html">Learning Factory</a>
           <button class="view-button record-route" type="button" data-route="record"><span class="record-route-dot" aria-hidden="true"></span>Record</button>
         </nav>
 
@@ -107,6 +106,10 @@
                   <button type="button" data-replay-mode="recorded" aria-pressed="false">Recorded</button>
                 </div>
                 <span class="stage-verdict" id="stage-verdict">Waiting</span>
+                <button class="twin-fidelity-trigger" id="twin-fidelity-trigger" type="button" aria-controls="twin-fidelity-drawer" aria-expanded="false" disabled>
+                  <span class="twin-fidelity-signal" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                  <span>Twin fidelity</span>
+                </button>
                 <button class="detail-button" id="evidence-trigger" type="button" aria-controls="evidence-drawer" aria-expanded="false">Evidence details</button>
               </div>
             </header>
@@ -680,6 +683,19 @@
       </header>
       <p class="drawer-intro">Progress is observed from local heartbeats. This panel cannot start, stop, or promote a run.</p>
       <div class="activity-list" id="activity-list"></div>
+    </aside>
+
+    <aside class="side-drawer twin-fidelity-drawer" id="twin-fidelity-drawer" aria-labelledby="twin-fidelity-heading" aria-hidden="true">
+      <header class="drawer-heading">
+        <div>
+          <span class="section-label">Selected replay</span>
+          <h2 id="twin-fidelity-heading">Twin fidelity</h2>
+        </div>
+        <button class="drawer-close" type="button" data-close-drawer aria-label="Close Twin fidelity drawer">Close</button>
+      </header>
+      <div class="twin-fidelity-content" id="twin-fidelity-content" aria-live="polite">
+        <div class="twin-fidelity-loading">Choose a replay to inspect its receipt-verified twin gaps.</div>
+      </div>
     </aside>
 
     <aside class="side-drawer evidence-drawer" id="evidence-drawer" aria-labelledby="evidence-heading" aria-hidden="true">

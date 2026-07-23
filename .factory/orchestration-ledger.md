@@ -1,6 +1,31 @@
 # Orchestration Ledger
 
-## Current transaction — SAIL executed benchmark and retained-C2 adapter
+## Current transaction — Replay-integrated Twin fidelity
+
+- Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`.
+- Queue source: direct owner clarification and approved implementation map from
+  Codex task `019f8b9d-67ee-7801-9be3-f7cca45e8e3e`.
+- Classification time: `2026-07-23T15:45:00-05:00`.
+- Coordinator/executor: this Codex task; sole repository writer.
+- Baseline: clean `main == origin/main` at
+  `f2c56f0661043952601c5a626e76004281ade58a`.
+- Objective: keep Learning Factory evaluation/runtime machinery, remove its
+  standalone top-level Studio destination, and expose receipt-verified causal
+  and fidelity observability inside the selected Replay context.
+- Proof target: six ordered twin-gap domains with explicit observed, missing,
+  and failed states; action-bound SAIL causal evidence; read-only authority;
+  desktop/mobile/keyboard/console verification; unchanged S2 evidence.
+- Status: implementation and short gates pass; awaiting exact-head full suite
+  and independent read/test/visual review.
+- Authority: no simulator or adapter replay, provider call, training,
+  promotion, measurement acquisition, physical capture, gateway, robot
+  motion, VideoSim work, or push.
+- Evidence checkpoint: focused/static `61 + 2 subtests`; SAIL fast-contract
+  `36`, synthetic-golden `58`, integration `82 + 2 subtests`; all proof tiers
+  bracketed by `11/11` unchanged S2 hashes and `1 event / 4 replays / 0
+  measurement trials`.
+
+## Completed transaction — SAIL executed benchmark and retained-C2 adapter
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`.
 - Queue source: owner-approved objective delegated from Codex task
