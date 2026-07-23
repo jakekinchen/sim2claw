@@ -23,11 +23,22 @@ structural surprise, a deterministic belief graph, mechanism plugins,
 preregistered signatures, acquisition ranking, a global budget, influence
 discovery, a discrete posterior, sparse loop closure, invariance, consequence,
 and a terminal verdict. Arbitrary contract IDs require no Python registration.
-Results are never accepted by self-description. An independently owned receipt
-must hash-bind the frozen action, evaluator code/config/source identity,
-intervention set, execution or trial IDs, allowed mutations, raw artifacts,
-result artifact, consequence, budget, hypothesis set, affected factors, and
-all-false authority. Promotion is derived false and cannot be supplied.
+Results are never accepted by self-description. Generic simulator admission is
+disabled because an agent can forge a mutually consistent raw/result/receipt
+bundle and copy the expected evaluator identity; a future lane must use a
+trusted deterministic adapter to recompute concrete mutations and consequence.
+The only current admission lane is packet-bound synthetic measurement, whose
+features, classification, likelihoods, and consequence are deterministically
+recomputed from raw fixtures. Its receipt hash-binds the frozen action,
+evaluator code/config/source identity, intervention set, trial IDs, raw and
+result artifacts, budget, hypothesis set, affected factors, and all-false
+authority. Promotion is derived false and cannot be supplied.
+
+Persistent state is global to the campaign/config identity rather than the
+caller output directory. The append is prepared in memory and committed only
+after selected-intervention, likelihood, affected-factor, closure, artifact,
+and receipt validation. The exported verifier rechecks all bindings and the
+current state chain at read time, so stale receipts fail closed.
 
 The two retained mechanisms are:
 
@@ -82,9 +93,9 @@ separately unauthorized.
 - Contract: `configs/sail/live_operator_c2_v1.json`
 - Generated root: `outputs/sail/live-operator-c2-v1`
 - Receipt SHA-256:
-  `7155065350691aaef2d64f6a2fb4657ac2d01182d3355579ef9959cb9ccb8cea`
+  `80e427ec673043ca875b226a73a832c45b587baa6547d87f0e38fbb82b7807cd`
 - Receipt digest:
-  `67c2ab071ccf6a8c193328203573416c1d591ec666cb0c32b3f12817f13c8641`
+  `4f9fa5a8ca18d06517e5097cddf4b034e196e8944f146868cd14a318cb31dfc6`
 - Operator-trace SHA-256:
   `9e32549a81afc7802fd454f0650ed24fe964aa34d2c539e004d33bee1f6a383f`
 - Ablation SHA-256:
@@ -92,7 +103,7 @@ separately unauthorized.
 - Measurement-packet SHA-256:
   `4398417efa987ce578b98191ec8f87d2c8ab7b3498ae3689087c01e7b06de374`
 - Empty campaign-state SHA-256:
-  `addd4237ea5cc8437b53f8d70e9a8e4bba407f9cb3f06d84f331ece6aeb7ede9`
+  `b9c63de8971cb4e280d6dbe547e0f552907c51431c674f6e61f8aab951988cd2`
 
 Proof class:
 `retrospective_action_frozen_c2_decision_plane_abstention`. Training,

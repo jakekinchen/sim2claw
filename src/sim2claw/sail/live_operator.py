@@ -30,9 +30,12 @@ from .influence import discover_influence_set
 from .invariance import evaluate_invariance
 from .live_evidence import (
     EvidenceAdmissionError,
-    append_admitted_result,
+    commit_prepared_state,
     evaluator_identity,
+    json_artifact_sha256,
     locked_campaign_state,
+    prepare_admitted_result,
+    validate_campaign_state,
     verify_measurement_evaluator_receipt,
     verify_simulator_evaluator_receipt,
 )
@@ -42,8 +45,10 @@ from .posterior import PosteriorError, rank_structure_particles
 from .structural_surprise import evaluate_surprise
 
 
-CONFIG_SCHEMA = "sim2claw.sail_live_campaign.v1"
-RECEIPT_SCHEMA = "sim2claw.sail_live_operator_receipt.v1"
+CONFIG_SCHEMA = "sim2claw.sail_live_campaign.v2"
+RECEIPT_SCHEMA = "sim2claw.sail_live_operator_receipt.v2"
+CANONICAL_STATE_ROOT = "outputs/sail/live-campaign-state-v1"
+STATE_KEY_SCHEMA = "sim2claw.sail_live_campaign_state_key.v1"
 
 
 class LiveOperatorError(SailContractError):
@@ -554,6 +559,10 @@ def load_live_campaign_contract(
     """Load a typed campaign without enumerating campaign or task IDs."""
 
     resolved = path.resolve() if path.is_absolute() else (repo_root / path).resolve()
+    try:
+        resolved.relative_to(repo_root.resolve())
+    except ValueError as error:
+        raise LiveOperatorError("live campaign config must be repository-bound") from error
     config = load_json_object(resolved, label="SAIL live campaign")
     if config.get("schema_version") != CONFIG_SCHEMA:
         raise LiveOperatorError("unexpected SAIL live campaign schema")
@@ -621,6 +630,14 @@ def load_live_campaign_contract(
     }
     evaluator_digest = canonical_digest(evaluator_unsigned)
     _validate_budget(config.get("budget") or {})
+    persistent_state = config.get("persistent_state") or {}
+    if persistent_state != {
+        "repo_relative_root": CANONICAL_STATE_ROOT,
+        "key_algorithm": "sha256_campaign_config_v1",
+    }:
+        raise LiveOperatorError(
+            "persistent state root or campaign/config key algorithm changed"
+        )
 
     residual_artifact = validate_live_residual_evidence(
         config.get("residual_evidence") or [],
@@ -922,6 +939,44 @@ def _relative_config_path(path: Path, repo_root: Path) -> str:
         return str(path.resolve())
 
 
+def _resolve_repo_relative_path(
+    value: str, *, repo_root: Path, label: str
+) -> Path:
+    raw = Path(value)
+    if raw.is_absolute() or not value or raw.as_posix() != value or ".." in raw.parts:
+        raise LiveOperatorError(f"{label} is not a canonical repository-relative path")
+    root = repo_root.resolve()
+    resolved = (root / raw).resolve()
+    try:
+        resolved.relative_to(root)
+    except ValueError as error:
+        raise LiveOperatorError(f"{label} escaped the repository") from error
+    return resolved
+
+
+def resolve_live_campaign_state_path(
+    contract: LiveCampaignContract, *, repo_root: Path = REPO_ROOT
+) -> Path:
+    """Return the one generated state path for a campaign/config identity."""
+
+    persistent_state = contract.payload["persistent_state"]
+    root = _resolve_repo_relative_path(
+        str(persistent_state["repo_relative_root"]),
+        repo_root=repo_root,
+        label="persistent state root",
+    )
+    if root != (repo_root.resolve() / CANONICAL_STATE_ROOT).resolve():
+        raise LiveOperatorError("persistent state root is not the canonical generated root")
+    key = canonical_digest(
+        {
+            "schema_version": STATE_KEY_SCHEMA,
+            "campaign_id": contract.campaign_id,
+            "config_digest": contract.config_digest,
+        }
+    )
+    return root / key / "campaign_state.json"
+
+
 _COMPILER_PATHS = (
     "src/sim2claw/sail/live_operator.py",
     "src/sim2claw/sail/live_evidence.py",
@@ -979,19 +1034,348 @@ def _sealed_measurement_packet(
 
 
 def _validate_admitted_result(
-    contract: LiveCampaignContract, admission: Mapping[str, Any]
+    contract: LiveCampaignContract,
+    admission: Mapping[str, Any],
+    *,
+    selected_intervention_id: str,
+    affected_factor_ids: Sequence[str],
 ) -> None:
     result = admission["result"]
+    if result.get("selected_intervention") != selected_intervention_id:
+        raise LiveOperatorError("evaluator result changed the selected intervention")
+    if admission.get("consequence") != result.get("consequence"):
+        raise LiveOperatorError("evaluator result consequence changed after verification")
     update_discrete_structure_posterior(
         contract.hypothesis_priors,
         likelihoods=result.get("hypothesis_likelihoods") or {},
         observation_id=str(result["selected_intervention"]),
     )
-    declared_factors = {
-        str(row["factor_id"]) for row in contract.payload["factor_beliefs"]
-    }
-    if not set(result.get("factor_updates") or {}).issubset(declared_factors):
+    updates = {str(name) for name in (result.get("factor_updates") or {})}
+    declared_factors = {str(row["factor_id"]) for row in contract.payload["factor_beliefs"]}
+    if not updates.issubset(declared_factors):
         raise LiveOperatorError("evaluator result introduced an undeclared factor")
+    if not updates.issubset({str(value) for value in affected_factor_ids}):
+        raise LiveOperatorError("evaluator result attempted an unaffected factor update")
+
+
+_RECEIPT_FIELDS = {
+    "schema_version",
+    "campaign_id",
+    "config",
+    "source_sha256",
+    "compiler_sha256",
+    "evaluator_identity",
+    "outputs",
+    "action_sha256",
+    "action_bytes_unchanged",
+    "evaluator_digest",
+    "evaluator_changed",
+    "intervention_set_digest",
+    "selected_intervention",
+    "verdict",
+    "budget",
+    "campaign_state",
+    "admitted_evaluator_receipt",
+    "observed_information_gain",
+    "manual_ablation_counts",
+    "promotion",
+    "training_admitted",
+    "physical_authority",
+    "proof_class",
+    "intervention_executor_implemented",
+    "receipt_digest",
+}
+_BASE_OUTPUTS = {
+    "operator_trace",
+    "residual_evidence",
+    "structural_surprise",
+    "belief_before",
+    "belief_after",
+    "mechanism_status",
+    "acquisition_ranking",
+    "posterior",
+    "influence",
+    "sparse_closure",
+    "invariance",
+    "consequence",
+    "ablation",
+    "acquisition_packet",
+    "campaign_state",
+}
+_OUTPUT_DIGEST_FIELDS = {
+    "operator_trace": "trace_digest",
+    "residual_evidence": "residual_digest",
+    "belief_before": "graph_digest",
+    "belief_after": "graph_digest",
+    "acquisition_ranking": "ranking_digest",
+    "posterior": "posterior_digest",
+    "sparse_closure": "closure_digest",
+    "invariance": "invariance_digest",
+    "ablation": "ablation_digest",
+    "acquisition_packet": "packet_digest",
+}
+
+
+def _verify_embedded_digest(
+    payload: Mapping[str, Any], *, digest_field: str, label: str
+) -> None:
+    unsigned = copy.deepcopy(dict(payload))
+    observed = unsigned.pop(digest_field, None)
+    if observed != canonical_digest(unsigned):
+        raise LiveOperatorError(f"{label} canonical digest mismatch")
+
+
+def _load_receipt_output(
+    binding: Mapping[str, Any], *, receipt_root: Path, label: str
+) -> tuple[Path, dict[str, Any]]:
+    if set(binding) != {"path", "sha256"}:
+        raise LiveOperatorError(f"{label} output binding field set changed")
+    relative = str(binding["path"])
+    path = _resolve_repo_relative_path(
+        relative, repo_root=receipt_root, label=f"{label} output path"
+    )
+    if path.parent != receipt_root.resolve() or not path.is_file():
+        raise LiveOperatorError(f"{label} output path left the receipt directory")
+    if sha256_file(path) != str(binding["sha256"]):
+        raise LiveOperatorError(f"{label} output hash mismatch")
+    return path, load_json_object(path, label=f"live operator {label} output")
+
+
+def _verify_live_operator_receipt(
+    receipt_path: Path,
+    *,
+    repo_root: Path,
+    expected_state: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    receipt = load_json_object(receipt_path, label="SAIL live operator receipt")
+    if set(receipt) != _RECEIPT_FIELDS:
+        raise LiveOperatorError("live operator receipt field set changed")
+    if receipt.get("schema_version") != RECEIPT_SCHEMA:
+        raise LiveOperatorError("unexpected live operator receipt schema")
+    unsigned = copy.deepcopy(receipt)
+    observed_digest = unsigned.pop("receipt_digest")
+    if observed_digest != canonical_digest(unsigned):
+        raise LiveOperatorError("live operator receipt canonical digest mismatch")
+    for name in ("promotion", "training_admitted", "physical_authority"):
+        if receipt.get(name) is not False:
+            raise LiveOperatorError(f"live operator receipt {name} widened authority")
+    if (
+        receipt.get("action_bytes_unchanged") is not True
+        or receipt.get("evaluator_changed") is not False
+        or receipt.get("intervention_executor_implemented") is not False
+    ):
+        raise LiveOperatorError("live operator receipt control boundary changed")
+
+    config_binding = receipt.get("config") or {}
+    if set(config_binding) != {"path", "sha256", "canonical_digest"}:
+        raise LiveOperatorError("live operator config binding field set changed")
+    config_path = _resolve_repo_relative_path(
+        str(config_binding["path"]), repo_root=repo_root, label="live operator config"
+    )
+    if not config_path.is_file() or sha256_file(config_path) != str(
+        config_binding["sha256"]
+    ):
+        raise LiveOperatorError("live operator config hash mismatch")
+    contract = load_live_campaign_contract(config_path, repo_root=repo_root)
+    if (
+        config_binding["canonical_digest"] != contract.config_digest
+        or receipt.get("campaign_id") != contract.campaign_id
+        or receipt.get("action_sha256") != contract.action_sha256
+        or receipt.get("evaluator_digest") != contract.evaluator_digest
+        or receipt.get("intervention_set_digest") != contract.intervention_set_digest
+        or receipt.get("proof_class") != contract.payload["proof_boundary"]["proof_class"]
+    ):
+        raise LiveOperatorError("live operator receipt campaign identity changed")
+    expected_source = {
+        name: binding["sha256"]
+        for name, binding in sorted(contract.payload["source_bindings"].items())
+    }
+    expected_compiler = {
+        path: sha256_file(repo_root / path) for path in _COMPILER_PATHS
+    }
+    if receipt.get("source_sha256") != expected_source:
+        raise LiveOperatorError("live operator receipt source hashes changed")
+    if receipt.get("compiler_sha256") != expected_compiler:
+        raise LiveOperatorError("live operator receipt compiler hashes changed")
+    if receipt.get("evaluator_identity") != build_live_evaluator_identity(
+        contract, repo_root=repo_root
+    ):
+        raise LiveOperatorError("live operator receipt evaluator identity changed")
+    intervention_ids = {row.intervention_id for row in contract.interventions}
+    if str(receipt.get("selected_intervention", "")) not in intervention_ids:
+        raise LiveOperatorError("live operator receipt selected intervention is undeclared")
+
+    state_path = resolve_live_campaign_state_path(contract, repo_root=repo_root)
+    state_relative = _relative_config_path(state_path, repo_root)
+    if expected_state is None:
+        if not state_path.is_file():
+            raise LiveOperatorError("live operator canonical campaign state is missing")
+        state = load_json_object(state_path, label="persistent SAIL campaign state")
+        state_sha256 = sha256_file(state_path)
+    else:
+        state = copy.deepcopy(dict(expected_state))
+        state_sha256 = json_artifact_sha256(state)
+    try:
+        state = validate_campaign_state(
+            state,
+            campaign_id=contract.campaign_id,
+            config_digest=contract.config_digest,
+            initial_budget=contract.budget,
+        )
+    except EvidenceAdmissionError as error:
+        raise LiveOperatorError(f"live operator campaign state rejected: {error}") from error
+    expected_state_binding = {
+        "path": state_relative,
+        "sha256": state_sha256,
+        "state_digest": state["state_digest"],
+        "chain_head": state["chain_head"],
+        "event_count": len(state["events"]),
+    }
+    if receipt.get("campaign_state") != expected_state_binding:
+        raise LiveOperatorError("live operator receipt is stale against canonical campaign state")
+    if receipt.get("budget") != state["budget"]:
+        raise LiveOperatorError("live operator receipt budget is not state-bound")
+
+    outputs = receipt.get("outputs") or {}
+    admitted = receipt.get("admitted_evaluator_receipt")
+    expected_outputs = set(_BASE_OUTPUTS)
+    if admitted is not None:
+        expected_outputs.add("admitted_evaluator_receipt")
+    if set(outputs) != expected_outputs:
+        raise LiveOperatorError("live operator receipt output set changed")
+    if outputs.get("campaign_state") != {
+        "path": state_relative,
+        "sha256": state_sha256,
+    }:
+        raise LiveOperatorError("live operator output state binding changed")
+    loaded_outputs: dict[str, dict[str, Any]] = {}
+    for name in sorted(expected_outputs - {"campaign_state"}):
+        _, payload = _load_receipt_output(
+            outputs[name], receipt_root=receipt_path.resolve().parent, label=name
+        )
+        loaded_outputs[name] = payload
+        digest_field = _OUTPUT_DIGEST_FIELDS.get(name)
+        if digest_field is not None:
+            _verify_embedded_digest(payload, digest_field=digest_field, label=name)
+
+    trace = loaded_outputs["operator_trace"]
+    terminal = (trace.get("stages") or [{}])[-1]
+    if (
+        terminal.get("stage") != "terminal_verdict"
+        or terminal.get("status") != receipt.get("verdict")
+        or terminal.get("promotion") is not False
+        or trace.get("agent_promoted") is not False
+        or trace.get("training_admitted") is not False
+        or trace.get("physical_authority") is not False
+        or trace.get("intervention_executor_implemented") is not False
+    ):
+        raise LiveOperatorError("live operator trace widened or changed the terminal verdict")
+    acquisition = loaded_outputs["acquisition_ranking"]
+    if acquisition.get("selected_intervention") != receipt.get("selected_intervention"):
+        raise LiveOperatorError("live operator acquisition selection changed")
+    consequence = loaded_outputs["consequence"]
+    consequence_stage = next(
+        (
+            row
+            for row in trace.get("stages") or []
+            if row.get("stage") == "invariance_and_consequence"
+        ),
+        None,
+    )
+    if consequence_stage is None or consequence_stage.get("consequence") != consequence:
+        raise LiveOperatorError("live operator consequence changed")
+    for name in (
+        "promotion",
+        "simulator_promotion",
+        "training_admitted",
+        "physical_authority",
+        "robot_motion",
+    ):
+        if consequence.get(name) is True:
+            raise LiveOperatorError("live operator consequence widened authority")
+    packet_authority = loaded_outputs["acquisition_packet"].get("authority") or {}
+    if not packet_authority or any(value is not False for value in packet_authority.values()):
+        raise LiveOperatorError("live operator acquisition packet widened authority")
+    posterior = loaded_outputs["posterior"]
+    expected_gain = {
+        "status": (
+            "observed"
+            if posterior.get("observed_information_gain_bits") is not None
+            else "not_observed_abstained_before_execution"
+        ),
+        "bits": posterior.get("observed_information_gain_bits"),
+    }
+    if receipt.get("observed_information_gain") != expected_gain:
+        raise LiveOperatorError("live operator observed information gain changed")
+    manual = loaded_outputs["ablation"]["manual"]
+    expected_manual = {
+        "completed_campaigns": manual["completed_campaigns"],
+        "candidate_replays": manual["simulator_evaluations"],
+        "anchor_passes": manual["anchor_passes"],
+        "incomplete_artifacts": manual["incomplete_work_in_progress"]["artifact_count"],
+    }
+    if receipt.get("manual_ablation_counts") != expected_manual:
+        raise LiveOperatorError("live operator manual ablation counts changed")
+
+    if admitted is None:
+        if "admitted_evaluator_receipt" in loaded_outputs:
+            raise LiveOperatorError("live operator admitted summary is unexpected")
+    else:
+        if not isinstance(admitted, Mapping) or set(admitted) != {
+            "lane",
+            "receipt_sha256",
+            "receipt_digest",
+            "execution_id",
+        }:
+            raise LiveOperatorError("live operator admitted receipt summary changed")
+        if admitted.get("lane") != "offline_measurement":
+            raise LiveOperatorError("untrusted simulator receipt admission is disabled")
+        summary = loaded_outputs["admitted_evaluator_receipt"]
+        if (
+            summary.get("lane") != "offline_measurement"
+            or summary.get("execution_id") != admitted.get("execution_id")
+            or summary.get("receipt_sha256") != admitted.get("receipt_sha256")
+            or summary.get("receipt_digest") != admitted.get("receipt_digest")
+            or summary.get("promotion") is not False
+            or summary.get("physical_authority") is not False
+        ):
+            raise LiveOperatorError("live operator admitted receipt fields changed")
+        if not state["events"]:
+            raise LiveOperatorError("admitted receipt is absent from campaign state")
+        event = state["events"][-1]
+        if (
+            event.get("lane") != "offline_measurement"
+            or event.get("execution_id") != admitted.get("execution_id")
+            or event.get("receipt_sha256") != admitted.get("receipt_sha256")
+            or event.get("receipt_digest") != admitted.get("receipt_digest")
+            or event.get("result_sha256")
+            != (summary.get("result_artifact") or {}).get("sha256")
+        ):
+            raise LiveOperatorError("admitted receipt is not the canonical state-chain head")
+    return {
+        "schema_version": "sim2claw.sail_live_operator_receipt_verification.v1",
+        "campaign_id": contract.campaign_id,
+        "verdict": receipt["verdict"],
+        "receipt_sha256": sha256_file(receipt_path),
+        "receipt_digest": receipt["receipt_digest"],
+        "campaign_state_path": state_relative,
+        "campaign_state_sha256": state_sha256,
+        "campaign_state_digest": state["state_digest"],
+        "campaign_state_chain_head": state["chain_head"],
+        "promotion": False,
+        "training_admitted": False,
+        "physical_authority": False,
+    }
+
+
+def verify_live_operator_receipt(
+    receipt_path: Path, *, repo_root: Path = REPO_ROOT
+) -> dict[str, Any]:
+    """Revalidate a live-operator receipt and its current canonical state."""
+
+    return _verify_live_operator_receipt(
+        receipt_path.resolve(), repo_root=repo_root.resolve()
+    )
 
 
 def run_live_operator(
@@ -1007,8 +1391,11 @@ def run_live_operator(
     contract = load_live_campaign_contract(config_path, repo_root=repo_root)
     if simulator_evaluator_receipt_path is not None and measurement_evaluator_receipt_path is not None:
         raise LiveOperatorError("only one evaluator receipt lane may be admitted per run")
+    canonical_state_path = resolve_live_campaign_state_path(
+        contract, repo_root=repo_root
+    )
     with locked_campaign_state(
-        output_root,
+        canonical_state_path.parent,
         campaign_id=contract.campaign_id,
         config_digest=contract.config_digest,
         initial_budget=contract.budget,
@@ -1148,10 +1535,16 @@ def _run_live_operator_locked(
         raise LiveOperatorError(f"evaluator receipt rejected: {error}") from error
 
     observed_result = None if admission is None else admission["result"]
+    prepared_state: Mapping[str, Any] | None = None
     if admission is not None:
-        _validate_admitted_result(contract, admission)
+        _validate_admitted_result(
+            contract,
+            admission,
+            selected_intervention_id=selected_id,
+            affected_factor_ids=affected_factor_ids,
+        )
         try:
-            state = append_admitted_result(state_path, state, admission)
+            prepared_state = prepare_admitted_result(state, admission)
         except EvidenceAdmissionError as error:
             raise LiveOperatorError(f"evaluator receipt rejected: {error}") from error
         posterior = update_discrete_structure_posterior(
@@ -1173,7 +1566,7 @@ def _run_live_operator_locked(
                 if consequence.get("evaluator_passed") is True
                 else "evaluator_reject"
             )
-        budget = copy.deepcopy(dict(state["budget"]))
+        budget = copy.deepcopy(dict(prepared_state["budget"]))
     else:
         consequence = {
             "status": "not_run_no_intervention_result_opened",
@@ -1296,6 +1689,9 @@ def _run_live_operator_locked(
         "independent_evaluator_receipt_required": True,
     }
     trace = {**trace_unsigned, "trace_digest": canonical_digest(trace_unsigned)}
+    state_for_receipt = state if prepared_state is None else prepared_state
+    state_relative_path = _relative_config_path(state_path, repo_root)
+    state_sha256 = json_artifact_sha256(state_for_receipt)
 
     output_root.mkdir(parents=True, exist_ok=True)
     artifacts = {
@@ -1334,8 +1730,8 @@ def _run_live_operator_locked(
         atomic_write_json(path, artifact)
         output_bindings[name] = {"path": path.name, "sha256": sha256_file(path)}
     output_bindings["campaign_state"] = {
-        "path": state_path.name,
-        "sha256": sha256_file(state_path),
+        "path": state_relative_path,
+        "sha256": state_sha256,
     }
     receipt_unsigned = {
         "schema_version": RECEIPT_SCHEMA,
@@ -1360,11 +1756,11 @@ def _run_live_operator_locked(
         "verdict": verdict,
         "budget": budget,
         "campaign_state": {
-            "path": state_path.name,
-            "sha256": sha256_file(state_path),
-            "state_digest": state["state_digest"],
-            "chain_head": state["chain_head"],
-            "event_count": len(state["events"]),
+            "path": state_relative_path,
+            "sha256": state_sha256,
+            "state_digest": state_for_receipt["state_digest"],
+            "chain_head": state_for_receipt["chain_head"],
+            "event_count": len(state_for_receipt["events"]),
         },
         "admitted_evaluator_receipt": None
         if admission is None
@@ -1395,6 +1791,17 @@ def _run_live_operator_locked(
     receipt = {**receipt_unsigned, "receipt_digest": canonical_digest(receipt_unsigned)}
     receipt_path = output_root / "receipt.json"
     atomic_write_json(receipt_path, receipt)
+    _verify_live_operator_receipt(
+        receipt_path,
+        repo_root=repo_root,
+        expected_state=state_for_receipt,
+    )
+    if prepared_state is not None:
+        try:
+            commit_prepared_state(state_path, state, prepared_state)
+        except EvidenceAdmissionError as error:
+            raise LiveOperatorError(f"evaluator receipt rejected: {error}") from error
+    verified_receipt = verify_live_operator_receipt(receipt_path, repo_root=repo_root)
     return {
         "schema_version": "sim2claw.sail_live_operator_result.v1",
         "campaign_id": contract.campaign_id,
@@ -1403,11 +1810,12 @@ def _run_live_operator_locked(
         "budget": budget,
         "action_sha256": contract.action_sha256,
         "evaluator_digest": contract.evaluator_digest,
-        "receipt_sha256": sha256_file(receipt_path),
+        "receipt_sha256": verified_receipt["receipt_sha256"],
         "receipt_digest": receipt["receipt_digest"],
-        "campaign_state_sha256": sha256_file(state_path),
-        "campaign_state_digest": state["state_digest"],
-        "campaign_state_chain_head": state["chain_head"],
+        "campaign_state_path": state_relative_path,
+        "campaign_state_sha256": state_sha256,
+        "campaign_state_digest": state_for_receipt["state_digest"],
+        "campaign_state_chain_head": state_for_receipt["chain_head"],
         "output_root": str(output_root),
         "promotion": False,
         "training_admitted": False,
@@ -1416,6 +1824,7 @@ def _run_live_operator_locked(
 
 
 __all__ = [
+    "CANONICAL_STATE_ROOT",
     "CONFIG_SCHEMA",
     "LiveCampaignContract",
     "LiveIntervention",
@@ -1426,7 +1835,9 @@ __all__ = [
     "build_live_evaluator_identity",
     "load_live_campaign_contract",
     "rank_live_acquisition",
+    "resolve_live_campaign_state_path",
     "run_live_operator",
     "update_discrete_structure_posterior",
     "validate_live_residual_evidence",
+    "verify_live_operator_receipt",
 ]

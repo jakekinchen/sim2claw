@@ -33,6 +33,7 @@
 | `review_live_operator` | commit `5bc796f` | Independent live-operator and receipt review | Read only; no edits or external actions | active | 2026-07-22T18:30:09-05:00 | Merge-readiness findings with exact evidence | pending | none |
 | `inventory_measurement_path` | sealed C2 acquisition packet | Inventory force/deformation/angle/current acquisition surfaces | Read only; no physical I/O or authority inference | active | 2026-07-22T18:30:09-05:00 | Smallest zero-authority next objective and acceptance gates | pending | none |
 | `repair_sail_control_plane` | independent review blockers on `5bc796f` | Implement fail-closed evaluator receipts, persistent budgets, corrected metrics, and fixture-only offline measurement closure | Same branch edits, tests, scoped commit and push; no PR/main merge, provider, or physical I/O | complete | 2026-07-22T19:48:00-05:00 | Every review blocker has a targeted negative test and truthful receipt | 73 focused tests; 854 repository tests, 3 skipped, and 328 subtests; receipt `71550653...` | none |
+| `repair_sail_control_plane_p2` | adversarial rereview of `de308d5` | Disable unverified simulator admission, canonicalize global state, make admission transactional, and add a read-time receipt verifier | Same branch edits, tests, scoped commit and push; no PR/main merge, provider, or physical I/O | complete | 2026-07-22T20:32:00-05:00 | Exact forgery, shared-state replay, poison rollback, and receipt tamper/staleness regressions | 24 live and 78 focused tests; automatic SAIL tiers 36/58/75+2/6; 859 repository tests, 3 skipped, 328 subtests | none |
 | Coordinator | owner request | Reconcile history, reproduce verdict, route repairs and next objective | Ledger, local verification, scoped branch integration | active | 2026-07-22T18:30:09-05:00 | One reviewed continuation branch and owner-gated next boundary | reproduced receipt `e4aac1ce...`; 12 focused tests pass | independent reviews pending |
 
 ### Owner Decisions
@@ -65,6 +66,16 @@
   The decision plane remains at terminal measurement-acquisition abstention;
   its new receipt is `71550653...`, and independent rereview remains required
   before any PR or main merge decision.
+- 2026-07-22T20:07:00-05:00 - Second adversarial corrective slice disabled
+  generic simulator admission, moved state to one ignored campaign/config-keyed
+  path, made the append the final post-validation write, and exported a
+  current-state receipt verifier. Exact forgery, cross-output replay, poison,
+  artifact/authority tamper, and stale-state tests pass. No execution,
+  provider, Brev, physical I/O, PR, or main merge was opened.
+- 2026-07-22T20:32:00-05:00 - Second corrective verification closed with the
+  uninterrupted repository suite passing 859 tests, skipping 3, and passing
+  328 subtests in 1306.07 seconds. Receipt `80e427ec...` re-verifies against the
+  canonical empty state head; independent rereview remains the next gate.
 
 ## Current control plane — SAIL live operator integration
 

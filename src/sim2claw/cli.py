@@ -323,11 +323,6 @@ def build_parser() -> argparse.ArgumentParser:
     sail_live_operator.add_argument("--config", type=Path, required=True)
     sail_live_operator.add_argument("--output", type=Path, required=True)
     sail_live_operator.add_argument(
-        "--simulator-evaluator-receipt",
-        type=Path,
-        help="optional hash-bound receipt from the independent simulator evaluator",
-    )
-    sail_live_operator.add_argument(
         "--measurement-evaluator-receipt",
         type=Path,
         help="optional sealed-packet-bound offline measurement evaluator receipt",
@@ -1055,7 +1050,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             report = run_live_operator(
                 args.config,
                 output_root=args.output,
-                simulator_evaluator_receipt_path=args.simulator_evaluator_receipt,
                 measurement_evaluator_receipt_path=args.measurement_evaluator_receipt,
             )
         except SailContractError as error:

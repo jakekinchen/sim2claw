@@ -101,6 +101,18 @@ def test_live_control_plane_accepts_receipts_not_bare_self_described_results() -
                 "self-described.json",
             ]
         )
+    with pytest.raises(SystemExit):
+        parser.parse_args(
+            [
+                "sail-run-live-operator",
+                "--config",
+                "campaign.json",
+                "--output",
+                "ignored-output",
+                "--simulator-evaluator-receipt",
+                "self-consistent-but-untrusted.json",
+            ]
+        )
 
 
 def test_studio_observatory_cli_dispatches_without_widening_authority(

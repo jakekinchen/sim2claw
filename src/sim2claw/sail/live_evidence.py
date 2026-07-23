@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import copy
 import fcntl
+import hashlib
+import json
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator, Mapping, Sequence
@@ -45,18 +47,6 @@ def _nonempty_unique(values: Sequence[Any], *, label: str) -> list[str]:
         set(normalized)
     ):
         raise EvidenceAdmissionError(f"{label} identities are empty or duplicated")
-    return normalized
-
-
-def _reject_supplied_promotion(consequence: Any, *, label: str) -> dict[str, Any]:
-    if not isinstance(consequence, Mapping):
-        raise EvidenceAdmissionError(f"{label} consequence is missing")
-    normalized = copy.deepcopy(dict(consequence))
-    if any("promotion" in str(name) for name in normalized):
-        raise EvidenceAdmissionError(f"{label} consequence may not supply promotion")
-    for name in ("training_admitted", "physical_authority", "robot_motion"):
-        if normalized.get(name) is True:
-            raise EvidenceAdmissionError(f"{label} consequence widened authority")
     return normalized
 
 
@@ -115,93 +105,28 @@ def verify_simulator_evaluator_receipt(
     expected_evaluator_identity: Mapping[str, Any],
     remaining_anchor_replays: int,
 ) -> dict[str, Any]:
-    """Verify a hash-bound simulator evaluator receipt and its result artifact."""
+    """Fail closed until a trusted deterministic simulator adapter exists.
 
-    receipt = _verify_digest(
-        load_json_object(receipt_path, label="simulator evaluator receipt"),
-        label="simulator evaluator receipt",
+    A receipt, result, and raw bundle can all be forged together while remaining
+    internally hash-consistent.  The decision plane therefore does not admit
+    generic simulator results merely because they restate the frozen evaluator
+    identity.  A future adapter must recompute concrete mutations and consequence
+    from raw artifacts before this lane can be reopened.
+    """
+
+    del (
+        receipt_path,
+        campaign_id,
+        selected_intervention,
+        intervention_set_digest,
+        action_sha256,
+        expected_evaluator_identity,
+        remaining_anchor_replays,
     )
-    if receipt.get("schema_version") != SIMULATOR_RECEIPT_SCHEMA:
-        raise EvidenceAdmissionError("unexpected simulator evaluator receipt schema")
-    if receipt.get("campaign_id") != campaign_id:
-        raise EvidenceAdmissionError("simulator receipt campaign identity changed")
-    intervention_id = str(selected_intervention["intervention_id"])
-    if receipt.get("selected_intervention") != intervention_id:
-        raise EvidenceAdmissionError("simulator receipt does not bind the selected intervention")
-    if receipt.get("frozen_intervention_set_digest") != intervention_set_digest:
-        raise EvidenceAdmissionError("simulator receipt intervention set changed")
-    if receipt.get("action_sha256") != action_sha256:
-        raise EvidenceAdmissionError("simulator receipt action identity changed")
-    if receipt.get("evaluator_identity") != expected_evaluator_identity:
-        raise EvidenceAdmissionError("simulator receipt evaluator code/config/source identity changed")
-    if "promotion" in receipt:
-        raise EvidenceAdmissionError("simulator receipt may not self-describe promotion")
-    _all_false(receipt.get("authority") or {}, label="simulator receipt")
-    execution_id = str(receipt.get("execution_id", ""))
-    if not execution_id:
-        raise EvidenceAdmissionError("simulator receipt execution identity is missing")
-    replay_ids = _nonempty_unique(
-        receipt.get("anchor_replay_ids") or [], label="simulator anchor replay"
+    raise EvidenceAdmissionError(
+        "generic simulator result admission is disabled without a trusted "
+        "deterministic evaluator adapter"
     )
-    maximum_trials = int(selected_intervention["maximum_trials"])
-    if len(replay_ids) > maximum_trials or len(replay_ids) > remaining_anchor_replays:
-        raise EvidenceAdmissionError("simulator receipt escaped the anchor replay budget")
-    actual_mutations = [str(value) for value in receipt.get("actual_mutations") or []]
-    if len(actual_mutations) != len(set(actual_mutations)) or not set(
-        actual_mutations
-    ).issubset({str(value) for value in selected_intervention["allowed_mutations"]}):
-        raise EvidenceAdmissionError("simulator receipt used an undeclared mutation")
-    base_dir = receipt_path.resolve().parent
-    raw_bindings = receipt.get("raw_artifacts") or []
-    if not raw_bindings:
-        raise EvidenceAdmissionError("simulator receipt has no raw evaluator artifacts")
-    verified_raw = [
-        _resolve_artifact(binding, base_dir=base_dir, label="simulator raw")[1]
-        for binding in raw_bindings
-    ]
-    result_path, result_binding = _resolve_artifact(
-        receipt.get("result_artifact") or {},
-        base_dir=base_dir,
-        label="simulator result",
-    )
-    result = load_json_object(result_path, label="simulator evaluated result")
-    if result.get("schema_version") != SIMULATOR_RESULT_SCHEMA:
-        raise EvidenceAdmissionError("unexpected simulator evaluated result schema")
-    if "promotion" in result:
-        raise EvidenceAdmissionError("simulator result may not self-describe promotion")
-    if result.get("authority") != receipt.get("authority"):
-        raise EvidenceAdmissionError("simulator result authority is not receipt-bound")
-    consequence = _reject_supplied_promotion(
-        receipt.get("consequence"), label="simulator receipt"
-    )
-    required_equal = {
-        "campaign_id": campaign_id,
-        "selected_intervention": intervention_id,
-        "execution_id": execution_id,
-        "anchor_replay_ids": replay_ids,
-        "actual_mutations": actual_mutations,
-        "consequence": consequence,
-    }
-    for name, expected in required_equal.items():
-        if result.get(name) != expected:
-            raise EvidenceAdmissionError(f"simulator result {name} is not receipt-bound")
-    if not isinstance(result.get("hypothesis_likelihoods"), Mapping):
-        raise EvidenceAdmissionError("simulator result likelihoods are missing")
-    if not isinstance(result.get("factor_updates"), Mapping):
-        raise EvidenceAdmissionError("simulator result factor updates are missing")
-    return {
-        "lane": "simulator_anchor_replay",
-        "receipt": receipt,
-        "receipt_sha256": sha256_file(receipt_path),
-        "execution_id": execution_id,
-        "anchor_replay_ids": replay_ids,
-        "measurement_trial_ids": [],
-        "actual_mutations": actual_mutations,
-        "raw_artifacts": verified_raw,
-        "result_artifact": result_binding,
-        "result": result,
-        "consequence": consequence,
-    }
 
 
 def _normalized(values: np.ndarray) -> np.ndarray:
@@ -486,6 +411,13 @@ def _state_unsigned(state: Mapping[str, Any]) -> dict[str, Any]:
     return unsigned
 
 
+def json_artifact_sha256(payload: Mapping[str, Any]) -> str:
+    """Return the hash produced by ``atomic_write_json`` without writing it."""
+
+    encoded = (json.dumps(dict(payload), indent=2, sort_keys=True) + "\n").encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def _validate_budget(budget: Mapping[str, Any]) -> dict[str, int]:
     required = {
         "maximum_interventions",
@@ -590,7 +522,7 @@ def _initial_state(
 
 @contextmanager
 def locked_campaign_state(
-    output_root: Path,
+    state_root: Path,
     *,
     campaign_id: str,
     config_digest: str,
@@ -598,9 +530,9 @@ def locked_campaign_state(
 ) -> Iterator[tuple[Path, dict[str, Any]]]:
     """Hold an exclusive file lock while validating/updating generated state."""
 
-    output_root.mkdir(parents=True, exist_ok=True)
-    lock_path = output_root / ".campaign-state.lock"
-    state_path = output_root / "campaign_state.json"
+    state_root.mkdir(parents=True, exist_ok=True)
+    lock_path = state_root / ".campaign-state.lock"
+    state_path = state_root / "campaign_state.json"
     with lock_path.open("a+") as lock_file:
         fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
         if state_path.exists():
@@ -621,8 +553,10 @@ def locked_campaign_state(
         fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
 
 
-def append_admitted_result(state_path: Path, state: Mapping[str, Any], admission: Mapping[str, Any]) -> dict[str, Any]:
-    """Atomically append one unique evaluator receipt to the validated chain."""
+def prepare_admitted_result(
+    state: Mapping[str, Any], admission: Mapping[str, Any]
+) -> dict[str, Any]:
+    """Prepare one unique state transition without mutating persistent state."""
 
     events = copy.deepcopy(list(state["events"]))
     execution_ids = {str(event["execution_id"]) for event in events}
@@ -678,8 +612,64 @@ def append_admitted_result(state_path: Path, state: Mapping[str, Any], admission
         "chain_head": event["event_digest"],
     }
     updated = {**state_unsigned, "state_digest": canonical_digest(state_unsigned)}
-    atomic_write_json(state_path, updated)
     return updated
+
+
+def commit_prepared_state(
+    state_path: Path,
+    current_state: Mapping[str, Any],
+    prepared_state: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Commit an already-validated transition as the final admission step."""
+
+    observed = _validate_state(
+        load_json_object(state_path, label="persistent SAIL campaign state"),
+        campaign_id=str(current_state["campaign_id"]),
+        config_digest=str(current_state["config_digest"]),
+        initial_budget=current_state["initial_budget"],
+    )
+    if observed != current_state:
+        raise EvidenceAdmissionError("persistent campaign state changed before commit")
+    validated = _validate_state(
+        prepared_state,
+        campaign_id=str(current_state["campaign_id"]),
+        config_digest=str(current_state["config_digest"]),
+        initial_budget=current_state["initial_budget"],
+    )
+    current_events = list(current_state["events"])
+    if (
+        len(validated["events"]) != len(current_events) + 1
+        or validated["events"][:-1] != current_events
+    ):
+        raise EvidenceAdmissionError("prepared campaign state is not one append-only transition")
+    atomic_write_json(state_path, validated)
+    return validated
+
+
+def append_admitted_result(
+    state_path: Path, state: Mapping[str, Any], admission: Mapping[str, Any]
+) -> dict[str, Any]:
+    """Compatibility wrapper for a prepared, atomically committed append."""
+
+    prepared = prepare_admitted_result(state, admission)
+    return commit_prepared_state(state_path, state, prepared)
+
+
+def validate_campaign_state(
+    state: Mapping[str, Any],
+    *,
+    campaign_id: str,
+    config_digest: str,
+    initial_budget: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Public read-time validator for a persistent campaign state payload."""
+
+    return _validate_state(
+        state,
+        campaign_id=campaign_id,
+        config_digest=config_digest,
+        initial_budget=initial_budget,
+    )
 
 
 __all__ = [
@@ -691,9 +681,13 @@ __all__ = [
     "SIMULATOR_RECEIPT_SCHEMA",
     "SIMULATOR_RESULT_SCHEMA",
     "append_admitted_result",
+    "commit_prepared_state",
     "evaluate_offline_measurement_trials",
     "evaluator_identity",
+    "json_artifact_sha256",
     "locked_campaign_state",
+    "prepare_admitted_result",
+    "validate_campaign_state",
     "verify_measurement_evaluator_receipt",
     "verify_simulator_evaluator_receipt",
 ]

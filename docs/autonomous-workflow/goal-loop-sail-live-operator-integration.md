@@ -112,13 +112,18 @@ Test counts prove implementation integrity, not causal or transfer validity.
 
 ## Decision status
 
-Corrective closure (2026-07-22): this component is a decision/evidence control
-plane, not an intervention executor. It consumes only independently evaluated,
-hash-bound receipts. Persistent generated state enforces unique execution,
-anchor-replay, and synthetic measurement-trial identities. The 514 historical
-evaluations informed the frozen retrospective decision; SAIL used zero
-additional evaluations after the pause. Physical capture and motion remain
-separately unauthorized.
+Second corrective closure (2026-07-22): this component is a decision/evidence
+control plane, not an intervention executor. Generic simulator admission is
+disabled until a trusted deterministic adapter recomputes mutation and
+consequence from raw artifacts. The synthetic offline measurement lane remains
+admissible because it recomputes the preregistered result. Persistent generated
+state has one ignored campaign/config-keyed path independent of caller output;
+it enforces unique execution, anchor-replay, and synthetic measurement-trial
+identities. Admission commits only after semantic artifacts and the receipt
+verify, and a read-time verifier binds the current state head. The 514
+historical evaluations informed the frozen retrospective decision; SAIL used
+zero additional evaluations after the pause. Physical capture and motion
+remain separately unauthorized.
 
 Confirmed:
 

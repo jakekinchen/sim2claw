@@ -25,7 +25,9 @@ contract; Python must not enumerate C2 campaign IDs or schema versions.
 ## Verification gate
 
 - Generic IDs load without a Python allow-list. This component does not execute
-  interventions; it consumes independently evaluated receipts.
+  interventions. Generic simulator-result admission is disabled until a
+  trusted deterministic adapter recomputes concrete mutations and consequence
+  from raw artifacts; internally consistent files are not evaluator authority.
 - Invalid bindings, action/evaluator/code/config/source drift, post-result
   expansion, receipt/result/raw-artifact tampering, duplicate execution/replay/
   trial IDs, budget escape, invalid posterior likelihoods, unaffected-factor
@@ -36,6 +38,13 @@ contract; Python must not enumerate C2 campaign IDs or schema versions.
 - A strictly offline measurement lane accepts synthetic fixtures only when the
   acquisition packet, common clock, sampling, skew, calibration, phases, raw
   hashes, result hash, evaluator identity, and all-false authority verify.
+- Campaign state resolves to one ignored, repository-relative path keyed by the
+  campaign and canonical config digest, never beneath caller-selected output.
+  All semantic artifacts and the receipt are verified before the append-only
+  state transition is committed as the final mutation.
+- `verify_live_operator_receipt` rechecks the receipt digest, config, source,
+  compiler and output hashes, canonical state chain, action/evaluator/
+  intervention identity, budget, and all-false authority at read time.
 - Missing source-bound invariance vectors are not imputed.
 - The metric rename is scoped to this new control-plane contract. The
   receipt-bound Phase 1 acquisition compiler, config, intervention schema, and

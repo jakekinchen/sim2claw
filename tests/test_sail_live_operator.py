@@ -7,14 +7,17 @@ from pathlib import Path
 
 import pytest
 
+import sim2claw.sail.live_operator as live_operator_module
 from sim2claw.learning_factory_artifacts import canonical_digest, sha256_file
 from sim2claw.sail.live_operator import (
     LiveOperatorError,
     apply_live_sparse_closure,
     build_live_evaluator_identity,
     load_live_campaign_contract,
+    resolve_live_campaign_state_path,
     run_live_operator,
     update_discrete_structure_posterior,
+    verify_live_operator_receipt,
 )
 from sim2claw.sail.live_evidence import (
     EvidenceAdmissionError,
@@ -24,6 +27,7 @@ from sim2claw.sail.live_evidence import (
     SIMULATOR_RECEIPT_SCHEMA,
     SIMULATOR_RESULT_SCHEMA,
     evaluate_offline_measurement_trials,
+    verify_measurement_evaluator_receipt,
     verify_simulator_evaluator_receipt,
 )
 from sim2claw.sail.loop_closure import LoopClosureError
@@ -133,7 +137,7 @@ def _campaign(tmp_path: Path) -> tuple[Path, dict]:
         {"id": "ensemble_without_single_winner", "weight": 0.5, "uncertainty_class": "structural_uncertainty"},
     ]
     config = {
-        "schema_version": "sim2claw.sail_live_campaign.v1",
+        "schema_version": "sim2claw.sail_live_campaign.v2",
         "campaign_id": "campaign-with-no-python-registration",
         "created_at": "2026-07-22T12:00:00-05:00",
         "subject": {
@@ -174,6 +178,10 @@ def _campaign(tmp_path: Path) -> tuple[Path, dict]:
             "used_interventions": 0,
             "used_anchor_replays": 0,
             "used_measurement_trials": 0,
+        },
+        "persistent_state": {
+            "repo_relative_root": "outputs/sail/live-campaign-state-v1",
+            "key_algorithm": "sha256_campaign_config_v1",
         },
         "residual_evidence": [
             {
@@ -360,7 +368,16 @@ def _campaign(tmp_path: Path) -> tuple[Path, dict]:
             "self_promotion": False,
         },
     }
-    config_path = _write(tmp_path / "campaign.json", config)
+    repo_root = Path(__file__).resolve().parents[1]
+    config_path = _write(
+        repo_root
+        / "outputs"
+        / "sail"
+        / "test-live-campaigns"
+        / canonical_digest(str(tmp_path))
+        / "campaign.json",
+        config,
+    )
     return config_path, config
 
 
@@ -429,6 +446,9 @@ def _measurement_receipt(
     config: dict,
     packet_path: Path,
     raw_path: Path,
+    execution_id: str = "measurement-execution-arbitrary-1",
+    result_name: str = "measurement-result.json",
+    receipt_name: str = "measurement-receipt.json",
 ) -> Path:
     contract = load_live_campaign_contract(config_path)
     packet = json.loads(packet_path.read_text())
@@ -441,12 +461,12 @@ def _measurement_receipt(
         evaluation_contract=config["measurement_result_evaluation"],
     )
     result_path = _write(
-        tmp_path / "measurement-result.json",
+        tmp_path / result_name,
         {
             "schema_version": MEASUREMENT_RESULT_SCHEMA,
             "campaign_id": contract.campaign_id,
             "selected_intervention": "probe-measurement-arbitrary",
-            "execution_id": "measurement-execution-arbitrary-1",
+            "execution_id": execution_id,
             "actual_mutations": [],
             "acquisition_packet_digest": packet["packet_digest"],
             **evaluated,
@@ -460,7 +480,7 @@ def _measurement_receipt(
         "frozen_intervention_set_digest": contract.intervention_set_digest,
         "action_sha256": ACTION_SHA,
         "evaluator_identity": build_live_evaluator_identity(contract),
-        "execution_id": "measurement-execution-arbitrary-1",
+        "execution_id": execution_id,
         "actual_mutations": [],
         "measurement_trial_ids": evaluated["measurement_trial_ids"],
         "acquisition_packet": _binding(packet_path),
@@ -470,7 +490,7 @@ def _measurement_receipt(
         "authority": copy.deepcopy(config["authority"]),
     }
     return _write(
-        tmp_path / "measurement-receipt.json",
+        tmp_path / receipt_name,
         {**unsigned, "receipt_digest": canonical_digest(unsigned)},
     )
 
@@ -530,7 +550,7 @@ def test_action_and_source_drift_fail_closed(tmp_path: Path) -> None:
     path, config = _campaign(tmp_path)
     changed = copy.deepcopy(config)
     changed["action_identity"]["sha256"] = "b" * 64
-    changed_path = _write(tmp_path / "changed-action.json", changed)
+    changed_path = _write(path.parent / "changed-action.json", changed)
     with pytest.raises(LiveOperatorError, match="action identity"):
         load_live_campaign_contract(changed_path)
 
@@ -580,82 +600,19 @@ def test_sparse_closure_rejects_unaffected_factor_mutation() -> None:
         )
 
 
-def test_simulator_receipt_is_hash_bound_and_rejects_spoof_tamper_or_promotion(
+def test_self_consistent_forged_simulator_bundle_is_never_evaluator_authority(
     tmp_path: Path,
 ) -> None:
     path, config = _campaign(tmp_path)
     contract = load_live_campaign_contract(path)
-    receipt_path, receipt = _simulator_receipt(tmp_path, config_path=path, config=config)
+    receipt_path, _ = _simulator_receipt(tmp_path, config_path=path, config=config)
     simulator_intervention = next(
         row.payload for row in contract.interventions if row.kind == "simulator_family"
     )
-    verified = verify_simulator_evaluator_receipt(
-        receipt_path,
-        campaign_id=contract.campaign_id,
-        selected_intervention=simulator_intervention,
-        intervention_set_digest=contract.intervention_set_digest,
-        action_sha256=ACTION_SHA,
-        expected_evaluator_identity=build_live_evaluator_identity(contract),
-        remaining_anchor_replays=18,
-    )
-    assert verified["execution_id"] == "simulator-execution-arbitrary-1"
-
-    promoted = copy.deepcopy(receipt)
-    promoted["promotion"] = {"promoted": True}
-    promoted.pop("receipt_digest")
-    promoted["receipt_digest"] = canonical_digest(promoted)
-    promoted_path = _write(tmp_path / "promoted-receipt.json", promoted)
-    with pytest.raises(EvidenceAdmissionError, match="promotion"):
-        verify_simulator_evaluator_receipt(
-            promoted_path,
-            campaign_id=contract.campaign_id,
-            selected_intervention=simulator_intervention,
-            intervention_set_digest=contract.intervention_set_digest,
-            action_sha256=ACTION_SHA,
-            expected_evaluator_identity=build_live_evaluator_identity(contract),
-            remaining_anchor_replays=18,
-        )
-
-    spoofed = copy.deepcopy(receipt)
-    spoofed["evaluator_identity"]["evaluator_id"] = "agent-self-evaluator"
-    spoofed.pop("receipt_digest")
-    spoofed["receipt_digest"] = canonical_digest(spoofed)
-    spoofed_path = _write(tmp_path / "spoofed-receipt.json", spoofed)
-    with pytest.raises(EvidenceAdmissionError, match="evaluator"):
-        verify_simulator_evaluator_receipt(
-            spoofed_path,
-            campaign_id=contract.campaign_id,
-            selected_intervention=simulator_intervention,
-            intervention_set_digest=contract.intervention_set_digest,
-            action_sha256=ACTION_SHA,
-            expected_evaluator_identity=build_live_evaluator_identity(contract),
-            remaining_anchor_replays=18,
-        )
-
-    supplied = copy.deepcopy(receipt)
-    result_path = Path(supplied["result_artifact"]["path"])
-    result = json.loads(result_path.read_text())
-    result["consequence"]["simulator_promotion"] = False
-    supplied_result_path = _write(tmp_path / "supplied-promotion-result.json", result)
-    supplied["result_artifact"] = _binding(supplied_result_path)
-    supplied["consequence"] = copy.deepcopy(result["consequence"])
-    supplied.pop("receipt_digest")
-    supplied["receipt_digest"] = canonical_digest(supplied)
-    supplied_path = _write(tmp_path / "supplied-promotion-receipt.json", supplied)
-    with pytest.raises(EvidenceAdmissionError, match="may not supply promotion"):
-        verify_simulator_evaluator_receipt(
-            supplied_path,
-            campaign_id=contract.campaign_id,
-            selected_intervention=simulator_intervention,
-            intervention_set_digest=contract.intervention_set_digest,
-            action_sha256=ACTION_SHA,
-            expected_evaluator_identity=build_live_evaluator_identity(contract),
-            remaining_anchor_replays=18,
-        )
-
-    raw_path = Path(receipt["raw_artifacts"][0]["path"])
-    raw_path.write_text("tampered\n")
-    with pytest.raises(EvidenceAdmissionError, match="hash mismatch"):
+    # This is the exact previously accepted forgery shape: raw, result, receipt,
+    # hashes, evaluator identity, and digest are mutually consistent, but no
+    # trusted code recomputes its consequence from the raw artifact.
+    with pytest.raises(EvidenceAdmissionError, match="admission is disabled"):
         verify_simulator_evaluator_receipt(
             receipt_path,
             campaign_id=contract.campaign_id,
@@ -711,7 +668,7 @@ def test_two_context_missing_invariance_vectors_are_not_imputed(tmp_path: Path) 
         {"episode_id": "context-a", "level": "a", "feature": None, "observation": None, "actions": None},
         {"episode_id": "context-b", "level": "b", "feature": None, "observation": None, "actions": None},
     ]
-    changed_path = _write(tmp_path / "two-context-missing.json", changed)
+    changed_path = _write(path.parent / "two-context-missing.json", changed)
     output = tmp_path / "two-context-output"
     run_live_operator(changed_path, output_root=output)
     invariance = json.loads((output / "invariance.json").read_text())
@@ -904,7 +861,9 @@ def test_packet_bound_measurement_result_is_admitted_once_and_chain_is_validated
     assert admitted["budget"]["used_anchor_replays"] == 0
     assert admitted["budget"]["used_measurement_trials"] == 1
     assert not admitted["promotion"]
-    state = json.loads((output / "campaign_state.json").read_text())
+    repo_root = Path(__file__).resolve().parents[1]
+    state_path = repo_root / admitted["campaign_state_path"]
+    state = json.loads(state_path.read_text())
     assert len(state["events"]) == 1
     assert state["events"][0]["anchor_replay_ids"] == []
     assert state["events"][0]["measurement_trial_ids"] == [
@@ -922,9 +881,206 @@ def test_packet_bound_measurement_result_is_admitted_once_and_chain_is_validated
         )
 
     state["budget"]["used_measurement_trials"] = 0
-    _write(output / "campaign_state.json", state)
+    _write(state_path, state)
     with pytest.raises(EvidenceAdmissionError, match="state digest"):
         run_live_operator(path, output_root=output)
+
+
+def test_canonical_state_is_config_bound_and_rejects_alternate_roots(
+    tmp_path: Path,
+) -> None:
+    path, config = _campaign(tmp_path)
+    contract = load_live_campaign_contract(path)
+    repo_root = Path(__file__).resolve().parents[1]
+    state_path = resolve_live_campaign_state_path(contract)
+    assert state_path.is_relative_to(repo_root / "outputs" / "sail" / "live-campaign-state-v1")
+    assert state_path.name == "campaign_state.json"
+    assert len(state_path.parent.name) == 64
+
+    for name, root in (
+        ("absolute", str(tmp_path / "alternate-state")),
+        ("escape", "outputs/sail/../alternate-state"),
+        ("alternate", "outputs/sail/another-state-root"),
+    ):
+        changed = copy.deepcopy(config)
+        changed["persistent_state"]["repo_relative_root"] = root
+        changed_path = _write(path.parent / f"{name}-state-root.json", changed)
+        with pytest.raises(LiveOperatorError, match="persistent state root"):
+            load_live_campaign_contract(changed_path)
+
+
+def test_identical_receipt_is_rejected_across_two_output_roots_by_shared_state(
+    tmp_path: Path,
+) -> None:
+    path, config = _campaign(tmp_path)
+    output_a = tmp_path / "output-a"
+    output_b = tmp_path / "output-b"
+    initial = run_live_operator(path, output_root=output_a)
+    raw_path = _measurement_raw(tmp_path / "shared-state-raw.json", config=config)
+    receipt_path = _measurement_receipt(
+        tmp_path,
+        config_path=path,
+        config=config,
+        packet_path=output_a / "acquisition_packet.json",
+        raw_path=raw_path,
+    )
+    admitted = run_live_operator(
+        path,
+        output_root=output_a,
+        measurement_evaluator_receipt_path=receipt_path,
+    )
+    assert admitted["campaign_state_path"] == initial["campaign_state_path"]
+    repo_root = Path(__file__).resolve().parents[1]
+    state_path = repo_root / admitted["campaign_state_path"]
+    before = state_path.read_bytes()
+    with pytest.raises(LiveOperatorError, match="replay"):
+        run_live_operator(
+            path,
+            output_root=output_b,
+            measurement_evaluator_receipt_path=receipt_path,
+        )
+    assert state_path.read_bytes() == before
+    assert not (output_a / "campaign_state.json").exists()
+    assert not (output_b / "campaign_state.json").exists()
+
+
+def test_rejected_factor_poison_leaves_state_and_budget_byte_identical(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path, config = _campaign(tmp_path)
+    contract = load_live_campaign_contract(path)
+    output = tmp_path / "poison-output"
+    initial = run_live_operator(path, output_root=output)
+    packet = json.loads((output / "acquisition_packet.json").read_text())
+    raw_path = _measurement_raw(tmp_path / "poison-raw.json", config=config)
+    receipt_path = _measurement_receipt(
+        tmp_path,
+        config_path=path,
+        config=config,
+        packet_path=output / "acquisition_packet.json",
+        raw_path=raw_path,
+    )
+    measurement_intervention = next(
+        row.payload for row in contract.interventions if row.kind == "measurement_acquisition"
+    )
+    admission = verify_measurement_evaluator_receipt(
+        receipt_path,
+        campaign_id=contract.campaign_id,
+        selected_intervention=measurement_intervention,
+        intervention_set_digest=contract.intervention_set_digest,
+        action_sha256=ACTION_SHA,
+        expected_evaluator_identity=build_live_evaluator_identity(contract),
+        expected_packet=packet,
+        evaluation_contract=config["measurement_result_evaluation"],
+        remaining_measurement_trials=6,
+    )
+    poisoned = copy.deepcopy(admission)
+    poisoned["result"]["factor_updates"] = {"factor:arm_tracking": 0.9}
+    monkeypatch.setattr(
+        live_operator_module,
+        "verify_measurement_evaluator_receipt",
+        lambda *args, **kwargs: poisoned,
+    )
+    repo_root = Path(__file__).resolve().parents[1]
+    state_path = repo_root / initial["campaign_state_path"]
+    before = state_path.read_bytes()
+    with pytest.raises(LiveOperatorError, match="unaffected factor update"):
+        run_live_operator(
+            path,
+            output_root=tmp_path / "poison-rejected-output",
+            measurement_evaluator_receipt_path=receipt_path,
+        )
+    assert state_path.read_bytes() == before
+    state = json.loads(state_path.read_text())
+    assert state["events"] == []
+    assert state["budget"]["used_interventions"] == 0
+    assert state["budget"]["used_measurement_trials"] == 0
+
+
+def test_live_operator_receipt_verifier_rejects_artifact_and_authority_tamper(
+    tmp_path: Path,
+) -> None:
+    path, _ = _campaign(tmp_path)
+    output = tmp_path / "verify-output"
+    result = run_live_operator(path, output_root=output)
+    receipt_path = output / "receipt.json"
+    verified = verify_live_operator_receipt(receipt_path)
+    assert verified["receipt_sha256"] == result["receipt_sha256"]
+    assert not verified["promotion"]
+
+    trace_path = output / "operator_trace.json"
+    trace_bytes = trace_path.read_bytes()
+    trace = json.loads(trace_bytes)
+    trace["agent_promoted"] = True
+    _write(trace_path, trace)
+    with pytest.raises(LiveOperatorError, match="output hash"):
+        verify_live_operator_receipt(receipt_path)
+    trace_path.write_bytes(trace_bytes)
+
+    receipt_bytes = receipt_path.read_bytes()
+    receipt = json.loads(receipt_bytes)
+    receipt["promotion"] = True
+    unsigned = {key: value for key, value in receipt.items() if key != "receipt_digest"}
+    receipt["receipt_digest"] = canonical_digest(unsigned)
+    _write(receipt_path, receipt)
+    with pytest.raises(LiveOperatorError, match="promotion widened authority"):
+        verify_live_operator_receipt(receipt_path)
+    receipt_path.write_bytes(receipt_bytes)
+    verify_live_operator_receipt(receipt_path)
+
+
+def test_live_operator_receipt_verifier_rejects_stale_canonical_state(
+    tmp_path: Path,
+) -> None:
+    path, config = _campaign(tmp_path)
+    changed = copy.deepcopy(config)
+    changed["budget"]["maximum_interventions"] = 2
+    changed_path = _write(path.parent / "two-admission-campaign.json", changed)
+    output_a = tmp_path / "stale-output-a"
+    output_b = tmp_path / "stale-output-b"
+    run_live_operator(changed_path, output_root=output_a)
+
+    raw_a = _measurement_raw(tmp_path / "stale-raw-a.json", config=changed)
+    receipt_a = _measurement_receipt(
+        tmp_path,
+        config_path=changed_path,
+        config=changed,
+        packet_path=output_a / "acquisition_packet.json",
+        raw_path=raw_a,
+        execution_id="measurement-execution-stale-a",
+        result_name="measurement-result-stale-a.json",
+        receipt_name="measurement-receipt-stale-a.json",
+    )
+    run_live_operator(
+        changed_path,
+        output_root=output_a,
+        measurement_evaluator_receipt_path=receipt_a,
+    )
+    verify_live_operator_receipt(output_a / "receipt.json")
+
+    raw_b = _measurement_raw(
+        tmp_path / "stale-raw-b.json",
+        config=changed,
+        trial_id="measurement-trial-stale-b",
+    )
+    receipt_b = _measurement_receipt(
+        tmp_path,
+        config_path=changed_path,
+        config=changed,
+        packet_path=output_a / "acquisition_packet.json",
+        raw_path=raw_b,
+        execution_id="measurement-execution-stale-b",
+        result_name="measurement-result-stale-b.json",
+        receipt_name="measurement-receipt-stale-b.json",
+    )
+    run_live_operator(
+        changed_path,
+        output_root=output_b,
+        measurement_evaluator_receipt_path=receipt_b,
+    )
+    verify_live_operator_receipt(output_b / "receipt.json")
+    with pytest.raises(LiveOperatorError, match="stale against canonical campaign state"):
+        verify_live_operator_receipt(output_a / "receipt.json")
 
 
 def test_static_publication_is_read_only_and_matches_terminal_receipt() -> None:

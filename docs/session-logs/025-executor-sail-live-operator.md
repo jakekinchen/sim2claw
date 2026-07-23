@@ -13,10 +13,13 @@ belief, mechanism plugins, preregistered signatures, acquisition, a global
 budget, influence, a discrete posterior, sparse affected-factor closure,
 invariance, consequence, and terminal verdict. Contract IDs are data, not
 Python registrations. A corrective follow-on replaces bare results with
-hash-bound independent evaluator receipts, persistent receipt-chain budgets,
+fail-closed evaluator evidence, persistent receipt-chain budgets,
 unique execution/replay/trial IDs, honest entropy deltas, non-imputed
-invariance, and a synthetic-only offline measurement lane. The plane does not
-execute interventions and promotion is always derived false.
+invariance, and a synthetic-only offline measurement lane. A second
+adversarial repair disables generic simulator admission, moves state to one
+campaign/config-keyed ignored path, validates all artifacts before the final
+append, and exports a read-time receipt verifier. The plane does not execute
+interventions and promotion is always derived false.
 
 For retained C2, the operator retained flexural rubber/contact and actuator/load
 path mechanisms at 0.5/0.5, ranked synchronized force/deformation acquisition
@@ -26,8 +29,8 @@ packet requests at least 100 Hz jaw force, rubber deformation/profile, joint
 angle, and motor current in one timestamp domain with explicit calibration.
 No capture or motion authority is implied.
 
-The focused set passed 60 tests. SAIL tiers passed 36, 58, 74 plus two
-subtests, and 6 retained-evidence tests; provider and hardware tiers stayed
-closed. The final uninterrupted repository suite passed 841 tests, skipped 3,
-and passed 328 subtests in 1274.86 seconds. The standalone read-only Studio
-page and manifest returned HTTP 200. No external or paid resource was touched.
+The second-corrective focused set passed 78 tests. SAIL tiers passed 36, 58,
+75 plus two subtests, and 6 retained-evidence tests; provider and hardware
+tiers stayed closed. Final uninterrupted repository-suite results are recorded
+in the run log. The standalone read-only Studio page and manifest remain
+read-only. No external or paid resource was touched.

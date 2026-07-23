@@ -1,6 +1,6 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-22T20:00:00-05:00",
+  "updated_at": "2026-07-22T20:07:00-05:00",
   "active_campaign": "none_terminal_sail_live_operator_abstention",
   "current_milestone": "L1_COMPLETE_TERMINAL_MEASUREMENT_ABSTENTION",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
@@ -631,8 +631,8 @@
     "current_safe_claim": "Phase 1 was applied to the full retained evidence compilation and all 11 action-frozen pawn episodes. The bounded contact-model campaign did not repair or promote the simulator, but it localized the visible C2 drop to unilateral rubber contact plus surface-migration and opposing-load collapse, compiled 10 failure classes, and added a non-promoting post-first-lift task diagnostic that reveals three destination entries."
   },
   "sail_live_operator": {
-    "schema_version": "sim2claw.sail_decision_evidence_control_plane_state.v2",
-    "status": "corrective_implementation_complete_ready_for_independent_rereview",
+    "schema_version": "sim2claw.sail_decision_evidence_control_plane_state.v3",
+    "status": "second_corrective_implementation_complete_ready_for_independent_rereview",
     "goal_loop": "docs/autonomous-workflow/goal-loop-sail-live-operator-integration.md",
     "branch": "codex/sail-live-operator-integration",
     "baseline_commit": "c407f8eefd07322cef47fbecf729e4218d5989bf",
@@ -643,10 +643,11 @@
       "L1-03": "completed_c2_binding_and_ablation",
       "L1-04": "completed_terminal_measurement_acquisition_abstention",
       "L1-05": "completed_verification_publication_and_closeout",
-      "L1-06": "completed_fail_closed_receipt_state_and_offline_measurement_correction"
+      "L1-06": "completed_fail_closed_receipt_state_and_offline_measurement_correction",
+      "L1-07": "completed_simulator_admission_disable_global_state_transaction_and_receipt_verifier"
     },
     "progress_ledger": {
-      "current_state": "corrective_control_plane_complete_terminal_measurement_acquisition_abstention",
+      "current_state": "second_corrective_control_plane_complete_terminal_measurement_acquisition_abstention",
       "completed": [
         "authoritative_goal_prompt_read",
         "effectiveness_audit_task_read",
@@ -663,6 +664,11 @@
         "entropy_increase_reported_with_honest_signed_delta",
         "predicted_signature_separation_replaces_mislabeled_information_gain",
         "zero_device_io_packet_bound_synthetic_measurement_result_lane_verified",
+        "generic_simulator_result_admission_disabled_without_trusted_deterministic_adapter",
+        "campaign_and_config_keyed_state_independent_of_output_root",
+        "all_semantic_artifacts_verified_before_final_state_append",
+        "poisoned_factor_update_leaves_state_and_budget_byte_identical",
+        "read_time_operator_receipt_verifier_rejects_tamper_and_stale_state",
         "manual_vs_sail_ablation_completed",
         "sealed_measurement_acquisition_abstention_emitted",
         "read_only_studio_surface_published",
@@ -675,19 +681,23 @@
         "incomplete_b2_02x_anchor_artifacts": 17,
         "incomplete_b2_02x_complete_receipt": false,
         "operator_receipt_path": "outputs/sail/live-operator-c2-v1/receipt.json",
-        "operator_receipt_sha256": "7155065350691aaef2d64f6a2fb4657ac2d01182d3355579ef9959cb9ccb8cea",
-        "operator_receipt_digest": "67c2ab071ccf6a8c193328203573416c1d591ec666cb0c32b3f12817f13c8641",
+        "operator_receipt_sha256": "80e427ec673043ca875b226a73a832c45b587baa6547d87f0e38fbb82b7807cd",
+        "operator_receipt_digest": "4f9fa5a8ca18d06517e5097cddf4b034e196e8944f146868cd14a318cb31dfc6",
         "operator_trace_sha256": "9e32549a81afc7802fd454f0650ed24fe964aa34d2c539e004d33bee1f6a383f",
         "measurement_packet_sha256": "4398417efa987ce578b98191ec8f87d2c8ab7b3498ae3689087c01e7b06de374",
-        "campaign_state_sha256": "addd4237ea5cc8437b53f8d70e9a8e4bba407f9cb3f06d84f331ece6aeb7ede9",
-        "campaign_state_digest": "b2e92cfe522c62eee804ec41863a1376231fe0967b529b2a17e05be8750d1153",
+        "campaign_state_path": "outputs/sail/live-campaign-state-v1/7e28883008da09d99249ea827284e7f28a78836a24e16e4c086ec8357baafd3f/campaign_state.json",
+        "campaign_state_sha256": "b9c63de8971cb4e280d6dbe547e0f552907c51431c674f6e61f8aab951988cd2",
+        "campaign_state_digest": "5e5bd42d11c6dc52977b1621114a37d7a7df83ef2fee6668258510e551cf94df",
         "campaign_state_chain_head": "0000000000000000000000000000000000000000000000000000000000000000",
         "selected_intervention": "measurement_synchronized_force_deformation_probe",
         "terminal_verdict": "abstain_measurement_acquisition_required",
         "observed_information_gain_bits": null,
         "historical_evaluations_informed_frozen_retrospective_decision": 514,
         "additional_evaluations_after_pause": 0,
-        "intervention_executor_implemented": false
+        "intervention_executor_implemented": false,
+        "generic_simulator_result_admission": false,
+        "offline_synthetic_measurement_admission": true,
+        "read_time_receipt_verifier": true
       },
       "interventions_used": 0,
       "intervention_budget": 1,
@@ -701,16 +711,17 @@
       ],
       "hypotheses_rejected": [],
       "remaining": [
-        "independent_corrective_rereview",
+        "independent_second_corrective_rereview",
         "owner_pr_or_merge_decision"
       ],
       "blockers": [
-        "identifying_synchronized_jaw_force_and_rubber_deformation_measurement_unavailable_terminal_abstention"
+        "identifying_synchronized_jaw_force_and_rubber_deformation_measurement_unavailable_terminal_abstention",
+        "trusted_deterministic_simulator_evaluator_adapter_absent_generic_simulator_admission_disabled"
       ],
-      "next_step": "independent_rereview_no_new_c2_family_physical_measurement_requires_separate_authority"
+      "next_step": "independent_second_corrective_rereview_no_new_c2_family_physical_measurement_requires_separate_authority"
     },
     "final_verification": {
-      "focused_test_count": 73,
+      "focused_test_count": 78,
       "sail_ci_fast_contract_passed": 36,
       "sail_ci_synthetic_golden_passed": 58,
       "sail_ci_integration_passed": 75,
@@ -718,7 +729,7 @@
       "sail_ci_retained_evidence_passed": 6,
       "sail_ci_provider_campaign_opened": false,
       "sail_ci_hardware_opened": false,
-      "full_suite_passed": 854,
+      "full_suite_passed": 859,
       "full_suite_skipped": 3,
       "full_suite_subtests_passed": 328,
       "studio_live_operator_route_http_200": true,

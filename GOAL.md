@@ -23,13 +23,14 @@ do not resume its instruction to continue parameter families until a win.
 
 Progress ledger (2026-07-22):
 
-- Current state: corrective implementation complete and ready for independent
-  rereview. The generic decision plane completed the retained C2 path and
-  terminally abstained for the missing identifying measurement.
+- Current state: second adversarial corrective implementation complete and
+  ready for independent rereview. The generic decision plane completed the
+  retained C2 path and terminally abstained for the missing identifying
+  measurement.
 - Completed: authority prompt and both named Codex tasks read; branch verified
   clean at pushed commit `c407f8e`; 32 complete manual families / 514 C2
   candidate replays / 0 anchor passes frozen as the ablation baseline.
-- Evidence: receipt SHA-256 `7155065350691aaef2d64f6a2fb4657ac2d01182d3355579ef9959cb9ccb8cea`;
+- Evidence: receipt SHA-256 `80e427ec673043ca875b226a73a832c45b587baa6547d87f0e38fbb82b7807cd`;
   B2-02X remains a separate incomplete 17-of-18-artifact work-in-progress
   screen with no complete receipt.
 - Interventions used / budget: `0 / 1` new SAIL-selected families and `0 / 18`
@@ -43,12 +44,17 @@ Progress ledger (2026-07-22):
 - Remaining: independent rereview and owner decision on PR/merge. A synthetic,
   packet-bound, zero-device-I/O result lane is implemented; any physical
   measurement campaign still requires separate capture and motion authority.
+- Control boundary: generic simulator-result admission is disabled without a
+  trusted deterministic adapter. Persistent budgets use one ignored canonical
+  campaign/config-keyed state path independent of output; the exported receipt
+  verifier rejects artifact, authority, and stale-state tamper.
 - Blockers: synchronized jaw-force and rubber-deformation/profile evidence is
   unavailable. This is the accepted terminal measurement-acquisition outcome;
   it grants no capture or robot authority.
 - Next step: independent rereview. Do not resume B2 or open a new C2 family;
   retain the sealed acquisition packet. The control plane has no intervention
-  executor and consumes independently evaluated receipts only.
+  executor. Only the locally recomputed synthetic measurement receipt lane is
+  currently admissible.
 
 ## Paused B2 compliant-pad evaluator win loop
 

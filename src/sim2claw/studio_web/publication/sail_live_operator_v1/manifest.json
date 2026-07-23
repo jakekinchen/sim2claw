@@ -1,19 +1,20 @@
 {
   "schema_version": "sim2claw.sail_live_operator_publication.v1",
   "title": "SAIL decision/evidence control plane: retained C2 terminal decision",
-  "summary": "A generic SAIL decision plane composed the retained causal surfaces, ranked a synchronized force/deformation measurement above another simulator family, and abstained because the identifying measurement is unavailable. It executes no intervention and no C2 replay, promotion, training, or physical action was opened.",
+  "summary": "A generic SAIL decision plane composed the retained causal surfaces, ranked a synchronized force/deformation measurement above another simulator family, and abstained because the identifying measurement is unavailable. Generic simulator admission is disabled without a trusted deterministic adapter. It executes no intervention and no C2 replay, promotion, training, or physical action was opened.",
   "verdict": "abstain_measurement_acquisition_required",
   "selected_intervention": "measurement_synchronized_force_deformation_probe",
   "action_sha256": "402a29e4cdc0c4cb90d41a83327ad8df5685544851b4e4d659129b3239744fd6",
   "evaluator_digest": "906165a7faf334182a5d3bbee5189ef689c660a3f58b2d572a257b83d55bc359",
   "receipt": {
     "source_path": "outputs/sail/live-operator-c2-v1/receipt.json",
-    "sha256": "7155065350691aaef2d64f6a2fb4657ac2d01182d3355579ef9959cb9ccb8cea",
-    "receipt_digest": "67c2ab071ccf6a8c193328203573416c1d591ec666cb0c32b3f12817f13c8641",
+    "sha256": "80e427ec673043ca875b226a73a832c45b587baa6547d87f0e38fbb82b7807cd",
+    "receipt_digest": "4f9fa5a8ca18d06517e5097cddf4b034e196e8944f146868cd14a318cb31dfc6",
     "operator_trace_sha256": "9e32549a81afc7802fd454f0650ed24fe964aa34d2c539e004d33bee1f6a383f",
     "ablation_sha256": "67605e89e24eef01444b4c532a8ab088827266c6fc656e203373f4ba62a0cdcd",
     "measurement_packet_sha256": "4398417efa987ce578b98191ec8f87d2c8ab7b3498ae3689087c01e7b06de374",
-    "campaign_state_sha256": "addd4237ea5cc8437b53f8d70e9a8e4bba407f9cb3f06d84f331ece6aeb7ede9"
+    "campaign_state_path": "outputs/sail/live-campaign-state-v1/7e28883008da09d99249ea827284e7f28a78836a24e16e4c086ec8357baafd3f/campaign_state.json",
+    "campaign_state_sha256": "b9c63de8971cb4e280d6dbe547e0f552907c51431c674f6e61f8aab951988cd2"
   },
   "budget": {
     "used_interventions": 0,

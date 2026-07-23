@@ -26,11 +26,16 @@ accepted terminal external boundary.
 
 Corrective review then found that the initial implementation overstated the
 historical comparison and lacked evaluator-owned result binding and persistent
-budgets. The repaired plane consumes independent hash-bound receipts, rejects
-replays through an atomic state chain, keeps anchor and synthetic measurement
-trial budgets separate, and includes a zero-device-I/O synthetic measurement
-closure path. It still grants no physical authority and implements no
-intervention executor.
+budgets. A second adversarial review showed that an internally self-consistent
+simulator bundle still was not authentic evaluator authority, output-selected
+state roots could split the global budget, a rejected closure could poison the
+budget before semantic validation, and final receipts lacked a read-time
+verifier. The repaired plane disables generic simulator admission, uses one
+campaign/config-keyed ignored state chain, commits only after all artifacts and
+receipt fields verify, exports a fail-closed receipt verifier, keeps anchor and
+synthetic measurement budgets separate, and retains the deterministic
+zero-device-I/O measurement lane. It still grants no physical authority and
+implements no intervention executor.
 
 ## Resource disposition
 
