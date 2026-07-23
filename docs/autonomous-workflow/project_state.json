@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-23T09:30:00-05:00",
+  "updated_at": "2026-07-23T10:45:00-05:00",
   "active_campaign": "sail_executed_benchmark_c2_adapter",
-  "current_milestone": "S2_00_TRANSACTION_ACTIVATION_AND_CONTRACT_RECONCILIATION",
+  "current_milestone": "S2_02_NON_FIXTURE_RETAINED_C2_ADAPTER_PREREGISTRATION",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_and_bounded_action_frozen_simulator_evidence_no_physical_or_transfer_authority",
@@ -873,14 +873,14 @@
       "mutable_by_this_transaction": false
     },
     "milestones": {
-      "S2-00": "in_progress_transaction_activation_and_contract_reconciliation",
-      "S2-01": "pending_evaluator_executed_structural_benchmark",
-      "S2-02": "pending_non_fixture_retained_c2_trusted_adapter_or_prerequisite_abstention",
+      "S2-00": "completed_transaction_activation_and_contract_reconciliation",
+      "S2-01": "completed_evaluator_executed_structural_benchmark",
+      "S2-02": "in_progress_non_fixture_retained_c2_trusted_adapter_preregistration",
       "S2-03": "pending_bounded_materialization_and_receipts",
       "S2-04": "pending_exact_head_verification_independent_review_push_and_closeout"
     },
     "progress_ledger": {
-      "current_state": "new_bounded_transaction_active_implementation_not_started",
+      "current_state": "benchmark_v2_executed_and_adversarially_verified_C2_adapter_unexecuted",
       "completed": [
         "clean_main_equals_origin_main_at_616f989_verified",
         "closed_D6_terminal_packet_identity_recorded_without_mutation",
@@ -888,17 +888,27 @@
         "benchmark_v1_golden_source_scan_gap_confirmed",
         "fixture_only_trusted_adapter_registry_gap_confirmed",
         "authoritative_S2_goal_loop_prompt_written",
-        "GOAL_project_state_and_ledger_reconciliation_started"
+        "GOAL_project_state_and_ledger_reconciliation_started",
+        "benchmark_v2_eight_registered_callables_executed_on_eight_public_cases",
+        "sealed_evaluator_scored_sixty_four_predictions_and_four_controls",
+        "twenty_five_declared_golden_checks_executed_and_passed",
+        "benchmark_adversarial_and_byte_identity_gate_passed",
+        "benchmark_primary_result_honestly_reported_as_SAIL_tie"
       ],
       "evidence": {
         "benchmark_v1_config": "configs/sail/seeded_benchmark_v1.json",
         "benchmark_v1_compiler": "src/sim2claw/sail/benchmark.py",
         "fixture_adapter_id": "fixture_deterministic_v1",
         "retained_c2_action_sha256": "402a29e4cdc0c4cb90d41a83327ad8df5685544851b4e4d659129b3239744fd6",
-        "retained_c2_recording_id": "20260719T031324Z-bf91502b"
+        "retained_c2_recording_id": "20260719T031324Z-bf91502b",
+        "benchmark_v2_config": "configs/sail/seeded_benchmark_v2.json",
+        "benchmark_v2_run_log": "docs/run-logs/2026-07-23-sail-executed-benchmark-v2.md",
+        "benchmark_receipt_sha256": "4f65b80d7a19ad97dbb0daf0eaac014ff3f51e682031c91abec8386a6d19b803",
+        "benchmark_receipt_digest": "013716ef4356ff0ead320b0e309b5ab061dad675553d6f155f48498751135e76",
+        "benchmark_scorecard_digest": "132aaaa5f2244c7e362cc38a58e9276c4c240a81c6c9a71ab94f4d4e42fdd1df"
       },
-      "benchmark_methods_executed": 0,
-      "benchmark_evaluator_controls_executed": 0,
+      "benchmark_methods_executed": 64,
+      "benchmark_evaluator_controls_executed": 4,
       "benchmark_failures": 0,
       "c2_interventions_used": 0,
       "c2_intervention_budget": 1,
@@ -912,7 +922,6 @@
       },
       "posterior_after": null,
       "remaining": [
-        "freeze_and_implement_versioned_executed_benchmark",
         "freeze_and_implement_exactly_one_non_fixture_C2_adapter",
         "materialize_benchmark_and_C2_or_prerequisite_abstention",
         "run_exact_head_test_tiers_and_full_suite",
@@ -920,7 +929,7 @@
         "push_scoped_commits_and_verify_remote_equality"
       ],
       "blockers": [],
-      "next_step": "freeze_versioned_benchmark_and_C2_adapter_contracts_before_any_C2_execution"
+      "next_step": "finish_test_and_commit_the_single_C2_adapter_preregistration_before_any_C2_execution"
     },
     "authority": {
       "repository_write": true,

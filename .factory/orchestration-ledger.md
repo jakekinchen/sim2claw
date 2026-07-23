@@ -15,7 +15,7 @@
   packet digest `f88070030f27c6b0f61b8ca37f10e9942d48ef2b5bf389236183632ea8c27b28`.
 - Goal:
   `docs/autonomous-workflow/goal-loop-sail-executed-benchmark-c2-adapter.md`.
-- Status: `S2-00 in_progress`.
+- Status: `S2-02 in_progress`; S2-01 benchmark checkpoint complete.
 - Cadence: active bounded transaction through exact-head verification and
   independent review.
 - Authorized public mutation: scoped commits and push to `origin/main` only
@@ -36,7 +36,7 @@
 
 | Worker | Source | Task | Allowed Actions | Status | Last Seen | Proof Target | Proof Result | Blocker |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Coordinator/Executor | owner objective | Implement S2-00 through S2-04 as sole writer | Scoped files, local simulator up to 1 intervention/18 action-identical replays, tests, receipts, commit; push only after PASS | active | 2026-07-23T09:30:00-05:00 | Every acceptance criterion in the S2 goal prompt | clean baseline and two capability gaps confirmed | none |
+| Coordinator/Executor | owner objective | Implement S2-00 through S2-04 as sole writer | Scoped files, local simulator up to 1 intervention/18 action-identical replays, tests, receipts, commit; push only after PASS | active | 2026-07-23T10:45:00-05:00 | Every acceptance criterion in the S2 goal prompt | S2-01: 64 callable executions, 4 controls, 25 executed golden checks, 0 failures; deterministic receipt | none |
 
 ### Owner Decisions
 
@@ -54,6 +54,14 @@
 - 2026-07-23T09:30:00-05:00 - Confirmed benchmark v1 assigns results by method
   name and scans golden source text, while the adapter registry contains only
   `fixture_deterministic_v1`.
+- 2026-07-23T10:45:00-05:00 - Completed S2-01 benchmark v2: eight registered
+  callables executed on eight public cases, a sealed evaluator scored 64
+  outputs plus four evaluator-owned controls, and all 25 declared golden tests
+  actually executed.
+- 2026-07-23T10:45:00-05:00 - Recorded an honest primary tie for
+  `sail_deterministic_v2` versus `parameter_only_v2` at 0.625 top-1. Repeated
+  materialization was byte-identical at receipt SHA-256
+  `4f65b80d7a19ad97dbb0daf0eaac014ff3f51e682031c91abec8386a6d19b803`.
 
 ## D0 activation snapshot — autonomous development operations and advancement
 

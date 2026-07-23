@@ -1,0 +1,103 @@
+{
+  "schema_version": "sim2claw.sail_executed_benchmark_sealed.v2",
+  "benchmark_id": "sail-structural-recovery-executed-v2",
+  "evaluator_id": "sail-structural-sealed-evaluator-v2",
+  "sealed_cases": [
+    {
+      "case_id": "public-case-01",
+      "hidden_mechanisms": ["timing_delay"],
+      "oracle_influence_set": ["timing_schedule"],
+      "heldout_residual_reduction": 0.88,
+      "regression_count": 0,
+      "abstention_expected": false
+    },
+    {
+      "case_id": "public-case-02",
+      "hidden_mechanisms": ["reset_reference"],
+      "oracle_influence_set": ["initial_state"],
+      "heldout_residual_reduction": 0.84,
+      "regression_count": 0,
+      "abstention_expected": false
+    },
+    {
+      "case_id": "public-case-03",
+      "hidden_mechanisms": ["deadband_hysteresis"],
+      "oracle_influence_set": ["joint_actuator"],
+      "heldout_residual_reduction": 0.0,
+      "regression_count": 0,
+      "abstention_expected": true
+    },
+    {
+      "case_id": "public-case-04",
+      "hidden_mechanisms": ["load_compliance", "timing_delay"],
+      "oracle_influence_set": ["load_candidate", "timing_schedule"],
+      "heldout_residual_reduction": 0.91,
+      "regression_count": 0,
+      "abstention_expected": false
+    },
+    {
+      "case_id": "public-case-05",
+      "hidden_mechanisms": ["camera_timing_extrinsics"],
+      "oracle_influence_set": ["camera_observation"],
+      "heldout_residual_reduction": 0.81,
+      "regression_count": 0,
+      "abstention_expected": false
+    },
+    {
+      "case_id": "public-case-06",
+      "hidden_mechanisms": ["gripper_contact_geometry"],
+      "oracle_influence_set": ["gripper", "jaw_collision"],
+      "heldout_residual_reduction": 0.79,
+      "regression_count": 0,
+      "abstention_expected": false
+    },
+    {
+      "case_id": "public-case-07",
+      "hidden_mechanisms": ["contact_friction_compliance"],
+      "oracle_influence_set": ["contact_material"],
+      "heldout_residual_reduction": 0.0,
+      "regression_count": 0,
+      "abstention_expected": true
+    },
+    {
+      "case_id": "public-case-08",
+      "hidden_mechanisms": ["object_dynamics", "support_height"],
+      "oracle_influence_set": ["pawn_body", "support_geometry"],
+      "heldout_residual_reduction": 0.89,
+      "regression_count": 0,
+      "abstention_expected": false
+    }
+  ],
+  "scoring_thresholds": {
+    "topk_maximum": 3,
+    "minimum_influence_f1_for_recovery": 0.75,
+    "maximum_residual_prediction_error": 0.2,
+    "abstention_is_correct_only_when_preregistered": true
+  },
+  "aggregation": {
+    "primary": "mechanism_family_top1_accuracy",
+    "secondary": [
+      "mechanism_family_topk_complete_rate",
+      "mean_influence_f1",
+      "heldout_residual_reduction_mae",
+      "abstention_accuracy"
+    ],
+    "required_case_coverage": 1.0,
+    "tie_policy": "report_tie",
+    "win_required": false
+  },
+  "evaluator_controls": [
+    "unchanged_control_v2",
+    "incorrect_structure_control_v2",
+    "oracle_structure_control_v2",
+    "full_batch_refit_control_v2"
+  ],
+  "authority": {
+    "candidate_method_access": false,
+    "candidate_self_score": false,
+    "candidate_promotion": false,
+    "threshold_mutation": false,
+    "training": false,
+    "physical": false
+  }
+}

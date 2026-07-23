@@ -59,6 +59,7 @@ def test_all_phase_one_sail_cli_routes_are_parseable() -> None:
         "sail-compile-acquisition",
         "sail-run-live-operator",
         "sail-compile-benchmark",
+        "sail-compile-executed-benchmark",
         "sail-compile-inspect-campaign",
         "sail-compile-retrospective-case",
         "sail-run-prospective-simulator",

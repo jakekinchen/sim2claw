@@ -380,6 +380,13 @@ def build_parser() -> argparse.ArgumentParser:
     sail_benchmark.add_argument("--config", type=Path, required=True)
     sail_benchmark.add_argument("--output", type=Path, required=True)
 
+    sail_executed_benchmark = subparsers.add_parser(
+        "sail-compile-executed-benchmark",
+        help="execute registered public-only SAIL methods and score them with the sealed evaluator",
+    )
+    sail_executed_benchmark.add_argument("--config", type=Path, required=True)
+    sail_executed_benchmark.add_argument("--output", type=Path, required=True)
+
     sail_inspect_campaign = subparsers.add_parser(
         "sail-compile-inspect-campaign",
         help="compile the governed structural Inspect development campaign",
@@ -1169,6 +1176,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .sail.contracts import SailContractError
         try:
             report = compile_benchmark(args.config, output_root=args.output)
+        except SailContractError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "sail-compile-executed-benchmark":
+        from .sail.contracts import SailContractError
+        from .sail.executed_benchmark import compile_executed_benchmark
+
+        try:
+            report = compile_executed_benchmark(
+                args.config, output_root=args.output
+            )
         except SailContractError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1

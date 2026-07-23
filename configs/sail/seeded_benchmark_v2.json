@@ -1,0 +1,495 @@
+{
+  "schema_version": "sim2claw.sail_executed_benchmark_campaign.v2",
+  "benchmark_id": "sail-structural-recovery-executed-v2",
+  "generated_at": "2026-07-23T10:00:00-05:00",
+  "proof_class": "synthetic_evaluator_executed_structural_benchmark",
+  "source_bindings": {
+    "golden_registry": {
+      "path": "tests/fixtures/sail/golden_cases_v1.json",
+      "sha256": "a727a189285703dde745991979f856ca23ed1fa47b8cd08c071e6c8ba09ca514"
+    },
+    "sealed_evaluator": {
+      "path": "configs/sail/evaluator/seeded_benchmark_v2_sealed.json",
+      "sha256": "01e6f3ed3ee2096c026d91e5bab10321769f2336ee1c8b4d1d5fe5d650179a38"
+    }
+  },
+  "candidate_methods": [
+    {
+      "method_id": "parameter_only_v2",
+      "callable": "parameter_only",
+      "module": "sim2claw.sail.benchmark_methods"
+    },
+    {
+      "method_id": "sequential_no_revisit_v2",
+      "callable": "sequential_no_revisit",
+      "module": "sim2claw.sail.benchmark_methods"
+    },
+    {
+      "method_id": "deterministic_random_probe_v2",
+      "callable": "deterministic_random_probe",
+      "module": "sim2claw.sail.benchmark_methods"
+    },
+    {
+      "method_id": "residual_magnitude_v2",
+      "callable": "residual_magnitude",
+      "module": "sim2claw.sail.benchmark_methods"
+    },
+    {
+      "method_id": "sail_without_invariance_v2",
+      "callable": "sail_without_invariance",
+      "module": "sim2claw.sail.benchmark_methods"
+    },
+    {
+      "method_id": "sail_without_loop_closure_v2",
+      "callable": "sail_without_loop_closure",
+      "module": "sim2claw.sail.benchmark_methods"
+    },
+    {
+      "method_id": "sail_without_structural_acquisition_v2",
+      "callable": "sail_without_structural_acquisition",
+      "module": "sim2claw.sail.benchmark_methods"
+    },
+    {
+      "method_id": "sail_deterministic_v2",
+      "callable": "sail_deterministic",
+      "module": "sim2claw.sail.benchmark_methods"
+    }
+  ],
+  "budget_per_case": {
+    "maximum_probes": 2,
+    "maximum_recomputation": 9,
+    "maximum_simulator_evaluations": 2,
+    "maximum_provider_calls": 0
+  },
+  "public_cases": [
+    {
+      "case_id": "public-case-01",
+      "candidate_mechanisms": [
+        "timing_delay",
+        "load_compliance",
+        "reset_reference"
+      ],
+      "residual_scores": {
+        "timing_delay": 0.72,
+        "load_compliance": 0.68,
+        "reset_reference": 0.2
+      },
+      "probe_catalog": [
+        {
+          "probe_id": "command_frequency",
+          "cost": 1.0,
+          "evidence_by_mechanism": {
+            "timing_delay": 0.96,
+            "load_compliance": 0.25,
+            "reset_reference": 0.1
+          }
+        },
+        {
+          "probe_id": "simulated_load",
+          "cost": 1.0,
+          "evidence_by_mechanism": {
+            "timing_delay": 0.2,
+            "load_compliance": 0.9,
+            "reset_reference": 0.1
+          }
+        }
+      ],
+      "influence_candidates": {
+        "timing_delay": ["timing_schedule"],
+        "load_compliance": ["load_candidate"],
+        "reset_reference": ["initial_state"]
+      },
+      "influence_universe": [
+        "timing_schedule",
+        "load_candidate",
+        "initial_state"
+      ],
+      "required_observable_available": true,
+      "action": {
+        "shape": [3, 2],
+        "dtype": "float64",
+        "ordering": "C_row_major_time_joint",
+        "values": [[1.0, 0.0], [2.0, 1.0], [3.0, 2.0]],
+        "sha256": "2ba27cb7e2b8f5f05a771a6ecd06c9967449ba64f38661577d5a1933dfdc5b1b",
+        "byte_identical": true
+      }
+    },
+    {
+      "case_id": "public-case-02",
+      "candidate_mechanisms": [
+        "reset_reference",
+        "metric_geometry",
+        "camera_timing_extrinsics"
+      ],
+      "residual_scores": {
+        "reset_reference": 0.69,
+        "metric_geometry": 0.7,
+        "camera_timing_extrinsics": 0.38
+      },
+      "probe_catalog": [
+        {
+          "probe_id": "reset_reference",
+          "cost": 0.5,
+          "evidence_by_mechanism": {
+            "reset_reference": 0.95,
+            "metric_geometry": 0.18,
+            "camera_timing_extrinsics": 0.12
+          }
+        },
+        {
+          "probe_id": "static_extrinsic",
+          "cost": 0.8,
+          "evidence_by_mechanism": {
+            "reset_reference": 0.15,
+            "metric_geometry": 0.8,
+            "camera_timing_extrinsics": 0.72
+          }
+        }
+      ],
+      "influence_candidates": {
+        "reset_reference": ["initial_state"],
+        "metric_geometry": ["robot_geometry"],
+        "camera_timing_extrinsics": ["camera_observation"]
+      },
+      "influence_universe": [
+        "initial_state",
+        "robot_geometry",
+        "camera_observation"
+      ],
+      "required_observable_available": true,
+      "action": {
+        "shape": [3, 2],
+        "dtype": "float64",
+        "ordering": "C_row_major_time_joint",
+        "values": [[2.0, 0.0], [3.0, 1.0], [4.0, 2.0]],
+        "sha256": "8aa4eed32ff56ca34b642dccafe4f204f2a35224af0200b50d5e952daa331298",
+        "byte_identical": true
+      }
+    },
+    {
+      "case_id": "public-case-03",
+      "candidate_mechanisms": [
+        "deadband_hysteresis",
+        "load_compliance",
+        "timing_delay"
+      ],
+      "residual_scores": {
+        "deadband_hysteresis": 0.64,
+        "load_compliance": 0.62,
+        "timing_delay": 0.6
+      },
+      "probe_catalog": [
+        {
+          "probe_id": "small_amplitude_sweep",
+          "cost": 1.0,
+          "evidence_by_mechanism": {
+            "deadband_hysteresis": 0.51,
+            "load_compliance": 0.49,
+            "timing_delay": 0.48
+          }
+        },
+        {
+          "probe_id": "force_observation",
+          "cost": 1.0,
+          "evidence_by_mechanism": {
+            "deadband_hysteresis": 0.5,
+            "load_compliance": 0.5,
+            "timing_delay": 0.5
+          }
+        }
+      ],
+      "influence_candidates": {
+        "deadband_hysteresis": ["joint_actuator"],
+        "load_compliance": ["load_candidate"],
+        "timing_delay": ["timing_schedule"]
+      },
+      "influence_universe": [
+        "joint_actuator",
+        "load_candidate",
+        "timing_schedule"
+      ],
+      "required_observable_available": false,
+      "action": {
+        "shape": [3, 2],
+        "dtype": "float64",
+        "ordering": "C_row_major_time_joint",
+        "values": [[3.0, 0.0], [4.0, 1.0], [5.0, 2.0]],
+        "sha256": "a5390a8b06782a91b60803242354b0fa7eacc964c7f840144628fafc32d62355",
+        "byte_identical": true
+      }
+    },
+    {
+      "case_id": "public-case-04",
+      "candidate_mechanisms": [
+        "load_compliance",
+        "timing_delay",
+        "deadband_hysteresis"
+      ],
+      "residual_scores": {
+        "load_compliance": 0.76,
+        "timing_delay": 0.73,
+        "deadband_hysteresis": 0.36
+      },
+      "probe_catalog": [
+        {
+          "probe_id": "simulated_load",
+          "cost": 0.8,
+          "evidence_by_mechanism": {
+            "load_compliance": 0.95,
+            "timing_delay": 0.2,
+            "deadband_hysteresis": 0.3
+          }
+        },
+        {
+          "probe_id": "command_frequency",
+          "cost": 0.8,
+          "evidence_by_mechanism": {
+            "load_compliance": 0.25,
+            "timing_delay": 0.94,
+            "deadband_hysteresis": 0.35
+          }
+        }
+      ],
+      "influence_candidates": {
+        "load_compliance": ["load_candidate"],
+        "timing_delay": ["timing_schedule"],
+        "deadband_hysteresis": ["joint_actuator"]
+      },
+      "influence_universe": [
+        "load_candidate",
+        "timing_schedule",
+        "joint_actuator"
+      ],
+      "required_observable_available": true,
+      "action": {
+        "shape": [3, 2],
+        "dtype": "float64",
+        "ordering": "C_row_major_time_joint",
+        "values": [[4.0, 0.0], [5.0, 1.0], [6.0, 2.0]],
+        "sha256": "b2bff9ca067029ee6719c75e707834429e4ee3d2fba6ca8acecc843c4926bc7a",
+        "byte_identical": true
+      }
+    },
+    {
+      "case_id": "public-case-05",
+      "candidate_mechanisms": [
+        "camera_timing_extrinsics",
+        "metric_geometry",
+        "timing_delay"
+      ],
+      "residual_scores": {
+        "camera_timing_extrinsics": 0.74,
+        "metric_geometry": 0.79,
+        "timing_delay": 0.4
+      },
+      "probe_catalog": [
+        {
+          "probe_id": "camera_motion",
+          "cost": 0.7,
+          "evidence_by_mechanism": {
+            "camera_timing_extrinsics": 0.96,
+            "metric_geometry": 0.22,
+            "timing_delay": 0.35
+          }
+        },
+        {
+          "probe_id": "static_geometry",
+          "cost": 0.6,
+          "evidence_by_mechanism": {
+            "camera_timing_extrinsics": 0.3,
+            "metric_geometry": 0.9,
+            "timing_delay": 0.1
+          }
+        }
+      ],
+      "influence_candidates": {
+        "camera_timing_extrinsics": ["camera_observation"],
+        "metric_geometry": ["robot_geometry"],
+        "timing_delay": ["timing_schedule"]
+      },
+      "influence_universe": [
+        "camera_observation",
+        "robot_geometry",
+        "timing_schedule"
+      ],
+      "required_observable_available": true,
+      "action": {
+        "shape": [3, 2],
+        "dtype": "float64",
+        "ordering": "C_row_major_time_joint",
+        "values": [[5.0, 0.0], [6.0, 1.0], [7.0, 2.0]],
+        "sha256": "fb8d40f48af796b493a94c7125d901d338a3c2c583d4f33bc0a96a84dd41b20f",
+        "byte_identical": true
+      }
+    },
+    {
+      "case_id": "public-case-06",
+      "candidate_mechanisms": [
+        "gripper_contact_geometry",
+        "contact_friction_compliance",
+        "load_compliance"
+      ],
+      "residual_scores": {
+        "gripper_contact_geometry": 0.71,
+        "contact_friction_compliance": 0.75,
+        "load_compliance": 0.48
+      },
+      "probe_catalog": [
+        {
+          "probe_id": "aperture_geometry",
+          "cost": 0.5,
+          "evidence_by_mechanism": {
+            "gripper_contact_geometry": 0.94,
+            "contact_friction_compliance": 0.3,
+            "load_compliance": 0.2
+          }
+        },
+        {
+          "probe_id": "sliding_contact",
+          "cost": 0.9,
+          "evidence_by_mechanism": {
+            "gripper_contact_geometry": 0.25,
+            "contact_friction_compliance": 0.92,
+            "load_compliance": 0.35
+          }
+        }
+      ],
+      "influence_candidates": {
+        "gripper_contact_geometry": ["gripper", "jaw_collision"],
+        "contact_friction_compliance": ["contact_material"],
+        "load_compliance": ["load_candidate"]
+      },
+      "influence_universe": [
+        "gripper",
+        "jaw_collision",
+        "contact_material",
+        "load_candidate"
+      ],
+      "required_observable_available": true,
+      "action": {
+        "shape": [3, 2],
+        "dtype": "float64",
+        "ordering": "C_row_major_time_joint",
+        "values": [[6.0, 0.0], [7.0, 1.0], [8.0, 2.0]],
+        "sha256": "b85e3a9614be0ab92eb5b7d1dd1b541235ed217a691fbe1db3ef989f58ecab80",
+        "byte_identical": true
+      }
+    },
+    {
+      "case_id": "public-case-07",
+      "candidate_mechanisms": [
+        "contact_friction_compliance",
+        "gripper_contact_geometry",
+        "object_dynamics"
+      ],
+      "residual_scores": {
+        "contact_friction_compliance": 0.66,
+        "gripper_contact_geometry": 0.64,
+        "object_dynamics": 0.61
+      },
+      "probe_catalog": [
+        {
+          "probe_id": "sliding_friction",
+          "cost": 1.0,
+          "evidence_by_mechanism": {
+            "contact_friction_compliance": 0.52,
+            "gripper_contact_geometry": 0.5,
+            "object_dynamics": 0.49
+          }
+        },
+        {
+          "probe_id": "contact_force",
+          "cost": 1.0,
+          "evidence_by_mechanism": {
+            "contact_friction_compliance": 0.5,
+            "gripper_contact_geometry": 0.5,
+            "object_dynamics": 0.5
+          }
+        }
+      ],
+      "influence_candidates": {
+        "contact_friction_compliance": ["contact_material"],
+        "gripper_contact_geometry": ["gripper", "jaw_collision"],
+        "object_dynamics": ["pawn_body"]
+      },
+      "influence_universe": [
+        "contact_material",
+        "gripper",
+        "jaw_collision",
+        "pawn_body"
+      ],
+      "required_observable_available": false,
+      "action": {
+        "shape": [3, 2],
+        "dtype": "float64",
+        "ordering": "C_row_major_time_joint",
+        "values": [[7.0, 0.0], [8.0, 1.0], [9.0, 2.0]],
+        "sha256": "d9127328282e8d326f0aad4721847794d5155d2bf728f66a6b5fe00f61adb4b4",
+        "byte_identical": true
+      }
+    },
+    {
+      "case_id": "public-case-08",
+      "candidate_mechanisms": [
+        "object_dynamics",
+        "support_height",
+        "metric_geometry"
+      ],
+      "residual_scores": {
+        "object_dynamics": 0.74,
+        "support_height": 0.72,
+        "metric_geometry": 0.41
+      },
+      "probe_catalog": [
+        {
+          "probe_id": "object_mass",
+          "cost": 0.7,
+          "evidence_by_mechanism": {
+            "object_dynamics": 0.93,
+            "support_height": 0.22,
+            "metric_geometry": 0.2
+          }
+        },
+        {
+          "probe_id": "support_height",
+          "cost": 0.7,
+          "evidence_by_mechanism": {
+            "object_dynamics": 0.24,
+            "support_height": 0.94,
+            "metric_geometry": 0.35
+          }
+        }
+      ],
+      "influence_candidates": {
+        "object_dynamics": ["pawn_body"],
+        "support_height": ["support_geometry"],
+        "metric_geometry": ["robot_geometry"]
+      },
+      "influence_universe": [
+        "pawn_body",
+        "support_geometry",
+        "robot_geometry"
+      ],
+      "required_observable_available": true,
+      "action": {
+        "shape": [3, 2],
+        "dtype": "float64",
+        "ordering": "C_row_major_time_joint",
+        "values": [[8.0, 0.0], [9.0, 1.0], [10.0, 2.0]],
+        "sha256": "65edd080e44ed152b787a80dead9654d01135c8bda76c23554caa43958c3460d",
+        "byte_identical": true
+      }
+    }
+  ],
+  "isolation_guarantee": "trusted_in_repository_callables_receive_deep_copied_public_payloads_only;input_output_action_method_and_evaluator_identities_are_digest_checked;this_is_not_cryptographic_or_hostile_code_sandboxing",
+  "authority": {
+    "sealed_access_by_method": false,
+    "candidate_self_score": false,
+    "candidate_promotion": false,
+    "evaluator_mutation": false,
+    "action_mutation": false,
+    "provider_calls": false,
+    "training": false,
+    "physical": false
+  }
+}
