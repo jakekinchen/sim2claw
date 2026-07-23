@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import builtins
 import json
 from pathlib import Path
 
@@ -10,16 +11,37 @@ from sim2claw.learning_factory_artifacts import canonical_digest, sha256_file
 from sim2claw.sail.live_operator import (
     LiveOperatorError,
     apply_live_sparse_closure,
+    build_live_evaluator_identity,
     load_live_campaign_contract,
     run_live_operator,
     update_discrete_structure_posterior,
-    validate_observed_intervention_result,
+)
+from sim2claw.sail.live_evidence import (
+    EvidenceAdmissionError,
+    MEASUREMENT_RECEIPT_SCHEMA,
+    MEASUREMENT_RESULT_SCHEMA,
+    MEASUREMENT_TRIALS_SCHEMA,
+    SIMULATOR_RECEIPT_SCHEMA,
+    SIMULATOR_RESULT_SCHEMA,
+    evaluate_offline_measurement_trials,
+    verify_simulator_evaluator_receipt,
 )
 from sim2claw.sail.loop_closure import LoopClosureError
 from sim2claw.sail.posterior import PosteriorError
 
 
 ACTION_SHA = "a" * 64
+
+
+def test_live_metric_rename_does_not_mutate_frozen_phase_one_acquisition_contracts() -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    expected = {
+        "src/sim2claw/sail/acquisition.py": "bbd987fa2ffa6eafd9aa9c883b97f5c8e3ad9af2b8b838facc80541d59982f1b",
+        "configs/sail/acquisition_v1.json": "02bc19d8d8851fdc0199f8cb70025fea589260a36aac6cf480625b1f592e3411",
+        "configs/sail/schemas/intervention_v1.json": "b2c8251b99d1ecdf48d5541338c5c549c3f001c81b7d1aec620540c3710d6d40",
+        "tests/fixtures/sail/intervention_valid_v1.json": "97e989bd3d8b41bc6a192c4ba0480ee5a8b36a410333acc7ac3db8540e709e77",
+    }
+    assert {path: sha256_file(repo_root / path) for path in expected} == expected
 
 
 def _write(path: Path, payload: object) -> Path:
@@ -148,8 +170,10 @@ def _campaign(tmp_path: Path) -> tuple[Path, dict]:
         "budget": {
             "maximum_interventions": 1,
             "maximum_anchor_replays": 18,
+            "maximum_measurement_trials": 6,
             "used_interventions": 0,
             "used_anchor_replays": 0,
+            "used_measurement_trials": 0,
         },
         "residual_evidence": [
             {
@@ -218,7 +242,7 @@ def _campaign(tmp_path: Path) -> tuple[Path, dict]:
                 "risk": 0.3,
                 "gate_relevance": 0.5,
                 "compensation_debt_reduction": 0.3,
-                "parameter_information_gain": 0.2,
+                "parameter_diagnostic_score": 0.2,
                 "predicted_signatures": {
                     flex: {"contact_response": {"normalized_response": 0.55}},
                     actuator: {"contact_response": {"normalized_response": 0.45}},
@@ -232,12 +256,12 @@ def _campaign(tmp_path: Path) -> tuple[Path, dict]:
                 "required_observables": ["jaw_force", "rubber_profile", "joint_angle", "joint_current"],
                 "declared_scopes": ["fingertip_contact", "load_compliance"],
                 "residual_node_ids": factors,
-                "maximum_trials": 0,
+                "maximum_trials": 6,
                 "cost": 0.1,
                 "risk": 0.0,
                 "gate_relevance": 1.0,
                 "compensation_debt_reduction": 1.0,
-                "parameter_information_gain": 1.0,
+                "parameter_diagnostic_score": 1.0,
                 "predicted_signatures": {
                     flex: {"force_deformation_coupling": {"normalized_response": 0.95}},
                     actuator: {"force_deformation_coupling": {"normalized_response": 0.05}},
@@ -246,13 +270,13 @@ def _campaign(tmp_path: Path) -> tuple[Path, dict]:
         ],
         "acquisition": {
             "weights": {
-                "predicted_information_gain": 0.6,
+                "predicted_signature_separation": 0.6,
                 "compensation_debt_reduction": 0.2,
                 "gate_relevance": 0.2,
                 "cost": -0.05,
                 "risk": -0.05,
             },
-            "minimum_predicted_information_gain": 0.5,
+            "minimum_predicted_signature_separation": 0.5,
         },
         "factor_beliefs": [
             {"factor_id": "factor:contact_patch", "value": 0.5, "status": "retained", "affected_by_mechanisms": [flex]},
@@ -271,7 +295,15 @@ def _campaign(tmp_path: Path) -> tuple[Path, dict]:
             "mechanism_id": flex,
             "invariant_parameter": "gain",
             "context_covariate": "episode_context",
-            "episode_contexts": [{"episode_id": "retained:any", "level": "single"}],
+            "episode_contexts": [
+                {
+                    "episode_id": "retained:any",
+                    "level": "single",
+                    "feature": None,
+                    "observation": None,
+                    "actions": None,
+                }
+            ],
             "thresholds": {
                 "minimum_context_levels": 2,
                 "minimum_episodes_per_level": 1,
@@ -291,9 +323,35 @@ def _campaign(tmp_path: Path) -> tuple[Path, dict]:
         "measurement_acquisition_packet": {
             "measurements": ["jaw_force", "rubber_profile", "joint_angle", "joint_current"],
             "minimum_sampling_hz": 100,
+            "maximum_alignment_skew_samples": 1,
             "calibration": ["zero force before each trial", "known-gap blocked closures"],
             "synchronization": "one monotonic timestamp domain",
+            "required_phases": [
+                "unloaded close",
+                "first contact",
+                "loaded hold",
+                "transport-equivalent dwell",
+                "release",
+            ],
             "robot_motion_authority": False,
+        },
+        "measurement_result_evaluation": {
+            "allowed_proof_classes": ["synthetic_measurement_fixture"],
+            "flexural_mechanism_id": flex,
+            "actuator_mechanism_id": actuator,
+            "feature_algorithms": {
+                "force_deformation_coupling": "nonnegative Pearson correlation",
+                "current_force_hysteresis": "absolute normalized loop area",
+                "loaded_patch_change": "normalized unloaded-to-loaded mean change",
+            },
+            "thresholds": {
+                "flexural_min_force_deformation_coupling": 0.8,
+                "flexural_max_current_force_hysteresis": 0.1,
+                "flexural_min_loaded_patch_change": 0.25,
+                "actuator_max_force_deformation_coupling": 0.4,
+                "actuator_min_current_force_hysteresis": 0.2,
+                "actuator_max_loaded_patch_change": 0.15,
+            },
         },
         "authority": {
             "physical_capture": False,
@@ -304,6 +362,158 @@ def _campaign(tmp_path: Path) -> tuple[Path, dict]:
     }
     config_path = _write(tmp_path / "campaign.json", config)
     return config_path, config
+
+
+def _measurement_raw(
+    path: Path,
+    *,
+    config: dict,
+    trial_id: str = "measurement-trial-arbitrary-1",
+    force: list[float] | None = None,
+    deformation: list[float] | None = None,
+    current: list[float] | None = None,
+    patch: list[float] | None = None,
+) -> Path:
+    packet = config["measurement_acquisition_packet"]
+    return _write(
+        path,
+        {
+            "schema_version": MEASUREMENT_TRIALS_SCHEMA,
+            "campaign_id": config["campaign_id"],
+            "selected_intervention": "probe-measurement-arbitrary",
+            "proof_class": "synthetic_measurement_fixture",
+            "authority": copy.deepcopy(config["authority"]),
+            "trials": [
+                {
+                    "trial_id": trial_id,
+                    "clock_id": "synthetic-common-clock-arbitrary",
+                    "sampling_hz": 100.0,
+                    "maximum_alignment_skew_samples": 1,
+                    "calibration_completed": packet["calibration"],
+                    "phases_completed": packet.get(
+                        "required_phases",
+                        [
+                            "unloaded close",
+                            "first contact",
+                            "loaded hold",
+                            "transport-equivalent dwell",
+                            "release",
+                        ],
+                    ),
+                    "phase_labels": [
+                        "unloaded close",
+                        "unloaded close",
+                        "first contact",
+                        "loaded hold",
+                        "loaded hold",
+                        "release",
+                        "release",
+                    ],
+                    "jaw_force_n": force or [0.0, 0.0, 1.0, 2.0, 3.0, 2.0, 0.0],
+                    "deformation_mm": deformation
+                    or [0.0, 0.0, 0.4, 0.8, 1.2, 0.8, 0.0],
+                    "motor_current_a": current
+                    or [0.0, 0.0, 0.2, 0.4, 0.6, 0.4, 0.0],
+                    "patch_area_mm2": patch
+                    or [1.0, 1.0, 1.1, 2.0, 2.0, 1.4, 1.0],
+                }
+            ],
+        },
+    )
+
+
+def _measurement_receipt(
+    tmp_path: Path,
+    *,
+    config_path: Path,
+    config: dict,
+    packet_path: Path,
+    raw_path: Path,
+) -> Path:
+    contract = load_live_campaign_contract(config_path)
+    packet = json.loads(packet_path.read_text())
+    raw = json.loads(raw_path.read_text())
+    evaluated = evaluate_offline_measurement_trials(
+        [raw],
+        campaign_id=contract.campaign_id,
+        selected_intervention="probe-measurement-arbitrary",
+        packet=packet,
+        evaluation_contract=config["measurement_result_evaluation"],
+    )
+    result_path = _write(
+        tmp_path / "measurement-result.json",
+        {
+            "schema_version": MEASUREMENT_RESULT_SCHEMA,
+            "campaign_id": contract.campaign_id,
+            "selected_intervention": "probe-measurement-arbitrary",
+            "execution_id": "measurement-execution-arbitrary-1",
+            "actual_mutations": [],
+            "acquisition_packet_digest": packet["packet_digest"],
+            **evaluated,
+            "authority": copy.deepcopy(config["authority"]),
+        },
+    )
+    unsigned = {
+        "schema_version": MEASUREMENT_RECEIPT_SCHEMA,
+        "campaign_id": contract.campaign_id,
+        "selected_intervention": "probe-measurement-arbitrary",
+        "frozen_intervention_set_digest": contract.intervention_set_digest,
+        "action_sha256": ACTION_SHA,
+        "evaluator_identity": build_live_evaluator_identity(contract),
+        "execution_id": "measurement-execution-arbitrary-1",
+        "actual_mutations": [],
+        "measurement_trial_ids": evaluated["measurement_trial_ids"],
+        "acquisition_packet": _binding(packet_path),
+        "raw_artifacts": [_binding(raw_path)],
+        "result_artifact": _binding(result_path),
+        "consequence": evaluated["consequence"],
+        "authority": copy.deepcopy(config["authority"]),
+    }
+    return _write(
+        tmp_path / "measurement-receipt.json",
+        {**unsigned, "receipt_digest": canonical_digest(unsigned)},
+    )
+
+
+def _simulator_receipt(tmp_path: Path, *, config_path: Path, config: dict) -> tuple[Path, dict]:
+    contract = load_live_campaign_contract(config_path)
+    raw_path = _write(tmp_path / "simulator-raw.json", {"sealed": True, "score": 0.0})
+    consequence = {"evaluator_passed": False, "status": "frozen_evaluator_reject"}
+    result_path = _write(
+        tmp_path / "simulator-result.json",
+        {
+            "schema_version": SIMULATOR_RESULT_SCHEMA,
+            "campaign_id": contract.campaign_id,
+            "selected_intervention": "probe-simulator-arbitrary",
+            "execution_id": "simulator-execution-arbitrary-1",
+            "anchor_replay_ids": ["anchor-replay-arbitrary-1"],
+            "actual_mutations": ["declared simulator factor"],
+            "hypothesis_likelihoods": {
+                "flexural-mechanism-arbitrary": 0.8,
+                "actuator-path-mechanism-arbitrary": 0.2,
+            },
+            "factor_updates": {"factor:contact_patch": 0.8},
+            "consequence": consequence,
+            "authority": copy.deepcopy(config["authority"]),
+        },
+    )
+    unsigned = {
+        "schema_version": SIMULATOR_RECEIPT_SCHEMA,
+        "campaign_id": contract.campaign_id,
+        "selected_intervention": "probe-simulator-arbitrary",
+        "frozen_intervention_set_digest": contract.intervention_set_digest,
+        "action_sha256": ACTION_SHA,
+        "evaluator_identity": build_live_evaluator_identity(contract),
+        "execution_id": "simulator-execution-arbitrary-1",
+        "anchor_replay_ids": ["anchor-replay-arbitrary-1"],
+        "actual_mutations": ["declared simulator factor"],
+        "raw_artifacts": [_binding(raw_path)],
+        "result_artifact": _binding(result_path),
+        "consequence": consequence,
+        "authority": copy.deepcopy(config["authority"]),
+    }
+    receipt = {**unsigned, "receipt_digest": canonical_digest(unsigned)}
+    return _write(tmp_path / "simulator-receipt.json", receipt), receipt
 
 
 def test_generic_campaign_ids_need_no_python_registration(tmp_path: Path) -> None:
@@ -343,6 +553,17 @@ def test_invalid_posterior_updates_fail_closed() -> None:
         )
 
 
+def test_valid_bayesian_update_may_increase_entropy() -> None:
+    result = update_discrete_structure_posterior(
+        {"concentrated": 0.99, "unlikely": 0.01},
+        likelihoods={"concentrated": 0.01, "unlikely": 0.99},
+        observation_id="surprising-observation",
+    )
+    assert result["entropy_delta_bits"] > 0.0
+    assert result["observed_information_gain_bits"] < 0.0
+    assert result["entropy_after_bits"] > result["entropy_before_bits"]
+
+
 def test_sparse_closure_rejects_unaffected_factor_mutation() -> None:
     before = [
         {"factor_id": "affected", "value": 0.5, "status": "retained"},
@@ -359,38 +580,91 @@ def test_sparse_closure_rejects_unaffected_factor_mutation() -> None:
         )
 
 
-def test_result_cannot_expand_family_escape_budget_or_self_promote(tmp_path: Path) -> None:
-    path, _ = _campaign(tmp_path)
+def test_simulator_receipt_is_hash_bound_and_rejects_spoof_tamper_or_promotion(
+    tmp_path: Path,
+) -> None:
+    path, config = _campaign(tmp_path)
     contract = load_live_campaign_contract(path)
-    base = {
-        "schema_version": "sim2claw.sail_live_intervention_result.v1",
-        "campaign_id": contract.campaign_id,
-        "intervention_id": "probe-simulator-arbitrary",
-        "frozen_intervention_set_digest": contract.intervention_set_digest,
-        "action_sha256": ACTION_SHA,
-        "evaluator_digest": contract.evaluator_digest,
-        "anchor_replays": 1,
-        "hypothesis_likelihoods": {
-            "flexural-mechanism-arbitrary": 0.8,
-            "actuator-path-mechanism-arbitrary": 0.2,
-        },
-        "factor_updates": {"factor:contact_patch": 0.8},
-        "consequence": {"evaluator_passed": False},
-        "promotion": {"promoted": False, "requested_by": None},
-    }
-    expanded = {**base, "frozen_intervention_set_digest": "c" * 64}
-    with pytest.raises(LiveOperatorError, match="expanded"):
-        validate_observed_intervention_result(contract, expanded)
-    evaluator_drift = {**base, "evaluator_digest": "d" * 64}
-    with pytest.raises(LiveOperatorError, match="evaluator drift"):
-        validate_observed_intervention_result(contract, evaluator_drift)
-    escaped = {**base, "anchor_replays": 19}
-    with pytest.raises(LiveOperatorError, match="budget"):
-        validate_observed_intervention_result(contract, escaped)
-    promoted = copy.deepcopy(base)
-    promoted["promotion"] = {"promoted": True, "requested_by": "agent"}
-    with pytest.raises(LiveOperatorError, match="promotion"):
-        validate_observed_intervention_result(contract, promoted)
+    receipt_path, receipt = _simulator_receipt(tmp_path, config_path=path, config=config)
+    simulator_intervention = next(
+        row.payload for row in contract.interventions if row.kind == "simulator_family"
+    )
+    verified = verify_simulator_evaluator_receipt(
+        receipt_path,
+        campaign_id=contract.campaign_id,
+        selected_intervention=simulator_intervention,
+        intervention_set_digest=contract.intervention_set_digest,
+        action_sha256=ACTION_SHA,
+        expected_evaluator_identity=build_live_evaluator_identity(contract),
+        remaining_anchor_replays=18,
+    )
+    assert verified["execution_id"] == "simulator-execution-arbitrary-1"
+
+    promoted = copy.deepcopy(receipt)
+    promoted["promotion"] = {"promoted": True}
+    promoted.pop("receipt_digest")
+    promoted["receipt_digest"] = canonical_digest(promoted)
+    promoted_path = _write(tmp_path / "promoted-receipt.json", promoted)
+    with pytest.raises(EvidenceAdmissionError, match="promotion"):
+        verify_simulator_evaluator_receipt(
+            promoted_path,
+            campaign_id=contract.campaign_id,
+            selected_intervention=simulator_intervention,
+            intervention_set_digest=contract.intervention_set_digest,
+            action_sha256=ACTION_SHA,
+            expected_evaluator_identity=build_live_evaluator_identity(contract),
+            remaining_anchor_replays=18,
+        )
+
+    spoofed = copy.deepcopy(receipt)
+    spoofed["evaluator_identity"]["evaluator_id"] = "agent-self-evaluator"
+    spoofed.pop("receipt_digest")
+    spoofed["receipt_digest"] = canonical_digest(spoofed)
+    spoofed_path = _write(tmp_path / "spoofed-receipt.json", spoofed)
+    with pytest.raises(EvidenceAdmissionError, match="evaluator"):
+        verify_simulator_evaluator_receipt(
+            spoofed_path,
+            campaign_id=contract.campaign_id,
+            selected_intervention=simulator_intervention,
+            intervention_set_digest=contract.intervention_set_digest,
+            action_sha256=ACTION_SHA,
+            expected_evaluator_identity=build_live_evaluator_identity(contract),
+            remaining_anchor_replays=18,
+        )
+
+    supplied = copy.deepcopy(receipt)
+    result_path = Path(supplied["result_artifact"]["path"])
+    result = json.loads(result_path.read_text())
+    result["consequence"]["simulator_promotion"] = False
+    supplied_result_path = _write(tmp_path / "supplied-promotion-result.json", result)
+    supplied["result_artifact"] = _binding(supplied_result_path)
+    supplied["consequence"] = copy.deepcopy(result["consequence"])
+    supplied.pop("receipt_digest")
+    supplied["receipt_digest"] = canonical_digest(supplied)
+    supplied_path = _write(tmp_path / "supplied-promotion-receipt.json", supplied)
+    with pytest.raises(EvidenceAdmissionError, match="may not supply promotion"):
+        verify_simulator_evaluator_receipt(
+            supplied_path,
+            campaign_id=contract.campaign_id,
+            selected_intervention=simulator_intervention,
+            intervention_set_digest=contract.intervention_set_digest,
+            action_sha256=ACTION_SHA,
+            expected_evaluator_identity=build_live_evaluator_identity(contract),
+            remaining_anchor_replays=18,
+        )
+
+    raw_path = Path(receipt["raw_artifacts"][0]["path"])
+    raw_path.write_text("tampered\n")
+    with pytest.raises(EvidenceAdmissionError, match="hash mismatch"):
+        verify_simulator_evaluator_receipt(
+            receipt_path,
+            campaign_id=contract.campaign_id,
+            selected_intervention=simulator_intervention,
+            intervention_set_digest=contract.intervention_set_digest,
+            action_sha256=ACTION_SHA,
+            expected_evaluator_identity=build_live_evaluator_identity(contract),
+            remaining_anchor_replays=18,
+        )
 
 
 def test_end_to_end_operator_abstains_for_missing_discriminating_measurement(
@@ -412,9 +686,245 @@ def test_end_to_end_operator_abstains_for_missing_discriminating_measurement(
     assert ablation["manual"]["incomplete_work_in_progress"]["artifact_count"] == 1
     assert not ablation["manual"]["incomplete_work_in_progress"]["included_in_completed_counts"]
     assert ablation["sail"]["simulator_evaluations"] == 0
+    comparison = ablation["comparison"]
+    assert comparison["historical_simulator_evaluations_informed_frozen_retrospective_decision"] == 3
+    assert comparison["sail_additional_simulator_evaluations_after_pause"] == 0
+    assert comparison["historical_evaluations_remain_retrospective_context"]
+    assert "avoided" not in json.dumps(comparison).lower()
+    assert comparison["claim"] == (
+        "3 historical evaluations informed the frozen retrospective decision; "
+        "SAIL used 0 additional evaluations after the pause."
+    )
+    invariance = json.loads((output_root / "invariance.json").read_text())
+    assert invariance["verdict"] == "not_evaluable"
+    assert invariance["reason"] == "missing_source_bound_feature_observation_or_action_vectors"
+    assert not invariance["missing_vectors_imputed"]
     receipt = json.loads((output_root / "receipt.json").read_text())
     unsigned = {key: value for key, value in receipt.items() if key != "receipt_digest"}
     assert receipt["receipt_digest"] == canonical_digest(unsigned)
+
+
+def test_two_context_missing_invariance_vectors_are_not_imputed(tmp_path: Path) -> None:
+    path, config = _campaign(tmp_path)
+    changed = copy.deepcopy(config)
+    changed["invariance"]["episode_contexts"] = [
+        {"episode_id": "context-a", "level": "a", "feature": None, "observation": None, "actions": None},
+        {"episode_id": "context-b", "level": "b", "feature": None, "observation": None, "actions": None},
+    ]
+    changed_path = _write(tmp_path / "two-context-missing.json", changed)
+    output = tmp_path / "two-context-output"
+    run_live_operator(changed_path, output_root=output)
+    invariance = json.loads((output / "invariance.json").read_text())
+    assert invariance["verdict"] == "not_evaluable"
+    assert invariance["missing_vector_episode_ids"] == ["context-a", "context-b"]
+    assert not invariance["missing_vectors_imputed"]
+
+
+def test_offline_measurement_features_return_all_preregistered_outcomes(
+    tmp_path: Path,
+) -> None:
+    path, config = _campaign(tmp_path)
+    contract = load_live_campaign_contract(path)
+    output = tmp_path / "packet-output"
+    run_live_operator(path, output_root=output)
+    packet = json.loads((output / "acquisition_packet.json").read_text())
+
+    flex_raw = json.loads(
+        _measurement_raw(tmp_path / "flex-raw.json", config=config).read_text()
+    )
+    flex = evaluate_offline_measurement_trials(
+        [flex_raw],
+        campaign_id=contract.campaign_id,
+        selected_intervention="probe-measurement-arbitrary",
+        packet=packet,
+        evaluation_contract=config["measurement_result_evaluation"],
+    )
+    assert flex["classification"] == "flexural_dominant"
+
+    actuator_raw = json.loads(
+        _measurement_raw(
+            tmp_path / "actuator-raw.json",
+            config=config,
+            trial_id="measurement-trial-actuator",
+            deformation=[1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0],
+            current=[0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0],
+            patch=[1.0, 1.0, 1.0, 1.05, 1.05, 1.0, 1.0],
+        ).read_text()
+    )
+    actuator = evaluate_offline_measurement_trials(
+        [actuator_raw],
+        campaign_id=contract.campaign_id,
+        selected_intervention="probe-measurement-arbitrary",
+        packet=packet,
+        evaluation_contract=config["measurement_result_evaluation"],
+    )
+    assert actuator["classification"] == "actuator_dominant"
+
+    ambiguous_raw = copy.deepcopy(actuator_raw)
+    ambiguous_raw["trials"][0]["trial_id"] = "measurement-trial-ambiguous"
+    ambiguous_raw["trials"][0]["patch_area_mm2"] = [1.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0]
+    ambiguous = evaluate_offline_measurement_trials(
+        [ambiguous_raw],
+        campaign_id=contract.campaign_id,
+        selected_intervention="probe-measurement-arbitrary",
+        packet=packet,
+        evaluation_contract=config["measurement_result_evaluation"],
+    )
+    assert ambiguous["classification"] == "ambiguous_abstention"
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (lambda trial, artifact: trial.__setitem__("sampling_hz", 99.0), "sampling rate"),
+        (
+            lambda trial, artifact: trial.__setitem__(
+                "maximum_alignment_skew_samples", 2
+            ),
+            "alignment skew",
+        ),
+        (
+            lambda trial, artifact: trial.__setitem__("calibration_completed", []),
+            "calibration",
+        ),
+        (
+            lambda trial, artifact: trial.__setitem__("phases_completed", []),
+            "phases",
+        ),
+        (
+            lambda trial, artifact: artifact["authority"].__setitem__(
+                "physical_capture", True
+            ),
+            "authority",
+        ),
+    ],
+)
+def test_offline_measurement_preflight_fails_closed(
+    tmp_path: Path, mutation: object, message: str
+) -> None:
+    path, config = _campaign(tmp_path)
+    contract = load_live_campaign_contract(path)
+    output = tmp_path / "preflight-output"
+    run_live_operator(path, output_root=output)
+    packet = json.loads((output / "acquisition_packet.json").read_text())
+    raw = json.loads(_measurement_raw(tmp_path / "preflight-raw.json", config=config).read_text())
+    mutation(raw["trials"][0], raw)  # type: ignore[operator]
+    with pytest.raises(EvidenceAdmissionError, match=message):
+        evaluate_offline_measurement_trials(
+            [raw],
+            campaign_id=contract.campaign_id,
+            selected_intervention="probe-measurement-arbitrary",
+            packet=packet,
+            evaluation_contract=config["measurement_result_evaluation"],
+        )
+
+
+def test_measurement_receipt_rejects_a_resealed_but_changed_packet(tmp_path: Path) -> None:
+    path, config = _campaign(tmp_path)
+    output = tmp_path / "packet-tamper-output"
+    run_live_operator(path, output_root=output)
+    raw_path = _measurement_raw(tmp_path / "packet-tamper-raw.json", config=config)
+    receipt_path = _measurement_receipt(
+        tmp_path,
+        config_path=path,
+        config=config,
+        packet_path=output / "acquisition_packet.json",
+        raw_path=raw_path,
+    )
+    packet = json.loads((output / "acquisition_packet.json").read_text())
+    packet["minimum_sampling_hz"] = 101
+    unsigned_packet = {key: value for key, value in packet.items() if key != "packet_digest"}
+    packet["packet_digest"] = canonical_digest(unsigned_packet)
+    changed_packet = _write(tmp_path / "changed-packet.json", packet)
+    receipt = json.loads(receipt_path.read_text())
+    receipt["acquisition_packet"] = _binding(changed_packet)
+    receipt.pop("receipt_digest")
+    receipt["receipt_digest"] = canonical_digest(receipt)
+    changed_receipt = _write(tmp_path / "changed-packet-receipt.json", receipt)
+    with pytest.raises(LiveOperatorError, match="sealed packet"):
+        run_live_operator(
+            path,
+            output_root=output,
+            measurement_evaluator_receipt_path=changed_receipt,
+        )
+
+
+def test_offline_measurement_trials_require_one_common_clock(tmp_path: Path) -> None:
+    path, config = _campaign(tmp_path)
+    contract = load_live_campaign_contract(path)
+    output = tmp_path / "clock-output"
+    run_live_operator(path, output_root=output)
+    packet = json.loads((output / "acquisition_packet.json").read_text())
+    raw = json.loads(_measurement_raw(tmp_path / "clock-raw.json", config=config).read_text())
+    second = copy.deepcopy(raw["trials"][0])
+    second["trial_id"] = "measurement-trial-other-clock"
+    second["clock_id"] = "synthetic-other-clock"
+    raw["trials"].append(second)
+    with pytest.raises(EvidenceAdmissionError, match="one clock"):
+        evaluate_offline_measurement_trials(
+            [raw],
+            campaign_id=contract.campaign_id,
+            selected_intervention="probe-measurement-arbitrary",
+            packet=packet,
+            evaluation_contract=config["measurement_result_evaluation"],
+        )
+
+
+def test_packet_bound_measurement_result_is_admitted_once_and_chain_is_validated(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path, config = _campaign(tmp_path)
+    output = tmp_path / "measurement-output"
+    first = run_live_operator(path, output_root=output)
+    assert first["verdict"] == "abstain_measurement_acquisition_required"
+    raw_path = _measurement_raw(tmp_path / "measurement-raw.json", config=config)
+    receipt_path = _measurement_receipt(
+        tmp_path,
+        config_path=path,
+        config=config,
+        packet_path=output / "acquisition_packet.json",
+        raw_path=raw_path,
+    )
+
+    banned = ("physical_gateway", "teleop_recording", "serial", "camera", "force_hardware")
+    real_import = builtins.__import__
+
+    def guarded_import(name: str, *args: object, **kwargs: object) -> object:
+        if any(token in name for token in banned):
+            raise AssertionError(f"device opener imported: {name}")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", guarded_import)
+    admitted = run_live_operator(
+        path,
+        output_root=output,
+        measurement_evaluator_receipt_path=receipt_path,
+    )
+    assert admitted["verdict"] == "measurement_evidence_flexural_dominant"
+    assert admitted["budget"]["used_anchor_replays"] == 0
+    assert admitted["budget"]["used_measurement_trials"] == 1
+    assert not admitted["promotion"]
+    state = json.loads((output / "campaign_state.json").read_text())
+    assert len(state["events"]) == 1
+    assert state["events"][0]["anchor_replay_ids"] == []
+    assert state["events"][0]["measurement_trial_ids"] == [
+        "measurement-trial-arbitrary-1"
+    ]
+    assert state["state_digest"] == canonical_digest(
+        {key: value for key, value in state.items() if key != "state_digest"}
+    )
+
+    with pytest.raises(LiveOperatorError, match="replay"):
+        run_live_operator(
+            path,
+            output_root=output,
+            measurement_evaluator_receipt_path=receipt_path,
+        )
+
+    state["budget"]["used_measurement_trials"] = 0
+    _write(output / "campaign_state.json", state)
+    with pytest.raises(EvidenceAdmissionError, match="state digest"):
+        run_live_operator(path, output_root=output)
 
 
 def test_static_publication_is_read_only_and_matches_terminal_receipt() -> None:

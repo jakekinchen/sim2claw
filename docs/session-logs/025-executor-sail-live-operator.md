@@ -1,4 +1,4 @@
-# Executor Session Log 025 - SAIL Live Operator Integration
+# Executor Session Log 025 - SAIL Decision/Evidence Control Plane
 
 **Date:** 2026-07-22
 
@@ -8,13 +8,15 @@ completed C2 replays, and the separate incomplete 17-artifact B2-02X screen
 before implementation. No parameter family was opened during that work.
 
 The completed implementation adds a generic live-campaign contract and one
-operator path across residual evidence, structural surprise, deterministic
+decision path across residual evidence, structural surprise, deterministic
 belief, mechanism plugins, preregistered signatures, acquisition, a global
 budget, influence, a discrete posterior, sparse affected-factor closure,
 invariance, consequence, and terminal verdict. Contract IDs are data, not
-Python registrations. Result validation rejects action/evaluator drift,
-intervention-set expansion, budget escape, invalid posteriors, mutation of
-unaffected factors, and self-promotion.
+Python registrations. A corrective follow-on replaces bare results with
+hash-bound independent evaluator receipts, persistent receipt-chain budgets,
+unique execution/replay/trial IDs, honest entropy deltas, non-imputed
+invariance, and a synthetic-only offline measurement lane. The plane does not
+execute interventions and promotion is always derived false.
 
 For retained C2, the operator retained flexural rubber/contact and actuator/load
 path mechanisms at 0.5/0.5, ranked synchronized force/deformation acquisition

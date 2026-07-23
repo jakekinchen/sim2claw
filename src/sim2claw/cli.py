@@ -318,14 +318,19 @@ def build_parser() -> argparse.ArgumentParser:
 
     sail_live_operator = subparsers.add_parser(
         "sail-run-live-operator",
-        help="run one generic budgeted SAIL campaign to evaluator verdict or abstention",
+        help="run the SAIL decision/evidence control plane to a derived verdict or abstention",
     )
     sail_live_operator.add_argument("--config", type=Path, required=True)
     sail_live_operator.add_argument("--output", type=Path, required=True)
     sail_live_operator.add_argument(
-        "--result",
+        "--simulator-evaluator-receipt",
         type=Path,
-        help="optional independently evaluated result for the selected intervention",
+        help="optional hash-bound receipt from the independent simulator evaluator",
+    )
+    sail_live_operator.add_argument(
+        "--measurement-evaluator-receipt",
+        type=Path,
+        help="optional sealed-packet-bound offline measurement evaluator receipt",
     )
 
     sail_benchmark = subparsers.add_parser(
@@ -1050,7 +1055,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             report = run_live_operator(
                 args.config,
                 output_root=args.output,
-                observed_result_path=args.result,
+                simulator_evaluator_receipt_path=args.simulator_evaluator_receipt,
+                measurement_evaluator_receipt_path=args.measurement_evaluator_receipt,
             )
         except SailContractError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))

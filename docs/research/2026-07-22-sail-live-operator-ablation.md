@@ -1,10 +1,10 @@
-# SAIL live operator and manual-search ablation
+# SAIL decision/evidence control plane and manual-search ablation
 
 ## Decision
 
 The retained C2 evidence does not identify whether the remaining simulator gap
 is dominated by flexural rubber/contact-patch behavior or by the actuator/load
-path. The generic SAIL live operator therefore selected a synchronized
+path. The generic SAIL decision plane therefore selected a synchronized
 jaw-force and rubber-deformation measurement, found that acquisition
 unavailable under current authority, and abstained before opening another
 simulator family.
@@ -16,15 +16,18 @@ Evaluator digest
 `906165a7faf334182a5d3bbee5189ef689c660a3f58b2d572a257b83d55bc359`
 and release index 401 remain frozen.
 
-## Composed operator path
+## Composed decision path
 
-The execution follows one generic campaign contract through residual evidence,
+The decision follows one generic campaign contract through residual evidence,
 structural surprise, a deterministic belief graph, mechanism plugins,
 preregistered signatures, acquisition ranking, a global budget, influence
 discovery, a discrete posterior, sparse loop closure, invariance, consequence,
 and a terminal verdict. Arbitrary contract IDs require no Python registration.
-Observed results must match the frozen action, evaluator, intervention-set
-digest, budget, hypothesis set, affected factors, and no-promotion boundary.
+Results are never accepted by self-description. An independently owned receipt
+must hash-bind the frozen action, evaluator code/config/source identity,
+intervention set, execution or trial IDs, allowed mutations, raw artifacts,
+result artifact, consequence, budget, hypothesis set, affected factors, and
+all-false authority. Promotion is derived false and cannot be supplied.
 
 The two retained mechanisms are:
 
@@ -36,7 +39,7 @@ information gain is unavailable, and neither mechanism is rejected.
 
 ## Manual versus SAIL ablation
 
-| Dimension | Manual predecessor sequence | SAIL live operator |
+| Dimension | Manual predecessor sequence | SAIL decision plane |
 | --- | ---: | ---: |
 | Complete campaigns or operators | 32 | 1 |
 | C2 simulator evaluations | 514 | 0 |
@@ -46,9 +49,11 @@ information gain is unavailable, and neither mechanism is rejected.
 | Retained mechanisms | flexural contact and actuator/load path | same two mechanisms |
 | Abstention | incomplete family interrupted | pre-execution missing-measurement abstention |
 
-SAIL avoided 514 additional simulator evaluations, but efficiency is not task
-success. It earned no accepted task gain and the ablation does not manufacture
-one. B2-02X remains separately preserved as 17 work-in-progress anchor
+The 514 historical evaluations informed the frozen retrospective decision;
+SAIL used zero additional evaluations after the pause. This is not a
+counterfactual saved-evaluation claim. SAIL earned no accepted task gain and
+the ablation does not manufacture one. B2-02X remains separately preserved as
+17 work-in-progress anchor
 artifacts without a complete screen receipt; it is excluded from the 32
 completed campaigns and 514 completed candidate replays.
 
@@ -65,25 +70,31 @@ monotonic timestamp domain of:
 Calibration requires force zeroing before each trial, unloaded closures,
 blocked closures at two known gaps, and recorded metric profile scale and
 camera intrinsics. Required phases are unloaded close, first contact, loaded
-hold, transport-equivalent dwell, and release. The packet is sealed before
-execution and grants neither physical capture nor robot-motion authority.
+hold, transport-equivalent dwell, and release. The packet is sealed before any
+result is admitted and grants neither physical capture nor robot-motion
+authority. A zero-device-I/O lane now verifies only synthetic packet-bound
+fixtures and deterministically computes force-deformation coupling,
+current-force hysteresis, and loaded-patch change. Physical capture remains
+separately unauthorized.
 
 ## Evidence
 
 - Contract: `configs/sail/live_operator_c2_v1.json`
 - Generated root: `outputs/sail/live-operator-c2-v1`
 - Receipt SHA-256:
-  `e4aac1ce3cbf100902e71afc2be834a54a4b83555b51fb94196cd9e505490c23`
+  `7155065350691aaef2d64f6a2fb4657ac2d01182d3355579ef9959cb9ccb8cea`
 - Receipt digest:
-  `caa30fdcf4592f52fdc02c94181e75bbf24bd413a3310fbeb4d06707d431036f`
+  `67c2ab071ccf6a8c193328203573416c1d591ec666cb0c32b3f12817f13c8641`
 - Operator-trace SHA-256:
-  `98dfd3e24da68e6d023ee2320875ad4b90bf44f3c162f4d44e23b30d8db7481d`
+  `9e32549a81afc7802fd454f0650ed24fe964aa34d2c539e004d33bee1f6a383f`
 - Ablation SHA-256:
-  `39596e54063503865aede2d42387730ac133256f74068a061e9a979a17061dde`
+  `67605e89e24eef01444b4c532a8ab088827266c6fc656e203373f4ba62a0cdcd`
 - Measurement-packet SHA-256:
-  `fd52e5e882b277259c7f5449e62abda8373ebe85a689ce9b7c7fc527671807bd`
+  `4398417efa987ce578b98191ec8f87d2c8ab7b3498ae3689087c01e7b06de374`
+- Empty campaign-state SHA-256:
+  `addd4237ea5cc8437b53f8d70e9a8e4bba407f9cb3f06d84f331ece6aeb7ede9`
 
 Proof class:
-`retrospective_action_frozen_c2_live_operator_abstention`. Training,
+`retrospective_action_frozen_c2_decision_plane_abstention`. Training,
 simulator promotion, physical capture, physical task evidence, and robot motion
 remain closed.

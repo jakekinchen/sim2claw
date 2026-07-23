@@ -1,8 +1,15 @@
-# Reviewer verdict: SAIL live operator integration
+# Reviewer verdict 026: superseded SAIL control-plane review
 
-Verdict: `ACCEPT TERMINAL MEASUREMENT-ACQUISITION ABSTENTION AND STOP`
+Verdict: `SUPERSEDED BY CORRECTIVE REVIEW`
 
-The implementation satisfies the live-operator objective without continuing
+The terminal measurement-acquisition abstention was directionally correct, but
+the original acceptance missed material merge blockers: it mischaracterized
+the 514-evaluation historical comparison, trusted a bare self-described result, kept
+budgets only in config, imputed invariance vectors, rejected entropy-increasing
+Bayesian updates, and mislabeled signature distance as predicted information
+gain. This verdict is preserved as history and is not current merge authority.
+
+The original implementation satisfied the selection objective without continuing
 the paused manual search. One generic contract binds arbitrary IDs, two
 competing retained mechanisms, frozen predicted signatures, observables,
 affected factors, evaluator identity, proof boundaries, and a global 1-family /
@@ -18,10 +25,10 @@ physical path was opened.
 
 The ablation reports the manual baseline exactly: 32 complete receipts, 514 C2
 replays, and zero anchor passes. The 17 incomplete B2-02X artifacts are
-preserved and excluded. SAIL's zero-evaluation abstention is correctly called
-an efficiency result, not a task gain.
+preserved and excluded. The original efficiency comparison is withdrawn; those
+514 evaluations are retrospective input, not unperformed work.
 
 Focused, automatic CI, retained-evidence, full-suite, static receipt, and HTTP
-checks pass. Stop the autonomous loop. Future acquisition requires separately
-granted capture and motion authority; do not resume B2 or open another C2
-family from this result.
+checks described the original commit only. See reviewer message 027 for the
+corrective merge-readiness status. Physical acquisition still requires
+separately granted capture and motion authority.

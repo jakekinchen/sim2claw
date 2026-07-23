@@ -1,9 +1,9 @@
-# Goal loop: live SAIL operator integration and ablation
+# Goal loop: SAIL decision/evidence control-plane integration and ablation
 
 ## Mission
 
 Turn SAIL from a collection of validated fixtures and campaign-specific
-guardrails into the live causal control plane for the retained C2 twin-error
+guardrails into the causal decision/evidence control plane for the retained C2 twin-error
 problem. Replace the manual sequence of hand-authored parameter families with
 one compositional operator that updates explicit competing hypotheses, selects
 discriminating interventions, reallocates causal credit, validates consequences,
@@ -35,7 +35,7 @@ retrospective, prospective simulator, training, and physical proof classes.
 
 ## Intended outcome
 
-A real retained-project SAIL execution follows one auditable path:
+A retained-project SAIL decision follows one auditable path:
 
 `residual evidence -> competing structures -> predicted signatures ->`
 `acquisition ranking -> bounded intervention -> posterior/belief update ->`
@@ -52,7 +52,7 @@ abstention; passing the evaluator is never required merely to finish the goal.
 1. Reconcile branch, worktree, predecessor task, `GOAL.md`, and
    `project_state.json`; mark the legacy B2 parameter search paused and preserve
    every completed receipt and commit.
-2. Define a generic, typed live-campaign contract that can bind residuals,
+2. Define a generic, typed campaign contract that can bind residuals,
    hypotheses, predicted intervention signatures, budgets, observables,
    affected graph factors, evaluators, and proof/authority boundaries without
    enumerating task-specific schema or campaign IDs in Python.
@@ -111,6 +111,14 @@ Completion requires:
 Test counts prove implementation integrity, not causal or transfer validity.
 
 ## Decision status
+
+Corrective closure (2026-07-22): this component is a decision/evidence control
+plane, not an intervention executor. It consumes only independently evaluated,
+hash-bound receipts. Persistent generated state enforces unique execution,
+anchor-replay, and synthetic measurement-trial identities. The 514 historical
+evaluations informed the frozen retrospective decision; SAIL used zero
+additional evaluations after the pause. Physical capture and motion remain
+separately unauthorized.
 
 Confirmed:
 

@@ -4,6 +4,8 @@ import json
 import shlex
 from pathlib import Path
 
+import pytest
+
 from sim2claw import cli
 from sim2claw.sail.contracts import SailContractError
 
@@ -71,6 +73,34 @@ def test_all_phase_one_sail_cli_routes_are_parseable() -> None:
         if command != "sail-inventory":
             argv.extend(["--output", "ignored-output"])
         assert parser.parse_args(argv).command == command
+
+
+def test_live_control_plane_accepts_receipts_not_bare_self_described_results() -> None:
+    parser = cli.build_parser()
+    parsed = parser.parse_args(
+        [
+            "sail-run-live-operator",
+            "--config",
+            "campaign.json",
+            "--output",
+            "ignored-output",
+            "--measurement-evaluator-receipt",
+            "measurement-receipt.json",
+        ]
+    )
+    assert parsed.measurement_evaluator_receipt == Path("measurement-receipt.json")
+    with pytest.raises(SystemExit):
+        parser.parse_args(
+            [
+                "sail-run-live-operator",
+                "--config",
+                "campaign.json",
+                "--output",
+                "ignored-output",
+                "--result",
+                "self-described.json",
+            ]
+        )
 
 
 def test_studio_observatory_cli_dispatches_without_widening_authority(

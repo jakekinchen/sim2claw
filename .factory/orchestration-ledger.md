@@ -1,5 +1,71 @@
 # Orchestration Ledger
 
+## Current control plane — SAIL promotion review and measurement readiness
+
+- Repo and branch: `/Users/kelly/Developer/sim2claw` on the clean, pushed
+  continuation branch `codex/sail-live-operator-integration` at `5bc796f`.
+- Queue source: owner request to assess SAIL effectiveness, centralize the
+  active commit lineage, and orchestrate the next bounded objective.
+- Classified: 2026-07-22T18:30:09-05:00.
+- Authorized actions: read-only review, local orchestration records, scoped
+  branch repairs, tests, commit, and push to the named continuation branch.
+  No merge to `main`, PR creation, training, physical capture, robot motion,
+  provider use, or paid compute is assumed.
+- Branch state: `main`, `codex/build-phase-1-sail-clawloop`,
+  `codex/SAIL-integration`, and `agent/publish-sim2real-advancements` are all
+  ancestors of the continuation branch. Divergent `backup-*` refs are
+  superseded reorder snapshots and are not merge candidates.
+
+### Queue Summary
+
+- Autonomous: independently review commit `5bc796f`; reproduce its receipt;
+  correct any proof-language or implementation defect; inventory and specify
+  a fixture-first, zero-I/O measurement-acquisition readiness layer.
+- Needs owner: merge/publication authority; actual sensor selection or spend;
+  physical capture; gateway arming; and robot motion.
+- Defer/close/supersede: resume B2-02X, open another C2 simulator family,
+  merge backup branches, or claim twin-error reduction from an abstention.
+
+### Workers
+
+| Worker | Source | Task | Allowed Actions | Status | Last Seen | Proof Target | Proof Result | Blocker |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `review_live_operator` | commit `5bc796f` | Independent live-operator and receipt review | Read only; no edits or external actions | active | 2026-07-22T18:30:09-05:00 | Merge-readiness findings with exact evidence | pending | none |
+| `inventory_measurement_path` | sealed C2 acquisition packet | Inventory force/deformation/angle/current acquisition surfaces | Read only; no physical I/O or authority inference | active | 2026-07-22T18:30:09-05:00 | Smallest zero-authority next objective and acceptance gates | pending | none |
+| `repair_sail_control_plane` | independent review blockers on `5bc796f` | Implement fail-closed evaluator receipts, persistent budgets, corrected metrics, and fixture-only offline measurement closure | Same branch edits, tests, scoped commit and push; no PR/main merge, provider, or physical I/O | complete | 2026-07-22T19:48:00-05:00 | Every review blocker has a targeted negative test and truthful receipt | 73 focused tests; 854 repository tests, 3 skipped, and 328 subtests; receipt `71550653...` | none |
+| Coordinator | owner request | Reconcile history, reproduce verdict, route repairs and next objective | Ledger, local verification, scoped branch integration | active | 2026-07-22T18:30:09-05:00 | One reviewed continuation branch and owner-gated next boundary | reproduced receipt `e4aac1ce...`; 12 focused tests pass | independent reviews pending |
+
+### Owner Decisions
+
+| Source | Decision Needed | Proof Completed | Risks | Recommendation | Choices | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| continuation branch | Whether to merge or publish after review | active SAIL lineage is centralized and pushed; no open PR exists; corrective repair is in progress | premature merge before independent rereview could preserve an unreviewed receipt/state design | wait for corrective rereview | keep branch-only, open PR, or merge later | pending; not blocking autonomous repair |
+| acquisition packet | Whether and how to perform physical acquisition | deterministic packet reproduced; physical authority remains false | sensor spend, hardware safety, and accidental motion/capture authority | first build and verify fixture-only ingestion/preflight; request authority only at the physical boundary | authorize later capture, revise hardware, or keep blocked | pending; not blocking fixture-only design |
+
+### Event Log
+
+- 2026-07-22T18:30:09-05:00 - Reproduced the terminal
+  `abstain_measurement_acquisition_required` verdict with zero interventions,
+  zero anchor replays, and receipt SHA-256 `e4aac1ce...`; 12 focused live
+  operator and hardware-protocol tests passed.
+- 2026-07-22T18:30:09-05:00 - Confirmed all active SAIL lineage branches are
+  ancestors of `codex/sail-live-operator-integration`; no backup snapshot will
+  be merged.
+- 2026-07-22T18:30:09-05:00 - Opened independent code/receipt review and
+  zero-authority measurement-path inventory. Actual capture and motion remain
+  closed.
+- 2026-07-22T19:40:00-05:00 - Routed all review blockers into one same-branch
+  corrective implementation. Focused tests now cover hash-bound evaluator
+  receipts, promotion spoofing, raw/result tampering, persistent replay-safe
+  state, missing invariance vectors, signed entropy change, honest signature
+  separation, and a synthetic-only packet-bound offline measurement lane. No
+  intervention, physical I/O, provider, Brev, PR, or main merge was opened.
+- 2026-07-22T19:48:00-05:00 - Corrective implementation closed with 73 focused
+  tests and the uninterrupted 854-test/328-subtest repository suite passing.
+  The decision plane remains at terminal measurement-acquisition abstention;
+  its new receipt is `71550653...`, and independent rereview remains required
+  before any PR or main merge decision.
+
 ## Current control plane — SAIL live operator integration
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on

@@ -1,24 +1,27 @@
 {
   "schema_version": "sim2claw.sail_live_operator_publication.v1",
-  "title": "SAIL live operator: retained C2 terminal decision",
-  "summary": "A generic SAIL operator composed the retained causal surfaces, ranked a synchronized force/deformation measurement above another simulator family, and abstained because the identifying measurement is unavailable. No C2 replay, promotion, training, or physical action was opened.",
+  "title": "SAIL decision/evidence control plane: retained C2 terminal decision",
+  "summary": "A generic SAIL decision plane composed the retained causal surfaces, ranked a synchronized force/deformation measurement above another simulator family, and abstained because the identifying measurement is unavailable. It executes no intervention and no C2 replay, promotion, training, or physical action was opened.",
   "verdict": "abstain_measurement_acquisition_required",
   "selected_intervention": "measurement_synchronized_force_deformation_probe",
   "action_sha256": "402a29e4cdc0c4cb90d41a83327ad8df5685544851b4e4d659129b3239744fd6",
   "evaluator_digest": "906165a7faf334182a5d3bbee5189ef689c660a3f58b2d572a257b83d55bc359",
   "receipt": {
     "source_path": "outputs/sail/live-operator-c2-v1/receipt.json",
-    "sha256": "e4aac1ce3cbf100902e71afc2be834a54a4b83555b51fb94196cd9e505490c23",
-    "receipt_digest": "caa30fdcf4592f52fdc02c94181e75bbf24bd413a3310fbeb4d06707d431036f",
-    "operator_trace_sha256": "98dfd3e24da68e6d023ee2320875ad4b90bf44f3c162f4d44e23b30d8db7481d",
-    "ablation_sha256": "39596e54063503865aede2d42387730ac133256f74068a061e9a979a17061dde",
-    "measurement_packet_sha256": "fd52e5e882b277259c7f5449e62abda8373ebe85a689ce9b7c7fc527671807bd"
+    "sha256": "7155065350691aaef2d64f6a2fb4657ac2d01182d3355579ef9959cb9ccb8cea",
+    "receipt_digest": "67c2ab071ccf6a8c193328203573416c1d591ec666cb0c32b3f12817f13c8641",
+    "operator_trace_sha256": "9e32549a81afc7802fd454f0650ed24fe964aa34d2c539e004d33bee1f6a383f",
+    "ablation_sha256": "67605e89e24eef01444b4c532a8ab088827266c6fc656e203373f4ba62a0cdcd",
+    "measurement_packet_sha256": "4398417efa987ce578b98191ec8f87d2c8ab7b3498ae3689087c01e7b06de374",
+    "campaign_state_sha256": "addd4237ea5cc8437b53f8d70e9a8e4bba407f9cb3f06d84f331ece6aeb7ede9"
   },
   "budget": {
     "used_interventions": 0,
     "maximum_interventions": 1,
     "used_anchor_replays": 0,
-    "maximum_anchor_replays": 18
+    "maximum_anchor_replays": 18,
+    "used_measurement_trials": 0,
+    "maximum_measurement_trials": 6
   },
   "operator_trace": [
     {"stage": "residual_evidence", "status": "verified"},
@@ -27,6 +30,7 @@
     {"stage": "competing_mechanisms", "status": "retained"},
     {"stage": "acquisition", "status": "ranked_before_result"},
     {"stage": "global_budget", "status": "enforced"},
+    {"stage": "independent_evidence_admission", "status": "no_receipt_opened"},
     {"stage": "influence", "status": "discovered"},
     {"stage": "posterior_update", "status": "not_updated_no_observation"},
     {"stage": "sparse_loop_closure", "status": "no_refit_abstained_before_observation"},
@@ -54,10 +58,10 @@
     ],
     "minimum_sampling_hz": 100,
     "synchronization": "one monotonic timestamp domain, aligned to no worse than one sample",
-    "packet_digest": "65eac72810ca85bbde30664b5595bff7d00cf699443728134111861db5bb7e91"
+    "packet_digest": "11495ad0ebb12b41e7178b2f88c1b7480fdaf7c3091cd85ec3313a064d132069"
   },
   "ablation": {
-    "note": "SAIL avoided 514 additional simulator evaluations, but that efficiency is not a task-success claim and no accepted task gain was earned.",
+    "note": "514 historical evaluations informed the frozen retrospective decision; SAIL used zero additional evaluations after the pause. No accepted task gain was earned.",
     "manual": {
       "completed_campaigns": 32,
       "simulator_evaluations": 514,
@@ -80,5 +84,5 @@
     "physical_authority": false,
     "robot_motion": false
   },
-  "proof_class": "retrospective_action_frozen_c2_live_operator_abstention"
+  "proof_class": "retrospective_action_frozen_c2_decision_plane_abstention"
 }

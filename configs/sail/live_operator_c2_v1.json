@@ -70,8 +70,10 @@
   "budget": {
     "maximum_interventions": 1,
     "maximum_anchor_replays": 18,
+    "maximum_measurement_trials": 6,
     "used_interventions": 0,
-    "used_anchor_replays": 0
+    "used_anchor_replays": 0,
+    "used_measurement_trials": 0
   },
   "residual_evidence": [
     {
@@ -199,7 +201,7 @@
       "risk": 0.8,
       "gate_relevance": 0.6,
       "compensation_debt_reduction": 0.2,
-      "parameter_information_gain": 0.2,
+      "parameter_diagnostic_score": 0.2,
       "predicted_signatures": {
         "flexural_rubber_contact_v1": {"retention_aperture_tradeoff": {"normalized_response": 0.55}, "task_consequence": {"normalized_response": 0.50}},
         "actuator_load_path_v1": {"retention_aperture_tradeoff": {"normalized_response": 0.45}, "task_consequence": {"normalized_response": 0.50}}
@@ -213,12 +215,12 @@
       "required_observables": ["jaw_force", "rubber_cap_deformation_profile", "joint_angle", "joint_current"],
       "declared_scopes": ["fingertip_contact", "load_compliance"],
       "residual_node_ids": ["residual:bilateral-contact-retention", "residual:loaded-aperture-load-path", "residual:rubber-contact-patch", "residual:task-consequence"],
-      "maximum_trials": 0,
+      "maximum_trials": 6,
       "cost": 0.2,
       "risk": 0.1,
       "gate_relevance": 1.0,
       "compensation_debt_reduction": 1.0,
-      "parameter_information_gain": 1.0,
+      "parameter_diagnostic_score": 1.0,
       "predicted_signatures": {
         "flexural_rubber_contact_v1": {"force_deformation_coupling": {"normalized_response": 0.95}, "current_force_hysteresis": {"normalized_response": 0.35}, "loaded_patch_change": {"normalized_response": 0.95}},
         "actuator_load_path_v1": {"force_deformation_coupling": {"normalized_response": 0.20}, "current_force_hysteresis": {"normalized_response": 0.95}, "loaded_patch_change": {"normalized_response": 0.20}}
@@ -226,8 +228,8 @@
     }
   ],
   "acquisition": {
-    "weights": {"predicted_information_gain": 0.60, "compensation_debt_reduction": 0.20, "gate_relevance": 0.20, "cost": -0.05, "risk": -0.05},
-    "minimum_predicted_information_gain": 0.50
+    "weights": {"predicted_signature_separation": 0.60, "compensation_debt_reduction": 0.20, "gate_relevance": 0.20, "cost": -0.05, "risk": -0.05},
+    "minimum_predicted_signature_separation": 0.50
   },
   "factor_beliefs": [
     {"factor_id": "factor:rubber_contact_patch", "value": 0.5, "status": "retained_competing", "affected_by_mechanisms": ["flexural_rubber_contact_v1"]},
@@ -247,7 +249,7 @@
     "mechanism_id": "flexural_rubber_contact_v1",
     "invariant_parameter": "deformation_gain",
     "context_covariate": "episode_context",
-    "episode_contexts": [{"episode_id": "20260719T031324Z-bf91502b", "level": "retained_c2_only"}],
+    "episode_contexts": [{"episode_id": "20260719T031324Z-bf91502b", "level": "retained_c2_only", "feature": null, "observation": null, "actions": null}],
     "thresholds": {"minimum_context_levels": 2, "minimum_episodes_per_level": 1, "maximum_invariant_parameter_range": 0.10, "minimum_residual_signature_consistency": 0.90}
   },
   "ablation": {
@@ -278,10 +280,29 @@
   "measurement_acquisition_packet": {
     "measurements": ["synchronized jaw force", "rubber-cap deformation and contact profile", "gripper joint angle", "gripper motor current"],
     "minimum_sampling_hz": 100,
+    "maximum_alignment_skew_samples": 1,
     "calibration": ["force-sensor zero before every trial", "three unloaded closures", "three blocked closures at each of two known gaps", "metric profile scale and camera intrinsics recorded"],
     "synchronization": "single monotonic timestamp domain with force, profile, angle, and current aligned to no worse than one sample",
     "required_phases": ["unloaded close", "first contact", "loaded hold", "transport-equivalent dwell", "release"],
     "robot_motion_authority": false
+  },
+  "measurement_result_evaluation": {
+    "allowed_proof_classes": ["synthetic_measurement_fixture"],
+    "flexural_mechanism_id": "flexural_rubber_contact_v1",
+    "actuator_mechanism_id": "actuator_load_path_v1",
+    "feature_algorithms": {
+      "force_deformation_coupling": "nonnegative Pearson correlation of aligned jaw-force and deformation samples",
+      "current_force_hysteresis": "absolute normalized trapezoidal loop area in the current-force plane",
+      "loaded_patch_change": "absolute unloaded-to-loaded mean patch-area change normalized by the larger mean"
+    },
+    "thresholds": {
+      "flexural_min_force_deformation_coupling": 0.80,
+      "flexural_max_current_force_hysteresis": 0.10,
+      "flexural_min_loaded_patch_change": 0.25,
+      "actuator_max_force_deformation_coupling": 0.40,
+      "actuator_min_current_force_hysteresis": 0.20,
+      "actuator_max_loaded_patch_change": 0.15
+    }
   },
   "authority": {
     "physical_capture": false,

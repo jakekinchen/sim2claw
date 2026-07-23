@@ -1,14 +1,14 @@
 # SAIL/ClawLoop Goal
 
-Status: `PHASE 1, A1, B1, AND LIVE SAIL OPERATOR COMPLETE; B2 SEARCH PAUSED; TERMINAL MEASUREMENT ABSTENTION`
+Status: `PHASE 1, A1, B1, AND SAIL DECISION/EVIDENCE CONTROL PLANE COMPLETE; B2 SEARCH PAUSED; TERMINAL MEASUREMENT ABSTENTION`
 
-## Active live SAIL operator integration and ablation
+## Active SAIL decision/evidence control-plane integration and ablation
 
 The user paused the open-ended B2 parameter-family search after it accumulated
 completed causal diagnostics without an evaluator-owned anchor pass. The active
 objective is now to make the existing SAIL residual, belief, acquisition,
 posterior, influence, sparse loop-closure, invariance, and consequence surfaces
-operate as one live retained-project control plane, then ablate that operator
+operate as one retained-project decision/evidence control plane, then ablate that plane
 against the manual campaign sequence. A correct evidence-bound abstention is an
 accepted terminal outcome.
 
@@ -23,28 +23,32 @@ do not resume its instruction to continue parameter families until a win.
 
 Progress ledger (2026-07-22):
 
-- Current state: complete. The generic live operator completed the retained C2
-  path and terminally abstained for the missing identifying measurement.
+- Current state: corrective implementation complete and ready for independent
+  rereview. The generic decision plane completed the retained C2 path and
+  terminally abstained for the missing identifying measurement.
 - Completed: authority prompt and both named Codex tasks read; branch verified
   clean at pushed commit `c407f8e`; 32 complete manual families / 514 C2
   candidate replays / 0 anchor passes frozen as the ablation baseline.
-- Evidence: receipt SHA-256 `e4aac1ce3cbf100902e71afc2be834a54a4b83555b51fb94196cd9e505490c23`;
+- Evidence: receipt SHA-256 `7155065350691aaef2d64f6a2fb4657ac2d01182d3355579ef9959cb9ccb8cea`;
   B2-02X remains a separate incomplete 17-of-18-artifact work-in-progress
   screen with no complete receipt.
 - Interventions used / budget: `0 / 1` new SAIL-selected families and `0 / 18`
-  new C2 anchor replays.
+  new C2 anchor replays; `0 / 6` separately counted synthetic measurement
+  trials.
 - Hypotheses retained: `flexural_rubber_contact_v1` and
   `actuator_load_path_v1`, each at posterior probability 0.5 because no result
   was opened.
 - Hypotheses rejected: none; observed information gain is unavailable, not
   imputed.
-- Remaining: no autonomous implementation or simulator search. A future
-  measurement campaign requires separate capture and motion authority.
+- Remaining: independent rereview and owner decision on PR/merge. A synthetic,
+  packet-bound, zero-device-I/O result lane is implemented; any physical
+  measurement campaign still requires separate capture and motion authority.
 - Blockers: synchronized jaw-force and rubber-deformation/profile evidence is
   unavailable. This is the accepted terminal measurement-acquisition outcome;
   it grants no capture or robot authority.
-- Next step: stop. Do not resume B2 or open a new C2 family; retain the sealed
-  acquisition packet for a separately authorized measurement campaign.
+- Next step: independent rereview. Do not resume B2 or open a new C2 family;
+  retain the sealed acquisition packet. The control plane has no intervention
+  executor and consumes independently evaluated receipts only.
 
 ## Paused B2 compliant-pad evaluator win loop
 

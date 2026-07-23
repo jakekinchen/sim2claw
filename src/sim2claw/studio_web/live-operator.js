@@ -52,7 +52,7 @@ function renderAblation(data) {
   const root = byId("ablation-body");
   const rows = [
     ["Manual sequence", data.manual.completed_campaigns, data.manual.simulator_evaluations, data.manual.anchor_passes, data.manual.abstention_quality],
-    ["SAIL live operator", "1 operator", data.sail.simulator_evaluations, 0, data.sail.abstention_quality],
+    ["SAIL decision plane", "1 plane", data.sail.simulator_evaluations, 0, data.sail.abstention_quality],
   ];
   root.replaceChildren(...rows.map((values) => {
     const row = document.createElement("tr");

@@ -1,4 +1,8 @@
-"""Generic, budgeted SAIL live operator with evaluator-owned terminal verdicts."""
+"""Generic, budgeted SAIL decision/evidence control plane.
+
+The control plane ranks preregistered interventions and consumes independently
+evaluated, hash-bound receipts.  It is not an intervention executor.
+"""
 
 from __future__ import annotations
 
@@ -24,6 +28,14 @@ from .contracts import REPO_ROOT, SailContractError, verify_source_binding
 from .importers import load_json_object
 from .influence import discover_influence_set
 from .invariance import evaluate_invariance
+from .live_evidence import (
+    EvidenceAdmissionError,
+    append_admitted_result,
+    evaluator_identity,
+    locked_campaign_state,
+    verify_measurement_evaluator_receipt,
+    verify_simulator_evaluator_receipt,
+)
 from .loop_closure import LoopClosureError
 from .mechanisms import MechanismPlugin, build_mechanism_plugin, json_pointer
 from .posterior import PosteriorError, rank_structure_particles
@@ -31,7 +43,6 @@ from .structural_surprise import evaluate_surprise
 
 
 CONFIG_SCHEMA = "sim2claw.sail_live_campaign.v1"
-RESULT_SCHEMA = "sim2claw.sail_live_intervention_result.v1"
 RECEIPT_SCHEMA = "sim2claw.sail_live_operator_receipt.v1"
 
 
@@ -113,15 +124,15 @@ def update_discrete_structure_posterior(
         after = {name: value / normalizer for name, value in unnormalized.items()}
         status = "updated_from_preregistered_result"
         observed_gain = entropy_before - entropy(after)
-        if observed_gain < -1e-12:
-            raise PosteriorError("posterior update increased entropy unexpectedly")
+    entropy_after = entropy(after)
     unsigned = {
         "schema_version": "sim2claw.sail_discrete_structure_posterior.v1",
         "hypothesis_ids": sorted(before),
         "before": dict(sorted(before.items())),
         "after": dict(sorted(after.items())),
         "entropy_before_bits": entropy_before,
-        "entropy_after_bits": entropy(after),
+        "entropy_after_bits": entropy_after,
+        "entropy_delta_bits": entropy_after - entropy_before,
         "observed_information_gain_bits": observed_gain,
         "observation_id": observation_id,
         "status": status,
@@ -146,7 +157,7 @@ def rank_live_acquisition(
     ):
         raise AcquisitionError("live acquisition priors are invalid")
     required_components = {
-        "predicted_information_gain",
+        "predicted_signature_separation",
         "compensation_debt_reduction",
         "gate_relevance",
         "cost",
@@ -198,9 +209,9 @@ def rank_live_acquisition(
             pair_rows.append(
                 {"left": left, "right": right, "distance": distance, "weight": pair_weight}
             )
-        predicted_gain = weighted_distance / pair_weight_total
+        predicted_separation = weighted_distance / pair_weight_total
         components = {
-            "predicted_information_gain": predicted_gain,
+            "predicted_signature_separation": predicted_separation,
             "compensation_debt_reduction": float(candidate["compensation_debt_reduction"]),
             "gate_relevance": float(candidate["gate_relevance"]),
             "cost": float(candidate["cost"]),
@@ -215,7 +226,7 @@ def rank_live_acquisition(
                 "kind": str(candidate["kind"]),
                 "availability": str(candidate["availability"]),
                 "available_for_execution": available,
-                "predicted_information_gain": predicted_gain,
+                "predicted_signature_separation": predicted_separation,
                 "pairwise_signature_distances": pair_rows,
                 "components": components,
                 "score": _weighted_score(components, weights),
@@ -316,6 +327,7 @@ def build_live_belief_graph(
     interventions: Sequence[Mapping[str, Any]],
     posterior: Mapping[str, float],
     selected_intervention_id: str | None,
+    selected_intervention_executed: bool,
     verdict: str,
     proof_class: str,
     evaluator_identity: str,
@@ -413,7 +425,14 @@ def build_live_belief_graph(
                 intervention_id,
                 "intervention",
                 intervention_id,
-                "selected_unexecuted" if intervention_id == selected_intervention_id else "ranked_unexecuted",
+                (
+                    "selected_independently_evaluated"
+                    if intervention_id == selected_intervention_id
+                    and selected_intervention_executed
+                    else "selected_unexecuted"
+                    if intervention_id == selected_intervention_id
+                    else "ranked_unexecuted"
+                ),
                 proof_class,
                 source,
                 data={"kind": intervention["kind"], "availability": intervention["availability"]},
@@ -424,7 +443,14 @@ def build_live_belief_graph(
                 raise BeliefGraphError("intervention references an undeclared residual")
             edges.append(_edge(str(residual_id), "affected-by", intervention_id, metadata={"basis": "preregistered_signature"}))
         if intervention_id == selected_intervention_id:
-            edges.append(_edge(intervention_id, "evaluated-on", verdict_id, metadata={"executed": False}))
+            edges.append(
+                _edge(
+                    intervention_id,
+                    "evaluated-on",
+                    verdict_id,
+                    metadata={"independent_result_admitted": selected_intervention_executed},
+                )
+            )
     graph = _canonical_graph(
         campaign_id=campaign_id,
         generated_at=generated_at,
@@ -500,8 +526,10 @@ def _validate_budget(payload: Mapping[str, Any]) -> None:
     required = {
         "maximum_interventions",
         "maximum_anchor_replays",
+        "maximum_measurement_trials",
         "used_interventions",
         "used_anchor_replays",
+        "used_measurement_trials",
     }
     if set(payload) != required:
         raise LiveOperatorError("live operator budget field set changed")
@@ -509,10 +537,13 @@ def _validate_budget(payload: Mapping[str, Any]) -> None:
     if (
         values["maximum_interventions"] <= 0
         or values["maximum_anchor_replays"] < 0
+        or values["maximum_measurement_trials"] < 0
         or values["used_interventions"] < 0
         or values["used_anchor_replays"] < 0
+        or values["used_measurement_trials"] < 0
         or values["used_interventions"] > values["maximum_interventions"]
         or values["used_anchor_replays"] > values["maximum_anchor_replays"]
+        or values["used_measurement_trials"] > values["maximum_measurement_trials"]
     ):
         raise LiveOperatorError("live operator budget is invalid")
 
@@ -672,7 +703,12 @@ def load_live_campaign_contract(
         if not set(row.get("residual_node_ids") or []).issubset(residual_ids):
             raise LiveOperatorError("intervention residual scope is undeclared")
         maximum_trials = int(row.get("maximum_trials", -1))
-        if maximum_trials < 0 or maximum_trials > int(config["budget"]["maximum_anchor_replays"]):
+        budget_name = (
+            "maximum_anchor_replays"
+            if str(row.get("kind", "")) == "simulator_family"
+            else "maximum_measurement_trials"
+        )
+        if maximum_trials < 0 or maximum_trials > int(config["budget"][budget_name]):
             raise LiveOperatorError("intervention trial budget is invalid")
         interventions.append(
             LiveIntervention(
@@ -712,6 +748,45 @@ def load_live_campaign_contract(
         )
     except AcquisitionError as error:
         raise LiveOperatorError(f"live acquisition contract is invalid: {error}") from error
+    packet = config.get("measurement_acquisition_packet") or {}
+    if (
+        float(packet.get("minimum_sampling_hz", 0.0)) <= 0.0
+        or int(packet.get("maximum_alignment_skew_samples", -1)) < 0
+        or not packet.get("calibration")
+        or not packet.get("required_phases")
+        or packet.get("robot_motion_authority") is not False
+    ):
+        raise LiveOperatorError("measurement acquisition packet is invalid")
+    measurement_evaluation = config.get("measurement_result_evaluation") or {}
+    if {
+        str(measurement_evaluation.get("flexural_mechanism_id", "")),
+        str(measurement_evaluation.get("actuator_mechanism_id", "")),
+    } != set(mechanism_ids):
+        raise LiveOperatorError("measurement evaluator mechanism roles changed")
+    if set(measurement_evaluation.get("feature_algorithms") or {}) != {
+        "force_deformation_coupling",
+        "current_force_hysteresis",
+        "loaded_patch_change",
+    }:
+        raise LiveOperatorError("measurement feature preregistration changed")
+    expected_thresholds = {
+        "flexural_min_force_deformation_coupling",
+        "flexural_max_current_force_hysteresis",
+        "flexural_min_loaded_patch_change",
+        "actuator_max_force_deformation_coupling",
+        "actuator_min_current_force_hysteresis",
+        "actuator_max_loaded_patch_change",
+    }
+    thresholds = measurement_evaluation.get("thresholds") or {}
+    if set(thresholds) != expected_thresholds or any(
+        not np.isfinite(float(value)) or not 0.0 <= float(value) <= 1.0
+        for value in thresholds.values()
+    ):
+        raise LiveOperatorError("measurement evaluator thresholds changed")
+    if measurement_evaluation.get("allowed_proof_classes") != [
+        "synthetic_measurement_fixture"
+    ]:
+        raise LiveOperatorError("measurement evaluator proof class widened")
     intervention_set_digest = canonical_digest(
         [dict(row.payload) for row in sorted(interventions, key=lambda value: value.intervention_id)]
     )
@@ -727,66 +802,6 @@ def load_live_campaign_contract(
         config_digest=canonical_digest(config),
         residual_artifact=residual_artifact,
     )
-
-
-def validate_observed_intervention_result(
-    contract: LiveCampaignContract, result: Mapping[str, Any]
-) -> dict[str, Any]:
-    normalized = copy.deepcopy(dict(result))
-    if normalized.get("schema_version") != RESULT_SCHEMA:
-        raise LiveOperatorError("unexpected live intervention result schema")
-    if normalized.get("campaign_id") != contract.campaign_id:
-        raise LiveOperatorError("observed result campaign identity changed")
-    interventions = {row.intervention_id: row for row in contract.interventions}
-    intervention_id = str(normalized.get("intervention_id", ""))
-    if intervention_id not in interventions:
-        raise LiveOperatorError("post-result intervention family expanded")
-    if normalized.get("frozen_intervention_set_digest") != contract.intervention_set_digest:
-        raise LiveOperatorError("post-result intervention set expanded or changed")
-    intervention = interventions[intervention_id]
-    if intervention.availability != "available_simulator":
-        raise LiveOperatorError("observed result targets an unavailable intervention")
-    if normalized.get("action_sha256") != contract.action_sha256:
-        raise LiveOperatorError("observed result action drift")
-    if normalized.get("evaluator_digest") != contract.evaluator_digest:
-        raise LiveOperatorError("observed result evaluator drift")
-    replay_count = int(normalized.get("anchor_replays", -1))
-    remaining_interventions = int(contract.budget["maximum_interventions"]) - int(
-        contract.budget["used_interventions"]
-    )
-    remaining_replays = int(contract.budget["maximum_anchor_replays"]) - int(
-        contract.budget["used_anchor_replays"]
-    )
-    if (
-        remaining_interventions < 1
-        or replay_count <= 0
-        or replay_count > remaining_replays
-        or replay_count > intervention.maximum_trials
-    ):
-        raise LiveOperatorError("observed result escaped the global budget")
-    update_discrete_structure_posterior(
-        contract.hypothesis_priors,
-        likelihoods=normalized.get("hypothesis_likelihoods") or {},
-        observation_id=intervention_id,
-    )
-    declared_factors = {
-        str(row["factor_id"]) for row in contract.payload["factor_beliefs"]
-    }
-    if not set(normalized.get("factor_updates") or {}).issubset(declared_factors):
-        raise LiveOperatorError("observed result introduced an undeclared factor")
-    promotion = normalized.get("promotion") or {}
-    promoted = promotion.get("promoted") is True
-    if promoted and (
-        promotion.get("requested_by") != contract.payload["evaluator"]["evaluator_id"]
-        or (normalized.get("consequence") or {}).get("evaluator_passed") is not True
-    ):
-        raise LiveOperatorError("unauthorized self-promotion was requested")
-    if not promoted and promotion.get("requested_by") not in {
-        None,
-        contract.payload["evaluator"]["evaluator_id"],
-    }:
-        raise LiveOperatorError("unauthorized promotion requester")
-    return normalized
 
 
 def _manual_ablation(contract: LiveCampaignContract) -> dict[str, Any]:
@@ -857,16 +872,39 @@ def _invariance_result(contract: LiveCampaignContract) -> dict[str, Any]:
     config = contract.payload["invariance"]
     covariate = str(config["context_covariate"])
     episodes = []
+    missing_vector_episode_ids: list[str] = []
     for row in config["episode_contexts"]:
+        if any(row.get(name) is None for name in ("feature", "observation", "actions")):
+            missing_vector_episode_ids.append(str(row["episode_id"]))
+            continue
         episodes.append(
             {
                 "episode_id": str(row["episode_id"]),
                 "context": {covariate: str(row["level"])},
-                "feature": row.get("feature", [0.0, 1.0, 2.0]),
-                "observation": row.get("observation", [0.0, 1.0, 2.0]),
-                "actions": row.get("actions", [[0.0] * 6] * 3),
+                "feature": row["feature"],
+                "observation": row["observation"],
+                "actions": row["actions"],
             }
         )
+    if missing_vector_episode_ids:
+        unsigned = {
+            "schema_version": "sim2claw.sail_invariance_result.v1",
+            "mechanism_id": str(config["mechanism_id"]),
+            "invariant_parameter": str(config["invariant_parameter"]),
+            "context_covariate": covariate,
+            "proof_class": str(contract.payload["proof_boundary"]["proof_class"]),
+            "verdict": "not_evaluable",
+            "reason": "missing_source_bound_feature_observation_or_action_vectors",
+            "missing_vector_episode_ids": sorted(missing_vector_episode_ids),
+            "context_counts": {},
+            "whole_episode_grouping": True,
+            "episode_ids": sorted(str(row["episode_id"]) for row in config["episode_contexts"]),
+            "parameter_range": None,
+            "residual_signature_consistency": None,
+            "missing_vectors_imputed": False,
+            "physical_mechanism_identified": False,
+        }
+        return {**unsigned, "invariance_digest": canonical_digest(unsigned)}
     return evaluate_invariance(
         mechanism_id=str(config["mechanism_id"]),
         invariant_parameter=str(config["invariant_parameter"]),
@@ -884,16 +922,118 @@ def _relative_config_path(path: Path, repo_root: Path) -> str:
         return str(path.resolve())
 
 
+_COMPILER_PATHS = (
+    "src/sim2claw/sail/live_operator.py",
+    "src/sim2claw/sail/live_evidence.py",
+    "src/sim2claw/sail/residuals.py",
+    "src/sim2claw/sail/structural_surprise.py",
+    "src/sim2claw/sail/mechanisms.py",
+    "src/sim2claw/sail/posterior.py",
+    "src/sim2claw/sail/acquisition.py",
+    "src/sim2claw/sail/belief_graph.py",
+    "src/sim2claw/sail/influence.py",
+    "src/sim2claw/sail/loop_closure.py",
+    "src/sim2claw/sail/invariance.py",
+)
+
+
+def build_live_evaluator_identity(
+    contract: LiveCampaignContract, *, repo_root: Path = REPO_ROOT
+) -> dict[str, Any]:
+    config = contract.payload
+    return evaluator_identity(
+        evaluator=config["evaluator"],
+        evaluator_digest=contract.evaluator_digest,
+        source_sha256={
+            name: binding["sha256"]
+            for name, binding in sorted(config["source_bindings"].items())
+        },
+        config_sha256=sha256_file(contract.path),
+        config_digest=contract.config_digest,
+        compiler_sha256={path: sha256_file(repo_root / path) for path in _COMPILER_PATHS},
+    )
+
+
+def _sealed_measurement_packet(
+    contract: LiveCampaignContract,
+    *,
+    selected_id: str,
+    missing_observables: Sequence[str],
+) -> dict[str, Any]:
+    config = contract.payload
+    packet_unsigned = {
+        "schema_version": "sim2claw.sail_sealed_measurement_acquisition_packet.v1",
+        "campaign_id": contract.campaign_id,
+        "selected_intervention": selected_id,
+        "verdict": "abstain_measurement_acquisition_required",
+        "missing_observables": sorted(str(value) for value in missing_observables),
+        **copy.deepcopy(dict(config["measurement_acquisition_packet"])),
+        "action_sha256": contract.action_sha256,
+        "evaluator_digest": contract.evaluator_digest,
+        "intervention_set_digest": contract.intervention_set_digest,
+        "sealed_before_execution": True,
+        "intervention_executed": False,
+        "authority": copy.deepcopy(dict(config["authority"])),
+    }
+    return {**packet_unsigned, "packet_digest": canonical_digest(packet_unsigned)}
+
+
+def _validate_admitted_result(
+    contract: LiveCampaignContract, admission: Mapping[str, Any]
+) -> None:
+    result = admission["result"]
+    update_discrete_structure_posterior(
+        contract.hypothesis_priors,
+        likelihoods=result.get("hypothesis_likelihoods") or {},
+        observation_id=str(result["selected_intervention"]),
+    )
+    declared_factors = {
+        str(row["factor_id"]) for row in contract.payload["factor_beliefs"]
+    }
+    if not set(result.get("factor_updates") or {}).issubset(declared_factors):
+        raise LiveOperatorError("evaluator result introduced an undeclared factor")
+
+
 def run_live_operator(
     config_path: Path,
     *,
     output_root: Path,
-    observed_result_path: Path | None = None,
+    simulator_evaluator_receipt_path: Path | None = None,
+    measurement_evaluator_receipt_path: Path | None = None,
     repo_root: Path = REPO_ROOT,
 ) -> dict[str, Any]:
-    """Execute the causal control path to an evaluator verdict or abstention."""
+    """Run the decision plane and optionally admit one independent evaluator receipt."""
 
     contract = load_live_campaign_contract(config_path, repo_root=repo_root)
+    if simulator_evaluator_receipt_path is not None and measurement_evaluator_receipt_path is not None:
+        raise LiveOperatorError("only one evaluator receipt lane may be admitted per run")
+    with locked_campaign_state(
+        output_root,
+        campaign_id=contract.campaign_id,
+        config_digest=contract.config_digest,
+        initial_budget=contract.budget,
+    ) as (state_path, state):
+        return _run_live_operator_locked(
+            contract,
+            output_root=output_root,
+            state_path=state_path,
+            state=state,
+            simulator_evaluator_receipt_path=simulator_evaluator_receipt_path,
+            measurement_evaluator_receipt_path=measurement_evaluator_receipt_path,
+            repo_root=repo_root,
+        )
+
+
+def _run_live_operator_locked(
+    contract: LiveCampaignContract,
+    *,
+    output_root: Path,
+    state_path: Path,
+    state: Mapping[str, Any],
+    simulator_evaluator_receipt_path: Path | None,
+    measurement_evaluator_receipt_path: Path | None,
+    repo_root: Path,
+) -> dict[str, Any]:
     config = contract.payload
     available_observables = [
         str(row["observable_id"]) for row in config["observables"] if row["available"]
@@ -937,6 +1077,7 @@ def run_live_operator(
         interventions=[row.payload for row in contract.interventions],
         posterior=posterior["before"],
         selected_intervention_id=None,
+        selected_intervention_executed=False,
         verdict="pending",
         proof_class=str(config["proof_boundary"]["proof_class"]),
         evaluator_identity=str(config["evaluator"]["evaluator_id"]),
@@ -964,31 +1105,75 @@ def run_live_operator(
         & {str(value) for value in row.get("affected_by_mechanisms") or []}
     )
 
-    observed_result = None
-    if observed_result_path is not None:
-        observed_result = validate_observed_intervention_result(
-            contract,
-            load_json_object(observed_result_path, label="live intervention result"),
-        )
-        if observed_result["intervention_id"] != selected_id:
-            raise LiveOperatorError("observed result was not selected by acquisition")
+    packet = _sealed_measurement_packet(
+        contract,
+        selected_id=selected_id,
+        missing_observables=missing_observables,
+    )
+    selected_contract = next(
+        row for row in contract.interventions if row.intervention_id == selected_id
+    )
+    expected_evaluator = build_live_evaluator_identity(contract, repo_root=repo_root)
+    admission = None
+    try:
+        if simulator_evaluator_receipt_path is not None:
+            if selected_contract.kind != "simulator_family" or selected_contract.availability != "available_simulator":
+                raise LiveOperatorError("simulator receipt does not target the selected simulator intervention")
+            admission = verify_simulator_evaluator_receipt(
+                simulator_evaluator_receipt_path,
+                campaign_id=contract.campaign_id,
+                selected_intervention=selected_contract.payload,
+                intervention_set_digest=contract.intervention_set_digest,
+                action_sha256=contract.action_sha256,
+                expected_evaluator_identity=expected_evaluator,
+                remaining_anchor_replays=int(state["budget"]["maximum_anchor_replays"])
+                - int(state["budget"]["used_anchor_replays"]),
+            )
+        elif measurement_evaluator_receipt_path is not None:
+            if selected_contract.kind != "measurement_acquisition":
+                raise LiveOperatorError("measurement receipt does not target the selected measurement intervention")
+            admission = verify_measurement_evaluator_receipt(
+                measurement_evaluator_receipt_path,
+                campaign_id=contract.campaign_id,
+                selected_intervention=selected_contract.payload,
+                intervention_set_digest=contract.intervention_set_digest,
+                action_sha256=contract.action_sha256,
+                expected_evaluator_identity=expected_evaluator,
+                expected_packet=packet,
+                evaluation_contract=config["measurement_result_evaluation"],
+                remaining_measurement_trials=int(state["budget"]["maximum_measurement_trials"])
+                - int(state["budget"]["used_measurement_trials"]),
+            )
+    except EvidenceAdmissionError as error:
+        raise LiveOperatorError(f"evaluator receipt rejected: {error}") from error
+
+    observed_result = None if admission is None else admission["result"]
+    if admission is not None:
+        _validate_admitted_result(contract, admission)
+        try:
+            state = append_admitted_result(state_path, state, admission)
+        except EvidenceAdmissionError as error:
+            raise LiveOperatorError(f"evaluator receipt rejected: {error}") from error
         posterior = update_discrete_structure_posterior(
             contract.hypothesis_priors,
             likelihoods=observed_result["hypothesis_likelihoods"],
             observation_id=selected_id,
         )
-        consequence = observed_result["consequence"]
-        verdict = (
-            "evaluator_pass"
-            if consequence.get("evaluator_passed") is True
-            else "evaluator_reject"
-        )
-        budget = {
-            **copy.deepcopy(dict(config["budget"])),
-            "used_interventions": int(config["budget"]["used_interventions"]) + 1,
-            "used_anchor_replays": int(config["budget"]["used_anchor_replays"])
-            + int(observed_result["anchor_replays"]),
-        }
+        consequence = copy.deepcopy(dict(admission["consequence"]))
+        if admission["lane"] == "offline_measurement":
+            classification = str(observed_result["classification"])
+            verdict = (
+                "abstain_measurement_result_ambiguous"
+                if classification == "ambiguous_abstention"
+                else f"measurement_evidence_{classification}"
+            )
+        else:
+            verdict = (
+                "evaluator_pass"
+                if consequence.get("evaluator_passed") is True
+                else "evaluator_reject"
+            )
+        budget = copy.deepcopy(dict(state["budget"]))
     else:
         consequence = {
             "status": "not_run_no_intervention_result_opened",
@@ -997,21 +1182,23 @@ def run_live_operator(
             "task_thresholds_changed": False,
             "promotion": False,
         }
-        budget = copy.deepcopy(dict(config["budget"]))
-        minimum_gain = float(config["acquisition"]["minimum_predicted_information_gain"])
+        budget = copy.deepcopy(dict(state["budget"]))
+        minimum_separation = float(
+            config["acquisition"]["minimum_predicted_signature_separation"]
+        )
         if int(budget["used_interventions"]) >= int(budget["maximum_interventions"]):
             verdict = "abstain_global_budget_exhausted"
         elif not selected["available_for_execution"]:
             verdict = "abstain_measurement_acquisition_required"
-        elif float(selected["predicted_information_gain"]) < minimum_gain:
+        elif float(selected["predicted_signature_separation"]) < minimum_separation:
             verdict = "abstain_non_identifying_simulator_intervention"
         else:
             verdict = "abstain_no_bound_intervention_result"
     closure = apply_live_sparse_closure(
         before_factors=config["factor_beliefs"],
         affected_factor_ids=affected_factor_ids,
-        updates=None if observed_result is None else observed_result.get("factor_updates") or {},
-        observation_opened=observed_result is not None,
+        updates=None if admission is None else observed_result.get("factor_updates") or {},
+        observation_opened=admission is not None,
         action_identity={"sha256": contract.action_sha256},
         evidence_identity={"sha256": contract.residual_artifact["residual_digest"]},
     )
@@ -1025,6 +1212,7 @@ def run_live_operator(
         interventions=[row.payload for row in contract.interventions],
         posterior=posterior["after"],
         selected_intervention_id=selected_id,
+        selected_intervention_executed=admission is not None,
         verdict=verdict,
         proof_class=str(config["proof_boundary"]["proof_class"]),
         evaluator_identity=str(config["evaluator"]["evaluator_id"]),
@@ -1037,6 +1225,8 @@ def run_live_operator(
         - int(config["budget"]["used_interventions"]),
         "simulator_evaluations": int(budget["used_anchor_replays"])
         - int(config["budget"]["used_anchor_replays"]),
+        "measurement_trials": int(budget["used_measurement_trials"])
+        - int(config["budget"]["used_measurement_trials"]),
         "hypotheses_rejected": [
             name for name, value in posterior["after"].items() if value <= 0.05
         ],
@@ -1056,38 +1246,39 @@ def run_live_operator(
         "manual": manual,
         "sail": sail_ablation,
         "comparison": {
-            "simulator_evaluations_avoided": manual["simulator_evaluations"]
-            - sail_ablation["simulator_evaluations"],
+            "historical_simulator_evaluations_informed_frozen_retrospective_decision": manual[
+                "simulator_evaluations"
+            ],
+            "sail_additional_simulator_evaluations_after_pause": sail_ablation[
+                "simulator_evaluations"
+            ],
+            "historical_evaluations_remain_retrospective_context": True,
+            "claim": (
+                f"{manual['simulator_evaluations']} historical evaluations informed the "
+                "frozen retrospective decision; SAIL used "
+                f"{sail_ablation['simulator_evaluations']} additional evaluations after the pause."
+            ),
             "accepted_task_gain_earned_by_sail": False,
             "efficiency_is_not_task_success": True,
             "advantage_manufactured": False,
         },
     }
     ablation = {**ablation_unsigned, "ablation_digest": canonical_digest(ablation_unsigned)}
-    packet_unsigned = {
-        "schema_version": "sim2claw.sail_sealed_measurement_acquisition_packet.v1",
-        "campaign_id": contract.campaign_id,
-        "selected_intervention": selected_id,
-        "verdict": verdict,
-        "missing_observables": missing_observables,
-        **copy.deepcopy(dict(config["measurement_acquisition_packet"])),
-        "action_sha256": contract.action_sha256,
-        "evaluator_digest": contract.evaluator_digest,
-        "intervention_set_digest": contract.intervention_set_digest,
-        "sealed_before_execution": observed_result is None,
-        "intervention_executed": observed_result is not None,
-        "authority": copy.deepcopy(dict(config["authority"])),
-    }
-    packet = {**packet_unsigned, "packet_digest": canonical_digest(packet_unsigned)}
     stages = [
         {"stage": "residual_evidence", "status": "verified", "digest": contract.residual_artifact["residual_digest"]},
         {"stage": "structural_surprise", "status": "triggered" if surprise["triggered"] else "not_triggered", "score": surprise["score"]},
         {"stage": "belief_before", "status": "verified", "digest": before_graph["graph_digest"]},
         {"stage": "competing_mechanisms", "status": "retained", "mechanisms": mechanism_status},
-        {"stage": "acquisition", "status": "ranked_before_result", "selected_intervention": selected_id, "predicted_information_gain": selected["predicted_information_gain"]},
+        {"stage": "acquisition", "status": "ranked_before_result", "selected_intervention": selected_id, "predicted_signature_separation": selected["predicted_signature_separation"]},
         {"stage": "global_budget", "status": "enforced", "budget": budget},
+        {
+            "stage": "independent_evidence_admission",
+            "status": "receipt_admitted" if admission is not None else "no_receipt_opened",
+            "lane": None if admission is None else admission["lane"],
+            "execution_id": None if admission is None else admission["execution_id"],
+        },
         {"stage": "influence", "status": "discovered", "affected_factor_ids": affected_factor_ids},
-        {"stage": "posterior_update", "status": posterior["status"], "observed_information_gain_bits": posterior["observed_information_gain_bits"]},
+        {"stage": "posterior_update", "status": posterior["status"], "entropy_delta_bits": posterior["entropy_delta_bits"], "observed_information_gain_bits": posterior["observed_information_gain_bits"]},
         {"stage": "sparse_loop_closure", "status": closure["status"], "unaffected_unchanged": closure["unaffected_factor_digests_unchanged"]},
         {"stage": "invariance_and_consequence", "status": invariance["verdict"], "consequence": consequence},
         {"stage": "terminal_verdict", "status": verdict, "promotion": False},
@@ -1101,6 +1292,8 @@ def run_live_operator(
         "agent_promoted": False,
         "training_admitted": False,
         "physical_authority": False,
+        "intervention_executor_implemented": False,
+        "independent_evaluator_receipt_required": True,
     }
     trace = {**trace_unsigned, "trace_digest": canonical_digest(trace_unsigned)}
 
@@ -1121,23 +1314,29 @@ def run_live_operator(
         "ablation": ablation,
         "acquisition_packet": packet,
     }
+    if admission is not None:
+        artifacts["admitted_evaluator_receipt"] = {
+            "schema_version": "sim2claw.sail_admitted_evaluator_receipt_summary.v1",
+            "lane": admission["lane"],
+            "execution_id": admission["execution_id"],
+            "anchor_replay_ids": admission["anchor_replay_ids"],
+            "measurement_trial_ids": admission["measurement_trial_ids"],
+            "receipt_sha256": admission["receipt_sha256"],
+            "receipt_digest": admission["receipt"]["receipt_digest"],
+            "raw_artifacts": admission["raw_artifacts"],
+            "result_artifact": admission["result_artifact"],
+            "promotion": False,
+            "physical_authority": False,
+        }
     output_bindings: dict[str, dict[str, str]] = {}
     for name, artifact in artifacts.items():
         path = output_root / f"{name}.json"
         atomic_write_json(path, artifact)
         output_bindings[name] = {"path": path.name, "sha256": sha256_file(path)}
-    code_paths = [
-        "src/sim2claw/sail/live_operator.py",
-        "src/sim2claw/sail/residuals.py",
-        "src/sim2claw/sail/structural_surprise.py",
-        "src/sim2claw/sail/mechanisms.py",
-        "src/sim2claw/sail/posterior.py",
-        "src/sim2claw/sail/acquisition.py",
-        "src/sim2claw/sail/belief_graph.py",
-        "src/sim2claw/sail/influence.py",
-        "src/sim2claw/sail/loop_closure.py",
-        "src/sim2claw/sail/invariance.py",
-    ]
+    output_bindings["campaign_state"] = {
+        "path": state_path.name,
+        "sha256": sha256_file(state_path),
+    }
     receipt_unsigned = {
         "schema_version": RECEIPT_SCHEMA,
         "campaign_id": contract.campaign_id,
@@ -1149,7 +1348,8 @@ def run_live_operator(
         "source_sha256": {
             name: binding["sha256"] for name, binding in sorted(config["source_bindings"].items())
         },
-        "compiler_sha256": {path: sha256_file(REPO_ROOT / path) for path in code_paths},
+        "compiler_sha256": {path: sha256_file(repo_root / path) for path in _COMPILER_PATHS},
+        "evaluator_identity": expected_evaluator,
         "outputs": output_bindings,
         "action_sha256": contract.action_sha256,
         "action_bytes_unchanged": True,
@@ -1159,6 +1359,21 @@ def run_live_operator(
         "selected_intervention": selected_id,
         "verdict": verdict,
         "budget": budget,
+        "campaign_state": {
+            "path": state_path.name,
+            "sha256": sha256_file(state_path),
+            "state_digest": state["state_digest"],
+            "chain_head": state["chain_head"],
+            "event_count": len(state["events"]),
+        },
+        "admitted_evaluator_receipt": None
+        if admission is None
+        else {
+            "lane": admission["lane"],
+            "receipt_sha256": admission["receipt_sha256"],
+            "receipt_digest": admission["receipt"]["receipt_digest"],
+            "execution_id": admission["execution_id"],
+        },
         "observed_information_gain": {
             "status": (
                 "observed" if posterior["observed_information_gain_bits"] is not None else "not_observed_abstained_before_execution"
@@ -1175,6 +1390,7 @@ def run_live_operator(
         "training_admitted": False,
         "physical_authority": False,
         "proof_class": config["proof_boundary"]["proof_class"],
+        "intervention_executor_implemented": False,
     }
     receipt = {**receipt_unsigned, "receipt_digest": canonical_digest(receipt_unsigned)}
     receipt_path = output_root / "receipt.json"
@@ -1189,6 +1405,9 @@ def run_live_operator(
         "evaluator_digest": contract.evaluator_digest,
         "receipt_sha256": sha256_file(receipt_path),
         "receipt_digest": receipt["receipt_digest"],
+        "campaign_state_sha256": sha256_file(state_path),
+        "campaign_state_digest": state["state_digest"],
+        "campaign_state_chain_head": state["chain_head"],
         "output_root": str(output_root),
         "promotion": False,
         "training_admitted": False,
@@ -1204,10 +1423,10 @@ __all__ = [
     "LiveOperatorError",
     "apply_live_sparse_closure",
     "build_live_belief_graph",
+    "build_live_evaluator_identity",
     "load_live_campaign_contract",
     "rank_live_acquisition",
     "run_live_operator",
     "update_discrete_structure_posterior",
     "validate_live_residual_evidence",
-    "validate_observed_intervention_result",
 ]

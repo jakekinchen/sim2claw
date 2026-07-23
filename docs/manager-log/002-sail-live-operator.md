@@ -1,4 +1,4 @@
-# Manager Log 002 - SAIL live operator control plane
+# Manager Log 002 - SAIL decision/evidence control plane
 
 **Date:** 2026-07-22
 
@@ -6,23 +6,31 @@
 
 The effectiveness audit found that valid Phase 1 SAIL components were bypassed
 by a manually authored C2 family sequence. The user paused that sequence and
-authorized one generic operator, one global budget, an ablation, and at most
-one operator-selected family after the integration gates.
+authorized one generic decision plane, one global budget, an ablation, and at
+most one selected family after the integration gates.
 
 ## Control decision
 
 Freeze the 32-complete/514-replay/0-pass manual baseline, preserve incomplete
 B2-02X separately, and make the operator choose between a simulator family and
-measurement acquisition from preregistered signatures. Stop before execution
+measurement acquisition from preregistered signatures. Stop before result admission
 when the highest-value intervention is unavailable.
 
 ## Outcome
 
-The operator selected synchronized jaw force and rubber deformation/profile,
+The decision plane selected synchronized jaw force and rubber deformation/profile,
 not another simulator family. It abstained at 0/1 interventions and 0/18 C2
 anchors, retained both mechanisms, and emitted a sealed packet with no
 physical authority. The loop is complete; the missing measurement is an
 accepted terminal external boundary.
+
+Corrective review then found that the initial implementation overstated the
+historical comparison and lacked evaluator-owned result binding and persistent
+budgets. The repaired plane consumes independent hash-bound receipts, rejects
+replays through an atomic state chain, keeps anchor and synthetic measurement
+trial budgets separate, and includes a zero-device-I/O synthetic measurement
+closure path. It still grants no physical authority and implements no
+intervention executor.
 
 ## Resource disposition
 
