@@ -16,6 +16,13 @@ from ..learning_factory_artifacts import (
     sha256_file,
 )
 from .contracts import REPO_ROOT
+from .c2_trusted_adapter import (
+    ADAPTER_ID as C2_ADAPTER_ID,
+    REQUEST_SCHEMA as C2_REQUEST_SCHEMA,
+    build_c2_adapter_request,
+    execute_c2_adapter_request,
+    verify_c2_adapter_receipt,
+)
 from .importers import load_json_object
 from .live_evidence import json_artifact_sha256
 from .live_types import LiveCampaignContract, LiveOperatorError
@@ -414,6 +421,9 @@ class FixtureDeterministicAdapter:
 _TRUSTED_ADAPTERS: Mapping[str, TrustedSimulatorAdapter] = MappingProxyType(
     {FIXTURE_ADAPTER_ID: FixtureDeterministicAdapter()}
 )
+_NON_FIXTURE_TRUSTED_ADAPTERS = MappingProxyType(
+    {C2_ADAPTER_ID: execute_c2_adapter_request}
+)
 
 
 def execute_trusted_adapter_request(
@@ -430,6 +440,23 @@ def execute_trusted_adapter_request(
     repo_root: Path = REPO_ROOT,
 ) -> dict[str, Any]:
     request_raw = load_json_object(request_path, label="trusted adapter request")
+    if request_raw.get("schema_version") == C2_REQUEST_SCHEMA:
+        adapter_id = str(request_raw.get("adapter_id", ""))
+        handler = _NON_FIXTURE_TRUSTED_ADAPTERS.get(adapter_id)
+        if handler is None:
+            raise LiveOperatorError("non-fixture trusted adapter is not registered")
+        return handler(
+            request_raw,
+            contract=contract,
+            selected_intervention=selected_intervention,
+            affected_factor_ids=affected_factor_ids,
+            expected_evaluator_identity=expected_evaluator_identity,
+            remaining_anchor_replays=remaining_anchor_replays,
+            output_root=output_root,
+            prior_execution_ids=prior_execution_ids,
+            prior_anchor_replay_ids=prior_anchor_replay_ids,
+            repo_root=repo_root,
+        )
     if set(request_raw) != {
         "schema_version",
         "adapter_id",
@@ -537,6 +564,34 @@ def verify_embedded_trusted_adapter_receipt(
     embedded = summary.get("adapter_receipt")
     if not isinstance(embedded, Mapping):
         raise LiveOperatorError("trusted adapter receipt is missing from summary")
+    identity = embedded.get("adapter_identity")
+    if (
+        isinstance(identity, Mapping)
+        and identity.get("adapter_id") == C2_ADAPTER_ID
+    ):
+        selected = next(
+            (
+                row.payload
+                for row in contract.interventions
+                if row.intervention_id
+                == embedded.get("selected_intervention")
+            ),
+            None,
+        )
+        if selected is None:
+            raise LiveOperatorError(
+                "C2 trusted adapter selected intervention changed"
+            )
+        return verify_c2_adapter_receipt(
+            summary,
+            contract=contract,
+            selected_intervention=selected,
+            expected_evaluator_identity=expected_evaluator_identity,
+            expected_consequence=expected_consequence,
+            expected_affected_factor_ids=expected_affected_factor_ids,
+            receipt_root=receipt_root,
+            repo_root=repo_root,
+        )
     if set(embedded) != {
         "schema_version",
         "adapter_identity",
@@ -717,6 +772,8 @@ __all__ = [
     "FIXTURE_ADAPTER_ID",
     "FIXTURE_SCHEMA",
     "REQUEST_SCHEMA",
+    "C2_ADAPTER_ID",
+    "build_c2_adapter_request",
     "build_trusted_adapter_request",
     "execute_trusted_adapter_request",
     "verify_embedded_trusted_adapter_receipt",

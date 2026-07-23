@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-23T10:45:00-05:00",
+  "updated_at": "2026-07-23T11:30:00-05:00",
   "active_campaign": "sail_executed_benchmark_c2_adapter",
-  "current_milestone": "S2_02_NON_FIXTURE_RETAINED_C2_ADAPTER_PREREGISTRATION",
+  "current_milestone": "S2_03_BOUNDED_RETAINED_C2_MATERIALIZATION_COMMIT_GATED",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_and_bounded_action_frozen_simulator_evidence_no_physical_or_transfer_authority",
@@ -875,12 +875,12 @@
     "milestones": {
       "S2-00": "completed_transaction_activation_and_contract_reconciliation",
       "S2-01": "completed_evaluator_executed_structural_benchmark",
-      "S2-02": "in_progress_non_fixture_retained_c2_trusted_adapter_preregistration",
-      "S2-03": "pending_bounded_materialization_and_receipts",
+      "S2-02": "completed_non_fixture_retained_c2_trusted_adapter_preregistered_unexecuted",
+      "S2-03": "in_progress_bounded_materialization_waiting_for_preregistration_commit",
       "S2-04": "pending_exact_head_verification_independent_review_push_and_closeout"
     },
     "progress_ledger": {
-      "current_state": "benchmark_v2_executed_and_adversarially_verified_C2_adapter_unexecuted",
+      "current_state": "benchmark_v2_independently_reviewed_single_C2_adapter_preregistered_and_tested_zero_real_replays",
       "completed": [
         "clean_main_equals_origin_main_at_616f989_verified",
         "closed_D6_terminal_packet_identity_recorded_without_mutation",
@@ -893,7 +893,13 @@
         "sealed_evaluator_scored_sixty_four_predictions_and_four_controls",
         "twenty_five_declared_golden_checks_executed_and_passed",
         "benchmark_adversarial_and_byte_identity_gate_passed",
-        "benchmark_primary_result_honestly_reported_as_SAIL_tie"
+        "benchmark_primary_result_honestly_reported_as_SAIL_tie",
+        "benchmark_checkpoint_independently_verified_PASS_at_33705e9",
+        "exactly_one_non_fixture_C2_adapter_registered",
+        "balanced_four_replay_factorial_frozen_before_execution",
+        "posterior_task_EE_and_factor_scope_rules_frozen",
+        "C2_adapter_and_live_operator_focused_gate_sixty_tests_passed",
+        "real_C2_replay_count_remains_zero_before_preregistration_commit"
       ],
       "evidence": {
         "benchmark_v1_config": "configs/sail/seeded_benchmark_v1.json",
@@ -906,6 +912,14 @@
         "benchmark_receipt_sha256": "4f65b80d7a19ad97dbb0daf0eaac014ff3f51e682031c91abec8386a6d19b803",
         "benchmark_receipt_digest": "013716ef4356ff0ead320b0e309b5ab061dad675553d6f155f48498751135e76",
         "benchmark_scorecard_digest": "132aaaa5f2244c7e362cc38a58e9276c4c240a81c6c9a71ab94f4d4e42fdd1df"
+        ,
+        "c2_adapter_contract": "configs/sail/c2_trusted_adapter_v1.json",
+        "c2_adapter_contract_sha256": "156540d4bd800e6bad95058573ebb3b9bbdbbdd57f472ef320c9da353dd4ee11",
+        "c2_adapter_contract_digest": "1cccd19a249f84606ddedda4925767eff5b3ef34294ba1de757323634b95dbfd",
+        "c2_live_campaign": "configs/sail/live_operator_c2_adapter_v1.json",
+        "c2_live_campaign_sha256": "893ff56afb7ac2476acd061cdf89865394e5b51a0462975faa369469b314f311",
+        "c2_candidate_count": 4,
+        "c2_adapter_run_log": "docs/run-logs/2026-07-23-c2-trusted-adapter-preregistration.md"
       },
       "benchmark_methods_executed": 64,
       "benchmark_evaluator_controls_executed": 4,
@@ -922,14 +936,13 @@
       },
       "posterior_after": null,
       "remaining": [
-        "freeze_and_implement_exactly_one_non_fixture_C2_adapter",
         "materialize_benchmark_and_C2_or_prerequisite_abstention",
         "run_exact_head_test_tiers_and_full_suite",
         "obtain_independent_PASS_review",
         "push_scoped_commits_and_verify_remote_equality"
       ],
       "blockers": [],
-      "next_step": "finish_test_and_commit_the_single_C2_adapter_preregistration_before_any_C2_execution"
+      "next_step": "commit_and_report_the_single_C2_adapter_preregistration_with_zero_real_replays_before_execution"
     },
     "authority": {
       "repository_write": true,

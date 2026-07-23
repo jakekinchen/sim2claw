@@ -15,7 +15,8 @@
   packet digest `f88070030f27c6b0f61b8ca37f10e9942d48ef2b5bf389236183632ea8c27b28`.
 - Goal:
   `docs/autonomous-workflow/goal-loop-sail-executed-benchmark-c2-adapter.md`.
-- Status: `S2-02 in_progress`; S2-01 benchmark checkpoint complete.
+- Status: `S2-03 commit-gated`; S2-01 benchmark checkpoint independently
+  reviewed and S2-02 preregistration tested with zero real replays.
 - Cadence: active bounded transaction through exact-head verification and
   independent review.
 - Authorized public mutation: scoped commits and push to `origin/main` only
@@ -36,7 +37,7 @@
 
 | Worker | Source | Task | Allowed Actions | Status | Last Seen | Proof Target | Proof Result | Blocker |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Coordinator/Executor | owner objective | Implement S2-00 through S2-04 as sole writer | Scoped files, local simulator up to 1 intervention/18 action-identical replays, tests, receipts, commit; push only after PASS | active | 2026-07-23T10:45:00-05:00 | Every acceptance criterion in the S2 goal prompt | S2-01: 64 callable executions, 4 controls, 25 executed golden checks, 0 failures; deterministic receipt | none |
+| Coordinator/Executor | owner objective | Implement S2-00 through S2-04 as sole writer | Scoped files, local simulator up to 1 intervention/18 action-identical replays, tests, receipts, commit; push only after PASS | active | 2026-07-23T11:30:00-05:00 | Every acceptance criterion in the S2 goal prompt | S2-01 independently reviewed; S2-02 exactly one non-fixture adapter, four frozen candidates, 60 focused tests, 0 real replays | none |
 
 ### Owner Decisions
 
@@ -62,6 +63,14 @@
   `sail_deterministic_v2` versus `parameter_only_v2` at 0.625 top-1. Repeated
   materialization was byte-identical at receipt SHA-256
   `4f65b80d7a19ad97dbb0daf0eaac014ff3f51e682031c91abec8386a6d19b803`.
+- 2026-07-23T11:00:00-05:00 - Coordinator independently returned `PASS` on
+  benchmark commit `33705e9` and its exact receipt, scorecard, and synthetic
+  proof class; origin remained untouched.
+- 2026-07-23T11:30:00-05:00 - Froze exactly one non-fixture adapter with a
+  balanced four-replay flexural-contact versus actuator-load-path factorial,
+  evaluator-owned posterior gate, strict task/EE thresholds, and affected
+  factor scope. The focused adapter/live-operator gate passed 60 tests using
+  test doubles; retained C2 intervention and replay counts remain zero.
 
 ## D0 activation snapshot — autonomous development operations and advancement
 

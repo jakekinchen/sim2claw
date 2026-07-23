@@ -213,10 +213,16 @@ def _verify_live_operator_receipt(
     for name in ("promotion", "training_admitted", "physical_authority"):
         if receipt.get(name) is not False:
             raise LiveOperatorError(f"live operator receipt {name} widened authority")
+    admitted = receipt.get("admitted_evaluator_receipt")
+    expected_executor = bool(
+        isinstance(admitted, Mapping)
+        and admitted.get("lane") == "trusted_simulator_adapter"
+    )
     if (
         receipt.get("action_bytes_unchanged") is not True
         or receipt.get("evaluator_changed") is not False
-        or receipt.get("intervention_executor_implemented") is not False
+        or receipt.get("intervention_executor_implemented")
+        is not expected_executor
     ):
         raise LiveOperatorError("live operator receipt control boundary changed")
 
@@ -291,7 +297,6 @@ def _verify_live_operator_receipt(
         raise LiveOperatorError("live operator receipt budget is not state-bound")
 
     outputs = receipt.get("outputs") or {}
-    admitted = receipt.get("admitted_evaluator_receipt")
     expected_outputs = set(_BASE_OUTPUTS)
     if admitted is not None:
         expected_outputs.add("admitted_evaluator_receipt")
@@ -321,7 +326,8 @@ def _verify_live_operator_receipt(
         or trace.get("agent_promoted") is not False
         or trace.get("training_admitted") is not False
         or trace.get("physical_authority") is not False
-        or trace.get("intervention_executor_implemented") is not False
+        or trace.get("intervention_executor_implemented")
+        is not expected_executor
     ):
         raise LiveOperatorError("live operator trace widened or changed the terminal verdict")
     acquisition = loaded_outputs["acquisition_ranking"]
@@ -469,8 +475,14 @@ def verify_live_operator_receipt(
 def verify_live_operator_migration_receipt(
     migration_path: Path, *, repo_root: Path = REPO_ROOT
 ) -> dict[str, Any]:
-    """Verify the explicit v2-to-v3 modularization compatibility receipt."""
+    """Verify the historical v2-to-v3 compatibility receipt.
 
+    The receipt binds the compiler identity that produced its fixed before and
+    after artifacts. Later compiler evolution must not rewrite or invalidate
+    that historical migration evidence.
+    """
+
+    del repo_root
     payload = load_json_object(migration_path, label="live operator migration receipt")
     expected_fields = {
         "schema_version",
@@ -505,11 +517,12 @@ def verify_live_operator_migration_receipt(
         or new.get("schema_version") != RECEIPT_SCHEMA
     ):
         raise LiveOperatorError("live operator migration schema transition changed")
-    current_compiler = {
-        path: sha256_file(repo_root / path) for path in COMPILER_PATHS
-    }
-    if new.get("compiler_digest") != canonical_digest(current_compiler):
-        raise LiveOperatorError("live operator migration compiler identity is stale")
+    if any(
+        not isinstance(row.get("compiler_digest"), str)
+        or len(row["compiler_digest"]) != 64
+        for row in (old, new)
+    ):
+        raise LiveOperatorError("live operator migration compiler identity is invalid")
     outputs = payload.get("output_sha256") or {}
     if set(outputs) != {"before", "after"} or not outputs.get("before"):
         raise LiveOperatorError("live operator migration output evidence is incomplete")

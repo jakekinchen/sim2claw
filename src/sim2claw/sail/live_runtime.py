@@ -383,6 +383,10 @@ def _run_live_operator_locked(
         {"stage": "invariance_and_consequence", "status": invariance["verdict"], "consequence": consequence},
         {"stage": "terminal_verdict", "status": verdict, "promotion": False},
     ]
+    intervention_executor_implemented = bool(
+        admission is not None
+        and admission["lane"] == "trusted_simulator_adapter"
+    )
     trace_unsigned = {
         "schema_version": "sim2claw.sail_live_operator_trace.v1",
         "campaign_id": contract.campaign_id,
@@ -392,7 +396,7 @@ def _run_live_operator_locked(
         "agent_promoted": False,
         "training_admitted": False,
         "physical_authority": False,
-        "intervention_executor_implemented": False,
+        "intervention_executor_implemented": intervention_executor_implemented,
         "independent_evaluator_receipt_required": True,
     }
     if admission is not None and admission["lane"] == "trusted_simulator_adapter":
@@ -503,7 +507,7 @@ def _run_live_operator_locked(
         "training_admitted": False,
         "physical_authority": False,
         "proof_class": config["proof_boundary"]["proof_class"],
-        "intervention_executor_implemented": False,
+        "intervention_executor_implemented": intervention_executor_implemented,
     }
     receipt = {**receipt_unsigned, "receipt_digest": canonical_digest(receipt_unsigned)}
     receipt_path = output_root / "receipt.json"

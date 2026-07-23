@@ -25,9 +25,9 @@ packet digest
 `f88070030f27c6b0f61b8ca37f10e9942d48ef2b5bf389236183632ea8c27b28`.
 It proves the prior transaction only and cannot authorize this one.
 
-Current milestone: **S2-02 — non-fixture retained-C2 trusted adapter
-preregistration**. S2-01 is complete as separately reviewable benchmark
-checkpoint.
+Current milestone: **S2-03 — bounded retained-C2 materialization**. S2-01 is
+complete as a separately reviewed benchmark checkpoint; S2-02 is frozen and
+tested with zero real replays before its preregistration commit.
 
 The benchmark acceptance target is trustworthy executed measurement, not a
 required SAIL win. The C2 lane is limited to one preregistered intervention,
@@ -38,8 +38,9 @@ authority remain closed.
 
 Progress ledger:
 
-- Current state: evaluator-executed benchmark v2 materialized and focused
-  adversarial gate passed; C2 adapter remains unexecuted.
+- Current state: evaluator-executed benchmark v2 is materialized and reviewed;
+  exactly one four-replay non-fixture C2 adapter is frozen and tested but
+  remains unexecuted.
 - Completed: clean baseline and immutable D6 packet identity reconciled;
   benchmark-v1 label scoring and fixture-only adapter gap confirmed.
 - Evidence: `main == origin/main == 616f989`; D6 packet terminal authority is
@@ -49,12 +50,13 @@ Progress ledger:
 - C2 interventions / anchor replays / retries: `0 / 1`, `0 / 18`, `0`.
 - Posterior before / after: pending; prior must remain unchanged without
   admitted evaluator evidence.
-- Remaining: non-fixture adapter or prerequisite abstention, C2 receipt,
-  exact-head verification, review, and push.
+- Remaining: commit the preregistration, execute the one authorized
+  four-replay intervention, publish its receipt, run exact-head verification,
+  review, and push.
 - Blockers: none; retained C2 source hashes are verified, but execution remains
   closed until the adapter family is committed.
-- Next step: finish and test the single four-replay C2 adapter contract, commit
-  its preregistration, and only then open the one authorized intervention.
+- Next step: commit this preregistration checkpoint and report its exact
+  identity with zero replays before opening the one authorized intervention.
 
 ## Closed autonomous development operations and advancement baseline
 

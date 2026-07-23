@@ -1,0 +1,226 @@
+{
+  "schema_version": "sim2claw.sail_c2_trusted_adapter_contract.v1",
+  "adapter_id": "retained_action_frozen_c2_v1",
+  "family_id": "retained-c2-flexural-vs-actuator-factorial-v1",
+  "created_at": "2026-07-23T10:30:00-05:00",
+  "objective": "Execute one balanced, action-frozen retained-C2 factorial that separates flexural-contact and actuator-load-path main effects while requiring joint mechanism and strict task/EE consequences.",
+  "source_bindings": {
+    "project_application_contract": {
+      "path": "configs/sail/project_application_v1.json",
+      "sha256": "1142884783ee198c0facb350cce0f65dca06df5d95de9330a5b13eafa9216013"
+    },
+    "c2_surface_witness": {
+      "path": "outputs/sail/project-application-v1/c2-v3-surface-witness.json",
+      "sha256": "99dd528bf76e07fda729ac1e343814524908780813d0843b15a48765f8ad27d3"
+    },
+    "physical_c2_samples": {
+      "path": "datasets/manipulation_source_recordings/c2-to-c1__20260719T031324Z-bf91502b/samples.jsonl",
+      "sha256": "b93fed706dd205197e9e068aec62d8fe552b822be150218dff5601a1a5eec183"
+    },
+    "grasp_coordinate_contract": {
+      "path": "configs/optimization/pawn_bg_grasp_coordinate_descent_v1.json",
+      "sha256": "6f39692ede95e1fc581826699ba107b6b9814a776a0751dbc6a13ce25e6e9847"
+    },
+    "simulator_implementation": {
+      "path": "src/sim2claw/pawn_bg_grasp_coordinate_descent.py",
+      "sha256": "fe938637ceb106faadcb85bcb04db0847c69943e2c5fe3f72f1d4cc2b6b867bf"
+    },
+    "independent_anchor_evaluator": {
+      "path": "src/sim2claw/sail/grasp_retention_resolution.py",
+      "sha256": "42f9443b12ecc85aa72e81055d3c822661d5f25ca01f6f57f1b3721287bdc0eb"
+    },
+    "independent_consequence_evaluator": {
+      "path": "src/sim2claw/sail/c2_consequence_evaluator.py",
+      "sha256": "ac6751a22eaa840357ce422ff1806a8f52dad92c152d649f43c995fbd883a330"
+    }
+  },
+  "proof_boundary": {
+    "proof_class": "retained_action_frozen_simulator_family_evidence",
+    "physical_source_qualification": "unqualified_retrospective_diagnostic_trace",
+    "physical_calibration": false,
+    "independent_holdout": false,
+    "policy_actions_mutable": false,
+    "simulator_control_assistance": false,
+    "training": false,
+    "promotion": false,
+    "physical_authority": false
+  },
+  "diagnosis_anchor": {
+    "recording_id": "20260719T031324Z-bf91502b",
+    "action_array_sha256": "402a29e4cdc0c4cb90d41a83327ad8df5685544851b4e4d659129b3239744fd6",
+    "release_onset_source_index": 401
+  },
+  "budget": {
+    "maximum_interventions": 1,
+    "maximum_anchor_replays": 4,
+    "maximum_provider_calls": 0
+  },
+  "base_parameters": {
+    "fixed_jaw_mesh_collision_enabled": false,
+    "fixed_jaw_primitive_collision_enabled": false,
+    "gripper_contact_force_limit_latch_dwell_seconds": 0.01,
+    "gripper_contact_force_limit_latch_enabled": true,
+    "gripper_force_limit_multiplier": 3.0,
+    "gripper_joint_damping_multiplier": 1.0,
+    "gripper_joint_frictionloss_multiplier": 1.0,
+    "gripper_load_hold_enabled": false,
+    "gripper_piece_contact_force_limit_multiplier": 0.022,
+    "gripper_servo_gain_multiplier": 1.0,
+    "moving_jaw_mesh_collision_enabled": false,
+    "moving_jaw_primitive_collision_enabled": false,
+    "pawn_friction_multiplier": 1.0,
+    "pawn_mass_multiplier": 1.0,
+    "rolling_friction_m": 0.0012,
+    "rubber_tip_enabled": true,
+    "rubber_tip_fixed_anchor_geom_suffix": "fixed_jaw_box5",
+    "rubber_tip_moving_anchor_geom_suffix": "moving_jaw_box3",
+    "rubber_tip_modeled_mass_per_finger_kg": 0.001,
+    "rubber_tip_normal_compliance_enabled": true,
+    "rubber_tip_compliance_travel_m": 0.001,
+    "rubber_tip_compliance_stiffness_n_per_m": 300.0,
+    "rubber_tip_compliance_damping_n_s_per_m": 1.095,
+    "simulation_timestep_multiplier": 0.1,
+    "sliding_friction": 3.5,
+    "solref_damping_ratio": 1.2,
+    "solref_time_constant_s": 0.006,
+    "tip_coverage_m": 0.04,
+    "tip_coverage_offset_m": 0.0,
+    "tip_fixed_coverage_multiplier": 1.1,
+    "tip_fixed_coverage_offset_m": 0.005,
+    "tip_fixed_half_width_multiplier": 1.5,
+    "tip_fixed_thickness_multiplier": 2.0,
+    "tip_half_width_m": 0.006,
+    "tip_moving_coverage_multiplier": 0.36,
+    "tip_moving_coverage_offset_m": 0.0,
+    "tip_moving_half_width_multiplier": 1.3333333333333333,
+    "tip_moving_thickness_multiplier": 2.0,
+    "tip_segment_count": 1,
+    "tip_segment_fill_fraction": 1.0,
+    "tip_thickness_m": 0.001,
+    "torsional_friction_m": 0.012
+  },
+  "factorial_design": {
+    "axes": [
+      "flexural_contact",
+      "actuator_load_path"
+    ],
+    "allowed_mutation_fields_by_axis": {
+      "flexural_contact": [
+        "rubber_tip_compliance_stiffness_n_per_m",
+        "rubber_tip_compliance_damping_n_s_per_m"
+      ],
+      "actuator_load_path": [
+        "gripper_piece_contact_force_limit_multiplier"
+      ]
+    },
+    "baseline_candidate_id": "baseline",
+    "balanced": true,
+    "post_hoc_candidate_expansion": false
+  },
+  "frozen_candidate_family": [
+    {
+      "candidate_id": "baseline",
+      "axis_levels": {
+        "flexural_contact": false,
+        "actuator_load_path": false
+      },
+      "overrides": {}
+    },
+    {
+      "candidate_id": "flexural_contact",
+      "axis_levels": {
+        "flexural_contact": true,
+        "actuator_load_path": false
+      },
+      "overrides": {
+        "rubber_tip_compliance_stiffness_n_per_m": 1000.0,
+        "rubber_tip_compliance_damping_n_s_per_m": 2.0
+      }
+    },
+    {
+      "candidate_id": "actuator_load_path",
+      "axis_levels": {
+        "flexural_contact": false,
+        "actuator_load_path": true
+      },
+      "overrides": {
+        "gripper_piece_contact_force_limit_multiplier": 0.024
+      }
+    },
+    {
+      "candidate_id": "combined",
+      "axis_levels": {
+        "flexural_contact": true,
+        "actuator_load_path": true
+      },
+      "overrides": {
+        "rubber_tip_compliance_stiffness_n_per_m": 1000.0,
+        "rubber_tip_compliance_damping_n_s_per_m": 2.0,
+        "gripper_piece_contact_force_limit_multiplier": 0.024
+      }
+    }
+  ],
+  "hypotheses": {
+    "flexural_rubber_contact_v1": {
+      "axis": "flexural_contact",
+      "predicted_signature": "The flexural main effect dominates the actuator main effect on the frozen mechanism score while preserving strict task and EE consequences."
+    },
+    "actuator_load_path_v1": {
+      "axis": "actuator_load_path",
+      "predicted_signature": "The actuator main effect dominates the flexural main effect on the frozen mechanism score while preserving strict task and EE consequences."
+    }
+  },
+  "posterior_update_rule": {
+    "hypothesis_axis": {
+      "flexural_rubber_contact_v1": "flexural_contact",
+      "actuator_load_path_v1": "actuator_load_path"
+    },
+    "minimum_absolute_main_effect_for_mechanism_evidence": 0.02,
+    "movement_requires_admitted_evaluator_owned_evidence": true,
+    "preserve_prior_on_rejection_or_abstention": true,
+    "no_post_hoc_threshold_change": true
+  },
+  "consequence_thresholds": {
+    "maximum_ee_rms_m": 0.02,
+    "maximum_joint_rms_degrees": 2.0,
+    "maximum_absolute_loaded_aperture_bias_degrees": 0.5,
+    "retention_seconds_normalization": 1.0,
+    "mechanism_score_weights": {
+      "retention": 0.25,
+      "loaded_aperture": 0.20,
+      "slip_reduction": 0.15,
+      "task_consequence": 0.25,
+      "ee_consequence": 0.15
+    },
+    "lower_rms_without_strict_task_success_is_diagnostic_only": true
+  },
+  "acceptance": {
+    "anchor_action_sha256_must_match": true,
+    "anchor_contact_loss_source_index_minimum": 401,
+    "anchor_absolute_loaded_aperture_bias_degrees_maximum": 0.5,
+    "anchor_lift_and_transport_required": true,
+    "anchor_release_required": true,
+    "anchor_post_grasp_slip_relative_reduction_minimum": 0.1,
+    "anchor_minimum_rubber_load_pair_fraction_after_lift": 1.0,
+    "anchor_simulation_stability_required": true,
+    "anchor_maximum_piece_rise_m": 0.25,
+    "anchor_maximum_force_target_transition_count": 20
+  },
+  "affected_factor_scope": [
+    "factor:actuator_load_path",
+    "factor:rubber_contact_patch"
+  ],
+  "stop_conditions": [
+    "Stop before execution on source, action, evaluator, family, budget, or authority drift.",
+    "Reject lower RMS, visual improvement, retention-only, aperture-only, or task-only results.",
+    "Preserve the prior when independent mechanism plus strict task/EE evidence is not admitted.",
+    "Do not add a candidate or parameter family after opening results.",
+    "Do not open training, promotion, paid compute, physical capture, gateway, or robot motion."
+  ],
+  "authority": {
+    "physical_capture": false,
+    "robot_motion": false,
+    "training": false,
+    "self_promotion": false
+  }
+}
