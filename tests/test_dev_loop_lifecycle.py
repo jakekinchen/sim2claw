@@ -11,6 +11,7 @@ import pytest
 from sim2claw.dev_loop import lifecycle
 from sim2claw.dev_loop.contracts import SCHEMA_PATHS, load_dev_loop_schema
 from sim2claw.dev_loop.lifecycle import (
+    CANONICAL_FINAL_REVIEW_PATH,
     DevLoopLifecycleError,
     build_merge_readiness_packet,
     build_process_lease,
@@ -670,19 +671,31 @@ def _final_review(
     )
 
 
+def _write_final_review(root: Path, review: dict) -> str:
+    path = root / CANONICAL_FINAL_REVIEW_PATH
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(review, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return CANONICAL_FINAL_REVIEW_PATH.as_posix()
+
+
 def test_merge_readiness_requires_current_verified_audit_tests_and_pass_review(
     tmp_path: Path,
 ) -> None:
     root = _terminal_repo(tmp_path)
     receipts = _final_test_receipts(root)
     review = _final_review(root, receipts)
+    review_path = _write_final_review(root, review)
+    review_bytes = (root / review_path).read_bytes()
     audit = audit_dev_loop_authority(root)
     assert verify_authority_audit(audit)["status"] == "pass"
     packet = build_merge_readiness_packet(
         repo_root=root,
         authority_audit=audit,
         test_receipts=receipts,
-        review_receipts=[review],
+        review_receipt_paths=[review_path],
         changed_paths=["src/sim2claw/dev_loop/lifecycle.py"],
     )
     assert packet["status"] == "merge_ready"
@@ -693,6 +706,24 @@ def test_merge_readiness_requires_current_verified_audit_tests_and_pass_review(
         verify_merge_readiness_packet(packet, repo_root=root)["packet_digest"]
         == packet["packet_digest"]
     )
+    assert packet["review_artifacts"] == [
+        {
+            "path": review_path,
+            "file_sha256": sha256_file(root / review_path),
+            "receipt_digest": review["receipt_digest"],
+        }
+    ]
+
+    replacement = copy.deepcopy(review)
+    replacement["findings"] = [
+        {"anchor": 0, "finding": "different valid PASS receipt"}
+    ]
+    replacement = _redigest(replacement, "receipt_digest")
+    _write_final_review(root, replacement)
+    with pytest.raises(DevLoopLifecycleError, match="changed after packet generation"):
+        verify_merge_readiness_packet(packet, repo_root=root)
+    (root / review_path).write_bytes(review_bytes)
+    assert verify_merge_readiness_packet(packet, repo_root=root) == packet
 
     state_path = root / "docs/autonomous-workflow/project_state.json"
     state_path.write_text(
@@ -720,11 +751,12 @@ def test_merge_readiness_rejects_stop_stale_and_unverified_evidence(
     receipts = _final_test_receipts(root)
     audit = audit_dev_loop_authority(root)
     stopped = _final_review(root, receipts, decision="STOP")
+    review_path = _write_final_review(root, stopped)
     packet = build_merge_readiness_packet(
         repo_root=root,
         authority_audit=audit,
         test_receipts=receipts,
-        review_receipts=[stopped],
+        review_receipt_paths=[review_path],
         changed_paths=["src/sim2claw/dev_loop/lifecycle.py"],
     )
     assert packet["status"] == "not_ready"
@@ -737,7 +769,7 @@ def test_merge_readiness_rejects_stop_stale_and_unverified_evidence(
             repo_root=root,
             authority_audit=bad_audit,
             test_receipts=receipts,
-            review_receipts=[stopped],
+            review_receipt_paths=[review_path],
             changed_paths=[],
         )
 
@@ -749,7 +781,7 @@ def test_merge_readiness_rejects_stop_stale_and_unverified_evidence(
             repo_root=root,
             authority_audit=malformed_audit,
             test_receipts=receipts,
-            review_receipts=[stopped],
+            review_receipt_paths=[review_path],
             changed_paths=[],
         )
 
@@ -765,15 +797,17 @@ def test_merge_readiness_rejects_stop_stale_and_unverified_evidence(
             repo_root=root,
             authority_audit=fabricated,
             test_receipts=receipts,
-            review_receipts=[stopped],
+            review_receipt_paths=[review_path],
             changed_paths=[],
         )
 
+    incomplete_review = _final_review(root, receipts[:-1])
+    _write_final_review(root, incomplete_review)
     missing_tier = build_merge_readiness_packet(
         repo_root=root,
         authority_audit=audit,
         test_receipts=receipts[:-1],
-        review_receipts=[_final_review(root, receipts[:-1])],
+        review_receipt_paths=[review_path],
         changed_paths=[],
     )
     assert missing_tier["status"] == "not_ready"
@@ -782,46 +816,49 @@ def test_merge_readiness_rejects_stop_stale_and_unverified_evidence(
         repo_root=root,
         authority_audit=audit,
         test_receipts=receipts,
-        review_receipts=[],
+        review_receipt_paths=[],
         changed_paths=[],
     )
     assert missing_review["status"] == "not_ready"
 
     pass_review = _final_review(root, receipts)
-    duplicate_review = build_merge_readiness_packet(
-        repo_root=root,
-        authority_audit=audit,
-        test_receipts=receipts,
-        review_receipts=[pass_review, _final_review(root, receipts)],
-        changed_paths=[],
-    )
-    assert duplicate_review["status"] == "not_ready"
+    _write_final_review(root, pass_review)
+    with pytest.raises(ValueError, match="non-unique elements"):
+        build_merge_readiness_packet(
+            repo_root=root,
+            authority_audit=audit,
+            test_receipts=receipts,
+            review_receipt_paths=[review_path, review_path],
+            changed_paths=[],
+        )
 
     with pytest.raises(ValueError, match="non-unique elements"):
         build_merge_readiness_packet(
             repo_root=root,
             authority_audit=audit,
             test_receipts=[*receipts, receipts[0]],
-            review_receipts=[_final_review(root, receipts)],
+            review_receipt_paths=[review_path],
             changed_paths=[],
         )
 
     failed = _final_test_receipts(root, failed_tier="full_repository")
+    _write_final_review(root, _final_review(root, failed))
     failed_packet = build_merge_readiness_packet(
         repo_root=root,
         authority_audit=audit,
         test_receipts=failed,
-        review_receipts=[_final_review(root, failed)],
+        review_receipt_paths=[review_path],
         changed_paths=[],
     )
     assert failed_packet["status"] == "not_ready"
 
     stale_review = _final_review(root, receipts, state_sha256="f" * 64)
+    _write_final_review(root, stale_review)
     stale_review_packet = build_merge_readiness_packet(
         repo_root=root,
         authority_audit=audit,
         test_receipts=receipts,
-        review_receipts=[stale_review],
+        review_receipt_paths=[review_path],
         changed_paths=[],
     )
     assert stale_review_packet["status"] == "not_ready"
@@ -852,7 +889,37 @@ def test_merge_readiness_rejects_stop_stale_and_unverified_evidence(
         repo_root=root,
         authority_audit=audit,
         test_receipts=receipts,
-        review_receipts=[_final_review(root, receipts)],
+        review_receipt_paths=[
+            _write_final_review(root, _final_review(root, receipts))
+        ],
         changed_paths=[],
     )
     assert active_packet["status"] == "not_ready"
+
+
+def test_merge_readiness_rejects_noncanonical_or_missing_review_artifact(
+    tmp_path: Path,
+) -> None:
+    root = _terminal_repo(tmp_path)
+    receipts = _final_test_receipts(root)
+    audit = audit_dev_loop_authority(root)
+    review = _final_review(root, receipts)
+    noncanonical = root / "other-review.json"
+    noncanonical.write_text(json.dumps(review), encoding="utf-8")
+
+    with pytest.raises(DevLoopLifecycleError, match="not the canonical"):
+        build_merge_readiness_packet(
+            repo_root=root,
+            authority_audit=audit,
+            test_receipts=receipts,
+            review_receipt_paths=["other-review.json"],
+            changed_paths=[],
+        )
+    with pytest.raises(DevLoopLifecycleError, match="missing"):
+        build_merge_readiness_packet(
+            repo_root=root,
+            authority_audit=audit,
+            test_receipts=receipts,
+            review_receipt_paths=[CANONICAL_FINAL_REVIEW_PATH],
+            changed_paths=[],
+        )

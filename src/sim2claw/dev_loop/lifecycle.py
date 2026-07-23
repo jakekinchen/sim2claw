@@ -30,6 +30,9 @@ REVIEW_SCHEMA = "sim2claw.dev_loop_review_receipt.v2"
 TEST_SCHEMA = "sim2claw.dev_loop_test_receipt.v1"
 PROCESS_SCHEMA = "sim2claw.dev_loop_process_lease.v1"
 MERGE_SCHEMA = "sim2claw.dev_loop_merge_readiness.v2"
+CANONICAL_FINAL_REVIEW_PATH = Path(
+    "outputs/dev-loop/final-review/review-receipt.json"
+)
 REQUIRED_AUTHORITY_AUDIT_CHECKS = {
     "authority",
     "baseline_ancestry",
@@ -244,6 +247,38 @@ def verify_review_receipt(payload: Mapping[str, Any]) -> dict[str, Any]:
     if not isinstance(state_sha256, str) or len(state_sha256) != 64:
         raise DevLoopLifecycleError("review receipt project-state identity is invalid")
     return validate_dev_loop_artifact("review", verified)
+
+
+def _load_canonical_review_artifact(
+    repo_root: Path, value: Path | str
+) -> tuple[dict[str, Any], dict[str, str]]:
+    raw_path = Path(value)
+    if (
+        raw_path.is_absolute()
+        or raw_path.as_posix() != CANONICAL_FINAL_REVIEW_PATH.as_posix()
+    ):
+        raise DevLoopLifecycleError(
+            "review receipt path is not the canonical reviewer artifact"
+        )
+    path = repo_root / CANONICAL_FINAL_REVIEW_PATH
+    if path.is_symlink() or not path.is_file():
+        raise DevLoopLifecycleError(
+            "canonical reviewer artifact is missing or not a regular file"
+        )
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise DevLoopLifecycleError(
+            "canonical reviewer artifact is unreadable"
+        ) from error
+    if not isinstance(payload, Mapping):
+        raise DevLoopLifecycleError("canonical reviewer artifact is not an object")
+    receipt = verify_review_receipt(payload)
+    return receipt, {
+        "path": CANONICAL_FINAL_REVIEW_PATH.as_posix(),
+        "file_sha256": sha256_file(path),
+        "receipt_digest": receipt["receipt_digest"],
+    }
 
 
 def _git(repo_root: Path, *args: str) -> str:
@@ -812,7 +847,7 @@ def build_merge_readiness_packet(
     repo_root: Path,
     authority_audit: Mapping[str, Any],
     test_receipts: Sequence[Mapping[str, Any]],
-    review_receipts: Sequence[Mapping[str, Any]],
+    review_receipt_paths: Sequence[Path | str],
     changed_paths: Sequence[str],
 ) -> dict[str, Any]:
     root = repo_root.resolve()
@@ -823,7 +858,12 @@ def build_merge_readiness_packet(
     state = _project_state_identity(root)
     audit = verify_authority_audit(authority_audit, repo_root=root)
     tests = [verify_test_receipt(value) for value in test_receipts]
-    reviews = [verify_review_receipt(value) for value in review_receipts]
+    loaded_reviews = [
+        _load_canonical_review_artifact(root, value)
+        for value in review_receipt_paths
+    ]
+    reviews = [row[0] for row in loaded_reviews]
+    review_artifacts = [row[1] for row in loaded_reviews]
     leases = _repository_process_leases(root)
     active_leases = [row for row in leases if row["status"] == "active"]
     audit_git = audit["git_identity"]
@@ -909,6 +949,7 @@ def build_merge_readiness_packet(
         ],
         "review_receipt_digests": [row["receipt_digest"] for row in reviews],
         "review_receipts": reviews,
+        "review_artifacts": review_artifacts,
         "review_evidence": [
             {
                 "receipt_digest": row["receipt_digest"],
@@ -989,6 +1030,22 @@ def verify_merge_readiness_packet(
                 "operational merge-ready verification requires a repository root"
             )
         root = repo_root.resolve()
+        if len(verified["review_artifacts"]) != 1:
+            raise DevLoopLifecycleError(
+                "merge-ready packet must bind exactly one reviewer artifact"
+            )
+        external_review, external_artifact = _load_canonical_review_artifact(
+            root, verified["review_artifacts"][0]["path"]
+        )
+        if (
+            external_artifact != verified["review_artifacts"][0]
+            or external_review != verified["review_receipts"][0]
+            or external_review["receipt_digest"]
+            != verified["review_evidence"][0]["receipt_digest"]
+        ):
+            raise DevLoopLifecycleError(
+                "canonical reviewer artifact changed after packet generation"
+            )
         state = _project_state_identity(root)
         if (
             verified["head"] != _git(root, "rev-parse", "HEAD")
@@ -1005,7 +1062,9 @@ def verify_merge_readiness_packet(
             repo_root=root,
             authority_audit=verified["authority_audit"],
             test_receipts=verified["test_receipts"],
-            review_receipts=verified["review_receipts"],
+            review_receipt_paths=[
+                row["path"] for row in verified["review_artifacts"]
+            ],
             changed_paths=verified["changed_paths"],
         )
         if rebuilt != verified:
@@ -1019,6 +1078,7 @@ def verify_merge_readiness_packet(
 
 __all__ = [
     "DevLoopLifecycleError",
+    "CANONICAL_FINAL_REVIEW_PATH",
     "MERGE_SCHEMA",
     "PROCESS_SCHEMA",
     "REQUIRED_AUTHORITY_AUDIT_CHECKS",

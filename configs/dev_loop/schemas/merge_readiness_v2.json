@@ -21,6 +21,7 @@
     "test_evidence",
     "review_receipt_digests",
     "review_receipts",
+    "review_artifacts",
     "review_evidence",
     "process_lease_digests",
     "live_process_lease_count",
@@ -90,6 +91,20 @@
       "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
     },
     "review_receipts": {"type": "array", "items": {"type": "object"}},
+    "review_artifacts": {
+      "type": "array",
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "file_sha256", "receipt_digest"],
+        "properties": {
+          "path": {"const": "outputs/dev-loop/final-review/review-receipt.json"},
+          "file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
     "review_evidence": {
       "type": "array",
       "items": {
