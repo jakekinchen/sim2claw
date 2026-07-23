@@ -324,6 +324,109 @@ def test_active_process_lease_completion_and_missing_process_orphaning(
     assert orphaned["process_present"] is False
 
 
+def _completed_process_lease(
+    monkeypatch: pytest.MonkeyPatch,
+    repo_root: Path,
+) -> dict:
+    monkeypatch.setattr(
+        lifecycle,
+        "process_identity",
+        lambda _pid: {
+            "start_token": "legacy-token",
+            "command": "owned-worker",
+            "cwd": str(repo_root),
+        },
+    )
+    created = datetime(2026, 7, 23, tzinfo=timezone.utc)
+    lease = build_process_lease(
+        lease_id="legacy-complete",
+        task_contract=_task(repo_root),
+        pid=404,
+        expected_command_substring="owned-worker",
+        expires_at=created + timedelta(minutes=1),
+        now=created,
+    )
+    return complete_process_lease(lease, exit_code=0, now=created)
+
+
+def _write_process_lease(repo_root: Path, payload: dict) -> Path:
+    path = repo_root / "outputs/dev-loop/compatibility/process-lease.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def test_completed_legacy_process_lease_is_accepted_only_after_process_exit(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    completed = _completed_process_lease(monkeypatch, tmp_path)
+    completed.pop("process_cwd")
+    completed = _redigest(completed, "lease_digest")
+    _write_process_lease(tmp_path, completed)
+
+    monkeypatch.setattr(lifecycle, "process_identity", lambda _pid: None)
+    leases = lifecycle._repository_process_leases(tmp_path)
+    assert [(row["status"], row["lease_digest"]) for row in leases] == [
+        ("completed", completed["lease_digest"])
+    ]
+
+
+def test_legacy_active_ambiguous_and_malformed_leases_fail_closed(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    completed = _completed_process_lease(monkeypatch, tmp_path)
+    completed.pop("process_cwd")
+    completed = _redigest(completed, "lease_digest")
+
+    active = copy.deepcopy(completed)
+    active["status"] = "active"
+    active = _redigest(active, "lease_digest")
+    _write_process_lease(tmp_path, active)
+    monkeypatch.setattr(lifecycle, "process_identity", lambda _pid: None)
+    with pytest.raises(DevLoopLifecycleError, match="not a completed historical"):
+        lifecycle._repository_process_leases(tmp_path)
+
+    _write_process_lease(tmp_path, completed)
+    monkeypatch.setattr(
+        lifecycle,
+        "process_identity",
+        lambda _pid: {
+            "start_token": "legacy-token",
+            "command": "owned-worker",
+            "cwd": str(tmp_path),
+        },
+    )
+    with pytest.raises(DevLoopLifecycleError, match="still matches a live process"):
+        lifecycle._repository_process_leases(tmp_path)
+
+    malformed = copy.deepcopy(completed)
+    malformed.pop("heartbeat_at")
+    malformed = _redigest(malformed, "lease_digest")
+    _write_process_lease(tmp_path, malformed)
+    monkeypatch.setattr(lifecycle, "process_identity", lambda _pid: None)
+    with pytest.raises(DevLoopLifecycleError, match="malformed"):
+        lifecycle._repository_process_leases(tmp_path)
+
+
+def test_malformed_current_process_lease_fails_closed(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    current = _completed_process_lease(monkeypatch, tmp_path)
+    _write_process_lease(tmp_path, current)
+    with pytest.raises(DevLoopLifecycleError, match="still matches a live process"):
+        lifecycle._repository_process_leases(tmp_path)
+
+    current["pid"] = "not-an-integer"
+    current = _redigest(current, "lease_digest")
+    _write_process_lease(tmp_path, current)
+    monkeypatch.setattr(lifecycle, "process_identity", lambda _pid: None)
+    with pytest.raises(ValueError, match="schema violation"):
+        lifecycle._repository_process_leases(tmp_path)
+
+
 def _terminal_repo(tmp_path: Path) -> Path:
     root = tmp_path / "work"
     remote = tmp_path / "remote.git"

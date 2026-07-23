@@ -628,8 +628,86 @@ def _repository_process_leases(repo_root: Path) -> list[dict[str, Any]]:
             raise DevLoopLifecycleError(f"cannot read process lease {path}") from error
         if not isinstance(payload, dict):
             raise DevLoopLifecycleError(f"process lease is not an object: {path}")
-        leases.append(verify_process_lease(payload))
+        if "process_cwd" in payload:
+            lease = verify_process_lease(payload)
+        else:
+            lease = _verify_legacy_completed_process_lease(
+                payload,
+                repo_root=repo_root,
+            )
+        if lease["status"] != "active":
+            identity = process_identity(int(lease["pid"]))
+            if (
+                identity is not None
+                and identity["start_token"] == lease["process_start_token"]
+            ):
+                raise DevLoopLifecycleError(
+                    f"closed process lease still matches a live process: {path}"
+                )
+        leases.append(lease)
     return leases
+
+
+def _verify_legacy_completed_process_lease(
+    payload: Mapping[str, Any], *, repo_root: Path
+) -> dict[str, Any]:
+    """Accept only a closed pre-process_cwd lease whose process is no longer live."""
+
+    verified = _verify_digest(
+        payload,
+        "lease_digest",
+        label="legacy completed process lease",
+    )
+    required = {
+        "schema_version",
+        "lease_id",
+        "task_contract_digest",
+        "role",
+        "repository",
+        "pid",
+        "process_start_token",
+        "expected_command_substring",
+        "created_at",
+        "heartbeat_at",
+        "expires_at",
+        "status",
+        "teardown",
+        "closed_at",
+        "exit_code",
+        "lease_digest",
+    }
+    if (
+        verified.get("schema_version") != PROCESS_SCHEMA
+        or verified.get("status") != "completed"
+    ):
+        raise DevLoopLifecycleError(
+            "legacy process lease is not a completed historical lease"
+        )
+    if (
+        set(verified) != required
+        or verified.get("teardown") != "terminate_after_verified_identity_on_expiry"
+        or verified.get("role") not in {"executor", "reviewer", "manager"}
+        or verified.get("repository") != str(repo_root.resolve())
+        or not isinstance(verified.get("pid"), int)
+        or int(verified["pid"]) < 1
+        or not isinstance(verified.get("process_start_token"), str)
+        or not verified["process_start_token"]
+        or not isinstance(verified.get("expected_command_substring"), str)
+        or not verified["expected_command_substring"]
+        or not isinstance(verified.get("exit_code"), int)
+    ):
+        raise DevLoopLifecycleError("legacy completed process lease is malformed")
+    for field in ("created_at", "heartbeat_at", "expires_at", "closed_at"):
+        _parse_time(verified.get(field), label=f"legacy process lease {field}")
+    for field in ("task_contract_digest", "lease_digest"):
+        value = verified.get(field)
+        if (
+            not isinstance(value, str)
+            or len(value) != 64
+            or any(character not in "0123456789abcdef" for character in value)
+        ):
+            raise DevLoopLifecycleError("legacy completed process lease is malformed")
+    return verified
 
 
 def verify_authority_audit(
