@@ -47,3 +47,25 @@ packet may become terminal authority, and only when it binds the exact current
 HEAD and project-state digest, the exact five final tier names, one fresh
 covering `PASS` review, remote equality, a clean tracked worktree, and zero
 live development-loop process leases.
+
+## Current-compiler benchmark refresh
+
+On 2026-07-23, the historical D3 benchmark scorecard still reproduced exactly,
+but its earlier receipt correctly failed read-time verification after the
+shared development-loop schema loader changed during later lifecycle
+hardening. The benchmark was deterministically regenerated at the current
+compiler identity under `outputs/dev-loop/benchmark-v1-current`.
+
+- Scorecard SHA-256:
+  `1f4a9e1a527e7927f4ebabcdb36067945fd654a61f52c15c1c9de6c3104da8d0`
+- Scorecard digest:
+  `0533c8e37f971d417c90e9829a5b1ba3826d97b99a85d289ef2bb24de8ce3090`
+- Receipt SHA-256:
+  `3a436d0307b067854cd41d4abc5eaa39b6e59595d9bb67cd6bdf3beeb269f828`
+- Receipt digest:
+  `49f1c4c2cc9348ec09f98eae289b035bcb64ced302eae0237b8098511a11643a`
+
+The identical scorecard result remains limited to configured deterministic
+control-label coverage: `single_worker` escaped 9/9 seeded defects,
+`worker_self_review` escaped 8/9, and `independent_receipt_gated` escaped 0/9.
+It is not evidence of general agent intelligence.
