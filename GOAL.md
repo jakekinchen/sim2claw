@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `SILICON RECOVERY RECONCILIATION IN VERIFICATION; S2 TERMINAL NEGATIVE FROZEN; PHYSICAL AUTHORITY CLOSED`
+Status: `SILICON RECOVERY RECONCILIATION COMPLETE; S2 TERMINAL NEGATIVE FROZEN; PHYSICAL AUTHORITY CLOSED`
 
 ## Active Silicon recovery and repository reconciliation
 
@@ -28,8 +28,11 @@ Recovery contract:
 - do not run the gateway, robot, camera capture, simulator adapter, provider,
   training, promotion, or VideoSim paths during reconciliation.
 
-Current milestone: safe source integration, control-plane reconciliation,
-focused and full verification, independent review, then centralized push.
+Completed milestone: the exact source snapshot is quarantined, the compatible
+subset is integrated, the physical controller is default-closed, publication
+bindings are refreshed, and the full repository suite passes. Centralization
+is limited to a normal push of the reviewed `main` chain plus the quarantined
+recovery branch.
 
 ## Closed SAIL executed-benchmark and retained-C2 adapter transaction
 

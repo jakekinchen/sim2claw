@@ -1,14 +1,14 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-23T16:15:00-05:00",
+  "updated_at": "2026-07-23T17:09:41-05:00",
   "active_campaign": "silicon_recovery_reconciliation",
-  "current_milestone": "SILICON_RECOVERY_VERIFICATION",
+  "current_milestone": "SILICON_RECOVERY_COMPLETE",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_and_bounded_action_frozen_simulator_evidence_no_physical_or_transfer_authority",
   "silicon_recovery_reconciliation": {
     "schema_version": "sim2claw.silicon_recovery_reconciliation.v1",
-    "status": "verification_in_progress",
+    "status": "complete",
     "baseline_commit": "3a0e45864419a393ef902d255a48518b5d728f3b",
     "source_host": "silicon.local",
     "source_user": "jakekinchen",
@@ -35,11 +35,32 @@
       "tracked_in_git": false
     },
     "integration": {
+      "commit": "77d5270398530706211ba88dfffd13cc4d3cd272",
+      "publication_rebind_commit": "df7dada1fc4b9a4dcc3844e1195b6fdff7ff5b2a",
       "ordinary_studio_physical_demo_enabled": false,
       "explicit_loopback_opt_in_required": true,
       "task_success_verified": false,
       "training_or_promotion_allowed": false,
       "physical_authority": false
+    },
+    "verification": {
+      "focused_python_passed": 143,
+      "focused_python_skipped": 7,
+      "focused_python_subtests_passed": 24,
+      "swift_tests_passed": 2,
+      "studio_publication_tests_passed": 16,
+      "full_suite_commit": "df7dada1fc4b9a4dcc3844e1195b6fdff7ff5b2a",
+      "full_suite_passed": 1002,
+      "full_suite_skipped": 3,
+      "full_suite_subtests_passed": 328,
+      "excluded_temporary_worktree_run": "missing_owner_local_ignored_evidence",
+      "excluded_pre_refresh_primary_run": "stale_studio_observatory_receipt_detected_fail_closed"
+    },
+    "publication_refresh": {
+      "studio_manifest_sha256": "127b2faa0fbfcff3b946184920b3c3d324d5bcc62ff6745940499be4f0bf0422",
+      "studio_receipt_sha256": "453e9ccde854c4f5914eed239fb15d3d53ef58a7bc1bdb43d07390897db76176",
+      "publication_package_sha256": "98173b9d5dca97c75ce8aa579fd727b02a32ff96474e3025283d590ebdd8f833",
+      "publication_receipt_sha256": "97b65f6413184b8b0f5547feb0dabeccf606a65ea57ddf5774a4467db85b449b"
     },
     "frozen_s2_root_manifests": {
       "benchmark_v2": "45cc7dfa2cd8a8c2f158462a2fc30c071a685388fddfaae19a91fe710472d48b",

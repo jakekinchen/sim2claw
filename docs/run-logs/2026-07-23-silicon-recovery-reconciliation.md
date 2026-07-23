@@ -82,3 +82,31 @@ publication refresh, these ignored roots were byte-identical:
 The retained C2 state remains one event, four anchor replays, zero measurement
 trials, evaluator reject, and unchanged posterior. Physical authority remains
 closed.
+
+## Verification and closeout
+
+The compatible recovery landed as
+`77d5270398530706211ba88dfffd13cc4d3cd272`. The Studio observatory receipt was
+then deterministically refreshed because that integration intentionally
+changed the bound Studio server and UI sources. Its manifest remained
+`127b2faa0fbfcff3b946184920b3c3d324d5bcc62ff6745940499be4f0bf0422`;
+the refreshed receipt is
+`453e9ccde854c4f5914eed239fb15d3d53ef58a7bc1bdb43d07390897db76176`.
+The publication package remained
+`98173b9d5dca97c75ce8aa579fd727b02a32ff96474e3025283d590ebdd8f833`;
+its refreshed receipt is
+`97b65f6413184b8b0f5547feb0dabeccf606a65ea57ddf5774a4467db85b449b`.
+The one-line publication binding landed as
+`df7dada1fc4b9a4dcc3844e1195b6fdff7ff5b2a`.
+
+Focused Python/static verification passed with 143 tests, seven skips, and 24
+subtests. The native Swift package passed two tests. The refreshed
+Studio/publication slice passed 16 tests. The exact code/config commit
+`df7dada1fc4b9a4dcc3844e1195b6fdff7ff5b2a` passed the full repository suite:
+1002 tests passed, three skipped, and 328 subtests passed.
+
+Two runs are excluded diagnostic history: a temporary Git worktree lacked the
+owner-local ignored evidence required by content-addressed contracts, and the
+first primary-checkout run correctly rejected the stale pre-refresh Studio
+receipt. Neither is represented as proof, and neither executed the C2 adapter,
+simulator, provider, capture, gateway, or robot-motion lanes.

@@ -1,9 +1,10 @@
 # Orchestration Ledger
 
-## Current transaction — Silicon recovery reconciliation
+## Completed transaction — Silicon recovery reconciliation
 
-- Repo and branch: `/Users/kelly/Developer/sim2claw`, integration worktree on
-  `codex/silicon-integration-20260723`; final target is `main`.
+- Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`; compatible
+  integration commit `77d5270398530706211ba88dfffd13cc4d3cd272` and
+  publication-rebind commit `df7dada1fc4b9a4dcc3844e1195b6fdff7ff5b2a`.
 - Queue source: direct owner request to inspect `silicon.local`, retrieve
   missing Sim2Claw work, and centralize the repository.
 - Baseline: clean `main == origin/main` at
@@ -26,7 +27,16 @@
   transaction.
 - Proof target: byte-identical historical retrieval, default-closed physical
   controller, honest unqualified replay projection, unchanged frozen S2 roots,
-  focused/native/full tests, independent review, scoped commits, then push.
+  focused/native/full tests, scoped commits, then push.
+- Verification: Python focused/static gates passed (`143 passed`, `7 skipped`,
+  `24` subtests); native Swift tests passed (`2`); refreshed Studio/publication
+  tests passed (`16`). The final exact code/config tree passed
+  `1002 passed`, `3 skipped`, and `328` subtests. A temporary-worktree run
+  missing owner-local ignored evidence and a primary run that correctly found
+  the stale pre-refresh Studio receipt are excluded diagnostic runs.
+- Frozen state after verification: benchmark, retained-C2 adapter, and campaign
+  state roots remain unchanged; the retained campaign remains `1` event,
+  `4` anchor replays, and `0` measurement trials.
 
 ## Completed transaction — Replay-integrated twin observability
 
