@@ -683,22 +683,30 @@ def _verify_legacy_completed_process_lease(
         raise DevLoopLifecycleError(
             "legacy process lease is not a completed historical lease"
         )
-    if (
-        set(verified) != required
-        or verified.get("teardown") != "terminate_after_verified_identity_on_expiry"
-        or verified.get("role") not in {"executor", "reviewer", "manager"}
-        or verified.get("repository") != str(repo_root.resolve())
-        or not isinstance(verified.get("pid"), int)
-        or int(verified["pid"]) < 1
-        or not isinstance(verified.get("process_start_token"), str)
-        or not verified["process_start_token"]
-        or not isinstance(verified.get("expected_command_substring"), str)
-        or not verified["expected_command_substring"]
-        or not isinstance(verified.get("exit_code"), int)
+    nonempty_strings = (
+        "lease_id",
+        "process_start_token",
+        "expected_command_substring",
+        "created_at",
+        "heartbeat_at",
+        "expires_at",
+        "closed_at",
+    )
+    if set(verified) != required or any(
+        not isinstance(verified.get(field), str) or not verified[field]
+        for field in nonempty_strings
     ):
         raise DevLoopLifecycleError("legacy completed process lease is malformed")
-    for field in ("created_at", "heartbeat_at", "expires_at", "closed_at"):
-        _parse_time(verified.get(field), label=f"legacy process lease {field}")
+    if (
+        verified.get("teardown") != "terminate_after_verified_identity_on_expiry"
+        or verified.get("role") not in {"executor", "reviewer", "manager"}
+        or not isinstance(verified.get("repository"), str)
+        or verified["repository"] != str(repo_root.resolve())
+        or type(verified.get("pid")) is not int
+        or verified["pid"] < 1
+        or type(verified.get("exit_code")) is not int
+    ):
+        raise DevLoopLifecycleError("legacy completed process lease is malformed")
     for field in ("task_contract_digest", "lease_digest"):
         value = verified.get(field)
         if (
@@ -707,6 +715,24 @@ def _verify_legacy_completed_process_lease(
             or any(character not in "0123456789abcdef" for character in value)
         ):
             raise DevLoopLifecycleError("legacy completed process lease is malformed")
+    created = _parse_time(
+        verified["created_at"],
+        label="legacy process lease created_at",
+    )
+    heartbeat = _parse_time(
+        verified["heartbeat_at"],
+        label="legacy process lease heartbeat_at",
+    )
+    expires = _parse_time(
+        verified["expires_at"],
+        label="legacy process lease expires_at",
+    )
+    closed = _parse_time(
+        verified["closed_at"],
+        label="legacy process lease closed_at",
+    )
+    if not created <= heartbeat <= closed <= expires:
+        raise DevLoopLifecycleError("legacy completed process lease times are inconsistent")
     return verified
 
 

@@ -410,6 +410,86 @@ def test_legacy_active_ambiguous_and_malformed_leases_fail_closed(
         lifecycle._repository_process_leases(tmp_path)
 
 
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("schema_version", 17),
+        ("schema_version", "sim2claw.dev_loop_process_lease.v0"),
+        ("lease_id", 17),
+        ("lease_id", ""),
+        ("task_contract_digest", 17),
+        ("task_contract_digest", "0" * 63),
+        ("role", 17),
+        ("role", "owner"),
+        ("repository", 17),
+        ("repository", "/different/repository"),
+        ("pid", True),
+        ("pid", 0),
+        ("pid", "404"),
+        ("process_start_token", 17),
+        ("process_start_token", ""),
+        ("expected_command_substring", 17),
+        ("expected_command_substring", ""),
+        ("created_at", 17),
+        ("created_at", "2026-07-23T00:00:00"),
+        ("heartbeat_at", 17),
+        ("heartbeat_at", "not-a-time"),
+        ("expires_at", 17),
+        ("expires_at", "not-a-time"),
+        ("status", 17),
+        ("status", "active"),
+        ("teardown", 17),
+        ("teardown", "none"),
+        ("closed_at", 17),
+        ("closed_at", "not-a-time"),
+        ("exit_code", False),
+        ("exit_code", "0"),
+    ],
+)
+def test_redigested_legacy_field_type_and_value_tampering_fails_closed(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    field: str,
+    value: object,
+) -> None:
+    completed = _completed_process_lease(monkeypatch, tmp_path)
+    completed.pop("process_cwd")
+    completed[field] = value
+    completed = _redigest(completed, "lease_digest")
+    _write_process_lease(tmp_path, completed)
+    monkeypatch.setattr(lifecycle, "process_identity", lambda _pid: None)
+    with pytest.raises(DevLoopLifecycleError):
+        lifecycle._repository_process_leases(tmp_path)
+
+
+def test_legacy_completed_lease_rejects_extra_fields_bad_digest_and_time_order(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    completed = _completed_process_lease(monkeypatch, tmp_path)
+    completed.pop("process_cwd")
+
+    extra = {**completed, "unexpected": True}
+    extra = _redigest(extra, "lease_digest")
+    _write_process_lease(tmp_path, extra)
+    monkeypatch.setattr(lifecycle, "process_identity", lambda _pid: None)
+    with pytest.raises(DevLoopLifecycleError, match="malformed"):
+        lifecycle._repository_process_leases(tmp_path)
+
+    bad_digest = _redigest(completed, "lease_digest")
+    bad_digest["lease_digest"] = "0" * 64
+    _write_process_lease(tmp_path, bad_digest)
+    with pytest.raises(DevLoopLifecycleError, match="digest mismatch"):
+        lifecycle._repository_process_leases(tmp_path)
+
+    inconsistent = copy.deepcopy(completed)
+    inconsistent["closed_at"] = "2027-07-23T00:00:00+00:00"
+    inconsistent = _redigest(inconsistent, "lease_digest")
+    _write_process_lease(tmp_path, inconsistent)
+    with pytest.raises(DevLoopLifecycleError, match="times are inconsistent"):
+        lifecycle._repository_process_leases(tmp_path)
+
+
 def test_malformed_current_process_lease_fails_closed(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
