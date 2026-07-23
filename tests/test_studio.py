@@ -325,6 +325,7 @@ class StudioCatalogTest(unittest.TestCase):
             recording / "sim_replay_receipt.json",
             {
                 "schema_version": "sim2claw.physical_command_sim_replay.v1",
+                "action_array_sha256": "1" * 64,
                 "state_trace_path": "sim_replay_state_trace.json",
                 "state_trace_schema_version": "sim2claw.mujoco_body_state_trace.v1",
                 "state_trace_sha256": "0" * 64,
@@ -381,6 +382,176 @@ class StudioCatalogTest(unittest.TestCase):
             catalog["simulations"][0]["asset_revision"],
             expected_revision,
         )
+
+    def test_catalog_exposes_physical_library_without_inventing_physics(self) -> None:
+        recording = (
+            self.root
+            / "datasets"
+            / "manipulation_source_recordings"
+            / "c2-to-c1__fixture-recording"
+        )
+        recording.mkdir(parents=True)
+        (recording / "overhead_c922.mp4").write_bytes(b"fixture-video")
+        self._write_json(
+            recording / "recording_receipt.json",
+            {
+                "recording_id": "fixture-recording",
+                "task_id": "pawn_manipulation_v1",
+                "label": "C2 to C1",
+                "skill": "pick_and_place",
+                "outcome_label": "success",
+                "mode": "physical_follower",
+                "proof_class": "physical_teleoperation_source_unqualified",
+                "piece_id": "brown_pawn_c2",
+                "source_square": "c2",
+                "destination_square": "c1",
+                "sample_count": 40,
+                "sample_hz": 20,
+                "duration_seconds": 2.0,
+                "overhead_video": {
+                    "teleoperation_start_video_offset_seconds": 1.0,
+                    "teleoperation_stop_video_offset_seconds": 3.0,
+                    "orientation_rotation_degrees": 180,
+                },
+            },
+        )
+
+        catalog = build_catalog(self.root)
+        task = next(
+            row
+            for row in catalog["tasks"]
+            if row["id"] == "physical_pawn_episode_library_v1"
+        )
+        episode = next(
+            row
+            for row in catalog["episodes"]
+            if row["task_id"] == "physical_pawn_episode_library_v1"
+        )
+
+        self.assertEqual(task["title"], "Physical pawn episodes")
+        self.assertEqual(task["role"], "Recorded evidence")
+        self.assertEqual(task["episode_count"], 1)
+        self.assertEqual(episode["title"], "Physical episode")
+        self.assertEqual(episode["status"], "recorded")
+        self.assertEqual(
+            episode["proof_class"],
+            "physical_teleoperation_source_unqualified",
+        )
+        self.assertEqual(episode["media"]["kind"], "video")
+        self.assertEqual(episode["media"]["window_start_seconds"], 1.0)
+        self.assertEqual(episode["media"]["window_end_seconds"], 3.0)
+        self.assertEqual(episode["media"]["display_rotation_degrees"], 180)
+        self.assertNotIn("inspection", episode)
+        self.assertEqual(
+            episode["terminal_outcome"],
+            "operator_label_success_unqualified",
+        )
+        self.assertEqual(episode["metrics"][-1]["label"], "Operator label")
+
+        comparison = episode["comparison"]
+        self.assertEqual(
+            comparison["schema_version"],
+            "sim2claw.studio_episode_comparison.v1",
+        )
+        self.assertTrue(comparison["real"]["available"])
+        self.assertTrue(comparison["visual_twin"]["available"])
+        self.assertEqual(
+            comparison["visual_twin"]["physics_authority"],
+            "none",
+        )
+        self.assertFalse(comparison["physics_replay"]["available"])
+        self.assertIn("action-frozen", comparison["physics_replay"]["notice"])
+        self.assertIsNone(comparison["physics_replay"]["binding"])
+
+    def test_physical_pairing_requires_tracked_receipt_and_action_hash(self) -> None:
+        recording = (
+            self.root
+            / "datasets"
+            / "manipulation_source_recordings"
+            / "c2-to-c1__fixture-recording"
+        )
+        recording.mkdir(parents=True)
+        (recording / "overhead_c922.mp4").write_bytes(b"fixture-video")
+        self._write_json(
+            recording / "recording_receipt.json",
+            {
+                "recording_id": "fixture-recording",
+                "mode": "physical_follower",
+                "proof_class": "physical_teleoperation_source_unqualified",
+                "piece_id": "brown_pawn_c2",
+                "source_square": "c2",
+                "destination_square": "c1",
+                "sample_count": 40,
+                "sample_hz": 20,
+                "duration_seconds": 2.0,
+                "overhead_video": {
+                    "teleoperation_start_video_offset_seconds": 1.0,
+                    "teleoperation_stop_video_offset_seconds": 3.0,
+                    "orientation_rotation_degrees": 180,
+                },
+            },
+        )
+        replay = {
+            "source_recording_id": "fixture-recording",
+            "gallery_source": "generated_output",
+            "action_array_sha256": "a" * 64,
+            "state_trace_sha256": "b" * 64,
+            "evidence_receipt": {
+                "path": "outputs/fixture/episode_probe_receipt.json",
+                "sha256": "c" * 64,
+            },
+            "inspection": {
+                "kind": "threejs_state_trace",
+                "trace_url": "/fixture-trace.json",
+                "scene_url": "/fixture-scene.json",
+                "frame_count": 20,
+                "fps": 10,
+                "duration_seconds": 2,
+                "physics_authority": "mujoco",
+                "renderer_authority": "inspection_only",
+            },
+        }
+
+        with patch.object(
+            studio_catalog_module,
+            "_ranked_grasp_episodes",
+            return_value=[replay],
+        ):
+            generated = studio_catalog_module._teleop_episodes(self.root)[0]
+        self.assertNotIn("inspection", generated)
+        self.assertFalse(generated["comparison"]["physics_replay"]["available"])
+
+        replay["gallery_source"] = "tracked_publication_bundle"
+        replay["action_array_sha256"] = "not-a-digest"
+        with patch.object(
+            studio_catalog_module,
+            "_ranked_grasp_episodes",
+            return_value=[replay],
+        ):
+            malformed = studio_catalog_module._teleop_episodes(self.root)[0]
+        self.assertNotIn("inspection", malformed)
+        self.assertFalse(malformed["comparison"]["physics_replay"]["available"])
+
+        replay["action_array_sha256"] = "a" * 64
+        with patch.object(
+            studio_catalog_module,
+            "_ranked_grasp_episodes",
+            return_value=[replay],
+        ):
+            paired = studio_catalog_module._teleop_episodes(self.root)[0]
+        physics = paired["comparison"]["physics_replay"]
+        self.assertTrue(physics["available"])
+        self.assertEqual(physics["action_array_sha256"], "a" * 64)
+        self.assertEqual(
+            physics["binding"]["kind"],
+            "tracked_publication_recording_and_action",
+        )
+        self.assertEqual(
+            physics["binding"]["evidence_receipt"]["sha256"],
+            "c" * 64,
+        )
+        self.assertEqual(physics["binding"]["state_trace_sha256"], "b" * 64)
+        self.assertIn("byte-identical", physics["notice"])
 
     def test_media_tokens_cannot_escape_generated_storage(self) -> None:
         outside = self.root / "README.md"
@@ -991,6 +1162,10 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('role="group"', html)
             self.assertIn('id="sync-follower"', html)
             self.assertIn('id="three-canvas"', html)
+            self.assertIn('id="comparison-lane-strip"', html)
+            self.assertIn('id="visual-twin-canvas"', html)
+            self.assertIn("Same-camera · no physics", html)
+            self.assertIn("Studio will not invent one.", html)
             self.assertIn('data-route="calibration"', html)
             self.assertIn('id="calibration-canvas"', html)
             self.assertIn('id="recording-feed-switch"', html)
@@ -1050,6 +1225,8 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('/* Phone layout: the replay is an evidence instrument', css)
             self.assertIn('.masthead.nav-open .view-switch', css)
             self.assertIn('.transport-phase', css)
+            self.assertIn('.comparison-lane-strip', css)
+            self.assertIn('.physics-unavailable', css)
 
             with urlopen(f"{base}/studio.js", timeout=3) as response:
                 javascript = response.read().decode("utf-8")
@@ -1080,6 +1257,10 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('elements.transportPhase', javascript)
             self.assertIn('elements.browserRail.dataset.taskId', javascript)
             self.assertIn('"Ranked replays"', javascript)
+            self.assertIn("sim2claw.studio_episode_comparison.v1", javascript)
+            self.assertIn("VISUAL TWIN · IMAGE SPACE", javascript)
+            self.assertIn("startVisualTwinLoop()", javascript)
+            self.assertNotIn("elements.physicsUnavailable.innerHTML", javascript)
 
             with urlopen(f"{base}/studio3d.js", timeout=3) as response:
                 replay_javascript = response.read().decode("utf-8")

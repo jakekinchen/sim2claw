@@ -45,6 +45,11 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def _is_sha256(value: Any) -> bool:
+    text = str(value or "")
+    return len(text) == 64 and all(character in "0123456789abcdef" for character in text)
+
+
 def _title(identifier: str) -> str:
     return " ".join(part.capitalize() for part in identifier.replace("-", "_").split("_") if part)
 
@@ -74,6 +79,8 @@ RANKED_GRASP_OUTPUT_ROOT = Path("outputs/pawn_bg_ranked_grasp_gallery_v1")
 RANKED_GRASP_PUBLICATION_SCHEMA = (
     "sim2claw.pawn_bg_ranked_grasp_publication_bundle.v1"
 )
+PHYSICAL_EPISODE_LIBRARY_TASK = "physical_pawn_episode_library_v1"
+COMPARISON_SCHEMA_VERSION = "sim2claw.studio_episode_comparison.v1"
 
 
 def _media_relative_path(token: str) -> Path:
@@ -213,7 +220,7 @@ def _receipt_inspection(
     except (TypeError, ValueError):
         return None
     trace_sha256 = str(receipt.get("state_trace_sha256") or "")
-    if frame_count < 1 or fps <= 0 or len(trace_sha256) != 64:
+    if frame_count < 1 or fps <= 0 or not _is_sha256(trace_sha256):
         return None
     piece_layout = str(receipt.get("state_trace_piece_layout") or "standard")
     manifest_url = str(
@@ -321,6 +328,16 @@ def _ranked_grasp_episodes(
                         for row in rows
                         if isinstance(row, dict)
                     ]
+                    or any(
+                        not isinstance(row, dict)
+                        or not _is_sha256(row.get("action_array_sha256"))
+                        or not _is_sha256(row.get("episode_probe_receipt_sha256"))
+                        or not isinstance(row.get("state_trace"), dict)
+                        or not _is_sha256(
+                            row["state_trace"].get("state_trace_sha256")
+                        )
+                        for row in rows
+                    )
                 ):
                     continue
             gallery = candidate_gallery
@@ -477,11 +494,21 @@ def _ranked_grasp_episodes(
                 ],
                 "phases": row.get("phase_segments", []),
                 "case_id": str(row.get("folder_label") or "pawn_move"),
+                "source_recording_id": str(row.get("recording_id") or ""),
                 "notes": (
                     f"{gallery.get('claim_boundary', '')} "
                     "The action array is byte-identical to the source teleoperation trace."
                 ),
                 "action_array_sha256": row.get("action_array_sha256"),
+                "evidence_receipt": (
+                    {
+                        "path": row.get("episode_probe_receipt_path"),
+                        "sha256": row.get("episode_probe_receipt_sha256"),
+                    }
+                    if publication_bundle
+                    else None
+                ),
+                "state_trace_sha256": artifact.get("state_trace_sha256"),
                 "relative_success_tier": row.get("relative_success_tier"),
                 "gallery_source": (
                     "tracked_publication_bundle"
@@ -839,6 +866,30 @@ def _grasp_episodes(repo_root: Path) -> list[dict[str, Any]]:
 
 def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
     episodes: list[dict[str, Any]] = []
+    ranked_by_recording: dict[str, dict[str, Any]] = {}
+    duplicate_recordings: set[str] = set()
+    for row in _ranked_grasp_episodes(
+        repo_root,
+        _include_generated_alternates=False,
+    ):
+        recording_id = str(row.get("source_recording_id") or "")
+        evidence_receipt = row.get("evidence_receipt")
+        if (
+            not recording_id
+            or row.get("gallery_source") != "tracked_publication_bundle"
+            or not _is_sha256(row.get("action_array_sha256"))
+            or not _is_sha256(row.get("state_trace_sha256"))
+            or not isinstance(evidence_receipt, dict)
+            or not evidence_receipt.get("path")
+            or not _is_sha256(evidence_receipt.get("sha256"))
+        ):
+            continue
+        if recording_id in ranked_by_recording:
+            duplicate_recordings.add(recording_id)
+            continue
+        ranked_by_recording[recording_id] = row
+    for recording_id in duplicate_recordings:
+        ranked_by_recording.pop(recording_id, None)
     receipt_paths = sorted(
         [
             *(
@@ -855,23 +906,33 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
         mode = str(receipt.get("mode") or "")
         if mode not in {"simulation_follower", "physical_follower"}:
             continue
+        recording_id = str(receipt.get("recording_id") or sequence)
+        ranked_replay = ranked_by_recording.get(recording_id)
         replay_receipt: dict[str, Any] = {}
         if mode == "physical_follower":
             replay_receipt = _read_json(receipt_path.parent / "sim_replay_receipt.json")
             if (
                 replay_receipt.get("schema_version")
                 != "sim2claw.physical_command_sim_replay.v1"
+                or not _is_sha256(replay_receipt.get("action_array_sha256"))
             ):
-                continue
-            trace_path = receipt_path.parent / str(
-                replay_receipt.get("state_trace_path")
-                or "sim_replay_state_trace.json"
-            )
-            inspection = _receipt_inspection(
-                trace_path,
-                repo_root,
-                replay_receipt,
-            )
+                replay_receipt = {}
+            if replay_receipt:
+                trace_path = receipt_path.parent / str(
+                    replay_receipt.get("state_trace_path")
+                    or "sim_replay_state_trace.json"
+                )
+                inspection = _receipt_inspection(
+                    trace_path,
+                    repo_root,
+                    replay_receipt,
+                )
+            else:
+                inspection = (
+                    dict(ranked_replay["inspection"])
+                    if ranked_replay and ranked_replay.get("inspection")
+                    else None
+                )
         else:
             trace_path = receipt_path.parent / str(
                 receipt.get("state_trace_path") or "state_trace.json"
@@ -879,7 +940,7 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
             inspection = (
                 _inspection(trace_path, repo_root) if trace_path.is_file() else None
             )
-        if inspection is None:
+        if mode == "simulation_follower" and inspection is None:
             continue
         source_proof_class = str(
             receipt.get("proof_class") or "simulation_teleoperation_source"
@@ -890,10 +951,35 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
             else source_proof_class
         )
         outcome = str(receipt.get("outcome_label") or "recorded")
+        video_receipt = (
+            receipt.get("overhead_video")
+            if isinstance(receipt.get("overhead_video"), dict)
+            else {}
+        )
+        video_start = float(
+            video_receipt.get("action_start_video_offset_seconds")
+            or video_receipt.get("teleoperation_start_video_offset_seconds")
+            or 0
+        )
+        video_end = float(
+            video_receipt.get("action_stop_video_offset_seconds")
+            or video_receipt.get("teleoperation_stop_video_offset_seconds")
+            or 0
+        )
         duration = float(receipt.get("duration_seconds") or 0)
+        if video_end > video_start:
+            duration = video_end - video_start
         video_path = receipt_path.parent / "overhead_c922.mp4"
         media = (
-            {"kind": "video", "url": media_url(video_path, repo_root)}
+            {
+                "kind": "video",
+                "url": media_url(video_path, repo_root),
+                "window_start_seconds": video_start,
+                "window_end_seconds": video_end,
+                "display_rotation_degrees": int(
+                    video_receipt.get("orientation_rotation_degrees") or 0
+                ),
+            }
             if video_path.is_file()
             else {"kind": "none"}
         )
@@ -931,47 +1017,208 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                     ),
                 ]
             )
+        action_sha256 = str(
+            replay_receipt.get("action_array_sha256")
+            or (ranked_replay or {}).get("action_array_sha256")
+            or ""
+        )
+        physics_available = inspection is not None and _is_sha256(action_sha256)
+        if not physics_available:
+            inspection = None
+            action_sha256 = ""
+        source_square = str(receipt.get("source_square") or "—")
+        destination_square = str(
+            receipt.get("destination_square")
+            or receipt.get("target_square_operator_metadata")
+            or "—"
+        )
+        is_physical_library = (
+            mode == "physical_follower"
+            and receipt_path.is_relative_to(
+                repo_root / "datasets" / "manipulation_source_recordings"
+            )
+        )
+        if is_physical_library and metrics:
+            metrics[-1]["label"] = "Operator label"
+        task_id = (
+            PHYSICAL_EPISODE_LIBRARY_TASK
+            if is_physical_library
+            else str(receipt.get("task_id") or "manipulation_source_recordings")
+        )
+        comparison = None
+        if is_physical_library and media.get("kind") == "video":
+            comparison = {
+                "schema_version": COMPARISON_SCHEMA_VERSION,
+                "timeline_alignment": "normalized_recorded_action_window",
+                "real": {
+                    "available": True,
+                    "proof_class": source_proof_class,
+                    "camera": "C922 overhead",
+                    "source_pixels": True,
+                },
+                "visual_twin": {
+                    "available": True,
+                    "kind": "image_space_visual_projection",
+                    "camera_alignment": "pixel_identical_source_view",
+                    "source_pixels": True,
+                    "physics_authority": "none",
+                    "proof_class": "visual_only_same_camera_projection",
+                    "notice": (
+                        "Image-space visual mimic derived from the recorded camera "
+                        "pixels. It does not simulate geometry, contact, or dynamics."
+                    ),
+                },
+                "physics_replay": {
+                    "available": physics_available,
+                    "kind": "mujoco_action_frozen_state_trace"
+                    if physics_available
+                    else "missing",
+                    "proof_class": (
+                        "retained_action_frozen_simulation_replay"
+                        if physics_available
+                        else "unavailable"
+                    ),
+                    "action_array_sha256": action_sha256 or None,
+                    "binding": (
+                        {
+                            "kind": (
+                                "adjacent_sim_replay_receipt"
+                                if replay_receipt
+                                else "tracked_publication_recording_and_action"
+                            ),
+                            "recording_id": recording_id,
+                            "action_array_sha256": action_sha256,
+                            "evidence_receipt": (
+                                {
+                                    "path": (
+                                        str(
+                                            (
+                                                receipt_path.parent
+                                                / "sim_replay_receipt.json"
+                                            ).relative_to(repo_root)
+                                        )
+                                    ),
+                                    "sha256": hashlib.sha256(
+                                        (
+                                            receipt_path.parent
+                                            / "sim_replay_receipt.json"
+                                        ).read_bytes()
+                                    ).hexdigest(),
+                                }
+                                if replay_receipt
+                                else (ranked_replay or {}).get("evidence_receipt")
+                            ),
+                            "state_trace_sha256": (
+                                replay_receipt.get("state_trace_sha256")
+                                if replay_receipt
+                                else (ranked_replay or {}).get(
+                                    "state_trace_sha256"
+                                )
+                            ),
+                        }
+                        if physics_available
+                        else None
+                    ),
+                    "notice": (
+                        (
+                            "A receipt binds this recording ID to the byte-identical "
+                            "action array and retained MuJoCo state trace."
+                        )
+                        if physics_available
+                        else (
+                            "No receipt-bound action-frozen MuJoCo state trace is "
+                            "available for this physical recording. Studio does "
+                            "not synthesize one."
+                        )
+                    ),
+                },
+            }
         episodes.append(
             {
-                "id": f"{receipt.get('task_id', 'teleop')}:{receipt.get('recording_id', sequence)}",
-                "task_id": str(
-                    receipt.get("task_id") or "manipulation_source_recordings"
+                "id": f"{task_id}:{recording_id}",
+                "task_id": task_id,
+                "title": (
+                    "Physical episode"
+                    if is_physical_library
+                    else str(
+                        receipt.get("label") or f"Teleop recording {sequence + 1}"
+                    )
                 ),
-                "title": str(receipt.get("label") or f"Teleop recording {sequence + 1}"),
                 "subtitle": (
                     f"{_title(str(receipt.get('piece_id', 'piece')))} · "
-                    f"{receipt.get('source_square', '—')} → {receipt.get('destination_square', '—')}"
+                    f"{source_square.upper()} → {destination_square.upper()} · "
+                    f"{'physics replay paired' if physics_available else 'physics trace missing'}"
                 ),
                 "sequence": 30_000 + sequence,
                 "status": (
+                    "recorded"
+                    if is_physical_library
+                    else
                     "passed"
                     if outcome == "success"
                     else "failed"
                     if outcome == "failure"
                     else "recorded"
                 ),
-                "terminal_outcome": outcome,
-                "proof_class": proof_class,
+                "terminal_outcome": (
+                    f"operator_label_{outcome}_unqualified"
+                    if is_physical_library
+                    else outcome
+                ),
+                "proof_class": (
+                    source_proof_class if is_physical_library else proof_class
+                ),
                 "source_proof_class": source_proof_class,
-                "proof_label": _proof_label(proof_class),
+                "proof_label": (
+                    "Physical source · recorded, not admitted"
+                    if is_physical_library
+                    else _proof_label(proof_class)
+                ),
                 "physical_authority": False,
-                "frame_count": inspection["frame_count"],
-                "fps": inspection["fps"],
-                "duration_seconds": duration or inspection["duration_seconds"],
+                "frame_count": (
+                    inspection["frame_count"]
+                    if inspection is not None
+                    else receipt.get("sample_count")
+                ),
+                "fps": (
+                    inspection["fps"]
+                    if inspection is not None
+                    else receipt.get("sample_hz")
+                ),
+                "duration_seconds": (
+                    duration
+                    or (
+                        inspection["duration_seconds"]
+                        if inspection is not None
+                        else 0
+                    )
+                ),
                 "recorded_at": _iso_timestamp(receipt_path),
                 "media": media,
-                "inspection": inspection,
-                "camera": "free_orbit",
+                "camera": "C922 overhead" if is_physical_library else "free_orbit",
                 "metrics": metrics,
-                "notes": str(receipt.get("notes") or "").strip(),
+                "notes": (
+                    (
+                        f"{str(receipt.get('notes') or '').strip()} "
+                        "The real recording, image-space visual twin, and MuJoCo "
+                        "replay remain separate proof classes."
+                    ).strip()
+                    if is_physical_library
+                    else str(receipt.get("notes") or "").strip()
+                ),
                 "phases": [{"name": "Teleoperation", "start": 0.0, "end": 1.0}],
                 "case_id": (
-                    "physical_command_simulation_replay"
-                    if mode == "physical_follower"
+                    f"{source_square.lower()}_to_{destination_square.lower()}_physical"
+                    if is_physical_library
                     else "simulation_teleoperation_source"
                 ),
+                "source_recording_id": recording_id,
+                "action_array_sha256": action_sha256 or None,
+                "comparison": comparison,
             }
         )
+        if inspection is not None:
+            episodes[-1]["inspection"] = inspection
     return episodes
 
 
@@ -1150,6 +1397,7 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     title_overrides = {
         "chess_pick_place_groot_v1": "Chess pick + place",
         "chess_rook_lift_v1": "Rook lift",
+        PHYSICAL_EPISODE_LIBRARY_TASK: "Physical pawn episodes",
         "scripted_grasp_probe": "Scripted grasp probe",
         "pawn_bg_ranked_grasp_v3": "Top pawn grasp replays",
         "pawn_bg_rubber_sliding2_sensitivity": "Rubber friction sensitivity",
@@ -1165,10 +1413,22 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
             {
                 "id": task_id,
                 "title": title_overrides.get(task_id, _title(task_id)),
-                "role": _task_role(contract) if contract else "Simulation probe",
+                "role": (
+                    "Recorded evidence"
+                    if task_id == PHYSICAL_EPISODE_LIBRARY_TASK
+                    else _task_role(contract)
+                    if contract
+                    else "Simulation probe"
+                ),
                 "description": (
                     "Seven consequence-ranked, action-frozen V3 simulator replays; partial outcomes only, with zero strict task successes."
                     if task_id == "pawn_bg_ranked_grasp_v3"
+                    else (
+                        "All retained C922 physical recordings with a same-camera "
+                        "visual-only twin and every currently available "
+                        "action-frozen MuJoCo replay."
+                    )
+                    if task_id == PHYSICAL_EPISODE_LIBRARY_TASK
                     else "Frozen sliding-friction 2.0 sensitivity replays; diagnostic only because the all-episode EE RMS guard fails."
                     if task_id == "pawn_bg_rubber_sliding2_sensitivity"
                     else

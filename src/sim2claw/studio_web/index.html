@@ -99,11 +99,14 @@
                 <p id="stage-subtitle">The newest replayable evidence will appear here.</p>
               </div>
               <div class="stage-actions">
+                <a class="grasp-gallery-shortcut" href="#/tasks/physical_pawn_episode_library_v1">Real ↔ twin episodes</a>
                 <a class="grasp-gallery-shortcut" href="#/tasks/pawn_bg_ranked_grasp_v3">Top 7 grasp replays</a>
                 <div class="recording-feed-switch" id="recording-feed-switch" hidden aria-label="Recorded camera feed"></div>
                 <div class="replay-mode-switch" id="replay-mode-switch" hidden aria-label="Replay view">
-                  <button type="button" data-replay-mode="three" aria-pressed="true">3D inspect</button>
-                  <button type="button" data-replay-mode="recorded" aria-pressed="false">Recorded</button>
+                  <button type="button" data-replay-mode="compare" aria-pressed="true">Compare</button>
+                  <button type="button" data-replay-mode="recorded" aria-pressed="false">Reality</button>
+                  <button type="button" data-replay-mode="visual" aria-pressed="false">Visual twin</button>
+                  <button type="button" data-replay-mode="three" aria-pressed="false">Physics</button>
                 </div>
                 <span class="stage-verdict" id="stage-verdict">Waiting</span>
                 <button class="twin-fidelity-trigger" id="twin-fidelity-trigger" type="button" aria-controls="twin-fidelity-drawer" aria-expanded="false" disabled>
@@ -114,13 +117,41 @@
               </div>
             </header>
 
+            <div class="comparison-lane-strip" id="comparison-lane-strip" hidden aria-label="Episode comparison evidence lanes">
+              <span data-comparison-lane="real"><i>01</i><b>Recorded reality</b><small>Source pixels</small></span>
+              <span data-comparison-lane="visual"><i>02</i><b>Visual twin</b><small>Same-camera · no physics</small></span>
+              <span data-comparison-lane="physics"><i>03</i><b>Physics replay</b><small id="physics-lane-state">Action-frozen MuJoCo</small></span>
+              <em>One normalized playhead</em>
+            </div>
+
             <div class="episode-stage" id="episode-stage" tabindex="0" aria-label="Episode replay viewer">
               <video id="replay-video" playsinline muted preload="metadata"></video>
               <img id="replay-frame" alt="Current simulation episode frame">
+              <canvas class="visual-twin-canvas" id="visual-twin-canvas" aria-label="Same-camera image-space visual twin"></canvas>
+              <div class="visual-twin-seam" id="visual-twin-seam" aria-hidden="true"><i></i></div>
+              <div class="visual-twin-toolbar" id="visual-twin-toolbar" hidden>
+                <div role="group" aria-label="Reality and visual twin reveal">
+                  <button type="button" data-visual-mode="real" aria-pressed="false">Reality</button>
+                  <button type="button" data-visual-mode="split" aria-pressed="true">Wipe</button>
+                  <button type="button" data-visual-mode="twin" aria-pressed="false">Visual twin</button>
+                </div>
+                <label><span>Reveal</span><input id="visual-twin-reveal" type="range" min="8" max="92" value="50" aria-label="Visual twin reveal position"></label>
+              </div>
+              <div class="comparison-pane-label comparison-pane-label-real" id="comparison-real-label" hidden>
+                <i>01</i><span>Reality / visual twin</span>
+              </div>
               <div class="three-replay" id="three-replay" aria-label="Interactive MuJoCo episode inspection">
                 <canvas id="three-canvas"></canvas>
                 <div class="three-status" id="three-status">Loading MuJoCo scene…</div>
                 <button class="three-reset" id="three-reset" type="button">Reset view</button>
+              </div>
+              <div class="physics-unavailable" id="physics-unavailable" hidden>
+                <i>03</i>
+                <b>Physics replay unavailable</b>
+                <p>No receipt-bound MuJoCo trace exists for this recording. Studio will not invent one.</p>
+              </div>
+              <div class="comparison-pane-label comparison-pane-label-physics" id="comparison-physics-label" hidden>
+                <i>03</i><span>Action-frozen physics</span>
               </div>
               <div class="empty-stage" id="empty-stage">
                 <svg class="stage-portrait" id="stage-portrait" viewBox="0 0 640 360" aria-hidden="true"></svg>

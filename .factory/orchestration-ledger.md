@@ -1,6 +1,6 @@
 # Orchestration Ledger
 
-## Current transaction — Replay-integrated Twin fidelity
+## Current transaction — Replay-integrated twin observability
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`.
 - Queue source: direct owner clarification and approved implementation map from
@@ -10,13 +10,20 @@
 - Baseline: clean `main == origin/main` at
   `f2c56f0661043952601c5a626e76004281ade58a`.
 - Objective: keep Learning Factory evaluation/runtime machinery, remove its
-  standalone top-level Studio destination, and expose receipt-verified causal
-  and fidelity observability inside the selected Replay context.
+  standalone top-level Studio destination, and combine receipt-verified causal
+  fidelity with recorded-reality, same-camera visual, and action-frozen physics
+  comparison inside the selected Replay context.
 - Proof target: six ordered twin-gap domains with explicit observed, missing,
   and failed states; action-bound SAIL causal evidence; read-only authority;
-  desktop/mobile/keyboard/console verification; unchanged S2 evidence.
-- Status: proof-binding correction and corrected focused/short gates pass;
-  exact-head full suite and independent read/test/visual review remain pending.
+  evidence-separated episode comparison; desktop/mobile/keyboard/console
+  verification; unchanged S2 evidence.
+- Implementation checkpoint: the combined Replay slice contains 18 retained
+  physical recordings, 18 same-camera image-space visual projections labelled
+  visual-only/no-physics, seven tracked publication-receipt/action/trace-bound
+  MuJoCo replays, and 11 explicit physics-unavailable states. Generated-output
+  fallback, malformed or duplicate bindings, and absent action digests fail
+  closed. This checkpoint records product semantics; exact-head test receipts
+  and independent-review evidence own verification status.
 - Authority: no simulator or adapter replay, provider call, training,
   promotion, measurement acquisition, physical capture, gateway, robot
   motion, VideoSim work, or push.
@@ -29,6 +36,13 @@
   action hashes no longer fall back to episode ID. Every final proof tier was
   bracketed by `11/11` unchanged S2 hashes and `1 event / 4 replays / 0
   measurement trials`.
+- Reconciliation checkpoint: the stopped episode-comparison work was reviewed
+  hunk-by-hunk against Twin fidelity and retained as a contextual Replay mode.
+  The physical source, image-space transform, and retained MuJoCo trace remain
+  separate proof classes; no missing trace is synthesized and physical
+  authority remains false. The interrupted comparison full run (2%, exit 130)
+  and the `49f3610` identity-failed run (976 passed, 3 skipped, one stale
+  publication binding) remain excluded historical evidence.
 
 ## Completed transaction — SAIL executed benchmark and retained-C2 adapter
 
