@@ -8,6 +8,7 @@ import json
 import os
 import platform
 import signal
+import stat
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -260,23 +261,109 @@ def _load_canonical_review_artifact(
         raise DevLoopLifecycleError(
             "review receipt path is not the canonical reviewer artifact"
         )
-    path = repo_root / CANONICAL_FINAL_REVIEW_PATH
-    if path.is_symlink() or not path.is_file():
+
+    try:
+        root = repo_root.resolve(strict=True)
+    except OSError as error:
+        raise DevLoopLifecycleError("repository root is unreadable") from error
+    path = root / CANONICAL_FINAL_REVIEW_PATH
+    component_stats: list[os.stat_result] = []
+    cursor = root
+    try:
+        for part in CANONICAL_FINAL_REVIEW_PATH.parts:
+            cursor = cursor / part
+            component = cursor.lstat()
+            if stat.S_ISLNK(component.st_mode):
+                raise DevLoopLifecycleError(
+                    "canonical reviewer artifact path contains a symlink component"
+                )
+            component_stats.append(component)
+        resolved = path.resolve(strict=True)
+    except DevLoopLifecycleError:
+        raise
+    except OSError as error:
         raise DevLoopLifecycleError(
             "canonical reviewer artifact is missing or not a regular file"
+        ) from error
+    if resolved != path or not resolved.is_relative_to(root):
+        raise DevLoopLifecycleError(
+            "canonical reviewer artifact resolves outside its lexical repository path"
         )
+
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    file_flags = os.O_RDONLY | os.O_NOFOLLOW
+    opened: list[int] = []
     try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        current_fd = os.open(root, directory_flags)
+        opened.append(current_fd)
+        for index, part in enumerate(CANONICAL_FINAL_REVIEW_PATH.parts):
+            is_leaf = index == len(CANONICAL_FINAL_REVIEW_PATH.parts) - 1
+            next_fd = os.open(
+                part,
+                file_flags if is_leaf else directory_flags,
+                dir_fd=current_fd,
+            )
+            opened.append(next_fd)
+            observed = os.fstat(next_fd)
+            expected = component_stats[index]
+            if (
+                observed.st_dev != expected.st_dev
+                or observed.st_ino != expected.st_ino
+                or stat.S_IFMT(observed.st_mode) != stat.S_IFMT(expected.st_mode)
+            ):
+                raise DevLoopLifecycleError(
+                    "canonical reviewer artifact path changed while opening"
+                )
+            current_fd = next_fd
+        before = os.fstat(current_fd)
+        if not stat.S_ISREG(before.st_mode):
+            raise DevLoopLifecycleError(
+                "canonical reviewer artifact is missing or not a regular file"
+            )
+        chunks: list[bytes] = []
+        while chunk := os.read(current_fd, 1024 * 1024):
+            chunks.append(chunk)
+        content = b"".join(chunks)
+        after = os.fstat(current_fd)
+        if (
+            before.st_dev,
+            before.st_ino,
+            before.st_size,
+            before.st_mtime_ns,
+        ) != (
+            after.st_dev,
+            after.st_ino,
+            after.st_size,
+            after.st_mtime_ns,
+        ):
+            raise DevLoopLifecycleError(
+                "canonical reviewer artifact changed while reading"
+            )
+    except DevLoopLifecycleError:
+        raise
+    except OSError as error:
+        raise DevLoopLifecycleError(
+            "canonical reviewer artifact is unreadable"
+        ) from error
+    finally:
+        for descriptor in reversed(opened):
+            os.close(descriptor)
+
+    try:
+        payload = json.loads(content.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
         raise DevLoopLifecycleError(
             "canonical reviewer artifact is unreadable"
         ) from error
     if not isinstance(payload, Mapping):
         raise DevLoopLifecycleError("canonical reviewer artifact is not an object")
     receipt = verify_review_receipt(payload)
+    # This binds one local artifact's path and bytes. It is not cryptographic
+    # proof of reviewer actor identity against a writer who can regenerate all
+    # repository-local receipts and the packet.
     return receipt, {
         "path": CANONICAL_FINAL_REVIEW_PATH.as_posix(),
-        "file_sha256": sha256_file(path),
+        "file_sha256": hashlib.sha256(content).hexdigest(),
         "receipt_digest": receipt["receipt_digest"],
     }
 

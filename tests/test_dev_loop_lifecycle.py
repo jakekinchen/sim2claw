@@ -923,3 +923,40 @@ def test_merge_readiness_rejects_noncanonical_or_missing_review_artifact(
             review_receipt_paths=[CANONICAL_FINAL_REVIEW_PATH],
             changed_paths=[],
         )
+
+
+@pytest.mark.parametrize("outside_root", [False, True])
+def test_merge_readiness_rejects_symlinked_review_parent_for_builder_and_verifier(
+    tmp_path: Path,
+    outside_root: bool,
+) -> None:
+    root = _terminal_repo(tmp_path)
+    receipts = _final_test_receipts(root)
+    audit = audit_dev_loop_authority(root)
+    review_path = _write_final_review(root, _final_review(root, receipts))
+    packet = build_merge_readiness_packet(
+        repo_root=root,
+        authority_audit=audit,
+        test_receipts=receipts,
+        review_receipt_paths=[review_path],
+        changed_paths=[],
+    )
+    canonical_parent = (root / CANONICAL_FINAL_REVIEW_PATH).parent
+    relocated_parent = (
+        tmp_path / "outside-final-review"
+        if outside_root
+        else root / "other-final-review"
+    )
+    canonical_parent.rename(relocated_parent)
+    canonical_parent.symlink_to(relocated_parent, target_is_directory=True)
+
+    with pytest.raises(DevLoopLifecycleError, match="symlink component"):
+        build_merge_readiness_packet(
+            repo_root=root,
+            authority_audit=audit,
+            test_receipts=receipts,
+            review_receipt_paths=[review_path],
+            changed_paths=[],
+        )
+    with pytest.raises(DevLoopLifecycleError, match="symlink component"):
+        verify_merge_readiness_packet(packet, repo_root=root)
