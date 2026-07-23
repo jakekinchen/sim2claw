@@ -15,8 +15,8 @@
   packet digest `f88070030f27c6b0f61b8ca37f10e9942d48ef2b5bf389236183632ea8c27b28`.
 - Goal:
   `docs/autonomous-workflow/goal-loop-sail-executed-benchmark-c2-adapter.md`.
-- Status: `S2-03 commit-gated`; S2-01 benchmark checkpoint independently
-  reviewed and S2-02 preregistration tested with zero real replays.
+- Status: `S2-04 exact-head closeout`; S2-01 benchmark checkpoint independently
+  reviewed and S2-03 frozen as an independently audited terminal negative.
 - Cadence: active bounded transaction through exact-head verification and
   independent review.
 - Authorized public mutation: scoped commits and push to `origin/main` only
@@ -37,7 +37,7 @@
 
 | Worker | Source | Task | Allowed Actions | Status | Last Seen | Proof Target | Proof Result | Blocker |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Coordinator/Executor | owner objective | Implement S2-00 through S2-04 as sole writer | Scoped files, local simulator up to 1 intervention/18 action-identical replays, tests, receipts, commit; push only after PASS | active | 2026-07-23T11:30:00-05:00 | Every acceptance criterion in the S2 goal prompt | S2-01 independently reviewed; S2-02 exactly one non-fixture adapter, four frozen candidates, 60 focused tests, 0 real replays | none |
+| Coordinator/Executor | owner objective | Close S2 as sole writer without another simulator execution | Read-only evidence checks, scoped authority files, tests, receipts, commit; push only after PASS | active | 2026-07-23T12:15:00-05:00 | Every acceptance criterion in the S2 goal prompt | S2-01 synthetic benchmark tie; S2-03 one event/four replays, evaluator reject, 0 admitted evidence, unchanged posterior | measurement acquisition remains a later prerequisite |
 
 ### Owner Decisions
 
@@ -71,6 +71,35 @@
   evaluator-owned posterior gate, strict task/EE thresholds, and affected
   factor scope. The focused adapter/live-operator gate passed 60 tests using
   test doubles; retained C2 intervention and replay counts remain zero.
+- 2026-07-23T11:45:00-05:00 - Executed the single authorized intervention
+  once: one campaign event, four of four action-identical anchor replays, zero
+  retries, zero measurement trials, and zero provider calls. Every candidate
+  retained action SHA-256
+  `402a29e4cdc0c4cb90d41a83327ad8df5685544851b4e4d659129b3239744fd6`.
+- 2026-07-23T11:45:00-05:00 - The independent CPU/fp32 evaluator returned
+  `evaluator_reject`. Strict task-plus-EE passes, admitted evidence, and factor
+  updates were all zero; both 0.5 priors remained unchanged and observed
+  information gain was zero. This is a retained-simulator terminal negative,
+  not an improvement.
+- 2026-07-23T12:00:00-05:00 - Independent read-only audit confirmed all
+  reported hashes and counts and returned `PASS`. No further family, replay,
+  retry, candidate, threshold, or posterior change is authorized. The next
+  scientific prerequisite is measurement acquisition, outside this closeout.
+
+<!-- autonomous-dev-loop-current:start -->
+## Generated current autonomous-development state
+
+- Status: `active`.
+- Milestone: `D6` (`in_progress`).
+- Branch / remote: `main` / `origin/main`.
+- Baseline: `1ee6b7d5f45aecb3fc95006b6abf1141713cb927`.
+- Plan SHA-256: `cc480b36a9c490d91d2b504b585e29fb82a2510a1bbe05095c412ea0b65ea240`.
+- Goal SHA-256: `df0eecfb09a341c3fe1b295f59b3e4439d379256d5040df5de6f4adcad29f667`.
+- Scoped origin/main push: `true`.
+- External authority: provider, paid compute, training, simulator campaign/promotion, physical capture, gateway, and motion are `false`.
+- Physical readiness: `blocked_hardware_and_calibration_not_ready`; gateway remains `false`.
+- Next step: `commit_verification_candidate_run_exact_final_tiers_obtain_fresh_PASS_review_then_push_audit_and_generate_operational_terminal_packet`.
+<!-- autonomous-dev-loop-current:end -->
 
 ## D0 activation snapshot — autonomous development operations and advancement
 

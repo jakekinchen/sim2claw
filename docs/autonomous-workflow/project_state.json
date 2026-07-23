@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-23T11:30:00-05:00",
+  "updated_at": "2026-07-23T12:15:00-05:00",
   "active_campaign": "sail_executed_benchmark_c2_adapter",
-  "current_milestone": "S2_03_BOUNDED_RETAINED_C2_MATERIALIZATION_COMMIT_GATED",
+  "current_milestone": "D6_VERIFICATION_AND_CLOSEOUT",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_and_bounded_action_frozen_simulator_evidence_no_physical_or_transfer_authority",
@@ -857,7 +857,7 @@
   },
   "sail_executed_benchmark_c2_adapter": {
     "schema_version": "sim2claw.sail_executed_benchmark_c2_adapter_state.v1",
-    "status": "active",
+    "status": "terminal_negative_awaiting_exact_head_closeout_gates",
     "goal_loop": "docs/autonomous-workflow/goal-loop-sail-executed-benchmark-c2-adapter.md",
     "branch": "main",
     "expected_remote": "origin/main",
@@ -875,12 +875,12 @@
     "milestones": {
       "S2-00": "completed_transaction_activation_and_contract_reconciliation",
       "S2-01": "completed_evaluator_executed_structural_benchmark",
-      "S2-02": "completed_non_fixture_retained_c2_trusted_adapter_preregistered_unexecuted",
-      "S2-03": "in_progress_bounded_materialization_waiting_for_preregistration_commit",
-      "S2-04": "pending_exact_head_verification_independent_review_push_and_closeout"
+      "S2-02": "completed_non_fixture_retained_c2_trusted_adapter_preregistered_before_execution",
+      "S2-03": "completed_single_authorized_intervention_terminal_negative",
+      "S2-04": "in_progress_exact_head_verification_independent_review_push_and_closeout"
     },
     "progress_ledger": {
-      "current_state": "benchmark_v2_independently_reviewed_single_C2_adapter_preregistered_and_tested_zero_real_replays",
+      "current_state": "synthetic_benchmark_tie_and_retained_C2_terminal_negative_frozen_no_further_simulator_execution_authorized",
       "completed": [
         "clean_main_equals_origin_main_at_616f989_verified",
         "closed_D6_terminal_packet_identity_recorded_without_mutation",
@@ -899,7 +899,14 @@
         "balanced_four_replay_factorial_frozen_before_execution",
         "posterior_task_EE_and_factor_scope_rules_frozen",
         "C2_adapter_and_live_operator_focused_gate_sixty_tests_passed",
-        "real_C2_replay_count_remains_zero_before_preregistration_commit"
+        "real_C2_replay_count_remained_zero_before_preregistration_commit",
+        "single_authorized_C2_intervention_executed_once",
+        "four_of_four_action_identical_anchor_replays_materialized_without_retry",
+        "independent_cpu_fp32_evaluator_rejected_all_candidates_on_joint_mechanism_and_strict_task_EE_gate",
+        "zero_evaluator_owned_evidence_admitted",
+        "posterior_preserved_at_equal_half_priors_with_zero_information_gain",
+        "terminal_negative_independently_audited_PASS",
+        "all_future_C2_family_replay_retry_threshold_and_posterior_changes_closed"
       ],
       "evidence": {
         "benchmark_v1_config": "configs/sail/seeded_benchmark_v1.json",
@@ -911,22 +918,39 @@
         "benchmark_v2_run_log": "docs/run-logs/2026-07-23-sail-executed-benchmark-v2.md",
         "benchmark_receipt_sha256": "4f65b80d7a19ad97dbb0daf0eaac014ff3f51e682031c91abec8386a6d19b803",
         "benchmark_receipt_digest": "013716ef4356ff0ead320b0e309b5ab061dad675553d6f155f48498751135e76",
-        "benchmark_scorecard_digest": "132aaaa5f2244c7e362cc38a58e9276c4c240a81c6c9a71ab94f4d4e42fdd1df"
-        ,
+        "benchmark_scorecard_digest": "132aaaa5f2244c7e362cc38a58e9276c4c240a81c6c9a71ab94f4d4e42fdd1df",
         "c2_adapter_contract": "configs/sail/c2_trusted_adapter_v1.json",
         "c2_adapter_contract_sha256": "156540d4bd800e6bad95058573ebb3b9bbdbbdd57f472ef320c9da353dd4ee11",
         "c2_adapter_contract_digest": "1cccd19a249f84606ddedda4925767eff5b3ef34294ba1de757323634b95dbfd",
         "c2_live_campaign": "configs/sail/live_operator_c2_adapter_v1.json",
         "c2_live_campaign_sha256": "893ff56afb7ac2476acd061cdf89865394e5b51a0462975faa369469b314f311",
         "c2_candidate_count": 4,
-        "c2_adapter_run_log": "docs/run-logs/2026-07-23-c2-trusted-adapter-preregistration.md"
+        "c2_adapter_run_log": "docs/run-logs/2026-07-23-c2-trusted-adapter-preregistration.md",
+        "c2_terminal_negative_run_log": "docs/run-logs/2026-07-23-c2-trusted-adapter-terminal-negative.md",
+        "c2_live_receipt": "outputs/sail/live-operator-c2-adapter-v1/receipt.json",
+        "c2_live_receipt_sha256": "ff79ea13db0eeb712bfe3b14ce38a1dbf7d57e9aa2743bcaab151777c7a0639d",
+        "c2_live_receipt_digest": "b36b02582793afc302b60043cd966b749fbdfb1e1b77ad028be3e27cef73e7a0",
+        "c2_adapter_receipt": "outputs/sail/live-operator-c2-adapter-v1/trusted_adapter/receipt.json",
+        "c2_adapter_receipt_sha256": "b2e93b24466d3e562ab59483da5f6bff132240e37119f9ff2646c8220c466958",
+        "c2_adapter_receipt_digest": "d5c1e1fd236d3d8b7bba16e2dbc1486d2def56eac9416321e244e273befa5912",
+        "c2_evaluation_sha256": "d4d1d2b2ea8772b3e0083d055b94e0556eade3a639619ba1eee18bce67ac6bb2",
+        "c2_result_sha256": "8e2bab901d8956d52b1828a53593b7582117717cb2ab26af53e525ca18e1e775",
+        "c2_campaign_state": "outputs/sail/live-campaign-state-v1/0422ad20f50d1abc5247200a18c7bf5ac9d206c279c3b3940a7ef33a41eb6865/campaign_state.json",
+        "c2_campaign_state_sha256": "9d305db1e6bce6042536422c17e9ea70f1752255108cb23da77c5f302e120448",
+        "c2_campaign_state_digest": "f6d32c8d9dbb88926cff1a4c15a9cad7eecf9c8e3cf234522519a4c955085b9b",
+        "c2_campaign_chain_head": "5042039d6f53f6ac5cca801c095b7becc3fac7d8ecf716472a9a9ba7ea4ce6f7",
+        "c2_execution_id": "a0fb3064a6ef7560bc1edf30c129dc2f8f5f0f8eb5365e45d6fdbba701aca926",
+        "c2_verdict": "evaluator_reject",
+        "c2_consequence_status": "rejected_no_joint_mechanism_and_strict_task_ee_evidence",
+        "c2_proof_class": "retained_action_frozen_c2_simulator_adapter_evidence",
+        "c2_measurement_prerequisite": "independent_synchronized_force_deformation_angle_and_current_measurement_acquisition_with_verified_calibration_and_alignment"
       },
       "benchmark_methods_executed": 64,
       "benchmark_evaluator_controls_executed": 4,
       "benchmark_failures": 0,
-      "c2_interventions_used": 0,
+      "c2_interventions_used": 1,
       "c2_intervention_budget": 1,
-      "c2_anchor_replays_used": 0,
+      "c2_anchor_replays_used": 4,
       "c2_anchor_replay_budget": 18,
       "c2_retries_used": 0,
       "c2_retry_budget": 0,
@@ -934,15 +958,30 @@
         "flexural_rubber_contact_v1": 0.5,
         "actuator_load_path_v1": 0.5
       },
-      "posterior_after": null,
+      "posterior_after": {
+        "flexural_rubber_contact_v1": 0.5,
+        "actuator_load_path_v1": 0.5
+      },
+      "c2_campaign_event_count": 1,
+      "c2_measurement_trials_used": 0,
+      "c2_provider_calls_used": 0,
+      "c2_strict_task_and_ee_pass_count": 0,
+      "c2_admitted_evaluator_owned_evidence_count": 0,
+      "c2_factor_update_count": 0,
+      "c2_observed_information_gain_bits": 0.0,
+      "c2_main_effects": {
+        "flexural_contact": 0.11802180856466293,
+        "actuator_load_path": -0.08861631155014038
+      },
       "remaining": [
-        "materialize_benchmark_and_C2_or_prerequisite_abstention",
         "run_exact_head_test_tiers_and_full_suite",
         "obtain_independent_PASS_review",
         "push_scoped_commits_and_verify_remote_equality"
       ],
-      "blockers": [],
-      "next_step": "commit_and_report_the_single_C2_adapter_preregistration_with_zero_real_replays_before_execution"
+      "blockers": [
+        "physical_measurement_prerequisite_unavailable_and_not_authorized_in_this_transaction"
+      ],
+      "next_step": "freeze_outputs_run_read_only_exact_head_verification_obtain_fresh_PASS_review_then_push_without_any_simulator_rerun"
     },
     "authority": {
       "repository_write": true,
@@ -953,7 +992,8 @@
       "paid_compute": false,
       "brev": false,
       "training": false,
-      "simulator_execution": true,
+      "simulator_execution": false,
+      "simulator_intervention_budget_exhausted": true,
       "maximum_simulator_interventions": 1,
       "maximum_c2_anchor_replays": 18,
       "simulator_campaign_expansion": false,

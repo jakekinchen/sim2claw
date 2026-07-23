@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `SAIL EXECUTED BENCHMARK + RETAINED-C2 ADAPTER S2 ACTIVE; D6 CLOSED BASELINE PRESERVED; B2 SEARCH PAUSED`
+Status: `SAIL S2 TERMINAL NEGATIVE IN EXACT-HEAD CLOSEOUT; D6 CLOSED BASELINE PRESERVED; B2 SEARCH PAUSED`
 
 ## Active SAIL executed-benchmark and retained-C2 adapter transaction
 
@@ -25,9 +25,15 @@ packet digest
 `f88070030f27c6b0f61b8ca37f10e9942d48ef2b5bf389236183632ea8c27b28`.
 It proves the prior transaction only and cannot authorize this one.
 
-Current milestone: **S2-03 — bounded retained-C2 materialization**. S2-01 is
-complete as a separately reviewed benchmark checkpoint; S2-02 is frozen and
-tested with zero real replays before its preregistration commit.
+Transaction milestone: **S2-04 — exact-head verification, independent review,
+and scoped push**. S2-01 is complete as a separately reviewed synthetic
+benchmark checkpoint. S2-02 was frozen and tested with zero real replays before
+its preregistration commit. S2-03 used the single authorized intervention and
+closed as a retained-simulator terminal negative.
+
+Current milestone: **D6 — verification and closeout**. This marker remains
+owned by the canonical autonomous-development control-plane candidate; the
+closed D6 packet named above is immutable and S2 does not reopen it.
 
 The benchmark acceptance target is trustworthy executed measurement, not a
 required SAIL win. The C2 lane is limited to one preregistered intervention,
@@ -38,25 +44,35 @@ authority remain closed.
 
 Progress ledger:
 
-- Current state: evaluator-executed benchmark v2 is materialized and reviewed;
-  exactly one four-replay non-fixture C2 adapter is frozen and tested but
-  remains unexecuted.
+- Transaction state: evaluator-executed benchmark v2 is materialized and
+  reviewed; the one four-candidate non-fixture C2 intervention executed once
+  and is frozen as an evaluator-rejected terminal negative.
 - Completed: clean baseline and immutable D6 packet identity reconciled;
   benchmark-v1 label scoring and fixture-only adapter gap confirmed.
-- Evidence: `main == origin/main == 616f989`; D6 packet terminal authority is
-  true with zero live leases.
+- Baseline evidence: `main == origin/main == 616f989` before S2; the D6 packet
+  terminal authority is true with zero live leases and remains immutable.
 - Benchmark methods / controls / failures: `64 / 4 / 0`; all 25 declared
   golden checks actually executed and passed.
-- C2 interventions / anchor replays / retries: `0 / 1`, `0 / 18`, `0`.
-- Posterior before / after: pending; prior must remain unchanged without
-  admitted evaluator evidence.
-- Remaining: commit the preregistration, execute the one authorized
-  four-replay intervention, publish its receipt, run exact-head verification,
-  review, and push.
-- Blockers: none; retained C2 source hashes are verified, but execution remains
-  closed until the adapter family is committed.
-- Next step: commit this preregistration checkpoint and report its exact
-  identity with zero replays before opening the one authorized intervention.
+- C2 interventions / anchor replays / retries / measurement trials: `1 / 1`,
+  `4 / 18`, `0`, `0`; campaign events: `1`.
+- Consequence: `evaluator_reject`; mechanism effects were diagnostic but strict
+  task-plus-EE passes were `0 / 4`, admitted evaluator evidence was `0`, and
+  factor updates were `0`.
+- Posterior before / after: flexural contact `0.5 / 0.5`; actuator load path
+  `0.5 / 0.5`; observed information gain `0.0` bits.
+- Frozen evidence: live receipt SHA-256
+  `ff79ea13db0eeb712bfe3b14ce38a1dbf7d57e9aa2743bcaab151777c7a0639d`,
+  adapter receipt SHA-256
+  `b2e93b24466d3e562ab59483da5f6bff132240e37119f9ff2646c8220c466958`,
+  and campaign-state SHA-256
+  `9d305db1e6bce6042536422c17e9ea70f1752255108cb23da77c5f302e120448`.
+- Remaining: read-only receipt validation, exact-head focused/SAIL/full-suite
+  verification, fresh independent review, scoped push, and remote equality.
+- Blocker / next scientific prerequisite: independently calibrated,
+  synchronized force/deformation/angle/current measurement acquisition. It is
+  not authorized or started during S2 closeout.
+- Next step: verify without executing another simulator replay, obtain fresh
+  `PASS`, push the exact scoped commits, and verify local/remote equality.
 
 ## Closed autonomous development operations and advancement baseline
 
