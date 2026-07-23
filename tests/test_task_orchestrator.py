@@ -17,6 +17,7 @@ import cv2
 
 from sim2claw.orchestrator_frames import (
     FrameSourceError,
+    LocalOverheadSnapshotAdapter,
     SiliconOverheadSnapshotAdapter,
     SnapshotFrame,
     SnapshotResponse,
@@ -553,6 +554,39 @@ class SnapshotAdapterTests(unittest.TestCase):
         self.assertNotIn("fixture-secret-token", serialized)
         self.assertNotIn("/api/v1/", serialized)
 
+    def test_local_overhead_snapshot_is_live_preview_without_registration_authority(self) -> None:
+        image = cv2.imdecode(
+            __import__("numpy").frombuffer(
+                _fixture_bytes("base_case.png"), dtype=__import__("numpy").uint8
+            ),
+            cv2.IMREAD_COLOR,
+        )
+        encoded, jpeg = cv2.imencode(".jpg", image)
+        self.assertTrue(encoded)
+        adapter = LocalOverheadSnapshotAdapter(
+            lambda camera_id: {
+                "camera_id": camera_id,
+                "device_name": "C922 Pro Stream Webcam",
+                "device_index": 1,
+                "captured_at": self.now.isoformat(),
+                "fetch_duration_ms": 12.5,
+                "body": jpeg.tobytes(),
+            },
+            status=lambda _camera_id: {
+                "ready": True,
+                "available": True,
+                "device_name": "C922 Pro Stream Webcam",
+            },
+        )
+        frame = adapter.fetch()
+        self.assertEqual(frame.record["camera_id"], "logitech-overhead")
+        self.assertEqual(frame.record["camera_role"], "overhead_workspace")
+        self.assertFalse(frame.record["perception_ready"])
+        self.assertEqual(
+            frame.record["registration_state"], "operator_registration_required"
+        )
+        self.assertFalse(frame.record["physical_authority"])
+
     def test_stale_malformed_oversized_redirected_and_drift_frames_are_rejected(self) -> None:
         cases: list[tuple[str, dict[str, Any], str, dict[str, Any] | None]] = [
             (
@@ -665,6 +699,27 @@ class ModelAdapterTests(unittest.TestCase):
         self.assertEqual(request["reasoning"], {"effort": "medium"})
         self.assertEqual(request["instructions"], SYSTEM_PROMPT)
         self.assertIn("B1, C2, D1, E2, F1, and G2", request["instructions"])
+        self.assertIn(
+            "B2, C1, D2, E1, F2, and G1 are occupied",
+            request["instructions"],
+        )
+        self.assertIn(
+            "B1->B2, C2->C1, D1->D2, E2->E1, F1->F2, and G2->G1",
+            request["instructions"],
+        )
+        self.assertIn("planning-only", request["instructions"])
+        self.assertIn(
+            "occupied contains only the destination square",
+            request["instructions"],
+        )
+        self.assertIn(
+            'The named command "loop the base case" means',
+            request["instructions"],
+        )
+        self.assertIn(
+            "A requested loop duration is a planning horizon",
+            request["instructions"],
+        )
         self.assertIn("exactly one allowlisted skill", request["instructions"])
         self.assertIn("only the deterministic state checker", request["instructions"])
         self.assertIn("cannot train or promote", request["instructions"])
@@ -896,6 +951,169 @@ class ServiceTests(unittest.TestCase):
             monotonic=clock or __import__("time").monotonic,
             start_worker=False,
         )
+
+    def local_source_service(self) -> tuple[TaskOrchestratorService, FixtureModel]:
+        image = cv2.imdecode(
+            __import__("numpy").frombuffer(
+                _fixture_bytes("b_mismatch.png"), dtype=__import__("numpy").uint8
+            ),
+            cv2.IMREAD_COLOR,
+        )
+        encoded, jpeg = cv2.imencode(".jpg", image)
+        self.assertTrue(encoded)
+
+        def adapter() -> LocalOverheadSnapshotAdapter:
+            return LocalOverheadSnapshotAdapter(
+                lambda camera_id: {
+                    "camera_id": camera_id,
+                    "device_name": "C922 Pro Stream Webcam",
+                    "device_index": 1,
+                    "captured_at": datetime.now(UTC).isoformat(),
+                    "body": jpeg.tobytes(),
+                },
+                status=lambda _camera_id: {
+                    "ready": True,
+                    "available": True,
+                    "device_name": "C922 Pro Stream Webcam",
+                },
+            )
+
+        model = FixtureModel()
+        service = TaskOrchestratorService(
+            repo_root=self.root,
+            config_path=self.config_path,
+            frame_adapter_factory=adapter,
+            frame_source_metadata={
+                "adapter_id": "local_logitech_overhead_snapshot_v1",
+                "label": "Logitech overhead",
+                "host": "local-avfoundation",
+                "camera_id": "logitech-overhead",
+                "camera_role": "overhead_workspace",
+                "roi_contract_id": "local_overhead_unregistered_v1",
+                "registration_state": "operator_registration_required",
+            },
+            frame_source_status=lambda: {
+                "ready": True,
+                "available": True,
+                "device_name": "C922 Pro Stream Webcam",
+            },
+            workcell_status=lambda: {
+                "arms": [{"role": "leader", "connected": True}],
+                "cameras": [
+                    {
+                        "id": "logitech-overhead",
+                        "available": True,
+                        "primary_for_orchestrator": True,
+                    }
+                ],
+                "physical_authority": False,
+            },
+            model_adapter_factory=lambda: model,
+            start_worker=False,
+        )
+        return service, model
+
+    def test_local_overhead_preview_works_while_stopped_without_model_turn(self) -> None:
+        service, model = self.local_source_service()
+        state = service.preview_source()
+        self.assertEqual(state["state"], "STOPPED")
+        self.assertEqual(state["source"]["health"], "healthy")
+        self.assertTrue(state["source"]["latest_preview_sha256"])
+        self.assertEqual(state["source"]["device_name"], "C922 Pro Stream Webcam")
+        self.assertIsNone(state["base_case"])
+        self.assertEqual(model.calls, 0)
+        self.assertTrue(state["workcell"]["cameras"][0]["primary_for_orchestrator"])
+        service.shutdown()
+
+    def test_unregistered_local_overhead_reaches_model_without_action_authority(self) -> None:
+        service, model = self.local_source_service()
+        service.start({"mode": "observe_only"})
+        self.assertTrue(service.process_pending_once())
+        state = service.snapshot()
+        self.assertEqual(state["state"], "OBSERVING")
+        self.assertEqual(state["base_case"]["state"], "observation_limited")
+        self.assertEqual(
+            state["base_case"]["blockers"][0]["kind"],
+            "camera_registration_required",
+        )
+        self.assertEqual(model.calls, 1)
+        self.assertEqual(state["conversation"][-1]["role"], "assistant")
+        self.assertEqual(state["action_queue"]["verification"], "not_started")
+        self.assertFalse(state["physical_authority"])
+        service.stop()
+        service.shutdown()
+
+    def test_demo_visual_feedback_does_not_show_registration_blocker(self) -> None:
+        service, _model = self.local_source_service()
+        service.frame_adapter_factory = lambda: LocalOverheadSnapshotAdapter(
+            lambda camera_id: {
+                "camera_id": camera_id,
+                "device_name": "C922 Pro Stream Webcam",
+                "captured_at": datetime.now(UTC).isoformat(),
+                "body": _fixture_bytes("b_mismatch.png"),
+            },
+            status=lambda _camera_id: {"ready": True, "available": True},
+            demo_visual_feedback=True,
+        )
+        service.source_metadata["registration_state"] = "demo_visual_feedback"
+        service.start({"mode": "observe_only"})
+        self.assertTrue(service.process_pending_once())
+        state = service.snapshot()
+        self.assertEqual(state["base_case"]["state"], "demo_visual_feedback")
+        self.assertEqual(state["base_case"]["blockers"], [])
+        self.assertEqual(
+            state["base_case"]["comparison_authority"],
+            "demo_visual_feedback_without_square_level_registration",
+        )
+        service.stop()
+        service.shutdown()
+
+    def test_exact_loop_chat_bypasses_model_and_starts_fixed_demo_controller(self) -> None:
+        source = FixtureFrameAdapter(["b_mismatch.png"])
+        model = FixtureModel()
+        controller = {
+            "enabled": True,
+            "status": "ready",
+            "completed_moves": 0,
+            "total_moves": 12,
+        }
+        starts: list[str] = []
+
+        def start_demo() -> dict[str, Any]:
+            starts.append("started")
+            controller["status"] = "running"
+            return dict(controller)
+
+        service = TaskOrchestratorService(
+            repo_root=self.root,
+            config_path=self.config_path,
+            frame_adapter_factory=lambda: source,
+            model_adapter_factory=lambda: model,
+            frame_source_status=lambda: {"ready": True, "available": True},
+            workcell_status=lambda: {
+                "arms": [{"id": "so101-follower", "role": "follower", "connected": True}],
+                "cameras": [{"id": "logitech-overhead", "available": True}],
+            },
+            demo_loop_start=start_demo,
+            demo_loop_status=lambda: dict(controller),
+            demo_loop_stop=lambda: dict(controller),
+            start_worker=False,
+        )
+        started = service.start({"mode": "demo_physical"})
+        self.assertEqual(started["state"], "OBSERVING")
+        self.assertEqual(model.calls, 0)
+        self.assertFalse(service.process_pending_once())
+        state = service.chat("Loop it.")
+        self.assertEqual(starts, ["started"])
+        self.assertEqual(model.calls, 0)
+        self.assertEqual(
+            state["action_queue"]["current_action"]["skill_id"],
+            "five_minute_base_loop_script",
+        )
+        self.assertEqual(state["conversation"][-1]["decision"], "run_demo_script")
+        self.assertTrue(state["physical_authority"])
+        service.stop()
+        service.shutdown()
 
     def test_base_case_completion_is_checker_owned_and_stops_resources(self) -> None:
         source = FixtureFrameAdapter(["base_case.png"])
@@ -1408,8 +1626,14 @@ class StudioHTTPTests(unittest.TestCase):
             with urlopen(f"{base}/api/orchestrator", timeout=3) as response:
                 payload = json.loads(response.read())
             self.assertTrue(payload["available"])
-            self.assertEqual(payload["model"]["label"], "5.6 luna")
+            self.assertNotIn("demo_physical", payload["modes"])
             self.assertFalse(payload["physical_authority"])
+            self.assertEqual(payload["model"]["label"], "5.6 luna")
+            self.assertEqual(
+                payload["physical_authority"],
+                payload["demo_loop"]["physical_authority"],
+            )
+            self.assertEqual(payload["demo_loop"]["authority_scope"], "none")
             self.assertEqual(payload["skills"]["callable"], 0)
             self.assertFalse(payload["modes"]["physical_gated"]["selectable"])
             self.assertEqual(
@@ -1436,6 +1660,49 @@ class StudioHTTPTests(unittest.TestCase):
             server.shutdown()
             server.server_close()
             thread.join(timeout=3)
+
+        enabled = create_server(
+            "127.0.0.1",
+            0,
+            repo_root=ROOT,
+            enable_physical_demo=True,
+        )
+        thread = threading.Thread(target=enabled.serve_forever, daemon=True)
+        thread.start()
+        try:
+            with urlopen(
+                f"http://127.0.0.1:{enabled.server_address[1]}/api/orchestrator",
+                timeout=3,
+            ) as response:
+                payload = json.loads(response.read())
+            self.assertIn("demo_physical", payload["modes"])
+            self.assertEqual(
+                payload["demo_loop"]["authority_scope"],
+                "fixed_owner_directed_base_inverse_base_script_only",
+            )
+            self.assertFalse(
+                payload["demo_loop"]["registration_required_for_demo_script"]
+            )
+        finally:
+            enabled.shutdown()
+            enabled.server_close()
+            thread.join(timeout=3)
+
+        with self.assertRaisesRegex(ValueError, "interactive loopback"):
+            create_server(
+                "0.0.0.0",
+                0,
+                repo_root=ROOT,
+                enable_physical_demo=True,
+            )
+        with self.assertRaisesRegex(ValueError, "interactive loopback"):
+            create_server(
+                "127.0.0.1",
+                0,
+                repo_root=ROOT,
+                read_only=True,
+                enable_physical_demo=True,
+            )
 
         read_only = create_server("127.0.0.1", 0, repo_root=ROOT, read_only=True)
         thread = threading.Thread(target=read_only.serve_forever, daemon=True)

@@ -162,6 +162,14 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="disable all recorder and live-device control endpoints",
     )
+    studio.add_argument(
+        "--enable-physical-demo",
+        action="store_true",
+        help=(
+            "explicitly expose the fixed physical demo controller on loopback; "
+            "disabled by default and incompatible with --read-only"
+        ),
+    )
 
     project_pack = subparsers.add_parser(
         "project-pack", help="create a hash-bound project evidence bundle"
@@ -871,6 +879,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             port=args.port,
             open_browser=not args.no_open,
             read_only=args.read_only,
+            enable_physical_demo=args.enable_physical_demo,
         )
         return 0
     if args.command == "project-pack":

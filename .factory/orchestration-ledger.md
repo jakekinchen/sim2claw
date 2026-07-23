@@ -1,6 +1,34 @@
 # Orchestration Ledger
 
-## Current transaction — Replay-integrated twin observability
+## Current transaction — Silicon recovery reconciliation
+
+- Repo and branch: `/Users/kelly/Developer/sim2claw`, integration worktree on
+  `codex/silicon-integration-20260723`; final target is `main`.
+- Queue source: direct owner request to inspect `silicon.local`, retrieve
+  missing Sim2Claw work, and centralize the repository.
+- Baseline: clean `main == origin/main` at
+  `3a0e45864419a393ef902d255a48518b5d728f3b`.
+- Remote inventory: `silicon.local` checkout at `090549a`, 102 commits behind,
+  with 20 modified tracked and 18 untracked source files. No active Sim2Claw or
+  demo-control process was found.
+- Lossless preservation: exact 38-file recovery commit
+  `f5e8e2995333f3abe169c7e37a0e273b7943e790` on
+  `codex/silicon-recovery-20260723`; generated app builds and caches excluded.
+- Historical evidence: 34 owner-directed loop receipts (10 completed command
+  cycles, 24 failed) and 128 physical replay receipts (105 completed, 23
+  failed), with zero verified task successes. Raw files remain ignored.
+- Integration decision: keep current verified Studio catalog, receipt-owned
+  rotation, and exact scene/trace identity; port generic workcell/camera
+  observability and replay-safety changes; recover the native controller behind
+  a new default-off, loopback-only explicit opt-in.
+- Authority: physical demo, gateway, motion, capture, simulator/adapter replay,
+  provider, training, promotion, and VideoSim work are closed during this
+  transaction.
+- Proof target: byte-identical historical retrieval, default-closed physical
+  controller, honest unqualified replay projection, unchanged frozen S2 roots,
+  focused/native/full tests, independent review, scoped commits, then push.
+
+## Completed transaction — Replay-integrated twin observability
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`.
 - Queue source: direct owner clarification and approved implementation map from

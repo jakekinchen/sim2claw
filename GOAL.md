@@ -1,8 +1,37 @@
 # sim2claw Goal
 
-Status: `SAIL S2 TERMINAL NEGATIVE IN EXACT-HEAD CLOSEOUT; D6 CLOSED BASELINE PRESERVED; B2 SEARCH PAUSED`
+Status: `SILICON RECOVERY RECONCILIATION IN VERIFICATION; S2 TERMINAL NEGATIVE FROZEN; PHYSICAL AUTHORITY CLOSED`
 
-## Active SAIL executed-benchmark and retained-C2 adapter transaction
+## Active Silicon recovery and repository reconciliation
+
+Recover the unfinished Sim2Claw work found on `silicon.local`, preserve it
+losslessly, and integrate only the parts that remain compatible with current
+proof, safety, and Studio contracts.
+
+Baseline: clean centralized `main == origin/main` at
+`3a0e45864419a393ef902d255a48518b5d728f3b`. The Silicon checkout was
+`102` commits behind at `090549ae7824b244c81a1af7d5e0484e8a747f41` and
+contained `20` modified tracked files plus `18` untracked source files.
+
+Recovery contract:
+
+- preserve the exact 38-file source snapshot on the quarantined
+  `codex/silicon-recovery-20260723` branch;
+- retain the 34 owner-directed attempt receipts and 128 physical replay
+  receipts under ignored `runs/` with byte-identical directory manifests;
+- label all recovered physical history as unqualified command-replay
+  provenance: zero receipts verify task success;
+- keep ordinary Studio startup free of physical demo authority; expose the
+  recovered controller only through a separate explicit loopback-only opt-in;
+- retain current receipt-owned media rotation, exact scene/trace revision
+  binding, the 18/18/7/11 Replay comparison truth, and all frozen S2 evidence;
+- do not run the gateway, robot, camera capture, simulator adapter, provider,
+  training, promotion, or VideoSim paths during reconciliation.
+
+Current milestone: safe source integration, control-plane reconciliation,
+focused and full verification, independent review, then centralized push.
+
+## Closed SAIL executed-benchmark and retained-C2 adapter transaction
 
 Replace the remaining label-conditioned benchmark and synthetic-fixture
 adapter limitations with two bounded executable evidence surfaces:

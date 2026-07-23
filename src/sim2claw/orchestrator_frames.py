@@ -9,7 +9,7 @@ import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable, Mapping
+from typing import Any, Callable, Mapping, Protocol
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
@@ -53,6 +53,134 @@ class SnapshotFrame:
 
 
 Requester = Callable[[str, Mapping[str, str], float, int], SnapshotResponse]
+
+
+class FrameAdapter(Protocol):
+    """Small common surface shared by remote and local overhead sources."""
+
+    def preflight(self) -> dict[str, Any]: ...
+
+    def fetch(self) -> SnapshotFrame: ...
+
+    def close(self) -> None: ...
+
+
+LocalCapture = Callable[[str], Mapping[str, Any]]
+
+
+class LocalOverheadSnapshotAdapter:
+    """Capture the Studio C922 through the same server-owned device inventory.
+
+    The local camera currently supplies an unrectified workcell view.  Its
+    record therefore closes deterministic occupancy authority until a reviewed
+    board-registration transform is supplied; the pixels remain useful for a
+    live operator preview and source-health proof.
+    """
+
+    adapter_id = "local_logitech_overhead_snapshot_v1"
+    camera_id = "logitech-overhead"
+    camera_role = "overhead_workspace"
+
+    def __init__(
+        self,
+        capture: LocalCapture,
+        *,
+        status: Callable[[str], Mapping[str, Any]] | None = None,
+        demo_visual_feedback: bool = False,
+    ) -> None:
+        self.capture = capture
+        self.status = status
+        self.demo_visual_feedback = demo_visual_feedback
+        self.closed = False
+
+    @property
+    def registration_state(self) -> str:
+        return (
+            "demo_visual_feedback"
+            if self.demo_visual_feedback
+            else "operator_registration_required"
+        )
+
+    @property
+    def roi_contract_id(self) -> str:
+        return (
+            "local_overhead_demo_visual_v1"
+            if self.demo_visual_feedback
+            else "local_overhead_unregistered_v1"
+        )
+
+    def preflight(self) -> dict[str, Any]:
+        row = dict(self.status(self.camera_id)) if self.status is not None else {}
+        ready = not self.closed and bool(row.get("ready", True))
+        return {
+            "adapter_id": self.adapter_id,
+            "ready": ready,
+            "protected": True,
+            "source_host": "local-avfoundation",
+            "camera_id": self.camera_id,
+            "camera_role": self.camera_role,
+            "device_name": row.get("device_name"),
+            "roi_contract_id": self.roi_contract_id,
+            "registration_state": self.registration_state,
+            "perception_ready": False,
+            "live_connectivity_verified": bool(row.get("available", False)),
+            "reason": None if ready else row.get("reason") or "Local overhead camera is unavailable.",
+            "physical_authority": False,
+        }
+
+    def close(self) -> None:
+        self.closed = True
+
+    def fetch(self) -> SnapshotFrame:
+        if self.closed:
+            raise FrameSourceError("adapter_closed", "Local overhead adapter is closed.")
+        try:
+            captured = dict(self.capture(self.camera_id))
+        except FrameSourceError:
+            raise
+        except Exception as error:
+            raise FrameSourceError(
+                "source_unavailable",
+                f"Local overhead snapshot is unavailable: {type(error).__name__}: {error}",
+            ) from error
+        body = captured.get("body")
+        if not isinstance(body, bytes) or not body:
+            raise FrameSourceError("malformed_frame", "Local overhead snapshot body is empty.")
+        decoded = cv2.imdecode(np.frombuffer(body, dtype=np.uint8), cv2.IMREAD_COLOR)
+        if decoded is None or decoded.ndim != 3 or decoded.shape[2] != 3:
+            raise FrameSourceError(
+                "malformed_frame", "Local overhead snapshot is not a decodable RGB image."
+            )
+        height, width = decoded.shape[:2]
+        digest = hashlib.sha256(body).hexdigest()
+        captured_at = str(captured.get("captured_at") or _utc_now().isoformat())
+        received_at = _utc_now().isoformat()
+        record = {
+            "schema_version": FRAME_RECORD_SCHEMA,
+            "source_host": "local-avfoundation",
+            "camera_id": self.camera_id,
+            "camera_role": self.camera_role,
+            "device_name": captured.get("device_name"),
+            "device_index": captured.get("device_index"),
+            "capture_timestamp": captured_at,
+            "studio_receipt_timestamp": received_at,
+            "width": width,
+            "height": height,
+            "encoding": "jpeg",
+            "byte_count": len(body),
+            "sha256": digest,
+            "freshness": {"maximum_age_seconds": 10, "age_seconds": 0.0, "passed": True},
+            "roi_contract_id": self.roi_contract_id,
+            "workspace_pose_id": None,
+            "board_pose_id": None,
+            "registration_error_pixels": None,
+            "registration_state": self.registration_state,
+            "perception_ready": False,
+            "fetch_duration_ms": float(captured.get("fetch_duration_ms") or 0.0),
+            "error": None,
+            "physical_authority": False,
+        }
+        return SnapshotFrame(body, decoded, record)
 
 
 class _RejectRedirects(HTTPRedirectHandler):

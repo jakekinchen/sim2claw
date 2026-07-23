@@ -5,7 +5,7 @@
   "purpose": "Run one evidence-aware Sim2Claw reference workflow inside one NemoClaw/OpenShell sandbox.",
   "source_of_truth": {
     "project_state": "docs/autonomous-workflow/project_state.json",
-    "project_state_sha256": "8fb316bcc6f989bbe05e67aeebae5fa7672d192866f88693282a4445d27f3b4f",
+    "project_state_sha256": "5e8f77d21583fcea2ee92d9773bad9706ff352c514b67d74f220638869b5c9a9",
     "evaluation_contract": "configs/evaluations/pawn_rank12_bidirectional_v2.json",
     "evaluation_contract_sha256": "8e5a351421dc222688e3ad0cfc7e0c14023352e3ee7132e02c26290d0a7f96f3",
     "physical_source_catalog": "configs/data/physical_pawn_move_catalog_20260719.json",

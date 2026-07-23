@@ -7,6 +7,7 @@ import numpy as np
 
 from sim2claw.physical_gateway import (
     BODY_EXCURSION_LIMIT_DEG,
+    BUS_READ_RETRIES,
     CURRENT_TELEMETRY_HZ,
     GATEWAY_SCHEMA,
     GRIPPER_EXCURSION_LIMIT,
@@ -295,6 +296,20 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertEqual(recovered["current_telemetry_missed_samples"], 0)
         gateway.close()
 
+    def test_runtime_current_can_be_disabled_for_recorded_replay(self) -> None:
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            current_telemetry_hz=0.0,
+        )
+        gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        preflight_reads = self.follower.bus.current_reads
+        sample = gateway.sample(0.05)
+        self.assertEqual(self.follower.bus.current_reads, preflight_reads)
+        self.assertEqual(sample["current_telemetry_hz"], 0.0)
+        self.assertTrue(sample["current_telemetry_stale"])
+        gateway.close()
+
     def test_one_transient_motion_packet_is_retried_but_repeated_failure_is_fatal(
         self,
     ) -> None:
@@ -305,9 +320,20 @@ class PhysicalGatewayTest(unittest.TestCase):
         recovered = gateway.sample(0.05)
         self.assertEqual(recovered["bus_read_retries_this_sample"], 1)
         self.assertEqual(recovered["bus_read_retries_total"], 1)
-        self.follower.failed_reads_remaining = 2
-        with self.assertRaisesRegex(ConnectionError, "transient follower packet"):
+        self.follower.failed_reads_remaining = BUS_READ_RETRIES + 1
+        with self.assertRaisesRegex(
+            PhysicalGatewayError, "failed after 4 gateway attempts"
+        ):
             gateway.sample(0.1)
+        gateway.close()
+
+    def test_startup_position_read_uses_bounded_retry_window(self) -> None:
+        self.follower.failed_reads_remaining = BUS_READ_RETRIES
+        gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)
+        opened = gateway.open(enable_motion=False)
+        self.assertEqual(opened["follower_start_degrees"], [5, 4, 3, 2, 1, 5])
+        self.assertEqual(gateway.bus_read_retries_total, BUS_READ_RETRIES)
+        self.assertFalse(self.follower.bus.torque)
         gateway.close()
 
     def test_repeated_stall_samples_fail_closed(self) -> None:
@@ -393,6 +419,29 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertFalse(report["physical_follower_torque_enabled"])
         self.assertFalse(self.follower.bus.torque)
 
+    def test_replay_origin_rebase_preserves_episode_relative_excursion(self) -> None:
+        gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)
+        gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        leader_origin = self.leader.values.copy()
+        follower_origin = self.follower.values.copy()
+        report = gateway.rebase_relative_origin(
+            leader_origin=leader_origin,
+            follower_origin=follower_origin,
+        )
+        self.assertEqual(
+            report["control_mode"],
+            "guarded_replay_episode_origin_rebase",
+        )
+        self.assertEqual(report["body_excursion_limit_degrees"], 90.0)
+        self.leader.values[0] += 25.0
+        sample = gateway.sample(0.5)
+        self.assertAlmostEqual(
+            sample["follower_requested_degrees"][0],
+            follower_origin[0] + 25.0,
+        )
+        gateway.close()
+        self.assertFalse(self.follower.bus.torque)
+
     def test_continuous_sync_countdown_and_arm_retains_one_gateway_session(self) -> None:
         gateway = SO101PhysicalGateway(
             self.identity,
@@ -436,12 +485,16 @@ class PhysicalGatewayTest(unittest.TestCase):
 
     def test_sync_refuses_large_pose_mismatch_before_torque(self) -> None:
         self.follower.values[1] = STALL_TIMEOUT_SECONDS * 10
-        with self.assertRaisesRegex(PhysicalGatewayError, "roughly the same pose"):
+        with self.assertRaisesRegex(
+            PhysicalGatewayError,
+            r"roughly the same pose.*shoulder_lift delta 50\.0°.*leader 0\.0°.*follower 50\.0°",
+        ) as raised:
             synchronize_physical_gateway(
                 self.identity,
                 device_factory=self.factory,
                 sleep=lambda _seconds: None,
             )
+        self.assertEqual(raised.exception.details["limiting_joint"], "shoulder_lift")
         self.assertFalse(self.follower.bus.torque)
 
 

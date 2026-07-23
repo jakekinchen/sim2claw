@@ -45,6 +45,7 @@ class FakeReplayGateway:
         self.lower_limits = np.asarray([-180.0] * 5 + [0.0])
         self.upper_limits = np.asarray([180.0] * 5 + [100.0])
         self.closed = False
+        self.rebases: list[dict[str, np.ndarray]] = []
 
     def open(
         self,
@@ -65,6 +66,23 @@ class FakeReplayGateway:
             "follower_command_degrees": self.leader.target.tolist(),
             "follower_actual_position_degrees": self.leader.target.tolist(),
             "safety_clamped": False,
+        }
+
+    def rebase_relative_origin(
+        self,
+        *,
+        leader_origin: np.ndarray,
+        follower_origin: np.ndarray,
+    ) -> dict[str, Any]:
+        self.rebases.append(
+            {
+                "leader_origin": leader_origin.copy(),
+                "follower_origin": follower_origin.copy(),
+            }
+        )
+        return {
+            "control_mode": "guarded_replay_episode_origin_rebase",
+            "physical_follower_torque_enabled": True,
         }
 
     def close(self) -> None:
@@ -123,10 +141,59 @@ class PhysicalTraceReplayTest(unittest.TestCase):
                 )
 
     def test_envelope_rejects_a_distant_start_pose(self) -> None:
-        with self.assertRaisesRegex(PhysicalTraceReplayError, "too far"):
+        with self.assertRaisesRegex(
+            PhysicalTraceReplayError,
+            r"shoulder_pan.*50\.0°.*current 0\.0°.*episode start 50\.0°",
+        ):
             validate_replay_envelope(
                 np.asarray([[50.0, 0, 0, 0, 0, 0]]),
                 np.zeros(6),
+                lower_limits=np.asarray([-180.0] * 5 + [0.0]),
+                upper_limits=np.asarray([180.0] * 5 + [100.0]),
+            )
+
+    def test_wrist_roll_uses_its_own_guard_and_reports_corrective_pose(self) -> None:
+        with self.assertRaisesRegex(
+            PhysicalTraceReplayError,
+            r"wrist_roll.*125\.4°.*limit 60\.0°.*current 6\.7°.*episode start -118\.8°",
+        ):
+            validate_replay_envelope(
+                np.asarray([[0.0, 0, 0, 0, -118.75, 1.0]]),
+                np.asarray([0.0, 0, 0, 0, 6.65, 1.0]),
+                lower_limits=np.asarray([-180.0] * 5 + [0.0]),
+                upper_limits=np.asarray([180.0] * 5 + [100.0]),
+            )
+
+    def test_envelope_uses_episode_start_after_guarded_preroll(self) -> None:
+        report = validate_replay_envelope(
+            np.asarray(
+                [
+                    [0.0, 0, 0, -101.05, 0, 1.0],
+                    [0.0, 0, 0, -11.05, 0, 1.0],
+                ]
+            ),
+            np.asarray([0.0, 0, 0, -105.63, 0, 1.0]),
+            lower_limits=np.asarray([-180.0] * 5 + [0.0]),
+            upper_limits=np.asarray([180.0] * 5 + [100.0]),
+        )
+        self.assertAlmostEqual(report["maximum_replay_excursion_degrees"][3], 90.0)
+        self.assertEqual(report["replay_excursion_origin_degrees"][3], -101.05)
+        self.assertAlmostEqual(report["maximum_envelope_clip_degrees"][3], 0.0)
+        self.assertEqual(report["maximum_allowed_envelope_clip_degrees"], 1.0)
+
+    def test_envelope_rejects_more_than_one_degree_of_clipping(self) -> None:
+        with self.assertRaisesRegex(
+            PhysicalTraceReplayError,
+            "leaves the follower calibration",
+        ):
+            validate_replay_envelope(
+                np.asarray(
+                    [
+                        [0.0, -106.5, 0, 0, 0, 1.0],
+                        [0.0, -15.0, 0, 0, 0, 1.0],
+                    ]
+                ),
+                np.asarray([0.0, -107.0, 0, 0, 0, 1.0]),
                 lower_limits=np.asarray([-180.0] * 5 + [0.0]),
                 upper_limits=np.asarray([180.0] * 5 + [100.0]),
             )
@@ -152,10 +219,48 @@ class PhysicalTraceReplayTest(unittest.TestCase):
             self.assertEqual(report["status"], "completed")
             self.assertEqual(report["completed_sample_count"], 3)
             self.assertEqual(report["exact_command_sample_count"], 3)
+            self.assertEqual(len(gateway.rebases), 1)
+            np.testing.assert_allclose(
+                gateway.rebases[0]["follower_origin"],
+                np.asarray([0.0, 0, 0, 0, 0, 1.0]),
+            )
+            self.assertEqual(
+                report["replay_origin_rebase"]["control_mode"],
+                "guarded_replay_episode_origin_rebase",
+            )
             self.assertFalse(report["physical_follower_torque_enabled"])
             self.assertTrue(gateway.closed)
             receipt = Path(report["run_directory"]) / "replay_receipt.json"
             self.assertTrue(receipt.is_file())
+
+    def test_reverse_replay_uses_the_same_saved_samples_in_reverse_order(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            recording = self._recording(root)
+            clock = FakeClock()
+            gateway = FakeReplayGateway()
+            identity = GatewayIdentity("leader", "follower", "a" * 64, "b" * 64)
+            report = run_physical_trace_replay(
+                recording,
+                operator_acknowledged=True,
+                reverse=True,
+                output_root=root / "runs",
+                identity=identity,
+                gateway_factory=lambda _identity: gateway,
+                clock=clock.read,
+                sleep=clock.sleep,
+                allowed_source_root=root / "datasets" / "act_source_recordings",
+            )
+            self.assertEqual(report["status"], "completed")
+            self.assertEqual(report["source_trace_direction"], "reverse")
+            rows = [
+                json.loads(line)
+                for line in (
+                    Path(report["run_directory"]) / "replay_samples.jsonl"
+                ).read_text(encoding="utf-8").splitlines()
+            ]
+            self.assertEqual(rows[0]["source_sample_index"], 2)
+            self.assertEqual(rows[-1]["source_sample_index"], 0)
 
 
 if __name__ == "__main__":

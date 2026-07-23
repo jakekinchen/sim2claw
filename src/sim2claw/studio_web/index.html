@@ -426,7 +426,7 @@
             <div>
               <span class="section-label">Bounded dynamic task runtime</span>
               <h1 id="orchestrator-heading">Task Orchestrator</h1>
-              <p>Restore the managed B–G pawn region to its frozen base case. Model proposals remain executor-gated; physical authority is closed.</p>
+              <p>Inspect the managed B–G task state and bounded evaluator chain. Model proposals remain executor-gated; physical demo authority is closed unless Studio was explicitly started with its loopback-only opt-in.</p>
             </div>
             <div class="orchestrator-status-stack">
               <b class="orchestrator-status" id="orchestrator-main-status">Stopped</b>
@@ -440,7 +440,8 @@
               <button id="orchestrator-pause" type="button">Pause</button>
               <button id="orchestrator-resume" type="button">Resume</button>
               <button id="orchestrator-stop" type="button">Stop</button>
-              <button id="orchestrator-refresh" type="button">Refresh frame</button>
+              <button id="orchestrator-refresh" type="button">Preview overhead</button>
+              <button id="orchestrator-copy" type="button">Copy session text</button>
             </div>
             <label><span>Mode</span><select id="orchestrator-mode"></select></label>
             <label><span>Polling seconds</span><input id="orchestrator-polling" type="number" min="2" max="300" step="1" value="15"></label>
@@ -453,13 +454,15 @@
 
           <div class="orchestrator-grid">
             <article class="orchestrator-card orchestrator-source-card">
-              <header><div><span class="section-label">Overhead source</span><h2>Silicon registered board</h2></div><b id="orchestrator-source-health">Not started</b></header>
+              <header><div><span class="section-label">Primary overhead source</span><h2 id="orchestrator-source-title">Logitech overhead</h2></div><b id="orchestrator-source-health">Not started</b></header>
               <div class="orchestrator-frame-shell">
-                <img id="orchestrator-frame" alt="Latest accepted Silicon overhead board frame" hidden>
-                <span id="orchestrator-frame-empty">No accepted frame</span>
+                <img id="orchestrator-frame" alt="Latest server-owned overhead workcell frame" hidden>
+                <span id="orchestrator-frame-empty">No overhead preview</span>
               </div>
               <dl class="orchestrator-detail-list">
                 <div><dt>Host</dt><dd id="orchestrator-source-host">silicon.local.net</dd></div>
+                <div><dt>Role</dt><dd id="orchestrator-source-role">overhead_workspace</dd></div>
+                <div><dt>Registration</dt><dd id="orchestrator-source-registration">Checking</dd></div>
                 <div><dt>Captured</dt><dd id="orchestrator-source-time">—</dd></div>
                 <div><dt>Accepted SHA</dt><dd id="orchestrator-source-hash">—</dd></div>
                 <div><dt>Similarity</dt><dd id="orchestrator-similarity">—</dd></div>
@@ -467,9 +470,24 @@
               </dl>
             </article>
 
+            <article class="orchestrator-card orchestrator-workcell-card">
+              <header><div><span class="section-label">Task hardware</span><h2>Follower and overhead</h2></div><b id="orchestrator-workcell-state">Checking</b></header>
+              <div class="orchestrator-device-group">
+                <span>SO-101 follower</span>
+                <div class="orchestrator-device-list" id="orchestrator-arms"></div>
+              </div>
+              <div class="orchestrator-device-group">
+                <span>Overhead source</span>
+                <div class="orchestrator-device-list" id="orchestrator-cameras"></div>
+              </div>
+              <p>Only this follower and C922 overhead source belong to the task runtime.</p>
+            </article>
+
             <article class="orchestrator-card orchestrator-base-card">
               <header><div><span class="section-label">Deterministic checker</span><h2>B–G base case</h2></div><b id="orchestrator-base-state">Awaiting frame</b></header>
               <p class="orchestrator-base-contract">Required: B1 · C2 · D1 · E2 · F1 · G2</p>
+              <p class="orchestrator-base-contract">Named inverse: B2 · C1 · D2 · E1 · F2 · G1</p>
+              <p class="orchestrator-base-contract">Named loop: base → inverse → base · fixed 12-move demo script</p>
               <div class="orchestrator-square-grid" id="orchestrator-squares" aria-label="Managed square occupancy"></div>
               <dl class="orchestrator-detail-list">
                 <div><dt>Mismatched files</dt><dd id="orchestrator-mismatches">—</dd></div>
@@ -486,6 +504,11 @@
                 <div><dt>Current action</dt><dd id="orchestrator-current-action">None</dd></div>
                 <div><dt>Expected postcondition</dt><dd id="orchestrator-postcondition">None</dd></div>
               </dl>
+              <div class="orchestrator-replay-result" id="orchestrator-replay-result" hidden>
+                <strong>Supervised physical replay</strong>
+                <span id="orchestrator-replay-status">Awaiting receipt</span>
+                <small id="orchestrator-replay-detail">No physical replay receipt.</small>
+              </div>
               <form class="orchestrator-shadow-review" id="orchestrator-shadow-review" hidden>
                 <strong>Supervised shadow comparison</strong>
                 <p>Record what the operator would choose. This never issues a hardware command.</p>
@@ -500,12 +523,13 @@
 
             <article class="orchestrator-card orchestrator-chat-card">
               <header><div><span class="section-label">Immediate wake</span><h2>Session chat</h2></div></header>
+              <div class="orchestrator-conversation" id="orchestrator-conversation" aria-live="polite"></div>
               <form id="orchestrator-chat-form">
                 <label class="visually-hidden" for="orchestrator-chat">Message the task orchestrator</label>
                 <textarea id="orchestrator-chat" maxlength="2000" rows="3" placeholder="Describe a change, blocker, or operator observation"></textarea>
                 <button type="submit">Send and inspect now</button>
               </form>
-              <p>Chat forces a fresh accepted observation even when the frame is visually redundant.</p>
+              <p>Messages wake the bounded planner. Fixed physical demo commands are unavailable unless the server was separately and explicitly opted in.</p>
             </article>
 
             <article class="orchestrator-card orchestrator-skills-card">

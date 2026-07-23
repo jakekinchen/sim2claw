@@ -33,8 +33,12 @@ BODY_STALL_ERROR_DEG = 3.0
 GRIPPER_STALL_ERROR = 6.0
 MAX_CONTROL_INTERVAL_SECONDS = 0.1
 CURRENT_TELEMETRY_HZ = 5.0
-BUS_READ_RETRIES = 1
-BUS_RETRY_DELAY_SECONDS = 0.002
+# The Feetech bus can occasionally miss a single group-read response while the
+# serial controller is otherwise healthy.  Give motion-critical reads a short,
+# bounded recovery window.  A controller reset/disconnect still exhausts this
+# window quickly and follows the existing torque-off shutdown path.
+BUS_READ_RETRIES = 3
+BUS_RETRY_DELAY_SECONDS = 0.01
 STALL_TIMEOUT_SECONDS = 5.0
 STALL_WARNING_SECONDS = 1.0
 MIN_PROGRESS_DEG = 0.5
@@ -299,6 +303,7 @@ class SO101PhysicalGateway:
         device_factory: DeviceFactory = _lerobot_devices,
         sleep: SleepFunction = time.sleep,
         configure_devices: bool = True,
+        current_telemetry_hz: float = CURRENT_TELEMETRY_HZ,
     ):
         if identity.leader_port == identity.follower_port:
             raise PhysicalGatewayError("Leader and follower must use distinct buses.")
@@ -306,6 +311,9 @@ class SO101PhysicalGateway:
         self.leader, self.follower = device_factory(identity)
         self.sleep = sleep
         self.configure_devices = configure_devices
+        if current_telemetry_hz < 0.0:
+            raise PhysicalGatewayError("Current telemetry rate cannot be negative.")
+        self.current_telemetry_hz = float(current_telemetry_hz)
         self.leader_start: np.ndarray | None = None
         self.follower_start: np.ndarray | None = None
         self.lower_limits = np.asarray([-180.0] * 5 + [0.0], dtype=np.float64)
@@ -392,10 +400,13 @@ class SO101PhysicalGateway:
         paired_pose_confirmed: bool = False,
     ) -> dict[str, Any]:
         self._connect_torque_off()
-        leader = action_vector(self.leader.get_action())
-        follower = action_vector(self.follower.get_observation())
-        _finite(leader, "leader position")
-        _finite(follower, "follower position")
+        # Startup pose reads are motion-critical too.  Route them through the
+        # same bounded retry path used during sampling instead of allowing one
+        # missed status packet to abort an otherwise healthy replay.
+        leader = self._motion_read("initial leader position", self.leader.get_action)
+        follower = self._motion_read(
+            "initial follower position", self.follower.get_observation
+        )
         self.leader_start = leader
         self.follower_start = follower
         self.previous_actual = follower.copy()
@@ -432,10 +443,12 @@ class SO101PhysicalGateway:
             self.follower.bus.enable_torque()
             self.torque_enabled = True
             self.sleep(HOLD_SETTLE_SECONDS)
-            actual = action_vector(self.follower.get_observation())
-            registered_leader = action_vector(self.leader.get_action())
-            _finite(actual, "post-hold follower position")
-            _finite(registered_leader, "registered leader position")
+            actual = self._motion_read(
+                "post-hold follower position", self.follower.get_observation
+            )
+            registered_leader = self._motion_read(
+                "registered leader position", self.leader.get_action
+            )
             registration = paired_pose_registration_report(registered_leader, actual)
             if not registration["paired_pose_registration_ready"]:
                 self.follower.bus.disable_torque()
@@ -536,7 +549,10 @@ class SO101PhysicalGateway:
         try:
             return {
                 name: float(value)
-                for name, value in self.follower.bus.sync_read(register).items()
+                for name, value in self.follower.bus.sync_read(
+                    register,
+                    num_retry=BUS_READ_RETRIES,
+                ).items()
             }
         except (KeyError, NotImplementedError):
             return None
@@ -567,10 +583,91 @@ class SO101PhysicalGateway:
             **paired_pose_registration_report(leader, follower),
         }
 
+    def rebase_relative_origin(
+        self,
+        *,
+        leader_origin: np.ndarray,
+        follower_origin: np.ndarray,
+    ) -> dict[str, Any]:
+        """Admit a reached replay start as the unchanged excursion origin.
+
+        A guarded replay may begin a few degrees away from its saved first
+        command. After the normal rate-limited pre-roll reaches that command,
+        rebase the 90-degree envelope to the episode's own start pose. This
+        does not widen calibrated limits or excursion bounds.
+        """
+
+        if (
+            not self.connected
+            or not self.torque_enabled
+            or self.previous_command is None
+            or self.previous_actual is None
+        ):
+            raise PhysicalGatewayError("Replay-origin rebase requires an armed gateway.")
+        _finite(leader_origin, "replay leader origin")
+        _finite(follower_origin, "replay follower origin")
+        calibrated_origin = np.clip(
+            follower_origin,
+            self.lower_limits,
+            self.upper_limits,
+        )
+        if np.any(np.abs(calibrated_origin - follower_origin) > 0.5):
+            raise PhysicalGatewayError(
+                "Replay start pose is outside the follower calibration envelope."
+            )
+        actual = self._motion_read(
+            "replay-origin follower position",
+            self.follower.get_observation,
+        )
+        residual = follower_origin - actual
+        residual[4] = shortest_delta_degrees(
+            float(follower_origin[4]),
+            float(actual[4]),
+        )
+        maximum_body_residual = float(np.max(np.abs(residual[:4])))
+        wrist_roll_residual = abs(float(residual[4]))
+        gripper_residual = abs(float(residual[5]))
+        if (
+            maximum_body_residual > SHOULDER_LIFT_TRACKING_ERROR_LIMIT_DEG
+            or wrist_roll_residual > WRIST_ROLL_TRACKING_ERROR_LIMIT_DEG
+            or gripper_residual > GRIPPER_TRACKING_ERROR_LIMIT
+        ):
+            raise PhysicalGatewayError(
+                "Follower did not reach the guarded replay start closely enough to "
+                "rebase the excursion envelope.",
+                details={
+                    "stage": "replay_origin_rebase",
+                    "requested_follower_origin_degrees": follower_origin.tolist(),
+                    "actual_follower_degrees": actual.tolist(),
+                    "residual_degrees": residual.tolist(),
+                },
+            )
+        self.leader_start = leader_origin.copy()
+        self.follower_start = follower_origin.copy()
+        self.previous_actual = actual.copy()
+        self.stall_anchor_actual = actual.copy()
+        self.stall_started_at[:] = np.nan
+        self.stall_command_direction[:] = 0.0
+        self.consecutive_stall_samples[:] = 0
+        return {
+            "schema_version": GATEWAY_SCHEMA,
+            "control_mode": "guarded_replay_episode_origin_rebase",
+            "leader_origin_degrees": leader_origin.tolist(),
+            "follower_origin_degrees": follower_origin.tolist(),
+            "actual_follower_degrees": actual.tolist(),
+            "origin_residual_degrees": residual.tolist(),
+            "body_excursion_limit_degrees": BODY_EXCURSION_LIMIT_DEG,
+            "wrist_roll_excursion_limit_degrees": WRIST_ROLL_EXCURSION_LIMIT_DEG,
+            "gripper_excursion_limit": GRIPPER_EXCURSION_LIMIT,
+            "physical_follower_torque_enabled": True,
+        }
+
     def _runtime_current(
         self, elapsed_seconds: float
     ) -> tuple[dict[str, float] | None, bool]:
-        period = 1.0 / CURRENT_TELEMETRY_HZ
+        if self.current_telemetry_hz == 0.0:
+            return None, True
+        period = 1.0 / self.current_telemetry_hz
         due = (
             self.current_telemetry_elapsed is None
             or elapsed_seconds - self.current_telemetry_elapsed >= period
@@ -597,16 +694,29 @@ class SO101PhysicalGateway:
         name: str,
         operation: Callable[[], dict[str, float]],
     ) -> np.ndarray:
-        last_error: ConnectionError | None = None
+        last_error: ConnectionError | OSError | None = None
         for attempt in range(BUS_READ_RETRIES + 1):
             try:
                 values = action_vector(operation())
                 _finite(values, name)
                 return values
-            except ConnectionError as error:
+            except (ConnectionError, OSError) as error:
                 last_error = error
                 if attempt >= BUS_READ_RETRIES:
-                    raise
+                    raise PhysicalGatewayError(
+                        f"Motor-bus read for {name} failed after "
+                        f"{BUS_READ_RETRIES + 1} gateway attempts. The follower "
+                        "USB controller may have reset or disconnected; motion was "
+                        "stopped and the gateway will release torque.",
+                        details={
+                            "stage": "motor_bus_read",
+                            "read_name": name,
+                            "gateway_attempts": BUS_READ_RETRIES + 1,
+                            "follower_port": self.identity.follower_port,
+                            "underlying_error_type": type(error).__name__,
+                            "underlying_error": str(error),
+                        },
+                    ) from error
                 self.bus_read_retries_total += 1
                 self.sleep(BUS_RETRY_DELAY_SECONDS)
         assert last_error is not None
@@ -735,7 +845,7 @@ class SO101PhysicalGateway:
             "continuous_target_pose_world": None,
             "pose_inputs_available": False,
             "available_motor_current_raw": current,
-            "current_telemetry_hz": CURRENT_TELEMETRY_HZ,
+            "current_telemetry_hz": self.current_telemetry_hz,
             "current_telemetry_stale": current_stale,
             "current_telemetry_missed_samples": self.current_telemetry_missed_samples,
             "bus_read_retries_this_sample": (
@@ -793,14 +903,31 @@ class SO101PhysicalGateway:
             maximum_body_delta > SYNC_BODY_DELTA_LIMIT_DEG
             or gripper_delta > SYNC_GRIPPER_DELTA_LIMIT
         ):
+            if maximum_body_delta > SYNC_BODY_DELTA_LIMIT_DEG:
+                limiting_index = int(np.argmax(np.abs(delta[:5])))
+                limiting_joint = ROBOT_JOINTS[limiting_index]
+                mismatch = (
+                    f"{limiting_joint} delta {abs(float(delta[limiting_index])):.1f}° "
+                    f"(limit {SYNC_BODY_DELTA_LIMIT_DEG:.1f}°; "
+                    f"leader {leader[limiting_index]:.1f}°, "
+                    f"follower {follower[limiting_index]:.1f}°)"
+                )
+            else:
+                limiting_joint = ROBOT_JOINTS[5]
+                mismatch = (
+                    f"gripper delta {gripper_delta:.1f} "
+                    f"(limit {SYNC_GRIPPER_DELTA_LIMIT:.1f}; "
+                    f"leader {leader[5]:.1f}, follower {follower[5]:.1f})"
+                )
             raise PhysicalGatewayError(
                 "Sync requires the arms to already be in roughly the same pose: "
-                f"maximum body delta {maximum_body_delta:.1f}° "
-                f"(limit {SYNC_BODY_DELTA_LIMIT_DEG:.1f}°).",
+                f"{mismatch}. Keep follower torque off, physically match "
+                f"{limiting_joint}, then retry Sync.",
                 details=_pose_diagnostics(
                     "sync_initial_pose",
                     leader=leader,
                     follower=follower,
+                    limiting_joint=limiting_joint,
                 ),
             )
         target = follower + delta

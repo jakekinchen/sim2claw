@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import secrets
 import threading
 import time
@@ -13,6 +14,7 @@ from pathlib import Path
 from typing import Any, Callable, Mapping
 
 from .orchestrator_frames import (
+    FrameAdapter,
     FrameSourceError,
     SiliconOverheadSnapshotAdapter,
     SnapshotFrame,
@@ -40,6 +42,8 @@ from .paths import REPO_ROOT
 
 ORCHESTRATOR_STATE_SCHEMA = "sim2claw.task_orchestrator_state.v1"
 ORCHESTRATOR_EVENT_SCHEMA = "sim2claw.orchestrator_event.v1"
+BOARD_FILES = "bcdefg"
+BIT_PATTERN_RE = re.compile(r"(?<![01])([01]{6})(?![01])")
 DEFAULT_CONFIG_PATH = REPO_ROOT / "configs" / "orchestrator" / "studio_task_orchestrator_v1.json"
 ACTIVE_STATES = {
     "STARTING",
@@ -99,6 +103,40 @@ def _secret(repo_root: Path, key: str) -> str | None:
     return os.environ.get(key) or _read_dotenv_value(repo_root / ".env", key)
 
 
+def interpret_objective(message: str) -> dict[str, Any]:
+    """Preserve an intent while limiting execution to the twelve B-G moves."""
+    patterns = BIT_PATTERN_RE.findall(message)
+    target_pattern = patterns[-1] if patterns else None
+    source_pattern = patterns[-2] if len(patterns) > 1 else None
+    objective: dict[str, Any] = {
+        "request": message,
+        "status": "active",
+        "kind": "pattern" if target_pattern is not None else "free_form",
+        "execution_vocabulary": "twelve_b_through_g_moves_only",
+    }
+    if target_pattern is None:
+        return objective
+    occupied: list[str] = []
+    empty: list[str] = []
+    moves: list[str] = []
+    for file_name, bit in zip(BOARD_FILES, target_pattern, strict=True):
+        destination_rank = "2" if bit == "1" else "1"
+        source_rank = "1" if bit == "1" else "2"
+        occupied.append(file_name + destination_rank)
+        empty.append(file_name + source_rank)
+        moves.append(f"pawn_{file_name}{source_rank}_to_{file_name}{destination_rank}")
+    objective["pattern"] = {
+        "files": list(BOARD_FILES),
+        "bit_meaning": {"0": "rank_1", "1": "rank_2"},
+        "source_if_supplied": source_pattern,
+        "target": target_pattern,
+        "occupied": occupied,
+        "empty": empty,
+        "candidate_moves": moves,
+    }
+    return objective
+
+
 def _atomic_json(path: Path, payload: Mapping[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
@@ -116,7 +154,13 @@ class TaskOrchestratorService:
         *,
         repo_root: Path = REPO_ROOT,
         config_path: Path = DEFAULT_CONFIG_PATH,
-        frame_adapter_factory: Callable[[], SiliconOverheadSnapshotAdapter] | None = None,
+        frame_adapter_factory: Callable[[], FrameAdapter] | None = None,
+        frame_source_metadata: Mapping[str, Any] | None = None,
+        frame_source_status: Callable[[], Mapping[str, Any]] | None = None,
+        workcell_status: Callable[[], Mapping[str, Any]] | None = None,
+        demo_loop_start: Callable[[], Mapping[str, Any]] | None = None,
+        demo_loop_status: Callable[[], Mapping[str, Any]] | None = None,
+        demo_loop_stop: Callable[[], Mapping[str, Any]] | None = None,
         model_adapter_factory: Callable[[], OpenAIOrchestratorModel] | None = None,
         dispatcher: OneAtATimeSkillDispatcher | None = None,
         monotonic: Callable[[], float] = time.monotonic,
@@ -232,7 +276,24 @@ class TaskOrchestratorService:
         if model_adapter_factory is not None:
             self.model_credential_configured = True
 
-        self.frame_adapter: SiliconOverheadSnapshotAdapter | None = None
+        self.source_metadata = {
+            "adapter_id": self.snapshot_contract["adapter_id"],
+            "label": "Silicon registered board",
+            "host": self.snapshot_contract["endpoint"]["allowed_host"],
+            "camera_id": "silicon-overhead",
+            "camera_role": self.snapshot_contract["image_contract"]["camera_role"],
+            "roi_contract_id": self.snapshot_contract["image_contract"]["roi_contract_id"],
+            "registration_state": "registered",
+            **dict(frame_source_metadata or {}),
+        }
+        self.frame_source_status = frame_source_status
+        self.workcell_status = workcell_status
+        self.demo_loop_start = demo_loop_start
+        self.demo_loop_status = demo_loop_status
+        self.demo_loop_stop = demo_loop_stop
+        self.demo_loop_last_status: str | None = None
+
+        self.frame_adapter: FrameAdapter | None = None
         self.model_adapter: OpenAIOrchestratorModel | None = None
         self.session_directory: Path | None = None
         self.ledger_path: Path | None = None
@@ -249,6 +310,7 @@ class TaskOrchestratorService:
         self.next_poll_monotonic: float | None = None
         self.last_user_activity_monotonic: float | None = None
         self.last_world_activity_monotonic: float | None = None
+        self.active_objective: dict[str, Any] | None = None
         self.state = self._initial_state()
         if start_worker:
             self.worker = threading.Thread(
@@ -281,13 +343,12 @@ class TaskOrchestratorService:
                 "world_action_inactivity_seconds": inactivity["world_action_seconds"],
             },
             "source": {
-                "adapter_id": self.snapshot_contract["adapter_id"],
-                "host": self.snapshot_contract["endpoint"]["allowed_host"],
-                "camera_role": self.snapshot_contract["image_contract"]["camera_role"],
+                **json.loads(json.dumps(self.source_metadata)),
                 "health": "not_started",
                 "connected": False,
                 "latest_captured_at": None,
                 "latest_accepted_sha256": None,
+                "latest_preview_sha256": None,
                 "latest_error": None,
                 "live_connectivity_verified": False,
             },
@@ -332,7 +393,8 @@ class TaskOrchestratorService:
         }
 
     def _mode_capabilities(self) -> dict[str, dict[str, Any]]:
-        source_ready = self.frame_credential_configured
+        source_preflight = self._source_preflight()
+        source_ready = bool(source_preflight.get("ready"))
         model_ready = self.model_credential_configured
         skills = self.registry.capability_summary()
         dispatcher_state = self.dispatcher.snapshot()
@@ -340,7 +402,9 @@ class TaskOrchestratorService:
         common = source_ready and model_ready
         missing_common: list[str] = []
         if not source_ready:
-            missing_common.append("server-side Silicon snapshot credential")
+            missing_common.append(
+                str(source_preflight.get("reason") or "selected overhead source")
+            )
         if not model_ready:
             missing_common.append("exact-model credential")
         common_reason = (
@@ -349,7 +413,7 @@ class TaskOrchestratorService:
             else " and ".join(missing_common).capitalize()
             + (" is required." if len(missing_common) == 1 else " are required.")
         )
-        return {
+        capabilities = {
             "observe_only": {
                 "selectable": common,
                 "reason": (
@@ -391,11 +455,172 @@ class TaskOrchestratorService:
                 "physical_authority": False,
             },
         }
+        if self.demo_loop_start is not None and self.demo_loop_status is not None:
+            demo = self._demo_loop_snapshot()
+            capabilities["demo_physical"] = {
+                "selectable": bool(demo["ready"]),
+                "reason": demo.get("reason"),
+                "physical_authority": bool(demo["physical_authority"]),
+                "authority_scope": demo["authority_scope"],
+            }
+        return capabilities
+
+    def _demo_loop_snapshot(
+        self,
+        workcell: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        if self.demo_loop_status is None:
+            return {
+                "enabled": False,
+                "status": "unavailable",
+                "ready": False,
+                "reason": "The fixed demo loop controller is unavailable.",
+                "authority_scope": "none",
+                "physical_authority": False,
+            }
+        try:
+            controller = dict(self.demo_loop_status())
+        except Exception as error:
+            controller = {
+                "enabled": True,
+                "status": "failed",
+                "error": f"{type(error).__name__}: {error}",
+            }
+        source = self._source_preflight()
+        if workcell is None:
+            try:
+                workcell = dict(self.workcell_status()) if self.workcell_status else {}
+            except Exception as error:
+                workcell = {"error": f"{type(error).__name__}: {error}"}
+        follower_connected = any(
+            bool(row.get("connected"))
+            for row in (workcell.get("arms") or [])
+            if row.get("id") == "so101-follower" or row.get("role") == "follower"
+        )
+        camera_ready = bool(source.get("ready"))
+        running = controller.get("status") in {"running", "stopping"}
+        ready = bool(
+            controller.get("enabled", True)
+            and camera_ready
+            and follower_connected
+        )
+        missing: list[str] = []
+        if not camera_ready:
+            missing.append("visible overhead camera")
+        if not follower_connected:
+            missing.append("connected follower")
+        return {
+            **controller,
+            "enabled": True,
+            "ready": ready or running,
+            "camera_ready": camera_ready,
+            "follower_connected": follower_connected,
+            "reason": None if ready or running else " and ".join(missing) + " required.",
+            "authority_scope": "fixed_owner_directed_base_inverse_base_script_only",
+            "physical_authority": bool(ready or running),
+            "registration_required_for_demo_script": False,
+        }
+
+    @staticmethod
+    def _is_demo_loop_command(message: str) -> bool:
+        normalized = " ".join(
+            "".join(character if character.isalnum() else " " for character in message.casefold()).split()
+        )
+        return normalized in {
+            "loop it",
+            "run the loop",
+            "start the loop",
+            "loop the base case",
+            "run the base case loop",
+        }
+
+    def _sync_demo_loop_locked(self) -> dict[str, Any]:
+        demo = self._demo_loop_snapshot()
+        status = str(demo.get("status") or "unavailable")
+        prior = self.demo_loop_last_status
+        self.state["demo_loop"] = demo
+        self.state["physical_authority"] = bool(demo.get("physical_authority"))
+        if status in {"running", "stopping"}:
+            self.state["main_status"] = "executing"
+            action = str(demo.get("action") or "loop")
+            self.state["action_queue"]["current_action"] = {
+                "decision": "run_demo_script",
+                "skill_id": "five_minute_base_loop_script",
+                "arguments": {"duration_seconds": 300, "action": action},
+            }
+            self.state["action_queue"]["verification"] = status
+        elif prior in {"running", "stopping"} and status in {"completed", "failed", "stopped"}:
+            self.state["action_queue"]["current_action"] = None
+            self.state["action_queue"]["verification"] = (
+                "command_cycle_completed_task_unverified"
+                if status == "completed"
+                else status
+            )
+            self.state["main_status"] = (
+                "command_cycle_complete" if status == "completed" else "failed"
+            )
+            action_label = str(demo.get("action") or "loop").replace("_", " ")
+            message = (
+                f"The fixed {action_label} command sequence completed. "
+                "Overhead checkpoints and the aggregate receipt were saved."
+                if status == "completed"
+                else f"The fixed demo loop {status}: {demo.get('error') or 'see its receipt.'}"
+            )
+            self.recent_conversation.append(
+                {
+                    "role": "assistant",
+                    "message": message,
+                    "decision": "demo_loop_status",
+                    "recorded_at": self.utc_now().isoformat(),
+                }
+            )
+            maximum = int(self.config["model"]["maximum_recent_messages"])
+            self.recent_conversation = self.recent_conversation[-maximum:]
+            self._event_locked("demo_loop_finished", demo)
+        self.demo_loop_last_status = status
+        return demo
+
+    def _source_preflight(self) -> dict[str, Any]:
+        if self.frame_source_status is None:
+            return {
+                "ready": self.frame_credential_configured,
+                "reason": (
+                    None
+                    if self.frame_credential_configured
+                    else "server-side Silicon snapshot credential"
+                ),
+                **self.source_metadata,
+                "physical_authority": False,
+            }
+        try:
+            dynamic = dict(self.frame_source_status())
+        except Exception as error:
+            dynamic = {
+                "ready": False,
+                "reason": f"Source preflight failed: {type(error).__name__}: {error}",
+            }
+        return {
+            **self.source_metadata,
+            **dynamic,
+            "physical_authority": False,
+        }
 
     def snapshot(self) -> dict[str, Any]:
         with self.lock:
             self._update_timer_snapshot_locked()
+            self._sync_demo_loop_locked()
             payload = json.loads(json.dumps(self.state))
+            source_preflight = self._source_preflight()
+            payload["source"].update(
+                {
+                    "ready": bool(source_preflight.get("ready")),
+                    "available": bool(source_preflight.get("available", source_preflight.get("ready"))),
+                    "device_name": source_preflight.get("device_name"),
+                    "device_index": source_preflight.get("device_index"),
+                    "busy": bool(source_preflight.get("busy", False)),
+                    "preflight_reason": source_preflight.get("reason"),
+                }
+            )
             payload["modes"] = self._mode_capabilities()
             payload["allowed_skills"] = self.registry.public_rows(self.last_skill_results)
             payload["dispatcher"] = self.dispatcher.snapshot()
@@ -408,6 +633,27 @@ class TaskOrchestratorService:
                 "physical_authority": False,
             }
             payload["ledger"] = json.loads(json.dumps(self.ledger_tail))
+            payload["conversation"] = json.loads(json.dumps(self.recent_conversation))
+            payload["objective"] = json.loads(json.dumps(self.active_objective))
+            if self.workcell_status is not None:
+                try:
+                    payload["workcell"] = json.loads(json.dumps(self.workcell_status()))
+                except Exception as error:
+                    payload["workcell"] = {
+                        "schema_version": "sim2claw.orchestrator_workcell_inventory.v1",
+                        "arms": [],
+                        "cameras": [],
+                        "error": f"{type(error).__name__}: {error}",
+                        "physical_authority": False,
+                    }
+            demo = self._demo_loop_snapshot(payload.get("workcell") or {})
+            payload["demo_loop"] = demo
+            payload["physical_authority"] = bool(demo.get("physical_authority"))
+            payload["torque_off"] = (
+                "guarded_replay_releases_between_moves"
+                if demo.get("physical_authority")
+                else payload.get("torque_off")
+            )
             payload["receipt_directory"] = (
                 str(self.session_directory.relative_to(self.repo_root))
                 if self.session_directory is not None
@@ -421,6 +667,50 @@ class TaskOrchestratorService:
                 return None
             digest = hashlib.sha256(self.latest_frame_bytes).hexdigest()
             return self.latest_frame_bytes, self.latest_frame_content_type, digest
+
+    def preview_source(self) -> dict[str, Any]:
+        """Capture one operator preview without starting a model/session ledger."""
+
+        with self.lock:
+            if self.state["state"] != "STOPPED":
+                raise TaskOrchestratorError(
+                    "Use Refresh frame while a task session is active."
+                )
+            if not self._source_preflight().get("ready"):
+                raise TaskOrchestratorError(
+                    str(
+                        self._source_preflight().get("reason")
+                        or "The selected overhead source is unavailable."
+                    )
+                )
+        adapter = self.frame_adapter_factory()
+        try:
+            frame = adapter.fetch()
+        except FrameSourceError as error:
+            with self.lock:
+                self.state["source"]["health"] = "fault"
+                self.state["source"]["connected"] = False
+                self.state["source"]["latest_error"] = error.receipt()
+            raise TaskOrchestratorError(str(error)) from error
+        finally:
+            adapter.close()
+        with self.lock:
+            self.latest_frame = frame
+            self.latest_frame_bytes = frame.image_bytes
+            self.latest_frame_content_type = f"image/{frame.record['encoding']}"
+            self.state["source"].update(
+                {
+                    "health": "healthy",
+                    "connected": True,
+                    "latest_captured_at": frame.record["capture_timestamp"],
+                    "latest_preview_sha256": frame.sha256,
+                    "latest_error": None,
+                    "live_connectivity_verified": True,
+                    "registration_state": frame.record.get("registration_state")
+                    or self.source_metadata.get("registration_state"),
+                }
+            )
+            return self.snapshot()
 
     def _transition_locked(self, new_state: str, *, main_status: str | None = None) -> None:
         current = str(self.state["state"])
@@ -483,10 +773,11 @@ class TaskOrchestratorService:
             "started_at": self.state["started_at"],
             "contracts": contracts,
             "source": {
-                "adapter_id": self.snapshot_contract["adapter_id"],
-                "host": self.snapshot_contract["endpoint"]["allowed_host"],
-                "camera_role": self.snapshot_contract["image_contract"]["camera_role"],
-                "roi_contract_id": self.snapshot_contract["image_contract"]["roi_contract_id"],
+                "adapter_id": self.source_metadata["adapter_id"],
+                "host": self.source_metadata["host"],
+                "camera_role": self.source_metadata["camera_role"],
+                "roi_contract_id": self.source_metadata["roi_contract_id"],
+                "registration_state": self.source_metadata.get("registration_state"),
             },
             "model": {
                 "adapter_id": self.config["model"]["adapter_id"],
@@ -533,6 +824,7 @@ class TaskOrchestratorService:
             self.last_base_state = None
             self.pending_postcondition = None
             self.last_skill_results = {}
+            self.active_objective = None
             self.frame_adapter = self.frame_adapter_factory()
             self.model_adapter = self.model_adapter_factory()
             receipt_root = self.repo_root / self.config["receipts"]["root"]
@@ -549,8 +841,15 @@ class TaskOrchestratorService:
                 "session_started",
                 {"mode": mode, "forced_accept_reason": "start", "settings": self.state["settings"]},
             )
-            self.pending_reasons.append("start")
-            self.wake_event.set()
+            if mode == "demo_physical":
+                # The demo lane is command-driven. Starting its chat session
+                # must not produce an unsolicited planning turn before the
+                # operator types the exact loop command.
+                self.next_poll_monotonic = None
+                self._transition_locked("OBSERVING", main_status="ready")
+            else:
+                self.pending_reasons.append("start")
+                self.wake_event.set()
             return self.snapshot()
 
     def _apply_settings_locked(self, payload: Mapping[str, Any]) -> None:
@@ -593,6 +892,55 @@ class TaskOrchestratorService:
             self.recent_conversation = self.recent_conversation[-maximum:]
             self.last_user_activity_monotonic = self.monotonic()
             self._event_locked("user_chat", row)
+            if self._is_demo_loop_command(message) and self.demo_loop_start is not None:
+                demo = self._demo_loop_snapshot()
+                if not demo.get("ready"):
+                    raise TaskOrchestratorError(
+                        str(demo.get("reason") or "The fixed demo loop is unavailable.")
+                    )
+                started = dict(self.demo_loop_start())
+                self.demo_loop_last_status = str(started.get("status") or "running")
+                self.state["demo_loop"] = started
+                self.state["physical_authority"] = True
+                self.state["main_status"] = "executing"
+                self.state["action_queue"] = {
+                    "proposed_plan": [
+                        {
+                            "decision": "run_demo_script",
+                            "reason": "Exact demo chat command routed directly to the fixed loopback script.",
+                            "skill_id": "five_minute_base_loop_script",
+                            "arguments": {"duration_seconds": 300},
+                            "expected_postcondition": {},
+                            "confidence": 1.0,
+                        }
+                    ],
+                    "current_action": {
+                        "decision": "run_demo_script",
+                        "skill_id": "five_minute_base_loop_script",
+                        "arguments": {"duration_seconds": 300},
+                    },
+                    "expected_postcondition": None,
+                    "verification": "running",
+                }
+                assistant = {
+                    "role": "assistant",
+                    "message": (
+                        "Starting the fixed five-minute base → inverse → base demo loop now. "
+                        "The LLM planner was bypassed; the guarded Python runner owns execution."
+                    ),
+                    "decision": "run_demo_script",
+                    "recorded_at": self.utc_now().isoformat(),
+                }
+                self.recent_conversation.append(assistant)
+                self.recent_conversation = self.recent_conversation[-maximum:]
+                self._event_locked("demo_loop_started", started)
+                self.pending_reasons.clear()
+                self.next_poll_monotonic = None
+                self.last_world_activity_monotonic = self.monotonic()
+                return self.snapshot()
+            self.active_objective = interpret_objective(message)
+            self.active_objective["created_at"] = self.utc_now().isoformat()
+            self._event_locked("objective_accepted", self.active_objective)
             self.pending_reasons.append("user_chat")
             self.wake_event.set()
             return self.snapshot()
@@ -784,7 +1132,7 @@ class TaskOrchestratorService:
                 raise TaskOrchestratorError("Resume requires PAUSED state.")
             prior_fault = self.state.get("fault")
             if self.frame_adapter is None or self.model_adapter is None:
-                frame_adapter: SiliconOverheadSnapshotAdapter | None = None
+                frame_adapter: FrameAdapter | None = None
                 model_adapter: OpenAIOrchestratorModel | None = None
                 try:
                     frame_adapter = self.frame_adapter_factory()
@@ -820,6 +1168,10 @@ class TaskOrchestratorService:
 
     def stop(self, reason: str = "user_stop", *, task_outcome: str | None = None) -> dict[str, Any]:
         with self.lock:
+            if self.demo_loop_stop is not None:
+                demo = self._demo_loop_snapshot()
+                if demo.get("status") in {"running", "stopping"}:
+                    self.demo_loop_stop()
             if self.state["state"] == "STOPPED":
                 return self.snapshot()
             if self.state["state"] not in ACTIVE_STATES | {"PAUSED", "FAULTED", "PAUSING"}:
@@ -905,6 +1257,13 @@ class TaskOrchestratorService:
         with self.lock:
             if self.state["state"] not in ACTIVE_STATES:
                 return False
+            demo = self._sync_demo_loop_locked()
+            if demo.get("status") in {"running", "stopping"}:
+                now = self.monotonic()
+                self.last_user_activity_monotonic = now
+                self.last_world_activity_monotonic = now
+                self._update_timer_snapshot_locked()
+                return False
             self._update_timer_snapshot_locked()
             timers = self.state["timers"]
             reason = None
@@ -925,7 +1284,11 @@ class TaskOrchestratorService:
             reason: str | None = None
             wait_seconds = 1.0
             with self.lock:
-                if self.pending_reasons and self.state["state"] in ACTIVE_STATES:
+                demo = self._sync_demo_loop_locked()
+                if demo.get("status") in {"running", "stopping"}:
+                    wait_seconds = 0.5
+                    reason = None
+                elif self.pending_reasons and self.state["state"] in ACTIVE_STATES:
                     reason = self.pending_reasons.pop(0)
                 elif self.state["state"] in ACTIVE_STATES and self.next_poll_monotonic is not None:
                     remaining = self.next_poll_monotonic - self.monotonic()
@@ -945,6 +1308,12 @@ class TaskOrchestratorService:
         if self._check_inactivity():
             return True
         with self.lock:
+            if (
+                self.state.get("mode") == "demo_physical"
+                and not self.pending_reasons
+                and self.next_poll_monotonic is None
+            ):
+                return False
             if self.pending_reasons:
                 reason = self.pending_reasons.pop(0)
             elif self.state["state"] in ACTIVE_STATES:
@@ -1030,6 +1399,8 @@ class TaskOrchestratorService:
                         "latest_captured_at": frame.record["capture_timestamp"],
                         "latest_error": None,
                         "live_connectivity_verified": True,
+                        "registration_state": frame.record.get("registration_state")
+                        or self.source_metadata.get("registration_state"),
                     }
                 )
                 if suppressed:
@@ -1058,9 +1429,12 @@ class TaskOrchestratorService:
                 self.state["comparison"]["accepted_count"] += 1
                 self.state["source"]["latest_accepted_sha256"] = frame.sha256
                 retained_path = self._store_accepted_frame(frame)
-                base_state = self.classifier.classify(
-                    frame.image_bgr, evidence_frame_sha256=frame.sha256
-                )
+                if frame.record.get("perception_ready", True):
+                    base_state = self.classifier.classify(
+                        frame.image_bgr, evidence_frame_sha256=frame.sha256
+                    )
+                else:
+                    base_state = self._unregistered_base_state(frame)
                 prior_base_state = self.last_base_state
                 self.last_base_state = base_state
                 self.state["base_case"] = base_state
@@ -1183,6 +1557,47 @@ class TaskOrchestratorService:
 
         self._run_model_turn(frame, base_state, reason, prior_base_state)
 
+    def _unregistered_base_state(self, frame: SnapshotFrame) -> dict[str, Any]:
+        demo_feedback = frame.record.get("registration_state") == "demo_visual_feedback"
+        squares = {
+            square: {
+                "status": "unknown",
+                "brown_ratio": None,
+                "colored_non_brown_ratio": None,
+                "confidence": 0.0,
+            }
+            for square in self.base_contract.managed_squares
+        }
+        return {
+            "schema_version": "sim2claw.orchestrator_base_state.v1",
+            "contract_id": self.base_contract.contract_id,
+            "state": "demo_visual_feedback" if demo_feedback else "observation_limited",
+            "deterministic_complete": False,
+            "required_occupied": sorted(self.base_contract.required_occupied),
+            "required_empty": sorted(self.base_contract.required_empty),
+            "observed_occupied": [],
+            "observed_empty": [],
+            "mismatched_files": [],
+            "confidence": 0.0,
+            "minimum_confidence": self.classifier.minimum_confidence,
+            "evidence_frame_sha256": frame.sha256,
+            "squares": squares,
+            "blockers": [] if demo_feedback else [
+                {
+                    "kind": "camera_registration_required",
+                    "camera_id": frame.record.get("camera_id"),
+                    "registration_state": frame.record.get("registration_state"),
+                }
+            ],
+            "suggested_moves": [],
+            "comparison_authority": (
+                "demo_visual_feedback_without_square_level_registration"
+                if demo_feedback
+                else "raw_frame_model_context_without_square_level_authority"
+            ),
+            "physical_authority": False,
+        }
+
     def _model_context(
         self,
         base_state: Mapping[str, Any],
@@ -1195,6 +1610,48 @@ class TaskOrchestratorService:
             "session_state": self.state["state"],
             "mode": self.state["mode"],
             "base_case_contract": self.base_contract.payload,
+            "named_layouts": {
+                "base_case": {
+                    "occupied": ["b1", "c2", "d1", "e2", "f1", "g2"],
+                    "empty": ["b2", "c1", "d2", "e1", "f2", "g1"],
+                },
+                "inverse_base_case": {
+                    "occupied": ["b2", "c1", "d2", "e1", "f2", "g1"],
+                    "empty": ["b1", "c2", "d1", "e2", "f1", "g2"],
+                    "from_base_case_moves": [
+                        "pawn_b1_to_b2",
+                        "pawn_c2_to_c1",
+                        "pawn_d1_to_d2",
+                        "pawn_e2_to_e1",
+                        "pawn_f1_to_f2",
+                        "pawn_g2_to_g1",
+                    ],
+                },
+            },
+            "named_loops": {
+                "loop_base_case": {
+                    "normalize_to": "base_case",
+                    "repeat_phases": ["inverse_base_case", "base_case"],
+                    "base_to_inverse_moves": [
+                        "pawn_b1_to_b2",
+                        "pawn_c2_to_c1",
+                        "pawn_d1_to_d2",
+                        "pawn_e2_to_e1",
+                        "pawn_f1_to_f2",
+                        "pawn_g2_to_g1",
+                    ],
+                    "inverse_to_base_moves": [
+                        "pawn_b2_to_b1",
+                        "pawn_c1_to_c2",
+                        "pawn_d2_to_d1",
+                        "pawn_e1_to_e2",
+                        "pawn_f2_to_f1",
+                        "pawn_g1_to_g2",
+                    ],
+                    "one_move_then_registered_reobservation": True,
+                    "duration_is_planning_horizon_not_execution_authority": True,
+                }
+            },
             "base_case_state": base_state,
             "prior_base_case_state": prior_base_state,
             "newest_user_message": (
@@ -1210,6 +1667,8 @@ class TaskOrchestratorService:
                 "completion_owner": "deterministic_managed_region_checker",
                 "training_or_promotion_allowed": False,
                 "raw_joint_or_arbitrary_command_allowed": False,
+                "named_layout_assertion_is_planning_only": True,
+                "loop_duration_grants_execution_authority": False,
                 "physical_authority": False,
             },
         }
@@ -1262,6 +1721,16 @@ class TaskOrchestratorService:
                 return
             self.state["model"]["identity_verified"] = True
             self.state["model"]["last_turn"] = turn
+            self.recent_conversation.append(
+                {
+                    "role": "assistant",
+                    "message": str(turn["decision"]["reason"]),
+                    "decision": str(turn["decision"]["decision"]),
+                    "recorded_at": self.utc_now().isoformat(),
+                }
+            )
+            maximum = int(self.config["model"]["maximum_recent_messages"])
+            self.recent_conversation = self.recent_conversation[-maximum:]
             self._event_locked("model_decision", turn)
         self._handle_decision(turn["decision"], base_state)
 
@@ -1276,9 +1745,13 @@ class TaskOrchestratorService:
         if kind == "ask_user":
             with self.lock:
                 self.state["action_queue"]["proposed_plan"] = [dict(decision)]
+                self.state["action_queue"]["verification"] = "awaiting_user_message"
                 self._transition_locked("PROPOSED_ACTION", main_status="proposed")
                 self._event_locked("user_help_requested", {"decision": decision})
-                self._pause_locked("model_requested_user_help")
+                if self.state["mode"] == "observe_only":
+                    self._transition_locked("OBSERVING", main_status="proposed")
+                else:
+                    self._pause_locked("model_requested_user_help")
             return
         if kind == "pause":
             with self.lock:

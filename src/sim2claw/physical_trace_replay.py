@@ -46,6 +46,11 @@ START_BODY_RATE_DEG_S = 10.0
 START_WRIST_ROLL_RATE_DEG_S = 15.0
 START_GRIPPER_RATE_S = 20.0
 START_COMMAND_HZ = 20.0
+# Loaded joints can settle a fraction of a degree beyond the saved calibration
+# edge while torque is off.  Permit only this small source-envelope discrepancy;
+# the gateway still applies its unchanged calibrated limits and 90 degree body
+# excursion bound to every runtime command.
+MAX_REPLAY_ENVELOPE_CLIP_DEG = 1.0
 
 
 class PhysicalTraceReplayError(RuntimeError):
@@ -78,6 +83,13 @@ class ReplayGateway(Protocol):
     ) -> dict[str, Any]: ...
 
     def sample(self, elapsed_seconds: float) -> dict[str, Any]: ...
+
+    def rebase_relative_origin(
+        self,
+        *,
+        leader_origin: np.ndarray,
+        follower_origin: np.ndarray,
+    ) -> dict[str, Any]: ...
 
     def close(self) -> None: ...
 
@@ -204,26 +216,59 @@ def validate_replay_envelope(
         float(commands[0, 4]),
         float(live_start[4]),
     )
-    maximum_start_body = float(np.max(np.abs(first_delta[:5])))
+    # Wrist roll has its own circular-distance and start-motion guard.  Keeping
+    # it out of the body-joint maximum prevents a large wrist-only mismatch
+    # from being mislabeled as a 45-degree body-pose failure.
+    body_delta = np.abs(first_delta[:4])
+    maximum_start_body = float(np.max(body_delta))
     if maximum_start_body > START_BODY_DELTA_LIMIT_DEG:
+        joint_index = int(np.argmax(body_delta))
+        joint_name = ROBOT_JOINTS[joint_index]
         raise PhysicalTraceReplayError(
-            "Follower is too far from the episode start pose: "
-            f"{maximum_start_body:.1f}° (limit {START_BODY_DELTA_LIMIT_DEG:.1f}°)."
+            f"Follower {joint_name} is too far from the episode start pose: "
+            f"{maximum_start_body:.1f}° (limit {START_BODY_DELTA_LIMIT_DEG:.1f}°; "
+            f"current {live_start[joint_index]:.1f}°, "
+            f"episode start {commands[0, joint_index]:.1f}°). "
+            "Keep follower torque off, place that joint near the episode start, "
+            "then retry."
         )
-    if abs(float(first_delta[4])) > START_WRIST_ROLL_DELTA_LIMIT_DEG:
-        raise PhysicalTraceReplayError("Follower wrist roll is too far from the replay start.")
+    wrist_roll_delta = abs(float(first_delta[4]))
+    if wrist_roll_delta > START_WRIST_ROLL_DELTA_LIMIT_DEG:
+        raise PhysicalTraceReplayError(
+            "Follower wrist_roll is too far from the episode start pose: "
+            f"{wrist_roll_delta:.1f}° "
+            f"(limit {START_WRIST_ROLL_DELTA_LIMIT_DEG:.1f}°; "
+            f"current {live_start[4]:.1f}°, "
+            f"episode start {commands[0, 4]:.1f}°). "
+            "Keep follower torque off, rotate wrist_roll near the episode start, "
+            "then retry."
+        )
     if abs(float(first_delta[5])) > START_GRIPPER_DELTA_LIMIT:
-        raise PhysicalTraceReplayError("Follower gripper is too far from the replay start.")
+        raise PhysicalTraceReplayError(
+            "Follower gripper is too far from the episode start pose: "
+            f"{abs(float(first_delta[5])):.1f} "
+            f"(limit {START_GRIPPER_DELTA_LIMIT:.1f}; "
+            f"current {live_start[5]:.1f}, episode start {commands[0, 5]:.1f}). "
+            "Keep follower torque off, place the gripper near the episode start, "
+            "then retry."
+        )
+    # Pre-roll reaches the first saved command before motion replay begins.
+    # Validate the unchanged relative-excursion guard from that admitted
+    # episode origin, not from a transient live pose a few degrees away.
+    episode_origin = commands[0].copy()
     maximum_excursion = np.zeros(6, dtype=np.float64)
+    maximum_envelope_clip = np.zeros(6, dtype=np.float64)
     for command in commands:
         bounded, delta = bounded_relative_target(
             command.copy(),
-            live_start.copy(),
-            live_start.copy(),
+            episode_origin.copy(),
+            episode_origin.copy(),
             lower_limits=lower_limits,
             upper_limits=upper_limits,
         )
-        if np.any(np.abs(bounded - command) > 0.5):
+        envelope_clip = np.abs(bounded - command)
+        maximum_envelope_clip = np.maximum(maximum_envelope_clip, envelope_clip)
+        if np.any(envelope_clip > MAX_REPLAY_ENVELOPE_CLIP_DEG):
             raise PhysicalTraceReplayError(
                 "Recorded command leaves the follower calibration or excursion envelope."
             )
@@ -238,8 +283,12 @@ def validate_replay_envelope(
         "live_start_degrees": live_start.tolist(),
         "first_command_degrees": commands[0].tolist(),
         "first_command_delta_degrees": first_delta.tolist(),
+        "replay_excursion_origin_degrees": episode_origin.tolist(),
         "maximum_start_body_delta_degrees": maximum_start_body,
+        "start_wrist_roll_delta_degrees": wrist_roll_delta,
         "maximum_replay_excursion_degrees": maximum_excursion.tolist(),
+        "maximum_envelope_clip_degrees": maximum_envelope_clip.tolist(),
+        "maximum_allowed_envelope_clip_degrees": MAX_REPLAY_ENVELOPE_CLIP_DEG,
     }
 
 
@@ -298,6 +347,10 @@ def _default_gateway_factory(identity: GatewayIdentity) -> ReplayGateway:
         identity,
         device_factory=_physical_replay_devices,
         configure_devices=False,
+        # Recorded replay needs position feedback on every sample.  Current is
+        # diagnostic only, so leave those extra group reads off to give the
+        # flaky USB controller the lowest sustained transaction load.
+        current_telemetry_hz=0.0,
     )
 
 
@@ -336,6 +389,7 @@ def run_physical_trace_replay(
     recording_directory: Path,
     *,
     operator_acknowledged: bool,
+    reverse: bool = False,
     output_root: Path | None = None,
     identity: GatewayIdentity | None = None,
     gateway_factory: GatewayFactory = _default_gateway_factory,
@@ -352,6 +406,16 @@ def run_physical_trace_replay(
         recording_directory,
         allowed_root=allowed_source_root,
     )
+    replay_rows = source.rows
+    replay_commands = source.commands
+    replay_elapsed_seconds = source.elapsed_seconds
+    if reverse:
+        replay_rows = tuple(reversed(source.rows))
+        replay_commands = source.commands[::-1].copy()
+        reverse_intervals = np.diff(source.elapsed_seconds)[::-1]
+        replay_elapsed_seconds = np.concatenate(
+            (np.asarray([0.0], dtype=np.float64), np.cumsum(reverse_intervals))
+        )
     gateway_identity = identity or _gateway_identity()
     destination_root = (output_root or REPO_ROOT / "runs" / "physical_replays").resolve()
     run_id = (
@@ -371,6 +435,7 @@ def run_physical_trace_replay(
     exact_samples = 0
     opened: dict[str, Any] | None = None
     envelope: dict[str, Any] | None = None
+    origin_rebase: dict[str, Any] | None = None
     started_at = datetime.now(UTC).isoformat()
     wall_started: float | None = None
     error: Exception | None = None
@@ -386,7 +451,7 @@ def run_physical_trace_replay(
         leader_start = np.asarray(opened["leader_start_degrees"], dtype=np.float64)
         follower_start = np.asarray(opened["follower_start_degrees"], dtype=np.float64)
         envelope = validate_replay_envelope(
-            source.commands,
+            replay_commands,
             follower_start,
             lower_limits=gateway.lower_limits,
             upper_limits=gateway.upper_limits,
@@ -434,17 +499,32 @@ def run_physical_trace_replay(
                         total=pre_roll_steps,
                     )
 
+            mapped_episode_origin = _mapped_leader_target(
+                replay_commands[0],
+                leader_start,
+                follower_start,
+            )
+            origin_rebase = gateway.rebase_relative_origin(
+                leader_origin=mapped_episode_origin,
+                follower_origin=replay_commands[0],
+            )
+            emit(
+                "replay_origin_rebased",
+                maximum_body_excursion_degrees=BODY_EXCURSION_LIMIT_DEG,
+            )
+
             trace_started = clock()
             emit(
                 "trace_started",
-                samples=len(source.rows),
-                duration_seconds=float(source.elapsed_seconds[-1]),
+                samples=len(replay_rows),
+                duration_seconds=float(replay_elapsed_seconds[-1]),
+                direction="reverse" if reverse else "forward",
             )
             for index, (source_row, follower_target, source_elapsed) in enumerate(
                 zip(
-                    source.rows,
-                    source.commands,
-                    source.elapsed_seconds,
+                    replay_rows,
+                    replay_commands,
+                    replay_elapsed_seconds,
                     strict=True,
                 )
             ):
@@ -487,7 +567,7 @@ def run_physical_trace_replay(
                     emit(
                         "trace_progress",
                         current=completed_samples,
-                        total=len(source.rows),
+                        total=len(replay_rows),
                         source_elapsed_seconds=float(source_elapsed),
                     )
             emit("trace_completed", samples=completed_samples)
@@ -508,6 +588,7 @@ def run_physical_trace_replay(
         "source_label": source.receipt.get("label"),
         "source_samples_sha256": source.receipt["samples_sha256"],
         "source_sample_count": len(source.rows),
+        "source_trace_direction": "reverse" if reverse else "forward",
         "completed_sample_count": completed_samples,
         "exact_command_sample_count": exact_samples,
         "safety_clamped_sample_count": clamped_samples,
@@ -518,6 +599,7 @@ def run_physical_trace_replay(
         ),
         "gateway_open_report": opened,
         "replay_envelope": envelope,
+        "replay_origin_rebase": origin_rebase,
         "replay_samples_path": samples_path.name,
         "replay_samples_sha256": _sha256(samples_path) if samples_path.is_file() else None,
         "physical_follower_torque_enabled": False,

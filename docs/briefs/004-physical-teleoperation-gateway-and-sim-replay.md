@@ -72,6 +72,54 @@ Completing this replay proves command-trajectory delivery only. It does not
 inherit the source label as a physical evaluator verdict and does not prove
 piece motion, placement accuracy, learned-policy behavior, or task success.
 
+## Owner-directed five-minute base loop
+
+The fixed 12-recording base-to-inverse-to-base demo cycle has a separate
+runner. Validate every source receipt without opening hardware first:
+
+```bash
+uv run python scripts/run_owner_directed_base_loop.py --dry-run
+```
+
+After separate owner authorization and a current powered-workcell-clear check,
+run the guarded cycle explicitly:
+
+```bash
+uv run python scripts/run_owner_directed_base_loop.py \
+  --yes \
+  --owner-directed-unqualified-labels
+```
+
+The runner performs one move at a time through the guarded physical replay
+path, releases torque between moves, retains an overhead checkpoint after each
+move, and writes one aggregate receipt below
+`runs/task_orchestrator/owner_directed_base_loop/`. It fails closed on source,
+duration, gateway, camera, or torque-off errors. Folder-label selection and the
+unregistered C922 checkpoints remain unqualified command-replay evidence; the
+runner does not promote the recordings or claim the board outcome succeeded.
+
+On a loopback Studio server, the Task Orchestrator exposes this same runner as
+the narrow `Demo Physical` mode only when Studio is started with
+`--enable-physical-demo`, the Logitech overhead camera is available, and the
+follower bus is connected. Ordinary Studio startup keeps this mode absent. In
+an explicitly opted-in demo session, the exact chat
+commands `loop it`, `run the loop`, `start the loop`, `loop the base case`, and
+`run the base case loop` bypass the model planner and start this fixed script.
+The overhead image is labeled demo visual feedback rather than board-registered
+occupancy evidence; square registration is not a prerequisite for this script.
+
+The native controller in `apps/Sim2ClawDemoControl/` exposes four buttons over
+the same loopback controller. Power starts or stops Studio and the Demo Physical
+session; the two direction buttons select the first or last six fixed traces;
+Loop selects the full 12-move five-minute cycle. Power Off requests a stop and
+waits for the current guarded move to finish and release torque before it stops
+the server. Build and launch it only for an owner-authorized physical session:
+
+```bash
+SIM2CLAW_ENABLE_PHYSICAL_DEMO=1 \
+  apps/Sim2ClawDemoControl/Scripts/compile_and_run.sh
+```
+
 ## Stop conditions
 
 Calibration mismatch, missing/distinct-bus failure, Sync mismatch outside the

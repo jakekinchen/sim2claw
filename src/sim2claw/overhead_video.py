@@ -211,8 +211,15 @@ class OverheadVideoRecorder:
         startup_deadline = time.monotonic() + 1.0
         while time.monotonic() < startup_deadline:
             if self.process.poll() is not None:
+                return_code = self.process.returncode
                 self._close_log()
                 detail = _compact_log_tail(self.log_path)
+                if return_code == -6 and not detail:
+                    detail = (
+                        "capture was aborted by macOS before FFmpeg produced a log; "
+                        "when Studio is launched from the native controller, verify "
+                        "that sim2claw Demo Control has Camera access"
+                    )
                 raise OverheadVideoError(
                     "C922 video capture exited during startup"
                     + (f": {detail}" if detail else ".")
