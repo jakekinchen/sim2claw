@@ -153,22 +153,26 @@ def _unavailable_projection(
 
 def _episode_projection(
     episode: Mapping[str, Any], observatory: Mapping[str, Any]
-) -> Mapping[str, Any] | None:
+) -> tuple[Mapping[str, Any] | None, str]:
     action_sha256 = str(episode.get("action_array_sha256") or "")
     episode_id = str(episode.get("id") or "")
     rows = _as_rows(observatory.get("episodes"))
-    by_action = next(
-        (
-            row
-            for row in rows
-            if action_sha256
-            and str(row.get("action_array_sha256") or "") == action_sha256
-        ),
-        None,
+    if action_sha256:
+        return (
+            next(
+                (
+                    row
+                    for row in rows
+                    if str(row.get("action_array_sha256") or "") == action_sha256
+                ),
+                None,
+            ),
+            "action_sha256",
+        )
+    return (
+        next((row for row in rows if str(row.get("id") or "") == episode_id), None),
+        "episode_id_only_action_hash_unavailable",
     )
-    if by_action is not None:
-        return by_action
-    return next((row for row in rows if str(row.get("id") or "") == episode_id), None)
 
 
 def _episode_only_domains(sail_episode: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -417,12 +421,20 @@ def project_twin_fidelity(
 ) -> dict[str, Any]:
     """Project existing evidence into a replay-scoped, non-scoring fidelity view."""
 
-    sail_episode = _episode_projection(episode, observatory)
+    sail_episode, episode_binding = _episode_projection(episode, observatory)
     if sail_episode is None:
         return _unavailable_projection(
             episode,
-            reason="episode_not_in_receipt_bound_observatory",
-            detail="This replay has no action-hash-matched SAIL observatory record.",
+            reason=(
+                "action_hash_not_in_receipt_bound_observatory"
+                if episode.get("action_array_sha256")
+                else "episode_not_in_receipt_bound_observatory"
+            ),
+            detail=(
+                "The selected replay action hash has no exact match in the receipt-bound SAIL observatory; episode-ID fallback is prohibited."
+                if episode.get("action_array_sha256")
+                else "This replay has neither an action hash nor an episode-ID-matched SAIL observatory record."
+            ),
         )
 
     action_sha256 = str(episode.get("action_array_sha256") or "")
@@ -556,6 +568,14 @@ def project_twin_fidelity(
             },
         ]
 
+    proof_label = (
+        sail_episode.get("proof_label")
+        or episode.get("proof_label")
+        or "Replay evidence"
+    )
+    if episode_binding != "action_sha256":
+        proof_label = f"{proof_label} · episode ID only; action hash unavailable"
+
     return {
         "schema_version": SCHEMA_VERSION,
         "available": True,
@@ -568,12 +588,11 @@ def project_twin_fidelity(
             "action_binding": (
                 "byte_identical_campaign_match"
                 if campaign_matches
-                else "no_terminal_campaign_match"
+                else episode_binding
             ),
             "proof_class": sail_episode.get("proof_class")
             or episode.get("proof_class"),
-            "proof_label": sail_episode.get("proof_label")
-            or episode.get("proof_label"),
+            "proof_label": proof_label,
         },
         "summary": summary,
         "authority": dict(READ_ONLY_AUTHORITY),

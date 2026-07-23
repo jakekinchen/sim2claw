@@ -215,6 +215,40 @@ def test_action_mismatch_does_not_attach_terminal_campaign_claims() -> None:
     assert mismatched["evaluator"]["verdict"] is None
 
 
+def test_same_episode_id_with_different_action_hash_is_unavailable() -> None:
+    selected = {**_episode(), "id": "shared-episode", "action_array_sha256": "5" * 64}
+    observatory = {
+        **_observatory(),
+        "episodes": [
+            {
+                **_observatory()["episodes"][0],
+                "id": "shared-episode",
+                "action_array_sha256": "6" * 64,
+            }
+        ],
+    }
+    projection = project_twin_fidelity(selected, observatory)
+    assert projection["available"] is False
+    assert projection["reason"] == "action_hash_not_in_receipt_bound_observatory"
+    assert "episode-ID fallback is prohibited" in projection["detail"]
+    assert projection["chain"] == []
+    assert projection["hypotheses"] == []
+    assert {row["status"] for row in projection["domains"]} == {"missing"}
+
+
+def test_episode_id_fallback_is_explicit_when_selected_action_hash_is_absent() -> None:
+    selected = {**_episode(), "action_array_sha256": None, "id": "sail-episode"}
+    projection = project_twin_fidelity(selected, _observatory())
+    assert projection["available"] is True
+    assert (
+        projection["episode"]["action_binding"]
+        == "episode_id_only_action_hash_unavailable"
+    )
+    assert "episode ID only; action hash unavailable" in projection["episode"][
+        "proof_label"
+    ]
+
+
 def test_invalid_observatory_receipt_fails_projection_closed() -> None:
     with patch(
         "sim2claw.studio_twin_fidelity.load_studio_observatory",

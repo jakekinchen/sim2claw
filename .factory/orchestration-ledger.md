@@ -15,13 +15,18 @@
 - Proof target: six ordered twin-gap domains with explicit observed, missing,
   and failed states; action-bound SAIL causal evidence; read-only authority;
   desktop/mobile/keyboard/console verification; unchanged S2 evidence.
-- Status: implementation and short gates pass; awaiting exact-head full suite
-  and independent read/test/visual review.
+- Status: proof-binding correction and corrected focused/short gates pass;
+  exact-head full suite and independent read/test/visual review remain pending.
 - Authority: no simulator or adapter replay, provider call, training,
   promotion, measurement acquisition, physical capture, gateway, robot
   motion, VideoSim work, or push.
-- Evidence checkpoint: focused/static `61 + 2 subtests`; SAIL fast-contract
-  `36`, synthetic-golden `58`, integration `82 + 2 subtests`; all proof tiers
+- Excluded checkpoint: the pre-correction short gates passed, but are not final
+  evidence. The first full suite at `ddb97a1` was stopped at 2% and its orphaned
+  lease/log are preserved under
+  `outputs/sail/studio-twin-fidelity-test-receipts/full-repository/`.
+- Corrected checkpoint: focused/static `63 + 2 subtests`; SAIL fast-contract
+  `36`, synthetic-golden `58`, integration `84 + 2 subtests`. Exact selected
+  action hashes no longer fall back to episode ID. Every final proof tier was
   bracketed by `11/11` unchanged S2 hashes and `1 event / 4 replays / 0
   measurement trials`.
 
