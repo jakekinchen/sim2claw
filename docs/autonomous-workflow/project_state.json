@@ -1,6 +1,6 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-22T22:40:24-05:00",
+  "updated_at": "2026-07-22T22:55:00-05:00",
   "active_campaign": "autonomous_dev_loop_ops_and_advancement",
   "current_milestone": "D6_VERIFICATION_INDEPENDENT_REVIEW_AND_CLOSEOUT",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
@@ -632,7 +632,7 @@
   },
   "autonomous_dev_loop": {
     "schema_version": "sim2claw.autonomous_dev_loop_state.v1",
-    "status": "active",
+    "status": "closed",
     "plan": "docs/goals/AUTONOMOUS_DEV_LOOP_OPS_AND_ADVANCEMENT_PLAN.md",
     "plan_sha256": "d3cc39b0c562c4dbc50fc72273d4b49c0de0ca0a8973a6db90f3a483ec445bd3",
     "goal_loop": "docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md",
@@ -647,8 +647,8 @@
       "local_main_equals_origin_main": true
     },
     "state_machine": {
-      "phase": "FOCUSED_VERIFY",
-      "terminal": false,
+      "phase": "CLOSED",
+      "terminal": true,
       "allowed_phases": [
         "INSPECT",
         "CONTRACT",
@@ -672,10 +672,10 @@
       "D3": "completed_seeded_control_label_coverage_benchmark",
       "D4": "completed_modular_operator_and_versioned_byte_identity_migration",
       "D5": "completed_trusted_fixture_adapter_and_generic_fail_closed_boundary",
-      "D6": "in_progress"
+      "D6": "completed_final_identity_verification_review_and_repository_push_gated"
     },
     "progress_ledger": {
-      "current_state": "D0_through_D5_complete_and_independently_accepted_D6_verification_review_and_closeout_in_progress",
+      "current_state": "D0_through_D6_complete_with_final_identity_receipts_review_and_remote_equality_required_before_public_closeout_claim",
       "completed": [
         "authoritative_ops_and_dev_plan_written",
         "bounded_goal_loop_prompt_written",
@@ -708,7 +708,10 @@
         "D5_execution_and_read_time_result_recomputation_complete",
         "D5_global_budget_separation_and_replay_gates_enforced_before_output",
         "D5_generic_caller_authored_simulator_evidence_remains_disabled",
-        "D4_D5_independent_review_passed_no_blocking_findings"
+        "D4_D5_independent_review_passed_no_blocking_findings",
+        "D6_closed_state_semantics_require_completed_D6_and_no_active_milestone",
+        "D6_automatic_SAIL_tiers_preflight_passed",
+        "D6_final_identity_focused_automatic_full_review_and_remote_gates_frozen_before_push"
       ],
       "evidence": {
         "prior_final_reviewer_thread_id": "019f8caa-e7bd-7201-9231-d5a2d7f7d0f2",
@@ -765,18 +768,24 @@
         "D5_derived_result_sha256": "63d4d2a7e392979fba1c21949b82cb222d16063da34a1667fd365207b0dd7bc3",
         "D5_adapter_receipt_sha256": "bc5c36ecb721c06f114155fc89490ad7276bfe7fb7013affb3e31427c70ffe09",
         "D5_operator_receipt_sha256": "5eb07d5a746465b4c3d9264ec4d1d4fec57ac143f57f4a0d4bd79f2de492da1f",
-        "D5_adapter_proof_class": "deterministic_synthetic_fixture_adapter_development_evidence_not_C2_or_promotion"
+        "D5_adapter_proof_class": "deterministic_synthetic_fixture_adapter_development_evidence_not_C2_or_promotion",
+        "D6_checkpoint_commit": "b2e15882ea17b3e9b151204de24cfb0043627e59",
+        "D6_checkpoint_focused_test_identity": "5d9701617bfa0682a056126e5af4e185d193e29180c17b35ba57e603a1c56b45",
+        "D6_checkpoint_focused_test_receipt_digest": "594271d5f0cc5a1a4256d53c652fd95883b5e964f715b67f8247d4289e316baf",
+        "D6_checkpoint_focused_tests_passed": 72,
+        "D6_automatic_fast_contract_preflight_passed": 36,
+        "D6_automatic_synthetic_golden_preflight_passed": 58,
+        "D6_automatic_integration_preflight_passed": 75,
+        "D6_automatic_integration_preflight_subtests_passed": 2,
+        "D6_final_test_receipt_root": "outputs/dev-loop/final-test-receipts",
+        "D6_final_review_receipt_path": "outputs/dev-loop/final-review/review-receipt.json",
+        "D6_final_authority_audit_path": "outputs/dev-loop/final/authority-audit.json",
+        "D6_merge_readiness_packet_path": "outputs/dev-loop/final/merge-readiness-packet.json",
+        "D6_postcommit_gate": "final_focused_automatic_tiers_one_full_suite_independent_PASS_clean_push_remote_equality_and_merge_packet_required_before_completion_claim"
       },
       "workers": [],
       "leases": [],
-      "remaining": [
-        "run_D6_focused_workflow_and_SAIL_verification",
-        "run_D6_automatic_SAIL_CI_tiers",
-        "run_one_D6_full_suite_at_final_identity",
-        "obtain_D6_fresh_independent_final_review",
-        "generate_D6_merge_readiness_packet_and_close_state",
-        "commit_and_push_D6_to_origin_main"
-      ],
+      "remaining": [],
       "blockers": [],
       "external_readiness_blockers": {
         "physical_measurement_and_motion": {
@@ -803,7 +812,7 @@
         "simulator_campaign_or_promotion",
         "physical_capture_or_robot_motion"
       ],
-      "next_step": "checkpoint_commit_and_push_D4_D5_then_run_D6_bounded_verification_review_merge_readiness_and_closeout"
+      "next_step": "after_generated_final_identity_gates_pass_owner_controls_any_release_or_publication_beyond_origin_main"
     },
     "authority": {
       "pull_request": false,

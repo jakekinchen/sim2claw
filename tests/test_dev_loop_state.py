@@ -11,6 +11,7 @@ from sim2claw.dev_loop.state import (
     audit_dev_loop_authority,
     render_current_ledger_block,
     update_current_ledger_block,
+    validate_dev_loop_state,
 )
 from sim2claw.learning_factory_artifacts import sha256_file
 
@@ -175,6 +176,35 @@ def test_milestone_drift_and_multiple_active_milestones_fail(tmp_path: Path) -> 
     )
     with pytest.raises(DevLoopStateError, match="exactly one"):
         audit_dev_loop_authority(root, git_snapshot=_snapshot())
+
+
+def test_closed_state_requires_completed_d6_and_no_active_milestone(
+    tmp_path: Path,
+) -> None:
+    root, state = _repo(tmp_path)
+    state["current_milestone"] = "D6_VERIFICATION_AND_CLOSEOUT"
+    dev_state = state["autonomous_dev_loop"]
+    dev_state["status"] = "closed"
+    dev_state["milestones"] = {
+        "D0": "completed",
+        "D1": "completed",
+        "D2": "completed",
+        "D3": "completed",
+        "D4": "completed",
+        "D5": "completed",
+        "D6": "completed_final_verification_and_review",
+    }
+    validated = validate_dev_loop_state(state, repo_root=root)
+    assert validated["autonomous_dev_loop"]["status"] == "closed"
+
+    dev_state["milestones"]["D6"] = "pending"
+    with pytest.raises(DevLoopStateError, match="requires completed D6"):
+        validate_dev_loop_state(state, repo_root=root)
+
+    dev_state["milestones"]["D6"] = "completed_final_verification_and_review"
+    dev_state["milestones"]["D5"] = "in_progress"
+    with pytest.raises(DevLoopStateError, match="requires completed D6"):
+        validate_dev_loop_state(state, repo_root=root)
 
 
 def test_ledger_render_is_idempotent_and_repairs_only_generated_block(

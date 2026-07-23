@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `AUTONOMOUS DEVELOPMENT LOOP OPERATIONS AND ADVANCEMENT ACTIVE; PRIOR SAIL OPERATOR INDEPENDENTLY REVIEWED AND MERGE-READY; B2 SEARCH PAUSED`
+Status: `AUTONOMOUS DEVELOPMENT LOOP OPERATIONS AND ADVANCEMENT CLOSED SUBJECT TO GENERATED FINAL-IDENTITY RECEIPTS BEFORE PUSH; B2 SEARCH PAUSED`
 
 ## Active autonomous development operations and advancement
 
@@ -17,7 +17,7 @@ Authoritative plan:
 Active goal-loop prompt:
 [`docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md`](docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md).
 
-Current milestone: **D6 — verification, independent final review, and closeout**.
+Current milestone: **D6 — completed after generated final-identity verification, independent review, and remote-equality gates pass**.
 D1-D3 are independently accepted after two corrective review cycles and a
 final `PASS`:
 canonical current-state drift is unique and fail closed; role, receipt, merge,
@@ -41,6 +41,11 @@ Read-only physical readiness is negative: the expected SO-101 leader/follower
 ports and calibrations are absent, the only `/dev/cu.usbmodem*` candidate is an
 ignored billboard, no usable camera/USB device was enumerated, and no
 synchronized jaw-force or rubber-deformation/profile sensor is present.
+The committed closeout state is fail closed: no completion claim or push is
+valid until its generated D6 focused, automatic-tier, one full-suite, fresh
+review, authority-audit, and merge-readiness receipts all pass at the exact
+final commit. Those generated receipts avoid an impossible commit self-hash.
+
 Physical capture and robot motion remain blocked by hardware/calibration
 readiness; do not open the gateway or manufacture measurement evidence.
 

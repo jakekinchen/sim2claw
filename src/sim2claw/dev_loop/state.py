@@ -80,6 +80,12 @@ def _active_milestone(dev_state: Mapping[str, Any]) -> str:
     if not isinstance(milestones, dict):
         raise DevLoopStateError("autonomous_dev_loop milestones must be an object")
     active = [str(name) for name, status in milestones.items() if status == "in_progress"]
+    if dev_state.get("status") == "closed":
+        if active or not str(milestones.get("D6", "")).startswith("completed"):
+            raise DevLoopStateError(
+                "closed development loop requires completed D6 and no active milestone"
+            )
+        return "D6"
     if len(active) != 1:
         raise DevLoopStateError("exactly one development-loop milestone must be in_progress")
     return active[0]
