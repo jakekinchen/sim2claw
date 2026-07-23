@@ -17,15 +17,19 @@ Authoritative plan:
 Active goal-loop prompt:
 [`docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md`](docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md).
 
-Current milestone: **D4 — SAIL maintenance hardening in progress**. D1-D3 are
-independently accepted after two corrective review cycles and a final `PASS`:
+Current milestone: **D6 — verification, independent final review, and closeout**.
+D1-D3 are independently accepted after two corrective review cycles and a
+final `PASS`:
 canonical current-state drift is unique and fail closed; role, receipt, merge,
 and actual-child process lifecycles are bound; exact tests execute once and
 reuse only the matching receipt; and DevLoopBench reports configured
-control-label coverage with its limited proof class explicit.
+control-label coverage with its limited proof class explicit. D4-D5 are also
+independently accepted: the retained operator is modular with a versioned,
+byte-identical non-receipt migration, and the registered development fixture
+adapter derives and rereads its own result behind global abstention gates.
 
 The reviewed continuation was fast-forwarded with owner authorization. Local
-`main` and `origin/main` are equal at `1ee6b7d`; D0-D6 execute on `main` with
+`main` and `origin/main` were equal at the D1-D3 checkpoint `6e6abd5`; D0-D6 execute on `main` with
 scoped commit/push authority. Do not rewrite or fork that completed history,
 open a provider or paid-compute lane, train, run a simulator campaign, capture
 physical data, access a robot gateway, or command motion.
@@ -82,21 +86,24 @@ Closeout ledger (2026-07-22):
 - Remaining: owner decision on PR/merge. A synthetic,
   packet-bound, zero-device-I/O result lane is implemented; any physical
   measurement campaign still requires separate capture and motion authority.
-- Control boundary: generic simulator-result admission is disabled without a
-  trusted deterministic adapter. Persistent budgets use one ignored canonical
+- Control boundary: generic caller-authored simulator-result admission is
+  disabled. One registered generic development fixture adapter independently
+  derives and rereads mutation, response, likelihood, factor, and consequence
+  evidence; it contains no C2/task ID whitelist and grants no C2 campaign or
+  promotion authority. Persistent budgets use one ignored canonical
   campaign/config-keyed state path independent of output; the exported receipt
-  verifier rejects artifact, authority, and stale-state tamper.
+  verifier rejects artifact, authority, stale-state, and adapter-identity drift.
 - Blockers: synchronized jaw-force and rubber-deformation/profile evidence is
   unavailable. This is the accepted terminal measurement-acquisition outcome;
   it grants no capture or robot authority.
 - Final review: fresh reviewer task `019f8caa-e7bd-7201-9231-d5a2d7f7d0f2`
   returned `merge-ready; no blocking correctness findings`; six targeted tests
   passed against pushed commit `1ee6b7d`.
-- Next step: retain the merge-ready branch while the active development-loop
-  hardening goal proceeds. Do not resume B2 or open a new C2 family; retain the
-  sealed acquisition packet. The control plane has no intervention executor.
-  Only the locally recomputed synthetic measurement receipt lane is currently
-  admissible.
+- Next step: finish D6 verification and final review on `main`. Do not resume B2
+  or open a new C2 family; retain the sealed acquisition packet. The only
+  simulator executor is the development fixture adapter, which is not a C2
+  adapter or campaign authorization. The locally recomputed synthetic
+  measurement lane remains separately admissible.
 
 ## Paused B2 compliant-pad evaluator win loop
 

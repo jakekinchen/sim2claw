@@ -2,13 +2,24 @@ from __future__ import annotations
 
 import copy
 import builtins
+import inspect
 import json
+import multiprocessing
+import shutil
 from pathlib import Path
 
 import pytest
+from jsonschema import Draft202012Validator
 
-import sim2claw.sail.live_operator as live_operator_module
+import sim2claw.sail.live_runtime as live_runtime_module
 from sim2claw.learning_factory_artifacts import canonical_digest, sha256_file
+from sim2claw.sail.live_adapters import (
+    ADAPTER_CONTRACT_SCHEMA,
+    FIXTURE_ADAPTER_ID,
+    FIXTURE_SCHEMA,
+    build_trusted_adapter_request,
+    verify_embedded_trusted_adapter_receipt,
+)
 from sim2claw.sail.live_operator import (
     LiveOperatorError,
     apply_live_sparse_closure,
@@ -17,6 +28,7 @@ from sim2claw.sail.live_operator import (
     resolve_live_campaign_state_path,
     run_live_operator,
     update_discrete_structure_posterior,
+    verify_live_operator_migration_receipt,
     verify_live_operator_receipt,
 )
 from sim2claw.sail.live_evidence import (
@@ -30,11 +42,261 @@ from sim2claw.sail.live_evidence import (
     verify_measurement_evaluator_receipt,
     verify_simulator_evaluator_receipt,
 )
+from sim2claw.sail.live_state import (
+    commit_prepared_state,
+    locked_campaign_state,
+    prepare_admitted_result,
+)
 from sim2claw.sail.loop_closure import LoopClosureError
 from sim2claw.sail.posterior import PosteriorError
 
 
 ACTION_SHA = "a" * 64
+_LOCK_BUDGET = {
+    "maximum_interventions": 1,
+    "maximum_anchor_replays": 1,
+    "maximum_measurement_trials": 1,
+    "used_interventions": 0,
+    "used_anchor_replays": 0,
+    "used_measurement_trials": 0,
+}
+
+
+def _hold_campaign_lock(
+    state_root: str,
+    entered: object,
+    release: object,
+) -> None:
+    with locked_campaign_state(
+        Path(state_root),
+        campaign_id="lock-test",
+        config_digest="c" * 64,
+        initial_budget=_LOCK_BUDGET,
+    ):
+        entered.set()  # type: ignore[attr-defined]
+        release.wait(5)  # type: ignore[attr-defined]
+
+
+@pytest.fixture(autouse=True)
+def cleanup_test_generated_live_campaign_state() -> object:
+    repo_root = Path(__file__).resolve().parents[1]
+    roots = (
+        repo_root / "outputs/sail/test-live-campaigns",
+        repo_root / "outputs/sail/live-campaign-state-v1",
+    )
+    before = {
+        root: {path.resolve() for path in root.iterdir()} if root.is_dir() else set()
+        for root in roots
+    }
+    yield
+    for root in roots:
+        if not root.is_dir():
+            continue
+        for path in root.iterdir():
+            if path.resolve() in before[root]:
+                continue
+            if path.is_dir():
+                shutil.rmtree(path)
+            else:
+                path.unlink()
+
+
+def test_public_operator_api_has_no_disabled_simulator_receipt_parameter() -> None:
+    parameters = inspect.signature(run_live_operator).parameters
+    assert "simulator_evaluator_receipt_path" not in parameters
+    assert "trusted_adapter_request_path" in parameters
+
+
+def test_modularization_migration_receipt_binds_byte_identical_outputs(
+    tmp_path: Path,
+) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    path = (
+        repo_root
+        / "configs/sail/migrations/live_operator_modularization_v3.json"
+    )
+    verified = verify_live_operator_migration_receipt(path)
+    assert verified["retained_outputs_byte_identical"] is True
+    payload = json.loads(path.read_text())
+    payload["output_sha256"]["after"]["ablation.json"] = "f" * 64
+    unsigned = {key: value for key, value in payload.items() if key != "migration_digest"}
+    payload["migration_digest"] = canonical_digest(unsigned)
+    changed = _write(tmp_path / "changed-migration.json", payload)
+    with pytest.raises(LiveOperatorError, match="changed retained outputs"):
+        verify_live_operator_migration_receipt(changed)
+
+
+def test_trusted_adapter_contract_request_and_fixture_match_frozen_schemas(
+    tmp_path: Path,
+) -> None:
+    path, config, fixture_path, request_path = _trusted_adapter_campaign(tmp_path)
+    repo_root = Path(__file__).resolve().parents[1]
+    cases = (
+        (
+            "trusted_adapter_fixture_v1.json",
+            json.loads(fixture_path.read_text()),
+        ),
+        (
+            "trusted_adapter_request_v1.json",
+            json.loads(request_path.read_text()),
+        ),
+        (
+            "trusted_fixture_adapter_contract_v1.json",
+            next(
+                row["trusted_adapter"]
+                for row in config["interventions"]
+                if row["kind"] == "simulator_family"
+            ),
+        ),
+    )
+    assert path.is_file()
+    assert json.loads(fixture_path.read_text())["schema_version"] == FIXTURE_SCHEMA
+    for schema_name, instance in cases:
+        schema = json.loads(
+            (repo_root / "configs/sail/schemas" / schema_name).read_text()
+        )
+        Draft202012Validator(schema).validate(instance)
+
+
+def test_trusted_adapter_request_builder_rejects_fixture_outside_repository(
+    tmp_path: Path,
+) -> None:
+    path, config, _, _ = _trusted_adapter_campaign(tmp_path)
+    contract = load_live_campaign_contract(path)
+    selected = next(
+        row.payload
+        for row in contract.interventions
+        if row.kind == "simulator_family"
+    )
+    outside_fixture = _write(
+        tmp_path / "outside-fixture.json",
+        {
+            "schema_version": FIXTURE_SCHEMA,
+            "fixture_id": "outside-repository",
+            "inputs": {"gain": 0.4, "signal": 1.0},
+            "authority": config["authority"],
+        },
+    )
+    with pytest.raises(LiveOperatorError, match="escaped the repository"):
+        build_trusted_adapter_request(
+            adapter_id=FIXTURE_ADAPTER_ID,
+            contract=contract,
+            selected_intervention=selected,
+            fixture_path=outside_fixture,
+            evaluator_identity=build_live_evaluator_identity(contract),
+            authority=config["authority"],
+        )
+
+
+def test_runtime_adapter_validation_matches_numeric_json_schemas(
+    tmp_path: Path,
+) -> None:
+    path, config, _, _ = _trusted_adapter_campaign(tmp_path)
+    changed = copy.deepcopy(config)
+    simulator = next(
+        row for row in changed["interventions"] if row["kind"] == "simulator_family"
+    )
+    simulator["trusted_adapter"]["mutation"]["value"] = "2.0"
+    changed_path = _write(path.parent / "string-mutation.json", changed)
+    string_request = _trusted_request_for_campaign(
+        changed_path,
+        changed,
+        fixture_path=Path(__file__).resolve().parent
+        / "fixtures/sail/trusted_adapter_fixture_v1.json",
+        name="string-mutation-request.json",
+    )
+    with pytest.raises(LiveOperatorError, match="not a JSON number"):
+        run_live_operator(
+            changed_path,
+            output_root=tmp_path / "string-mutation-output",
+            trusted_adapter_request_path=string_request,
+        )
+
+    fixture = _write(
+        path.parent / "boolean-input-fixture.json",
+        {
+            "schema_version": FIXTURE_SCHEMA,
+            "fixture_id": "boolean-input",
+            "inputs": {"gain": True, "signal": 1.0},
+            "authority": config["authority"],
+        },
+    )
+    boolean_request = _trusted_request_for_campaign(
+        path,
+        config,
+        fixture_path=fixture,
+        name="boolean-input-request.json",
+    )
+    with pytest.raises(LiveOperatorError, match="not a JSON number"):
+        run_live_operator(
+            path,
+            output_root=tmp_path / "boolean-input-output",
+            trusted_adapter_request_path=boolean_request,
+        )
+
+
+def test_campaign_state_lock_serializes_two_processes(tmp_path: Path) -> None:
+    context = multiprocessing.get_context("fork")
+    entered_first = context.Event()
+    entered_second = context.Event()
+    release_first = context.Event()
+    release_second = context.Event()
+    state_root = str(tmp_path / "shared-state")
+    first = context.Process(
+        target=_hold_campaign_lock,
+        args=(state_root, entered_first, release_first),
+    )
+    second = context.Process(
+        target=_hold_campaign_lock,
+        args=(state_root, entered_second, release_second),
+    )
+    first.start()
+    assert entered_first.wait(5)
+    second.start()
+    assert not entered_second.wait(0.25)
+    release_first.set()
+    assert entered_second.wait(5)
+    release_second.set()
+    first.join(5)
+    second.join(5)
+    assert first.exitcode == 0
+    assert second.exitcode == 0
+
+
+def test_interrupted_state_replace_leaves_canonical_bytes_unchanged(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    state_root = tmp_path / "interrupted-state"
+    with locked_campaign_state(
+        state_root,
+        campaign_id="interrupt-test",
+        config_digest="d" * 64,
+        initial_budget=_LOCK_BUDGET,
+    ) as (state_path, state):
+        admission = {
+            "lane": "offline_measurement",
+            "execution_id": "interrupt-execution",
+            "anchor_replay_ids": [],
+            "measurement_trial_ids": ["interrupt-trial"],
+            "receipt_sha256": "a" * 64,
+            "receipt": {"receipt_digest": "b" * 64},
+            "result_artifact": {"sha256": "c" * 64},
+        }
+        prepared = prepare_admitted_result(state, admission)
+        before = state_path.read_bytes()
+        original_replace = Path.replace
+
+        def interrupted_replace(path: Path, target: Path) -> Path:
+            if Path(target) == state_path:
+                raise OSError("simulated interruption before atomic replace")
+            return original_replace(path, target)
+
+        monkeypatch.setattr(Path, "replace", interrupted_replace)
+        with pytest.raises(OSError, match="simulated interruption"):
+            commit_prepared_state(state_path, state, prepared)
+        assert state_path.read_bytes() == before
+        for temporary in state_path.parent.glob("campaign_state.json.*.tmp"):
+            temporary.unlink()
 
 
 def test_live_metric_rename_does_not_mutate_frozen_phase_one_acquisition_contracts() -> None:
@@ -381,6 +643,78 @@ def _campaign(tmp_path: Path) -> tuple[Path, dict]:
     return config_path, config
 
 
+def _trusted_adapter_campaign(
+    tmp_path: Path,
+) -> tuple[Path, dict, Path, Path]:
+    path, original = _campaign(tmp_path)
+    config = copy.deepcopy(original)
+    simulator = next(
+        row for row in config["interventions"] if row["kind"] == "simulator_family"
+    )
+    measurement = next(
+        row
+        for row in config["interventions"]
+        if row["kind"] == "measurement_acquisition"
+    )
+    mechanism_ids = [row["mechanism_id"] for row in config["mechanisms"]]
+    simulator["cost"] = 0.0
+    simulator["risk"] = 0.0
+    simulator["gate_relevance"] = 1.0
+    simulator["compensation_debt_reduction"] = 1.0
+    simulator["predicted_signatures"] = {
+        mechanism_ids[0]: {"contact_response": {"normalized_response": 0.8}},
+        mechanism_ids[1]: {"contact_response": {"normalized_response": 0.1}},
+    }
+    simulator["trusted_adapter"] = {
+        "schema_version": ADAPTER_CONTRACT_SCHEMA,
+        "adapter_id": FIXTURE_ADAPTER_ID,
+        "mutation": {"field": "gain", "operation": "scale", "value": 2.0},
+        "response": {"operation": "product", "fields": ["gain", "signal"]},
+        "evaluation": {"target": 0.8, "pass_tolerance": 0.01},
+    }
+    measurement["cost"] = 1.0
+    measurement["risk"] = 1.0
+    measurement["gate_relevance"] = 0.0
+    measurement["compensation_debt_reduction"] = 0.0
+    measurement["predicted_signatures"] = {
+        mechanism_ids[0]: {"force_deformation_coupling": {"normalized_response": 0.55}},
+        mechanism_ids[1]: {"force_deformation_coupling": {"normalized_response": 0.45}},
+    }
+    path = _write(path.parent / "trusted-adapter-campaign.json", config)
+    repo_root = Path(__file__).resolve().parents[1]
+    fixture_path = (
+        repo_root / "tests/fixtures/sail/trusted_adapter_fixture_v1.json"
+    )
+    request_path = _trusted_request_for_campaign(
+        path, config, fixture_path=fixture_path
+    )
+    return path, config, fixture_path, request_path
+
+
+def _trusted_request_for_campaign(
+    path: Path,
+    config: dict,
+    *,
+    fixture_path: Path,
+    name: str = "trusted-adapter-request.json",
+) -> Path:
+    contract = load_live_campaign_contract(path)
+    selected = next(
+        row.payload
+        for row in contract.interventions
+        if row.intervention_id == "probe-simulator-arbitrary"
+    )
+    request = build_trusted_adapter_request(
+        adapter_id=FIXTURE_ADAPTER_ID,
+        contract=contract,
+        selected_intervention=selected,
+        fixture_path=fixture_path,
+        evaluator_identity=build_live_evaluator_identity(contract),
+        authority=config["authority"],
+    )
+    return _write(path.parent / name, request)
+
+
 def _measurement_raw(
     path: Path,
     *,
@@ -659,6 +993,274 @@ def test_end_to_end_operator_abstains_for_missing_discriminating_measurement(
     receipt = json.loads((output_root / "receipt.json").read_text())
     unsigned = {key: value for key, value in receipt.items() if key != "receipt_digest"}
     assert receipt["receipt_digest"] == canonical_digest(unsigned)
+
+
+def test_selected_simulator_abstains_without_a_bound_trusted_request(
+    tmp_path: Path,
+) -> None:
+    path, _, _, _ = _trusted_adapter_campaign(tmp_path)
+    result = run_live_operator(path, output_root=tmp_path / "no-adapter-request")
+    assert result["selected_intervention"] == "probe-simulator-arbitrary"
+    assert result["verdict"] == "abstain_no_bound_intervention_result"
+    assert result["budget"]["used_interventions"] == 0
+    assert result["budget"]["used_anchor_replays"] == 0
+
+
+@pytest.mark.parametrize(
+    ("gate", "verdict"),
+    [
+        ("intervention_budget", "abstain_global_budget_exhausted"),
+        ("anchor_budget", "abstain_global_budget_exhausted"),
+        ("signature_separation", "abstain_non_identifying_simulator_intervention"),
+    ],
+)
+def test_trusted_adapter_abstains_before_execution_when_a_global_gate_is_closed(
+    tmp_path: Path, gate: str, verdict: str
+) -> None:
+    path, config, fixture_path, _ = _trusted_adapter_campaign(tmp_path)
+    changed = copy.deepcopy(config)
+    if gate == "intervention_budget":
+        changed["budget"]["used_interventions"] = changed["budget"][
+            "maximum_interventions"
+        ]
+    elif gate == "anchor_budget":
+        changed["budget"]["used_anchor_replays"] = changed["budget"][
+            "maximum_anchor_replays"
+        ]
+    else:
+        changed["acquisition"]["minimum_predicted_signature_separation"] = 0.8
+    changed_path = _write(path.parent / f"closed-{gate}.json", changed)
+    request_path = _trusted_request_for_campaign(
+        changed_path,
+        changed,
+        fixture_path=fixture_path,
+        name=f"closed-{gate}-request.json",
+    )
+    output = tmp_path / f"closed-{gate}-output"
+    result = run_live_operator(
+        changed_path,
+        output_root=output,
+        trusted_adapter_request_path=request_path,
+    )
+    assert result["verdict"] == verdict
+    assert not (output / "trusted_adapter").exists()
+    assert result["budget"] == changed["budget"]
+
+
+def test_trusted_adapter_derives_and_admits_one_simulator_result(
+    tmp_path: Path,
+) -> None:
+    path, _, _, request_path = _trusted_adapter_campaign(tmp_path)
+    output = tmp_path / "trusted-adapter-output"
+    result = run_live_operator(
+        path,
+        output_root=output,
+        trusted_adapter_request_path=request_path,
+    )
+    assert result["selected_intervention"] == "probe-simulator-arbitrary"
+    assert result["verdict"] == "evaluator_pass"
+    assert result["budget"]["used_interventions"] == 1
+    assert result["budget"]["used_anchor_replays"] == 1
+    assert result["budget"]["used_measurement_trials"] == 0
+    assert result["promotion"] is False
+    assert result["training_admitted"] is False
+    assert result["physical_authority"] is False
+    summary = json.loads((output / "admitted_evaluator_receipt.json").read_text())
+    assert summary["lane"] == "trusted_simulator_adapter"
+    assert summary["adapter_id"] == FIXTURE_ADAPTER_ID
+    assert summary["adapter_receipt"]["actual_mutations"] == [
+        {
+            "after": 0.8,
+            "before": 0.4,
+            "field": "gain",
+            "operand": 2.0,
+            "operation": "scale",
+        }
+    ]
+    assert summary["adapter_receipt"]["consequence"]["derived_response"] == 0.8
+    verify_live_operator_receipt(output / "receipt.json")
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (lambda request: request.__setitem__("result", {"evaluator_passed": True}), "field set"),
+        (lambda request: request.__setitem__("config_digest", "f" * 64), "identity"),
+        (
+            lambda request: request["evaluator_identity"].__setitem__(
+                "evaluator_id", "forged-evaluator"
+            ),
+            "identity",
+        ),
+        (lambda request: request["fixture"].__setitem__("sha256", "f" * 64), "source identity"),
+        (lambda request: request.__setitem__("adapter_id", "unregistered-adapter"), "registered"),
+        (lambda request: request["authority"].__setitem__("training", True), "widened authority"),
+    ],
+)
+def test_trusted_adapter_request_rejects_substitution_result_and_authority_tamper(
+    tmp_path: Path, mutation: object, message: str
+) -> None:
+    path, _, _, request_path = _trusted_adapter_campaign(tmp_path)
+    request = json.loads(request_path.read_text())
+    mutation(request)  # type: ignore[operator]
+    request.pop("request_digest")
+    request["request_digest"] = canonical_digest(request)
+    changed_request = _write(path.parent / "changed-adapter-request.json", request)
+    with pytest.raises(LiveOperatorError, match=message):
+        run_live_operator(
+            path,
+            output_root=tmp_path / "rejected-adapter-output",
+            trusted_adapter_request_path=changed_request,
+        )
+
+
+def test_trusted_adapter_request_is_single_use_across_output_roots(
+    tmp_path: Path,
+) -> None:
+    path, config, fixture_path, _ = _trusted_adapter_campaign(tmp_path)
+    changed = copy.deepcopy(config)
+    changed["budget"]["maximum_interventions"] = 2
+    path = _write(path.parent / "two-intervention-budget.json", changed)
+    request_path = _trusted_request_for_campaign(
+        path,
+        changed,
+        fixture_path=fixture_path,
+        name="two-intervention-request.json",
+    )
+    run_live_operator(
+        path,
+        output_root=tmp_path / "trusted-first",
+        trusted_adapter_request_path=request_path,
+    )
+    with pytest.raises(LiveOperatorError, match="replay"):
+        run_live_operator(
+            path,
+            output_root=tmp_path / "trusted-second",
+            trusted_adapter_request_path=request_path,
+        )
+    assert not (tmp_path / "trusted-second" / "trusted_adapter").exists()
+
+
+def test_trusted_adapter_request_rejects_a_changed_frozen_mutation(
+    tmp_path: Path,
+) -> None:
+    path, config, _, request_path = _trusted_adapter_campaign(tmp_path)
+    changed = copy.deepcopy(config)
+    simulator = next(
+        row for row in changed["interventions"] if row["kind"] == "simulator_family"
+    )
+    simulator["trusted_adapter"]["mutation"]["value"] = 3.0
+    changed_path = _write(path.parent / "changed-mutation-campaign.json", changed)
+    with pytest.raises(LiveOperatorError, match="identity"):
+        run_live_operator(
+            changed_path,
+            output_root=tmp_path / "changed-mutation-output",
+            trusted_adapter_request_path=request_path,
+        )
+
+
+def test_live_receipt_rejects_resealed_stale_adapter_implementation_identity(
+    tmp_path: Path,
+) -> None:
+    path, _, _, request_path = _trusted_adapter_campaign(tmp_path)
+    output = tmp_path / "stale-adapter-output"
+    run_live_operator(
+        path,
+        output_root=output,
+        trusted_adapter_request_path=request_path,
+    )
+    adapter_receipt_path = output / "trusted_adapter" / "receipt.json"
+    adapter_receipt = json.loads(adapter_receipt_path.read_text())
+    adapter_receipt["adapter_identity"]["implementation"]["sha256"] = "f" * 64
+    adapter_unsigned = {
+        key: value
+        for key, value in adapter_receipt.items()
+        if key != "receipt_digest"
+    }
+    adapter_receipt["receipt_digest"] = canonical_digest(adapter_unsigned)
+    _write(adapter_receipt_path, adapter_receipt)
+
+    summary_path = output / "admitted_evaluator_receipt.json"
+    summary = json.loads(summary_path.read_text())
+    summary["adapter_identity"] = adapter_receipt["adapter_identity"]
+    summary["adapter_receipt"] = adapter_receipt
+    summary["receipt_sha256"] = sha256_file(adapter_receipt_path)
+    summary["receipt_digest"] = adapter_receipt["receipt_digest"]
+    _write(summary_path, summary)
+
+    receipt_path = output / "receipt.json"
+    receipt = json.loads(receipt_path.read_text())
+    receipt["outputs"]["admitted_evaluator_receipt"]["sha256"] = sha256_file(
+        summary_path
+    )
+    receipt["admitted_evaluator_receipt"]["receipt_sha256"] = summary[
+        "receipt_sha256"
+    ]
+    receipt["admitted_evaluator_receipt"]["receipt_digest"] = summary[
+        "receipt_digest"
+    ]
+    receipt_unsigned = {
+        key: value for key, value in receipt.items() if key != "receipt_digest"
+    }
+    receipt["receipt_digest"] = canonical_digest(receipt_unsigned)
+    _write(receipt_path, receipt)
+    with pytest.raises(LiveOperatorError, match="implementation identity"):
+        verify_live_operator_receipt(receipt_path)
+
+
+def test_adapter_verifier_rejects_a_resealed_non_derived_consequence(
+    tmp_path: Path,
+) -> None:
+    path, _, _, request_path = _trusted_adapter_campaign(tmp_path)
+    output = tmp_path / "changed-consequence-output"
+    run_live_operator(
+        path,
+        output_root=output,
+        trusted_adapter_request_path=request_path,
+    )
+    adapter_receipt_path = output / "trusted_adapter" / "receipt.json"
+    adapter_receipt = json.loads(adapter_receipt_path.read_text())
+    changed_consequence = copy.deepcopy(adapter_receipt["consequence"])
+    changed_consequence["status"] = "caller_changed_status"
+    adapter_receipt["consequence"] = changed_consequence
+    adapter_unsigned = {
+        key: value
+        for key, value in adapter_receipt.items()
+        if key != "receipt_digest"
+    }
+    adapter_receipt["receipt_digest"] = canonical_digest(adapter_unsigned)
+    _write(adapter_receipt_path, adapter_receipt)
+    summary = json.loads((output / "admitted_evaluator_receipt.json").read_text())
+    summary["adapter_receipt"] = adapter_receipt
+    summary["receipt_sha256"] = sha256_file(adapter_receipt_path)
+    summary["receipt_digest"] = adapter_receipt["receipt_digest"]
+    contract = load_live_campaign_contract(path)
+    with pytest.raises(LiveOperatorError, match="not independently derived"):
+        verify_embedded_trusted_adapter_receipt(
+            summary,
+            contract=contract,
+            expected_evaluator_identity=build_live_evaluator_identity(contract),
+            expected_consequence=changed_consequence,
+            expected_affected_factor_ids=[
+                "factor:actuator_path",
+                "factor:contact_patch",
+            ],
+            receipt_root=output,
+            repo_root=Path(__file__).resolve().parents[1],
+        )
+
+
+def test_trusted_adapter_and_measurement_receipts_are_mutually_exclusive(
+    tmp_path: Path,
+) -> None:
+    path, _, _, request_path = _trusted_adapter_campaign(tmp_path)
+    with pytest.raises(LiveOperatorError, match="only one"):
+        run_live_operator(
+            path,
+            output_root=tmp_path / "mutually-exclusive",
+            measurement_evaluator_receipt_path=tmp_path / "measurement.json",
+            trusted_adapter_request_path=request_path,
+        )
 
 
 def test_two_context_missing_invariance_vectors_are_not_imputed(tmp_path: Path) -> None:
@@ -977,7 +1579,7 @@ def test_rejected_factor_poison_leaves_state_and_budget_byte_identical(
     poisoned = copy.deepcopy(admission)
     poisoned["result"]["factor_updates"] = {"factor:arm_tracking": 0.9}
     monkeypatch.setattr(
-        live_operator_module,
+        live_runtime_module,
         "verify_measurement_evaluator_receipt",
         lambda *args, **kwargs: poisoned,
     )

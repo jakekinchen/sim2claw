@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-22T21:38:00-05:00",
+  "updated_at": "2026-07-22T22:40:24-05:00",
   "active_campaign": "autonomous_dev_loop_ops_and_advancement",
-  "current_milestone": "D4_SAIL_MAINTENANCE_HARDENING",
+  "current_milestone": "D6_VERIFICATION_INDEPENDENT_REVIEW_AND_CLOSEOUT",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_control_plane_hardening_no_new_scientific_training_or_physical_evidence",
@@ -647,7 +647,7 @@
       "local_main_equals_origin_main": true
     },
     "state_machine": {
-      "phase": "IMPLEMENT",
+      "phase": "FOCUSED_VERIFY",
       "terminal": false,
       "allowed_phases": [
         "INSPECT",
@@ -670,12 +670,12 @@
       "D1": "completed_canonical_state_and_shadow_drift_enforcement",
       "D2": "completed_role_receipt_merge_and_child_process_lifecycle",
       "D3": "completed_seeded_control_label_coverage_benchmark",
-      "D4": "in_progress",
-      "D5": "pending",
-      "D6": "pending"
+      "D4": "completed_modular_operator_and_versioned_byte_identity_migration",
+      "D5": "completed_trusted_fixture_adapter_and_generic_fail_closed_boundary",
+      "D6": "in_progress"
     },
     "progress_ledger": {
-      "current_state": "D1_through_D3_independently_accepted_D4_sail_maintenance_hardening_in_progress",
+      "current_state": "D0_through_D5_complete_and_independently_accepted_D6_verification_review_and_closeout_in_progress",
       "completed": [
         "authoritative_ops_and_dev_plan_written",
         "bounded_goal_loop_prompt_written",
@@ -699,7 +699,16 @@
         "D1_through_D3_final_bounded_rereview_passed_no_findings",
         "D1_canonical_state_and_drift_gate_complete",
         "D2_receipt_lease_reuse_and_merge_lifecycle_complete",
-        "D3_seeded_control_label_coverage_benchmark_complete"
+        "D3_seeded_control_label_coverage_benchmark_complete",
+        "D4_live_operator_split_into_contract_decision_state_receipt_runtime_and_adapter_modules",
+        "D4_disabled_public_simulator_receipt_parameter_removed",
+        "D4_retained_C2_fourteen_nonreceipt_outputs_byte_identical_under_versioned_migration",
+        "D4_generated_test_campaign_cleanup_isolated_and_verified",
+        "D5_result_free_trusted_adapter_request_and_immutable_registry_complete",
+        "D5_execution_and_read_time_result_recomputation_complete",
+        "D5_global_budget_separation_and_replay_gates_enforced_before_output",
+        "D5_generic_caller_authored_simulator_evidence_remains_disabled",
+        "D4_D5_independent_review_passed_no_blocking_findings"
       ],
       "evidence": {
         "prior_final_reviewer_thread_id": "019f8caa-e7bd-7201-9231-d5a2d7f7d0f2",
@@ -737,14 +746,36 @@
         "D1_through_D3_final_rereview_blocking_findings": 0,
         "D1_through_D3_final_rereview_nonblocking_findings": 0,
         "D1_through_D3_final_rereview_targeted_tests_passed": 9,
-        "D1_through_D3_final_rereview_edit_count": 0
+        "D1_through_D3_final_rereview_edit_count": 0,
+        "D4_live_operator_facade_lines": 50,
+        "D4_migration_receipt_path": "configs/sail/migrations/live_operator_modularization_v3.json",
+        "D4_migration_digest": "61ff4e4a697cf80c30d0bb8a65bec4b6463def4b7e1bfc12710a76c078efc172",
+        "D4_retained_before_receipt_sha256": "80e427ec673043ca875b226a73a832c45b587baa6547d87f0e38fbb82b7807cd",
+        "D4_retained_after_receipt_sha256": "b2e671761cc77cd0ac2e83c3ec7bef9cb8ea01bcee1c17da4a3956bbd41d6c34",
+        "D4_retained_nonreceipt_artifacts_byte_identical": 14,
+        "D4_D5_focused_tests_passed": 47,
+        "D4_D5_focused_test_duration_seconds": 4.12,
+        "D4_D5_reviewer_disposition": "PASS",
+        "D4_D5_reviewer_blocking_findings": 0,
+        "D4_D5_reviewer_edit_count": 0,
+        "D4_D5_authority_audit_digest": "12ec9eb157bfdcfa3b01a86d097239d2ce353443860e099170506baecaeed9e6",
+        "D5_fixture_sha256": "1ef0750503f4a5d9428be4c4e3f2614fa06b7d991041f649220074ed759f2cc7",
+        "D5_fixture_config_sha256": "b2cacaf902a99dc282286a9042a60cca8858ba3109a13f62e5c0f2bb20520cc7",
+        "D5_result_free_request_sha256": "7181028d5c2763fcb3931642023fe2d3299b2a640c2deba8c810755a05d476e0",
+        "D5_derived_result_sha256": "63d4d2a7e392979fba1c21949b82cb222d16063da34a1667fd365207b0dd7bc3",
+        "D5_adapter_receipt_sha256": "bc5c36ecb721c06f114155fc89490ad7276bfe7fb7013affb3e31427c70ffe09",
+        "D5_operator_receipt_sha256": "5eb07d5a746465b4c3d9264ec4d1d4fec57ac143f57f4a0d4bd79f2de492da1f",
+        "D5_adapter_proof_class": "deterministic_synthetic_fixture_adapter_development_evidence_not_C2_or_promotion"
       },
       "workers": [],
       "leases": [],
       "remaining": [
-        "implement_D4_sail_maintenance_hardening",
-        "implement_D5_trusted_deterministic_adapter_boundary",
-        "complete_D6_verification_review_and_closeout"
+        "run_D6_focused_workflow_and_SAIL_verification",
+        "run_D6_automatic_SAIL_CI_tiers",
+        "run_one_D6_full_suite_at_final_identity",
+        "obtain_D6_fresh_independent_final_review",
+        "generate_D6_merge_readiness_packet_and_close_state",
+        "commit_and_push_D6_to_origin_main"
       ],
       "blockers": [],
       "external_readiness_blockers": {
@@ -772,7 +803,7 @@
         "simulator_campaign_or_promotion",
         "physical_capture_or_robot_motion"
       ],
-      "next_step": "checkpoint_commit_and_push_D1_through_D3_then_implement_D4"
+      "next_step": "checkpoint_commit_and_push_D4_D5_then_run_D6_bounded_verification_review_merge_readiness_and_closeout"
     },
     "authority": {
       "pull_request": false,

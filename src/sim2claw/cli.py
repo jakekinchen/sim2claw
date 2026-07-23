@@ -367,6 +367,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="optional sealed-packet-bound offline measurement evaluator receipt",
     )
+    sail_live_operator.add_argument(
+        "--trusted-adapter-request",
+        type=Path,
+        help="optional result-free request for a registered deterministic simulator adapter",
+    )
 
     sail_benchmark = subparsers.add_parser(
         "sail-compile-benchmark",
@@ -1152,6 +1157,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.config,
                 output_root=args.output,
                 measurement_evaluator_receipt_path=args.measurement_evaluator_receipt,
+                trusted_adapter_request_path=args.trusted_adapter_request,
             )
         except SailContractError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sim2claw.sail_trusted_adapter_request.v1",
+  "additionalProperties": false,
+  "properties": {
+    "action_sha256": {"pattern": "^[0-9a-f]{64}$", "type": "string"},
+    "adapter_id": {"const": "fixture_deterministic_v1"},
+    "authority": {
+      "additionalProperties": {"const": false},
+      "minProperties": 1,
+      "type": "object"
+    },
+    "campaign_id": {"minLength": 1, "type": "string"},
+    "config_digest": {"pattern": "^[0-9a-f]{64}$", "type": "string"},
+    "evaluator_identity": {"minProperties": 1, "type": "object"},
+    "fixture": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {"minLength": 1, "type": "string"},
+        "sha256": {"pattern": "^[0-9a-f]{64}$", "type": "string"}
+      },
+      "required": ["path", "sha256"],
+      "type": "object"
+    },
+    "intervention_set_digest": {"pattern": "^[0-9a-f]{64}$", "type": "string"},
+    "request_digest": {"pattern": "^[0-9a-f]{64}$", "type": "string"},
+    "schema_version": {"const": "sim2claw.sail_trusted_adapter_request.v1"},
+    "selected_intervention": {"minLength": 1, "type": "string"}
+  },
+  "required": [
+    "schema_version",
+    "adapter_id",
+    "campaign_id",
+    "config_digest",
+    "selected_intervention",
+    "intervention_set_digest",
+    "action_sha256",
+    "evaluator_identity",
+    "fixture",
+    "authority",
+    "request_digest"
+  ],
+  "type": "object"
+}

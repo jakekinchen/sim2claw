@@ -1,0 +1,14 @@
+{
+  "authority": {
+    "physical_capture": false,
+    "robot_motion": false,
+    "self_promotion": false,
+    "training": false
+  },
+  "fixture_id": "fixture-arbitrary-no-python-id-whitelist",
+  "inputs": {
+    "gain": 0.4,
+    "signal": 1.0
+  },
+  "schema_version": "sim2claw.sail_trusted_adapter_fixture.v1"
+}

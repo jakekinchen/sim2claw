@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sim2claw.sail_trusted_adapter_fixture.v1",
+  "additionalProperties": false,
+  "properties": {
+    "authority": {
+      "additionalProperties": {"const": false},
+      "minProperties": 1,
+      "type": "object"
+    },
+    "fixture_id": {"minLength": 1, "type": "string"},
+    "inputs": {
+      "additionalProperties": {"type": "number"},
+      "minProperties": 1,
+      "type": "object"
+    },
+    "schema_version": {"const": "sim2claw.sail_trusted_adapter_fixture.v1"}
+  },
+  "required": ["schema_version", "fixture_id", "inputs", "authority"],
+  "type": "object"
+}

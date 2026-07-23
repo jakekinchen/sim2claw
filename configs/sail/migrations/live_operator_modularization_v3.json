@@ -1,0 +1,81 @@
+{
+  "api_changes": [
+    "removed_disabled_simulator_evaluator_receipt_path",
+    "added_result_free_trusted_adapter_request_path"
+  ],
+  "changed_receipt_fields": [
+    "compiler_sha256",
+    "evaluator_identity",
+    "receipt_digest",
+    "schema_version"
+  ],
+  "from_receipt": {
+    "compiler_digest": "ad4c378bd3f4a2558ce4357b29350c5b67788b36db7f38d9ad134ca9ba3c6e3c",
+    "receipt_digest": "4f9fa5a8ca18d06517e5097cddf4b034e196e8944f146868cd14a318cb31dfc6",
+    "receipt_sha256": "80e427ec673043ca875b226a73a832c45b587baa6547d87f0e38fbb82b7807cd",
+    "schema_version": "sim2claw.sail_live_operator_receipt.v2"
+  },
+  "migration_digest": "61ff4e4a697cf80c30d0bb8a65bec4b6463def4b7e1bfc12710a76c078efc172",
+  "migration_id": "live-operator-v2-to-v3-modular-adapter-boundary-20260722",
+  "output_sha256": {
+    "after": {
+      "ablation.json": "67605e89e24eef01444b4c532a8ab088827266c6fc656e203373f4ba62a0cdcd",
+      "acquisition_packet.json": "4398417efa987ce578b98191ec8f87d2c8ab7b3498ae3689087c01e7b06de374",
+      "acquisition_ranking.json": "355a0afd74c43a66543f9c3f2bd225e286de343bc9dceb4d5ed3a72f23673ce2",
+      "belief_after.json": "2deb4e9bfd7bbde19522b5ef50b1b5fcb367f30f8d953137b9d4844a3a277295",
+      "belief_before.json": "2d427ff1452c520aa0e2d3e8c7e80a3d67fde0796d525b3813fc85c90a744ce2",
+      "consequence.json": "25dee4a4e6d91bd85fcdf69673c32f67ea9e381aa70d8b7b0bf1592a922f3cc2",
+      "influence.json": "d6840df1cb2536cb2af6b25d0f788c49c35dc3c2ec9796a35e762ff27536628f",
+      "invariance.json": "0e5d3a421ada09b31d4f848e4025b759740b1ddbea9d812e09d6c131f37f2b34",
+      "mechanism_status.json": "f6c1b3001039cde70aa62529e032abf8a07081454b367ed54f26c3bc185fe588",
+      "operator_trace.json": "9e32549a81afc7802fd454f0650ed24fe964aa34d2c539e004d33bee1f6a383f",
+      "posterior.json": "c846a52c99ff787b3d9f106e1e7df078b84460848cc1ddc36e5f72d68f3301c4",
+      "residual_evidence.json": "4c5992f85c6828255adb75bb3f23783ba6d503739ddce6cc196fd2b767ae039c",
+      "sparse_closure.json": "f48ad2aace824a33200539ff4cc61e5a4c466d38424de9172c5c59592e2a3209",
+      "structural_surprise.json": "076c15c05ce35e628684b63001e53997d1057e6dff849bf614eeccea2a3bf8d4"
+    },
+    "before": {
+      "ablation.json": "67605e89e24eef01444b4c532a8ab088827266c6fc656e203373f4ba62a0cdcd",
+      "acquisition_packet.json": "4398417efa987ce578b98191ec8f87d2c8ab7b3498ae3689087c01e7b06de374",
+      "acquisition_ranking.json": "355a0afd74c43a66543f9c3f2bd225e286de343bc9dceb4d5ed3a72f23673ce2",
+      "belief_after.json": "2deb4e9bfd7bbde19522b5ef50b1b5fcb367f30f8d953137b9d4844a3a277295",
+      "belief_before.json": "2d427ff1452c520aa0e2d3e8c7e80a3d67fde0796d525b3813fc85c90a744ce2",
+      "consequence.json": "25dee4a4e6d91bd85fcdf69673c32f67ea9e381aa70d8b7b0bf1592a922f3cc2",
+      "influence.json": "d6840df1cb2536cb2af6b25d0f788c49c35dc3c2ec9796a35e762ff27536628f",
+      "invariance.json": "0e5d3a421ada09b31d4f848e4025b759740b1ddbea9d812e09d6c131f37f2b34",
+      "mechanism_status.json": "f6c1b3001039cde70aa62529e032abf8a07081454b367ed54f26c3bc185fe588",
+      "operator_trace.json": "9e32549a81afc7802fd454f0650ed24fe964aa34d2c539e004d33bee1f6a383f",
+      "posterior.json": "c846a52c99ff787b3d9f106e1e7df078b84460848cc1ddc36e5f72d68f3301c4",
+      "residual_evidence.json": "4c5992f85c6828255adb75bb3f23783ba6d503739ddce6cc196fd2b767ae039c",
+      "sparse_closure.json": "f48ad2aace824a33200539ff4cc61e5a4c466d38424de9172c5c59592e2a3209",
+      "structural_surprise.json": "076c15c05ce35e628684b63001e53997d1057e6dff849bf614eeccea2a3bf8d4"
+    }
+  },
+  "proof_boundary": {
+    "behavior_preserved_for_retained_abstention": true,
+    "physical_capture": false,
+    "provider": false,
+    "robot_motion": false,
+    "simulator_campaign": false,
+    "simulator_promotion": false,
+    "training": false,
+    "untrusted_generic_simulator_admission": false
+  },
+  "reproduction_command": [
+    "uv",
+    "run",
+    "sim2claw",
+    "sail-run-live-operator",
+    "--config",
+    "configs/sail/live_operator_c2_v1.json",
+    "--output",
+    "outputs/sail/live-operator-c2-migration-reproduction"
+  ],
+  "schema_version": "sim2claw.sail_live_operator_migration_receipt.v1",
+  "to_receipt": {
+    "compiler_digest": "237f5f17af13bf52bc7c681fb1b223bb0669ecb8825cd8a680861b4a0c579d02",
+    "receipt_digest": "94d13bfa67ff87ff11e16afe26afa3aeae1628bc308e7e6b9117d8c62661c0c8",
+    "receipt_sha256": "b2e671761cc77cd0ac2e83c3ec7bef9cb8ea01bcee1c17da4a3956bbd41d6c34",
+    "schema_version": "sim2claw.sail_live_operator_receipt.v3"
+  }
+}

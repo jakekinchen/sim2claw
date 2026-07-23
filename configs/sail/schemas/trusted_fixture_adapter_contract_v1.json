@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sim2claw.sail_fixture_adapter_contract.v1",
+  "additionalProperties": false,
+  "properties": {
+    "adapter_id": {"const": "fixture_deterministic_v1"},
+    "evaluation": {
+      "additionalProperties": false,
+      "properties": {
+        "pass_tolerance": {"minimum": 0, "type": "number"},
+        "target": {"maximum": 1, "minimum": 0, "type": "number"}
+      },
+      "required": ["target", "pass_tolerance"],
+      "type": "object"
+    },
+    "mutation": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {"minLength": 1, "type": "string"},
+        "operation": {"enum": ["add", "scale", "set"]},
+        "value": {"type": "number"}
+      },
+      "required": ["field", "operation", "value"],
+      "type": "object"
+    },
+    "response": {
+      "additionalProperties": false,
+      "properties": {
+        "fields": {
+          "items": {"minLength": 1, "type": "string"},
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "operation": {"const": "product"}
+      },
+      "required": ["operation", "fields"],
+      "type": "object"
+    },
+    "schema_version": {"const": "sim2claw.sail_fixture_adapter_contract.v1"}
+  },
+  "required": ["schema_version", "adapter_id", "mutation", "response", "evaluation"],
+  "type": "object"
+}
