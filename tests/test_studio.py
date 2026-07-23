@@ -1338,6 +1338,8 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('.transport-phase', css)
             self.assertIn('.comparison-lane-strip', css)
             self.assertIn('.physics-unavailable', css)
+            self.assertIn('height: min(43dvh, 360px)', css)
+            self.assertIn('left: calc(50% + 6px)', css)
 
             with urlopen(f"{base}/studio.js", timeout=3) as response:
                 javascript = response.read().decode("utf-8")
@@ -1358,6 +1360,7 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertNotIn("for (const count of [3, 2, 1])", javascript)
             self.assertIn('episode.inspection?.kind === "threejs_state_trace"', javascript)
             self.assertIn('episodeRecordingFeeds(episode)', javascript)
+            self.assertNotIn('const mobileStack =', javascript)
             self.assertIn('window.Sim2ClawCalibration?.setActive', javascript)
             self.assertIn('episode.evaluator_verdict ? "Evaluator result" : "Evidence status"', javascript)
             self.assertIn('"Operator notes"', javascript)
@@ -1369,7 +1372,7 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('elements.browserRail.dataset.taskId', javascript)
             self.assertIn('"Ranked replays"', javascript)
             self.assertIn("sim2claw.studio_episode_comparison.v1", javascript)
-            self.assertIn("VISUAL TWIN · IMAGE SPACE", javascript)
+            self.assertNotIn("VISUAL TWIN · IMAGE SPACE", javascript)
             self.assertIn("startVisualTwinLoop()", javascript)
             self.assertNotIn("elements.physicsUnavailable.innerHTML", javascript)
 

@@ -1264,11 +1264,7 @@ function renderComparisonAvailability(episode) {
 
 function updateVisualTwinSeam() {
   const reveal = Math.max(8, Math.min(92, Number(state.visualTwinReveal) || 50));
-  const mobileStack = (
-    state.replayMode === "compare"
-    && window.matchMedia("(max-width: 720px)").matches
-  );
-  const stagePercentage = state.replayMode === "compare" && !mobileStack
+  const stagePercentage = state.replayMode === "compare"
     ? reveal / 2
     : reveal;
   elements.stage.style.setProperty("--visual-reveal", `${reveal}%`);
@@ -1392,9 +1388,6 @@ function drawVisualTwinFrame() {
       context.lineTo(renderWidth, y + 0.5);
       context.stroke();
     }
-    context.fillStyle = "rgba(223, 255, 250, 0.82)";
-    context.font = "600 10px 'IBM Plex Mono', monospace";
-    context.fillText("VISUAL TWIN · IMAGE SPACE", 12, renderHeight - 14);
     context.restore();
   } catch (_error) {
     text(elements.cameraName, "VISUAL TWIN / FRAME UNAVAILABLE");
