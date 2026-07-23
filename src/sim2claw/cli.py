@@ -43,6 +43,46 @@ def build_parser() -> argparse.ArgumentParser:
     doctor.add_argument("--render-probe", action="store_true")
     doctor.add_argument("--json", action="store_true", dest="as_json")
 
+    dev_loop_audit = subparsers.add_parser(
+        "dev-loop-audit",
+        help="verify canonical autonomous-development authority and drift",
+    )
+    dev_loop_audit.add_argument("--root", type=Path, default=REPO_ROOT)
+    dev_loop_audit.add_argument("--output", type=Path)
+
+    dev_loop_ledger = subparsers.add_parser(
+        "dev-loop-render-ledger",
+        help="render or check the ledger's canonical current-state block",
+    )
+    dev_loop_ledger.add_argument("--root", type=Path, default=REPO_ROOT)
+    ledger_mode = dev_loop_ledger.add_mutually_exclusive_group(required=True)
+    ledger_mode.add_argument("--check", action="store_true")
+    ledger_mode.add_argument("--write", action="store_true")
+
+    dev_loop_benchmark = subparsers.add_parser(
+        "dev-loop-benchmark",
+        help="run the deterministic seeded development-loop control benchmark",
+    )
+    dev_loop_benchmark.add_argument("--config", type=Path, required=True)
+    dev_loop_benchmark.add_argument("--output", type=Path, required=True)
+
+    dev_loop_verify = subparsers.add_parser(
+        "dev-loop-verify",
+        help="run or reuse an exact-identity leased test receipt",
+    )
+    dev_loop_verify.add_argument("--root", type=Path, default=REPO_ROOT)
+    dev_loop_verify.add_argument("--tier", required=True)
+    dev_loop_verify.add_argument("--receipt-root", type=Path, required=True)
+    dev_loop_verify.add_argument(
+        "--relevant-path", action="append", required=True, dest="relevant_paths"
+    )
+    dev_loop_verify.add_argument("--wall-time-seconds", type=int, default=3600)
+    dev_loop_verify.add_argument(
+        "test_command",
+        nargs=argparse.REMAINDER,
+        help="test command after --",
+    )
+
     subparsers.add_parser(
         "fetch-polycam", help="fetch and verify the owner-provided capture reference"
     )
@@ -690,6 +730,67 @@ def main(argv: Sequence[str] | None = None) -> int:
         report = run_doctor(args.target, args.render_probe)
         print(doctor_json(report) if args.as_json else format_doctor(report))
         return 0 if report["passed"] else 1
+    if args.command == "dev-loop-render-ledger":
+        from .dev_loop.state import update_current_ledger_block
+
+        root = args.root.resolve()
+        project_state = json.loads(
+            (root / "docs/autonomous-workflow/project_state.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        ledger_path = root / ".factory/orchestration-ledger.md"
+        current = ledger_path.read_text(encoding="utf-8")
+        expected = update_current_ledger_block(current, project_state=project_state)
+        if args.write:
+            ledger_path.write_text(expected, encoding="utf-8")
+        report = {
+            "schema_version": "sim2claw.dev_loop_ledger_render.v1",
+            "status": "written" if args.write else ("pass" if current == expected else "fail"),
+            "path": str(ledger_path.relative_to(root)),
+        }
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if args.write or current == expected else 1
+    if args.command == "dev-loop-audit":
+        from .dev_loop.state import audit_dev_loop_authority
+        from .learning_factory_artifacts import atomic_write_json
+
+        report = audit_dev_loop_authority(args.root)
+        if args.output is not None:
+            atomic_write_json(args.output, report)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["status"] == "pass" else 1
+    if args.command == "dev-loop-benchmark":
+        from .dev_loop.bench import DevLoopBenchmarkError, run_dev_loop_benchmark
+
+        try:
+            report = run_dev_loop_benchmark(args.config, output_root=args.output)
+        except DevLoopBenchmarkError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "dev-loop-verify":
+        from .dev_loop.lifecycle import DevLoopLifecycleError
+        from .dev_loop.runner import DevLoopRunnerError, run_test_with_receipt
+
+        command = list(args.test_command)
+        if command[:1] == ["--"]:
+            command = command[1:]
+        try:
+            report = run_test_with_receipt(
+                repo_root=args.root,
+                command=command,
+                relevant_paths=args.relevant_paths,
+                receipt_root=args.receipt_root,
+                tier=args.tier,
+                wall_time_seconds=args.wall_time_seconds,
+            )
+        except (DevLoopRunnerError, DevLoopLifecycleError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return int(report["exit_code"])
     if args.command == "fetch-polycam":
         print(json.dumps(fetch_capture(), indent=2, sort_keys=True))
         return 0

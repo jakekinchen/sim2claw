@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/dev-loop-process-lease-v1.json",
+  "type": "object",
+  "required": ["schema_version", "lease_id", "task_contract_digest", "role", "repository", "pid", "process_start_token", "process_cwd", "expected_command_substring", "created_at", "heartbeat_at", "expires_at", "status", "teardown", "lease_digest"],
+  "properties": {
+    "schema_version": {"const": "sim2claw.dev_loop_process_lease.v1"},
+    "lease_id": {"type": "string", "minLength": 1},
+    "task_contract_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "role": {"enum": ["executor", "reviewer", "manager"]},
+    "repository": {"type": "string", "minLength": 1},
+    "pid": {"type": "integer", "minimum": 1},
+    "process_start_token": {"type": "string", "minLength": 1},
+    "process_cwd": {"type": "string", "minLength": 1},
+    "expected_command_substring": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "heartbeat_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "status": {"enum": ["active", "completed", "expired", "orphaned", "resumable"]},
+    "teardown": {"const": "terminate_after_verified_identity_on_expiry"},
+    "lease_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

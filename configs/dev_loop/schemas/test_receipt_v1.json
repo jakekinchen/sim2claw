@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/dev-loop-test-receipt-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "identity", "tier", "exit_code", "duration_seconds", "counts", "log_sha256", "status", "authority", "receipt_digest"],
+  "properties": {
+    "schema_version": {"const": "sim2claw.dev_loop_test_receipt.v1"},
+    "identity": {"type": "object", "required": ["identity_digest"]},
+    "tier": {"type": "string", "minLength": 1},
+    "exit_code": {"type": "integer"},
+    "duration_seconds": {"type": "number", "minimum": 0},
+    "counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "log_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "status": {"enum": ["pass", "fail"]},
+    "authority": {"type": "object", "additionalProperties": {"type": "boolean"}},
+    "receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

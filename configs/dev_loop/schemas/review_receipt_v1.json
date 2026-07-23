@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/dev-loop-review-receipt-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task_contract_digest", "reviewed_commit", "decision", "findings", "test_receipt_digests", "authority", "receipt_digest"],
+  "properties": {
+    "schema_version": {"const": "sim2claw.dev_loop_review_receipt.v1"},
+    "task_contract_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "reviewed_commit": {"type": "string", "minLength": 7},
+    "decision": {"enum": ["CONTINUE", "NUDGE", "REDIRECT", "STOP", "ESCALATE", "PASS"]},
+    "findings": {"type": "array", "items": {"type": "object", "required": ["anchor", "finding"], "properties": {"anchor": {"enum": [0, 25, 50, 75, 100]}, "finding": {"type": "string"}}}},
+    "test_receipt_digests": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "authority": {"type": "object", "additionalProperties": {"type": "boolean"}},
+    "receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

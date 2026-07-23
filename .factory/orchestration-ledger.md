@@ -1,6 +1,21 @@
 # Orchestration Ledger
 
-## Current control plane — autonomous development operations and advancement
+<!-- autonomous-dev-loop-current:start -->
+## Generated current autonomous-development state
+
+- Status: `active`.
+- Milestone: `D4` (`in_progress`).
+- Branch / remote: `main` / `origin/main`.
+- Baseline: `1ee6b7d5f45aecb3fc95006b6abf1141713cb927`.
+- Plan SHA-256: `d3cc39b0c562c4dbc50fc72273d4b49c0de0ca0a8973a6db90f3a483ec445bd3`.
+- Goal SHA-256: `df0eecfb09a341c3fe1b295f59b3e4439d379256d5040df5de6f4adcad29f667`.
+- Scoped origin/main push: `true`.
+- External authority: provider, paid compute, training, simulator campaign/promotion, physical capture, gateway, and motion are `false`.
+- Physical readiness: `blocked_hardware_and_calibration_not_ready`; gateway remains `false`.
+- Next step: `checkpoint_commit_and_push_D1_through_D3_then_implement_D4`.
+<!-- autonomous-dev-loop-current:end -->
+
+## D0 activation snapshot — autonomous development operations and advancement
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`; local and
   `origin/main` baseline
@@ -15,7 +30,7 @@
 - Canonical current state: `docs/autonomous-workflow/project_state.json` under
   `autonomous_dev_loop`. This ledger is rendered/history evidence and may not
   override canonical state.
-- Current milestone: D1, canonical state and authority-drift checker. D0 is
+- Milestone at snapshot: D1, canonical state and authority-drift checker. D0 is
   complete.
 - Authorized: scoped implementation, tests, receipts, commits, and pushes to
   `origin/main`. The prior SAIL merge authority has been exercised. Release,
@@ -60,7 +75,7 @@
   hardware readiness blockers, GOAL, canonical state, and ledger agree. D1 is
   active.
 
-## Current control plane — SAIL promotion review and measurement readiness
+## Historical snapshot — SAIL promotion review and measurement readiness
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on the clean, pushed
   continuation branch `codex/sail-live-operator-integration` at `1ee6b7d`.
@@ -141,7 +156,7 @@
   targeted tests passed; the prior live-operator review gate is closed in
   reviewer message 029.
 
-## Current control plane — SAIL live operator integration
+## Historical snapshot — SAIL live operator integration
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on
   `codex/sail-live-operator-integration` at pushed baseline `c407f8e`.

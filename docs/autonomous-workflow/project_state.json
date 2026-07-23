@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-07-22T21:38:00-05:00",
   "active_campaign": "autonomous_dev_loop_ops_and_advancement",
-  "current_milestone": "D1_CANONICAL_STATE_AND_DRIFT_CHECKER",
+  "current_milestone": "D4_SAIL_MAINTENANCE_HARDENING",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_control_plane_hardening_no_new_scientific_training_or_physical_evidence",
@@ -667,15 +667,15 @@
     },
     "milestones": {
       "D0": "completed_plan_goal_final_review_and_main_authority_reconciled",
-      "D1": "in_progress",
-      "D2": "pending",
-      "D3": "pending",
-      "D4": "pending",
+      "D1": "completed_canonical_state_and_shadow_drift_enforcement",
+      "D2": "completed_role_receipt_merge_and_child_process_lifecycle",
+      "D3": "completed_seeded_control_label_coverage_benchmark",
+      "D4": "in_progress",
       "D5": "pending",
       "D6": "pending"
     },
     "progress_ledger": {
-      "current_state": "D0_complete_D1_canonical_state_and_drift_checker_in_progress",
+      "current_state": "D1_through_D3_independently_accepted_D4_sail_maintenance_hardening_in_progress",
       "completed": [
         "authoritative_ops_and_dev_plan_written",
         "bounded_goal_loop_prompt_written",
@@ -687,7 +687,19 @@
         "hardware_and_calibration_readiness_blocker_recorded",
         "GOAL_project_state_and_ledger_reconciled_for_D0",
         "workflow_audit_clean",
-        "D0_diff_check_clean"
+        "D0_diff_check_clean",
+        "D1_through_D3_pre_review_implementation_attempt_complete",
+        "D1_through_D3_pre_review_focused_verification_passed",
+        "D1_through_D3_independent_checkpoint_review_stopped_for_four_blocking_findings",
+        "D1_shadow_current_state_detection_repaired_and_negative_test_added",
+        "D2_role_scoped_repository_write_authority_repaired",
+        "D2_merge_readiness_audit_commit_review_and_test_binding_repaired",
+        "D2_repository_owned_child_process_leasing_and_crash_duplicate_guard_repaired",
+        "D1_through_D3_repaired_focused_verification_passed",
+        "D1_through_D3_final_bounded_rereview_passed_no_findings",
+        "D1_canonical_state_and_drift_gate_complete",
+        "D2_receipt_lease_reuse_and_merge_lifecycle_complete",
+        "D3_seeded_control_label_coverage_benchmark_complete"
       ],
       "evidence": {
         "prior_final_reviewer_thread_id": "019f8caa-e7bd-7201-9231-d5a2d7f7d0f2",
@@ -695,12 +707,44 @@
         "prior_final_reviewer_focused_tests_passed": 6,
         "prior_full_suite_passed": 859,
         "prior_full_suite_skipped": 3,
-        "prior_full_suite_subtests_passed": 328
+        "prior_full_suite_subtests_passed": 328,
+        "D1_through_D3_pre_review_authority_audit_digest": "7acb2c1519f88890c3aa382605035cd967fb97074761ef6febda100bbfb610df",
+        "D1_through_D3_pre_review_focused_test_identity": "87c9bb8a9d7113e740cb199f7de0a15e8f9afee26ba2604cd65727e5108df6ea",
+        "D1_through_D3_pre_review_focused_test_receipt_digest": "dc5bbd47ae2aff2c2b0450f0f55d0815733400d94747a02b64edd6bbf5ddfabe",
+        "D1_through_D3_pre_review_focused_tests_passed": 26,
+        "D1_through_D3_pre_review_exact_receipt_reuse_observed": true,
+        "D1_through_D3_pre_review_benchmark_scorecard_digest": "af9849d87dfd5da93f0c96bdbc84ae3b2367b0086b1d1ae038a0615f469462aa",
+        "D1_through_D3_pre_review_benchmark_receipt_digest": "e8e494abe938d955921e739bc6ae93991437373ebb3c4b4963415d641b2b72aa",
+        "D1_through_D3_checkpoint_review_disposition": "STOP",
+        "D1_through_D3_checkpoint_review_agent": "d1_d3_checkpoint_review",
+        "D1_through_D3_checkpoint_review_edit_count": 0,
+        "D1_through_D3_checkpoint_review_blocking_findings": 4,
+        "D1_through_D3_repaired_authority_audit_digest": "b8d6ed27d8d1c37d6df717eb641bb1df3a467a2cad3def4af79f3dc55e287893",
+        "D1_through_D3_repaired_focused_test_identity": "55cbb525c6de58924db3950582e20fc65aa035db1d628ac2e5fab9cb77257b75",
+        "D1_through_D3_repaired_focused_test_receipt_digest": "54313a340e5052d25897e57ed618e854ebcbd9cbd06b03dae854321183c0f706",
+        "D1_through_D3_repaired_focused_tests_passed": 29,
+        "D1_through_D3_repaired_exact_receipt_reuse_observed": true,
+        "D3_repaired_benchmark_scorecard_digest": "0533c8e37f971d417c90e9829a5b1ba3826d97b99a85d289ef2bb24de8ce3090",
+        "D3_repaired_benchmark_receipt_digest": "e02327ac10ff1171063e497a5dd313ff0de7b466431a5b8afc3008027958dfe5",
+        "D3_benchmark_proof_boundary": "configured_control_label_coverage_not_validator_execution_or_agent_intelligence",
+        "D1_through_D3_second_rereview_disposition": "STOP",
+        "D1_through_D3_second_rereview_blocking_findings": 2,
+        "D1_through_D3_repaired_v2_focused_test_identity": "17d3ac30dbcb7e6fdd3c26752c5ea453086f74e430564cdb86c9c365f1b5f924",
+        "D1_through_D3_repaired_v2_focused_test_receipt_digest": "69f8d8353168968fd213e8d7dbe75ed521a2237a400f5bd09fbd17dbb812a48e",
+        "D1_through_D3_repaired_v2_focused_tests_passed": 30,
+        "D1_through_D3_repaired_v2_exact_receipt_reuse_observed": true,
+        "D1_through_D3_final_rereview_disposition": "PASS",
+        "D1_through_D3_final_rereview_blocking_findings": 0,
+        "D1_through_D3_final_rereview_nonblocking_findings": 0,
+        "D1_through_D3_final_rereview_targeted_tests_passed": 9,
+        "D1_through_D3_final_rereview_edit_count": 0
       },
       "workers": [],
       "leases": [],
       "remaining": [
-        "implement_D1_through_D6"
+        "implement_D4_sail_maintenance_hardening",
+        "implement_D5_trusted_deterministic_adapter_boundary",
+        "complete_D6_verification_review_and_closeout"
       ],
       "blockers": [],
       "external_readiness_blockers": {
@@ -728,7 +772,7 @@
         "simulator_campaign_or_promotion",
         "physical_capture_or_robot_motion"
       ],
-      "next_step": "implement_D1_canonical_state_and_drift_checker"
+      "next_step": "checkpoint_commit_and_push_D1_through_D3_then_implement_D4"
     },
     "authority": {
       "pull_request": false,

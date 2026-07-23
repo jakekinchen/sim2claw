@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/dev-loop-task-contract-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task_id", "role", "repository", "branch", "base_commit", "allowed_paths", "allowed_operations", "proof_target", "max_attempts", "wall_time_seconds", "created_at", "authority", "contract_digest"],
+  "properties": {
+    "schema_version": {"const": "sim2claw.dev_loop_task_contract.v1"},
+    "task_id": {"type": "string", "minLength": 1},
+    "role": {"enum": ["executor", "reviewer", "manager"]},
+    "repository": {"type": "string", "minLength": 1},
+    "branch": {"type": "string", "minLength": 1},
+    "base_commit": {"type": "string", "minLength": 7},
+    "allowed_paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "allowed_operations": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "proof_target": {"type": "string", "minLength": 1},
+    "max_attempts": {"type": "integer", "minimum": 1},
+    "wall_time_seconds": {"type": "integer", "minimum": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "authority": {"$ref": "#/$defs/authority"},
+    "contract_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "authority": {
+      "type": "object",
+      "additionalProperties": {"type": "boolean"},
+      "required": ["commit", "push_origin_main", "release", "provider", "paid_compute", "training", "simulator_campaign", "simulator_promotion", "physical_capture", "robot_gateway", "robot_motion"]
+    }
+  }
+}

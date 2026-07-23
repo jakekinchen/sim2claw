@@ -17,10 +17,12 @@ Authoritative plan:
 Active goal-loop prompt:
 [`docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md`](docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md).
 
-Current milestone: **D1 — canonical development-loop state and authority-drift
-checker in progress**. D0 is complete: the plan and goal are active, the final
-review is recorded, the fast-forward to `main` is reconciled, and hardware
-readiness blockers are explicit.
+Current milestone: **D4 — SAIL maintenance hardening in progress**. D1-D3 are
+independently accepted after two corrective review cycles and a final `PASS`:
+canonical current-state drift is unique and fail closed; role, receipt, merge,
+and actual-child process lifecycles are bound; exact tests execute once and
+reuse only the matching receipt; and DevLoopBench reports configured
+control-label coverage with its limited proof class explicit.
 
 The reviewed continuation was fast-forwarded with owner authorization. Local
 `main` and `origin/main` are equal at `1ee6b7d`; D0-D6 execute on `main` with
@@ -156,7 +158,7 @@ reproducible inconsistencies. The immediate diagnosis anchor is the best
 C2-to-C1 pawn transport replay, whose action-frozen simulated grasp loses the
 pawn before intended release.
 
-Current milestone: **A1-06 complete — terminal negative for bounded contact-model
+Historical milestone: **A1-06 complete — terminal negative for bounded contact-model
 promotion, with contact localization and post-first-lift observability gains**.
 
 Active brief:

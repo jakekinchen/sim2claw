@@ -1,0 +1,46 @@
+{
+  "schema_version": "sim2claw.dev_loop_benchmark_config.v1",
+  "benchmark_id": "sim2claw-autonomous-dev-loop-control-plane-v1",
+  "cases": "configs/dev_loop/fixtures/seeded_cases_v1.json",
+  "modes": [
+    {
+      "id": "single_worker",
+      "controls": ["focused_tests", "task_scope"]
+    },
+    {
+      "id": "worker_self_review",
+      "controls": ["focused_tests", "git_identity", "self_review", "task_scope"]
+    },
+    {
+      "id": "independent_receipt_gated",
+      "controls": [
+        "authority_check",
+        "authority_drift_check",
+        "exact_test_identity",
+        "focused_tests",
+        "git_identity",
+        "independent_review",
+        "process_cleanup",
+        "process_lease",
+        "receipt_current_state",
+        "repair_gate",
+        "task_scope"
+      ]
+    }
+  ],
+  "expected": {
+    "case_count": 10,
+    "seeded_defect_count": 9,
+    "independent_receipt_gated_escaped_defects": 0
+  },
+  "authority": {
+    "provider": false,
+    "paid_compute": false,
+    "training": false,
+    "simulator_campaign": false,
+    "simulator_promotion": false,
+    "physical_capture": false,
+    "robot_gateway": false,
+    "robot_motion": false
+  }
+}

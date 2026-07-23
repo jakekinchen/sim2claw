@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/dev-loop-merge-readiness-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "branch", "head", "remote_head", "authority_audit_digest", "test_receipt_digests", "review_receipt_digests", "changed_paths", "authority", "owner_gates", "proof_class", "packet_digest"],
+  "properties": {
+    "schema_version": {"const": "sim2claw.dev_loop_merge_readiness.v1"},
+    "status": {"enum": ["merge_ready", "not_ready"]},
+    "branch": {"type": "string"},
+    "head": {"type": "string"},
+    "remote_head": {"type": "string"},
+    "authority_audit_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "test_receipt_digests": {"type": "array", "items": {"type": "string"}},
+    "review_receipt_digests": {"type": "array", "items": {"type": "string"}},
+    "changed_paths": {"type": "array", "items": {"type": "string"}},
+    "authority": {"type": "object", "additionalProperties": {"type": "boolean"}},
+    "owner_gates": {"type": "array", "items": {"type": "string"}},
+    "proof_class": {"const": "deterministic_repository_merge_readiness_no_release_authority"},
+    "packet_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
