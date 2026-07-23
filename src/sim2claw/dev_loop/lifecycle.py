@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 import os
 import platform
 import signal
@@ -15,14 +16,20 @@ from typing import Any, Mapping, Sequence
 
 from ..learning_factory_artifacts import canonical_digest, sha256_file
 from .contracts import validate_dev_loop_artifact
-from .state import AUDIT_SCHEMA
+from .state import (
+    AUDIT_SCHEMA,
+    FINAL_REMAINING_GATES,
+    FINAL_REQUIRED_TEST_TIERS,
+    TERMINAL_AUTHORITY_MODE,
+    validate_dev_loop_state,
+)
 
 
 TASK_SCHEMA = "sim2claw.dev_loop_task_contract.v1"
-REVIEW_SCHEMA = "sim2claw.dev_loop_review_receipt.v1"
+REVIEW_SCHEMA = "sim2claw.dev_loop_review_receipt.v2"
 TEST_SCHEMA = "sim2claw.dev_loop_test_receipt.v1"
 PROCESS_SCHEMA = "sim2claw.dev_loop_process_lease.v1"
-MERGE_SCHEMA = "sim2claw.dev_loop_merge_readiness.v1"
+MERGE_SCHEMA = "sim2claw.dev_loop_merge_readiness.v2"
 REQUIRED_AUTHORITY_AUDIT_CHECKS = {
     "authority",
     "baseline_ancestry",
@@ -198,6 +205,7 @@ def build_review_receipt(
     decision: str,
     findings: Sequence[Mapping[str, Any]],
     test_receipt_digests: Sequence[str],
+    reviewed_state_sha256: str,
 ) -> dict[str, Any]:
     task = verify_task_contract(task_contract)
     if task["role"] != "reviewer":
@@ -208,6 +216,8 @@ def build_review_receipt(
     for row in rows:
         if row.get("anchor") not in {0, 25, 50, 75, 100}:
             raise DevLoopLifecycleError("review finding has invalid evidence anchor")
+    if len(reviewed_state_sha256) != 64:
+        raise DevLoopLifecycleError("reviewed project-state identity is invalid")
     unsigned = {
         "schema_version": REVIEW_SCHEMA,
         "task_contract_digest": task["contract_digest"],
@@ -215,6 +225,7 @@ def build_review_receipt(
         "decision": decision,
         "findings": rows,
         "test_receipt_digests": sorted({str(value) for value in test_receipt_digests}),
+        "reviewed_state_sha256": reviewed_state_sha256,
         "authority": _authority({"commit": False, "push_origin_main": False}),
     }
     return _with_digest(unsigned, "receipt_digest")
@@ -229,6 +240,9 @@ def verify_review_receipt(payload: Mapping[str, Any]) -> dict[str, Any]:
         repository_write_allowed=False,
         label="review receipt",
     )
+    state_sha256 = verified.get("reviewed_state_sha256")
+    if not isinstance(state_sha256, str) or len(state_sha256) != 64:
+        raise DevLoopLifecycleError("review receipt project-state identity is invalid")
     return validate_dev_loop_artifact("review", verified)
 
 
@@ -562,7 +576,65 @@ def mark_missing_process_orphaned(
     return _with_digest(unsigned, "lease_digest")
 
 
-def verify_authority_audit(payload: Mapping[str, Any]) -> dict[str, Any]:
+def _project_state_identity(repo_root: Path) -> dict[str, Any]:
+    root = repo_root.resolve()
+    path = root / "docs/autonomous-workflow/project_state.json"
+    try:
+        project_state = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise DevLoopLifecycleError("cannot read canonical project state") from error
+    if not isinstance(project_state, dict):
+        raise DevLoopLifecycleError("canonical project state is not an object")
+    try:
+        validated = validate_dev_loop_state(project_state, repo_root=root)
+    except ValueError as error:
+        raise DevLoopLifecycleError(str(error)) from error
+    dev_state = validated["autonomous_dev_loop"]
+    return {
+        "path": "docs/autonomous-workflow/project_state.json",
+        "sha256": sha256_file(path),
+        "digest": canonical_digest(validated),
+        "semantics": {
+            "status": dev_state["status"],
+            "phase": dev_state["state_machine"]["phase"],
+            "terminal": dev_state["state_machine"]["terminal"],
+            "d6_status": dev_state["milestones"]["D6"],
+            "remaining": list(dev_state["progress_ledger"]["remaining"]),
+            "terminal_authority_mode": dev_state["terminal_authority"]["mode"],
+        },
+    }
+
+
+def _candidate_state_semantics(value: object) -> bool:
+    return value == {
+        "status": "active",
+        "phase": "FULL_VERIFY",
+        "terminal": False,
+        "d6_status": "in_progress",
+        "remaining": list(FINAL_REMAINING_GATES),
+        "terminal_authority_mode": TERMINAL_AUTHORITY_MODE,
+    }
+
+
+def _repository_process_leases(repo_root: Path) -> list[dict[str, Any]]:
+    lease_root = repo_root.resolve() / "outputs/dev-loop"
+    if not lease_root.is_dir():
+        return []
+    leases: list[dict[str, Any]] = []
+    for path in sorted(lease_root.rglob("process-lease.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            raise DevLoopLifecycleError(f"cannot read process lease {path}") from error
+        if not isinstance(payload, dict):
+            raise DevLoopLifecycleError(f"process lease is not an object: {path}")
+        leases.append(verify_process_lease(payload))
+    return leases
+
+
+def verify_authority_audit(
+    payload: Mapping[str, Any], *, repo_root: Path | None = None
+) -> dict[str, Any]:
     verified = _verify_digest(payload, "audit_digest", label="authority audit")
     if verified.get("schema_version") != AUDIT_SCHEMA:
         raise DevLoopLifecycleError("unexpected authority audit schema")
@@ -603,22 +675,53 @@ def verify_authority_audit(payload: Mapping[str, Any]) -> dict[str, Any]:
         raise DevLoopLifecycleError("authority audit widened external authority")
     if verified["active_milestone"] not in {f"D{index}" for index in range(7)}:
         raise DevLoopLifecycleError("authority audit milestone is not permitted")
+    state_sha256 = verified.get("project_state_sha256")
+    state_digest = verified.get("project_state_digest")
+    if (
+        not isinstance(state_sha256, str)
+        or len(state_sha256) != 64
+        or not isinstance(state_digest, str)
+        or len(state_digest) != 64
+        or not _candidate_state_semantics(verified.get("state_semantics"))
+    ):
+        raise DevLoopLifecycleError("authority audit project-state binding is invalid")
+    if repo_root is not None:
+        root = repo_root.resolve()
+        current_state = _project_state_identity(root)
+        if (
+            state_sha256 != current_state["sha256"]
+            or state_digest != current_state["digest"]
+            or verified["state_semantics"] != current_state["semantics"]
+        ):
+            raise DevLoopLifecycleError("authority audit project-state binding is stale")
+        if (
+            git_identity["branch"] != _git(root, "branch", "--show-current")
+            or git_identity["head"] != _git(root, "rev-parse", "HEAD")
+            or git_identity["remote"] != _git(root, "rev-parse", "origin/main")
+        ):
+            raise DevLoopLifecycleError("authority audit repository identity is stale")
     return verified
 
 
 def build_merge_readiness_packet(
     *,
-    branch: str,
-    head: str,
-    remote_head: str,
+    repo_root: Path,
     authority_audit: Mapping[str, Any],
     test_receipts: Sequence[Mapping[str, Any]],
     review_receipts: Sequence[Mapping[str, Any]],
     changed_paths: Sequence[str],
 ) -> dict[str, Any]:
-    audit = verify_authority_audit(authority_audit)
+    root = repo_root.resolve()
+    branch = _git(root, "branch", "--show-current")
+    head = _git(root, "rev-parse", "HEAD")
+    remote_head = _git(root, "rev-parse", "origin/main")
+    tracked_clean = not bool(_git(root, "status", "--porcelain", "--untracked-files=no"))
+    state = _project_state_identity(root)
+    audit = verify_authority_audit(authority_audit, repo_root=root)
     tests = [verify_test_receipt(value) for value in test_receipts]
     reviews = [verify_review_receipt(value) for value in review_receipts]
+    leases = _repository_process_leases(root)
+    active_leases = [row for row in leases if row["status"] == "active"]
     audit_git = audit["git_identity"]
     audit_pass = (
         audit["status"] == "pass"
@@ -631,47 +734,102 @@ def build_merge_readiness_packet(
         and audit["authority"].get("merge") is True
         and audit["authority"].get("push_origin_main") is True
         and audit["authority"].get("prior_sail_fast_forward_completed") is True
+        and audit["project_state_sha256"] == state["sha256"]
+        and audit["project_state_digest"] == state["digest"]
+        and audit["state_semantics"] == state["semantics"]
     )
-    tests_pass = bool(tests) and all(
-        row["status"] == "pass"
-        and row["identity"]["commit"] == head
-        and row["identity"]["branch"] == branch
-        for row in tests
+    tier_names = [str(row["tier"]) for row in tests]
+    test_digests = [str(row["receipt_digest"]) for row in tests]
+    test_identity_digests = [str(row["identity"]["identity_digest"]) for row in tests]
+    exact_tiers = (
+        set(tier_names) == set(FINAL_REQUIRED_TEST_TIERS)
+        and len(tier_names) == len(FINAL_REQUIRED_TEST_TIERS)
     )
-    test_digests = {row["receipt_digest"] for row in tests}
-    reviewed_test_digests = {
-        digest for row in reviews for digest in row["test_receipt_digests"]
-    }
-    reviews_pass = (
-        bool(reviews)
+    tests_pass = (
+        exact_tiers
+        and len(test_digests) == len(set(test_digests))
+        and len(test_identity_digests) == len(set(test_identity_digests))
         and all(
-            row["decision"] == "PASS"
-            and row["reviewed_commit"] == head
-            and bool(row["test_receipt_digests"])
-            and set(row["test_receipt_digests"]) <= test_digests
-            for row in reviews
+            row["status"] == "pass"
+            and row["exit_code"] == 0
+            and row["identity"]["commit"] == head
+            and row["identity"]["branch"] == branch
+            for row in tests
         )
-        and test_digests <= reviewed_test_digests
     )
-    ready = branch == "main" and head == remote_head and audit_pass and tests_pass and reviews_pass
+    test_digest_set = set(test_digests)
+    reviews_pass = (
+        len(reviews) == 1
+        and reviews[0]["decision"] == "PASS"
+        and reviews[0]["reviewed_commit"] == head
+        and reviews[0]["reviewed_state_sha256"] == state["sha256"]
+        and set(reviews[0]["test_receipt_digests"]) == test_digest_set
+        and len(reviews[0]["test_receipt_digests"]) == len(test_digest_set)
+    )
+    ready = (
+        branch == "main"
+        and head == remote_head
+        and tracked_clean
+        and audit_pass
+        and tests_pass
+        and reviews_pass
+        and not active_leases
+        and _candidate_state_semantics(state["semantics"])
+    )
     unsigned = {
         "schema_version": MERGE_SCHEMA,
         "status": "merge_ready" if ready else "not_ready",
         "branch": branch,
         "head": head,
         "remote_head": remote_head,
+        "project_state_path": state["path"],
+        "project_state_sha256": state["sha256"],
+        "project_state_digest": state["digest"],
+        "state_semantics": state["semantics"],
         "authority_audit_digest": audit["audit_digest"],
-        "test_receipt_digests": [row["receipt_digest"] for row in tests],
+        "authority_audit": audit,
+        "required_test_tiers": list(FINAL_REQUIRED_TEST_TIERS),
+        "test_receipt_digests": test_digests,
+        "test_receipts": tests,
+        "test_evidence": [
+            {
+                "tier": row["tier"],
+                "receipt_digest": row["receipt_digest"],
+                "identity_digest": row["identity"]["identity_digest"],
+                "commit": row["identity"]["commit"],
+                "branch": row["identity"]["branch"],
+                "status": row["status"],
+                "exit_code": row["exit_code"],
+            }
+            for row in tests
+        ],
         "review_receipt_digests": [row["receipt_digest"] for row in reviews],
+        "review_receipts": reviews,
+        "review_evidence": [
+            {
+                "receipt_digest": row["receipt_digest"],
+                "reviewed_commit": row["reviewed_commit"],
+                "reviewed_state_sha256": row["reviewed_state_sha256"],
+                "decision": row["decision"],
+                "test_receipt_digests": row["test_receipt_digests"],
+            }
+            for row in reviews
+        ],
+        "process_lease_digests": [row["lease_digest"] for row in leases],
+        "live_process_lease_count": len(active_leases),
+        "tracked_worktree_clean": tracked_clean,
         "changed_paths": sorted({str(value) for value in changed_paths}),
         "authority": _authority({"commit": False, "push_origin_main": False}),
         "owner_gates": ["release_or_publication_beyond_repository_push"],
         "proof_class": "deterministic_repository_merge_readiness_no_release_authority",
+        "terminal_authority": ready,
     }
     return validate_dev_loop_artifact("merge", _with_digest(unsigned, "packet_digest"))
 
 
-def verify_merge_readiness_packet(payload: Mapping[str, Any]) -> dict[str, Any]:
+def verify_merge_readiness_packet(
+    payload: Mapping[str, Any], *, repo_root: Path | None = None
+) -> dict[str, Any]:
     verified = _verify_digest(payload, "packet_digest", label="merge readiness")
     if verified.get("schema_version") != MERGE_SCHEMA:
         raise DevLoopLifecycleError("unexpected merge-readiness schema")
@@ -680,7 +838,79 @@ def verify_merge_readiness_packet(payload: Mapping[str, Any]) -> dict[str, Any]:
         repository_write_allowed=False,
         label="merge readiness",
     )
-    return validate_dev_loop_artifact("merge", verified)
+    verified = validate_dev_loop_artifact("merge", verified)
+    if verified["status"] == "merge_ready":
+        test_evidence = verified["test_evidence"]
+        review_evidence = verified["review_evidence"]
+        tiers = [row["tier"] for row in test_evidence]
+        test_digests = [row["receipt_digest"] for row in test_evidence]
+        exact_tests = (
+            verified["required_test_tiers"] == list(FINAL_REQUIRED_TEST_TIERS)
+            and set(tiers) == set(FINAL_REQUIRED_TEST_TIERS)
+            and len(tiers) == len(FINAL_REQUIRED_TEST_TIERS)
+            and len(test_digests) == len(set(test_digests))
+            and verified["test_receipt_digests"] == test_digests
+            and all(
+                row["status"] == "pass"
+                and row["exit_code"] == 0
+                and row["commit"] == verified["head"]
+                and row["branch"] == verified["branch"]
+                for row in test_evidence
+            )
+        )
+        exact_review = (
+            len(review_evidence) == 1
+            and verified["review_receipt_digests"]
+            == [review_evidence[0]["receipt_digest"]]
+            and review_evidence[0]["decision"] == "PASS"
+            and review_evidence[0]["reviewed_commit"] == verified["head"]
+            and review_evidence[0]["reviewed_state_sha256"]
+            == verified["project_state_sha256"]
+            and set(review_evidence[0]["test_receipt_digests"]) == set(test_digests)
+            and len(review_evidence[0]["test_receipt_digests"]) == len(test_digests)
+        )
+        if not (
+            verified["terminal_authority"] is True
+            and verified["branch"] == "main"
+            and verified["head"] == verified["remote_head"]
+            and verified["tracked_worktree_clean"] is True
+            and verified["live_process_lease_count"] == 0
+            and exact_tests
+            and exact_review
+            and _candidate_state_semantics(verified["state_semantics"])
+        ):
+            raise DevLoopLifecycleError("merge-ready terminal semantics are invalid")
+        if repo_root is None:
+            raise DevLoopLifecycleError(
+                "operational merge-ready verification requires a repository root"
+            )
+        root = repo_root.resolve()
+        state = _project_state_identity(root)
+        if (
+            verified["head"] != _git(root, "rev-parse", "HEAD")
+            or verified["remote_head"] != _git(root, "rev-parse", "origin/main")
+            or verified["branch"] != _git(root, "branch", "--show-current")
+            or verified["project_state_sha256"] != state["sha256"]
+            or verified["project_state_digest"] != state["digest"]
+            or verified["state_semantics"] != state["semantics"]
+            or bool(_git(root, "status", "--porcelain", "--untracked-files=no"))
+            or any(row["status"] == "active" for row in _repository_process_leases(root))
+        ):
+            raise DevLoopLifecycleError("merge-readiness packet is stale")
+        rebuilt = build_merge_readiness_packet(
+            repo_root=root,
+            authority_audit=verified["authority_audit"],
+            test_receipts=verified["test_receipts"],
+            review_receipts=verified["review_receipts"],
+            changed_paths=verified["changed_paths"],
+        )
+        if rebuilt != verified:
+            raise DevLoopLifecycleError(
+                "merge-readiness packet does not match its verified evidence bundle"
+            )
+    elif verified["terminal_authority"] is not False:
+        raise DevLoopLifecycleError("not-ready packet cannot grant terminal authority")
+    return verified
 
 
 __all__ = [

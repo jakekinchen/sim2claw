@@ -21,6 +21,21 @@ STATE_SCHEMA = "sim2claw.autonomous_dev_loop_state.v1"
 AUDIT_SCHEMA = "sim2claw.autonomous_dev_loop_authority_audit.v1"
 LEDGER_START = "<!-- autonomous-dev-loop-current:start -->"
 LEDGER_END = "<!-- autonomous-dev-loop-current:end -->"
+TERMINAL_AUTHORITY_MODE = "generated_post_push_merge_readiness_packet"
+FINAL_REQUIRED_TEST_TIERS = (
+    "final_focused",
+    "sail_fast_contract",
+    "sail_synthetic_golden",
+    "sail_integration",
+    "full_repository",
+)
+FINAL_REMAINING_GATES = (
+    "exact_current_HEAD_final_focused_sail_fast_contract_sail_synthetic_golden_sail_integration_and_full_repository_test_receipts",
+    "fresh_independent_PASS_review_covering_every_exact_current_HEAD_test_receipt",
+    "push_current_main_HEAD_to_origin_main_and_confirm_remote_equality",
+    "post_push_D6_authority_audit_bound_to_current_HEAD_and_project_state",
+    "generated_merge_ready_terminal_authority_packet_with_zero_live_process_leases",
+)
 
 PROHIBITED_TRUE_AUTHORITIES = (
     "release",
@@ -91,6 +106,44 @@ def _active_milestone(dev_state: Mapping[str, Any]) -> str:
     return active[0]
 
 
+def _validate_terminal_authority_candidate(dev_state: Mapping[str, Any]) -> None:
+    terminal_authority = dev_state.get("terminal_authority")
+    if terminal_authority is None:
+        return
+    if not isinstance(terminal_authority, dict):
+        raise DevLoopStateError("development-loop terminal authority contract is malformed")
+    if terminal_authority.get("mode") != TERMINAL_AUTHORITY_MODE:
+        raise DevLoopStateError("unexpected development-loop terminal authority mode")
+    if terminal_authority.get("committed_state_may_be_terminal") is not False:
+        raise DevLoopStateError("committed development-loop state may not be terminal")
+    if terminal_authority.get("required_test_tiers") != list(FINAL_REQUIRED_TEST_TIERS):
+        raise DevLoopStateError("final required test tier set changed")
+
+    state_machine = dev_state.get("state_machine")
+    if not isinstance(state_machine, dict):
+        raise DevLoopStateError("development-loop state machine is missing")
+    if (
+        dev_state.get("status") != "active"
+        or state_machine.get("phase") != "FULL_VERIFY"
+        or state_machine.get("terminal") is not False
+    ):
+        raise DevLoopStateError(
+            "committed development-loop state must remain an active FULL_VERIFY candidate"
+        )
+
+    milestones = dev_state.get("milestones")
+    progress = dev_state.get("progress_ledger")
+    if (
+        not isinstance(milestones, dict)
+        or milestones.get("D6") != "in_progress"
+        or not isinstance(progress, dict)
+        or progress.get("remaining") != list(FINAL_REMAINING_GATES)
+    ):
+        raise DevLoopStateError(
+            "verification candidate requires in-progress D6 and the exact remaining gates"
+        )
+
+
 def validate_dev_loop_state(
     project_state: Mapping[str, Any], *, repo_root: Path
 ) -> dict[str, Any]:
@@ -102,6 +155,7 @@ def validate_dev_loop_state(
         raise DevLoopStateError("unexpected autonomous development-loop schema")
     if dev_state.get("status") not in {"active", "merge_ready", "closed", "blocked"}:
         raise DevLoopStateError("invalid autonomous development-loop status")
+    _validate_terminal_authority_candidate(dev_state)
 
     active = _active_milestone(dev_state)
     current = str(normalized.get("current_milestone", ""))
@@ -300,6 +354,16 @@ def audit_dev_loop_authority(
         "status": "pass" if passed else "fail",
         "proof_class": "deterministic_repository_authority_consistency",
         "active_milestone": active,
+        "project_state_sha256": sha256_file(project_state_path),
+        "project_state_digest": canonical_digest(project_state),
+        "state_semantics": {
+            "status": dev_state["status"],
+            "phase": dev_state.get("state_machine", {}).get("phase"),
+            "terminal": dev_state.get("state_machine", {}).get("terminal"),
+            "d6_status": dev_state["milestones"].get("D6"),
+            "remaining": list(dev_state["progress_ledger"].get("remaining", [])),
+            "terminal_authority_mode": dev_state.get("terminal_authority", {}).get("mode"),
+        },
         "git_identity": git_identity,
         "checks": checks,
         "authority": {
@@ -315,7 +379,10 @@ __all__ = [
     "DevLoopStateError",
     "LEDGER_END",
     "LEDGER_START",
+    "FINAL_REMAINING_GATES",
+    "FINAL_REQUIRED_TEST_TIERS",
     "STATE_SCHEMA",
+    "TERMINAL_AUTHORITY_MODE",
     "audit_dev_loop_authority",
     "render_current_ledger_block",
     "update_current_ledger_block",

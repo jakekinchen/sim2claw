@@ -8,6 +8,9 @@ import pytest
 
 from sim2claw.dev_loop.state import (
     DevLoopStateError,
+    FINAL_REMAINING_GATES,
+    FINAL_REQUIRED_TEST_TIERS,
+    TERMINAL_AUTHORITY_MODE,
     audit_dev_loop_authority,
     render_current_ledger_block,
     update_current_ledger_block,
@@ -178,12 +181,18 @@ def test_milestone_drift_and_multiple_active_milestones_fail(tmp_path: Path) -> 
         audit_dev_loop_authority(root, git_snapshot=_snapshot())
 
 
-def test_closed_state_requires_completed_d6_and_no_active_milestone(
+def test_generated_terminal_authority_mode_rejects_committed_closed_state(
     tmp_path: Path,
 ) -> None:
     root, state = _repo(tmp_path)
     state["current_milestone"] = "D6_VERIFICATION_AND_CLOSEOUT"
     dev_state = state["autonomous_dev_loop"]
+    dev_state["terminal_authority"] = {
+        "mode": TERMINAL_AUTHORITY_MODE,
+        "committed_state_may_be_terminal": False,
+        "required_test_tiers": list(FINAL_REQUIRED_TEST_TIERS),
+    }
+    dev_state["state_machine"] = {"phase": "CLOSED", "terminal": True}
     dev_state["status"] = "closed"
     dev_state["milestones"] = {
         "D0": "completed",
@@ -194,16 +203,19 @@ def test_closed_state_requires_completed_d6_and_no_active_milestone(
         "D5": "completed",
         "D6": "completed_final_verification_and_review",
     }
-    validated = validate_dev_loop_state(state, repo_root=root)
-    assert validated["autonomous_dev_loop"]["status"] == "closed"
-
-    dev_state["milestones"]["D6"] = "pending"
-    with pytest.raises(DevLoopStateError, match="requires completed D6"):
+    dev_state["progress_ledger"]["remaining"] = []
+    with pytest.raises(DevLoopStateError, match="active FULL_VERIFY candidate"):
         validate_dev_loop_state(state, repo_root=root)
 
-    dev_state["milestones"]["D6"] = "completed_final_verification_and_review"
-    dev_state["milestones"]["D5"] = "in_progress"
-    with pytest.raises(DevLoopStateError, match="requires completed D6"):
+    dev_state["status"] = "active"
+    dev_state["state_machine"] = {"phase": "FULL_VERIFY", "terminal": False}
+    dev_state["milestones"]["D6"] = "in_progress"
+    dev_state["progress_ledger"]["remaining"] = list(FINAL_REMAINING_GATES)
+    validated = validate_dev_loop_state(state, repo_root=root)
+    assert validated["autonomous_dev_loop"]["status"] == "active"
+
+    dev_state["progress_ledger"]["remaining"].pop()
+    with pytest.raises(DevLoopStateError, match="exact remaining gates"):
         validate_dev_loop_state(state, repo_root=root)
 
 

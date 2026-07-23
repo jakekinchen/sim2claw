@@ -1,6 +1,6 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-22T22:55:00-05:00",
+  "updated_at": "2026-07-22T23:45:00-05:00",
   "active_campaign": "autonomous_dev_loop_ops_and_advancement",
   "current_milestone": "D6_VERIFICATION_INDEPENDENT_REVIEW_AND_CLOSEOUT",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
@@ -632,9 +632,9 @@
   },
   "autonomous_dev_loop": {
     "schema_version": "sim2claw.autonomous_dev_loop_state.v1",
-    "status": "closed",
+    "status": "active",
     "plan": "docs/goals/AUTONOMOUS_DEV_LOOP_OPS_AND_ADVANCEMENT_PLAN.md",
-    "plan_sha256": "d3cc39b0c562c4dbc50fc72273d4b49c0de0ca0a8973a6db90f3a483ec445bd3",
+    "plan_sha256": "cc480b36a9c490d91d2b504b585e29fb82a2510a1bbe05095c412ea0b65ea240",
     "goal_loop": "docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md",
     "goal_loop_sha256": "df0eecfb09a341c3fe1b295f59b3e4439d379256d5040df5de6f4adcad29f667",
     "goal_thread_id": "019f8cb5-c04f-7a92-8c90-e045076a34fd",
@@ -647,8 +647,8 @@
       "local_main_equals_origin_main": true
     },
     "state_machine": {
-      "phase": "CLOSED",
-      "terminal": true,
+      "phase": "FULL_VERIFY",
+      "terminal": false,
       "allowed_phases": [
         "INSPECT",
         "CONTRACT",
@@ -665,6 +665,17 @@
         "FAILED"
       ]
     },
+    "terminal_authority": {
+      "mode": "generated_post_push_merge_readiness_packet",
+      "committed_state_may_be_terminal": false,
+      "required_test_tiers": [
+        "final_focused",
+        "sail_fast_contract",
+        "sail_synthetic_golden",
+        "sail_integration",
+        "full_repository"
+      ]
+    },
     "milestones": {
       "D0": "completed_plan_goal_final_review_and_main_authority_reconciled",
       "D1": "completed_canonical_state_and_shadow_drift_enforcement",
@@ -672,10 +683,10 @@
       "D3": "completed_seeded_control_label_coverage_benchmark",
       "D4": "completed_modular_operator_and_versioned_byte_identity_migration",
       "D5": "completed_trusted_fixture_adapter_and_generic_fail_closed_boundary",
-      "D6": "completed_final_identity_verification_review_and_repository_push_gated"
+      "D6": "in_progress"
     },
     "progress_ledger": {
-      "current_state": "D0_through_D6_complete_with_final_identity_receipts_review_and_remote_equality_required_before_public_closeout_claim",
+      "current_state": "D0_through_D5_complete_D6_honest_verification_candidate_awaiting_exact_identity_review_push_audit_and_generated_terminal_packet",
       "completed": [
         "authoritative_ops_and_dev_plan_written",
         "bounded_goal_loop_prompt_written",
@@ -709,7 +720,8 @@
         "D5_global_budget_separation_and_replay_gates_enforced_before_output",
         "D5_generic_caller_authored_simulator_evidence_remains_disabled",
         "D4_D5_independent_review_passed_no_blocking_findings",
-        "D6_closed_state_semantics_require_completed_D6_and_no_active_milestone",
+        "D6_premature_committed_closed_state_rejected_in_generated_terminal_authority_mode",
+        "D6_verification_candidate_semantics_require_active_FULL_VERIFY_nonterminal_and_in_progress_D6",
         "D6_automatic_SAIL_tiers_preflight_passed",
         "D6_final_identity_focused_automatic_full_review_and_remote_gates_frozen_before_push"
       ],
@@ -785,7 +797,13 @@
       },
       "workers": [],
       "leases": [],
-      "remaining": [],
+      "remaining": [
+        "exact_current_HEAD_final_focused_sail_fast_contract_sail_synthetic_golden_sail_integration_and_full_repository_test_receipts",
+        "fresh_independent_PASS_review_covering_every_exact_current_HEAD_test_receipt",
+        "push_current_main_HEAD_to_origin_main_and_confirm_remote_equality",
+        "post_push_D6_authority_audit_bound_to_current_HEAD_and_project_state",
+        "generated_merge_ready_terminal_authority_packet_with_zero_live_process_leases"
+      ],
       "blockers": [],
       "external_readiness_blockers": {
         "physical_measurement_and_motion": {
@@ -812,7 +830,7 @@
         "simulator_campaign_or_promotion",
         "physical_capture_or_robot_motion"
       ],
-      "next_step": "after_generated_final_identity_gates_pass_owner_controls_any_release_or_publication_beyond_origin_main"
+      "next_step": "commit_verification_candidate_run_exact_final_tiers_obtain_fresh_PASS_review_then_push_audit_and_generate_operational_terminal_packet"
     },
     "authority": {
       "pull_request": false,

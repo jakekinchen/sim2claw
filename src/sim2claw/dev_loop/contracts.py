@@ -14,10 +14,10 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_ROOT = REPO_ROOT / "configs" / "dev_loop" / "schemas"
 SCHEMA_PATHS = {
     "task": SCHEMA_ROOT / "task_contract_v1.json",
-    "review": SCHEMA_ROOT / "review_receipt_v1.json",
+    "review": SCHEMA_ROOT / "review_receipt_v2.json",
     "test": SCHEMA_ROOT / "test_receipt_v1.json",
     "process": SCHEMA_ROOT / "process_lease_v1.json",
-    "merge": SCHEMA_ROOT / "merge_readiness_v1.json",
+    "merge": SCHEMA_ROOT / "merge_readiness_v2.json",
 }
 
 

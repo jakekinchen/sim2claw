@@ -31,3 +31,19 @@ contains:
 Canonical generated paths are recorded in `project_state.json`. Final hashes,
 counts, durations, reviewer disposition, and remote equality are reported from
 those receipts after the transaction completes.
+
+## Verification-candidate correction
+
+An independent audit rejected the original committed `CLOSED` / terminal D6
+state as premature and self-referential: the exact-identity tests, fresh
+review, push, remote equality, authority audit, and merge-readiness packet
+cannot already be complete inside the commit that they must bind.
+
+The committed authority surfaces now remain an honest nonterminal candidate:
+`status=active`, `phase=FULL_VERIFY`, `terminal=false`, and `D6=in_progress`,
+with the five post-commit gates listed explicitly. In this mode validators
+reject committed terminal closure. Only a generated post-push `merge_ready`
+packet may become terminal authority, and only when it binds the exact current
+HEAD and project-state digest, the exact five final tier names, one fresh
+covering `PASS` review, remote equality, a clean tracked worktree, and zero
+live development-loop process leases.

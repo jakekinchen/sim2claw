@@ -3,16 +3,16 @@
 <!-- autonomous-dev-loop-current:start -->
 ## Generated current autonomous-development state
 
-- Status: `closed`.
-- Milestone: `D6` (`completed_final_identity_verification_review_and_repository_push_gated`).
+- Status: `active`.
+- Milestone: `D6` (`in_progress`).
 - Branch / remote: `main` / `origin/main`.
 - Baseline: `1ee6b7d5f45aecb3fc95006b6abf1141713cb927`.
-- Plan SHA-256: `d3cc39b0c562c4dbc50fc72273d4b49c0de0ca0a8973a6db90f3a483ec445bd3`.
+- Plan SHA-256: `cc480b36a9c490d91d2b504b585e29fb82a2510a1bbe05095c412ea0b65ea240`.
 - Goal SHA-256: `df0eecfb09a341c3fe1b295f59b3e4439d379256d5040df5de6f4adcad29f667`.
 - Scoped origin/main push: `true`.
 - External authority: provider, paid compute, training, simulator campaign/promotion, physical capture, gateway, and motion are `false`.
 - Physical readiness: `blocked_hardware_and_calibration_not_ready`; gateway remains `false`.
-- Next step: `after_generated_final_identity_gates_pass_owner_controls_any_release_or_publication_beyond_origin_main`.
+- Next step: `commit_verification_candidate_run_exact_final_tiers_obtain_fresh_PASS_review_then_push_audit_and_generate_operational_terminal_packet`.
 <!-- autonomous-dev-loop-current:end -->
 
 ## D0 activation snapshot — autonomous development operations and advancement

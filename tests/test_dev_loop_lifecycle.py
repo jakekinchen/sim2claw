@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import copy
+import json
+import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -28,7 +30,14 @@ from sim2claw.dev_loop.lifecycle import (
     verify_test_receipt,
     writer_lease_available,
 )
-from sim2claw.learning_factory_artifacts import canonical_digest
+from sim2claw.dev_loop.state import (
+    FINAL_REMAINING_GATES,
+    FINAL_REQUIRED_TEST_TIERS,
+    TERMINAL_AUTHORITY_MODE,
+    audit_dev_loop_authority,
+    update_current_ledger_block,
+)
+from sim2claw.learning_factory_artifacts import canonical_digest, sha256_file
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -315,135 +324,253 @@ def test_active_process_lease_completion_and_missing_process_orphaning(
     assert orphaned["process_present"] is False
 
 
-def _authority_audit(*, head: str, branch: str = "main") -> dict:
-    unsigned = {
-        "schema_version": "sim2claw.autonomous_dev_loop_authority_audit.v1",
-        "status": "pass",
-        "proof_class": "deterministic_repository_authority_consistency",
-        "active_milestone": "D6",
-        "git_identity": {
-            "branch": branch,
-            "head": head,
-            "remote": head,
+def _terminal_repo(tmp_path: Path) -> Path:
+    root = tmp_path / "work"
+    remote = tmp_path / "remote.git"
+    plan = root / "docs/goals/plan.md"
+    goal_loop = root / "docs/autonomous-workflow/goal-loop.md"
+    plan.parent.mkdir(parents=True)
+    goal_loop.parent.mkdir(parents=True)
+    plan.write_text("# Plan\n", encoding="utf-8")
+    goal_loop.write_text("# Goal loop\n", encoding="utf-8")
+    state = {
+        "schema_version": "sim2claw.autonomous_project_state.v1",
+        "current_milestone": "D6_VERIFICATION_AND_CLOSEOUT",
+        "autonomous_dev_loop": {
+            "schema_version": "sim2claw.autonomous_dev_loop_state.v1",
+            "status": "active",
+            "plan": "docs/goals/plan.md",
+            "plan_sha256": sha256_file(plan),
+            "goal_loop": "docs/autonomous-workflow/goal-loop.md",
+            "goal_loop_sha256": sha256_file(goal_loop),
+            "branch": "main",
+            "baseline_commit": "HEAD",
             "expected_remote": "origin/main",
-        },
-        "checks": [
-            {"name": name, "passed": True, "detail": "ok"}
-            for name in sorted(REQUIRED_AUTHORITY_AUDIT_CHECKS)
-        ],
-        "authority": {
-            "merge": True,
-            "push_origin_main": True,
-            "prior_sail_fast_forward_completed": True,
-            "history_rewrite": False,
-            "release": False,
-            "provider": False,
-            "paid_compute": False,
-            "training": False,
-            "simulator_campaign": False,
-            "simulator_promotion": False,
-            "physical_capture": False,
-            "robot_gateway": False,
-            "robot_motion": False,
+            "state_machine": {"phase": "FULL_VERIFY", "terminal": False},
+            "terminal_authority": {
+                "mode": TERMINAL_AUTHORITY_MODE,
+                "committed_state_may_be_terminal": False,
+                "required_test_tiers": list(FINAL_REQUIRED_TEST_TIERS),
+            },
+            "milestones": {
+                "D0": "completed",
+                "D1": "completed",
+                "D2": "completed",
+                "D3": "completed",
+                "D4": "completed",
+                "D5": "completed",
+                "D6": "in_progress",
+            },
+            "progress_ledger": {
+                "remaining": list(FINAL_REMAINING_GATES),
+                "next_step": "generate_terminal_packet",
+                "external_readiness_blockers": {
+                    "physical_measurement_and_motion": {
+                        "status": "blocked_hardware_and_calibration_not_ready",
+                        "physical_gateway_may_open": False,
+                        "measurement_evidence_available": False,
+                    }
+                },
+            },
+            "authority": {
+                "merge": True,
+                "push_origin_main": True,
+                "prior_sail_fast_forward_completed": True,
+                "history_rewrite": False,
+                "release": False,
+                "provider": False,
+                "paid_compute": False,
+                "training": False,
+                "simulator_campaign": False,
+                "simulator_promotion": False,
+                "physical_capture": False,
+                "robot_gateway": False,
+                "robot_motion": False,
+            },
         },
     }
-    return {**unsigned, "audit_digest": canonical_digest(unsigned)}
+    state_path = root / "docs/autonomous-workflow/project_state.json"
+    state_path.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+    (root / "GOAL.md").write_text(
+        "\n".join(
+            [
+                "# Goal",
+                "docs/goals/plan.md",
+                "docs/autonomous-workflow/goal-loop.md",
+                "Current milestone: **D6 — verification**",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    ledger = root / ".factory/orchestration-ledger.md"
+    ledger.parent.mkdir(parents=True)
+    ledger.write_text(
+        update_current_ledger_block(
+            "# Orchestration Ledger\n",
+            project_state=state,
+        ),
+        encoding="utf-8",
+    )
+    lifecycle.subprocess.run(
+        ["git", "init", "--bare", str(remote)], check=True, capture_output=True
+    )
+    lifecycle.subprocess.run(
+        ["git", "init", "-b", "main"], cwd=root, check=True, capture_output=True
+    )
+    lifecycle.subprocess.run(
+        ["git", "config", "user.email", "terminal@example.invalid"],
+        cwd=root,
+        check=True,
+    )
+    lifecycle.subprocess.run(
+        ["git", "config", "user.name", "Terminal Test"], cwd=root, check=True
+    )
+    lifecycle.subprocess.run(["git", "add", "."], cwd=root, check=True)
+    lifecycle.subprocess.run(
+        ["git", "commit", "-m", "verification candidate"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+    )
+    lifecycle.subprocess.run(
+        ["git", "remote", "add", "origin", str(remote)], cwd=root, check=True
+    )
+    lifecycle.subprocess.run(
+        ["git", "push", "-u", "origin", "main"], cwd=root, check=True, capture_output=True
+    )
+    return root
+
+
+def _final_test_receipts(root: Path, *, failed_tier: str | None = None) -> list[dict]:
+    receipts: list[dict] = []
+    for tier in FINAL_REQUIRED_TEST_TIERS:
+        identity = build_test_identity(
+            repo_root=root,
+            command=["pytest", f"tests/{tier}.py"],
+            relevant_paths=["docs/autonomous-workflow/project_state.json"],
+        )
+        failed = tier == failed_tier
+        receipts.append(
+            build_test_receipt(
+                identity=identity,
+                tier=tier,
+                exit_code=1 if failed else 0,
+                duration_seconds=1.0,
+                counts={"passed": 0 if failed else 1, "failed": 1 if failed else 0},
+                log_sha256="0" * 64,
+            )
+        )
+    return receipts
+
+
+def _final_review(
+    root: Path,
+    receipts: list[dict],
+    *,
+    decision: str = "PASS",
+    state_sha256: str | None = None,
+) -> dict:
+    return build_review_receipt(
+        task_contract=_task(root, role="reviewer"),
+        reviewed_commit=lifecycle._git(root, "rev-parse", "HEAD"),
+        decision=decision,
+        findings=[
+            {
+                "anchor": 0 if decision == "PASS" else 100,
+                "finding": "no blocking finding" if decision == "PASS" else "blocking",
+            }
+        ],
+        test_receipt_digests=[row["receipt_digest"] for row in receipts],
+        reviewed_state_sha256=state_sha256
+        or sha256_file(root / "docs/autonomous-workflow/project_state.json"),
+    )
 
 
 def test_merge_readiness_requires_current_verified_audit_tests_and_pass_review(
     tmp_path: Path,
 ) -> None:
-    identity = _identity()
-    head = identity["commit"]
-    test_receipt = _test_receipt(identity)
-    reviewer = _task(tmp_path, role="reviewer")
-    review = build_review_receipt(
-        task_contract=reviewer,
-        reviewed_commit=head,
-        decision="PASS",
-        findings=[{"anchor": 0, "finding": "no blocking finding"}],
-        test_receipt_digests=[test_receipt["receipt_digest"]],
-    )
-    audit = _authority_audit(head=head)
+    root = _terminal_repo(tmp_path)
+    receipts = _final_test_receipts(root)
+    review = _final_review(root, receipts)
+    audit = audit_dev_loop_authority(root)
     assert verify_authority_audit(audit)["status"] == "pass"
     packet = build_merge_readiness_packet(
-        branch="main",
-        head=head,
-        remote_head=head,
+        repo_root=root,
         authority_audit=audit,
-        test_receipts=[test_receipt],
+        test_receipts=receipts,
         review_receipts=[review],
         changed_paths=["src/sim2claw/dev_loop/lifecycle.py"],
     )
     assert packet["status"] == "merge_ready"
+    assert packet["terminal_authority"] is True
+    assert packet["required_test_tiers"] == list(FINAL_REQUIRED_TEST_TIERS)
     assert packet["authority"]["release"] is False
-    assert verify_merge_readiness_packet(packet)["packet_digest"] == packet["packet_digest"]
-
-    not_ready = build_merge_readiness_packet(
-        branch="main",
-        head=head,
-        remote_head="other",
-        authority_audit=audit,
-        test_receipts=[test_receipt],
-        review_receipts=[review],
-        changed_paths=[],
+    assert (
+        verify_merge_readiness_packet(packet, repo_root=root)["packet_digest"]
+        == packet["packet_digest"]
     )
-    assert not_ready["status"] == "not_ready"
+
+    state_path = root / "docs/autonomous-workflow/project_state.json"
+    state_path.write_text(
+        state_path.read_text(encoding="utf-8") + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(DevLoopLifecycleError, match="stale"):
+        verify_merge_readiness_packet(packet, repo_root=root)
+    lifecycle.subprocess.run(["git", "add", str(state_path)], cwd=root, check=True)
+    lifecycle.subprocess.run(
+        ["git", "commit", "-m", "post-packet mutation"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+    )
+    with pytest.raises(DevLoopLifecycleError, match="stale"):
+        verify_merge_readiness_packet(packet, repo_root=root)
 
 
 def test_merge_readiness_rejects_stop_stale_and_unverified_evidence(
+    monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    identity = _identity()
-    head = identity["commit"]
-    test_receipt = _test_receipt(identity)
-    reviewer = _task(tmp_path, role="reviewer")
-    stopped = build_review_receipt(
-        task_contract=reviewer,
-        reviewed_commit=head,
-        decision="STOP",
-        findings=[{"anchor": 100, "finding": "blocking"}],
-        test_receipt_digests=[test_receipt["receipt_digest"]],
-    )
+    root = _terminal_repo(tmp_path)
+    receipts = _final_test_receipts(root)
+    audit = audit_dev_loop_authority(root)
+    stopped = _final_review(root, receipts, decision="STOP")
     packet = build_merge_readiness_packet(
-        branch="main",
-        head=head,
-        remote_head=head,
-        authority_audit=_authority_audit(head=head),
-        test_receipts=[test_receipt],
+        repo_root=root,
+        authority_audit=audit,
+        test_receipts=receipts,
         review_receipts=[stopped],
         changed_paths=["src/sim2claw/dev_loop/lifecycle.py"],
     )
     assert packet["status"] == "not_ready"
+    assert packet["terminal_authority"] is False
 
-    bad_audit = _authority_audit(head=head)
+    bad_audit = copy.deepcopy(audit)
     bad_audit["audit_digest"] = "0" * 64
     with pytest.raises(DevLoopLifecycleError, match="authority audit digest mismatch"):
         build_merge_readiness_packet(
-            branch="main",
-            head=head,
-            remote_head=head,
+            repo_root=root,
             authority_audit=bad_audit,
-            test_receipts=[test_receipt],
+            test_receipts=receipts,
             review_receipts=[stopped],
             changed_paths=[],
         )
 
-    malformed_audit = _authority_audit(head=head)
+    malformed_audit = copy.deepcopy(audit)
     malformed_audit["checks"].append("not-a-check")
     malformed_audit = _redigest(malformed_audit, "audit_digest")
     with pytest.raises(DevLoopLifecycleError, match="check is malformed"):
         build_merge_readiness_packet(
-            branch="main",
-            head=head,
-            remote_head=head,
+            repo_root=root,
             authority_audit=malformed_audit,
-            test_receipts=[test_receipt],
+            test_receipts=receipts,
             review_receipts=[stopped],
             changed_paths=[],
         )
 
-    fabricated = _authority_audit(head=head)
+    fabricated = copy.deepcopy(audit)
     fabricated["checks"] = [
         {"name": "bogus", "passed": True, "detail": "self-asserted"}
     ]
@@ -452,37 +579,97 @@ def test_merge_readiness_rejects_stop_stale_and_unverified_evidence(
     fabricated = _redigest(fabricated, "audit_digest")
     with pytest.raises(DevLoopLifecycleError, match="required check set changed"):
         build_merge_readiness_packet(
-            branch="main",
-            head=head,
-            remote_head=head,
+            repo_root=root,
             authority_audit=fabricated,
-            test_receipts=[test_receipt],
+            test_receipts=receipts,
             review_receipts=[stopped],
             changed_paths=[],
         )
 
-    wrong_gate = _authority_audit(head=head)
-    wrong_gate["active_milestone"] = "D5"
-    wrong_gate["git_identity"]["expected_remote"] = "evil/remote"
-    wrong_gate = _redigest(wrong_gate, "audit_digest")
-    wrong_gate_packet = build_merge_readiness_packet(
-        branch="main",
-        head=head,
-        remote_head=head,
-        authority_audit=wrong_gate,
-        test_receipts=[test_receipt],
-        review_receipts=[stopped],
+    missing_tier = build_merge_readiness_packet(
+        repo_root=root,
+        authority_audit=audit,
+        test_receipts=receipts[:-1],
+        review_receipts=[_final_review(root, receipts[:-1])],
         changed_paths=[],
     )
-    assert wrong_gate_packet["status"] == "not_ready"
+    assert missing_tier["status"] == "not_ready"
 
-    stale = build_merge_readiness_packet(
-        branch="main",
-        head="f" * 40,
-        remote_head="f" * 40,
-        authority_audit=_authority_audit(head="f" * 40),
-        test_receipts=[test_receipt],
-        review_receipts=[stopped],
+    missing_review = build_merge_readiness_packet(
+        repo_root=root,
+        authority_audit=audit,
+        test_receipts=receipts,
+        review_receipts=[],
         changed_paths=[],
     )
-    assert stale["status"] == "not_ready"
+    assert missing_review["status"] == "not_ready"
+
+    pass_review = _final_review(root, receipts)
+    duplicate_review = build_merge_readiness_packet(
+        repo_root=root,
+        authority_audit=audit,
+        test_receipts=receipts,
+        review_receipts=[pass_review, _final_review(root, receipts)],
+        changed_paths=[],
+    )
+    assert duplicate_review["status"] == "not_ready"
+
+    with pytest.raises(ValueError, match="non-unique elements"):
+        build_merge_readiness_packet(
+            repo_root=root,
+            authority_audit=audit,
+            test_receipts=[*receipts, receipts[0]],
+            review_receipts=[_final_review(root, receipts)],
+            changed_paths=[],
+        )
+
+    failed = _final_test_receipts(root, failed_tier="full_repository")
+    failed_packet = build_merge_readiness_packet(
+        repo_root=root,
+        authority_audit=audit,
+        test_receipts=failed,
+        review_receipts=[_final_review(root, failed)],
+        changed_paths=[],
+    )
+    assert failed_packet["status"] == "not_ready"
+
+    stale_review = _final_review(root, receipts, state_sha256="f" * 64)
+    stale_review_packet = build_merge_readiness_packet(
+        repo_root=root,
+        authority_audit=audit,
+        test_receipts=receipts,
+        review_receipts=[stale_review],
+        changed_paths=[],
+    )
+    assert stale_review_packet["status"] == "not_ready"
+
+    lease_root = root / "outputs/dev-loop/final"
+    lease_root.mkdir(parents=True)
+    monkeypatch.setattr(
+        lifecycle,
+        "process_identity",
+        lambda _pid: {
+            "start_token": "test-token",
+            "command": "pytest",
+            "cwd": str(root),
+        },
+    )
+    active_lease = build_process_lease(
+        lease_id="still-active",
+        task_contract=_task(root),
+        pid=os.getpid(),
+        expected_command_substring="pytest",
+        expires_at=datetime.now(timezone.utc) + timedelta(minutes=5),
+    )
+    (lease_root / "process-lease.json").write_text(
+        json.dumps(active_lease),
+        encoding="utf-8",
+    )
+    active_packet = build_merge_readiness_packet(
+        repo_root=root,
+        authority_audit=audit,
+        test_receipts=receipts,
+        review_receipts=[_final_review(root, receipts)],
+        changed_paths=[],
+    )
+    assert active_packet["status"] == "not_ready"

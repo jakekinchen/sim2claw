@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/dev-loop-merge-readiness-v2.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "branch",
+    "head",
+    "remote_head",
+    "project_state_path",
+    "project_state_sha256",
+    "project_state_digest",
+    "state_semantics",
+    "authority_audit_digest",
+    "authority_audit",
+    "required_test_tiers",
+    "test_receipt_digests",
+    "test_receipts",
+    "test_evidence",
+    "review_receipt_digests",
+    "review_receipts",
+    "review_evidence",
+    "process_lease_digests",
+    "live_process_lease_count",
+    "tracked_worktree_clean",
+    "changed_paths",
+    "authority",
+    "owner_gates",
+    "proof_class",
+    "terminal_authority",
+    "packet_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "sim2claw.dev_loop_merge_readiness.v2"},
+    "status": {"enum": ["merge_ready", "not_ready"]},
+    "branch": {"type": "string", "minLength": 1},
+    "head": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "remote_head": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "project_state_path": {"const": "docs/autonomous-workflow/project_state.json"},
+    "project_state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "project_state_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "state_semantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "phase", "terminal", "d6_status", "remaining", "terminal_authority_mode"],
+      "properties": {
+        "status": {"type": "string"},
+        "phase": {"type": "string"},
+        "terminal": {"type": "boolean"},
+        "d6_status": {"type": "string"},
+        "remaining": {"type": "array", "items": {"type": "string"}},
+        "terminal_authority_mode": {"type": "string"}
+      }
+    },
+    "authority_audit_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "authority_audit": {"type": "object"},
+    "required_test_tiers": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string"}
+    },
+    "test_receipt_digests": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "test_receipts": {"type": "array", "items": {"type": "object"}},
+    "test_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["tier", "receipt_digest", "identity_digest", "commit", "branch", "status", "exit_code"],
+        "properties": {
+          "tier": {"type": "string"},
+          "receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "identity_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "branch": {"type": "string"},
+          "status": {"enum": ["pass", "fail"]},
+          "exit_code": {"type": "integer"}
+        }
+      }
+    },
+    "review_receipt_digests": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "review_receipts": {"type": "array", "items": {"type": "object"}},
+    "review_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["receipt_digest", "reviewed_commit", "reviewed_state_sha256", "decision", "test_receipt_digests"],
+        "properties": {
+          "receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "reviewed_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "reviewed_state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "decision": {"enum": ["CONTINUE", "NUDGE", "REDIRECT", "STOP", "ESCALATE", "PASS"]},
+          "test_receipt_digests": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        }
+      }
+    },
+    "process_lease_digests": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "live_process_lease_count": {"type": "integer", "minimum": 0},
+    "tracked_worktree_clean": {"type": "boolean"},
+    "changed_paths": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "authority": {"type": "object", "additionalProperties": {"type": "boolean"}},
+    "owner_gates": {"type": "array", "items": {"type": "string"}},
+    "proof_class": {"const": "deterministic_repository_merge_readiness_no_release_authority"},
+    "terminal_authority": {"type": "boolean"},
+    "packet_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

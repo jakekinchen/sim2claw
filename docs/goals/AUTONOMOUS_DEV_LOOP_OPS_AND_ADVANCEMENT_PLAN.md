@@ -293,7 +293,14 @@ on `main`.
 **Gate:** Focused workflow/SAIL suites, automatic SAIL CI tiers, and the full
 repository suite pass once at the final identity; a fresh read-only review has
 no blocking finding; project state, goal, ledger, local `main`, and
-`origin/main` agree.
+`origin/main` agree. The committed project state remains an active,
+nonterminal `FULL_VERIFY` candidate with D6 in progress; it may not claim its
+own post-commit receipts. After push, a generated merge-readiness v2 packet is
+the operational terminal authority only when it embeds and verifies exactly
+the `final_focused`, `sail_fast_contract`, `sail_synthetic_golden`,
+`sail_integration`, and `full_repository` receipts, one covering fresh `PASS`
+review, a current state digest and HEAD, remote equality, a clean tracked
+worktree, and zero live development-loop process leases.
 
 ## Implementation slices
 
@@ -325,8 +332,9 @@ Before completion, preserve:
 - changed-file inventory and commit list;
 - independent reviewer disposition;
 - branch/remote equality;
-- explicit false values for merge, release, training, provider, simulator
-  promotion, physical capture, and robot motion authority.
+- explicit false values for release, training, provider, simulator promotion,
+  physical capture, and robot motion authority; repository merge/push authority
+  remains the separately recorded owner-approved scope.
 
 Generated runtime data belongs under ignored `outputs/` or `/tmp`; only frozen
 fixtures, schemas, compact receipts, and read-only summaries are committed.
