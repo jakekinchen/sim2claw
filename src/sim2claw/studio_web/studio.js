@@ -179,19 +179,26 @@ const elements = {
   orchestratorResume: document.querySelector("#orchestrator-resume"),
   orchestratorStop: document.querySelector("#orchestrator-stop"),
   orchestratorRefresh: document.querySelector("#orchestrator-refresh"),
+  orchestratorCopy: document.querySelector("#orchestrator-copy"),
   orchestratorMode: document.querySelector("#orchestrator-mode"),
   orchestratorPolling: document.querySelector("#orchestrator-polling"),
   orchestratorUserTimer: document.querySelector("#orchestrator-user-timer"),
   orchestratorWorldTimer: document.querySelector("#orchestrator-world-timer"),
   orchestratorMessage: document.querySelector("#orchestrator-message"),
   orchestratorSourceHealth: document.querySelector("#orchestrator-source-health"),
+  orchestratorSourceTitle: document.querySelector("#orchestrator-source-title"),
   orchestratorFrame: document.querySelector("#orchestrator-frame"),
   orchestratorFrameEmpty: document.querySelector("#orchestrator-frame-empty"),
   orchestratorSourceHost: document.querySelector("#orchestrator-source-host"),
+  orchestratorSourceRole: document.querySelector("#orchestrator-source-role"),
+  orchestratorSourceRegistration: document.querySelector("#orchestrator-source-registration"),
   orchestratorSourceTime: document.querySelector("#orchestrator-source-time"),
   orchestratorSourceHash: document.querySelector("#orchestrator-source-hash"),
   orchestratorSimilarity: document.querySelector("#orchestrator-similarity"),
   orchestratorSuppressed: document.querySelector("#orchestrator-suppressed"),
+  orchestratorWorkcellState: document.querySelector("#orchestrator-workcell-state"),
+  orchestratorArms: document.querySelector("#orchestrator-arms"),
+  orchestratorCameras: document.querySelector("#orchestrator-cameras"),
   orchestratorBaseState: document.querySelector("#orchestrator-base-state"),
   orchestratorSquares: document.querySelector("#orchestrator-squares"),
   orchestratorMismatches: document.querySelector("#orchestrator-mismatches"),
@@ -202,6 +209,9 @@ const elements = {
   orchestratorPlan: document.querySelector("#orchestrator-plan"),
   orchestratorCurrentAction: document.querySelector("#orchestrator-current-action"),
   orchestratorPostcondition: document.querySelector("#orchestrator-postcondition"),
+  orchestratorReplayResult: document.querySelector("#orchestrator-replay-result"),
+  orchestratorReplayStatus: document.querySelector("#orchestrator-replay-status"),
+  orchestratorReplayDetail: document.querySelector("#orchestrator-replay-detail"),
   orchestratorModel: document.querySelector("#orchestrator-model"),
   orchestratorModelState: document.querySelector("#orchestrator-model-state"),
   orchestratorShadowReview: document.querySelector("#orchestrator-shadow-review"),
@@ -212,6 +222,7 @@ const elements = {
   orchestratorShadowResult: document.querySelector("#orchestrator-shadow-result"),
   orchestratorChatForm: document.querySelector("#orchestrator-chat-form"),
   orchestratorChat: document.querySelector("#orchestrator-chat"),
+  orchestratorConversation: document.querySelector("#orchestrator-conversation"),
   orchestratorSkillCount: document.querySelector("#orchestrator-skill-count"),
   orchestratorSkills: document.querySelector("#orchestrator-skills"),
   orchestratorLedgerCount: document.querySelector("#orchestrator-ledger-count"),
@@ -219,7 +230,9 @@ const elements = {
 };
 
 function text(node, value) {
-  if (node) node.textContent = value == null ? "" : String(value);
+  if (!node) return;
+  const nextValue = value == null ? "" : String(value);
+  if (node.textContent !== nextValue) node.textContent = nextValue;
 }
 
 function formatCampaign(value) {
@@ -243,6 +256,23 @@ function formatIdentifier(value) {
     .replaceAll("_", " ")
     .replaceAll("-", " ")
     .replace(/\b[a-z]/g, (character) => character.toUpperCase());
+}
+
+function isOverheadCameraMedia(source = {}) {
+  const identity = [
+    source.camera_role,
+    source.camera,
+    source.id,
+    source.title,
+    source.url,
+  ].join(" ").toLowerCase();
+  return Number(source.rotation_degrees) === 180
+    || identity.includes("overhead")
+    || identity.includes("c922");
+}
+
+function orientRecordedMedia(element, source) {
+  element?.classList.toggle("is-overhead-camera", isOverheadCameraMedia(source));
 }
 
 function formatCaseMove(caseId) {
@@ -579,6 +609,7 @@ function mountThumbnail(container, episode, priority = false) {
 
   if (media.kind === "video" && media.url) {
     const video = document.createElement("video");
+    orientRecordedMedia(video, { ...episode, ...media });
     video.muted = true;
     video.playsInline = true;
     video.tabIndex = -1;
@@ -736,8 +767,10 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
   stopFramePlayback();
   elements.video.pause();
   elements.video.removeAttribute("src");
+  orientRecordedMedia(elements.video, {});
   elements.video.load();
   elements.previewVideo.removeAttribute("src");
+  orientRecordedMedia(elements.previewVideo, {});
   elements.previewVideo.load();
   elements.frame.removeAttribute("src");
   elements.previewFrame.removeAttribute("src");
@@ -862,6 +895,9 @@ function loadRecordingFeed(episode, index) {
   if (!feed?.url) return;
   state.recordingFeedIndex = index;
   state.recordingWindow = null;
+  const orientedFeed = { ...episode, ...feed };
+  orientRecordedMedia(elements.video, orientedFeed);
+  orientRecordedMedia(elements.previewVideo, orientedFeed);
   elements.video.pause();
   elements.video.src = feed.url;
   elements.video.playbackRate = state.playbackRate;
@@ -1663,10 +1699,24 @@ function renderSimulation() {
   const subtitle = document.createElement("p");
   text(label, `Current scene · ${simulation.asset_revision || "local"}`);
   text(title, simulation.title);
-  text(subtitle, simulation.subtitle);
+  const accuracy = simulation.simulator_accuracy;
+  text(
+    subtitle,
+    accuracy
+      ? `${simulation.subtitle}. Latest bounded fit recovered selected-piece contact; it remains a kinematic candidate, not the canonical scene.`
+      : simulation.subtitle,
+  );
   const facts = document.createElement("div");
   facts.className = "simulation-facts";
-  [["Tasks", simulation.task_count], ["Robots", simulation.robot_count], ["Board", simulation.board_pose_label || "Current"]].forEach(([name, value]) => {
+  const factRows = [["Tasks", simulation.task_count], ["Robots", simulation.robot_count], ["Board", simulation.board_pose_label || "Current"]];
+  if (accuracy) {
+    factRows.push(
+      ["Train contact", `${accuracy.contact_episodes}/${accuracy.episode_count}`],
+      ["Held-out contact", `${accuracy.held_out_contact_episodes}/${accuracy.held_out_episode_count}`],
+      ["Completed moves", accuracy.success_episodes],
+    );
+  }
+  factRows.forEach(([name, value]) => {
     const fact = document.createElement("span");
     const factValue = document.createElement("b");
     text(fact, name);
@@ -1674,7 +1724,17 @@ function renderSimulation() {
     fact.append(factValue);
     facts.append(fact);
   });
+  let boundary = null;
+  if (accuracy) {
+    boundary = document.createElement("small");
+    boundary.className = "simulation-boundary";
+    text(
+      boundary,
+      `${formatIdentifier(accuracy.proof_state)} · ${accuracy.event_rms_mm} mm event RMS · ${accuracy.lift_episodes}/${accuracy.episode_count} lifts · ${accuracy.claim}`,
+    );
+  }
   copy.append(label, title, subtitle, facts);
+  if (boundary) copy.append(boundary);
   elements.simulationCard.append(copy);
 }
 
@@ -2296,6 +2356,36 @@ function orchestratorEventDetail(row) {
     || "receipt recorded";
 }
 
+function orchestratorHasActiveTextSelection() {
+  const selection = window.getSelection?.();
+  const root = document.querySelector('[data-view-panel="orchestrator"]');
+  if (!root || !selection || selection.isCollapsed || selection.rangeCount === 0) return false;
+  return root.contains(selection.anchorNode) || root.contains(selection.focusNode);
+}
+
+async function copyOrchestratorText() {
+  const root = document.querySelector('[data-view-panel="orchestrator"]');
+  const value = root?.innerText?.trim();
+  if (!value) return;
+  const previousLabel = elements.orchestratorCopy.textContent;
+  try {
+    await navigator.clipboard.writeText(value);
+    text(elements.orchestratorCopy, "Copied");
+  } catch (_error) {
+    const field = document.createElement("textarea");
+    field.value = value;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.opacity = "0";
+    document.body.append(field);
+    field.select();
+    const copied = document.execCommand("copy");
+    field.remove();
+    text(elements.orchestratorCopy, copied ? "Copied" : "Copy failed");
+  }
+  window.setTimeout(() => text(elements.orchestratorCopy, previousLabel), 1600);
+}
+
 function renderOrchestrator() {
   const runtime = state.orchestrator;
   if (!runtime) return;
@@ -2316,9 +2406,11 @@ function renderOrchestrator() {
     text(option, `${formatIdentifier(identifier)}${capability.selectable ? "" : " · unavailable"}`);
     elements.orchestratorMode.append(option);
   });
-  const preferredMode = machineState === "STOPPED" && runtime.modes?.[previousMode]
-    ? previousMode
-    : runtime.mode;
+  const preferredMode = machineState === "STOPPED" && runtime.modes?.demo_physical?.selectable
+    ? "demo_physical"
+    : machineState === "STOPPED" && runtime.modes?.[previousMode]
+      ? previousMode
+      : runtime.mode;
   elements.orchestratorMode.value = preferredMode || "observe_only";
   elements.orchestratorMode.disabled = !available || machineState !== "STOPPED" || state.orchestratorRequestActive;
 
@@ -2337,12 +2429,17 @@ function renderOrchestrator() {
   elements.orchestratorPause.disabled = !activeStates.has(machineState) || state.orchestratorRequestActive;
   elements.orchestratorResume.disabled = machineState !== "PAUSED" || state.orchestratorRequestActive;
   elements.orchestratorStop.disabled = machineState === "STOPPED" || state.orchestratorRequestActive;
-  elements.orchestratorRefresh.disabled = !activeStates.has(machineState) || state.orchestratorRequestActive;
+  const canPreviewStopped = machineState === "STOPPED" && runtime.source?.ready;
+  elements.orchestratorRefresh.disabled = (!activeStates.has(machineState) && !canPreviewStopped) || state.orchestratorRequestActive;
+  text(elements.orchestratorRefresh, machineState === "STOPPED" ? "Preview overhead" : "Refresh frame");
   elements.orchestratorChat.disabled = !activeStates.has(machineState) || state.orchestratorRequestActive;
   const chatButton = elements.orchestratorChatForm.querySelector("button");
   if (chatButton) chatButton.disabled = !activeStates.has(machineState) || state.orchestratorRequestActive;
 
-  let message = "Loopback controls ready. Physical authority remains closed.";
+  const demo = runtime.demo_loop || {};
+  let message = demo.ready
+    ? "Demo physical ready. Type “loop it” to run the fixed five-minute script."
+    : "Loopback controls ready.";
   if (!available) message = runtime.reason || "Task Orchestrator is unavailable.";
   else if (state.orchestratorRequestError) message = state.orchestratorRequestError;
   else if (runtime.fault) message = `${formatIdentifier(runtime.fault.category)}: ${runtime.fault.message || runtime.fault.code || "session fault"}`;
@@ -2350,24 +2447,70 @@ function renderOrchestrator() {
   else if (machineState === "STOPPED" && runtime.task_outcome === "complete") message = "Verified complete by the deterministic managed-region checker.";
   else if (machineState === "STOPPED" && !selectedCapability?.selectable) message = selectedCapability?.reason || "Selected mode did not pass preflight.";
   else if (runtime.source?.health === "fault") message = runtime.source.latest_error?.message || "Overhead source faulted.";
+  else if (demo.status === "running" || demo.status === "stopping") message = `Demo loop ${demo.status} · ${demo.completed_moves || 0}/${demo.total_moves || 12} moves complete · Stop finishes the current guarded move.`;
+  else if (demo.status === "failed") message = demo.error || "The fixed demo loop failed safely.";
   text(elements.orchestratorMessage, message);
 
   const source = runtime.source || {};
+  text(elements.orchestratorSourceTitle, source.label || formatIdentifier(source.camera_id || "Overhead source"));
   text(elements.orchestratorSourceHealth, formatIdentifier(source.health || "unknown"));
-  text(elements.orchestratorSourceHost, source.host || "—");
+  text(elements.orchestratorSourceHost, source.device_name || source.host || "—");
+  text(elements.orchestratorSourceRole, source.camera_role || "—");
+  text(elements.orchestratorSourceRegistration, formatIdentifier(source.registration_state || "unknown"));
   text(elements.orchestratorSourceTime, source.latest_captured_at ? new Date(source.latest_captured_at).toLocaleTimeString() : "—");
-  text(elements.orchestratorSourceHash, source.latest_accepted_sha256 ? source.latest_accepted_sha256.slice(0, 16) : "—");
+  const frameHash = source.latest_accepted_sha256 || source.latest_preview_sha256;
+  text(elements.orchestratorSourceHash, frameHash ? frameHash.slice(0, 16) : "—");
   text(elements.orchestratorSimilarity, runtime.comparison?.similarity == null ? "—" : Number(runtime.comparison.similarity).toFixed(4));
   text(elements.orchestratorSuppressed, runtime.comparison?.suppression_count ?? 0);
-  if (source.latest_accepted_sha256 && source.latest_accepted_sha256 !== state.orchestratorFrameHash) {
-    state.orchestratorFrameHash = source.latest_accepted_sha256;
-    elements.orchestratorFrame.src = `/api/orchestrator/frame?sha=${encodeURIComponent(source.latest_accepted_sha256)}`;
+  if (frameHash && frameHash !== state.orchestratorFrameHash) {
+    state.orchestratorFrameHash = frameHash;
+    elements.orchestratorFrame.src = `/api/orchestrator/frame?sha=${encodeURIComponent(frameHash)}`;
     elements.orchestratorFrame.hidden = false;
     elements.orchestratorFrameEmpty.hidden = true;
-  } else if (!source.latest_accepted_sha256) {
+  } else if (!frameHash) {
     elements.orchestratorFrame.hidden = true;
     elements.orchestratorFrameEmpty.hidden = false;
   }
+
+  const workcell = runtime.workcell || {};
+  const arms = workcell.arms || [];
+  const cameras = workcell.cameras || [];
+  const connectedArms = arms.filter((row) => row.connected).length;
+  const availableCameras = cameras.filter((row) => row.available).length;
+  text(elements.orchestratorWorkcellState, `${connectedArms}/${arms.length || 1} follower · ${availableCameras}/${cameras.length || 1} overhead${demo.physical_authority ? " · DEMO OPEN" : ""}`);
+  elements.orchestratorArms.replaceChildren();
+  arms.forEach((arm) => {
+    const row = document.createElement("div");
+    row.className = "orchestrator-device-row";
+    row.dataset.ready = String(Boolean(arm.connected));
+    const copy = document.createElement("div");
+    const name = document.createElement("b");
+    const detail = document.createElement("small");
+    text(name, `${formatIdentifier(arm.role)} arm`);
+    text(detail, arm.port || `Expected ${arm.serial_suffix || "SO-101"} bus`);
+    copy.append(name, detail);
+    const status = document.createElement("em");
+    text(status, arm.connected ? (demo.ready ? "Connected · demo script ready" : "Connected · preflight on run") : "Offline");
+    row.append(copy, status);
+    elements.orchestratorArms.append(row);
+  });
+  elements.orchestratorCameras.replaceChildren();
+  cameras.forEach((camera) => {
+    const row = document.createElement("div");
+    row.className = "orchestrator-device-row";
+    row.dataset.ready = String(Boolean(camera.available));
+    row.dataset.primary = String(Boolean(camera.primary_for_orchestrator));
+    const copy = document.createElement("div");
+    const name = document.createElement("b");
+    const detail = document.createElement("small");
+    text(name, `${camera.label}${camera.primary_for_orchestrator ? " · primary" : ""}`);
+    text(detail, camera.device_name || camera.role || camera.detail);
+    copy.append(name, detail);
+    const status = document.createElement("em");
+    text(status, camera.busy ? `Busy · ${formatIdentifier(camera.busy_owner)}` : camera.available ? "Ready" : "Offline");
+    row.append(copy, status);
+    elements.orchestratorCameras.append(row);
+  });
 
   const base = runtime.base_case;
   text(elements.orchestratorBaseState, base ? formatIdentifier(base.state) : "Awaiting frame");
@@ -2403,8 +2546,32 @@ function renderOrchestrator() {
   text(elements.orchestratorPlan, orchestratorActionLabel(proposed));
   text(elements.orchestratorCurrentAction, orchestratorActionLabel(queue.current_action));
   text(elements.orchestratorPostcondition, queue.expected_postcondition ? JSON.stringify(queue.expected_postcondition) : "None");
+  const replay = runtime.supervised_replay;
+  elements.orchestratorReplayResult.hidden = !replay;
+  if (replay) {
+    text(elements.orchestratorReplayStatus, `${formatIdentifier(replay.status)} · B2→B1 · torque ${replay.torque_enabled_after ? "on" : "off"}`);
+    text(
+      elements.orchestratorReplayDetail,
+      replay.status === "completed"
+        ? `${replay.completed_sample_count}/${replay.source_sample_count} commands completed · ${replay.exact_command_sample_count} exact · outcome requires visual review · recorded replay, not ACT`
+        : `${replay.failure_message || "Replay failed safely"} · no task-success claim`,
+    );
+  }
   text(elements.orchestratorModel, `${runtime.model?.label || "5.6 luna"} · ${runtime.model?.reasoning_effort || "medium"}`);
   text(elements.orchestratorModelState, runtime.model?.identity_verified ? "Exact identity verified" : runtime.model?.credential_configured ? "Credential configured" : "Credential unavailable");
+
+  elements.orchestratorConversation.replaceChildren();
+  (runtime.conversation || []).forEach((message) => {
+    const row = document.createElement("div");
+    row.className = "orchestrator-conversation-row";
+    row.dataset.role = message.role;
+    const role = document.createElement("b");
+    text(role, message.role === "assistant" ? "5.6 luna" : "You");
+    const body = document.createElement("span");
+    text(body, message.message);
+    row.append(role, body);
+    elements.orchestratorConversation.append(row);
+  });
 
   const skills = runtime.allowed_skills || [];
   const shadowVisible = runtime.mode === "physical_shadow";
@@ -2485,7 +2652,7 @@ async function fetchOrchestrator() {
   } catch (error) {
     state.orchestratorRequestError = String(error.message || error);
   }
-  renderOrchestrator();
+  if (!orchestratorHasActiveTextSelection()) renderOrchestrator();
 }
 
 async function postOrchestrator(path, payload) {
@@ -2803,7 +2970,11 @@ elements.orchestratorStart.addEventListener("click", () => postOrchestrator("ses
 elements.orchestratorPause.addEventListener("click", () => postOrchestrator("session", { action: "pause" }));
 elements.orchestratorResume.addEventListener("click", () => postOrchestrator("session", { action: "resume" }));
 elements.orchestratorStop.addEventListener("click", () => postOrchestrator("session", { action: "stop" }));
-elements.orchestratorRefresh.addEventListener("click", () => postOrchestrator("refresh", {}));
+elements.orchestratorRefresh.addEventListener("click", () => postOrchestrator(
+  state.orchestrator?.state === "STOPPED" ? "preview" : "refresh",
+  {},
+));
+elements.orchestratorCopy.addEventListener("click", copyOrchestratorText);
 elements.orchestratorPolling.addEventListener("change", () => {
   if (state.orchestrator?.state === "STOPPED") return;
   postOrchestrator("session", {

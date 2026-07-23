@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import subprocess
 import threading
 import unittest
 from typing import Any
@@ -195,6 +196,39 @@ class StudioLiveTest(unittest.TestCase):
             service.snapshot()
             self.assertTrue(process.terminated)
             self.assertTrue(FakeGateway.instances[0].closed)
+        finally:
+            service.shutdown()
+
+    def test_orchestrator_snapshot_uses_the_primary_overhead_inventory_role(self) -> None:
+        commands: list[list[str]] = []
+
+        def run(command: list[str], **_kwargs: Any) -> subprocess.CompletedProcess[bytes]:
+            commands.append(command)
+            return subprocess.CompletedProcess(command, 0, stdout=b"fixture-jpeg", stderr=b"")
+
+        service = LiveWorkspaceService(
+            FakeRecorder(),
+            camera_discovery=_camera_inventory,
+            gateway_factory=FakeGateway,
+            run_factory=run,
+        )
+        try:
+            source = service.camera_source_status("logitech-overhead")
+            self.assertTrue(source["ready"])
+            self.assertEqual(source["role"], "overhead_workspace")
+            captured = service.capture_camera_snapshot("logitech-overhead")
+            self.assertEqual(captured["body"], b"fixture-jpeg")
+            self.assertEqual(captured["camera_role"], "overhead_workspace")
+            command = commands[0]
+            self.assertEqual(command[command.index("-i") + 1], "0:none")
+            self.assertEqual(command[command.index("-frames:v") + 1], "1")
+            inventory = service.orchestrator_inventory()
+            self.assertEqual(inventory["primary_camera_id"], "logitech-overhead")
+            overhead = next(
+                row for row in inventory["cameras"] if row["id"] == "logitech-overhead"
+            )
+            self.assertTrue(overhead["primary_for_orchestrator"])
+            self.assertFalse(inventory["physical_authority"])
         finally:
             service.shutdown()
 

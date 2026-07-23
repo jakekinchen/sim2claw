@@ -241,6 +241,7 @@ class PhysicalPoseMirror:
 
 GatewayFactory = Callable[..., SO101PhysicalGateway]
 PopenFactory = Callable[..., subprocess.Popen[bytes]]
+RunFactory = Callable[..., subprocess.CompletedProcess[bytes]]
 
 
 class LiveWorkspaceService:
@@ -253,12 +254,14 @@ class LiveWorkspaceService:
         camera_discovery: Callable[[], dict[str, Any]] = discover_live_cameras,
         gateway_factory: GatewayFactory = SO101PhysicalGateway,
         popen_factory: PopenFactory = subprocess.Popen,
+        run_factory: RunFactory = subprocess.run,
         clock: Callable[[], float] = time.monotonic,
     ) -> None:
         self.recorder = recorder
         self.camera_discovery = camera_discovery
         self.gateway_factory = gateway_factory
         self.popen_factory = popen_factory
+        self.run_factory = run_factory
         self.clock = clock
         self.lock = threading.RLock()
         self.leases: dict[str, float] = {}
@@ -272,6 +275,7 @@ class LiveWorkspaceService:
         self.camera_cache_monotonic: float | None = None
         self.camera_processes: dict[int, subprocess.Popen[bytes]] = {}
         self.camera_process_ids: dict[int, str] = {}
+        self.snapshot_camera_ids: set[str] = set()
         self.stop_event = threading.Event()
         self.reaper = threading.Thread(
             target=self._reap_loop,
@@ -568,6 +572,168 @@ class LiveWorkspaceService:
             raise LiveWorkspaceError(row["error"] or "The requested camera is unavailable.")
         return spec, row, inventory
 
+    def camera_source_status(self, camera_id: str) -> dict[str, Any]:
+        """Return a bounded source preflight without opening a camera stream."""
+
+        with self.lock:
+            try:
+                _spec, row, _inventory = self._camera_spec_and_row(camera_id)
+            except LiveWorkspaceError as error:
+                return {
+                    "camera_id": camera_id,
+                    "ready": False,
+                    "available": False,
+                    "reason": str(error),
+                    "physical_authority": False,
+                }
+            recorder_state = self._recorder_state()
+            recorder_owns_source = (
+                camera_id == "logitech-overhead"
+                and recorder_state.get("overhead_video", {}).get("status") == "recording"
+            )
+            stream_owns_source = camera_id in self.camera_process_ids.values()
+            snapshot_active = camera_id in self.snapshot_camera_ids
+            busy = recorder_owns_source or stream_owns_source or snapshot_active
+            return {
+                "camera_id": camera_id,
+                "label": row["label"],
+                "role": row["role"],
+                "ready": bool(row["available"] and not busy),
+                "available": bool(row["available"]),
+                "device_name": row.get("device_name"),
+                "device_index": row.get("device_index"),
+                "busy": busy,
+                "busy_owner": (
+                    "recorder"
+                    if recorder_owns_source
+                    else "live_preview"
+                    if stream_owns_source
+                    else "orchestrator_snapshot"
+                    if snapshot_active
+                    else None
+                ),
+                "reason": (
+                    "The overhead camera is currently owned by another Studio surface."
+                    if busy
+                    else row.get("error")
+                ),
+                "physical_authority": False,
+            }
+
+    def orchestrator_inventory(self) -> dict[str, Any]:
+        """Expose only the hardware this orchestrator is allowed to consume."""
+
+        with self.lock:
+            preflight = self._preflight()
+            inventory = self._camera_inventory()
+            overhead = next(
+                (
+                    row
+                    for row in inventory.get("cameras", [])
+                    if row.get("id") == "logitech-overhead"
+                ),
+                {
+                    "id": "logitech-overhead",
+                    "label": "Logitech overhead",
+                    "role": "overhead_workspace",
+                },
+            )
+            source = self.camera_source_status("logitech-overhead")
+            devices = preflight.get("devices") or {}
+            return {
+                "schema_version": "sim2claw.orchestrator_workcell_inventory.v1",
+                "checked_at": inventory.get("checked_at"),
+                "arms": [
+                    {
+                        "id": "so101-follower",
+                        "role": "follower",
+                        **dict(devices.get("follower") or {}),
+                        "motion_authority": False,
+                    },
+                ],
+                "cameras": [
+                    {
+                        **overhead,
+                        **source,
+                        "primary_for_orchestrator": True,
+                    }
+                ],
+                "primary_camera_id": "logitech-overhead",
+                "physical_authority": False,
+            }
+
+    def capture_camera_snapshot(self, camera_id: str) -> dict[str, Any]:
+        """Capture one JPEG through the same stable AVFoundation camera role."""
+
+        with self.lock:
+            source = self.camera_source_status(camera_id)
+            if not source["ready"]:
+                raise LiveWorkspaceError(source.get("reason") or "Camera source is unavailable.")
+            spec, row, inventory = self._camera_spec_and_row(camera_id)
+            ffmpeg = inventory.get("ffmpeg_path") or shutil.which("ffmpeg")
+            if not ffmpeg:
+                raise LiveWorkspaceError("ffmpeg is unavailable for overhead snapshots.")
+            self.snapshot_camera_ids.add(camera_id)
+            command = [
+                str(ffmpeg),
+                "-nostdin",
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-f",
+                "avfoundation",
+                "-pixel_format",
+                spec.pixel_format,
+                "-framerate",
+                str(spec.input_fps),
+                "-video_size",
+                spec.input_size,
+                "-i",
+                f"{row['device_index']}:none",
+                "-an",
+                "-frames:v",
+                "1",
+                "-c:v",
+                "mjpeg",
+                "-q:v",
+                "3",
+                "-f",
+                "image2pipe",
+                "pipe:1",
+            ]
+        started = self.clock()
+        try:
+            result = self.run_factory(
+                command,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                timeout=10.0,
+                check=False,
+            )
+        except (OSError, subprocess.TimeoutExpired) as error:
+            raise LiveWorkspaceError(f"Overhead snapshot failed: {error}") from error
+        finally:
+            with self.lock:
+                self.snapshot_camera_ids.discard(camera_id)
+        if result.returncode != 0 or not result.stdout:
+            detail = result.stderr.decode("utf-8", errors="replace").strip()[-500:]
+            raise LiveWorkspaceError(
+                f"Overhead snapshot process failed{': ' + detail if detail else '.'}"
+            )
+        return {
+            "schema_version": "sim2claw.local_camera_snapshot.v1",
+            "camera_id": camera_id,
+            "camera_role": spec.role,
+            "device_name": row.get("device_name"),
+            "device_index": row.get("device_index"),
+            "captured_at": _utc_now(),
+            "fetch_duration_ms": round((self.clock() - started) * 1000.0, 3),
+            "content_type": "image/jpeg",
+            "body": bytes(result.stdout),
+            "physical_authority": False,
+        }
+
     def open_camera(
         self,
         camera_id: str,
@@ -576,6 +742,10 @@ class LiveWorkspaceService:
         with self.lock:
             self._cleanup_expired()
             self._renew(token)
+            if camera_id in self.snapshot_camera_ids:
+                raise LiveWorkspaceError(
+                    "The orchestrator currently owns this camera for one snapshot."
+                )
             recorder_state = self._recorder_state()
             if (
                 camera_id == "logitech-overhead"

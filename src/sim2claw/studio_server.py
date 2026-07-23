@@ -15,8 +15,11 @@ from typing import Any
 from urllib.parse import parse_qs, unquote, urlsplit
 
 from .paths import REPO_ROOT
+from .demo_loop_controller import DemoLoopController
+from .owner_directed_base_loop import OwnerDirectedLoopError
 from .learning_factory import LearningFactoryError
 from .learning_factory_studio import DEFAULT_FACTORY_PROJECT, build_factory_navigation
+from .orchestrator_frames import LocalOverheadSnapshotAdapter
 from .physical_gateway import PhysicalGatewayError
 from .studio_catalog import build_catalog, open_media_token
 from .studio_live import LiveWorkspaceError, LiveWorkspaceService, MJPEG_BOUNDARY
@@ -34,6 +37,46 @@ SCENE_SYNTHESIS_API_SCHEMA = "sim2claw.studio_scene_synthesis_proposal.v1"
 DEFAULT_SCENE_SYNTHESIS_CONFIG = (
     REPO_ROOT / "configs" / "scenes" / "robo_scanner_llm_workcell_v1.json"
 )
+SUPERVISED_REPLAY_RECORDING_ID = "20260719T032315Z-d3c3cf0b"
+
+
+def latest_supervised_replay(repo_root: Path) -> dict[str, Any] | None:
+    """Expose the newest matching physical replay receipt without promoting it."""
+
+    receipt_paths = sorted(
+        (repo_root / "runs" / "physical_replays").glob("*/replay_receipt.json"),
+        key=lambda candidate: candidate.stat().st_mtime,
+        reverse=True,
+    )
+    for receipt_path in receipt_paths:
+        try:
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if receipt.get("source_recording_id") != SUPERVISED_REPLAY_RECORDING_ID:
+            continue
+        return {
+            "proof_class": "guarded_physical_teleoperation_trace_replay",
+            "skill_id": "pawn_b2_to_b1",
+            "source_square": "b2",
+            "destination_square": "b1",
+            "run_id": receipt.get("run_id"),
+            "status": receipt.get("status"),
+            "completed_at": receipt.get("completed_at"),
+            "completed_sample_count": receipt.get("completed_sample_count"),
+            "source_sample_count": receipt.get("source_sample_count"),
+            "exact_command_sample_count": receipt.get("exact_command_sample_count"),
+            "rate_limited_sample_count": receipt.get("safety_clamped_sample_count"),
+            "torque_enabled_after": receipt.get(
+                "physical_follower_torque_enabled"
+            ),
+            "task_success_verified": receipt.get("task_success_verified"),
+            "learned_policy_verified": receipt.get("learned_policy_verified"),
+            "failure_message": receipt.get("failure_message"),
+            "receipt_path": receipt_path.relative_to(repo_root).as_posix(),
+            "physical_authority": False,
+        }
+    return None
 
 
 def load_scene_synthesis_proposal(
@@ -78,11 +121,39 @@ class StudioServer(ThreadingHTTPServer):
         self.recorder: TeleopRecordingManager | None = None
         self.live_workspace: LiveWorkspaceService | None = None
         self.task_orchestrator: TaskOrchestratorService | None = None
+        self.demo_loop_controller: DemoLoopController | None = None
         if not read_only:
             self.recorder = TeleopRecordingManager(repo_root=self.repo_root)
             self.live_workspace = LiveWorkspaceService(self.recorder)
             if self.recorder_control_enabled:
-                self.task_orchestrator = TaskOrchestratorService(repo_root=self.repo_root)
+                self.demo_loop_controller = DemoLoopController(
+                    self.repo_root,
+                    camera_capture=self.live_workspace.capture_camera_snapshot,
+                )
+                self.task_orchestrator = TaskOrchestratorService(
+                    repo_root=self.repo_root,
+                    frame_adapter_factory=lambda: LocalOverheadSnapshotAdapter(
+                        self.live_workspace.capture_camera_snapshot,
+                        status=self.live_workspace.camera_source_status,
+                        demo_visual_feedback=True,
+                    ),
+                    frame_source_metadata={
+                        "adapter_id": LocalOverheadSnapshotAdapter.adapter_id,
+                        "label": "Logitech overhead",
+                        "host": "local-avfoundation",
+                        "camera_id": LocalOverheadSnapshotAdapter.camera_id,
+                        "camera_role": LocalOverheadSnapshotAdapter.camera_role,
+                        "roi_contract_id": "local_overhead_demo_visual_v1",
+                        "registration_state": "demo_visual_feedback",
+                    },
+                    frame_source_status=lambda: self.live_workspace.camera_source_status(
+                        LocalOverheadSnapshotAdapter.camera_id
+                    ),
+                    workcell_status=self.live_workspace.orchestrator_inventory,
+                    demo_loop_start=self.demo_loop_controller.start,
+                    demo_loop_status=self.demo_loop_controller.snapshot,
+                    demo_loop_stop=self.demo_loop_controller.request_stop,
+                )
         self.scene_manifests: dict[str, dict[str, Any]] = {}
         self.scene_synthesis_proposal: dict[str, Any] | None = None
         super().__init__(address, StudioRequestHandler)
@@ -90,6 +161,8 @@ class StudioServer(ThreadingHTTPServer):
     def server_close(self) -> None:
         if self.task_orchestrator is not None:
             self.task_orchestrator.shutdown()
+        if self.demo_loop_controller is not None:
+            self.demo_loop_controller.shutdown()
         if self.live_workspace is not None:
             self.live_workspace.shutdown()
         if self.recorder is not None:
@@ -182,6 +255,9 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                 )
                 return
             payload = self.server.task_orchestrator.snapshot()
+            payload["supervised_replay"] = latest_supervised_replay(
+                self.server.repo_root
+            )
             payload["available"] = True
             self._send_json(payload)
             return
@@ -354,8 +430,25 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                         raise TaskOrchestratorError("Unknown orchestrator session action.")
                 elif path == "/api/orchestrator/chat":
                     result = orchestrator.chat(str(payload.get("message") or ""))
+                elif path == "/api/orchestrator/demo":
+                    controller = self.server.demo_loop_controller
+                    if controller is None:
+                        raise TaskOrchestratorError("The fixed demo controller is unavailable.")
+                    current = orchestrator.snapshot()
+                    if current.get("state") in {"STOPPED", "PAUSED", "PAUSING", "FAULTED"}:
+                        raise TaskOrchestratorError(
+                            "Power on a Demo Physical session before starting motion."
+                        )
+                    action = str(payload.get("action") or "")
+                    if action == "stop":
+                        controller.request_stop()
+                    else:
+                        controller.start_action(action)
+                    result = orchestrator.snapshot()
                 elif path == "/api/orchestrator/refresh":
                     result = orchestrator.refresh()
+                elif path == "/api/orchestrator/preview":
+                    result = orchestrator.preview_source()
                 elif path == "/api/orchestrator/shadow-choice":
                     result = orchestrator.shadow_choice(
                         skill_id=(
@@ -423,6 +516,7 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
             PhysicalGatewayError,
             LiveWorkspaceError,
             TaskOrchestratorError,
+            OwnerDirectedLoopError,
             ConnectionError,
             OSError,
             ValueError,

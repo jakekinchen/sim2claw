@@ -98,11 +98,18 @@ class ThreeReplayViewer {
     if (trace.schema_version !== "sim2claw.mujoco_body_state_trace.v1") {
       throw new Error("Unsupported MuJoCo episode trace.");
     }
-    if (
+    const revisionMismatch = Boolean(
       trace.scene?.manifest_revision_sha256 &&
       trace.scene.manifest_revision_sha256 !== manifest.revision_sha256
-    ) {
-      throw new Error("Episode trace and scene manifest revisions do not match.");
+    );
+    if (revisionMismatch) {
+      const manifestBodies = new Set(manifest.bodies.map((body) => body.name));
+      const missingBodies = trace.body_names.filter((name) => !manifestBodies.has(name));
+      if (missingBodies.length) {
+        throw new Error(
+          `Episode trace is incompatible with the current scene (${missingBodies.length} bodies missing).`,
+        );
+      }
     }
 
     this.clearScene();
@@ -113,9 +120,9 @@ class ThreeReplayViewer {
     this.buildContactMarkers();
     this.resetCamera();
     this.applyTime(0);
-    this.setStatus(
-      `${trace.frame_count} MuJoCo states · ${Number(trace.fps).toFixed(0)} Hz · drag to orbit`,
-    );
+    this.setStatus(revisionMismatch
+      ? `${trace.frame_count} MuJoCo states · compatible current scene revision · drag to orbit`
+      : `${trace.frame_count} MuJoCo states · ${Number(trace.fps).toFixed(0)} Hz · drag to orbit`);
   }
 
   async loadLive({ scene_url: sceneUrl, manifest_revision_sha256: expectedRevision }) {

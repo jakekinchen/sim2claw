@@ -607,22 +607,24 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
         if mode not in {"simulation_follower", "physical_follower"}:
             continue
         replay_receipt: dict[str, Any] = {}
+        inspection = None
         if mode == "physical_follower":
             replay_receipt = _read_json(receipt_path.parent / "sim_replay_receipt.json")
             if (
                 replay_receipt.get("schema_version")
-                != "sim2claw.physical_command_sim_replay.v1"
+                == "sim2claw.physical_command_sim_replay.v1"
             ):
-                continue
-            trace_path = receipt_path.parent / str(
-                replay_receipt.get("state_trace_path")
-                or "sim_replay_state_trace.json"
-            )
-            inspection = _receipt_inspection(
-                trace_path,
-                repo_root,
-                replay_receipt,
-            )
+                trace_path = receipt_path.parent / str(
+                    replay_receipt.get("state_trace_path")
+                    or "sim_replay_state_trace.json"
+                )
+                inspection = _receipt_inspection(
+                    trace_path,
+                    repo_root,
+                    replay_receipt,
+                )
+            else:
+                replay_receipt = {}
         else:
             trace_path = receipt_path.parent / str(
                 receipt.get("state_trace_path") or "state_trace.json"
@@ -630,21 +632,26 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
             inspection = (
                 _inspection(trace_path, repo_root) if trace_path.is_file() else None
             )
-        if inspection is None:
+        if inspection is None and mode != "physical_follower":
             continue
         source_proof_class = str(
             receipt.get("proof_class") or "simulation_teleoperation_source"
         )
         proof_class = (
             "physical_source_simulation_command_replay"
-            if mode == "physical_follower"
+            if replay_receipt
             else source_proof_class
         )
         outcome = str(receipt.get("outcome_label") or "recorded")
         duration = float(receipt.get("duration_seconds") or 0)
         video_path = receipt_path.parent / "overhead_c922.mp4"
         media = (
-            {"kind": "video", "url": media_url(video_path, repo_root)}
+            {
+                "kind": "video",
+                "url": media_url(video_path, repo_root),
+                "camera_role": "overhead_board",
+                "rotation_degrees": 180,
+            }
             if video_path.is_file()
             else {"kind": "none"}
         )
@@ -706,23 +713,36 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                 "source_proof_class": source_proof_class,
                 "proof_label": _proof_label(proof_class),
                 "physical_authority": False,
-                "frame_count": inspection["frame_count"],
-                "fps": inspection["fps"],
-                "duration_seconds": duration or inspection["duration_seconds"],
+                "frame_count": (
+                    inspection["frame_count"]
+                    if inspection
+                    else int(receipt.get("sample_count") or 0)
+                ),
+                "fps": (
+                    inspection["fps"]
+                    if inspection
+                    else float(receipt.get("sample_hz") or 0)
+                ),
+                "duration_seconds": duration or (
+                    inspection["duration_seconds"] if inspection else 0
+                ),
                 "recorded_at": _iso_timestamp(receipt_path),
                 "media": media,
-                "inspection": inspection,
-                "camera": "free_orbit",
+                "camera": "free_orbit" if inspection else "logitech_overhead",
                 "metrics": metrics,
                 "notes": str(receipt.get("notes") or "").strip(),
                 "phases": [{"name": "Teleoperation", "start": 0.0, "end": 1.0}],
                 "case_id": (
                     "physical_command_simulation_replay"
+                    if replay_receipt
+                    else "physical_teleoperation_source_unqualified"
                     if mode == "physical_follower"
                     else "simulation_teleoperation_source"
                 ),
             }
         )
+        if inspection is not None:
+            episodes[-1]["inspection"] = inspection
     return episodes
 
 
@@ -961,6 +981,42 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         if robotward_displacement is not None
         else "Current registration"
     )
+    progression = _read_json(
+        repo_root / "docs" / "run-logs" / "2026-07-19-simulator-progression-ledger.json"
+    )
+    spatial_fit = progression.get("spatial_fit_progression", [])
+    latest_training_fit = next(
+        (
+            row
+            for row in reversed(spatial_fit)
+            if row.get("split") == "training" and row.get("contact_episode_count") is not None
+        ),
+        None,
+    )
+    latest_held_out_fit = next(
+        (row for row in reversed(spatial_fit) if row.get("split") == "held_out"),
+        None,
+    )
+    simulator_accuracy = None
+    if latest_training_fit:
+        simulator_accuracy = {
+            "schema_version": progression.get("schema_version"),
+            "label": latest_training_fit.get("label"),
+            "proof_state": latest_training_fit.get("proof_state"),
+            "event_rms_mm": round(float(latest_training_fit["event_rms_m"]) * 1000, 2),
+            "contact_episodes": int(latest_training_fit.get("contact_episode_count", 0)),
+            "episode_count": int(latest_training_fit.get("episode_count", 0)),
+            "lift_episodes": int(latest_training_fit.get("lift_episode_count", 0)),
+            "success_episodes": int(latest_training_fit.get("success_episode_count", 0)),
+            "held_out_contact_episodes": int(
+                (latest_held_out_fit or {}).get("contact_episode_count", 0)
+            ),
+            "held_out_episode_count": int(
+                (latest_held_out_fit or {}).get("episode_count", 0)
+            ),
+            "canonical_scene_selected": False,
+            "claim": "kinematic contact candidate only; no completed move or physical calibration",
+        }
     robot_estimates = {
         str(row.get("name")): row
         for row in scene_estimates.get("robots", [])
@@ -998,6 +1054,7 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
                 }
             ],
             "asset_revision": asset_revision,
+            "simulator_accuracy": simulator_accuracy,
         }
     ]
     robots = []

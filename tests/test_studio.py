@@ -56,6 +56,37 @@ class StudioCatalogTest(unittest.TestCase):
                 }
             },
         )
+        self._write_json(
+            self.root
+            / "docs"
+            / "run-logs"
+            / "2026-07-19-simulator-progression-ledger.json",
+            {
+                "schema_version": "sim2claw.simulator_progression_ledger.v1",
+                "spatial_fit_progression": [
+                    {
+                        "label": "lift-dominant offset",
+                        "proof_state": "uncommitted_working_receipt",
+                        "split": "training",
+                        "event_rms_m": 0.0174139,
+                        "contact_episode_count": 9,
+                        "episode_count": 11,
+                        "lift_episode_count": 1,
+                        "success_episode_count": 0,
+                    },
+                    {
+                        "label": "held-out lift-dominant",
+                        "proof_state": "uncommitted_kinematic_admission_only",
+                        "split": "held_out",
+                        "event_rms_m": 0.0235493,
+                        "contact_episode_count": 2,
+                        "episode_count": 2,
+                        "lift_episode_count": 0,
+                        "success_episode_count": 0,
+                    },
+                ],
+            },
+        )
         (self.root / "datasets" / "pick_v1" / "meta").mkdir(parents=True)
         video_dir = (
             self.root
@@ -184,6 +215,14 @@ class StudioCatalogTest(unittest.TestCase):
             catalog["simulations"][0]["board_pose_label"],
             "100 mm robotward",
         )
+        accuracy = catalog["simulations"][0]["simulator_accuracy"]
+        self.assertEqual(accuracy["contact_episodes"], 9)
+        self.assertEqual(accuracy["episode_count"], 11)
+        self.assertEqual(accuracy["held_out_contact_episodes"], 2)
+        self.assertEqual(accuracy["held_out_episode_count"], 2)
+        self.assertEqual(accuracy["lift_episodes"], 1)
+        self.assertEqual(accuracy["success_episodes"], 0)
+        self.assertFalse(accuracy["canonical_scene_selected"])
         self.assertEqual(
             catalog["simulations"][0]["mug_inspection_url"],
             "/assets/workcell/studio-mug.png",
@@ -293,6 +332,43 @@ class StudioCatalogTest(unittest.TestCase):
             catalog["simulations"][0]["asset_revision"],
             expected_revision,
         )
+        self.assertEqual(episode["media"]["camera_role"], "overhead_board")
+        self.assertEqual(episode["media"]["rotation_degrees"], 180)
+
+    def test_catalog_includes_recorded_physical_source_without_sim_trace(self) -> None:
+        recording = (
+            self.root
+            / "datasets"
+            / "manipulation_source_recordings"
+            / "b1-to-b2__fixture-recording"
+        )
+        recording.mkdir(parents=True)
+        (recording / "overhead_c922.mp4").write_bytes(b"fixture-video")
+        self._write_json(
+            recording / "recording_receipt.json",
+            {
+                "schema_version": "sim2claw.teleop_recording_receipt.v1",
+                "recording_id": "fixture-recording",
+                "task_id": "chess_pick_place_source_episode_v4",
+                "mode": "physical_follower",
+                "proof_class": "physical_teleoperation_source_unqualified",
+                "label": "b1 to b2",
+                "piece_id": "brown_pawn_b1",
+                "source_square": "b1",
+                "destination_square": "b2",
+                "sample_count": 360,
+                "sample_hz": 20,
+                "duration_seconds": 18,
+                "outcome_label": "success",
+            },
+        )
+        catalog = build_catalog(self.root)
+        episode = next(
+            row for row in catalog["episodes"] if row["id"].endswith("fixture-recording")
+        )
+        self.assertEqual(episode["case_id"], "physical_teleoperation_source_unqualified")
+        self.assertEqual(episode["media"]["kind"], "video")
+        self.assertNotIn("inspection", episode)
 
     def test_media_tokens_cannot_escape_generated_storage(self) -> None:
         outside = self.root / "README.md"
@@ -489,6 +565,13 @@ class StudioCatalogTest(unittest.TestCase):
         self.assertEqual(physical["status"], "recorded")
         self.assertNotIn("evaluator_verdict", physical)
         self.assertEqual(len(physical["recording_feeds"]), 4)
+        source_overhead, replay_overhead, replay_side, replay_wrist = physical[
+            "recording_feeds"
+        ]
+        self.assertEqual(source_overhead["rotation_degrees"], 180)
+        self.assertEqual(replay_overhead["rotation_degrees"], 180)
+        self.assertEqual(replay_side["rotation_degrees"], 0)
+        self.assertEqual(replay_wrist["rotation_degrees"], 0)
         self.assertIn("disagrees", physical["notes"])
 
         arbitrary = replay_root / "arbitrary.browser.mp4"
@@ -882,6 +965,9 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('id="live-simulation-status"', html)
             self.assertIn('id="live-workspace-drawer"', html)
             self.assertIn('id="live-workspace-canvas"', html)
+            self.assertIn('id="orchestrator-copy"', html)
+            self.assertIn("fixed base → inverse → base demo directly", html)
+            self.assertIn("Type “loop it” to run the fixed five-minute demo", html)
             self.assertIn('data-camera-id="d405-wrist"', html)
             self.assertIn('data-camera-id="logitech-overhead"', html)
             self.assertIn('data-camera-id="logitech-workspace"', html)
@@ -901,6 +987,15 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn("script-src 'self' 'wasm-unsafe-eval'", content_security_policy)
             self.assertIn("worker-src 'self' blob:", content_security_policy)
 
+            with urlopen(f"{base}/studio3d.js", timeout=3) as response:
+                studio3d = response.read().decode("utf-8")
+            self.assertIn("compatible current scene revision", studio3d)
+            self.assertIn("bodies missing", studio3d)
+            self.assertNotIn(
+                "Episode trace and scene manifest revisions do not match.",
+                studio3d,
+            )
+
             with urlopen(f"{base}/studio.css", timeout=3) as response:
                 css = response.read().decode("utf-8")
             self.assertIn('@font-face', css)
@@ -915,6 +1010,8 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('.scene-synthesis-card', css)
             self.assertIn('.scene-hierarchy', css)
             self.assertIn('.recording-feed-switch', css)
+            self.assertIn('video.is-overhead-camera', css)
+            self.assertIn('user-select: text', css)
 
             with urlopen(f"{base}/studio.js", timeout=3) as response:
                 javascript = response.read().decode("utf-8")
@@ -935,7 +1032,14 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertNotIn("for (const count of [3, 2, 1])", javascript)
             self.assertIn('episode.inspection?.kind === "threejs_state_trace"', javascript)
             self.assertIn('episodeRecordingFeeds(episode)', javascript)
+            self.assertIn('orientRecordedMedia(video, { ...episode, ...media })', javascript)
+            self.assertIn('orientRecordedMedia(elements.video, orientedFeed)', javascript)
             self.assertIn('window.Sim2ClawCalibration?.setActive', javascript)
+            self.assertIn('orchestratorHasActiveTextSelection()', javascript)
+            self.assertIn('runtime.modes?.demo_physical?.selectable', javascript)
+            self.assertIn('Demo physical ready. Type “loop it”', javascript)
+            self.assertNotIn('Physical authority remains closed.', javascript)
+            self.assertIn('navigator.clipboard.writeText(value)', javascript)
             self.assertIn('episode.evaluator_verdict ? "Evaluator result" : "Evidence status"', javascript)
             self.assertIn('"Operator notes"', javascript)
             self.assertIn('fetch("/api/recorder/live-simulation"', javascript)

@@ -425,6 +425,7 @@ def build_physical_release_episodes(
             "kind": "source_episode",
             "camera_role": "overhead_board",
             "camera": "C922 overhead",
+            "rotation_degrees": 180,
             "url": media_url(source_video, repo_root),
             "window_start_seconds": source_start,
             "window_end_seconds": source_end,
@@ -458,6 +459,7 @@ def build_physical_release_episodes(
                 "kind": "physical_command_replay",
                 "camera_role": role,
                 "camera": cameras[role],
+                "rotation_degrees": 180 if role == "overhead_board" else 0,
                 "url": media_url(browser_path, repo_root),
                 "window_start_seconds": float(
                     spec.get("replay_window_start_seconds") or 0
@@ -498,6 +500,8 @@ def build_physical_release_episodes(
             "media": {
                 "kind": "video",
                 "url": media_url(source_video, repo_root),
+                "camera_role": "overhead_board",
+                "rotation_degrees": 180,
                 "window_start_seconds": source_start,
                 "window_end_seconds": source_end,
             },
