@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-23T17:09:41-05:00",
-  "active_campaign": "silicon_recovery_reconciliation",
-  "current_milestone": "SILICON_RECOVERY_COMPLETE",
+  "updated_at": "2026-07-23T18:48:00-05:00",
+  "active_campaign": "silicon_data_completeness",
+  "current_milestone": "SILICON_DATA_RECONCILIATION_COMPLETE",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_and_bounded_action_frozen_simulator_evidence_no_physical_or_transfer_authority",
@@ -70,6 +70,136 @@
     "s2_campaign_event_count": 1,
     "s2_anchor_replay_count": 4,
     "s2_measurement_trial_count": 0,
+    "physical_authority": false
+  },
+  "silicon_data_completeness": {
+    "schema_version": "sim2claw.silicon_data_completeness.v1",
+    "status": "complete",
+    "baseline_commit": "fe95ca0042813e482dbfa3f85f39350791b0784c",
+    "source_host": "silicon.local",
+    "source_checkout": "/Users/jakekinchen/Developer/sim2claw",
+    "copied_canonical_file_count": 359,
+    "copied_canonical_bytes": 1324118935,
+    "canonical_roots": {
+      "act_source_recordings": {
+        "files": 48,
+        "bytes": 122808335,
+        "manifest_sha256": "f86cacc92e5d29020e4b7436f50b9f72629509fee0f62bb43d57a22e3a1c646b"
+      },
+      "teleop_recordings": {
+        "files": 138,
+        "bytes": 289174566,
+        "manifest_sha256": "79b009e833a7b1e0e07210df6c03cfbe1b82a5be66f9189a11fbd424b9d1191b"
+      },
+      "multicamera_physical_replays": {
+        "files": 4,
+        "bytes": 85088256,
+        "manifest_sha256": "d8e8d317030819b3965f9e81a7b93257ca5d6e40b8b804f9a67463ec52257120"
+      },
+      "transfer_archives": {
+        "files": 12,
+        "bytes": 814530761,
+        "manifest_sha256": "32a9605442dadfac4b9aca383b6d21ab27265057a018db4091b5d65d1534f4a2"
+      },
+      "remote_task_orchestrator_source": {
+        "files": 214,
+        "bytes": 3686980,
+        "manifest_sha256": "865bcd5fa5ed2cfdd96f68d345c8d5b6a9ffe37df4bd93c0cdb04d040c59afb1",
+        "remote_to_local_residual_files": 0
+      },
+      "roboscanner_output": {
+        "files": 4,
+        "bytes": 9617063,
+        "manifest_sha256": "605295bc04e2575f51f8503a7677cb486c0a4d0dd795f728ed74088f0797176d"
+      },
+      "remote_task_orchestrator_output": {
+        "files": 7,
+        "bytes": 606861,
+        "manifest_sha256": "dc513dbb9e71ff225ba85d9df5010f49ed86008ea814cc18c2281d5a09c26b0a",
+        "remote_to_local_residual_files": 0
+      }
+    },
+    "already_complete_roots": {
+      "manipulation_source_recordings_manifest_sha256": "bad2e1891890e0fa7266f3951d8476a82848dc84faf35cf0ba9f1effa0a584db",
+      "physical_replays_manifest_sha256": "9ffcdd8f2de92306ddf580029ce0c164cc85acf8763f116f5c45486c502c6992",
+      "owner_directed_base_loop_manifest_sha256": "dc951952c4a211f3bc84db3100f504d084b783ada177375defbf13091c81bb7e"
+    },
+    "excluded_provenance": {
+      "root": "runs/silicon-data-recovery-20260723",
+      "files": 14,
+      "bytes": 4727549,
+      "manifest_sha256": "5f7ec006d03795401cb1478f7dc17119fd88e6868f6f32be902702f010770182",
+      "polycam_conflict_manifest_sha256": "fa7794b7762ef713ad29f8e007fcb4dcdecf023453bbac9da4ee5055e29a0da2",
+      "truncated_splat_sha256": "dbef38d4c098037857694b6bcb31aeb097dceac7ea40683b5564fe3cce1cb3ef"
+    },
+    "validation": {
+      "transfer_hashes_passed": 6,
+      "act_sample_hashes_passed": 6,
+      "multicamera_hashes_passed": 3,
+      "json_files_valid": 201,
+      "jsonl_files_valid": 58,
+      "videos_probeable": 34,
+      "tar_archives_readable": 6,
+      "remote_to_local_admitted_residual_files": 0
+    },
+    "host_inventory": {
+      "stashes": 0,
+      "additional_sim2claw_repositories": 0,
+      "unique_branch_commits_outside_main_or_recovery": 0,
+      "matching_files_outside_checkout": 0,
+      "mounted_external_data_volumes": 0
+    },
+    "excluded_from_admission": [
+      "credentials_and_env_files",
+      "virtual_environments_and_build_caches",
+      "synthetic_learning_factory_component_test_outputs",
+      "stale_studio_process_registrations",
+      "older_conflicting_polycam_derivatives",
+      "explicitly_truncated_splat"
+    ],
+    "recalibration_assessment": {
+      "status": "joint_response_ready_task_score_unchanged",
+      "bridge_contract": "configs/experiments/pawn_sim_real_bridge_v1.json",
+      "bridge_contract_sha256": "5c0d1e72b53420e449afe2cab78efd217c1011ae3b9b3c929b6bc557a8d4181a",
+      "bridge_module_sha256": "6bde2cf30691e42e74b97138caa1948669769d96ec0fc3efd641fec358545942",
+      "recovered_72mm_episode_count": 5,
+      "recovered_72mm_verified_rows": 2186,
+      "recovered_72mm_aggregate_per_joint_rmse_native_units": [
+        1.105585914430085,
+        2.3341885604950154,
+        2.505865587177151,
+        1.856900094577161,
+        1.4374376744492907,
+        1.6617998549566435
+      ],
+      "recovered_72mm_best_lag_seconds_range": [0.15, 0.2],
+      "recovered_72mm_rate_limited_fraction": 0.23101555352241537,
+      "historical_sim_replay_body_joint_rmse_degrees_range": [
+        2.8298892442690766,
+        3.451542791489592
+      ],
+      "current_100mm_episode_count": 18,
+      "current_100mm_rows": 7741,
+      "current_100mm_aggregate_per_joint_rmse_native_units": [
+        1.40569889141486,
+        2.9678237172577084,
+        2.94777844799049,
+        2.1943263493613157,
+        2.0187856909703563,
+        2.662174594418448
+      ],
+      "current_100mm_median_best_lag_seconds": 0.15,
+      "current_100mm_rate_limited_fraction": 0.3436248546699393,
+      "failed_attempt_rows_excluded_from_admission": 10731,
+      "joint_response_calibration_ready": true,
+      "spatial_100mm_comparison_ready": false,
+      "contact_or_friction_calibration_ready": false,
+      "pawn_policy_training_ready": false,
+      "strict_task_score_changed": false,
+      "recommended_next_transaction": "preregistered_held_out_actuator_response_cross_validation"
+    },
+    "proof_class": "historical_unqualified_physical_and_simulation_data_provenance",
+    "training_or_promotion_allowed": false,
     "physical_authority": false
   },
   "sail_clawloop": {

@@ -1,5 +1,37 @@
 # Orchestration Ledger
 
+## Completed transaction — Silicon data completeness audit
+
+- Repo and branch: `/Users/kelly/Developer/sim2claw` on clean `main` at
+  `fe95ca0042813e482dbfa3f85f39350791b0784c` before this documentation-only
+  closeout.
+- Queue source: direct owner request to inspect Silicon again and ensure all
+  required Sim2Claw data is centralized.
+- Source scope: `/Users/jakekinchen/Developer/sim2claw`, the source account's
+  Desktop/Documents/Downloads/Shared locations, local Git branches/worktrees,
+  and mounted-volume inventory.
+- Result: copied 359 previously missing canonical files
+  (`1,324,118,935` bytes) without overwrite; preserved 14 conflicting or
+  incomplete generated files in an ignored recovery root.
+- Validation: six transfer archive hashes passed; six ACT sample hashes
+  passed; three multicamera hashes passed; 201 JSON files, 58 JSONL files, 34
+  videos, and six tar archives parsed or probed successfully. Remote-to-local
+  residual count is zero for every admitted source root.
+- Git result: no stash or second repository; all three old Silicon branch tips
+  are already ancestors of current `main` and the exact recovery branch.
+- Exclusions: `.env`, virtual environments, Swift/Python caches, synthetic
+  component-test Learning Factory output, stale Studio process registrations,
+  and the explicitly truncated splat remain credentials, reproducible output,
+  ephemeral state, or excluded provenance—not admitted project evidence.
+- Recalibration assessment: the existing fail-closed sim/real bridge now
+  verifies all 2,186 rows in the five recovered 72 mm task recordings and marks
+  joint-response calibration ready. The historical replays retain
+  2.830°–3.452° body-joint RMSE and identify actuator timing/load-path
+  cross-check value only. The 100 mm spatial, contact/friction, policy, and
+  strict task gates remain closed; no score or parameter changed.
+- Authority: no simulator, adapter, provider, training, capture, gateway,
+  robot motion, or physical task evaluation ran.
+
 ## Completed transaction — Silicon recovery reconciliation
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`; compatible

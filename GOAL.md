@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `SILICON RECOVERY RECONCILIATION COMPLETE; S2 TERMINAL NEGATIVE FROZEN; PHYSICAL AUTHORITY CLOSED`
+Status: `SILICON DATA COMPLETENESS COMPLETE; S2 TERMINAL NEGATIVE FROZEN; PHYSICAL AUTHORITY CLOSED`
 
 ## Active Silicon recovery and repository reconciliation
 
@@ -33,6 +33,22 @@ subset is integrated, the physical controller is default-closed, publication
 bindings are refreshed, and the full repository suite passes. Centralization
 is limited to a normal push of the reviewed `main` chain plus the quarantined
 recovery branch.
+
+Data-completeness closeout: every Silicon dataset/run file already present was
+byte-identical, all missing raw ACT, teleoperation, multicamera, transfer, and
+orchestrator data was copied into the ignored canonical roots, and conflicting
+or explicitly truncated generated outputs were preserved separately as
+excluded provenance. No credential, environment, cache, build product,
+synthetic test campaign, or stale Studio process registration was promoted as
+project data.
+
+Recalibration assessment: the five recovered 72 mm recordings now make the
+frozen sim/real bridge joint-response-ready across 2,186 hash-verified rows.
+Their 0.15–0.20 s lag and 2.830°–3.452° historical sim-replay body-joint RMSE
+can support a future preregistered actuator-response cross-check. They do not
+make the current 100 mm spatial comparison, policy training, closed-loop
+comparison, contact/friction fit, or strict task score ready. No calibration
+or task score changed in this transaction.
 
 ## Closed SAIL executed-benchmark and retained-C2 adapter transaction
 
