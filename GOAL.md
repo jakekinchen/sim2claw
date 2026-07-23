@@ -1,8 +1,58 @@
 # sim2claw Goal
 
-Status: `AUTONOMOUS DEVELOPMENT LOOP D6 FULL-VERIFY CANDIDATE; GENERATED POST-PUSH TERMINAL AUTHORITY NOT YET ISSUED; B2 SEARCH PAUSED`
+Status: `SAIL EXECUTED BENCHMARK + RETAINED-C2 ADAPTER S2 ACTIVE; D6 CLOSED BASELINE PRESERVED; B2 SEARCH PAUSED`
 
-## Active autonomous development operations and advancement
+## Active SAIL executed-benchmark and retained-C2 adapter transaction
+
+Replace the remaining label-conditioned benchmark and synthetic-fixture
+adapter limitations with two bounded executable evidence surfaces:
+
+1. a versioned structural benchmark whose registered methods actually execute
+   from frozen public inputs and are scored only by a separate sealed
+   evaluator; and
+2. exactly one non-fixture retained-C2 trusted adapter, or a sealed
+   prerequisite abstention if its action-frozen raw inputs cannot be verified
+   without widening authority.
+
+Authoritative goal-loop prompt:
+[`docs/autonomous-workflow/goal-loop-sail-executed-benchmark-c2-adapter.md`](docs/autonomous-workflow/goal-loop-sail-executed-benchmark-c2-adapter.md).
+
+Baseline: clean `main == origin/main` at
+`616f9896650870913915087095a9a9bae9aad9ed`. The closed D6 packet remains
+read-only at `outputs/dev-loop/final/merge-readiness-packet.json`, file
+SHA-256 `c7d66da11896c27b1fdb39ff2bbc39ddf3c456ae8cf919957cb7e9ca91deb775`,
+packet digest
+`f88070030f27c6b0f61b8ca37f10e9942d48ef2b5bf389236183632ea8c27b28`.
+It proves the prior transaction only and cannot authorize this one.
+
+Current milestone: **S2-00 — transaction activation and contract
+reconciliation**.
+
+The benchmark acceptance target is trustworthy executed measurement, not a
+required SAIL win. The C2 lane is limited to one preregistered intervention,
+eighteen action-identical anchor replays, zero retries, and no post-result
+family expansion. Provider calls, paid/Brev compute, training, simulator
+promotion, physical capture, gateway access, robot motion, and transfer
+authority remain closed.
+
+Progress ledger:
+
+- Current state: new bounded transaction active; implementation not started.
+- Completed: clean baseline and immutable D6 packet identity reconciled;
+  benchmark-v1 label scoring and fixture-only adapter gap confirmed.
+- Evidence: `main == origin/main == 616f989`; D6 packet terminal authority is
+  true with zero live leases.
+- Benchmark methods / controls / failures: pending v2 execution.
+- C2 interventions / anchor replays / retries: `0 / 1`, `0 / 18`, `0`.
+- Posterior before / after: pending; prior must remain unchanged without
+  admitted evaluator evidence.
+- Remaining: executable benchmark, non-fixture adapter or prerequisite
+  abstention, receipts, verification, review, push.
+- Blockers: none yet; raw C2 input verification is pending.
+- Next step: freeze versioned benchmark and C2 adapter contracts before any C2
+  execution.
+
+## Closed autonomous development operations and advancement baseline
 
 Harden the repository's autonomous-development loop into a deterministic,
 resumable, receipt-gated, process-safe, and measurable control plane. Reconcile
@@ -17,7 +67,8 @@ Authoritative plan:
 Active goal-loop prompt:
 [`docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md`](docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md).
 
-Current milestone: **D6 — in progress: exact-identity verification, independent review, push, authority audit, and generated terminal packet**.
+Closed milestone: **D6 — terminal at `616f989` through the generated
+post-push packet named above**.
 D1-D3 are independently accepted after two corrective review cycles and a
 final `PASS`:
 canonical current-state drift is unique and fail closed; role, receipt, merge,
@@ -41,13 +92,11 @@ Read-only physical readiness is negative: the expected SO-101 leader/follower
 ports and calibrations are absent, the only `/dev/cu.usbmodem*` candidate is an
 ignored billboard, no usable camera/USB device was enumerated, and no
 synchronized jaw-force or rubber-deformation/profile sensor is present.
-The committed state is deliberately nonterminal (`active`, `FULL_VERIFY`,
-`D6=in_progress`). No completion claim is valid until generated D6 focused,
-automatic-tier, one full-suite, fresh review, post-push authority-audit, and
-merge-readiness evidence all pass at the exact final commit. The generated
-`merge_ready` packet, verified against current project-state bytes, local and
-remote HEAD, and zero live process leases, is the terminal operational
-authority; a committed `CLOSED` claim is rejected as self-referential.
+The D6 committed state was deliberately nonterminal (`active`, `FULL_VERIFY`,
+`D6=in_progress`). Its generated `merge_ready` packet, verified against the
+then-current project-state bytes, local and remote HEAD, and zero live process
+leases, is the prior transaction's terminal operational authority. This new S2
+transaction does not mutate or inherit that packet.
 
 Physical capture and robot motion remain blocked by hardware/calibration
 readiness; do not open the gateway or manufacture measurement evidence.

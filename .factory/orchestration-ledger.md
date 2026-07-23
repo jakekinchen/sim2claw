@@ -1,19 +1,59 @@
 # Orchestration Ledger
 
-<!-- autonomous-dev-loop-current:start -->
-## Generated current autonomous-development state
+## Current transaction — SAIL executed benchmark and retained-C2 adapter
 
-- Status: `active`.
-- Milestone: `D6` (`in_progress`).
-- Branch / remote: `main` / `origin/main`.
-- Baseline: `1ee6b7d5f45aecb3fc95006b6abf1141713cb927`.
-- Plan SHA-256: `cc480b36a9c490d91d2b504b585e29fb82a2510a1bbe05095c412ea0b65ea240`.
-- Goal SHA-256: `df0eecfb09a341c3fe1b295f59b3e4439d379256d5040df5de6f4adcad29f667`.
-- Scoped origin/main push: `true`.
-- External authority: provider, paid compute, training, simulator campaign/promotion, physical capture, gateway, and motion are `false`.
-- Physical readiness: `blocked_hardware_and_calibration_not_ready`; gateway remains `false`.
-- Next step: `commit_verification_candidate_run_exact_final_tiers_obtain_fresh_PASS_review_then_push_audit_and_generate_operational_terminal_packet`.
-<!-- autonomous-dev-loop-current:end -->
+- Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`.
+- Queue source: owner-approved objective delegated from Codex task
+  `019f8b9d-67ee-7801-9be3-f7cca45e8e3e`.
+- Classification time: `2026-07-23T09:30:00-05:00`.
+- Coordinator/executor: this Codex task; sole repository writer.
+- Baseline: clean `main == origin/main` at
+  `616f9896650870913915087095a9a9bae9aad9ed`.
+- Closed D6 evidence: immutable packet
+  `outputs/dev-loop/final/merge-readiness-packet.json`, file SHA-256
+  `c7d66da11896c27b1fdb39ff2bbc39ddf3c456ae8cf919957cb7e9ca91deb775`,
+  packet digest `f88070030f27c6b0f61b8ca37f10e9942d48ef2b5bf389236183632ea8c27b28`.
+- Goal:
+  `docs/autonomous-workflow/goal-loop-sail-executed-benchmark-c2-adapter.md`.
+- Status: `S2-00 in_progress`.
+- Cadence: active bounded transaction through exact-head verification and
+  independent review.
+- Authorized public mutation: scoped commits and push to `origin/main` only
+  after `PASS`; no force push or release.
+
+### Queue Summary
+
+- Autonomous: versioned evaluator-executed benchmark; exactly one
+  non-fixture C2 adapter or sealed prerequisite abstention; deterministic
+  evidence, tests, receipts, review, and scoped push.
+- Needs owner: release/publication, provider or paid compute, training,
+  simulator promotion, physical capture, gateway, robot motion, or transfer.
+- Defer/close/supersede: rewriting benchmark v1; mutating the D6 packet;
+  resuming B2-02X; adding a second C2 family or adapter; post-result family
+  expansion; caller-authored result admission.
+
+### Workers
+
+| Worker | Source | Task | Allowed Actions | Status | Last Seen | Proof Target | Proof Result | Blocker |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Coordinator/Executor | owner objective | Implement S2-00 through S2-04 as sole writer | Scoped files, local simulator up to 1 intervention/18 action-identical replays, tests, receipts, commit; push only after PASS | active | 2026-07-23T09:30:00-05:00 | Every acceptance criterion in the S2 goal prompt | clean baseline and two capability gaps confirmed | none |
+
+### Owner Decisions
+
+| Source | Decision Needed | Proof Completed | Risks | Recommendation | Choices | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| release or authority expansion | Any publication, provider, paid compute, training, promotion, physical capture, gateway, motion, or transfer | none requested by S2 | unsupported claims, spend, or physical risk | keep closed | authorize later or retain closed | not needed; nonblocking |
+
+### Event Log
+
+- 2026-07-23T09:30:00-05:00 - Verified clean baseline and recorded the closed
+  D6 packet without modifying it.
+- 2026-07-23T09:30:00-05:00 - Classified the objective autonomous within one
+  bounded local simulator intervention; all external and physical authority
+  remains closed.
+- 2026-07-23T09:30:00-05:00 - Confirmed benchmark v1 assigns results by method
+  name and scans golden source text, while the adapter registry contains only
+  `fixture_deterministic_v1`.
 
 ## D0 activation snapshot — autonomous development operations and advancement
 

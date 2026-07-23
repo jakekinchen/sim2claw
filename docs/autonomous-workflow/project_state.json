@@ -1,11 +1,11 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-22T23:45:00-05:00",
-  "active_campaign": "autonomous_dev_loop_ops_and_advancement",
-  "current_milestone": "D6_VERIFICATION_INDEPENDENT_REVIEW_AND_CLOSEOUT",
+  "updated_at": "2026-07-23T09:30:00-05:00",
+  "active_campaign": "sail_executed_benchmark_c2_adapter",
+  "current_milestone": "S2_00_TRANSACTION_ACTIVATION_AND_CONTRACT_RECONCILIATION",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
-  "proof_class": "development_control_plane_hardening_no_new_scientific_training_or_physical_evidence",
+  "proof_class": "development_infrastructure_synthetic_executed_benchmark_and_bounded_action_frozen_simulator_evidence_no_physical_or_transfer_authority",
   "sail_clawloop": {
     "schema_version": "sim2claw.sail_clawloop_campaign_state.v1",
     "master_plan": "docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md",
@@ -853,6 +853,93 @@
       "physical_capture": false,
       "robot_gateway": false,
       "robot_motion": false
+    }
+  },
+  "sail_executed_benchmark_c2_adapter": {
+    "schema_version": "sim2claw.sail_executed_benchmark_c2_adapter_state.v1",
+    "status": "active",
+    "goal_loop": "docs/autonomous-workflow/goal-loop-sail-executed-benchmark-c2-adapter.md",
+    "branch": "main",
+    "expected_remote": "origin/main",
+    "baseline_commit": "616f9896650870913915087095a9a9bae9aad9ed",
+    "closed_d6_baseline": {
+      "path": "outputs/dev-loop/final/merge-readiness-packet.json",
+      "file_sha256": "c7d66da11896c27b1fdb39ff2bbc39ddf3c456ae8cf919957cb7e9ca91deb775",
+      "packet_digest": "f88070030f27c6b0f61b8ca37f10e9942d48ef2b5bf389236183632ea8c27b28",
+      "head": "616f9896650870913915087095a9a9bae9aad9ed",
+      "remote_head": "616f9896650870913915087095a9a9bae9aad9ed",
+      "terminal_authority": true,
+      "live_process_lease_count": 0,
+      "mutable_by_this_transaction": false
+    },
+    "milestones": {
+      "S2-00": "in_progress_transaction_activation_and_contract_reconciliation",
+      "S2-01": "pending_evaluator_executed_structural_benchmark",
+      "S2-02": "pending_non_fixture_retained_c2_trusted_adapter_or_prerequisite_abstention",
+      "S2-03": "pending_bounded_materialization_and_receipts",
+      "S2-04": "pending_exact_head_verification_independent_review_push_and_closeout"
+    },
+    "progress_ledger": {
+      "current_state": "new_bounded_transaction_active_implementation_not_started",
+      "completed": [
+        "clean_main_equals_origin_main_at_616f989_verified",
+        "closed_D6_terminal_packet_identity_recorded_without_mutation",
+        "benchmark_v1_method_name_conditioned_scoring_gap_confirmed",
+        "benchmark_v1_golden_source_scan_gap_confirmed",
+        "fixture_only_trusted_adapter_registry_gap_confirmed",
+        "authoritative_S2_goal_loop_prompt_written",
+        "GOAL_project_state_and_ledger_reconciliation_started"
+      ],
+      "evidence": {
+        "benchmark_v1_config": "configs/sail/seeded_benchmark_v1.json",
+        "benchmark_v1_compiler": "src/sim2claw/sail/benchmark.py",
+        "fixture_adapter_id": "fixture_deterministic_v1",
+        "retained_c2_action_sha256": "402a29e4cdc0c4cb90d41a83327ad8df5685544851b4e4d659129b3239744fd6",
+        "retained_c2_recording_id": "20260719T031324Z-bf91502b"
+      },
+      "benchmark_methods_executed": 0,
+      "benchmark_evaluator_controls_executed": 0,
+      "benchmark_failures": 0,
+      "c2_interventions_used": 0,
+      "c2_intervention_budget": 1,
+      "c2_anchor_replays_used": 0,
+      "c2_anchor_replay_budget": 18,
+      "c2_retries_used": 0,
+      "c2_retry_budget": 0,
+      "posterior_before": {
+        "flexural_rubber_contact_v1": 0.5,
+        "actuator_load_path_v1": 0.5
+      },
+      "posterior_after": null,
+      "remaining": [
+        "freeze_and_implement_versioned_executed_benchmark",
+        "freeze_and_implement_exactly_one_non_fixture_C2_adapter",
+        "materialize_benchmark_and_C2_or_prerequisite_abstention",
+        "run_exact_head_test_tiers_and_full_suite",
+        "obtain_independent_PASS_review",
+        "push_scoped_commits_and_verify_remote_equality"
+      ],
+      "blockers": [],
+      "next_step": "freeze_versioned_benchmark_and_C2_adapter_contracts_before_any_C2_execution"
+    },
+    "authority": {
+      "repository_write": true,
+      "commit": true,
+      "push_origin_main_after_PASS": true,
+      "history_rewrite": false,
+      "provider": false,
+      "paid_compute": false,
+      "brev": false,
+      "training": false,
+      "simulator_execution": true,
+      "maximum_simulator_interventions": 1,
+      "maximum_c2_anchor_replays": 18,
+      "simulator_campaign_expansion": false,
+      "simulator_promotion": false,
+      "physical_capture": false,
+      "robot_gateway": false,
+      "robot_motion": false,
+      "physical_transfer": false
     }
   },
   "sail_live_operator": {
