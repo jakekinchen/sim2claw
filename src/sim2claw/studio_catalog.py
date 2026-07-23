@@ -291,6 +291,7 @@ def _ranked_grasp_episodes(
     *,
     _gallery_override: tuple[Path, dict[str, Any]] | None = None,
     _include_generated_alternates: bool = True,
+    _include_binding_sources: bool = False,
 ) -> list[dict[str, Any]]:
     """Prefer the tracked publication bundle, with generated output fallback."""
 
@@ -386,8 +387,7 @@ def _ranked_grasp_episodes(
         lifted = bool(row.get("piece_lifted"))
         outcome = str(row.get("relative_success_label") or "Partial replay")
         status = "passed" if strict_success else "partial" if lifted else "near-miss"
-        episodes.append(
-            {
+        catalog_episode = {
                 "id": f"{task_id}:rank-{rank:02d}",
                 "task_id": task_id,
                 "title": f"Rank {rank:02d} · {row.get('move_label', 'Pawn move')}",
@@ -516,7 +516,12 @@ def _ranked_grasp_episodes(
                     else "generated_output"
                 ),
             }
-        )
+        if publication_bundle and _include_binding_sources:
+            catalog_episode["_binding_sources"] = {
+                "evidence_receipt_path": row.get("episode_probe_receipt_path"),
+                "state_trace_path": artifact.get("state_trace_path"),
+            }
+        episodes.append(catalog_episode)
     if _include_generated_alternates:
         selected_task_id = str(gallery.get("task_id") or "pawn_bg_ranked_grasp_v3")
         for alternate_path in sorted(
@@ -539,6 +544,7 @@ def _ranked_grasp_episodes(
                     repo_root,
                     _gallery_override=(alternate_path, alternate),
                     _include_generated_alternates=False,
+                    _include_binding_sources=_include_binding_sources,
                 )
             )
     return episodes
@@ -864,6 +870,92 @@ def _grasp_episodes(repo_root: Path) -> list[dict[str, Any]]:
     return episodes
 
 
+def _bound_file(
+    repo_root: Path,
+    relative_value: Any,
+    allowed_root: Path,
+) -> Path | None:
+    relative = Path(str(relative_value or ""))
+    if not relative.parts or relative.is_absolute():
+        return None
+    resolved = (repo_root / relative).resolve()
+    allowed = (repo_root / allowed_root).resolve()
+    if not resolved.is_relative_to(allowed) or not resolved.is_file():
+        return None
+    return resolved
+
+
+def _read_hash_bound_json(path: Path, expected_sha256: Any) -> dict[str, Any] | None:
+    if not _is_sha256(expected_sha256):
+        return None
+    try:
+        raw = path.read_bytes()
+        if hashlib.sha256(raw).hexdigest() != expected_sha256:
+            return None
+        value = json.loads(raw)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def _verified_tracked_publication_replay(
+    row: dict[str, Any],
+    repo_root: Path,
+) -> dict[str, Any] | None:
+    """Verify the tracked receipt, trace, recording, and action binding."""
+
+    evidence_receipt = row.get("evidence_receipt")
+    binding_sources = row.get("_binding_sources")
+    recording_id = str(row.get("source_recording_id") or "")
+    action_sha256 = str(row.get("action_array_sha256") or "")
+    state_trace_sha256 = str(row.get("state_trace_sha256") or "")
+    if (
+        row.get("gallery_source") != "tracked_publication_bundle"
+        or not recording_id
+        or not _is_sha256(action_sha256)
+        or not _is_sha256(state_trace_sha256)
+        or not isinstance(evidence_receipt, dict)
+        or not isinstance(binding_sources, dict)
+        or evidence_receipt.get("path")
+        != binding_sources.get("evidence_receipt_path")
+        or not _is_sha256(evidence_receipt.get("sha256"))
+    ):
+        return None
+
+    receipt_path = _bound_file(
+        repo_root,
+        binding_sources.get("evidence_receipt_path"),
+        RANKED_GRASP_OUTPUT_ROOT,
+    )
+    trace_path = _bound_file(
+        repo_root,
+        binding_sources.get("state_trace_path"),
+        RANKED_GRASP_PUBLICATION_ROOT,
+    )
+    if receipt_path is None or trace_path is None:
+        return None
+
+    receipt = _read_hash_bound_json(receipt_path, evidence_receipt.get("sha256"))
+    trace = _read_hash_bound_json(trace_path, state_trace_sha256)
+    if receipt is None or trace is None:
+        return None
+    receipt_episode = receipt.get("episode")
+    if (
+        receipt.get("schema_version")
+        != "sim2claw.pawn_bg_grasp_episode_probe.v1"
+        or not isinstance(receipt_episode, dict)
+        or receipt_episode.get("recording_id") != recording_id
+        or receipt_episode.get("action_array_sha256") != action_sha256
+        or receipt_episode.get("action_byte_identical") is not True
+        or trace.get("schema_version") != "sim2claw.mujoco_body_state_trace.v1"
+    ):
+        return None
+
+    verified = dict(row)
+    verified.pop("_binding_sources", None)
+    return verified
+
+
 def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
     episodes: list[dict[str, Any]] = []
     ranked_by_recording: dict[str, dict[str, Any]] = {}
@@ -871,23 +963,16 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
     for row in _ranked_grasp_episodes(
         repo_root,
         _include_generated_alternates=False,
+        _include_binding_sources=True,
     ):
-        recording_id = str(row.get("source_recording_id") or "")
-        evidence_receipt = row.get("evidence_receipt")
-        if (
-            not recording_id
-            or row.get("gallery_source") != "tracked_publication_bundle"
-            or not _is_sha256(row.get("action_array_sha256"))
-            or not _is_sha256(row.get("state_trace_sha256"))
-            or not isinstance(evidence_receipt, dict)
-            or not evidence_receipt.get("path")
-            or not _is_sha256(evidence_receipt.get("sha256"))
-        ):
+        verified = _verified_tracked_publication_replay(row, repo_root)
+        if verified is None:
             continue
+        recording_id = str(verified["source_recording_id"])
         if recording_id in ranked_by_recording:
             duplicate_recordings.add(recording_id)
             continue
-        ranked_by_recording[recording_id] = row
+        ranked_by_recording[recording_id] = verified
     for recording_id in duplicate_recordings:
         ranked_by_recording.pop(recording_id, None)
     receipt_paths = sorted(

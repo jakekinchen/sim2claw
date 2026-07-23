@@ -97,6 +97,45 @@ def test_catalog_uses_tracked_bundle_without_generated_outputs() -> None:
     assert all(row["physical_authority"] is False for row in episodes)
 
 
+def test_physical_comparison_pairs_only_verified_publication_evidence() -> None:
+    catalog = studio_catalog.build_catalog(REPO_ROOT)
+    manifest = json.loads(
+        (PUBLICATION_ROOT / "gallery_manifest.json").read_text(encoding="utf-8")
+    )
+    manifest_by_recording = {
+        row["recording_id"]: row for row in manifest["episodes"]
+    }
+    physical = [
+        row
+        for row in catalog["episodes"]
+        if row["task_id"] == "physical_pawn_episode_library_v1"
+    ]
+    paired = [
+        row
+        for row in physical
+        if row["comparison"]["physics_replay"]["available"]
+    ]
+
+    assert len(physical) == 18
+    assert len(paired) == 7
+    assert len(physical) - len(paired) == 11
+    assert all("_binding_sources" not in row for row in catalog["episodes"])
+    for row in paired:
+        physics = row["comparison"]["physics_replay"]
+        binding = physics["binding"]
+        receipt_path = REPO_ROOT / binding["evidence_receipt"]["path"]
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        episode = receipt["episode"]
+        manifest_row = manifest_by_recording[row["source_recording_id"]]
+        trace_path = REPO_ROOT / manifest_row["state_trace"]["state_trace_path"]
+
+        assert sha256_file(receipt_path) == binding["evidence_receipt"]["sha256"]
+        assert sha256_file(trace_path) == binding["state_trace_sha256"]
+        assert episode["recording_id"] == row["source_recording_id"]
+        assert episode["action_array_sha256"] == physics["action_array_sha256"]
+        assert episode["action_byte_identical"] is True
+
+
 def test_server_serves_publication_scene_and_phone_trace() -> None:
     episode = next(
         row

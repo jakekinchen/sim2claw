@@ -43,6 +43,18 @@
   authority remains false. The interrupted comparison full run (2%, exit 130)
   and the `49f3610` identity-failed run (976 passed, 3 skipped, one stale
   publication binding) remain excluded historical evidence.
+- Independent-review correction: review of `387de631` proved that a tracked
+  publication row could relabel an otherwise valid receipt because Studio had
+  checked digest syntax and file existence without recomputing the receipt and
+  trace digests or comparing the receipt's embedded recording/action identity.
+  Push was withheld.
+- Repair checkpoint: tracked publication physics is now available only after
+  the receipt and trace bytes match their declared SHA-256 values, the receipt
+  parses with the expected schema, and its embedded recording ID,
+  action-array SHA-256, and byte-identical flag match the selected recording
+  and publication row. Receipt drift, trace drift, recording/action mismatch,
+  and action-mutation claims all fail closed to physics unavailable. Exact-head
+  receipts and fresh independent review own final verification status.
 
 ## Completed transaction — SAIL executed benchmark and retained-C2 adapter
 

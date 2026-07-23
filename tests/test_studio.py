@@ -491,14 +491,70 @@ class StudioCatalogTest(unittest.TestCase):
                 },
             },
         )
+        action_sha256 = "a" * 64
+        evidence_receipt_path = (
+            self.root
+            / "outputs"
+            / "pawn_bg_ranked_grasp_gallery_v1"
+            / "episodes"
+            / "fixture-recording"
+            / "episode_probe_receipt.json"
+        )
+        state_trace_path = (
+            self.root
+            / "src"
+            / "sim2claw"
+            / "studio_web"
+            / "publication"
+            / "pawn_bg_ranked_grasp_v1"
+            / "episodes"
+            / "fixture-recording.json"
+        )
+        evidence_receipt = {
+            "schema_version": "sim2claw.pawn_bg_grasp_episode_probe.v1",
+            "episode": {
+                "recording_id": "fixture-recording",
+                "action_array_sha256": action_sha256,
+                "action_byte_identical": True,
+            },
+        }
+        state_trace = {
+            "schema_version": "sim2claw.mujoco_body_state_trace.v1",
+            "scene": {
+                "piece_layout": "standard",
+                "manifest_url": "/api/scene?layout=standard",
+            },
+            "frame_count": 20,
+            "fps": 10,
+            "duration_seconds": 2,
+        }
+        self._write_json(evidence_receipt_path, evidence_receipt)
+        self._write_json(state_trace_path, state_trace)
         replay = {
             "source_recording_id": "fixture-recording",
             "gallery_source": "generated_output",
-            "action_array_sha256": "a" * 64,
-            "state_trace_sha256": "b" * 64,
+            "action_array_sha256": action_sha256,
+            "state_trace_sha256": hashlib.sha256(
+                state_trace_path.read_bytes()
+            ).hexdigest(),
             "evidence_receipt": {
-                "path": "outputs/fixture/episode_probe_receipt.json",
-                "sha256": "c" * 64,
+                "path": (
+                    "outputs/pawn_bg_ranked_grasp_gallery_v1/episodes/"
+                    "fixture-recording/episode_probe_receipt.json"
+                ),
+                "sha256": hashlib.sha256(
+                    evidence_receipt_path.read_bytes()
+                ).hexdigest(),
+            },
+            "_binding_sources": {
+                "evidence_receipt_path": (
+                    "outputs/pawn_bg_ranked_grasp_gallery_v1/episodes/"
+                    "fixture-recording/episode_probe_receipt.json"
+                ),
+                "state_trace_path": (
+                    "src/sim2claw/studio_web/publication/"
+                    "pawn_bg_ranked_grasp_v1/episodes/fixture-recording.json"
+                ),
             },
             "inspection": {
                 "kind": "threejs_state_trace",
@@ -541,17 +597,72 @@ class StudioCatalogTest(unittest.TestCase):
             paired = studio_catalog_module._teleop_episodes(self.root)[0]
         physics = paired["comparison"]["physics_replay"]
         self.assertTrue(physics["available"])
-        self.assertEqual(physics["action_array_sha256"], "a" * 64)
+        self.assertEqual(physics["action_array_sha256"], action_sha256)
         self.assertEqual(
             physics["binding"]["kind"],
             "tracked_publication_recording_and_action",
         )
         self.assertEqual(
             physics["binding"]["evidence_receipt"]["sha256"],
-            "c" * 64,
+            hashlib.sha256(evidence_receipt_path.read_bytes()).hexdigest(),
         )
-        self.assertEqual(physics["binding"]["state_trace_sha256"], "b" * 64)
+        self.assertEqual(
+            physics["binding"]["state_trace_sha256"],
+            hashlib.sha256(state_trace_path.read_bytes()).hexdigest(),
+        )
         self.assertIn("byte-identical", physics["notice"])
+
+        def assert_unavailable(candidate: dict[str, object]) -> None:
+            with patch.object(
+                studio_catalog_module,
+                "_ranked_grasp_episodes",
+                return_value=[candidate],
+            ):
+                episode = studio_catalog_module._teleop_episodes(self.root)[0]
+            self.assertNotIn("inspection", episode)
+            self.assertFalse(episode["comparison"]["physics_replay"]["available"])
+            self.assertIsNone(episode["comparison"]["physics_replay"]["binding"])
+
+        evidence_receipt["unexpected"] = "receipt-byte-drift"
+        self._write_json(evidence_receipt_path, evidence_receipt)
+        assert_unavailable(replay)
+
+        evidence_receipt.pop("unexpected")
+        self._write_json(evidence_receipt_path, evidence_receipt)
+        replay["evidence_receipt"]["sha256"] = hashlib.sha256(
+            evidence_receipt_path.read_bytes()
+        ).hexdigest()
+        state_trace["unexpected"] = "trace-byte-drift"
+        self._write_json(state_trace_path, state_trace)
+        assert_unavailable(replay)
+
+        state_trace.pop("unexpected")
+        self._write_json(state_trace_path, state_trace)
+        replay["state_trace_sha256"] = hashlib.sha256(
+            state_trace_path.read_bytes()
+        ).hexdigest()
+        evidence_receipt["episode"]["recording_id"] = "different-recording"
+        self._write_json(evidence_receipt_path, evidence_receipt)
+        replay["evidence_receipt"]["sha256"] = hashlib.sha256(
+            evidence_receipt_path.read_bytes()
+        ).hexdigest()
+        assert_unavailable(replay)
+
+        evidence_receipt["episode"]["recording_id"] = "fixture-recording"
+        evidence_receipt["episode"]["action_array_sha256"] = "d" * 64
+        self._write_json(evidence_receipt_path, evidence_receipt)
+        replay["evidence_receipt"]["sha256"] = hashlib.sha256(
+            evidence_receipt_path.read_bytes()
+        ).hexdigest()
+        assert_unavailable(replay)
+
+        evidence_receipt["episode"]["action_array_sha256"] = action_sha256
+        evidence_receipt["episode"]["action_byte_identical"] = False
+        self._write_json(evidence_receipt_path, evidence_receipt)
+        replay["evidence_receipt"]["sha256"] = hashlib.sha256(
+            evidence_receipt_path.read_bytes()
+        ).hexdigest()
+        assert_unavailable(replay)
 
     def test_media_tokens_cannot_escape_generated_storage(self) -> None:
         outside = self.root / "README.md"
