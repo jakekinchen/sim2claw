@@ -1,6 +1,42 @@
-# SAIL/ClawLoop Goal
+# sim2claw Goal
 
-Status: `PHASE 1, A1, B1, AND SAIL DECISION/EVIDENCE CONTROL PLANE COMPLETE; B2 SEARCH PAUSED; TERMINAL MEASUREMENT ABSTENTION`
+Status: `AUTONOMOUS DEVELOPMENT LOOP OPERATIONS AND ADVANCEMENT ACTIVE; PRIOR SAIL OPERATOR INDEPENDENTLY REVIEWED AND MERGE-READY; B2 SEARCH PAUSED`
+
+## Active autonomous development operations and advancement
+
+Harden the repository's autonomous-development loop into a deterministic,
+resumable, receipt-gated, process-safe, and measurable control plane. Reconcile
+authority surfaces, implement task/review/test/process receipts and exact test
+reuse, prevent duplicate/orphaned work, produce merge-readiness packets, run a
+seeded DevLoopBench, modularize the SAIL live operator, and add a trusted
+deterministic adapter boundary.
+
+Authoritative plan:
+[`docs/goals/AUTONOMOUS_DEV_LOOP_OPS_AND_ADVANCEMENT_PLAN.md`](docs/goals/AUTONOMOUS_DEV_LOOP_OPS_AND_ADVANCEMENT_PLAN.md).
+
+Active goal-loop prompt:
+[`docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md`](docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md).
+
+Current milestone: **D1 — canonical development-loop state and authority-drift
+checker in progress**. D0 is complete: the plan and goal are active, the final
+review is recorded, the fast-forward to `main` is reconciled, and hardware
+readiness blockers are explicit.
+
+The reviewed continuation was fast-forwarded with owner authorization. Local
+`main` and `origin/main` are equal at `1ee6b7d`; D0-D6 execute on `main` with
+scoped commit/push authority. Do not rewrite or fork that completed history,
+open a provider or paid-compute lane, train, run a simulator campaign, capture
+physical data, access a robot gateway, or command motion.
+Only `docs/autonomous-workflow/project_state.json` owns live workflow state;
+the orchestration ledger is rendered/history evidence and must fail validation
+when stale.
+
+Read-only physical readiness is negative: the expected SO-101 leader/follower
+ports and calibrations are absent, the only `/dev/cu.usbmodem*` candidate is an
+ignored billboard, no usable camera/USB device was enumerated, and no
+synchronized jaw-force or rubber-deformation/profile sensor is present.
+Physical capture and robot motion remain blocked by hardware/calibration
+readiness; do not open the gateway or manufacture measurement evidence.
 
 ## Active SAIL decision/evidence control-plane integration and ablation
 
@@ -15,18 +51,18 @@ accepted terminal outcome.
 Authoritative goal-loop prompt:
 [`docs/autonomous-workflow/goal-loop-sail-live-operator-integration.md`](docs/autonomous-workflow/goal-loop-sail-live-operator-integration.md).
 
-Continuation branch: `codex/sail-live-operator-integration`.
+Historical continuation branch: `codex/sail-live-operator-integration`, now
+fast-forwarded into `main` at `1ee6b7d`.
 
 The interrupted predecessor task is
 `019f87bd-5440-78b2-a74b-c447fe287cbe`. Read it for evidence and context, but
 do not resume its instruction to continue parameter families until a win.
 
-Progress ledger (2026-07-22):
+Closeout ledger (2026-07-22):
 
-- Current state: second adversarial corrective implementation complete and
-  ready for independent rereview. The generic decision plane completed the
-  retained C2 path and terminally abstained for the missing identifying
-  measurement.
+- Current state: independently rereviewed and merge-ready with no blocking
+  correctness finding. The generic decision plane completed the retained C2
+  path and terminally abstained for the missing identifying measurement.
 - Completed: authority prompt and both named Codex tasks read; branch verified
   clean at pushed commit `c407f8e`; 32 complete manual families / 514 C2
   candidate replays / 0 anchor passes frozen as the ablation baseline.
@@ -41,7 +77,7 @@ Progress ledger (2026-07-22):
   was opened.
 - Hypotheses rejected: none; observed information gain is unavailable, not
   imputed.
-- Remaining: independent rereview and owner decision on PR/merge. A synthetic,
+- Remaining: owner decision on PR/merge. A synthetic,
   packet-bound, zero-device-I/O result lane is implemented; any physical
   measurement campaign still requires separate capture and motion authority.
 - Control boundary: generic simulator-result admission is disabled without a
@@ -51,10 +87,14 @@ Progress ledger (2026-07-22):
 - Blockers: synchronized jaw-force and rubber-deformation/profile evidence is
   unavailable. This is the accepted terminal measurement-acquisition outcome;
   it grants no capture or robot authority.
-- Next step: independent rereview. Do not resume B2 or open a new C2 family;
-  retain the sealed acquisition packet. The control plane has no intervention
-  executor. Only the locally recomputed synthetic measurement receipt lane is
-  currently admissible.
+- Final review: fresh reviewer task `019f8caa-e7bd-7201-9231-d5a2d7f7d0f2`
+  returned `merge-ready; no blocking correctness findings`; six targeted tests
+  passed against pushed commit `1ee6b7d`.
+- Next step: retain the merge-ready branch while the active development-loop
+  hardening goal proceeds. Do not resume B2 or open a new C2 family; retain the
+  sealed acquisition packet. The control plane has no intervention executor.
+  Only the locally recomputed synthetic measurement receipt lane is currently
+  admissible.
 
 ## Paused B2 compliant-pad evaluator win loop
 

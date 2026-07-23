@@ -1,11 +1,11 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-22T20:07:00-05:00",
-  "active_campaign": "none_terminal_sail_live_operator_abstention",
-  "current_milestone": "L1_COMPLETE_TERMINAL_MEASUREMENT_ABSTENTION",
+  "updated_at": "2026-07-22T21:38:00-05:00",
+  "active_campaign": "autonomous_dev_loop_ops_and_advancement",
+  "current_milestone": "D1_CANONICAL_STATE_AND_DRIFT_CHECKER",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
-  "proof_class": "phase1_multi_lane_retrospective_synthetic_and_prospective_simulator_only_no_new_physical_data",
+  "proof_class": "development_control_plane_hardening_no_new_scientific_training_or_physical_evidence",
   "sail_clawloop": {
     "schema_version": "sim2claw.sail_clawloop_campaign_state.v1",
     "master_plan": "docs/goals/SAIL_CLAWLOOP_GRAND_MASTER_PLAN.md",
@@ -630,9 +630,126 @@
     "physical_authority": false,
     "current_safe_claim": "Phase 1 was applied to the full retained evidence compilation and all 11 action-frozen pawn episodes. The bounded contact-model campaign did not repair or promote the simulator, but it localized the visible C2 drop to unilateral rubber contact plus surface-migration and opposing-load collapse, compiled 10 failure classes, and added a non-promoting post-first-lift task diagnostic that reveals three destination entries."
   },
+  "autonomous_dev_loop": {
+    "schema_version": "sim2claw.autonomous_dev_loop_state.v1",
+    "status": "active",
+    "plan": "docs/goals/AUTONOMOUS_DEV_LOOP_OPS_AND_ADVANCEMENT_PLAN.md",
+    "plan_sha256": "d3cc39b0c562c4dbc50fc72273d4b49c0de0ca0a8973a6db90f3a483ec445bd3",
+    "goal_loop": "docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md",
+    "goal_loop_sha256": "df0eecfb09a341c3fe1b295f59b3e4439d379256d5040df5de6f4adcad29f667",
+    "goal_thread_id": "019f8cb5-c04f-7a92-8c90-e045076a34fd",
+    "branch": "main",
+    "baseline_commit": "1ee6b7d5f45aecb3fc95006b6abf1141713cb927",
+    "expected_remote": "origin/main",
+    "prior_sail_fast_forward_to_main": {
+      "completed": true,
+      "commit": "1ee6b7d5f45aecb3fc95006b6abf1141713cb927",
+      "local_main_equals_origin_main": true
+    },
+    "state_machine": {
+      "phase": "IMPLEMENT",
+      "terminal": false,
+      "allowed_phases": [
+        "INSPECT",
+        "CONTRACT",
+        "IMPLEMENT",
+        "FOCUSED_VERIFY",
+        "INDEPENDENT_REVIEW",
+        "REPAIR",
+        "FULL_VERIFY",
+        "FINAL_REVIEW",
+        "MERGE_READY",
+        "CLOSED",
+        "BLOCKED",
+        "STOPPED",
+        "FAILED"
+      ]
+    },
+    "milestones": {
+      "D0": "completed_plan_goal_final_review_and_main_authority_reconciled",
+      "D1": "in_progress",
+      "D2": "pending",
+      "D3": "pending",
+      "D4": "pending",
+      "D5": "pending",
+      "D6": "pending"
+    },
+    "progress_ledger": {
+      "current_state": "D0_complete_D1_canonical_state_and_drift_checker_in_progress",
+      "completed": [
+        "authoritative_ops_and_dev_plan_written",
+        "bounded_goal_loop_prompt_written",
+        "goal_created",
+        "prior_live_operator_final_review_read",
+        "prior_branch_and_remote_verified_equal_at_1ee6b7d",
+        "prior_final_review_recorded_in_reviewer_message_029",
+        "main_fast_forward_authority_reconciled",
+        "hardware_and_calibration_readiness_blocker_recorded",
+        "GOAL_project_state_and_ledger_reconciled_for_D0",
+        "workflow_audit_clean",
+        "D0_diff_check_clean"
+      ],
+      "evidence": {
+        "prior_final_reviewer_thread_id": "019f8caa-e7bd-7201-9231-d5a2d7f7d0f2",
+        "prior_final_reviewer_verdict": "merge_ready_no_blocking_correctness_findings",
+        "prior_final_reviewer_focused_tests_passed": 6,
+        "prior_full_suite_passed": 859,
+        "prior_full_suite_skipped": 3,
+        "prior_full_suite_subtests_passed": 328
+      },
+      "workers": [],
+      "leases": [],
+      "remaining": [
+        "implement_D1_through_D6"
+      ],
+      "blockers": [],
+      "external_readiness_blockers": {
+        "physical_measurement_and_motion": {
+          "status": "blocked_hardware_and_calibration_not_ready",
+          "lerobot_version": "0.6.0",
+          "expected_leader_suffix": "0448141",
+          "leader_present": false,
+          "expected_follower_suffix": "0406411",
+          "follower_present": false,
+          "leader_calibration_present": false,
+          "follower_calibration_present": false,
+          "ignored_billboard_port": "/dev/cu.usbmodemSN234567892",
+          "usable_camera_or_usb_device_present": false,
+          "synchronized_jaw_force_sensor_present": false,
+          "rubber_deformation_profile_sensor_present": false,
+          "physical_gateway_may_open": false,
+          "measurement_evidence_available": false
+        }
+      },
+      "owner_gates": [
+        "release_or_publication_beyond_repository_push",
+        "provider_or_paid_compute",
+        "training",
+        "simulator_campaign_or_promotion",
+        "physical_capture_or_robot_motion"
+      ],
+      "next_step": "implement_D1_canonical_state_and_drift_checker"
+    },
+    "authority": {
+      "pull_request": false,
+      "merge": true,
+      "prior_sail_fast_forward_completed": true,
+      "push_origin_main": true,
+      "history_rewrite": false,
+      "release": false,
+      "provider": false,
+      "paid_compute": false,
+      "training": false,
+      "simulator_campaign": false,
+      "simulator_promotion": false,
+      "physical_capture": false,
+      "robot_gateway": false,
+      "robot_motion": false
+    }
+  },
   "sail_live_operator": {
     "schema_version": "sim2claw.sail_decision_evidence_control_plane_state.v3",
-    "status": "second_corrective_implementation_complete_ready_for_independent_rereview",
+    "status": "independently_rereviewed_merge_ready_no_blocking_correctness_findings",
     "goal_loop": "docs/autonomous-workflow/goal-loop-sail-live-operator-integration.md",
     "branch": "codex/sail-live-operator-integration",
     "baseline_commit": "c407f8eefd07322cef47fbecf729e4218d5989bf",
@@ -644,10 +761,11 @@
       "L1-04": "completed_terminal_measurement_acquisition_abstention",
       "L1-05": "completed_verification_publication_and_closeout",
       "L1-06": "completed_fail_closed_receipt_state_and_offline_measurement_correction",
-      "L1-07": "completed_simulator_admission_disable_global_state_transaction_and_receipt_verifier"
+      "L1-07": "completed_simulator_admission_disable_global_state_transaction_and_receipt_verifier",
+      "L1-08": "completed_independent_final_correctness_rereview"
     },
     "progress_ledger": {
-      "current_state": "second_corrective_control_plane_complete_terminal_measurement_acquisition_abstention",
+      "current_state": "independently_reviewed_merge_ready_terminal_measurement_acquisition_abstention",
       "completed": [
         "authoritative_goal_prompt_read",
         "effectiveness_audit_task_read",
@@ -672,7 +790,8 @@
         "manual_vs_sail_ablation_completed",
         "sealed_measurement_acquisition_abstention_emitted",
         "read_only_studio_surface_published",
-        "focused_sail_ci_retained_and_full_suite_verification_completed"
+        "focused_sail_ci_retained_and_full_suite_verification_completed",
+        "independent_final_correctness_rereview_completed_no_blocking_findings"
       ],
       "evidence": {
         "completed_manual_campaign_receipts": 32,
@@ -697,7 +816,10 @@
         "intervention_executor_implemented": false,
         "generic_simulator_result_admission": false,
         "offline_synthetic_measurement_admission": true,
-        "read_time_receipt_verifier": true
+        "read_time_receipt_verifier": true,
+        "final_reviewer_thread_id": "019f8caa-e7bd-7201-9231-d5a2d7f7d0f2",
+        "final_reviewer_verdict": "merge_ready_no_blocking_correctness_findings",
+        "final_reviewer_focused_tests_passed": 6
       },
       "interventions_used": 0,
       "intervention_budget": 1,
@@ -711,14 +833,13 @@
       ],
       "hypotheses_rejected": [],
       "remaining": [
-        "independent_second_corrective_rereview",
         "owner_pr_or_merge_decision"
       ],
       "blockers": [
         "identifying_synchronized_jaw_force_and_rubber_deformation_measurement_unavailable_terminal_abstention",
         "trusted_deterministic_simulator_evaluator_adapter_absent_generic_simulator_admission_disabled"
       ],
-      "next_step": "independent_second_corrective_rereview_no_new_c2_family_physical_measurement_requires_separate_authority"
+      "next_step": "retain_merge_ready_branch_no_new_c2_family_owner_pr_or_merge_decision_remains_separate"
     },
     "final_verification": {
       "focused_test_count": 78,
@@ -734,7 +855,9 @@
       "full_suite_subtests_passed": 328,
       "studio_live_operator_route_http_200": true,
       "paid_compute_touched": false,
-      "brev_inventory_required": false
+      "brev_inventory_required": false,
+      "independent_final_rereview_passed": true,
+      "independent_final_rereview_targeted_tests_passed": 6
     },
     "training_admitted": false,
     "physical_authority": false,

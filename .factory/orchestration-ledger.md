@@ -1,9 +1,69 @@
 # Orchestration Ledger
 
+## Current control plane — autonomous development operations and advancement
+
+- Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`; local and
+  `origin/main` baseline
+  `1ee6b7d5f45aecb3fc95006b6abf1141713cb927`. The reviewed continuation was
+  fast-forwarded into `main` under owner authority before D0 implementation.
+- Queue source: owner direction to implement every operations/development
+  recommendation after first writing an authoritative plan and activating a
+  goal loop.
+- Plan: `docs/goals/AUTONOMOUS_DEV_LOOP_OPS_AND_ADVANCEMENT_PLAN.md`.
+- Goal: `docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md`;
+  active goal task `019f8cb5-c04f-7a92-8c90-e045076a34fd`.
+- Canonical current state: `docs/autonomous-workflow/project_state.json` under
+  `autonomous_dev_loop`. This ledger is rendered/history evidence and may not
+  override canonical state.
+- Current milestone: D1, canonical state and authority-drift checker. D0 is
+  complete.
+- Authorized: scoped implementation, tests, receipts, commits, and pushes to
+  `origin/main`. The prior SAIL merge authority has been exercised. Release,
+  provider, paid compute, training, simulator campaign/promotion, physical
+  capture, gateway, and robot motion remain closed.
+
+### Queue Summary
+
+- Autonomous: D0-D6 from the authoritative plan.
+- Needs owner: release/publication beyond the scoped repository push and any
+  future authority-expanding action.
+- Defer/close/supersede: new agent roles, B2/C2 campaigns, untrusted simulator
+  result admission, duplicate full-suite runs, and chat-only completion claims.
+
+### Workers
+
+| Worker | Source | Task | Allowed Actions | Status | Last Seen | Proof Target | Proof Result | Blocker |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Coordinator/Executor | owner goal | Implement D0-D6 with one writer | Scoped branch work, tests, receipts, commit/push | active | 2026-07-22T21:31:00-05:00 | All plan acceptance gates and independent final review | D0 plan and goal active | none |
+
+### Owner Decisions
+
+| Source | Decision Needed | Proof Completed | Risks | Recommendation | Choices | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| final verified `main` | Release/publication beyond repository push | pending final program verification | publishing incomplete workflow hardening | wait for D6 closeout packet | keep repository-only or authorize later release | pending; not blocking autonomous work |
+| physical acquisition | Hardware/calibration readiness and separate capture/motion gate | read-only preflight completed | absent buses/calibrations/camera/force/deformation sensors; billboard port is not a motor bus | keep gateway closed and do not manufacture evidence | install/calibrate later or remain blocked | blocked by readiness; not blocking D0-D6 |
+
+### Event Log
+
+- 2026-07-22T21:31:00-05:00 - Wrote the authoritative operations/development
+  plan, derived the bounded goal-loop prompt, activated goal task
+  `019f8cb5-c04f-7a92-8c90-e045076a34fd`, and began D0 reconciliation. No
+  external authority or resource lane was opened.
+- 2026-07-22T21:31:00-05:00 - Reconciled the upstream control-plane handoff:
+  reviewed SAIL history was already fast-forwarded to `main` and pushed at
+  `1ee6b7d`; D0-D6 direct scoped pushes to `origin/main` are authorized. A
+  read-only readiness preflight found neither expected SO-101 bus, neither
+  calibration, no usable camera/USB device, and no synchronized force or
+  deformation sensor, so physical capture/motion remain blocked and closed.
+- 2026-07-22T21:38:00-05:00 - D0 closed with a clean workflow audit and diff
+  check. Plan/goal hashes, final reviewer message 029, `main` fast-forward,
+  hardware readiness blockers, GOAL, canonical state, and ledger agree. D1 is
+  active.
+
 ## Current control plane — SAIL promotion review and measurement readiness
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on the clean, pushed
-  continuation branch `codex/sail-live-operator-integration` at `5bc796f`.
+  continuation branch `codex/sail-live-operator-integration` at `1ee6b7d`.
 - Queue source: owner request to assess SAIL effectiveness, centralize the
   active commit lineage, and orchestrate the next bounded objective.
 - Classified: 2026-07-22T18:30:09-05:00.
@@ -30,17 +90,17 @@
 
 | Worker | Source | Task | Allowed Actions | Status | Last Seen | Proof Target | Proof Result | Blocker |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `review_live_operator` | commit `5bc796f` | Independent live-operator and receipt review | Read only; no edits or external actions | active | 2026-07-22T18:30:09-05:00 | Merge-readiness findings with exact evidence | pending | none |
-| `inventory_measurement_path` | sealed C2 acquisition packet | Inventory force/deformation/angle/current acquisition surfaces | Read only; no physical I/O or authority inference | active | 2026-07-22T18:30:09-05:00 | Smallest zero-authority next objective and acceptance gates | pending | none |
+| `review_live_operator` | commit `5bc796f` then `1ee6b7d` | Independent live-operator and receipt review | Read only; no edits or external actions | complete | 2026-07-22T21:27:04-05:00 | Merge-readiness findings with exact evidence | final fresh review: merge-ready, no blocking findings; 6 targeted tests | none |
+| `inventory_measurement_path` | sealed C2 acquisition packet | Inventory force/deformation/angle/current acquisition surfaces | Read only; no physical I/O or authority inference | complete | 2026-07-22T18:30:09-05:00 | Smallest zero-authority next objective and acceptance gates | packet-bound offline ingestion gap identified and repaired in corrective commits | none |
 | `repair_sail_control_plane` | independent review blockers on `5bc796f` | Implement fail-closed evaluator receipts, persistent budgets, corrected metrics, and fixture-only offline measurement closure | Same branch edits, tests, scoped commit and push; no PR/main merge, provider, or physical I/O | complete | 2026-07-22T19:48:00-05:00 | Every review blocker has a targeted negative test and truthful receipt | 73 focused tests; 854 repository tests, 3 skipped, and 328 subtests; receipt `71550653...` | none |
 | `repair_sail_control_plane_p2` | adversarial rereview of `de308d5` | Disable unverified simulator admission, canonicalize global state, make admission transactional, and add a read-time receipt verifier | Same branch edits, tests, scoped commit and push; no PR/main merge, provider, or physical I/O | complete | 2026-07-22T20:32:00-05:00 | Exact forgery, shared-state replay, poison rollback, and receipt tamper/staleness regressions | 24 live and 78 focused tests; automatic SAIL tiers 36/58/75+2/6; 859 repository tests, 3 skipped, 328 subtests | none |
-| Coordinator | owner request | Reconcile history, reproduce verdict, route repairs and next objective | Ledger, local verification, scoped branch integration | active | 2026-07-22T18:30:09-05:00 | One reviewed continuation branch and owner-gated next boundary | reproduced receipt `e4aac1ce...`; 12 focused tests pass | independent reviews pending |
+| Coordinator | owner request | Reconcile history, reproduce verdict, route repairs and next objective | Ledger, local verification, scoped branch integration | complete | 2026-07-22T21:31:00-05:00 | One reviewed continuation branch and owner-gated next boundary | branch merge-ready at `1ee6b7d`; final review recorded in message 029 | none |
 
 ### Owner Decisions
 
 | Source | Decision Needed | Proof Completed | Risks | Recommendation | Choices | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| continuation branch | Whether to merge or publish after review | active SAIL lineage is centralized and pushed; no open PR exists; corrective repair is in progress | premature merge before independent rereview could preserve an unreviewed receipt/state design | wait for corrective rereview | keep branch-only, open PR, or merge later | pending; not blocking autonomous repair |
+| continuation branch | Whether to merge or publish after review | active SAIL lineage is centralized, pushed, and independently reviewed; no open PR exists | merging before the newly authorized D0-D6 workflow hardening completes would split the advancement | wait for D6 closeout | keep branch-only, open PR, or merge later | pending; not blocking autonomous work |
 | acquisition packet | Whether and how to perform physical acquisition | deterministic packet reproduced; physical authority remains false | sensor spend, hardware safety, and accidental motion/capture authority | first build and verify fixture-only ingestion/preflight; request authority only at the physical boundary | authorize later capture, revise hardware, or keep blocked | pending; not blocking fixture-only design |
 
 ### Event Log
@@ -76,6 +136,10 @@
   uninterrupted repository suite passing 859 tests, skipping 3, and passing
   328 subtests in 1306.07 seconds. Receipt `80e427ec...` re-verifies against the
   canonical empty state head; independent rereview remains the next gate.
+- 2026-07-22T21:27:04-05:00 - Fresh independent review of pushed commit
+  `1ee6b7d` returned merge-ready with no blocking correctness findings. Six
+  targeted tests passed; the prior live-operator review gate is closed in
+  reviewer message 029.
 
 ## Current control plane — SAIL live operator integration
 
