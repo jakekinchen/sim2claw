@@ -91,20 +91,23 @@ unmeasured channels remain explicit; they are never converted to zero.
 
 ## Decision Status
 
-`BASELINE_COMPLETE_MOTION_BLOCKED_SAFE_START_AND_WORKSPACE`
+`BOUNDED_REPLAY_COMPLETE_UNQUALIFIED_TASK_PIPELINE_STILL_GATED`
 
 Camera and both calibrated SO-101 buses are reachable. The follower remains
-torque-off. Live paired-pose registration is rejected because the maximum body
-offset is `97.4945054945` degrees against a `12` degree admission limit.
-All 18 retained physical traces are independently rejected from the present
-follower pose because wrist-flex start error is approximately `144` degrees
-against a `45` degree replay-start limit. The observed workcell also still
-contains task objects. No motion has been commanded.
+torque-off after one bounded positioning move and one camera-recorded
+historical replay. The owner clarified that the observed pieces were the
+intended task setup and explicitly confirmed the workcell clear. The closest
+one-session endpoint was the `b2 to c2` source in reverse; its direct
+positioning interpolation had no MuJoCo contact pairs and its complete reverse
+trace passed the unchanged replay envelope.
 
 The one admitted torque-off baseline is complete: 30/30 samples include fresh
 raw current, the diagnostic video contains 239 frames, and all observations
-confirm torque-off/no-motion state. Static current does not identify the
-load/contact/task mechanisms needed for a score-changing calibration.
+confirm torque-off/no-motion state. The later replay requested all 566 source
+rows but sent only 394 within the exactness tolerance and gateway-clamped 175,
+so it remains unqualified command-replay observation. It did not run the
+independent metric task evaluator, did not satisfy the five empty-gripper
+cycles, and cannot change the strict `0 / 11` task score.
 
 ## Execution Rhythm
 
@@ -135,3 +138,18 @@ load/contact/task mechanisms needed for a score-changing calibration.
   `4dbb666ab68fa41688b3d346f54797d947fd0771af8f2ec20edc1ac379eb4021`.
 - 2026-07-23 — Camera evidence independently rejected the clear-workcell gate;
   motion and task collection remain blocked.
+- 2026-07-23 — Owner corrected the camera interpretation and explicitly
+  confirmed the intended task setup clear. The leader arm remained unused.
+- 2026-07-23 — A first positioning attempt stopped before motion when motor ID
+  2 missed the one-attempt torque-enable acknowledgement. Torque-off was
+  verified. The gateway now uses the Feetech API's bounded retry window for
+  safety-critical enable and disable transitions; 31 focused tests passed.
+- 2026-07-23 — A second positioning attempt moved partially, then stopped when
+  a duplicate Studio live tab reclaimed the serial port. All competing live
+  sessions were closed and torque-off was independently reverified.
+- 2026-07-23 — The third positioning attempt completed at 5 degrees/second
+  with 0.527/0.615/0.176/1.077/0.352/0.0-degree residuals and released torque.
+- 2026-07-23 — The single `b2 to c2` reverse replay completed all 566 rows with
+  a 31.066667-second C922 capture. Exact commands were 394/566 and safety
+  clamping occurred on 175/566 samples. The proof class is
+  `physical_command_replay_observation_unqualified`; task score remains 0/11.

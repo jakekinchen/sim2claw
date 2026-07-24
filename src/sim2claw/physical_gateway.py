@@ -361,9 +361,9 @@ class SO101PhysicalGateway:
     def _connect_torque_off(self) -> None:
         try:
             self.leader.bus.connect()
-            self.leader.bus.disable_torque()
+            self.leader.bus.disable_torque(num_retry=BUS_READ_RETRIES)
             self.follower.bus.connect()
-            self.follower.bus.disable_torque()
+            self.follower.bus.disable_torque(num_retry=BUS_READ_RETRIES)
             self.connected = True
             if not self.leader.is_calibrated:
                 raise PhysicalGatewayError(
@@ -375,9 +375,9 @@ class SO101PhysicalGateway:
                 )
             if self.configure_devices:
                 self.leader.configure()
-                self.leader.bus.disable_torque()
+                self.leader.bus.disable_torque(num_retry=BUS_READ_RETRIES)
                 self.follower.configure()
-                self.follower.bus.disable_torque()
+                self.follower.bus.disable_torque(num_retry=BUS_READ_RETRIES)
             else:
                 operating_modes = self.follower.bus.sync_read(
                     "Operating_Mode",
@@ -440,7 +440,7 @@ class SO101PhysicalGateway:
             # Set the goal to the follower's current position before torque is
             # enabled. This intentionally commands no leader-to-follower sweep.
             self.follower.send_action(_position_dict(follower))
-            self.follower.bus.enable_torque()
+            self.follower.bus.enable_torque(num_retry=BUS_READ_RETRIES)
             self.torque_enabled = True
             self.sleep(HOLD_SETTLE_SECONDS)
             actual = self._motion_read(
@@ -451,7 +451,7 @@ class SO101PhysicalGateway:
             )
             registration = paired_pose_registration_report(registered_leader, actual)
             if not registration["paired_pose_registration_ready"]:
-                self.follower.bus.disable_torque()
+                self.follower.bus.disable_torque(num_retry=BUS_READ_RETRIES)
                 self.torque_enabled = False
                 raise PhysicalGatewayError(
                     "The paired pose changed before registration completed; torque released.",
@@ -472,7 +472,7 @@ class SO101PhysicalGateway:
                 maximum_hold_residual > POST_HOLD_BODY_TOLERANCE_DEG
                 or gripper_hold_residual > POST_HOLD_GRIPPER_TOLERANCE
             ):
-                self.follower.bus.disable_torque()
+                self.follower.bus.disable_torque(num_retry=BUS_READ_RETRIES)
                 self.torque_enabled = False
                 raise PhysicalGatewayError(
                     "Follower moved while establishing the paired-pose hold; "
@@ -948,7 +948,7 @@ class SO101PhysicalGateway:
         if torque is not None and any(float(value) != 0.0 for value in torque.values()):
             raise PhysicalGatewayError("Follower torque was not off before sync.")
         self.follower.send_action(_position_dict(follower))
-        self.follower.bus.enable_torque()
+        self.follower.bus.enable_torque(num_retry=BUS_READ_RETRIES)
         self.torque_enabled = True
         self.sleep(HOLD_SETTLE_SECONDS)
         held = action_vector(self.follower.get_observation())
@@ -1173,7 +1173,7 @@ class SO101PhysicalGateway:
                 continue
             try:
                 if bus.is_connected:
-                    bus.disable_torque()
+                    bus.disable_torque(num_retry=BUS_READ_RETRIES)
             except Exception as error:  # retain all shutdown attempts
                 errors.append(error)
             try:

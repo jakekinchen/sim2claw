@@ -16,31 +16,32 @@
 - Budget: one torque-off baseline (up to 120 samples/30 seconds), five
   empty-gripper cycles, and a frozen 6/3/3 train/validation/held-out task split;
   zero adaptive retries and zero provider calls.
-- Live preflight: C922 index 0 and both calibrated SO-101 buses are reachable.
-  Follower torque is off. Paired-pose registration is rejected at
-  `97.4945054945` degrees versus the `12` degree limit. All 18 retained traces
-  are rejected from the present follower pose by the unchanged `45` degree
-  replay-start envelope; wrist-flex error is approximately `144` degrees.
-  The camera also shows task objects in the intended workcell.
-- Authority: owner authorization is recorded, but gateway motion execution,
-  physical task claim, training admission, and promotion remain false until
+- Live preflight: C922 and both calibrated SO-101 buses are reachable. The
+  owner corrected the earlier image interpretation and explicitly confirmed
+  that the observed pieces were the intended task setup. One follower-only
+  positioning move and one historical replay completed; torque is confirmed
+  off. Paired leader/follower registration remains rejected and was not used.
+- Authority: bounded gateway motion executed under direct owner authorization.
+  Physical task claim, training admission, and promotion remain false until
   their independent gates pass.
 - Torque-off result: one committed capture path produced 30/30 fresh-current
   samples and a 239-frame, 7.966667-second C922 video. Every row preserved
   torque-off/no-motion state. Receipt file SHA-256 is `851631b9...`; embedded
   digest is `4dbb666a...`.
-- Evidence decision: `baseline_complete_motion_abstained_safe_start_and_workspace_not_ready`.
-  The observed workspace still contains the arm and task pieces, so an
-  autonomous alignment move is not admitted. Static current is usable but
-  does not identify load/contact/task consequence.
+- Evidence decision:
+  `bounded_physical_replay_complete_unqualified_task_pipeline_still_gated`.
+  The `b2 to c2` reverse source requested all 566 rows, sent 394 within the
+  exactness tolerance, and safety-clamped 175. The 932-frame C922 capture is
+  diagnostic only and does not identify metric task consequence.
 - Safety repair: a post-capture check exposed that the legacy preflight wrapper
   requested LeRobot device configuration. Its failed configuration attempt
   entered the gateway exception shutdown and sent no position command. The
   wrapper is now hard-bound to `configure_devices=false`; focused regression
   tests and a corrected live inspection confirm no configuration rewrite,
   torque off, and the unchanged 97.4945-degree rejection.
-- Status: active but physically blocked. No motion has been commanded, no
-  existing guard has been bypassed, and the strict task score remains `0/11`.
+- Status: active after one bounded unqualified replay. The strict task score
+  remains `0/11`; five empty-gripper cycles and synchronized metric consequence
+  remain pending.
 - Goal:
   `docs/autonomous-workflow/goal-loop-current-100mm-physical-measurement-calibration.md`.
 

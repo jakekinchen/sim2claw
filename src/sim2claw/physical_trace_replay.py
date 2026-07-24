@@ -299,7 +299,8 @@ class _SyntheticBus:
     def connect(self) -> None:
         self.is_connected = True
 
-    def disable_torque(self) -> None:
+    def disable_torque(self, *, num_retry: int = 0) -> None:
+        del num_retry
         return None
 
     def disconnect(self, _disable_torque: bool = True) -> None:

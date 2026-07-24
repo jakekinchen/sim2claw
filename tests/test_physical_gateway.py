@@ -30,6 +30,8 @@ class FakeBus:
         self.is_connected = False
         self.torque = False
         self.disable_calls = 0
+        self.disable_num_retries: list[int] = []
+        self.enable_num_retries: list[int] = []
         self.disconnect_calls = 0
         self.current_reads = 0
         self.fail_next_current_read = False
@@ -37,12 +39,14 @@ class FakeBus:
     def connect(self) -> None:
         self.is_connected = True
 
-    def disable_torque(self) -> None:
+    def disable_torque(self, *, num_retry: int = 0) -> None:
         self.torque = False
         self.disable_calls += 1
+        self.disable_num_retries.append(num_retry)
 
-    def enable_torque(self) -> None:
+    def enable_torque(self, *, num_retry: int = 0) -> None:
         self.torque = True
+        self.enable_num_retries.append(num_retry)
 
     def disconnect(self, _disable_torque: bool = True) -> None:
         self.torque = False
@@ -213,6 +217,10 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertFalse(opened["start_alignment_motion_commanded"])
         self.assertTrue(self.follower.bus.torque)
         self.assertFalse(self.leader.bus.torque)
+        self.assertEqual(
+            self.follower.bus.enable_num_retries,
+            [BUS_READ_RETRIES],
+        )
         self.leader.values[:] = [20, 0, 0, 0, 0, 0]
         sample = gateway.sample(0.1)
         self.assertTrue(sample["safety_clamped"])
@@ -220,6 +228,10 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertEqual(sample["follower_command_degrees"][0], 11.0)
         gateway.close()
         self.assertFalse(self.follower.bus.torque)
+        self.assertEqual(
+            self.follower.bus.disable_num_retries[-1],
+            BUS_READ_RETRIES,
+        )
         self.assertFalse(self.follower.bus.is_connected)
         self.assertFalse(self.leader.bus.is_connected)
 

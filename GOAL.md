@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `CURRENT 100 MM MEASUREMENT ACTIVE; MOTION PREFLIGHT BLOCKED; TASK SCORE 0/11`
+Status: `CURRENT 100 MM MEASUREMENT ACTIVE; ONE UNQUALIFIED PHYSICAL REPLAY COMPLETE; TASK SCORE 0/11`
 
 ## Active current-workcell measurement and calibration
 
@@ -12,22 +12,27 @@ authoritative prompt is
 
 The owner has authorized bounded camera capture, robot episodes, and data
 collection. The preregistered torque-off baseline is complete with 30/30
-fresh-current samples, 239 diagnostic camera frames, and zero motion.
-Readiness remains fail-closed: the current leader/follower
-registration differs by `97.4945` degrees against the reviewed `12` degree
-limit, all 18 retained traces fail the independent replay-start envelope from
-the present follower pose, and the camera still shows task objects in the
-intended workcell. Follower torque remains off and no motion has been
-commanded.
+fresh-current samples and 239 diagnostic camera frames. After the owner
+confirmed that the overhead view showed the intended task setup rather than an
+uncleared workcell, the gateway completed one slow positioning move and one
+camera-bound historical trace replay. The selected `b2 to c2` source ran in
+reverse for all `566 / 566` requested rows. Only `394 / 566` commands were sent
+within the 0.25-degree exactness tolerance and `175 / 566` samples were
+gateway-clamped, so the result is unqualified physical command-replay
+observation only. It is not exact-action, task-success, calibration, or
+training evidence. Follower torque is confirmed off.
 
-Work continues through the safe torque-off measurement and evidence pipeline.
-No action assistance, safety-gate bypass, post-held-out family expansion, or
-score change is allowed. The strict task score stays `0/11` unless an
-independent evaluator admits new camera-bound metric task consequences.
+Work continues through the preregistered empty-gripper and synchronized
+measurement gates. No action assistance, post-held-out family expansion, or
+score change is allowed. The strict task score stays `0/11` because this run
+did not have evaluator-owned metric task consequence and visibly showed no
+obvious endpoint board-state change in sampled start/end frames.
 The baseline receipt digest is
 `4dbb666ab68fa41688b3d346f54797d947fd0771af8f2ec20edc1ac379eb4021`;
+the replay capture receipt SHA-256 is
+`fda49752b4bf261e4c40419bbd477096f55377e1aaa7b29ce65533621bcbce87`;
 the run log is
-[`docs/run-logs/2026-07-23-current-100mm-torque-off-baseline.md`](docs/run-logs/2026-07-23-current-100mm-torque-off-baseline.md).
+[`docs/run-logs/2026-07-23-current-100mm-bounded-physical-replay.md`](docs/run-logs/2026-07-23-current-100mm-bounded-physical-replay.md).
 
 ## Active actuator-response external validation
 
