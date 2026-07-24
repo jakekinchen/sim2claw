@@ -498,6 +498,10 @@ def test_hil_gripper_projection_admits_only_unloaded_measurement() -> None:
     assert projection["evidence_status"] == (
         "physical_measurement_admitted_no_task_authority"
     )
+    assert (
+        projection["episode"]["action_binding"]
+        == "hash_bound_requested_physical_packet"
+    )
     statuses = {row["id"]: row["status"] for row in projection["domains"]}
     assert statuses["kinematics"] == "observed"
     assert statuses["contact_compliance"] == "missing"
@@ -789,6 +793,7 @@ def test_replay_owns_twin_fidelity_navigation_and_read_only_drawer() -> None:
     assert 'id="twin-fidelity-content"' in html
     assert "<form" not in drawer
     assert "fetch(`/api/twin-fidelity?episode_id=" in js
+    assert '"Requested action hash bound"' in js
     assert 'event.key === "Escape" && state.drawer' in js
     assert "trigger?.focus({ preventScroll: true })" in js
     assert "@media (max-width: 620px)" in css

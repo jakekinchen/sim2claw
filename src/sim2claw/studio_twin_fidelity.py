@@ -605,7 +605,7 @@ def _hil_identifiability_projection(
             "title": episode.get("title"),
             "subtitle": episode.get("subtitle"),
             "action_sha256": packet_action,
-            "action_binding": "hash_bound_physical_packet",
+            "action_binding": "hash_bound_requested_physical_packet",
             "proof_class": [
                 episode.get("proof_class"),
                 *list(publication.get("proof_classes") or []),
