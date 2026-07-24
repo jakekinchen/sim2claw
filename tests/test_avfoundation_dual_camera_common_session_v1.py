@@ -21,6 +21,9 @@ from sim2claw.avfoundation_format_inventory import (
     AVFoundationFormatInventoryError,
     _canonical_bytes,
 )
+from sim2claw.avfoundation_dual_camera_common_session_seal_v1 import (
+    seal_observation,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = (
@@ -541,3 +544,41 @@ def test_evaluation_is_byte_identical(
     assert (tmp_path / "eval-1/evaluation.json").read_bytes() == (
         tmp_path / "eval-2/evaluation.json"
     ).read_bytes()
+
+
+def test_sealer_accepts_only_absent_optional_failure_reason(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(ROOT)
+    observed = _materialize(tmp_path)
+    raw_path = observed / "raw/observation.json"
+    raw = json.loads(raw_path.read_text(encoding="utf-8"))
+    raw.pop("failure_reason")
+    _write(raw_path, raw)
+    attempt_path = observed / "attempt.json"
+    attempt = json.loads(attempt_path.read_text(encoding="utf-8"))
+    attempt["raw_observation_sha256"] = _sha(raw_path)
+    attempt["runtime_identity"]["evaluator_sha256"] = (
+        "380510825d3871e43408a285faca028ff2fcb6b8f72212c4c734786f310e52f5"
+    )
+    attempt["runtime_identity"]["source_sha256"] = (
+        "8ee7ddc0a298c2ffc960961e58c8d86708f92a3d9015ce2be148a694c39e8e51"
+    )
+    prelaunch_path = observed / "attempt-prelaunch.json"
+    prelaunch = json.loads(prelaunch_path.read_text(encoding="utf-8"))
+    prelaunch["runtime_identity"] = attempt["runtime_identity"]
+    _write(prelaunch_path, prelaunch)
+    attempt["prelaunch_manifest_sha256"] = _sha(prelaunch_path)
+    _write(attempt_path, attempt)
+    evaluation, receipt = seal_observation(
+        contract_path=CONTRACT,
+        observation_root=observed,
+        output_root=tmp_path / "sealed",
+        sealer_path=(
+            ROOT
+            / "src/sim2claw/"
+            "avfoundation_dual_camera_common_session_seal_v1.py"
+        ),
+    )
+    assert evaluation["verdict"] == "common_session_callback_delivery_verified"
+    assert receipt["normalization"]["scientific_thresholds_changed"] is False
