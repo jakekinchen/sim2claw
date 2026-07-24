@@ -1477,6 +1477,9 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('data-camera-id="d405-wrist"', html)
             self.assertIn('data-camera-id="logitech-overhead"', html)
             self.assertIn('data-camera-id="logitech-workspace"', html)
+            self.assertIn('id="overhead-camera-preflight"', html)
+            self.assertIn('id="wrist-camera-preflight"', html)
+            self.assertIn("Start records the C922 and D405", html)
             self.assertIn('class="live-camera-slot"', html)
             self.assertIn("Live streams", html)
             self.assertNotIn("Three physical views", html)
@@ -1519,6 +1522,13 @@ class StudioCatalogTest(unittest.TestCase):
                 javascript = response.read().decode("utf-8")
             self.assertIn("document.body.dataset.recorderStatus = status", javascript)
             self.assertIn('"C922 REC"', javascript)
+            self.assertIn('"C922 + D405 REC"', javascript)
+            self.assertIn('"d405-wrist"', javascript)
+            self.assertIn("recorder.wrist_video?.status", javascript)
+            self.assertIn(
+                "Recording leader targets, follower state, C922 overhead video, and the D405 wrist stream.",
+                javascript,
+            )
             self.assertIn('sim2claw.recorder.settings.v3', javascript)
             self.assertIn('lowerTwoRowSquares', javascript)
             self.assertIn('recordBrownPawnSquares', javascript)

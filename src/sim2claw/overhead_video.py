@@ -1,7 +1,7 @@
-"""Isolated overhead-camera recording for teleoperation diagnostics.
+"""Isolated diagnostic-camera recording for teleoperation episodes.
 
-The camera process is deliberately separate from the arm control loop.  Its
-output is diagnostic evidence only and is not admitted as ACT training data.
+Camera processes are deliberately separate from the arm control loop. Their
+outputs are diagnostic evidence only and are not admitted as ACT training data.
 """
 
 from __future__ import annotations
@@ -17,7 +17,9 @@ from typing import Any
 
 
 OVERHEAD_VIDEO_SCHEMA = "sim2claw.overhead_diagnostic_video.v1"
+WRIST_VIDEO_SCHEMA = "sim2claw.wrist_diagnostic_video.v1"
 DEFAULT_CAMERA_NAME = "C922 Pro Stream Webcam"
+DEFAULT_WRIST_CAMERA_NAME = "Intel(R) RealSense(TM) Depth Camera 405  Depth"
 # The C922's current AVFoundation path exposes 720p NV12 at only 10 fps.  The
 # 640x480 NV12 mode accepts 30 fps without a fallback, which better preserves
 # temporal evidence while the arms share this Mac's USB topology.
@@ -124,6 +126,13 @@ def list_avfoundation_cameras(
 class OverheadVideoRecorder:
     """Own one ffmpeg process and expose nonblocking health checks."""
 
+    schema_version = OVERHEAD_VIDEO_SCHEMA
+    camera_label = "C922"
+    source_pixel_format = "nv12"
+    orientation_rotation_degrees = 180
+    video_filter = "hflip,vflip"
+    metric_depth = False
+
     def __init__(
         self,
         output_path: Path,
@@ -173,7 +182,7 @@ class OverheadVideoRecorder:
             "-f",
             "avfoundation",
             "-pixel_format",
-            "nv12",
+            self.source_pixel_format,
             "-framerate",
             str(self.fps),
             "-video_size",
@@ -181,19 +190,11 @@ class OverheadVideoRecorder:
             "-i",
             f"{self.discovery['camera_name']}:none",
             "-an",
-            "-vf",
-            "hflip,vflip",
-            "-c:v",
-            "h264_videotoolbox",
-            "-b:v",
-            "4M",
-            "-pix_fmt",
-            "yuv420p",
-            "-movflags",
-            "+faststart",
-            "-y",
-            str(self.output_path),
         ]
+        if self.video_filter:
+            command.extend(["-vf", self.video_filter])
+        command.extend(self._encoder_args())
+        command.extend(["-y", str(self.output_path)])
         self.started_at = _utc_now()
         self.started_monotonic = time.monotonic()
         try:
@@ -221,20 +222,21 @@ class OverheadVideoRecorder:
                         "that sim2claw Demo Control has Camera access"
                     )
                 raise OverheadVideoError(
-                    "C922 video capture exited during startup"
+                    f"{self.camera_label} video capture exited during startup"
                     + (f": {detail}" if detail else ".")
                 )
             time.sleep(0.05)
         return {
-            "schema_version": OVERHEAD_VIDEO_SCHEMA,
+            "schema_version": self.schema_version,
             "status": "recording",
             "camera_name": self.discovery["camera_name"],
             "camera_index": self.discovery["camera_index"],
             "configured_width": self.width,
             "configured_height": self.height,
             "configured_fps": self.fps,
-            "configured_pixel_format": "nv12",
-            "orientation_rotation_degrees": 180,
+            "configured_pixel_format": self.source_pixel_format,
+            "orientation_rotation_degrees": self.orientation_rotation_degrees,
+            "metric_depth": self.metric_depth,
             "video_path": self.output_path.name,
             "ffmpeg_log_path": self.log_path.name,
             "video_started_at": self.started_at,
@@ -247,7 +249,7 @@ class OverheadVideoRecorder:
             return
         detail = _compact_log_tail(self.log_path)
         raise OverheadVideoError(
-            "C922 video capture stopped before the episode ended"
+            f"{self.camera_label} video capture stopped before the episode ended"
             + (f": {detail}" if detail else ".")
         )
 
@@ -315,15 +317,16 @@ class OverheadVideoRecorder:
             else None
         )
         return {
-            "schema_version": OVERHEAD_VIDEO_SCHEMA,
+            "schema_version": self.schema_version,
             "status": status,
             "camera_name": self.discovery["camera_name"] if self.discovery else self.camera_name,
             "camera_index": self.discovery["camera_index"] if self.discovery else None,
             "configured_width": self.width,
             "configured_height": self.height,
             "configured_fps": self.fps,
-            "configured_pixel_format": "nv12",
-            "orientation_rotation_degrees": 180,
+            "configured_pixel_format": self.source_pixel_format,
+            "orientation_rotation_degrees": self.orientation_rotation_degrees,
+            "metric_depth": self.metric_depth,
             "video_path": self.output_path.name,
             "ffmpeg_log_path": self.log_path.name,
             "video_started_at": self.started_at,
@@ -341,6 +344,18 @@ class OverheadVideoRecorder:
             "is_training_data": False,
             "error_log_tail": _compact_log_tail(self.log_path) if status == "failed" else None,
         }
+
+    def _encoder_args(self) -> list[str]:
+        return [
+            "-c:v",
+            "h264_videotoolbox",
+            "-b:v",
+            "4M",
+            "-pix_fmt",
+            "yuv420p",
+            "-movflags",
+            "+faststart",
+        ]
 
     def _probe_output(self) -> dict[str, Any] | None:
         if not self.ffprobe_path or not self.output_path.is_file():
@@ -374,3 +389,128 @@ class OverheadVideoRecorder:
         if self.log_handle is not None:
             self.log_handle.close()
             self.log_handle = None
+
+
+class WristVideoRecorder(OverheadVideoRecorder):
+    """Record the D405 display stream without claiming metric depth."""
+
+    schema_version = WRIST_VIDEO_SCHEMA
+    camera_label = "D405 wrist"
+    source_pixel_format = "uyvy422"
+    orientation_rotation_degrees = 0
+    video_filter = ""
+    metric_depth = False
+
+    def __init__(
+        self,
+        output_path: Path,
+        *,
+        camera_name: str = DEFAULT_WRIST_CAMERA_NAME,
+        width: int = 424,
+        height: int = 240,
+        fps: int = 5,
+        ffmpeg_path: str | None = None,
+        ffprobe_path: str | None = None,
+    ):
+        super().__init__(
+            output_path,
+            camera_name=camera_name,
+            width=width,
+            height=height,
+            fps=fps,
+            ffmpeg_path=ffmpeg_path,
+            ffprobe_path=ffprobe_path,
+        )
+        self.browser_output_path = output_path.with_name("wrist_d405.browser.mp4")
+
+    def _encoder_args(self) -> list[str]:
+        # A low-rate FFV1 source is intentionally used here. It was the stable
+        # D405 path under simultaneous camera-only capture and avoids adding
+        # hardware-encoder work to the arm-control interval.
+        return ["-c:v", "ffv1", "-level", "3", "-g", "1", "-f", "matroska"]
+
+    def finish(
+        self,
+        *,
+        action_started_monotonic: float | None,
+        action_stopped_monotonic: float | None,
+        post_roll_seconds: float,
+    ) -> dict[str, Any]:
+        report = super().finish(
+            action_started_monotonic=action_started_monotonic,
+            action_stopped_monotonic=action_stopped_monotonic,
+            post_roll_seconds=post_roll_seconds,
+        )
+        if report.get("status") != "completed":
+            return report
+        ffmpeg = self.ffmpeg_path or shutil.which("ffmpeg")
+        if not ffmpeg:
+            report.update(
+                status="failed",
+                browser_video_path=None,
+                browser_derivative_error="ffmpeg is unavailable for the browser derivative.",
+            )
+            return report
+        try:
+            result = subprocess.run(
+                [
+                    ffmpeg,
+                    "-hide_banner",
+                    "-loglevel",
+                    "warning",
+                    "-i",
+                    str(self.output_path),
+                    "-an",
+                    "-c:v",
+                    "h264_videotoolbox",
+                    "-b:v",
+                    "2M",
+                    "-pix_fmt",
+                    "yuv420p",
+                    "-movflags",
+                    "+faststart",
+                    "-y",
+                    str(self.browser_output_path),
+                ],
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=30.0,
+                check=False,
+            )
+        except (OSError, subprocess.TimeoutExpired) as error:
+            report.update(
+                status="failed",
+                browser_video_path=None,
+                browser_derivative_error=str(error),
+            )
+            return report
+        derivative_observed = self._probe_path(self.browser_output_path)
+        if (
+            result.returncode != 0
+            or not self.browser_output_path.is_file()
+            or derivative_observed is None
+        ):
+            report.update(
+                status="failed",
+                browser_video_path=None,
+                browser_derivative_error=(
+                    result.stderr.strip() or "Browser derivative validation failed."
+                ),
+            )
+            return report
+        report.update(
+            browser_video_path=self.browser_output_path.name,
+            browser_observed_video=derivative_observed,
+            browser_derivative_error=None,
+        )
+        return report
+
+    def _probe_path(self, path: Path) -> dict[str, Any] | None:
+        original = self.output_path
+        try:
+            self.output_path = path
+            return self._probe_output()
+        finally:
+            self.output_path = original

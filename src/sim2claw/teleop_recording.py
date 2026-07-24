@@ -25,7 +25,11 @@ import numpy as np
 from .act_pick_place import (
     resolve_structured_goal,
 )
-from .overhead_video import OverheadVideoError, OverheadVideoRecorder
+from .overhead_video import (
+    OverheadVideoError,
+    OverheadVideoRecorder,
+    WristVideoRecorder,
+)
 from .paths import REPO_ROOT
 from .physical_gateway import (
     GATEWAY_SCHEMA,
@@ -181,11 +185,23 @@ def _physical_source_row(
         "action_owner": action_owner,
         "assistance": int(assistance),
         "intervention": int(intervention),
-        "visual_observation": {
-            "kind": "overhead_diagnostic_video_only",
-            "path": "overhead_c922.mp4",
-            "training_data": False,
-        },
+        "visual_observation": (
+            {
+                "kind": "dual_diagnostic_video",
+                "streams": {
+                    "overhead_workspace": "overhead_c922.mp4",
+                    "wrist_gripper_upward": "wrist_d405.mkv",
+                },
+                "training_data": False,
+                "metric_depth": False,
+            }
+            if raw_sample.get("wrist_video_time_seconds") is not None
+            else {
+                "kind": "overhead_diagnostic_video_only",
+                "path": "overhead_c922.mp4",
+                "training_data": False,
+            }
+        ),
     }
     if len(row.get("follower_command_degrees") or []) != 6:
         raise ValueError(
@@ -214,7 +230,8 @@ def _validate_physical_source_row(row: dict[str, Any]) -> dict[str, Any]:
     visual_observation = row.get("visual_observation")
     if (
         not isinstance(visual_observation, dict)
-        or visual_observation.get("kind") != "overhead_diagnostic_video_only"
+        or visual_observation.get("kind")
+        not in {"overhead_diagnostic_video_only", "dual_diagnostic_video"}
     ):
         raise ValueError("physical teleoperation sample visual evidence is invalid")
     return _physical_source_row(
@@ -661,6 +678,7 @@ class PhysicalFollowerBackend:
 
 BackendFactory = Callable[[dict[str, Any], dict[str, Any]], RecorderBackend]
 VideoRecorderFactory = Callable[[Path], DiagnosticVideoRecorder]
+_DEFAULT_WRIST_FACTORY = object()
 
 
 def _default_backend_factory(request: dict[str, Any], preflight: dict[str, Any]) -> RecorderBackend:
@@ -674,6 +692,10 @@ def _default_backend_factory(request: dict[str, Any], preflight: dict[str, Any])
 
 def _default_video_recorder_factory(draft: Path) -> DiagnosticVideoRecorder:
     return OverheadVideoRecorder(draft / "overhead_c922.mp4")
+
+
+def _default_wrist_video_recorder_factory(draft: Path) -> DiagnosticVideoRecorder:
+    return WristVideoRecorder(draft / "wrist_d405.mkv")
 
 
 @dataclass
@@ -700,12 +722,23 @@ class TeleopRecordingManager:
         repo_root: Path = REPO_ROOT,
         backend_factory: BackendFactory = _default_backend_factory,
         video_recorder_factory: VideoRecorderFactory = _default_video_recorder_factory,
+        wrist_video_recorder_factory: VideoRecorderFactory | None | object = (
+            _DEFAULT_WRIST_FACTORY
+        ),
         dev_root: Path = Path("/dev"),
         calibration_root: Path | None = None,
     ):
         self.paths = RecorderPaths(repo_root.resolve())
         self.backend_factory = backend_factory
         self.video_recorder_factory = video_recorder_factory
+        self.wrist_video_recorder_factory = (
+            _default_wrist_video_recorder_factory
+            if wrist_video_recorder_factory is _DEFAULT_WRIST_FACTORY
+            and video_recorder_factory is _default_video_recorder_factory
+            else None
+            if wrist_video_recorder_factory is _DEFAULT_WRIST_FACTORY
+            else wrist_video_recorder_factory
+        )
         self.dev_root = dev_root
         self.calibration_root = calibration_root
         self.lock = threading.RLock()
@@ -714,6 +747,7 @@ class TeleopRecordingManager:
         self.thread: threading.Thread | None = None
         self.backend: RecorderBackend | None = None
         self.video_recorder: DiagnosticVideoRecorder | None = None
+        self.wrist_video_recorder: DiagnosticVideoRecorder | None = None
         self.live_simulation: dict[str, Any] = self._empty_live_simulation()
         self.state: dict[str, Any] = self._recover_existing_state()
 
@@ -1067,10 +1101,27 @@ class TeleopRecordingManager:
             video_started_monotonic = self.video_recorder.started_monotonic
             if video_started_monotonic is None:
                 raise OverheadVideoError("C922 video capture did not publish its start clock.")
+            wrist_video_state: dict[str, Any] | None = None
+            wrist_video_started_monotonic: float | None = None
+            if (
+                request["mode"] == "physical_follower"
+                and callable(self.wrist_video_recorder_factory)
+            ):
+                self.wrist_video_recorder = self.wrist_video_recorder_factory(draft)
+                wrist_video_state = self.wrist_video_recorder.start()
+                wrist_video_started_monotonic = (
+                    self.wrist_video_recorder.started_monotonic
+                )
+                if wrist_video_started_monotonic is None:
+                    raise OverheadVideoError(
+                        "D405 wrist capture did not publish its start clock."
+                    )
             with self.lock:
                 self.live_simulation["active"] = False
                 self.state.update(
                     overhead_video=video_state,
+                    wrist_video=wrist_video_state,
+                    wrist_video_required=wrist_video_state is not None,
                     prestart_sequence_started_at=_utc_now(),
                     prestart_sequence_start_video_offset_seconds=(
                         sequence_started_monotonic - video_started_monotonic
@@ -1131,6 +1182,8 @@ class TeleopRecordingManager:
                 while not self.stop_event.is_set():
                     tick = time.monotonic()
                     self.video_recorder.ensure_running()
+                    if self.wrist_video_recorder is not None:
+                        self.wrist_video_recorder.ensure_running()
                     sample = self.backend.sample(tick - action_started_monotonic)
                     live_frame = sample.pop("_live_simulation_frame", None)
                     rgb_frames = sample.pop("_rgb_frames", None)
@@ -1147,6 +1200,11 @@ class TeleopRecordingManager:
                     raw_sample = {
                         "overhead_video_time_seconds": tick
                         - video_started_monotonic,
+                        "wrist_video_time_seconds": (
+                            tick - wrist_video_started_monotonic
+                            if wrist_video_started_monotonic is not None
+                            else None
+                        ),
                         **sample,
                     }
                     if request["mode"] == "physical_follower":
@@ -1270,6 +1328,7 @@ class TeleopRecordingManager:
                     self.backend = None
 
             video_metadata: dict[str, Any] | None = None
+            wrist_video_metadata: dict[str, Any] | None = None
             if self.video_recorder is not None:
                 try:
                     video_stop_anchor = (
@@ -1327,6 +1386,59 @@ class TeleopRecordingManager:
                     errors.append(f"video close error: {type(error).__name__}: {error}")
                 finally:
                     self.video_recorder = None
+            if self.wrist_video_recorder is not None:
+                try:
+                    video_stop_anchor = (
+                        action_stopped_monotonic or sequence_stopped_monotonic
+                    )
+                    wrist_video_metadata = self.wrist_video_recorder.finish(
+                        action_started_monotonic=action_started_monotonic,
+                        action_stopped_monotonic=video_stop_anchor,
+                        post_roll_seconds=(
+                            1.0 if video_stop_anchor is not None else 0.0
+                        ),
+                    )
+                    wrist_started = self.wrist_video_recorder.started_monotonic
+                    if wrist_started is not None:
+                        wrist_video_metadata.update(
+                            prestart_sequence_start_video_offset_seconds=(
+                                sequence_started_monotonic - wrist_started
+                                if sequence_started_monotonic is not None
+                                else None
+                            ),
+                            prestart_sequence_stop_video_offset_seconds=(
+                                sequence_stopped_monotonic - wrist_started
+                                if sequence_stopped_monotonic is not None
+                                else None
+                            ),
+                            teleoperation_start_video_offset_seconds=(
+                                action_started_monotonic - wrist_started
+                                if action_started_monotonic is not None
+                                else None
+                            ),
+                            teleoperation_stop_video_offset_seconds=(
+                                action_stopped_monotonic - wrist_started
+                                if action_stopped_monotonic is not None
+                                else None
+                            ),
+                        )
+                    _atomic_json(draft / "wrist_video.json", wrist_video_metadata)
+                    if wrist_video_metadata.get("status") != "completed":
+                        detail = str(
+                            wrist_video_metadata.get("error_log_tail")
+                            or wrist_video_metadata.get("browser_derivative_error")
+                            or ""
+                        ).strip()
+                        errors.append(
+                            "OverheadVideoError: D405 wrist capture did not complete"
+                            + (f": {detail}" if detail else ".")
+                        )
+                except Exception as error:
+                    errors.append(
+                        f"wrist video close error: {type(error).__name__}: {error}"
+                    )
+                finally:
+                    self.wrist_video_recorder = None
 
             with self.lock:
                 self.state.update(
@@ -1337,6 +1449,8 @@ class TeleopRecordingManager:
                 )
                 if video_metadata is not None:
                     self.state["overhead_video"] = video_metadata
+                if wrist_video_metadata is not None:
+                    self.state["wrist_video"] = wrist_video_metadata
                 failed = bool(errors)
                 failed_state = json.loads(json.dumps(self.state)) if failed else None
                 draft_state = json.loads(json.dumps(self.state))
@@ -1440,6 +1554,17 @@ class TeleopRecordingManager:
                 raise RecorderError(
                     "The required C922 diagnostic video is incomplete; the draft was retained."
                 )
+            wrist_required = bool(self.state.get("wrist_video_required"))
+            wrist_video = draft / "wrist_d405.mkv"
+            wrist_browser_video = draft / "wrist_d405.browser.mp4"
+            wrist_metadata = draft / "wrist_video.json"
+            if wrist_required and not all(
+                path.is_file()
+                for path in (wrist_video, wrist_browser_video, wrist_metadata)
+            ):
+                raise RecorderError(
+                    "The required D405 wrist video is incomplete; the draft was retained."
+                )
             shutil.move(str(draft), str(destination))
             video_receipt = {
                 **dict(self.state.get("overhead_video") or {}),
@@ -1460,6 +1585,34 @@ class TeleopRecordingManager:
                 "diagnostic_only": True,
                 "is_training_data": False,
             }
+            wrist_video_receipt = (
+                {
+                    **dict(self.state.get("wrist_video") or {}),
+                    "video_path": "wrist_d405.mkv",
+                    "video_sha256": _sha256(destination / "wrist_d405.mkv"),
+                    "browser_video_path": "wrist_d405.browser.mp4",
+                    "browser_video_sha256": _sha256(
+                        destination / "wrist_d405.browser.mp4"
+                    ),
+                    "metadata_path": "wrist_video.json",
+                    "metadata_sha256": _sha256(destination / "wrist_video.json"),
+                    "ffmpeg_log_path": (
+                        "wrist_d405.ffmpeg.log"
+                        if (destination / "wrist_d405.ffmpeg.log").is_file()
+                        else None
+                    ),
+                    "ffmpeg_log_sha256": (
+                        _sha256(destination / "wrist_d405.ffmpeg.log")
+                        if (destination / "wrist_d405.ffmpeg.log").is_file()
+                        else None
+                    ),
+                    "diagnostic_only": True,
+                    "metric_depth": False,
+                    "is_training_data": False,
+                }
+                if wrist_required
+                else None
+            )
             receipt = {
                 "schema_version": RECEIPT_SCHEMA,
                 "source_episode_schema": EPISODE_SCHEMA,
@@ -1522,6 +1675,17 @@ class TeleopRecordingManager:
                     else None
                 ),
                 "overhead_video": video_receipt,
+                "wrist_video": wrist_video_receipt,
+                "diagnostic_video_streams": {
+                    "overhead_workspace": {
+                        "receipt_field": "overhead_video",
+                        "available": True,
+                    },
+                    "wrist_gripper_upward": {
+                        "receipt_field": "wrist_video",
+                        "available": wrist_video_receipt is not None,
+                    },
+                },
                 "backend": self.state.get("backend"),
                 "scene_reset_seed": self.state["scene_reset_seed"],
                 "language_instruction": self.state["language_instruction"],

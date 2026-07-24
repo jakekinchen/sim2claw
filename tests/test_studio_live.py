@@ -44,6 +44,7 @@ class FakeRecorder:
             "mode": "simulation_follower",
             "last_sample": None,
             "overhead_video": {"status": "idle"},
+            "wrist_video": {"status": "idle"},
         }
         self.ready = ready
 
@@ -130,6 +131,7 @@ class StudioLiveTest(unittest.TestCase):
         )
         self.assertEqual([camera["device_index"] for camera in cameras], [2, 0, 3])
         self.assertTrue(all(camera["available"] for camera in cameras))
+        self.assertEqual(cameras[0]["role"], "wrist_gripper_upward")
         self.assertFalse(cameras[0]["metric_depth"])
         self.assertTrue(all(camera["stream_on_demand"] for camera in cameras))
         overhead = next(camera for camera in LIVE_CAMERAS if camera.id == "logitech-overhead")
@@ -196,6 +198,31 @@ class StudioLiveTest(unittest.TestCase):
             service.snapshot()
             self.assertTrue(process.terminated)
             self.assertTrue(FakeGateway.instances[0].closed)
+        finally:
+            service.shutdown()
+
+    def test_recorder_reserves_both_episode_cameras(self) -> None:
+        recorder = FakeRecorder()
+        recorder.state["overhead_video"]["status"] = "recording"
+        recorder.state["wrist_video"]["status"] = "recording"
+        service = LiveWorkspaceService(
+            recorder,
+            camera_discovery=_camera_inventory,
+            gateway_factory=FakeGateway,
+        )
+        try:
+            snapshot = service.snapshot()
+            self.assertTrue(snapshot["recorder"]["owns_c922"])
+            self.assertTrue(snapshot["recorder"]["owns_d405"])
+            for camera_id in ("logitech-overhead", "d405-wrist"):
+                status = service.camera_source_status(camera_id)
+                self.assertTrue(status["busy"])
+                self.assertEqual(status["busy_owner"], "recorder")
+                with self.assertRaisesRegex(
+                    Exception, "recorder currently owns"
+                ):
+                    session = service.start_session()
+                    service.open_camera(camera_id, session["session_id"])
         finally:
             service.shutdown()
 

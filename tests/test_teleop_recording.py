@@ -211,6 +211,46 @@ class FakeVideoRecorder:
         }
 
 
+class FakeWristVideoRecorder(FakeVideoRecorder):
+    def __init__(self, draft: Path):
+        super().__init__(draft)
+        self.output_path = draft / "wrist_d405.mkv"
+        self.browser_output_path = draft / "wrist_d405.browser.mp4"
+        self.log_path = draft / "wrist_d405.ffmpeg.log"
+
+    def start(self) -> dict[str, Any]:
+        self.started_monotonic = time.monotonic()
+        self.output_path.write_bytes(b"fixture-d405-source")
+        self.browser_output_path.write_bytes(b"fixture-d405-browser")
+        self.log_path.write_text("fixture wrist log\n", encoding="utf-8")
+        return {
+            "schema_version": "sim2claw.wrist_diagnostic_video.v1",
+            "status": "recording",
+            "camera_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+            "configured_width": 424,
+            "configured_height": 240,
+            "configured_fps": 5,
+            "diagnostic_only": True,
+            "metric_depth": False,
+            "is_training_data": False,
+        }
+
+    def finish(self, **kwargs: Any) -> dict[str, Any]:
+        report = super().finish(**kwargs)
+        return {
+            **report,
+            "schema_version": "sim2claw.wrist_diagnostic_video.v1",
+            "camera_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+            "configured_width": 424,
+            "configured_height": 240,
+            "configured_fps": 5,
+            "video_path": "wrist_d405.mkv",
+            "browser_video_path": "wrist_d405.browser.mp4",
+            "ffmpeg_log_path": "wrist_d405.ffmpeg.log",
+            "metric_depth": False,
+        }
+
+
 class TeleopRecordingTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -406,6 +446,9 @@ class TeleopRecordingTest(unittest.TestCase):
                 request, preflight
             ),
             video_recorder_factory=lambda draft: FakeVideoRecorder(draft),
+            wrist_video_recorder_factory=lambda draft: FakeWristVideoRecorder(
+                draft
+            ),
             dev_root=self.dev_root,
             calibration_root=self.calibration_root,
         )
@@ -443,14 +486,35 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertNotIn("rgb", rows[0])
         self.assertEqual(
             rows[0]["visual_observation"]["kind"],
-            "overhead_diagnostic_video_only",
+            "dual_diagnostic_video",
         )
+        self.assertEqual(
+            rows[0]["visual_observation"]["streams"],
+            {
+                "overhead_workspace": "overhead_c922.mp4",
+                "wrist_gripper_upward": "wrist_d405.mkv",
+            },
+        )
+        self.assertIn("wrist_video_time_seconds", rows[0])
         self.assertEqual(receipt["source_sample_schema"], PHYSICAL_SAMPLE_SCHEMA)
         self.assertIsNone(receipt["rgb_streams"])
+        self.assertEqual(
+            receipt["wrist_video"]["camera_name"],
+            "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+        )
+        self.assertFalse(receipt["wrist_video"]["metric_depth"])
+        self.assertTrue(
+            receipt["diagnostic_video_streams"]["wrist_gripper_upward"][
+                "available"
+            ]
+        )
         self.assertTrue(receipt["physical_motion_recorded"])
         self.assertEqual(receipt["source_square"], "a1")
         self.assertEqual(receipt["destination_square"], "h2")
         self.assertTrue((destination / "overhead_c922.mp4").is_file())
+        self.assertTrue((destination / "wrist_d405.mkv").is_file())
+        self.assertTrue((destination / "wrist_d405.browser.mp4").is_file())
+        self.assertTrue((destination / "wrist_video.json").is_file())
         replay = replay_physical_recording(destination)
         self.assertEqual(replay["sample_count"], len(rows))
         self.assertFalse(replay["task_success_verified"])

@@ -218,6 +218,8 @@ const elements = {
   physicalSafetyAck: document.querySelector("#physical-safety-ack"),
   simModeState: document.querySelector("#sim-mode-state"),
   physicalModeState: document.querySelector("#physical-mode-state"),
+  overheadCameraPreflight: document.querySelector("#overhead-camera-preflight"),
+  wristCameraPreflight: document.querySelector("#wrist-camera-preflight"),
   leaderPreflight: document.querySelector("#leader-preflight"),
   followerPreflight: document.querySelector("#follower-preflight"),
   runtimePreflight: document.querySelector("#runtime-preflight"),
@@ -2916,9 +2918,17 @@ function renderRecorder() {
   text(elements.recordRate, `${recorder.sample_hz || elements.sampleHz.value} Hz`);
   text(elements.recordModeLabel, (recorder.mode || selectedMode) === "physical_follower" ? "PHYSICAL" : "SIM");
   const cameraStatus = recorder.overhead_video?.status;
+  const wristCameraStatus = recorder.wrist_video?.status;
+  const physicalCapture = (recorder.mode || selectedMode) === "physical_follower";
   text(
     elements.recordCamera,
-    cameraStatus === "recording"
+    physicalCapture && cameraStatus === "recording" && wristCameraStatus === "recording"
+      ? "C922 + D405 REC"
+      : physicalCapture && cameraStatus === "completed" && wristCameraStatus === "completed"
+        ? "2 feeds saved"
+        : physicalCapture
+          ? "C922 + D405 on Start"
+          : cameraStatus === "recording"
       ? "C922 REC"
       : cameraStatus === "completed"
         ? "C922 saved"
@@ -2942,13 +2952,30 @@ function renderRecorder() {
   setPreflightItem(elements.leaderPreflight, leader?.connected && preflight?.calibrations?.leader?.present, leader?.connected ? `Bus ${leader.serial_suffix} · calibrated` : "Expected leader bus not found");
   setPreflightItem(elements.followerPreflight, follower?.connected && preflight?.calibrations?.follower?.present, gatewayPreflight?.passed ? `Bus ${follower.serial_suffix} · torque-off verified` : follower?.connected ? `Bus ${follower.serial_suffix} · calibrated` : "Expected follower bus not found");
   setPreflightItem(elements.runtimePreflight, runtime?.lerobot_version === runtime?.required_lerobot_version, runtime?.lerobot_version ? `LeRobot ${runtime.lerobot_version}` : "LeRobot runtime missing");
+  const cameraInventory = liveCameraRows();
+  const overheadCamera = cameraInventory.find((camera) => camera.id === "logitech-overhead");
+  const wristCamera = cameraInventory.find((camera) => camera.id === "d405-wrist");
+  setPreflightItem(
+    elements.overheadCameraPreflight,
+    Boolean(overheadCamera?.available),
+    overheadCamera?.available
+      ? overheadCamera.device_name || "C922 exact-name input ready"
+      : overheadCamera?.error || "C922 not discovered",
+  );
+  setPreflightItem(
+    elements.wristCameraPreflight,
+    Boolean(wristCamera?.available),
+    wristCamera?.available
+      ? wristCamera.device_name || "D405 exact-name input ready"
+      : wristCamera?.error || "D405 wrist not discovered",
+  );
 
   elements.alignmentPanel.hidden = selectedMode !== "physical_follower";
   elements.alignmentPanel.classList.toggle("is-ready", registrationReady);
   elements.alignmentPanel.classList.toggle("is-blocked", Boolean(gatewayPreflight) && !registrationReady);
   text(elements.alignmentStatus, !gatewayPreflight ? "Check or sync both buses" : registrationReady ? "Follower and leader are synchronized" : "Pose mismatch is outside the guard");
   text(elements.alignmentSummary, !gatewayPreflight
-    ? "Check is read-only. Separate Sync finishes torque-off. Start records the C922, then syncs and torque-holds the follower through countdown in one gateway session."
+    ? "Check is read-only. Separate Sync finishes torque-off. Start records both diagnostic cameras, then syncs and torque-holds the follower through countdown in one gateway session."
     : registrationReady
       ? `Maximum calibration offset ${Number(gatewayPreflight.maximum_body_calibration_offset_degrees).toFixed(1)}°. Start rechecks this pair after continuous Sync and torque-held countdown, then maps relative motion.`
       : `Maximum calibration offset ${Number(gatewayPreflight.maximum_body_calibration_offset_degrees).toFixed(1)}°. Start may bounded-sync a nearby pair; any body mismatch over 20° is refused.`);
@@ -3019,17 +3046,17 @@ function renderRecorder() {
   } else if (state.physicalPreflighting) {
     text(elements.recorderMessage, "Automatically verifying both buses torque-off and measuring the paired-pose offset…");
   } else if (state.physicalStartSequence) {
-    text(elements.recorderMessage, "C922 is recording. The server is syncing the nearby follower, keeping torque held through the countdown, then registering relative zero. Keep both arms still and the workcell clear.");
+    text(elements.recorderMessage, "The C922 and D405 are recording. The server is syncing the nearby follower, keeping torque held through the countdown, then registering relative zero. Keep both arms still and the workcell clear.");
   } else if (state.physicalSyncing) {
     text(elements.recorderMessage, "Ramping the nearby follower to the leader pose through the reviewed gateway; torque will be off again when Sync completes.");
   } else if (status === "recording") {
-    text(elements.recorderMessage, "Recording leader targets, follower state, and independent C922 overhead video. Stop when this demonstration or correction is complete.");
+    text(elements.recorderMessage, physicalCapture ? "Recording leader targets, follower state, C922 overhead video, and the D405 wrist stream. Stop when this demonstration or correction is complete." : "Recording leader targets, simulator state, and independent C922 overhead video. Stop when this demonstration or correction is complete.");
   } else if (status === "starting") {
-    text(elements.recorderMessage, "Starting the overhead C922 first, then opening the leader bus and initializing the selected follower…");
+    text(elements.recorderMessage, physicalCapture ? "Starting exact-name C922 and D405 captures before opening either arm bus…" : "Starting the overhead C922 first, then opening the leader bus and initializing the simulator follower…");
   } else if (status === "stopping") {
-    text(elements.recorderMessage, "Arm control is stopping; retaining one second of C922 post-roll and finalizing the video…");
+    text(elements.recorderMessage, physicalCapture ? "Arm control is stopping; retaining diagnostic post-roll and finalizing both camera artifacts…" : "Arm control is stopping; retaining one second of C922 post-roll and finalizing the video…");
   } else if (awaitingLabel) {
-    text(elements.recorderMessage, "Recording stopped. The C922 video and one-second post-roll are retained; add the observed skill and outcome before saving.");
+    text(elements.recorderMessage, physicalCapture ? "Recording stopped. Both camera sources and the D405 browser derivative are verified; add the observed skill and outcome before saving." : "Recording stopped. The C922 video and one-second post-roll are retained; add the observed skill and outcome before saving.");
   } else if (status === "saved") {
     text(elements.recorderMessage, `Saved ${recorder.sample_count} samples. This episode is still pending replay and separate evaluator admission.`);
   } else if (hasError) {
@@ -3039,11 +3066,11 @@ function renderRecorder() {
   } else if (!selectedReady) {
     text(elements.recorderMessage, preflight?.modes?.[selectedMode]?.reason || "Selected follower is not ready.");
   } else if (selectedMode === "physical_follower" && !gatewayPreflight) {
-    text(elements.recorderMessage, "Ready: Start records the C922 first, then syncs and holds the nearby follower through a server-owned countdown before relative teleoperation. Sync is also available separately.");
+    text(elements.recorderMessage, "Ready: Start records the C922 and D405 first, then syncs and holds the nearby follower through a server-owned countdown before relative teleoperation. Sync is also available separately.");
   } else if (selectedMode === "physical_follower" && !registrationReady) {
     text(elements.recorderMessage, "The current pair is outside the 12° registration guard. Start can bounded-sync a nearby pair up to 20°; otherwise physically match the arms and verify again.");
   } else if (selectedMode === "physical_follower") {
-    text(elements.recorderMessage, "Ready: Start records the C922, re-syncs the pair, and keeps follower torque held through countdown before relative teleoperation.");
+    text(elements.recorderMessage, "Ready: Start records both diagnostic cameras, re-syncs the pair, and keeps follower torque held through countdown before relative teleoperation.");
   } else {
     text(elements.recorderMessage, "Move the leader to a comfortable starting pose. The simulator initializes from that pose when recording begins.");
   }

@@ -66,7 +66,7 @@ LIVE_CAMERAS = (
     LiveCameraSpec(
         id="d405-wrist",
         label="D405 wrist",
-        role="wrist_depth_display",
+        role="wrist_gripper_upward",
         name_contains="RealSense(TM) Depth Camera 405  Depth",
         detail="Wrist-mounted AVFoundation display stream",
         pixel_format="uyvy422",
@@ -287,6 +287,19 @@ class LiveWorkspaceService:
     def _recorder_state(self) -> dict[str, Any]:
         with self.recorder.lock:
             return json.loads(json.dumps(self.recorder.state))
+
+    @staticmethod
+    def _recorder_owns_camera(
+        recorder_state: dict[str, Any], camera_id: str
+    ) -> bool:
+        receipt_field = {
+            "logitech-overhead": "overhead_video",
+            "d405-wrist": "wrist_video",
+        }.get(camera_id)
+        return bool(
+            receipt_field
+            and recorder_state.get(receipt_field, {}).get("status") == "recording"
+        )
 
     def _preflight(self) -> dict[str, Any]:
         return self.recorder.preflight()
@@ -545,6 +558,8 @@ class LiveWorkspaceService:
                 "mode": recorder_state.get("mode"),
                 "owns_c922": recorder_state.get("overhead_video", {}).get("status")
                 == "recording",
+                "owns_d405": recorder_state.get("wrist_video", {}).get("status")
+                == "recording",
             },
             "authority": {
                 "inspection_only": True,
@@ -587,9 +602,8 @@ class LiveWorkspaceService:
                     "physical_authority": False,
                 }
             recorder_state = self._recorder_state()
-            recorder_owns_source = (
-                camera_id == "logitech-overhead"
-                and recorder_state.get("overhead_video", {}).get("status") == "recording"
+            recorder_owns_source = self._recorder_owns_camera(
+                recorder_state, camera_id
             )
             stream_owns_source = camera_id in self.camera_process_ids.values()
             snapshot_active = camera_id in self.snapshot_camera_ids
@@ -613,7 +627,7 @@ class LiveWorkspaceService:
                     else None
                 ),
                 "reason": (
-                    "The overhead camera is currently owned by another Studio surface."
+                    "The camera is currently owned by another Studio surface."
                     if busy
                     else row.get("error")
                 ),
@@ -747,12 +761,9 @@ class LiveWorkspaceService:
                     "The orchestrator currently owns this camera for one snapshot."
                 )
             recorder_state = self._recorder_state()
-            if (
-                camera_id == "logitech-overhead"
-                and recorder_state.get("overhead_video", {}).get("status") == "recording"
-            ):
+            if self._recorder_owns_camera(recorder_state, camera_id):
                 raise LiveWorkspaceError(
-                    "The recorder currently owns the overhead C922 capture."
+                    "The recorder currently owns this diagnostic camera capture."
                 )
             spec, row, inventory = self._camera_spec_and_row(camera_id)
             ffmpeg = inventory.get("ffmpeg_path") or shutil.which("ffmpeg")

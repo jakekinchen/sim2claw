@@ -1307,6 +1307,11 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
             if isinstance(receipt.get("overhead_video"), dict)
             else {}
         )
+        wrist_video_receipt = (
+            receipt.get("wrist_video")
+            if isinstance(receipt.get("wrist_video"), dict)
+            else {}
+        )
         video_start = float(
             video_receipt.get("action_start_video_offset_seconds")
             or video_receipt.get("teleoperation_start_video_offset_seconds")
@@ -1321,6 +1326,84 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
         if video_end > video_start:
             duration = video_end - video_start
         video_path = receipt_path.parent / "overhead_c922.mp4"
+        wrist_browser_path = receipt_path.parent / str(
+            wrist_video_receipt.get("browser_video_path")
+            or "wrist_d405.browser.mp4"
+        )
+        wrist_source_path = receipt_path.parent / str(
+            wrist_video_receipt.get("video_path") or "wrist_d405.mkv"
+        )
+        wrist_hashes_valid = (
+            wrist_browser_path.is_file()
+            and wrist_source_path.is_file()
+            and _is_sha256(wrist_video_receipt.get("browser_video_sha256"))
+            and _is_sha256(wrist_video_receipt.get("video_sha256"))
+            and hashlib.sha256(wrist_browser_path.read_bytes()).hexdigest()
+            == wrist_video_receipt.get("browser_video_sha256")
+            and hashlib.sha256(wrist_source_path.read_bytes()).hexdigest()
+            == wrist_video_receipt.get("video_sha256")
+        )
+        recording_feeds: list[dict[str, Any]] = []
+        if video_path.is_file():
+            recording_feeds.append(
+                {
+                    "id": "overhead-c922",
+                    "title": "Overhead C922",
+                    "camera": str(
+                        video_receipt.get("camera_name") or "C922 overhead"
+                    ),
+                    "kind": "physical_teleoperation_source_observation",
+                    "role": "overhead_workspace",
+                    "url": media_url(video_path, repo_root),
+                    "window_start_seconds": video_start,
+                    "window_end_seconds": video_end,
+                    "display_rotation_degrees": int(
+                        video_receipt.get("orientation_rotation_degrees") or 0
+                    ),
+                    "sha256": video_receipt.get("video_sha256"),
+                    "diagnostic_only": True,
+                    "metric_depth": False,
+                }
+            )
+        if wrist_hashes_valid:
+            wrist_start = float(
+                wrist_video_receipt.get("action_start_video_offset_seconds")
+                or wrist_video_receipt.get(
+                    "teleoperation_start_video_offset_seconds"
+                )
+                or 0
+            )
+            wrist_end = float(
+                wrist_video_receipt.get("action_stop_video_offset_seconds")
+                or wrist_video_receipt.get(
+                    "teleoperation_stop_video_offset_seconds"
+                )
+                or 0
+            )
+            recording_feeds.append(
+                {
+                    "id": "wrist-d405",
+                    "title": "Wrist D405",
+                    "camera": str(
+                        wrist_video_receipt.get("camera_name") or "D405 wrist"
+                    ),
+                    "kind": "physical_teleoperation_source_observation",
+                    "role": "wrist_gripper_upward",
+                    "url": media_url(wrist_browser_path, repo_root),
+                    "window_start_seconds": wrist_start,
+                    "window_end_seconds": wrist_end,
+                    "display_rotation_degrees": int(
+                        wrist_video_receipt.get("orientation_rotation_degrees")
+                        or 0
+                    ),
+                    "sha256": wrist_video_receipt.get("video_sha256"),
+                    "browser_derivative_sha256": wrist_video_receipt.get(
+                        "browser_video_sha256"
+                    ),
+                    "diagnostic_only": True,
+                    "metric_depth": False,
+                }
+            )
         media = (
             {
                 "kind": "video",
@@ -1546,7 +1629,16 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                 ),
                 "recorded_at": _iso_timestamp(receipt_path),
                 "media": media,
-                "camera": "C922 overhead" if is_physical_library else "free_orbit",
+                "recording_feeds": (
+                    recording_feeds if is_physical_library else []
+                ),
+                "camera": (
+                    "C922 overhead + D405 wrist"
+                    if is_physical_library and wrist_hashes_valid
+                    else "C922 overhead"
+                    if is_physical_library
+                    else "free_orbit"
+                ),
                 "metrics": metrics,
                 "notes": (
                     (

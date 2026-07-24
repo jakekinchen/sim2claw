@@ -609,16 +609,18 @@
               <article class="recorder-card preflight-card">
                 <header class="recorder-card-heading">
                   <span class="recorder-step">03</span>
-                  <div><h2>Connected-device preflight</h2><p>Expected buses and same-arm calibration are checked before Start unlocks.</p></div>
+                  <div><h2>Connected-device preflight</h2><p>Expected buses, calibration, and exact-name diagnostic cameras are checked before capture.</p></div>
                   <div class="preflight-actions"><button class="quiet-button" id="refresh-preflight" type="button">Refresh</button><button class="quiet-button" id="verify-gateway" type="button">Check buses · torque off</button><button class="sync-button" id="sync-follower" type="button">Sync follower to leader</button></div>
                 </header>
                 <div class="preflight-grid">
                   <div class="preflight-item" id="leader-preflight"><span class="preflight-light"></span><div><b>Leader arm</b><small>Checking expected bus</small></div></div>
                   <div class="preflight-item" id="follower-preflight"><span class="preflight-light"></span><div><b>Follower arm</b><small>Checking expected bus</small></div></div>
                   <div class="preflight-item" id="runtime-preflight"><span class="preflight-light"></span><div><b>LeRobot runtime</b><small>Checking dependency</small></div></div>
+                  <div class="preflight-item" id="overhead-camera-preflight"><span class="preflight-light"></span><div><b>C922 overhead</b><small>Checking AVFoundation identity</small></div></div>
+                  <div class="preflight-item" id="wrist-camera-preflight"><span class="preflight-light"></span><div><b>D405 wrist</b><small>Checking AVFoundation identity</small></div></div>
                 </div>
                 <div class="alignment-panel" id="alignment-panel" hidden>
-                  <div class="alignment-heading"><div><span class="section-label">Paired-pose registration</span><b id="alignment-status">Check or sync both buses</b></div><small id="alignment-summary">Start records the C922, then syncs and torque-holds the nearby follower through countdown in one gateway session.</small></div>
+                  <div class="alignment-heading"><div><span class="section-label">Paired-pose registration</span><b id="alignment-status">Check or sync both buses</b></div><small id="alignment-summary">Start records the C922 and D405, then syncs and torque-holds the nearby follower through countdown in one gateway session.</small></div>
                   <div class="alignment-joints" id="alignment-joints"></div>
                 </div>
               </article>
@@ -638,7 +640,7 @@
                 </div>
               </section>
               <div class="record-clock" id="record-clock">00:00.000</div>
-              <div class="record-facts"><span>Samples <b id="record-samples">0</b></span><span>Rate <b id="record-rate">20 Hz</b></span><span>Mode <b id="record-mode-label">SIM</b></span><span>Camera <b id="record-camera">C922 on Start</b></span></div>
+              <div class="record-facts"><span>Samples <b id="record-samples">0</b></span><span>Rate <b id="record-rate">20 Hz</b></span><span>Mode <b id="record-mode-label">SIM</b></span><span>Cameras <b id="record-camera">C922 on Start</b></span></div>
               <div class="joint-monitor">
                 <div class="joint-monitor-heading"><span>Follower joint state</span><small id="joint-unit">radians</small></div>
                 <div id="joint-bars"></div>

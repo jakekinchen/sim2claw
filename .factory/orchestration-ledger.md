@@ -41,6 +41,14 @@
   wrapper is now hard-bound to `configure_devices=false`; focused regression
   tests and a corrected live inspection confirm no configuration rewrite,
   torque off, and the unchanged 97.4945-degree rejection.
+- Recorder infrastructure checkpoint: physical source recording now reserves
+  the exact-name C922 and D405 inputs as one fail-closed lifecycle. The D405
+  writes a 424x240-at-5-fps FFV1 source plus a verified browser MP4 derivative;
+  samples, metadata, and the final receipt keep the two streams and hashes
+  separate and explicitly deny metric-depth/training authority. A camera-only
+  simultaneous probe completed with 206 C922 frames and 34 D405 frames, both
+  live Studio previews reached `Live`, and no serial bus, torque, or robot
+  motion was used for this checkpoint.
 - Status: active after a dual-camera terminal negative. The board endpoint was
   unchanged; wrist evidence plus 5-8 degree critical-window tracking lag
   isolates approach timing and grasp retention as the next measurement target
