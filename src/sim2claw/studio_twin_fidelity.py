@@ -202,13 +202,39 @@ def _hil_identifiability_projection(
                 "HIL packet; no telemetry-derived claim is attached."
             ),
         )
+    decomposition_bundle = _as_mapping(bundle.get("offline_decomposition"))
+    decomposition_report = _as_mapping(decomposition_bundle.get("report"))
+    decomposition_packet = next(
+        (
+            row
+            for row in _as_rows(decomposition_report.get("packets"))
+            if row.get("packet_id") == packet_id
+        ),
+        {},
+    )
+    if not decomposition_packet:
+        return _unavailable_projection(
+            episode,
+            reason="hil_offline_decomposition_packet_missing",
+            detail=(
+                "The requested-versus-applied trace decomposition is missing "
+                "the selected HIL packet; no action-integrity claim is attached."
+            ),
+        )
     selected_action = str(episode.get("action_array_sha256") or "")
     packet_action = str(raw.get("action_tensor_sha256") or "")
     analysis_action = str(offline_packet.get("action_tensor_sha256") or "")
+    decomposition_identity = _as_mapping(
+        decomposition_packet.get("action_identity")
+    )
+    decomposition_action = str(
+        decomposition_identity.get("requested_action_sha256") or ""
+    )
     if (
         not selected_action
         or selected_action != packet_action
         or selected_action != analysis_action
+        or selected_action != decomposition_action
     ):
         return _unavailable_projection(
             episode,
@@ -233,6 +259,12 @@ def _hil_identifiability_projection(
         offline_packet.get("fresh_current_association")
     )
     offline_safety = _as_mapping(offline_packet.get("safety"))
+    fault_chronology = _as_mapping(
+        decomposition_packet.get("fault_chronology")
+    )
+    pre_fault_lag = _as_mapping(
+        fault_chronology.get("pre_fault_best_lag")
+    )
     cameras = _as_mapping(summary.get("cameras"))
     wrist = _as_mapping(cameras.get("wrist"))
     sim_bundle = _as_mapping(bundle.get("simulator"))
@@ -382,14 +414,70 @@ def _hil_identifiability_projection(
         ),
         _domain(
             "action_timing",
-            status="observed",
-            summary="A bounded command-to-position lag was measured",
+            status=(
+                "observed"
+                if decomposition_identity.get(
+                    "applied_action_byte_identical"
+                )
+                is True
+                else "failed"
+            ),
+            summary=(
+                "Applied action matched the requested tensor byte-for-byte"
+                if decomposition_identity.get(
+                    "applied_action_byte_identical"
+                )
+                is True
+                else "Applied action differed from the requested tensor"
+            ),
             detail=(
-                "Requested and actual position were aligned over the frozen 20 Hz "
-                "trace. The displayed lag is sample-quantized response alignment, "
-                "not command-application latency; actuator timestamps are absent."
+                "Requested and applied actions have separate content hashes. "
+                f"{decomposition_identity.get('gateway_rate_limited_sample_count')} "
+                "sample(s) carried a gateway rate-limit flag. Requested and actual "
+                "position were aligned over the frozen 20 Hz trace, but the "
+                "displayed lag is sample-quantized response alignment, not "
+                "command-application latency; actuator timestamps are absent."
             ),
             measurements=[
+                _measurement(
+                    "Byte-modified action samples",
+                    value=decomposition_identity.get(
+                        "byte_modified_sample_count"
+                    ),
+                    unit="samples",
+                    source="Requested-versus-applied action tensor audit",
+                    threshold=0,
+                    comparator="=",
+                ),
+                _measurement(
+                    "Gateway rate-limited samples",
+                    value=decomposition_identity.get(
+                        "gateway_rate_limited_sample_count"
+                    ),
+                    unit="samples",
+                    source="Guarded physical gateway",
+                    threshold=0,
+                    comparator="=",
+                ),
+                _measurement(
+                    "First gateway-modified sample",
+                    value=decomposition_identity.get(
+                        "first_gateway_modified_sample"
+                    ),
+                    unit="sample index",
+                    source="Requested-versus-applied fault chronology",
+                ),
+                _measurement(
+                    "Pre-fault best lag",
+                    value=(
+                        float(pre_fault_lag["lag_samples"])
+                        / float(offline_packet.get("sample_hz") or 20)
+                        if pre_fault_lag.get("lag_samples") is not None
+                        else None
+                    ),
+                    unit="s",
+                    source="Pre-rate-limit trace window · diagnostic only",
+                ),
                 _measurement(
                     "Best sample-quantized lag",
                     value=offline_lag.get("seconds"),
@@ -498,6 +586,12 @@ def _hil_identifiability_projection(
     physical_binding = _as_mapping(publication.get("physical"))
     offline_binding = _as_mapping(publication.get("offline_analysis"))
     offline_receipt = _as_mapping(offline_bundle.get("receipt"))
+    decomposition_binding = _as_mapping(
+        publication.get("offline_decomposition")
+    )
+    decomposition_receipt = _as_mapping(
+        decomposition_bundle.get("receipt")
+    )
     return {
         "schema_version": SCHEMA_VERSION,
         "available": True,
@@ -692,8 +786,18 @@ def _hil_identifiability_projection(
                 else "measurement_wrist_camera_finalization"
             ),
             "summary": next_summary,
-            "measurements": list(summary.get("failures") or [])
-            + list(offline_report.get("remaining_prerequisites") or []),
+            "measurements": list(
+                dict.fromkeys(
+                    list(summary.get("failures") or [])
+                    + list(
+                        offline_report.get("remaining_prerequisites") or []
+                    )
+                    + list(
+                        decomposition_report.get("remaining_prerequisites")
+                        or []
+                    )
+                )
+            ),
         },
         "receipt": {
             "verification": "verified",
@@ -717,6 +821,12 @@ def _hil_identifiability_projection(
             ),
             "offline_analysis_receipt_digest": offline_receipt.get(
                 "receipt_digest"
+            ),
+            "offline_decomposition_receipt_sha256": (
+                decomposition_binding.get("receipt_sha256")
+            ),
+            "offline_decomposition_receipt_digest": (
+                decomposition_receipt.get("receipt_digest")
             ),
             "publication_sha256": bundle.get("publication_sha256"),
         },

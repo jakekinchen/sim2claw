@@ -299,6 +299,9 @@ def _hil_bundle(
             "offline_analysis": {
                 "receipt_sha256": "7" * 64,
             },
+            "offline_decomposition": {
+                "receipt_sha256": "9" * 64,
+            },
         },
         "publication_sha256": "3" * 64,
         "evidence_receipt": {"receipt_digest": "4" * 64},
@@ -342,6 +345,58 @@ def _hil_bundle(
                 ],
             },
             "receipt": {"receipt_digest": "8" * 64},
+        },
+        "offline_decomposition": {
+            "report": {
+                "packets": [
+                    {
+                        "packet_id": packet_id,
+                        "action_identity": {
+                            "requested_action_sha256": ACTION_SHA256,
+                            "applied_action_byte_identical": (
+                                packet_id == "HIL-SHOULDER-LIFT-22"
+                            ),
+                            "byte_modified_sample_count": (
+                                0
+                                if packet_id == "HIL-SHOULDER-LIFT-22"
+                                else 11
+                                if packet_id == "HIL-ELBOW-FLEX-22"
+                                else 6
+                                if packet_id == "HIL-WRIST-FLEX-30"
+                                else 13
+                            ),
+                            "gateway_rate_limited_sample_count": (
+                                11
+                                if packet_id == "HIL-ELBOW-FLEX-22"
+                                else 4
+                                if packet_id == "HIL-WRIST-FLEX-30"
+                                else 0
+                            ),
+                            "first_gateway_modified_sample": (
+                                59
+                                if packet_id == "HIL-ELBOW-FLEX-22"
+                                else 101
+                                if packet_id == "HIL-WRIST-FLEX-30"
+                                else None
+                            ),
+                        },
+                        "fault_chronology": {
+                            "pre_fault_best_lag": {
+                                "lag_samples": (
+                                    7
+                                    if packet_id == "HIL-ELBOW-FLEX-22"
+                                    else 3
+                                ),
+                            },
+                        },
+                    }
+                ],
+                "remaining_prerequisites": [
+                    "device_or_actuator_application_ack_timestamp",
+                    "controller_configuration_and_threshold_hashes",
+                ],
+            },
+            "receipt": {"receipt_digest": "a" * 64},
         },
         "packets": [
             {
@@ -462,6 +517,13 @@ def test_hil_gripper_projection_admits_only_unloaded_measurement() -> None:
         in projection["next_evidence"]["measurements"]
     )
     assert projection["receipt"]["offline_analysis_receipt_digest"] == "8" * 64
+    assert projection["receipt"]["offline_decomposition_receipt_digest"] == (
+        "a" * 64
+    )
+    assert projection["domains"][2]["status"] == "failed"
+    assert "applied action differed" in projection["domains"][2][
+        "summary"
+    ].lower()
     assert "perfect simulation" not in json.dumps(projection).lower()
 
 
@@ -505,6 +567,14 @@ def test_hil_rejected_packet_and_action_mismatch_fail_closed() -> None:
     )
     assert unavailable["available"] is False
     assert unavailable["reason"] == "hil_offline_analysis_packet_missing"
+    missing_decomposition = _hil_bundle("HIL-GRIPPER-05", admitted=True)
+    missing_decomposition["offline_decomposition"]["report"]["packets"] = []
+    unavailable = _hil_identifiability_projection(
+        _hil_episode("HIL-GRIPPER-05"),
+        missing_decomposition,
+    )
+    assert unavailable["available"] is False
+    assert unavailable["reason"] == "hil_offline_decomposition_packet_missing"
 
 
 def test_terminal_negative_keeps_posterior_and_authority_closed() -> None:

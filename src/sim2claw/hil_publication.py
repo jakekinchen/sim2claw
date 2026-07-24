@@ -27,6 +27,11 @@ from .hil_trace_analysis import (
     REPORT_SCHEMA as TRACE_REPORT_SCHEMA,
     derive_hil_trace_report_payload,
 )
+from .hil_trace_decomposition import (
+    RECEIPT_SCHEMA as DECOMPOSITION_RECEIPT_SCHEMA,
+    REPORT_SCHEMA as DECOMPOSITION_REPORT_SCHEMA,
+    derive_hil_trace_decomposition_payload,
+)
 from .learning_factory_artifacts import canonical_digest, sha256_file
 from .paths import REPO_ROOT
 from .sail.importers import load_json_object
@@ -79,7 +84,7 @@ def load_hil_publication_binding(
         publication.get("status")
         == (
             "frozen_four_packets_two_admitted_two_rejected_"
-            "one_simulator_comparison_one_offline_trace_audit"
+            "one_simulator_comparison_two_offline_trace_audits"
         ),
         "HIL publication is not frozen.",
     )
@@ -121,6 +126,10 @@ def verify_hil_publication(
     physical = _mapping(publication.get("physical"), "Physical binding")
     offline_analysis = _mapping(
         publication.get("offline_analysis"), "Offline analysis binding"
+    )
+    offline_decomposition = _mapping(
+        publication.get("offline_decomposition"),
+        "Offline decomposition binding",
     )
     simulator = _mapping(publication.get("simulator"), "Simulator binding")
 
@@ -376,6 +385,104 @@ def verify_hil_publication(
         "HIL offline analysis packet or action binding changed.",
     )
 
+    decomposition_contract_path = _repo_path(
+        root,
+        offline_decomposition.get("contract_path"),
+        label="HIL offline decomposition contract",
+    )
+    decomposition_output_root = _repo_path(
+        root,
+        offline_decomposition.get("output_root"),
+        label="HIL offline decomposition output",
+    )
+    decomposition_report_path = decomposition_output_root / "report.json"
+    decomposition_receipt_path = decomposition_output_root / "receipt.json"
+    for path, expected, label in (
+        (
+            decomposition_contract_path,
+            offline_decomposition.get("contract_sha256"),
+            "HIL offline decomposition contract",
+        ),
+        (
+            decomposition_report_path,
+            offline_decomposition.get("report_sha256"),
+            "HIL offline decomposition report",
+        ),
+        (
+            decomposition_receipt_path,
+            offline_decomposition.get("receipt_sha256"),
+            "HIL offline decomposition receipt",
+        ),
+    ):
+        _verify_file(path, expected, label=label)
+    decomposition_report = load_json_object(
+        decomposition_report_path,
+        label="HIL offline decomposition report",
+    )
+    decomposition_receipt = load_json_object(
+        decomposition_receipt_path,
+        label="HIL offline decomposition receipt",
+    )
+    _require(
+        decomposition_report.get("schema_version")
+        == DECOMPOSITION_REPORT_SCHEMA
+        and decomposition_receipt.get("schema_version")
+        == DECOMPOSITION_RECEIPT_SCHEMA,
+        "HIL offline decomposition output schema changed.",
+    )
+    _require(
+        decomposition_report
+        == derive_hil_trace_decomposition_payload(
+            contract_path=decomposition_contract_path,
+            repo_root=root,
+        ),
+        "HIL offline decomposition no longer re-derives from packet telemetry.",
+    )
+    decomposition_unsigned = {
+        key: value
+        for key, value in decomposition_receipt.items()
+        if key != "receipt_digest"
+    }
+    _require(
+        canonical_digest(decomposition_unsigned)
+        == decomposition_receipt.get("receipt_digest")
+        == offline_decomposition.get("embedded_receipt_digest"),
+        "HIL offline decomposition receipt digest is invalid.",
+    )
+    _require(
+        decomposition_receipt.get("contract_sha256")
+        == offline_decomposition.get("contract_sha256")
+        and decomposition_receipt.get("report_sha256")
+        == offline_decomposition.get("report_sha256")
+        and decomposition_receipt.get("packet_count") == 4
+        and decomposition_receipt.get("additional_physical_attempts") == 0
+        and decomposition_receipt.get("additional_simulator_replays") == 0
+        and decomposition_receipt.get("evaluator_provider_calls") == 0
+        and decomposition_receipt.get("simulator_parameter_promoted") is False
+        and decomposition_receipt.get("task_score_changed") is False,
+        "HIL offline decomposition budget or authority changed.",
+    )
+    _require(
+        [
+            (
+                row.get("packet_id"),
+                _mapping(row.get("action_identity"), "Action identity").get(
+                    "requested_action_sha256"
+                ),
+            )
+            for row in decomposition_report.get("packets", [])
+            if isinstance(row, Mapping)
+        ]
+        == [
+            (
+                packet_id,
+                packets_by_id[packet_id]["action_tensor_sha256"],
+            )
+            for packet_id in publication["packet_ids"]
+        ],
+        "HIL offline decomposition requested-action binding changed.",
+    )
+
     sim_contract_path = _repo_path(
         root, simulator.get("contract_path"), label="HIL simulator contract"
     )
@@ -474,6 +581,10 @@ def verify_hil_publication(
         "offline_analysis": {
             "report": analysis_report,
             "receipt": analysis_receipt,
+        },
+        "offline_decomposition": {
+            "report": decomposition_report,
+            "receipt": decomposition_receipt,
         },
         "simulator": {
             "contract": sim_contract,

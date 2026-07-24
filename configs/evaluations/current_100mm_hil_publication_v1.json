@@ -22,6 +22,14 @@
     "receipt_sha256": "fc588df9e94c8a7bbdfb4c61cbbf959e07c1048d6dc0d56da13c03ac3e68e10c",
     "report_sha256": "a62481c1dac5930306e26efd847c39e87873c37eeabb96e8cef98194c6c2e698"
   },
+  "offline_decomposition": {
+    "contract_path": "configs/evaluations/hil_trace_decomposition_v2.json",
+    "contract_sha256": "f4734facdc6662f033a7679009a035a7b3f78cb5c61e0a373d583d47d5a6962a",
+    "embedded_receipt_digest": "ccf87f0c960000ba5912f75d56ea0d17c2dbc7dab99fac5b7656a6d52f951af8",
+    "output_root": "outputs/current-100mm-hil-trace-decomposition-v2",
+    "receipt_sha256": "523c5a52648682a674c086e1326412bef0317cd881ce8cba10cc0d56311aeb5f",
+    "report_sha256": "e4fbc956153f0bd1c68981adfc87cfd90984402f5bcdba0e48ce12f47d19e7e5"
+  },
   "physical": {
     "campaign_root": "runs/current-100mm-hil-identifiability-20260724",
     "campaign_state_sha256": "b364aae639bb753b58216177386aa6ae93d43dad5462c8dd1a3d33dd44330858",
@@ -36,7 +44,8 @@
     "physical_hil_unloaded_joint_observation",
     "derived_hil_joint_identifiability_evaluation",
     "action_frozen_hil_simulator_comparison",
-    "offline_hil_trace_identifiability_diagnostic"
+    "offline_hil_trace_identifiability_diagnostic",
+    "offline_hil_requested_applied_trace_decomposition_diagnostic"
   ],
   "schema_version": "sim2claw.hil_identifiability_publication.v1",
   "simulator": {
@@ -52,5 +61,5 @@
       "follower_shoulder_lift_range_v1.jsonl": "e3be914d7dbce0a652a9276cffd44ac366aee8eadc3632648513adc18e1ee053"
     }
   },
-  "status": "frozen_four_packets_two_admitted_two_rejected_one_simulator_comparison_one_offline_trace_audit"
+  "status": "frozen_four_packets_two_admitted_two_rejected_one_simulator_comparison_two_offline_trace_audits"
 }
