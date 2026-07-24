@@ -1,0 +1,101 @@
+{
+  "schema_version": "sim2claw.hil_shoulder_range_external_validation.v1",
+  "validation_id": "hil-shoulder-range-external-validation-20260724-v1",
+  "status": "frozen_before_simulator_execution",
+  "goal": "docs/autonomous-workflow/goal-loop-four-hour-hil-identifiability.md",
+  "source": {
+    "role": "independent_current_workcell_hil_evaluation_only",
+    "packet_id": "HIL-SHOULDER-LIFT-22",
+    "packet_directory": "runs/current-100mm-hil-identifiability-20260724/HIL-SHOULDER-LIFT-22",
+    "raw_receipt_sha256": "b52125b3370b40baac31c0234324859a5e35ca73349a86c79ce467d3b8e0e844",
+    "evaluation_sha256": "2b6c9b7baec4015106ef83acb2d95114e963c3da57fa079f3bd32497eebf8b13",
+    "evaluation_verdict": "admit_unloaded_joint_measurement",
+    "action_tensor_path": "source/action_tensor.npy",
+    "action_tensor_file_sha256": "ebaae315443cd655b88b449ea95677e73d0d102e53cd8f0962f0b279702336d9",
+    "action_tensor_sha256": "a61706c3bb36bb10c1ebcb758a9343a99d5dd69193c8e26a757b409137dad1b8",
+    "action_shape": [201, 6],
+    "replay_samples_path": "replay/20260724T075114Z-HIL-SHOULDER-LIFT-22-e71d89ce/replay_samples.jsonl",
+    "replay_samples_sha256": "ac9cd7702bef66c96ac32e9e503e4f80cdd9841db6109b39e7db2ebcd2bf0a50",
+    "observed_shoulder_lift_span_degrees": 21.626373626373635
+  },
+  "candidate_lineage": {
+    "kind": "preexisting_hash_bound_follower_endpoint_calibration",
+    "prior_comparison_contract": "configs/evaluations/overnight_joint_limit_comparison_v1.json",
+    "prior_comparison_contract_sha256": "49cdc5725f6599b7e5cf028944f7a4c650d667ca1e88e1cd6b82d76951c1f718",
+    "prior_offline_identifiability_result": "shoulder_candidate_not_identified_because_prior_command_span_was_zero",
+    "new_parameter_value_fit_from_hil_packet": false,
+    "affected_factor_scope": ["shoulder_lift_joint_range", "shoulder_lift_actuator_ctrlrange"]
+  },
+  "calibration_identity": {
+    "kind": "lerobot_so101_follower_endpoint_calibration",
+    "standard_path": "~/.cache/huggingface/lerobot/calibration/robots/so_follower/so101_follower.json",
+    "sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4",
+    "motor_resolution_counts": 4095,
+    "body_normalization": "degrees_about_calibrated_range_midpoint",
+    "gripper_normalization": "range_0_100",
+    "frozen_range_counts": {
+      "shoulder_pan": [755, 3491],
+      "shoulder_lift": [803, 3229],
+      "elbow_flex": [753, 3076],
+      "wrist_flex": [839, 3284],
+      "wrist_roll": [0, 4095],
+      "gripper": [1482, 2324]
+    },
+    "derived_body_ranges_degrees": {
+      "shoulder_pan": [-120.26373626373626, 120.26373626373626],
+      "shoulder_lift": [-106.63736263736264, 106.63736263736264],
+      "elbow_flex": [-102.10989010989012, 102.10989010989012],
+      "wrist_flex": [-107.47252747252747, 107.47252747252747],
+      "wrist_roll": [-180.0, 180.0]
+    }
+  },
+  "simulator": {
+    "scene_source": "src/sim2claw/scene.py",
+    "scene_source_sha256": "01366394bb10cc789956e59965b32b3f8d009df5ccba9390894b139b02639206",
+    "piece_layout": "sparse_two_sided_pawns",
+    "variants": [
+      {
+        "id": "current_declared_ranges",
+        "kind": "baseline",
+        "mutated_joints": []
+      },
+      {
+        "id": "follower_shoulder_lift_range_v1",
+        "kind": "candidate",
+        "mutated_joints": ["shoulder_lift"],
+        "shoulder_lift_range_degrees": [-106.63736263736264, 106.63736263736264]
+      }
+    ],
+    "simulator_replays_maximum": 2,
+    "candidate_families": 1,
+    "adaptive_retries": 0,
+    "action_tensor_must_be_byte_identical": true,
+    "external_preclip_allowed": false
+  },
+  "evaluation": {
+    "owner": "independent_cpu_fp32_hil_joint_response_evaluator",
+    "target_joint": "shoulder_lift",
+    "target_joint_rmse_improvement_minimum_fraction": 0.02,
+    "maximum_non_target_joint_rmse_regression_degrees": 0.25,
+    "gripper_rmse_nonregression_required": true,
+    "strict_task_consequence_available": false,
+    "promotion_requires_strict_task_consequence": true
+  },
+  "budget": {
+    "simulator_replays": 2,
+    "adaptive_retries": 0,
+    "provider_calls": 0,
+    "new_parameter_families_after_results": 0
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_capture": false,
+    "task_score_change": false,
+    "training": false,
+    "simulator_parameter_promotion": false,
+    "policy_promotion": false,
+    "physical_transfer": false,
+    "provider": false,
+    "paid_compute": false
+  }
+}

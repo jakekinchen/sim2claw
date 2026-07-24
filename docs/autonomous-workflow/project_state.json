@@ -1,6 +1,6 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T02:39:00-05:00",
+  "updated_at": "2026-07-24T02:58:00-05:00",
   "active_campaign": "current_100mm_four_hour_hil_identifiability",
   "current_milestone": "D10_HIL_PREREGISTRATION_ZERO_NEW_PHYSICAL_ATTEMPTS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
@@ -8,7 +8,7 @@
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
   "four_hour_hil_transaction": {
     "schema_version": "sim2claw.four_hour_hil_transaction.v1",
-    "status": "preregistering_zero_new_physical_attempts",
+    "status": "four_physical_attempts_complete_two_admitted_two_rejected_simulator_followup_preregistered",
     "goal": "docs/autonomous-workflow/goal-loop-four-hour-hil-identifiability.md",
     "goal_sha256": "b367b88e166449036fd8ad914d180acd3688bd3f5111dd30f54b2523bc702989",
     "contract": "configs/evaluations/current_100mm_hil_identifiability_v1.json",
@@ -23,8 +23,10 @@
     },
     "packet_budget": {
       "packet_count": 4,
-      "attempts_used": 0,
-      "completed": 0,
+      "attempts_used": 4,
+      "completed": 4,
+      "admitted": 2,
+      "rejected": 2,
       "adaptive_retries": 0,
       "provider_calls": 0
     },
@@ -34,6 +36,42 @@
       "HIL-ELBOW-FLEX-22",
       "HIL-WRIST-FLEX-30"
     ],
+    "physical_result": {
+      "campaign_state_sha256": "b364aae639bb753b58216177386aa6ae93d43dad5462c8dd1a3d33dd44330858",
+      "gripper": {
+        "verdict": "admit_unloaded_joint_measurement",
+        "action_sha256": "30e7addea882fe94523e88d2c9135f182afe023f4621672650f0f4f72a9d747c",
+        "evaluation_sha256": "0708b012983f9a7011748b3643dc4170b17195d918150d27f3227b6c31fc8cf7"
+      },
+      "shoulder_lift": {
+        "verdict": "admit_unloaded_joint_measurement",
+        "action_sha256": "a61706c3bb36bb10c1ebcb758a9343a99d5dd69193c8e26a757b409137dad1b8",
+        "evaluation_sha256": "2b6c9b7baec4015106ef83acb2d95114e963c3da57fa079f3bd32497eebf8b13"
+      },
+      "elbow_flex": {
+        "verdict": "reject_packet_stall_observed",
+        "action_sha256": "efd0cfb10f8e57d117d1ea6fd6c6ada85411703d9a87959314e5a1fa74e70230",
+        "evaluation_sha256": "ff918a9dceb72770636832a208cd9f1369f6eb84d5bf7907d29fa2df99cc26d0"
+      },
+      "wrist_flex": {
+        "verdict": "reject_packet_wrist_video_not_completed",
+        "action_sha256": "58894fd504feaad80ee625f0a9612641b2ceb28a5ca71f0ac32f2e6d52c4b2b6",
+        "evaluation_sha256": "f1839ad8f0430d6b7310baee239bdd5cd33a6a5158f0496089495ece61b93dbd"
+      },
+      "adaptive_retries": 0,
+      "follower_torque_enabled_after": false,
+      "strict_task_score_changed": false
+    },
+    "simulator_followup": {
+      "status": "frozen_before_simulator_execution",
+      "config": "configs/evaluations/hil_shoulder_range_external_validation_v1.json",
+      "config_sha256": "c326d8400b8c1e800340c21b0bf70cf1fb5d1f0526eaf2a6c507275137307ca2",
+      "candidate_lineage": "preexisting_follower_endpoint_calibration",
+      "mutated_joints": ["shoulder_lift"],
+      "simulator_replays_used": 0,
+      "simulator_replays_maximum": 2,
+      "new_parameter_value_fit_from_hil_packet": false
+    },
     "preflight": {
       "device_identity_match": true,
       "calibration_identity_match": true,

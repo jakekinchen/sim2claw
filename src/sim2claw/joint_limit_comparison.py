@@ -248,8 +248,13 @@ def _apply_calibrated_ranges(
     actuator_ids: Sequence[int],
     joint_ids: Sequence[int],
     calibrated_ranges_degrees: Mapping[str, Sequence[float]],
+    *,
+    mutated_joints: Sequence[str] | None = None,
 ) -> None:
+    selected = set(mutated_joints or ROBOT_JOINTS[:-1])
     for index, joint in enumerate(ROBOT_JOINTS[:-1]):
+        if joint not in selected:
+            continue
         limits = np.deg2rad(
             np.asarray(calibrated_ranges_degrees[joint], dtype=np.float64)
         )
@@ -300,6 +305,7 @@ def _execute_variant(
     mutate_ranges: bool,
     output_path: Path,
     diagnostic: Mapping[str, Any],
+    mutated_joints: Sequence[str] | None = None,
 ) -> dict[str, Any]:
     model = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT).compile()
     actuator_ids, joint_ids, qpos_addresses = _model_binding(model)
@@ -307,7 +313,11 @@ def _execute_variant(
     baseline_ctrlranges = model.actuator_ctrlrange[actuator_ids].astype(float).copy()
     if mutate_ranges:
         _apply_calibrated_ranges(
-            model, actuator_ids, joint_ids, calibrated_ranges_degrees
+            model,
+            actuator_ids,
+            joint_ids,
+            calibrated_ranges_degrees,
+            mutated_joints=mutated_joints,
         )
     final_joint_ranges = model.jnt_range[joint_ids].astype(float).copy()
     final_ctrlranges = model.actuator_ctrlrange[actuator_ids].astype(float).copy()
@@ -359,6 +369,9 @@ def _execute_variant(
     return {
         "variant_id": variant_id,
         "range_mutation": mutate_ranges,
+        "mutated_joints": list(
+            mutated_joints or (ROBOT_JOINTS[:-1] if mutate_ranges else ())
+        ),
         "input_action_sha256": action_sha256,
         "input_action_shape": list(actions.shape),
         "input_action_dtype": "float64",

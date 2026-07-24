@@ -32,6 +32,17 @@
 - Authority: four bounded packets and read-only/offline evaluation are open.
   Unbounded task replay, another retained-C2 family, provider, paid compute,
   training, promotion, push, and VideoSim work remain closed.
+- Physical checkpoint: all `4 / 4` one-attempt packets completed and torque is
+  off. Gripper and shoulder lift are evaluator-admitted. Elbow is excluded
+  after a sustained stall-warning interval despite adequate span; wrist is
+  excluded because its D405 file failed bounded finalization. No packet was
+  retried.
+- Simulator checkpoint: one pre-existing follower-endpoint hypothesis is
+  frozen for external validation on the admitted shoulder packet. The
+  candidate changes shoulder-lift joint/control range only; it fits no value
+  from the new packet. Contract SHA-256:
+  `c326d8400b8c1e800340c21b0bf70cf1fb5d1f0526eaf2a6c507275137307ca2`;
+  budget before execution `0 / 2` simulator replays.
 
 ## Active bounded transaction — Studio project map and agent access
 

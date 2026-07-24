@@ -350,6 +350,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="acknowledge the owner-cleared powered follower workcell",
     )
+    hil_simulator = subparsers.add_parser(
+        "hil-simulator-compare",
+        help="run the frozen two-replay shoulder-range HIL simulator comparison",
+    )
+    hil_simulator.add_argument("--config", type=Path, required=True)
+    hil_simulator.add_argument("--output", type=Path, required=True)
 
     sail_inventory = subparsers.add_parser(
         "sail-inventory",
@@ -1192,6 +1198,22 @@ def main(argv: Sequence[str] | None = None) -> int:
                 packet_id=args.packet,
             )
         except HILIdentifiabilityError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "hil-simulator-compare":
+        from .hil_simulator_comparison import (
+            HILSimulatorComparisonError,
+            run_hil_simulator_comparison,
+        )
+
+        try:
+            report = run_hil_simulator_comparison(
+                args.output,
+                contract_path=args.config,
+            )
+        except HILSimulatorComparisonError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))

@@ -23,6 +23,19 @@ The strict task score remains `0/11`. These unloaded measurements cannot by
 themselves prove pawn transport, physical transfer, training admission, or
 simulator promotion. Frozen S2 evidence remains read-only.
 
+All four one-attempt packets are now recorded and follower torque is off.
+Gripper and shoulder lift passed the independent packet gates. Elbow completed
+an `18.37°` span but is excluded from fitting because its sustained tracking
+gap triggered the frozen stall warning. Wrist flex completed a `28.75°` span
+and returned, but its D405 source did not finalize, so the packet is excluded
+from admitted evidence. Neither rejected packet may be retried.
+
+The sole simulator follow-up is frozen before execution in
+`configs/evaluations/hil_shoulder_range_external_validation_v1.json`. It
+compares the current declared shoulder range with the pre-existing hash-bound
+follower endpoint range, mutates only shoulder lift, consumes exactly two
+action-identical simulator replays, and cannot promote or change task score.
+
 ## Active Studio project mapping
 
 Make the full sim-to-real system legible through one Studio evidence system
