@@ -2,9 +2,10 @@
 
 Date: 2026-07-24
 
-Status: simulator-twin reconciliation committed and evaluator receipts rebound.
-Exact-head tier receipts and independent review still own final verification;
-this log does not self-certify them.
+Status: simulator-twin reconciliation and the independently identified
+rendering-race repair are committed; evaluator receipts are rebound. New
+exact-head tier receipts and independent rereview still own final
+verification; this log does not self-certify them.
 
 ## Product result
 
@@ -73,13 +74,18 @@ Official evaluator-owned bindings after the committed compiler:
 - Studio manifest SHA-256:
   `127b2faa0fbfcff3b946184920b3c3d324d5bcc62ff6745940499be4f0bf0422`.
 - Studio receipt SHA-256 / digest:
-  `c8489f8d72e35413b933944689027b5ac1ebb46059d1aaed0a77d1b6d98eb66f` /
-  `51670fb8d172c63399d516eba35fc4e8ec19272649345ba55faa133335348e44`.
+  `5cde59a71f506ad680fffd2d0c24231b07c08faf98ce28ddc364e79be773a161` /
+  `8f1bce61949ce5376d888989a3fc9e191fb2ead4f707a6ba4331bdddd1805c4a`.
 - Publication package SHA-256:
   `98173b9d5dca97c75ce8aa579fd727b02a32ff96474e3025283d590ebdd8f833`.
 - Publication receipt SHA-256 / digest:
-  `6f72f0bd8aca46ddb9fe58ede65c536e493fb1a0102543d57ce55b8f7fe88696` /
-  `9cad224906e27ee40fcb2f9638b3cd2af5f4982db5ad9c6c6054f5ee2f750b1d`.
+  `c3cb2e2618fffd0d5746f17448e9a6a906b6382cfef95c369b004c40dd9913eb` /
+  `542929707879989cb27de6f453e74c2c66f433d7e34f895ce60394c57948e4d4`.
+
+The superseded pre-repair Studio/publication receipts remain preserved as
+historical generated evidence at SHA-256 `c8489f8d...` and `6f72f0bd...`.
+Their manifest/package payloads are unchanged; only compiler/config identities
+and receipt digests changed.
 
 ## Verification checkpoint
 
@@ -99,9 +105,21 @@ Official evaluator-owned bindings after the committed compiler:
 - Reconciled focused/static gate: 55 passed plus two subtests; JavaScript syntax,
   Python compilation, and diff checks passed.
 - Live desktop and 390×844 mobile inspection: no horizontal overflow, three
-  unambiguous Replay modes, synchronized 50% scrub at 24.820 seconds, Twin
-  fidelity focus return on Escape, and zero console errors. The sole console
-  warning remains the pre-existing Three.js Clock deprecation.
+  unambiguous Replay modes, synchronized 50% scrub at 24.820 seconds, and Twin
+  fidelity focus return on Escape.
+- Independent exact-head review corrected the earlier console claim. At
+  `6fc3a9f`, missing replay → paired replay → second paired replay constructed
+  two Three.js viewers on one canvas and produced 197 WebKit WebGL
+  program-location errors. Reality stopped only the retained viewer while the
+  orphan renderer continued.
+- Repair commit `3195280b001e58aad6b43a4d60314daabe6e19f4`
+  single-flights viewer creation, removes the redundant initial paired load,
+  serializes scene mutation, and discards stale loads. The original sequence
+  now completes with zero WebGL errors in the in-app Chromium runtime and a
+  clean WebKit session. The sole remaining browser warning is the pre-existing
+  Three.js Clock deprecation. The pre-rebind SAIL-observatory 503 was an
+  expected fail-closed response to dirty compiler identity and is excluded;
+  the rebound receipt removes it.
 - Excluded full-suite receipt at
   `31e5ead86c6028284059365e3da1e1b3086b6e8b`: 1162 passed, three skipped,
   328 subtests passed, and one stale assertion failed because it still required

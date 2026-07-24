@@ -122,6 +122,14 @@ does not reopen the rejected shoulder simulator candidate, training, promotion,
 provider, paid-compute, or public-release authority. The frozen four-packet
 HIL and eleven-file S2 evidence sets remain immutable.
 
+The Replay-integrated Twin surface also passed a narrow rendering repair after
+independent review found that two concurrent Three.js viewers could share one
+canvas and emit WebGL program-location errors. Viewer creation and scene loads
+are now single-flight/serialized at committed implementation `3195280b`; the
+original missing → paired → paired sequence has zero WebGL errors in Chromium
+and WebKit. This is product reliability evidence only and does not change any
+fidelity-domain, simulator, task, or physical verdict.
+
 ## Completed four-hour HIL identifiability loop
 
 From `2026-07-24T02:37:10-05:00` through at least

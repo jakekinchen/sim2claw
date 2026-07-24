@@ -20,10 +20,20 @@
   existing diagnostic replay runner under a single-flight lock; read-only
   Studio has no write control. No simulator replay was executed by this
   reconciliation.
-- Evaluator binding: Studio receipt `c8489f8...` and publication receipt
-  `6f72f0b...` were regenerated from the committed compiler. Focused/static and
-  desktop/mobile/keyboard/console checks pass; exact-head short tiers, one full
-  suite, and independent review remain.
+- Independent review correction: exact commit `6fc3a9f` failed the console
+  gate. Selecting two paired episodes could construct two Three.js viewers on
+  one canvas; the orphan renderer emitted 197 WebKit WebGL program-location
+  errors and continued after switching to Reality. The original zero-error
+  observation did not exercise this second-selection path.
+- Rendering repair: commit `3195280b001e58aad6b43a4d60314daabe6e19f4`
+  single-flights viewer construction, removes the redundant paired-episode
+  load, serializes scene mutation, and discards stale requests. The original
+  missing → paired → paired sequence now has zero WebGL errors in Chromium and
+  WebKit. Focused coverage passes `49 + 2 subtests`.
+- Evaluator binding: Studio receipt `5cde59a...` and publication receipt
+  `c3cb2e2...` were regenerated from the repaired committed compiler. The
+  Studio manifest and publication package remain byte-identical. Exact-head
+  short tiers, one replacement full suite, and fresh independent review remain.
 - Verification correction: the first exact-head full suite completed with
   `1162 passed / 3 skipped / 328 subtests / 1 failed`. The sole failure was an
   older test that treated every non-retained recording as simulator-unavailable
@@ -135,11 +145,11 @@
   percentage.
 - Implementation verification: new focused/project-map, Studio, SAIL observatory,
   Twin fidelity, orchestrator, and Learning Factory coverage passes `103`
-  tests plus `24` subtests. Desktop visual inspection, close-focus return,
-  overflow, and console-error checks pass; the sole console warning is the
-  pre-existing Three.js Clock deprecation. Exact-head receipts, commit
-  identity, and independent review own final verification; this durable
-  checkpoint does not self-certify them.
+  tests plus `24` subtests. The initial desktop visual, close-focus, and
+  overflow checks passed, but their console check missed the paired-episode
+  viewer race later proven by exact-head independent review. Commit `3195280b`
+  repairs that race; exact-head receipts, a fresh full suite, and independent
+  rereview own final verification.
 - Frozen evidence: every proof check is bracketed by the unchanged S2
   `11/11` file hashes and `1 event / 4 replays / 0 measurement trials`.
 - Authority: no simulator/adapter replay, provider call, paid compute,

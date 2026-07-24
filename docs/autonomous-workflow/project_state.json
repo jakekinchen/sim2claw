@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T14:23:00-05:00",
+  "updated_at": "2026-07-24T15:35:00-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
-  "current_milestone": "STUDIO_SIMULATOR_TWIN_RECONCILIATION_EXACT_HEAD_VERIFICATION",
+  "current_milestone": "STUDIO_TWIN_RENDERING_REPAIR_EXACT_HEAD_VERIFICATION",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
@@ -146,7 +146,7 @@
   },
   "studio_project_map_transaction": {
     "schema_version": "sim2claw.studio_project_map_transaction.v1",
-    "status": "simulator_twin_reconciliation_committed_receipts_rebound_exact_head_verification_pending",
+    "status": "independent_review_found_webgl_viewer_race_repair_committed_receipts_rebound_exact_head_verification_pending",
     "baseline_commit": "e7ae3f4840ab1be97f0884dfaeb5b3fcc3f632ec",
     "config": "configs/studio/project_map_v1.json",
     "projection": "src/sim2claw/studio_project_map.py",
@@ -188,7 +188,9 @@
       "desktop_live_inspection_passed": true,
       "keyboard_focus_return_passed": true,
       "horizontal_overflow_detected": false,
-      "console_error_count": 0,
+      "console_error_count_at_reviewed_commit": 197,
+      "reviewed_commit": "6fc3a9f0fc4a5f2a29285e72dca597d1d31b3a6b",
+      "independent_review_verdict": "fail_p1_duplicate_three_viewer_webgl_uniform_program_mismatch",
       "responsive_static_contract_passed": true,
       "live_mobile_viewport_claimed": true,
       "s2_frozen_hashes_verified": 11,
@@ -213,7 +215,7 @@
   },
   "studio_simulator_twin_reconciliation": {
     "schema_version": "sim2claw.studio_simulator_twin_reconciliation.v1",
-    "status": "implementation_committed_evaluator_receipts_rebound_final_verification_pending",
+    "status": "rendering_race_repaired_receipts_rebound_final_verification_pending",
     "implementation_commit": "cfc502140999e9e35bcd2d5dbeefbfb3c04a6aa8",
     "source_recording_count": 22,
     "simulator_pairing_count": 8,
@@ -236,11 +238,11 @@
     },
     "evaluator_bindings": {
       "studio_manifest_sha256": "127b2faa0fbfcff3b946184920b3c3d324d5bcc62ff6745940499be4f0bf0422",
-      "studio_receipt_sha256": "c8489f8d72e35413b933944689027b5ac1ebb46059d1aaed0a77d1b6d98eb66f",
-      "studio_receipt_digest": "51670fb8d172c63399d516eba35fc4e8ec19272649345ba55faa133335348e44",
+      "studio_receipt_sha256": "5cde59a71f506ad680fffd2d0c24231b07c08faf98ce28ddc364e79be773a161",
+      "studio_receipt_digest": "8f1bce61949ce5376d888989a3fc9e191fb2ead4f707a6ba4331bdddd1805c4a",
       "publication_package_sha256": "98173b9d5dca97c75ce8aa579fd727b02a32ff96474e3025283d590ebdd8f833",
-      "publication_receipt_sha256": "6f72f0bd8aca46ddb9fe58ede65c536e493fb1a0102543d57ce55b8f7fe88696",
-      "publication_receipt_digest": "9cad224906e27ee40fcb2f9638b3cd2af5f4982db5ad9c6c6054f5ee2f750b1d"
+      "publication_receipt_sha256": "c3cb2e2618fffd0d5746f17448e9a6a906b6382cfef95c369b004c40dd9913eb",
+      "publication_receipt_digest": "542929707879989cb27de6f453e74c2c66f433d7e34f895ce60394c57948e4d4"
     },
     "verification": {
       "focused_tests_passed": 55,
@@ -252,7 +254,17 @@
       "keyboard_focus_return_passed": true,
       "synchronized_half_timeline_time_seconds": 24.82,
       "horizontal_overflow_detected": false,
-      "console_error_count": 0,
+      "reviewed_commit_console_webgl_error_count": 197,
+      "reviewed_commit_independent_verdict": "fail_p1",
+      "rendering_repair_commit": "3195280b001e58aad6b43a4d60314daabe6e19f4",
+      "rendering_repair": {
+        "single_flight_viewer_construction": true,
+        "redundant_initial_pair_load_removed": true,
+        "scene_loads_serialized_and_stale_requests_discarded": true,
+        "in_app_chromium_webgl_error_count": 0,
+        "webkit_original_sequence_webgl_error_count": 0,
+        "pre_rebind_fail_closed_sail_observatory_503_excluded": true
+      },
       "excluded_full_suite": {
         "commit": "31e5ead86c6028284059365e3da1e1b3086b6e8b",
         "status": "failed_stale_publication_only_pairing_assertion",
