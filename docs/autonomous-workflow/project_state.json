@@ -2675,6 +2675,46 @@
         "task_score_change": false
       }
     },
+    "avfoundation_source_localization": {
+      "status": "preregistered_before_source_probe_implementation",
+      "goal": "docs/autonomous-workflow/goal-loop-avfoundation-source-localization.md",
+      "contract": "configs/evaluations/avfoundation_source_localization_v1.json",
+      "contract_sha256": "c7063d8f875c576007d21a1f676a5ec75dec286d80c4a207af28d2a99e065df5",
+      "baseline_commit": "87534c5bc7beb2de13f3bc2e24cd6e296554e569",
+      "sealed_d405_campaign_sha256": "57d4983c73543bb6b675447cb9f5c3e0d60a2035ad06806cf79d48437c4cf2cf",
+      "sealed_d405_evaluation_sha256": "80ed9ac3608c0f95353a95dd83e3cb87959d273885f4415e483e8074c6828cde",
+      "sealed_d405_receipt_sha256": "cfc11ff377730c137211ea41758ddd4da150a8b4d108f825a0619c7a7d453733",
+      "trial_order": [
+        "C01",
+        "T01",
+        "T02",
+        "C02",
+        "C03",
+        "T03",
+        "T04",
+        "C04",
+        "C05",
+        "T05",
+        "T06",
+        "C06"
+      ],
+      "control_trial_count": 6,
+      "treatment_trial_count": 6,
+      "replacement_trial_count": 0,
+      "robot_motion_trial_count": 0,
+      "provider_call_count": 0,
+      "source_probe_implementation_status": "pending",
+      "live_campaign_status": "not_started",
+      "authority": {
+        "robot_motion": false,
+        "metric_depth": false,
+        "cross_camera_exposure_synchronization": false,
+        "simulator_replay": false,
+        "training": false,
+        "promotion": false,
+        "task_score_change": false
+      }
+    },
     "domain_status": {
       "geometry_scale": "missing",
       "kinematics": "partial",

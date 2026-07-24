@@ -1,0 +1,177 @@
+{
+  "schema_version": "sim2claw.avfoundation_source_localization_contract.v1",
+  "contract_id": "current-100mm-avfoundation-source-localization-20260724-v1",
+  "status": "frozen_before_source_probe_implementation",
+  "baseline_commit": "87534c5bc7beb2de13f3bc2e24cd6e296554e569",
+  "purpose": "Separate C922 AVFoundation source delivery from downstream FFmpeg/container timing when the D405 stream opens and closes on the same Mac.",
+  "baseline_evidence": {
+    "d405_stationary_campaign": "outputs/d405-capture-reliability-v1/raw/campaign.json",
+    "d405_stationary_campaign_sha256": "57d4983c73543bb6b675447cb9f5c3e0d60a2035ad06806cf79d48437c4cf2cf",
+    "d405_stationary_evaluation": "outputs/d405-capture-reliability-v1/evaluated/evaluation.json",
+    "d405_stationary_evaluation_sha256": "80ed9ac3608c0f95353a95dd83e3cb87959d273885f4415e483e8074c6828cde",
+    "d405_stationary_receipt": "outputs/d405-capture-reliability-v1/evaluated/receipt.json",
+    "d405_stationary_receipt_sha256": "cfc11ff377730c137211ea41758ddd4da150a8b4d108f825a0619c7a7d453733",
+    "sealed_result": "reject_stationary_capture_reliability",
+    "sealed_trial_count": 6,
+    "sealed_replacement_count": 0,
+    "sealed_d405_source_stall_count": 0,
+    "sealed_c922_inferred_missing_intervals_per_trial": [
+      30,
+      29,
+      30,
+      29,
+      30,
+      30
+    ],
+    "sealed_result_may_be_reclassified": false
+  },
+  "advisory_context": {
+    "chatgpt_project_review_url": "https://chatgpt.com/g/g-p-6a62f9df04648191a141784d8cf36669-robotics-and-sims/c/6a63890e-008c-83ea-bbfa-812c9a02fb34",
+    "proof_authority": false,
+    "adopted_design_principle": "Measure source callbacks and Apple drop reasons before interpreting encoded-container PTS gaps as physical exposure loss."
+  },
+  "runtime_identity": {
+    "platform": "macos",
+    "swift_version_prefix": "Apple Swift version 6.3",
+    "swift_source_path": "tools/macos/AVFoundationSourceProbe.swift",
+    "python_runner_path": "src/sim2claw/avfoundation_source_localization.py",
+    "source_and_runner_sha256_frozen_at_execution_commit": true,
+    "ffmpeg_version": "8.0.1",
+    "ffmpeg_executable_sha256": "0a96da2735695308d964e25fa6f4a0db2e9d24031390360f4c5ff96a4f8938e5",
+    "ffprobe_version": "8.0.1",
+    "ffprobe_executable_sha256": "68447e67105534f3f43b95c94983ed56fbdd7125e5724cc56499ad538c2b86a7"
+  },
+  "cameras": {
+    "source_probe": {
+      "role": "overhead",
+      "name": "C922 Pro Stream Webcam",
+      "width": 640,
+      "height": 480,
+      "fps": 30,
+      "preferred_pixel_format": "420v"
+    },
+    "lifecycle_intervention": {
+      "role": "wrist",
+      "name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+      "width": 424,
+      "height": 240,
+      "fps": 5,
+      "pixel_format": "uyvy422",
+      "metric_depth": false
+    }
+  },
+  "hypotheses": [
+    {
+      "id": "H1_avfoundation_source_discontinuity",
+      "predicted_signature": "Treatment-only C922 source PTS gap or dropped-frame callback with discontinuity reason at a D405 lifecycle boundary."
+    },
+    {
+      "id": "H2_client_lateness_or_buffer_pressure",
+      "predicted_signature": "Treatment-only C922 dropped-frame callback reports late-frame or out-of-buffers reason, with callback arrival delay at a D405 lifecycle boundary."
+    },
+    {
+      "id": "H3_downstream_encode_or_mux_only",
+      "predicted_signature": "C922 source callbacks remain continuous with no source drop in all treatment trials while the sealed FFmpeg containers retain lifecycle-boundary PTS gaps; this is suggestive only because the source and sealed container paths are not the same process."
+    },
+    {
+      "id": "H4_stationary_d405_usb_removal",
+      "predicted_signature": "D405 USB removal or re-enumeration occurs during a treatment trial; this fails the packet and prevents a source-layer attribution."
+    }
+  ],
+  "campaign": {
+    "mode": "camera_only_no_robot_motion",
+    "cells": {
+      "C": "c922_source_only_control",
+      "T": "c922_source_plus_d405_lifecycle"
+    },
+    "fixed_trial_order": [
+      "C01",
+      "T01",
+      "T02",
+      "C02",
+      "C03",
+      "T03",
+      "T04",
+      "C04",
+      "C05",
+      "T05",
+      "T06",
+      "C06"
+    ],
+    "trials_per_cell": 6,
+    "total_trials": 12,
+    "replacement_trials": 0,
+    "source_probe_duration_seconds": 30.0,
+    "source_warmup_seconds": 5.0,
+    "lifecycle_start_offset_seconds": 5.0,
+    "lifecycle_stop_offset_seconds": 25.0,
+    "source_probe_stop_offset_seconds": 30.0,
+    "poll_interval_seconds": 0.05,
+    "robot_motion": false,
+    "provider_calls": 0
+  },
+  "required_source_events": [
+    "probe_started",
+    "session_start_requested",
+    "session_start_returned",
+    "sample_output",
+    "sample_dropped",
+    "session_interrupted",
+    "session_interruption_ended",
+    "session_runtime_error",
+    "device_connected",
+    "device_disconnected",
+    "session_stop_requested",
+    "session_stop_returned",
+    "probe_finished"
+  ],
+  "source_measurements": {
+    "clock": "mach_continuous_time",
+    "sample_pts": "CMSampleBuffer presentation timestamp",
+    "sample_duration": "CMSampleBuffer duration",
+    "local_sequence": true,
+    "drop_reason_attachment": true,
+    "drop_reason_info_attachment": true,
+    "callback_entry_time": true,
+    "callback_exit_time": true,
+    "format_dimensions": true,
+    "pixel_format": true,
+    "device_and_session_notifications": true,
+    "source_pts_is_cross_camera_exposure_clock": false,
+    "host_event_time_is_cross_camera_exposure_clock": false
+  },
+  "evaluator": {
+    "nominal_source_interval_seconds": 0.03333333333333333,
+    "large_source_interval_multiplier": 1.5,
+    "boundary_window_seconds": 1.5,
+    "maximum_non_monotonic_source_intervals": 0,
+    "maximum_duplicate_source_pts": 0,
+    "maximum_d405_source_stalls": 0,
+    "maximum_usb_removals": 0,
+    "require_all_trials_complete": true,
+    "require_all_raw_artifacts_hash_bound": true,
+    "source_attribution_requires_treatment_replication_count": 6,
+    "source_continuity_does_not_prove_physical_exposure_continuity": true,
+    "source_continuity_does_not_reclassify_sealed_container_result": true,
+    "verdicts": [
+      "source_discontinuity_replicated",
+      "client_lateness_or_buffer_pressure_replicated",
+      "source_continuous_under_d405_lifecycle",
+      "inconclusive_or_mixed",
+      "prerequisite_abstention"
+    ]
+  },
+  "authority": {
+    "robot_motion": false,
+    "robot_gateway": false,
+    "metric_depth": false,
+    "cross_camera_exposure_synchronization": false,
+    "simulator_replay": false,
+    "simulator_parameter_promotion": false,
+    "training": false,
+    "provider_calls": false,
+    "paid_compute": false,
+    "task_score_change": false,
+    "physical_task_authority": false
+  }
+}

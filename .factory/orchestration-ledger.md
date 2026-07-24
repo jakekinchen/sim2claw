@@ -957,3 +957,13 @@ goal. External provider campaigns and spending remain separately gated.
   these stationary trials; the earlier motion-correlated D405 physical fault
   remains separate. No retry, threshold change, simulator, training,
   promotion, metric-depth, or task claim is permitted.
+- 2026-07-24T11:35:00-05:00 — Opened a separate AVFoundation source
+  localization transaction from clean centralized `main@87534c5`. Contract
+  `avfoundation_source_localization_v1.json` freezes six C922-only controls and
+  six C922-plus-D405-lifecycle treatments in fixed balanced order, zero
+  replacements, zero robot motion, and zero provider calls. The primary
+  evidence is native C922 source callback PTS/cadence, Apple drop reasons,
+  session/device notifications, and exact runtime identity. Source continuity
+  is not physical-exposure synchronization and cannot reclassify the sealed
+  D405/C922 `0/6` result. GPT-5.6 Pro supplied advisory hypotheses only and has
+  no proof or execution authority.

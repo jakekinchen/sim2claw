@@ -56,6 +56,15 @@ this stationary campaign. The result is therefore a terminal negative for the
 current dual-camera lifecycle, not a D405 motion-reliability pass, and it is not
 eligible for retry or post-hoc threshold relaxation.
 
+The next software/camera-only transaction now targets the unresolved layer
+between camera source delivery and the encoded C922 container. It freezes a
+native AVFoundation callback probe and, only after that implementation is
+committed, six C922-only controls plus six C922-with-D405-lifecycle trials.
+The probe records source PTS, callback cadence, Apple drop reasons, session
+notifications, and device events. It does not create a shared exposure clock,
+reclassify the sealed `0/6` camera result, authorize robot motion, or change
+Twin fidelity or task scores.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
