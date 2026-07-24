@@ -9,6 +9,7 @@ from urllib.request import urlopen
 from sim2claw.studio_server import create_server
 from sim2claw.studio_twin_fidelity import (
     DOMAIN_ORDER,
+    _overnight_calibration_projection,
     load_twin_fidelity_projection,
     project_twin_fidelity,
 )
@@ -156,6 +157,99 @@ def _live_projection() -> dict[str, object]:
     )
 
 
+def _overnight_bundle() -> dict[str, object]:
+    authority = {
+        "provider_advice_is_evaluator_evidence": False,
+        "simulator_parameter_promotion": False,
+        "task_score_change": False,
+        "training": False,
+        "physical_capture": False,
+        "physical_motion": False,
+    }
+    return {
+        "publication": {
+            "source_recording_id": "recording-empty-gripper",
+            "proof_classes": [
+                "derived_empty_gripper_cycle_diagnostic",
+                "action_frozen_simulator_joint_range_diagnostic",
+            ],
+            "diagnostic": {"receipt_sha256": "1" * 64},
+            "comparison": {"receipt_sha256": "2" * 64},
+        },
+        "publication_sha256": "3" * 64,
+        "diagnostic": {
+            "sample_count": 911,
+            "segmentation": {
+                "observed_excursion_count": 6,
+                "owner_intended_excursion_count": 5,
+            },
+            "owner_intended_five_cycle_sensitivity": {
+                "summary": {
+                    "median_best_gripper_lag_seconds": 0.15,
+                    "median_lag_aligned_gripper_rmse_degrees": 1.02,
+                }
+            },
+            "current_telemetry": {
+                "maximum_raw_current_by_joint": [2, 1, 23, 4, 3, 8]
+            },
+            "authority": authority,
+        },
+        "diagnostic_receipt": {"receipt_sha256": "4" * 64},
+        "raw_comparison": {
+            "variants": [
+                {
+                    "variant_id": "current_declared_ranges",
+                    "metrics": {
+                        "aggregate_body_joint_rmse_degrees": 3.428,
+                    },
+                },
+                {
+                    "variant_id": "follower_calibrated_ranges_v1",
+                    "metrics": {
+                        "aggregate_body_joint_rmse_degrees": 2.280,
+                    },
+                },
+            ]
+        },
+        "evaluation": {
+            "evaluator_owner": "independent_cpu_fp32_joint_response_evaluator",
+            "action_tensor_byte_identical": True,
+            "aggregate_body_joint_rmse_improvement_fraction": 0.3349,
+            "per_joint_rmse_regression_degrees": [
+                0.002,
+                -5.701,
+                0.870,
+                -0.758,
+                0.0,
+            ],
+            "gates": {
+                "action_identity": True,
+                "aggregate_body_improvement": True,
+                "per_joint_nonregression": False,
+                "gripper_nonregression": False,
+                "strict_task_consequence": False,
+            },
+            "verdict": "diagnostic_joint_range_tie_or_loss_no_promotion",
+        },
+        "comparison_receipt": {
+            "receipt_sha256": "5" * 64,
+            "exact_action_sha256": "6" * 64,
+        },
+    }
+
+
+def _physical_episode() -> dict[str, object]:
+    return {
+        "id": "physical-episode",
+        "title": "Physical episode",
+        "subtitle": "Empty gripper diagnostic",
+        "source_recording_id": "recording-empty-gripper",
+        "proof_class": "physical_teleoperation_source_unqualified",
+        "proof_label": "Physical source · recorded, not admitted",
+        "action_array_sha256": None,
+    }
+
+
 def test_projection_orders_domains_and_keeps_missing_distinct_from_failed() -> None:
     projection = _live_projection()
     assert projection["available"] is True
@@ -278,6 +372,57 @@ def test_invalid_live_receipt_never_synthesizes_terminal_claims() -> None:
     assert projection["summary"]["verdict"] == "no_action_matched_terminal_campaign"
     assert "live receipt output changed" in projection["summary"]["detail"]
     assert projection["evaluator"]["verdict"] is None
+    assert projection["hypotheses"] == []
+
+
+def test_overnight_calibration_projection_is_explicitly_rejected_and_partial() -> None:
+    projection = _overnight_calibration_projection(
+        _physical_episode(), _overnight_bundle()
+    )
+    assert projection["available"] is True
+    assert projection["evidence_status"] == "terminal_diagnostic_no_promotion"
+    assert "candidate rejected" in projection["summary"]["label"].lower()
+    assert "33.5%" in projection["summary"]["detail"]
+    assert projection["episode"]["action_sha256"] == "6" * 64
+    assert (
+        projection["episode"]["action_binding"]
+        == "source_recording_plus_hash_bound_command_tensor"
+    )
+    statuses = {row["id"]: row["status"] for row in projection["domains"]}
+    assert statuses == {
+        "geometry_scale": "missing",
+        "kinematics": "failed",
+        "action_timing": "observed",
+        "contact_compliance": "missing",
+        "actuator_load_path": "missing",
+        "task_ee_consequence": "missing",
+    }
+    assert projection["evaluator"]["gates"]["aggregate_body_improvement"] is True
+    assert projection["evaluator"]["gates"]["per_joint_nonregression"] is False
+    assert projection["evaluator"]["posterior_movement_permitted"] is False
+    assert projection["authority"]["simulator_promotion"] is False
+    assert "perfect simulation" not in json.dumps(projection).lower()
+
+
+def test_matching_physical_episode_with_invalid_publication_fails_closed() -> None:
+    with (
+        patch(
+            "sim2claw.studio_twin_fidelity.load_overnight_calibration_binding",
+            return_value={"source_recording_id": "recording-empty-gripper"},
+        ),
+        patch(
+            "sim2claw.studio_twin_fidelity.verify_overnight_calibration_publication",
+            side_effect=ValueError("comparison evaluation hash changed"),
+        ),
+    ):
+        projection = load_twin_fidelity_projection(
+            _physical_episode(), repo_root=REPO_ROOT
+        )
+    assert projection["available"] is False
+    assert projection["reason"] == "overnight_calibration_publication_unavailable"
+    assert "comparison evaluation hash changed" in projection["detail"]
+    assert {row["status"] for row in projection["domains"]} == {"missing"}
+    assert projection["chain"] == []
     assert projection["hypotheses"] == []
 
 

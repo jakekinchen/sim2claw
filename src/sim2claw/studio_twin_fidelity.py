@@ -6,6 +6,10 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from .paths import REPO_ROOT
+from .overnight_calibration_publication import (
+    load_overnight_calibration_binding,
+    verify_overnight_calibration_publication,
+)
 from .sail.importers import load_json_object
 from .sail.live_receipts import verify_live_operator_receipt
 from .sail.studio import load_studio_observatory
@@ -147,6 +151,339 @@ def _unavailable_projection(
             "status": "missing",
             "summary": "Restore the receipt-verified evidence projection.",
             "measurements": [],
+        },
+    }
+
+
+def _overnight_calibration_projection(
+    episode: Mapping[str, Any],
+    bundle: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Project a verified physical diagnostic without upgrading its proof class."""
+
+    publication = _as_mapping(bundle.get("publication"))
+    diagnostic = _as_mapping(bundle.get("diagnostic"))
+    raw = _as_mapping(bundle.get("raw_comparison"))
+    evaluation = _as_mapping(bundle.get("evaluation"))
+    comparison_receipt = _as_mapping(bundle.get("comparison_receipt"))
+    diagnostic_receipt = _as_mapping(bundle.get("diagnostic_receipt"))
+    variants = _as_rows(raw.get("variants"))
+    baseline = next(
+        (row for row in variants if row.get("variant_id") == "current_declared_ranges"),
+        {},
+    )
+    candidate = next(
+        (
+            row
+            for row in variants
+            if row.get("variant_id") == "follower_calibrated_ranges_v1"
+        ),
+        {},
+    )
+    baseline_metrics = _as_mapping(baseline.get("metrics"))
+    candidate_metrics = _as_mapping(candidate.get("metrics"))
+    segmentation = _as_mapping(diagnostic.get("segmentation"))
+    sensitivity = _as_mapping(
+        _as_mapping(diagnostic.get("owner_intended_five_cycle_sensitivity")).get(
+            "summary"
+        )
+    )
+    current = _as_mapping(diagnostic.get("current_telemetry"))
+    gates = _as_mapping(evaluation.get("gates"))
+    improvement = evaluation.get("aggregate_body_joint_rmse_improvement_fraction")
+    per_joint_regressions = evaluation.get("per_joint_rmse_regression_degrees")
+    elbow_regression = (
+        per_joint_regressions[2]
+        if isinstance(per_joint_regressions, Sequence)
+        and not isinstance(per_joint_regressions, (str, bytes, bytearray))
+        and len(per_joint_regressions) > 2
+        else None
+    )
+    exact_action_sha256 = comparison_receipt.get("exact_action_sha256")
+    domains = [
+        _domain(
+            "geometry_scale",
+            status="missing",
+            summary="Metric scene and object geometry remain unobserved",
+            detail="Both cameras recorded source pixels, but this packet contains no metric depth, calibrated camera-to-gripper extrinsics, or metric object pose.",
+            missing_evidence=[
+                "metric_wrist_depth",
+                "camera_to_gripper_extrinsics",
+                "metric_object_pose",
+            ],
+        ),
+        _domain(
+            "kinematics",
+            status="failed",
+            summary="Aggregate joint error fell, but the global range candidate failed",
+            detail="The calibrated endpoint ranges reduced aggregate body-joint RMSE, primarily at shoulder lift, while elbow RMSE regressed beyond the frozen per-joint ceiling. The evaluator rejected the candidate and changed no simulator parameter.",
+            measurements=[
+                _measurement(
+                    "Current-range body RMSE",
+                    value=baseline_metrics.get(
+                        "aggregate_body_joint_rmse_degrees"
+                    ),
+                    unit="deg",
+                    source="Action-identical MuJoCo replay · current declared ranges",
+                ),
+                _measurement(
+                    "Calibrated-range body RMSE",
+                    value=candidate_metrics.get(
+                        "aggregate_body_joint_rmse_degrees"
+                    ),
+                    unit="deg",
+                    source="Action-identical MuJoCo replay · follower endpoint ranges",
+                ),
+                _measurement(
+                    "Aggregate RMSE reduction",
+                    value=(
+                        float(improvement) * 100.0
+                        if improvement is not None
+                        else None
+                    ),
+                    unit="%",
+                    source="Independent CPU/fp32 joint-response evaluator · body-joint RMSE denominator",
+                ),
+                _measurement(
+                    "Elbow RMSE regression",
+                    value=elbow_regression,
+                    unit="deg",
+                    source="Independent CPU/fp32 joint-response evaluator",
+                    threshold=0.25,
+                    comparator="≤",
+                ),
+            ],
+            missing_evidence=[
+                "joint_specific_range_validation",
+                "strict_task_consequence",
+            ],
+        ),
+        _domain(
+            "action_timing",
+            status="observed",
+            summary="Five stable retrospective cycles show a repeatable gripper lag",
+            detail="Six excursions were observed although five were requested. Cycles 2–6 form a retrospective sensitivity view only; the procedure mismatch prevents measurement admission.",
+            measurements=[
+                _measurement(
+                    "Observed excursions",
+                    value=segmentation.get("observed_excursion_count"),
+                    unit="count",
+                    source="Hash-bound follower requested-position trace",
+                    threshold=segmentation.get("owner_intended_excursion_count"),
+                    comparator="=",
+                ),
+                _measurement(
+                    "Cycles 2–6 median lag",
+                    value=sensitivity.get("median_best_gripper_lag_seconds"),
+                    unit="s",
+                    source="Retrospective non-promoting five-cycle sensitivity view",
+                ),
+                _measurement(
+                    "Cycles 2–6 gripper RMSE",
+                    value=sensitivity.get(
+                        "median_lag_aligned_gripper_rmse_degrees"
+                    ),
+                    unit="deg",
+                    source="Retrospective non-promoting five-cycle sensitivity view",
+                ),
+            ],
+            missing_evidence=["preregistered_stationary_five_cycle_capture"],
+        ),
+        _domain(
+            "contact_compliance",
+            status="missing",
+            summary="No contact or compliance measurement was captured",
+            detail="The empty-gripper episode isolates unloaded motion; it cannot identify jaw force, fingertip deformation, or contact mechanics.",
+            missing_evidence=["contact_force", "load_or_deformation_sensor"],
+        ),
+        _domain(
+            "actuator_load_path",
+            status="missing",
+            summary="Raw current is present but not independently synchronized",
+            detail="All telemetry rows carry non-stale raw current values, but no independent current-read timestamp or force calibration exists, so load-path evidence is not admitted.",
+            measurements=[
+                _measurement(
+                    "Maximum gripper current",
+                    value=(
+                        current.get("maximum_raw_current_by_joint", [None] * 6)[5]
+                        if isinstance(
+                            current.get("maximum_raw_current_by_joint"), Sequence
+                        )
+                        and len(current.get("maximum_raw_current_by_joint", [])) > 5
+                        else None
+                    ),
+                    unit="raw device units",
+                    source="Follower current telemetry · diagnostic only",
+                )
+            ],
+            missing_evidence=[
+                "independent_current_read_timestamp",
+                "current_to_torque_calibration",
+                "jaw_force",
+            ],
+        ),
+        _domain(
+            "task_ee_consequence",
+            status="missing",
+            summary="No strict task or end-effector consequence was evaluated",
+            detail="This was an empty-gripper response diagnostic. Aggregate error reduction alone cannot change task score or establish physical-transfer improvement.",
+            missing_evidence=[
+                "strict_task_consequence",
+                "physical_object_trajectory",
+                "physical_target_consequence",
+            ],
+        ),
+    ]
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "available": True,
+        "evidence_status": "terminal_diagnostic_no_promotion",
+        "episode": {
+            "id": episode.get("id"),
+            "title": episode.get("title"),
+            "subtitle": episode.get("subtitle"),
+            "action_sha256": exact_action_sha256,
+            "action_binding": "source_recording_plus_hash_bound_command_tensor",
+            "proof_class": [
+                episode.get("proof_class"),
+                *list(publication.get("proof_classes", [])),
+            ],
+            "proof_label": (
+                f"{episode.get('proof_label') or 'Physical source'} · "
+                "action-frozen simulator diagnostic"
+            ),
+        },
+        "summary": {
+            "label": "Partial aggregate reduction · candidate rejected",
+            "verdict": evaluation.get("verdict"),
+            "detail": (
+                "Follower endpoint ranges reduced aggregate body-joint RMSE by "
+                f"{float(improvement) * 100.0:.1f}% with identical action bytes, "
+                "but elbow and gripper non-regression gates failed. No parameter, "
+                "task score, training, or physical authority changed."
+                if improvement is not None
+                else "The verified evaluator rejected the candidate without promotion."
+            ),
+        },
+        "authority": dict(READ_ONLY_AUTHORITY),
+        "twin_worthiness": {
+            "level": "diagnostic_only",
+            "allowed_capabilities": ["read_only_diagnostics"],
+            "denied_capabilities": [
+                "simulator_parameter_promotion",
+                "task_score_change",
+                "training",
+                "physical_authority",
+            ],
+            "verdict_owner": evaluation.get("evaluator_owner"),
+        },
+        "domains": domains,
+        "chain": [
+            {
+                "id": "observe",
+                "label": "Observe",
+                "status": "verified",
+                "detail": (
+                    f"{diagnostic.get('sample_count')} telemetry rows · "
+                    f"{segmentation.get('observed_excursion_count')} excursions · "
+                    "dual-camera source coverage"
+                ),
+            },
+            {
+                "id": "residual",
+                "label": "Residual",
+                "status": "verified",
+                "detail": (
+                    f"Current-range aggregate body RMSE "
+                    f"{float(baseline_metrics.get('aggregate_body_joint_rmse_degrees')):.3f}°"
+                ),
+            },
+            {
+                "id": "hypothesis",
+                "label": "Hypothesis",
+                "status": "retained",
+                "detail": "Follower calibration endpoint ranges explain current-workcell joint-response error",
+            },
+            {
+                "id": "intervention",
+                "label": "Intervention",
+                "status": "executed",
+                "detail": "One frozen family · current ranges versus follower endpoint ranges · two replays",
+            },
+            {
+                "id": "evaluator",
+                "label": "Evaluator",
+                "status": "failed",
+                "detail": (
+                    f"{evaluation.get('verdict')} · elbow and gripper "
+                    "non-regression gates failed"
+                ),
+            },
+            {
+                "id": "posterior_consequence",
+                "label": "Posterior / consequence",
+                "status": "missing",
+                "detail": "No posterior update and no strict task consequence; no promotion",
+            },
+        ],
+        "hypotheses": [
+            {
+                "id": "follower_calibration_endpoint_ranges",
+                "family": "Joint-specific calibration range mismatch",
+                "before": None,
+                "after": None,
+                "status": "rejected_as_global_candidate",
+                "missing_observables": [
+                    "joint_specific_range_validation",
+                    "strict_task_consequence",
+                ],
+            }
+        ],
+        "intervention": {
+            "selected": "follower_calibrated_ranges_v1",
+            "status": "executed_once",
+            "candidate_count": 2,
+            "action_bytes_unchanged": evaluation.get(
+                "action_tensor_byte_identical"
+            ),
+        },
+        "evaluator": {
+            "verdict": evaluation.get("verdict"),
+            "consequence_status": "strict_task_consequence_unavailable",
+            "strict_task_and_ee_pass_count": None,
+            "candidate_count": 2,
+            "admitted_evaluator_owned_evidence": 0,
+            "posterior_movement_permitted": False,
+            "observed_information_gain_bits": None,
+            "gates": dict(gates),
+        },
+        "next_evidence": {
+            "status": "missing",
+            "intervention_id": "measurement_joint_specific_range_validation",
+            "summary": (
+                "Repeat a preregistered stationary five-cycle capture with independent "
+                "current timestamps, then validate shoulder-lift and elbow ranges "
+                "joint-by-joint before any new global simulator candidate."
+            ),
+            "measurements": [
+                "preregistered_stationary_five_cycle_capture",
+                "independent_current_read_timestamp",
+                "shoulder_lift_range_response",
+                "elbow_range_response",
+                "strict_task_consequence",
+            ],
+        },
+        "receipt": {
+            "verification": "verified",
+            "receipt_sha256": _as_mapping(publication.get("comparison")).get(
+                "receipt_sha256"
+            ),
+            "receipt_digest": comparison_receipt.get("receipt_sha256"),
+            "diagnostic_receipt_sha256": _as_mapping(
+                publication.get("diagnostic")
+            ).get("receipt_sha256"),
+            "diagnostic_receipt_digest": diagnostic_receipt.get("receipt_sha256"),
+            "publication_sha256": bundle.get("publication_sha256"),
         },
     }
 
@@ -723,6 +1060,28 @@ def load_twin_fidelity_projection(
 
     resolved_root = repo_root.resolve()
     try:
+        calibration_binding = load_overnight_calibration_binding(
+            repo_root=resolved_root
+        )
+    except (OSError, ValueError):
+        calibration_binding = {}
+    if (
+        calibration_binding
+        and str(episode.get("source_recording_id") or "")
+        == str(calibration_binding.get("source_recording_id") or "")
+    ):
+        try:
+            calibration_bundle = verify_overnight_calibration_publication(
+                repo_root=resolved_root
+            )
+        except (OSError, ValueError) as error:
+            return _unavailable_projection(
+                episode,
+                reason="overnight_calibration_publication_unavailable",
+                detail=str(error),
+            )
+        return _overnight_calibration_projection(episode, calibration_bundle)
+    try:
         observatory = load_studio_observatory(repo_root=resolved_root)
     except (OSError, ValueError) as error:
         return _unavailable_projection(
@@ -753,6 +1112,7 @@ __all__ = [
     "DOMAIN_ORDER",
     "SCHEMA_VERSION",
     "TwinFidelityError",
+    "_overnight_calibration_projection",
     "load_twin_fidelity_projection",
     "project_twin_fidelity",
 ]
