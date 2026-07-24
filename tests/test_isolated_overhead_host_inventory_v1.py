@@ -303,7 +303,16 @@ def test_timeout_or_ssh_launch_failure_is_sealed_once(
 
 @pytest.mark.parametrize(
     "mutation",
-    ["ssh_args", "budget", "authority", "raw", "stream", "command"],
+    [
+        "ssh_args",
+        "budget",
+        "authority",
+        "raw",
+        "coordinated_raw_rehash",
+        "return_code",
+        "stream",
+        "command",
+    ],
 )
 def test_evaluator_rejects_manifest_or_evidence_mutation(
     monkeypatch: pytest.MonkeyPatch,
@@ -321,10 +330,21 @@ def test_evaluator_rejects_manifest_or_evidence_mutation(
         else:
             payload["authority"]["remote_file_write"] = True
         path.write_bytes(_canonical_bytes(payload))
-    elif mutation == "raw":
+    elif mutation in {"raw", "coordinated_raw_rehash"}:
         path = observed / "raw/observation.json"
         payload = json.loads(path.read_text())
         payload["remote_hostname"] = "substituted"
+        path.write_bytes(_canonical_bytes(payload))
+        if mutation == "coordinated_raw_rehash":
+            attempt = json.loads((observed / "attempt.json").read_text())
+            attempt["raw_observation_sha256"] = hashlib.sha256(
+                path.read_bytes()
+            ).hexdigest()
+            (observed / "attempt.json").write_bytes(_canonical_bytes(attempt))
+    elif mutation == "return_code":
+        path = observed / "attempt.json"
+        payload = json.loads(path.read_text())
+        payload["return_code"] = 255
         path.write_bytes(_canonical_bytes(payload))
     elif mutation == "stream":
         (observed / "raw/ssh.stdout").write_bytes(b"changed")
@@ -339,6 +359,28 @@ def test_evaluator_rejects_manifest_or_evidence_mutation(
         ).hexdigest()
         (observed / "attempt.json").write_bytes(_canonical_bytes(attempt))
     with pytest.raises(AVFoundationFormatInventoryError):
+        inventory.evaluate(
+            contract_path=CONTRACT,
+            observed_root=observed,
+            output_root=evaluated,
+        )
+
+
+def test_malformed_profiler_data_type_shape_is_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    malformed = {
+        "SPCameraDataType": {"_name": "C922 Pro Stream Webcam"},
+        "SPUSBDataType": [],
+    }
+    stdout = f"silicon\n15.5\n{json.dumps(malformed)}\n".encode()
+    observed, evaluated = _materialize(
+        monkeypatch,
+        tmp_path,
+        completed=_completed(stdout=stdout),
+    )
+    with pytest.raises(AVFoundationFormatInventoryError, match="malformed"):
         inventory.evaluate(
             contract_path=CONTRACT,
             observed_root=observed,

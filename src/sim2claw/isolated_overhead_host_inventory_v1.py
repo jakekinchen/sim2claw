@@ -406,6 +406,19 @@ def _load_and_verify_manifests(
     _require(attempt.get("schema_version") == ATTEMPT_SCHEMA, "Attempt schema changed.")
     _require(raw.get("schema_version") == RAW_SCHEMA, "Raw schema changed.")
     _require(set(raw) == RAW_KEYS, "Raw observation shape changed.")
+    _require(
+        prelaunch.get("status") == "prepared_before_ssh_launch",
+        "Prelaunch status changed.",
+    )
+    _require(
+        attempt.get("status") == "ssh_observation_finished",
+        "Attempt status changed.",
+    )
+    _require(
+        prelaunch.get("proof_class") == PROOF_CLASS
+        and attempt.get("proof_class") == PROOF_CLASS,
+        "Manifest proof class changed.",
+    )
     for payload, label in ((prelaunch, "Prelaunch"), (attempt, "Attempt"), (raw, "Raw")):
         _require(payload.get("contract_sha256") == CONTRACT_SHA256, f"{label} contract identity changed.")
         _require(payload.get("budget") == USED_BUDGET, f"{label} budget changed.")
@@ -432,6 +445,48 @@ def _load_and_verify_manifests(
         == _sha256_bytes(REMOTE_COMMAND.encode("utf-8")),
         "Raw remote-command identity changed.",
     )
+    _require(
+        raw.get("remote_endpoint") == "kelly@silicon.local:22",
+        "Raw remote endpoint changed.",
+    )
+    _require(
+        attempt.get("return_code") == raw.get("ssh_return_code"),
+        "Attempt and raw SSH return codes disagree.",
+    )
+    stdout = (observed_root / "raw/ssh.stdout").read_bytes()
+    if attempt["return_code"] == 0:
+        try:
+            hostname, macos_version, profiler = _parse_remote_stdout(stdout)
+        except AVFoundationFormatInventoryError:
+            _require(
+                raw.get("status") == "prerequisite_unavailable"
+                and raw.get("failure_reason") == "malformed_remote_metadata"
+                and raw.get("remote_hostname") is None
+                and raw.get("remote_macos_version") is None
+                and raw.get("system_profiler") is None,
+                "Malformed stdout was not represented fail-closed.",
+            )
+        else:
+            _require(
+                raw.get("status") == "completed"
+                and raw.get("failure_reason") is None,
+                "Valid stdout status changed.",
+            )
+            _require(
+                raw.get("remote_hostname") == hostname
+                and raw.get("remote_macos_version") == macos_version
+                and raw.get("system_profiler") == profiler,
+                "Raw metadata disagrees with independently parsed stdout.",
+            )
+    else:
+        _require(
+            raw.get("status") == "prerequisite_unavailable"
+            and raw.get("failure_reason") == "ssh_command_failed"
+            and raw.get("remote_hostname") is None
+            and raw.get("remote_macos_version") is None
+            and raw.get("system_profiler") is None,
+            "Failed SSH result was not represented fail-closed.",
+        )
     return prelaunch, attempt, raw
 
 
@@ -470,6 +525,10 @@ def evaluate(
         _require(isinstance(profiler, dict), "System-profiler payload is missing.")
         camera_payload = profiler["SPCameraDataType"]
         usb_payload = profiler["SPUSBDataType"]
+        _require(
+            isinstance(camera_payload, list) and isinstance(usb_payload, list),
+            "System-profiler data-type payloads are malformed.",
+        )
         target = contract["target_device"]
         excluded = contract["excluded_device"]
         target_camera_count = _camera_name_match_count(
