@@ -26,6 +26,7 @@ from sim2claw.teleop_recording import (
 )
 from sim2claw.physical_gateway import PhysicalGatewayError
 from sim2claw.physical_sim_replay import replay_physical_recording
+from sim2claw.overhead_video import OverheadVideoError
 from sim2claw.scene import CURRENT_TASK_LAYOUT_ID
 
 
@@ -518,6 +519,114 @@ class TeleopRecordingTest(unittest.TestCase):
         replay = replay_physical_recording(destination)
         self.assertEqual(replay["sample_count"], len(rows))
         self.assertFalse(replay["task_success_verified"])
+
+    def test_physical_dual_camera_lifecycle_is_nested_d405_then_c922(
+        self,
+    ) -> None:
+        events: list[str] = []
+
+        class OrderedOverhead(FakeVideoRecorder):
+            def start(self) -> dict[str, Any]:
+                events.append("c922_start")
+                return super().start()
+
+            def finish(self, **kwargs: Any) -> dict[str, Any]:
+                events.append("c922_finish")
+                return super().finish(**kwargs)
+
+        class OrderedWrist(FakeWristVideoRecorder):
+            def start(self) -> dict[str, Any]:
+                events.append("d405_start")
+                return super().start()
+
+            def finish(self, **kwargs: Any) -> dict[str, Any]:
+                events.append("d405_finish")
+                return super().finish(**kwargs)
+
+        self.manager.shutdown()
+        self.manager = TeleopRecordingManager(
+            repo_root=self.repo_root,
+            backend_factory=lambda request, preflight: FakePhysicalBackend(
+                request, preflight
+            ),
+            video_recorder_factory=lambda draft: OrderedOverhead(draft),
+            wrist_video_recorder_factory=lambda draft: OrderedWrist(draft),
+            dev_root=self.dev_root,
+            calibration_root=self.calibration_root,
+        )
+        self.manager.start(
+            {
+                "mode": "physical_follower",
+                "source_square": "a1",
+                "target_square": "h2",
+                "sample_hz": 20,
+                "physical_safety_acknowledged": True,
+                "server_owned_prestart_sequence": True,
+            }
+        )
+        self.manager.stop()
+
+        self.assertEqual(
+            events,
+            ["d405_start", "c922_start", "c922_finish", "d405_finish"],
+        )
+        self.manager.discard()
+
+    def test_wrist_is_finalized_when_c922_start_fails(self) -> None:
+        events: list[str] = []
+        wrists: list[FakeWristVideoRecorder] = []
+
+        class FailingOverhead(FakeVideoRecorder):
+            def start(self) -> dict[str, Any]:
+                events.append("c922_start")
+                raise OverheadVideoError("fixture C922 open failure")
+
+            def finish(self, **kwargs: Any) -> dict[str, Any]:
+                events.append("c922_finish")
+                raise OverheadVideoError("fixture C922 never started")
+
+        class OrderedWrist(FakeWristVideoRecorder):
+            def start(self) -> dict[str, Any]:
+                events.append("d405_start")
+                return super().start()
+
+            def finish(self, **kwargs: Any) -> dict[str, Any]:
+                events.append("d405_finish")
+                return super().finish(**kwargs)
+
+        def wrist_factory(draft: Path) -> OrderedWrist:
+            recorder = OrderedWrist(draft)
+            wrists.append(recorder)
+            return recorder
+
+        self.manager.shutdown()
+        self.manager = TeleopRecordingManager(
+            repo_root=self.repo_root,
+            backend_factory=lambda request, preflight: FakePhysicalBackend(
+                request, preflight
+            ),
+            video_recorder_factory=lambda draft: FailingOverhead(draft),
+            wrist_video_recorder_factory=wrist_factory,
+            dev_root=self.dev_root,
+            calibration_root=self.calibration_root,
+        )
+        with self.assertRaisesRegex(RecorderError, "fixture C922 open failure"):
+            self.manager.start(
+                {
+                    "mode": "physical_follower",
+                    "source_square": "a1",
+                    "target_square": "h2",
+                    "sample_hz": 20,
+                    "physical_safety_acknowledged": True,
+                    "server_owned_prestart_sequence": True,
+                }
+            )
+
+        self.assertEqual(
+            events,
+            ["d405_start", "c922_start", "c922_finish", "d405_finish"],
+        )
+        self.assertTrue(wrists[0].finished)
 
     def test_physical_mode_is_ready_but_requires_operator_acknowledgement(self) -> None:
         preflight = self.manager.preflight()

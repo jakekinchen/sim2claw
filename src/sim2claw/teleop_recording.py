@@ -1096,11 +1096,6 @@ class TeleopRecordingManager:
         errors: list[str] = []
         try:
             self.video_recorder = self.video_recorder_factory(draft)
-            video_state = self.video_recorder.start()
-            sequence_started_monotonic = time.monotonic()
-            video_started_monotonic = self.video_recorder.started_monotonic
-            if video_started_monotonic is None:
-                raise OverheadVideoError("C922 video capture did not publish its start clock.")
             wrist_video_state: dict[str, Any] | None = None
             wrist_video_started_monotonic: float | None = None
             if (
@@ -1116,6 +1111,14 @@ class TeleopRecordingManager:
                     raise OverheadVideoError(
                         "D405 wrist capture did not publish its start clock."
                     )
+            # Keep every D405 lifecycle transition outside the C922 container
+            # window. The inverse order produced repeatable C922 PTS gaps at
+            # D405 open/close boundaries in the sealed stationary campaign.
+            video_state = self.video_recorder.start()
+            sequence_started_monotonic = time.monotonic()
+            video_started_monotonic = self.video_recorder.started_monotonic
+            if video_started_monotonic is None:
+                raise OverheadVideoError("C922 video capture did not publish its start clock.")
             with self.lock:
                 self.live_simulation["active"] = False
                 self.state.update(
