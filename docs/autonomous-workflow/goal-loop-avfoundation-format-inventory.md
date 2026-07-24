@@ -104,10 +104,10 @@ task evidence as separate proof classes.
 ## Progress Ledger
 
 ```text
-Current state: Preregistration is committed; observer/evaluator implementation passes static and focused gates without device enumeration.
-Completed: Prior 12-attempt prerequisite abstention is frozen and centralized; target/rate tolerance/ranking/budgets/authority are specified; standalone Swift enumerator, independent evaluator, and adversarial tests are implemented.
-Evidence: baseline 2e8b33d; preregistration 8a29d3f; prior campaign 7c8b6ad3; Swift source 289c3fc2; evaluator 3ec4e50a; 15 direct and 96 combined focused tests pass.
-Remaining: Commit implementation, execute exactly one inventory observation, evaluate, freeze evidence, verify, and centralize.
-Blockers: Actual native C922 format/rate surface is not yet observed.
-Next step: Commit exact implementation identities before any device enumeration.
+Current state: Terminal prerequisite abstention; the single v1 observation is exhausted with no raw inventory or candidate.
+Completed: Preregistration 8a29d3f; observer/evaluator c868038; fail-closed sealer 9b3a5bf; one observation; deterministic sealed abstention.
+Evidence: Swift source 289c3fc2; evaluator 3ec4e50a; binary aa432262; stderr e8404380; evaluation c4677bb5; receipt eb95e1eb / embedded 0157d4b1; failure Invalid type in JSON write (__SwiftValue); 0 capture sessions/frames/D405 operations.
+Remaining: Exact-head verification and centralization. A separately versioned primitive-only observer is needed for actual native formats.
+Blockers: V1 cannot serialize one or more AVFoundation-derived Swift values into JSON; its attempt budget is exhausted.
+Next step: Seal v1 authority/state, then preregister a v2 primitive-only observer rather than rerunning v1.
 ```

@@ -1012,3 +1012,14 @@ goal. External provider campaigns and spending remain separately gated.
   tests pass. No device enumeration or camera stream occurred. Source
   `289c3fc2...` and evaluator `3ec4e50a...` await the implementation commit
   before the one observation.
+- 2026-07-24T12:51:16-05:00 — C922 format inventory v1 reached a terminal
+  prerequisite abstention. Implementation commit `c868038` preceded the sole
+  observation. The exact binary `aa432262...` enumerated far enough to reach
+  JSON writing but terminated on `Invalid type in JSON write (__SwiftValue)`;
+  stderr is `e8404380...`. No raw inventory or manifest was written, so no
+  device/format/rate or candidate claim is admitted. Separate sealer commit
+  `9b3a5bf` preserved the executed source/evaluator hashes and emitted
+  evaluation `c4677bb5...` plus receipt `eb95e1eb...` / `0157d4b1...`.
+  Accounting is one observation, zero usable inventories, capture sessions,
+  samples, D405 operations, motions, and providers. V1 cannot be retried. A
+  v2 primitive-only observer requires a new versioned preregistration.

@@ -79,9 +79,11 @@ sessions or frames, no D405 lifecycle, and an evaluator-owned 640×480
 fractional-rate rule with a maximum `0.05 fps` deviation from 30. The observer
 will enumerate only; it cannot select, score, start a stream, or authorize a
 new campaign. The standalone Swift observer and independent Python evaluator
-now pass typecheck, direct adversarial tests, and the combined
-camera/HIL/Studio gate without enumerating a device. Their exact identities
-must be committed before the single observation.
+were committed before the single observation. That observation exhausted its
+one-attempt budget but crashed during JSON serialization on a non-primitive
+Swift bridge value before writing raw inventory. A separately committed
+fail-closed sealer recorded `prerequisite_abstention`, zero usable inventory,
+and no candidate. No second v1 observation is permitted.
 
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
