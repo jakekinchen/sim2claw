@@ -1208,3 +1208,14 @@ goal. External provider campaigns and spending remain separately gated.
   through start verification, and frozen callback/interval gates after visible
   warm-up. One stationary session maximum, no retry/container/robot/simulator/
   provider authority. Admission failure routes to an isolated camera host.
+- 2026-07-24T18:27:57-05:00 — The sole native common session is terminal
+  degraded and exhausted. Exact observation `86d8005` admitted both inputs and
+  outputs and produced 338 C922 plus 61 D405 callbacks with zero drops. All
+  scored count, cadence, and 10.447306-second common-host-window gates passed.
+  The frozen evaluator rejected only the two post-stop format-index gates,
+  yielding evaluation `76cca950...`, receipt file `a33ada65...`, and receipt
+  digest `910f3347...`. No retry or threshold change is allowed. A tracked
+  exhaustion guard and separate no-delegation control seal the family; the
+  next bounded architecture is an isolated camera host. Frozen S2/HIL evidence
+  and all robot/simulator/provider/training/promotion authority remain
+  unchanged.

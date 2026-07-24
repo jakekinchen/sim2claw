@@ -64,23 +64,31 @@ evidence; verdict; and closed authority.
 - The C922 has verified exact-format steady callbacks after one-second warm-up.
 - Independent FFmpeg lifecycles still produced a D405 gap near the reverse
   boundary; that family is exhausted.
+- The sole native common session admitted both exact inputs and outputs and
+  delivered 338 C922 and 61 D405 callbacks with zero drops. Both scored
+  callback-count, cadence, and common-host-window gates passed.
+- Both devices reported a reset format index after the session stopped. The
+  frozen evaluator therefore returned
+  `common_session_callback_delivery_degraded` on exactly the two
+  `after_stop:*_format_index` gates.
 
 ### Assumptions
 
-- Standard macOS `AVCaptureSession` may admit two external video inputs and
-  outputs. The observer must ask `canAddInput`/`canAddOutput`; this is not yet
-  evidence.
+- No remaining common-session assumption is admitted as evidence. Active
+  callback delivery was observed, while post-stop identity persistence failed.
 
 ### Recommended Default
 
-- Attempt the single native common session. If the second input/output cannot
-  be admitted, seal prerequisite abstention and switch to an isolated host.
+- Do not retry or reinterpret this family. Preregister an isolated camera-host
+  architecture before any additional camera session.
 
 ### Open Questions
 
-- Whether one standard session admits both exact external inputs/outputs.
-- Whether both active formats survive start simultaneously.
-- Whether source callback cadence remains bounded for both streams.
+- Which reviewed isolated host can own one camera without cross-camera
+  lifecycle coupling while preserving content-addressed timestamps and
+  fail-closed device identity.
+- Whether the motion-correlated D405 cable/connector path remains stable after
+  physical strain relief; this stationary transaction does not answer it.
 
 ## Execution Rhythm
 
@@ -93,10 +101,10 @@ evidence; verdict; and closed authority.
 ## Progress Ledger
 
 ```text
-Current state: Preregistered before implementation or session.
-Completed: D405 and C922 format/cadence inputs are frozen.
-Evidence: D405 receipt fb4e76d9; C922 receipt 7354ce1d; baseline 049c5da.
-Remaining: Implement observer/evaluator, review, execute once, seal.
-Blockers: Common-session two-input/two-output admission is unverified.
-Next step: Implement the typed observer and independent evaluator.
+Current state: Terminal degraded; one-attempt family exhausted with no retry.
+Completed: Preregistration, exact observer/evaluator review, one stationary session, independent sealing, tracked exhaustion control.
+Evidence: Observation f78c363d; evaluation 76cca950; receipt a33ada65 / digest 910f3347; 338 C922 and 61 D405 callbacks; zero drops.
+Remaining: A separate isolated-camera-host prerequisite and motion-safe D405 physical path.
+Blockers: Frozen post-stop format-index gates failed for both cameras.
+Next step: Preregister the isolated camera-host architecture without device access.
 ```

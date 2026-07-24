@@ -175,24 +175,31 @@ sessions, zero frames, and zero camera lifecycle operations, robot motions,
 simulator replays, or provider calls. This is design input only; it does not
 prove that a native two-input common session works.
 
-That native common-session gate is now separately preregistered before
-implementation. It freezes one stationary metadata-only `AVCaptureSession`
-with the exact D405 and C922 as two inputs/two outputs, both format locks held
-through start verification, one visible source-PTS warm-up second, and frozen
-per-stream callback/interval gates. It permits one eleven-second session and
-no retry, container encoding, robot motion, simulator replay, or provider
-call. Failure to admit both inputs/outputs routes to an isolated camera host.
+That native common-session gate is now terminal degraded and exhausted. The
+sole preregistered stationary metadata-only `AVCaptureSession` admitted both
+exact devices and outputs. It delivered `338` C922 callbacks and `61` D405
+callbacks with zero drops; after the visible one-second source-PTS warm-up,
+the scored counts were `315` and `60`, maximum intervals were `0.034033 s`
+and `0.200000 s`, and the common host window was `10.447306 s`. All callback,
+cadence, and common-window gates passed. Both devices, however, reported reset
+format indices after the session stopped, so the frozen evaluator returned
+`common_session_callback_delivery_degraded` on exactly
+`after_stop:c922_format_index` and `after_stop:d405_format_index`. No
+threshold changed and no retry, container, robot motion, simulator replay, or
+provider call occurred. A tracked guard now refuses before device delegation.
+This proves bounded active-session callback health only; it is not a production
+writer, exposure synchronization, motion reliability, metric depth,
+calibration, simulator, or task result. Per the preregistered decision rule,
+the next camera architecture is a separately preregistered isolated host.
 
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
 measurements and does not convert partial progress into a percentage or a
 simulator/task claim. The next scientific step requires a separately
-preregistered capture mechanism that avoids cross-camera lifecycle
-interruption—most plausibly a reviewed native common-session design or
-physically separate camera host—plus physical repair and strain relief of the
-D405 path before any motion qualification. Only afterward add metric
-registration, calibrated force/current/load
+preregistered physically isolated camera host, plus physical repair and strain
+relief of the D405 path before any motion qualification. Only afterward add
+metric registration, calibrated force/current/load
 observability, device/actuator timing, reset/loaded trials, and strict held-out
 physical consequence. Another simulator family, silent retry, or post-hoc
 camera threshold change is not an acceptable substitute.
