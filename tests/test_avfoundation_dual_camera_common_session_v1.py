@@ -21,9 +21,7 @@ from sim2claw.avfoundation_format_inventory import (
     AVFoundationFormatInventoryError,
     _canonical_bytes,
 )
-from sim2claw.avfoundation_dual_camera_common_session_seal_v1 import (
-    seal_observation,
-)
+import sim2claw.avfoundation_dual_camera_common_session_seal_v1 as sealer
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = (
@@ -554,6 +552,8 @@ def test_sealer_accepts_only_absent_optional_failure_reason(
     raw_path = observed / "raw/observation.json"
     raw = json.loads(raw_path.read_text(encoding="utf-8"))
     raw.pop("failure_reason")
+    for event in raw["events"]:
+        event.pop("drop_reason")
     _write(raw_path, raw)
     attempt_path = observed / "attempt.json"
     attempt = json.loads(attempt_path.read_text(encoding="utf-8"))
@@ -570,15 +570,12 @@ def test_sealer_accepts_only_absent_optional_failure_reason(
     _write(prelaunch_path, prelaunch)
     attempt["prelaunch_manifest_sha256"] = _sha(prelaunch_path)
     _write(attempt_path, attempt)
-    evaluation, receipt = seal_observation(
+    monkeypatch.setattr(sealer, "SOLE_RAW_SHA256", _sha(raw_path))
+    monkeypatch.setattr(sealer, "SOLE_ATTEMPT_SHA256", _sha(attempt_path))
+    evaluation, receipt = sealer.seal_observation(
         contract_path=CONTRACT,
         observation_root=observed,
         output_root=tmp_path / "sealed",
-        sealer_path=(
-            ROOT
-            / "src/sim2claw/"
-            "avfoundation_dual_camera_common_session_seal_v1.py"
-        ),
     )
     assert evaluation["verdict"] == "common_session_callback_delivery_verified"
     assert receipt["normalization"]["scientific_thresholds_changed"] is False
