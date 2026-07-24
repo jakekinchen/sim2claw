@@ -1,0 +1,47 @@
+{
+  "authority": {
+    "physical_transfer": false,
+    "provider_calls": false,
+    "robot_motion": false,
+    "simulator_parameter_promotion": false,
+    "task_score_change": false,
+    "task_success": false,
+    "training": false
+  },
+  "packet_ids": [
+    "HIL-GRIPPER-05",
+    "HIL-SHOULDER-LIFT-22",
+    "HIL-ELBOW-FLEX-22",
+    "HIL-WRIST-FLEX-30"
+  ],
+  "physical": {
+    "campaign_root": "runs/current-100mm-hil-identifiability-20260724",
+    "campaign_state_sha256": "b364aae639bb753b58216177386aa6ae93d43dad5462c8dd1a3d33dd44330858",
+    "contract_path": "configs/evaluations/current_100mm_hil_identifiability_v1.json",
+    "contract_sha256": "bca343538955b5e7ea108f5c8be6f519a04a8e2892790520c1d46d5b67dee5d5",
+    "embedded_receipt_digest": "a1d4c7d6b30ca01e59e6f72bab2649006b4c03ea6f947e07cf464bddb43c5aa0",
+    "evidence_root": "outputs/current-100mm-hil-evidence-v1",
+    "receipt_sha256": "584827cd9376bbe9235fa588541990c75780d1e0764c882907c3b8a9e30c54ab",
+    "summary_sha256": "886ca149bcbc5389869f98cd9bd53c34a9f817ec9bd1f86271e16218753c6ac1"
+  },
+  "proof_classes": [
+    "physical_hil_unloaded_joint_observation",
+    "derived_hil_joint_identifiability_evaluation",
+    "action_frozen_hil_simulator_comparison"
+  ],
+  "schema_version": "sim2claw.hil_identifiability_publication.v1",
+  "simulator": {
+    "contract_path": "configs/evaluations/hil_shoulder_range_external_validation_v1.json",
+    "contract_sha256": "c326d8400b8c1e800340c21b0bf70cf1fb5d1f0526eaf2a6c507275137307ca2",
+    "embedded_receipt_digest": "38e0598a642ed19480d1caf01ca4661e85a85e6f936ac8d3958dd20e5e42d8ec",
+    "evaluation_sha256": "bfd126fde51cf3d3a858a47689a9754aa986bb64268871646c47347f13a6e2ec",
+    "output_root": "outputs/current-100mm-hil-shoulder-range-v1",
+    "raw_comparison_sha256": "c0b9d1da684353ccffe3caceac04a1c6a14904a414d4379626a08acac4e0ef7b",
+    "receipt_sha256": "f98137e9f83d0001cc312a10994fa60928a1e51f71b38c620d6b5fa765b7a5ad",
+    "trace_sha256": {
+      "current_declared_ranges.jsonl": "979e819c4fcd186436955e14b88d1bc3cc80b1c08ad60c7a1de7efff959583c8",
+      "follower_shoulder_lift_range_v1.jsonl": "e3be914d7dbce0a652a9276cffd44ac366aee8eadc3632648513adc18e1ee053"
+    }
+  },
+  "status": "frozen_four_packets_two_admitted_two_rejected_one_simulator_comparison"
+}

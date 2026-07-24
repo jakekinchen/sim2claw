@@ -176,6 +176,13 @@ def _stage_observations(
     dual_camera_sources = [
         row for row in physical_sources if len(row.get("recording_feeds") or []) >= 2
     ]
+    hil_packets = [
+        row
+        for row in episodes
+        if row.get("proof_class") == "physical_hil_unloaded_joint_observation"
+    ]
+    admitted_hil = [row for row in hil_packets if row.get("status") == "passed"]
+    rejected_hil = [row for row in hil_packets if row.get("status") == "failed"]
     paired_physics = [
         row
         for row in physical_sources
@@ -192,9 +199,24 @@ def _stage_observations(
     training_lock = str(project.get("training_lock") or "closed")
     return {
         "capture": {
-            "status": "partial" if physical_sources else "missing",
-            "measure": f"{len(physical_sources)} physical sources · {len(dual_camera_sources)} dual-camera",
-            "proof": "recorded source evidence · not training-admitted",
+            "status": "partial" if physical_sources or hil_packets else "missing",
+            "measure": (
+                (
+                    f"{len(physical_sources)} physical sources · "
+                    f"{len(dual_camera_sources)} source dual-camera · "
+                    f"{len(hil_packets)} bounded HIL packets"
+                )
+                if hil_packets
+                else (
+                    f"{len(physical_sources)} physical sources · "
+                    f"{len(dual_camera_sources)} dual-camera"
+                )
+            ),
+            "proof": (
+                "recorded source + unloaded HIL evidence · not training-admitted"
+                if hil_packets
+                else "recorded source evidence · not training-admitted"
+            ),
             "missing": ["evaluator admission", "held-out consequence"],
             "detail": (
                 "Interactive loopback capture is available."
@@ -221,6 +243,7 @@ def _stage_observations(
             "measure": (
                 f"{len(episodes)} catalog episodes · {len(paired_physics)}/{len(physical_sources)} "
                 "physical sources physics-paired"
+                + (f" · {len(hil_packets)} HIL" if hil_packets else "")
             ),
             "proof": "separated real · visual-only · action-frozen physics lanes",
             "missing": [
@@ -233,10 +256,23 @@ def _stage_observations(
             "measure": (
                 f"{summary.get('passed_episodes', 0)} labeled passes / "
                 f"{summary.get('episodes', len(episodes))} catalog episodes"
+                + (
+                    f" · {len(admitted_hil)}/{len(hil_packets)} HIL admitted"
+                    if hil_packets
+                    else ""
+                )
             ),
             "proof": "receipt-scoped evaluator outcomes · non-comparable proof classes stay separate",
             "missing": ["strict physical held-outs", "complete consequence coverage"],
-            "detail": "Dense margins explain progress; frozen gates define acceptance.",
+            "detail": (
+                "Dense margins explain progress; frozen gates define acceptance."
+                + (
+                    f" HIL retained {len(admitted_hil)} admitted unloaded "
+                    f"measurement(s) and {len(rejected_hil)} rejected packet(s)."
+                    if hil_packets
+                    else ""
+                )
+            ),
         },
         "diagnose": {
             "status": "available" if sail_available else "unavailable",
@@ -255,6 +291,12 @@ def _stage_observations(
                 "Agents may read structured diagnosis; the evaluator retains scoring authority."
                 if sail_available
                 else "Diagnosis fails closed until the observatory receipt verifies."
+            )
+            + (
+                " The HIL shoulder candidate remains rejected; elbow coupling and "
+                "strict task consequence are next evidence prerequisites."
+                if hil_packets
+                else ""
             ),
         },
         "improve": {
@@ -320,6 +362,14 @@ def build_project_map(
         recorder_control_enabled=recorder_control_enabled,
         orchestrator_available=orchestrator_available,
     )
+    catalog_episodes = [
+        row for row in catalog.get("episodes", []) if isinstance(row, dict)
+    ]
+    hil_packets = [
+        row
+        for row in catalog_episodes
+        if row.get("proof_class") == "physical_hil_unloaded_joint_observation"
+    ]
     stages = []
     for declared in config["stages"]:
         observation = observations[declared["id"]]
@@ -348,6 +398,24 @@ def build_project_map(
             "agent_entrypoint": "GET /api/project-map",
         },
         "stages": stages,
+        "hil_evidence": {
+            "available": bool(hil_packets),
+            "proof_class": "physical_hil_unloaded_joint_observation",
+            "packets": len(hil_packets),
+            "admitted_unloaded_measurements": sum(
+                row.get("status") == "passed" for row in hil_packets
+            ),
+            "rejected_packets": sum(
+                row.get("status") == "failed" for row in hil_packets
+            ),
+            "task_score_changed": False,
+            "simulator_parameter_promoted": False,
+            "next_prerequisite": (
+                "elbow coupling plus strict task consequence"
+                if hil_packets
+                else "receipt-verified HIL publication"
+            ),
+        },
         "factory": factory,
         "authority": {
             **config["authority"],

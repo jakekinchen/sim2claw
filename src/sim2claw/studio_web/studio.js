@@ -2596,9 +2596,14 @@ function renderTwinFidelity(projection) {
 
   const hero = twinNode("section", `twin-summary is-${projection.evidence_status}`);
   const eyebrow = twinNode("div", "twin-summary-topline");
+  const actionBindingLabel = projection.episode.action_binding === "byte_identical_campaign_match"
+    ? "Action bytes matched"
+    : projection.episode.action_binding === "hash_bound_physical_packet"
+    ? "Packet action hash bound"
+    : "Replay evidence only";
   eyebrow.append(
     twinNode("span", "twin-proof", projection.episode.proof_label || projection.episode.proof_class),
-    twinNode("span", "twin-binding", projection.episode.action_binding === "byte_identical_campaign_match" ? "Action bytes matched" : "Replay evidence only"),
+    twinNode("span", "twin-binding", actionBindingLabel),
   );
   hero.append(
     eyebrow,

@@ -9,6 +9,7 @@ from urllib.request import urlopen
 from sim2claw.studio_server import create_server
 from sim2claw.studio_twin_fidelity import (
     DOMAIN_ORDER,
+    _hil_identifiability_projection,
     _overnight_calibration_projection,
     load_twin_fidelity_projection,
     project_twin_fidelity,
@@ -261,6 +262,114 @@ def _physical_episode() -> dict[str, object]:
     }
 
 
+def _hil_episode(packet_id: str, action_sha256: str = ACTION_SHA256) -> dict[str, object]:
+    return {
+        "id": f"hil-{packet_id}",
+        "title": packet_id,
+        "subtitle": "Bounded HIL packet",
+        "source_recording_id": packet_id,
+        "proof_class": "physical_hil_unloaded_joint_observation",
+        "proof_label": "Physical HIL",
+        "action_array_sha256": action_sha256,
+        "recording_feeds": [{"id": "overhead"}, {"id": "wrist"}],
+    }
+
+
+def _hil_bundle(
+    packet_id: str,
+    *,
+    admitted: bool,
+    failures: list[str] | None = None,
+) -> dict[str, object]:
+    failures = failures or []
+    return {
+        "publication": {
+            "proof_classes": [
+                "physical_hil_unloaded_joint_observation",
+                "derived_hil_joint_identifiability_evaluation",
+                "action_frozen_hil_simulator_comparison",
+            ],
+            "physical": {
+                "receipt_sha256": "1" * 64,
+            },
+            "simulator": {
+                "receipt_sha256": "2" * 64,
+            },
+        },
+        "publication_sha256": "3" * 64,
+        "evidence_receipt": {"receipt_digest": "4" * 64},
+        "packets": [
+            {
+                "packet_id": packet_id,
+                "event": {"evaluation_sha256": "5" * 64},
+                "raw": {"action_tensor_sha256": ACTION_SHA256},
+                "evaluation": {
+                    "admitted": admitted,
+                    "verdict": (
+                        "admit_unloaded_joint_measurement"
+                        if admitted
+                        else "reject_packet"
+                    ),
+                    "failures": failures,
+                    "evaluator_owner": "independent_hil_packet_evaluator",
+                },
+                "summary": {
+                    "packet_id": packet_id,
+                    "target_joint": (
+                        "shoulder_lift"
+                        if packet_id == "HIL-SHOULDER-LIFT-22"
+                        else "elbow_flex"
+                        if packet_id == "HIL-ELBOW-FLEX-22"
+                        else "wrist_flex"
+                        if packet_id == "HIL-WRIST-FLEX-30"
+                        else "gripper"
+                    ),
+                    "sample_count": 201,
+                    "requested_span_degrees": 22.0,
+                    "actual_span_degrees": 21.6,
+                    "failures": failures,
+                    "tracking": {
+                        "requested_to_actual_rmse": 1.3,
+                        "requested_to_actual_best_lag": {
+                            "lag_seconds": 0.15,
+                            "lag_aligned_rmse": 0.64,
+                        },
+                    },
+                    "current_raw": {"p95_absolute": 2.0, "maximum": 3.0},
+                    "safety": {"stall_warning_sample_count": 0},
+                    "cameras": {"wrist": {"status": "completed"}},
+                },
+            }
+        ],
+        "simulator": {
+            "raw_comparison": {
+                "baseline": {
+                    "metrics": {
+                        "aggregate_body_joint_rmse_degrees": 3.02,
+                    }
+                },
+                "candidate": {
+                    "metrics": {
+                        "aggregate_body_joint_rmse_degrees": 2.63,
+                    }
+                },
+            },
+            "evaluation": {
+                "evaluator_owner": "independent_cpu_fp32_hil_joint_response_evaluator",
+                "verdict": "diagnostic_shoulder_range_external_tie_or_loss_no_promotion",
+                "action_tensor_byte_identical": True,
+                "baseline_target_joint_rmse_degrees": 4.289,
+                "candidate_target_joint_rmse_degrees": 1.281,
+                "body_joint_rmse_regression_degrees": [0, -3.008, 0.511, 0, 0],
+                "target_improvement_gate_passed": True,
+                "non_target_regression_gate_passed": False,
+                "gripper_nonregression_gate_passed": True,
+            },
+            "receipt": {"receipt_digest": "6" * 64},
+        },
+    }
+
+
 def test_projection_orders_domains_and_keeps_missing_distinct_from_failed() -> None:
     projection = _live_projection()
     assert projection["available"] is True
@@ -278,6 +387,58 @@ def test_projection_orders_domains_and_keeps_missing_distinct_from_failed() -> N
     assert strict["observed"] is True
     assert "percentage" not in json.dumps(projection).lower()
     assert "score" not in projection
+
+
+def test_hil_gripper_projection_admits_only_unloaded_measurement() -> None:
+    projection = _hil_identifiability_projection(
+        _hil_episode("HIL-GRIPPER-05"),
+        _hil_bundle("HIL-GRIPPER-05", admitted=True),
+    )
+    assert projection["available"] is True
+    assert projection["evidence_status"] == (
+        "physical_measurement_admitted_no_task_authority"
+    )
+    statuses = {row["id"]: row["status"] for row in projection["domains"]}
+    assert statuses["kinematics"] == "observed"
+    assert statuses["contact_compliance"] == "missing"
+    assert statuses["task_ee_consequence"] == "missing"
+    assert projection["authority"]["simulator_promotion"] is False
+    assert "0/11" in projection["domains"][-1]["detail"]
+    assert "perfect simulation" not in json.dumps(projection).lower()
+
+
+def test_hil_shoulder_projection_reports_gain_and_failed_elbow_gate() -> None:
+    projection = _hil_identifiability_projection(
+        _hil_episode("HIL-SHOULDER-LIFT-22"),
+        _hil_bundle("HIL-SHOULDER-LIFT-22", admitted=True),
+    )
+    assert projection["domains"][1]["status"] == "failed"
+    assert projection["evaluator"]["gates"]["target_improvement"] is True
+    assert projection["evaluator"]["gates"]["non_target_nonregression"] is False
+    assert "candidate rejected" in projection["summary"]["label"].lower()
+    assert projection["intervention"]["action_bytes_unchanged"] is True
+    assert projection["evaluator"]["posterior_movement_permitted"] is False
+
+
+def test_hil_rejected_packet_and_action_mismatch_fail_closed() -> None:
+    rejected = _hil_identifiability_projection(
+        _hil_episode("HIL-ELBOW-FLEX-22"),
+        _hil_bundle(
+            "HIL-ELBOW-FLEX-22",
+            admitted=False,
+            failures=["stall_observed"],
+        ),
+    )
+    assert rejected["evidence_status"] == "physical_packet_rejected"
+    assert rejected["domains"][1]["status"] == "failed"
+    assert rejected["evaluator"]["admitted_evaluator_owned_evidence"] == 0
+    mismatch = _hil_identifiability_projection(
+        _hil_episode("HIL-GRIPPER-05", action_sha256="9" * 64),
+        _hil_bundle("HIL-GRIPPER-05", admitted=True),
+    )
+    assert mismatch["available"] is False
+    assert mismatch["reason"] == "hil_action_hash_mismatch"
+    assert mismatch["chain"] == []
 
 
 def test_terminal_negative_keeps_posterior_and_authority_closed() -> None:

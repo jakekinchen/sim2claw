@@ -148,6 +148,52 @@ def test_project_map_preserves_proof_lanes_and_missing_physics(
     assert stages["learn_transfer"]["agent"]["commands"] == []
 
 
+def test_project_map_exposes_hil_counts_without_upgrading_task_authority(
+    tmp_path: Path,
+) -> None:
+    catalog = _catalog()
+    catalog["episodes"] = [
+        *catalog["episodes"],
+        *[
+            {
+                "id": f"hil-{index}",
+                "proof_class": "physical_hil_unloaded_joint_observation",
+                "status": "passed" if index < 2 else "failed",
+                "recording_feeds": [{"id": "overhead"}, {"id": "wrist"}],
+            }
+            for index in range(4)
+        ],
+    ]
+    root = _fixture_root(tmp_path)
+    with (
+        patch("sim2claw.studio_project_map.build_catalog", return_value=catalog),
+        patch(
+            "sim2claw.studio_project_map.load_studio_observatory",
+            return_value=_sail(),
+        ),
+    ):
+        payload = build_project_map(
+            repo_root=root,
+            read_only=True,
+            recorder_control_enabled=False,
+            orchestrator_available=True,
+        )
+    stages = {row["id"]: row for row in payload["stages"]}
+    assert "4 bounded HIL packets" in stages["capture"]["measure"]
+    assert "2/4 HIL admitted" in stages["evaluate"]["measure"]
+    assert "shoulder candidate remains rejected" in stages["diagnose"]["detail"]
+    assert payload["hil_evidence"] == {
+        "available": True,
+        "proof_class": "physical_hil_unloaded_joint_observation",
+        "packets": 4,
+        "admitted_unloaded_measurements": 2,
+        "rejected_packets": 2,
+        "task_score_changed": False,
+        "simulator_parameter_promoted": False,
+        "next_prerequisite": "elbow coupling plus strict task consequence",
+    }
+
+
 def test_project_map_fails_closed_on_sail_or_factory_binding(
     tmp_path: Path,
 ) -> None:

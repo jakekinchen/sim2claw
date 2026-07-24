@@ -13,6 +13,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, BinaryIO, Iterable
 
+from .hil_publication import verify_hil_publication
+from .learning_factory_artifacts import sha256_file
 from .paths import REPO_ROOT
 from .studio_private_releases import (
     build_calibration_assets,
@@ -1164,6 +1166,214 @@ def _current_dual_camera_episodes(repo_root: Path) -> list[dict[str, Any]]:
     ]
 
 
+def _hil_identifiability_episodes(repo_root: Path) -> list[dict[str, Any]]:
+    """Project only the four receipt-verified HIL packets into Replay."""
+
+    try:
+        bundle = verify_hil_publication(repo_root=repo_root)
+    except (OSError, ValueError):
+        return []
+    publication = _as_mapping(bundle.get("publication"))
+    evidence_receipt = _as_mapping(bundle.get("evidence_receipt"))
+    titles = {
+        "HIL-GRIPPER-05": "HIL · empty gripper close / open",
+        "HIL-SHOULDER-LIFT-22": "HIL · shoulder-lift response",
+        "HIL-ELBOW-FLEX-22": "HIL · elbow-flex response",
+        "HIL-WRIST-FLEX-30": "HIL · wrist-flex response",
+    }
+    subtitles = {
+        "HIL-GRIPPER-05": "Admitted unloaded response · overhead + wrist",
+        "HIL-SHOULDER-LIFT-22": (
+            "Admitted physical span · simulator candidate rejected"
+        ),
+        "HIL-ELBOW-FLEX-22": "Rejected · stall evidence observed",
+        "HIL-WRIST-FLEX-30": "Rejected · wrist-camera coverage incomplete",
+    }
+    episodes: list[dict[str, Any]] = []
+    for sequence, packet in enumerate(bundle.get("packets") or [], start=41_000):
+        if not isinstance(packet, dict):
+            return []
+        packet_id = str(packet.get("packet_id") or "")
+        raw = _as_mapping(packet.get("raw"))
+        evaluation = _as_mapping(packet.get("evaluation"))
+        summary = _as_mapping(packet.get("summary"))
+        session = (repo_root / str(packet.get("session_relative") or "")).resolve()
+        if not session.is_relative_to(repo_root.resolve()):
+            return []
+        artifact_sha = _as_mapping(raw.get("artifact_sha256"))
+        cameras = _as_mapping(summary.get("cameras"))
+        overhead_metrics = _as_mapping(cameras.get("overhead"))
+        wrist_metrics = _as_mapping(cameras.get("wrist"))
+        overhead_path = session / "overhead_c922.mp4"
+        overhead_sha = artifact_sha.get("overhead_c922.mp4")
+        if (
+            overhead_metrics.get("status") != "completed"
+            or not overhead_path.is_file()
+            or sha256_file(overhead_path) != overhead_sha
+        ):
+            return []
+        overhead_duration = float(overhead_metrics.get("duration_seconds") or 0)
+        overhead_frames = int(overhead_metrics.get("frames") or 0)
+        feeds = [
+            {
+                "id": f"{packet_id.lower()}-overhead-c922",
+                "title": "Overhead C922",
+                "camera": "C922 Pro Stream Webcam",
+                "kind": "physical_hil_observation",
+                "role": "overhead_workspace",
+                "url": media_url(overhead_path, repo_root),
+                "window_start_seconds": 0,
+                "window_end_seconds": overhead_duration,
+                "display_rotation_degrees": 180,
+                "sha256": overhead_sha,
+                "diagnostic_only": True,
+                "metric_depth": False,
+            }
+        ]
+        wrist_browser = session / "wrist_d405.browser.mp4"
+        wrist_browser_sha = artifact_sha.get("wrist_d405.browser.mp4")
+        if (
+            wrist_metrics.get("status") == "completed"
+            and wrist_browser_sha
+            and wrist_browser.is_file()
+            and sha256_file(wrist_browser) == wrist_browser_sha
+        ):
+            feeds.append(
+                {
+                    "id": f"{packet_id.lower()}-wrist-d405",
+                    "title": "Wrist D405",
+                    "camera": "Intel RealSense D405 · display RGB only",
+                    "kind": "physical_hil_observation",
+                    "role": "wrist_gripper_upward",
+                    "url": media_url(wrist_browser, repo_root),
+                    "window_start_seconds": 0,
+                    "window_end_seconds": float(
+                        wrist_metrics.get("duration_seconds") or 0
+                    ),
+                    "display_rotation_degrees": 0,
+                    "sha256": artifact_sha.get("wrist_d405.mkv"),
+                    "browser_derivative_sha256": wrist_browser_sha,
+                    "diagnostic_only": True,
+                    "metric_depth": False,
+                }
+            )
+        lag = _as_mapping(
+            _as_mapping(summary.get("tracking")).get(
+                "requested_to_actual_best_lag"
+            )
+        )
+        current = _as_mapping(summary.get("current_raw"))
+        failures = [str(value) for value in evaluation.get("failures") or []]
+        admitted = evaluation.get("admitted") is True
+        episodes.append(
+            {
+                "id": f"{CURRENT_MEASUREMENT_TASK}:{packet_id}:hil",
+                "task_id": CURRENT_MEASUREMENT_TASK,
+                "title": titles.get(packet_id, packet_id),
+                "subtitle": subtitles.get(packet_id, "Bounded physical HIL packet"),
+                "sequence": sequence,
+                "status": "passed" if admitted else "failed",
+                "terminal_outcome": str(evaluation.get("verdict") or "reject_packet"),
+                "proof_class": "physical_hil_unloaded_joint_observation",
+                "proof_label": (
+                    "Physical HIL · unloaded measurement admitted"
+                    if admitted
+                    else "Physical HIL · evaluator rejected"
+                ),
+                "physical_authority": False,
+                "physical_task_success_verified": False,
+                "training_admission": False,
+                "promotion_authority": False,
+                "frame_count": overhead_frames,
+                "fps": (
+                    overhead_frames / overhead_duration
+                    if overhead_duration > 0
+                    else 0
+                ),
+                "duration_seconds": float(summary.get("duration_seconds") or 0),
+                "recorded_at": raw.get("created_at"),
+                "media": {
+                    "kind": "video",
+                    "url": feeds[0]["url"],
+                    "window_start_seconds": 0,
+                    "window_end_seconds": overhead_duration,
+                    "display_rotation_degrees": 180,
+                },
+                "recording_feeds": feeds,
+                "camera": (
+                    "dual_camera_overhead_and_wrist"
+                    if len(feeds) == 2
+                    else "overhead_only_wrist_evidence_unavailable"
+                ),
+                "metrics": [
+                    _metric(
+                        "Actual span",
+                        round(float(summary.get("actual_span_degrees") or 0), 2),
+                        unit="deg",
+                        tone="good" if admitted else "warning",
+                    ),
+                    _metric(
+                        "Best lag",
+                        round(float(lag.get("lag_seconds") or 0), 3),
+                        unit="s",
+                    ),
+                    _metric(
+                        "Lag-aligned RMSE",
+                        round(float(lag.get("lag_aligned_rmse") or 0), 3),
+                        unit="deg",
+                        tone="good" if admitted else "warning",
+                    ),
+                    _metric(
+                        "Current p95",
+                        current.get("p95_absolute"),
+                        unit="raw register",
+                        tone="warning" if failures else "neutral",
+                    ),
+                ],
+                "notes": (
+                    "This packet is an unloaded joint-response observation. It does "
+                    "not prove contact, pawn-task success, physical transfer, or "
+                    "training suitability. "
+                    + (
+                        "Evaluator admitted the bounded measurement."
+                        if admitted
+                        else "Evaluator rejected it: " + ", ".join(failures) + "."
+                    )
+                ),
+                "phases": [
+                    {"name": "Preregistered HIL action", "start": 0.0, "end": 1.0}
+                ],
+                "case_id": "bounded_hil_identifiability_packet",
+                "source_recording_id": packet_id,
+                "action_array_sha256": raw.get("action_tensor_sha256"),
+                "evidence_receipt": {
+                    "path": (
+                        str(
+                            _as_mapping(publication.get("physical")).get(
+                                "evidence_root"
+                            )
+                        )
+                        + "/receipt.json"
+                    ),
+                    "sha256": _as_mapping(publication.get("physical")).get(
+                        "receipt_sha256"
+                    ),
+                    "embedded_digest": evidence_receipt.get("receipt_digest"),
+                    "packet_evaluation_sha256": _as_mapping(packet.get("event")).get(
+                        "evaluation_sha256"
+                    ),
+                },
+                "missing_evidence": failures
+                + [
+                    "contact_state",
+                    "strict_task_consequence",
+                    "calibrated_force_or_current",
+                ],
+            }
+        )
+    return episodes
+
+
 def _verified_tracked_publication_replay(
     row: dict[str, Any],
     repo_root: Path,
@@ -1832,6 +2042,7 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         + _grasp_episodes(repo_root)
         + _teleop_episodes(repo_root)
         + _current_dual_camera_episodes(repo_root)
+        + _hil_identifiability_episodes(repo_root)
         + build_physical_release_episodes(repo_root, media_url)
     )
     episodes.sort(key=lambda row: (str(row["task_id"]), int(row["sequence"])))

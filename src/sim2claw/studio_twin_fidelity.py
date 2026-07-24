@@ -5,6 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from .hil_publication import (
+    load_hil_publication_binding,
+    verify_hil_publication,
+)
 from .paths import REPO_ROOT
 from .overnight_calibration_publication import (
     load_overnight_calibration_binding,
@@ -151,6 +155,502 @@ def _unavailable_projection(
             "status": "missing",
             "summary": "Restore the receipt-verified evidence projection.",
             "measurements": [],
+        },
+    }
+
+
+def _hil_identifiability_projection(
+    episode: Mapping[str, Any],
+    bundle: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Project a verified HIL packet without turning it into task proof."""
+
+    packet_id = str(episode.get("source_recording_id") or "")
+    packet = next(
+        (
+            row
+            for row in _as_rows(bundle.get("packets"))
+            if row.get("packet_id") == packet_id
+        ),
+        {},
+    )
+    if not packet:
+        return _unavailable_projection(
+            episode,
+            reason="hil_packet_not_in_publication",
+            detail="The selected HIL packet is not in the verified publication.",
+        )
+    raw = _as_mapping(packet.get("raw"))
+    evaluation = _as_mapping(packet.get("evaluation"))
+    summary = _as_mapping(packet.get("summary"))
+    selected_action = str(episode.get("action_array_sha256") or "")
+    packet_action = str(raw.get("action_tensor_sha256") or "")
+    if not selected_action or selected_action != packet_action:
+        return _unavailable_projection(
+            episode,
+            reason="hil_action_hash_mismatch",
+            detail=(
+                "Twin fidelity requires the selected Replay action hash to match "
+                "the verified HIL packet exactly; episode-ID fallback is prohibited."
+            ),
+        )
+    admitted = evaluation.get("admitted") is True
+    failures = [str(value) for value in evaluation.get("failures") or []]
+    tracking = _as_mapping(summary.get("tracking"))
+    lag = _as_mapping(tracking.get("requested_to_actual_best_lag"))
+    current = _as_mapping(summary.get("current_raw"))
+    safety = _as_mapping(summary.get("safety"))
+    cameras = _as_mapping(summary.get("cameras"))
+    wrist = _as_mapping(cameras.get("wrist"))
+    sim_bundle = _as_mapping(bundle.get("simulator"))
+    sim_raw = _as_mapping(sim_bundle.get("raw_comparison"))
+    sim_evaluation = _as_mapping(sim_bundle.get("evaluation"))
+    sim_receipt = _as_mapping(sim_bundle.get("receipt"))
+    baseline_metrics = _as_mapping(
+        _as_mapping(sim_raw.get("baseline")).get("metrics")
+    )
+    candidate_metrics = _as_mapping(
+        _as_mapping(sim_raw.get("candidate")).get("metrics")
+    )
+    is_shoulder = packet_id == "HIL-SHOULDER-LIFT-22"
+    is_elbow = packet_id == "HIL-ELBOW-FLEX-22"
+    is_wrist = packet_id == "HIL-WRIST-FLEX-30"
+    if is_shoulder:
+        kinematics_status = "failed"
+        kinematics_summary = (
+            "Physical span was admitted; the simulator candidate failed a "
+            "non-target gate"
+        )
+        kinematics_detail = (
+            "The unloaded shoulder response is a valid physical measurement. "
+            "Applying the pre-existing follower shoulder range reduced shoulder "
+            "RMSE, but elbow RMSE regressed beyond the frozen 0.25° ceiling. The "
+            "independent evaluator rejected the candidate and promoted nothing."
+        )
+    elif admitted:
+        kinematics_status = "observed"
+        kinematics_summary = "Bounded unloaded joint response was admitted"
+        kinematics_detail = (
+            "The packet met frozen motion, return, telemetry, and dual-camera "
+            "coverage gates. It identifies only this unloaded response."
+        )
+    elif is_elbow:
+        kinematics_status = "failed"
+        kinematics_summary = "Elbow packet failed the frozen stall gate"
+        kinematics_detail = (
+            "The action completed and returned, but six stall-warning samples "
+            "and elevated raw current made the packet inadmissible for fitting."
+        )
+    else:
+        kinematics_status = "failed"
+        kinematics_summary = "Wrist packet failed the frozen evidence gate"
+        kinematics_detail = (
+            "The motion trace completed, but D405 finalization failed. The "
+            "single-attempt packet remains rejected and was not retried."
+        )
+    kinematics_measurements = [
+        _measurement(
+            "Requested span",
+            value=summary.get("requested_span_degrees"),
+            unit="deg",
+            source="Preregistered HIL action tensor",
+        ),
+        _measurement(
+            "Physical span",
+            value=summary.get("actual_span_degrees"),
+            unit="deg",
+            source="Follower position telemetry",
+        ),
+        _measurement(
+            "Lag-aligned RMSE",
+            value=lag.get("lag_aligned_rmse"),
+            unit="deg",
+            source="Independent HIL packet evaluator",
+        ),
+    ]
+    if is_shoulder:
+        kinematics_measurements.extend(
+            [
+                _measurement(
+                    "Baseline shoulder RMSE",
+                    value=sim_evaluation.get(
+                        "baseline_target_joint_rmse_degrees"
+                    ),
+                    unit="deg",
+                    source="Action-identical CPU/fp32 simulator comparison",
+                ),
+                _measurement(
+                    "Candidate shoulder RMSE",
+                    value=sim_evaluation.get(
+                        "candidate_target_joint_rmse_degrees"
+                    ),
+                    unit="deg",
+                    source="Action-identical CPU/fp32 simulator comparison",
+                ),
+                _measurement(
+                    "Elbow RMSE regression",
+                    value=(
+                        sim_evaluation.get(
+                            "body_joint_rmse_regression_degrees", []
+                        )[2]
+                        if len(
+                            sim_evaluation.get(
+                                "body_joint_rmse_regression_degrees", []
+                            )
+                        )
+                        > 2
+                        else None
+                    ),
+                    unit="deg",
+                    source="Independent CPU/fp32 simulator evaluator",
+                    threshold=0.25,
+                    comparator="≤",
+                ),
+            ]
+        )
+    domains = [
+        _domain(
+            "geometry_scale",
+            status="missing",
+            summary="No metric scene or object geometry in this packet",
+            detail=(
+                "The cameras are diagnostic RGB views. They do not provide "
+                "metric depth, calibrated camera-to-gripper extrinsics, or object pose."
+            ),
+            missing_evidence=[
+                "metric_wrist_depth",
+                "camera_to_gripper_extrinsics",
+                "metric_object_pose",
+            ],
+        ),
+        _domain(
+            "kinematics",
+            status=kinematics_status,
+            summary=kinematics_summary,
+            detail=kinematics_detail,
+            measurements=kinematics_measurements,
+            missing_evidence=(
+                ["non_target_joint_nonregression", "strict_task_consequence"]
+                if is_shoulder
+                else failures
+            ),
+        ),
+        _domain(
+            "action_timing",
+            status="observed",
+            summary="A bounded command-to-position lag was measured",
+            detail=(
+                "Requested and actual position were aligned over the frozen 20 Hz "
+                "trace. The command-application timestamp remains unavailable."
+            ),
+            measurements=[
+                _measurement(
+                    "Best non-negative lag",
+                    value=lag.get("lag_seconds"),
+                    unit="s",
+                    source="Independent HIL packet evaluator",
+                ),
+                _measurement(
+                    "Raw requested-to-actual RMSE",
+                    value=tracking.get("requested_to_actual_rmse"),
+                    unit="deg",
+                    source="Follower position telemetry",
+                ),
+            ],
+            missing_evidence=["command_application_timestamp"],
+        ),
+        _domain(
+            "contact_compliance",
+            status="missing",
+            summary="Contact and compliance were not excited",
+            detail=(
+                "These are unloaded single-joint packets. They cannot identify "
+                "pawn contact, fingertip deformation, friction, or grasp retention."
+            ),
+            missing_evidence=[
+                "contact_state",
+                "force",
+                "deformation",
+                "pawn_trajectory",
+            ],
+        ),
+        _domain(
+            "actuator_load_path",
+            status="observed",
+            summary="Raw motor-current samples exist; force remains uncalibrated",
+            detail=(
+                "Fresh motor-register values were captured and are useful for "
+                "diagnosis, but they are not torque or contact-force measurements."
+            ),
+            measurements=[
+                _measurement(
+                    "Current p95 absolute",
+                    value=current.get("p95_absolute"),
+                    unit="raw register",
+                    source="Follower current telemetry · diagnostic only",
+                ),
+                _measurement(
+                    "Current maximum absolute",
+                    value=current.get("maximum"),
+                    unit="raw register",
+                    source="Follower current telemetry · diagnostic only",
+                ),
+                _measurement(
+                    "Stall-warning samples",
+                    value=safety.get("stall_warning_sample_count"),
+                    unit="samples",
+                    source="Guarded physical gateway",
+                    threshold=0,
+                    comparator="=",
+                ),
+            ],
+            missing_evidence=[
+                "current_zero_and_scale_calibration",
+                "current_to_torque_calibration",
+                "force",
+            ],
+        ),
+        _domain(
+            "task_ee_consequence",
+            status="missing",
+            summary="No pawn-task or strict EE consequence was evaluated",
+            detail=(
+                "Unloaded response evidence cannot change the 0/11 physical task "
+                "score or establish a sim-to-real task improvement."
+            ),
+            missing_evidence=[
+                "strict_task_consequence",
+                "physical_object_trajectory",
+                "physical_target_consequence",
+            ],
+        ),
+    ]
+    evaluator_detail = (
+        sim_evaluation.get("verdict")
+        if is_shoulder
+        else evaluation.get("verdict")
+    )
+    next_summary = (
+        "Measure elbow coupling under a separately preregistered safe protocol "
+        "before proposing another simulator family."
+        if is_shoulder or is_elbow
+        else "Capture calibrated force/current and strict pawn/EE consequence "
+        "before any task-level simulator claim."
+        if packet_id == "HIL-GRIPPER-05"
+        else "Repair D405 finalization, then preregister a new wrist packet; do "
+        "not reuse or reinterpret this rejected attempt."
+    )
+    publication = _as_mapping(bundle.get("publication"))
+    physical_binding = _as_mapping(publication.get("physical"))
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "available": True,
+        "evidence_status": (
+            "physical_measurement_admitted_no_task_authority"
+            if admitted
+            else "physical_packet_rejected"
+        ),
+        "episode": {
+            "id": episode.get("id"),
+            "title": episode.get("title"),
+            "subtitle": episode.get("subtitle"),
+            "action_sha256": packet_action,
+            "action_binding": "hash_bound_physical_packet",
+            "proof_class": [
+                episode.get("proof_class"),
+                *list(publication.get("proof_classes") or []),
+            ],
+            "proof_label": (
+                f"{episode.get('proof_label') or 'Physical HIL'} · "
+                "hash-bound action and evaluator"
+            ),
+        },
+        "summary": {
+            "label": (
+                "Unloaded measurement admitted · task authority closed"
+                if admitted and not is_shoulder
+                else "Physical span admitted · simulator candidate rejected"
+                if is_shoulder
+                else "Physical packet rejected · no fit admitted"
+            ),
+            "verdict": evaluator_detail,
+            "detail": (
+                kinematics_detail
+                + " No task score, posterior, training, promotion, or physical "
+                "transfer authority changed."
+            ),
+        },
+        "authority": dict(READ_ONLY_AUTHORITY),
+        "twin_worthiness": {
+            "level": "unloaded_joint_diagnostic_only",
+            "allowed_capabilities": ["read_only_diagnostics"],
+            "denied_capabilities": [
+                "simulator_parameter_promotion",
+                "task_score_change",
+                "training",
+                "physical_transfer",
+            ],
+            "verdict_owner": (
+                sim_evaluation.get("evaluator_owner")
+                if is_shoulder
+                else evaluation.get("evaluator_owner")
+            ),
+        },
+        "domains": domains,
+        "chain": [
+            {
+                "id": "observe",
+                "label": "Observe",
+                "status": "verified",
+                "detail": (
+                    f"{summary.get('sample_count')} samples · "
+                    f"{len(_as_rows(episode.get('recording_feeds')))} verified "
+                    "camera feed(s)"
+                ),
+            },
+            {
+                "id": "residual",
+                "label": "Residual",
+                "status": "verified",
+                "detail": (
+                    f"Lag-aligned target RMSE "
+                    f"{float(lag.get('lag_aligned_rmse') or 0):.3f}°"
+                ),
+            },
+            {
+                "id": "hypothesis",
+                "label": "Hypothesis",
+                "status": "retained" if admitted else "unresolved",
+                "detail": (
+                    "Pre-existing shoulder endpoint range mismatch"
+                    if is_shoulder
+                    else f"{summary.get('target_joint')} unloaded response"
+                ),
+            },
+            {
+                "id": "intervention",
+                "label": "Intervention",
+                "status": "executed_once",
+                "detail": (
+                    "Two action-identical simulator variants"
+                    if is_shoulder
+                    else "One preregistered physical packet · no retry"
+                ),
+            },
+            {
+                "id": "evaluator",
+                "label": "Evaluator",
+                "status": "failed" if (not admitted or is_shoulder) else "admitted",
+                "detail": str(evaluator_detail),
+            },
+            {
+                "id": "posterior_consequence",
+                "label": "Posterior / consequence",
+                "status": "missing",
+                "detail": "No posterior movement and no strict task consequence",
+            },
+        ],
+        "hypotheses": [
+            {
+                "id": (
+                    "preexisting_shoulder_endpoint_range"
+                    if is_shoulder
+                    else f"{summary.get('target_joint')}_unloaded_response"
+                ),
+                "family": (
+                    "Joint range and coupled response"
+                    if is_shoulder or is_elbow
+                    else "Unloaded actuator response"
+                ),
+                "before": None,
+                "after": None,
+                "status": (
+                    "measurement_admitted_candidate_rejected"
+                    if is_shoulder
+                    else "measurement_admitted"
+                    if admitted
+                    else "packet_rejected"
+                ),
+                "missing_observables": list(
+                    dict.fromkeys(failures + ["strict_task_consequence"])
+                ),
+            }
+        ],
+        "intervention": {
+            "selected": (
+                "follower_shoulder_lift_range_v1"
+                if is_shoulder
+                else packet_id
+            ),
+            "status": "executed_once",
+            "candidate_count": 2 if is_shoulder else 1,
+            "action_bytes_unchanged": (
+                sim_evaluation.get("action_tensor_byte_identical")
+                if is_shoulder
+                else True
+            ),
+        },
+        "evaluator": {
+            "verdict": evaluator_detail,
+            "consequence_status": "strict_task_consequence_unavailable",
+            "strict_task_and_ee_pass_count": None,
+            "candidate_count": 2 if is_shoulder else 1,
+            "admitted_evaluator_owned_evidence": 1 if admitted else 0,
+            "posterior_movement_permitted": False,
+            "observed_information_gain_bits": None,
+            "gates": (
+                {
+                    "target_improvement": sim_evaluation.get(
+                        "target_improvement_gate_passed"
+                    ),
+                    "non_target_nonregression": sim_evaluation.get(
+                        "non_target_regression_gate_passed"
+                    ),
+                    "gripper_nonregression": sim_evaluation.get(
+                        "gripper_nonregression_gate_passed"
+                    ),
+                }
+                if is_shoulder
+                else {
+                    "packet_admission": admitted,
+                    "wrist_video_completed": wrist.get("status") == "completed",
+                }
+            ),
+        },
+        "next_evidence": {
+            "status": "missing",
+            "intervention_id": (
+                "measurement_elbow_coupling"
+                if is_shoulder or is_elbow
+                else "measurement_force_and_task_consequence"
+                if packet_id == "HIL-GRIPPER-05"
+                else "measurement_wrist_camera_finalization"
+            ),
+            "summary": next_summary,
+            "measurements": list(summary.get("failures") or [])
+            + [
+                "calibrated_force_or_current",
+                "strict_task_consequence",
+            ],
+        },
+        "receipt": {
+            "verification": "verified",
+            "receipt_sha256": physical_binding.get("receipt_sha256"),
+            "receipt_digest": _as_mapping(bundle.get("evidence_receipt")).get(
+                "receipt_digest"
+            ),
+            "packet_evaluation_sha256": _as_mapping(packet.get("event")).get(
+                "evaluation_sha256"
+            ),
+            "simulator_receipt_sha256": (
+                _as_mapping(publication.get("simulator")).get("receipt_sha256")
+                if is_shoulder
+                else None
+            ),
+            "simulator_receipt_digest": (
+                sim_receipt.get("receipt_digest") if is_shoulder else None
+            ),
+            "publication_sha256": bundle.get("publication_sha256"),
         },
     }
 
@@ -1090,6 +1590,22 @@ def load_twin_fidelity_projection(
 
     resolved_root = repo_root.resolve()
     try:
+        hil_binding = load_hil_publication_binding(repo_root=resolved_root)
+    except (OSError, ValueError):
+        hil_binding = {}
+    if str(episode.get("source_recording_id") or "") in set(
+        hil_binding.get("packet_ids") or []
+    ):
+        try:
+            hil_bundle = verify_hil_publication(repo_root=resolved_root)
+        except (OSError, ValueError) as error:
+            return _unavailable_projection(
+                episode,
+                reason="hil_publication_unavailable",
+                detail=str(error),
+            )
+        return _hil_identifiability_projection(episode, hil_bundle)
+    try:
         calibration_binding = load_overnight_calibration_binding(
             repo_root=resolved_root
         )
@@ -1142,6 +1658,7 @@ __all__ = [
     "DOMAIN_ORDER",
     "SCHEMA_VERSION",
     "TwinFidelityError",
+    "_hil_identifiability_projection",
     "_overnight_calibration_projection",
     "load_twin_fidelity_projection",
     "project_twin_fidelity",

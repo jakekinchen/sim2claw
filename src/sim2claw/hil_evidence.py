@@ -208,15 +208,14 @@ def _packet_summary(
     }
 
 
-def compile_hil_evidence(
+def derive_hil_evidence_summary(
     campaign_root: Path,
-    output_root: Path,
     *,
     contract_path: Path,
 ) -> dict[str, Any]:
+    """Re-derive the evaluator-owned summary without writing artifacts."""
+
     campaign_root = campaign_root.resolve()
-    output_root = output_root.resolve()
-    _require(not output_root.exists(), "HIL evidence output already exists.")
     contract = load_hil_contract(contract_path)
     campaign_path = campaign_root / "campaign_state.json"
     try:
@@ -248,7 +247,7 @@ def compile_hil_evidence(
         for row in packet_summaries
         if not row["admitted"]
     ]
-    summary = {
+    return {
         "schema_version": SUMMARY_SCHEMA,
         "proof_class": "derived_hil_joint_identifiability_evaluation",
         "contract_id": contract["contract_id"],
@@ -288,6 +287,24 @@ def compile_hil_evidence(
             "physical_transfer": False,
         },
     }
+
+
+def compile_hil_evidence(
+    campaign_root: Path,
+    output_root: Path,
+    *,
+    contract_path: Path,
+) -> dict[str, Any]:
+    campaign_root = campaign_root.resolve()
+    output_root = output_root.resolve()
+    _require(not output_root.exists(), "HIL evidence output already exists.")
+    summary = derive_hil_evidence_summary(
+        campaign_root,
+        contract_path=contract_path,
+    )
+    campaign_path = campaign_root / "campaign_state.json"
+    admitted = list(summary["admitted_packet_ids"])
+    rejected = list(summary["rejected_packets"])
     output_root.mkdir(parents=True)
     summary_path = output_root / "summary.json"
     atomic_write_json(summary_path, summary)
