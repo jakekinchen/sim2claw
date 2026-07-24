@@ -298,6 +298,16 @@ def build_parser() -> argparse.ArgumentParser:
     physical_measurement.add_argument("--samples", type=int, default=30)
     physical_measurement.add_argument("--interval-seconds", type=float, default=0.25)
 
+    empty_gripper = subparsers.add_parser(
+        "empty-gripper-diagnose",
+        help=(
+            "derive a hash-bound, non-promoting empty-gripper diagnostic "
+            "without robot or simulator execution"
+        ),
+    )
+    empty_gripper.add_argument("--config", type=Path, required=True)
+    empty_gripper.add_argument("--output", type=Path, required=True)
+
     physical_replay = subparsers.add_parser(
         "physical-replay",
         help="replay one finalized physical command trace through the guarded follower",
@@ -1053,6 +1063,22 @@ def main(argv: Sequence[str] | None = None) -> int:
             sample_count=args.samples,
             sample_interval_seconds=args.interval_seconds,
         )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "empty-gripper-diagnose":
+        from .empty_gripper_diagnostic import (
+            EmptyGripperDiagnosticError,
+            derive_empty_gripper_diagnostic,
+        )
+
+        try:
+            report = derive_empty_gripper_diagnostic(
+                args.output,
+                contract_path=args.config,
+            )
+        except EmptyGripperDiagnosticError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
     if args.command == "physical-replay":

@@ -1,5 +1,32 @@
 # Orchestration Ledger
 
+## Active bounded transaction — overnight dual-camera simulator calibration
+
+- Owner objective: spend up to three hours cleaning and integrating the new
+  dual-camera/fresh-current observation, calibrating it against the current
+  simulator only where exact-action evidence permits, and pursuing measurable
+  sim-to-real gap reductions.
+- Window: `2026-07-24T00:16:30-05:00` through
+  `2026-07-24T03:16:30-05:00`.
+- Baseline: local `main@b4d3b51515fd97b0704d965b554d6abdb9de0ecc`,
+  twelve commits ahead of `origin/main@694fa5a4372056fa1484711053f2d340e2044232`.
+- Source: immutable recording `20260724T050132Z-02baf745`; 911 rows, 1,625
+  C922 frames, 270 D405 browser frames, six observed excursions, zero stale
+  current rows, and a mismatched `full_episode / success / C2→C1` raw label.
+- Proof target: deterministic derived cycle diagnostic plus exact current
+  simulator binding. Raw relabelling, hidden cycle deletion, action clipping,
+  unattended motion, task-score change, training, promotion, paid compute,
+  push, and retained-C2 family expansion are closed.
+- Initial finding: cycles 2–6 show a consistent approximately 0.15-second
+  gripper lag, while cycle 1 is a higher-motion/approximately 0.4-second
+  conditioning-like outlier. Every command row exceeds at least one current
+  simulator control range, so exact-action simulator execution is initially
+  fail-closed at zero replays.
+- GPT-5.6 role: requested technical critic only; browser session currently
+  awaits owner sign-in and cannot score or promote local evidence.
+- Goal:
+  `docs/autonomous-workflow/goal-loop-overnight-dual-camera-sim-calibration.md`.
+
 ## Active transaction — current 100 mm physical measurement and calibration
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on clean `main`; sole

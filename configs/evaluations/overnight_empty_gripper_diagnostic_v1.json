@@ -1,0 +1,82 @@
+{
+  "schema_version": "sim2claw.overnight_empty_gripper_diagnostic_contract.v1",
+  "contract_id": "overnight-empty-gripper-diagnostic-20260724-v1",
+  "status": "frozen_before_derived_materialization",
+  "goal": "docs/autonomous-workflow/goal-loop-overnight-dual-camera-sim-calibration.md",
+  "source": {
+    "recording_directory": "datasets/manipulation_source_recordings/c2-to-c1__20260724T050132Z-02baf745",
+    "recording_id": "20260724T050132Z-02baf745",
+    "expected_mode": "physical_follower",
+    "expected_proof_class": "physical_teleoperation_source_unqualified",
+    "expected_raw_label": {
+      "skill": "full_episode",
+      "outcome_label": "success",
+      "source_square": "c2",
+      "destination_square": "c1"
+    },
+    "artifacts_sha256": {
+      "draft_state.json": "a6aac46f241939f70a34a0e76ae3e303c7d6adbc6c9dc2f40e3711e520e20dcb",
+      "evaluator_privileged_state.jsonl": "063f5bc345bec13b70484f2aad66217c2919405b1cb56b108609360f3d1b6d4c",
+      "initial_evaluator_privileged_state.json": "c494366cddff14361437dfcc5c11eac364541dcffaae5c747b9df77b936fa98d",
+      "overhead_c922.ffmpeg.log": "24613c624ef3dd6eeb9e9371ecfc1d526349dc07d5fcba8563d1bfcfa7db6544",
+      "overhead_c922.mp4": "3072f4dc07acbb98ac324d48843c9fc8c44ddb22ff2c13570cab0e09402bf134",
+      "overhead_video.json": "d1e89b64027196f24180b798347022e58e64f2057e256a341fa799d9078bb056",
+      "recording_receipt.json": "a21010b200c2ea91d741a56f4400136a52e7ca327ea61b2d656bf92a7754ee05",
+      "samples.jsonl": "334ea676f4c2a48a22fd039ef2911946f608fdbfe293cea4383dba88f59da254",
+      "wrist_d405.browser.mp4": "e6de4b9e6a748ac1994516501c64979253f9c41918681c39cfcb58f6f325b425",
+      "wrist_d405.ffmpeg.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrist_d405.mkv": "70db9227ff7bd72e7eecd1f2031d624c937bfdb529b151c4762ea1b33003401c",
+      "wrist_video.json": "095619ecfd79363da6d3b3caf1685d165b402ce0234722e49e5624f28a06e350"
+    }
+  },
+  "segmentation": {
+    "signal": "follower_requested_degrees[5]",
+    "low_threshold_degrees": 10.0,
+    "high_threshold_degrees": 90.0,
+    "analysis_margin_seconds": 1.0,
+    "lag_search_min_seconds": 0.0,
+    "lag_search_max_seconds": 0.5,
+    "expected_observed_excursions": 6,
+    "owner_intended_excursions": 5,
+    "owner_intended_sensitivity_cycle_ids": [2, 3, 4, 5, 6],
+    "sensitivity_view_is_retrospective_and_non_promoting": true
+  },
+  "measurement_gates": {
+    "require_zero_assistance": true,
+    "require_zero_interventions": true,
+    "require_nonstale_current_rows": true,
+    "maximum_stable_cycle_body_peak_to_peak_degrees": 6.0,
+    "maximum_stable_cycle_gripper_lag_seconds": 0.25,
+    "procedure_count_must_match_for_measurement_admission": true
+  },
+  "simulator_binding": {
+    "scene_source": "src/sim2claw/scene.py",
+    "scene_source_sha256": "01366394bb10cc789956e59965b32b3f8d009df5ccba9390894b139b02639206",
+    "replay_source": "src/sim2claw/physical_sim_replay.py",
+    "replay_source_sha256": "4ab0cba06d4ea7c244aaeef6c1423a89ea6f1b762a308cdd3c4b95c9bce5b98d",
+    "action_dtype": "float64",
+    "action_field": "follower_command_degrees",
+    "action_mutation_allowed": false,
+    "preclip_allowed": false,
+    "simulator_replays_maximum": 1,
+    "candidate_variants": 0,
+    "execute_only_if_every_action_is_within_declared_ctrlrange": true
+  },
+  "unavailable_observables": [
+    "contact_force",
+    "load_or_deformation_sensor",
+    "metric_wrist_depth",
+    "camera_to_gripper_extrinsics",
+    "metric_object_pose",
+    "strict_task_consequence"
+  ],
+  "authority": {
+    "physical_motion": false,
+    "physical_capture": false,
+    "simulator_parameter_promotion": false,
+    "training": false,
+    "policy_promotion": false,
+    "task_score_change": false,
+    "provider_advice_is_evaluator_evidence": false
+  }
+}

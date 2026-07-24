@@ -2,6 +2,22 @@
 
 Status: `CURRENT 100 MM MEASUREMENT ACTIVE; DUAL-CAMERA C2-TO-C1 NEGATIVE RECORDED; TASK SCORE 0/11`
 
+## Active overnight dual-camera simulator calibration
+
+For the three-hour window ending `2026-07-24T03:16:30-05:00`, convert the
+new dual-camera, fresh-current empty-gripper recording into a deterministic
+derived diagnostic and bind its exact command tensor to the current simulator.
+The authoritative bounded prompt is
+[`docs/autonomous-workflow/goal-loop-overnight-dual-camera-sim-calibration.md`](docs/autonomous-workflow/goal-loop-overnight-dual-camera-sim-calibration.md).
+
+The raw recording remains immutable and unqualified. Six excursions are
+visible even though five were intended. All six must remain reported, unknown
+force/depth/contact channels remain unknown, and any exact-action simulator
+range failure causes abstention rather than clipping. GPT-5.6 Pro may advise
+the methodology after browser sign-in, but it has no evidence or promotion
+authority. No unattended robot motion, task-score change, training, simulator
+promotion, paid compute, push, or new retained-C2 family is authorized.
+
 ## Active current-workcell measurement and calibration
 
 Collect the independently synchronized current-100 mm evidence required by the
