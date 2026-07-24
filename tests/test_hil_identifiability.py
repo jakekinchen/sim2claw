@@ -22,6 +22,12 @@ CONTRACT = (
     / "evaluations"
     / "current_100mm_hil_identifiability_v1.json"
 )
+CONTRACT_V2 = (
+    REPO_ROOT
+    / "configs"
+    / "evaluations"
+    / "current_100mm_hil_multilevel_v2.json"
+)
 START = np.asarray([-4.0, -106.0, 100.0, -10.0, -95.0, 2.0])
 
 
@@ -50,14 +56,62 @@ def test_all_four_packets_are_deterministic_and_return_byte_exactly() -> None:
     assert len(hashes) == 4
 
 
+def test_v2_covers_all_six_joints_and_returns_byte_exactly() -> None:
+    contract = load_hil_contract(CONTRACT_V2)
+    assert [row["target_joint"] for row in contract["packets"]] == [
+        "shoulder_pan",
+        "shoulder_lift",
+        "elbow_flex",
+        "wrist_flex",
+        "wrist_roll",
+        "gripper",
+    ]
+    hashes: set[str] = set()
+    for packet in contract["packets"]:
+        timestamps, actions = materialize_packet_actions(
+            contract,
+            packet["packet_id"],
+            START,
+        )
+        repeated_timestamps, repeated_actions = materialize_packet_actions(
+            contract,
+            packet["packet_id"],
+            START,
+        )
+        joint_index = contract["action_materialization"]["joint_order"].index(
+            packet["target_joint"]
+        )
+        assert np.array_equal(timestamps, repeated_timestamps)
+        assert np.array_equal(actions, repeated_actions)
+        assert np.array_equal(actions[0], START)
+        assert np.array_equal(actions[-1], START)
+        assert np.max(actions[:, joint_index]) - np.min(
+            actions[:, joint_index]
+        ) >= packet["required_position_span"]
+        untouched = [index for index in range(6) if index != joint_index]
+        assert np.array_equal(
+            actions[:, untouched],
+            np.repeat(START[None, untouched], actions.shape[0], axis=0),
+        )
+        hashes.add(action_tensor_sha256(actions))
+    assert len(hashes) == 6
+
+
 def _write_video_report(path: Path, *, fps: int, duration: float) -> None:
+    frames = round(fps * duration)
     path.write_text(
         json.dumps(
             {
                 "status": "completed",
                 "observed_video": {
-                    "streams": [{"nb_frames": str(round(fps * duration))}],
+                    "streams": [{"nb_frames": str(frames)}],
                     "format": {"duration": str(duration)},
+                    "container_timing": {
+                        "schema_version": "sim2claw.video_container_timing.v1",
+                        "status": "observed_container_timing",
+                        "frame_count": frames,
+                        "inferred_missing_frame_intervals": 0,
+                    },
                 },
             }
         ),
@@ -65,9 +119,13 @@ def _write_video_report(path: Path, *, fps: int, duration: float) -> None:
     )
 
 
-def _packet_fixture(root: Path) -> tuple[Path, Path]:
-    contract = load_hil_contract(CONTRACT)
-    packet_id = "HIL-GRIPPER-05"
+def _packet_fixture(
+    root: Path,
+    *,
+    contract_path: Path = CONTRACT,
+    packet_id: str = "HIL-GRIPPER-05",
+) -> tuple[Path, Path]:
+    contract = load_hil_contract(contract_path)
     timestamps, actions = materialize_packet_actions(contract, packet_id, START)
     session = root / packet_id
     source = session / "source"
@@ -206,3 +264,29 @@ def test_evaluator_uses_verified_wrist_derivative_frame_count(tmp_path: Path) ->
     evaluation = evaluate_hil_packet(raw_path, CONTRACT)
     assert evaluation["admitted"] is True
     assert evaluation["camera_metrics"]["wrist"]["frames"] == 1000
+
+
+def test_v2_evaluator_fails_closed_without_wrist_container_timing(
+    tmp_path: Path,
+) -> None:
+    raw_path, _ = _packet_fixture(
+        tmp_path,
+        contract_path=CONTRACT_V2,
+        packet_id="HIL2-GRIPPER-MULTILEVEL",
+    )
+    wrist_path = raw_path.parent / "wrist_video.json"
+    wrist = json.loads(wrist_path.read_text(encoding="utf-8"))
+    wrist["observed_video"].pop("container_timing")
+    wrist_path.write_text(json.dumps(wrist), encoding="utf-8")
+
+    evaluation = evaluate_hil_packet(raw_path, CONTRACT_V2)
+
+    assert evaluation["admitted"] is False
+    assert "wrist_container_timing_unavailable" in evaluation["failures"]
+    assert "wrist_container_timing_gap_fraction_failed" in evaluation["failures"]
+    assert (
+        evaluation["camera_metrics"]["wrist"][
+            "inferred_missing_frame_interval_fraction"
+        ]
+        is None
+    )

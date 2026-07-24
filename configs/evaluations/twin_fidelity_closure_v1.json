@@ -1,0 +1,100 @@
+{
+  "schema_version": "sim2claw.twin_fidelity_closure_contract.v1",
+  "contract_id": "current-100mm-twin-fidelity-closure-v1",
+  "status": "frozen_before_measurement_readiness_implementation",
+  "purpose": "Define perfect as six of six evaluator-owned fidelity domains passing without an unknown required observable.",
+  "domain_order": [
+    "geometry_scale",
+    "kinematics",
+    "action_timing",
+    "contact_compliance",
+    "actuator_load_path",
+    "task_ee_consequence"
+  ],
+  "completion": {
+    "required_domain_count": 6,
+    "required_pass_count": 6,
+    "allow_weighted_percentage": false,
+    "allow_unknown_as_zero": false,
+    "allow_partial_as_pass": false
+  },
+  "domains": {
+    "geometry_scale": {
+      "label": "Geometry / scale",
+      "required_observables": [
+        "metric_board_to_robot_registration",
+        "metric_object_pose",
+        "camera_to_gripper_extrinsics"
+      ],
+      "pass_rule": "all required observables are calibrated, receipt-bound, and independently evaluated"
+    },
+    "kinematics": {
+      "label": "Kinematics",
+      "required_observables": [
+        "all_six_joint_channels",
+        "three_or_more_distributed_levels_per_joint",
+        "two_or_more_command_speeds_per_joint",
+        "two_or_more_clean_traversals_per_direction"
+      ],
+      "minimum_admitted_joint_channels": 6,
+      "pass_rule": "all excitation and held-out joint residual gates pass"
+    },
+    "action_timing": {
+      "label": "Action / timing",
+      "required_observables": [
+        "requested_and_applied_action_identity",
+        "actuator_application_or_ack_timestamp",
+        "device_synchronized_position_and_current_time",
+        "camera_container_timing",
+        "camera_exposure_or_device_time"
+      ],
+      "pass_rule": "the common-clock timing evaluator passes with no inferred timestamp substitution"
+    },
+    "contact_compliance": {
+      "label": "Contact / compliance",
+      "required_observables": [
+        "calibrated_contact_force",
+        "deformation",
+        "contact_state",
+        "known_loaded_and_unloaded_trials"
+      ],
+      "pass_rule": "the held-out contact mechanism and consequence gates pass"
+    },
+    "actuator_load_path": {
+      "label": "Actuator / load path",
+      "required_observables": [
+        "calibrated_current_zero_and_scale",
+        "current_to_torque_provenance",
+        "known_load_trials",
+        "repeat_reference_reset_trials"
+      ],
+      "pass_rule": "load-response parameters and non-target consequences pass held-out evaluation"
+    },
+    "task_ee_consequence": {
+      "label": "Task / EE consequence",
+      "required_observables": [
+        "metric_target_piece_trajectory",
+        "end_effector_trajectory",
+        "strict_pawn_task_consequence"
+      ],
+      "required_strict_passes": 11,
+      "required_strict_trials": 11,
+      "pass_rule": "all frozen strict task and end-effector consequence gates pass"
+    }
+  },
+  "inputs": {
+    "hil_publication": "configs/evaluations/current_100mm_hil_publication_v1.json",
+    "sail_live_receipt": "outputs/sail/live-operator-c2-adapter-v1/receipt.json"
+  },
+  "proof_boundary": "Measurement-readiness and closure accounting only. This contract does not promote a simulator, policy, task score, physical capability, or training row.",
+  "authority": {
+    "physical_capture": false,
+    "robot_motion": false,
+    "simulator_replay": false,
+    "simulator_parameter_promotion": false,
+    "task_score_change": false,
+    "training": false,
+    "provider_calls": false,
+    "paid_compute": false
+  }
+}

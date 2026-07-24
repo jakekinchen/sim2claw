@@ -868,3 +868,40 @@ goal. External provider campaigns and spending remain separately gated.
   selecting none and asserting no physical cause. GOLD-05 passed, 0/256 clean
   seeded cases falsely triggered, 48 SAIL tests and the uninterrupted
   668-test/328-subtest broad suite passed. P1-06 opened.
+- 2026-07-24T07:52:59-05:00 — Owner opened a new bounded Twin fidelity closure
+  transaction. “Perfect” is frozen as six of six evaluator-owned domains
+  passing with no required unknown, not a visual or synthetic percentage.
+  Baseline is clean `main@1859ee2`; frozen HIL campaign `b364aae6` remains
+  four attempts and S2 campaign `9d305db1` remains one event/four replays/zero
+  trials. The first slice is software-only container-timing observability plus
+  a fail-closed Studio/agent closure matrix. Motion, capture, simulator replay,
+  training, promotion, provider, paid-compute, and push authority remain closed.
+- 2026-07-24T08:00:00-05:00 — Owner explicitly authorized any physical tests
+  needed for Twin fidelity closure and guaranteed the workcell is clear.
+  Capture and bounded gateway motion are owner-authorized; execution remains
+  fail-closed until each packet is preregistered and passes exact identity,
+  torque-off, start-envelope, dual-camera, controlled-return, attempt-budget,
+  and independent evaluator gates. No blanket simulator, training, promotion,
+  provider, paid-compute, or push authority was inferred.
+- 2026-07-24T08:13:31-05:00 — The first closure slice reached its pre-motion
+  freeze: the evaluator reports `0 / 6` required domains with no weighted
+  percentage; future C922/D405 files gain explicitly container-only timing
+  diagnostics; and Studio exposes the same receipt-verified matrix. SAIL
+  observatory receipt `0fd31a2c...` and publication receipt `1e230715...`
+  rebind the frozen product compiler while preserving the observatory manifest
+  and publication package byte-identically. Multilevel HIL v2 contract
+  `8dbe616e...` freezes six ordered, one-attempt joint packets with zero
+  attempts/retries consumed. Focused gate: 52 passed. Frozen HIL `b364aae6`
+  and all 11 S2 hashes remain unchanged; hardware execution waits for a scoped
+  preregistration commit and live identity/envelope/torque-off preflight.
+- 2026-07-24T08:37:00-05:00 — Owner requested last night's advancements be
+  centralized separately. The already-committed 33-commit overnight chain was
+  audited as a clean fast-forward and pushed by itself:
+  `origin/main 694fa5a..1859ee2`; no current Twin-closure file was included.
+  The first current full suite completed `1093 passed / 3 skipped / 328
+  subtests` with one fail-closed Learning Factory project-state identity
+  mismatch. The single declared project-state SHA was rebound to finalized
+  state `935ca060...`; the exact LF00–LF13 component test then passed `1 / 1`.
+  The replacement full suite passed `1094 / 1094`, with three expected skips
+  and 328 subtests, in `1319.70 s`. The current patch is eligible for a
+  separate preregistration commit before live hardware preflight.

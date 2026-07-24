@@ -31,3 +31,15 @@ def test_wrist_recorder_uses_exact_low_bandwidth_d405_contract(
         "-f",
         "matroska",
     ]
+    assert recorder._browser_encoder_args() == [
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "23",
+        "-pix_fmt",
+        "yuv420p",
+        "-movflags",
+        "+faststart",
+    ]

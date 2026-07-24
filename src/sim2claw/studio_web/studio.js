@@ -2594,6 +2594,57 @@ function renderTwinFidelity(projection) {
     return;
   }
 
+  const closure = twinNode("section", "twin-closure");
+  const closureReport = projection.closure;
+  if (closureReport?.available) {
+    const passed = closureReport.closure?.passed_required_domains ?? 0;
+    const required = closureReport.closure?.required_domain_count ?? 6;
+    const heading = twinNode("header", "twin-section-heading");
+    const headingCopy = twinNode("div");
+    headingCopy.append(
+      twinNode("span", "section-label", "Evaluator closure"),
+      twinNode("h3", "", `${passed} / ${required} domains closed`),
+    );
+    heading.append(
+      headingCopy,
+      twinNode("small", "", "Explicit denominator · no weighted percentage"),
+    );
+    closure.append(
+      heading,
+      twinNode(
+        "p",
+        "twin-closure-copy",
+        closureReport.perfect
+          ? "Every required domain passed its receipt-bound evaluator gate."
+          : "Perfect remains blocked until every required domain passes with no required unknown.",
+      ),
+    );
+    const closureList = twinNode("ol", "twin-closure-list");
+    (closureReport.domains || []).forEach((domain) => {
+      const row = twinNode("li", `is-${domain.status}`);
+      row.append(
+        twinNode("span", "", domain.label),
+        twinNode("b", "", formatIdentifier(domain.status)),
+        twinNode(
+          "small",
+          "",
+          domain.missing_evidence?.length
+            ? `${domain.missing_evidence.length} prerequisite${domain.missing_evidence.length === 1 ? "" : "s"} open`
+            : domain.detail,
+        ),
+      );
+      closureList.append(row);
+    });
+    closure.append(closureList);
+  } else {
+    closure.classList.add("is-unavailable");
+    closure.append(
+      twinNode("span", "section-label", "Evaluator closure unavailable"),
+      twinNode("h3", "", "No project-level verdict"),
+      twinNode("p", "twin-closure-copy", closureReport?.detail || "Closure evidence failed verification."),
+    );
+  }
+
   const hero = twinNode("section", `twin-summary is-${projection.evidence_status}`);
   const eyebrow = twinNode("div", "twin-summary-topline");
   const actionBindingLabel = projection.episode.action_binding === "byte_identical_campaign_match"
@@ -2718,10 +2769,10 @@ function renderTwinFidelity(projection) {
   const authority = twinNode("footer", "twin-authority");
   authority.append(
     twinNode("span", "lock-icon"),
-    twinNode("p", "", "Read-only diagnostic surface. Training, promotion, physical capture, physical authority, and robot motion remain closed."),
+    twinNode("p", "", "Read-only diagnostic surface. Physical packets remain preregistered and gateway-gated; training, promotion, and autonomous motion remain closed."),
     twinNode("code", "", projection.receipt.receipt_sha256 ? `receipt ${projection.receipt.receipt_sha256.slice(0, 16)}…` : "receipt unavailable"),
   );
-  elements.twinFidelityContent.append(hero, map, chain, lower, authority);
+  elements.twinFidelityContent.append(closure, hero, map, chain, lower, authority);
 }
 
 async function loadTwinFidelity(episode) {

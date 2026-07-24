@@ -1,0 +1,235 @@
+{
+  "schema_version": "sim2claw.current_100mm_hil_identifiability.v2",
+  "contract_id": "current-100mm-hil-multilevel-20260724-v2",
+  "status": "preregistered_before_any_v2_physical_attempt",
+  "goal": "docs/autonomous-workflow/goal-loop-twin-fidelity-closure.md",
+  "baseline_commit": "1859ee22f0394ccc585600fe7df35e93eadf02be",
+  "owner_authority": {
+    "physical_tests_authorized": true,
+    "workcell_clear_guaranteed": true,
+    "workcell_clear_scope": "no_person_or_object_will_enter_the_chessboard_workcell_during_powered_packets",
+    "leader_arm_used_for_action_generation": false,
+    "authorization_does_not_grant_task_or_capability_authority": true
+  },
+  "hardware_identity": {
+    "leader_port": "/dev/cu.usbmodem5B3D0448141",
+    "follower_port": "/dev/cu.usbmodem5B3D0406411",
+    "leader_calibration_sha256": "732c6e862436dbbaf06c6afcd7ae81dc8341f09ca8d812170f48b371091a8339",
+    "follower_calibration_sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4",
+    "gateway_schema": "sim2claw.so101_physical_gateway.v2",
+    "lerobot_version": "0.6.0"
+  },
+  "camera_identity": {
+    "overhead_name": "C922 Pro Stream Webcam",
+    "overhead_mode": "640x480@30_nv12_rotated_180",
+    "wrist_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+    "wrist_mode": "424x240@5_uyvy422",
+    "wrist_metric_depth": false,
+    "camera_to_gripper_extrinsics_available": false
+  },
+  "action_materialization": {
+    "sample_hz": 20,
+    "dtype": "float64",
+    "joint_order": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "start_binding": "one_torque_off_follower_read_immediately_before_each_packet",
+    "non_target_joints": "captured_start_value",
+    "interpolation": "cubic_smoothstep",
+    "pre_hold_seconds": 2.0,
+    "post_return_hold_seconds": 3.0,
+    "adaptive_amplitude": false,
+    "post_result_suffix": false,
+    "action_assistance": false
+  },
+  "packets": [
+    {
+      "packet_id": "HIL2-SHOULDER-PAN-MULTILEVEL",
+      "target_joint": "shoulder_pan",
+      "segments": [
+        {"target_offset": 10.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 20.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 30.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 10.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 20.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 30.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.9, "hold_seconds": 0.4}
+      ],
+      "required_position_span": 24.0,
+      "hypothesis": "Level- and rate-dependent shoulder-pan lag is observable independently of gravity loading.",
+      "predicted_signature": "Increasing command rate increases absolute tracking lag without changing the return equilibrium."
+    },
+    {
+      "packet_id": "HIL2-SHOULDER-LIFT-MULTILEVEL",
+      "target_joint": "shoulder_lift",
+      "segments": [
+        {"target_offset": 10.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 20.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 30.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 10.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 20.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 30.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.9, "hold_seconds": 0.4}
+      ],
+      "required_position_span": 24.0,
+      "hypothesis": "Gravity-loaded shoulder-lift motion exposes direction, amplitude, and rate dependence that a single excursion cannot identify.",
+      "predicted_signature": "Fast positive excursions show larger lag and current response than slow excursions at the same level while returning within the frozen residual gate."
+    },
+    {
+      "packet_id": "HIL2-ELBOW-FLEX-MULTILEVEL",
+      "target_joint": "elbow_flex",
+      "segments": [
+        {"target_offset": -10.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": -20.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": -30.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": -10.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": -20.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": -30.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.9, "hold_seconds": 0.4}
+      ],
+      "required_position_span": 24.0,
+      "hypothesis": "Negative elbow excursions away from the live upper endpoint distinguish amplitude-dependent tracking from endpoint saturation.",
+      "predicted_signature": "Observed span increases monotonically with level and fast excursions increase lag without endpoint clipping."
+    },
+    {
+      "packet_id": "HIL2-WRIST-FLEX-MULTILEVEL",
+      "target_joint": "wrist_flex",
+      "segments": [
+        {"target_offset": 10.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 20.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 30.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 10.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 20.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 30.0, "ramp_seconds": 0.9, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.9, "hold_seconds": 0.4}
+      ],
+      "required_position_span": 24.0,
+      "hypothesis": "Multi-level wrist-flex motion separates deadband, lag, and return bias near the retained replay posture.",
+      "predicted_signature": "Small-level deadband and fast-rate lag, if present, appear without a shifted return equilibrium."
+    },
+    {
+      "packet_id": "HIL2-WRIST-ROLL-MULTILEVEL",
+      "target_joint": "wrist_roll",
+      "segments": [
+        {"target_offset": 15.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 30.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 45.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 2.0, "hold_seconds": 0.4},
+        {"target_offset": 15.0, "ramp_seconds": 1.2, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 1.2, "hold_seconds": 0.4},
+        {"target_offset": 30.0, "ramp_seconds": 1.2, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 1.2, "hold_seconds": 0.4},
+        {"target_offset": 45.0, "ramp_seconds": 1.2, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 1.2, "hold_seconds": 0.4}
+      ],
+      "required_position_span": 36.0,
+      "hypothesis": "Wrapped wrist-roll observations remain stable across multiple levels and rates.",
+      "predicted_signature": "Shortest-angle residual remains continuous and returns to the captured equilibrium after every level."
+    },
+    {
+      "packet_id": "HIL2-GRIPPER-MULTILEVEL",
+      "target_joint": "gripper",
+      "segments": [
+        {"target_offset": 15.0, "ramp_seconds": 1.5, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 1.5, "hold_seconds": 0.4},
+        {"target_offset": 30.0, "ramp_seconds": 1.5, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 1.5, "hold_seconds": 0.4},
+        {"target_offset": 45.0, "ramp_seconds": 1.5, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 1.5, "hold_seconds": 0.4},
+        {"target_offset": 15.0, "ramp_seconds": 0.8, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.8, "hold_seconds": 0.4},
+        {"target_offset": 30.0, "ramp_seconds": 0.8, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.8, "hold_seconds": 0.4},
+        {"target_offset": 45.0, "ramp_seconds": 0.8, "hold_seconds": 0.4},
+        {"target_offset": 0.0, "ramp_seconds": 0.8, "hold_seconds": 0.4}
+      ],
+      "required_position_span": 36.0,
+      "hypothesis": "Unloaded multilevel jaw motion estimates aperture deadband, lag, hysteresis, and current baseline without contact.",
+      "predicted_signature": "Observed aperture span increases with level; direction reversal exposes hysteresis; return residual stays within the gripper gate."
+    }
+  ],
+  "budget": {
+    "physical_packet_attempts": 6,
+    "successful_packet_target": 6,
+    "adaptive_retries": 0,
+    "replacement_packets": 0,
+    "provider_calls": 0,
+    "retained_c2_replays": 0,
+    "new_parameter_families_after_results": 0
+  },
+  "safe_return": {
+    "normal": "every level returns to captured start; final return holds three seconds before torque release",
+    "camera_or_evaluator_failure": "controlled return to captured start then hold three seconds if bus health allows",
+    "bus_or_position_feedback_failure": "release torque after bounded gateway retries because commanded hold cannot be verified",
+    "never_release_immediately_for_inferred_drop_only": true
+  },
+  "packet_admission": {
+    "exact_action_hash_required": true,
+    "device_and_calibration_identity_required": true,
+    "both_video_reports_completed": true,
+    "container_timing_required": true,
+    "overhead_frame_coverage_fraction_minimum": 0.9,
+    "wrist_frame_coverage_fraction_minimum": 0.9,
+    "overhead_inferred_missing_frame_interval_fraction_maximum": 0.05,
+    "wrist_inferred_missing_frame_interval_fraction_maximum": 0.1,
+    "current_refresh_coverage_fraction_minimum": 0.85,
+    "body_final_residual_degrees_maximum": 3.0,
+    "gripper_final_residual_maximum": 5.0,
+    "bus_retry_count_maximum": 3,
+    "stall_abort_allowed_as_admitted_success": false,
+    "return_to_start_required": true
+  },
+  "inference": {
+    "admitted_packets_only": true,
+    "fit_after_all_packets_are_terminal": true,
+    "no_post_result_threshold_change": true,
+    "no_visual_only_promotion": true,
+    "posterior_movement_requires_evaluator_owned_measurement": true,
+    "missing_or_rejected_packet_preserves_unknown_state": true
+  },
+  "simulator_evaluation": {
+    "action_bytes_identical_across_variants": true,
+    "cpu_fp32_evaluator_independent": true,
+    "fit_uses_admitted_packets_only": true,
+    "candidate_frozen_before_scoring": true,
+    "per_joint_non_regression_required": true,
+    "lower_rms_alone_is_diagnostic": true,
+    "task_score_change_allowed": false
+  },
+  "authority": {
+    "physical_packet_execution": true,
+    "unbounded_task_replay": false,
+    "training": false,
+    "promotion": false,
+    "provider": false,
+    "paid_compute": false,
+    "push": false
+  }
+}

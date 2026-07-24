@@ -1,6 +1,32 @@
 # sim2claw Goal
 
-Status: `FOUR-HOUR HIL EVIDENCE FROZEN; VERIFICATION ACTIVE; TASK SCORE 0/11`
+Status: `TWIN FIDELITY CLOSURE ACTIVE; HIL/S2 FROZEN; TASK SCORE 0/11`
+
+## Active evaluator-owned Twin fidelity closure
+
+“Perfect” is now an explicit six-domain evaluator verdict, not a visual
+impression or an unweighted percentage. Geometry/scale, kinematics,
+action/timing, contact/compliance, actuator/load path, and task/EE consequence
+must all pass frozen, receipt-bound gates on the same workcell and action
+identity. The authoritative prompt is
+[`docs/autonomous-workflow/goal-loop-twin-fidelity-closure.md`](docs/autonomous-workflow/goal-loop-twin-fidelity-closure.md).
+
+The first bounded slice now has deterministic future camera container-timing
+observability and a fail-closed `0 / 6` closure matrix shared by Studio and
+agents. The matrix keeps missing, partial, failed, and passed states distinct;
+it publishes no weighted percentage. The next packet family is frozen in
+`configs/evaluations/current_100mm_hil_multilevel_v2.json`: exactly six
+one-attempt unloaded packets, one per gateway joint, with multiple fixed
+levels and slow/fast traversals, exact returns, dual-camera coverage, and
+container-timing admission. It remains at `0 / 6` attempts until its code,
+contract, and proof bindings are committed.
+The owner now explicitly authorizes necessary physical tests and guarantees
+the workcell is clear. Each physical packet remains execution-blocked until
+its own preregistration, exact hardware/calibration, torque-off, start-envelope,
+dual-camera, controlled-return, and evaluator gates pass. The authorization
+does not reopen the rejected shoulder simulator candidate, training, promotion,
+provider, paid-compute, or public-release authority. The frozen four-packet
+HIL and eleven-file S2 evidence sets remain immutable.
 
 ## Active four-hour HIL identifiability loop
 

@@ -25,6 +25,10 @@ from .studio_catalog import build_catalog, open_media_token
 from .studio_live import LiveWorkspaceError, LiveWorkspaceService, MJPEG_BOUNDARY
 from .studio_project_map import StudioProjectMapError, build_project_map
 from .studio_twin_fidelity import load_twin_fidelity_projection
+from .twin_fidelity_closure import (
+    TwinFidelityClosureError,
+    evaluate_twin_fidelity_closure,
+)
 from .state_trace import build_scene_manifest
 from .task_orchestrator import TaskOrchestratorError, TaskOrchestratorService
 from .teleop_recording import (
@@ -321,12 +325,35 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                     HTTPStatus.NOT_FOUND,
                 )
                 return
-            self._send_json(
-                load_twin_fidelity_projection(
-                    episode,
-                    repo_root=self.server.repo_root,
-                )
+            projection = load_twin_fidelity_projection(
+                episode,
+                repo_root=self.server.repo_root,
             )
+            try:
+                projection["closure"] = evaluate_twin_fidelity_closure(
+                    repo_root=self.server.repo_root
+                )
+            except (
+                TwinFidelityClosureError,
+                OSError,
+                ValueError,
+                json.JSONDecodeError,
+            ) as error:
+                projection["closure"] = {
+                    "schema_version": "sim2claw.twin_fidelity_closure_report.v1",
+                    "available": False,
+                    "status": "unavailable",
+                    "perfect": False,
+                    "detail": str(error),
+                    "closure": {
+                        "passed_required_domains": 0,
+                        "required_domain_count": 6,
+                        "weighted_percentage": None,
+                        "unknown_counted_as_zero": False,
+                    },
+                    "domains": [],
+                }
+            self._send_json(projection)
             return
         if path == "/api/catalog":
             self._send_json(build_catalog(self.server.repo_root))

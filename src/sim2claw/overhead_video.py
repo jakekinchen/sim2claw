@@ -15,6 +15,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from .video_timing import VideoTimingError, probe_video_container_timing
+
 
 OVERHEAD_VIDEO_SCHEMA = "sim2claw.overhead_diagnostic_video.v1"
 WRIST_VIDEO_SCHEMA = "sim2claw.wrist_diagnostic_video.v1"
@@ -380,7 +382,24 @@ class OverheadVideoRecorder:
                 check=False,
             )
             if result.returncode == 0:
-                return json.loads(result.stdout)
+                observed = json.loads(result.stdout)
+                try:
+                    observed["container_timing"] = probe_video_container_timing(
+                        self.output_path,
+                        configured_fps=self.fps,
+                        ffprobe_path=self.ffprobe_path,
+                    )
+                except VideoTimingError as error:
+                    observed["container_timing"] = {
+                        "schema_version": "sim2claw.video_container_timing.v1",
+                        "status": "unavailable",
+                        "reason": str(error),
+                        "semantics": {
+                            "camera_exposure_timestamps": False,
+                            "device_synchronized": False,
+                        },
+                    }
+                return observed
         except (OSError, subprocess.TimeoutExpired, json.JSONDecodeError):
             pass
         return None
@@ -429,6 +448,23 @@ class WristVideoRecorder(OverheadVideoRecorder):
         # hardware-encoder work to the arm-control interval.
         return ["-c:v", "ffv1", "-level", "3", "-g", "1", "-f", "matroska"]
 
+    def _browser_encoder_args(self) -> list[str]:
+        # The browser derivative is produced only after acquisition is complete.
+        # Software x264 avoids the resource-dependent VideoToolbox failure seen
+        # in the prior HIL packet while leaving the lossless source untouched.
+        return [
+            "-c:v",
+            "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "23",
+            "-pix_fmt",
+            "yuv420p",
+            "-movflags",
+            "+faststart",
+        ]
+
     def finish(
         self,
         *,
@@ -461,14 +497,7 @@ class WristVideoRecorder(OverheadVideoRecorder):
                     "-i",
                     str(self.output_path),
                     "-an",
-                    "-c:v",
-                    "h264_videotoolbox",
-                    "-b:v",
-                    "2M",
-                    "-pix_fmt",
-                    "yuv420p",
-                    "-movflags",
-                    "+faststart",
+                    *self._browser_encoder_args(),
                     "-y",
                     str(self.browser_output_path),
                 ],

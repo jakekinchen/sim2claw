@@ -2540,5 +2540,48 @@
     "paid_training_authorized": false,
     "token_stored_in_repo": false
   },
+  "twin_fidelity_closure_transaction": {
+    "status": "multilevel_hil_preregistration_ready_for_commit",
+    "goal": "docs/autonomous-workflow/goal-loop-twin-fidelity-closure.md",
+    "baseline_commit": "1859ee22f0394ccc585600fe7df35e93eadf02be",
+    "required_domains": [
+      "geometry_scale",
+      "kinematics",
+      "action_timing",
+      "contact_compliance",
+      "actuator_load_path",
+      "task_ee_consequence"
+    ],
+    "required_domain_count": 6,
+    "passed_domain_count": 0,
+    "verdict": "not_perfect_missing_required_evidence",
+    "first_slice": "container_timing_and_fail_closed_closure_matrix_complete",
+    "closure_contract": "configs/evaluations/twin_fidelity_closure_v1.json",
+    "closure_contract_sha256": "4e387a7b2a9195e5e2e5167aeb6aed4be358883bb919fa14326fe36ab8c105f8",
+    "closure_report": "outputs/twin-fidelity-closure-v1/report.json",
+    "closure_report_sha256": "1a63345540a59cef5a81e72db984c2621600e33b6f5c3296f52085dceaef025f",
+    "closure_receipt_sha256": "2f3d07d51d2bdbafa2a9e5390949b8c9bbd0f3321520c9d1685084ed700e3e5a",
+    "multilevel_hil_contract": "configs/evaluations/current_100mm_hil_multilevel_v2.json",
+    "multilevel_hil_contract_sha256": "8dbe616efc5450e6a94115459b38d50f8aac959453a77db3a75d8baea80671bb",
+    "multilevel_hil_packet_count": 6,
+    "multilevel_hil_attempt_count": 0,
+    "multilevel_hil_retry_count": 0,
+    "studio_observatory_receipt_sha256": "0fd31a2c4612c33320e90d09f25448f8d86b3810a1aa681b3be08dc9319f0945",
+    "sail_publication_receipt_sha256": "1e2307155c493540bb8488fd52850468ac12d6c7579f6ab11c11cc2c302b8876",
+    "frozen_hil_campaign_sha256": "b364aae639bb753b58216177386aa6ae93d43dad5462c8dd1a3d33dd44330858",
+    "frozen_s2_campaign_sha256": "9d305db1e6bce6042536422c17e9ea70f1752255108cb23da77c5f302e120448",
+    "authority": {
+      "owner_authorized_physical_capture": true,
+      "owner_authorized_bounded_robot_motion": true,
+      "owner_workspace_clear_assertion": true,
+      "physical_packet_execution_admitted": false,
+      "simulator_replay": false,
+      "training": false,
+      "promotion": false,
+      "provider_calls": false,
+      "paid_compute": false,
+      "push": false
+    }
+  },
   "physical_authority": false
 }

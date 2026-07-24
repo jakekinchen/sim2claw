@@ -35,6 +35,7 @@ from .teleop_recording import RECEIPT_SCHEMA, physical_gateway_preflight
 
 
 CONTRACT_SCHEMA = "sim2claw.current_100mm_hil_identifiability.v1"
+CONTRACT_SCHEMA_V2 = "sim2claw.current_100mm_hil_identifiability.v2"
 RAW_RECEIPT_SCHEMA = "sim2claw.current_100mm_hil_raw_packet.v1"
 EVALUATION_SCHEMA = "sim2claw.current_100mm_hil_packet_evaluation.v1"
 CAMPAIGN_SCHEMA = "sim2claw.current_100mm_hil_campaign.v1"
@@ -85,22 +86,64 @@ def load_hil_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
         contract = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
         raise HILIdentifiabilityError(f"HIL contract is unreadable: {error}") from error
-    if contract.get("schema_version") != CONTRACT_SCHEMA:
+    schema = contract.get("schema_version")
+    if schema not in {CONTRACT_SCHEMA, CONTRACT_SCHEMA_V2}:
         raise HILIdentifiabilityError("HIL contract schema is unsupported.")
     packets = contract.get("packets")
-    if not isinstance(packets, list) or len(packets) != 4:
-        raise HILIdentifiabilityError("HIL contract requires exactly four packets.")
+    expected_packets = 4 if schema == CONTRACT_SCHEMA else 6
+    if not isinstance(packets, list) or len(packets) != expected_packets:
+        raise HILIdentifiabilityError(
+            f"HIL {schema} contract requires exactly {expected_packets} packets."
+        )
     packet_ids = [row.get("packet_id") for row in packets]
-    if len(set(packet_ids)) != 4 or any(not value for value in packet_ids):
+    if len(set(packet_ids)) != expected_packets or any(not value for value in packet_ids):
         raise HILIdentifiabilityError("HIL packet identifiers must be unique.")
-    if int(contract["budget"]["physical_packet_attempts"]) != 4:
-        raise HILIdentifiabilityError("HIL physical attempt budget must remain four.")
+    if int(contract["budget"]["physical_packet_attempts"]) != expected_packets:
+        raise HILIdentifiabilityError(
+            "HIL physical attempt budget must equal the packet inventory."
+        )
     if int(contract["budget"]["adaptive_retries"]) != 0:
         raise HILIdentifiabilityError("HIL adaptive retries must remain zero.")
     if int(contract["action_materialization"]["sample_hz"]) != 20:
         raise HILIdentifiabilityError("HIL action materialization is frozen at 20 Hz.")
     if contract["action_materialization"]["joint_order"] != list(ROBOT_JOINTS):
         raise HILIdentifiabilityError("HIL joint order does not match the gateway.")
+    if schema == CONTRACT_SCHEMA_V2:
+        target_joints = [row.get("target_joint") for row in packets]
+        if target_joints != list(ROBOT_JOINTS):
+            raise HILIdentifiabilityError(
+                "HIL v2 must preregister one ordered packet per gateway joint."
+            )
+        for packet in packets:
+            segments = packet.get("segments")
+            if (
+                not isinstance(segments, list)
+                or len(segments) < 2
+                or float(segments[-1].get("target_offset", math.nan)) != 0.0
+            ):
+                raise HILIdentifiabilityError(
+                    "HIL v2 segments must be non-empty and return to zero."
+                )
+            for segment in segments:
+                values = (
+                    segment.get("target_offset"),
+                    segment.get("ramp_seconds"),
+                    segment.get("hold_seconds"),
+                )
+                if not all(
+                    isinstance(value, (int, float)) and math.isfinite(float(value))
+                    for value in values
+                ):
+                    raise HILIdentifiabilityError(
+                        "HIL v2 segment values must be finite."
+                    )
+                if (
+                    float(segment["ramp_seconds"]) <= 0.0
+                    or float(segment["hold_seconds"]) <= 0.0
+                ):
+                    raise HILIdentifiabilityError(
+                        "HIL v2 segment durations must be positive."
+                    )
     return contract
 
 
@@ -128,18 +171,6 @@ def materialize_packet_actions(
         target_index = list(ROBOT_JOINTS).index(packet["target_joint"])
     except ValueError as error:
         raise HILIdentifiabilityError("HIL target joint is unsupported.") from error
-    offsets = np.asarray(packet["offset_sequence"], dtype=np.float64)
-    if (
-        offsets.ndim != 1
-        or offsets.size < 2
-        or not np.all(np.isfinite(offsets))
-        or abs(float(offsets[0])) > 1e-12
-        or abs(float(offsets[-1])) > 1e-12
-    ):
-        raise HILIdentifiabilityError(
-            "HIL offset sequence must be finite and start/end at zero."
-        )
-
     sample_hz = int(contract["action_materialization"]["sample_hz"])
     pre_hold = round(
         float(contract["action_materialization"]["pre_hold_seconds"]) * sample_hz
@@ -148,13 +179,55 @@ def materialize_packet_actions(
         float(contract["action_materialization"]["post_return_hold_seconds"])
         * sample_hz
     )
-    ramp_steps = round(float(packet["ramp_seconds"]) * sample_hz)
-    hold_steps = round(float(packet["hold_seconds"]) * sample_hz)
-    if min(pre_hold, post_hold, ramp_steps, hold_steps) < 1:
+    if min(pre_hold, post_hold) < 1:
         raise HILIdentifiabilityError("HIL segment duration is too short.")
 
     actions: list[np.ndarray] = [start.copy() for _ in range(pre_hold + 1)]
-    for source_offset, target_offset in zip(offsets[:-1], offsets[1:], strict=True):
+    if contract["schema_version"] == CONTRACT_SCHEMA:
+        offsets = np.asarray(packet["offset_sequence"], dtype=np.float64)
+        if (
+            offsets.ndim != 1
+            or offsets.size < 2
+            or not np.all(np.isfinite(offsets))
+            or abs(float(offsets[0])) > 1e-12
+            or abs(float(offsets[-1])) > 1e-12
+        ):
+            raise HILIdentifiabilityError(
+                "HIL offset sequence must be finite and start/end at zero."
+            )
+        segment_rows = [
+            {
+                "source_offset": float(source_offset),
+                "target_offset": float(target_offset),
+                "ramp_seconds": float(packet["ramp_seconds"]),
+                "hold_seconds": float(packet["hold_seconds"]),
+            }
+            for source_offset, target_offset in zip(
+                offsets[:-1], offsets[1:], strict=True
+            )
+        ]
+    else:
+        segment_rows = []
+        source_offset = 0.0
+        for segment in packet["segments"]:
+            target_offset = float(segment["target_offset"])
+            segment_rows.append(
+                {
+                    "source_offset": source_offset,
+                    "target_offset": target_offset,
+                    "ramp_seconds": float(segment["ramp_seconds"]),
+                    "hold_seconds": float(segment["hold_seconds"]),
+                }
+            )
+            source_offset = target_offset
+
+    for segment in segment_rows:
+        source_offset = float(segment["source_offset"])
+        target_offset = float(segment["target_offset"])
+        ramp_steps = round(float(segment["ramp_seconds"]) * sample_hz)
+        hold_steps = round(float(segment["hold_seconds"]) * sample_hz)
+        if min(ramp_steps, hold_steps) < 1:
+            raise HILIdentifiabilityError("HIL segment duration is too short.")
         for index in range(1, ramp_steps + 1):
             fraction = index / ramp_steps
             smooth = fraction * fraction * (3.0 - 2.0 * fraction)
@@ -256,6 +329,21 @@ def _video_counts(report: dict[str, Any]) -> tuple[int, float]:
             except (TypeError, ValueError):
                 duration = 0.0
     return frames, duration
+
+
+def _video_container_timing(
+    report: dict[str, Any],
+    *,
+    prefer_browser_derivative: bool,
+) -> dict[str, Any]:
+    if prefer_browser_derivative and report.get("browser_video_path"):
+        browser = report.get("browser_observed_video") or {}
+        timing = browser.get("container_timing")
+        if isinstance(timing, dict):
+            return timing
+    observed = report.get("observed_video") or {}
+    timing = observed.get("container_timing")
+    return timing if isinstance(timing, dict) else {}
 
 
 def _relative_artifacts(session: Path, paths: list[Path]) -> dict[str, str]:
@@ -401,6 +489,36 @@ def evaluate_hil_packet(raw_receipt_path: Path, contract_path: Path) -> dict[str
             "duration_seconds": video_duration,
             "frame_coverage_fraction": frame_coverage,
         }
+        if thresholds.get("container_timing_required") is True:
+            timing = _video_container_timing(
+                report,
+                prefer_browser_derivative=role == "wrist",
+            )
+            inferred_missing = timing.get("inferred_missing_frame_intervals")
+            try:
+                inferred_missing_count = int(inferred_missing)
+            except (TypeError, ValueError):
+                inferred_missing_count = -1
+            denominator = frames + max(0, inferred_missing_count)
+            inferred_missing_fraction = (
+                None
+                if inferred_missing_count < 0
+                else inferred_missing_count / max(1, denominator)
+            )
+            camera_metrics[role]["container_timing"] = timing
+            camera_metrics[role][
+                "inferred_missing_frame_interval_fraction"
+            ] = inferred_missing_fraction
+            if timing.get("status") != "observed_container_timing":
+                failures.append(f"{role}_container_timing_unavailable")
+            maximum_name = (
+                f"{role}_inferred_missing_frame_interval_fraction_maximum"
+            )
+            if (
+                inferred_missing_fraction is None
+                or inferred_missing_fraction > float(thresholds[maximum_name])
+            ):
+                failures.append(f"{role}_container_timing_gap_fraction_failed")
         if report.get("status") != "completed":
             failures.append(f"{role}_video_not_completed")
         if frame_coverage < float(thresholds[threshold_name]):
@@ -667,9 +785,10 @@ def run_hil_campaign(
     packet_id: str | None = None,
     **packet_kwargs: Any,
 ) -> dict[str, Any]:
-    """Run the selected packet or the four frozen packets without retries."""
+    """Run selected preregistered packets without retries."""
 
     contract = load_hil_contract(contract_path)
+    maximum_attempts = int(contract["budget"]["physical_packet_attempts"])
     output_root = output_root.resolve()
     output_root.mkdir(parents=True, exist_ok=True)
     state_path = output_root / "campaign_state.json"
@@ -677,6 +796,17 @@ def run_hil_campaign(
         state = json.loads(state_path.read_text(encoding="utf-8"))
         if state.get("schema_version") != CAMPAIGN_SCHEMA:
             raise HILIdentifiabilityError("Existing HIL campaign state is invalid.")
+        if state.get("contract_id") != contract["contract_id"]:
+            raise HILIdentifiabilityError(
+                "Existing HIL campaign is bound to another contract."
+            )
+        if (
+            int(state.get("budget", {}).get("maximum_physical_packet_attempts", -1))
+            != maximum_attempts
+        ):
+            raise HILIdentifiabilityError(
+                "Existing HIL campaign attempt budget does not match the contract."
+            )
     else:
         state = {
             "schema_version": CAMPAIGN_SCHEMA,
@@ -684,7 +814,7 @@ def run_hil_campaign(
             "contract_file_sha256": _sha256(contract_path),
             "events": [],
             "budget": {
-                "maximum_physical_packet_attempts": 4,
+                "maximum_physical_packet_attempts": maximum_attempts,
                 "used_physical_packet_attempts": 0,
                 "adaptive_retries": 0,
                 "provider_calls": 0,
@@ -706,7 +836,7 @@ def run_hil_campaign(
             raise HILIdentifiabilityError(
                 f"HIL packet already consumed and cannot be retried: {current_id}"
             )
-        if int(state["budget"]["used_physical_packet_attempts"]) >= 4:
+        if int(state["budget"]["used_physical_packet_attempts"]) >= maximum_attempts:
             raise HILIdentifiabilityError("HIL physical attempt budget is exhausted.")
         event = execute_hil_packet(
             contract_path,

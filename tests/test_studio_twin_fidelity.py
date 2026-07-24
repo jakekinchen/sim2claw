@@ -779,6 +779,22 @@ def test_server_projects_selected_episode_through_read_only_endpoint(
             "sim2claw.studio_server.load_twin_fidelity_projection",
             return_value=expected,
         ) as loader,
+        patch(
+            "sim2claw.studio_server.evaluate_twin_fidelity_closure",
+            return_value={
+                "schema_version": "sim2claw.twin_fidelity_closure_report.v1",
+                "available": True,
+                "status": "not_perfect",
+                "perfect": False,
+                "closure": {
+                    "passed_required_domains": 0,
+                    "required_domain_count": 6,
+                    "weighted_percentage": None,
+                    "unknown_counted_as_zero": False,
+                },
+                "domains": [],
+            },
+        ) as closure_loader,
     ):
         server = create_server("127.0.0.1", 0, repo_root=tmp_path, read_only=True)
         thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -793,8 +809,10 @@ def test_server_projects_selected_episode_through_read_only_endpoint(
             server.shutdown()
             server.server_close()
             thread.join(timeout=2)
-    assert observed == expected
+    assert observed["closure"]["closure"]["required_domain_count"] == 6
+    assert observed["closure"]["perfect"] is False
     loader.assert_called_once()
+    closure_loader.assert_called_once()
 
 
 def test_replay_owns_twin_fidelity_navigation_and_read_only_drawer() -> None:
@@ -812,6 +830,10 @@ def test_replay_owns_twin_fidelity_navigation_and_read_only_drawer() -> None:
     assert "<form" not in drawer
     assert "fetch(`/api/twin-fidelity?episode_id=" in js
     assert '"Requested action hash bound"' in js
+    assert '"Evaluator closure"' in js
+    assert "Explicit denominator · no weighted percentage" in js
+    assert "projection.closure" in js
+    assert ".twin-closure-list" in css
     assert 'event.key === "Escape" && state.drawer' in js
     assert "trigger?.focus({ preventScroll: true })" in js
     assert "@media (max-width: 620px)" in css

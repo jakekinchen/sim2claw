@@ -5867,12 +5867,82 @@ body[data-studio-mode="read_only_evidence"] .live-trigger {
   line-height: 1.55;
 }
 
+.twin-closure,
 .twin-gap-map,
 .twin-chain,
 .twin-hypotheses,
 .twin-next-evidence {
   padding: 22px 24px;
   border-bottom: 1px solid var(--rule);
+}
+
+.twin-closure {
+  display: grid;
+  gap: 16px;
+  background: var(--ceramic);
+}
+
+.twin-closure.is-unavailable {
+  border-left: 4px solid var(--graphite);
+}
+
+.twin-closure-copy {
+  max-width: 650px;
+  margin: 0;
+  color: var(--graphite-dark);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.twin-closure-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 1px;
+  background: var(--rule);
+  list-style: none;
+}
+
+.twin-closure-list li {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px;
+  background: var(--paper);
+}
+
+.twin-closure-list span {
+  overflow: hidden;
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.twin-closure-list b,
+.twin-closure-list small {
+  font-family: var(--utility);
+  font-size: 9px;
+}
+
+.twin-closure-list b {
+  color: var(--diagnostic);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.twin-closure-list .is-failed b {
+  color: var(--fail);
+}
+
+.twin-closure-list .is-missing b {
+  color: var(--graphite);
+}
+
+.twin-closure-list small {
+  color: var(--graphite);
 }
 
 .twin-section-heading h3,
@@ -7565,6 +7635,7 @@ body[data-studio-mode="read_only_evidence"] .live-trigger {
   }
 
   .twin-summary,
+  .twin-closure,
   .twin-gap-map,
   .twin-chain,
   .twin-hypotheses,
@@ -7581,6 +7652,10 @@ body[data-studio-mode="read_only_evidence"] .live-trigger {
   .twin-section-heading > small {
     max-width: none;
     text-align: left;
+  }
+
+  .twin-closure-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .twin-chain ol {
