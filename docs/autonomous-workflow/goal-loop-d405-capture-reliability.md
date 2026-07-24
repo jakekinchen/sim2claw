@@ -82,6 +82,16 @@ motion capture or metric depth.
 - Four other packets completed 27–33 seconds of D405 capture and finalized in
   under 0.83 seconds.
 - The exhausted six-attempt family cannot be retried.
+- The separately frozen stationary campaign used exactly six trials, zero
+  replacements, zero robot motions, and zero provider calls. Every D405 source
+  completed with 201–202 frames, monotonic 5 fps container PTS, no inferred
+  missing interval, no source stall, and stdin-`q` finalization.
+- The independent evaluator rejected all six dual-camera trials because the
+  C922 container had 29–30 inferred missing 30 fps intervals. The gaps occur
+  at D405 stream open and close/finalization boundaries in every trial; the
+  macOS log records no USB-device removal during this campaign.
+- The qualification is a sealed terminal negative. It cannot be retried,
+  substituted, or made passing by changing the zero-gap threshold.
 
 ### Assumptions
 
@@ -105,8 +115,9 @@ motion capture or metric depth.
   preregistered motion.
 - Whether a different validated host or whole-device USB passthrough is needed
   after the physical path is repaired.
-- Whether six no-motion trials qualify the current Mac path or produce a
-  sealed acquisition abstention.
+- Whether a lifecycle design that keeps both camera sessions open for the
+  entire common capture window removes the C922 boundary gaps without hiding
+  or rewriting source timing.
 - Whether reliable D405 acquisition under robot motion ultimately requires a
   separate camera host.
 
@@ -123,10 +134,10 @@ motion capture or metric depth.
 ## Progress Ledger
 
 ```text
-Current state: Root cause is localized to motion-correlated whole-device USB removal; watchdog implementation and focused proof pass, stationary qualification remains pending.
-Completed: Exact failure reports, macOS USB removal/re-enumeration timelines, direct SuperSpeed topology, isolated and simultaneous stationary diagnostics, source-progress watchdog, bounded signal escalation, fail-closed reports/tests, and a live class smoke.
-Evidence: preregistration 0e4d578; contract e8232fd7; campaign 0e818d22; rejected reports 911d3363 and 10d28805; stationary diagnostics 200/200 twice; focused tests 29/29; live smoke 65 frames/13 seconds.
-Remaining: Commit the software milestone, execute the frozen six-trial stationary qualification, then repair/restrain the physical cable path before any newly preregistered motion qualification.
-Blockers: The defective physical cable/connector segment is not remotely serviceable or identified; reliable D405 acquisition under motion and metric depth remain unproven.
-Next step: Freeze the recorder software commit, then run only the no-motion qualification campaign.
+Current state: Recorder hardening and the only authorized stationary qualification are complete. The D405 passed its own transport checks in 6/6 trials, while the dual-camera campaign is a sealed 0/6 terminal negative because the C922 container gaps at D405 lifecycle boundaries.
+Completed: Exact failure reports, macOS USB removal/re-enumeration timelines, direct SuperSpeed topology, isolated and simultaneous stationary diagnostics, source-progress watchdog, bounded signal escalation, fail-closed reports/tests, live class smoke, six-trial campaign, independent evaluation, and lifecycle-aligned PTS audit.
+Evidence: preregistration 0e4d578; software commit d19a909; qualification commit c823d63; contract e8232fd7; campaign 57d4983c; evaluation 80ed9ac3; receipt file cfc11ff3 / embedded digest 294f3066; 6 trials / 0 replacements / 0 motions / 0 providers; D405 6/6 transport pass and dual-camera 0/6 verdict.
+Remaining: Preserve the terminal negative, verify the exact closeout commit, physically reseat/replace and strain-relieve the D405 path, then separately preregister a lifecycle-safe dual-camera check before any motion qualification.
+Blockers: The defective physical cable/connector segment is not remotely serviceable or identified; the current AVFoundation lifecycle causes C922 container gaps; reliable dual-camera acquisition under motion and metric depth remain unproven.
+Next step: Close and verify this transaction without rerunning the camera campaign.
 ```

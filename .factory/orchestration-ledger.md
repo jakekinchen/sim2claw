@@ -945,3 +945,15 @@ goal. External provider campaigns and spending remain separately gated.
   sealed six-attempt robot family remains unchanged and stationary
   qualification is still distinct from motion reliability, metric depth,
   calibration, or task evidence.
+- 2026-07-24T10:35:00-05:00 — Completed the only preregistered D405
+  stationary qualification at commits `d19a909` and `c823d63`. Exactly six
+  no-motion simultaneous C922+D405 trials ran with zero replacements, robot
+  motions, or provider calls. D405 transport passed 6/6 with no stalls or
+  inferred gaps; the independent evaluator sealed the combined result as
+  `0/6 reject_stationary_capture_reliability` because each C922 container had
+  29–30 inferred intervals missing at the D405 open/close lifecycle boundaries.
+  Campaign `57d4983c...`, evaluation `80ed9ac3...`, and receipt
+  `cfc11ff3...` / `294f3066...` are frozen. No USB removal occurred during
+  these stationary trials; the earlier motion-correlated D405 physical fault
+  remains separate. No retry, threshold change, simulator, training,
+  promotion, metric-depth, or task claim is permitted.

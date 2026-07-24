@@ -45,16 +45,28 @@ cannot turn a detected stall into admitted evidence. This is acquisition
 infrastructure only: stationary qualification remains separate from reliable
 capture under motion, metric depth, calibration, and task proof.
 
+The one authorized stationary qualification is now sealed. It used six of six
+40-second dual-camera trials, zero replacements, zero robot motions, and zero
+provider calls. The D405 completed all six sources with 201–202 frames,
+monotonic 5 fps container PTS, zero inferred missing intervals, and no source
+stall. The independent evaluator still rejected all six trials because the
+C922 container had 29–30 inferred missing 30 fps intervals at D405 stream-open
+and stream-close/finalization boundaries. No USB-device removal occurred in
+this stationary campaign. The result is therefore a terminal negative for the
+current dual-camera lifecycle, not a D405 motion-reliability pass, and it is not
+eligible for retry or post-hoc threshold relaxation.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
 measurements and does not convert partial progress into a percentage or a
 simulator/task claim. The next scientific step requires a new preregistered
-measurement transaction that first resolves reliable D405 acquisition and
+measurement transaction that first physically repairs and strain-relieves the
+D405 path, then qualifies a lifecycle-safe simultaneous capture design, and
 then adds metric registration, calibrated force/current/load observability,
 device/actuator timing, reset/loaded trials, and strict held-out physical
-consequence. Another simulator family or silent physical retry is not an
-acceptable substitute.
+consequence. Another simulator family, silent physical retry, or modified
+camera threshold is not an acceptable substitute.
 The owner now explicitly authorizes necessary physical tests and guarantees
 the workcell is clear. Each physical packet remains execution-blocked until
 its own preregistration, exact hardware/calibration, torque-off, start-envelope,
