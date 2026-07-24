@@ -3179,7 +3179,7 @@
       "implementation_tree": "fbc147d5a78fe3572ca4ce961ef6c5fb6d821f89",
       "runner_evaluator_sha256": "89cfd1caf941a1808c220515efa92ffdd3899e24c0d70f264e9fb04f533f0e3c",
       "post_execution_control_module": "src/sim2claw/dual_camera_lifecycle_control.py",
-      "post_execution_control_module_sha256": "e621d1c042718497dbfc08aea3167ccb21c25adbfeb025e6f17351c038165bd4",
+      "post_execution_control_module_sha256": "2be071844ff98e8ebef74c281803fd0b3e9de88bf6685e312bb1190eb1796454",
       "exhaustion_guard": "configs/evaluations/dual_camera_lifecycle_qualification_v1_exhausted.json",
       "exhaustion_guard_sha256": "8b753d2477d84eabfa4bdf269ed7363f8fa56791741a0ccc6c816eb83e7275ed",
       "teleop_integration_sha256": "f89d756d8b99a62aef7ba2c0d21051bf6c5c3b634debc9d9507c2201bfc2764f",

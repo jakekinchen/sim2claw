@@ -121,4 +121,3 @@ def test_preterminal_control_delegates_once_at_canonical_root(
 
 def test_guard_json_matches_expected_bytes() -> None:
     assert json.loads(GUARD.read_text(encoding="utf-8")) == control.EXPECTED_GUARD
-

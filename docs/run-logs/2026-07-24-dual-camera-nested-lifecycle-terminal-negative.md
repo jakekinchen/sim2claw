@@ -120,7 +120,7 @@ raw evidence still prove one session only, but that was insufficient
 control-plane enforcement. Closeout therefore adds:
 
 - a separate canonical control wrapper, SHA-256
-  `e621d1c042718497dbfc08aea3167ccb21c25adbfeb025e6f17351c038165bd4`;
+  `2be071844ff98e8ebef74c281803fd0b3e9de88bf6685e312bb1190eb1796454`;
 - a tracked exhausted-family guard, SHA-256
   `8b753d2477d84eabfa4bdf269ed7363f8fa56791741a0ccc6c816eb83e7275ed`;
 - direct `execute_hil_packet` start/stop and second-camera-failure cleanup

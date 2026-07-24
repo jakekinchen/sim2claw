@@ -1178,6 +1178,7 @@ goal. External provider campaigns and spending remain separately gated.
   at a fresh output root. Added two direct HIL lifecycle/cleanup tests plus a
   separate canonical control-plane wrapper and tracked exhausted-family guard.
   The observed runner/evaluator remains byte-identical at `89cfd1ca...`; the
-  guard is `8b753d24...` and blocks delegation before any device access.
+  control module is `2be07184...`; the guard is `8b753d24...` and blocks
+  delegation before any device access.
   Focused verification is 61 passed, and a no-camera re-evaluation reproduced
   evaluation `bfad6408...` and receipt `d066fa14...` byte-identically.
