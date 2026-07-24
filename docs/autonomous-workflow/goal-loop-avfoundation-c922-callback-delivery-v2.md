@@ -85,9 +85,11 @@ simulator fidelity, or task proof.
 
 ### Open Questions
 
-- Whether post-input `activeFormat` survives commit and start.
-- Whether matching device format yields matching delivered dimensions/cadence.
-- Whether output conversion remains despite stable device format.
+- Resolved: post-input `activeFormat` survives commit but not session start.
+- Resolved: session start changes the active device format before sustained
+  callback delivery; this is not merely output conversion.
+- Open: whether setting the format after session commit can force
+  input-priority behavior before start on this macOS/C922 combination.
 
 ## Execution Rhythm
 
@@ -100,10 +102,10 @@ simulator fidelity, or task proof.
 ## Progress Ledger
 
 ```text
-Current state: Preregistered design pending commit; no v2 implementation or camera use.
-Completed: V1 terminal degraded and independently reviewed PASS.
-Evidence: v1 raw 9e3e2d57; evaluation 25827c4d; receipt 2096d836 / digest 558aae78.
-Remaining: Commit preregistration; implement/test/commit; one observation; evaluate; close.
-Blockers: Any device/candidate drift forces abstention without retry.
-Next step: Commit this prompt and contract.
+Current state: Terminal degraded; the one-session budget is exhausted with no retry.
+Completed: Preregistration e90ef28; exact implementation c8d2f50; one observation and evaluation.
+Evidence: raw 593c3d3e; evaluation a889450f; receipt 5dd301ab / digest ae6dd332.
+Remaining: Seal state/log and obtain fresh read-only review.
+Blockers: AVCaptureSessionPresetHigh overrides the exact device format at start.
+Next step: Separately preregister any post-commit format/preset mechanism.
 ```

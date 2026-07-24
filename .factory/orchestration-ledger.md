@@ -1120,3 +1120,11 @@ goal. External provider campaigns and spending remain separately gated.
   after association, commit, and start. All v1 output/cadence gates remain
   unchanged. One new session maximum; no retry, D405, robot, simulator,
   provider, training, promotion, or task authority.
+- 2026-07-24T16:35:00-05:00 — Callback delivery v2 reached terminal degraded
+  under exact implementation `c8d2f50`. The sole session preserved the frozen
+  640×480 `420v` format through commit while the preset stayed
+  `AVCaptureSessionPresetHigh`; session start changed the active format to
+  1920×1080 at about 24 Hz. The observer stopped after one sample and the
+  evaluator rejected start-stage identity and delivery gates. V2 is exhausted
+  with no retry. D405, robot, simulator, provider, training, promotion, and
+  task authority stayed closed.

@@ -114,13 +114,26 @@ configuration and post-configuration/start verification; v1 is exhausted and
 cannot be retried. It does not reclassify D405/container, exposure,
 cross-camera, simulator, or task evidence.
 
+Callback-delivery v2 is also terminal degraded and exhausted. Its sole
+post-input-association session preserved the frozen `640×480 420v` format and
+`0.03333330000003333 s` frame duration through configuration commit, while the
+session preset remained `AVCaptureSessionPresetHigh`. On `startRunning()`,
+AVFoundation changed the active device format to `1920×1080 420v` with a
+`0.0416666006945489 s` frame duration. The observer stopped fail closed after
+one delivered sample. The evaluator failed `exact_format_after_start`,
+`minimum_output_callbacks`, `exact_dimensions`, `strictly_increasing_pts`, and
+`bounded_pts_interval`. This localizes the next prerequisite to a separately
+preregistered post-commit format/preset binding mechanism before session
+start; v2 cannot be retried. It remains source-callback evidence only.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
 measurements and does not convert partial progress into a percentage or a
 simulator/task claim. The next scientific step requires new, separately
-preregistered measurement work: validate callback delivery with the frozen
-C922 `420v` candidate; physically repair and strain-relieve the D405 path; then
+preregistered measurement work: bind the frozen C922 `420v` candidate after
+session commit without allowing start-time preset override; physically repair
+and strain-relieve the D405 path; then
 qualify a lifecycle-safe simultaneous capture design; and only
 afterward add metric registration, calibrated force/current/load
 observability, device/actuator timing, reset/loaded trials, and strict held-out
