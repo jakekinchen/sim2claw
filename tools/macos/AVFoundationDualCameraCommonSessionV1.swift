@@ -317,6 +317,7 @@ private func write(_ observation: Observation, path: String) throws {
         at: url.deletingLastPathComponent(), withIntermediateDirectories: true
     )
     let encoder = JSONEncoder()
+    encoder.keyEncodingStrategy = .convertToSnakeCase
     encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
     var data = try encoder.encode(observation)
     data.append(0x0a)
