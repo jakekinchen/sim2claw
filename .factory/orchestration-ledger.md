@@ -1182,3 +1182,11 @@ goal. External provider campaigns and spending remain separately gated.
   delegation before any device access.
   Focused verification is 61 passed, and a no-camera re-evaluation reproduced
   evaluation `bfad6408...` and receipt `d066fa14...` byte-identically.
+- 2026-07-24T17:40:28-05:00 — Independent exact-commit review passed the
+  sealed nested-lifecycle chain at `3fafda3`; the terminal verdict remains
+  `reject_stationary_nested_dual_camera_lifecycle` with no retry. Opened one
+  zero-session D405 AVFoundation inventory prerequisite before implementation:
+  one exact-device enumeration, exact 424×240 near-5-fps selection under a
+  frozen 0.01-fps rule, and zero sessions, frames, camera lifecycle operations,
+  robot motions, simulator replays, or provider calls. Any candidate is native
+  common-session design input only and grants no capture or Twin authority.

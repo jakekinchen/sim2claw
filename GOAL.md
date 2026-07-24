@@ -166,6 +166,15 @@ clocks are not exposure-synchronized. The frozen evaluator therefore returned
 `reject_stationary_nested_dual_camera_lifecycle`. No threshold changed and no
 retry is permitted.
 
+A new zero-session prerequisite is now preregistered before implementation.
+It permits exactly one read-only inventory of the exact D405 AVFoundation
+device and its native format/rate metadata. An independent evaluator will
+select only an exact 424×240 candidate within 0.01 fps of 5 under a frozen
+subtype/tie-break order. The observer may not construct or start a capture
+session, emit a frame, touch the C922 lifecycle, move the robot, replay the
+simulator, or call a provider. Even an admitted candidate is design input only;
+it does not prove that a native two-input common session works.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
