@@ -139,14 +139,27 @@ cannot be retried. The format-negotiation prerequisite is closed; a separately
 preregistered warm-up-bounded measurement window is now required before
 source cadence can be verified.
 
+Callback-delivery v4 now verifies that production-style pre-roll window. It
+reused the exact reviewed v3 lock-through-start observer for one eleven-second
+session and retained all `334` exact `640×480 420v` samples with zero Apple
+drop callbacks. The frozen first source-PTS second remained visible as `27`
+warm-up samples, including a `0.06700000003911555 s` startup gap. The scored
+window contained `307` samples and `306` intervals across
+`10.199999999953434 s`; its mean interval was
+`0.033333333333181156 s` and maximum `0.03400000010151416 s`, below the
+unchanged `0.049999950000049996 s` gate. The independent evaluator returned
+`steady_callback_delivery_verified` with no failed gates. This closes the C922
+source-format and steady-cadence prerequisite; it does not prove exposure
+continuity, cross-camera synchronization, D405 reliability, or calibration.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
 measurements and does not convert partial progress into a percentage or a
 simulator/task claim. The next scientific step requires new, separately
-preregistered measurement work: verify steady callback cadence after a bounded
-C922 warm-up while retaining the proven lock-through-start mechanism; physically repair
-and strain-relieve the D405 path; then
+preregistered measurement work: integrate the verified C922 lock-through-start
+and one-second pre-roll behavior into the recorder; physically repair and
+strain-relieve the D405 path; then
 qualify a lifecycle-safe simultaneous capture design; and only
 afterward add metric registration, calibrated force/current/load
 observability, device/actuator timing, reset/loaded trials, and strict held-out

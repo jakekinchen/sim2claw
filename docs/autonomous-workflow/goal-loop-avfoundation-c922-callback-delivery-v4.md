@@ -74,8 +74,11 @@ pre-roll callback window, not exposure continuity or simulator fidelity.
 
 ### Open Questions
 
-- Whether all measurement-window intervals satisfy the 50 ms maximum.
-- Whether the full session remains exact format with zero reported drops.
+- Resolved: all 306 measurement-window intervals satisfy the 50 ms maximum.
+- Resolved: all 334 full-session samples remained exact format with zero
+  reported drops.
+- Open outside this transaction: D405 reliability and qualified dual-camera
+  synchronization.
 
 ## Execution Rhythm
 
@@ -88,10 +91,10 @@ pre-roll callback window, not exposure continuity or simulator fidelity.
 ## Progress Ledger
 
 ```text
-Current state: Preregistered design pending commit; no v4 evaluator or session.
-Completed: V3 exact-format delivery with one startup cadence gap.
-Evidence: v3 raw df6aac8d; evaluation b4cc0037; receipt 276611fd / digest 7c596566.
-Remaining: Commit; implement/test/commit; v3 review gate; one observation; close.
-Blockers: Any frozen-evidence drift forces abstention.
-Next step: Commit this prompt and contract.
+Current state: Terminal verified; one-session budget exhausted with no retry.
+Completed: Preregistration 3cd554c; evaluator d49f2ef; one observation/evaluation.
+Evidence: raw 6fb1301c; evaluation 0d18cfb7; receipt 7354ce1d / digest 0933f548.
+Remaining: Seal state/log and obtain fresh read-only review.
+Blockers: None within the C922 source-format/cadence proof class.
+Next step: Integrate the verified behavior, then return to D405 reliability.
 ```

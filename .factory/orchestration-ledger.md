@@ -1145,3 +1145,10 @@ goal. External provider campaigns and spending remain separately gated.
   second as reported pre-roll before an unchanged ten-second scored window.
   Full-session format, PTS validity/order, and zero-drop gates remain active.
   One eleven-second session maximum; no retry or widened authority.
+- 2026-07-24T17:02:00-05:00 — Callback delivery v4 verified steady source
+  delivery under exact evaluator `d49f2ef`. The sole session retained 334 exact
+  640×480 `420v` samples and zero drop callbacks. The one-second warm-up kept
+  its 67 ms startup gap visible; the scored 10.2-second window had 307 samples,
+  306 intervals, and a 34.0 ms maximum below the unchanged 50.0 ms gate.
+  C922 source format/cadence is verified; synchronization, D405, calibration,
+  simulator, and task proof remain open/closed as previously declared.

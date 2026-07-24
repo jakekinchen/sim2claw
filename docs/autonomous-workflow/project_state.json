@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T16:51:00-05:00",
+  "updated_at": "2026-07-24T17:02:00-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
-  "current_milestone": "AVFOUNDATION_C922_CALLBACK_V3_FORMAT_VERIFIED_CADENCE_DEGRADED",
+  "current_milestone": "AVFOUNDATION_C922_STEADY_CALLBACK_DELIVERY_VERIFIED",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
@@ -3116,6 +3116,59 @@
         "task_success": false
       }
     },
+    "avfoundation_c922_callback_delivery_v4": {
+      "status": "terminal_steady_callback_delivery_verified_attempt_budget_exhausted",
+      "goal": "docs/autonomous-workflow/goal-loop-avfoundation-c922-callback-delivery-v4.md",
+      "contract": "configs/evaluations/avfoundation_c922_callback_delivery_v4.json",
+      "contract_sha256": "6caa3affe419a74ff94582f9341387a614adb0648757811847722acf551801e9",
+      "preregistration_commit": "3cd554c",
+      "implementation_and_execution_commit": "d49f2ef25ee6eee4b2cef603c7ab4059c8c2a986",
+      "reused_observer_source_sha256": "79da2c743ac5e16ef90fb56dfd77802e015e8e4fd7d9763ac23e5410ea29bb53",
+      "evaluator_sha256": "3201b8653aeb75f60ffa9ced94543ce58e9f415642be75c351c204b4c78b6a2e",
+      "compiled_binary_sha256": "26d76d43b9806262be768b7fd56e7b5c50594f279b9796415167b9ed94034bcb",
+      "prelaunch_sha256": "896ef1a52c26447ef9cd48547db9ba6e972802a4f3012650e5ddc58faed8a57c",
+      "attempt_sha256": "6b917acb107cf637dbf53be7b6d4bfa6aa00e093d7bc808de4451652df368bae",
+      "raw_observation_sha256": "6fb1301cea2b1d4c6da56c5902730c7359237855da1be91a96e7f9ceb0a98e3d",
+      "evaluation_sha256": "0d18cfb7e614061a513135079a125789a317d0b1fd937612b47d5ee486bd6ebb",
+      "receipt_sha256": "7354ce1d33847c15fd4dfcddf0eba35a435788d8fd144bf6b2d842e11c0f1740",
+      "receipt_digest": "0933f548774b10e6fea4be3320b632931588824e04a6b6d1f00418d006bcb6c8",
+      "verdict": "steady_callback_delivery_verified",
+      "failed_gates": [],
+      "observation_attempts_used": 1,
+      "observation_attempts_maximum": 1,
+      "capture_sessions_used": 1,
+      "full_session_output_callbacks": 334,
+      "full_session_drop_callbacks": 0,
+      "warmup_output_callbacks": 27,
+      "measurement_output_callbacks": 307,
+      "measurement_pts_interval_count": 306,
+      "measurement_pts_span_seconds": 10.199999999953434,
+      "warmup_maximum_pts_interval_seconds": 0.06700000003911555,
+      "transition_pts_interval_seconds": 0.03400000010151416,
+      "measurement_mean_pts_interval_seconds": 0.033333333333181156,
+      "measurement_maximum_pts_interval_seconds": 0.03400000010151416,
+      "maximum_measurement_pts_interval_allowed_seconds": 0.049999950000049996,
+      "delivered_dimensions": [
+        640,
+        480
+      ],
+      "delivered_subtype": "420v",
+      "d405_lifecycle_operations_used": 0,
+      "robot_motion_trials_used": 0,
+      "simulator_replays_used": 0,
+      "provider_calls_used": 0,
+      "v4_retry_authorized": false,
+      "next_prerequisite": "integrate_verified_c922_lock_through_start_and_one_second_preroll_then_requalify_d405",
+      "claim_limits": {
+        "camera_source_callback_delivery": true,
+        "container_timing": false,
+        "physical_exposure_continuity": false,
+        "cross_camera_synchronization": false,
+        "metric_depth": false,
+        "simulator_calibration": false,
+        "task_success": false
+      }
+    },
     "domain_status": {
       "geometry_scale": "missing",
       "kinematics": "partial",
@@ -3125,7 +3178,6 @@
       "task_ee_consequence": "failed"
     },
     "external_measurement_prerequisite": [
-      "c922_warmup_bounded_steady_callback_delivery_verification_v4",
       "reliable_dual_camera_d405_completion_under_motion",
       "metric_board_object_and_camera_registration",
       "actuator_application_and_device_synchronized_timing",
