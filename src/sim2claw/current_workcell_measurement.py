@@ -170,7 +170,6 @@ def capture_torque_off_baseline(
         height=480,
         fps=30,
     )
-    gateway_opened = False
     video_started = False
     video_report: dict[str, Any] | None = None
     samples: list[dict[str, Any]] = []
@@ -179,7 +178,6 @@ def capture_torque_off_baseline(
     open_report: dict[str, Any] | None = None
     try:
         open_report = gateway.open(enable_motion=False)
-        gateway_opened = True
         _require(
             open_report.get("physical_follower_torque_enabled") is False,
             "Gateway did not preserve torque-off state.",
@@ -221,13 +219,16 @@ def capture_torque_off_baseline(
             )
         baseline_stopped = clock()
     finally:
-        if video_started:
-            video_report = video.finish(
-                action_started_monotonic=baseline_started,
-                action_stopped_monotonic=baseline_stopped or clock(),
-                post_roll_seconds=0.0,
-            )
-        if gateway_opened:
+        try:
+            if video_started:
+                video_report = video.finish(
+                    action_started_monotonic=baseline_started,
+                    action_stopped_monotonic=baseline_stopped or clock(),
+                    post_roll_seconds=0.0,
+                )
+        finally:
+            # Close even when gateway.open() or camera finalization raises.
+            # The reviewed close path disables torque before disconnecting.
             gateway.close()
 
     _require(video_report is not None, "Overhead video report is missing.")

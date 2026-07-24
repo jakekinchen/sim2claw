@@ -98,6 +98,11 @@ class FakeVideo:
         }
 
 
+class FailingFinalizeVideo(FakeVideo):
+    def finish(self, **_: Any) -> dict[str, Any]:
+        raise RuntimeError("camera finalization failed")
+
+
 def test_torque_off_baseline_is_content_addressed_and_has_no_motion(
     tmp_path: Path,
 ) -> None:
@@ -171,6 +176,20 @@ def test_torque_off_baseline_rejects_identity_drift_and_output_replay(
             gateway_factory=FakeGateway,
             video_factory=FakeVideo,
         )
+
+
+def test_gateway_closes_when_camera_finalization_fails(tmp_path: Path) -> None:
+    with pytest.raises(RuntimeError, match="camera finalization failed"):
+        capture_torque_off_baseline(
+            tmp_path / "capture",
+            contract_path=CONTRACT,
+            sample_count=1,
+            sample_interval_seconds=0.0,
+            preflight_fn=_preflight,
+            gateway_factory=FakeGateway,
+            video_factory=FailingFinalizeVideo,
+        )
+    assert FakeGateway.instances[-1].closed is True
 
 
 def test_contract_rejects_authority_widening(tmp_path: Path) -> None:
