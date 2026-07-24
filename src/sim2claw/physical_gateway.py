@@ -775,6 +775,15 @@ class SO101PhysicalGateway:
             dtype=np.float64,
         )
         stall_candidates = np.abs(sent_actual_delta) > stall_thresholds
+        # A position-controlled gripper is expected to retain an object at a
+        # steady offset from its requested closed position. Treating that
+        # contact deflection as a motion stall releases every joint and drops
+        # the grasp even while the arm is tracking normally. Keep the
+        # deflection observable, but reserve the torque-off stall guard for
+        # body joints; bus-read and tracking-error guards still fail closed for
+        # the gripper.
+        gripper_contact_hold = bool(stall_candidates[5])
+        stall_candidates[5] = False
         stall_directions = np.sign(sent_actual_delta)
         stall_durations = np.zeros(6, dtype=np.float64)
         for index, candidate in enumerate(stall_candidates.tolist()):
@@ -885,6 +894,8 @@ class SO101PhysicalGateway:
                     strict=True,
                 )
             },
+            "gripper_contact_hold": gripper_contact_hold,
+            "gripper_contact_deflection": float(abs(sent_actual_delta[5])),
         }
 
     def synchronize_to_leader(self) -> dict[str, Any]:

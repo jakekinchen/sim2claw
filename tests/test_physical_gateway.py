@@ -370,6 +370,24 @@ class PhysicalGatewayTest(unittest.TestCase):
         gateway.close()
         self.assertFalse(self.follower.bus.torque)
 
+    def test_gripper_contact_hold_does_not_release_moving_arm(self) -> None:
+        self.follower.values[5] = 10.0
+        gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)
+        gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        self.follower.frozen_indices.add(5)
+        self.leader.values[5] = -10.0
+        sample: dict[str, Any] | None = None
+        for index in range(1, MAX_CONSECUTIVE_STALL_SAMPLES + 20):
+            self.leader.values[0] = min(20.0, index / 5)
+            sample = gateway.sample(index / 20)
+        assert sample is not None
+        self.assertTrue(sample["gripper_contact_hold"])
+        self.assertGreater(sample["gripper_contact_deflection"], 6.0)
+        self.assertFalse(sample["stalled"])
+        self.assertTrue(self.follower.bus.torque)
+        gateway.close()
+        self.assertFalse(self.follower.bus.torque)
+
     def test_torque_off_inspection_never_arms_follower(self) -> None:
         report = inspect_physical_gateway(self.identity, device_factory=self.factory)
         self.assertTrue(report["passed"])
