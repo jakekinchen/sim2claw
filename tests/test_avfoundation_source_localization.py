@@ -6,6 +6,9 @@ from pathlib import Path
 
 import pytest
 
+from sim2claw.avfoundation_source_abstention import (
+    seal_source_localization_prerequisite_abstention,
+)
 from sim2claw.avfoundation_source_localization import (
     AVFoundationLocalizationError,
     CAMPAIGN_SCHEMA,
@@ -146,6 +149,7 @@ def _materialize_campaign(
     treatment_gap: bool = False,
     treatment_drop_reason: str | None = None,
     disconnect_trial: str | None = None,
+    fail_before_session: bool = False,
 ) -> Path:
     contract = load_source_localization_contract(CONTRACT_PATH)
     campaign_root = root / "raw"
@@ -159,21 +163,36 @@ def _materialize_campaign(
         trial_root = campaign_root / "trials" / trial_id
         source_path = trial_root / "c922_source_events.jsonl"
         orchestration_path = trial_root / "orchestration_events.jsonl"
-        _write_jsonl(
-            source_path,
-            _source_events(
-                boundary_gap=treatment_gap and cell == "T",
-                drop_reason=treatment_drop_reason if cell == "T" else None,
-                disconnect=trial_id == disconnect_trial,
-            ),
+        source_events = _source_events(
+            boundary_gap=treatment_gap and cell == "T",
+            drop_reason=treatment_drop_reason if cell == "T" else None,
+            disconnect=trial_id == disconnect_trial,
         )
-        _write_jsonl(orchestration_path, _orchestration_events())
+        orchestration_events = _orchestration_events()
+        if fail_before_session:
+            source_events = source_events[:1]
+            orchestration_events = [
+                orchestration_events[0],
+                {
+                    **orchestration_events[-1],
+                    "event_index": 1,
+                },
+            ]
+        _write_jsonl(source_path, source_events)
+        _write_jsonl(orchestration_path, orchestration_events)
         artifacts = {
             source_path.name: _sha256(source_path),
             orchestration_path.name: _sha256(orchestration_path),
         }
+        if fail_before_session:
+            stderr_path = trial_root / "source_probe.stderr.log"
+            stderr_path.write_text(
+                "AVFoundationSourceProbe: requested_format_unavailable\n",
+                encoding="utf-8",
+            )
+            artifacts[stderr_path.name] = _sha256(stderr_path)
         report_path: Path | None = None
-        if cell == "T":
+        if cell == "T" and not fail_before_session:
             report_path = trial_root / "d405_report.json"
             _write_json(
                 report_path,
@@ -187,8 +206,13 @@ def _materialize_campaign(
             "cell": cell,
             "replacement": False,
             "robot_motion": False,
-            "trial_error": None,
-            "source_probe_return_code": 0,
+            "trial_error": (
+                "AVFoundationLocalizationError: Source probe exited before session "
+                "startup completed."
+                if fail_before_session
+                else None
+            ),
+            "source_probe_return_code": 2 if fail_before_session else 0,
             "source_event_path": source_path.name,
             "orchestration_event_path": orchestration_path.name,
             "d405_report_path": report_path.name if report_path else None,
@@ -406,6 +430,58 @@ def test_evaluator_abstains_on_device_disconnect(
     )
     assert evaluation["verdict"] == "prerequisite_abstention"
     assert evaluation["device_disconnect_count"] == 1
+
+
+def test_evaluator_seals_prerequisite_abstention_for_failed_source_probe(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.chdir(REPO_ROOT)
+    campaign_root = _materialize_campaign(tmp_path, fail_before_session=True)
+    evaluation, receipt = seal_source_localization_prerequisite_abstention(
+        contract_path=CONTRACT_PATH,
+        campaign_root=campaign_root,
+        output_root=tmp_path / "evaluated",
+    )
+    assert evaluation["verdict"] == "prerequisite_abstention"
+    assert evaluation["incomplete_trial_count"] == 12
+    assert evaluation["usable_measurement_trial_count"] == 0
+    assert evaluation["source_sample_or_drop_count"] == 0
+    assert evaluation["d405_lifecycle_started_count"] == 0
+    assert all(row["source"] is None for row in evaluation["trials"])
+    assert all(
+        row["source_unavailable_reason"].endswith(
+            "Source probe exited before session startup completed."
+        )
+        for row in evaluation["trials"]
+    )
+    assert receipt["verdict"] == "prerequisite_abstention"
+
+
+def test_abstention_sealer_is_byte_identical(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.chdir(REPO_ROOT)
+    campaign_root = _materialize_campaign(tmp_path, fail_before_session=True)
+    first_eval, first_receipt = seal_source_localization_prerequisite_abstention(
+        contract_path=CONTRACT_PATH,
+        campaign_root=campaign_root,
+        output_root=tmp_path / "eval-1",
+    )
+    second_eval, second_receipt = seal_source_localization_prerequisite_abstention(
+        contract_path=CONTRACT_PATH,
+        campaign_root=campaign_root,
+        output_root=tmp_path / "eval-2",
+    )
+    assert first_eval == second_eval
+    assert first_receipt == second_receipt
+    assert (tmp_path / "eval-1/evaluation.json").read_bytes() == (
+        tmp_path / "eval-2/evaluation.json"
+    ).read_bytes()
+    assert (tmp_path / "eval-1/receipt.json").read_bytes() == (
+        tmp_path / "eval-2/receipt.json"
+    ).read_bytes()
 
 
 @pytest.mark.parametrize(
