@@ -1133,3 +1133,10 @@ goal. External provider campaigns and spending remain separately gated.
   C922 device configuration lock through commit, initial start, and immediate
   post-start verification, then unlock before the callback window. Candidate,
   thresholds, one-session/no-retry budget, and closed authority are unchanged.
+- 2026-07-24T16:51:00-05:00 — Callback delivery v3 reached terminal degraded
+  on cadence only under exact implementation `a779dc5`. The lock-through-start
+  mechanism preserved 640×480 `420v` through start and across all 305 samples,
+  with zero drop callbacks. Exactly one of 304 PTS intervals—the first—was
+  66.0 ms above the frozen 50.0 ms gate; all remaining 303 passed. V3 is
+  exhausted. Format negotiation is repaired, but steady-state source cadence
+  still requires a separately preregistered warm-up-bounded measurement.

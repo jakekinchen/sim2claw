@@ -84,10 +84,14 @@ verdict, failed gates, and unchanged frozen evidence. The proof class remains
 
 ### Open Questions
 
-- Whether `startRunning()` preserves the exact device format while its
+- Resolved: `startRunning()` preserves the exact device format while the
   configuration lock is held.
-- Whether the session preset getter changes from `.high`.
-- Whether exact 640×480 operation restores sustained 30 fps callback cadence.
+- Resolved: the session preset getter remains `.high`; the lock window, not a
+  preset change, prevented override.
+- Resolved: steady-state cadence is near 30 fps, but the first scored PTS
+  interval was 66 ms and failed the unchanged strict maximum.
+- Open: whether a separately preregistered warm-up before the scored window
+  yields continuous in-gate cadence without hiding later gaps.
 
 ## Execution Rhythm
 
@@ -100,10 +104,10 @@ verdict, failed gates, and unchanged frozen evidence. The proof class remains
 ## Progress Ledger
 
 ```text
-Current state: Preregistered design pending commit; no v3 implementation or camera use.
-Completed: V2 terminal degraded and independently reviewed PASS.
-Evidence: v2 raw 593c3d3e; evaluation a889450f; receipt 5dd301ab / digest ae6dd332.
-Remaining: Commit preregistration; implement/test/commit; one observation; evaluate; close.
-Blockers: Any evidence drift or device/candidate mismatch forces abstention.
-Next step: Commit this prompt and contract.
+Current state: Terminal degraded on cadence only; one-session budget exhausted.
+Completed: Preregistration d6c1a08; exact implementation a779dc5; one observation/evaluation.
+Evidence: raw df6aac8d; evaluation b4cc0037; receipt 276611fd / digest 7c596566.
+Remaining: Seal state/log and obtain fresh read-only review.
+Blockers: First PTS interval 66 ms; remaining 303 intervals passed the 50 ms gate.
+Next step: Separately preregister a warm-up-bounded measurement window.
 ```

@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T16:35:00-05:00",
+  "updated_at": "2026-07-24T16:51:00-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
-  "current_milestone": "AVFOUNDATION_C922_CALLBACK_V2_TERMINAL_DEGRADED",
+  "current_milestone": "AVFOUNDATION_C922_CALLBACK_V3_FORMAT_VERIFIED_CADENCE_DEGRADED",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
@@ -3058,6 +3058,64 @@
         "task_success": false
       }
     },
+    "avfoundation_c922_callback_delivery_v3": {
+      "status": "terminal_format_verified_cadence_degraded_attempt_budget_exhausted",
+      "goal": "docs/autonomous-workflow/goal-loop-avfoundation-c922-callback-delivery-v3.md",
+      "contract": "configs/evaluations/avfoundation_c922_callback_delivery_v3.json",
+      "contract_sha256": "bfd1d6435b436f8dea09fd8357bd300d85333dab4d7ccfacdc748ea9d3344adf",
+      "preregistration_commit": "d6c1a08",
+      "implementation_and_execution_commit": "a779dc5ff351b61334ddcaf3e5462a624b949708",
+      "observer_source_sha256": "79da2c743ac5e16ef90fb56dfd77802e015e8e4fd7d9763ac23e5410ea29bb53",
+      "evaluator_sha256": "a2ffdce45eb6ceafafd034fee76ab5423a8b2a7f539db687b67ef31c1155a23f",
+      "compiled_binary_sha256": "e31f594bce795c43299eef7ceeafd3560f2e739678f4da1d3c51c16fcf532191",
+      "prelaunch_sha256": "0dbed725ca69e7bec859d51e9114692c2b881a94d9fcc3059a9cdcb26f0e9253",
+      "attempt_sha256": "da4f2b92931ec4fb87fb8e1f33ba5ddffa0caad6a9c252a562129571487130ae",
+      "raw_observation_sha256": "df6aac8d735dc1f157bbd5c76b5a333eb4abd9bca64f7997a253e06db16f3ae9",
+      "evaluation_sha256": "b4cc00376001cdfc531bdc22d6adc6bf9846fd7e2171d0d8ead222e2a6445fa2",
+      "receipt_sha256": "276611fd190c31ec9c7d76fa1b9c1154982974d1055b152f35d3d9ed0ff1eabe",
+      "receipt_digest": "7c5965661c987807c899c7b1a4ca019bb8f1fed1b47cb9b3898d17abf81000c6",
+      "verdict": "callback_delivery_degraded",
+      "failed_gates": [
+        "bounded_pts_interval"
+      ],
+      "observation_attempts_used": 1,
+      "observation_attempts_maximum": 1,
+      "capture_sessions_used": 1,
+      "source_output_callbacks": 305,
+      "source_drop_callbacks": 0,
+      "format_before_commit": "640x480_420v_0.03333330000003333s_exact_lock_held",
+      "format_after_commit": "640x480_420v_0.03333330000003333s_exact_lock_held",
+      "format_after_start": "640x480_420v_0.03333330000003333s_exact_lock_held",
+      "session_preset_all_stages": "AVCaptureSessionPresetHigh",
+      "delivered_dimensions": [
+        640,
+        480
+      ],
+      "delivered_subtype": "420v",
+      "pts_interval_count": 304,
+      "pts_intervals_within_gate": 303,
+      "pts_intervals_above_gate": 1,
+      "above_gate_interval_index": 0,
+      "median_pts_interval_seconds": 0.03300000005401671,
+      "mean_pts_interval_seconds": 0.034180811403769586,
+      "maximum_pts_interval_seconds": 0.0659999999916181,
+      "maximum_pts_interval_allowed_seconds": 0.049999950000049996,
+      "d405_lifecycle_operations_used": 0,
+      "robot_motion_trials_used": 0,
+      "simulator_replays_used": 0,
+      "provider_calls_used": 0,
+      "v3_retry_authorized": false,
+      "next_prerequisite": "separately_preregistered_warmup_bounded_callback_measurement_window",
+      "claim_limits": {
+        "camera_source_callback_delivery": true,
+        "container_timing": false,
+        "physical_exposure_continuity": false,
+        "cross_camera_synchronization": false,
+        "metric_depth": false,
+        "simulator_calibration": false,
+        "task_success": false
+      }
+    },
     "domain_status": {
       "geometry_scale": "missing",
       "kinematics": "partial",
@@ -3067,7 +3125,7 @@
       "task_ee_consequence": "failed"
     },
     "external_measurement_prerequisite": [
-      "c922_post_commit_format_or_input_priority_binding_before_start_v3",
+      "c922_warmup_bounded_steady_callback_delivery_verification_v4",
       "reliable_dual_camera_d405_completion_under_motion",
       "metric_board_object_and_camera_registration",
       "actuator_application_and_device_synchronized_timing",

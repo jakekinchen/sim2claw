@@ -126,13 +126,26 @@ one delivered sample. The evaluator failed `exact_format_after_start`,
 preregistered post-commit format/preset binding mechanism before session
 start; v2 cannot be retried. It remains source-callback evidence only.
 
+Callback-delivery v3 resolved that start-time format override. Keeping the
+associated device configuration lock through commit and initial start
+preserved exact `640×480 420v` format and `0.03333330000003333 s` frame
+duration at every lifecycle stage, and all `305` output samples retained the
+same format with zero Apple drop callbacks. Mean PTS interval improved to
+`0.034180811403769586 s`; median was about `0.033 s`. The frozen strict result
+is nevertheless `callback_delivery_degraded`: the first of `304` intervals was
+`0.0659999999916181 s`, above the `0.049999950000049996 s` maximum, while the
+remaining `303 / 303` intervals stayed within the gate. V3 is exhausted and
+cannot be retried. The format-negotiation prerequisite is closed; a separately
+preregistered warm-up-bounded measurement window is now required before
+source cadence can be verified.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
 measurements and does not convert partial progress into a percentage or a
 simulator/task claim. The next scientific step requires new, separately
-preregistered measurement work: bind the frozen C922 `420v` candidate after
-session commit without allowing start-time preset override; physically repair
+preregistered measurement work: verify steady callback cadence after a bounded
+C922 warm-up while retaining the proven lock-through-start mechanism; physically repair
 and strain-relieve the D405 path; then
 qualify a lifecycle-safe simultaneous capture design; and only
 afterward add metric registration, calibrated force/current/load
