@@ -1,0 +1,113 @@
+{
+  "schema_version": "sim2claw.avfoundation_c922_callback_delivery_contract.v1",
+  "contract_id": "current-100mm-c922-avfoundation-callback-delivery-20260724-v1",
+  "status": "preregistered_before_implementation_and_observation",
+  "baseline_commit": "7ad9757fb7d23d52f24635b4d4d234b1fe2983e0",
+  "purpose": "Measure one C922-only native AVFoundation callback stream using the exact sealed format-inventory v2 candidate.",
+  "sealed_inventory": {
+    "contract_path": "configs/evaluations/avfoundation_format_inventory_v2.json",
+    "contract_sha256": "ec25b9443f024972a8f4f6f9d7c1b600ad1893b4e7cb3e379f5be3db4c841dcd",
+    "raw_inventory_path": "outputs/avfoundation-format-inventory-v2/observed/raw/inventory.json",
+    "raw_inventory_sha256": "3754a62fa643359fa1f13484bd4f86ba7c1ab13d234b2a3f7f5b5bcb60e830a2",
+    "evaluation_path": "outputs/avfoundation-format-inventory-v2/evaluated/evaluation.json",
+    "evaluation_sha256": "3c59915c81f9d8073f02acd4ca3eae8b9c715db9485e9e838ca4638427e05d7d",
+    "receipt_path": "outputs/avfoundation-format-inventory-v2/evaluated/receipt.json",
+    "receipt_sha256": "14c8f82147611854ac4ecc317426f447ac4b3fbccef9cd133e1cd4026287e98f",
+    "receipt_digest": "9c42f8a55357f2508897a8515d3b7d3dba98bbe7409ba246c1c8b14ccec932ac",
+    "verdict": "supported_exact_or_fractional_rate_candidate",
+    "observation_reusable": false,
+    "candidate_identity_reusable": true
+  },
+  "device": {
+    "media_type": "video",
+    "exact_localized_name": "C922 Pro Stream Webcam",
+    "exact_unique_id": "0x8310000046d085c",
+    "exact_model_id": "UVC Camera VendorID_1133 ProductID_2140",
+    "exact_match_count_required": 1
+  },
+  "candidate": {
+    "format_index": 16,
+    "frame_rate_range_index": 0,
+    "width": 640,
+    "height": 480,
+    "media_subtype_fourcc": "420v",
+    "supported_fps": 30.00003000003,
+    "frame_duration_seconds": 0.03333330000003333
+  },
+  "observation": {
+    "duration_seconds": 10.0,
+    "always_discards_late_video_frames": true,
+    "output_pixel_format_fourcc": "420v",
+    "session_preset": "input_priority",
+    "typed_codable_primitive_artifacts_only": true,
+    "prelaunch_manifest_before_session": true,
+    "raw_observer_may_score": false
+  },
+  "evaluator": {
+    "minimum_output_callback_count": 240,
+    "maximum_dropped_callback_count_for_verified": 0,
+    "maximum_pts_interval_multiplier": 1.5,
+    "require_strictly_increasing_pts": true,
+    "require_numeric_pts_and_duration": true,
+    "require_all_output_dimensions_exact": true,
+    "require_all_output_subtypes_exact": true,
+    "verdicts": [
+      "callback_delivery_verified",
+      "callback_delivery_degraded",
+      "prerequisite_abstention"
+    ],
+    "threshold_changes_after_observation": false,
+    "observer_self_scoring": false
+  },
+  "required_event_types": [
+    "observer_started",
+    "authorization_observed",
+    "device_discovery_observed",
+    "format_applied",
+    "session_start_returned",
+    "sample_output",
+    "session_stop_returned",
+    "observer_finished"
+  ],
+  "operation_budget": {
+    "observation_attempts_maximum": 1,
+    "capture_sessions_maximum": 1,
+    "capture_duration_seconds_maximum": 10.0,
+    "source_callbacks_maximum": 600,
+    "d405_lifecycle_operations_maximum": 0,
+    "robot_motion_trials_maximum": 0,
+    "simulator_replays_maximum": 0,
+    "provider_calls_maximum": 0
+  },
+  "runtime_identity": {
+    "platform": "macos",
+    "swift_version_prefix": "Apple Swift version 6.3",
+    "observer_source_path": "tools/macos/AVFoundationCallbackDeliveryV1.swift",
+    "evaluator_path": "src/sim2claw/avfoundation_callback_delivery_v1.py",
+    "compiler_path": "/usr/bin/swiftc",
+    "source_evaluator_and_binary_sha256_frozen_at_observation_commit": true
+  },
+  "claim_limits": {
+    "camera_source_callback_delivery": true,
+    "container_timing": false,
+    "physical_exposure_continuity": false,
+    "cross_camera_synchronization": false,
+    "metric_depth": false,
+    "simulator_calibration": false,
+    "task_success": false
+  },
+  "authority": {
+    "c922_capture_session": true,
+    "camera_frame_callback_observation": true,
+    "d405_lifecycle": false,
+    "robot_gateway": false,
+    "robot_motion": false,
+    "simulator_replay": false,
+    "simulator_parameter_promotion": false,
+    "training": false,
+    "provider_calls": false,
+    "paid_compute": false,
+    "task_score_change": false,
+    "physical_task_authority": false
+  }
+}

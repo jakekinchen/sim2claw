@@ -1098,3 +1098,11 @@ goal. External provider campaigns and spending remain separately gated.
   observation and zero capture sessions, frames, D405 operations, motion,
   simulator replays, or providers. This closes the format prerequisite only;
   callback delivery and timing remain unmeasured and require new authority.
+- 2026-07-24T16:02:00-05:00 — Opened the separately versioned C922 callback
+  delivery transaction from reviewed Studio baseline `7ad9757`. The contract
+  binds the sealed format-inventory v2 candidate exactly: format 16 / range 0,
+  `640×480`, `420v`, `30.00003000003 fps`. It freezes one ten-second C922-only
+  session, no retry, typed raw callbacks, and evaluator-owned delivery gates.
+  D405 lifecycle, robot motion, simulator replay, provider, training,
+  promotion, task-score, and physical-task authority remain closed. No
+  observer implementation exists and no camera session has started.
