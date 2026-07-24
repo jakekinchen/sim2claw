@@ -192,9 +192,9 @@
     },
     "publication_refresh": {
       "studio_manifest_sha256": "127b2faa0fbfcff3b946184920b3c3d324d5bcc62ff6745940499be4f0bf0422",
-      "studio_receipt_sha256": "453e9ccde854c4f5914eed239fb15d3d53ef58a7bc1bdb43d07390897db76176",
+      "studio_receipt_sha256": "309ee505e49335589aedf7e30e03d03b0d464989ac5f7e6f135cfa6fc86962ab",
       "publication_package_sha256": "98173b9d5dca97c75ce8aa579fd727b02a32ff96474e3025283d590ebdd8f833",
-      "publication_receipt_sha256": "97b65f6413184b8b0f5547feb0dabeccf606a65ea57ddf5774a4467db85b449b"
+      "publication_receipt_sha256": "43308ac8e0d8c04df3e8645987cbc56dafcfc0165f023e70947541ab765da9f3"
     },
     "frozen_s2_root_manifests": {
       "benchmark_v2": "45cc7dfa2cd8a8c2f158462a2fc30c071a685388fddfaae19a91fe710472d48b",

@@ -183,3 +183,9 @@ not a score-changing task episode.
   receipt SHA-256 is
   `3fafb113a7b89e0b80640b9c7b4cc2016db16ecafcb9f46cba79a79a1330499f`;
   task score remains 0/11 because the board endpoint did not change.
+- 2026-07-24 — Physical recording `20260724T050132Z-02baf745` saved 911
+  synchronized rows with fresh current, a 1,625-frame C922 video, a 54.6-second
+  lossless D405 source, and a verified 270-frame D405 browser derivative.
+  Telemetry contains six high/low gripper excursions. Because the operator
+  receipt labels it `full_episode / success / C2→C1`, it remains an intact
+  unqualified observation rather than an admitted five-cycle measurement.

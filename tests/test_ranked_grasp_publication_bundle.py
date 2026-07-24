@@ -105,20 +105,44 @@ def test_physical_comparison_pairs_only_verified_publication_evidence() -> None:
     manifest_by_recording = {
         row["recording_id"]: row for row in manifest["episodes"]
     }
+    retained_catalog = json.loads(
+        (
+            REPO_ROOT
+            / "configs/data/physical_pawn_move_catalog_20260719.json"
+        ).read_text(encoding="utf-8")
+    )
+    retained_recording_ids = {
+        row["recording_id"] for row in retained_catalog["episodes"]
+    }
     physical = [
         row
         for row in catalog["episodes"]
         if row["task_id"] == "physical_pawn_episode_library_v1"
     ]
-    paired = [
+    retained_cohort = [
         row
         for row in physical
+        if row["source_recording_id"] in retained_recording_ids
+    ]
+    paired = [
+        row
+        for row in retained_cohort
         if row["comparison"]["physics_replay"]["available"]
     ]
+    later_recordings = [
+        row
+        for row in physical
+        if row["source_recording_id"] not in retained_recording_ids
+    ]
 
-    assert len(physical) == 18
+    assert len(physical) >= 18
+    assert len(retained_cohort) == 18
     assert len(paired) == 7
-    assert len(physical) - len(paired) == 11
+    assert len(retained_cohort) - len(paired) == 11
+    assert all(
+        row["comparison"]["physics_replay"]["available"] is False
+        for row in later_recordings
+    )
     assert all("_binding_sources" not in row for row in catalog["episodes"])
     for row in paired:
         physics = row["comparison"]["physics_replay"]

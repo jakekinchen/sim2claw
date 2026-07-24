@@ -49,6 +49,14 @@
   simultaneous probe completed with 206 C922 frames and 34 D405 frames, both
   live Studio previews reached `Live`, and no serial bus, torque, or robot
   motion was used for this checkpoint.
+- Empty-gripper observation checkpoint: owner recording
+  `20260724T050132Z-02baf745` retained 911 rows, fresh 5 Hz current, 1,625 C922
+  frames, and a verified 270-frame D405 browser stream derived from its
+  lossless source. Twelve threshold crossings form six full gripper
+  excursions. The saved `full_episode / success / C2→C1` label does not match
+  the preregistered five-cycle measurement, so no measurement budget,
+  calibration, posterior, training, promotion, or strict task score is
+  admitted from it yet.
 - Status: active after a dual-camera terminal negative. The board endpoint was
   unchanged; wrist evidence plus 5-8 degree critical-window tracking lag
   isolates approach timing and grasp retention as the next measurement target
