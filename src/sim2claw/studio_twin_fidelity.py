@@ -262,6 +262,12 @@ def _hil_identifiability_projection(
     fault_chronology = _as_mapping(
         decomposition_packet.get("fault_chronology")
     )
+    fault_events = _as_rows(fault_chronology.get("events"))
+    fault_event_summary = " → ".join(
+        f"{str(row.get('event') or '').replace('_', ' ')} "
+        f"@ {row.get('sample_index')}"
+        for row in fault_events
+    )
     pre_fault_lag = _as_mapping(
         fault_chronology.get("pre_fault_best_lag")
     )
@@ -515,6 +521,12 @@ def _hil_identifiability_projection(
             detail=(
                 "Fresh motor-register values were captured and are useful for "
                 "diagnosis, but they are not torque or contact-force measurements."
+                + (
+                    f" Index-aligned chronology: {fault_event_summary}. This "
+                    "ordering is correlation, not causality."
+                    if fault_event_summary
+                    else ""
+                )
             ),
             measurements=[
                 _measurement(

@@ -381,6 +381,20 @@ def _hil_bundle(
                             ),
                         },
                         "fault_chronology": {
+                            "events": (
+                                [
+                                    {
+                                        "event": "first_gateway_rate_limit",
+                                        "sample_index": 59,
+                                    },
+                                    {
+                                        "event": "first_stall_warning",
+                                        "sample_index": 99,
+                                    },
+                                ]
+                                if packet_id == "HIL-ELBOW-FLEX-22"
+                                else []
+                            ),
                             "pre_fault_best_lag": {
                                 "lag_samples": (
                                     7
@@ -555,6 +569,10 @@ def test_hil_rejected_packet_and_action_mismatch_fail_closed() -> None:
     )
     assert rejected["evidence_status"] == "physical_packet_rejected"
     assert rejected["domains"][1]["status"] == "failed"
+    assert "first gateway rate limit @ 59" in rejected["domains"][4][
+        "detail"
+    ]
+    assert "correlation, not causality" in rejected["domains"][4]["detail"]
     assert rejected["evaluator"]["admitted_evaluator_owned_evidence"] == 0
     mismatch = _hil_identifiability_projection(
         _hil_episode("HIL-GRIPPER-05", action_sha256="9" * 64),
