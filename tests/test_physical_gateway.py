@@ -308,6 +308,53 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertEqual(recovered["current_telemetry_missed_samples"], 0)
         gateway.close()
 
+    def test_sample_exposes_ordered_host_timestamps_without_claiming_actuator_ack(
+        self,
+    ) -> None:
+        tick = [100.0]
+
+        def clock() -> float:
+            tick[0] += 0.001
+            return tick[0]
+
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            clock=clock,
+        )
+        gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        sample = gateway.sample(0.05)
+        timestamps = sample["observability_timestamps"]
+        ordered = [
+            timestamps["sample_started_monotonic_seconds"],
+            timestamps["leader_read_completed_monotonic_seconds"],
+            timestamps["follower_command_call_started_monotonic_seconds"],
+            timestamps["follower_command_call_completed_monotonic_seconds"],
+            timestamps["follower_position_read_completed_monotonic_seconds"],
+            timestamps["current_read_started_monotonic_seconds"],
+            timestamps["current_read_completed_monotonic_seconds"],
+            timestamps["sample_completed_monotonic_seconds"],
+        ]
+        self.assertEqual(ordered, sorted(ordered))
+        self.assertTrue(sample["current_telemetry_refreshed_this_sample"])
+        self.assertEqual(
+            timestamps["clock_source"],
+            "python_time_monotonic_same_host_process",
+        )
+        self.assertFalse(
+            timestamps["actuator_application_or_ack_timestamp_available"]
+        )
+        self.assertFalse(timestamps["device_clock_synchronized"])
+
+        cached = gateway.sample(0.06)
+        self.assertFalse(cached["current_telemetry_refreshed_this_sample"])
+        self.assertIsNone(
+            cached["observability_timestamps"][
+                "current_read_completed_monotonic_seconds"
+            ]
+        )
+        gateway.close()
+
     def test_runtime_current_can_be_disabled_for_recorded_replay(self) -> None:
         gateway = SO101PhysicalGateway(
             self.identity,

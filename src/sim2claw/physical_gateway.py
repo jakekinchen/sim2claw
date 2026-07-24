@@ -302,6 +302,7 @@ class SO101PhysicalGateway:
         *,
         device_factory: DeviceFactory = _lerobot_devices,
         sleep: SleepFunction = time.sleep,
+        clock: Callable[[], float] = time.monotonic,
         configure_devices: bool = True,
         current_telemetry_hz: float = CURRENT_TELEMETRY_HZ,
     ):
@@ -310,6 +311,7 @@ class SO101PhysicalGateway:
         self.identity = identity
         self.leader, self.follower = device_factory(identity)
         self.sleep = sleep
+        self.clock = clock
         self.configure_devices = configure_devices
         if current_telemetry_hz < 0.0:
             raise PhysicalGatewayError("Current telemetry rate cannot be negative.")
@@ -329,6 +331,8 @@ class SO101PhysicalGateway:
         self.stall_command_direction = np.zeros(6, dtype=np.float64)
         self.current_telemetry: dict[str, float] | None = None
         self.current_telemetry_elapsed: float | None = None
+        self.current_telemetry_read_started_monotonic: float | None = None
+        self.current_telemetry_read_completed_monotonic: float | None = None
         self.current_telemetry_missed_samples = 0
         self.current_telemetry_stale = False
         self.bus_read_retries_total = 0
@@ -412,7 +416,7 @@ class SO101PhysicalGateway:
         self.previous_actual = follower.copy()
         self.previous_command = follower.copy()
         self.previous_elapsed_seconds = 0.0
-        self.previous_time = time.monotonic()
+        self.previous_time = self.clock()
         registration = paired_pose_registration_report(leader, follower)
 
         current = self._read_optional("Present_Current")
@@ -490,7 +494,7 @@ class SO101PhysicalGateway:
             self.previous_actual = actual.copy()
             self.previous_command = actual.copy()
             self.previous_elapsed_seconds = 0.0
-            self.previous_time = time.monotonic()
+            self.previous_time = self.clock()
             self.stall_anchor_actual = actual.copy()
             self.stall_started_at[:] = np.nan
             self.stall_command_direction[:] = 0.0
@@ -664,30 +668,33 @@ class SO101PhysicalGateway:
 
     def _runtime_current(
         self, elapsed_seconds: float
-    ) -> tuple[dict[str, float] | None, bool]:
+    ) -> tuple[dict[str, float] | None, bool, bool]:
         if self.current_telemetry_hz == 0.0:
-            return None, True
+            return None, True, False
         period = 1.0 / self.current_telemetry_hz
         due = (
             self.current_telemetry_elapsed is None
             or elapsed_seconds - self.current_telemetry_elapsed >= period
         )
         if not due:
-            return self.current_telemetry, self.current_telemetry_stale
+            return self.current_telemetry, self.current_telemetry_stale, False
+        self.current_telemetry_read_started_monotonic = self.clock()
         try:
             self.current_telemetry = self._read_optional("Present_Current")
+            self.current_telemetry_read_completed_monotonic = self.clock()
             self.current_telemetry_elapsed = elapsed_seconds
             self.current_telemetry_missed_samples = 0
             self.current_telemetry_stale = False
-            return self.current_telemetry, False
+            return self.current_telemetry, False, True
         except (ConnectionError, OSError):
             # Current is diagnostic telemetry. Motion-critical position reads
             # still fail closed, but one missing current packet must not end an
             # otherwise healthy recording.
             self.current_telemetry_elapsed = elapsed_seconds
+            self.current_telemetry_read_completed_monotonic = self.clock()
             self.current_telemetry_missed_samples += 1
             self.current_telemetry_stale = True
-            return self.current_telemetry, True
+            return self.current_telemetry, True, True
 
     def _motion_read(
         self,
@@ -732,8 +739,10 @@ class SO101PhysicalGateway:
             or self.previous_actual is None
         ):
             raise PhysicalGatewayError("Physical gateway is not armed.")
+        sample_started_monotonic = self.clock()
         retries_before = self.bus_read_retries_total
         leader = self._motion_read("leader position", self.leader.get_action)
+        leader_read_completed_monotonic = self.clock()
         requested, relative_delta = bounded_relative_target(
             leader,
             self.leader_start,
@@ -750,8 +759,11 @@ class SO101PhysicalGateway:
             lower_limits=self.lower_limits,
             upper_limits=self.upper_limits,
         )
+        command_call_started_monotonic = self.clock()
         sent = action_vector(self.follower.send_action(_position_dict(command)))
+        command_call_completed_monotonic = self.clock()
         actual = self._motion_read("follower position", self.follower.get_observation)
+        position_read_completed_monotonic = self.clock()
         _finite(sent, "follower command")
 
         requested_sent_delta = requested - sent
@@ -828,7 +840,7 @@ class SO101PhysicalGateway:
                 f"{STALL_TIMEOUT_SECONDS:.1f} seconds; torque released."
             )
 
-        now = time.monotonic()
+        now = self.clock()
         dt = max(now - (self.previous_time or now), 1e-6)
         actual_delta = actual - previous
         actual_delta[4] = shortest_delta_degrees(
@@ -836,7 +848,10 @@ class SO101PhysicalGateway:
             float(previous[4]),
         )
         velocity = actual_delta / dt
-        current, current_stale = self._runtime_current(elapsed_seconds)
+        current, current_stale, current_refreshed = self._runtime_current(
+            elapsed_seconds
+        )
+        sample_completed_monotonic = self.clock()
         self.previous_actual = actual.copy()
         self.previous_command = sent.copy()
         self.previous_elapsed_seconds = elapsed_seconds
@@ -862,7 +877,37 @@ class SO101PhysicalGateway:
                 else max(0.0, elapsed_seconds - self.current_telemetry_elapsed)
             ),
             "current_telemetry_stale": current_stale,
+            "current_telemetry_refreshed_this_sample": current_refreshed,
             "current_telemetry_missed_samples": self.current_telemetry_missed_samples,
+            "observability_timestamps": {
+                "clock_source": "python_time_monotonic_same_host_process",
+                "sample_started_monotonic_seconds": sample_started_monotonic,
+                "leader_read_completed_monotonic_seconds": (
+                    leader_read_completed_monotonic
+                ),
+                "follower_command_call_started_monotonic_seconds": (
+                    command_call_started_monotonic
+                ),
+                "follower_command_call_completed_monotonic_seconds": (
+                    command_call_completed_monotonic
+                ),
+                "follower_position_read_completed_monotonic_seconds": (
+                    position_read_completed_monotonic
+                ),
+                "current_read_started_monotonic_seconds": (
+                    self.current_telemetry_read_started_monotonic
+                    if current_refreshed
+                    else None
+                ),
+                "current_read_completed_monotonic_seconds": (
+                    self.current_telemetry_read_completed_monotonic
+                    if current_refreshed
+                    else None
+                ),
+                "sample_completed_monotonic_seconds": sample_completed_monotonic,
+                "actuator_application_or_ack_timestamp_available": False,
+                "device_clock_synchronized": False,
+            },
             "bus_read_retries_this_sample": (
                 self.bus_read_retries_total - retries_before
             ),
@@ -1161,7 +1206,7 @@ class SO101PhysicalGateway:
         self.previous_actual = registered_follower.copy()
         self.previous_command = registered_follower.copy()
         self.previous_elapsed_seconds = 0.0
-        self.previous_time = time.monotonic()
+        self.previous_time = self.clock()
         self.stall_anchor_actual = registered_follower.copy()
         self.stall_started_at[:] = np.nan
         self.stall_command_direction[:] = 0.0
