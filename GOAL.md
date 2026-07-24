@@ -1,6 +1,27 @@
 # sim2claw Goal
 
-Status: `CURRENT 100 MM MEASUREMENT ACTIVE; STUDIO PROJECT MAP IMPLEMENTATION CANDIDATE; TASK SCORE 0/11`
+Status: `FOUR-HOUR HIL IDENTIFIABILITY ACTIVE; TASK SCORE 0/11`
+
+## Active four-hour HIL identifiability loop
+
+From `2026-07-24T02:37:10-05:00` through at least
+`2026-07-24T06:37:10-05:00`, record exactly four additional bounded unloaded
+physical packets—gripper, shoulder lift, elbow flex, and wrist flex—then use
+their content-addressed evidence to close only the simulator factors they
+actually identify. The authoritative prompt is
+[`docs/autonomous-workflow/goal-loop-four-hour-hil-identifiability.md`](docs/autonomous-workflow/goal-loop-four-hour-hil-identifiability.md).
+
+The owner authorized the physical tests and guaranteed the chessboard workcell
+will remain clear. Motion still requires the exact identified follower,
+calibration, torque-off, dual-camera, action-envelope, telemetry, controlled
+return, and evaluator gates. Each packet gets one attempt and no adaptive
+retry. The arm is powered only during the short packets; the remaining loop is
+offline evidence integration, action-identical simulator comparison, Studio
+observability, and verification.
+
+The strict task score remains `0/11`. These unloaded measurements cannot by
+themselves prove pawn transport, physical transfer, training admission, or
+simulator promotion. Frozen S2 evidence remains read-only.
 
 ## Active Studio project mapping
 

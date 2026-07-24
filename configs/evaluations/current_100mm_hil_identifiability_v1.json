@@ -1,0 +1,139 @@
+{
+  "schema_version": "sim2claw.current_100mm_hil_identifiability.v1",
+  "contract_id": "current-100mm-hil-identifiability-20260724-v1",
+  "status": "preregistered_zero_new_physical_attempts",
+  "goal": "docs/autonomous-workflow/goal-loop-four-hour-hil-identifiability.md",
+  "baseline_commit": "7ead2d75a360b88f1b38f2061510e002dbb40ff0",
+  "window": {
+    "started_at": "2026-07-24T02:37:10-05:00",
+    "earliest_terminal_exit_at": "2026-07-24T06:37:10-05:00",
+    "minimum_seconds": 14400,
+    "idle_torque_on_for_time_requirement": false
+  },
+  "owner_authority": {
+    "physical_tests_authorized": true,
+    "minimum_recorded_additional_tests": 4,
+    "workcell_clear_guaranteed": true,
+    "workcell_clear_scope": "no_person_or_object_will_enter_the_chessboard_workcell_during_powered_packets"
+  },
+  "hardware_identity": {
+    "leader_port": "/dev/cu.usbmodem5B3D0448141",
+    "follower_port": "/dev/cu.usbmodem5B3D0406411",
+    "leader_calibration_sha256": "732c6e862436dbbaf06c6afcd7ae81dc8341f09ca8d812170f48b371091a8339",
+    "follower_calibration_sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4",
+    "gateway_schema": "sim2claw.so101_physical_gateway.v2",
+    "lerobot_version": "0.6.0"
+  },
+  "camera_identity": {
+    "overhead_name": "C922 Pro Stream Webcam",
+    "overhead_mode": "640x480@30_nv12_rotated_180",
+    "wrist_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+    "wrist_mode": "424x240@5_uyvy422",
+    "wrist_metric_depth": false,
+    "camera_to_gripper_extrinsics_available": false
+  },
+  "action_materialization": {
+    "sample_hz": 20,
+    "dtype": "float64",
+    "joint_order": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "start_binding": "one_torque_off_follower_read_immediately_before_each_packet",
+    "non_target_joints": "captured_start_value",
+    "interpolation": "cubic_smoothstep",
+    "pre_hold_seconds": 2.0,
+    "post_return_hold_seconds": 2.0,
+    "adaptive_amplitude": false,
+    "post_result_suffix": false,
+    "action_assistance": false
+  },
+  "packets": [
+    {
+      "packet_id": "HIL-GRIPPER-05",
+      "target_joint": "gripper",
+      "offset_sequence": [0.0, 20.0, 0.0, 20.0, 0.0, 20.0, 0.0, 20.0, 0.0, 20.0, 0.0],
+      "ramp_seconds": 0.8,
+      "hold_seconds": 0.4,
+      "required_position_span": 12.0,
+      "hypothesis": "Repeated unloaded jaw motion identifies gripper delay, aperture range, hysteresis, and current baseline without contact confounding."
+    },
+    {
+      "packet_id": "HIL-SHOULDER-LIFT-22",
+      "target_joint": "shoulder_lift",
+      "offset_sequence": [0.0, 22.0, 0.0],
+      "ramp_seconds": 2.0,
+      "hold_seconds": 1.0,
+      "required_position_span": 15.0,
+      "hypothesis": "Moving away from the calibrated lower endpoint and returning identifies the previously zero-span shoulder-lift range and unloaded gravity response."
+    },
+    {
+      "packet_id": "HIL-ELBOW-FLEX-22",
+      "target_joint": "elbow_flex",
+      "offset_sequence": [0.0, -22.0, 0.0],
+      "ramp_seconds": 2.0,
+      "hold_seconds": 1.0,
+      "required_position_span": 15.0,
+      "hypothesis": "Moving away from the calibrated upper endpoint and returning increases elbow coverage beyond the prior ten-degree identifiability failure."
+    },
+    {
+      "packet_id": "HIL-WRIST-FLEX-30",
+      "target_joint": "wrist_flex",
+      "offset_sequence": [0.0, 15.0, -15.0, 0.0],
+      "ramp_seconds": 1.5,
+      "hold_seconds": 0.75,
+      "required_position_span": 20.0,
+      "hypothesis": "Symmetric wrist-flex excitation separates sign-dependent tracking and deadband from the approach-timing residual."
+    }
+  ],
+  "budget": {
+    "physical_packet_attempts": 4,
+    "successful_packet_target": 4,
+    "adaptive_retries": 0,
+    "replacement_packets": 0,
+    "provider_calls": 0,
+    "retained_c2_replays": 0,
+    "new_parameter_families_after_results": 0
+  },
+  "safe_return": {
+    "normal": "end_at_captured_start_and_hold_two_seconds_before_torque_release",
+    "camera_or_evaluator_failure": "controlled_return_to_captured_start_then_hold_three_seconds_if_bus_health_allows",
+    "bus_or_position_feedback_failure": "release_torque_after_bounded_gateway_retries_because_commanded_hold_cannot_be_verified",
+    "never_release_immediately_for_inferred_drop_only": true
+  },
+  "packet_admission": {
+    "exact_action_hash_required": true,
+    "device_and_calibration_identity_required": true,
+    "both_video_reports_completed": true,
+    "overhead_frame_coverage_fraction_minimum": 0.8,
+    "wrist_frame_coverage_fraction_minimum": 0.8,
+    "current_refresh_coverage_fraction_minimum": 0.8,
+    "body_final_residual_degrees_maximum": 3.0,
+    "gripper_final_residual_maximum": 5.0,
+    "bus_retry_count_maximum": 3,
+    "stall_abort_allowed_as_admitted_success": false,
+    "return_to_start_required": true
+  },
+  "simulator_evaluation": {
+    "action_bytes_identical_across_variants": true,
+    "cpu_fp32_evaluator_independent": true,
+    "fit_uses_admitted_packets_only": true,
+    "candidate_frozen_before_scoring": true,
+    "per_joint_non_regression_required": true,
+    "lower_rms_alone_is_diagnostic": true,
+    "task_score_change_allowed": false
+  },
+  "authority": {
+    "physical_packet_execution": true,
+    "unbounded_task_replay": false,
+    "training": false,
+    "promotion": false,
+    "provider": false,
+    "paid_compute": false,
+    "push": false
+  }
+}

@@ -1,11 +1,61 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T02:42:00-05:00",
-  "active_campaign": "current_100mm_physical_measurement_calibration",
-  "current_milestone": "D9_OVERNIGHT_EMPTY_GRIPPER_RANGE_IDENTIFIABILITY_TERMINAL_DIAGNOSTIC",
+  "updated_at": "2026-07-24T02:39:00-05:00",
+  "active_campaign": "current_100mm_four_hour_hil_identifiability",
+  "current_milestone": "D10_HIL_PREREGISTRATION_ZERO_NEW_PHYSICAL_ATTEMPTS",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
+  "four_hour_hil_transaction": {
+    "schema_version": "sim2claw.four_hour_hil_transaction.v1",
+    "status": "preregistering_zero_new_physical_attempts",
+    "goal": "docs/autonomous-workflow/goal-loop-four-hour-hil-identifiability.md",
+    "goal_sha256": "b367b88e166449036fd8ad914d180acd3688bd3f5111dd30f54b2523bc702989",
+    "contract": "configs/evaluations/current_100mm_hil_identifiability_v1.json",
+    "contract_sha256": "bca343538955b5e7ea108f5c8be6f519a04a8e2892790520c1d46d5b67dee5d5",
+    "baseline_commit": "7ead2d75a360b88f1b38f2061510e002dbb40ff0",
+    "started_at": "2026-07-24T02:37:10-05:00",
+    "earliest_terminal_exit_at": "2026-07-24T06:37:10-05:00",
+    "owner_authority": {
+      "physical_tests": true,
+      "workcell_clear_guaranteed": true,
+      "minimum_recorded_tests": 4
+    },
+    "packet_budget": {
+      "packet_count": 4,
+      "attempts_used": 0,
+      "completed": 0,
+      "adaptive_retries": 0,
+      "provider_calls": 0
+    },
+    "packets": [
+      "HIL-GRIPPER-05",
+      "HIL-SHOULDER-LIFT-22",
+      "HIL-ELBOW-FLEX-22",
+      "HIL-WRIST-FLEX-30"
+    ],
+    "preflight": {
+      "device_identity_match": true,
+      "calibration_identity_match": true,
+      "follower_torque_enabled": false,
+      "overhead_camera_discovered": true,
+      "wrist_camera_discovered": true,
+      "studio_recorder_idle": true,
+      "s2_frozen_hash_count": 11,
+      "s2_campaign_event_count": 1,
+      "s2_anchor_replay_count": 4,
+      "s2_measurement_trial_count": 0
+    },
+    "authority": {
+      "physical_packet_execution": true,
+      "unbounded_task_replay": false,
+      "training": false,
+      "promotion": false,
+      "provider": false,
+      "paid_compute": false,
+      "push": false
+    }
+  },
   "studio_project_map_transaction": {
     "schema_version": "sim2claw.studio_project_map_transaction.v1",
     "status": "implementation_frozen_exact_head_receipts_own_verification",

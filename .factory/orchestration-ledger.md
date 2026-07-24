@@ -1,5 +1,38 @@
 # Orchestration Ledger
 
+## Active bounded transaction — four-hour HIL identifiability
+
+- Owner objective: work for at least four hours, perform and record at least
+  four additional physical tests, integrate the data against the current
+  simulator, and pursue evaluator-owned sim-to-real gains.
+- Window: `2026-07-24T02:37:10-05:00` through no earlier than
+  `2026-07-24T06:37:10-05:00`; torque-on time is limited to four short
+  preregistered packets.
+- Baseline: local `main@7ead2d75a360b88f1b38f2061510e002dbb40ff0`,
+  nineteen commits ahead of
+  `origin/main@694fa5a4372056fa1484711053f2d340e2044232`; sole repository writer.
+- Physical scope: one gripper packet, one shoulder-lift packet, one elbow-flex
+  packet, and one wrist-flex packet. Each uses a start-bound exact float64
+  tensor, the reviewed gateway, C922 plus D405 capture, timestamped current and
+  joint telemetry, and a return/hold before torque release.
+- Frozen preregistration: contract SHA-256
+  `bca343538955b5e7ea108f5c8be6f519a04a8e2892790520c1d46d5b67dee5d5`;
+  goal SHA-256
+  `b367b88e166449036fd8ad914d180acd3688bd3f5111dd30f54b2523bc702989`;
+  zero new physical attempts at freeze.
+- Safety: the owner guarantees the chessboard workcell remains clear. Device,
+  calibration, torque-off, action-envelope, camera, telemetry, and
+  controlled-return gates remain fail closed. An aborted or camera-incomplete
+  packet consumes its one attempt; no adaptive retry is authorized.
+- Proof target: unloaded actuator identifiability and action-frozen simulator
+  consequence only. The strict task score stays `0/11`; force, contact,
+  deformation, metric wrist depth, and camera extrinsics remain unavailable.
+- Frozen evidence: S2 remains `11/11` byte-identical files and
+  `1 event / 4 replays / 0 measurement trials`.
+- Authority: four bounded packets and read-only/offline evaluation are open.
+  Unbounded task replay, another retained-C2 family, provider, paid compute,
+  training, promotion, push, and VideoSim work remain closed.
+
 ## Active bounded transaction — Studio project map and agent access
 
 - Owner objective: make Studio reflect every major sim-to-real stage and show
