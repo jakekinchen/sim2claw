@@ -14,6 +14,13 @@ contract permits one ten-second capture session and at most 600 callbacks. It
 permits no D405 lifecycle operation, robot motion, simulator replay, provider
 call, training, promotion, task-score change, or retry.
 
+Static implementation work confirmed that macOS marks direct assignment of
+`AVCaptureSessionPresetInputPriority` unavailable. On macOS, setting the
+device's `activeFormat` makes the associated session input-priority
+automatically. The preregistration wording was corrected before any observer
+implementation commit or camera access; the candidate, budget, evaluator
+gates, and authority are unchanged.
+
 The independent evaluator will report verified delivery, degraded delivery,
 or prerequisite abstention. Even a verified result proves only native
 camera-source callback delivery; it does not prove container timing, physical

@@ -38,7 +38,7 @@
     "duration_seconds": 10.0,
     "always_discards_late_video_frames": true,
     "output_pixel_format_fourcc": "420v",
-    "session_preset": "input_priority",
+    "session_preset": "automatically_input_priority_after_active_format_on_macos",
     "typed_codable_primitive_artifacts_only": true,
     "prelaunch_manifest_before_session": true,
     "raw_observer_may_score": false
