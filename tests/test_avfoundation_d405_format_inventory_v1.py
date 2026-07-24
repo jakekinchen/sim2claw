@@ -384,6 +384,34 @@ def test_evaluator_abstains_when_observer_failed_without_raw(
     assert evaluation["format_count"] is None
 
 
+@pytest.mark.parametrize("mutation", ["path", "sha_integer", "sha_false"])
+def test_evaluator_rejects_absent_raw_manifest_contradiction(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    mutation: str,
+) -> None:
+    monkeypatch.chdir(ROOT)
+    observed = _materialize(tmp_path, return_code=-6, raw_available=False)
+    attempt_path = observed / "attempt.json"
+    attempt = json.loads(attempt_path.read_text(encoding="utf-8"))
+    if mutation == "path":
+        attempt["raw_inventory_path"] = "substituted.json"
+    elif mutation == "sha_integer":
+        attempt["raw_inventory_sha256"] = 7
+    else:
+        attempt["raw_inventory_sha256"] = False
+    _write(attempt_path, attempt)
+    with pytest.raises(
+        AVFoundationFormatInventoryError,
+        match="raw inventory path|raw availability",
+    ):
+        evaluate_d405_format_inventory(
+            contract_path=CONTRACT,
+            observation_root=observed,
+            output_root=tmp_path / "evaluated",
+        )
+
+
 def test_evaluator_accepts_exact_empty_match_count_abstention(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

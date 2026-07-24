@@ -358,11 +358,21 @@ def evaluate_d405_format_inventory(
         raise AVFoundationFormatInventoryError(
             "D405 attempt status contradicts raw availability."
         )
-    if raw_available != isinstance(attempt.get("raw_inventory_sha256"), str):
+    raw_sha256 = attempt.get("raw_inventory_sha256")
+    if attempt.get("raw_inventory_path") != "raw/inventory.json":
+        raise AVFoundationFormatInventoryError(
+            "D405 raw inventory path changed."
+        )
+    if raw_available and (
+        not isinstance(raw_sha256, str)
+        or len(raw_sha256) != 64
+        or any(character not in "0123456789abcdef" for character in raw_sha256)
+    ):
+        raise AVFoundationFormatInventoryError("D405 raw availability changed.")
+    if not raw_available and raw_sha256 is not None:
         raise AVFoundationFormatInventoryError("D405 raw availability changed.")
     if raw_available and (
-        attempt.get("raw_inventory_path") != "raw/inventory.json"
-        or _sha256_file(raw_path) != attempt.get("raw_inventory_sha256")
+        _sha256_file(raw_path) != raw_sha256
     ):
         raise AVFoundationFormatInventoryError("D405 raw identity changed.")
 
