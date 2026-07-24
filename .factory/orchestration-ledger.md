@@ -1032,3 +1032,12 @@ goal. External provider campaigns and spending remain separately gated.
   `Codable` structs, `JSONEncoder`, explicit primitive conversions, and a
   content-addressed attempt manifest written before observer launch. No v2
   implementation or device enumeration has occurred.
+- 2026-07-24T13:08:51-05:00 — Froze the AVFoundation format inventory v2
+  implementation at `995e8bb` before device access. The source uses only
+  concrete `Codable` fields and `JSONEncoder`; macOS-unavailable format
+  metadata is encoded as typed null and excluded from the frozen candidate
+  rule. The runner persists the exact runtime/budget/authority identity before
+  launch and finalizes it after any observer return. Swift typecheck, 15 direct
+  adversarial tests, and 138 combined inventory/camera/HIL/Studio tests pass.
+  Inventory use remains `0 / 1`; capture sessions, samples, D405 lifecycle
+  operations, motion, simulator replays, and provider calls remain zero.

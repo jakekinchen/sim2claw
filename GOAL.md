@@ -85,11 +85,15 @@ Swift bridge value before writing raw inventory. A separately committed
 fail-closed sealer recorded `prerequisite_abstention`, zero usable inventory,
 and no candidate. No second v1 observation is permitted.
 
-A separately versioned v2 prerequisite is now frozen before implementation.
-It preserves the same exact-device, 640×480, `0.05 fps`, and one-observation
-method, but requires concrete Swift `Codable` structs, `JSONEncoder`, explicit
-primitive conversions, and a pre-launch attempt manifest. It uses new source
-and evaluator paths and cannot mutate or reinterpret v1.
+A separately versioned v2 prerequisite was frozen before implementation. Its
+exact implementation is now committed at `995e8bb` without device access. It
+preserves the same exact-device, 640×480, `0.05 fps`, and one-observation
+method, but uses concrete Swift `Codable` structs, `JSONEncoder`, explicit
+primitive conversions, typed nulls for macOS-unavailable metadata, and a
+pre-launch attempt manifest. It uses new source and evaluator paths and cannot
+mutate or reinterpret v1. Swift typecheck, 15 direct adversarial tests, and 138
+combined inventory/camera/HIL/Studio tests pass. The sole read-only inventory
+observation remains unconsumed.
 
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load

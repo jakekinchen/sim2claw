@@ -104,10 +104,10 @@ proof.
 ## Progress Ledger
 
 ```text
-Current state: V2 preregistration authored after sealed v1 abstention; no v2 observation has run.
-Completed: V1 failure mechanism, v2 serialization contract, unchanged selection rule, attempt persistence, budgets, and authority are specified.
-Evidence: baseline 4e1807f; v1 binary aa432262; stderr e8404380; evaluation c4677bb5; receipt eb95e1eb / 0157d4b1.
-Remaining: Commit preregistration, implement/test/commit v2, execute one observation, evaluate, freeze, verify, and centralize.
+Current state: Exact v2 implementation is committed after preregistration; no v2 observation has run.
+Completed: Preregistration 622602c; implementation 995e8bb; primitive Codable/JSONEncoder observer; pre-launch/final attempt manifests; unchanged selection rule; adversarial validation.
+Evidence: source 73f0e6b7; evaluator ab13da6a; 15 direct tests; 138 combined inventory/camera/HIL/Studio tests; 0/1 observations used.
+Remaining: Execute one observation, evaluate, freeze hashes/state, verify exact head, and centralize.
 Blockers: Actual C922 format surface remains unavailable until the v2 observation.
-Next step: Reconcile active state/ledger and commit v2 preregistration.
+Next step: Commit the implementation-state binding, then consume the sole read-only observation once.
 ```
