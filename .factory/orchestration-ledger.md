@@ -919,3 +919,14 @@ goal. External provider campaigns and spending remain separately gated.
   family is sealed; a new transaction requires reliable D405 acquisition and
   the named external sensor/calibration prerequisites. The frozen HIL v1 and
   all eleven S2 hashes remain byte-identical.
+- 2026-07-24T10:01:32-05:00 — Opened a new software-only D405 capture
+  reliability transaction from clean centralized `main@1ce73c4`. The two
+  rejected wrist reports prove an alive FFmpeg process stopped receiving
+  encoded source frames at `13.6 s` and `22.8 s`, then reached `-9` after the
+  existing finalizer exhausted ten seconds; both logs are empty. Contract
+  `d405_capture_reliability_v1.json` freezes a 3-second source-growth watchdog,
+  bounded `q` / process-group `SIGINT` / terminate / kill escalation, explicit
+  transport-stall reporting, and a future six-by-40-second no-motion
+  qualification. The sealed robot family remains six attempts with no retry.
+  This milestone grants no robot, simulator, training, promotion, provider,
+  metric-depth, or task-score authority.

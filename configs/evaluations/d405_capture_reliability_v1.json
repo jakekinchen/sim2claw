@@ -1,0 +1,86 @@
+{
+  "schema_version": "sim2claw.d405_capture_reliability_contract.v1",
+  "contract_id": "current-100mm-d405-capture-reliability-20260724-v1",
+  "status": "frozen_before_recorder_reliability_implementation",
+  "baseline_commit": "1ce73c420d91809ecededd01d688d1ce6077557e",
+  "purpose": "Detect an alive FFmpeg process whose D405 source stops producing bytes, preserve partial evidence, and qualify future no-motion dual-camera acquisition without reopening rejected robot packets.",
+  "failure_evidence": {
+    "campaign_state": "runs/current-100mm-hil-multilevel-20260724/campaign_state.json",
+    "campaign_state_sha256": "0e818d2228cf91dc4dd96dd44341795199b53eb1041245e869df7d327e2176b5",
+    "shoulder_lift_report": "runs/current-100mm-hil-multilevel-20260724/HIL2-SHOULDER-LIFT-MULTILEVEL/wrist_video.json",
+    "shoulder_lift_report_sha256": "911d3363dd962b2a34dcb0e34efdd618e2290bbcc20a914a505725bd1aef7ec4",
+    "shoulder_lift_last_container_pts_seconds": 13.6,
+    "wrist_flex_report": "runs/current-100mm-hil-multilevel-20260724/HIL2-WRIST-FLEX-MULTILEVEL/wrist_video.json",
+    "wrist_flex_report_sha256": "10d28805c19a48428db01156a6a855c55ef71204ac1ec531a06da7cdf5963bc7",
+    "wrist_flex_last_container_pts_seconds": 22.8,
+    "observed_ffmpeg_return_code": -9,
+    "ffmpeg_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "interpretation": "The process remained alive while the encoded source stopped growing. Container PTS is not exposure time and does not prove the camera-side cause."
+  },
+  "runtime_identity": {
+    "ffmpeg_version": "8.0.1",
+    "ffmpeg_executable_sha256": "0a96da2735695308d964e25fa6f4a0db2e9d24031390360f4c5ff96a4f8938e5",
+    "ffprobe_version": "8.0.1",
+    "ffprobe_executable_sha256": "68447e67105534f3f43b95c94983ed56fbdd7125e5724cc56499ad538c2b86a7"
+  },
+  "source_progress": {
+    "monitored_artifact": "lossless_ffv1_matroska_source",
+    "startup_grace_seconds": 3.0,
+    "maximum_no_growth_seconds": 3.0,
+    "minimum_growth_bytes": 1,
+    "process_alive_is_sufficient": false,
+    "transport_heartbeat_is_exposure_timestamp": false,
+    "transport_heartbeat_proves_frame_drop": false
+  },
+  "shutdown_escalation": [
+    {
+      "stage": "stdin_q",
+      "timeout_seconds": 1.0
+    },
+    {
+      "stage": "process_group_sigint",
+      "timeout_seconds": 3.0
+    },
+    {
+      "stage": "terminate",
+      "timeout_seconds": 2.0
+    },
+    {
+      "stage": "kill",
+      "timeout_seconds": 2.0
+    }
+  ],
+  "required_report_fields": [
+    "source_progress_status",
+    "source_bytes_observed",
+    "last_source_growth_offset_seconds",
+    "source_stall_detected",
+    "source_stall_elapsed_seconds",
+    "shutdown_stages_attempted",
+    "shutdown_terminal_stage",
+    "failure_kind"
+  ],
+  "qualification": {
+    "mode": "camera_only_no_robot_motion",
+    "required_consecutive_trials": 6,
+    "trial_duration_seconds": 40.0,
+    "replacement_trials": 0,
+    "simultaneous_c922_and_d405": true,
+    "minimum_frame_coverage_fraction_per_stream": 0.95,
+    "maximum_source_stalls": 0,
+    "require_monotonic_container_pts": true,
+    "require_zero_inferred_missing_frame_intervals": true,
+    "metric_depth_claim": false,
+    "motion_capture_reliability_claim": false
+  },
+  "authority": {
+    "robot_motion": false,
+    "robot_gateway": false,
+    "simulator_replay": false,
+    "simulator_parameter_promotion": false,
+    "training": false,
+    "provider_calls": false,
+    "paid_compute": false,
+    "task_score_change": false
+  }
+}
