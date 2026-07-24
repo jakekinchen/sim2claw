@@ -11,7 +11,9 @@ authoritative prompt is
 [`docs/autonomous-workflow/goal-loop-current-100mm-physical-measurement-calibration.md`](docs/autonomous-workflow/goal-loop-current-100mm-physical-measurement-calibration.md).
 
 The owner has authorized bounded camera capture, robot episodes, and data
-collection. Readiness remains fail-closed: the current leader/follower
+collection. The preregistered torque-off baseline is complete with 30/30
+fresh-current samples, 239 diagnostic camera frames, and zero motion.
+Readiness remains fail-closed: the current leader/follower
 registration differs by `97.4945` degrees against the reviewed `12` degree
 limit, all 18 retained traces fail the independent replay-start envelope from
 the present follower pose, and the camera still shows task objects in the
@@ -22,6 +24,10 @@ Work continues through the safe torque-off measurement and evidence pipeline.
 No action assistance, safety-gate bypass, post-held-out family expansion, or
 score change is allowed. The strict task score stays `0/11` unless an
 independent evaluator admits new camera-bound metric task consequences.
+The baseline receipt digest is
+`4dbb666ab68fa41688b3d346f54797d947fd0771af8f2ec20edc1ac379eb4021`;
+the run log is
+[`docs/run-logs/2026-07-23-current-100mm-torque-off-baseline.md`](docs/run-logs/2026-07-23-current-100mm-torque-off-baseline.md).
 
 ## Active actuator-response external validation
 

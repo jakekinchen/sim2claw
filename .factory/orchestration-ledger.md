@@ -25,8 +25,16 @@
 - Authority: owner authorization is recorded, but gateway motion execution,
   physical task claim, training admission, and promotion remain false until
   their independent gates pass.
-- Status: active; safe torque-off measurement path in progress. No motion has
-  been commanded and no existing guard has been bypassed.
+- Torque-off result: one committed capture path produced 30/30 fresh-current
+  samples and a 239-frame, 7.966667-second C922 video. Every row preserved
+  torque-off/no-motion state. Receipt file SHA-256 is `851631b9...`; embedded
+  digest is `4dbb666a...`.
+- Evidence decision: `baseline_complete_motion_abstained_safe_start_and_workspace_not_ready`.
+  The observed workspace still contains the arm and task pieces, so an
+  autonomous alignment move is not admitted. Static current is usable but
+  does not identify load/contact/task consequence.
+- Status: active but physically blocked. No motion has been commanded, no
+  existing guard has been bypassed, and the strict task score remains `0/11`.
 - Goal:
   `docs/autonomous-workflow/goal-loop-current-100mm-physical-measurement-calibration.md`.
 

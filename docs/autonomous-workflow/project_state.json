@@ -1,14 +1,14 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-23T21:10:00-05:00",
+  "updated_at": "2026-07-23T21:20:00-05:00",
   "active_campaign": "current_100mm_physical_measurement_calibration",
-  "current_milestone": "D6_CURRENT_100MM_MEASUREMENT_PREFLIGHT_BLOCKED_SAFE_START_POSE",
+  "current_milestone": "D6_CURRENT_100MM_BASELINE_COMPLETE_MOTION_BLOCKED_SAFE_START_AND_WORKSPACE",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_and_bounded_action_frozen_simulator_evidence_no_physical_or_transfer_authority",
   "current_100mm_measurement_transaction": {
     "schema_version": "sim2claw.current_100mm_measurement_transaction.v1",
-    "status": "preflight_blocked_safe_start_pose",
+    "status": "baseline_complete_motion_blocked_safe_start_and_workspace",
     "baseline_commit": "694fa5a4372056fa1484711053f2d340e2044232",
     "contract": "configs/evaluations/current_100mm_measurement_acquisition_v1.json",
     "goal": "docs/autonomous-workflow/goal-loop-current-100mm-physical-measurement-calibration.md",
@@ -29,6 +29,23 @@
       "retained_traces_checked": 18,
       "retained_traces_start_envelope_admitted": 0,
       "workspace_clear_admitted": false
+    },
+    "torque_off_baseline": {
+      "status": "complete_no_motion_no_task_claim",
+      "generated_root": "runs/current-100mm-measurement-20260723/torque-off-baseline-001",
+      "receipt_file_sha256": "851631b9aca09d7ba5307205f94f4ea5736602846f6d05d456bc4141fdd8ca15",
+      "receipt_digest": "4dbb666ab68fa41688b3d346f54797d947fd0771af8f2ec20edc1ac379eb4021",
+      "samples_sha256": "f22d661b1c3563fd5512a6411b150adca71408128123af0bab54a26b455959f1",
+      "video_sha256": "a12f50d817948c37315eb85c555f9e224c5a81aa1dc1abfd807c80ad09cab30b",
+      "ffmpeg_log_sha256": "1b15b9bae0e1de128b162148aa8ec5feef765632dc156b5052562b04f28d4dbf",
+      "sample_count": 30,
+      "fresh_current_sample_count": 30,
+      "video_frame_count": 239,
+      "video_duration_seconds": 7.966667,
+      "physical_motion_commanded": false,
+      "physical_task_claim_admitted": false,
+      "training_admission": false,
+      "promotion_authority": false
     },
     "budget": {
       "torque_off_baseline_sessions": 1,

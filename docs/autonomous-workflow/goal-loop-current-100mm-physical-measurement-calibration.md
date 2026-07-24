@@ -91,7 +91,7 @@ unmeasured channels remain explicit; they are never converted to zero.
 
 ## Decision Status
 
-`PREFLIGHT_BLOCKED_SAFE_START_POSE`
+`BASELINE_COMPLETE_MOTION_BLOCKED_SAFE_START_AND_WORKSPACE`
 
 Camera and both calibrated SO-101 buses are reachable. The follower remains
 torque-off. Live paired-pose registration is rejected because the maximum body
@@ -100,6 +100,11 @@ All 18 retained physical traces are independently rejected from the present
 follower pose because wrist-flex start error is approximately `144` degrees
 against a `45` degree replay-start limit. The observed workcell also still
 contains task objects. No motion has been commanded.
+
+The one admitted torque-off baseline is complete: 30/30 samples include fresh
+raw current, the diagnostic video contains 239 frames, and all observations
+confirm torque-off/no-motion state. Static current does not identify the
+load/contact/task mechanisms needed for a score-changing calibration.
 
 ## Execution Rhythm
 
@@ -125,3 +130,8 @@ contains task objects. No motion has been commanded.
   paired-pose result; no motion was commanded.
 - 2026-07-23 — All 18 retained physical traces failed the unchanged replay
   start-envelope check; no trace was selected or executed.
+- 2026-07-23 — One torque-off baseline captured 30/30 fresh-current samples
+  and 239 camera frames with zero motion. Receipt digest:
+  `4dbb666ab68fa41688b3d346f54797d947fd0771af8f2ec20edc1ac379eb4021`.
+- 2026-07-23 — Camera evidence independently rejected the clear-workcell gate;
+  motion and task collection remain blocked.
