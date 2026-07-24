@@ -1140,3 +1140,8 @@ goal. External provider campaigns and spending remain separately gated.
   66.0 ms above the frozen 50.0 ms gate; all remaining 303 passed. V3 is
   exhausted. Format negotiation is repaired, but steady-state source cadence
   still requires a separately preregistered warm-up-bounded measurement.
+- 2026-07-24T16:58:00-05:00 — Opened callback delivery v4 without retrying v3.
+  V4 reuses the exact v3 lock-through-start observer and freezes one source-PTS
+  second as reported pre-roll before an unchanged ten-second scored window.
+  Full-session format, PTS validity/order, and zero-drop gates remain active.
+  One eleven-second session maximum; no retry or widened authority.
