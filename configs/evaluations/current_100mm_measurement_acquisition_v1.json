@@ -1,0 +1,110 @@
+{
+  "schema_version": "sim2claw.current_100mm_measurement_acquisition.v1",
+  "contract_id": "current-100mm-measurement-acquisition-20260723-v1",
+  "status": "preregistered_preflight_blocked_safe_start_pose",
+  "goal": "docs/autonomous-workflow/goal-loop-current-100mm-physical-measurement-calibration.md",
+  "proof_target": "current_workcell_measurement_then_action_frozen_mechanism_calibration",
+  "baseline_commit": "694fa5a4372056fa1484711053f2d340e2044232",
+  "hardware_identity": {
+    "leader_port": "/dev/cu.usbmodem5B3D0448141",
+    "follower_port": "/dev/cu.usbmodem5B3D0406411",
+    "ignored_non_motor_port": "/dev/cu.usbmodemSN234567892",
+    "leader_calibration_sha256": "732c6e862436dbbaf06c6afcd7ae81dc8341f09ca8d812170f48b371091a8339",
+    "follower_calibration_sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4",
+    "camera_backend": "AVFoundation",
+    "camera_index": 0,
+    "camera_mode": "1920x1080",
+    "lerobot_version": "0.6.0"
+  },
+  "observed_preflight": {
+    "follower_torque_enabled": false,
+    "motion_commanded": false,
+    "leader_start_degrees": [
+      -105.84615384615384,
+      -106.28571428571429,
+      96.17582417582418,
+      75.56043956043956,
+      -54.989010989010985,
+      0.0
+    ],
+    "follower_start_degrees": [
+      -8.351648351648352,
+      -21.01098901098901,
+      42.32967032967033,
+      43.2967032967033,
+      -95.07692307692308,
+      1.0688836104513064
+    ],
+    "maximum_body_offset_degrees": 97.49450549450549,
+    "paired_pose_limit_degrees": 12.0,
+    "synchronization_admission_limit_degrees": 20.0,
+    "retained_trace_count_checked": 18,
+    "retained_trace_count_start_envelope_admitted": 0,
+    "largest_blocking_joint": "wrist_flex",
+    "approximate_trace_start_error_degrees": 144.0,
+    "trace_start_limit_degrees": 45.0,
+    "workspace_clear_evaluator_status": "not_admitted_task_objects_visible"
+  },
+  "measurement_budget": {
+    "torque_off_baseline_sessions": 1,
+    "torque_off_samples_maximum": 120,
+    "torque_off_video_seconds_maximum": 30,
+    "empty_gripper_cycles": 5,
+    "task_training_episodes": 6,
+    "task_validation_episodes": 3,
+    "task_heldout_episodes": 3,
+    "adaptive_retries": 0,
+    "provider_calls": 0,
+    "new_parameter_families_after_heldout": 0
+  },
+  "frozen_factor_scope": [
+    "per_joint_command_delay",
+    "per_joint_deadband",
+    "per_joint_load_response",
+    "gripper_aperture_and_load_path",
+    "contact_compliance_and_friction",
+    "metric_board_to_robot_registration"
+  ],
+  "hypotheses": [
+    {
+      "id": "H1_ACTUATOR_RESPONSE",
+      "prediction": "Fresh current and timestamped measured joints explain action-frozen timing and load-dependent residuals better than the existing candidate."
+    },
+    {
+      "id": "H2_GRIPPER_CONTACT",
+      "prediction": "Empty-close versus object-loaded current and aperture separate mechanical hard-stop from grasp contact/compliance."
+    },
+    {
+      "id": "H3_SPATIAL_REGISTRATION",
+      "prediction": "Metric board/object observations identify spatial residuals that joint-only historical traces cannot."
+    }
+  ],
+  "selection_and_evaluation": {
+    "training_only_fit": true,
+    "validation_selects_one_composite_candidate": true,
+    "heldout_opens_once_after_candidate_freeze": true,
+    "actions_must_be_byte_identical_across_simulator_variants": true,
+    "cpu_fp32_evaluator_independent": true,
+    "lower_rms_alone_is_diagnostic": true,
+    "unknown_channels_are_not_zero": true,
+    "task_score_requires_metric_camera_bound_consequence": true
+  },
+  "motion_admission_gates": [
+    "exact_hardware_and_calibration_identity",
+    "follower_torque_off_before_session",
+    "paired_pose_or_recorded_trace_start_envelope_pass",
+    "camera_verified_clear_intended_workcell",
+    "metric_board_and_object_registration_admitted",
+    "fresh_current_and_timestamp_pipeline_admitted",
+    "reviewed_gateway_only"
+  ],
+  "authority": {
+    "owner_authorized_camera_capture": true,
+    "owner_authorized_bounded_robot_motion": true,
+    "owner_authorized_episode_collection": true,
+    "gateway_motion_execution_admitted": false,
+    "physical_task_claim_admitted": false,
+    "training_admission": false,
+    "promotion_authority": false
+  }
+}

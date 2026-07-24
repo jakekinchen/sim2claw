@@ -1,6 +1,27 @@
 # sim2claw Goal
 
-Status: `ACTUATOR EXTERNAL VALIDATION TERMINAL NEGATIVE; 10/10 REPLAYS; TASK SCORE 0/11`
+Status: `CURRENT 100 MM MEASUREMENT ACTIVE; MOTION PREFLIGHT BLOCKED; TASK SCORE 0/11`
+
+## Active current-workcell measurement and calibration
+
+Collect the independently synchronized current-100 mm evidence required by the
+closed actuator external-validation result, then use the fixed methodology to
+fit and evaluate at most one action-frozen composite simulator candidate. The
+authoritative prompt is
+[`docs/autonomous-workflow/goal-loop-current-100mm-physical-measurement-calibration.md`](docs/autonomous-workflow/goal-loop-current-100mm-physical-measurement-calibration.md).
+
+The owner has authorized bounded camera capture, robot episodes, and data
+collection. Readiness remains fail-closed: the current leader/follower
+registration differs by `97.4945` degrees against the reviewed `12` degree
+limit, all 18 retained traces fail the independent replay-start envelope from
+the present follower pose, and the camera still shows task objects in the
+intended workcell. Follower torque remains off and no motion has been
+commanded.
+
+Work continues through the safe torque-off measurement and evidence pipeline.
+No action assistance, safety-gate bypass, post-held-out family expansion, or
+score change is allowed. The strict task score stays `0/11` unless an
+independent evaluator admits new camera-bound metric task consequences.
 
 ## Active actuator-response external validation
 

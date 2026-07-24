@@ -1,5 +1,35 @@
 # Orchestration Ledger
 
+## Active transaction — current 100 mm physical measurement and calibration
+
+- Repo and branch: `/Users/kelly/Developer/sim2claw` on clean `main`; sole
+  writer.
+- Queue source: direct owner authorization to use the robot and C922 camera,
+  rerun bounded episodes, collect missing current-workcell observations, and
+  apply the project methodology to improve the independently evaluated task
+  score if the evidence supports it.
+- Baseline: clean `main == origin/main` at
+  `694fa5a4372056fa1484711053f2d340e2044232`.
+- Proof target: synchronized current-100 mm physical measurement followed by
+  training-only mechanism fitting, one frozen action-identical candidate, and
+  independent validation/held-out task consequence.
+- Budget: one torque-off baseline (up to 120 samples/30 seconds), five
+  empty-gripper cycles, and a frozen 6/3/3 train/validation/held-out task split;
+  zero adaptive retries and zero provider calls.
+- Live preflight: C922 index 0 and both calibrated SO-101 buses are reachable.
+  Follower torque is off. Paired-pose registration is rejected at
+  `97.4945054945` degrees versus the `12` degree limit. All 18 retained traces
+  are rejected from the present follower pose by the unchanged `45` degree
+  replay-start envelope; wrist-flex error is approximately `144` degrees.
+  The camera also shows task objects in the intended workcell.
+- Authority: owner authorization is recorded, but gateway motion execution,
+  physical task claim, training admission, and promotion remain false until
+  their independent gates pass.
+- Status: active; safe torque-off measurement path in progress. No motion has
+  been commanded and no existing guard has been bypassed.
+- Goal:
+  `docs/autonomous-workflow/goal-loop-current-100mm-physical-measurement-calibration.md`.
+
 ## Completed transaction — actuator-response external validation
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`; sole writer.
