@@ -1161,3 +1161,23 @@ goal. External provider campaigns and spending remain separately gated.
   second—and permits one ten-second stationary session with no retry,
   replacement, robot, simulator, provider, training, promotion, or task
   authority. No implementation or camera session has occurred.
+- 2026-07-24T17:26:00-05:00 — The nested lifecycle transaction reached its
+  one-attempt terminal result. Preregistration `75bcbd6` preceded exact
+  implementation `e3affd4`; 48 focused camera/teleop/HIL tests passed before
+  device access. The sole stationary session used one D405 and one C922
+  capture, zero retries/replacements/motions/simulator/provider calls. C922
+  passed with 314 frames and zero inferred gaps. D405 completed and progressed
+  but contained one 600 ms container interval (PTS 11.6 to 12.2), two inferred
+  intervals, so the independent verdict is
+  `reject_stationary_nested_dual_camera_lifecycle`. This is a terminal
+  negative, not a Twin-fidelity or synchronization pass; no retry or threshold
+  change is authorized.
+- 2026-07-24T17:34:00-05:00 — Read-only review confirmed the raw/evaluation
+  result but found two control-plane proof defects: `execute_hil_packet` order
+  lacked an invoking test, and the low-level one-shot runner could be pointed
+  at a fresh output root. Added two direct HIL lifecycle/cleanup tests plus a
+  separate canonical control-plane wrapper and tracked exhausted-family guard.
+  The observed runner/evaluator remains byte-identical at `89cfd1ca...`; the
+  guard is `8b753d24...` and blocks delegation before any device access.
+  Focused verification is 61 passed, and a no-camera re-evaluation reproduced
+  evaluation `bfad6408...` and receipt `d066fa14...` byte-identically.

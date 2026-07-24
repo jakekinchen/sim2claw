@@ -114,10 +114,10 @@ A pass establishes one stationary lifecycle-safe container capture only.
 ## Progress Ledger
 
 ```text
-Current state: Preregistered before implementation or camera use.
-Completed: C922 v4 independent PASS; D405 6/6 stationary transport result and lifecycle-boundary C922 gaps reconciled.
-Evidence: C922 v4 receipt 7354ce1d / digest 0933f548; D405 campaign 57d4983c / evaluation 80ed9ac3 / receipt cfc11ff3.
-Remaining: Commit lifecycle implementation and evaluator, run one stationary session, seal and review.
-Blockers: Motion-correlated D405 cable reliability remains outside this stationary transaction.
-Next step: Implement D405-first/C922-second start and reverse stop ordering with deterministic tests.
+Current state: Terminal negative; one-session budget exhausted with no retry.
+Completed: Preregistration 75bcbd6; implementation e3affd4; 48 focused tests; one stationary acquisition; independent evaluation.
+Evidence: campaign 093dd71d; event f873b869; C922 47c4d564 with 314 frames/0 gaps; D405 0553db5f with 63 frames/one 0.6 s gap/two inferred intervals; evaluation bfad6408 / digest 922190e3; receipt d066fa14 / digest 4e37b6b; frozen runner remains 89cfd1ca; post-terminal guard 8b753d24.
+Remaining: Commit closeout and obtain fresh read-only review.
+Blockers: Cross-camera AVFoundation lifecycle interruption remains; motion-correlated D405 cable reliability is separately unproven.
+Next step: Do not retry. Separately preregister a common native session or isolated camera-host prerequisite before motion qualification.
 ```

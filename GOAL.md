@@ -152,16 +152,30 @@ unchanged `0.049999950000049996 s` gate. The independent evaluator returned
 source-format and steady-cadence prerequisite; it does not prove exposure
 continuity, cross-camera synchronization, D405 reliability, or calibration.
 
+The separately preregistered production lifecycle test is also complete and
+must remain a terminal negative. The recorder now opens the D405 before the
+C922 and finalizes the C922 before the D405, so the D405 lifecycle boundaries
+sit outside the C922 container window. The sole ten-second stationary session
+used one D405 session and one C922 session with zero retries, replacements,
+robot motions, simulator replays, or provider calls. This C922 container had
+`314` frames and zero inferred gaps. D405 completed with source progress
+and `63` frames, but its container contained one `0.600 s` interval from PTS
+`11.6` to `12.2`, equal to two inferred missing intervals. That gap
+diagnostically brackets the reported common-window/C922-stop boundary; the
+clocks are not exposure-synchronized. The frozen evaluator therefore returned
+`reject_stationary_nested_dual_camera_lifecycle`. No threshold changed and no
+retry is permitted.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
 measurements and does not convert partial progress into a percentage or a
-simulator/task claim. The next scientific step requires new, separately
-preregistered measurement work: integrate the verified C922 lock-through-start
-and one-second pre-roll behavior into the recorder; physically repair and
-strain-relieve the D405 path; then
-qualify a lifecycle-safe simultaneous capture design; and only
-afterward add metric registration, calibrated force/current/load
+simulator/task claim. The next scientific step requires a separately
+preregistered capture mechanism that avoids cross-camera lifecycle
+interruption—most plausibly a reviewed native common-session design or
+physically separate camera host—plus physical repair and strain relief of the
+D405 path before any motion qualification. Only afterward add metric
+registration, calibrated force/current/load
 observability, device/actuator timing, reset/loaded trials, and strict held-out
 physical consequence. Another simulator family, silent retry, or post-hoc
 camera threshold change is not an acceptable substitute.
