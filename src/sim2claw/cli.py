@@ -369,6 +369,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     hil_trace_analysis.add_argument("--config", type=Path, required=True)
     hil_trace_analysis.add_argument("--output", type=Path, required=True)
+    hil_trace_decomposition = subparsers.add_parser(
+        "hil-decompose-traces",
+        help="audit requested/applied HIL actions, faults, excitation, and lag",
+    )
+    hil_trace_decomposition.add_argument("--config", type=Path, required=True)
+    hil_trace_decomposition.add_argument("--output", type=Path, required=True)
 
     sail_inventory = subparsers.add_parser(
         "sail-inventory",
@@ -1257,6 +1263,22 @@ def main(argv: Sequence[str] | None = None) -> int:
                 contract_path=args.config,
             )
         except HILTraceAnalysisError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "hil-decompose-traces":
+        from .hil_trace_decomposition import (
+            HILTraceDecompositionError,
+            derive_hil_trace_decomposition,
+        )
+
+        try:
+            report = derive_hil_trace_decomposition(
+                args.output,
+                contract_path=args.config,
+            )
+        except HILTraceDecompositionError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))

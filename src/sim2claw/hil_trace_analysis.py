@@ -147,13 +147,14 @@ def _correlation(left: np.ndarray, right: np.ndarray) -> float | None:
     return float(np.corrcoef(left, right)[0, 1])
 
 
-def _packet_report(
+def load_verified_hil_packet_trace(
     *,
     repo_root: Path,
     campaign_root: Path,
     packet_contract: Mapping[str, Any],
-    analysis: Mapping[str, Any],
 ) -> dict[str, Any]:
+    """Load one hash-bound packet and its exact requested action tensor."""
+
     packet_id = str(packet_contract["packet_id"])
     session = (campaign_root / packet_id).resolve()
     _require(
@@ -186,10 +187,10 @@ def _packet_report(
         if line.strip()
     ]
     rows = [
-        row for row in rows if row.get("replay_phase", "source_trace") == "source_trace"
+        row
+        for row in rows
+        if row.get("replay_phase", "source_trace") == "source_trace"
     ]
-    target_joint = str(packet_contract["target_joint"])
-    target_index = list(ROBOT_JOINTS).index(target_joint)
     requested_all = np.ascontiguousarray(
         [row["requested_source_command_degrees"] for row in rows],
         dtype="<f8",
@@ -200,6 +201,35 @@ def _packet_report(
         == raw["action_tensor_sha256"],
         f"HIL action tensor changed: {packet_id}",
     )
+    return {
+        "packet_id": packet_id,
+        "session": session,
+        "raw": raw,
+        "evaluation": evaluation,
+        "rows": rows,
+        "requested_action": requested_all,
+    }
+
+
+def _packet_report(
+    *,
+    repo_root: Path,
+    campaign_root: Path,
+    packet_contract: Mapping[str, Any],
+    analysis: Mapping[str, Any],
+) -> dict[str, Any]:
+    trace = load_verified_hil_packet_trace(
+        repo_root=repo_root,
+        campaign_root=campaign_root,
+        packet_contract=packet_contract,
+    )
+    packet_id = str(trace["packet_id"])
+    raw = trace["raw"]
+    evaluation = trace["evaluation"]
+    rows = trace["rows"]
+    target_joint = str(packet_contract["target_joint"])
+    target_index = list(ROBOT_JOINTS).index(target_joint)
+    requested_all = trace["requested_action"]
     requested = requested_all[:, target_index]
     sent = np.asarray(
         [row["follower_command_degrees"][target_index] for row in rows],
@@ -575,5 +605,6 @@ __all__ = [
     "REPORT_SCHEMA",
     "derive_hil_trace_report",
     "derive_hil_trace_report_payload",
+    "load_verified_hil_packet_trace",
     "load_hil_trace_contract",
 ]

@@ -1,0 +1,67 @@
+{
+  "analysis": {
+    "command_change_epsilon_degrees": 0.01,
+    "edge_trim_samples": [
+      0,
+      5,
+      10
+    ],
+    "lag_candidates_samples": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "minimum_plateau_samples": 3,
+    "minimum_traversal_samples": 3,
+    "motion_velocity_threshold_degrees_s": 1.0,
+    "sample_hz": 20,
+    "tracking_error_event_threshold_degrees": 3.0,
+    "velocity_collapse_threshold_degrees_s": 0.5
+  },
+  "authority": {
+    "physical_motion": false,
+    "provider_calls": false,
+    "simulator_execution": false,
+    "simulator_parameter_promotion": false,
+    "task_score_change": false,
+    "training": false
+  },
+  "claim_gates": {
+    "applied_action_byte_identity_requires_array_equal": true,
+    "backlash_requires_repeatable_directional_effect_under_independent_timing": true,
+    "current_is_calibrated_force_or_torque": false,
+    "dynamics_requires_multiple_command_speeds": true,
+    "latency_requires_actuator_ack_or_application_timestamp": true,
+    "range_scale_requires_three_distributed_levels": true,
+    "range_scale_requires_two_clean_traversals_per_direction": true,
+    "reset_drift_requires_repeated_reference_resets": true,
+    "strict_task_consequence_available": false
+  },
+  "contract_id": "hil-trace-decomposition-20260724-v2",
+  "evidence_context": {
+    "external_advisory_informed_analysis_design": true,
+    "external_advisory_is_evaluator_evidence": false,
+    "v1_results_were_visible_before_this_v2_contract": true
+  },
+  "proof_class": "offline_hil_requested_applied_trace_decomposition_diagnostic",
+  "schema_version": "sim2claw.hil_trace_decomposition.v2",
+  "source": {
+    "campaign_root": "runs/current-100mm-hil-identifiability-20260724",
+    "campaign_state_sha256": "b364aae639bb753b58216177386aa6ae93d43dad5462c8dd1a3d33dd44330858",
+    "v1_contract_path": "configs/evaluations/hil_offline_trace_analysis_v1.json",
+    "v1_contract_sha256": "42e3be1e32e46aa5d9aa0043d02bd90c9f166c70223009b902a6cdfb4c50e595",
+    "v1_receipt_path": "outputs/current-100mm-hil-trace-analysis-v1/receipt.json",
+    "v1_receipt_sha256": "fc588df9e94c8a7bbdfb4c61cbbf959e07c1048d6dc0d56da13c03ac3e68e10c",
+    "v1_report_path": "outputs/current-100mm-hil-trace-analysis-v1/report.json",
+    "v1_report_sha256": "a62481c1dac5930306e26efd847c39e87873c37eeabb96e8cef98194c6c2e698"
+  },
+  "status": "frozen_after_v1_observation_before_v2_materialization"
+}
