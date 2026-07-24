@@ -72,6 +72,13 @@ motion capture or metric depth.
   `13.6 s` and `22.8 s`.
 - Both finalizers exhausted the existing timeout and returned `-9`; their
   FFmpeg logs were empty.
+- The macOS host recorded a whole SuperSpeed USB-device removal in both failure
+  windows, invalidated the D405 for every camera client, and re-enumerated it.
+- One isolated and one simultaneous production-order stationary diagnostic
+  each captured `200 / 200` D405 frames over `40.000 s` with no USB removal.
+  This localizes the primary fault to motion-correlated cable, connector, or
+  strain-relief behavior rather than encoder or dual-camera load, without
+  identifying the defective physical segment.
 - Four other packets completed 27–33 seconds of D405 capture and finalized in
   under 0.83 seconds.
 - The exhausted six-attempt family cannot be retried.
@@ -92,8 +99,12 @@ motion capture or metric depth.
 
 ### Open Questions
 
-- Whether the AVFoundation source stall is eliminated by a different host,
-  driver, or whole-device USB passthrough.
+- Which cable segment, connector, or mounting/strain-relief point causes the
+  motion-correlated whole-device removal.
+- Whether a separately repaired physical path remains reliable under bounded
+  preregistered motion.
+- Whether a different validated host or whole-device USB passthrough is needed
+  after the physical path is repaired.
 - Whether six no-motion trials qualify the current Mac path or produce a
   sealed acquisition abstention.
 - Whether reliable D405 acquisition under robot motion ultimately requires a
@@ -112,10 +123,10 @@ motion capture or metric depth.
 ## Progress Ledger
 
 ```text
-Current state: Two of six D405 motion captures stopped producing frames while FFmpeg remained alive; the family is sealed.
-Completed: Exact failure reports, empty logs, durations, finalization timeouts, FFmpeg/FFprobe identities, and frozen evidence budgets audited.
-Evidence: baseline 1ce73c4; contract e8232fd7; campaign 0e818d22; rejected reports 911d3363 and 10d28805; FFmpeg 0a96da27; FFprobe 68447e67.
-Remaining: Implement source-progress monitoring, bounded signal escalation, fail-closed reports/tests, then freeze and run camera-only qualification.
-Blockers: AVFoundation/D405 source reliability under sustained motion remains unproven; metric depth remains unavailable on the Mac path.
-Next step: Commit this preregistration before recorder implementation.
+Current state: Root cause is localized to motion-correlated whole-device USB removal; watchdog implementation and focused proof pass, stationary qualification remains pending.
+Completed: Exact failure reports, macOS USB removal/re-enumeration timelines, direct SuperSpeed topology, isolated and simultaneous stationary diagnostics, source-progress watchdog, bounded signal escalation, fail-closed reports/tests, and a live class smoke.
+Evidence: preregistration 0e4d578; contract e8232fd7; campaign 0e818d22; rejected reports 911d3363 and 10d28805; stationary diagnostics 200/200 twice; focused tests 29/29; live smoke 65 frames/13 seconds.
+Remaining: Commit the software milestone, execute the frozen six-trial stationary qualification, then repair/restrain the physical cable path before any newly preregistered motion qualification.
+Blockers: The defective physical cable/connector segment is not remotely serviceable or identified; reliable D405 acquisition under motion and metric depth remain unproven.
+Next step: Freeze the recorder software commit, then run only the no-motion qualification campaign.
 ```

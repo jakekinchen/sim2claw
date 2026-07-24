@@ -7,10 +7,13 @@ outputs are diagnostic evidence only and are not admitted as ACT training data.
 from __future__ import annotations
 
 import json
+import os
 import re
+import signal
 import shutil
 import subprocess
 import time
+from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -145,6 +148,13 @@ class OverheadVideoRecorder:
         fps: int = DEFAULT_FPS,
         ffmpeg_path: str | None = None,
         ffprobe_path: str | None = None,
+        clock: Callable[[], float] = time.monotonic,
+        source_startup_grace_seconds: float | None = None,
+        source_stall_timeout_seconds: float | None = None,
+        shutdown_q_timeout_seconds: float = 8.0,
+        shutdown_sigint_timeout_seconds: float | None = None,
+        shutdown_terminate_timeout_seconds: float = 2.0,
+        shutdown_kill_timeout_seconds: float = 2.0,
     ):
         self.output_path = output_path
         self.log_path = output_path.with_suffix(".ffmpeg.log")
@@ -154,11 +164,24 @@ class OverheadVideoRecorder:
         self.fps = int(fps)
         self.ffmpeg_path = ffmpeg_path
         self.ffprobe_path = ffprobe_path or shutil.which("ffprobe")
+        self._clock = clock
+        self.source_startup_grace_seconds = source_startup_grace_seconds
+        self.source_stall_timeout_seconds = source_stall_timeout_seconds
+        self.shutdown_q_timeout_seconds = float(shutdown_q_timeout_seconds)
+        self.shutdown_sigint_timeout_seconds = shutdown_sigint_timeout_seconds
+        self.shutdown_terminate_timeout_seconds = float(
+            shutdown_terminate_timeout_seconds
+        )
+        self.shutdown_kill_timeout_seconds = float(shutdown_kill_timeout_seconds)
         self.process: subprocess.Popen[bytes] | None = None
         self.log_handle: Any = None
         self.started_at: str | None = None
         self.started_monotonic: float | None = None
         self.discovery: dict[str, Any] | None = None
+        self.source_bytes_observed = 0
+        self.last_source_growth_monotonic: float | None = None
+        self.source_stall_detected = False
+        self.source_stall_elapsed_seconds: float | None = None
 
     def start(self) -> dict[str, Any]:
         if self.process is not None:
@@ -198,7 +221,7 @@ class OverheadVideoRecorder:
         command.extend(self._encoder_args())
         command.extend(["-y", str(self.output_path)])
         self.started_at = _utc_now()
-        self.started_monotonic = time.monotonic()
+        self.started_monotonic = self._clock()
         try:
             self.process = subprocess.Popen(
                 command,
@@ -211,8 +234,8 @@ class OverheadVideoRecorder:
             self._close_log()
             raise OverheadVideoError(f"Could not start overhead video capture: {error}") from error
 
-        startup_deadline = time.monotonic() + 1.0
-        while time.monotonic() < startup_deadline:
+        startup_deadline = self._clock() + 1.0
+        while self._clock() < startup_deadline:
             if self.process.poll() is not None:
                 return_code = self.process.returncode
                 self._close_log()
@@ -247,7 +270,10 @@ class OverheadVideoRecorder:
         }
 
     def ensure_running(self) -> None:
-        if self.process is None or self.process.poll() is None:
+        if self.process is None:
+            return
+        if self.process.poll() is None:
+            self._observe_source_progress(raise_on_stall=True)
             return
         detail = _compact_log_tail(self.log_path)
         raise OverheadVideoError(
@@ -270,39 +296,43 @@ class OverheadVideoRecorder:
         was_running = process.poll() is None
         if was_running and action_stopped_monotonic is not None:
             deadline = action_stopped_monotonic + max(0.0, post_roll_seconds)
-            while time.monotonic() < deadline and process.poll() is None:
-                time.sleep(min(0.05, deadline - time.monotonic()))
-        capture_stop_requested_monotonic = time.monotonic()
-        if process.poll() is None:
-            try:
-                if process.stdin is not None:
-                    process.stdin.write(b"q\n")
-                    process.stdin.flush()
-                    process.stdin.close()
-                process.wait(timeout=8.0)
-            except (BrokenPipeError, OSError, subprocess.TimeoutExpired):
-                if process.poll() is None:
-                    process.terminate()
+            while self._clock() < deadline and process.poll() is None:
                 try:
-                    process.wait(timeout=2.0)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-                    process.wait(timeout=2.0)
+                    self._observe_source_progress(raise_on_stall=True)
+                except OverheadVideoError:
+                    break
+                time.sleep(min(0.05, deadline - self._clock()))
+        self._observe_source_progress(raise_on_stall=False)
+        capture_stop_requested_monotonic = self._clock()
+        (
+            shutdown_stages_attempted,
+            shutdown_terminal_stage,
+            shutdown_errors,
+        ) = self._stop_process(process)
         self._close_log()
 
-        completed_at_monotonic = time.monotonic()
+        completed_at_monotonic = self._clock()
         observed = self._probe_output()
         return_code = process.returncode
         status = (
             "completed"
             if (
                 was_running
+                and not self.source_stall_detected
                 and return_code in {0, 255}
                 and self.output_path.is_file()
                 and observed is not None
             )
             else "failed"
         )
+        if self.source_stall_detected:
+            failure_kind = "source_transport_stall"
+        elif not was_running or return_code not in {0, 255}:
+            failure_kind = "capture_process_exited"
+        elif not self.output_path.is_file() or observed is None:
+            failure_kind = "capture_output_unreadable"
+        else:
+            failure_kind = None
         action_start_offset = (
             action_started_monotonic - start
             if action_started_monotonic is not None
@@ -318,6 +348,19 @@ class OverheadVideoRecorder:
             if action_stopped_monotonic is not None
             else None
         )
+        last_growth_offset = (
+            self.last_source_growth_monotonic - start
+            if self.last_source_growth_monotonic is not None
+            else None
+        )
+        if self.source_stall_timeout_seconds is None:
+            source_progress_status = "not_monitored"
+        elif self.source_stall_detected:
+            source_progress_status = "stalled"
+        elif self.last_source_growth_monotonic is None:
+            source_progress_status = "no_growth_observed"
+        else:
+            source_progress_status = "progressing"
         return {
             "schema_version": self.schema_version,
             "status": status,
@@ -342,10 +385,111 @@ class OverheadVideoRecorder:
             ),
             "ffmpeg_return_code": return_code,
             "observed_video": observed,
+            "source_progress_status": source_progress_status,
+            "source_bytes_observed": self.source_bytes_observed,
+            "last_source_growth_offset_seconds": last_growth_offset,
+            "source_stall_detected": self.source_stall_detected,
+            "source_stall_elapsed_seconds": self.source_stall_elapsed_seconds,
+            "shutdown_stages_attempted": shutdown_stages_attempted,
+            "shutdown_terminal_stage": shutdown_terminal_stage,
+            "shutdown_errors": shutdown_errors,
+            "failure_kind": failure_kind,
             "diagnostic_only": True,
             "is_training_data": False,
             "error_log_tail": _compact_log_tail(self.log_path) if status == "failed" else None,
         }
+
+    def _observe_source_progress(self, *, raise_on_stall: bool) -> None:
+        """Treat file growth as a transport heartbeat, never an exposure clock."""
+
+        timeout = self.source_stall_timeout_seconds
+        grace = self.source_startup_grace_seconds
+        start = self.started_monotonic
+        if timeout is None or grace is None or start is None:
+            return
+
+        now = self._clock()
+        try:
+            current_size = self.output_path.stat().st_size
+        except OSError:
+            current_size = 0
+        if current_size > self.source_bytes_observed:
+            self.source_bytes_observed = current_size
+            self.last_source_growth_monotonic = now
+            return
+
+        no_growth_since = self.last_source_growth_monotonic
+        if no_growth_since is None:
+            no_growth_since = start + max(0.0, grace)
+        elapsed = now - no_growth_since
+        if now < start + max(0.0, grace) or elapsed <= max(0.0, timeout):
+            return
+
+        self.source_stall_detected = True
+        self.source_stall_elapsed_seconds = elapsed
+        if raise_on_stall:
+            raise OverheadVideoError(
+                f"{self.camera_label} source stopped growing for "
+                f"{elapsed:.3f} seconds while FFmpeg remained alive."
+            )
+
+    def _stop_process(
+        self,
+        process: subprocess.Popen[bytes],
+    ) -> tuple[list[str], str, list[str]]:
+        stages: list[str] = []
+        errors: list[str] = []
+        if process.poll() is not None:
+            return stages, "already_exited", errors
+
+        stages.append("stdin_q")
+        try:
+            if process.stdin is not None:
+                process.stdin.write(b"q\n")
+                process.stdin.flush()
+                process.stdin.close()
+        except (BrokenPipeError, OSError) as error:
+            errors.append(f"stdin_q:{type(error).__name__}")
+        try:
+            process.wait(timeout=self.shutdown_q_timeout_seconds)
+            return stages, "stdin_q", errors
+        except subprocess.TimeoutExpired:
+            pass
+
+        if self.shutdown_sigint_timeout_seconds is not None:
+            stages.append("process_group_sigint")
+            try:
+                os.killpg(process.pid, signal.SIGINT)
+            except OSError as error:
+                errors.append(f"process_group_sigint:{type(error).__name__}")
+            try:
+                process.wait(timeout=self.shutdown_sigint_timeout_seconds)
+                return stages, "process_group_sigint", errors
+            except subprocess.TimeoutExpired:
+                pass
+
+        stages.append("terminate")
+        try:
+            process.terminate()
+        except OSError as error:
+            errors.append(f"terminate:{type(error).__name__}")
+        try:
+            process.wait(timeout=self.shutdown_terminate_timeout_seconds)
+            return stages, "terminate", errors
+        except subprocess.TimeoutExpired:
+            pass
+
+        stages.append("kill")
+        try:
+            process.kill()
+        except OSError as error:
+            errors.append(f"kill:{type(error).__name__}")
+        try:
+            process.wait(timeout=self.shutdown_kill_timeout_seconds)
+            return stages, "kill", errors
+        except subprocess.TimeoutExpired:
+            errors.append("kill:TimeoutExpired")
+            return stages, "kill_timeout", errors
 
     def _encoder_args(self) -> list[str]:
         return [
@@ -430,6 +574,13 @@ class WristVideoRecorder(OverheadVideoRecorder):
         fps: int = 5,
         ffmpeg_path: str | None = None,
         ffprobe_path: str | None = None,
+        clock: Callable[[], float] = time.monotonic,
+        source_startup_grace_seconds: float = 3.0,
+        source_stall_timeout_seconds: float = 3.0,
+        shutdown_q_timeout_seconds: float = 1.0,
+        shutdown_sigint_timeout_seconds: float = 3.0,
+        shutdown_terminate_timeout_seconds: float = 2.0,
+        shutdown_kill_timeout_seconds: float = 2.0,
     ):
         super().__init__(
             output_path,
@@ -439,6 +590,13 @@ class WristVideoRecorder(OverheadVideoRecorder):
             fps=fps,
             ffmpeg_path=ffmpeg_path,
             ffprobe_path=ffprobe_path,
+            clock=clock,
+            source_startup_grace_seconds=source_startup_grace_seconds,
+            source_stall_timeout_seconds=source_stall_timeout_seconds,
+            shutdown_q_timeout_seconds=shutdown_q_timeout_seconds,
+            shutdown_sigint_timeout_seconds=shutdown_sigint_timeout_seconds,
+            shutdown_terminate_timeout_seconds=shutdown_terminate_timeout_seconds,
+            shutdown_kill_timeout_seconds=shutdown_kill_timeout_seconds,
         )
         self.browser_output_path = output_path.with_name("wrist_d405.browser.mp4")
 

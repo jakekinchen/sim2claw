@@ -27,6 +27,24 @@ rejected because the D405 stream failed the frozen completion and frame
 coverage gates; their robot telemetry remains diagnostic and cannot be fit.
 No retry or replacement packet is allowed under this contract.
 
+The D405 failure has now been localized below FFmpeg and the Studio UI. In
+both rejected packets macOS recorded a whole USB-device removal while the arm
+was moving, invalidated the D405 for every camera client, and re-enumerated it.
+The device is directly attached at SuperSpeed, and controlled stationary tests
+passed both in isolation and alongside the production C922 path at exactly
+`200 / 200` D405 frames over `40.000 s`. The evidence therefore supports a
+motion-correlated cable/connector/strain-relief fault, not an encoder,
+dual-camera bandwidth, or camera-ownership failure. It does not identify which
+physical connector or cable segment is defective.
+
+The preregistered recorder hardening now treats FFV1 Matroska byte growth as a
+transport heartbeat, detects an alive-process/no-growth condition after the
+frozen three-second grace and timeout, and escalates shutdown through stdin
+`q`, process-group `SIGINT`, terminate, and kill. A readable partial container
+cannot turn a detected stall into admitted evidence. This is acquisition
+infrastructure only: stationary qualification remains separate from reliable
+capture under motion, metric depth, calibration, and task proof.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining

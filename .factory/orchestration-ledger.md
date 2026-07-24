@@ -930,3 +930,18 @@ goal. External provider campaigns and spending remain separately gated.
   qualification. The sealed robot family remains six attempts with no retry.
   This milestone grants no robot, simulator, training, promotion, provider,
   metric-depth, or task-score authority.
+- 2026-07-24T10:17:40-05:00 — Localized the two rejected D405 packets to
+  motion-time whole-USB-device removals. Both failures produced the same
+  macOS `IOUSBHost` invalidation/re-enumeration signature, while one isolated
+  and one production-order C922+D405 stationary diagnostic each captured
+  exactly `200 / 200` D405 frames over `40.000 s` with no removal. This supports
+  a cable/connector/strain-relief fault rather than encoder, dual-camera
+  bandwidth, or Studio ownership, without identifying the defective physical
+  segment. Implemented the frozen source-growth watchdog and bounded
+  `q`/process-group `SIGINT`/terminate/kill finalizer. Focused recorder,
+  timing, teleop, and HIL gates pass `29 / 29`; a live 13-second class smoke
+  completed 65 frames with no false stall. The broader focused gate including
+  Studio project-map and Learning Factory state binding passes `41 / 41`. The
+  sealed six-attempt robot family remains unchanged and stationary
+  qualification is still distinct from motion reliability, metric depth,
+  calibration, or task evidence.

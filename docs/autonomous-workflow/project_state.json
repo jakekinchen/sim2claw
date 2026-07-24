@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T09:21:12-05:00",
+  "updated_at": "2026-07-24T10:17:40-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
-  "current_milestone": "TWIN_FIDELITY_TERMINAL_PARTIAL_EXTERNAL_MEASUREMENT_PREREQUISITE",
+  "current_milestone": "D405_WATCHDOG_IMPLEMENTED_STATIONARY_QUALIFICATION_PENDING_MOTION_CABLE_PREREQUISITE",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
@@ -2587,6 +2587,59 @@
     "multilevel_hil_evidence_receipt_digest": "d8f8a312ceff51b91f3e1d4bfcfe3d0e04d6d7d782152266a39a2687be7f22b3",
     "multilevel_hil_provider_call_count": 0,
     "multilevel_hil_follower_torque_enabled_after": false,
+    "d405_capture_reliability": {
+      "status": "root_cause_localized_watchdog_implemented_stationary_qualification_pending",
+      "goal": "docs/autonomous-workflow/goal-loop-d405-capture-reliability.md",
+      "contract": "configs/evaluations/d405_capture_reliability_v1.json",
+      "contract_sha256": "e8232fd76044e5458030fe7392eb0b69d8b0f1bebf96706a96c68642d011b942",
+      "preregistration_commit": "0e4d57836ba6ddda9f2e6fb1d5357f14881737a2",
+      "root_cause_classification": "motion_correlated_whole_usb_device_removal_probable_cable_connector_or_strain_relief_fault",
+      "classification_limits": "The evidence does not identify which cable segment or connector is defective and does not prove reliable capture under motion.",
+      "macos_usb_removal_observed_in_both_rejected_packets": true,
+      "direct_superspeed_attachment_verified": true,
+      "stationary_d405_isolated": {
+        "trial_count": 1,
+        "duration_seconds": 40.0,
+        "expected_frames": 200,
+        "observed_frames": 200,
+        "usb_removals": 0,
+        "qualification_evidence": false
+      },
+      "stationary_d405_with_c922": {
+        "trial_count": 1,
+        "duration_seconds": 40.0,
+        "expected_frames": 200,
+        "observed_frames": 200,
+        "c922_duration_seconds": 42.0,
+        "c922_observed_frames": 1229,
+        "usb_removals": 0,
+        "qualification_evidence": false
+      },
+      "recorder_hardening": {
+        "source_heartbeat": "ffv1_matroska_file_byte_growth",
+        "heartbeat_is_exposure_timestamp": false,
+        "startup_grace_seconds": 3.0,
+        "maximum_no_growth_seconds": 3.0,
+        "shutdown_sequence": [
+          "stdin_q",
+          "process_group_sigint",
+          "terminate",
+          "kill"
+        ],
+        "detected_stall_remains_failed_if_partial_container_is_readable": true,
+        "focused_tests_passed": 29,
+        "live_class_smoke_status": "completed_65_frames_13_seconds_no_stall"
+      },
+      "authority": {
+        "robot_motion_used": false,
+        "simulator_replay_used": false,
+        "provider_calls_used": 0,
+        "training": false,
+        "promotion": false,
+        "metric_depth_claim": false,
+        "task_score_change": false
+      }
+    },
     "domain_status": {
       "geometry_scale": "missing",
       "kinematics": "partial",
