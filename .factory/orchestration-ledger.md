@@ -1114,3 +1114,9 @@ goal. External provider campaigns and spending remain separately gated.
   cadence gate. This identifies session negotiation/configuration order as the
   next prerequisite; v1 is exhausted with no retry. D405, robot, simulator,
   provider, training, promotion, and task authority stayed closed.
+- 2026-07-24T16:30:00-05:00 — Opened callback delivery v2 after independent
+  PASS closure of v1. V2 freezes one changed mechanism only: add the exact C922
+  input/output before setting format 16/range 0, then record active format
+  after association, commit, and start. All v1 output/cadence gates remain
+  unchanged. One new session maximum; no retry, D405, robot, simulator,
+  provider, training, promotion, or task authority.
