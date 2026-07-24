@@ -120,11 +120,15 @@ def test_contract_freezes_zero_session_single_connection_authority() -> None:
 
 
 def test_ssh_command_is_exact_noninteractive_read_only_allowlist() -> None:
-    assert inventory.SSH_ARGUMENTS[:6] == [
+    assert inventory.SSH_ARGUMENTS[:-1] == [
         "/usr/bin/ssh",
+        "-F",
+        "/dev/null",
         "-oBatchMode=yes",
         "-oStrictHostKeyChecking=yes",
         "-oConnectTimeout=5",
+        "-oConnectionAttempts=1",
+        "-oClearAllForwardings=yes",
         "-p22",
         "kelly@silicon.local",
     ]
@@ -139,6 +143,7 @@ def test_ssh_command_is_exact_noninteractive_read_only_allowlist() -> None:
     ]
     for forbidden in ("|", ">", "<", "$(", "`", "sudo", "scp", "rsync"):
         assert forbidden not in inventory.REMOTE_COMMAND
+    assert inventory._runtime_identity()["ssh_identity_admitted"] is True
 
 
 def test_ready_inventory_is_evaluated_byte_identically(
@@ -191,6 +196,7 @@ def test_absent_c922_returns_attachment_prerequisite(
     [
         (2, 0, "target_c922_camera_match_count"),
         (1, 1, "excluded_d405_camera_match_count"),
+        (0, 1, "excluded_d405_camera_match_count"),
     ],
 )
 def test_substitution_or_excluded_device_fails_closed(
@@ -265,7 +271,7 @@ def test_replayed_observation_root_is_rejected_before_ssh(
     assert called is False
 
 
-@pytest.mark.parametrize("failure", ["timeout", "launch"])
+@pytest.mark.parametrize("failure", ["timeout", "launch", "identity", "missing"])
 def test_timeout_or_ssh_launch_failure_is_sealed_once(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -275,6 +281,16 @@ def test_timeout_or_ssh_launch_failure_is_sealed_once(
     evaluated = tmp_path / "evaluated"
     monkeypatch.setattr(inventory, "DEFAULT_OBSERVED_ROOT", observed)
     monkeypatch.setattr(inventory, "DEFAULT_EVALUATED_ROOT", evaluated)
+    if failure in {"identity", "missing"}:
+        candidate = tmp_path / "unexpected-ssh"
+        if failure == "identity":
+            candidate.write_bytes(b"not the reviewed executable")
+        monkeypatch.setattr(inventory, "SSH_PATH", candidate)
+        monkeypatch.setattr(
+            inventory,
+            "SSH_ARGUMENTS",
+            [str(candidate), *inventory.SSH_ARGUMENTS[1:]],
+        )
 
     def failing_runner(*_: object, **__: object) -> subprocess.CompletedProcess[bytes]:
         if failure == "timeout":
@@ -298,7 +314,7 @@ def test_timeout_or_ssh_launch_failure_is_sealed_once(
     )
     assert evaluated_result["verdict"] == "prerequisite_abstention"
     attempt = json.loads((observed / "attempt.json").read_text())
-    assert attempt["return_code"] in {124, 127}
+    assert attempt["return_code"] in {124, 126, 127}
 
 
 @pytest.mark.parametrize(
@@ -309,6 +325,8 @@ def test_timeout_or_ssh_launch_failure_is_sealed_once(
         "authority",
         "raw",
         "coordinated_raw_rehash",
+        "observer_role",
+        "contract_id",
         "return_code",
         "stream",
         "command",
@@ -330,17 +348,36 @@ def test_evaluator_rejects_manifest_or_evidence_mutation(
         else:
             payload["authority"]["remote_file_write"] = True
         path.write_bytes(_canonical_bytes(payload))
-    elif mutation in {"raw", "coordinated_raw_rehash"}:
+    elif mutation in {
+        "raw",
+        "coordinated_raw_rehash",
+        "observer_role",
+    }:
         path = observed / "raw/observation.json"
         payload = json.loads(path.read_text())
-        payload["remote_hostname"] = "substituted"
+        if mutation == "observer_role":
+            payload["observer_role"] = "self_scoring_remote_observer"
+        else:
+            payload["remote_hostname"] = "substituted"
         path.write_bytes(_canonical_bytes(payload))
-        if mutation == "coordinated_raw_rehash":
+        if mutation in {"coordinated_raw_rehash", "observer_role"}:
             attempt = json.loads((observed / "attempt.json").read_text())
             attempt["raw_observation_sha256"] = hashlib.sha256(
                 path.read_bytes()
             ).hexdigest()
             (observed / "attempt.json").write_bytes(_canonical_bytes(attempt))
+    elif mutation == "contract_id":
+        prelaunch_path = observed / "attempt-prelaunch.json"
+        prelaunch = json.loads(prelaunch_path.read_text())
+        prelaunch["contract_id"] = "substituted-contract"
+        prelaunch_path.write_bytes(_canonical_bytes(prelaunch))
+        attempt_path = observed / "attempt.json"
+        attempt = json.loads(attempt_path.read_text())
+        attempt["contract_id"] = "substituted-contract"
+        attempt["prelaunch_manifest_sha256"] = hashlib.sha256(
+            prelaunch_path.read_bytes()
+        ).hexdigest()
+        attempt_path.write_bytes(_canonical_bytes(attempt))
     elif mutation == "return_code":
         path = observed / "attempt.json"
         payload = json.loads(path.read_text())

@@ -21,6 +21,8 @@ from sim2claw.avfoundation_format_inventory import (
 
 
 CONTRACT_SHA256 = "10f4d01df62fc1f59b8efd46b61f4d19116966f17a18296c0e3ad5bb41623a7a"
+CONTRACT_ID = "current-100mm-isolated-overhead-host-inventory-20260724-v1"
+SSH_SHA256 = "aa3ba829a6283f29ffb81e0e3c57ff43d0cee132fea789072a0a2a2688af3afc"
 PROOF_CLASS = "zero_session_isolated_overhead_host_and_device_inventory"
 PRELAUNCH_SCHEMA = "sim2claw.isolated_overhead_host_inventory_prelaunch.v1"
 ATTEMPT_SCHEMA = "sim2claw.isolated_overhead_host_inventory_attempt.v1"
@@ -46,9 +48,13 @@ REMOTE_COMMAND = (
 )
 SSH_ARGUMENTS = [
     str(SSH_PATH),
+    "-F",
+    "/dev/null",
     "-oBatchMode=yes",
     "-oStrictHostKeyChecking=yes",
     "-oConnectTimeout=5",
+    "-oConnectionAttempts=1",
+    "-oClearAllForwardings=yes",
     "-p22",
     "kelly@silicon.local",
     REMOTE_COMMAND,
@@ -176,14 +182,22 @@ def load_contract(path: Path = DEFAULT_CONTRACT_PATH) -> dict[str, Any]:
     return contract
 
 
-def _runtime_identity() -> dict[str, str]:
+def _runtime_identity() -> dict[str, str | bool | None]:
     module_path = Path(__file__).resolve()
-    _require(SSH_PATH.is_file(), "SSH executable is unavailable.")
+    ssh_available = SSH_PATH.is_file()
+    ssh_sha256: str | None = None
+    if ssh_available:
+        try:
+            ssh_sha256 = _sha256_file(SSH_PATH)
+        except OSError:
+            ssh_available = False
     return {
         "runner_evaluator_path": str(module_path),
         "runner_evaluator_sha256": _sha256_file(module_path),
         "ssh_path": str(SSH_PATH),
-        "ssh_sha256": _sha256_file(SSH_PATH),
+        "ssh_available": ssh_available,
+        "ssh_sha256": ssh_sha256,
+        "ssh_identity_admitted": ssh_sha256 == SSH_SHA256,
         "remote_command_sha256": _sha256_bytes(REMOTE_COMMAND.encode("utf-8")),
     }
 
@@ -240,9 +254,9 @@ def run_observation(
         not output_root.exists(),
         "Observation output already exists; replay is forbidden.",
     )
+    runtime = _runtime_identity()
     raw_root = output_root / "raw"
     raw_root.mkdir(parents=True, exist_ok=False)
-    runtime = _runtime_identity()
     prelaunch = {
         "schema_version": PRELAUNCH_SCHEMA,
         "contract_id": contract["contract_id"],
@@ -256,29 +270,37 @@ def run_observation(
     }
     prelaunch_path = output_root / "attempt-prelaunch.json"
     _write_json(prelaunch_path, prelaunch)
-    try:
-        completed = subprocess.run(
-            SSH_ARGUMENTS,
-            check=False,
-            capture_output=True,
-            timeout=15,
-        )
-    except subprocess.TimeoutExpired as error:
-        stdout = error.stdout if isinstance(error.stdout, bytes) else b""
-        stderr = error.stderr if isinstance(error.stderr, bytes) else b""
+    if runtime["ssh_identity_admitted"] is not True:
         completed = subprocess.CompletedProcess(
             SSH_ARGUMENTS,
-            124,
-            stdout=stdout,
-            stderr=stderr + b"\nssh observation timed out\n",
-        )
-    except OSError as error:
-        completed = subprocess.CompletedProcess(
-            SSH_ARGUMENTS,
-            127,
+            126,
             stdout=b"",
-            stderr=f"ssh launch failed: {type(error).__name__}\n".encode(),
+            stderr=b"reviewed ssh executable is unavailable or changed\n",
         )
+    else:
+        try:
+            completed = subprocess.run(
+                SSH_ARGUMENTS,
+                check=False,
+                capture_output=True,
+                timeout=15,
+            )
+        except subprocess.TimeoutExpired as error:
+            stdout = error.stdout if isinstance(error.stdout, bytes) else b""
+            stderr = error.stderr if isinstance(error.stderr, bytes) else b""
+            completed = subprocess.CompletedProcess(
+                SSH_ARGUMENTS,
+                124,
+                stdout=stdout,
+                stderr=stderr + b"\nssh observation timed out\n",
+            )
+        except OSError as error:
+            completed = subprocess.CompletedProcess(
+                SSH_ARGUMENTS,
+                127,
+                stdout=b"",
+                stderr=f"ssh launch failed: {type(error).__name__}\n".encode(),
+            )
     _require(
         isinstance(completed.stdout, bytes) and isinstance(completed.stderr, bytes),
         "SSH runner did not return byte streams.",
@@ -419,6 +441,11 @@ def _load_and_verify_manifests(
         and attempt.get("proof_class") == PROOF_CLASS,
         "Manifest proof class changed.",
     )
+    _require(
+        prelaunch.get("contract_id") == CONTRACT_ID
+        and attempt.get("contract_id") == CONTRACT_ID,
+        "Manifest contract ID changed.",
+    )
     for payload, label in ((prelaunch, "Prelaunch"), (attempt, "Attempt"), (raw, "Raw")):
         _require(payload.get("contract_sha256") == CONTRACT_SHA256, f"{label} contract identity changed.")
         _require(payload.get("budget") == USED_BUDGET, f"{label} budget changed.")
@@ -448,6 +475,11 @@ def _load_and_verify_manifests(
     _require(
         raw.get("remote_endpoint") == "kelly@silicon.local:22",
         "Raw remote endpoint changed.",
+    )
+    _require(
+        raw.get("observer_role")
+        == "remote_host_and_usb_camera_metadata_only",
+        "Raw observer role changed.",
     )
     _require(
         attempt.get("return_code") == raw.get("ssh_return_code"),
@@ -552,7 +584,15 @@ def evaluate(
             failed_gates.append("excluded_d405_camera_match_count")
         if excluded_usb_count != 0:
             failed_gates.append("excluded_d405_usb_match_count")
-        if target_camera_count == 0 and target_usb_count == 0:
+        attachment_gates = [
+            "target_c922_camera_match_count",
+            "target_c922_usb_match_count",
+        ]
+        if (
+            target_camera_count == 0
+            and target_usb_count == 0
+            and failed_gates == attachment_gates
+        ):
             verdict = "isolated_overhead_host_requires_c922_attachment"
         elif not failed_gates:
             verdict = "isolated_overhead_host_ready"
