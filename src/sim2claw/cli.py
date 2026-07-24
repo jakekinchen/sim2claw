@@ -290,6 +290,13 @@ def build_parser() -> argparse.ArgumentParser:
         "physical-gateway-preflight",
         help="open both identified buses torque-off and verify physical gateway state",
     )
+    physical_measurement = subparsers.add_parser(
+        "physical-measurement-baseline",
+        help="capture one preregistered torque-off camera and actuator baseline",
+    )
+    physical_measurement.add_argument("--output", type=Path, required=True)
+    physical_measurement.add_argument("--samples", type=int, default=30)
+    physical_measurement.add_argument("--interval-seconds", type=float, default=0.25)
 
     physical_replay = subparsers.add_parser(
         "physical-replay",
@@ -1037,6 +1044,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .teleop_recording import physical_gateway_preflight
 
         print(json.dumps(physical_gateway_preflight(), indent=2, sort_keys=True))
+        return 0
+    if args.command == "physical-measurement-baseline":
+        from .current_workcell_measurement import capture_torque_off_baseline
+
+        report = capture_torque_off_baseline(
+            args.output,
+            sample_count=args.samples,
+            sample_interval_seconds=args.interval_seconds,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
         return 0
     if args.command == "physical-replay":
         from .physical_trace_replay import (
