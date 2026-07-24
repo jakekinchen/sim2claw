@@ -51,3 +51,10 @@ The verdict is `supported_d405_common_session_candidate`. This closes only
 native format selection. Capture-session admission, callback delivery,
 cross-camera timing, motion reliability, metric depth, simulator calibration,
 and task authority remain unproved.
+
+Post-terminal control uses tracked exhaustion guard
+`b8194ddc4e9ee11b53f5f950243c7be7bdb8418ca01e58d3c656cd3c5232c531`
+and separate control module
+`78027bd591e379550cc43deefcee2ed9a5060d5913aedb0843396c13ad9f67b2`.
+The control checks the committed one-of-one accounting and refuses before any
+runner or device delegation, even if ignored generated outputs are moved.

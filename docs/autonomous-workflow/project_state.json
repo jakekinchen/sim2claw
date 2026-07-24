@@ -3231,7 +3231,7 @@
     "avfoundation_d405_format_inventory_v1": {
       "status": "terminal_supported_candidate_observation_budget_exhausted",
       "goal": "docs/autonomous-workflow/goal-loop-avfoundation-d405-format-inventory-v1.md",
-      "goal_sha256": "06eb86bc187be3a1862511faf2e02289749d9c4df497e94c42c278c5e9125183",
+      "goal_sha256": "988ec01f9ff6ab3082109f22817024ddae833a255147132ec861116aae980a3f",
       "contract": "configs/evaluations/avfoundation_d405_format_inventory_v1.json",
       "contract_sha256": "fac08af1fab964ccc1f367d1ab97a5495fe6c535cea79b837a327b1de51cecef",
       "baseline_commit": "3fafda3b7429f6c727afaacade86346791e72b52",
@@ -3248,6 +3248,10 @@
       "evaluation_sha256": "68ad34b9e004b5781f73a38e2c7df88536f0e5291b3845d90856a0e69d9edb8b",
       "receipt_sha256": "fb4e76d990b44bd5633fa3ec955c1480c044430bd8e32427b9386269f4553ed3",
       "receipt_digest": "674d5825732ad72f0ea2513519307098f3c7dc27e7a26926fe5fcceadeee22b8",
+      "post_execution_control_module": "src/sim2claw/avfoundation_d405_format_inventory_control.py",
+      "post_execution_control_module_sha256": "78027bd591e379550cc43deefcee2ed9a5060d5913aedb0843396c13ad9f67b2",
+      "exhaustion_guard": "configs/evaluations/avfoundation_d405_format_inventory_v1_exhausted.json",
+      "exhaustion_guard_sha256": "b8194ddc4e9ee11b53f5f950243c7be7bdb8418ca01e58d3c656cd3c5232c531",
       "verdict": "supported_d405_common_session_candidate",
       "device_match_count": 1,
       "format_count": 12,
@@ -3273,6 +3277,7 @@
       "simulator_replays_used": 0,
       "provider_calls_used": 0,
       "retry_authorized": false,
+      "control_plane_blocks_post_terminal_observation_delegation": true,
       "next_prerequisite": "separately_preregistered_native_two_input_common_session_admission_and_callback_delivery",
       "claim_limits": {
         "format_inventory_only": true,

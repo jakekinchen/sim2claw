@@ -1197,3 +1197,8 @@ goal. External provider campaigns and spending remain separately gated.
   zero capture sessions, frames, lifecycle operations, robot motions,
   simulator replays, or provider calls. This removes the guessed-format
   blocker only; native two-input session admission/delivery is a separate gate.
+- 2026-07-24T17:55:00-05:00 — Post-terminal D405 inventory audit passed the
+  evidence and found stale goal binding plus output-presence-only exhaustion.
+  Rebound the terminal goal SHA to `988ec01f...` and added tracked guard
+  `b8194ddc...` plus separate control `78027bd5...`, which refuses before any
+  runner/device delegation. The execution-bound evaluator remains unchanged.
