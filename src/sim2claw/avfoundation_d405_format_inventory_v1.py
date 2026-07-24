@@ -299,6 +299,14 @@ def evaluate_d405_format_inventory(
         raise AVFoundationFormatInventoryError("D405 prelaunch schema changed.")
     if attempt.get("schema_version") != ATTEMPT_SCHEMA:
         raise AVFoundationFormatInventoryError("D405 attempt schema changed.")
+    if (
+        prelaunch.get("status") != "prepared_before_observer_launch"
+        or prelaunch.get("raw_inventory_path") != "raw/inventory.json"
+        or prelaunch.get("stderr_path") != "raw/inventory.stderr.log"
+    ):
+        raise AVFoundationFormatInventoryError(
+            "D405 prelaunch state or paths changed."
+        )
     for label, payload in (("prelaunch", prelaunch), ("attempt", attempt)):
         if (
             payload.get("contract_id") != contract["contract_id"]
@@ -336,6 +344,20 @@ def evaluate_d405_format_inventory(
         raise AVFoundationFormatInventoryError("D405 stderr identity changed.")
     raw_path = observation_root / "raw/inventory.json"
     raw_available = raw_path.is_file()
+    return_code = attempt.get("return_code")
+    if isinstance(return_code, bool) or not isinstance(return_code, int):
+        raise AVFoundationFormatInventoryError(
+            "D405 observer return code is not an integer."
+        )
+    expected_attempt_status = (
+        "observer_completed_with_raw"
+        if raw_available
+        else "observer_failed_without_raw"
+    )
+    if attempt.get("status") != expected_attempt_status:
+        raise AVFoundationFormatInventoryError(
+            "D405 attempt status contradicts raw availability."
+        )
     if raw_available != isinstance(attempt.get("raw_inventory_sha256"), str):
         raise AVFoundationFormatInventoryError("D405 raw availability changed.")
     if raw_available and (
@@ -385,10 +407,21 @@ def evaluate_d405_format_inventory(
             raise AVFoundationFormatInventoryError(
                 "D405 detected camera inventory is malformed."
             )
+        match_count = observation.get("device_match_count")
+        if (
+            isinstance(match_count, bool)
+            or not isinstance(match_count, int)
+            or match_count < 0
+            or detected.count(contract["device"]["exact_localized_name"])
+            != match_count
+        ):
+            raise AVFoundationFormatInventoryError(
+                "D405 device match count contradicts detected inventory."
+            )
 
     prerequisite_available = (
         raw_available
-        and attempt.get("return_code") == 0
+        and return_code == 0
         and observation is not None
         and observation.get("status") == "observed"
         and observation.get("device_match_count") == 1
@@ -417,7 +450,7 @@ def evaluate_d405_format_inventory(
             else "no_supported_d405_common_session_candidate"
         )
     else:
-        if attempt.get("return_code") == 0:
+        if return_code == 0:
             raise AVFoundationFormatInventoryError(
                 "D405 successful attempt has inconsistent raw identity."
             )
@@ -472,7 +505,7 @@ def evaluate_d405_format_inventory(
         ),
         "proof_class": PROOF_CLASS,
         "verdict": verdict,
-        "observer_return_code": attempt.get("return_code"),
+        "observer_return_code": return_code,
         "raw_inventory_available": raw_available,
         "device_match_count": (
             observation.get("device_match_count") if observation else None

@@ -307,6 +307,24 @@ def test_evaluator_selects_exact_d405_candidate_without_authority(
     assert receipt["verdict"] == evaluation["verdict"]
 
 
+def test_evaluator_rejects_success_match_count_inventory_contradiction(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.chdir(ROOT)
+    observed = _materialize(tmp_path)
+    raw_path = observed / "raw/inventory.json"
+    raw = json.loads(raw_path.read_text(encoding="utf-8"))
+    raw["detected_device_names"] = ["C922 Pro Stream Webcam"]
+    _rewrite_raw(observed, raw)
+    with pytest.raises(AVFoundationFormatInventoryError, match="match count"):
+        evaluate_d405_format_inventory(
+            contract_path=CONTRACT,
+            observation_root=observed,
+            output_root=tmp_path / "evaluated",
+        )
+
+
 def test_evaluator_rejects_nonfinite_native_rate(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -386,6 +404,7 @@ def test_evaluator_accepts_exact_empty_match_count_abstention(
             "formats": [],
         }
     )
+    raw["detected_device_names"] = ["C922 Pro Stream Webcam"]
     _rewrite_raw(observed, raw)
     evaluation, _ = evaluate_d405_format_inventory(
         contract_path=CONTRACT,
@@ -394,6 +413,35 @@ def test_evaluator_accepts_exact_empty_match_count_abstention(
     )
     assert evaluation["verdict"] == "prerequisite_abstention"
     assert evaluation["format_count"] is None
+
+
+def test_evaluator_rejects_abstention_match_count_inventory_contradiction(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.chdir(ROOT)
+    observed = _materialize(tmp_path, return_code=2)
+    raw_path = observed / "raw/inventory.json"
+    raw = json.loads(raw_path.read_text(encoding="utf-8"))
+    raw.update(
+        {
+            "authorization_status_raw_value": 3,
+            "status": "prerequisite_unavailable",
+            "failure_reason": "exact_device_match_count_invalid",
+            "device_match_count": 0,
+            "device_localized_name": None,
+            "device_unique_id": None,
+            "device_model_id": None,
+            "formats": [],
+        }
+    )
+    _rewrite_raw(observed, raw)
+    with pytest.raises(AVFoundationFormatInventoryError, match="match count"):
+        evaluate_d405_format_inventory(
+            contract_path=CONTRACT,
+            observation_root=observed,
+            output_root=tmp_path / "evaluated",
+        )
 
 
 @pytest.mark.parametrize(
@@ -477,6 +525,51 @@ def test_evaluator_rejects_substitution_or_mutation(
         attempt = json.loads(attempt_path.read_text(encoding="utf-8"))
         attempt["budget"]["capture_sessions_used"] = 1
         _write(attempt_path, attempt)
+    with pytest.raises(AVFoundationFormatInventoryError, match=match):
+        evaluate_d405_format_inventory(
+            contract_path=CONTRACT,
+            observation_root=observed,
+            output_root=tmp_path / "evaluated",
+        )
+
+
+@pytest.mark.parametrize(
+    ("mutation", "match"),
+    [
+        ("prelaunch_status", "prelaunch state or paths"),
+        ("prelaunch_path", "prelaunch state or paths"),
+        ("attempt_status", "status contradicts raw"),
+        ("return_code_bool", "return code is not an integer"),
+    ],
+)
+def test_evaluator_rejects_manifest_state_contradiction(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    mutation: str,
+    match: str,
+) -> None:
+    monkeypatch.chdir(ROOT)
+    observed = _materialize(tmp_path)
+    if mutation.startswith("prelaunch"):
+        path = observed / "attempt-prelaunch.json"
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if mutation == "prelaunch_status":
+            payload["status"] = "already_observed"
+        else:
+            payload["raw_inventory_path"] = "substituted.json"
+        _write(path, payload)
+        attempt_path = observed / "attempt.json"
+        attempt = json.loads(attempt_path.read_text(encoding="utf-8"))
+        attempt["prelaunch_manifest_sha256"] = _sha(path)
+        _write(attempt_path, attempt)
+    else:
+        path = observed / "attempt.json"
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if mutation == "attempt_status":
+            payload["status"] = "observer_failed_without_raw"
+        else:
+            payload["return_code"] = False
+        _write(path, payload)
     with pytest.raises(AVFoundationFormatInventoryError, match=match):
         evaluate_d405_format_inventory(
             contract_path=CONTRACT,
