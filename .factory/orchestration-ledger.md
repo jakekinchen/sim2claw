@@ -24,6 +24,14 @@
   `6f72f0b...` were regenerated from the committed compiler. Focused/static and
   desktop/mobile/keyboard/console checks pass; exact-head short tiers, one full
   suite, and independent review remain.
+- Verification correction: the first exact-head full suite completed with
+  `1162 passed / 3 skipped / 328 subtests / 1 failed`. The sole failure was an
+  older test that treated every non-retained recording as simulator-unavailable
+  and therefore rejected the new, separately labelled source-command
+  diagnostic. The test now preserves the original seven exact-action pairings
+  and eleven retained missing pairings while checking the diagnostic lane
+  separately; affected coverage passes `29 + 2 subtests`. The failed receipt is
+  excluded and a replacement exact-head full suite is pending.
 - Frozen evidence: S2 remains `11/11` byte-identical files and
   `1 event / 4 replays / 0 measurement trials`; HIL artifacts are unchanged.
 - Authority: provider, paid compute, simulator campaign, physical capture,

@@ -102,6 +102,18 @@ Official evaluator-owned bindings after the committed compiler:
   unambiguous Replay modes, synchronized 50% scrub at 24.820 seconds, Twin
   fidelity focus return on Escape, and zero console errors. The sole console
   warning remains the pre-existing Three.js Clock deprecation.
+- Excluded full-suite receipt at
+  `31e5ead86c6028284059365e3da1e1b3086b6e8b`: 1162 passed, three skipped,
+  328 subtests passed, and one stale assertion failed because it still required
+  every post-retained recording to be simulator-unavailable. Receipt digest
+  `cfcf454f139d9344c3668f4e593ffdce3121d2df12145bdabf007e3c290e5ff9`;
+  log SHA-256
+  `18e70c1623bbaa4d9708ad87720ec94ed8ec1d5466140193dd4ac684aadd74c6`.
+- The repaired test now separately asserts seven retained byte-identical
+  publication pairings, one hash-bound converted source-command diagnostic,
+  and two later simulator-unavailable recordings. The affected slice passes
+  29 tests plus two subtests. A replacement exact-head full suite remains
+  required.
 
 ## Authority
 

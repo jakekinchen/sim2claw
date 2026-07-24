@@ -253,6 +253,18 @@
       "synchronized_half_timeline_time_seconds": 24.82,
       "horizontal_overflow_detected": false,
       "console_error_count": 0,
+      "excluded_full_suite": {
+        "commit": "31e5ead86c6028284059365e3da1e1b3086b6e8b",
+        "status": "failed_stale_publication_only_pairing_assertion",
+        "passed": 1162,
+        "failed": 1,
+        "skipped": 3,
+        "subtests_passed": 328,
+        "receipt_digest": "cfcf454f139d9344c3668f4e593ffdce3121d2df12145bdabf007e3c290e5ff9",
+        "log_sha256": "18e70c1623bbaa4d9708ad87720ec94ed8ec1d5466140193dd4ac684aadd74c6"
+      },
+      "targeted_repair_tests_passed": 29,
+      "targeted_repair_subtests_passed": 2,
       "exact_head_short_tiers_pending": true,
       "exact_head_full_suite_pending": true,
       "independent_review_pending": true

@@ -97,7 +97,7 @@ def test_catalog_uses_tracked_bundle_without_generated_outputs() -> None:
     assert all(row["physical_authority"] is False for row in episodes)
 
 
-def test_physical_comparison_pairs_only_verified_publication_evidence() -> None:
+def test_physical_comparison_separates_publication_and_source_command_evidence() -> None:
     catalog = studio_catalog.build_catalog(REPO_ROOT)
     manifest = json.loads(
         (PUBLICATION_ROOT / "gallery_manifest.json").read_text(encoding="utf-8")
@@ -124,7 +124,7 @@ def test_physical_comparison_pairs_only_verified_publication_evidence() -> None:
         for row in physical
         if row["source_recording_id"] in retained_recording_ids
     ]
-    paired = [
+    publication_paired = [
         row
         for row in retained_cohort
         if row["comparison"]["physics_replay"]["available"]
@@ -134,17 +134,25 @@ def test_physical_comparison_pairs_only_verified_publication_evidence() -> None:
         for row in physical
         if row["source_recording_id"] not in retained_recording_ids
     ]
+    source_command_diagnostics = [
+        row
+        for row in later_recordings
+        if row["comparison"]["physics_replay"]["available"]
+    ]
+    later_missing = [
+        row
+        for row in later_recordings
+        if not row["comparison"]["physics_replay"]["available"]
+    ]
 
     assert len(physical) >= 18
     assert len(retained_cohort) == 18
-    assert len(paired) == 7
-    assert len(retained_cohort) - len(paired) == 11
-    assert all(
-        row["comparison"]["physics_replay"]["available"] is False
-        for row in later_recordings
-    )
+    assert len(publication_paired) == 7
+    assert len(retained_cohort) - len(publication_paired) == 11
+    assert len(source_command_diagnostics) == 1
+    assert len(later_missing) == 2
     assert all("_binding_sources" not in row for row in catalog["episodes"])
-    for row in paired:
+    for row in publication_paired:
         physics = row["comparison"]["physics_replay"]
         binding = physics["binding"]
         receipt_path = REPO_ROOT / binding["evidence_receipt"]["path"]
@@ -158,6 +166,17 @@ def test_physical_comparison_pairs_only_verified_publication_evidence() -> None:
         assert episode["recording_id"] == row["source_recording_id"]
         assert episode["action_array_sha256"] == physics["action_array_sha256"]
         assert episode["action_byte_identical"] is True
+
+    diagnostic = source_command_diagnostics[0]["comparison"]["physics_replay"]
+    assert diagnostic["proof_class"] == (
+        "simulation_physical_command_replay_diagnostic"
+    )
+    assert diagnostic["action_byte_identical"] is False
+    assert diagnostic["action_array_sha256"] is None
+    assert len(diagnostic["source_samples_sha256"]) == 64
+    assert diagnostic["binding"]["kind"] == (
+        "source_samples_bound_sim_replay_receipt"
+    )
 
 
 def test_server_serves_publication_scene_and_phone_trace() -> None:
