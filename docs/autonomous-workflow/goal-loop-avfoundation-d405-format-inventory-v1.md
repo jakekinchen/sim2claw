@@ -100,10 +100,10 @@ abstention; budget use; tests; frozen-evidence proof; and all closed authority.
 ## Progress Ledger
 
 ```text
-Current state: Preregistered before implementation or device observation.
-Completed: Sealed nested-lifecycle terminal negative and independent PASS.
-Evidence: Baseline 3fafda3; nested verdict reject_stationary_nested_dual_camera_lifecycle.
-Remaining: Implement/test evaluator, commit exact bytes, observe once, seal result.
-Blockers: D405 native format/rate surface is not yet evaluator-verified.
-Next step: Implement the zero-session inventory evaluator and adversarial tests.
+Current state: Terminal supported-format result; the single observation is exhausted.
+Completed: Preregistration 359506e; final implementation 2e3a94f; 1/1 observation; 0 sessions/frames; 12 formats; 56 ranges; 2 eligible candidates.
+Evidence: Raw ca2bef8b; evaluation 68ad34b9; receipt file fb4e76d9 / digest 674d5825; selected format 0/range 4, 424x240 2vuy at exact 5 fps.
+Remaining: Close state/review, then separately preregister native common-session delivery.
+Blockers: No D405 format blocker remains. Common-session input/output admission and callback delivery remain unmeasured.
+Next step: Freeze the terminal inventory without rerunning device enumeration.
 ```

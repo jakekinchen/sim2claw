@@ -20,3 +20,34 @@ No evaluator implementation exists for this v1 transaction and no device
 observation has occurred. A selected candidate, if any, is inventory evidence
 only and grants no stream, synchronization, metric-depth, simulator, task, or
 physical-task authority.
+
+## Terminal result
+
+Preregistration commit `359506e` preceded the exact final implementation and
+observation commit `2e3a94f3f716a8bb098e752e74c762f34e8d3727`.
+The single observer returned zero and materialized:
+
+- 1 exact D405 device match;
+- 12 formats and 56 frame-rate ranges;
+- 10 exact-dimension candidate rows and 2 eligible rows;
+- selected format index 0, range 4, 424×240, `2vuy`, exact 5 fps;
+- 1/1 inventory observation;
+- 0 capture sessions, frames, C922/D405 lifecycle operations, robot motions,
+  simulator replays, or provider calls.
+
+Content identities:
+
+- observer source: `73f0e6b7675cb20be8fc7fccdd5b1c6dd1c369ee75443627ec2c43ba9e612aab`
+- evaluator: `f5ad88887b8822765532d60c66d52969ad7a8cc0004e8116f629d14dad11684c`
+- binary: `b75847230e2904c0c6f69cdbdf7a973a493e611ca15501aefe1ffb933286a359`
+- prelaunch: `b85122b465bed7309a1fe82a8dd15e3b1453854b012d979e54293e5c990ff258`
+- attempt: `ccded9ed94d0407238b852a1a7e3d5586a1fe97dfb1436a1ff8ea4d5477b617e`
+- raw inventory: `ca2bef8b552fee3c55ae9cffd6bd2da0f5286449dd7c76f5922ef65dadd7917a`
+- evaluation file/digest: `68ad34b9e004b5781f73a38e2c7df88536f0e5291b3845d90856a0e69d9edb8b`
+- receipt file: `fb4e76d990b44bd5633fa3ec955c1480c044430bd8e32427b9386269f4553ed3`
+- receipt digest: `674d5825732ad72f0ea2513519307098f3c7dc27e7a26926fe5fcceadeee22b8`
+
+The verdict is `supported_d405_common_session_candidate`. This closes only
+native format selection. Capture-session admission, callback delivery,
+cross-camera timing, motion reliability, metric depth, simulator calibration,
+and task authority remain unproved.

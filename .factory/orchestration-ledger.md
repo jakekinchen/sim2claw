@@ -1190,3 +1190,10 @@ goal. External provider campaigns and spending remain separately gated.
   frozen 0.01-fps rule, and zero sessions, frames, camera lifecycle operations,
   robot motions, simulator replays, or provider calls. Any candidate is native
   common-session design input only and grants no capture or Twin authority.
+- 2026-07-24T17:50:00-05:00 — The sole D405 zero-session inventory completed
+  at exact implementation `2e3a94f`: one exact device, 12 formats, 56 ranges,
+  and two eligible exact 424×240 @ 5-fps candidates. The frozen evaluator
+  selected native `2vuy` format 0/range 4. Budget use is 1/1 inventories and
+  zero capture sessions, frames, lifecycle operations, robot motions,
+  simulator replays, or provider calls. This removes the guessed-format
+  blocker only; native two-input session admission/delivery is a separate gate.
