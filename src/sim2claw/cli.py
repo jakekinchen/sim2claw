@@ -363,6 +363,12 @@ def build_parser() -> argparse.ArgumentParser:
     hil_evidence.add_argument("--config", type=Path, required=True)
     hil_evidence.add_argument("--campaign", type=Path, required=True)
     hil_evidence.add_argument("--output", type=Path, required=True)
+    hil_trace_analysis = subparsers.add_parser(
+        "hil-analyze-traces",
+        help="derive zero-new-motion diagnostics from the frozen HIL traces",
+    )
+    hil_trace_analysis.add_argument("--config", type=Path, required=True)
+    hil_trace_analysis.add_argument("--output", type=Path, required=True)
 
     sail_inventory = subparsers.add_parser(
         "sail-inventory",
@@ -1235,6 +1241,22 @@ def main(argv: Sequence[str] | None = None) -> int:
                 contract_path=args.config,
             )
         except HILEvidenceError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "hil-analyze-traces":
+        from .hil_trace_analysis import (
+            HILTraceAnalysisError,
+            derive_hil_trace_report,
+        )
+
+        try:
+            report = derive_hil_trace_report(
+                args.output,
+                contract_path=args.config,
+            )
+        except HILTraceAnalysisError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))

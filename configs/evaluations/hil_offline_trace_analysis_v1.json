@@ -1,0 +1,77 @@
+{
+  "analysis": {
+    "command_change_epsilon_degrees": 0.01,
+    "direction_velocity_threshold_degrees_s": 1.0,
+    "lag_candidates_samples": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "minimum_plateau_samples_after_settle": 3,
+    "minimum_traversal_samples": 3,
+    "plateau_settle_samples": 3,
+    "reset_window_samples": 20,
+    "sample_hz": 20
+  },
+  "authority": {
+    "physical_motion": false,
+    "provider_calls": false,
+    "simulator_execution": false,
+    "simulator_parameter_promotion": false,
+    "task_score_change": false,
+    "training": false
+  },
+  "claim_gates": {
+    "affine_scale_offset_fit_requires_admitted_packet": true,
+    "affine_scale_offset_fit_requires_at_least_three_plateau_levels": true,
+    "affine_scale_offset_fit_requires_two_traversals_per_direction": true,
+    "current_is_calibrated_force": false,
+    "directional_residual_is_contact_or_backlash_proof": false,
+    "sample_lag_is_command_application_latency": false,
+    "strict_task_consequence_available": false
+  },
+  "contract_id": "hil-offline-trace-analysis-20260724-v1",
+  "packets": [
+    {
+      "action_tensor_sha256": "30e7addea882fe94523e88d2c9135f182afe023f4621672650f0f4f72a9d747c",
+      "evaluation_sha256": "0708b012983f9a7011748b3643dc4170b17195d918150d27f3227b6c31fc8cf7",
+      "packet_id": "HIL-GRIPPER-05",
+      "raw_receipt_sha256": "7c3e30ab8a2090649a4259301298ded77668141f4a7f369ab8d521f6705bb452",
+      "target_joint": "gripper"
+    },
+    {
+      "action_tensor_sha256": "a61706c3bb36bb10c1ebcb758a9343a99d5dd69193c8e26a757b409137dad1b8",
+      "evaluation_sha256": "2b6c9b7baec4015106ef83acb2d95114e963c3da57fa079f3bd32497eebf8b13",
+      "packet_id": "HIL-SHOULDER-LIFT-22",
+      "raw_receipt_sha256": "b52125b3370b40baac31c0234324859a5e35ca73349a86c79ce467d3b8e0e844",
+      "target_joint": "shoulder_lift"
+    },
+    {
+      "action_tensor_sha256": "efd0cfb10f8e57d117d1ea6fd6c6ada85411703d9a87959314e5a1fa74e70230",
+      "evaluation_sha256": "ff918a9dceb72770636832a208cd9f1369f6eb84d5bf7907d29fa2df99cc26d0",
+      "packet_id": "HIL-ELBOW-FLEX-22",
+      "raw_receipt_sha256": "fbeaaf28d2d22b7f9ec76c8b15bbdf779a60a8524393e49dc9843566d4e2432a",
+      "target_joint": "elbow_flex"
+    },
+    {
+      "action_tensor_sha256": "58894fd504feaad80ee625f0a9612641b2ceb28a5ca71f0ac32f2e6d52c4b2b6",
+      "evaluation_sha256": "f1839ad8f0430d6b7310baee239bdd5cd33a6a5158f0496089495ece61b93dbd",
+      "packet_id": "HIL-WRIST-FLEX-30",
+      "raw_receipt_sha256": "4b30c3e34723a2bd22d9fab302c32d002d29b7b258dd6cb10b0aa517da35d539",
+      "target_joint": "wrist_flex"
+    }
+  ],
+  "proof_class": "offline_hil_trace_identifiability_diagnostic",
+  "schema_version": "sim2claw.hil_offline_trace_analysis.v1",
+  "source_campaign_root": "runs/current-100mm-hil-identifiability-20260724",
+  "source_campaign_sha256": "b364aae639bb753b58216177386aa6ae93d43dad5462c8dd1a3d33dd44330858",
+  "status": "frozen_before_derived_materialization"
+}
