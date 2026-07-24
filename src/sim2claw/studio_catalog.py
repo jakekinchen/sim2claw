@@ -45,6 +45,10 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def _as_mapping(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
 def _is_sha256(value: Any) -> bool:
     text = str(value or "")
     return len(text) == 64 and all(character in "0123456789abcdef" for character in text)
@@ -81,6 +85,11 @@ RANKED_GRASP_PUBLICATION_SCHEMA = (
 )
 PHYSICAL_EPISODE_LIBRARY_TASK = "physical_pawn_episode_library_v1"
 COMPARISON_SCHEMA_VERSION = "sim2claw.studio_episode_comparison.v1"
+CURRENT_MEASUREMENT_TASK = "current_100mm_measurement_v1"
+DUAL_CAMERA_CAPTURE_SCHEMA = "sim2claw.dual_camera_physical_replay_capture.v1"
+DUAL_CAMERA_STUDIO_RECEIPT_SCHEMA = (
+    "sim2claw.studio_dual_camera_browser_projection.v1"
+)
 
 
 def _media_relative_path(token: str) -> Path:
@@ -898,6 +907,263 @@ def _read_hash_bound_json(path: Path, expected_sha256: Any) -> dict[str, Any] | 
     return value if isinstance(value, dict) else None
 
 
+def _current_dual_camera_episodes(repo_root: Path) -> list[dict[str, Any]]:
+    """Project the current owner-authorized capture without widening its claims."""
+
+    project_state = _read_json(
+        repo_root / "docs" / "autonomous-workflow" / "project_state.json"
+    )
+    transaction = project_state.get("current_100mm_measurement_transaction")
+    if not isinstance(transaction, dict):
+        return []
+    declared = transaction.get("dual_camera_c2_c1_replay")
+    if not isinstance(declared, dict):
+        return []
+
+    capture_digest = declared.get("final_capture_receipt_sha256")
+    matching_receipts: list[Path] = []
+    if _is_sha256(capture_digest):
+        for candidate in sorted(
+            (repo_root / "runs").glob(
+                "current-100mm-measurement-*/episode-*/capture_receipt.json"
+            )
+        ):
+            try:
+                if hashlib.sha256(candidate.read_bytes()).hexdigest() == capture_digest:
+                    matching_receipts.append(candidate)
+            except OSError:
+                continue
+    if len(matching_receipts) != 1:
+        return []
+
+    capture_path = matching_receipts[0]
+    capture = _read_hash_bound_json(capture_path, capture_digest)
+    if (
+        capture is None
+        or capture.get("schema_version") != DUAL_CAMERA_CAPTURE_SCHEMA
+        or capture.get("status") != "completed"
+        or capture.get("physical_task_success_verified") is not False
+        or capture.get("training_admission") is not False
+        or capture.get("promotion_authority") is not False
+        or capture.get("source_recording_id")
+        != declared.get("source_recording_id")
+        or capture.get("source_samples_sha256")
+        != declared.get("source_samples_sha256")
+        or capture.get("replay_receipt_sha256")
+        != declared.get("final_replay_receipt_sha256")
+    ):
+        return []
+
+    reports = capture.get("camera_reports")
+    if not isinstance(reports, list):
+        return []
+    report_by_role: dict[str, dict[str, Any]] = {}
+    for report in reports:
+        if not isinstance(report, dict):
+            return []
+        role = str(report.get("role") or "")
+        if role in report_by_role:
+            return []
+        report_by_role[role] = report
+    required_roles = {"overhead_workspace", "wrist_gripper_upward"}
+    if not required_roles.issubset(report_by_role):
+        return []
+
+    verified_media: dict[str, Path] = {}
+    expected_media_digests = {
+        "overhead_workspace": declared.get("overhead_video_sha256"),
+        "wrist_gripper_upward": declared.get("wrist_video_sha256"),
+    }
+    for role in required_roles:
+        report = report_by_role[role]
+        name = Path(str(report.get("file") or ""))
+        path = (capture_path.parent / name).resolve()
+        try:
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        except OSError:
+            return []
+        if (
+            name.name != str(report.get("file") or "")
+            or not path.is_relative_to(capture_path.parent.resolve())
+            or report.get("diagnostic_only") is not True
+            or report.get("metric_depth") is not False
+            or report.get("status") != "completed_full_timestamp_coverage"
+            or digest != report.get("sha256")
+            or digest != expected_media_digests[role]
+        ):
+            return []
+        verified_media[role] = path
+
+    replay_root = Path(str(capture.get("replay_run_directory") or "")).resolve()
+    replay_path = replay_root / "replay_receipt.json"
+    expected_runs_root = (repo_root / "runs").resolve()
+    replay = _read_hash_bound_json(
+        replay_path,
+        declared.get("final_replay_receipt_sha256"),
+    )
+    if (
+        not replay_root.is_relative_to(expected_runs_root)
+        or replay is None
+        or replay.get("schema_version")
+        != "sim2claw.physical_trace_replay_attempt.v1"
+        or replay.get("status") != "completed"
+        or replay.get("source_recording_id")
+        != declared.get("source_recording_id")
+        or replay.get("source_samples_sha256")
+        != declared.get("source_samples_sha256")
+        or replay.get("source_trace_direction") != declared.get("source_direction")
+        or replay.get("task_success_verified") is not False
+        or replay.get("learned_policy_verified") is not False
+        or replay.get("physical_follower_torque_enabled") is not False
+    ):
+        return []
+
+    browser_receipt = _read_json(
+        capture_path.parent / "studio_projection_receipt.json"
+    )
+    derivative = browser_receipt.get("wrist_browser_derivative")
+    wrist_report = report_by_role["wrist_gripper_upward"]
+    if (
+        browser_receipt.get("schema_version")
+        != DUAL_CAMERA_STUDIO_RECEIPT_SCHEMA
+        or browser_receipt.get("capture_receipt_sha256") != capture_digest
+        or not isinstance(derivative, dict)
+        or derivative.get("source_file") != wrist_report.get("file")
+        or derivative.get("source_sha256") != wrist_report.get("sha256")
+        or derivative.get("operation") != "container_remux_h264_copy_to_mp4"
+        or not _is_sha256(derivative.get("sha256"))
+    ):
+        return []
+    derivative_name = Path(str(derivative.get("file") or ""))
+    wrist_browser = (capture_path.parent / derivative_name).resolve()
+    try:
+        wrist_browser_digest = hashlib.sha256(wrist_browser.read_bytes()).hexdigest()
+    except OSError:
+        return []
+    if (
+        derivative_name.name != str(derivative.get("file") or "")
+        or not wrist_browser.is_relative_to(capture_path.parent.resolve())
+        or wrist_browser.suffix.lower() != ".mp4"
+        or wrist_browser_digest != derivative.get("sha256")
+    ):
+        return []
+
+    overhead = report_by_role["overhead_workspace"]
+    wrist = report_by_role["wrist_gripper_upward"]
+    overhead_end = float(
+        _as_mapping(overhead.get("observed")).get("last_timestamp_seconds") or 0
+    )
+    wrist_end = float(
+        _as_mapping(wrist.get("observed")).get("last_timestamp_seconds") or 0
+    )
+    duration = min(value for value in (overhead_end, wrist_end) if value > 0)
+    source_count = int(replay.get("source_sample_count") or 0)
+    completed_count = int(replay.get("completed_sample_count") or 0)
+    exact_count = int(replay.get("exact_command_sample_count") or 0)
+    clamped_count = int(replay.get("safety_clamped_sample_count") or 0)
+    if (
+        source_count != int(declared.get("source_sample_count") or -1)
+        or completed_count != int(declared.get("completed_sample_count") or -1)
+        or exact_count != int(declared.get("exact_command_sample_count") or -1)
+        or clamped_count != int(declared.get("safety_clamped_sample_count") or -1)
+    ):
+        return []
+
+    feeds = [
+        {
+            "id": "overhead-c922",
+            "title": "Overhead C922",
+            "camera": str(overhead.get("name") or "C922 overhead"),
+            "kind": "physical_command_replay_observation",
+            "role": "overhead_workspace",
+            "url": media_url(verified_media["overhead_workspace"], repo_root),
+            "window_start_seconds": 0,
+            "window_end_seconds": overhead_end,
+            "display_rotation_degrees": 180,
+            "sha256": overhead.get("sha256"),
+            "diagnostic_only": True,
+            "metric_depth": False,
+        },
+        {
+            "id": "wrist-d405",
+            "title": "Wrist D405",
+            "camera": str(wrist.get("name") or "D405 wrist"),
+            "kind": "physical_command_replay_observation",
+            "role": "wrist_gripper_upward",
+            "url": media_url(wrist_browser, repo_root),
+            "window_start_seconds": 0,
+            "window_end_seconds": wrist_end,
+            "display_rotation_degrees": 0,
+            "sha256": wrist.get("sha256"),
+            "browser_derivative_sha256": wrist_browser_digest,
+            "diagnostic_only": True,
+            "metric_depth": False,
+        },
+    ]
+    return [
+        {
+            "id": (
+                f"{CURRENT_MEASUREMENT_TASK}:"
+                f"{capture.get('source_recording_id')}:dual-camera-replay"
+            ),
+            "task_id": CURRENT_MEASUREMENT_TASK,
+            "title": "C2 → C1 dual-camera replay",
+            "subtitle": (
+                "Overhead + wrist evidence · board unchanged · "
+                "approach timing and grasp retention unresolved"
+            ),
+            "sequence": 40_000,
+            "status": "failed",
+            "terminal_outcome": (
+                "terminal_negative_board_unchanged_grasp_mechanism_unresolved"
+            ),
+            "proof_class": capture.get("proof_class"),
+            "proof_label": "Physical replay observation · task unverified",
+            "physical_authority": False,
+            "frame_count": int(
+                _as_mapping(overhead.get("observed")).get("frame_count") or 0
+            ),
+            "fps": float(overhead.get("fps") or 0),
+            "duration_seconds": duration,
+            "recorded_at": capture.get("completed_at"),
+            "media": {
+                "kind": "video",
+                "url": feeds[0]["url"],
+                "window_start_seconds": 0,
+                "window_end_seconds": overhead_end,
+                "display_rotation_degrees": 180,
+            },
+            "recording_feeds": feeds,
+            "camera": "dual_camera_overhead_and_wrist",
+            "metrics": [
+                _metric("Replay samples", f"{completed_count}/{source_count}"),
+                _metric("Exact command", exact_count),
+                _metric("Safety-clamped", clamped_count, tone="warning"),
+                _metric("Task verdict", "Unverified", tone="warning"),
+            ],
+            "notes": (
+                "Both feeds cover the completed action replay. The wrist stream is "
+                "display RGB only: no metric depth or camera-to-gripper calibration. "
+                "No piece-sized endpoint change was detected, so this is a terminal "
+                "negative diagnostic and not task success or training evidence."
+            ),
+            "phases": [{"name": "Physical command replay", "start": 0.0, "end": 1.0}],
+            "case_id": "c2_to_c1_dual_camera_physical_replay",
+            "source_recording_id": capture.get("source_recording_id"),
+            "source_samples_sha256": capture.get("source_samples_sha256"),
+            "evidence_receipt": {
+                "path": capture_path.relative_to(repo_root).as_posix(),
+                "sha256": capture_digest,
+                "replay_receipt_sha256": capture.get("replay_receipt_sha256"),
+            },
+            "physical_task_success_verified": False,
+            "training_admission": False,
+            "promotion_authority": False,
+            "missing_evidence": list(declared.get("unresolved_observables") or []),
+        }
+    ]
+
+
 def _verified_tracked_publication_replay(
     row: dict[str, Any],
     repo_root: Path,
@@ -1473,6 +1739,7 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         + _act_episodes(repo_root, contracts)
         + _grasp_episodes(repo_root)
         + _teleop_episodes(repo_root)
+        + _current_dual_camera_episodes(repo_root)
         + build_physical_release_episodes(repo_root, media_url)
     )
     episodes.sort(key=lambda row: (str(row["task_id"]), int(row["sequence"])))
@@ -1483,6 +1750,7 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         "chess_pick_place_groot_v1": "Chess pick + place",
         "chess_rook_lift_v1": "Rook lift",
         PHYSICAL_EPISODE_LIBRARY_TASK: "Physical pawn episodes",
+        CURRENT_MEASUREMENT_TASK: "Current 100 mm measurement",
         "scripted_grasp_probe": "Scripted grasp probe",
         "pawn_bg_ranked_grasp_v3": "Top pawn grasp replays",
         "pawn_bg_rubber_sliding2_sensitivity": "Rubber friction sensitivity",
@@ -1514,6 +1782,12 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
                         "action-frozen MuJoCo replay."
                     )
                     if task_id == PHYSICAL_EPISODE_LIBRARY_TASK
+                    else (
+                        "Current owner-authorized physical replay observations, "
+                        "kept diagnostic-only until evaluator-owned task and "
+                        "measurement prerequisites are satisfied."
+                    )
+                    if task_id == CURRENT_MEASUREMENT_TASK
                     else "Frozen sliding-friction 2.0 sensitivity replays; diagnostic only because the all-episode EE RMS guard fails."
                     if task_id == "pawn_bg_rubber_sliding2_sensitivity"
                     else

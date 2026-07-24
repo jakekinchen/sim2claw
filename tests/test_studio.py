@@ -177,6 +177,180 @@ class StudioCatalogTest(unittest.TestCase):
             catalog["simulations"][0]["workspace_pose_id"],
             "workspace_board_fiducial_robotward_100mm_20260718_v3",
         )
+
+    def test_current_dual_camera_capture_is_hash_bound_and_fails_closed(self) -> None:
+        capture_root = (
+            self.root
+            / "runs"
+            / "current-100mm-measurement-fixture"
+            / "episode-c2-c1-dual-fixture"
+        )
+        replay_root = (
+            self.root
+            / "runs"
+            / "current-100mm-measurement-fixture"
+            / "physical-replays"
+            / "fixture-replay"
+        )
+        capture_root.mkdir(parents=True)
+        replay_root.mkdir(parents=True)
+        overhead = b"fixture-overhead-h264"
+        wrist = b"fixture-wrist-h264-mkv"
+        wrist_browser = b"fixture-wrist-h264-mp4"
+        (capture_root / "overhead_c922.mp4").write_bytes(overhead)
+        (capture_root / "wrist_d405.mkv").write_bytes(wrist)
+        (capture_root / "wrist_d405.browser.mp4").write_bytes(wrist_browser)
+        source_sha256 = "b" * 64
+        overhead_sha256 = hashlib.sha256(overhead).hexdigest()
+        wrist_sha256 = hashlib.sha256(wrist).hexdigest()
+        wrist_browser_sha256 = hashlib.sha256(wrist_browser).hexdigest()
+        replay = {
+            "schema_version": "sim2claw.physical_trace_replay_attempt.v1",
+            "status": "completed",
+            "source_recording_id": "fixture-c2-c1",
+            "source_samples_sha256": source_sha256,
+            "source_trace_direction": "forward",
+            "source_sample_count": 527,
+            "completed_sample_count": 527,
+            "exact_command_sample_count": 501,
+            "safety_clamped_sample_count": 70,
+            "task_success_verified": False,
+            "learned_policy_verified": False,
+            "physical_follower_torque_enabled": False,
+        }
+        self._write_json(replay_root / "replay_receipt.json", replay)
+        replay_sha256 = hashlib.sha256(
+            (replay_root / "replay_receipt.json").read_bytes()
+        ).hexdigest()
+        capture = {
+            "schema_version": "sim2claw.dual_camera_physical_replay_capture.v1",
+            "status": "completed",
+            "proof_class": (
+                "physical_command_replay_observation_unqualified_dual_camera"
+            ),
+            "completed_at": "2026-07-24T03:18:12+00:00",
+            "source_recording_id": "fixture-c2-c1",
+            "source_samples_sha256": source_sha256,
+            "source_trace_direction": "forward",
+            "replay_run_directory": str(replay_root),
+            "replay_receipt_sha256": replay_sha256,
+            "physical_task_success_verified": False,
+            "training_admission": False,
+            "promotion_authority": False,
+            "camera_reports": [
+                {
+                    "file": "overhead_c922.mp4",
+                    "name": "C922 Pro Stream Webcam",
+                    "role": "overhead_workspace",
+                    "sha256": overhead_sha256,
+                    "status": "completed_full_timestamp_coverage",
+                    "diagnostic_only": True,
+                    "metric_depth": False,
+                    "fps": 30,
+                    "observed": {
+                        "frame_count": 1049,
+                        "last_timestamp_seconds": 34.966667,
+                    },
+                },
+                {
+                    "file": "wrist_d405.mkv",
+                    "name": "Intel RealSense D405",
+                    "role": "wrist_gripper_upward",
+                    "sha256": wrist_sha256,
+                    "status": "completed_full_timestamp_coverage",
+                    "diagnostic_only": True,
+                    "metric_depth": False,
+                    "fps": 5,
+                    "observed": {
+                        "frame_count": 175,
+                        "last_timestamp_seconds": 34.8,
+                    },
+                },
+            ],
+        }
+        self._write_json(capture_root / "capture_receipt.json", capture)
+        capture_sha256 = hashlib.sha256(
+            (capture_root / "capture_receipt.json").read_bytes()
+        ).hexdigest()
+        self._write_json(
+            capture_root / "studio_projection_receipt.json",
+            {
+                "schema_version": (
+                    "sim2claw.studio_dual_camera_browser_projection.v1"
+                ),
+                "capture_receipt_sha256": capture_sha256,
+                "read_only": True,
+                "wrist_browser_derivative": {
+                    "file": "wrist_d405.browser.mp4",
+                    "sha256": wrist_browser_sha256,
+                    "source_file": "wrist_d405.mkv",
+                    "source_sha256": wrist_sha256,
+                    "operation": "container_remux_h264_copy_to_mp4",
+                },
+            },
+        )
+        self._write_json(
+            self.root
+            / "docs"
+            / "autonomous-workflow"
+            / "project_state.json",
+            {
+                "current_100mm_measurement_transaction": {
+                    "dual_camera_c2_c1_replay": {
+                        "source_recording_id": "fixture-c2-c1",
+                        "source_samples_sha256": source_sha256,
+                        "source_direction": "forward",
+                        "final_replay_receipt_sha256": replay_sha256,
+                        "final_capture_receipt_sha256": capture_sha256,
+                        "overhead_video_sha256": overhead_sha256,
+                        "wrist_video_sha256": wrist_sha256,
+                        "source_sample_count": 527,
+                        "completed_sample_count": 527,
+                        "exact_command_sample_count": 501,
+                        "safety_clamped_sample_count": 70,
+                        "unresolved_observables": [
+                            "grasp_force",
+                            "metric_wrist_depth",
+                        ],
+                    }
+                }
+            },
+        )
+
+        catalog = build_catalog(self.root)
+        episode = next(
+            row
+            for row in catalog["episodes"]
+            if row["task_id"] == "current_100mm_measurement_v1"
+        )
+        self.assertEqual(episode["status"], "failed")
+        self.assertFalse(episode["physical_task_success_verified"])
+        self.assertFalse(episode["training_admission"])
+        self.assertFalse(episode["promotion_authority"])
+        self.assertEqual(
+            [feed["role"] for feed in episode["recording_feeds"]],
+            ["overhead_workspace", "wrist_gripper_upward"],
+        )
+        self.assertEqual(
+            episode["recording_feeds"][0]["display_rotation_degrees"],
+            180,
+        )
+        self.assertEqual(
+            episode["recording_feeds"][1]["display_rotation_degrees"],
+            0,
+        )
+        self.assertTrue(all(feed["diagnostic_only"] for feed in episode["recording_feeds"]))
+        self.assertTrue(all(not feed["metric_depth"] for feed in episode["recording_feeds"]))
+        self.assertIn("terminal negative", episode["notes"])
+
+        (capture_root / "wrist_d405.browser.mp4").write_bytes(b"tampered")
+        tampered = build_catalog(self.root)
+        self.assertFalse(
+            any(
+                row["task_id"] == "current_100mm_measurement_v1"
+                for row in tampered["episodes"]
+            )
+        )
         self.assertEqual(
             catalog["simulations"][0]["board_center_in_table_frame_xy_m"],
             [0.04, -0.065],
