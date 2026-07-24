@@ -1,11 +1,131 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-23T22:20:00-05:00",
+  "updated_at": "2026-07-24T00:57:02-05:00",
   "active_campaign": "current_100mm_physical_measurement_calibration",
-  "current_milestone": "D8_CURRENT_100MM_DUAL_CAMERA_C2_C1_NEGATIVE_GRASP_MECHANISM_UNRESOLVED",
+  "current_milestone": "D9_OVERNIGHT_EMPTY_GRIPPER_RANGE_IDENTIFIABILITY_TERMINAL_DIAGNOSTIC",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
-  "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_and_unqualified_physical_command_replay_evidence_no_task_or_transfer_authority",
+  "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
+  "overnight_dual_camera_calibration_transaction": {
+    "schema_version": "sim2claw.overnight_dual_camera_calibration_transaction.v1",
+    "status": "terminal_diagnostic_partial_aggregate_reduction_rejected_no_promotion",
+    "baseline_commit": "b4d3b51515fd97b0704d965b554d6abdb9de0ecc",
+    "goal": "docs/autonomous-workflow/goal-loop-overnight-dual-camera-sim-calibration.md",
+    "run_log": "docs/run-logs/2026-07-24-overnight-dual-camera-calibration.md",
+    "source": {
+      "recording_id": "20260724T050132Z-02baf745",
+      "recording_directory": "datasets/manipulation_source_recordings/c2-to-c1__20260724T050132Z-02baf745",
+      "samples_sha256": "334ea676f4c2a48a22fd039ef2911946f608fdbfe293cea4383dba88f59da254",
+      "exact_action_sha256": "4dcdabd0b8681c4d811884458d3e4bbff523c7435ade38f22570c7fbca61d142",
+      "sample_count": 911,
+      "observed_excursion_count": 6,
+      "owner_intended_excursion_count": 5,
+      "procedure_count_matches": false,
+      "c922_frame_count": 1625,
+      "c922_video_sha256": "3072f4dc07acbb98ac324d48843c9fc8c44ddb22ff2c13570cab0e09402bf134",
+      "d405_browser_frame_count": 270,
+      "d405_browser_video_sha256": "e6de4b9e6a748ac1994516501c64979253f9c41918681c39cfcb58f6f325b425",
+      "raw_label_admitted_as_measurement": false
+    },
+    "diagnostic": {
+      "proof_class": "derived_empty_gripper_cycle_diagnostic",
+      "diagnostic_sha256": "c6791f9434aa8e9d4eb1e48547cebb28cbf29a3f4bd544e19dc239870c5a33a6",
+      "receipt_file_sha256": "fef884776e1f7cbbfafd11e542874f800234a3ca5f4f0aae2ae58b37c441da93",
+      "receipt_digest": "53f6a9fecea55feb3aaf6895f35f20a841490d5487863239d5a0b72809eab042",
+      "all_cycle_median_lag_seconds": 0.1500001244712621,
+      "all_cycle_maximum_lag_seconds": 0.4000003319233656,
+      "retrospective_cycle_ids": [2, 3, 4, 5, 6],
+      "retrospective_median_lag_seconds": 0.1500001244712621,
+      "retrospective_median_aligned_gripper_rmse_degrees": 1.0217126209619103,
+      "measurement_admitted": false,
+      "simulator_replays_used": 0
+    },
+    "joint_range_comparison": {
+      "proof_class": "action_frozen_simulator_joint_range_diagnostic",
+      "family_count": 1,
+      "variant_count": 2,
+      "simulator_replays_used": 2,
+      "simulator_replays_maximum": 2,
+      "adaptive_retries": 0,
+      "action_tensor_byte_identical": true,
+      "external_preclip_applied": false,
+      "baseline_aggregate_body_joint_rmse_degrees": 3.4281218295333917,
+      "candidate_aggregate_body_joint_rmse_degrees": 2.2800505979723162,
+      "aggregate_body_joint_rmse_improvement_fraction": 0.3348980254057487,
+      "elbow_rmse_regression_degrees": 0.8699944528147476,
+      "baseline_gripper_rmse_actuator_rad": 0.10111616980413113,
+      "candidate_gripper_rmse_actuator_rad": 0.10111823515132974,
+      "gates": {
+        "action_identity": true,
+        "aggregate_body_improvement": true,
+        "per_joint_nonregression": false,
+        "gripper_nonregression": false,
+        "strict_task_consequence": false
+      },
+      "verdict": "diagnostic_joint_range_tie_or_loss_no_promotion",
+      "raw_comparison_sha256": "cb6a35965a640a7052b023cb15fc3bc8acd03ef9def44bfb9f26a2c4471ca427",
+      "evaluation_sha256": "2bf577af5278dc7a5c8a06e10916db0a4eabbef1dcff99236db80339ed6c1802",
+      "receipt_file_sha256": "4e49fe686e6fdb5417278daf58a0897e3782fbe3942c5e8a3833228b034f4cc8",
+      "receipt_digest": "410000a8c66a581223207027562c551d3199e289307c1f5866cefcb5958c2eb6"
+    },
+    "joint_identifiability": {
+      "proof_class": "offline_unloaded_joint_identifiability_diagnostic",
+      "simulator_replays_used": 0,
+      "physical_trials_used": 0,
+      "shoulder_lift_command_span_degrees": 0.0,
+      "shoulder_lift_range_scale_identified": false,
+      "elbow_command_span_degrees": 10.021978021978015,
+      "elbow_range_scale_identified": false,
+      "wrist_flex_bidirectional_excitation_admitted": false,
+      "report_sha256": "22227ca7373efe18c51d68f750d3f44aa11c668b50a9e76260c2d72981264330",
+      "receipt_file_sha256": "2d9cb53787cac06383360fec88029b141a7b581078aa0594c399ff504900c7bb",
+      "receipt_digest": "2f7b0073a6d052a6db1436e183bb6594d20616f70dae5e0f5a51f9f415a8b719"
+    },
+    "studio_publication": {
+      "config": "configs/evaluations/overnight_calibration_publication_v2.json",
+      "config_sha256": "b3435627c0ccd739d8b950ca19563a2effa2c37fbd05869db5b42e1633564c1a",
+      "invalid_or_missing_artifact_fails_closed": true,
+      "overall_fidelity_percentage_emitted": false,
+      "read_only": true
+    },
+    "provider_review": {
+      "provider": "ChatGPT Robotics and Sims project",
+      "requested_model": "GPT-5.6 Sol with Pro reasoning",
+      "role": "advisory_only",
+      "accepted_recommendations": [
+        "independent_command_application_and_sensor_read_timestamps",
+        "per_channel_availability_and_alignment_confidence",
+        "calibration_operating_envelope_and_sensor_health",
+        "reset_invariant_receipt"
+      ],
+      "rejected_or_superseded_recommendations": [
+        "bootstrap_ci_gate_not_present_in_frozen_evaluator",
+        "shoulder_only_simulator_change_superseded_by_zero_command_span"
+      ],
+      "provider_advice_is_evaluator_evidence": false
+    },
+    "next_measurement_prerequisites": [
+      "preregistered_stationary_five_cycle_capture",
+      "independent_camera_capture_and_arrival_timestamps",
+      "command_send_and_application_timestamps",
+      "position_and_current_read_timestamps",
+      "frame_sequence_and_drop_counter",
+      "reset_invariant_receipt",
+      "calibration_identity_operating_envelope_and_sensor_health",
+      "bidirectional_shoulder_lift_excitation",
+      "bidirectional_elbow_excitation",
+      "strict_task_consequence"
+    ],
+    "authority": {
+      "simulator_parameter_promoted": false,
+      "task_score_changed": false,
+      "posterior_changed": false,
+      "training_admitted": false,
+      "physical_capture_opened": false,
+      "physical_motion_opened": false,
+      "provider_advice_is_evaluator_evidence": false
+    }
+  },
   "current_100mm_measurement_transaction": {
     "schema_version": "sim2claw.current_100mm_measurement_transaction.v1",
     "status": "dual_camera_c2_c1_negative_grasp_mechanism_unresolved_task_pipeline_still_gated",

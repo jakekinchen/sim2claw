@@ -1,6 +1,6 @@
 # Orchestration Ledger
 
-## Active bounded transaction — overnight dual-camera simulator calibration
+## Completed bounded transaction — overnight dual-camera simulator calibration
 
 - Owner objective: spend up to three hours cleaning and integrating the new
   dual-camera/fresh-current observation, calibrating it against the current
@@ -22,8 +22,10 @@
   conditioning-like outlier. Every command row exceeds at least one current
   simulator control range, so exact-action simulator execution is initially
   fail-closed at zero replays.
-- GPT-5.6 role: requested technical critic only; browser session currently
-  awaits owner sign-in and cannot score or promote local evidence.
+- GPT-5.6 role: technical critic only. The Robotics and Sims project review
+  supported explicit timing, availability, reset, and calibration-envelope
+  fields. Its initial inapplicable bootstrap-CI claim and pre-identifiability
+  shoulder-only recommendation were not adopted.
 - Derived checkpoint: committed implementation `d0f053a` materialized
   diagnostic SHA-256 `c6791f94...`, exact float64 action SHA-256
   `4dcdabd0...`, and receipt digest `53f6a9fe...`. The raw procedure remains
@@ -35,6 +37,22 @@
   911x6 float64 tensor; the only candidate mutation is body joint and actuator
   range, the budget is two total replays and zero retries, and strict task
   consequence remains unavailable so promotion is impossible.
+- Terminal comparison: exactly two replays and zero retries used identical
+  `911x6` float64 action bytes (`4dcdabd0...`). Aggregate body-joint RMSE fell
+  `3.4281° → 2.2801°`, but elbow regressed `+0.8700°`, gripper
+  non-regression failed, and strict task consequence was unavailable. Verdict:
+  `diagnostic_joint_range_tie_or_loss_no_promotion`.
+- Offline identifiability: zero simulator replays and zero physical trials.
+  Shoulder-lift command span was `0.0°`; elbow span was `10.022°` against a
+  frozen `15°` minimum. Neither range scale is identified, so no joint
+  parameter is promoted.
+- Integrated evidence: publication v2 `b3435627...` verifies the diagnostic,
+  comparison, traces, and identifiability receipts before projecting them into
+  the Replay-scoped Twin fidelity drawer. Invalid bytes fail closed.
+- Next prerequisite: a preregistered stationary five-cycle packet with
+  independent camera capture/arrival, command send/application, position-read,
+  and current-read timestamps; reset/calibration-health receipts; bidirectional
+  shoulder-lift and elbow excitation; and strict consequence evidence.
 - Goal:
   `docs/autonomous-workflow/goal-loop-overnight-dual-camera-sim-calibration.md`.
 

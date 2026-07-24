@@ -70,8 +70,8 @@ Keep these proof classes separate:
 
 - `physical_dual_camera_empty_gripper_observation_unqualified`
 - `derived_empty_gripper_cycle_diagnostic`
-- `action_frozen_simulator_actuator_diagnostic`
-- `independent_cpu_fp32_calibration_evaluation`
+- `action_frozen_simulator_joint_range_diagnostic`
+- `offline_unloaded_joint_identifiability_diagnostic`
 
 Completion evidence must include exact source and derived hashes, action
 identity, simulator identity, segmentation rule, measured counts, test
@@ -91,6 +91,19 @@ flags, and any remaining sim-to-real gap.
   an admitted five-cycle calibration measurement.
 - Contact force, metric D405 depth, deformation, and a camera-to-gripper
   transform are unavailable.
+- The only authorized simulator family used two of two replays with identical
+  action bytes. Endpoint-derived ranges reduced aggregate body-joint RMSE from
+  `3.4281°` to `2.2801°`, but elbow RMSE regressed by `0.8700°`, gripper
+  non-regression failed, and strict task consequence was unavailable. The
+  evaluator rejected the candidate.
+- The offline identifiability audit found `0.0°` shoulder-lift command span
+  and only `10.022°` elbow span. Neither joint's range scale is identified
+  from this episode, so the large shoulder-lift residual reduction cannot
+  authorize a shoulder-only simulator change.
+- GPT-5.6 reviewed the result inside the Robotics and Sims project. Its useful
+  timing/calibration-envelope recommendations remain advisory. Its initial
+  bootstrap-CI statement was inapplicable to this frozen evaluator, and its
+  initial shoulder-only recommendation was superseded by the zero-span audit.
 
 ### Assumptions
 
@@ -109,14 +122,17 @@ flags, and any remaining sim-to-real gap.
 - Use GPT-5.6 Pro for critique of the preregistration and failure modes, not for
   scoring local evidence.
 
-### Open Questions
+### Terminal Finding
 
-- Whether the first or last excursion was procedural conditioning.
-- Whether the current simulator exposes a trustworthy actuator/gripper
-  response surface for this exact action trace without widening the already
-  closed retained-C2 family.
-- Whether current telemetry is sufficiently aligned to distinguish command
-  delay, deadband, and load-path effects.
+- This episode supports a repeatable, sample-quantized approximately
+  `0.15 s` unloaded tracking lag on the sufficiently excited channels, but it
+  does not measure command-application latency.
+- The endpoint-range candidate is a rejected partial diagnostic gain, not a
+  calibration improvement or task result.
+- The next measurement packet must add independent capture/arrival,
+  command-send/application, position-read, and current-read timestamps; reset
+  and calibration-health receipts; and preregistered bidirectional
+  shoulder-lift/elbow excitation before another range hypothesis.
 
 ## Execution Rhythm
 
@@ -135,10 +151,10 @@ flags, and any remaining sim-to-real gap.
 ## Progress Ledger
 
 ```text
-Current state: Derived packet frozen; one externally calibrated joint-range comparison preregistered before execution.
-Completed: Three-hour goal activated; raw bytes verified; six-cycle diagnostic materialized; exact-action range blocker isolated.
-Evidence: implementation@d0f053ac2aa383dda3dcedb601f9252b13757587; diagnostic c6791f94...; exact action 4dcdabd0....
-Remaining: GPT-5.6 critique, single two-variant simulator execution, evaluation, verification, receipts, closeout.
-Blockers: GPT-5.6 browser session is signed out; contact/force/metric-depth channels are absent.
-Next step: Commit the calibrated-range preregistration, then execute its two replay variants exactly once.
+Current state: Terminal diagnostic; partial aggregate reduction rejected; no simulator or task promotion.
+Completed: Raw/data integrity, six-cycle evaluator, single two-replay action-identical comparison, offline joint identifiability audit, GPT-5.6 project critique, and receipt-verified Studio projection.
+Evidence: implementations d0f053a/a509682/a5e58eb/b1cd6e5; action 4dcdabd0...; diagnostic c6791f94...; comparison evaluation 2bf577af...; identifiability report 22227ca7...; publication v2 b3435627....
+Remaining: Exact-head verification and documentation closeout only.
+Blockers: Contact force, metric depth/extrinsics/object pose, independent timing, reset/calibration-health, and strict task consequence remain unavailable.
+Next step: Run focused/short/full proof tiers without simulator or physical replay, then close with no push.
 ```

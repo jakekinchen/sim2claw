@@ -165,8 +165,10 @@ def _overnight_calibration_projection(
     diagnostic = _as_mapping(bundle.get("diagnostic"))
     raw = _as_mapping(bundle.get("raw_comparison"))
     evaluation = _as_mapping(bundle.get("evaluation"))
+    identifiability = _as_mapping(bundle.get("identifiability"))
     comparison_receipt = _as_mapping(bundle.get("comparison_receipt"))
     diagnostic_receipt = _as_mapping(bundle.get("diagnostic_receipt"))
+    identifiability_receipt = _as_mapping(bundle.get("identifiability_receipt"))
     variants = _as_rows(raw.get("variants"))
     baseline = next(
         (row for row in variants if row.get("variant_id") == "current_declared_ranges"),
@@ -190,6 +192,10 @@ def _overnight_calibration_projection(
     )
     current = _as_mapping(diagnostic.get("current_telemetry"))
     gates = _as_mapping(evaluation.get("gates"))
+    shoulder_identifiability = _as_mapping(
+        identifiability.get("shoulder_lift_hypothesis")
+    )
+    elbow_identifiability = _as_mapping(identifiability.get("elbow_hypothesis"))
     improvement = evaluation.get("aggregate_body_joint_rmse_improvement_fraction")
     per_joint_regressions = evaluation.get("per_joint_rmse_regression_degrees")
     elbow_regression = (
@@ -216,7 +222,7 @@ def _overnight_calibration_projection(
             "kinematics",
             status="failed",
             summary="Aggregate joint error fell, but the global range candidate failed",
-            detail="The calibrated endpoint ranges reduced aggregate body-joint RMSE, primarily at shoulder lift, while elbow RMSE regressed beyond the frozen per-joint ceiling. The evaluator rejected the candidate and changed no simulator parameter.",
+            detail="The calibrated endpoint ranges reduced aggregate body-joint RMSE, primarily at shoulder lift, while elbow RMSE regressed beyond the frozen per-joint ceiling. The offline audit then found zero shoulder-lift command span and insufficient elbow span, so neither joint's range scale is identified. The evaluator rejected the candidate and changed no simulator parameter.",
             measurements=[
                 _measurement(
                     "Current-range body RMSE",
@@ -251,6 +257,26 @@ def _overnight_calibration_projection(
                     source="Independent CPU/fp32 joint-response evaluator",
                     threshold=0.25,
                     comparator="≤",
+                ),
+                _measurement(
+                    "Shoulder-lift command span",
+                    value=shoulder_identifiability.get(
+                        "observed_command_span_degrees"
+                    ),
+                    unit="deg",
+                    source="Offline unloaded joint-identifiability audit",
+                    threshold=15.0,
+                    comparator="≥",
+                ),
+                _measurement(
+                    "Elbow command span",
+                    value=elbow_identifiability.get(
+                        "observed_command_span_degrees"
+                    ),
+                    unit="deg",
+                    source="Offline unloaded joint-identifiability audit",
+                    threshold=15.0,
+                    comparator="≥",
                 ),
             ],
             missing_evidence=[
@@ -359,8 +385,9 @@ def _overnight_calibration_projection(
             "detail": (
                 "Follower endpoint ranges reduced aggregate body-joint RMSE by "
                 f"{float(improvement) * 100.0:.1f}% with identical action bytes, "
-                "but elbow and gripper non-regression gates failed. No parameter, "
-                "task score, training, or physical authority changed."
+                "but elbow and gripper non-regression gates failed, and the offline "
+                "audit could not identify shoulder-lift or elbow range scale. No "
+                "parameter, task score, training, or physical authority changed."
                 if improvement is not None
                 else "The verified evaluator rejected the candidate without promotion."
             ),
@@ -432,7 +459,7 @@ def _overnight_calibration_projection(
                 "family": "Joint-specific calibration range mismatch",
                 "before": None,
                 "after": None,
-                "status": "rejected_as_global_candidate",
+                "status": "not_identified_insufficient_excitation",
                 "missing_observables": [
                     "joint_specific_range_validation",
                     "strict_task_consequence",
@@ -462,16 +489,13 @@ def _overnight_calibration_projection(
             "intervention_id": "measurement_joint_specific_range_validation",
             "summary": (
                 "Repeat a preregistered stationary five-cycle capture with independent "
-                "current timestamps, then validate shoulder-lift and elbow ranges "
-                "joint-by-joint before any new global simulator candidate."
+                "capture, command-application, position, and current timestamps; "
+                "verify reset and calibration health; then excite shoulder lift and "
+                "elbow bidirectionally before any new global simulator candidate."
             ),
-            "measurements": [
-                "preregistered_stationary_five_cycle_capture",
-                "independent_current_read_timestamp",
-                "shoulder_lift_range_response",
-                "elbow_range_response",
-                "strict_task_consequence",
-            ],
+            "measurements": list(
+                publication.get("next_measurement_prerequisites", [])
+            ),
         },
         "receipt": {
             "verification": "verified",
@@ -483,6 +507,12 @@ def _overnight_calibration_projection(
                 publication.get("diagnostic")
             ).get("receipt_sha256"),
             "diagnostic_receipt_digest": diagnostic_receipt.get("receipt_sha256"),
+            "identifiability_receipt_sha256": _as_mapping(
+                publication.get("identifiability")
+            ).get("receipt_sha256"),
+            "identifiability_receipt_digest": identifiability_receipt.get(
+                "receipt_sha256"
+            ),
             "publication_sha256": bundle.get("publication_sha256"),
         },
     }

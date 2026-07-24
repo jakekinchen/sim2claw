@@ -2,7 +2,7 @@
 
 Status: `CURRENT 100 MM MEASUREMENT ACTIVE; DUAL-CAMERA C2-TO-C1 NEGATIVE RECORDED; TASK SCORE 0/11`
 
-## Active overnight dual-camera simulator calibration
+## Completed overnight dual-camera simulator calibration
 
 For the three-hour window ending `2026-07-24T03:16:30-05:00`, convert the
 new dual-camera, fresh-current empty-gripper recording into a deterministic
@@ -10,13 +10,26 @@ derived diagnostic and bind its exact command tensor to the current simulator.
 The authoritative bounded prompt is
 [`docs/autonomous-workflow/goal-loop-overnight-dual-camera-sim-calibration.md`](docs/autonomous-workflow/goal-loop-overnight-dual-camera-sim-calibration.md).
 
-The raw recording remains immutable and unqualified. Six excursions are
-visible even though five were intended. All six must remain reported, unknown
-force/depth/contact channels remain unknown, and any exact-action simulator
-range failure causes abstention rather than clipping. GPT-5.6 Pro may advise
-the methodology after browser sign-in, but it has no evidence or promotion
-authority. No unattended robot motion, task-score change, training, simulator
-promotion, paid compute, push, or new retained-C2 family is authorized.
+Terminal result: the raw recording remains immutable and unqualified, with six
+reported excursions rather than the intended five. The one frozen,
+action-identical two-replay comparison reduced aggregate body-joint RMSE from
+`3.4281°` to `2.2801°` but regressed elbow RMSE by `0.8700°`, narrowly
+regressed gripper RMSE, and had no strict task consequence. The independent
+evaluator therefore rejected the global range candidate.
+
+A subsequent zero-replay offline audit found that shoulder lift never moved
+from its endpoint command (`0.0°` span) and elbow covered only `10.022°`, below
+the frozen `15°` identifiability gate. Neither joint-specific range scale is
+identified, so no shoulder-only correction is admitted. GPT-5.6's useful
+timing/calibration-envelope advice is retained as critique only; an
+inapplicable bootstrap claim and its pre-audit shoulder-only recommendation
+were not adopted.
+
+The receipt-verified Twin fidelity view now exposes the partial aggregate
+reduction, joint regression, excitation gaps, procedure mismatch, and exact
+next measurement fields. No unattended robot motion, task-score change,
+training, simulator promotion, paid compute, push, or new retained-C2 family
+occurred.
 
 ## Active current-workcell measurement and calibration
 

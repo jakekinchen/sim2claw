@@ -130,13 +130,56 @@ def _publication_fixture(root: Path) -> Path:
     comparison_receipt_path = comparison_root / "receipt.json"
     _write_json(comparison_receipt_path, comparison_receipt)
 
+    identifiability_root = root / "outputs/identifiability"
+    identifiability_contract = root / "configs/evaluations/identifiability.json"
+    _write_json(
+        identifiability_contract,
+        {"schema_version": "fixture-identifiability-contract"},
+    )
+    identifiability = {
+        "source_recording_id": recording_id,
+        "exact_action_sha256": action_sha256,
+        "proof_class": "offline_unloaded_joint_identifiability_diagnostic",
+        "shoulder_lift_hypothesis": {
+            "observed_command_span_degrees": 0.0,
+            "joint_specific_range_scale_identified": False,
+        },
+        "elbow_hypothesis": {
+            "joint_specific_range_scale_identified": False,
+        },
+        "simulator_replays_used": 0,
+        "physical_trials_used": 0,
+        "authority": AUTHORITY,
+    }
+    identifiability_path = identifiability_root / "report.json"
+    _write_json(identifiability_path, identifiability)
+    identifiability_receipt = _receipt(
+        {
+            "source_recording_id": recording_id,
+            "exact_action_sha256": action_sha256,
+            "proof_class": "offline_unloaded_joint_identifiability_diagnostic",
+            "report_sha256": sha256_file(identifiability_path),
+            "simulator_replays_used": 0,
+            "physical_trials_used": 0,
+            "simulator_parameter_promoted": False,
+            "task_score_changed": False,
+            "authority": AUTHORITY,
+        }
+    )
+    identifiability_receipt_path = identifiability_root / "receipt.json"
+    _write_json(identifiability_receipt_path, identifiability_receipt)
+
     publication = {
-        "schema_version": "sim2claw.overnight_calibration_publication.v1",
-        "status": "frozen_after_single_authorized_comparison",
+        "schema_version": "sim2claw.overnight_calibration_publication.v2",
+        "status": (
+            "frozen_after_single_authorized_comparison_and_"
+            "offline_identifiability_audit"
+        ),
         "source_recording_id": recording_id,
         "proof_classes": [
             "derived_empty_gripper_cycle_diagnostic",
             "action_frozen_simulator_joint_range_diagnostic",
+            "offline_unloaded_joint_identifiability_diagnostic",
         ],
         "diagnostic": {
             "output_root": "outputs/diag",
@@ -165,11 +208,26 @@ def _publication_fixture(root: Path) -> Path:
             "adaptive_retries": 0,
             "traces": trace_bindings,
         },
+        "identifiability": {
+            "output_root": "outputs/identifiability",
+            "contract_path": "configs/evaluations/identifiability.json",
+            "contract_sha256": sha256_file(identifiability_contract),
+            "report_path": "report.json",
+            "report_sha256": sha256_file(identifiability_path),
+            "receipt_path": "receipt.json",
+            "receipt_sha256": sha256_file(identifiability_receipt_path),
+            "embedded_receipt_sha256": identifiability_receipt["receipt_sha256"],
+            "simulator_replays_used": 0,
+            "physical_trials_used": 0,
+        },
         "required_claims": {
             "procedure_count_matches": False,
             "observed_excursion_count": 6,
             "owner_intended_excursion_count": 5,
             "action_tensor_byte_identical": True,
+            "shoulder_lift_command_span_degrees": 0.0,
+            "shoulder_lift_range_scale_identified": False,
+            "elbow_range_scale_identified": False,
             "simulator_parameter_promoted": False,
             "task_score_changed": False,
             "strict_task_consequence_available": False,
@@ -178,7 +236,7 @@ def _publication_fixture(root: Path) -> Path:
         "authority": AUTHORITY,
     }
     publication_path = (
-        root / "configs/evaluations/overnight_calibration_publication_v1.json"
+        root / "configs/evaluations/overnight_calibration_publication_v2.json"
     )
     _write_json(publication_path, publication)
     return publication_path
@@ -229,7 +287,7 @@ def test_publication_fails_closed_on_action_substitution(tmp_path: Path) -> None
     _write_json(comparison_receipt_path, comparison_receipt)
     publication_path = (
         tmp_path
-        / "configs/evaluations/overnight_calibration_publication_v1.json"
+        / "configs/evaluations/overnight_calibration_publication_v2.json"
     )
     publication = json.loads(publication_path.read_text(encoding="utf-8"))
     publication["comparison"]["raw_comparison_sha256"] = sha256_file(raw_path)

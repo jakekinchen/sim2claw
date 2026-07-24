@@ -1,0 +1,93 @@
+{
+  "schema_version": "sim2claw.overnight_calibration_publication.v2",
+  "publication_id": "current-100mm-empty-gripper-calibration-diagnostics-v2",
+  "status": "frozen_after_single_authorized_comparison_and_offline_identifiability_audit",
+  "source_recording_id": "20260724T050132Z-02baf745",
+  "proof_classes": [
+    "derived_empty_gripper_cycle_diagnostic",
+    "action_frozen_simulator_joint_range_diagnostic",
+    "offline_unloaded_joint_identifiability_diagnostic"
+  ],
+  "diagnostic": {
+    "output_root": "outputs/current-100mm-empty-gripper-diagnostic-v1",
+    "contract_path": "configs/evaluations/overnight_empty_gripper_diagnostic_v1.json",
+    "contract_sha256": "e8eca3ff4a07ad68c16871390ee5272daf58e02bba9b1f6dc240d47bec76b7cb",
+    "diagnostic_path": "diagnostic.json",
+    "diagnostic_sha256": "c6791f9434aa8e9d4eb1e48547cebb28cbf29a3f4bd544e19dc239870c5a33a6",
+    "receipt_path": "receipt.json",
+    "receipt_sha256": "fef884776e1f7cbbfafd11e542874f800234a3ca5f4f0aae2ae58b37c441da93",
+    "embedded_receipt_sha256": "53f6a9fecea55feb3aaf6895f35f20a841490d5487863239d5a0b72809eab042",
+    "simulator_replays_used": 0
+  },
+  "comparison": {
+    "output_root": "outputs/current-100mm-joint-limit-comparison-v1",
+    "contract_path": "configs/evaluations/overnight_joint_limit_comparison_v1.json",
+    "contract_sha256": "49cdc5725f6599b7e5cf028944f7a4c650d667ca1e88e1cd6b82d76951c1f718",
+    "raw_comparison_path": "raw_comparison.json",
+    "raw_comparison_sha256": "cb6a35965a640a7052b023cb15fc3bc8acd03ef9def44bfb9f26a2c4471ca427",
+    "evaluation_path": "evaluation.json",
+    "evaluation_sha256": "2bf577af5278dc7a5c8a06e10916db0a4eabbef1dcff99236db80339ed6c1802",
+    "receipt_path": "receipt.json",
+    "receipt_sha256": "4e49fe686e6fdb5417278daf58a0897e3782fbe3942c5e8a3833228b034f4cc8",
+    "embedded_receipt_sha256": "410000a8c66a581223207027562c551d3199e289307c1f5866cefcb5958c2eb6",
+    "exact_action_sha256": "4dcdabd0b8681c4d811884458d3e4bbff523c7435ade38f22570c7fbca61d142",
+    "simulator_replays_used": 2,
+    "adaptive_retries": 0,
+    "traces": {
+      "current_declared_ranges.jsonl": "f939fdf9c1c9f0bf8fd273f6bb8499ae665a8deae5ec401ae563a8e3b72b7505",
+      "follower_calibrated_ranges_v1.jsonl": "689175a6fbe8a2c1d9dbd9e7af4f03c4ac320f6480d01bb66847120e943c1220"
+    }
+  },
+  "identifiability": {
+    "output_root": "outputs/current-100mm-joint-identifiability-v1",
+    "contract_path": "configs/evaluations/overnight_joint_identifiability_v1.json",
+    "contract_sha256": "258ccf908871eff8eda33cc1dec735d1d2d4d5160e0eda1c9d77adeb25122c3e",
+    "report_path": "report.json",
+    "report_sha256": "22227ca7373efe18c51d68f750d3f44aa11c668b50a9e76260c2d72981264330",
+    "receipt_path": "receipt.json",
+    "receipt_sha256": "2d9cb53787cac06383360fec88029b141a7b581078aa0594c399ff504900c7bb",
+    "embedded_receipt_sha256": "2f7b0073a6d052a6db1436e183bb6594d20616f70dae5e0f5a51f9f415a8b719",
+    "simulator_replays_used": 0,
+    "physical_trials_used": 0
+  },
+  "required_claims": {
+    "procedure_count_matches": false,
+    "observed_excursion_count": 6,
+    "owner_intended_excursion_count": 5,
+    "action_tensor_byte_identical": true,
+    "shoulder_lift_command_span_degrees": 0.0,
+    "shoulder_lift_range_scale_identified": false,
+    "elbow_range_scale_identified": false,
+    "simulator_parameter_promoted": false,
+    "task_score_changed": false,
+    "strict_task_consequence_available": false,
+    "verdict": "diagnostic_joint_range_tie_or_loss_no_promotion"
+  },
+  "next_measurement_prerequisites": [
+    "preregistered_stationary_five_cycle_capture",
+    "bidirectional_shoulder_lift_excitation",
+    "bidirectional_elbow_excitation",
+    "independent_camera_capture_timestamp",
+    "camera_arrival_timestamp",
+    "frame_sequence_and_drop_counter",
+    "command_generated_and_sent_timestamp",
+    "command_applied_timestamp",
+    "position_read_timestamp",
+    "current_read_timestamp",
+    "timestamp_clock_source_resolution_and_sync_method",
+    "controller_mode_gains_saturation_rate_limit_and_deadband",
+    "calibrated_current_zero_scale_and_provenance",
+    "quasi_static_dwell_and_direction_traversal_identifiers",
+    "reset_invariant_receipt",
+    "calibration_identity_and_sensor_health",
+    "strict_task_consequence"
+  ],
+  "authority": {
+    "provider_advice_is_evaluator_evidence": false,
+    "simulator_parameter_promotion": false,
+    "task_score_change": false,
+    "training": false,
+    "physical_capture": false,
+    "physical_motion": false
+  }
+}

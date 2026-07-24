@@ -10,9 +10,9 @@ from .paths import REPO_ROOT
 from .sail.importers import load_json_object
 
 
-SCHEMA_VERSION = "sim2claw.overnight_calibration_publication.v1"
+SCHEMA_VERSION = "sim2claw.overnight_calibration_publication.v2"
 DEFAULT_PUBLICATION_PATH = Path(
-    "configs/evaluations/overnight_calibration_publication_v1.json"
+    "configs/evaluations/overnight_calibration_publication_v2.json"
 )
 
 
@@ -51,7 +51,8 @@ def load_overnight_calibration_binding(
         "Unsupported overnight calibration publication.",
     )
     _require(
-        publication.get("status") == "frozen_after_single_authorized_comparison",
+        publication.get("status")
+        == "frozen_after_single_authorized_comparison_and_offline_identifiability_audit",
         "Overnight calibration publication is not frozen.",
     )
     recording_id = str(publication.get("source_recording_id") or "")
@@ -97,6 +98,9 @@ def verify_overnight_calibration_publication(
     )
     diagnostic_binding = _mapping(publication.get("diagnostic"), "Diagnostic binding")
     comparison_binding = _mapping(publication.get("comparison"), "Comparison binding")
+    identifiability_binding = _mapping(
+        publication.get("identifiability"), "Identifiability binding"
+    )
     required = _mapping(publication.get("required_claims"), "Required claims")
     authority = _mapping(publication.get("authority"), "Publication authority")
     _require(
@@ -110,11 +114,21 @@ def verify_overnight_calibration_publication(
     comparison_root = _repo_path(
         root, comparison_binding.get("output_root"), label="Comparison output root"
     )
+    identifiability_root = _repo_path(
+        root,
+        identifiability_binding.get("output_root"),
+        label="Identifiability output root",
+    )
     diagnostic_contract_path = _repo_path(
         root, diagnostic_binding.get("contract_path"), label="Diagnostic contract"
     )
     comparison_contract_path = _repo_path(
         root, comparison_binding.get("contract_path"), label="Comparison contract"
+    )
+    identifiability_contract_path = _repo_path(
+        root,
+        identifiability_binding.get("contract_path"),
+        label="Identifiability contract",
     )
     diagnostic_path = diagnostic_root / str(diagnostic_binding.get("diagnostic_path"))
     diagnostic_receipt_path = diagnostic_root / str(
@@ -127,6 +141,12 @@ def verify_overnight_calibration_publication(
     comparison_receipt_path = comparison_root / str(
         comparison_binding.get("receipt_path")
     )
+    identifiability_report_path = identifiability_root / str(
+        identifiability_binding.get("report_path")
+    )
+    identifiability_receipt_path = identifiability_root / str(
+        identifiability_binding.get("receipt_path")
+    )
     for path, expected, label in (
         (
             diagnostic_contract_path,
@@ -137,6 +157,11 @@ def verify_overnight_calibration_publication(
             comparison_contract_path,
             comparison_binding.get("contract_sha256"),
             "Comparison contract",
+        ),
+        (
+            identifiability_contract_path,
+            identifiability_binding.get("contract_sha256"),
+            "Identifiability contract",
         ),
         (
             diagnostic_path,
@@ -163,6 +188,16 @@ def verify_overnight_calibration_publication(
             comparison_binding.get("receipt_sha256"),
             "Comparison receipt",
         ),
+        (
+            identifiability_report_path,
+            identifiability_binding.get("report_sha256"),
+            "Identifiability report",
+        ),
+        (
+            identifiability_receipt_path,
+            identifiability_binding.get("receipt_sha256"),
+            "Identifiability receipt",
+        ),
     ):
         _verify_file(path, expected, label=label)
 
@@ -182,6 +217,12 @@ def verify_overnight_calibration_publication(
     comparison_receipt = load_json_object(
         comparison_receipt_path, label="Overnight comparison receipt"
     )
+    identifiability = load_json_object(
+        identifiability_report_path, label="Overnight identifiability report"
+    )
+    identifiability_receipt = load_json_object(
+        identifiability_receipt_path, label="Overnight identifiability receipt"
+    )
     _verify_receipt(
         diagnostic_receipt,
         expected_embedded_digest=diagnostic_binding.get("embedded_receipt_sha256"),
@@ -192,13 +233,22 @@ def verify_overnight_calibration_publication(
         expected_embedded_digest=comparison_binding.get("embedded_receipt_sha256"),
         label="Comparison receipt",
     )
+    _verify_receipt(
+        identifiability_receipt,
+        expected_embedded_digest=identifiability_binding.get(
+            "embedded_receipt_sha256"
+        ),
+        label="Identifiability receipt",
+    )
 
     recording_id = str(publication["source_recording_id"])
     _require(
         diagnostic.get("source_recording_id") == recording_id
         and diagnostic_receipt.get("source_recording_id") == recording_id
         and raw.get("source_recording_id") == recording_id
-        and comparison_receipt.get("source_recording_id") == recording_id,
+        and comparison_receipt.get("source_recording_id") == recording_id
+        and identifiability.get("source_recording_id") == recording_id
+        and identifiability_receipt.get("source_recording_id") == recording_id,
         "Publication artifacts do not bind the same source recording.",
     )
     proof_classes = publication.get("proof_classes")
@@ -206,7 +256,9 @@ def verify_overnight_calibration_publication(
         isinstance(proof_classes, list)
         and diagnostic.get("proof_class") in proof_classes
         and diagnostic_receipt.get("proof_class") in proof_classes
-        and comparison_receipt.get("proof_class") in proof_classes,
+        and comparison_receipt.get("proof_class") in proof_classes
+        and identifiability.get("proof_class") in proof_classes
+        and identifiability_receipt.get("proof_class") in proof_classes,
         "Publication proof-class binding changed.",
     )
     _require(
@@ -221,6 +273,11 @@ def verify_overnight_calibration_publication(
         == comparison_binding.get("evaluation_sha256"),
         "Comparison receipt artifact binding changed.",
     )
+    _require(
+        identifiability_receipt.get("report_sha256")
+        == identifiability_binding.get("report_sha256"),
+        "Identifiability receipt artifact binding changed.",
+    )
     exact_action_sha256 = str(comparison_binding.get("exact_action_sha256") or "")
     variants = raw.get("variants")
     _require(
@@ -230,6 +287,9 @@ def verify_overnight_calibration_publication(
     _require(
         raw.get("exact_action_sha256") == exact_action_sha256
         and comparison_receipt.get("exact_action_sha256") == exact_action_sha256
+        and identifiability.get("exact_action_sha256") == exact_action_sha256
+        and identifiability_receipt.get("exact_action_sha256")
+        == exact_action_sha256
         and all(row.get("input_action_sha256") == exact_action_sha256 for row in variants),
         "Comparison action identity changed.",
     )
@@ -269,6 +329,22 @@ def verify_overnight_calibration_publication(
         is required.get("strict_task_consequence_available"),
         "Strict task-consequence availability changed.",
     )
+    shoulder_hypothesis = _mapping(
+        identifiability.get("shoulder_lift_hypothesis"),
+        "Shoulder-lift identifiability",
+    )
+    elbow_hypothesis = _mapping(
+        identifiability.get("elbow_hypothesis"), "Elbow identifiability"
+    )
+    _require(
+        shoulder_hypothesis.get("observed_command_span_degrees")
+        == required.get("shoulder_lift_command_span_degrees")
+        and shoulder_hypothesis.get("joint_specific_range_scale_identified")
+        is required.get("shoulder_lift_range_scale_identified")
+        and elbow_hypothesis.get("joint_specific_range_scale_identified")
+        is required.get("elbow_range_scale_identified"),
+        "Joint identifiability claim changed.",
+    )
     _require(
         comparison_receipt.get("simulator_parameter_promoted")
         is required.get("simulator_parameter_promoted")
@@ -277,6 +353,10 @@ def verify_overnight_calibration_publication(
         and diagnostic_receipt.get("simulator_parameter_promoted")
         is required.get("simulator_parameter_promoted")
         and diagnostic_receipt.get("task_score_changed")
+        is required.get("task_score_changed")
+        and identifiability_receipt.get("simulator_parameter_promoted")
+        is required.get("simulator_parameter_promoted")
+        and identifiability_receipt.get("task_score_changed")
         is required.get("task_score_changed"),
         "Receipt promotion or task-score boundary changed.",
     )
@@ -293,7 +373,25 @@ def verify_overnight_calibration_publication(
         == diagnostic_binding.get("simulator_replays_used"),
         "Diagnostic replay accounting changed.",
     )
-    for artifact in (diagnostic, diagnostic_receipt, raw, comparison_receipt):
+    _require(
+        identifiability.get("simulator_replays_used")
+        == identifiability_binding.get("simulator_replays_used")
+        and identifiability_receipt.get("simulator_replays_used")
+        == identifiability_binding.get("simulator_replays_used")
+        and identifiability.get("physical_trials_used")
+        == identifiability_binding.get("physical_trials_used")
+        and identifiability_receipt.get("physical_trials_used")
+        == identifiability_binding.get("physical_trials_used"),
+        "Identifiability budget accounting changed.",
+    )
+    for artifact in (
+        diagnostic,
+        diagnostic_receipt,
+        raw,
+        comparison_receipt,
+        identifiability,
+        identifiability_receipt,
+    ):
         artifact_authority = _mapping(
             artifact.get("authority"), "Evidence artifact authority"
         )
@@ -312,6 +410,8 @@ def verify_overnight_calibration_publication(
         "raw_comparison": raw,
         "evaluation": evaluation,
         "comparison_receipt": comparison_receipt,
+        "identifiability": identifiability,
+        "identifiability_receipt": identifiability_receipt,
     }
 
 

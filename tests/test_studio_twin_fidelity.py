@@ -231,10 +231,21 @@ def _overnight_bundle() -> dict[str, object]:
             },
             "verdict": "diagnostic_joint_range_tie_or_loss_no_promotion",
         },
+        "identifiability": {
+            "shoulder_lift_hypothesis": {
+                "observed_command_span_degrees": 0.0,
+                "joint_specific_range_scale_identified": False,
+            },
+            "elbow_hypothesis": {
+                "observed_command_span_degrees": 10.02,
+                "joint_specific_range_scale_identified": False,
+            },
+        },
         "comparison_receipt": {
             "receipt_sha256": "5" * 64,
             "exact_action_sha256": "6" * 64,
         },
+        "identifiability_receipt": {"receipt_sha256": "7" * 64},
     }
 
 
@@ -400,6 +411,16 @@ def test_overnight_calibration_projection_is_explicitly_rejected_and_partial() -
     assert projection["evaluator"]["gates"]["aggregate_body_improvement"] is True
     assert projection["evaluator"]["gates"]["per_joint_nonregression"] is False
     assert projection["evaluator"]["posterior_movement_permitted"] is False
+    kinematics = next(
+        row for row in projection["domains"] if row["id"] == "kinematics"
+    )
+    shoulder_span = next(
+        row
+        for row in kinematics["measurements"]
+        if row["label"] == "Shoulder-lift command span"
+    )
+    assert shoulder_span["value"] == 0
+    assert shoulder_span["threshold"] == 15
     assert projection["authority"]["simulator_promotion"] is False
     assert "perfect simulation" not in json.dumps(projection).lower()
 
