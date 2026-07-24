@@ -28,6 +28,9 @@ EVALUATION_SCHEMA = "sim2claw.avfoundation_d405_format_inventory_evaluation.v1"
 RECEIPT_SCHEMA = "sim2claw.avfoundation_d405_format_inventory_receipt.v1"
 PROOF_CLASS = "d405_camera_device_format_inventory"
 BINARY_RELATIVE_PATH = "runtime/avfoundation-d405-format-inventory-v1"
+CANONICAL_OUTPUT_ROOT = Path(
+    "outputs/avfoundation-d405-format-inventory-v1/observed"
+)
 
 EXPECTED_DEVICE = {
     "media_type": "video",
@@ -172,6 +175,10 @@ def run_d405_format_inventory_observation(
     output_root: Path,
 ) -> dict[str, Any]:
     contract = load_d405_format_inventory_contract(contract_path)
+    if output_root.resolve() != CANONICAL_OUTPUT_ROOT.resolve():
+        raise AVFoundationFormatInventoryError(
+            "D405 observation root is not the authorized canonical root."
+        )
     if output_root.exists():
         raise AVFoundationFormatInventoryError(
             "D405 observation output already exists; replay is forbidden."
@@ -414,6 +421,44 @@ def evaluate_d405_format_inventory(
             raise AVFoundationFormatInventoryError(
                 "D405 successful attempt has inconsistent raw identity."
             )
+        if observation is not None:
+            failure_reason = observation.get("failure_reason")
+            authorization = observation.get("authorization_status_raw_value")
+            match_count = observation.get("device_match_count")
+            if (
+                observation.get("status") != "prerequisite_unavailable"
+                or failure_reason
+                not in {
+                    "camera_authorization_not_granted",
+                    "exact_device_match_count_invalid",
+                }
+                or isinstance(authorization, bool)
+                or not isinstance(authorization, int)
+                or isinstance(match_count, bool)
+                or not isinstance(match_count, int)
+                or match_count < 0
+                or observation.get("device_localized_name") is not None
+                or observation.get("device_unique_id") is not None
+                or observation.get("device_model_id") is not None
+                or observation.get("formats") != []
+            ):
+                raise AVFoundationFormatInventoryError(
+                    "D405 prerequisite-unavailable payload is malformed."
+                )
+            if (
+                failure_reason == "camera_authorization_not_granted"
+                and authorization == 3
+            ):
+                raise AVFoundationFormatInventoryError(
+                    "D405 authorization abstention contradicts raw status."
+                )
+            if (
+                failure_reason == "exact_device_match_count_invalid"
+                and (authorization != 3 or match_count == 1)
+            ):
+                raise AVFoundationFormatInventoryError(
+                    "D405 match-count abstention contradicts raw status."
+                )
         verdict = "prerequisite_abstention"
 
     evaluation = {

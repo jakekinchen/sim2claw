@@ -10,6 +10,7 @@ import pytest
 from sim2claw.avfoundation_d405_format_inventory_v1 import (
     ATTEMPT_SCHEMA,
     BINARY_RELATIVE_PATH,
+    CANONICAL_OUTPUT_ROOT,
     OBSERVATION_SCHEMA,
     PRELAUNCH_SCHEMA,
     PROOF_CLASS,
@@ -218,6 +219,11 @@ def test_runner_persists_prelaunch_before_observer(
 ) -> None:
     monkeypatch.chdir(ROOT)
     output = tmp_path / "observed"
+    monkeypatch.setattr(
+        "sim2claw.avfoundation_d405_format_inventory_v1."
+        "CANONICAL_OUTPUT_ROOT",
+        output,
+    )
 
     def fake_compile(**_: object) -> dict[str, object]:
         return _runtime(output)
@@ -252,6 +258,11 @@ def test_runner_rejects_replayed_output_root_before_compile(
 ) -> None:
     monkeypatch.chdir(ROOT)
     output = tmp_path / "observed"
+    monkeypatch.setattr(
+        "sim2claw.avfoundation_d405_format_inventory_v1."
+        "CANONICAL_OUTPUT_ROOT",
+        output,
+    )
     output.mkdir()
     with pytest.raises(AVFoundationFormatInventoryError, match="replay"):
         run_d405_format_inventory_observation(
@@ -259,6 +270,21 @@ def test_runner_rejects_replayed_output_root_before_compile(
             source_path=SOURCE,
             evaluator_path=EVALUATOR,
             output_root=output,
+        )
+
+
+def test_runner_rejects_arbitrary_fresh_output_root() -> None:
+    arbitrary = CANONICAL_OUTPUT_ROOT.with_name("unregistered-fresh-root")
+    assert not arbitrary.exists()
+    with pytest.raises(
+        AVFoundationFormatInventoryError,
+        match="authorized canonical root",
+    ):
+        run_d405_format_inventory_observation(
+            contract_path=CONTRACT,
+            source_path=SOURCE,
+            evaluator_path=EVALUATOR,
+            output_root=arbitrary,
         )
 
 
@@ -338,6 +364,81 @@ def test_evaluator_abstains_when_observer_failed_without_raw(
     )
     assert evaluation["verdict"] == "prerequisite_abstention"
     assert evaluation["format_count"] is None
+
+
+def test_evaluator_accepts_exact_empty_match_count_abstention(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.chdir(ROOT)
+    observed = _materialize(tmp_path, return_code=2)
+    raw_path = observed / "raw/inventory.json"
+    raw = json.loads(raw_path.read_text(encoding="utf-8"))
+    raw.update(
+        {
+            "authorization_status_raw_value": 3,
+            "status": "prerequisite_unavailable",
+            "failure_reason": "exact_device_match_count_invalid",
+            "device_match_count": 0,
+            "device_localized_name": None,
+            "device_unique_id": None,
+            "device_model_id": None,
+            "formats": [],
+        }
+    )
+    _rewrite_raw(observed, raw)
+    evaluation, _ = evaluate_d405_format_inventory(
+        contract_path=CONTRACT,
+        observation_root=observed,
+        output_root=tmp_path / "evaluated",
+    )
+    assert evaluation["verdict"] == "prerequisite_abstention"
+    assert evaluation["format_count"] is None
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ["formats", "identity", "status", "contradictory_match_count"],
+)
+def test_evaluator_rejects_malformed_raw_abstention(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    mutation: str,
+) -> None:
+    monkeypatch.chdir(ROOT)
+    observed = _materialize(tmp_path, return_code=2)
+    raw_path = observed / "raw/inventory.json"
+    raw = json.loads(raw_path.read_text(encoding="utf-8"))
+    raw.update(
+        {
+            "authorization_status_raw_value": 3,
+            "status": "prerequisite_unavailable",
+            "failure_reason": "exact_device_match_count_invalid",
+            "device_match_count": 0,
+            "device_localized_name": None,
+            "device_unique_id": None,
+            "device_model_id": None,
+            "formats": [],
+        }
+    )
+    if mutation == "formats":
+        raw["formats"] = [_format()]
+    elif mutation == "identity":
+        raw["device_unique_id"] = "substituted"
+    elif mutation == "status":
+        raw["status"] = "observed"
+    else:
+        raw["device_match_count"] = 1
+    _rewrite_raw(observed, raw)
+    with pytest.raises(
+        AVFoundationFormatInventoryError,
+        match="malformed|contradicts",
+    ):
+        evaluate_d405_format_inventory(
+            contract_path=CONTRACT,
+            observation_root=observed,
+            output_root=tmp_path / "evaluated",
+        )
 
 
 @pytest.mark.parametrize(
