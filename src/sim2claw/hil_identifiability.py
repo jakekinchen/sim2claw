@@ -241,6 +241,20 @@ def _video_counts(report: dict[str, Any]) -> tuple[int, float]:
         duration = float(format_row.get("duration") or 0.0)
     except (TypeError, ValueError):
         duration = 0.0
+    if frames == 0 and report.get("browser_video_path"):
+        browser = report.get("browser_observed_video") or {}
+        browser_streams = browser.get("streams") or []
+        browser_stream = browser_streams[0] if browser_streams else {}
+        browser_format = browser.get("format") or {}
+        try:
+            frames = int(browser_stream.get("nb_frames") or 0)
+        except (TypeError, ValueError):
+            frames = 0
+        if duration <= 0.0:
+            try:
+                duration = float(browser_format.get("duration") or 0.0)
+            except (TypeError, ValueError):
+                duration = 0.0
     return frames, duration
 
 

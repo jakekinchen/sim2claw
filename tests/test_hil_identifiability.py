@@ -190,3 +190,19 @@ def test_evaluator_rejects_replay_path_outside_packet(tmp_path: Path) -> None:
         assert "inside its packet directory" in str(error)
     else:
         raise AssertionError("outside replay path was not rejected")
+
+
+def test_evaluator_uses_verified_wrist_derivative_frame_count(tmp_path: Path) -> None:
+    raw_path, _ = _packet_fixture(tmp_path)
+    wrist_path = raw_path.parent / "wrist_video.json"
+    wrist = json.loads(wrist_path.read_text(encoding="utf-8"))
+    wrist["observed_video"]["streams"][0].pop("nb_frames")
+    wrist["browser_video_path"] = "wrist_d405.browser.mp4"
+    wrist["browser_observed_video"] = {
+        "streams": [{"nb_frames": "1000"}],
+        "format": {"duration": "200.0"},
+    }
+    wrist_path.write_text(json.dumps(wrist), encoding="utf-8")
+    evaluation = evaluate_hil_packet(raw_path, CONTRACT)
+    assert evaluation["admitted"] is True
+    assert evaluation["camera_metrics"]["wrist"]["frames"] == 1000
