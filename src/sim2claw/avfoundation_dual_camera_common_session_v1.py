@@ -235,7 +235,24 @@ def run_observation(
         "--output",
         str(raw),
     ]
-    completed = subprocess.run(args, capture_output=True, text=True, check=False)
+    try:
+        completed = subprocess.run(
+            args,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=contract["windowing"]["full_session_seconds"] + 20.0,
+        )
+    except subprocess.TimeoutExpired as error:
+        captured = error.stderr
+        if isinstance(captured, bytes):
+            captured = captured.decode("utf-8", errors="replace")
+        completed = subprocess.CompletedProcess(
+            args=args,
+            returncode=-9,
+            stdout="",
+            stderr=(captured or "") + "observer_timeout\n",
+        )
     stderr.parent.mkdir(parents=True, exist_ok=True)
     stderr.write_text(completed.stderr, encoding="utf-8")
     raw_available = raw.is_file()

@@ -289,6 +289,47 @@ def test_contract_and_runner_reject_mutation_or_arbitrary_root(
         )
 
 
+def test_runner_seals_timeout_after_prelaunch_without_raw(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(ROOT)
+    output = tmp_path / "observed"
+    monkeypatch.setattr(
+        "sim2claw.avfoundation_dual_camera_common_session_v1."
+        "CANONICAL_OBSERVATION_ROOT",
+        output,
+    )
+    monkeypatch.setattr(
+        "sim2claw.avfoundation_dual_camera_common_session_v1.compile_observer",
+        lambda **_: _runtime(output),
+    )
+
+    def timeout(*args: object, **kwargs: object) -> object:
+        assert (output / "attempt-prelaunch.json").is_file()
+        raise subprocess.TimeoutExpired(
+            cmd=args[0] if args else [],
+            timeout=kwargs["timeout"],
+            stderr="synthetic timeout\n",
+        )
+
+    monkeypatch.setattr(
+        "sim2claw.avfoundation_dual_camera_common_session_v1.subprocess.run",
+        timeout,
+    )
+    attempt = run_observation(
+        contract_path=CONTRACT,
+        source_path=SOURCE,
+        evaluator_path=EVALUATOR,
+        output_root=output,
+    )
+    assert attempt["return_code"] == -9
+    assert attempt["raw_observation_sha256"] is None
+    assert (output / "attempt.json").is_file()
+    assert "observer_timeout" in (
+        output / "raw/observer.stderr.log"
+    ).read_text(encoding="utf-8")
+
+
 def test_evaluator_accepts_only_exact_second_input_abstention(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
