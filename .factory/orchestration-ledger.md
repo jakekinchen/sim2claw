@@ -1219,3 +1219,13 @@ goal. External provider campaigns and spending remain separately gated.
   next bounded architecture is an isolated camera host. Frozen S2/HIL evidence
   and all robot/simulator/provider/training/promotion authority remain
   unchanged.
+- 2026-07-24T18:39:37-05:00 — Independent exact-commit review passed the
+  common-session closeout at `40e59f0`. Opened the next bounded architecture
+  gate before implementation or remote access: one zero-session inventory of
+  `kelly@silicon.local` for the fixed C922 overhead role, while the
+  motion-coupled D405 remains on `kelly-claude`. One strict SSH connection may
+  read host/macOS/camera/USB metadata only; remote repo access, file writes,
+  sessions, frames, retries, robot motion, simulator replay, providers,
+  training, promotion, and task authority remain closed. Exactly one C922
+  `1133:2140` and zero D405 `32902:2907` matches are required before a separate
+  remote capture-transport transaction.

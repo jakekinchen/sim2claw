@@ -192,6 +192,19 @@ writer, exposure synchronization, motion reliability, metric depth,
 calibration, simulator, or task result. Per the preregistered decision rule,
 the next camera architecture is a separately preregistered isolated host.
 
+The isolated-host prerequisite is now preregistered before implementation or
+remote access. Its proposed architecture keeps the motion-coupled D405 and
+robot path on `kelly-claude` while assigning the fixed C922 overhead role to
+the separate `silicon.local` host. The first gate is one zero-session,
+zero-frame metadata inventory over strict noninteractive SSH. It may read only
+host, macOS, camera, and USB metadata, with no remote repo access or file
+write. The independent evaluator requires exactly one C922 USB `1133:2140`
+and zero D405 USB `32902:2907` matches on Silicon. An absent C922 becomes one
+explicit physical attachment prerequisite; it is not replaced with another
+camera or treated as capture evidence. This inventory cannot prove the future
+transport, source delivery, cross-host clocks, synchronization, calibration,
+simulator fidelity, or task success.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
