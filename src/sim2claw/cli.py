@@ -318,6 +318,16 @@ def build_parser() -> argparse.ArgumentParser:
     joint_limit.add_argument("--config", type=Path, required=True)
     joint_limit.add_argument("--output", type=Path, required=True)
 
+    joint_identifiability = subparsers.add_parser(
+        "joint-identifiability",
+        help=(
+            "derive a hash-bound offline scale/offset/lag identifiability "
+            "audit without robot or simulator execution"
+        ),
+    )
+    joint_identifiability.add_argument("--config", type=Path, required=True)
+    joint_identifiability.add_argument("--output", type=Path, required=True)
+
     physical_replay = subparsers.add_parser(
         "physical-replay",
         help="replay one finalized physical command trace through the guarded follower",
@@ -1103,6 +1113,22 @@ def main(argv: Sequence[str] | None = None) -> int:
                 contract_path=args.config,
             )
         except JointLimitComparisonError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "joint-identifiability":
+        from .joint_identifiability import (
+            JointIdentifiabilityError,
+            derive_joint_identifiability_report,
+        )
+
+        try:
+            report = derive_joint_identifiability_report(
+                args.output,
+                contract_path=args.config,
+            )
+        except JointIdentifiabilityError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))

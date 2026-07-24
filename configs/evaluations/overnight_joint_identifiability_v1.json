@@ -1,0 +1,57 @@
+{
+  "schema_version": "sim2claw.overnight_joint_identifiability_contract.v1",
+  "analysis_id": "overnight-joint-identifiability-20260724-v1",
+  "status": "frozen_before_derived_materialization",
+  "goal": "docs/autonomous-workflow/goal-loop-overnight-dual-camera-sim-calibration.md",
+  "source": {
+    "recording_directory": "datasets/manipulation_source_recordings/c2-to-c1__20260724T050132Z-02baf745",
+    "recording_id": "20260724T050132Z-02baf745",
+    "samples_path": "samples.jsonl",
+    "samples_sha256": "334ea676f4c2a48a22fd039ef2911946f608fdbfe293cea4383dba88f59da254",
+    "command_field": "follower_command_degrees",
+    "actual_position_field": "follower_actual_position_degrees",
+    "actual_velocity_field": "follower_actual_velocity_degrees_s",
+    "timestamp_field": "timestamp_monotonic_seconds",
+    "action_shape": [911, 6],
+    "action_dtype": "float64",
+    "action_sha256": "4dcdabd0b8681c4d811884458d3e4bbff523c7435ade38f22570c7fbca61d142",
+    "joint_order": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ]
+  },
+  "estimator": {
+    "lag_candidates_samples": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    "minimum_command_span_degrees": 15.0,
+    "minimum_positive_command_changes": 20,
+    "minimum_negative_command_changes": 20,
+    "command_change_epsilon_degrees": 0.000000001,
+    "minimum_velocity_for_direction_degrees_s": 2.0,
+    "affine_model": "actual_position = gain * command_position + offset",
+    "affine_fit_is_diagnostic_only": true,
+    "no_lag_interpolation": true,
+    "no_action_mutation": true
+  },
+  "claim_gates": {
+    "range_scale_claim_requires_command_span_and_bidirectional_excitation": true,
+    "offset_claim_requires_command_span_and_bidirectional_excitation": true,
+    "lag_claim_is_sample_quantized_and_not_command_application_latency": true,
+    "unloaded_tracking_cannot_identify_contact_or_loaded_dynamics": true,
+    "simulator_parameter_promotion_allowed": false,
+    "task_score_change_allowed": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_capture": false,
+    "simulator_execution": false,
+    "simulator_parameter_promotion": false,
+    "policy_promotion": false,
+    "training": false,
+    "task_score_change": false,
+    "provider_advice_is_evaluator_evidence": false
+  }
+}
