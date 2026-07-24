@@ -344,6 +344,16 @@ def _physical_replay_devices(identity: GatewayIdentity) -> tuple[Any, Any]:
 
 
 def _default_gateway_factory(identity: GatewayIdentity) -> ReplayGateway:
+    return physical_replay_gateway(identity)
+
+
+def physical_replay_gateway(
+    identity: GatewayIdentity,
+    *,
+    current_telemetry_hz: float = 0.0,
+) -> ReplayGateway:
+    """Build the reviewed action-replay gateway with an optional current lane."""
+
     return SO101PhysicalGateway(
         identity,
         device_factory=_physical_replay_devices,
@@ -351,7 +361,7 @@ def _default_gateway_factory(identity: GatewayIdentity) -> ReplayGateway:
         # Recorded replay needs position feedback on every sample.  Current is
         # diagnostic only, so leave those extra group reads off to give the
         # flaky USB controller the lowest sustained transaction load.
-        current_telemetry_hz=0.0,
+        current_telemetry_hz=current_telemetry_hz,
     )
 
 
@@ -386,6 +396,114 @@ def _mapped_leader_target(
     return target
 
 
+def _controlled_return_to_source_start(
+    gateway: ReplayGateway,
+    *,
+    target: np.ndarray,
+    leader_start: np.ndarray,
+    follower_start: np.ndarray,
+    wall_started: float,
+    samples_path: Path,
+    clock: Clock,
+    sleep: Sleep,
+    hold_seconds: float,
+) -> dict[str, Any]:
+    """Return after a non-bus failure before releasing follower torque.
+
+    The same gateway bounds every return sample. If position feedback or the
+    bus is unhealthy, this helper fails and normal gateway shutdown releases
+    torque rather than pretending the hold was verified.
+    """
+
+    previous_actual = np.asarray(
+        getattr(gateway, "previous_actual", follower_start),
+        dtype=np.float64,
+    )
+    delta = target - previous_actual
+    delta[4] = shortest_delta_degrees(float(target[4]), float(previous_actual[4]))
+    travel_seconds = max(
+        0.5,
+        float(np.max(np.abs(delta[:4]))) / START_BODY_RATE_DEG_S,
+        abs(float(delta[4])) / START_WRIST_ROLL_RATE_DEG_S,
+        abs(float(delta[5])) / START_GRIPPER_RATE_S,
+    )
+    travel_steps = max(1, math.ceil(travel_seconds * START_COMMAND_HZ))
+    hold_steps = max(1, math.ceil(max(0.0, hold_seconds) * START_COMMAND_HZ))
+    mapped_target = _mapped_leader_target(target, leader_start, follower_start)
+    completed = 0
+    last_sample: dict[str, Any] | None = None
+    started = clock()
+    with samples_path.open("a", encoding="utf-8") as sample_handle:
+        for index in range(1, travel_steps + hold_steps + 1):
+            deadline = started + index / START_COMMAND_HZ
+            delay = deadline - clock()
+            if delay > 0:
+                sleep(delay)
+            if index <= travel_steps:
+                fraction = index / travel_steps
+                smooth = fraction * fraction * (3.0 - 2.0 * fraction)
+                waypoint = previous_actual + smooth * delta
+                leader_target = _mapped_leader_target(
+                    waypoint,
+                    leader_start,
+                    follower_start,
+                )
+            else:
+                leader_target = mapped_target
+            gateway.leader.set_target(leader_target)
+            last_sample = gateway.sample(clock() - wall_started)
+            completed += 1
+            row = {
+                **last_sample,
+                "schema_version": PHYSICAL_TRACE_REPLAY_SCHEMA,
+                "replay_phase": "controlled_failure_return",
+                "requested_source_command_degrees": (
+                    waypoint.tolist() if index <= travel_steps else target.tolist()
+                ),
+                "source_command_sent_exactly": bool(
+                    np.all(
+                        np.abs(
+                            np.asarray(
+                                last_sample["follower_command_degrees"],
+                                dtype=np.float64,
+                            )
+                            - (waypoint if index <= travel_steps else target)
+                        )
+                        <= 0.25
+                    )
+                ),
+            }
+            sample_handle.write(
+                json.dumps(row, separators=(",", ":"), sort_keys=True) + "\n"
+            )
+            sample_handle.flush()
+    if last_sample is None:
+        raise PhysicalTraceReplayError("Controlled return produced no verified sample.")
+    actual = np.asarray(
+        last_sample["follower_actual_position_degrees"],
+        dtype=np.float64,
+    )
+    residual = target - actual
+    residual[4] = shortest_delta_degrees(float(target[4]), float(actual[4]))
+    completed_return = bool(
+        float(np.max(np.abs(residual[:5]))) <= 3.0
+        and abs(float(residual[5])) <= 5.0
+    )
+    if not completed_return:
+        raise PhysicalTraceReplayError(
+            "Controlled return did not reach the source start within the hold gate."
+        )
+    return {
+        "requested": True,
+        "completed": True,
+        "sample_count": completed,
+        "hold_seconds": float(hold_seconds),
+        "target_degrees": target.tolist(),
+        "final_actual_degrees": actual.tolist(),
+        "final_residual_degrees": residual.tolist(),
+    }
+
+
 def run_physical_trace_replay(
     recording_directory: Path,
     *,
@@ -398,6 +516,8 @@ def run_physical_trace_replay(
     sleep: Sleep = time.sleep,
     progress: ProgressCallback | None = None,
     allowed_source_root: Path | None = None,
+    controlled_return_on_failure: bool = False,
+    controlled_return_hold_seconds: float = 3.0,
 ) -> dict[str, Any]:
     if not operator_acknowledged:
         raise PhysicalTraceReplayError(
@@ -441,6 +561,16 @@ def run_physical_trace_replay(
     wall_started: float | None = None
     error: Exception | None = None
     shutdown_error: Exception | None = None
+    controlled_return: dict[str, Any] = {
+        "requested": False,
+        "completed": False,
+        "sample_count": 0,
+        "hold_seconds": 0.0,
+        "failure_type": None,
+        "failure_message": None,
+    }
+    leader_start: np.ndarray | None = None
+    follower_start: np.ndarray | None = None
 
     def emit(event: str, **values: Any) -> None:
         if progress is not None:
@@ -552,6 +682,7 @@ def run_physical_trace_replay(
                 replay_row = {
                     **sample,
                     "schema_version": PHYSICAL_TRACE_REPLAY_SCHEMA,
+                    "replay_phase": "source_trace",
                     "source_recording_id": source.receipt["recording_id"],
                     "source_sample_index": source_row["sample_index"],
                     "source_elapsed_seconds": float(source_elapsed),
@@ -575,6 +706,35 @@ def run_physical_trace_replay(
     except Exception as caught:
         error = caught
     finally:
+        if (
+            error is not None
+            and controlled_return_on_failure
+            and opened is not None
+            and wall_started is not None
+            and leader_start is not None
+            and follower_start is not None
+        ):
+            try:
+                controlled_return = _controlled_return_to_source_start(
+                    gateway,
+                    target=replay_commands[0],
+                    leader_start=leader_start,
+                    follower_start=follower_start,
+                    wall_started=wall_started,
+                    samples_path=samples_path,
+                    clock=clock,
+                    sleep=sleep,
+                    hold_seconds=controlled_return_hold_seconds,
+                )
+            except Exception as caught:
+                controlled_return = {
+                    "requested": True,
+                    "completed": False,
+                    "sample_count": 0,
+                    "hold_seconds": float(controlled_return_hold_seconds),
+                    "failure_type": type(caught).__name__,
+                    "failure_message": str(caught),
+                }
         try:
             gateway.close()
         except Exception as caught:
@@ -601,6 +761,7 @@ def run_physical_trace_replay(
         "gateway_open_report": opened,
         "replay_envelope": envelope,
         "replay_origin_rebase": origin_rebase,
+        "controlled_return": controlled_return,
         "replay_samples_path": samples_path.name,
         "replay_samples_sha256": _sha256(samples_path) if samples_path.is_file() else None,
         "physical_follower_torque_enabled": False,

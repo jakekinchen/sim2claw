@@ -262,6 +262,55 @@ class PhysicalTraceReplayTest(unittest.TestCase):
             self.assertEqual(rows[0]["source_sample_index"], 2)
             self.assertEqual(rows[-1]["source_sample_index"], 0)
 
+    def test_non_bus_failure_attempts_controlled_return_before_close(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            recording = self._recording(root)
+            clock = FakeClock()
+            gateway = FakeReplayGateway()
+            identity = GatewayIdentity("leader", "follower", "a" * 64, "b" * 64)
+
+            def fail_after_motion(row: dict[str, Any]) -> None:
+                if row.get("event") == "trace_progress":
+                    raise RuntimeError("camera stopped")
+
+            with self.assertRaises(PhysicalTraceReplayError) as caught:
+                run_physical_trace_replay(
+                    recording,
+                    operator_acknowledged=True,
+                    output_root=root / "runs",
+                    identity=identity,
+                    gateway_factory=lambda _identity: gateway,
+                    clock=clock.read,
+                    sleep=clock.sleep,
+                    progress=fail_after_motion,
+                    allowed_source_root=root / "datasets" / "act_source_recordings",
+                    controlled_return_on_failure=True,
+                    controlled_return_hold_seconds=3.0,
+                )
+            self.assertTrue(gateway.closed)
+            assert caught.exception.run_directory is not None
+            receipt = json.loads(
+                (
+                    caught.exception.run_directory / "replay_receipt.json"
+                ).read_text(encoding="utf-8")
+            )
+            self.assertEqual(receipt["status"], "failed")
+            self.assertTrue(receipt["controlled_return"]["requested"])
+            self.assertTrue(receipt["controlled_return"]["completed"])
+            rows = [
+                json.loads(line)
+                for line in (
+                    caught.exception.run_directory / "replay_samples.jsonl"
+                ).read_text(encoding="utf-8").splitlines()
+            ]
+            self.assertTrue(
+                any(
+                    row.get("replay_phase") == "controlled_failure_return"
+                    for row in rows
+                )
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

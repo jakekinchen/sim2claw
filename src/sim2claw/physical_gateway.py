@@ -855,6 +855,12 @@ class SO101PhysicalGateway:
             "pose_inputs_available": False,
             "available_motor_current_raw": current,
             "current_telemetry_hz": self.current_telemetry_hz,
+            "current_telemetry_elapsed_seconds": self.current_telemetry_elapsed,
+            "current_telemetry_sample_age_seconds": (
+                None
+                if self.current_telemetry_elapsed is None
+                else max(0.0, elapsed_seconds - self.current_telemetry_elapsed)
+            ),
             "current_telemetry_stale": current_stale,
             "current_telemetry_missed_samples": self.current_telemetry_missed_samples,
             "bus_read_retries_this_sample": (

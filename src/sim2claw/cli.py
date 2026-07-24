@@ -338,6 +338,18 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="acknowledge that the powered follower workcell is clear for motion",
     )
+    hil_identifiability = subparsers.add_parser(
+        "hil-identifiability",
+        help="run one or all preregistered dual-camera unloaded HIL packets",
+    )
+    hil_identifiability.add_argument("--config", type=Path, required=True)
+    hil_identifiability.add_argument("--output", type=Path, required=True)
+    hil_identifiability.add_argument("--packet", default=None)
+    hil_identifiability.add_argument(
+        "--yes",
+        action="store_true",
+        help="acknowledge the owner-cleared powered follower workcell",
+    )
 
     sail_inventory = subparsers.add_parser(
         "sail-inventory",
@@ -1163,6 +1175,24 @@ def main(argv: Sequence[str] | None = None) -> int:
                     sort_keys=True,
                 )
             )
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "hil-identifiability":
+        from .hil_identifiability import (
+            HILIdentifiabilityError,
+            run_hil_campaign,
+        )
+
+        try:
+            report = run_hil_campaign(
+                args.config,
+                args.output,
+                operator_acknowledged=args.yes,
+                packet_id=args.packet,
+            )
+        except HILIdentifiabilityError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
