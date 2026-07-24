@@ -308,6 +308,16 @@ def build_parser() -> argparse.ArgumentParser:
     empty_gripper.add_argument("--config", type=Path, required=True)
     empty_gripper.add_argument("--output", type=Path, required=True)
 
+    joint_limit = subparsers.add_parser(
+        "joint-limit-compare",
+        help=(
+            "run the frozen action-identical current-vs-calibrated SO-101 "
+            "joint-range diagnostic"
+        ),
+    )
+    joint_limit.add_argument("--config", type=Path, required=True)
+    joint_limit.add_argument("--output", type=Path, required=True)
+
     physical_replay = subparsers.add_parser(
         "physical-replay",
         help="replay one finalized physical command trace through the guarded follower",
@@ -1077,6 +1087,22 @@ def main(argv: Sequence[str] | None = None) -> int:
                 contract_path=args.config,
             )
         except EmptyGripperDiagnosticError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "joint-limit-compare":
+        from .joint_limit_comparison import (
+            JointLimitComparisonError,
+            run_joint_limit_comparison,
+        )
+
+        try:
+            report = run_joint_limit_comparison(
+                args.output,
+                contract_path=args.config,
+            )
+        except JointLimitComparisonError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))

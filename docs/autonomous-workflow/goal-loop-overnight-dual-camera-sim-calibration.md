@@ -135,10 +135,10 @@ flags, and any remaining sim-to-real gap.
 ## Progress Ledger
 
 ```text
-Current state: Baseline frozen; raw episode verified but mislabeled for the intended procedure.
-Completed: Three-hour goal activated; authoritative inputs inspected.
-Evidence: main@b4d3b51515fd97b0704d965b554d6abdb9de0ecc; raw episode 20260724T050132Z-02baf745.
-Remaining: GPT-5.6 critique, derived packet, bounded simulator decision, verification, receipts, closeout.
+Current state: Derived packet frozen; one externally calibrated joint-range comparison preregistered before execution.
+Completed: Three-hour goal activated; raw bytes verified; six-cycle diagnostic materialized; exact-action range blocker isolated.
+Evidence: implementation@d0f053ac2aa383dda3dcedb601f9252b13757587; diagnostic c6791f94...; exact action 4dcdabd0....
+Remaining: GPT-5.6 critique, single two-variant simulator execution, evaluation, verification, receipts, closeout.
 Blockers: GPT-5.6 browser session is signed out; contact/force/metric-depth channels are absent.
-Next step: Preserve baseline hashes and build the deterministic derived evaluator.
+Next step: Commit the calibrated-range preregistration, then execute its two replay variants exactly once.
 ```

@@ -15,6 +15,10 @@ from sim2claw.empty_gripper_diagnostic import (
     derive_empty_gripper_diagnostic,
     load_empty_gripper_contract,
 )
+from sim2claw.joint_limit_comparison import (
+    JointLimitComparisonError,
+    run_joint_limit_comparison,
+)
 
 
 JOINTS = [
@@ -174,6 +178,116 @@ def _fixture(
     return contract_path
 
 
+def _comparison_contract(root: Path, diagnostic_root: Path) -> Path:
+    calibration = {
+        "shoulder_pan": {"range_min": 755, "range_max": 3491},
+        "shoulder_lift": {"range_min": 803, "range_max": 3229},
+        "elbow_flex": {"range_min": 753, "range_max": 3076},
+        "wrist_flex": {"range_min": 839, "range_max": 3284},
+        "wrist_roll": {"range_min": 0, "range_max": 4095},
+        "gripper": {"range_min": 1482, "range_max": 2324},
+    }
+    calibration_path = root / "follower-calibration.json"
+    _write_json(calibration_path, calibration)
+    diagnostic = json.loads((diagnostic_root / "diagnostic.json").read_text())
+    body_ranges = {}
+    for joint in JOINTS[:-1]:
+        minimum, maximum = (
+            calibration[joint]["range_min"],
+            calibration[joint]["range_max"],
+        )
+        half = (maximum - minimum) * 180.0 / 4095.0
+        body_ranges[joint] = [-half, half]
+    contract = {
+        "schema_version": (
+            "sim2claw.overnight_joint_limit_comparison_contract.v1"
+        ),
+        "comparison_id": "fixture-joint-limit-comparison",
+        "status": "frozen_before_simulator_execution",
+        "source": {
+            "recording_directory": "source",
+            "recording_id": "fixture-recording",
+            "samples_sha256": _sha(root / "source/samples.jsonl"),
+            "action_field": "follower_command_degrees",
+            "action_dtype": "float64",
+            "action_shape": [180, 6],
+            "action_sha256": diagnostic["simulator_binding"][
+                "exact_input_action_sha256"
+            ],
+            "derived_diagnostic": "diagnostic/diagnostic.json",
+            "derived_diagnostic_sha256": _sha(
+                diagnostic_root / "diagnostic.json"
+            ),
+            "derived_receipt": "diagnostic/receipt.json",
+            "derived_receipt_sha256": _sha(diagnostic_root / "receipt.json"),
+        },
+        "calibration_identity": {
+            "kind": "lerobot_so101_follower_endpoint_calibration",
+            "standard_path": str(calibration_path),
+            "sha256": _sha(calibration_path),
+            "motor_resolution_counts": 4095,
+            "body_normalization": "degrees_about_calibrated_range_midpoint",
+            "gripper_normalization": "range_0_100",
+            "frozen_range_counts": {
+                joint: [
+                    calibration[joint]["range_min"],
+                    calibration[joint]["range_max"],
+                ]
+                for joint in JOINTS
+            },
+            "derived_body_ranges_degrees": body_ranges,
+        },
+        "simulator": {
+            "scene_source": "scene.py",
+            "scene_source_sha256": _sha(root / "scene.py"),
+            "piece_layout": "sparse_two_sided_pawns",
+            "variants": [
+                {
+                    "id": "current_declared_ranges",
+                    "kind": "baseline",
+                    "range_mutation": False,
+                },
+                {
+                    "id": "follower_calibrated_ranges_v1",
+                    "kind": "candidate",
+                    "range_mutation": True,
+                    "only_mutated_fields": [
+                        "body_joint_range",
+                        "body_actuator_ctrlrange",
+                    ],
+                },
+            ],
+            "simulator_replays_maximum": 2,
+            "candidate_families": 1,
+            "adaptive_retries": 0,
+            "action_tensor_must_be_byte_identical": True,
+            "external_preclip_allowed": False,
+            "engine_internal_control_limits_are_the_factor_under_test": True,
+        },
+        "evaluation": {
+            "owner": "independent_cpu_fp32_joint_response_evaluator",
+            "aggregate_body_joint_rmse_improvement_minimum_fraction": 0.02,
+            "maximum_per_joint_rmse_regression_degrees": 0.25,
+            "gripper_rmse_nonregression_required": True,
+            "cycle_ids_reported_separately": [1, 2, 3],
+            "strict_task_consequence_available": False,
+            "promotion_requires_strict_task_consequence": True,
+        },
+        "authority": {
+            "physical_motion": False,
+            "physical_capture": False,
+            "training": False,
+            "simulator_parameter_promotion": False,
+            "policy_promotion": False,
+            "task_score_change": False,
+            "provider_advice_is_evaluator_evidence": False,
+        },
+    }
+    path = root / "comparison-contract.json"
+    _write_json(path, contract)
+    return path
+
+
 def test_materialization_is_deterministic_and_preserves_all_cycles(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -274,3 +388,74 @@ def test_cli_exposes_read_only_diagnostic_command() -> None:
     assert parsed.command == "empty-gripper-diagnose"
     assert parsed.config == Path("contract.json")
     assert parsed.output == Path("derived")
+
+
+def test_joint_limit_comparison_keeps_actions_identical_and_never_promotes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    diagnostic_contract = _fixture(tmp_path, out_of_range=True)
+    monkeypatch.setattr(diagnostic_module, "REPO_ROOT", tmp_path)
+    derive_empty_gripper_diagnostic(
+        tmp_path / "diagnostic", contract_path=diagnostic_contract
+    )
+    import sim2claw.joint_limit_comparison as comparison_module
+
+    monkeypatch.setattr(comparison_module, "REPO_ROOT", tmp_path)
+    comparison_contract = _comparison_contract(
+        tmp_path, tmp_path / "diagnostic"
+    )
+    receipt = run_joint_limit_comparison(
+        tmp_path / "comparison", contract_path=comparison_contract
+    )
+    raw = json.loads((tmp_path / "comparison/raw_comparison.json").read_text())
+    evaluation = json.loads((tmp_path / "comparison/evaluation.json").read_text())
+
+    assert receipt["simulator_replays_used"] == 2
+    assert raw["simulator_replays_used"] == 2
+    assert len(raw["variants"]) == 2
+    assert raw["variants"][0]["input_action_sha256"] == raw["variants"][1][
+        "input_action_sha256"
+    ]
+    assert all(
+        row["external_preclip_applied"] is False for row in raw["variants"]
+    )
+    assert evaluation["action_tensor_byte_identical"] is True
+    assert evaluation["simulator_parameter_promoted"] is False
+    assert evaluation["task_score_changed"] is False
+    assert evaluation["gates"]["strict_task_consequence"] is False
+
+
+def test_joint_limit_comparison_rejects_calibration_tamper(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    diagnostic_contract = _fixture(tmp_path, out_of_range=True)
+    monkeypatch.setattr(diagnostic_module, "REPO_ROOT", tmp_path)
+    derive_empty_gripper_diagnostic(
+        tmp_path / "diagnostic", contract_path=diagnostic_contract
+    )
+    import sim2claw.joint_limit_comparison as comparison_module
+
+    monkeypatch.setattr(comparison_module, "REPO_ROOT", tmp_path)
+    comparison_contract = _comparison_contract(
+        tmp_path, tmp_path / "diagnostic"
+    )
+    (tmp_path / "follower-calibration.json").write_text("{}\n", encoding="utf-8")
+    with pytest.raises(JointLimitComparisonError, match="identity changed"):
+        run_joint_limit_comparison(
+            tmp_path / "comparison", contract_path=comparison_contract
+        )
+
+
+def test_cli_exposes_joint_limit_comparison() -> None:
+    parsed = build_parser().parse_args(
+        [
+            "joint-limit-compare",
+            "--config",
+            "comparison.json",
+            "--output",
+            "comparison-output",
+        ]
+    )
+    assert parsed.command == "joint-limit-compare"

@@ -1,0 +1,87 @@
+{
+  "schema_version": "sim2claw.overnight_joint_limit_comparison_contract.v1",
+  "comparison_id": "overnight-joint-limit-comparison-20260724-v1",
+  "status": "frozen_before_simulator_execution",
+  "goal": "docs/autonomous-workflow/goal-loop-overnight-dual-camera-sim-calibration.md",
+  "source": {
+    "recording_directory": "datasets/manipulation_source_recordings/c2-to-c1__20260724T050132Z-02baf745",
+    "recording_id": "20260724T050132Z-02baf745",
+    "samples_sha256": "334ea676f4c2a48a22fd039ef2911946f608fdbfe293cea4383dba88f59da254",
+    "action_field": "follower_command_degrees",
+    "action_dtype": "float64",
+    "action_shape": [911, 6],
+    "action_sha256": "4dcdabd0b8681c4d811884458d3e4bbff523c7435ade38f22570c7fbca61d142",
+    "derived_diagnostic": "outputs/current-100mm-empty-gripper-diagnostic-v1/diagnostic.json",
+    "derived_diagnostic_sha256": "c6791f9434aa8e9d4eb1e48547cebb28cbf29a3f4bd544e19dc239870c5a33a6",
+    "derived_receipt": "outputs/current-100mm-empty-gripper-diagnostic-v1/receipt.json",
+    "derived_receipt_sha256": "fef884776e1f7cbbfafd11e542874f800234a3ca5f4f0aae2ae58b37c441da93"
+  },
+  "calibration_identity": {
+    "kind": "lerobot_so101_follower_endpoint_calibration",
+    "standard_path": "~/.cache/huggingface/lerobot/calibration/robots/so_follower/so101_follower.json",
+    "sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4",
+    "motor_resolution_counts": 4095,
+    "body_normalization": "degrees_about_calibrated_range_midpoint",
+    "gripper_normalization": "range_0_100",
+    "frozen_range_counts": {
+      "shoulder_pan": [755, 3491],
+      "shoulder_lift": [803, 3229],
+      "elbow_flex": [753, 3076],
+      "wrist_flex": [839, 3284],
+      "wrist_roll": [0, 4095],
+      "gripper": [1482, 2324]
+    },
+    "derived_body_ranges_degrees": {
+      "shoulder_pan": [-120.26373626373626, 120.26373626373626],
+      "shoulder_lift": [-106.63736263736264, 106.63736263736264],
+      "elbow_flex": [-102.10989010989012, 102.10989010989012],
+      "wrist_flex": [-107.47252747252747, 107.47252747252747],
+      "wrist_roll": [-180.0, 180.0]
+    }
+  },
+  "simulator": {
+    "scene_source": "src/sim2claw/scene.py",
+    "scene_source_sha256": "01366394bb10cc789956e59965b32b3f8d009df5ccba9390894b139b02639206",
+    "piece_layout": "sparse_two_sided_pawns",
+    "variants": [
+      {
+        "id": "current_declared_ranges",
+        "kind": "baseline",
+        "range_mutation": false
+      },
+      {
+        "id": "follower_calibrated_ranges_v1",
+        "kind": "candidate",
+        "range_mutation": true,
+        "only_mutated_fields": [
+          "body_joint_range",
+          "body_actuator_ctrlrange"
+        ]
+      }
+    ],
+    "simulator_replays_maximum": 2,
+    "candidate_families": 1,
+    "adaptive_retries": 0,
+    "action_tensor_must_be_byte_identical": true,
+    "external_preclip_allowed": false,
+    "engine_internal_control_limits_are_the_factor_under_test": true
+  },
+  "evaluation": {
+    "owner": "independent_cpu_fp32_joint_response_evaluator",
+    "aggregate_body_joint_rmse_improvement_minimum_fraction": 0.02,
+    "maximum_per_joint_rmse_regression_degrees": 0.25,
+    "gripper_rmse_nonregression_required": true,
+    "cycle_ids_reported_separately": [1, 2, 3, 4, 5, 6],
+    "strict_task_consequence_available": false,
+    "promotion_requires_strict_task_consequence": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_capture": false,
+    "training": false,
+    "simulator_parameter_promotion": false,
+    "policy_promotion": false,
+    "task_score_change": false,
+    "provider_advice_is_evaluator_evidence": false
+  }
+}

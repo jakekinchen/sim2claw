@@ -24,6 +24,17 @@
   fail-closed at zero replays.
 - GPT-5.6 role: requested technical critic only; browser session currently
   awaits owner sign-in and cannot score or promote local evidence.
+- Derived checkpoint: committed implementation `d0f053a` materialized
+  diagnostic SHA-256 `c6791f94...`, exact float64 action SHA-256
+  `4dcdabd0...`, and receipt digest `53f6a9fe...`. The raw procedure remains
+  unadmitted because six excursions were observed; zero simulator replays were
+  used.
+- Preregistered simulator decision: compare the current internal joint/control
+  limits against one candidate derived exclusively from the independently
+  hash-bound follower endpoint calibration. Both variants receive the same
+  911x6 float64 tensor; the only candidate mutation is body joint and actuator
+  range, the budget is two total replays and zero retries, and strict task
+  consequence remains unavailable so promotion is impossible.
 - Goal:
   `docs/autonomous-workflow/goal-loop-overnight-dual-camera-sim-calibration.md`.
 
