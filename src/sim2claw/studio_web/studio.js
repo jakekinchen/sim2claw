@@ -27,6 +27,7 @@ const state = {
   recordingFeedIndex: 0,
   recordingWindow: null,
   threeViewer: null,
+  threeViewerPromise: null,
   threeLoadId: 0,
   liveSimViewer: null,
   liveSimViewerPromise: null,
@@ -1593,7 +1594,9 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
 
   if (episode.inspection?.kind === "threejs_state_trace") {
     elements.stage.classList.add("has-three");
-    loadThreeEpisode(episode, state.threeLoadId);
+    if (!episodeComparison(episode)) {
+      loadThreeEpisode(episode, state.threeLoadId);
+    }
   }
   const hasRecordedMedia = ["video", "frames"].includes(episode.media.kind);
   elements.replayModeSwitch.hidden = !(
@@ -1714,23 +1717,32 @@ function whenThreeReady() {
 
 async function ensureThreeViewer() {
   if (state.threeViewer) return state.threeViewer;
-  const { ThreeReplayViewer } = await whenThreeReady();
-  const viewer = new ThreeReplayViewer({
-    canvas: elements.threeCanvas,
-    status: elements.threeStatus,
-  });
-  viewer.onTime = ({ fraction, current }) => {
-    if (state.replayMode === "visual") updateProgress(fraction, current);
-  };
-  viewer.onPlayState = (playing) => {
-    if (state.replayMode !== "visual") return;
-    elements.play.classList.toggle("is-playing", playing);
-    elements.play.setAttribute("aria-label", playing ? "Pause episode" : "Play episode");
-  };
-  viewer.setRate(state.playbackRate);
-  viewer.setActive(state.view === "replay" && ["visual", "compare"].includes(state.replayMode));
-  state.threeViewer = viewer;
-  return viewer;
+  if (state.threeViewerPromise) return state.threeViewerPromise;
+  state.threeViewerPromise = (async () => {
+    const { ThreeReplayViewer } = await whenThreeReady();
+    if (state.threeViewer) return state.threeViewer;
+    const viewer = new ThreeReplayViewer({
+      canvas: elements.threeCanvas,
+      status: elements.threeStatus,
+    });
+    viewer.onTime = ({ fraction, current }) => {
+      if (state.replayMode === "visual") updateProgress(fraction, current);
+    };
+    viewer.onPlayState = (playing) => {
+      if (state.replayMode !== "visual") return;
+      elements.play.classList.toggle("is-playing", playing);
+      elements.play.setAttribute("aria-label", playing ? "Pause episode" : "Play episode");
+    };
+    viewer.setRate(state.playbackRate);
+    viewer.setActive(state.view === "replay" && ["visual", "compare"].includes(state.replayMode));
+    state.threeViewer = viewer;
+    return viewer;
+  })();
+  try {
+    return await state.threeViewerPromise;
+  } finally {
+    state.threeViewerPromise = null;
+  }
 }
 
 async function ensureLiveSimulationViewer() {

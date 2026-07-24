@@ -58,6 +58,11 @@ class ThreeReplayViewer {
     this.renderHeight = 0;
     this.active = true;
     this.animationFrame = null;
+    this.loadedInspectionKey = null;
+    this.loadingInspectionKey = null;
+    this.loadingInspectionPromise = null;
+    this.loadQueue = Promise.resolve();
+    this.loadRequestId = 0;
 
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2();
@@ -79,44 +84,73 @@ class ThreeReplayViewer {
   }
 
   async load(inspection) {
-    this.pause();
-    this.currentTime = 0;
-    this.setStatus("Loading MuJoCo scene…");
-    const [sceneResponse, traceResponse] = await Promise.all([
-      fetch(inspection.scene_url, { cache: "no-store" }),
-      fetch(inspection.trace_url, { cache: "no-store" }),
-    ]);
-    if (!sceneResponse.ok || !traceResponse.ok) {
-      throw new Error("The scene manifest or episode trace could not be loaded.");
-    }
-    const [manifest, trace] = await Promise.all([
-      sceneResponse.json(),
-      traceResponse.json(),
-    ]);
-    if (manifest.schema_version !== "sim2claw.mujoco_scene_manifest.v1") {
-      throw new Error("Unsupported MuJoCo scene manifest.");
-    }
-    if (trace.schema_version !== "sim2claw.mujoco_body_state_trace.v1") {
-      throw new Error("Unsupported MuJoCo episode trace.");
-    }
+    const inspectionKey = `${inspection.scene_url}\u0000${inspection.trace_url}`;
+    if (this.loadedInspectionKey === inspectionKey && this.trace) return;
     if (
-      trace.scene?.manifest_revision_sha256 &&
-      trace.scene.manifest_revision_sha256 !== manifest.revision_sha256
+      this.loadingInspectionKey === inspectionKey
+      && this.loadingInspectionPromise
     ) {
-      throw new Error("Episode trace and scene manifest revisions do not match.");
+      return this.loadingInspectionPromise;
     }
 
-    this.clearScene();
-    this.manifest = manifest;
-    this.trace = trace;
-    await this.buildScene();
-    this.bodyTraceIndices = trace.body_names.map((name) => this.bodyGroups.get(name) || null);
-    this.buildContactMarkers();
-    this.resetCamera();
-    this.applyTime(0);
-    this.setStatus(
-      `${trace.frame_count} MuJoCo states · ${Number(trace.fps).toFixed(0)} Hz · drag to orbit`,
-    );
+    const requestId = ++this.loadRequestId;
+    const execute = async () => {
+      this.pause();
+      this.currentTime = 0;
+      this.setStatus("Loading MuJoCo scene…");
+      const [sceneResponse, traceResponse] = await Promise.all([
+        fetch(inspection.scene_url, { cache: "no-store" }),
+        fetch(inspection.trace_url, { cache: "no-store" }),
+      ]);
+      if (!sceneResponse.ok || !traceResponse.ok) {
+        throw new Error("The scene manifest or episode trace could not be loaded.");
+      }
+      const [manifest, trace] = await Promise.all([
+        sceneResponse.json(),
+        traceResponse.json(),
+      ]);
+      if (manifest.schema_version !== "sim2claw.mujoco_scene_manifest.v1") {
+        throw new Error("Unsupported MuJoCo scene manifest.");
+      }
+      if (trace.schema_version !== "sim2claw.mujoco_body_state_trace.v1") {
+        throw new Error("Unsupported MuJoCo episode trace.");
+      }
+      if (
+        trace.scene?.manifest_revision_sha256 &&
+        trace.scene.manifest_revision_sha256 !== manifest.revision_sha256
+      ) {
+        throw new Error("Episode trace and scene manifest revisions do not match.");
+      }
+      if (requestId !== this.loadRequestId) return;
+
+      this.clearScene();
+      this.manifest = manifest;
+      this.trace = trace;
+      await this.buildScene();
+      if (requestId !== this.loadRequestId) return;
+      this.bodyTraceIndices = trace.body_names.map((name) => this.bodyGroups.get(name) || null);
+      this.buildContactMarkers();
+      this.resetCamera();
+      this.applyTime(0);
+      this.loadedInspectionKey = inspectionKey;
+      this.setStatus(
+        `${trace.frame_count} MuJoCo states · ${Number(trace.fps).toFixed(0)} Hz · drag to orbit`,
+      );
+    };
+    const loadPromise = this.loadQueue
+      .catch(() => undefined)
+      .then(execute);
+    this.loadQueue = loadPromise;
+    this.loadingInspectionKey = inspectionKey;
+    this.loadingInspectionPromise = loadPromise;
+    try {
+      await loadPromise;
+    } finally {
+      if (this.loadingInspectionPromise === loadPromise) {
+        this.loadingInspectionKey = null;
+        this.loadingInspectionPromise = null;
+      }
+    }
   }
 
   async loadLive({ scene_url: sceneUrl, manifest_revision_sha256: expectedRevision }) {

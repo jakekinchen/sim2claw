@@ -1742,6 +1742,8 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn("new AbortController()", javascript)
             self.assertNotIn("for (const count of [3, 2, 1])", javascript)
             self.assertIn('episode.inspection?.kind === "threejs_state_trace"', javascript)
+            self.assertIn("if (state.threeViewerPromise)", javascript)
+            self.assertIn("state.threeViewerPromise = (async () =>", javascript)
             self.assertIn('episodeRecordingFeeds(episode)', javascript)
             self.assertNotIn('const mobileStack =', javascript)
             self.assertIn('window.Sim2ClawCalibration?.setActive', javascript)
@@ -1767,6 +1769,18 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn("addScaledVector(portraitOffset, 0.96)", replay_javascript)
             self.assertIn("photoBackground.visible = !portraitInspection", replay_javascript)
             self.assertIn("portraitInspection ? 0xd7d7d5 : 0x111315", replay_javascript)
+            self.assertIn(
+                "this.loadingInspectionKey === inspectionKey",
+                replay_javascript,
+            )
+            self.assertIn(
+                "this.loadQueue",
+                replay_javascript,
+            )
+            self.assertIn(
+                "requestId !== this.loadRequestId",
+                replay_javascript,
+            )
 
             spark_license = (STATIC_ROOT / "vendor" / "spark" / "LICENSE").read_bytes()
             self.assertEqual(
