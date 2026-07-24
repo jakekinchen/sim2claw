@@ -113,9 +113,9 @@ observation, and strict task consequence remain separate proof classes.
 
 ```text
 Current state: 0/6 required domains are fully closed; trustworthy partial evidence exists.
-Completed: Closure evaluator, container-timing instrumentation, Studio closure matrix, and six-packet multilevel HIL preregistration.
-Evidence: Baseline 1859ee2; closure contract 4e387a7b; multilevel HIL contract 8dbe616e; HIL b364aae6; S2 11/11 unchanged, 1 event / 4 replays / 0 trials.
-Remaining: Commit the preregistration, verify the live envelope, execute at most six one-attempt packets, then evaluate only admitted measurements.
-Blockers: Device/actuator timing, calibrated force/current, metric registration, repeated excitation/reset trials, strict task/EE consequence.
-Next step: Freeze the software/preregistration commit before any robot motion.
+Completed: Closure evaluator, container-timing instrumentation, Studio closure matrix, preregistration commit 6bc8745, and the exact six-attempt multilevel HIL campaign.
+Evidence: Closure v2 contract de72fce3; campaign 0e818d22; 6 attempts / 0 retries / 4 admitted / 2 rejected; closure report 8cad9232; HIL b364aae6 unchanged; S2 11/11 unchanged, 1 event / 4 replays / 0 trials.
+Remaining: Geometry/scale and contact/compliance are missing; kinematics, action/timing, and actuator/load path are partial; strict task/EE consequence is failed.
+Blockers: Intermittent D405 completion under motion; device/actuator timing; calibrated force/current; metric registration; loaded/reset trials; strict held-out physical task/EE consequence.
+Next step: Open a new preregistered measurement transaction only after reliable D405 acquisition and the next independent sensor/calibration prerequisite are available. Do not retry this exhausted family or start another simulator search.
 ```

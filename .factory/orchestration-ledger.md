@@ -905,3 +905,17 @@ goal. External provider campaigns and spending remain separately gated.
   The replacement full suite passed `1094 / 1094`, with three expected skips
   and 328 subtests, in `1319.70 s`. The current patch is eligible for a
   separate preregistration commit before live hardware preflight.
+- 2026-07-24T09:21:12-05:00 — Twin fidelity multilevel HIL reached a terminal
+  partial result under the separately committed preregistration `6bc8745`.
+  All six one-attempt packets completed their bounded robot trajectories and
+  controlled returns with zero retries and follower torque off. Four packets
+  were admitted; shoulder lift and wrist flex were rejected solely by the
+  frozen D405 completion/coverage gates. The verified campaign is
+  `0e818d22...`; evidence is `91130bcd...` / `e8ce53b1...`. Closure v2 remains
+  honestly `0 / 6` with no weighted percentage: geometry and contact are
+  missing, three domains are partial, and strict task/EE consequence is
+  failed. No simulator replay, parameter promotion, training, provider call,
+  task-score change, replacement packet, or retry occurred. The exhausted
+  family is sealed; a new transaction requires reliable D405 acquisition and
+  the named external sensor/calibration prerequisites. The frozen HIL v1 and
+  all eleven S2 hashes remain byte-identical.

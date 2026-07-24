@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from .hil_evidence import verify_hil_evidence
 from .hil_publication import verify_hil_publication
 from .learning_factory_artifacts import atomic_write_json, canonical_digest, sha256_file
 from .paths import REPO_ROOT
@@ -15,9 +16,10 @@ from .sail.live_receipts import verify_live_operator_receipt
 
 
 CONTRACT_SCHEMA = "sim2claw.twin_fidelity_closure_contract.v1"
+CONTRACT_SCHEMA_V2 = "sim2claw.twin_fidelity_closure_contract.v2"
 REPORT_SCHEMA = "sim2claw.twin_fidelity_closure_report.v1"
 RECEIPT_SCHEMA = "sim2claw.twin_fidelity_closure_receipt.v1"
-DEFAULT_CONTRACT_PATH = Path("configs/evaluations/twin_fidelity_closure_v1.json")
+DEFAULT_CONTRACT_PATH = Path("configs/evaluations/twin_fidelity_closure_v2.json")
 DOMAIN_ORDER = (
     "geometry_scale",
     "kinematics",
@@ -59,13 +61,24 @@ def load_twin_fidelity_closure_contract(
     contract_path = _repo_path(repo_root, path, label="Twin closure contract")
     contract = load_json_object(contract_path, label="Twin closure contract")
     _require(
-        contract.get("schema_version") == CONTRACT_SCHEMA,
+        contract.get("schema_version") in {CONTRACT_SCHEMA, CONTRACT_SCHEMA_V2},
         "Unsupported Twin closure contract.",
     )
-    _require(
-        contract.get("status") == "frozen_before_measurement_readiness_implementation",
-        "Twin closure contract is not frozen.",
+    expected_status = (
+        "frozen_before_measurement_readiness_implementation"
+        if contract["schema_version"] == CONTRACT_SCHEMA
+        else "completion_rules_frozen_in_v1_bind_v2_measurement_after_execution"
     )
+    _require(contract.get("status") == expected_status, "Twin closure contract is not frozen.")
+    if contract["schema_version"] == CONTRACT_SCHEMA_V2:
+        provenance = contract.get("provenance")
+        _require(
+            isinstance(provenance, Mapping)
+            and provenance.get("v2_results_visible_before_this_binding") is True
+            and provenance.get("completion_thresholds_changed_after_results") is False
+            and provenance.get("rejected_packets_admitted_post_hoc") is False,
+            "Twin closure v2 result-binding provenance changed.",
+        )
     _require(
         tuple(contract.get("domain_order") or ()) == DOMAIN_ORDER,
         "Twin closure domain order changed.",
@@ -127,6 +140,7 @@ def evaluate_verified_twin_fidelity_closure(
     live_receipt: Mapping[str, Any],
     live_consequence: Mapping[str, Any],
     source_identity: Mapping[str, Any],
+    multilevel_summary: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Evaluate already-verified inputs without owning their scientific score."""
 
@@ -165,6 +179,40 @@ def evaluate_verified_twin_fidelity_closure(
     )
     strict_passes = int(live_consequence.get("strict_task_and_ee_pass_count") or 0)
     strict_candidates = int(live_consequence.get("candidate_count") or 0)
+    multilevel_packets = (
+        _rows(multilevel_summary.get("packets"))
+        if isinstance(multilevel_summary, Mapping)
+        else []
+    )
+    multilevel_admitted = [
+        row for row in multilevel_packets if row.get("admitted") is True
+    ]
+    multilevel_rejected = [
+        row for row in multilevel_packets if row.get("admitted") is not True
+    ]
+    kinematics_observed = [f"{len(admitted_packets)} admitted unloaded v1 packet(s)"]
+    kinematics_missing = [
+        "all_six_joint_channels",
+        "held_out_joint_residual_evaluation",
+    ]
+    kinematics_failed: list[str] = ["shoulder_candidate_non_target_regression"]
+    if multilevel_packets:
+        kinematics_observed.append(
+            f"{len(multilevel_admitted)}/6 timing-admitted multilevel/multispeed joint channels"
+        )
+        for row in multilevel_rejected:
+            kinematics_missing.append(
+                f"{row.get('target_joint')}_dual_camera_measurement_admission"
+            )
+            kinematics_failed.extend(str(value) for value in row.get("failures") or [])
+    else:
+        kinematics_missing.extend(
+            [
+                "three_or_more_distributed_levels_per_joint",
+                "two_or_more_command_speeds_per_joint",
+                "two_or_more_clean_traversals_per_direction",
+            ]
+        )
 
     domains = [
         _domain(
@@ -181,17 +229,19 @@ def evaluate_verified_twin_fidelity_closure(
         _domain(
             contract,
             "kinematics",
-            status="partial" if admitted_packets else "missing",
-            observed=[f"{len(admitted_packets)} admitted unloaded joint channels"],
-            missing=[
-                "all_six_joint_channels",
-                "three_or_more_distributed_levels_per_joint",
-                "two_or_more_command_speeds_per_joint",
-                "two_or_more_clean_traversals_per_direction",
-            ],
-            failed_gates=["shoulder_candidate_non_target_regression"],
+            status=(
+                "partial"
+                if admitted_packets or multilevel_admitted
+                else "missing"
+            ),
+            observed=kinematics_observed,
+            missing=kinematics_missing,
+            failed_gates=kinematics_failed,
             detail=(
-                f"{len(admitted_packets)} unloaded packet(s) were admitted, but "
+                f"{len(multilevel_admitted)}/6 multilevel channels were admitted. "
+                "Rejected camera-bound channels remain unavailable and may not be fit."
+                if multilevel_packets
+                else f"{len(admitted_packets)} unloaded packet(s) were admitted, but "
                 "the repeated multi-level/multi-speed excitation gate is open."
             ),
         ),
@@ -202,6 +252,13 @@ def evaluate_verified_twin_fidelity_closure(
             observed=[
                 f"{requested_applied_count} requested/applied action decompositions",
                 "same-process host monotonic read/call brackets",
+                *(
+                    [
+                        f"{len(multilevel_admitted)} timing-admitted dual-camera multilevel packets"
+                    ]
+                    if multilevel_packets
+                    else []
+                ),
             ],
             missing=[
                 "actuator_application_or_ack_timestamp",
@@ -303,6 +360,13 @@ def evaluate_verified_twin_fidelity_closure(
             "hil_admitted_packets": len(admitted_packets),
             "hil_rejected_packets": int(summary.get("rejected_packet_count") or 0),
             "hil_remaining_observables": sorted(remaining),
+            "multilevel_hil_physical_attempts": (
+                int(multilevel_summary.get("physical_attempts") or 0)
+                if isinstance(multilevel_summary, Mapping)
+                else 0
+            ),
+            "multilevel_hil_admitted_packets": len(multilevel_admitted),
+            "multilevel_hil_rejected_packets": len(multilevel_rejected),
             "requested_applied_decomposition_packets": requested_applied_count,
             "sail_verdict": live_receipt.get("verdict"),
             "strict_task_and_ee_pass_count": strict_passes,
@@ -355,12 +419,72 @@ def evaluate_twin_fidelity_closure(
         "sail_live_receipt_sha256": live_verification["receipt_sha256"],
         "sail_campaign_state_sha256": live_verification["campaign_state_sha256"],
     }
+    multilevel_summary: Mapping[str, Any] | None = None
+    if contract["schema_version"] == CONTRACT_SCHEMA_V2:
+        binding = contract.get("inputs", {}).get("multilevel_hil")
+        _require(
+            isinstance(binding, Mapping),
+            "Twin closure v2 multilevel HIL binding is missing.",
+        )
+        multilevel_contract = _repo_path(
+            root, binding.get("contract"), label="Multilevel HIL contract"
+        )
+        multilevel_campaign = _repo_path(
+            root, binding.get("campaign"), label="Multilevel HIL campaign"
+        )
+        multilevel_evidence = _repo_path(
+            root, binding.get("evidence"), label="Multilevel HIL evidence"
+        )
+        verified_multilevel = verify_hil_evidence(
+            multilevel_campaign,
+            multilevel_evidence,
+            contract_path=multilevel_contract,
+        )
+        for observed_key, expected_key in (
+            ("contract_sha256", "contract_sha256"),
+            ("campaign_state_sha256", "campaign_state_sha256"),
+            ("summary_sha256", "summary_sha256"),
+            ("receipt_sha256", "receipt_sha256"),
+        ):
+            _require(
+                verified_multilevel[observed_key] == binding.get(expected_key),
+                f"Twin closure multilevel {expected_key} changed.",
+            )
+        multilevel_summary = verified_multilevel["summary"]
+        _require(
+            int(multilevel_summary["physical_attempts"])
+            == int(binding["physical_attempts"])
+            and int(multilevel_summary["admitted_packet_count"])
+            == int(binding["admitted_packets"])
+            and int(multilevel_summary["rejected_packet_count"])
+            == int(binding["rejected_packets"])
+            and int(verified_multilevel["receipt"]["adaptive_retries"])
+            == int(binding["adaptive_retries"]),
+            "Twin closure multilevel accounting changed.",
+        )
+        source_identity.update(
+            {
+                "multilevel_hil_contract_sha256": verified_multilevel[
+                    "contract_sha256"
+                ],
+                "multilevel_hil_campaign_state_sha256": verified_multilevel[
+                    "campaign_state_sha256"
+                ],
+                "multilevel_hil_summary_sha256": verified_multilevel[
+                    "summary_sha256"
+                ],
+                "multilevel_hil_receipt_sha256": verified_multilevel[
+                    "receipt_sha256"
+                ],
+            }
+        )
     return evaluate_verified_twin_fidelity_closure(
         contract=contract,
         hil_bundle=hil_bundle,
         live_receipt=live_receipt,
         live_consequence=consequence,
         source_identity=source_identity,
+        multilevel_summary=multilevel_summary,
     )
 
 

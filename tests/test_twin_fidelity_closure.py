@@ -19,6 +19,7 @@ from sim2claw.twin_fidelity_closure import (
 CONTRACT = REPO_ROOT / "configs/evaluations/twin_fidelity_closure_v1.json"
 LIVE_RECEIPT = REPO_ROOT / "outputs/sail/live-operator-c2-adapter-v1/receipt.json"
 HIL_RECEIPT = REPO_ROOT / "outputs/current-100mm-hil-evidence-v1/receipt.json"
+MULTILEVEL_RECEIPT = REPO_ROOT / "outputs/current-100mm-hil-evidence-v2/receipt.json"
 
 
 def _verified_inputs() -> tuple[dict, dict, dict, dict]:
@@ -72,6 +73,9 @@ def test_closure_contract_has_explicit_six_domain_denominator() -> None:
         "allow_partial_as_pass": False,
     }
     assert not any(contract["authority"].values())
+    assert contract["schema_version"] == "sim2claw.twin_fidelity_closure_contract.v2"
+    assert contract["provenance"]["completion_thresholds_changed_after_results"] is False
+    assert contract["provenance"]["rejected_packets_admitted_post_hoc"] is False
 
 
 def test_verified_current_evidence_is_not_perfect_and_keeps_states_distinct() -> None:
@@ -128,7 +132,9 @@ def test_closure_fails_closed_on_authority_or_evaluator_mutation(tmp_path: Path)
 
 
 @pytest.mark.skipif(
-    not LIVE_RECEIPT.is_file() or not HIL_RECEIPT.is_file(),
+    not LIVE_RECEIPT.is_file()
+    or not HIL_RECEIPT.is_file()
+    or not MULTILEVEL_RECEIPT.is_file(),
     reason="receipt-bound local HIL/SAIL evidence unavailable",
 )
 def test_live_closure_materializes_byte_identically(tmp_path: Path) -> None:
@@ -141,3 +147,17 @@ def test_live_closure_materializes_byte_identically(tmp_path: Path) -> None:
     assert first["perfect"] is False
     assert first["passed_required_domains"] == 0
     assert first["required_domain_count"] == 6
+    report = json.loads((tmp_path / "first/report.json").read_text(encoding="utf-8"))
+    assert report["evidence_summary"]["multilevel_hil_physical_attempts"] == 6
+    assert report["evidence_summary"]["multilevel_hil_admitted_packets"] == 4
+    assert report["evidence_summary"]["multilevel_hil_rejected_packets"] == 2
+    kinematics = next(
+        row for row in report["domains"] if row["id"] == "kinematics"
+    )
+    assert kinematics["status"] == "partial"
+    assert "shoulder_lift_dual_camera_measurement_admission" in kinematics[
+        "missing_evidence"
+    ]
+    assert "wrist_flex_dual_camera_measurement_admission" in kinematics[
+        "missing_evidence"
+    ]

@@ -1,0 +1,120 @@
+{
+  "schema_version": "sim2claw.twin_fidelity_closure_contract.v2",
+  "contract_id": "current-100mm-twin-fidelity-closure-v2",
+  "status": "completion_rules_frozen_in_v1_bind_v2_measurement_after_execution",
+  "purpose": "Apply the pre-existing six-domain perfect criterion to the verified six-packet multilevel HIL result without changing thresholds or promoting rejected packets.",
+  "provenance": {
+    "completion_rules_source": "configs/evaluations/twin_fidelity_closure_v1.json",
+    "completion_rules_source_sha256": "4e387a7b2a9195e5e2e5167aeb6aed4be358883bb919fa14326fe36ab8c105f8",
+    "v2_results_visible_before_this_binding": true,
+    "completion_thresholds_changed_after_results": false,
+    "rejected_packets_admitted_post_hoc": false
+  },
+  "domain_order": [
+    "geometry_scale",
+    "kinematics",
+    "action_timing",
+    "contact_compliance",
+    "actuator_load_path",
+    "task_ee_consequence"
+  ],
+  "completion": {
+    "required_domain_count": 6,
+    "required_pass_count": 6,
+    "allow_weighted_percentage": false,
+    "allow_unknown_as_zero": false,
+    "allow_partial_as_pass": false
+  },
+  "domains": {
+    "geometry_scale": {
+      "label": "Geometry / scale",
+      "required_observables": [
+        "metric_board_to_robot_registration",
+        "metric_object_pose",
+        "camera_to_gripper_extrinsics"
+      ],
+      "pass_rule": "all required observables are calibrated, receipt-bound, and independently evaluated"
+    },
+    "kinematics": {
+      "label": "Kinematics",
+      "required_observables": [
+        "all_six_joint_channels",
+        "three_or_more_distributed_levels_per_joint",
+        "two_or_more_command_speeds_per_joint",
+        "two_or_more_clean_traversals_per_direction"
+      ],
+      "minimum_admitted_joint_channels": 6,
+      "pass_rule": "all excitation and held-out joint residual gates pass"
+    },
+    "action_timing": {
+      "label": "Action / timing",
+      "required_observables": [
+        "requested_and_applied_action_identity",
+        "actuator_application_or_ack_timestamp",
+        "device_synchronized_position_and_current_time",
+        "camera_container_timing",
+        "camera_exposure_or_device_time"
+      ],
+      "pass_rule": "the common-clock timing evaluator passes with no inferred timestamp substitution"
+    },
+    "contact_compliance": {
+      "label": "Contact / compliance",
+      "required_observables": [
+        "calibrated_contact_force",
+        "deformation",
+        "contact_state",
+        "known_loaded_and_unloaded_trials"
+      ],
+      "pass_rule": "the held-out contact mechanism and consequence gates pass"
+    },
+    "actuator_load_path": {
+      "label": "Actuator / load path",
+      "required_observables": [
+        "calibrated_current_zero_and_scale",
+        "current_to_torque_provenance",
+        "known_load_trials",
+        "repeat_reference_reset_trials"
+      ],
+      "pass_rule": "load-response parameters and non-target consequences pass held-out evaluation"
+    },
+    "task_ee_consequence": {
+      "label": "Task / EE consequence",
+      "required_observables": [
+        "metric_target_piece_trajectory",
+        "end_effector_trajectory",
+        "strict_pawn_task_consequence"
+      ],
+      "required_strict_passes": 11,
+      "required_strict_trials": 11,
+      "pass_rule": "all frozen strict task and end-effector consequence gates pass"
+    }
+  },
+  "inputs": {
+    "hil_publication": "configs/evaluations/current_100mm_hil_publication_v1.json",
+    "sail_live_receipt": "outputs/sail/live-operator-c2-adapter-v1/receipt.json",
+    "multilevel_hil": {
+      "contract": "configs/evaluations/current_100mm_hil_multilevel_v2.json",
+      "contract_sha256": "8dbe616efc5450e6a94115459b38d50f8aac959453a77db3a75d8baea80671bb",
+      "campaign": "runs/current-100mm-hil-multilevel-20260724",
+      "campaign_state_sha256": "0e818d2228cf91dc4dd96dd44341795199b53eb1041245e869df7d327e2176b5",
+      "evidence": "outputs/current-100mm-hil-evidence-v2",
+      "summary_sha256": "91130bcd94eb5b889da90ddbb3d46dc21088246daab966fa2d5d92787a184da1",
+      "receipt_sha256": "e8ce53b1c4289624ef7ed2588452b222516670fc0c93af1b3ceb759223f4c179",
+      "physical_attempts": 6,
+      "admitted_packets": 4,
+      "rejected_packets": 2,
+      "adaptive_retries": 0
+    }
+  },
+  "proof_boundary": "Measurement readiness and closure accounting only. Four admitted unloaded channels do not identify contact, force, metric geometry, strict task consequence, or a simulator promotion.",
+  "authority": {
+    "physical_capture": false,
+    "robot_motion": false,
+    "simulator_replay": false,
+    "simulator_parameter_promotion": false,
+    "task_score_change": false,
+    "training": false,
+    "provider_calls": false,
+    "paid_compute": false
+  }
+}

@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `TWIN FIDELITY CLOSURE ACTIVE; HIL/S2 FROZEN; TASK SCORE 0/11`
+Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
 
 ## Active evaluator-owned Twin fidelity closure
 
@@ -11,15 +11,32 @@ must all pass frozen, receipt-bound gates on the same workcell and action
 identity. The authoritative prompt is
 [`docs/autonomous-workflow/goal-loop-twin-fidelity-closure.md`](docs/autonomous-workflow/goal-loop-twin-fidelity-closure.md).
 
-The first bounded slice now has deterministic future camera container-timing
+The first bounded slice now has deterministic camera container-timing
 observability and a fail-closed `0 / 6` closure matrix shared by Studio and
 agents. The matrix keeps missing, partial, failed, and passed states distinct;
-it publishes no weighted percentage. The next packet family is frozen in
-`configs/evaluations/current_100mm_hil_multilevel_v2.json`: exactly six
-one-attempt unloaded packets, one per gateway joint, with multiple fixed
-levels and slow/fast traversals, exact returns, dual-camera coverage, and
-container-timing admission. It remains at `0 / 6` attempts until its code,
-contract, and proof bindings are committed.
+it publishes no weighted percentage. The separately committed and pushed
+preregistration authorized exactly six one-attempt unloaded packets, one per
+gateway joint, with multiple fixed levels and slow/fast traversals, exact
+returns, dual-camera coverage, and container-timing admission.
+
+That campaign is terminal at `6 / 6` attempts, `0` retries, and `0` provider
+calls. Every trajectory and controlled return completed with the same
+preregistered hardware/calibration identities and follower torque off after
+execution. Four packets were admitted. Shoulder lift and wrist flex were
+rejected because the D405 stream failed the frozen completion and frame
+coverage gates; their robot telemetry remains diagnostic and cannot be fit.
+No retry or replacement packet is allowed under this contract.
+
+The v2 closure evaluator remains `0 / 6`: geometry/scale and
+contact/compliance are missing; kinematics, action/timing, and actuator/load
+path are partial; task/EE consequence is failed. It reports the exact remaining
+measurements and does not convert partial progress into a percentage or a
+simulator/task claim. The next scientific step requires a new preregistered
+measurement transaction that first resolves reliable D405 acquisition and
+then adds metric registration, calibrated force/current/load observability,
+device/actuator timing, reset/loaded trials, and strict held-out physical
+consequence. Another simulator family or silent physical retry is not an
+acceptable substitute.
 The owner now explicitly authorizes necessary physical tests and guarantees
 the workcell is clear. Each physical packet remains execution-blocked until
 its own preregistration, exact hardware/calibration, torque-off, start-envelope,
@@ -28,7 +45,7 @@ does not reopen the rejected shoulder simulator candidate, training, promotion,
 provider, paid-compute, or public-release authority. The frozen four-packet
 HIL and eleven-file S2 evidence sets remain immutable.
 
-## Active four-hour HIL identifiability loop
+## Completed four-hour HIL identifiability loop
 
 From `2026-07-24T02:37:10-05:00` through at least
 `2026-07-24T06:37:10-05:00`, record exactly four additional bounded unloaded

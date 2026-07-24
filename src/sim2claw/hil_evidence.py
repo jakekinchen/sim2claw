@@ -8,7 +8,11 @@ from typing import Any
 
 import numpy as np
 
-from .hil_identifiability import evaluate_hil_packet, load_hil_contract
+from .hil_identifiability import (
+    CONTRACT_SCHEMA_V2,
+    evaluate_hil_packet,
+    load_hil_contract,
+)
 from .learning_factory_artifacts import (
     atomic_write_json,
     canonical_digest,
@@ -19,6 +23,8 @@ from .scene import ROBOT_JOINTS
 
 SUMMARY_SCHEMA = "sim2claw.current_100mm_hil_evidence_summary.v1"
 RECEIPT_SCHEMA = "sim2claw.current_100mm_hil_evidence_receipt.v1"
+SUMMARY_SCHEMA_V2 = "sim2claw.current_100mm_hil_evidence_summary.v2"
+RECEIPT_SCHEMA_V2 = "sim2claw.current_100mm_hil_evidence_receipt.v2"
 
 
 class HILEvidenceError(RuntimeError):
@@ -28,6 +34,15 @@ class HILEvidenceError(RuntimeError):
 def _require(condition: bool, message: str) -> None:
     if not condition:
         raise HILEvidenceError(message)
+
+
+def _json(path: Path, *, label: str) -> dict[str, Any]:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise HILEvidenceError(f"{label} is unreadable: {error}") from error
+    _require(isinstance(payload, dict), f"{label} must be a JSON object.")
+    return payload
 
 
 def _best_lag(
@@ -223,11 +238,13 @@ def derive_hil_evidence_summary(
     except (OSError, json.JSONDecodeError) as error:
         raise HILEvidenceError(f"HIL campaign state is unreadable: {error}") from error
     events = campaign.get("events")
+    expected_count = len(contract["packets"])
     _require(
         isinstance(events, list)
-        and len(events) == 4
-        and int(campaign["budget"]["used_physical_packet_attempts"]) == 4,
-        "HIL campaign must contain exactly four consumed attempts.",
+        and len(events) == expected_count
+        and int(campaign["budget"]["used_physical_packet_attempts"])
+        == expected_count,
+        "HIL campaign must contain the exact preregistered attempt inventory.",
     )
     expected_ids = [row["packet_id"] for row in contract["packets"]]
     _require(
@@ -247,20 +264,25 @@ def derive_hil_evidence_summary(
         for row in packet_summaries
         if not row["admitted"]
     ]
-    return {
-        "schema_version": SUMMARY_SCHEMA,
-        "proof_class": "derived_hil_joint_identifiability_evaluation",
-        "contract_id": contract["contract_id"],
-        "contract_sha256": sha256_file(contract_path),
-        "campaign_state_sha256": sha256_file(campaign_path),
-        "physical_attempts": 4,
-        "completed_trajectories": 4,
-        "admitted_packet_count": len(admitted),
-        "rejected_packet_count": len(rejected),
-        "admitted_packet_ids": admitted,
-        "rejected_packets": rejected,
-        "packets": packet_summaries,
-        "conclusions": {
+    if contract["schema_version"] == CONTRACT_SCHEMA_V2:
+        admitted_joints = sorted(
+            row["target_joint"] for row in packet_summaries if row["admitted"]
+        )
+        conclusions = {
+            "all_six_unloaded_joint_channels_admitted": len(admitted) == 6,
+            "admitted_joint_channels": admitted_joints,
+            "multilevel_and_multispeed_motion_observed": {
+                row["target_joint"]: row["packet_id"] in admitted
+                for row in packet_summaries
+            },
+            "rejected_packets_may_not_be_fit_or_replayed": bool(rejected),
+            "contact_or_friction_identified": False,
+            "strict_task_consequence_available": False,
+            "task_score_changed": False,
+        }
+        summary_schema = SUMMARY_SCHEMA_V2
+    else:
+        conclusions = {
             "gripper_unloaded_response_identified": "HIL-GRIPPER-05" in admitted,
             "shoulder_lift_range_identified": "HIL-SHOULDER-LIFT-22" in admitted,
             "elbow_fit_admitted": "HIL-ELBOW-FLEX-22" in admitted,
@@ -268,7 +290,24 @@ def derive_hil_evidence_summary(
             "contact_or_friction_identified": False,
             "strict_task_consequence_available": False,
             "task_score_changed": False,
-        },
+        }
+        summary_schema = SUMMARY_SCHEMA
+    return {
+        "schema_version": summary_schema,
+        "proof_class": "derived_hil_joint_identifiability_evaluation",
+        "contract_id": contract["contract_id"],
+        "contract_sha256": sha256_file(contract_path),
+        "campaign_state_sha256": sha256_file(campaign_path),
+        "physical_attempts": expected_count,
+        "completed_trajectories": sum(
+            row.get("replay_status") == "completed" for row in events
+        ),
+        "admitted_packet_count": len(admitted),
+        "rejected_packet_count": len(rejected),
+        "admitted_packet_ids": admitted,
+        "rejected_packets": rejected,
+        "packets": packet_summaries,
+        "conclusions": conclusions,
         "remaining_observables": [
             "calibrated_current_zero_and_scale",
             "command_application_timestamp",
@@ -305,16 +344,21 @@ def compile_hil_evidence(
     campaign_path = campaign_root / "campaign_state.json"
     admitted = list(summary["admitted_packet_ids"])
     rejected = list(summary["rejected_packets"])
+    physical_attempts = int(summary["physical_attempts"])
     output_root.mkdir(parents=True)
     summary_path = output_root / "summary.json"
     atomic_write_json(summary_path, summary)
     receipt = {
-        "schema_version": RECEIPT_SCHEMA,
+        "schema_version": (
+            RECEIPT_SCHEMA_V2
+            if summary["schema_version"] == SUMMARY_SCHEMA_V2
+            else RECEIPT_SCHEMA
+        ),
         "proof_class": "derived_hil_joint_identifiability_evaluation",
         "contract_sha256": sha256_file(contract_path),
         "campaign_state_sha256": sha256_file(campaign_path),
         "summary_sha256": sha256_file(summary_path),
-        "physical_attempts": 4,
+        "physical_attempts": physical_attempts,
         "admitted_packet_count": len(admitted),
         "rejected_packet_count": len(rejected),
         "adaptive_retries": 0,
@@ -325,3 +369,63 @@ def compile_hil_evidence(
     receipt["receipt_digest"] = canonical_digest(receipt)
     atomic_write_json(output_root / "receipt.json", receipt)
     return receipt
+
+
+def verify_hil_evidence(
+    campaign_root: Path,
+    output_root: Path,
+    *,
+    contract_path: Path,
+) -> dict[str, Any]:
+    """Re-derive a compiled HIL summary and verify every declared identity."""
+
+    campaign_root = campaign_root.resolve()
+    output_root = output_root.resolve()
+    summary_path = output_root / "summary.json"
+    receipt_path = output_root / "receipt.json"
+    saved_summary = _json(summary_path, label="HIL evidence summary")
+    saved_receipt = _json(receipt_path, label="HIL evidence receipt")
+    derived_summary = derive_hil_evidence_summary(
+        campaign_root,
+        contract_path=contract_path,
+    )
+    _require(
+        saved_summary == derived_summary,
+        "HIL evidence summary no longer re-derives.",
+    )
+    receipt_schema = (
+        RECEIPT_SCHEMA_V2
+        if saved_summary.get("schema_version") == SUMMARY_SCHEMA_V2
+        else RECEIPT_SCHEMA
+    )
+    _require(
+        saved_receipt.get("schema_version") == receipt_schema,
+        "HIL evidence receipt schema changed.",
+    )
+    expected_receipt = {
+        "schema_version": receipt_schema,
+        "proof_class": "derived_hil_joint_identifiability_evaluation",
+        "contract_sha256": sha256_file(contract_path),
+        "campaign_state_sha256": sha256_file(campaign_root / "campaign_state.json"),
+        "summary_sha256": sha256_file(summary_path),
+        "physical_attempts": int(saved_summary["physical_attempts"]),
+        "admitted_packet_count": int(saved_summary["admitted_packet_count"]),
+        "rejected_packet_count": int(saved_summary["rejected_packet_count"]),
+        "adaptive_retries": 0,
+        "simulator_replays": 0,
+        "provider_calls": 0,
+        "task_score_changed": False,
+    }
+    expected_receipt["receipt_digest"] = canonical_digest(expected_receipt)
+    _require(
+        saved_receipt == expected_receipt,
+        "HIL evidence receipt no longer verifies.",
+    )
+    return {
+        "summary": saved_summary,
+        "receipt": saved_receipt,
+        "summary_sha256": sha256_file(summary_path),
+        "receipt_sha256": sha256_file(receipt_path),
+        "campaign_state_sha256": expected_receipt["campaign_state_sha256"],
+        "contract_sha256": expected_receipt["contract_sha256"],
+    }
