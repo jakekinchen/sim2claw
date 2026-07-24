@@ -28,7 +28,19 @@
       "paired_pose_limit_degrees": 12.0,
       "retained_traces_checked": 18,
       "retained_traces_start_envelope_admitted": 0,
-      "workspace_clear_admitted": false
+      "workspace_clear_admitted": false,
+      "preflight_device_configuration_rewritten": false,
+      "preflight_follower_torque_enabled": false
+    },
+    "preflight_safety_repair": {
+      "status": "complete",
+      "defect": "legacy_inspection_wrapper_enabled_lerobot_device_configuration",
+      "observed_effect": "configuration_context_torque_reenable_attempt_failed_on_status_packet",
+      "position_command_sent": false,
+      "exception_shutdown_completed": true,
+      "repair": "inspect_physical_gateway_constructs_gateway_with_configure_devices_false",
+      "live_recheck_passed": true,
+      "follower_torque_enabled_after_recheck": false
     },
     "torque_off_baseline": {
       "status": "complete_no_motion_no_task_claim",

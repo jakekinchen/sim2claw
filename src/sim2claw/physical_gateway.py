@@ -1201,7 +1201,11 @@ def inspect_physical_gateway(
     *,
     device_factory: DeviceFactory = _lerobot_devices,
 ) -> dict[str, Any]:
-    gateway = SO101PhysicalGateway(identity, device_factory=device_factory)
+    gateway = SO101PhysicalGateway(
+        identity,
+        device_factory=device_factory,
+        configure_devices=False,
+    )
     try:
         report = gateway.open(enable_motion=False)
         report["passed"] = True

@@ -29,6 +29,20 @@ video, and closed the gateway. Every row reports
 The camera frame shows the follower over the chessboard and multiple pieces in
 the intended workcell. The clear-workcell gate is therefore not admitted.
 
+## Preflight safety repair
+
+A post-capture inspection found that the older `physical-gateway-preflight`
+wrapper instantiated the gateway with device reconfiguration enabled.
+LeRobot's configuration context attempted a torque re-enable and failed on a
+status packet. The gateway exception path disabled torque and disconnected
+both buses; no position command was sent.
+
+The wrapper now opens with `configure_devices=false`. A regression test
+requires zero leader/follower configure calls, and the corrected live
+inspection passed with `device_configuration_rewritten=false`,
+`physical_follower_torque_enabled=false`, and the same 97.4945054945-degree
+registration rejection. The baseline artifacts were not rerun or changed.
+
 ## Content-addressed evidence
 
 Generated root:

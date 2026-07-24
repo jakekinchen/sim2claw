@@ -363,6 +363,9 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertTrue(report["passed"])
         self.assertFalse(report["physical_follower_torque_enabled"])
         self.assertTrue(report["paired_pose_registration_ready"])
+        self.assertFalse(report["device_configuration_rewritten"])
+        self.assertEqual(self.leader.configure_calls, 0)
+        self.assertEqual(self.follower.configure_calls, 0)
         self.assertFalse(self.follower.bus.torque)
 
     def test_large_starting_mismatch_blocks_registration_before_torque(self) -> None:

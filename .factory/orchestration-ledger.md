@@ -33,6 +33,12 @@
   The observed workspace still contains the arm and task pieces, so an
   autonomous alignment move is not admitted. Static current is usable but
   does not identify load/contact/task consequence.
+- Safety repair: a post-capture check exposed that the legacy preflight wrapper
+  requested LeRobot device configuration. Its failed configuration attempt
+  entered the gateway exception shutdown and sent no position command. The
+  wrapper is now hard-bound to `configure_devices=false`; focused regression
+  tests and a corrected live inspection confirm no configuration rewrite,
+  torque off, and the unchanged 97.4945-degree rejection.
 - Status: active but physically blocked. No motion has been commanded, no
   existing guard has been bypassed, and the strict task score remains `0/11`.
 - Goal:
