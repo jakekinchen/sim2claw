@@ -84,9 +84,11 @@ candidates, or explicit missing-observable abstentions are terminal results.
 11. Focused, short-tier, and one exact-head full-suite verification pass after
     the patch is frozen. Generated observations stay ignored; scoped
     contracts, code, tests, state, logs, and content digests may be committed.
-12. No provider call, paid/Brev compute, new retained-C2 family, unbounded task
-    replay, training, promotion, public push, VideoSim work, or physical claim
-    expansion occurs.
+12. No provider-backed evaluator or experiment, paid/Brev compute, new
+    retained-C2 family, unbounded task replay, training, promotion, public
+    push, VideoSim work, or physical claim expansion occurs. The owner's
+    earlier request for one GPT-5.6 browser review is accounted separately as
+    non-evidentiary method advice; it cannot score, admit, or promote a result.
 
 ## Evidence Standard
 
@@ -165,10 +167,10 @@ receipts, authority, and remaining observables.
 ## Progress Ledger
 
 ```text
-Current state: Preregistration drafting; zero new physical attempts.
-Completed: Goal activated; live Git/process/device/calibration/camera/torque and S2 preflight.
-Evidence: main@7ead2d7; follower torque off; C922+D405 discovered; S2 11-file set located.
-Remaining: Freeze contract; implement/test recorder; four packets; evaluator; simulator comparison; Studio/state/logs; proof tiers.
-Blockers: None at preregistration. Each packet can still fail closed on its own live preflight.
-Next step: Commit the zero-motion goal and packet contract.
+Current state: Four one-attempt packets, one two-replay simulator comparison, two offline audits, and the Studio publication are frozen; exact-head closeout remains active until at least 06:37:10-05:00.
+Completed: 4/4 physical attempts; 2 admitted and 2 rejected; torque off; 2/2 action-identical simulator replays; evaluator reject; v1/v2 deterministic trace diagnostics; future host-timestamp observability; desktop/mobile Studio inspection.
+Evidence: campaign b364aae6; physical summary 886ca149; simulator evaluation bfd126fd; v1 report a62481c1; v2 report e4fbc956; physical task score 0/11; S2 11/11 unchanged with 1 event / 4 replays / 0 trials.
+Remaining: Final authority/state/log freeze, receipt-bound SAIL observatory regeneration, focused/short tiers, one exact-head full suite, final evidence recheck, and minimum-window exit.
+Blockers: Actuator/device timing, calibrated current/force, camera PTS/drop counters, repeatable multi-level/multi-speed excitation, repeated reset trials, and strict task/EE consequence remain unavailable. They block calibration and promotion, not closeout.
+Next step: Freeze the terminal authority record, restore exact-source Studio/SAIL receipts, and run the no-motion proof tiers.
 ```

@@ -1,16 +1,16 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T02:58:00-05:00",
+  "updated_at": "2026-07-24T03:46:04-05:00",
   "active_campaign": "current_100mm_four_hour_hil_identifiability",
-  "current_milestone": "D10_HIL_PREREGISTRATION_ZERO_NEW_PHYSICAL_ATTEMPTS",
+  "current_milestone": "D10_HIL_EVIDENCE_FROZEN_CLOSEOUT_VERIFICATION",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
   "four_hour_hil_transaction": {
     "schema_version": "sim2claw.four_hour_hil_transaction.v1",
-    "status": "four_physical_attempts_complete_two_admitted_two_rejected_simulator_followup_preregistered",
+    "status": "four_physical_attempts_complete_two_admitted_two_rejected_simulator_candidate_rejected_offline_decomposition_frozen_closeout_verification_active",
     "goal": "docs/autonomous-workflow/goal-loop-four-hour-hil-identifiability.md",
-    "goal_sha256": "b367b88e166449036fd8ad914d180acd3688bd3f5111dd30f54b2523bc702989",
+    "goal_sha256": "1fdef891c7998d4d8a6dfa2db702b1632ce766926ab7ef3130bba88cc0c8522b",
     "contract": "configs/evaluations/current_100mm_hil_identifiability_v1.json",
     "contract_sha256": "bca343538955b5e7ea108f5c8be6f519a04a8e2892790520c1d46d5b67dee5d5",
     "baseline_commit": "7ead2d75a360b88f1b38f2061510e002dbb40ff0",
@@ -28,7 +28,8 @@
       "admitted": 2,
       "rejected": 2,
       "adaptive_retries": 0,
-      "provider_calls": 0
+      "evaluator_provider_calls": 0,
+      "owner_requested_external_advisory_calls": 1
     },
     "packets": [
       "HIL-GRIPPER-05",
@@ -60,17 +61,65 @@
       },
       "adaptive_retries": 0,
       "follower_torque_enabled_after": false,
-      "strict_task_score_changed": false
+      "strict_task_score_changed": false,
+      "summary_sha256": "886ca149bcbc5389869f98cd9bd53c34a9f817ec9bd1f86271e16218753c6ac1",
+      "receipt_sha256": "584827cd9376bbe9235fa588541990c75780d1e0764c882907c3b8a9e30c54ab",
+      "receipt_digest": "a1d4c7d6b30ca01e59e6f72bab2649006b4c03ea6f947e07cf464bddb43c5aa0"
     },
     "simulator_followup": {
-      "status": "frozen_before_simulator_execution",
+      "status": "executed_once_evaluator_reject_no_promotion",
       "config": "configs/evaluations/hil_shoulder_range_external_validation_v1.json",
       "config_sha256": "c326d8400b8c1e800340c21b0bf70cf1fb5d1f0526eaf2a6c507275137307ca2",
       "candidate_lineage": "preexisting_follower_endpoint_calibration",
       "mutated_joints": ["shoulder_lift"],
-      "simulator_replays_used": 0,
+      "simulator_replays_used": 2,
       "simulator_replays_maximum": 2,
-      "new_parameter_value_fit_from_hil_packet": false
+      "adaptive_retries": 0,
+      "new_parameter_value_fit_from_hil_packet": false,
+      "action_tensor_byte_identical": true,
+      "baseline_shoulder_rmse_degrees": 4.289228179389073,
+      "candidate_shoulder_rmse_degrees": 1.2808659779878568,
+      "elbow_rmse_regression_degrees": 0.5105660011732667,
+      "maximum_per_joint_regression_degrees": 0.25,
+      "strict_task_and_ee_consequence_available": false,
+      "verdict": "diagnostic_shoulder_range_external_tie_or_loss_no_promotion",
+      "raw_comparison_sha256": "c0b9d1da684353ccffe3caceac04a1c6a14904a414d4379626a08acac4e0ef7b",
+      "evaluation_sha256": "bfd126fde51cf3d3a858a47689a9754aa986bb64268871646c47347f13a6e2ec",
+      "receipt_sha256": "f98137e9f83d0001cc312a10994fa60928a1e51f71b38c620d6b5fa765b7a5ad",
+      "simulator_parameter_promoted": false,
+      "strict_task_score_changed": false
+    },
+    "offline_trace_analysis": {
+      "status": "two_versioned_audits_frozen_and_byte_identically_rederived",
+      "v1_contract": "configs/evaluations/hil_offline_trace_analysis_v1.json",
+      "v1_contract_sha256": "42e3be1e32e46aa5d9aa0043d02bd90c9f166c70223009b902a6cdfb4c50e595",
+      "v1_report_sha256": "a62481c1dac5930306e26efd847c39e87873c37eeabb96e8cef98194c6c2e698",
+      "v1_receipt_sha256": "fc588df9e94c8a7bbdfb4c61cbbf959e07c1048d6dc0d56da13c03ac3e68e10c",
+      "v2_contract": "configs/evaluations/hil_trace_decomposition_v2.json",
+      "v2_contract_sha256": "f4734facdc6662f033a7679009a035a7b3f78cb5c61e0a373d583d47d5a6962a",
+      "v2_report_sha256": "e4fbc956153f0bd1c68981adfc87cfd90984402f5bcdba0e48ce12f47d19e7e5",
+      "v2_receipt_sha256": "523c5a52648682a674c086e1326412bef0317cd881ce8cba10cc0d56311aeb5f",
+      "requested_applied_actions_separated": true,
+      "elbow_event_samples": {
+        "first_gateway_rate_limit": 59,
+        "first_peak_fresh_raw_current": 68,
+        "first_velocity_collapse_under_tracking_error": 83,
+        "first_stall_warning": 99
+      },
+      "any_scale_offset_fit_admissible": false,
+      "simulator_change_warranted": false,
+      "strict_task_score_changed": false
+    },
+    "studio_publication": {
+      "binding": "configs/evaluations/current_100mm_hil_publication_v1.json",
+      "binding_sha256": "96bf610d666ba159f161103e09fb03c4a3bd0451211aaa3f1a576aea0e0d7774",
+      "catalog_hil_packet_count": 4,
+      "admitted_hil_packet_count": 2,
+      "requested_action_hash_binding_required": true,
+      "applied_action_identity_separate": true,
+      "offline_v1_v2_rederived_by_publication_verifier": true,
+      "overall_fidelity_percentage_claimed": false,
+      "write_controls_exposed": false
     },
     "preflight": {
       "device_identity_match": true,
@@ -85,11 +134,12 @@
       "s2_measurement_trial_count": 0
     },
     "authority": {
-      "physical_packet_execution": true,
+      "physical_packet_execution": false,
       "unbounded_task_replay": false,
       "training": false,
       "promotion": false,
-      "provider": false,
+      "provider_backed_evaluator_or_experiment": false,
+      "owner_requested_external_advisory_complete": true,
       "paid_compute": false,
       "push": false
     }

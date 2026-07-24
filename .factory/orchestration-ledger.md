@@ -6,8 +6,8 @@
   four additional physical tests, integrate the data against the current
   simulator, and pursue evaluator-owned sim-to-real gains.
 - Window: `2026-07-24T02:37:10-05:00` through no earlier than
-  `2026-07-24T06:37:10-05:00`; torque-on time is limited to four short
-  preregistered packets.
+  `2026-07-24T06:37:10-05:00`; the four-packet torque-on budget is exhausted
+  and no further physical execution is authorized in this transaction.
 - Baseline: local `main@7ead2d75a360b88f1b38f2061510e002dbb40ff0`,
   nineteen commits ahead of
   `origin/main@694fa5a4372056fa1484711053f2d340e2044232`; sole repository writer.
@@ -17,7 +17,7 @@
   joint telemetry, and a return/hold before torque release.
 - Frozen preregistration: contract SHA-256
   `bca343538955b5e7ea108f5c8be6f519a04a8e2892790520c1d46d5b67dee5d5`;
-  goal SHA-256
+  goal-at-freeze SHA-256
   `b367b88e166449036fd8ad914d180acd3688bd3f5111dd30f54b2523bc702989`;
   zero new physical attempts at freeze.
 - Safety: the owner guarantees the chessboard workcell remains clear. Device,
@@ -29,20 +29,44 @@
   deformation, metric wrist depth, and camera extrinsics remain unavailable.
 - Frozen evidence: S2 remains `11/11` byte-identical files and
   `1 event / 4 replays / 0 measurement trials`.
-- Authority: four bounded packets and read-only/offline evaluation are open.
-  Unbounded task replay, another retained-C2 family, provider, paid compute,
-  training, promotion, push, and VideoSim work remain closed.
+- Authority: physical execution and simulator replay budgets are closed.
+  Read-only/offline verification and Studio inspection remain open through the
+  minimum window. Unbounded task replay, another retained-C2 family,
+  provider-backed evaluation, paid compute, training, promotion, push, and
+  VideoSim work remain closed. One owner-requested GPT-5.6 browser advisory is
+  separately accounted as method-design input and not evaluator evidence.
 - Physical checkpoint: all `4 / 4` one-attempt packets completed and torque is
   off. Gripper and shoulder lift are evaluator-admitted. Elbow is excluded
   after a sustained stall-warning interval despite adequate span; wrist is
   excluded because its D405 file failed bounded finalization. No packet was
   retried.
-- Simulator checkpoint: one pre-existing follower-endpoint hypothesis is
-  frozen for external validation on the admitted shoulder packet. The
-  candidate changes shoulder-lift joint/control range only; it fits no value
-  from the new packet. Contract SHA-256:
+- Simulator checkpoint: the one pre-existing follower-endpoint hypothesis was
+  externally evaluated once on the admitted shoulder packet. The candidate
+  changes shoulder-lift joint/control range only and fits no value from the
+  new packet. Contract SHA-256:
   `c326d8400b8c1e800340c21b0bf70cf1fb5d1f0526eaf2a6c507275137307ca2`;
-  budget before execution `0 / 2` simulator replays.
+  final budget `2 / 2` simulator replays. Shoulder RMSE fell
+  `4.289228° → 1.280866°`, but elbow RMSE regressed `0.510566°` beyond the
+  frozen `0.25°` limit and strict task/EE consequence is unavailable. The
+  independent evaluator rejected the candidate; no parameter, posterior,
+  task score, or proof authority changed.
+- Offline-analysis checkpoint: two versioned deterministic audits rederive
+  byte-identically. V1 admits no scale/offset fit. V2 separates requested and
+  applied actions, reports gateway intervention before the elbow current and
+  stall sequence, and leaves causal load, force, latency, backlash, and reset
+  claims unavailable. These audits used zero physical attempts, zero simulator
+  replays, and zero evaluator/provider calls.
+- Studio checkpoint: Replay/Twin fidelity exposes all four packets through a
+  requested-action-hash binding, preserves separate applied-action identities,
+  and shows the failed simulator consequence, offline fault chronology,
+  unavailable observables, and `0/11` task score without an aggregate fidelity
+  percentage or write control. Future gateway traces include ordered
+  same-process host timestamps but do not retrofit the frozen packets.
+- Closeout status: tracked evidence and product changes are frozen. Remaining
+  work is exact-head publication rebinding, focused/automatic/full
+  verification, responsive/keyboard/console inspection, and minimum-window
+  completion. The frozen S2 `11/11` hashes and
+  `1 event / 4 replays / 0 measurement trials` remain the fail-closed bracket.
 
 ## Active bounded transaction — Studio project map and agent access
 

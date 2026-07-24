@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `FOUR-HOUR HIL IDENTIFIABILITY ACTIVE; TASK SCORE 0/11`
+Status: `FOUR-HOUR HIL EVIDENCE FROZEN; VERIFICATION ACTIVE; TASK SCORE 0/11`
 
 ## Active four-hour HIL identifiability loop
 
@@ -30,11 +30,31 @@ gap triggered the frozen stall warning. Wrist flex completed a `28.75°` span
 and returned, but its D405 source did not finalize, so the packet is excluded
 from admitted evidence. Neither rejected packet may be retried.
 
-The sole simulator follow-up is frozen before execution in
+The sole simulator follow-up was frozen before execution in
 `configs/evaluations/hil_shoulder_range_external_validation_v1.json`. It
-compares the current declared shoulder range with the pre-existing hash-bound
-follower endpoint range, mutates only shoulder lift, consumes exactly two
-action-identical simulator replays, and cannot promote or change task score.
+compared the current declared shoulder range with the pre-existing hash-bound
+follower endpoint range, mutated only shoulder lift, and consumed exactly two
+action-identical simulator replays. Shoulder RMSE fell from `4.289°` to
+`1.281°`, but elbow regressed by `0.511°`, beyond the frozen `0.25°` ceiling,
+and strict task/EE consequence was unavailable. The evaluator rejected the
+candidate; no simulator parameter, posterior, calibration, or task score
+changed.
+
+Two separately versioned offline audits now rederive all four traces. They
+show that none passes the scale/offset, actuator-latency, dynamic-response,
+backlash, or reset-drift identification gates. The requested/applied audit
+also localizes the elbow sequence to gateway rate limiting at sample `59`,
+peak raw current at `68`, velocity collapse under tracking error at `83`, and
+stall warning at `99`. This is diagnostic chronology, not force or causal
+load-path proof.
+
+Replay and Twin fidelity publish the four verified packets, available camera
+feeds, requested-versus-applied identity, observed/missing/failed gap domains,
+and exact next prerequisites. The physical gateway now emits ordered
+same-process host timestamps for future packets while explicitly leaving
+actuator acknowledgement and synchronized device-clock fields unavailable.
+Final state/log binding, exact-head proof tiers, one full suite, and the
+minimum `06:37:10-05:00` exit remain. No push is authorized.
 
 ## Active Studio project mapping
 
