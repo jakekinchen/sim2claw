@@ -1,6 +1,6 @@
 # Orchestration Ledger
 
-## Active transaction — actuator-response external validation
+## Completed transaction — actuator-response external validation
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`; sole writer.
 - Queue source: direct owner authorization to determine whether the recovered
@@ -22,8 +22,23 @@
   The independent strict task score remains 0/11 and cannot change from these
   traces. Training, promotion, physical capture, gateway, motion, and transfer
   remain closed.
-- Current checkpoint: contract, implementation, cohort manifest, and 16
-  adversarial/determinism tests pass before any external replay.
+- Preregistration checkpoint: contract, implementation, cohort manifest, and 16
+  adversarial/determinism tests passed before any external replay at commit
+  `fd5e8dafe23a6a73bc3c334c0eb72ce361e77856`.
+- Result: exactly ten action-identical replays completed once. Pooled joint RMS
+  improved 3.61%, four of five sessions improved, and pooled EE RMS improved
+  3.80%. The 95% whole-session joint-improvement interval was
+  `[-0.000649, 0.069475]`, so the frozen bootstrap-direction gate failed.
+- Terminal verdict:
+  `external_trace_validation_reject_task_completion_unchanged`. The existing
+  independent strict task score remains 0/11; no parameter was promoted.
+- Evidence: raw/evaluation/receipt SHA-256 values are respectively
+  `097baa940ed6951fad69519e10f8cdd8d2565f10d9c632b0da46f228ba5c963d`,
+  `1d8b91e423f10f9d3649608b70b87ffd532819fff2010db55a5e8afac67a2f19`,
+  and `6854ff26082d8491bf2e755c5e9e27f372846437e2355d359834f96981c345b2`.
+- Next prerequisite: independently synchronized current-100 mm
+  angle/current/load/contact measurement. No retry, family expansion, or
+  score-changing recalibration is admitted from this terminal negative.
 
 ## Completed transaction — Silicon data completeness audit
 

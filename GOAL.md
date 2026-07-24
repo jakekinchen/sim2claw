@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `ACTUATOR EXTERNAL VALIDATION PREREGISTERED; 0/10 REPLAYS; PHYSICAL AUTHORITY CLOSED`
+Status: `ACTUATOR EXTERNAL VALIDATION TERMINAL NEGATIVE; 10/10 REPLAYS; TASK SCORE 0/11`
 
 ## Active actuator-response external validation
 
@@ -24,9 +24,19 @@ owned 0/11 strict task score, refit or promote parameters, establish current
 100 mm spatial/contact calibration, or open training, physical, gateway, or
 motion authority.
 
-Current milestone: **AV-01 — preregistration freeze**. Contract, implementation,
-and adversarial tests are being frozen before any external replay. Current
-external replay usage is `0 / 10`.
+Terminal result: the single authorized run used all `10 / 10` replays with
+zero retries and zero provider calls. The selected candidate reduced pooled
+joint RMS from 1.41098 to 1.36004 degrees (3.61%) and pooled EE RMS from 13.756
+to 13.233 mm (3.80%), with improvement on four of five sessions. It failed the
+frozen bootstrap-direction gate because the 95% joint-improvement interval was
+`[-0.000649, 0.069475]`. The evaluator therefore returned
+`external_trace_validation_reject_task_completion_unchanged`.
+
+The independent strict task result remains 0/11. No candidate was promoted and
+no current-workspace calibration changed. This family is closed; the next
+scientific prerequisite is independently synchronized current-100 mm
+angle/current/load/contact measurement, not another post-result simulator
+parameter search.
 
 ## Active Silicon recovery and repository reconciliation
 
