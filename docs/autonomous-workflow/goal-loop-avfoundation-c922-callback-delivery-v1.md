@@ -117,10 +117,10 @@ success.
 ## Progress Ledger
 
 ```text
-Current state: Preregistration drafted before implementation and camera access.
-Completed: Frozen v2 candidate and prior exhausted-family boundaries reconciled.
-Evidence: v2 inventory raw 3754a62f; evaluation 3c59915c; receipt 14c8f821.
-Remaining: Commit preregistration; implement/test; commit exact identities; execute one observation; evaluate and close.
-Blockers: None before implementation. Any identity or authorization drift forces abstention without retry.
-Next step: Commit this prompt and contract before authoring the observer.
+Current state: Terminal degraded; the sole callback observation is exhausted.
+Completed: Preregistration 0c30321; macOS preset correction 7becd95; exact implementation f00f4f1; one session; evaluator closure.
+Evidence: 243 outputs / 0 drops; delivered 1920x1080 420v; max PTS gap 0.08303333341609687 s; evaluation 25827c4d; receipt 2096d836 / digest 558aae78.
+Remaining: Fresh read-only closeout review and centralization disposition.
+Blockers: Post-input-association active-format configuration and post-configuration/start identity verification require a separately versioned future transaction.
+Next step: Preserve v1 without retry; preregister corrected session ordering before any later camera observation.
 ```

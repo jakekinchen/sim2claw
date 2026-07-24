@@ -1106,3 +1106,11 @@ goal. External provider campaigns and spending remain separately gated.
   D405 lifecycle, robot motion, simulator replay, provider, training,
   promotion, task-score, and physical-task authority remain closed. No
   observer implementation exists and no camera session has started.
+- 2026-07-24T16:18:00-05:00 — C922 callback delivery v1 reached terminal
+  degraded under exact implementation `f00f4f1`. Its sole ten-second session
+  applied the frozen 640×480 `420v` format but delivered 243 callbacks at
+  1920×1080 `420v`, with zero drop callbacks and a maximum 83.033 ms PTS
+  interval. The evaluator failed exact dimensions and the frozen 50.000 ms
+  cadence gate. This identifies session negotiation/configuration order as the
+  next prerequisite; v1 is exhausted with no retry. D405, robot, simulator,
+  provider, training, promotion, and task authority stayed closed.

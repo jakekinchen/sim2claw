@@ -102,6 +102,18 @@ future callback-source measurement must be separately preregistered against
 this exact candidate and cannot reuse the exhausted v1 source-localization
 family.
 
+That separately preregistered callback-delivery v1 observation is now terminal
+degraded. One exact-implementation C922-only session produced `243` native
+output callbacks and zero Apple drop callbacks, but every delivered sample was
+`1920×1080 420v` rather than the applied `640×480 420v` candidate. Mean PTS
+interval was `0.04200826446267907 s`; maximum was
+`0.08303333341609687 s`, above the frozen `0.049999950000049996 s` gate.
+The evaluator failed `exact_dimensions` and `bounded_pts_interval`. The result
+isolates the next prerequisite to post-input-association AVFoundation format
+configuration and post-configuration/start verification; v1 is exhausted and
+cannot be retried. It does not reclassify D405/container, exposure,
+cross-camera, simulator, or task evidence.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining

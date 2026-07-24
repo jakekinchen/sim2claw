@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T15:35:00-05:00",
+  "updated_at": "2026-07-24T16:18:00-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
-  "current_milestone": "STUDIO_TWIN_RENDERING_REPAIR_EXACT_HEAD_VERIFICATION",
+  "current_milestone": "AVFOUNDATION_C922_CALLBACK_V1_TERMINAL_DEGRADED",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
@@ -2952,6 +2952,62 @@
         "task_score_change": false
       }
     },
+    "avfoundation_c922_callback_delivery_v1": {
+      "status": "terminal_callback_delivery_degraded_attempt_budget_exhausted",
+      "goal": "docs/autonomous-workflow/goal-loop-avfoundation-c922-callback-delivery-v1.md",
+      "contract": "configs/evaluations/avfoundation_c922_callback_delivery_v1.json",
+      "contract_sha256": "154854b53f2d18ddb4885b4f733e4ec4ef15f92f844f92e69cea0b2d5caf87ec",
+      "preregistration_commit": "0c30321",
+      "preset_contract_correction_commit": "7becd95",
+      "implementation_and_execution_commit": "f00f4f11ad19e9b413482705df66e0a04e364099",
+      "observer_source_sha256": "331928acb8753918fb8d2bb4ace174a1b28a2db09bfc101838658e978e5dbbdb",
+      "evaluator_sha256": "727b3c9096f809800777fdb2aeac655ca6a69fb8cd9ac3927b6dc1aa717dfb42",
+      "compiled_binary_sha256": "88fc6dd4aa36efebf2a06a3239affbdbf957ac755a778a117577ddb2fd978cab",
+      "prelaunch_sha256": "ef31e9ede87397c0ca2c538fc897d40429f53f156b0f08076abf556c8c6c980b",
+      "attempt_sha256": "744abba7ca941919225410b03c40ac72f64297cecab97e5cafa9e1c546ad3bd5",
+      "raw_observation_sha256": "9e3e2d574a7fa7db4a91b5d2f5e653bbc47fa88c82ee812e334993ea3a3fc671",
+      "evaluation_sha256": "25827c4d318e593df3042d19ae12fa7ba9041de864600b9d991c31845e8988af",
+      "receipt_sha256": "2096d836469662362e466f630fa1ede8b370412bf2e7a33592435e3c4436317b",
+      "receipt_digest": "558aae78b9721dd92a4718ff9d88a9572d84d8f5fa4607c0825edf75edb21b16",
+      "verdict": "callback_delivery_degraded",
+      "failed_gates": [
+        "exact_dimensions",
+        "bounded_pts_interval"
+      ],
+      "observation_attempts_used": 1,
+      "observation_attempts_maximum": 1,
+      "capture_sessions_used": 1,
+      "source_output_callbacks": 243,
+      "source_drop_callbacks": 0,
+      "requested_dimensions": [
+        640,
+        480
+      ],
+      "delivered_dimensions": [
+        1920,
+        1080
+      ],
+      "delivered_subtype": "420v",
+      "mean_pts_interval_seconds": 0.04200826446267907,
+      "maximum_pts_interval_seconds": 0.08303333341609687,
+      "maximum_pts_interval_allowed_seconds": 0.049999950000049996,
+      "repeat_evaluation_byte_identical": true,
+      "d405_lifecycle_operations_used": 0,
+      "robot_motion_trials_used": 0,
+      "simulator_replays_used": 0,
+      "provider_calls_used": 0,
+      "v1_retry_authorized": false,
+      "next_prerequisite": "post_input_association_active_format_configuration_and_post_configuration_start_verification",
+      "claim_limits": {
+        "camera_source_callback_delivery": true,
+        "container_timing": false,
+        "physical_exposure_continuity": false,
+        "cross_camera_synchronization": false,
+        "metric_depth": false,
+        "simulator_calibration": false,
+        "task_success": false
+      }
+    },
     "domain_status": {
       "geometry_scale": "missing",
       "kinematics": "partial",
@@ -2961,7 +3017,7 @@
       "task_ee_consequence": "failed"
     },
     "external_measurement_prerequisite": [
-      "c922_callback_delivery_with_frozen_640x480_420v_30_00003000003_fps_candidate",
+      "c922_post_input_association_format_binding_and_delivery_verification_v2",
       "reliable_dual_camera_d405_completion_under_motion",
       "metric_board_object_and_camera_registration",
       "actuator_application_and_device_synchronized_timing",
