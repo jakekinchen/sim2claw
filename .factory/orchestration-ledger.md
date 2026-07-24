@@ -991,3 +991,13 @@ goal. External provider campaigns and spending remain separately gated.
   negative or change Twin fidelity/task authority. A future attempt requires
   frozen supported-format enumeration and new campaign authority; exact-head
   closeout verification is pending.
+- 2026-07-24T12:39:30-05:00 — After the abstention chain was verified and
+  pushed as `87534c5..2e8b33d`, opened a separate read-only C922 native-format
+  inventory transaction. Contract `avfoundation_format_inventory_v1.json`
+  freezes one exact-name device/format enumeration, zero capture sessions,
+  frames, D405 lifecycle operations, robot motions, or provider calls. The
+  evaluator—not the observer—owns exact 640×480 dimensions, nearest supported
+  rate, `0.05 fps` maximum deviation from 30, subtype/tie-break ranking, and
+  verdict. The exhausted 12-attempt campaign cannot be reused. No inventory
+  has executed; implementation and observation identities must each be
+  committed first.

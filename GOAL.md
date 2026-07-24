@@ -73,6 +73,14 @@ evaluator-frozen mapping from the C922's actually enumerated AVFoundation
 formats to a supported exact source-probe request; a later campaign would
 require new authority because this 12-attempt family is exhausted.
 
+That prerequisite is now a separate software-only transaction. Its v1
+contract freezes one exact-name native C922 format inventory, zero capture
+sessions or frames, no D405 lifecycle, and an evaluator-owned 640×480
+fractional-rate rule with a maximum `0.05 fps` deviation from 30. The observer
+will enumerate only; it cannot select, score, start a stream, or authorize a
+new campaign. Implementation and the single observation remain pending until
+their own commits.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
