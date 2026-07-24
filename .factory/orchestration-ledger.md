@@ -1,5 +1,30 @@
 # Orchestration Ledger
 
+## Active transaction — actuator-response external validation
+
+- Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`; sole writer.
+- Queue source: direct owner authorization to determine whether the recovered
+  Silicon files can improve calibration and task completion.
+- Baseline: clean `main == origin/main` at
+  `78122d33e932f641312a9f370cfcdf704fcc96cd`.
+- Objective: evaluate the previously selected action-frozen actuator response
+  model on five preregistered historical sessions without refit or family
+  expansion, then consult the existing independent task-consequence receipt.
+- Frozen family: existing baseline versus the prior selected 0.11 s delay,
+  1.5 degree shoulder-lift deadband, 2.0 degree elbow deadband, and -1.5 elbow
+  load coefficient.
+- Budget: five episodes, two variants, ten simulator replays, zero retries,
+  zero provider calls. Current usage is `0 / 10`.
+- Evaluator gates: at least 2% pooled joint-RMS improvement, at least four of
+  five episode improvements, positive 95% whole-session bootstrap lower bound,
+  and pooled EE non-regression.
+- Proof boundary: historical cross-session simulator trace validation only.
+  The independent strict task score remains 0/11 and cannot change from these
+  traces. Training, promotion, physical capture, gateway, motion, and transfer
+  remain closed.
+- Current checkpoint: contract, implementation, cohort manifest, and 16
+  adversarial/determinism tests pass before any external replay.
+
 ## Completed transaction — Silicon data completeness audit
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on clean `main` at

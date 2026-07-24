@@ -516,6 +516,12 @@ def build_parser() -> argparse.ArgumentParser:
         default="auto",
     )
 
+    actuator_external = subparsers.add_parser(
+        "actuator-external-validate",
+        help="run the frozen five-session actuator response validation once",
+    )
+    actuator_external.add_argument("--output", type=Path, required=True)
+
     source_eval = subparsers.add_parser(
         "source-eval",
         help="replay and score one canonical pawn source episode on CPU/fp32",
@@ -1356,6 +1362,19 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["calibration_success"] else 1
+    if args.command == "actuator-external-validate":
+        from .actuator_external_validation import (
+            ActuatorExternalValidationError,
+            run_actuator_external_validation,
+        )
+
+        try:
+            report = run_actuator_external_validation(args.output)
+        except ActuatorExternalValidationError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     if args.command == "source-eval":
         from .pawn_source_evaluator import evaluate_source_episode
 

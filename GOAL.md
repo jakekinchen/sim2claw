@@ -1,6 +1,32 @@
 # sim2claw Goal
 
-Status: `SILICON DATA COMPLETENESS COMPLETE; S2 TERMINAL NEGATIVE FROZEN; PHYSICAL AUTHORITY CLOSED`
+Status: `ACTUATOR EXTERNAL VALIDATION PREREGISTERED; 0/10 REPLAYS; PHYSICAL AUTHORITY CLOSED`
+
+## Active actuator-response external validation
+
+Evaluate, without refitting, whether the previously selected action-frozen
+servo deadband/load-response candidate transfers from its 11-episode selection
+session to the five independently recovered 72 mm historical acquisition
+sessions. The authoritative prompt is
+[`docs/autonomous-workflow/goal-loop-actuator-external-validation.md`](docs/autonomous-workflow/goal-loop-actuator-external-validation.md).
+
+The cohort is frozen at five episodes and 2,186 rows. Baseline and candidate
+actions must remain byte-identical, float64 `[N, 6]`, unclipped, unassisted, and
+unresampled. The only family is the existing baseline versus the prior selected
+candidate; the budget is exactly ten simulator replays, zero retries, and zero
+provider calls.
+
+The external evaluator alone owns the preregistered gates: at least 2% pooled
+joint-RMS improvement, improvement on at least four of five episodes, a
+positive 95% whole-session bootstrap lower bound, and pooled EE RMS
+non-regression. These historical trace results cannot change the separately
+owned 0/11 strict task score, refit or promote parameters, establish current
+100 mm spatial/contact calibration, or open training, physical, gateway, or
+motion authority.
+
+Current milestone: **AV-01 — preregistration freeze**. Contract, implementation,
+and adversarial tests are being frozen before any external replay. Current
+external replay usage is `0 / 10`.
 
 ## Active Silicon recovery and repository reconciliation
 

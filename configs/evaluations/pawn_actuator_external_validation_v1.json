@@ -1,0 +1,151 @@
+{
+  "schema_version": "sim2claw.pawn_actuator_external_validation.v1",
+  "validation_id": "pawn_actuator_external_validation_v1",
+  "created_at": "2026-07-23T19:20:00-05:00",
+  "selection_evidence": {
+    "role": "selection_only_never_external_evaluation",
+    "servo_load_bias_receipt": {
+      "path": "outputs/pawn_bg_servo_load_bias_v1/servo_load_bias_receipt.json",
+      "sha256": "1ea4a84a509e320bece0f4797c1e2ae6a824ce72946528b95b7af04a561d4357",
+      "receipt_digest": "192b236c781bbf5d88f3ac76d01000e15ccef39e9a4122c467ac995e94f74e51"
+    },
+    "fidelity_advancement_receipt": {
+      "path": "outputs/pawn_bg_fidelity_advancement_v1/advancement_receipt.json",
+      "sha256": "d16367bee2a3ee7e8847d1845b0dcb891608f62822b53c784633dc6d7f9dc7e2",
+      "receipt_digest": "e5ab484f961535cf7a196ad4d443128b4358d666ba58993719e1fcc35d7ff379"
+    },
+    "selected_session_episode_count": 11,
+    "selected_session_sample_count": 4743,
+    "selected_session_joint_rms_relative_improvement": 0.06461155810214077,
+    "selected_session_strict_task_successes": 0
+  },
+  "external_evaluation": {
+    "role": "evaluation_only_never_selection_or_refit",
+    "bridge_contract": {
+      "path": "configs/experiments/pawn_sim_real_bridge_v1.json",
+      "sha256": "5c0d1e72b53420e449afe2cab78efd217c1011ae3b9b3c929b6bc557a8d4181a"
+    },
+    "intake_ledger": {
+      "path": "configs/data/physical_teleop_episode_intake_20260718.json",
+      "sha256": "22de7ec867448f8a3b524775bf586dc7fd013dc266d741e77b31a57d8bc87870"
+    },
+    "raw_root": "datasets/act_source_recordings",
+    "recorded_board_pose_id": "board_robotward_72mm_20260718_v2",
+    "expected_episode_count": 5,
+    "expected_sample_count": 2186,
+    "expected_episode_manifest": [
+      {
+        "recording_id": "20260718T224507Z-cb15a243",
+        "sample_count": 627,
+        "samples_sha256": "bfc209656cd16064dafd206bfa2de1488581cfa00f295aefa2a52383ffe89ead",
+        "historical_replay_receipt_sha256": "443f7a7e0d27808a64c8512173253acdc82bea16236baffdb01c053d30f582cf",
+        "historical_state_trace_sha256": "f8c8ec93163fc1e39f472c4efd281c5d60e3f8d04dae9e2598db3aaa5567e8fd"
+      },
+      {
+        "recording_id": "20260718T225126Z-a19918d7",
+        "sample_count": 538,
+        "samples_sha256": "ae4ad082b0e9d304c466cacdc0d0d3e499876f0aaff327748d506d17ed4c0a2d",
+        "historical_replay_receipt_sha256": "43abb91caa0bdeadcb36258a04e1d2c90599550747106e6c9b60da1bf9d4913b",
+        "historical_state_trace_sha256": "ad71e24ac24aca4fc5ca61c40215763e1b56459580c3891710ba574940672bb4"
+      },
+      {
+        "recording_id": "20260718T225419Z-bdd95fdf",
+        "sample_count": 274,
+        "samples_sha256": "bb7aa1e8153c134f6bfe87ffedb56db98d4e74f8717e8bc4d22b192aff575cd7",
+        "historical_replay_receipt_sha256": "f5afdecda7affa2c348000f7baf2a395ccc2a7bd8f468cd623b251240969beb3",
+        "historical_state_trace_sha256": "1caa9b0b59a3e4f6c47b4d40a0107df6e47325b48d069cc1e4cc59830d74c459"
+      },
+      {
+        "recording_id": "20260718T225715Z-e68b4076",
+        "sample_count": 504,
+        "samples_sha256": "bb131d47db97fcf8d548a3a4d899b08b0ec76d13823f0381ff9918821baa33d0",
+        "historical_replay_receipt_sha256": "ca285005b7f2b2a122bfd96c00088ef0851c93b7765cc355bc692127f81f6bd4",
+        "historical_state_trace_sha256": "7bcbffe1cebc78367941449e17b7c6478e80dbd00d0a80615d7345c1711c3394"
+      },
+      {
+        "recording_id": "20260718T230416Z-573f2320",
+        "sample_count": 243,
+        "samples_sha256": "9f38c52d4d7f87d9f0ba0d840bd528bda8fc5c45a952aa57cb188b5582df702c",
+        "historical_replay_receipt_sha256": "1eb8c9c1d3284ab4d8d83e2fd2b24ac1fdc5a37615dbbd4a93ac9472e94019f2",
+        "historical_state_trace_sha256": "e559e56ddadfee2fb3029ab4686dd0cea083fddfd40b7b4ce45b7015d7d452b9"
+      }
+    ],
+    "failed_attempt_rows_excluded": 10731
+  },
+  "variants": {
+    "baseline": {
+      "variant_id": "timing_deadband_baseline_v1",
+      "application_delay_seconds": 0.11,
+      "shoulder_lift_deadband_degrees": 2.0,
+      "elbow_flex_deadband_degrees": 2.0,
+      "elbow_load_bias_coefficient": 0.0
+    },
+    "candidate": {
+      "variant_id": "selected_load_response_v1",
+      "application_delay_seconds": 0.11,
+      "shoulder_lift_deadband_degrees": 1.5,
+      "elbow_flex_deadband_degrees": 2.0,
+      "elbow_load_bias_coefficient": -1.5
+    },
+    "candidate_values_frozen_from_selection_receipt": true,
+    "post_result_family_expansion_allowed": false
+  },
+  "evaluator": {
+    "owner": "independent_cpu_fp32_external_trace_evaluator",
+    "minimum_pooled_joint_rms_relative_improvement": 0.02,
+    "minimum_improved_episode_count": 4,
+    "maximum_episode_count": 5,
+    "maximum_pooled_ee_rms_relative_to_baseline": 1.0,
+    "bootstrap": {
+      "seed": 23072026,
+      "replicates": 10000,
+      "confidence_level": 0.95,
+      "resampling_unit": "whole_episode",
+      "require_joint_improvement_interval_lower_bound_above_zero": true
+    },
+    "task_consequence_source": "fidelity_advancement_receipt",
+    "strict_task_score_denominator": 11,
+    "expected_strict_task_successes_before": 0,
+    "task_score_may_change_from_external_trace_only": false
+  },
+  "budget": {
+    "maximum_variants": 2,
+    "maximum_episodes": 5,
+    "maximum_simulator_replays": 10,
+    "maximum_retries": 0,
+    "maximum_provider_calls": 0
+  },
+  "action_invariance": {
+    "require_float64_nx6": true,
+    "no_ik": true,
+    "no_clipping": true,
+    "no_resampling": true,
+    "no_offsets": true,
+    "no_suffix": true,
+    "no_assistance": true,
+    "no_reorder": true,
+    "identical_across_variants": true
+  },
+  "proof_boundary": {
+    "selection_proof_class": "action_frozen_simulator_trace_fidelity_advancement_closeout",
+    "external_proof_class": "historical_cross_session_action_frozen_simulator_trace_validation",
+    "task_proof_class": "existing_independent_simulator_task_consequence",
+    "candidate_runner_may_score_or_promote": false,
+    "external_trace_can_establish_task_success": false,
+    "physical_calibration": false,
+    "physical_torque_identification": false,
+    "contact_or_friction_identification": false,
+    "spatial_100mm_calibration": false
+  },
+  "authority": {
+    "training": false,
+    "promotion": false,
+    "provider": false,
+    "paid_compute": false,
+    "physical_capture": false,
+    "gateway": false,
+    "robot_motion": false,
+    "physical_task": false,
+    "transfer": false
+  }
+}
