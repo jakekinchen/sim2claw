@@ -1023,3 +1023,12 @@ goal. External provider campaigns and spending remain separately gated.
   Accounting is one observation, zero usable inventories, capture sessions,
   samples, D405 operations, motions, and providers. V1 cannot be retried. A
   v2 primitive-only observer requires a new versioned preregistration.
+- 2026-07-24T12:53:53-05:00 — Opened AVFoundation format inventory v2 after
+  sealing v1. V2 is a separate transaction, not a v1 retry. Contract
+  `avfoundation_format_inventory_v2.json` preserves exact device identity,
+  640×480 target, 30 fps target, 0.05 fps deviation, subtype/tie-break order,
+  one observation, and zero capture/D405/motion/provider authority. It changes
+  only the failure-prone serialization infrastructure: new paths, concrete
+  `Codable` structs, `JSONEncoder`, explicit primitive conversions, and a
+  content-addressed attempt manifest written before observer launch. No v2
+  implementation or device enumeration has occurred.
