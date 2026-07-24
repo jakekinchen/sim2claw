@@ -91,7 +91,7 @@ unmeasured channels remain explicit; they are never converted to zero.
 
 ## Decision Status
 
-`BOUNDED_REPLAY_COMPLETE_UNQUALIFIED_TASK_PIPELINE_STILL_GATED`
+`DUAL_CAMERA_C2_C1_NEGATIVE_GRASP_MECHANISM_UNRESOLVED_TASK_PIPELINE_STILL_GATED`
 
 Camera and both calibrated SO-101 buses are reachable. The follower remains
 torque-off after one bounded positioning move and one camera-recorded
@@ -108,6 +108,23 @@ rows but sent only 394 within the exactness tolerance and gateway-clamped 175,
 so it remains unqualified command-replay observation. It did not run the
 independent metric task evaluator, did not satisfy the five empty-gripper
 cycles, and cannot change the strict `0 / 11` task score.
+
+A subsequent owner-requested forward `c2 to c1` replay captured the C922 and
+D405 together. Two completed robot attempts are excluded from dual-camera
+proof because the D405 stopped after about five seconds. The final unchanged
+trace completed 527/527 rows with 501 exact commands and 70 safety-clamped
+samples; C922 coverage was 1,049 frames through 34.966667 seconds and D405
+coverage was 175 frames through 34.8 seconds. Both cameras and the replay
+receipt finalized, and follower torque is off.
+
+The overhead endpoint is unchanged and the wrist view shows the jaws
+converging around the pawn without transporting it. During the approach and
+closure window, physical tracking lag reached approximately 5-8 degrees on
+the shoulder/elbow/wrist chain. The wrist stream has no admitted metric depth
+or camera-to-gripper transform, and replay current telemetry was disabled, so
+this evidence cannot yet distinguish approach-timing error from inadequate
+grasp force/retention. It is a terminal negative for this unmodified trace,
+not a score-changing task episode.
 
 ## Execution Rhythm
 
@@ -153,3 +170,16 @@ cycles, and cannot change the strict `0 / 11` task score.
   a 31.066667-second C922 capture. Exact commands were 394/566 and safety
   clamping occurred on 175/566 samples. The proof class is
   `physical_command_replay_observation_unqualified`; task score remains 0/11.
+- 2026-07-23 — Owner requested the canonical forward `c2 to c1` trace with
+  simultaneous C922 and D405 evidence. The first D405 MP4 was unindexed; the
+  second contained only 80 frames through 5.267 seconds. Both robot replays
+  completed and are preserved as camera-incomplete evidence, not retried
+  successes.
+- 2026-07-23 — A torque-off 20 Hz serial-load probe established that the
+  D405's supported 424x240-at-5-fps mode sustains 173 frames through 34.4
+  seconds while the C922 records at 30 fps.
+- 2026-07-23 — The final unchanged `c2 to c1` replay completed 527/527 rows,
+  501 exact commands, and 70 safety-clamped samples. Its full dual-camera
+  receipt SHA-256 is
+  `3fafb113a7b89e0b80640b9c7b4cc2016db16ecafcb9f46cba79a79a1330499f`;
+  task score remains 0/11 because the board endpoint did not change.

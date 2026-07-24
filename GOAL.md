@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `CURRENT 100 MM MEASUREMENT ACTIVE; ONE UNQUALIFIED PHYSICAL REPLAY COMPLETE; TASK SCORE 0/11`
+Status: `CURRENT 100 MM MEASUREMENT ACTIVE; DUAL-CAMERA C2-TO-C1 NEGATIVE RECORDED; TASK SCORE 0/11`
 
 ## Active current-workcell measurement and calibration
 
@@ -27,10 +27,29 @@ measurement gates. No action assistance, post-held-out family expansion, or
 score change is allowed. The strict task score stays `0/11` because this run
 did not have evaluator-owned metric task consequence and visibly showed no
 obvious endpoint board-state change in sampled start/end frames.
+
+The owner then requested the canonical forward `c2 to c1` replay with the
+D405 wrist stream captured alongside the C922. Three action-unchanged physical
+replays completed; the first two are excluded from dual-camera proof because
+the D405 stream stopped after approximately five seconds. After a camera-only
+USB/serial-load test, the final attempt used the D405's supported
+424x240-at-5-fps mode and captured all 175 wrist frames through 34.8 seconds,
+plus 1,049 overhead frames through 34.97 seconds. The final robot replay
+completed 527/527 rows, delivered 501 within 0.25 degrees, safety-clamped 70,
+and released torque.
+
+The board endpoint remained visually unchanged. The wrist stream shows the
+jaws centering on the pawn without transporting it. During the critical
+approach/closure window, actual shoulder/elbow/wrist tracking lag reached
+approximately 5-8 degrees even though requested-to-sent clamp error stayed at
+or below 1.758 degrees. This is evidence for a combined approach-timing and
+grasp-retention gap, not a completed task or an admitted simulator
+recalibration. No force, grasp-load current, metric wrist depth, or
+camera-to-gripper calibration was available to separate those mechanisms.
 The baseline receipt digest is
 `4dbb666ab68fa41688b3d346f54797d947fd0771af8f2ec20edc1ac379eb4021`;
 the replay capture receipt SHA-256 is
-`fda49752b4bf261e4c40419bbd477096f55377e1aaa7b29ce65533621bcbce87`;
+`3fafb113a7b89e0b80640b9c7b4cc2016db16ecafcb9f46cba79a79a1330499f`;
 the run log is
 [`docs/run-logs/2026-07-23-current-100mm-bounded-physical-replay.md`](docs/run-logs/2026-07-23-current-100mm-bounded-physical-replay.md).
 

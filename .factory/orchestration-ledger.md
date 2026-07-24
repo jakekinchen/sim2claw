@@ -29,19 +29,24 @@
   torque-off/no-motion state. Receipt file SHA-256 is `851631b9...`; embedded
   digest is `4dbb666a...`.
 - Evidence decision:
-  `bounded_physical_replay_complete_unqualified_task_pipeline_still_gated`.
-  The `b2 to c2` reverse source requested all 566 rows, sent 394 within the
-  exactness tolerance, and safety-clamped 175. The 932-frame C922 capture is
-  diagnostic only and does not identify metric task consequence.
+  `dual_camera_c2_c1_negative_grasp_mechanism_unresolved_task_pipeline_still_gated`.
+  The earlier `b2 to c2` reverse source remains unqualified. The later
+  canonical forward `c2 to c1` trace completed 527 rows with 501 exact
+  commands and 70 safety-clamped samples. Full coverage is 1,049 C922 frames
+  and 175 D405 frames; two earlier completed robot attempts are explicitly
+  excluded because their wrist streams were incomplete.
 - Safety repair: a post-capture check exposed that the legacy preflight wrapper
   requested LeRobot device configuration. Its failed configuration attempt
   entered the gateway exception shutdown and sent no position command. The
   wrapper is now hard-bound to `configure_devices=false`; focused regression
   tests and a corrected live inspection confirm no configuration rewrite,
   torque off, and the unchanged 97.4945-degree rejection.
-- Status: active after one bounded unqualified replay. The strict task score
-  remains `0/11`; five empty-gripper cycles and synchronized metric consequence
-  remain pending.
+- Status: active after a dual-camera terminal negative. The board endpoint was
+  unchanged; wrist evidence plus 5-8 degree critical-window tracking lag
+  isolates approach timing and grasp retention as the next measurement target
+  without choosing between them. The strict task score remains `0/11`; five
+  empty-gripper cycles and synchronized force/current/metric consequence remain
+  pending.
 - Goal:
   `docs/autonomous-workflow/goal-loop-current-100mm-physical-measurement-calibration.md`.
 
