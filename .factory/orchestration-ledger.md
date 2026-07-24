@@ -1152,3 +1152,12 @@ goal. External provider campaigns and spending remain separately gated.
   306 intervals, and a 34.0 ms maximum below the unchanged 50.0 ms gate.
   C922 source format/cadence is verified; synchronization, D405, calibration,
   simulator, and task proof remain open/closed as previously declared.
+- 2026-07-24T17:18:00-05:00 — Independent review passed the exact C922 v4
+  chain at `e62e337`. Opened one bounded dual-camera lifecycle transaction
+  after reconciling the sealed D405 result: D405 transport passed 6/6
+  stationary trials, while C922 gaps aligned with D405 open and close inside
+  its container window. The new frozen design nests C922 inside the D405
+  lifetime—D405 starts first, C922 starts second, C922 stops first, D405 stops
+  second—and permits one ten-second stationary session with no retry,
+  replacement, robot, simulator, provider, training, promotion, or task
+  authority. No implementation or camera session has occurred.

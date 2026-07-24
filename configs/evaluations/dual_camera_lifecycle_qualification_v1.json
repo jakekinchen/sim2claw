@@ -1,0 +1,130 @@
+{
+  "schema_version": "sim2claw.dual_camera_lifecycle_qualification_contract.v1",
+  "contract_id": "current-100mm-dual-camera-lifecycle-qualification-20260724-v1",
+  "status": "preregistered_before_implementation_and_observation",
+  "baseline_commit": "e62e337ca13f6d0d2d80e62d031af35137f4f7a2",
+  "purpose": "Validate a production lifecycle in which D405 open and close are outside the C922 container window, using one stationary camera-only session.",
+  "sealed_predecessor_evidence": {
+    "d405_campaign_sha256": "57d4983c73543bb6b675447cb9f5c3e0d60a2035ad06806cf79d48437c4cf2cf",
+    "d405_evaluation_sha256": "80ed9ac3608c0f95353a95dd83e3cb87959d273885f4415e483e8074c6828cde",
+    "d405_receipt_sha256": "cfc11ff377730c137211ea41758ddd4da150a8b4d108f825a0619c7a7d453733",
+    "d405_receipt_digest": "294f30661f4d5967b90b88f3692d5856537e4c7e05aa1801ae9e642d1b84ee58",
+    "d405_stationary_transport_passed_trials": 6,
+    "d405_stationary_transport_total_trials": 6,
+    "dual_camera_lifecycle_passed_trials": 0,
+    "dual_camera_lifecycle_total_trials": 6,
+    "c922_v4_raw_sha256": "6fb1301cea2b1d4c6da56c5902730c7359237855da1be91a96e7f9ceb0a98e3d",
+    "c922_v4_evaluation_sha256": "0d18cfb7e614061a513135079a125789a317d0b1fd937612b47d5ee486bd6ebb",
+    "c922_v4_receipt_sha256": "7354ce1d33847c15fd4dfcddf0eba35a435788d8fd144bf6b2d842e11c0f1740",
+    "c922_v4_receipt_digest": "0933f548774b10e6fea4be3320b632931588824e04a6b6d1f00418d006bcb6c8"
+  },
+  "device_identity": {
+    "d405_exact_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+    "d405_camera_unique_id": "0x20000080860b5b",
+    "d405_model_id": "UVC Camera VendorID_32902 ProductID_2907",
+    "c922_exact_name": "C922 Pro Stream Webcam",
+    "c922_camera_unique_id": "0x8310000046d085c",
+    "c922_model_id": "UVC Camera VendorID_1133 ProductID_2140",
+    "exact_avfoundation_name_match_count": 1
+  },
+  "runtime_identity": {
+    "ffmpeg_version": "8.0.1",
+    "ffmpeg_executable_sha256": "0a96da2735695308d964e25fa6f4a0db2e9d24031390360f4c5ff96a4f8938e5",
+    "ffprobe_version": "8.0.1",
+    "ffprobe_executable_sha256": "68447e67105534f3f43b95c94983ed56fbdd7125e5724cc56499ad538c2b86a7",
+    "runner_and_evaluator_sha256_frozen_at_implementation_commit": true
+  },
+  "lifecycle": {
+    "start_order": [
+      "d405_wrist",
+      "c922_overhead"
+    ],
+    "stop_order": [
+      "c922_overhead",
+      "d405_wrist"
+    ],
+    "d405_start_completion_before_c922_open_required": true,
+    "c922_finalization_before_d405_stop_required": true,
+    "both_live_during_common_window_required": true
+  },
+  "streams": {
+    "d405_wrist": {
+      "width": 424,
+      "height": 240,
+      "fps": 5.0,
+      "pixel_format": "uyvy422",
+      "container": "matroska",
+      "codec": "ffv1",
+      "minimum_common_window_frames": 48
+    },
+    "c922_overhead": {
+      "width": 640,
+      "height": 480,
+      "fps": 30.0,
+      "pixel_format": "nv12",
+      "container": "mp4",
+      "minimum_common_window_frames": 285
+    }
+  },
+  "qualification": {
+    "mode": "stationary_camera_only_no_robot",
+    "common_window_duration_seconds": 10.0,
+    "attempts_maximum": 1,
+    "replacement_attempts": 0,
+    "retries": 0,
+    "minimum_frame_coverage_fraction_per_stream": 0.95,
+    "maximum_source_stalls": 0,
+    "require_completed_recorders": true,
+    "require_numeric_monotonic_container_pts": true,
+    "require_zero_inferred_missing_frame_intervals": true,
+    "metric_depth_claim": false,
+    "motion_capture_reliability_claim": false,
+    "exposure_synchronization_claim": false
+  },
+  "evaluator": {
+    "reprobe_raw_media": true,
+    "trust_runner_verdict": false,
+    "verify_raw_artifact_hashes": true,
+    "verify_exact_single_event": true,
+    "verify_nested_lifecycle_anchors": true,
+    "verdicts": [
+      "pass_stationary_nested_dual_camera_lifecycle_health_only",
+      "reject_stationary_nested_dual_camera_lifecycle",
+      "prerequisite_abstention"
+    ]
+  },
+  "operation_budget": {
+    "attempts_maximum": 1,
+    "d405_capture_sessions_maximum": 1,
+    "c922_capture_sessions_maximum": 1,
+    "common_window_seconds_maximum": 10.0,
+    "replacement_attempts_maximum": 0,
+    "retries_maximum": 0,
+    "robot_motion_trials_maximum": 0,
+    "simulator_replays_maximum": 0,
+    "provider_calls_maximum": 0
+  },
+  "claim_limits": {
+    "stationary_nested_camera_lifecycle_health": true,
+    "motion_capture_reliability": false,
+    "metric_depth": false,
+    "camera_exposure_timestamps": false,
+    "cross_camera_synchronization": false,
+    "robot_behavior": false,
+    "simulator_calibration": false,
+    "task_success": false
+  },
+  "authority": {
+    "c922_capture_session": true,
+    "d405_capture_session": true,
+    "robot_gateway": false,
+    "robot_motion": false,
+    "simulator_replay": false,
+    "simulator_parameter_promotion": false,
+    "training": false,
+    "provider_calls": false,
+    "paid_compute": false,
+    "task_score_change": false,
+    "physical_task_authority": false
+  }
+}
