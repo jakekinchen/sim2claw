@@ -22,6 +22,8 @@ const state = {
   visualTwinAnimation: null,
   visualTwinOffscreen: null,
   visualTwinLastDraw: 0,
+  physicsReplayRequestActive: false,
+  physicsReplayRequestError: null,
   recordingFeedIndex: 0,
   recordingWindow: null,
   threeViewer: null,
@@ -247,6 +249,7 @@ const elements = {
   simReplayPanel: document.querySelector("#sim-replay-panel"),
   runSimReplay: document.querySelector("#run-sim-replay"),
   simReplayMetrics: document.querySelector("#sim-replay-metrics"),
+  generatePhysicsReplay: document.querySelector("#generate-physics-replay"),
   pawnPreviewBoard: document.querySelector("#pawn-preview-board"),
   pawnBoardInstruction: document.querySelector("#pawn-board-instruction"),
   pawnPreviewSource: document.querySelector("#pawn-preview-source"),
@@ -1415,30 +1418,32 @@ function episodeComparison(episode = selectedEpisode()) {
     : null;
 }
 
-function hasVisualTwin(episode = selectedEpisode()) {
+function hasSimulatorTwin(episode = selectedEpisode()) {
+  const comparison = episodeComparison(episode);
   return Boolean(
-    episodeComparison(episode)?.visual_twin?.available
-    && episode?.media?.kind === "video",
+    episode?.inspection?.kind === "threejs_state_trace"
+    && (!comparison || comparison.simulator_twin?.available),
   );
 }
 
 function renderComparisonAvailability(episode) {
   const comparison = episodeComparison(episode);
   elements.comparisonLaneStrip.hidden = !comparison;
-  elements.visualTwinToolbar.hidden = !hasVisualTwin(episode);
+  elements.visualTwinToolbar.hidden = true;
   elements.comparisonRealLabel.hidden = true;
   elements.comparisonPhysicsLabel.hidden = true;
   elements.physicsUnavailable.hidden = true;
-  const physicsAvailable = Boolean(
-    episode?.inspection
-    && (!comparison || comparison.physics_replay?.available),
+  const physicsAvailable = hasSimulatorTwin(episode);
+  const canGeneratePhysics = Boolean(
+    state.readOnly === false
+    && episode?.source_recording_id
+    && comparison,
   );
   elements.replayModeSwitch.querySelectorAll("[data-replay-mode]").forEach((button) => {
     const mode = button.dataset.replayMode;
     button.disabled = (
       (mode === "compare" && !comparison)
-      || (mode === "visual" && !hasVisualTwin(episode))
-      || (mode === "three" && !physicsAvailable)
+      || (mode === "visual" && !comparison && !physicsAvailable)
     );
   });
   if (!comparison) return;
@@ -1456,7 +1461,13 @@ function renderComparisonAvailability(episode) {
   });
   text(
     elements.physicsLaneState,
-    physicsAvailable ? "Action-frozen MuJoCo" : "Receipt-bound trace missing",
+    physicsAvailable
+      ? comparison.simulator_twin?.action_byte_identical
+        ? "Byte-identical action · MuJoCo"
+        : "Source-command diagnostic · MuJoCo"
+      : canGeneratePhysics
+        ? "Generate source-command replay"
+        : "Receipt-bound replay unavailable",
   );
 
 }
@@ -1487,110 +1498,9 @@ function setVisualTwinMode(mode, { updateReplay = true } = {}) {
 }
 
 function drawVisualTwinFrame() {
-  const episode = selectedEpisode();
-  const canvas = elements.visualTwinCanvas;
-  const video = elements.video;
-  if (
-    !hasVisualTwin(episode)
-    || !video.videoWidth
-    || !video.videoHeight
-    || !["visual", "compare"].includes(state.replayMode)
-  ) return;
-
-  const visibleWidth = Math.max(1, canvas.clientWidth || elements.stage.clientWidth);
-  const visibleHeight = Math.max(1, canvas.clientHeight || elements.stage.clientHeight);
-  const renderWidth = Math.max(240, Math.min(480, Math.round(visibleWidth)));
-  const renderHeight = Math.max(135, Math.min(320, Math.round(renderWidth * visibleHeight / visibleWidth)));
-  if (canvas.width !== renderWidth || canvas.height !== renderHeight) {
-    canvas.width = renderWidth;
-    canvas.height = renderHeight;
-  }
-  if (!state.visualTwinOffscreen) state.visualTwinOffscreen = document.createElement("canvas");
-  const offscreen = state.visualTwinOffscreen;
-  offscreen.width = renderWidth;
-  offscreen.height = renderHeight;
-  const context = canvas.getContext("2d", { alpha: false });
-  const sourceContext = offscreen.getContext("2d", { willReadFrequently: true });
-  const sourceAspect = video.videoWidth / video.videoHeight;
-  const targetAspect = renderWidth / renderHeight;
-  let sourceX = 0;
-  let sourceY = 0;
-  let sourceWidth = video.videoWidth;
-  let sourceHeight = video.videoHeight;
-  if (sourceAspect > targetAspect) {
-    sourceWidth = video.videoHeight * targetAspect;
-    sourceX = (video.videoWidth - sourceWidth) / 2;
-  } else {
-    sourceHeight = video.videoWidth / targetAspect;
-    sourceY = (video.videoHeight - sourceHeight) / 2;
-  }
-
-  try {
-    const rotation = Number(
-      activeRecordingFeed(episode)?.display_rotation_degrees
-      ?? episode.media?.display_rotation_degrees
-      ?? 0,
-    );
-    sourceContext.save();
-    sourceContext.clearRect(0, 0, renderWidth, renderHeight);
-    sourceContext.translate(renderWidth / 2, renderHeight / 2);
-    sourceContext.rotate(rotation * Math.PI / 180);
-    sourceContext.drawImage(
-      video,
-      sourceX,
-      sourceY,
-      sourceWidth,
-      sourceHeight,
-      -renderWidth / 2,
-      -renderHeight / 2,
-      renderWidth,
-      renderHeight,
-    );
-    sourceContext.restore();
-    const image = sourceContext.getImageData(0, 0, renderWidth, renderHeight);
-    const pixels = image.data;
-    const original = new Uint8ClampedArray(pixels);
-    const quantize = (value) => Math.max(0, Math.min(255, Math.round(value / 28) * 28));
-    for (let y = 0; y < renderHeight; y += 1) {
-      for (let x = 0; x < renderWidth; x += 1) {
-        const index = (y * renderWidth + x) * 4;
-        const leftIndex = (y * renderWidth + Math.max(0, x - 1)) * 4;
-        const upperIndex = (Math.max(0, y - 1) * renderWidth + x) * 4;
-        const luminance = original[index] * 0.299 + original[index + 1] * 0.587 + original[index + 2] * 0.114;
-        const leftLuminance = original[leftIndex] * 0.299 + original[leftIndex + 1] * 0.587 + original[leftIndex + 2] * 0.114;
-        const upperLuminance = original[upperIndex] * 0.299 + original[upperIndex + 1] * 0.587 + original[upperIndex + 2] * 0.114;
-        const edge = Math.abs(luminance - leftLuminance) + Math.abs(luminance - upperLuminance);
-        if (edge > 45) {
-          pixels[index] = 13;
-          pixels[index + 1] = 33;
-          pixels[index + 2] = 37;
-        } else {
-          pixels[index] = quantize(original[index] * 0.92 + 12);
-          pixels[index + 1] = quantize(original[index + 1] * 1.02 + 8);
-          pixels[index + 2] = quantize(original[index + 2] * 1.08 + 10);
-        }
-      }
-    }
-    context.putImageData(image, 0, 0);
-    context.save();
-    context.strokeStyle = "rgba(139, 227, 220, 0.18)";
-    context.lineWidth = 1;
-    for (let x = 0; x < renderWidth; x += 48) {
-      context.beginPath();
-      context.moveTo(x + 0.5, 0);
-      context.lineTo(x + 0.5, renderHeight);
-      context.stroke();
-    }
-    for (let y = 0; y < renderHeight; y += 48) {
-      context.beginPath();
-      context.moveTo(0, y + 0.5);
-      context.lineTo(renderWidth, y + 0.5);
-      context.stroke();
-    }
-    context.restore();
-  } catch (_error) {
-    text(elements.cameraName, "VISUAL TWIN / FRAME UNAVAILABLE");
-  }
+  // Kept as a no-op for compatibility with the video event handlers. The
+  // simulator canvas is the sole twin renderer now; recorded pixels are never
+  // transformed into a faux twin image.
 }
 
 function stopVisualTwinLoop() {
@@ -1810,15 +1720,15 @@ async function ensureThreeViewer() {
     status: elements.threeStatus,
   });
   viewer.onTime = ({ fraction, current }) => {
-    if (state.replayMode === "three") updateProgress(fraction, current);
+    if (state.replayMode === "visual") updateProgress(fraction, current);
   };
   viewer.onPlayState = (playing) => {
-    if (state.replayMode !== "three") return;
+    if (state.replayMode !== "visual") return;
     elements.play.classList.toggle("is-playing", playing);
     elements.play.setAttribute("aria-label", playing ? "Pause episode" : "Play episode");
   };
   viewer.setRate(state.playbackRate);
-  viewer.setActive(state.view === "replay" && state.replayMode === "three");
+  viewer.setActive(state.view === "replay" && ["visual", "compare"].includes(state.replayMode));
   state.threeViewer = viewer;
   return viewer;
 }
@@ -2138,7 +2048,7 @@ async function loadThreeEpisode(episode, loadId) {
     await viewer.load(episode.inspection);
     if (loadId !== state.threeLoadId || episode.id !== state.selectedEpisodeId) return;
     viewer.setRate(state.playbackRate);
-    if (state.replayMode === "three") updateProgress(0, 0);
+    if (state.replayMode === "visual") updateProgress(0, 0);
   } catch (error) {
     if (loadId !== state.threeLoadId) return;
     text(elements.threeStatus, `3D inspection unavailable · ${error.message}`);
@@ -2148,13 +2058,16 @@ async function loadThreeEpisode(episode, loadId) {
 function setReplayMode(mode, { pauseCurrent = true } = {}) {
   const episode = selectedEpisode();
   const comparison = episodeComparison(episode);
+  const canGeneratePhysics = Boolean(
+    state.readOnly === false
+    && episode?.source_recording_id
+    && comparison,
+  );
   const next = (
     mode === "compare" && comparison
       ? "compare"
-      : mode === "visual" && hasVisualTwin(episode)
+      : mode === "visual" && (comparison || hasSimulatorTwin(episode))
       ? "visual"
-      : mode === "three" && episode?.inspection
-      ? "three"
       : "recorded"
   );
   if (pauseCurrent) {
@@ -2165,43 +2078,60 @@ function setReplayMode(mode, { pauseCurrent = true } = {}) {
   }
   state.replayMode = next;
   elements.stage.dataset.replayMode = next;
-  if (next === "recorded" && hasVisualTwin(episode)) {
+  if (next === "recorded" && hasSimulatorTwin(episode)) {
     setVisualTwinMode("real", { updateReplay: false });
   } else if (next === "visual" && state.visualTwinMode === "real") {
     setVisualTwinMode("twin", { updateReplay: false });
   }
-  const physicsAvailable = Boolean(
-    episode?.inspection && (!comparison || comparison.physics_replay?.available),
-  );
+  const physicsAvailable = hasSimulatorTwin(episode);
   elements.stage.dataset.physicsAvailable = String(physicsAvailable);
   state.threeViewer?.setActive(
     state.view === "replay"
     && physicsAvailable
-    && ["three", "compare"].includes(next),
+    && ["visual", "compare"].includes(next),
   );
   elements.replayModeSwitch.querySelectorAll("[data-replay-mode]").forEach((button) => {
     button.setAttribute("aria-pressed", String(button.dataset.replayMode === next));
   });
-  elements.visualTwinToolbar.hidden = !hasVisualTwin(episode) || next === "three";
+  // The old wipe/low-pass controls implied that a filtered camera frame was a
+  // twin. The twin is now the actual simulator scene, so there is no reveal
+  // slider to operate.
+  elements.visualTwinToolbar.hidden = true;
   elements.comparisonRealLabel.hidden = next !== "compare";
   elements.comparisonPhysicsLabel.hidden = next !== "compare";
   elements.physicsUnavailable.hidden = !(
-    next === "compare" && !physicsAvailable
+    ["visual", "compare"].includes(next) && !physicsAvailable
   );
-  if (next === "three") {
-    text(elements.cameraSourceLabel, "PHYSICS TRACE");
-    text(elements.cameraName, "MUJOCO / FREE ORBIT");
-  } else if (next === "visual") {
-    text(elements.cameraSourceLabel, "VISUAL TWIN");
-    text(elements.cameraName, "SAME CAMERA / IMAGE SPACE / NO PHYSICS");
-    drawVisualTwinFrame();
+  if (elements.generatePhysicsReplay) {
+    elements.generatePhysicsReplay.hidden = physicsAvailable || !canGeneratePhysics;
+    elements.generatePhysicsReplay.disabled = state.physicsReplayRequestActive;
+    text(
+      elements.generatePhysicsReplay,
+      state.physicsReplayRequestActive
+        ? "Generating source-command replay…"
+        : "Generate source-command replay",
+    );
+  }
+  if (next === "visual") {
+    text(elements.cameraSourceLabel, "SIMULATOR TWIN");
+    text(
+      elements.cameraName,
+      physicsAvailable
+        ? comparison?.simulator_twin?.action_byte_identical
+          ? "MUJOCO / BYTE-IDENTICAL ACTION TRACE"
+          : "MUJOCO / SOURCE-COMMAND DIAGNOSTIC"
+        : "SIMULATOR TWIN / RECEIPT MISSING",
+    );
+    if (physicsAvailable) void loadThreeEpisode(episode, state.threeLoadId);
   } else if (next === "compare") {
     text(elements.cameraSourceLabel, "SYNCED COMPARE");
     text(
       elements.cameraName,
       physicsAvailable
-        ? "REAL + VISUAL TWIN / ACTION-FROZEN MUJOCO"
-        : "REAL + VISUAL TWIN / PHYSICS TRACE MISSING",
+        ? comparison?.simulator_twin?.action_byte_identical
+          ? "REALITY + ACTION-FROZEN TWIN / ONE PLAYHEAD"
+          : "REALITY + SOURCE-COMMAND TWIN / ONE PLAYHEAD"
+        : "REALITY + TWIN / RECEIPT MISSING",
     );
     const windowRange = state.recordingWindow
       || feedWindow(activeRecordingFeed(episode), elements.video.duration || 0);
@@ -2209,7 +2139,7 @@ function setReplayMode(mode, { pauseCurrent = true } = {}) {
       ? Math.max(0, Math.min(1, (elements.video.currentTime - windowRange.start) / windowRange.duration))
       : 0;
     if (physicsAvailable) state.threeViewer?.setFraction(fraction);
-    drawVisualTwinFrame();
+    if (physicsAvailable) void loadThreeEpisode(episode, state.threeLoadId);
   } else if (episode) {
     const feed = activeRecordingFeed(episode);
     text(elements.cameraSourceLabel, feed?.kind === "physical_command_replay" ? "PHYSICAL REPLAY" : "RECORDED VIEW");
@@ -2223,7 +2153,7 @@ function setReplayMode(mode, { pauseCurrent = true } = {}) {
 }
 
 function updateTransportSemantics(episode) {
-  const three = state.replayMode === "three" && episode.inspection;
+  const three = state.replayMode === "visual" && episode.inspection;
   const frames = !three && episode.media.kind === "frames";
   text(elements.jumpBack, three ? "−1 state" : frames ? "−1 frame" : "−5 sec");
   text(elements.jumpForward, three ? "+1 state" : frames ? "+1 frame" : "+5 sec");
@@ -2277,7 +2207,7 @@ function renderPhases(phases) {
 
 function renderTimelineTicks(episode) {
   elements.timelineTicks.replaceChildren();
-  const three = state.replayMode === "three" && episode.inspection;
+  const three = state.replayMode === "visual" && episode.inspection;
   const duration = three
     ? episode.inspection.duration_seconds
     : episode.media.kind === "frames"
@@ -2304,7 +2234,7 @@ function updateSelectedCardState() {
 function togglePlayback() {
   const episode = selectedEpisode();
   if (!episode) return;
-  if (state.replayMode === "three" && episode.inspection) {
+  if (state.replayMode === "visual" && episode.inspection) {
     state.threeViewer?.toggle();
   } else if (episode.media.kind === "video") {
     if (elements.video.paused) {
@@ -2401,7 +2331,7 @@ function updateProgress(fraction, seconds) {
 function stepFrames(delta) {
   const episode = selectedEpisode();
   if (!episode) return;
-  if (state.replayMode === "three" && episode.inspection) {
+  if (state.replayMode === "visual" && episode.inspection) {
     state.threeViewer?.step(delta);
     return;
   }
@@ -2412,7 +2342,7 @@ function stepFrames(delta) {
 function jumpSeconds(delta) {
   const episode = selectedEpisode();
   if (!episode) return;
-  if (state.replayMode === "three" && episode.inspection) {
+  if (state.replayMode === "visual" && episode.inspection) {
     if (state.threeViewer) state.threeViewer.applyTime(state.threeViewer.currentTime + delta);
   } else if (episode.media.kind === "video") {
     const windowRange = state.recordingWindow || feedWindow(activeRecordingFeed(episode), elements.video.duration || 0);
@@ -2426,7 +2356,7 @@ function jumpSeconds(delta) {
 function performPrimaryStep(direction) {
   const episode = selectedEpisode();
   if (!episode) return;
-  if (state.replayMode === "three" && episode.inspection) state.threeViewer?.step(direction);
+  if (state.replayMode === "visual" && episode.inspection) state.threeViewer?.step(direction);
   else if (episode.media.kind === "frames") stepFrames(direction);
   else jumpSeconds(direction * 5);
 }
@@ -2435,7 +2365,7 @@ function seekFraction(fraction) {
   const episode = selectedEpisode();
   if (!episode) return;
   const safe = Math.max(0, Math.min(1, fraction));
-  if (state.replayMode === "three" && episode.inspection) {
+  if (state.replayMode === "visual" && episode.inspection) {
     state.threeViewer?.setFraction(safe);
   } else if (episode.media.kind === "video") {
     if (Number.isFinite(elements.video.duration)) {
@@ -2463,7 +2393,7 @@ function cycleSpeed() {
 function updateTimelinePreview(event) {
   const episode = selectedEpisode();
   if (!episode || window.matchMedia("(hover: none)").matches) return;
-  if (state.replayMode === "three" || episode.media.kind === "none") {
+  if (state.replayMode === "visual" || episode.media.kind === "none") {
     elements.preview.hidden = true;
     return;
   }
@@ -3359,6 +3289,44 @@ async function postRecorder(action, payload = {}) {
   return succeeded;
 }
 
+async function generateSimulatorReplay() {
+  const episode = selectedEpisode();
+  if (
+    state.physicsReplayRequestActive
+    || !episode?.source_recording_id
+    || state.readOnly !== false
+  ) return;
+  state.physicsReplayRequestActive = true;
+  state.physicsReplayRequestError = null;
+  if (elements.generatePhysicsReplay) {
+    elements.generatePhysicsReplay.disabled = true;
+    text(elements.generatePhysicsReplay, "Generating source-command replay…");
+  }
+  try {
+    const response = await fetch("/api/studio/simulator-replay", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recording_id: episode.source_recording_id }),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || `simulator replay returned ${response.status}`);
+    }
+    const selectedId = episode.id;
+    await fetchCatalog();
+    if (episodeById(selectedId)) selectEpisode(selectedId, { updateRoute: false });
+  } catch (error) {
+    state.physicsReplayRequestError = error.message || String(error);
+    text(elements.cameraName, `SIMULATOR REPLAY ERROR / ${state.physicsReplayRequestError}`);
+  } finally {
+    state.physicsReplayRequestActive = false;
+    if (elements.generatePhysicsReplay) {
+      elements.generatePhysicsReplay.disabled = false;
+      text(elements.generatePhysicsReplay, "Generate source-command replay");
+    }
+  }
+}
+
 async function beginRecording() {
   const physical = selectedRecorderMode() === "physical_follower";
   const payload = {
@@ -3907,7 +3875,7 @@ function setActiveView(view, { updateRoute = true } = {}) {
   text(elements.mobileNavLabel, safeView === "orchestrator" ? "Tasks" : formatIdentifier(safeView));
   document.querySelector(".masthead")?.classList.remove("nav-open");
   elements.mobileNavToggle?.setAttribute("aria-expanded", "false");
-  state.threeViewer?.setActive(safeView === "replay" && state.replayMode === "three");
+  state.threeViewer?.setActive(safeView === "replay" && ["visual", "compare"].includes(state.replayMode));
   state.liveSimViewer?.setActive(
     safeView === "record" && selectedRecorderMode() === "simulation_follower",
   );
@@ -4056,7 +4024,7 @@ elements.frame.addEventListener("load", () => {
   }
 });
 elements.video.addEventListener("timeupdate", () => {
-  if (state.replayMode === "three") return;
+  if (state.replayMode === "visual") return;
   const windowRange = state.recordingWindow || feedWindow(activeRecordingFeed(), elements.video.duration || 0);
   if (windowRange.duration > 0 && elements.video.currentTime >= windowRange.end - 0.01) {
     elements.video.currentTime = windowRange.end;
@@ -4071,13 +4039,13 @@ elements.video.addEventListener("timeupdate", () => {
   drawVisualTwinFrame();
 });
 elements.video.addEventListener("play", () => {
-  if (state.replayMode === "three") return;
+  if (state.replayMode === "visual") return;
   elements.play.classList.add("is-playing");
   elements.play.setAttribute("aria-label", "Pause episode");
   startVisualTwinLoop();
 });
 elements.video.addEventListener("pause", () => {
-  if (state.replayMode === "three") return;
+  if (state.replayMode === "visual") return;
   elements.play.classList.remove("is-playing");
   elements.play.setAttribute("aria-label", "Play episode");
   stopVisualTwinLoop();
@@ -4242,6 +4210,7 @@ elements.syncFollower.addEventListener("click", syncPhysicalFollower);
 elements.startRecording.addEventListener("click", beginRecording);
 elements.stopRecording.addEventListener("click", () => postRecorder("stop"));
 elements.runSimReplay.addEventListener("click", () => postRecorder("sim-replay"));
+elements.generatePhysicsReplay?.addEventListener("click", generateSimulatorReplay);
 elements.labelForm.addEventListener("submit", (event) => {
   event.preventDefault();
   postRecorder("finalize", {

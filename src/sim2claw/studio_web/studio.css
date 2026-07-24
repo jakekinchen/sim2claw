@@ -3745,6 +3745,11 @@ body[data-studio-mode="read_only_evidence"] .live-trigger {
   display: block;
 }
 
+/* Twin is an actual simulator scene, not a filtered copy of the video. */
+.episode-stage.has-three[data-replay-mode="visual"] .three-replay {
+  display: block;
+}
+
 .three-replay canvas {
   display: block;
   width: 100%;
@@ -3842,7 +3847,6 @@ body[data-studio-mode="read_only_evidence"] .live-trigger {
   border: 0;
   background: transparent;
   color: white;
-  cursor: pointer;
   font-family: var(--utility);
   font-size: 11px;
 }
@@ -3905,6 +3909,13 @@ body[data-studio-mode="read_only_evidence"] .live-trigger {
 
 .comparison-lane-strip[hidden] {
   display: none;
+}
+
+/* The mode switch above the stage is the single navigation surface. This
+   status strip remains in the DOM for deterministic state updates, but is not
+   rendered as a second set of tabs. */
+.comparison-lane-strip {
+  display: none !important;
 }
 
 .comparison-lane-strip > span {
@@ -4169,6 +4180,27 @@ body[data-studio-mode="read_only_evidence"] .live-trigger {
   font-size: 11px;
 }
 
+.physics-unavailable button {
+  min-height: 34px;
+  margin-top: 16px;
+  padding: 0 14px;
+  border: 1px solid rgb(255 255 255 / 35%);
+  border-radius: 4px;
+  background: var(--motion);
+  color: white;
+  cursor: pointer;
+  font-family: var(--utility);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.physics-unavailable button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
 .episode-stage[data-replay-mode="compare"] {
   min-height: 360px;
   background:
@@ -4180,6 +4212,13 @@ body[data-studio-mode="read_only_evidence"] .live-trigger {
 .episode-stage.has-video[data-replay-mode="compare"] .visual-twin-canvas {
   right: auto;
   width: 50%;
+}
+
+.episode-stage[data-replay-mode="visual"] .visual-twin-canvas,
+.episode-stage[data-replay-mode="compare"] .visual-twin-canvas,
+.episode-stage[data-replay-mode="visual"] .visual-twin-seam,
+.episode-stage[data-replay-mode="compare"] .visual-twin-seam {
+  display: none !important;
 }
 
 .episode-stage.has-three[data-replay-mode="compare"] .three-replay {

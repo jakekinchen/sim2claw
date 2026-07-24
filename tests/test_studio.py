@@ -7,7 +7,7 @@ import tempfile
 import threading
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
@@ -136,6 +136,91 @@ class StudioCatalogTest(unittest.TestCase):
     def _write_json(self, path: Path, payload: dict[str, object]) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload), encoding="utf-8")
+
+    def _write_physical_sim_replay(
+        self,
+        recording: Path,
+        *,
+        recording_id: str,
+        sample_count: int,
+        fps: int = 20,
+    ) -> None:
+        samples_path = recording / "samples.jsonl"
+        samples_path.write_text(
+            "".join(
+                json.dumps(
+                    {
+                        "timestamp_monotonic_seconds": index / fps,
+                        "follower_command_degrees": [0, 0, 0, 0, 0, 20],
+                        "follower_actual_position_degrees": [0, 0, 0, 0, 0, 20],
+                    }
+                )
+                + "\n"
+                for index in range(sample_count)
+            ),
+            encoding="utf-8",
+        )
+        samples_sha256 = hashlib.sha256(samples_path.read_bytes()).hexdigest()
+        source_receipt_path = recording / "recording_receipt.json"
+        source_receipt = json.loads(source_receipt_path.read_text(encoding="utf-8"))
+        source_receipt["samples_sha256"] = samples_sha256
+        self._write_json(source_receipt_path, source_receipt)
+
+        state_trace_path = recording / "sim_replay_state_trace.json"
+        self._write_json(
+            state_trace_path,
+            {
+                "schema_version": "sim2claw.mujoco_body_state_trace.v1",
+                "scene": {
+                    "piece_layout": "sparse_two_sided_pawns",
+                    "manifest_url": "/api/scene?layout=sparse_two_sided_pawns",
+                },
+                "frame_count": sample_count,
+                "fps": fps,
+                "duration_seconds": sample_count / fps,
+            },
+        )
+        response_trace_path = recording / "sim_replay_trace.jsonl"
+        response_trace_path.write_text(
+            "".join(
+                json.dumps({"sample_index": index}) + "\n"
+                for index in range(sample_count)
+            ),
+            encoding="utf-8",
+        )
+        self._write_json(
+            recording / "sim_replay_receipt.json",
+            {
+                "schema_version": "sim2claw.physical_command_sim_replay.v1",
+                "source_recording_id": recording_id,
+                "source_samples_sha256": samples_sha256,
+                "sample_count": sample_count,
+                "comparison_scope": "joint_space_command_response_only",
+                "learned_policy_verified": False,
+                "object_or_contact_dynamics_verified": False,
+                "task_success_verified": False,
+                "trace_path": response_trace_path.name,
+                "trace_sha256": hashlib.sha256(
+                    response_trace_path.read_bytes()
+                ).hexdigest(),
+                "state_trace_path": state_trace_path.name,
+                "state_trace_schema_version": (
+                    "sim2claw.mujoco_body_state_trace.v1"
+                ),
+                "state_trace_sha256": hashlib.sha256(
+                    state_trace_path.read_bytes()
+                ).hexdigest(),
+                "state_trace_frame_count": sample_count,
+                "state_trace_fps": fps,
+                "state_trace_duration_seconds": sample_count / fps,
+                "state_trace_piece_layout": "sparse_two_sided_pawns",
+                "state_trace_manifest_url": (
+                    "/api/scene?layout=sparse_two_sided_pawns"
+                ),
+                "aggregate_body_joint_rmse_degrees": 2.5,
+                "maximum_body_joint_error_degrees": 7.0,
+            },
+        )
 
     def test_catalog_groups_replayable_episode_under_task(self) -> None:
         catalog = build_catalog(self.root)
@@ -495,35 +580,10 @@ class StudioCatalogTest(unittest.TestCase):
                 "duration_seconds": 2.1,
             },
         )
-        self._write_json(
-            recording / "sim_replay_receipt.json",
-            {
-                "schema_version": "sim2claw.physical_command_sim_replay.v1",
-                "action_array_sha256": "1" * 64,
-                "state_trace_path": "sim_replay_state_trace.json",
-                "state_trace_schema_version": "sim2claw.mujoco_body_state_trace.v1",
-                "state_trace_sha256": "0" * 64,
-                "state_trace_frame_count": 42,
-                "state_trace_fps": 20,
-                "state_trace_duration_seconds": 2.1,
-                "state_trace_piece_layout": "sparse_two_sided_pawns",
-                "state_trace_manifest_url": "/api/scene?layout=sparse_two_sided_pawns",
-                "aggregate_body_joint_rmse_degrees": 2.5,
-                "maximum_body_joint_error_degrees": 7.0,
-            },
-        )
-        self._write_json(
-            recording / "sim_replay_state_trace.json",
-            {
-                "schema_version": "sim2claw.mujoco_body_state_trace.v1",
-                "scene": {
-                    "piece_layout": "sparse_two_sided_pawns",
-                    "manifest_url": "/api/scene?layout=sparse_two_sided_pawns",
-                },
-                "frame_count": 42,
-                "fps": 20,
-                "duration_seconds": 2.1,
-            },
+        self._write_physical_sim_replay(
+            recording,
+            recording_id="fixture-recording",
+            sample_count=42,
         )
 
         catalog = build_catalog(self.root)
@@ -620,7 +680,10 @@ class StudioCatalogTest(unittest.TestCase):
             episode["terminal_outcome"],
             "operator_label_success_unqualified",
         )
-        self.assertEqual(episode["metrics"][-1]["label"], "Operator label")
+        self.assertIn(
+            "Operator label",
+            [metric["label"] for metric in episode["metrics"]],
+        )
 
         comparison = episode["comparison"]
         self.assertEqual(
@@ -628,14 +691,90 @@ class StudioCatalogTest(unittest.TestCase):
             "sim2claw.studio_episode_comparison.v1",
         )
         self.assertTrue(comparison["real"]["available"])
-        self.assertTrue(comparison["visual_twin"]["available"])
+        self.assertFalse(comparison["visual_twin"]["available"])
         self.assertEqual(
             comparison["visual_twin"]["physics_authority"],
             "none",
         )
+        self.assertFalse(comparison["simulator_twin"]["available"])
         self.assertFalse(comparison["physics_replay"]["available"])
-        self.assertIn("action-frozen", comparison["physics_replay"]["notice"])
+        self.assertIn("does not synthesize", comparison["physics_replay"]["notice"])
         self.assertIsNone(comparison["physics_replay"]["binding"])
+
+    def test_catalog_admits_only_hash_bound_source_command_simulator_twin(
+        self,
+    ) -> None:
+        recording = (
+            self.root
+            / "datasets"
+            / "manipulation_source_recordings"
+            / "c2-to-c1__fixture-recording"
+        )
+        recording.mkdir(parents=True)
+        (recording / "overhead_c922.mp4").write_bytes(b"fixture-video")
+        self._write_json(
+            recording / "recording_receipt.json",
+            {
+                "recording_id": "fixture-recording",
+                "task_id": "pawn_manipulation_v1",
+                "label": "C2 to C1",
+                "mode": "physical_follower",
+                "proof_class": "physical_teleoperation_source_unqualified",
+                "piece_id": "brown_pawn_c2",
+                "source_square": "c2",
+                "destination_square": "c1",
+                "sample_count": 4,
+                "sample_hz": 20,
+                "duration_seconds": 0.2,
+            },
+        )
+        self._write_physical_sim_replay(
+            recording,
+            recording_id="fixture-recording",
+            sample_count=4,
+        )
+
+        episode = next(
+            row
+            for row in build_catalog(self.root)["episodes"]
+            if row["task_id"] == "physical_pawn_episode_library_v1"
+        )
+        comparison = episode["comparison"]
+        self.assertFalse(comparison["visual_twin"]["available"])
+        self.assertTrue(comparison["simulator_twin"]["available"])
+        self.assertTrue(comparison["physics_replay"]["available"])
+        self.assertEqual(
+            comparison["simulator_twin"]["proof_class"],
+            "simulation_physical_command_replay_diagnostic",
+        )
+        self.assertFalse(comparison["simulator_twin"]["action_byte_identical"])
+        self.assertEqual(
+            comparison["simulator_twin"]["command_transform"],
+            "declared_unit_conversion_and_model_bound_clipping",
+        )
+        self.assertIsNone(comparison["simulator_twin"]["action_array_sha256"])
+        self.assertEqual(
+            comparison["physics_replay"]["binding"]["kind"],
+            "source_samples_bound_sim_replay_receipt",
+        )
+        self.assertEqual(episode["inspection"]["frame_count"], 4)
+        metric_labels = [metric["label"] for metric in episode["metrics"]]
+        self.assertIn("Operator label", metric_labels)
+        self.assertIn("Worst sim error", metric_labels)
+
+        with (recording / "sim_replay_state_trace.json").open(
+            "a",
+            encoding="utf-8",
+        ) as handle:
+            handle.write(" ")
+        rejected = next(
+            row
+            for row in build_catalog(self.root)["episodes"]
+            if row["task_id"] == "physical_pawn_episode_library_v1"
+        )
+        self.assertNotIn("inspection", rejected)
+        self.assertFalse(rejected["comparison"]["simulator_twin"]["available"])
+        self.assertFalse(rejected["comparison"]["physics_replay"]["available"])
 
     def test_physical_pairing_requires_tracked_receipt_and_action_hash(self) -> None:
         recording = (
@@ -1380,6 +1519,60 @@ class StudioCatalogTest(unittest.TestCase):
             server.server_close()
             thread.join(timeout=3)
 
+    @patch("sim2claw.studio_server.replay_physical_recording")
+    def test_simulator_replay_endpoint_is_loopback_explicit_and_serialized(
+        self,
+        replay: Mock,
+    ) -> None:
+        recording = (
+            self.root
+            / "datasets"
+            / "manipulation_source_recordings"
+            / "fixture-recording"
+        )
+        self._write_json(
+            recording / "recording_receipt.json",
+            {
+                "recording_id": "fixture-recording",
+                "mode": "physical_follower",
+            },
+        )
+        replay.return_value = {
+            "schema_version": "sim2claw.physical_command_sim_replay.v1",
+            "source_recording_id": "fixture-recording",
+            "task_success_verified": False,
+        }
+        server = create_server("127.0.0.1", 0, repo_root=self.root)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        base = f"http://127.0.0.1:{server.server_address[1]}"
+        request = Request(
+            f"{base}/api/studio/simulator-replay",
+            data=json.dumps({"recording_id": "fixture-recording"}).encode(),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urlopen(request, timeout=3) as response:
+                payload = json.load(response)
+            self.assertTrue(payload["ok"])
+            self.assertFalse(payload["replay"]["task_success_verified"])
+            replay.assert_called_once_with(recording.resolve())
+
+            server.simulator_replay_lock.acquire()
+            try:
+                with self.assertRaises(HTTPError) as raised:
+                    urlopen(request, timeout=3)
+                self.assertEqual(raised.exception.code, 409)
+                conflict = json.loads(raised.exception.read().decode("utf-8"))
+                self.assertIn("already running", conflict["error"])
+            finally:
+                server.simulator_replay_lock.release()
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
     def test_read_only_rejection_closes_connection_before_unread_body(self) -> None:
         server = create_server("127.0.0.1", 0, repo_root=self.root, read_only=True)
         thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -1449,8 +1642,14 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('id="three-canvas"', html)
             self.assertIn('id="comparison-lane-strip"', html)
             self.assertIn('id="visual-twin-canvas"', html)
-            self.assertIn("Same-camera · no physics", html)
-            self.assertIn("Studio will not invent one.", html)
+            self.assertIn("Camera-matched simulator view", html)
+            self.assertIn("No receipt-bound source-command MuJoCo trace", html)
+            self.assertIn("Generate source-command replay", html)
+            self.assertNotIn('data-replay-mode="three"', html)
+            self.assertIn('<div class="camera-label" aria-live="polite">', html)
+            self.assertNotIn(
+                'class="camera-label" type="button" data-route="robots"', html
+            )
             self.assertIn('data-route="calibration"', html)
             self.assertIn('id="calibration-canvas"', html)
             self.assertIn('id="recording-feed-switch"', html)
@@ -1557,6 +1756,8 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('"Ranked replays"', javascript)
             self.assertIn("sim2claw.studio_episode_comparison.v1", javascript)
             self.assertNotIn("VISUAL TWIN · IMAGE SPACE", javascript)
+            self.assertNotIn("getImageData(0, 0, renderWidth, renderHeight)", javascript)
+            self.assertIn('fetch("/api/studio/simulator-replay"', javascript)
             self.assertIn("startVisualTwinLoop()", javascript)
             self.assertNotIn("elements.physicsUnavailable.innerHTML", javascript)
 

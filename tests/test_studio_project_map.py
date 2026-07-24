@@ -55,7 +55,12 @@ def _catalog() -> dict[str, object]:
                 "id": "physical-dual",
                 "proof_class": "physical_teleoperation_source_unqualified",
                 "recording_feeds": [{"id": "overhead"}, {"id": "wrist"}],
-                "comparison": {"physics_replay": {"available": True}},
+                "comparison": {
+                    "physics_replay": {
+                        "available": True,
+                        "action_byte_identical": True,
+                    }
+                },
             },
             {
                 "id": "physical-single",
@@ -140,10 +145,15 @@ def test_project_map_preserves_proof_lanes_and_missing_physics(
     stages = {row["id"]: row for row in payload["stages"]}
     assert stages["capture"]["measure"] == "2 physical sources · 1 dual-camera"
     assert stages["capture"]["proof"] == "recorded source evidence · not training-admitted"
-    assert "1/2 physical sources physics-paired" in stages["replay"]["measure"]
-    assert stages["replay"]["missing"] == ["1 physical physics pairings"]
-    assert "visual-only" in stages["replay"]["proof"]
-    assert "action-frozen" in stages["replay"]["proof"]
+    assert "1/2 physical sources simulator-paired" in stages["replay"]["measure"]
+    assert "1 byte-identical action" in stages["replay"]["measure"]
+    assert "0 source-command diagnostic" in stages["replay"]["measure"]
+    assert stages["replay"]["missing"] == ["1 physical simulator pairings"]
+    assert "receipt-bound simulator twin" in stages["replay"]["proof"]
+    assert "converted-command proof classes remain distinct" in stages["replay"]["proof"]
+    assert stages["replay"]["agent"]["commands"] == [
+        "POST /api/studio/simulator-replay"
+    ]
     assert stages["learn_transfer"]["status"] == "closed"
     assert stages["learn_transfer"]["agent"]["commands"] == []
 

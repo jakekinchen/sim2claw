@@ -250,6 +250,78 @@ def _receipt_inspection(
     }
 
 
+def _verified_physical_sim_replay(
+    source_receipt_path: Path,
+    source_receipt: dict[str, Any],
+    recording_id: str,
+    repo_root: Path,
+) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    """Admit one adjacent command replay as local simulator diagnostics only."""
+
+    replay_receipt_path = source_receipt_path.parent / "sim_replay_receipt.json"
+    replay_receipt = _read_json(replay_receipt_path)
+    samples_path = source_receipt_path.parent / "samples.jsonl"
+    if (
+        replay_receipt.get("schema_version")
+        != "sim2claw.physical_command_sim_replay.v1"
+        or replay_receipt.get("source_recording_id") != recording_id
+        or replay_receipt.get("comparison_scope")
+        != "joint_space_command_response_only"
+        or replay_receipt.get("learned_policy_verified") is not False
+        or replay_receipt.get("object_or_contact_dynamics_verified") is not False
+        or replay_receipt.get("task_success_verified") is not False
+        or not samples_path.is_file()
+    ):
+        return {}, None
+
+    source_samples_sha256 = str(source_receipt.get("samples_sha256") or "")
+    try:
+        observed_samples_sha256 = hashlib.sha256(samples_path.read_bytes()).hexdigest()
+        sample_count = int(replay_receipt.get("sample_count") or 0)
+        source_sample_count = int(source_receipt.get("sample_count") or 0)
+    except (OSError, TypeError, ValueError):
+        return {}, None
+    if (
+        not _is_sha256(source_samples_sha256)
+        or observed_samples_sha256 != source_samples_sha256
+        or replay_receipt.get("source_samples_sha256") != source_samples_sha256
+        or sample_count < 1
+        or (source_sample_count > 0 and sample_count != source_sample_count)
+    ):
+        return {}, None
+
+    def adjacent_file(field: str, default: str) -> Path | None:
+        value = str(replay_receipt.get(field) or default)
+        if not value or Path(value).name != value:
+            return None
+        candidate = source_receipt_path.parent / value
+        return candidate if candidate.is_file() else None
+
+    state_trace_path = adjacent_file(
+        "state_trace_path",
+        "sim_replay_state_trace.json",
+    )
+    response_trace_path = adjacent_file("trace_path", "sim_replay_trace.jsonl")
+    if state_trace_path is None or response_trace_path is None:
+        return {}, None
+    try:
+        state_trace_sha256 = hashlib.sha256(state_trace_path.read_bytes()).hexdigest()
+        response_trace_sha256 = hashlib.sha256(response_trace_path.read_bytes()).hexdigest()
+    except OSError:
+        return {}, None
+    if (
+        state_trace_sha256 != replay_receipt.get("state_trace_sha256")
+        or response_trace_sha256 != replay_receipt.get("trace_sha256")
+        or int(replay_receipt.get("state_trace_frame_count") or 0) != sample_count
+    ):
+        return {}, None
+
+    inspection = _receipt_inspection(state_trace_path, repo_root, replay_receipt)
+    if inspection is None:
+        return {}, None
+    return replay_receipt, inspection
+
+
 def _proof_label(proof_class: str) -> str:
     labels = {
         "simulation_learned_policy": "Learned policy · simulation",
@@ -1471,24 +1543,13 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
         ranked_replay = ranked_by_recording.get(recording_id)
         replay_receipt: dict[str, Any] = {}
         if mode == "physical_follower":
-            replay_receipt = _read_json(receipt_path.parent / "sim_replay_receipt.json")
-            if (
-                replay_receipt.get("schema_version")
-                != "sim2claw.physical_command_sim_replay.v1"
-                or not _is_sha256(replay_receipt.get("action_array_sha256"))
-            ):
-                replay_receipt = {}
-            if replay_receipt:
-                trace_path = receipt_path.parent / str(
-                    replay_receipt.get("state_trace_path")
-                    or "sim_replay_state_trace.json"
-                )
-                inspection = _receipt_inspection(
-                    trace_path,
-                    repo_root,
-                    replay_receipt,
-                )
-            else:
+            replay_receipt, inspection = _verified_physical_sim_replay(
+                receipt_path,
+                receipt,
+                recording_id,
+                repo_root,
+            )
+            if not replay_receipt:
                 inspection = (
                     dict(ranked_replay["inspection"])
                     if ranked_replay and ranked_replay.get("inspection")
@@ -1662,14 +1723,22 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                 ]
             )
         action_sha256 = str(
-            replay_receipt.get("action_array_sha256")
-            or (ranked_replay or {}).get("action_array_sha256")
+            (
+                replay_receipt.get("action_array_sha256")
+                if replay_receipt
+                else (ranked_replay or {}).get("action_array_sha256")
+            )
             or ""
         )
-        physics_available = inspection is not None and _is_sha256(action_sha256)
+        source_samples_sha256 = str(
+            replay_receipt.get("source_samples_sha256") or ""
+        )
+        replay_binding_sha256 = action_sha256 or source_samples_sha256
+        physics_available = inspection is not None and _is_sha256(replay_binding_sha256)
         if not physics_available:
             inspection = None
             action_sha256 = ""
+            source_samples_sha256 = ""
         source_square = str(receipt.get("source_square") or "—")
         destination_square = str(
             receipt.get("destination_square")
@@ -1682,8 +1751,11 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                 repo_root / "datasets" / "manipulation_source_recordings"
             )
         )
-        if is_physical_library and metrics:
-            metrics[-1]["label"] = "Operator label"
+        if is_physical_library:
+            for metric in metrics:
+                if metric.get("label") == "Outcome":
+                    metric["label"] = "Operator label"
+                    break
         task_id = (
             PHYSICAL_EPISODE_LIBRARY_TASK
             if is_physical_library
@@ -1701,15 +1773,66 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                     "source_pixels": True,
                 },
                 "visual_twin": {
-                    "available": True,
-                    "kind": "image_space_visual_projection",
-                    "camera_alignment": "pixel_identical_source_view",
-                    "source_pixels": True,
+                    "available": False,
+                    "kind": "unavailable",
+                    "camera_alignment": "not_measured",
+                    "source_pixels": False,
                     "physics_authority": "none",
-                    "proof_class": "visual_only_same_camera_projection",
+                    "proof_class": "unavailable",
                     "notice": (
-                        "Image-space visual mimic derived from the recorded camera "
-                        "pixels. It does not simulate geometry, contact, or dynamics."
+                        "No image-derived visual twin is admitted. The retired "
+                        "pixel filter was not simulation evidence."
+                    ),
+                },
+                "simulator_twin": {
+                    "available": physics_available,
+                    "kind": (
+                        "mujoco_source_command_reconstruction"
+                        if physics_available
+                        else "missing"
+                    ),
+                    "camera_alignment": "calibrated_workcell_view",
+                    "source_pixels": False,
+                    "physics_authority": "mujoco" if physics_available else "none",
+                    "proof_class": (
+                        "simulation_physical_command_replay_diagnostic"
+                        if replay_receipt and physics_available
+                        else "retained_action_frozen_simulation_replay"
+                        if physics_available
+                        else "unavailable"
+                    ),
+                    "action_array_sha256": action_sha256 or None,
+                    "source_samples_sha256": source_samples_sha256 or None,
+                    "action_byte_identical": (
+                        True
+                        if physics_available and not replay_receipt
+                        else False
+                        if physics_available
+                        else None
+                    ),
+                    "command_transform": (
+                        "declared_unit_conversion_and_model_bound_clipping"
+                        if replay_receipt and physics_available
+                        else "byte_identical_action_array"
+                        if physics_available
+                        else None
+                    ),
+                    "notice": (
+                        (
+                            "Camera-matched MuJoCo reconstruction driven by the "
+                            "recorded source commands. The replay declares unit "
+                            "conversion and model-bound clipping; it is diagnostic "
+                            "simulation, not byte-identical action or task evidence."
+                        )
+                        if replay_receipt and physics_available
+                        else (
+                            "Camera-matched MuJoCo reconstruction bound to a "
+                            "retained byte-identical action trace."
+                        )
+                        if physics_available
+                        else (
+                            "No receipt-bound simulator reconstruction is available."
+                        )
                     ),
                 },
                 "physics_replay": {
@@ -1718,20 +1841,38 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                     if physics_available
                     else "missing",
                     "proof_class": (
-                        "retained_action_frozen_simulation_replay"
+                        "simulation_physical_command_replay_diagnostic"
+                        if replay_receipt and physics_available
+                        else "retained_action_frozen_simulation_replay"
                         if physics_available
                         else "unavailable"
                     ),
                     "action_array_sha256": action_sha256 or None,
+                    "source_samples_sha256": source_samples_sha256 or None,
+                    "action_byte_identical": (
+                        True
+                        if physics_available and not replay_receipt
+                        else False
+                        if physics_available
+                        else None
+                    ),
+                    "command_transform": (
+                        "declared_unit_conversion_and_model_bound_clipping"
+                        if replay_receipt and physics_available
+                        else "byte_identical_action_array"
+                        if physics_available
+                        else None
+                    ),
                     "binding": (
                         {
                             "kind": (
-                                "adjacent_sim_replay_receipt"
+                                "source_samples_bound_sim_replay_receipt"
                                 if replay_receipt
                                 else "tracked_publication_recording_and_action"
                             ),
                             "recording_id": recording_id,
-                            "action_array_sha256": action_sha256,
+                            "action_array_sha256": action_sha256 or None,
+                            "source_samples_sha256": source_samples_sha256 or None,
                             "evidence_receipt": (
                                 {
                                     "path": (
@@ -1765,12 +1906,19 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                     ),
                     "notice": (
                         (
-                            "A receipt binds this recording ID to the byte-identical "
-                            "action array and retained MuJoCo state trace."
+                            "A local receipt binds this recording ID and immutable "
+                            "source samples to the MuJoCo state trace. Source commands "
+                            "undergo declared unit conversion and model-bound clipping; "
+                            "this is not byte-identical action evidence."
+                        )
+                        if replay_receipt and physics_available
+                        else (
+                            "A tracked receipt binds this recording ID to the "
+                            "byte-identical action array and retained MuJoCo state trace."
                         )
                         if physics_available
                         else (
-                            "No receipt-bound action-frozen MuJoCo state trace is "
+                            "No receipt-bound MuJoCo state trace is "
                             "available for this physical recording. Studio does "
                             "not synthesize one."
                         )
@@ -1791,7 +1939,7 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                 "subtitle": (
                     f"{_title(str(receipt.get('piece_id', 'piece')))} · "
                     f"{source_square.upper()} → {destination_square.upper()} · "
-                    f"{'physics replay paired' if physics_available else 'physics trace missing'}"
+                    f"{'simulator replay paired' if physics_available else 'simulator trace missing'}"
                 ),
                 "sequence": 30_000 + sequence,
                 "status": (
@@ -1853,8 +2001,8 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                 "notes": (
                     (
                         f"{str(receipt.get('notes') or '').strip()} "
-                        "The real recording, image-space visual twin, and MuJoCo "
-                        "replay remain separate proof classes."
+                        "The physical recording and source-command MuJoCo replay "
+                        "remain separate proof classes."
                     ).strip()
                     if is_physical_library
                     else str(receipt.get("notes") or "").strip()
@@ -2080,9 +2228,9 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
                     "Seven consequence-ranked, action-frozen V3 simulator replays; partial outcomes only, with zero strict task successes."
                     if task_id == "pawn_bg_ranked_grasp_v3"
                     else (
-                        "All retained C922 physical recordings with a same-camera "
-                        "visual-only twin and every currently available "
-                        "action-frozen MuJoCo replay."
+                        "All retained C922 physical recordings with a camera-matched "
+                        "simulator twin wherever the action-frozen MuJoCo replay "
+                        "has been generated."
                     )
                     if task_id == PHYSICAL_EPISODE_LIBRARY_TASK
                     else (

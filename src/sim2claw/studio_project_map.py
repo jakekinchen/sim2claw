@@ -192,6 +192,22 @@ def _stage_observations(
             ).get("available")
         )
     ]
+    byte_identical_pairings = [
+        row
+        for row in paired_physics
+        if (
+            (row.get("comparison") or {}).get("physics_replay") or {}
+        ).get("action_byte_identical")
+        is True
+    ]
+    source_command_pairings = [
+        row
+        for row in paired_physics
+        if (
+            (row.get("comparison") or {}).get("physics_replay") or {}
+        ).get("action_byte_identical")
+        is not True
+    ]
     calibration_count = len(catalog.get("calibrations") or [])
     robot_count = len(catalog.get("robots") or [])
     sail_available = bool(sail and sail.get("available"))
@@ -242,14 +258,26 @@ def _stage_observations(
             "status": "partial" if episodes else "missing",
             "measure": (
                 f"{len(episodes)} catalog episodes · {len(paired_physics)}/{len(physical_sources)} "
-                "physical sources physics-paired"
+                "physical sources simulator-paired"
+                + (
+                    f" ({len(byte_identical_pairings)} byte-identical action · "
+                    f"{len(source_command_pairings)} source-command diagnostic)"
+                    if paired_physics
+                    else ""
+                )
                 + (f" · {len(hil_packets)} HIL" if hil_packets else "")
             ),
-            "proof": "separated real · visual-only · action-frozen physics lanes",
+            "proof": (
+                "separated physical source · receipt-bound simulator twin · "
+                "exact-action and converted-command proof classes remain distinct"
+            ),
             "missing": [
-                f"{max(0, len(physical_sources) - len(paired_physics))} physical physics pairings"
+                f"{max(0, len(physical_sources) - len(paired_physics))} physical simulator pairings"
             ],
-            "detail": "The synchronized replay surface never invents a missing physics lane.",
+            "detail": (
+                "The synchronized replay surface rejects unbound traces and never "
+                "upgrades a source-command diagnostic to byte-identical action evidence."
+            ),
         },
         "evaluate": {
             "status": "available" if episodes else "missing",
