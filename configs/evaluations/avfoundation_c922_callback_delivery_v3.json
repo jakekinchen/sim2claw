@@ -1,0 +1,158 @@
+{
+  "schema_version": "sim2claw.avfoundation_c922_callback_delivery_contract.v3",
+  "contract_id": "current-100mm-c922-avfoundation-callback-delivery-20260724-v3",
+  "status": "preregistered_before_implementation_and_observation",
+  "baseline_commit": "56fc242dc0b28af853663cb8b1b7228181db441c",
+  "purpose": "Test whether retaining the associated C922 device configuration lock through session commit and initial start prevents the start-time format override measured by v2.",
+  "supersedes_without_retrying": "configs/evaluations/avfoundation_c922_callback_delivery_v2.json",
+  "v2_terminal_evidence": {
+    "implementation_commit": "c8d2f50100f5899d821ef5ed85750b207d97d21c",
+    "raw_observation_sha256": "593c3d3e62bb49e4a08713bab63e6e699584a2ad1da91341452318362b2d4314",
+    "evaluation_sha256": "a889450f94187906f745779620ed769e7e642def45e9d458a390c3064fce1935",
+    "receipt_sha256": "5dd301ab462395706f6b4d505d7f41a829871542682967da795b5dab17950c2f",
+    "receipt_digest": "ae6dd332ba20710bd06dff2bf3bba49d3662d2fd727eac05243a6d6bae84c4fd",
+    "verdict": "callback_delivery_degraded",
+    "failed_gates": [
+      "exact_format_after_start",
+      "minimum_output_callbacks",
+      "exact_dimensions",
+      "strictly_increasing_pts",
+      "bounded_pts_interval"
+    ],
+    "format_after_commit": "640x480_420v_0.03333330000003333s",
+    "session_preset_after_commit": "AVCaptureSessionPresetHigh",
+    "format_after_start": "1920x1080_420v_0.0416666006945489s",
+    "session_preset_after_start": "AVCaptureSessionPresetHigh",
+    "sample_output_count": 1,
+    "sample_dropped_count": 0,
+    "retry_authorized": false
+  },
+  "sealed_inventory": {
+    "contract_path": "configs/evaluations/avfoundation_format_inventory_v2.json",
+    "contract_sha256": "ec25b9443f024972a8f4f6f9d7c1b600ad1893b4e7cb3e379f5be3db4c841dcd",
+    "raw_inventory_path": "outputs/avfoundation-format-inventory-v2/observed/raw/inventory.json",
+    "raw_inventory_sha256": "3754a62fa643359fa1f13484bd4f86ba7c1ab13d234b2a3f7f5b5bcb60e830a2",
+    "evaluation_path": "outputs/avfoundation-format-inventory-v2/evaluated/evaluation.json",
+    "evaluation_sha256": "3c59915c81f9d8073f02acd4ca3eae8b9c715db9485e9e838ca4638427e05d7d",
+    "receipt_path": "outputs/avfoundation-format-inventory-v2/evaluated/receipt.json",
+    "receipt_sha256": "14c8f82147611854ac4ecc317426f447ac4b3fbccef9cd133e1cd4026287e98f",
+    "receipt_digest": "9c42f8a55357f2508897a8515d3b7d3dba98bbe7409ba246c1c8b14ccec932ac",
+    "verdict": "supported_exact_or_fractional_rate_candidate",
+    "candidate_identity_reusable": true
+  },
+  "device": {
+    "media_type": "video",
+    "exact_localized_name": "C922 Pro Stream Webcam",
+    "exact_unique_id": "0x8310000046d085c",
+    "exact_model_id": "UVC Camera VendorID_1133 ProductID_2140",
+    "exact_match_count_required": 1
+  },
+  "candidate": {
+    "format_index": 16,
+    "frame_rate_range_index": 0,
+    "width": 640,
+    "height": 480,
+    "media_subtype_fourcc": "420v",
+    "supported_fps": 30.00003000003,
+    "frame_duration_seconds": 0.03333330000003333
+  },
+  "changed_mechanism": {
+    "device_lock_acquired_after_input_output_association": true,
+    "device_lock_held_through_commit": true,
+    "device_lock_held_through_start_return_and_verification": true,
+    "device_unlock_after_start_verification": true,
+    "session_preset_assignment": false,
+    "output_dimension_keys": false,
+    "post_start_repair": false
+  },
+  "configuration_order": [
+    "create_session",
+    "begin_configuration",
+    "add_exact_device_input",
+    "add_video_data_output_requesting_only_420v",
+    "lock_associated_device",
+    "set_active_format_16",
+    "set_active_min_and_max_frame_duration_from_range_0",
+    "record_format_while_locked_before_commit",
+    "commit_configuration_while_device_locked",
+    "record_format_while_locked_after_commit",
+    "start_session_while_device_locked_only_if_post_commit_format_exact",
+    "record_format_while_locked_after_start",
+    "unlock_device",
+    "observe_delivered_sample_buffers_only_if_post_start_format_exact",
+    "stop_session"
+  ],
+  "observation": {
+    "duration_seconds": 10.0,
+    "always_discards_late_video_frames": true,
+    "output_pixel_format_fourcc": "420v",
+    "output_width_height_conversion_keys_allowed": false,
+    "post_commit_format_mismatch_starts_session": false,
+    "post_start_format_mismatch_continues_session": false,
+    "typed_codable_primitive_artifacts_only": true,
+    "prelaunch_manifest_before_session": true,
+    "raw_observer_may_score": false
+  },
+  "evaluator": {
+    "minimum_output_callback_count": 240,
+    "maximum_dropped_callback_count_for_verified": 0,
+    "maximum_pts_interval_multiplier": 1.5,
+    "require_exact_format_before_commit": true,
+    "require_exact_format_after_commit": true,
+    "require_exact_format_after_start": true,
+    "require_lock_held_at_all_three_format_stages": true,
+    "require_unlock_before_callback_window": true,
+    "require_strictly_increasing_pts": true,
+    "require_numeric_pts_and_duration": true,
+    "require_all_output_dimensions_exact": true,
+    "require_all_output_subtypes_exact": true,
+    "verdicts": [
+      "callback_delivery_verified",
+      "callback_delivery_degraded",
+      "prerequisite_abstention"
+    ],
+    "threshold_changes_after_observation": false,
+    "observer_self_scoring": false
+  },
+  "operation_budget": {
+    "observation_attempts_maximum": 1,
+    "capture_sessions_maximum": 1,
+    "capture_duration_seconds_maximum": 10.0,
+    "source_callbacks_maximum": 600,
+    "d405_lifecycle_operations_maximum": 0,
+    "robot_motion_trials_maximum": 0,
+    "simulator_replays_maximum": 0,
+    "provider_calls_maximum": 0
+  },
+  "runtime_identity": {
+    "platform": "macos",
+    "swift_version_prefix": "Apple Swift version 6.3",
+    "observer_source_path": "tools/macos/AVFoundationCallbackDeliveryV3.swift",
+    "evaluator_path": "src/sim2claw/avfoundation_callback_delivery_v3.py",
+    "compiler_path": "/usr/bin/swiftc",
+    "source_evaluator_and_binary_sha256_frozen_at_observation_commit": true
+  },
+  "claim_limits": {
+    "camera_source_callback_delivery": true,
+    "container_timing": false,
+    "physical_exposure_continuity": false,
+    "cross_camera_synchronization": false,
+    "metric_depth": false,
+    "simulator_calibration": false,
+    "task_success": false
+  },
+  "authority": {
+    "c922_capture_session": true,
+    "camera_frame_callback_observation": true,
+    "d405_lifecycle": false,
+    "robot_gateway": false,
+    "robot_motion": false,
+    "simulator_replay": false,
+    "simulator_parameter_promotion": false,
+    "training": false,
+    "provider_calls": false,
+    "paid_compute": false,
+    "task_score_change": false,
+    "physical_task_authority": false
+  }
+}

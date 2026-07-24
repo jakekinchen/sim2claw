@@ -1128,3 +1128,8 @@ goal. External provider campaigns and spending remain separately gated.
   evaluator rejected start-stage identity and delivery gates. V2 is exhausted
   with no retry. D405, robot, simulator, provider, training, promotion, and
   task authority stayed closed.
+- 2026-07-24T16:42:00-05:00 — Opened callback delivery v3 after independent
+  PASS closure of v2. V3 freezes one changed mechanism: retain the associated
+  C922 device configuration lock through commit, initial start, and immediate
+  post-start verification, then unlock before the callback window. Candidate,
+  thresholds, one-session/no-retry budget, and closed authority are unchanged.
