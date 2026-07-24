@@ -128,10 +128,10 @@ success as separate proof classes.
 ## Progress Ledger
 
 ```text
-Current state: Source-localization contract drafted from clean main after the sealed D405 terminal negative.
-Completed: Exact source-vs-container hypotheses, fixed control/treatment order, measurements, evaluator verdict vocabulary, budgets, and closed authority.
-Evidence: baseline 87534c5; sealed campaign 57d4983c; evaluation 80ed9ac3; receipt cfc11ff3; GPT-5.6 Pro advisory review retained without proof authority.
-Remaining: Freeze the preregistration commit, implement and test the native source probe, then decide whether the frozen no-motion campaign is executable.
-Blockers: None at preregistration; camera permission and AVFoundation event support remain live preflight gates.
-Next step: Rebind project authority and commit the preregistration before source-probe implementation.
+Current state: Preregistration is committed and the native probe/runner/evaluator implementation passes focused proof without opening a camera.
+Completed: Exact source-vs-container hypotheses, fixed control/treatment order, measurements, evaluator verdict vocabulary, budgets, closed authority, Swift callback/drop/session/device observer, Python compiler/runtime binding, orchestration, independent evaluator, and adversarial tests.
+Evidence: baseline 87534c5; preregistration 92c2f96; contract c7063d8f; Swift source 903658a0; Python runner 7be75815; sealed campaign 57d4983c; evaluation 80ed9ac3; receipt cfc11ff3; 16 direct and 60 combined focused tests pass.
+Remaining: Commit the exact implementation, perform a no-open authorization/identity preflight, then execute only the frozen 12-trial no-motion campaign or emit a prerequisite abstention.
+Blockers: Camera authorization and exact AVFoundation source-event behavior remain live preflight gates; no scientific blocker is claimed yet.
+Next step: Freeze the implementation commit before any live camera opens.
 ```

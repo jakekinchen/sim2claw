@@ -967,3 +967,13 @@ goal. External provider campaigns and spending remain separately gated.
   is not physical-exposure synchronization and cannot reclassify the sealed
   D405/C922 `0/6` result. GPT-5.6 Pro supplied advisory hypotheses only and has
   no proof or execution authority.
+- 2026-07-24T11:55:00-05:00 — Completed the pre-live AVFoundation source
+  observer implementation after preregistration `92c2f96`. The manually
+  authored Swift probe records exact-name C922 source callbacks, PTS/duration,
+  Mach continuous time, Apple drop reasons, session errors/interruptions, and
+  device events. The Python plane binds compiler/source/runner/binary/runtime
+  identity, owns the fixed no-motion orchestration, and evaluates raw events
+  separately. Sixteen direct and 60 combined focused tests pass, including
+  mutation, substitution, replay, abstention, and repeated-materialization
+  checks. No camera was opened; the implementation must be committed before
+  live authorization preflight or any frozen trial.
