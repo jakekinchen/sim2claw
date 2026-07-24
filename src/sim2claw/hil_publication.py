@@ -22,6 +22,11 @@ from .hil_simulator_comparison import (
     RECEIPT_SCHEMA as SIM_RECEIPT_SCHEMA,
     _evaluate as evaluate_simulator_comparison,
 )
+from .hil_trace_analysis import (
+    RECEIPT_SCHEMA as TRACE_RECEIPT_SCHEMA,
+    REPORT_SCHEMA as TRACE_REPORT_SCHEMA,
+    derive_hil_trace_report_payload,
+)
 from .learning_factory_artifacts import canonical_digest, sha256_file
 from .paths import REPO_ROOT
 from .sail.importers import load_json_object
@@ -72,7 +77,10 @@ def load_hil_publication_binding(
     )
     _require(
         publication.get("status")
-        == "frozen_four_packets_two_admitted_two_rejected_one_simulator_comparison",
+        == (
+            "frozen_four_packets_two_admitted_two_rejected_"
+            "one_simulator_comparison_one_offline_trace_audit"
+        ),
         "HIL publication is not frozen.",
     )
     packet_ids = publication.get("packet_ids")
@@ -111,6 +119,9 @@ def verify_hil_publication(
         "HIL publication widened authority.",
     )
     physical = _mapping(publication.get("physical"), "Physical binding")
+    offline_analysis = _mapping(
+        publication.get("offline_analysis"), "Offline analysis binding"
+    )
     simulator = _mapping(publication.get("simulator"), "Simulator binding")
 
     contract_path = _repo_path(
@@ -276,6 +287,95 @@ def verify_hil_publication(
             }
         )
 
+    analysis_contract_path = _repo_path(
+        root,
+        offline_analysis.get("contract_path"),
+        label="HIL offline analysis contract",
+    )
+    analysis_output_root = _repo_path(
+        root,
+        offline_analysis.get("output_root"),
+        label="HIL offline analysis output",
+    )
+    analysis_report_path = analysis_output_root / "report.json"
+    analysis_receipt_path = analysis_output_root / "receipt.json"
+    for path, expected, label in (
+        (
+            analysis_contract_path,
+            offline_analysis.get("contract_sha256"),
+            "HIL offline analysis contract",
+        ),
+        (
+            analysis_report_path,
+            offline_analysis.get("report_sha256"),
+            "HIL offline analysis report",
+        ),
+        (
+            analysis_receipt_path,
+            offline_analysis.get("receipt_sha256"),
+            "HIL offline analysis receipt",
+        ),
+    ):
+        _verify_file(path, expected, label=label)
+    analysis_report = load_json_object(
+        analysis_report_path, label="HIL offline analysis report"
+    )
+    analysis_receipt = load_json_object(
+        analysis_receipt_path, label="HIL offline analysis receipt"
+    )
+    _require(
+        analysis_report.get("schema_version") == TRACE_REPORT_SCHEMA
+        and analysis_receipt.get("schema_version") == TRACE_RECEIPT_SCHEMA,
+        "HIL offline analysis output schema changed.",
+    )
+    rederived_analysis = derive_hil_trace_report_payload(
+        contract_path=analysis_contract_path,
+        repo_root=root,
+    )
+    _require(
+        analysis_report == rederived_analysis,
+        "HIL offline analysis no longer re-derives from packet telemetry.",
+    )
+    analysis_unsigned = {
+        key: value
+        for key, value in analysis_receipt.items()
+        if key != "receipt_digest"
+    }
+    _require(
+        canonical_digest(analysis_unsigned)
+        == analysis_receipt.get("receipt_digest")
+        == offline_analysis.get("embedded_receipt_digest"),
+        "HIL offline analysis receipt digest is invalid.",
+    )
+    _require(
+        analysis_receipt.get("contract_sha256")
+        == offline_analysis.get("contract_sha256")
+        and analysis_receipt.get("report_sha256")
+        == offline_analysis.get("report_sha256")
+        and analysis_receipt.get("packet_count") == 4
+        and analysis_receipt.get("additional_physical_attempts") == 0
+        and analysis_receipt.get("additional_simulator_replays") == 0
+        and analysis_receipt.get("provider_calls") == 0
+        and analysis_receipt.get("simulator_parameter_promoted") is False
+        and analysis_receipt.get("task_score_changed") is False,
+        "HIL offline analysis budget or authority changed.",
+    )
+    _require(
+        [
+            (row.get("packet_id"), row.get("action_tensor_sha256"))
+            for row in analysis_report.get("packets", [])
+            if isinstance(row, Mapping)
+        ]
+        == [
+            (
+                packet_id,
+                packets_by_id[packet_id]["action_tensor_sha256"],
+            )
+            for packet_id in publication["packet_ids"]
+        ],
+        "HIL offline analysis packet or action binding changed.",
+    )
+
     sim_contract_path = _repo_path(
         root, simulator.get("contract_path"), label="HIL simulator contract"
     )
@@ -371,6 +471,10 @@ def verify_hil_publication(
         "summary": summary,
         "evidence_receipt": evidence_receipt,
         "packets": verified_packets,
+        "offline_analysis": {
+            "report": analysis_report,
+            "receipt": analysis_receipt,
+        },
         "simulator": {
             "contract": sim_contract,
             "raw_comparison": sim_raw,

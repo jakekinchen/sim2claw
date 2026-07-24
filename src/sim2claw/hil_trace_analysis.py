@@ -432,19 +432,13 @@ def _packet_report(
     }
 
 
-def derive_hil_trace_report(
-    output_root: Path,
+def derive_hil_trace_report_payload(
     *,
     contract_path: Path = DEFAULT_CONTRACT,
     repo_root: Path = REPO_ROOT,
 ) -> dict[str, Any]:
-    """Materialize one deterministic report without robot or simulator execution."""
+    """Re-derive the report payload without writing or executing hardware."""
 
-    output_root = output_root.resolve()
-    _require(
-        not output_root.exists() or not any(output_root.iterdir()),
-        "HIL trace-analysis output root is not empty; overwrite is refused.",
-    )
     contract = load_hil_trace_contract(contract_path)
     campaign_root = _rooted(
         repo_root,
@@ -531,14 +525,34 @@ def derive_hil_trace_report(
         },
         "authority": contract["authority"],
     }
+    return report
+
+
+def derive_hil_trace_report(
+    output_root: Path,
+    *,
+    contract_path: Path = DEFAULT_CONTRACT,
+    repo_root: Path = REPO_ROOT,
+) -> dict[str, Any]:
+    """Materialize one deterministic report without robot or simulator execution."""
+
+    output_root = output_root.resolve()
+    _require(
+        not output_root.exists() or not any(output_root.iterdir()),
+        "HIL trace-analysis output root is not empty; overwrite is refused.",
+    )
+    report = derive_hil_trace_report_payload(
+        contract_path=contract_path,
+        repo_root=repo_root,
+    )
     output_root.mkdir(parents=True, exist_ok=True)
     report_path = output_root / "report.json"
     atomic_write_json(report_path, report)
     receipt = {
         "schema_version": RECEIPT_SCHEMA,
-        "proof_class": contract["proof_class"],
-        "contract_sha256": sha256_file(contract_path),
-        "source_campaign_sha256": sha256_file(campaign_path),
+        "proof_class": report["proof_class"],
+        "contract_sha256": report["contract_sha256"],
+        "source_campaign_sha256": report["source_campaign_sha256"],
         "report_sha256": sha256_file(report_path),
         "packet_count": 4,
         "additional_physical_attempts": 0,
@@ -546,7 +560,7 @@ def derive_hil_trace_report(
         "provider_calls": 0,
         "simulator_parameter_promoted": False,
         "task_score_changed": False,
-        "authority": contract["authority"],
+        "authority": report["authority"],
     }
     receipt["receipt_digest"] = canonical_digest(receipt)
     atomic_write_json(output_root / "receipt.json", receipt)
@@ -560,5 +574,6 @@ __all__ = [
     "RECEIPT_SCHEMA",
     "REPORT_SCHEMA",
     "derive_hil_trace_report",
+    "derive_hil_trace_report_payload",
     "load_hil_trace_contract",
 ]

@@ -288,6 +288,7 @@ def _hil_bundle(
                 "physical_hil_unloaded_joint_observation",
                 "derived_hil_joint_identifiability_evaluation",
                 "action_frozen_hil_simulator_comparison",
+                "offline_hil_trace_identifiability_diagnostic",
             ],
             "physical": {
                 "receipt_sha256": "1" * 64,
@@ -295,9 +296,53 @@ def _hil_bundle(
             "simulator": {
                 "receipt_sha256": "2" * 64,
             },
+            "offline_analysis": {
+                "receipt_sha256": "7" * 64,
+            },
         },
         "publication_sha256": "3" * 64,
         "evidence_receipt": {"receipt_digest": "4" * 64},
+        "offline_analysis": {
+            "report": {
+                "packets": [
+                    {
+                        "packet_id": packet_id,
+                        "action_tensor_sha256": ACTION_SHA256,
+                        "sample_quantized_lag": {
+                            "seconds": 0.15,
+                            "is_not_command_application_latency": True,
+                        },
+                        "directional_tracking": {
+                            "mean_residual_gap_degrees": 0.14,
+                            "is_not_backlash_or_compliance_proof": True,
+                        },
+                        "plateau_scale_offset_diagnostic": {
+                            "admissible_for_scale_offset_claim": False,
+                        },
+                        "reset_return_audit": {
+                            "final_minus_initial_degrees": 0.59,
+                            "is_single_packet_return_residual_not_reset_drift_proof": True,
+                        },
+                        "fresh_current_association": {
+                            "correlation_absolute_current_to_absolute_error": 0.47,
+                            "is_diagnostic_not_force_or_torque": True,
+                        },
+                        "safety": {
+                            "stall_warning_sample_count": (
+                                6
+                                if packet_id == "HIL-ELBOW-FLEX-22"
+                                else 0
+                            ),
+                        },
+                    }
+                ],
+                "remaining_prerequisites": [
+                    "independent_command_created_sent_and_actuator_ack_timestamps",
+                    "strict_task_and_end_effector_consequence",
+                ],
+            },
+            "receipt": {"receipt_digest": "8" * 64},
+        },
         "packets": [
             {
                 "packet_id": packet_id,
@@ -404,6 +449,19 @@ def test_hil_gripper_projection_admits_only_unloaded_measurement() -> None:
     assert statuses["task_ee_consequence"] == "missing"
     assert projection["authority"]["simulator_promotion"] is False
     assert "0/11" in projection["domains"][-1]["detail"]
+    assert any(
+        row["label"] == "Directional residual gap"
+        for row in projection["domains"][1]["measurements"]
+    )
+    assert any(
+        row["label"] == "Current ↔ absolute error correlation"
+        for row in projection["domains"][4]["measurements"]
+    )
+    assert (
+        "independent_command_created_sent_and_actuator_ack_timestamps"
+        in projection["next_evidence"]["measurements"]
+    )
+    assert projection["receipt"]["offline_analysis_receipt_digest"] == "8" * 64
     assert "perfect simulation" not in json.dumps(projection).lower()
 
 
@@ -439,6 +497,14 @@ def test_hil_rejected_packet_and_action_mismatch_fail_closed() -> None:
     assert mismatch["available"] is False
     assert mismatch["reason"] == "hil_action_hash_mismatch"
     assert mismatch["chain"] == []
+    missing_analysis = _hil_bundle("HIL-GRIPPER-05", admitted=True)
+    missing_analysis["offline_analysis"]["report"]["packets"] = []
+    unavailable = _hil_identifiability_projection(
+        _hil_episode("HIL-GRIPPER-05"),
+        missing_analysis,
+    )
+    assert unavailable["available"] is False
+    assert unavailable["reason"] == "hil_offline_analysis_packet_missing"
 
 
 def test_terminal_negative_keeps_posterior_and_authority_closed() -> None:

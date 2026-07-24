@@ -183,9 +183,33 @@ def _hil_identifiability_projection(
     raw = _as_mapping(packet.get("raw"))
     evaluation = _as_mapping(packet.get("evaluation"))
     summary = _as_mapping(packet.get("summary"))
+    offline_bundle = _as_mapping(bundle.get("offline_analysis"))
+    offline_report = _as_mapping(offline_bundle.get("report"))
+    offline_packet = next(
+        (
+            row
+            for row in _as_rows(offline_report.get("packets"))
+            if row.get("packet_id") == packet_id
+        ),
+        {},
+    )
+    if not offline_packet:
+        return _unavailable_projection(
+            episode,
+            reason="hil_offline_analysis_packet_missing",
+            detail=(
+                "The hash-bound offline trace diagnostic is missing the selected "
+                "HIL packet; no telemetry-derived claim is attached."
+            ),
+        )
     selected_action = str(episode.get("action_array_sha256") or "")
     packet_action = str(raw.get("action_tensor_sha256") or "")
-    if not selected_action or selected_action != packet_action:
+    analysis_action = str(offline_packet.get("action_tensor_sha256") or "")
+    if (
+        not selected_action
+        or selected_action != packet_action
+        or selected_action != analysis_action
+    ):
         return _unavailable_projection(
             episode,
             reason="hil_action_hash_mismatch",
@@ -199,7 +223,16 @@ def _hil_identifiability_projection(
     tracking = _as_mapping(summary.get("tracking"))
     lag = _as_mapping(tracking.get("requested_to_actual_best_lag"))
     current = _as_mapping(summary.get("current_raw"))
-    safety = _as_mapping(summary.get("safety"))
+    offline_lag = _as_mapping(offline_packet.get("sample_quantized_lag"))
+    directional = _as_mapping(offline_packet.get("directional_tracking"))
+    plateau = _as_mapping(
+        offline_packet.get("plateau_scale_offset_diagnostic")
+    )
+    reset_audit = _as_mapping(offline_packet.get("reset_return_audit"))
+    current_association = _as_mapping(
+        offline_packet.get("fresh_current_association")
+    )
+    offline_safety = _as_mapping(offline_packet.get("safety"))
     cameras = _as_mapping(summary.get("cameras"))
     wrist = _as_mapping(cameras.get("wrist"))
     sim_bundle = _as_mapping(bundle.get("simulator"))
@@ -266,6 +299,18 @@ def _hil_identifiability_projection(
             value=lag.get("lag_aligned_rmse"),
             unit="deg",
             source="Independent HIL packet evaluator",
+        ),
+        _measurement(
+            "Directional residual gap",
+            value=directional.get("mean_residual_gap_degrees"),
+            unit="deg",
+            source="Hash-bound offline trace diagnostic · not backlash proof",
+        ),
+        _measurement(
+            "Return residual",
+            value=reset_audit.get("final_minus_initial_degrees"),
+            unit="deg",
+            source="Single-packet reset audit · not drift proof",
         ),
     ]
     if is_shoulder:
@@ -341,14 +386,15 @@ def _hil_identifiability_projection(
             summary="A bounded command-to-position lag was measured",
             detail=(
                 "Requested and actual position were aligned over the frozen 20 Hz "
-                "trace. The command-application timestamp remains unavailable."
+                "trace. The displayed lag is sample-quantized response alignment, "
+                "not command-application latency; actuator timestamps are absent."
             ),
             measurements=[
                 _measurement(
-                    "Best non-negative lag",
-                    value=lag.get("lag_seconds"),
+                    "Best sample-quantized lag",
+                    value=offline_lag.get("seconds"),
                     unit="s",
-                    source="Independent HIL packet evaluator",
+                    source="Offline trace diagnostic · not actuator latency",
                 ),
                 _measurement(
                     "Raw requested-to-actual RMSE",
@@ -397,11 +443,19 @@ def _hil_identifiability_projection(
                 ),
                 _measurement(
                     "Stall-warning samples",
-                    value=safety.get("stall_warning_sample_count"),
+                    value=offline_safety.get("stall_warning_sample_count"),
                     unit="samples",
                     source="Guarded physical gateway",
                     threshold=0,
                     comparator="=",
+                ),
+                _measurement(
+                    "Current ↔ absolute error correlation",
+                    value=current_association.get(
+                        "correlation_absolute_current_to_absolute_error"
+                    ),
+                    unit="correlation",
+                    source="Fresh raw-current samples · diagnostic only",
                 ),
             ],
             missing_evidence=[
@@ -442,6 +496,8 @@ def _hil_identifiability_projection(
     )
     publication = _as_mapping(bundle.get("publication"))
     physical_binding = _as_mapping(publication.get("physical"))
+    offline_binding = _as_mapping(publication.get("offline_analysis"))
+    offline_receipt = _as_mapping(offline_bundle.get("receipt"))
     return {
         "schema_version": SCHEMA_VERSION,
         "available": True,
@@ -572,7 +628,16 @@ def _hil_identifiability_projection(
                     else "packet_rejected"
                 ),
                 "missing_observables": list(
-                    dict.fromkeys(failures + ["strict_task_consequence"])
+                    dict.fromkeys(
+                        failures
+                        + (
+                            []
+                            if plateau.get("admissible_for_scale_offset_claim")
+                            is True
+                            else ["scale_offset_identifiability_gate"]
+                        )
+                        + ["strict_task_consequence"]
+                    )
                 ),
             }
         ],
@@ -628,10 +693,7 @@ def _hil_identifiability_projection(
             ),
             "summary": next_summary,
             "measurements": list(summary.get("failures") or [])
-            + [
-                "calibrated_force_or_current",
-                "strict_task_consequence",
-            ],
+            + list(offline_report.get("remaining_prerequisites") or []),
         },
         "receipt": {
             "verification": "verified",
@@ -649,6 +711,12 @@ def _hil_identifiability_projection(
             ),
             "simulator_receipt_digest": (
                 sim_receipt.get("receipt_digest") if is_shoulder else None
+            ),
+            "offline_analysis_receipt_sha256": offline_binding.get(
+                "receipt_sha256"
+            ),
+            "offline_analysis_receipt_digest": offline_receipt.get(
+                "receipt_digest"
             ),
             "publication_sha256": bundle.get("publication_sha256"),
         },

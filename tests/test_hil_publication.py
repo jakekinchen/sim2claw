@@ -63,6 +63,10 @@ def test_current_publication_rederives_packet_and_simulator_evaluations() -> Non
         == "diagnostic_shoulder_range_external_tie_or_loss_no_promotion"
     )
     assert bundle["simulator"]["evaluation"]["simulator_parameter_promoted"] is False
+    findings = bundle["offline_analysis"]["report"]["cross_packet_findings"]
+    assert findings["elbow_current_and_stall_signature_is_distinct"] is True
+    assert findings["any_scale_offset_fit_admissible"] is False
+    assert findings["simulator_change_warranted"] is False
 
 
 @pytest.mark.skipif(not EVIDENCE_AVAILABLE, reason="local HIL evidence unavailable")
@@ -88,4 +92,20 @@ def test_publication_authority_widening_fails_closed() -> None:
         return_value=tampered,
     ):
         with pytest.raises(HILPublicationError, match="widened authority"):
+            verify_hil_publication(repo_root=REPO_ROOT)
+
+
+@pytest.mark.skipif(not EVIDENCE_AVAILABLE, reason="local HIL evidence unavailable")
+def test_offline_analysis_hash_tamper_fails_closed() -> None:
+    publication = json.loads((REPO_ROOT / PUBLICATION).read_text(encoding="utf-8"))
+    tampered = copy.deepcopy(publication)
+    tampered["offline_analysis"]["report_sha256"] = "0" * 64
+    with patch(
+        "sim2claw.hil_publication.load_hil_publication_binding",
+        return_value=tampered,
+    ):
+        with pytest.raises(
+            HILPublicationError,
+            match="offline analysis report hash changed",
+        ):
             verify_hil_publication(repo_root=REPO_ROOT)

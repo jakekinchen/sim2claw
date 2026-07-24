@@ -14,6 +14,14 @@
     "HIL-ELBOW-FLEX-22",
     "HIL-WRIST-FLEX-30"
   ],
+  "offline_analysis": {
+    "contract_path": "configs/evaluations/hil_offline_trace_analysis_v1.json",
+    "contract_sha256": "42e3be1e32e46aa5d9aa0043d02bd90c9f166c70223009b902a6cdfb4c50e595",
+    "embedded_receipt_digest": "311d0c023d73b4b60a6186353ea375d04634f46cc2d14e2143694c57c7c35e36",
+    "output_root": "outputs/current-100mm-hil-trace-analysis-v1",
+    "receipt_sha256": "fc588df9e94c8a7bbdfb4c61cbbf959e07c1048d6dc0d56da13c03ac3e68e10c",
+    "report_sha256": "a62481c1dac5930306e26efd847c39e87873c37eeabb96e8cef98194c6c2e698"
+  },
   "physical": {
     "campaign_root": "runs/current-100mm-hil-identifiability-20260724",
     "campaign_state_sha256": "b364aae639bb753b58216177386aa6ae93d43dad5462c8dd1a3d33dd44330858",
@@ -27,7 +35,8 @@
   "proof_classes": [
     "physical_hil_unloaded_joint_observation",
     "derived_hil_joint_identifiability_evaluation",
-    "action_frozen_hil_simulator_comparison"
+    "action_frozen_hil_simulator_comparison",
+    "offline_hil_trace_identifiability_diagnostic"
   ],
   "schema_version": "sim2claw.hil_identifiability_publication.v1",
   "simulator": {
@@ -43,5 +52,5 @@
       "follower_shoulder_lift_range_v1.jsonl": "e3be914d7dbce0a652a9276cffd44ac366aee8eadc3632648513adc18e1ee053"
     }
   },
-  "status": "frozen_four_packets_two_admitted_two_rejected_one_simulator_comparison"
+  "status": "frozen_four_packets_two_admitted_two_rejected_one_simulator_comparison_one_offline_trace_audit"
 }
