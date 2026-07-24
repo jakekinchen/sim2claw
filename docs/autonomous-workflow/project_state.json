@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T17:50:00-05:00",
+  "updated_at": "2026-07-24T17:56:45-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
-  "current_milestone": "D405_AVFOUNDATION_FORMAT_INVENTORY_V1_TERMINAL_SUPPORTED",
+  "current_milestone": "AVFOUNDATION_DUAL_CAMERA_COMMON_SESSION_V1_PREREGISTERED",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
@@ -3288,6 +3288,36 @@
         "metric_depth": false,
         "camera_exposure_timestamps": false,
         "cross_camera_synchronization": false,
+        "simulator_calibration": false,
+        "task_success": false
+      }
+    },
+    "avfoundation_dual_camera_common_session_v1": {
+      "status": "preregistered_before_implementation_or_session",
+      "goal": "docs/autonomous-workflow/goal-loop-avfoundation-dual-camera-common-session-v1.md",
+      "goal_sha256": "beb45c2ed69ef68402bac52d6fedf3d4d5682e829e536ac997a4f68a6bb1747a",
+      "contract": "configs/evaluations/avfoundation_dual_camera_common_session_v1.json",
+      "contract_sha256": "c2ad7c333e06affae037998318976931da638c5eec2806e769f9c2971f817af1",
+      "baseline_commit": "049c5da55a203780ad20a2ef9711480125702286",
+      "observer_path": "tools/macos/AVFoundationDualCameraCommonSessionV1.swift",
+      "evaluator_path": "src/sim2claw/avfoundation_dual_camera_common_session_v1.py",
+      "observation_attempts_used": 0,
+      "observation_attempts_maximum": 1,
+      "common_capture_sessions_used": 0,
+      "common_capture_sessions_maximum": 1,
+      "independent_camera_sessions_used": 0,
+      "source_callbacks_used": 0,
+      "replacement_attempts_used": 0,
+      "retries_used": 0,
+      "robot_motion_trials_used": 0,
+      "simulator_replays_used": 0,
+      "provider_calls_used": 0,
+      "claim_limits": {
+        "stationary_source_callback_health_only": true,
+        "production_container_timing": false,
+        "motion_capture_reliability": false,
+        "camera_exposure_synchronization": false,
+        "metric_depth": false,
         "simulator_calibration": false,
         "task_success": false
       }

@@ -1202,3 +1202,9 @@ goal. External provider campaigns and spending remain separately gated.
   Rebound the terminal goal SHA to `988ec01f...` and added tracked guard
   `b8194ddc...` plus separate control `78027bd5...`, which refuses before any
   runner/device delegation. The execution-bound evaluator remains unchanged.
+- 2026-07-24T17:56:45-05:00 — Opened the next concrete lifecycle-isolation
+  gate before implementation: one metadata-only native `AVCaptureSession`
+  with exact D405/C922 formats, two inputs/two outputs, both format locks held
+  through start verification, and frozen callback/interval gates after visible
+  warm-up. One stationary session maximum, no retry/container/robot/simulator/
+  provider authority. Admission failure routes to an isolated camera host.

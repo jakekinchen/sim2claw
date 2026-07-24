@@ -175,6 +175,14 @@ sessions, zero frames, and zero camera lifecycle operations, robot motions,
 simulator replays, or provider calls. This is design input only; it does not
 prove that a native two-input common session works.
 
+That native common-session gate is now separately preregistered before
+implementation. It freezes one stationary metadata-only `AVCaptureSession`
+with the exact D405 and C922 as two inputs/two outputs, both format locks held
+through start verification, one visible source-PTS warm-up second, and frozen
+per-stream callback/interval gates. It permits one eleven-second session and
+no retry, container encoding, robot motion, simulator replay, or provider
+call. Failure to admit both inputs/outputs routes to an isolated camera host.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
