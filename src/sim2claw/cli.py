@@ -356,6 +356,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     hil_simulator.add_argument("--config", type=Path, required=True)
     hil_simulator.add_argument("--output", type=Path, required=True)
+    hil_evidence = subparsers.add_parser(
+        "hil-compile-evidence",
+        help="verify and summarize the frozen four-packet HIL campaign",
+    )
+    hil_evidence.add_argument("--config", type=Path, required=True)
+    hil_evidence.add_argument("--campaign", type=Path, required=True)
+    hil_evidence.add_argument("--output", type=Path, required=True)
 
     sail_inventory = subparsers.add_parser(
         "sail-inventory",
@@ -1214,6 +1221,20 @@ def main(argv: Sequence[str] | None = None) -> int:
                 contract_path=args.config,
             )
         except HILSimulatorComparisonError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "hil-compile-evidence":
+        from .hil_evidence import HILEvidenceError, compile_hil_evidence
+
+        try:
+            report = compile_hil_evidence(
+                args.campaign,
+                args.output,
+                contract_path=args.config,
+            )
+        except HILEvidenceError as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
