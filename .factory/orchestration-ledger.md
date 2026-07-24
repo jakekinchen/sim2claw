@@ -1,5 +1,34 @@
 # Orchestration Ledger
 
+## Active bounded transaction — Studio simulator-twin reconciliation
+
+- Owner objective: preserve evaluator/learning machinery while making Replay
+  the single contextual place to compare recorded reality with an honest
+  simulator twin and inspect the remaining sim-to-real gaps.
+- Implementation: committed at
+  `cfc502140999e9e35bcd2d5dbeefbfb3c04a6aa8`; the retired pixel-filter visual
+  mimic is no longer active. Reality / Twin / Compare share one timeline.
+- Live catalog: 101 episodes, 22 physical sources, eight receipt-bound
+  simulator pairings, seven byte-identical action pairings, one explicitly
+  converted source-command diagnostic, 14 simulator-unavailable sources, and
+  zero image-derived visual twins.
+- Fail-closed boundary: source samples, replay receipt, response trace, state
+  trace, recording identity, and declared proof class must all verify. A local
+  diagnostic is never relabelled as exact-action, mechanism, consequence,
+  task, training, promotion, or physical evidence.
+- Product boundary: the loopback interactive Studio may explicitly request the
+  existing diagnostic replay runner under a single-flight lock; read-only
+  Studio has no write control. No simulator replay was executed by this
+  reconciliation.
+- Evaluator binding: Studio receipt `c8489f8...` and publication receipt
+  `6f72f0b...` were regenerated from the committed compiler. Focused/static and
+  desktop/mobile/keyboard/console checks pass; exact-head short tiers, one full
+  suite, and independent review remain.
+- Frozen evidence: S2 remains `11/11` byte-identical files and
+  `1 event / 4 replays / 0 measurement trials`; HIL artifacts are unchanged.
+- Authority: provider, paid compute, simulator campaign, physical capture,
+  gateway, robot motion, training, promotion, push, and VideoSim remain closed.
+
 ## Active bounded transaction — four-hour HIL identifiability
 
 - Owner objective: work for at least four hours, perform and record at least

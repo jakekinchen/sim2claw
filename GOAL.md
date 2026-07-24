@@ -193,8 +193,25 @@ missing physics replay may be introduced.
 
 The implementation candidate is recorded in
 [`docs/run-logs/2026-07-24-studio-project-map-agent-access.md`](docs/run-logs/2026-07-24-studio-project-map-agent-access.md).
-Exact-head receipts and independent review own final verification; no push is
-authorized by this checkpoint.
+The Replay surface now removes the retired pixel-filter “visual twin” and
+admits only receipt-bound MuJoCo traces. Seven physical sources retain
+byte-identical action-frozen simulator pairings; one additional physical source
+has a separately labelled source-command diagnostic whose unit conversion and
+model-bound clipping explicitly prevent an exact-action claim. Fourteen
+physical sources remain simulator-unavailable. Invalid source, receipt,
+response-trace, or state-trace hashes fail closed.
+
+Studio exposes one Reality / Twin / Compare switch, one synchronized timeline,
+and contextual Twin fidelity/evidence drawers. The source badge is
+informational rather than a duplicate route. A loopback-only explicit command
+may generate a diagnostic replay for an existing recording, but read-only
+Studio exposes no write control and no generated replay can self-admit
+mechanism, consequence, task, training, promotion, or physical authority.
+
+The official SAIL observatory and publication package have been regenerated
+from the committed compiler and remain physical-authority false. Exact-head
+short tiers, one full repository suite, and independent review still own final
+verification; no push is authorized by this checkpoint.
 
 ## Completed overnight dual-camera simulator calibration
 

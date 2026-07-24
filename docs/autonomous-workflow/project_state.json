@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T13:13:00-05:00",
+  "updated_at": "2026-07-24T14:23:00-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
-  "current_milestone": "AVFOUNDATION_FORMAT_INVENTORY_V2_SUPPORTED_CANDIDATE_CLOSEOUT_VERIFICATION",
+  "current_milestone": "STUDIO_SIMULATOR_TWIN_RECONCILIATION_EXACT_HEAD_VERIFICATION",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
@@ -146,7 +146,7 @@
   },
   "studio_project_map_transaction": {
     "schema_version": "sim2claw.studio_project_map_transaction.v1",
-    "status": "implementation_frozen_exact_head_receipts_own_verification",
+    "status": "simulator_twin_reconciliation_committed_receipts_rebound_exact_head_verification_pending",
     "baseline_commit": "e7ae3f4840ab1be97f0884dfaeb5b3fcc3f632ec",
     "config": "configs/studio/project_map_v1.json",
     "projection": "src/sim2claw/studio_project_map.py",
@@ -171,11 +171,14 @@
       "agent_can_promote": false
     },
     "live_catalog_observation": {
-      "catalog_episode_count": 97,
+      "catalog_episode_count": 101,
       "physical_source_count": 22,
       "dual_camera_source_count": 2,
-      "physical_physics_pairing_count": 7,
-      "physical_physics_missing_count": 15,
+      "physical_simulator_pairing_count": 8,
+      "physical_byte_identical_action_pairing_count": 7,
+      "physical_source_command_diagnostic_pairing_count": 1,
+      "physical_simulator_missing_count": 14,
+      "physical_visual_twin_count": 0,
       "overall_fidelity_percentage_claimed": false
     },
     "verification": {
@@ -187,7 +190,7 @@
       "horizontal_overflow_detected": false,
       "console_error_count": 0,
       "responsive_static_contract_passed": true,
-      "live_mobile_viewport_claimed": false,
+      "live_mobile_viewport_claimed": true,
       "s2_frozen_hashes_verified": 11,
       "s2_campaign_event_count": 1,
       "s2_anchor_replay_count": 4,
@@ -201,6 +204,63 @@
       "provider": false,
       "paid_compute": false,
       "measurement": false,
+      "physical_capture": false,
+      "robot_motion": false,
+      "training": false,
+      "promotion": false,
+      "push_origin_main": false
+    }
+  },
+  "studio_simulator_twin_reconciliation": {
+    "schema_version": "sim2claw.studio_simulator_twin_reconciliation.v1",
+    "status": "implementation_committed_evaluator_receipts_rebound_final_verification_pending",
+    "implementation_commit": "cfc502140999e9e35bcd2d5dbeefbfb3c04a6aa8",
+    "source_recording_count": 22,
+    "simulator_pairing_count": 8,
+    "byte_identical_action_pairing_count": 7,
+    "source_command_diagnostic_pairing_count": 1,
+    "simulator_missing_count": 14,
+    "image_derived_visual_twin_count": 0,
+    "api": {
+      "catalog": "GET /api/catalog",
+      "project_map": "GET /api/project-map",
+      "twin_fidelity": "GET /api/twin-fidelity?episode_id={id}",
+      "explicit_loopback_diagnostic": "POST /api/studio/simulator-replay"
+    },
+    "proof_boundaries": {
+      "source_command_diagnostic_is_byte_identical_action": false,
+      "source_command_diagnostic_is_task_evidence": false,
+      "missing_trace_is_synthesized": false,
+      "invalid_receipt_or_trace_fails_closed": true,
+      "overall_fidelity_percentage_claimed": false
+    },
+    "evaluator_bindings": {
+      "studio_manifest_sha256": "127b2faa0fbfcff3b946184920b3c3d324d5bcc62ff6745940499be4f0bf0422",
+      "studio_receipt_sha256": "c8489f8d72e35413b933944689027b5ac1ebb46059d1aaed0a77d1b6d98eb66f",
+      "studio_receipt_digest": "51670fb8d172c63399d516eba35fc4e8ec19272649345ba55faa133335348e44",
+      "publication_package_sha256": "98173b9d5dca97c75ce8aa579fd727b02a32ff96474e3025283d590ebdd8f833",
+      "publication_receipt_sha256": "6f72f0bd8aca46ddb9fe58ede65c536e493fb1a0102543d57ce55b8f7fe88696",
+      "publication_receipt_digest": "9cad224906e27ee40fcb2f9638b3cd2af5f4982db5ad9c6c6054f5ee2f750b1d"
+    },
+    "verification": {
+      "focused_tests_passed": 55,
+      "focused_subtests_passed": 2,
+      "javascript_syntax_passed": true,
+      "python_compile_passed": true,
+      "desktop_live_inspection_passed": true,
+      "mobile_390x844_inspection_passed": true,
+      "keyboard_focus_return_passed": true,
+      "synchronized_half_timeline_time_seconds": 24.82,
+      "horizontal_overflow_detected": false,
+      "console_error_count": 0,
+      "exact_head_short_tiers_pending": true,
+      "exact_head_full_suite_pending": true,
+      "independent_review_pending": true
+    },
+    "authority": {
+      "simulator_or_adapter_replay": false,
+      "provider": false,
+      "paid_compute": false,
       "physical_capture": false,
       "robot_motion": false,
       "training": false,
