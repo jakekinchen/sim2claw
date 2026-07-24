@@ -104,10 +104,10 @@ proof.
 ## Progress Ledger
 
 ```text
-Current state: Exact v2 implementation is committed after preregistration; no v2 observation has run.
-Completed: Preregistration 622602c; implementation 995e8bb; primitive Codable/JSONEncoder observer; pre-launch/final attempt manifests; unchanged selection rule; adversarial validation.
-Evidence: source 73f0e6b7; evaluator ab13da6a; 15 direct tests; 138 combined inventory/camera/HIL/Studio tests; 0/1 observations used.
-Remaining: Execute one observation, evaluate, freeze hashes/state, verify exact head, and centralize.
-Blockers: Actual C922 format surface remains unavailable until the v2 observation.
-Next step: Commit the implementation-state binding, then consume the sole read-only observation once.
+Current state: Terminal supported-format result; the single v2 observation and evaluation are complete and may not be rerun.
+Completed: Preregistration 622602c; implementation 995e8bb; execution head 79fdbe8; 1/1 observation; 0 sessions/frames; 33 formats; 209 ranges; 14 exact-dimension and 2 eligible candidates.
+Evidence: raw 3754a62f; evaluation 3c59915c; receipt file 14c8f821 / digest 9c42f8a5; selected 640x480 420v at 30.00003000003 fps.
+Remaining: Commit closeout/state, run exact-head focused/SAIL/full verification, and centralize.
+Blockers: No inventory blocker remains. Callback delivery still requires a new separately preregistered campaign.
+Next step: Freeze the terminal result in state/logs without rerunning device enumeration.
 ```

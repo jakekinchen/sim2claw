@@ -86,23 +86,30 @@ fail-closed sealer recorded `prerequisite_abstention`, zero usable inventory,
 and no candidate. No second v1 observation is permitted.
 
 A separately versioned v2 prerequisite was frozen before implementation. Its
-exact implementation is now committed at `995e8bb` without device access. It
-preserves the same exact-device, 640×480, `0.05 fps`, and one-observation
-method, but uses concrete Swift `Codable` structs, `JSONEncoder`, explicit
-primitive conversions, typed nulls for macOS-unavailable metadata, and a
-pre-launch attempt manifest. It uses new source and evaluator paths and cannot
-mutate or reinterpret v1. Swift typecheck, 15 direct adversarial tests, and 138
-combined inventory/camera/HIL/Studio tests pass. The sole read-only inventory
-observation remains unconsumed.
+exact implementation was committed at `995e8bb` without device access. The
+sole read-only observation then completed under exact head `79fdbe8`: the
+native C922 surface contains 33 formats and 209 frame-rate ranges. The frozen
+evaluator found 14 exact-640×480 candidates, admitted two within `0.05 fps` of
+30, and selected subtype `420v` at `30.00003000003 fps` (deviation
+`0.00003000003 fps`) by the preregistered tie-break. The observation budget is
+exhausted at `1 / 1`; capture sessions, frames, D405 lifecycle operations,
+robot motions, simulator replays, and provider calls remain zero.
+
+This closes only the supported-format prerequisite. It does not prove callback
+delivery, container timing, physical exposure continuity, cross-camera
+synchronization, metric depth, simulator calibration, or task success. A
+future callback-source measurement must be separately preregistered against
+this exact candidate and cannot reuse the exhausted v1 source-localization
+family.
 
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
 measurements and does not convert partial progress into a percentage or a
 simulator/task claim. The next scientific step requires new, separately
-preregistered measurement work: first enumerate and freeze a supported C922
-AVFoundation callback format; physically repair and strain-relieve the D405
-path; then qualify a lifecycle-safe simultaneous capture design; and only
+preregistered measurement work: validate callback delivery with the frozen
+C922 `420v` candidate; physically repair and strain-relieve the D405 path; then
+qualify a lifecycle-safe simultaneous capture design; and only
 afterward add metric registration, calibrated force/current/load
 observability, device/actuator timing, reset/loaded trials, and strict held-out
 physical consequence. Another simulator family, silent retry, or post-hoc

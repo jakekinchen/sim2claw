@@ -1041,3 +1041,13 @@ goal. External provider campaigns and spending remain separately gated.
   adversarial tests, and 138 combined inventory/camera/HIL/Studio tests pass.
   Inventory use remains `0 / 1`; capture sessions, samples, D405 lifecycle
   operations, motion, simulator replays, and provider calls remain zero.
+- 2026-07-24T13:12:03-05:00 — Consumed the sole AVFoundation format inventory
+  v2 observation once at clean exact head `79fdbe8`. The primitive observer
+  returned zero with raw inventory `3754a62f...`; the frozen evaluator observed
+  33 formats, 209 rate ranges, 14 exact-640×480 candidates, and 2 eligible
+  candidates. It selected format 16 / range 0, `420v`, 640×480 at
+  `30.00003000003 fps` with `0.00003000003 fps` deviation. Evaluation
+  `3c59915c...` and receipt `14c8f821...` / `9c42f8a5...` preserve one
+  observation and zero capture sessions, frames, D405 operations, motion,
+  simulator replays, or providers. This closes the format prerequisite only;
+  callback delivery and timing remain unmeasured and require new authority.
