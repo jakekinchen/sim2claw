@@ -56,26 +56,35 @@ this stationary campaign. The result is therefore a terminal negative for the
 current dual-camera lifecycle, not a D405 motion-reliability pass, and it is not
 eligible for retry or post-hoc threshold relaxation.
 
-The next software/camera-only transaction now targets the unresolved layer
-between camera source delivery and the encoded C922 container. It freezes a
-native AVFoundation callback probe and, only after that implementation is
-committed, six C922-only controls plus six C922-with-D405-lifecycle trials.
-The probe records source PTS, callback cadence, Apple drop reasons, session
-notifications, and device events. It does not create a shared exposure clock,
-reclassify the sealed `0/6` camera result, authorize robot motion, or change
-Twin fidelity or task scores.
+The bounded AVFoundation source-localization transaction is now a sealed
+prerequisite abstention. Its implementation was committed before live use and
+the frozen campaign consumed all 12 one-attempt slots—six control-labelled and
+six treatment-labelled—with zero replacements, robot motions, or provider
+calls. Every attempt failed before session startup because the exact
+preregistered C922 `640 × 480 @ 30 fps` AVFoundation format was unavailable.
+The campaign therefore contains zero source samples or drops, zero completed
+AVFoundation session starts, and zero D405 lifecycle executions.
+
+An independently committed fail-closed sealer verified the original
+source/runner/binary identities and all raw artifact hashes, then emitted
+`prerequisite_abstention`. No source-continuity comparison is available and no
+container gap was reclassified. The immediate software prerequisite is an
+evaluator-frozen mapping from the C922's actually enumerated AVFoundation
+formats to a supported exact source-probe request; a later campaign would
+require new authority because this 12-attempt family is exhausted.
 
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
 measurements and does not convert partial progress into a percentage or a
-simulator/task claim. The next scientific step requires a new preregistered
-measurement transaction that first physically repairs and strain-relieves the
-D405 path, then qualifies a lifecycle-safe simultaneous capture design, and
-then adds metric registration, calibrated force/current/load observability,
-device/actuator timing, reset/loaded trials, and strict held-out physical
-consequence. Another simulator family, silent physical retry, or modified
-camera threshold is not an acceptable substitute.
+simulator/task claim. The next scientific step requires new, separately
+preregistered measurement work: first enumerate and freeze a supported C922
+AVFoundation callback format; physically repair and strain-relieve the D405
+path; then qualify a lifecycle-safe simultaneous capture design; and only
+afterward add metric registration, calibrated force/current/load
+observability, device/actuator timing, reset/loaded trials, and strict held-out
+physical consequence. Another simulator family, silent retry, or post-hoc
+camera threshold change is not an acceptable substitute.
 The owner now explicitly authorizes necessary physical tests and guarantees
 the workcell is clear. Each physical packet remains execution-blocked until
 its own preregistration, exact hardware/calibration, torque-off, start-envelope,

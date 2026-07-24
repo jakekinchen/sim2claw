@@ -977,3 +977,17 @@ goal. External provider campaigns and spending remain separately gated.
   mutation, substitution, replay, abstention, and repeated-materialization
   checks. No camera was opened; the implementation must be committed before
   live authorization preflight or any frozen trial.
+- 2026-07-24T12:00:34-05:00 — The fixed AVFoundation source-localization
+  family reached a terminal prerequisite abstention. Implementation commit
+  `6948496` preceded live execution. All 12 one-attempt slots were consumed in
+  the frozen order with zero replacements, robot motions, provider calls, or
+  D405 lifecycle starts. Every exact-name C922 probe failed before session
+  startup with `requested_format_unavailable` for the preregistered
+  `640x480@30` request, leaving zero source samples/drops and no valid
+  control/treatment comparison. The original runner remains byte-identical at
+  `7be75815...`; separate fail-closed sealer commit `d234ed7` produced campaign
+  `7c8b6ad3...`, evaluation `d0d65fbe...`, and receipt `ac636601...` /
+  `35b8f9d9...`. This does not reclassify the sealed D405/C922 container
+  negative or change Twin fidelity/task authority. A future attempt requires
+  frozen supported-format enumeration and new campaign authority; exact-head
+  closeout verification is pending.

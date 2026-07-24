@@ -128,10 +128,10 @@ success as separate proof classes.
 ## Progress Ledger
 
 ```text
-Current state: Preregistration is committed and the native probe/runner/evaluator implementation passes focused proof without opening a camera.
-Completed: Exact source-vs-container hypotheses, fixed control/treatment order, measurements, evaluator verdict vocabulary, budgets, closed authority, Swift callback/drop/session/device observer, Python compiler/runtime binding, orchestration, independent evaluator, and adversarial tests.
-Evidence: baseline 87534c5; preregistration 92c2f96; contract c7063d8f; Swift source 903658a0; Python runner 7be75815; sealed campaign 57d4983c; evaluation 80ed9ac3; receipt cfc11ff3; 16 direct and 60 combined focused tests pass.
-Remaining: Commit the exact implementation, perform a no-open authorization/identity preflight, then execute only the frozen 12-trial no-motion campaign or emit a prerequisite abstention.
-Blockers: Camera authorization and exact AVFoundation source-event behavior remain live preflight gates; no scientific blocker is claimed yet.
-Next step: Freeze the implementation commit before any live camera opens.
+Current state: Terminal prerequisite abstention; the 12-attempt family is exhausted without a usable source measurement or D405 lifecycle execution.
+Completed: Preregistration 92c2f96; source implementation 6948496; fail-closed abstention sealer d234ed7; fixed 6-control/6-treatment-labelled attempt budget; exact runtime/artifact verification; deterministic sealed abstention.
+Evidence: contract c7063d8f; Swift source 903658a0; frozen runner 7be75815; compiled probe 8222f380; campaign 7c8b6ad3; evaluation d0d65fbe; receipt ac636601 / embedded digest 35b8f9d9; 12/12 requested_format_unavailable; 0 source samples/drops; 0 session starts; 0 D405 lifecycle starts; 18 direct and 81 combined focused tests pass.
+Remaining: Exact-head focused/SAIL/full verification and centralization. Source-vs-container localization remains scientifically unanswered.
+Blockers: The preregistered C922 640x480@30 AVFoundation format is unavailable. A future campaign requires separately frozen enumeration-to-format selection and new attempt authority. The motion-correlated D405 cable/connector prerequisite remains separate.
+Next step: Freeze closeout authority/state, verify without opening cameras, then centralize only after all gates pass.
 ```
