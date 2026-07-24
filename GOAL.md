@@ -78,8 +78,10 @@ contract freezes one exact-name native C922 format inventory, zero capture
 sessions or frames, no D405 lifecycle, and an evaluator-owned 640×480
 fractional-rate rule with a maximum `0.05 fps` deviation from 30. The observer
 will enumerate only; it cannot select, score, start a stream, or authorize a
-new campaign. Implementation and the single observation remain pending until
-their own commits.
+new campaign. The standalone Swift observer and independent Python evaluator
+now pass typecheck, direct adversarial tests, and the combined
+camera/HIL/Studio gate without enumerating a device. Their exact identities
+must be committed before the single observation.
 
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load

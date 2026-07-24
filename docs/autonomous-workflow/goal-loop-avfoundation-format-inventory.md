@@ -104,10 +104,10 @@ task evidence as separate proof classes.
 ## Progress Ledger
 
 ```text
-Current state: Preregistration authored from clean centralized main; no inventory observation has run.
-Completed: Prior 12-attempt prerequisite abstention is frozen and centralized; target/rate tolerance/ranking/budgets/authority are specified.
-Evidence: baseline 2e8b33d; prior campaign 7c8b6ad3; evaluation d0d65fbe; receipt ac636601 / 35b8f9d9.
-Remaining: Commit preregistration, implement observer/evaluator/tests, commit implementation, execute one inventory, evaluate, verify, and centralize.
+Current state: Preregistration is committed; observer/evaluator implementation passes static and focused gates without device enumeration.
+Completed: Prior 12-attempt prerequisite abstention is frozen and centralized; target/rate tolerance/ranking/budgets/authority are specified; standalone Swift enumerator, independent evaluator, and adversarial tests are implemented.
+Evidence: baseline 2e8b33d; preregistration 8a29d3f; prior campaign 7c8b6ad3; Swift source 289c3fc2; evaluator 3ec4e50a; 15 direct and 96 combined focused tests pass.
+Remaining: Commit implementation, execute exactly one inventory observation, evaluate, freeze evidence, verify, and centralize.
 Blockers: Actual native C922 format/rate surface is not yet observed.
-Next step: Reconcile GOAL/project state/ledger and commit preregistration before implementation.
+Next step: Commit exact implementation identities before any device enumeration.
 ```

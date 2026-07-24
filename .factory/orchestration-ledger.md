@@ -1001,3 +1001,14 @@ goal. External provider campaigns and spending remain separately gated.
   verdict. The exhausted 12-attempt campaign cannot be reused. No inventory
   has executed; implementation and observation identities must each be
   committed first.
+- 2026-07-24T12:46:46-05:00 — Completed the pre-observation C922 format
+  inventory implementation after preregistration `8a29d3f`. The standalone
+  Swift observer records every native format/range and explicit zero
+  capture-session/sample state; its source contains no session, input, output,
+  sample-buffer, active-format, or stream-start APIs. The separate Python
+  evaluator owns validation, frozen fractional-rate ranking, identity/budget
+  checks, deterministic receipt materialization, and abstention. Swift
+  typecheck, 15 direct adversarial tests, and 96 combined camera/HIL/Studio
+  tests pass. No device enumeration or camera stream occurred. Source
+  `289c3fc2...` and evaluator `3ec4e50a...` await the implementation commit
+  before the one observation.
