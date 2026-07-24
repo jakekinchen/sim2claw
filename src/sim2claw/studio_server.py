@@ -23,6 +23,7 @@ from .orchestrator_frames import LocalOverheadSnapshotAdapter
 from .physical_gateway import PhysicalGatewayError
 from .studio_catalog import build_catalog, open_media_token
 from .studio_live import LiveWorkspaceError, LiveWorkspaceService, MJPEG_BOUNDARY
+from .studio_project_map import StudioProjectMapError, build_project_map
 from .studio_twin_fidelity import load_twin_fidelity_projection
 from .state_trace import build_scene_manifest
 from .task_orchestrator import TaskOrchestratorError, TaskOrchestratorService
@@ -329,6 +330,33 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/catalog":
             self._send_json(build_catalog(self.server.repo_root))
+            return
+        if path == "/api/project-map":
+            try:
+                self._send_json(
+                    build_project_map(
+                        repo_root=self.server.repo_root,
+                        read_only=self.server.read_only,
+                        recorder_control_enabled=self.server.recorder_control_enabled,
+                        orchestrator_available=self.server.task_orchestrator is not None,
+                    )
+                )
+            except (
+                StudioProjectMapError,
+                OSError,
+                ValueError,
+                json.JSONDecodeError,
+            ) as error:
+                self._send_json(
+                    {
+                        "schema_version": "sim2claw.studio_project_map.v1",
+                        "available": False,
+                        "read_only": True,
+                        "physical_authority": False,
+                        "error": str(error),
+                    },
+                    HTTPStatus.SERVICE_UNAVAILABLE,
+                )
             return
         if path == "/api/learning-factory":
             declared_project = parse_qs(request.query).get(

@@ -110,6 +110,8 @@ def test_full_observatory_retains_all_partial_episodes_and_binds_figures(
         payload = (tmp_path / figure["path"]).read_bytes()
         assert hashlib.sha256(payload).hexdigest() == figure["sha256"]
     receipt = json.loads((tmp_path / "receipt.json").read_text())
+    assert "configs/studio/project_map_v1.json" in receipt["compiler_sha256"]
+    assert "src/sim2claw/studio_project_map.py" in receipt["compiler_sha256"]
     assert "src/sim2claw/studio_twin_fidelity.py" in receipt["compiler_sha256"]
     first = manifest["episodes"][0]
     assert len(first["channels"]["action"]) == first["sample_count"]

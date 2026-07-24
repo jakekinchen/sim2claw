@@ -22,7 +22,7 @@
     "policy_receipt": {"path": "outputs/sail/policy-flywheel-v1/receipt.json", "sha256": "3d01c39088c07bb8e3f7279730113686bebbd5f170e112521e2430a2376bbfad"},
     "policy_run_log": {"path": "docs/run-logs/2026-07-22-sail-policy-flywheel.md", "sha256": "3fe6c9c852f337e6a17520dd810c3d02cede9fc8490f5996007be803d208bb51"},
     "studio_manifest": {"path": "outputs/sail/studio-observatory-v1/studio_observatory.json", "sha256": "127b2faa0fbfcff3b946184920b3c3d324d5bcc62ff6745940499be4f0bf0422"},
-    "studio_receipt": {"path": "outputs/sail/studio-observatory-v1/receipt.json", "sha256": "52aeb63817a991672ee3bf56af78dc5391cb22feeccda53f6b3ebf1232665ad5"},
+    "studio_receipt": {"path": "outputs/sail/studio-observatory-v1/receipt.json", "sha256": "d59c84e29c32031bfabe68b9364e115434b81f4f565c8b31b7ca6bcbbc96fcb7"},
     "structural_surprise": {"path": "outputs/sail/retired-bg-v1/structural-surprise/structural_surprise.json", "sha256": "ce8aae9a9f68a9958fd50e2efd0cd8b4bd20e7dab41d91b5d2369ba206912f54"},
     "structural_surprise_receipt": {"path": "outputs/sail/retired-bg-v1/structural-surprise/receipt.json", "sha256": "8738ec571193a02e7b5ef753e7becddae3f0ee32462f564290c435faf599763c"},
     "loop_closure": {"path": "outputs/sail/retired-bg-v1/loop-closure/sparse_loop_closure.json", "sha256": "249c93e4cb077ca545e4012a553dd72081eda0b2e871d21c48e639fd3a420fe0"},

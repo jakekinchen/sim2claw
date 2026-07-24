@@ -1,6 +1,26 @@
 # sim2claw Goal
 
-Status: `CURRENT 100 MM MEASUREMENT ACTIVE; DUAL-CAMERA C2-TO-C1 NEGATIVE RECORDED; TASK SCORE 0/11`
+Status: `CURRENT 100 MM MEASUREMENT ACTIVE; STUDIO PROJECT MAP IMPLEMENTATION CANDIDATE; TASK SCORE 0/11`
+
+## Active Studio project mapping
+
+Make the full sim-to-real system legible through one Studio evidence system
+shared by researchers and bounded agents. The Project map must cover Capture,
+Scene, Simulate, Replay, Evaluate, Diagnose, Improve, and Learn/transfer; bind
+each stage to existing routes and agent-readable contracts; show proof class,
+missing prerequisites, and authority; and fail closed when a receipt or
+project binding is invalid.
+
+Learning Factory remains contextual improvement/evaluation machinery rather
+than a standalone primary destination. The agent participates in the governed
+outer loop and never owns timestep control, evaluator scoring, admission,
+promotion, training, or robot authority. No synthetic fidelity percentage or
+missing physics replay may be introduced.
+
+The implementation candidate is recorded in
+[`docs/run-logs/2026-07-24-studio-project-map-agent-access.md`](docs/run-logs/2026-07-24-studio-project-map-agent-access.md).
+Exact-head receipts and independent review own final verification; no push is
+authorized by this checkpoint.
 
 ## Completed overnight dual-camera simulator calibration
 

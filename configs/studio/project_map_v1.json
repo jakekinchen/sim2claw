@@ -1,0 +1,141 @@
+{
+  "schema_version": "sim2claw.studio_project_map_config.v1",
+  "project_id": "sim2claw",
+  "title": "Sim-to-real project map",
+  "objective": "Make the current twin, its evidence gaps, and the next admissible improvement legible to both researchers and bounded agents.",
+  "stages": [
+    {
+      "id": "capture",
+      "order": 1,
+      "title": "Capture",
+      "purpose": "Create canonical, synchronized source episodes without silently admitting them to training or physical proof.",
+      "human_views": [
+        {"label": "Record", "route": "record"},
+        {"label": "Library", "route": "library"}
+      ],
+      "agent": {
+        "access": "operator_gated_loopback",
+        "reads": ["GET /api/recorder", "GET /api/catalog"],
+        "commands": ["POST /api/recorder/*"],
+        "boundary": "Recorder commands remain loopback-only and operator-gated; saved episodes remain unadmitted source evidence."
+      }
+    },
+    {
+      "id": "scene",
+      "order": 2,
+      "title": "Scene",
+      "purpose": "Inspect visual reconstruction, scale, geometry, collision, and assumption boundaries before simulation claims.",
+      "human_views": [
+        {"label": "Calibration", "route": "calibration"}
+      ],
+      "agent": {
+        "access": "read_only_projection",
+        "reads": ["GET /api/scene-synthesis", "GET /api/scene"],
+        "commands": [],
+        "boundary": "Visual reconstruction and scene proposals cannot grant metric, collision, evaluator, or physical authority."
+      }
+    },
+    {
+      "id": "simulate",
+      "order": 3,
+      "title": "Simulate",
+      "purpose": "Run and inspect the canonical MuJoCo embodiment while keeping visual context and physics authority separate.",
+      "human_views": [
+        {"label": "Robots", "route": "robots"},
+        {"label": "Replay", "route": "replay"}
+      ],
+      "agent": {
+        "access": "read_only_canonical_manifest",
+        "reads": ["GET /api/scene", "GET /api/catalog"],
+        "commands": [],
+        "boundary": "Candidate generation does not promote itself; action-frozen comparisons preserve exact source action bytes."
+      }
+    },
+    {
+      "id": "replay",
+      "order": 4,
+      "title": "Replay",
+      "purpose": "Compare recorded reality, the same-camera visual twin, and receipt-bound action-frozen physics on one timeline.",
+      "human_views": [
+        {"label": "Replay", "route": "replay"},
+        {"label": "Library", "route": "library"}
+      ],
+      "agent": {
+        "access": "read_only_evidence",
+        "reads": ["GET /api/catalog", "GET /api/twin-fidelity?episode_id={id}"],
+        "commands": [],
+        "boundary": "Missing physics remains missing; visual similarity never substitutes for a simulator or task consequence."
+      }
+    },
+    {
+      "id": "evaluate",
+      "order": 5,
+      "title": "Evaluate",
+      "purpose": "Apply deterministic gates and dense diagnostic margins without allowing a model or dashboard to score itself.",
+      "human_views": [
+        {"label": "Twin fidelity", "route": "replay"},
+        {"label": "SAIL", "route": "sail"}
+      ],
+      "agent": {
+        "access": "read_only_evaluator_output",
+        "reads": ["GET /api/twin-fidelity?episode_id={id}", "GET /api/sail-observatory"],
+        "commands": [],
+        "boundary": "The evaluator owns thresholds, held-outs, consequence gates, and promotion decisions."
+      }
+    },
+    {
+      "id": "diagnose",
+      "order": 6,
+      "title": "Diagnose",
+      "purpose": "Trace the first divergence through residuals, mechanisms, hypotheses, interventions, posterior movement, and consequence.",
+      "human_views": [
+        {"label": "SAIL", "route": "sail"},
+        {"label": "Twin fidelity", "route": "replay"}
+      ],
+      "agent": {
+        "access": "bounded_structured_context",
+        "reads": ["GET /api/sail-observatory", "GET /api/twin-fidelity?episode_id={id}"],
+        "commands": [],
+        "boundary": "Agents receive compact evidence reports and may propose hypotheses; missing fields stay missing and advice is not evaluator evidence."
+      }
+    },
+    {
+      "id": "improve",
+      "order": 7,
+      "title": "Improve",
+      "purpose": "Choose one bounded intervention, correction, or data request through the governed outer loop.",
+      "human_views": [
+        {"label": "Task Orchestrator", "route": "orchestrator"}
+      ],
+      "agent": {
+        "access": "proposal_only_executor_gated",
+        "reads": ["GET /api/orchestrator", "GET /api/learning-factory"],
+        "commands": ["POST /api/orchestrator/*"],
+        "boundary": "The Learning Factory and task orchestrator constrain execution; agents do not own budgets, sealed evaluation, admission, or promotion."
+      }
+    },
+    {
+      "id": "learn_transfer",
+      "order": 8,
+      "title": "Learn + transfer",
+      "purpose": "Publish admitted datasets, train bounded candidates, evaluate held-outs, and open physical canaries only through separate authority.",
+      "human_views": [
+        {"label": "Task Orchestrator", "route": "orchestrator"},
+        {"label": "Robots", "route": "robots"}
+      ],
+      "agent": {
+        "access": "closed_until_authorized",
+        "reads": ["GET /api/health", "GET /api/orchestrator"],
+        "commands": [],
+        "boundary": "No Studio endpoint grants training, promotion, gateway, camera, serial, torque, robot-motion, or physical-task authority."
+      }
+    }
+  ],
+  "authority": {
+    "agent_is_evaluator": false,
+    "agent_can_promote": false,
+    "training_authority": false,
+    "physical_authority": false,
+    "robot_motion": false
+  }
+}

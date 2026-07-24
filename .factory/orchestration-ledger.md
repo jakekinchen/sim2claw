@@ -1,5 +1,46 @@
 # Orchestration Ledger
 
+## Active bounded transaction — Studio project map and agent access
+
+- Owner objective: make Studio reflect every major sim-to-real stage and show
+  how a bounded agent traverses the same project evidence, while using the
+  Robotics and Sims ChatGPT project history as read-only architectural input.
+- Baseline: local `main@e7ae3f4840ab1be97f0884dfaeb5b3fcc3f632ec`,
+  eighteen commits ahead of
+  `origin/main@694fa5a4372056fa1484711053f2d340e2044232`; sole repository writer.
+- Product decision: keep the existing primary Studio destinations and add one
+  masthead Project map drawer. The signature dual-rail spine maps
+  Capture → Scene → Simulate → Replay → Evaluate → Diagnose → Improve →
+  Learn/transfer to both researcher routes and agent contracts. Learning
+  Factory remains backend/contextual outer-loop machinery, not a top-level
+  destination.
+- Evidence decision: the projection composes the existing catalog, verified
+  SAIL observatory, and hash-bound project declaration. It does not recompute
+  scientific scores, infer missing physics, or turn labels into proof.
+  Unavailable/tampered dependencies fail closed.
+- Agent boundary: the agent reads loopback JSON plus content-addressed
+  repository artifacts. Only existing operator-gated recorder and orchestrator
+  proposal routes are described; evaluator, admission, promotion, training,
+  physical, gateway, and motion authority stay closed.
+- Browser-history synthesis: the agent belongs in the causal outer loop, not
+  timestep control; every rollout is a trace; deterministic evaluators own
+  gates; one canonical evidence system should serve both human and agent
+  interfaces; progressive artifacts must expose unknown scale, collision,
+  dynamics, coverage, and consequence rather than manufacture a completeness
+  percentage.
+- Implementation verification: new focused/project-map, Studio, SAIL observatory,
+  Twin fidelity, orchestrator, and Learning Factory coverage passes `103`
+  tests plus `24` subtests. Desktop visual inspection, close-focus return,
+  overflow, and console-error checks pass; the sole console warning is the
+  pre-existing Three.js Clock deprecation. Exact-head receipts, commit
+  identity, and independent review own final verification; this durable
+  checkpoint does not self-certify them.
+- Frozen evidence: every proof check is bracketed by the unchanged S2
+  `11/11` file hashes and `1 event / 4 replays / 0 measurement trials`.
+- Authority: no simulator/adapter replay, provider call, paid compute,
+  measurement, capture, robot motion, training, promotion, push, or VideoSim
+  work.
+
 ## Completed bounded transaction — overnight dual-camera simulator calibration
 
 - Owner objective: spend up to three hours cleaning and integrating the new

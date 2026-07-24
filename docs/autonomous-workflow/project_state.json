@@ -1,11 +1,75 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T00:57:02-05:00",
+  "updated_at": "2026-07-24T02:42:00-05:00",
   "active_campaign": "current_100mm_physical_measurement_calibration",
   "current_milestone": "D9_OVERNIGHT_EMPTY_GRIPPER_RANGE_IDENTIFIABILITY_TERMINAL_DIAGNOSTIC",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
+  "studio_project_map_transaction": {
+    "schema_version": "sim2claw.studio_project_map_transaction.v1",
+    "status": "implementation_frozen_exact_head_receipts_own_verification",
+    "baseline_commit": "e7ae3f4840ab1be97f0884dfaeb5b3fcc3f632ec",
+    "config": "configs/studio/project_map_v1.json",
+    "projection": "src/sim2claw/studio_project_map.py",
+    "api": "GET /api/project-map",
+    "run_log": "docs/run-logs/2026-07-24-studio-project-map-agent-access.md",
+    "stage_order": [
+      "capture",
+      "scene",
+      "simulate",
+      "replay",
+      "evaluate",
+      "diagnose",
+      "improve",
+      "learn_transfer"
+    ],
+    "interface_contract": {
+      "researcher": "Studio routes and contextual drawers",
+      "agent": "loopback_JSON_endpoints_plus_content_addressed_repository_artifacts",
+      "shared_truth": "same_receipts_proof_classes_evaluator_outputs_and_authority_gates",
+      "agent_is_timestep_controller": false,
+      "agent_is_evaluator": false,
+      "agent_can_promote": false
+    },
+    "live_catalog_observation": {
+      "catalog_episode_count": 97,
+      "physical_source_count": 22,
+      "dual_camera_source_count": 2,
+      "physical_physics_pairing_count": 7,
+      "physical_physics_missing_count": 15,
+      "overall_fidelity_percentage_claimed": false
+    },
+    "verification": {
+      "project_map_focused_tests_passed": 7,
+      "combined_focused_tests_passed": 103,
+      "combined_focused_subtests_passed": 24,
+      "desktop_live_inspection_passed": true,
+      "keyboard_focus_return_passed": true,
+      "horizontal_overflow_detected": false,
+      "console_error_count": 0,
+      "responsive_static_contract_passed": true,
+      "live_mobile_viewport_claimed": false,
+      "s2_frozen_hashes_verified": 11,
+      "s2_campaign_event_count": 1,
+      "s2_anchor_replay_count": 4,
+      "s2_measurement_trial_count": 0,
+      "exact_head_short_tier_receipts_required": true,
+      "exact_head_full_suite_receipt_required": true,
+      "independent_review_required_before_push": true
+    },
+    "authority": {
+      "simulator_or_adapter_replay": false,
+      "provider": false,
+      "paid_compute": false,
+      "measurement": false,
+      "physical_capture": false,
+      "robot_motion": false,
+      "training": false,
+      "promotion": false,
+      "push_origin_main": false
+    }
+  },
   "overnight_dual_camera_calibration_transaction": {
     "schema_version": "sim2claw.overnight_dual_camera_calibration_transaction.v1",
     "status": "terminal_diagnostic_partial_aggregate_reduction_rejected_no_promotion",

@@ -59,6 +59,9 @@ const state = {
   sailFetchActive: false,
   sailSelectedEpisodeId: null,
   sailFrameIndex: 0,
+  projectMap: null,
+  projectMapError: null,
+  projectMapFetchActive: false,
   twinFidelity: null,
   twinFidelityEpisodeId: null,
   twinFidelityFetchId: 0,
@@ -71,6 +74,9 @@ const elements = {
   mobileNavLabel: document.querySelector("#mobile-nav-label"),
   campaign: document.querySelector("#campaign-label"),
   passRatio: document.querySelector("#pass-ratio"),
+  projectMapTrigger: document.querySelector("#project-map-trigger"),
+  projectMapContent: document.querySelector("#project-map-content"),
+  projectMapDrawer: document.querySelector("#project-map-drawer"),
   liveTrigger: document.querySelector("#live-trigger"),
   liveCount: document.querySelector("#live-count"),
   liveStrip: document.querySelector("#live-strip"),
@@ -503,6 +509,184 @@ async function fetchCatalog({ initial = false } = {}) {
       text(elements.stageTitle, "Viewer unavailable");
       text(elements.stageSubtitle, "Start the studio server from this repository and reload.");
     }
+  }
+}
+
+function projectMapNode(tag, className, value) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (value != null) text(node, value);
+  return node;
+}
+
+function projectMapLane(label, kind) {
+  const lane = projectMapNode("section", `project-map-lane is-${kind}`);
+  lane.append(projectMapNode("span", "project-map-lane-key", label));
+  return lane;
+}
+
+function renderProjectMap() {
+  const root = elements.projectMapContent;
+  root.replaceChildren();
+  const payload = state.projectMap;
+  if (!payload || state.projectMapError) {
+    const empty = projectMapNode("section", "project-map-empty");
+    empty.append(
+      projectMapNode("p", "eyebrow", "Project contract unavailable"),
+      projectMapNode(
+        "h3",
+        "",
+        "Studio cannot prove the shared researcher and agent map.",
+      ),
+      projectMapNode(
+        "p",
+        "",
+        state.projectMapError || "No verified project-map response is available.",
+      ),
+    );
+    root.append(empty);
+    return;
+  }
+
+  const thesis = projectMapNode("section", "project-map-thesis");
+  const thesisCopy = projectMapNode("div", "project-map-thesis-copy");
+  thesisCopy.append(
+    projectMapNode("p", "eyebrow", "One project · two interfaces · shared truth"),
+    projectMapNode("h3", "", payload.title),
+    projectMapNode("p", "", payload.objective),
+  );
+  const interfaceList = projectMapNode("dl", "project-map-interface");
+  [
+    ["Researcher", payload.interface?.human],
+    ["Agent", payload.interface?.agent],
+    ["Contract", payload.interface?.shared_truth],
+  ].forEach(([label, value]) => {
+    interfaceList.append(
+      projectMapNode("dt", "", label),
+      projectMapNode("dd", "", value || "Unavailable"),
+    );
+  });
+  thesis.append(thesisCopy, interfaceList);
+
+  const stages = projectMapNode("ol", "project-map-stages");
+  (payload.stages || []).forEach((stage) => {
+    const item = projectMapNode("li", "project-map-stage");
+    item.dataset.status = stage.status || "unavailable";
+
+    const stageHead = projectMapNode("header", "project-map-stage-head");
+    stageHead.append(
+      projectMapNode("span", "project-map-stage-number", String(stage.order).padStart(2, "0")),
+      projectMapNode("h3", "", stage.title),
+      projectMapNode(
+        "span",
+        "project-map-stage-status",
+        String(stage.status || "unavailable").replaceAll("_", " "),
+      ),
+    );
+    item.append(
+      stageHead,
+      projectMapNode("p", "project-map-purpose", stage.purpose),
+    );
+
+    const rails = projectMapNode("div", "project-map-rails");
+    const humanLane = projectMapLane("Researcher", "human");
+    const routeList = projectMapNode("div", "project-map-routes");
+    (stage.human_views || []).forEach((view) => {
+      const link = projectMapNode("a", "project-map-route", view.label);
+      link.href = `#/${view.route}`;
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        closeDrawer();
+        navigate(view.route);
+      });
+      routeList.append(link);
+    });
+    humanLane.append(routeList);
+
+    const agentLane = projectMapLane("Agent", "agent");
+    agentLane.append(
+      projectMapNode(
+        "strong",
+        "project-map-agent-access",
+        String(stage.agent?.access || "unavailable").replaceAll("_", " "),
+      ),
+    );
+    const agentContracts = projectMapNode("div", "project-map-contracts");
+    (stage.agent?.reads || []).forEach((contract) => {
+      agentContracts.append(projectMapNode("code", "", contract));
+    });
+    (stage.agent?.commands || []).forEach((contract) => {
+      agentContracts.append(projectMapNode("code", "is-command", contract));
+    });
+    if (!agentContracts.childElementCount) {
+      agentContracts.append(projectMapNode("span", "project-map-none", "No command surface"));
+    }
+    agentLane.append(agentContracts);
+    rails.append(humanLane, agentLane);
+    item.append(rails);
+
+    const evidence = projectMapNode("dl", "project-map-evidence");
+    evidence.append(
+      projectMapNode("dt", "", "Observed"),
+      projectMapNode("dd", "", stage.measure || "Unavailable"),
+      projectMapNode("dt", "", "Proof"),
+      projectMapNode("dd", "", stage.proof || "Unavailable"),
+    );
+    item.append(evidence);
+
+    if ((stage.missing || []).length) {
+      const missing = projectMapNode("div", "project-map-missing");
+      missing.append(projectMapNode("span", "project-map-missing-label", "Still missing"));
+      const gaps = projectMapNode("div", "project-map-gap-list");
+      stage.missing.forEach((gap) => {
+        gaps.append(projectMapNode("span", "project-map-gap", gap));
+      });
+      missing.append(gaps);
+      item.append(missing);
+    }
+    item.append(
+      projectMapNode("p", "project-map-detail", stage.detail),
+      projectMapNode("p", "project-map-boundary", stage.agent?.boundary),
+    );
+    stages.append(item);
+  });
+
+  const authority = payload.authority || {};
+  const footer = projectMapNode("footer", "project-map-footer");
+  const authorityValues = [
+    authority.agent_is_evaluator ? "agent evaluator" : "evaluator independent",
+    authority.agent_can_promote ? "agent promotion" : "promotion closed",
+    authority.training_authority ? "training open" : "training closed",
+    authority.robot_motion ? "motion open" : "motion closed",
+  ];
+  footer.append(
+    projectMapNode("p", "project-map-authority", authorityValues.join(" · ")),
+    projectMapNode(
+      "code",
+      "",
+      `contract ${String(payload.config?.sha256 || "unavailable").slice(0, 12)}`,
+    ),
+  );
+  root.append(thesis, stages, footer);
+}
+
+async function fetchProjectMap() {
+  if (state.projectMapFetchActive) return;
+  state.projectMapFetchActive = true;
+  try {
+    const response = await fetch("/api/project-map", { cache: "no-store" });
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(payload.error || payload.detail || `project map returned ${response.status}`);
+    }
+    state.projectMap = payload;
+    state.projectMapError = null;
+  } catch (error) {
+    state.projectMap = null;
+    state.projectMapError = error instanceof Error ? error.message : "Project map unavailable";
+  } finally {
+    state.projectMapFetchActive = false;
+    renderProjectMap();
   }
 }
 
@@ -3738,6 +3922,7 @@ function restoreRoute() {
 
 function openDrawer(name) {
   const drawers = {
+    project: elements.projectMapDrawer,
     live: elements.liveWorkspaceDrawer,
     process: elements.processDrawer,
     twin: elements.twinFidelityDrawer,
@@ -3756,24 +3941,29 @@ function openDrawer(name) {
   elements.drawerBackdrop.hidden = false;
   state.drawer = name;
   state.drawerTrigger = document.activeElement;
+  elements.projectMapTrigger.setAttribute("aria-expanded", String(name === "project"));
   elements.liveTrigger.setAttribute("aria-expanded", String(name === "live"));
   elements.twinFidelityTrigger.setAttribute("aria-expanded", String(name === "twin"));
   elements.evidenceTrigger.setAttribute("aria-expanded", String(name === "evidence"));
+  if (name === "project") void fetchProjectMap();
   if (name === "live") void startLiveWorkspace();
   drawer.querySelector("button")?.focus({ preventScroll: true });
 }
 
 function closeDrawer() {
   if (state.drawer === "live") stopLiveWorkspace();
+  elements.projectMapDrawer.classList.remove("is-open");
   elements.liveWorkspaceDrawer.classList.remove("is-open");
   elements.processDrawer.classList.remove("is-open");
   elements.twinFidelityDrawer.classList.remove("is-open");
   elements.evidenceDrawer.classList.remove("is-open");
+  elements.projectMapDrawer.setAttribute("aria-hidden", "true");
   elements.liveWorkspaceDrawer.setAttribute("aria-hidden", "true");
   elements.processDrawer.setAttribute("aria-hidden", "true");
   elements.twinFidelityDrawer.setAttribute("aria-hidden", "true");
   elements.evidenceDrawer.setAttribute("aria-hidden", "true");
   elements.drawerBackdrop.hidden = true;
+  elements.projectMapTrigger.setAttribute("aria-expanded", "false");
   elements.liveTrigger.setAttribute("aria-expanded", "false");
   elements.twinFidelityTrigger.setAttribute("aria-expanded", "false");
   elements.evidenceTrigger.setAttribute("aria-expanded", "false");
@@ -3934,6 +4124,7 @@ elements.timeline.addEventListener("pointermove", updateTimelinePreview);
 elements.timeline.addEventListener("pointerleave", () => { elements.preview.hidden = true; });
 elements.search.addEventListener("input", () => setQuery(elements.search.value));
 elements.librarySearch.addEventListener("input", () => setQuery(elements.librarySearch.value));
+elements.projectMapTrigger.addEventListener("click", () => openDrawer("project"));
 elements.liveTrigger.addEventListener("click", () => openDrawer("live"));
 document.querySelector("#live-strip-open").addEventListener("click", () => openDrawer("process"));
 elements.twinFidelityTrigger.addEventListener("click", () => openDrawer("twin"));
@@ -4088,6 +4279,7 @@ window.addEventListener("pagehide", () => stopLiveWorkspace({ useBeacon: true })
 initializeRecorderForm();
 fetchHealth().finally(() => {
   fetchCatalog({ initial: true }).then(restoreRoute);
+  fetchProjectMap();
   fetchSailObservatory();
   fetchRecorder();
   fetchLiveWorkspaceStatus();

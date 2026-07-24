@@ -41,6 +41,10 @@
         <div class="status-line" aria-label="Workspace status">
           <span class="campaign-name" id="campaign-label">Loading workspace</span>
           <span class="pass-ratio" id="pass-ratio">—</span>
+          <button class="project-map-trigger" id="project-map-trigger" type="button" aria-controls="project-map-drawer" aria-expanded="false">
+            <span class="project-map-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+            <b>Project map</b>
+          </button>
           <button class="live-trigger" id="live-trigger" type="button" aria-controls="live-workspace-drawer" aria-expanded="false" title="Open the connected workcell viewer">
             <span class="live-dot" aria-hidden="true"></span>
             <b id="live-count">Arm offline</b>
@@ -740,6 +744,24 @@
       </header>
       <p class="drawer-intro">Progress is observed from local heartbeats. This panel cannot start, stop, or promote a run.</p>
       <div class="activity-list" id="activity-list"></div>
+    </aside>
+
+    <aside class="side-drawer project-map-drawer" id="project-map-drawer" aria-labelledby="project-map-heading" aria-hidden="true">
+      <header class="drawer-heading">
+        <div>
+          <span class="section-label">One evidence system · two ways in</span>
+          <h2 id="project-map-heading">Project map</h2>
+        </div>
+        <button class="drawer-close" type="button" data-close-drawer aria-label="Close project map">Close</button>
+      </header>
+      <p class="drawer-intro">Researchers and bounded agents traverse the same receipts, proof classes, evaluator outputs, and authority gates. The agent has no hidden promotion or robot path.</p>
+      <div class="project-map-legend" aria-label="Project map lanes">
+        <span><i aria-hidden="true">H</i><b>Researcher surface</b><small>What you inspect in Studio</small></span>
+        <span><i aria-hidden="true">A</i><b>Agent contract</b><small>What the bounded worker can read or propose</small></span>
+      </div>
+      <div class="project-map-content" id="project-map-content" aria-live="polite">
+        <div class="project-map-loading">Loading the deterministic project projection…</div>
+      </div>
     </aside>
 
     <aside class="side-drawer twin-fidelity-drawer" id="twin-fidelity-drawer" aria-labelledby="twin-fidelity-heading" aria-hidden="true">

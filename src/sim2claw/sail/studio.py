@@ -585,6 +585,8 @@ def compile_studio_observatory(
     atomic_write_json(manifest_path, manifest)
     code_paths = (
         "src/sim2claw/sail/studio.py",
+        "configs/studio/project_map_v1.json",
+        "src/sim2claw/studio_project_map.py",
         "src/sim2claw/studio_server.py",
         "src/sim2claw/studio_twin_fidelity.py",
         "src/sim2claw/studio_web/index.html",
