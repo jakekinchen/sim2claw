@@ -29,8 +29,9 @@ EVALUATION_SCHEMA = (
 )
 RECEIPT_SCHEMA = "sim2claw.avfoundation_dual_camera_common_session_receipt.v1"
 PROOF_CLASS = "stationary_native_dual_camera_common_session_callback_health"
-CANONICAL_OBSERVATION_ROOT = Path(
-    "outputs/avfoundation-dual-camera-common-session-v1/observed"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+CANONICAL_OBSERVATION_ROOT = (
+    REPO_ROOT / "outputs/avfoundation-dual-camera-common-session-v1/observed"
 )
 BINARY_RELATIVE = "runtime/avfoundation-dual-camera-common-session-v1"
 USED_BUDGET = {
@@ -63,6 +64,8 @@ RAW_KEYS = {
     "d405_drop_count",
     "c922_output_count",
     "c922_drop_count",
+    "callback_events_seen",
+    "callback_events_truncated",
     "stages",
     "events",
 }
@@ -88,6 +91,8 @@ STAGE_KEYS = {
     "c922_input_admitted",
     "d405_output_admitted",
     "c922_output_admitted",
+    "d405_output_bound_to_exact_input",
+    "c922_output_bound_to_exact_input",
     "d405",
     "c922",
 }
@@ -97,12 +102,21 @@ FORMAT_KEYS = {
     "unique_id",
     "model_id",
     "format_index",
-    "range_index",
+    "compatible_range_indices",
     "width",
     "height",
     "subtype",
     "minimum_duration_seconds",
     "maximum_duration_seconds",
+}
+ADMISSION_ABSTENTION_REASONS = {
+    "d405_input_not_admitted",
+    "c922_second_video_input_not_admitted",
+    "d405_output_not_admitted",
+    "c922_output_not_admitted",
+    "exact_video_input_port_unavailable",
+    "d405_exact_connection_not_admitted",
+    "c922_exact_connection_not_admitted",
 }
 
 
@@ -392,6 +406,8 @@ def _validate_stage(
         "c922_input_admitted",
         "d405_output_admitted",
         "c922_output_admitted",
+        "d405_output_bound_to_exact_input",
+        "c922_output_bound_to_exact_input",
     ):
         if stage.get(flag) is not True:
             failures.append(f"{expected_name}:{flag}")
@@ -407,7 +423,6 @@ def _validate_stage(
             "unique_id": expected["exact_unique_id"],
             "model_id": expected["exact_model_id"],
             "format_index": expected["format_index"],
-            "range_index": expected["frame_rate_range_index"],
             "width": expected["width"],
             "height": expected["height"],
             "subtype": expected["media_subtype_fourcc"],
@@ -415,6 +430,9 @@ def _validate_stage(
         for key, value in checks.items():
             if row.get(key) != value:
                 failures.append(f"{expected_name}:{role}_{key}")
+        compatible = row.get("compatible_range_indices")
+        if compatible != [expected["frame_rate_range_index"]]:
+            failures.append(f"{expected_name}:{role}_compatible_range_indices")
         for key in ("minimum_duration_seconds", "maximum_duration_seconds"):
             if abs(_finite(row.get(key), f"{role} {key}") - duration) > 1e-9:
                 failures.append(f"{expected_name}:{role}_{key}")
@@ -497,7 +515,8 @@ def evaluate(
     if not raw_available:
         if return_code == 0:
             raise _error("Successful common-session attempt lacks raw output.")
-        verdict = "prerequisite_abstention"
+        failed_gates.append("observer_execution_failure_no_raw")
+        verdict = "common_session_callback_delivery_degraded"
     else:
         raw = _load_json(raw_path, label="common-session raw observation")
         if set(raw) != RAW_KEYS:
@@ -518,6 +537,8 @@ def evaluate(
             raise _error("Common-session detected-device inventory malformed.")
         for role in ("d405", "c922"):
             count = _integer(raw.get(f"{role}_match_count"), f"{role} match count")
+            if count != 1:
+                raise _error(f"Common-session {role} exact match count is not one.")
             if detected.count(contract["devices"][role]["exact_localized_name"]) != count:
                 raise _error(f"Common-session {role} match count contradicts inventory.")
         for key in (
@@ -529,7 +550,8 @@ def evaluate(
             "d405_output_count",
             "d405_drop_count",
             "c922_output_count",
-            "c922_drop_count",
+                "c922_drop_count",
+                "callback_events_seen",
         ):
             if _integer(raw.get(key), key) < 0:
                 raise _error(f"Common-session {key} is negative.")
@@ -544,11 +566,12 @@ def evaluate(
         if raw.get("status") == "prerequisite_unavailable":
             if (
                 return_code != 2
-                or raw.get("failure_reason")
-                != "c922_second_video_input_not_admitted"
-                or raw["common_capture_sessions_used"] != 0
+                or raw.get("failure_reason") not in ADMISSION_ABSTENTION_REASONS
+                or raw["common_capture_sessions_used"] != 1
                 or raw["stages"] != []
                 or raw["events"] != []
+                or raw["callback_events_seen"] != 0
+                or raw["callback_events_truncated"] is not False
                 or any(raw[key] != 0 for key in (
                     "d405_output_count",
                     "d405_drop_count",
@@ -563,6 +586,8 @@ def evaluate(
                 raise _error("Common-session completed payload contradicts attempt.")
             if raw["common_capture_sessions_used"] != 1:
                 raise _error("Common-session count changed.")
+            if not isinstance(raw.get("callback_events_truncated"), bool):
+                raise _error("Common-session truncation flag is malformed.")
             if (
                 _finite(
                     raw.get("duration_seconds_requested"),
@@ -581,6 +606,23 @@ def evaluate(
                 raise _error("Common-session stage count changed.")
             if len(events) > contract["windowing"]["maximum_callbacks_total"]:
                 raise _error("Common-session callback budget exceeded.")
+            if raw["callback_events_seen"] < len(events):
+                raise _error("Common-session callback seen count is inconsistent.")
+            reported_total = sum(
+                raw[key]
+                for key in (
+                    "d405_output_count",
+                    "d405_drop_count",
+                    "c922_output_count",
+                    "c922_drop_count",
+                )
+            )
+            if raw["callback_events_seen"] != reported_total:
+                raise _error("Common-session total callback accounting changed.")
+            if raw["callback_events_truncated"]:
+                failed_gates.append("callback_event_log_truncated")
+            elif raw["callback_events_seen"] != len(events):
+                raise _error("Common-session callback seen count changed.")
             sequences: dict[tuple[str, str], int] = {}
             previous_host = -1
             for index, row in enumerate(events):
@@ -613,7 +655,7 @@ def evaluate(
             failed_gates += d_fail + c_fail
             metrics = {"d405": d405, "c922": c922}
             for role, result in metrics.items():
-                if (
+                if not raw["callback_events_truncated"] and (
                     raw[f"{role}_output_count"] != result["output_count"]
                     or raw[f"{role}_drop_count"] != result["drop_count"]
                 ):

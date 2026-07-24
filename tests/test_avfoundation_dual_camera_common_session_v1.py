@@ -52,7 +52,7 @@ def _format_state(role: str) -> dict[str, object]:
         "unique_id": device["exact_unique_id"],
         "model_id": device["exact_model_id"],
         "format_index": device["format_index"],
-        "range_index": device["frame_rate_range_index"],
+        "compatible_range_indices": [device["frame_rate_range_index"]],
         "width": device["width"],
         "height": device["height"],
         "subtype": device["media_subtype_fourcc"],
@@ -156,6 +156,8 @@ def _materialize(root: Path, *, raw: dict[str, object] | None = None) -> Path:
         "d405_drop_count": 0,
         "c922_output_count": 330,
         "c922_drop_count": 0,
+        "callback_events_seen": len(events),
+        "callback_events_truncated": False,
         "stages": [
             {
                 "name": name,
@@ -164,6 +166,8 @@ def _materialize(root: Path, *, raw: dict[str, object] | None = None) -> Path:
                 "c922_input_admitted": True,
                 "d405_output_admitted": True,
                 "c922_output_admitted": True,
+                "d405_output_bound_to_exact_input": True,
+                "c922_output_bound_to_exact_input": True,
                 "d405": _format_state("d405"),
                 "c922": _format_state("c922"),
             }
@@ -245,11 +249,22 @@ def test_observer_typechecks_and_uses_one_native_session() -> None:
     assert source.count("let cOutput = AVCaptureVideoDataOutput()") == 1
     assert "session.canAddInput(dInput)" in source
     assert "session.canAddInput(cInput)" in source
+    assert "session.canAddOutput(dOutput)" in source
+    assert "session.canAddOutput(cOutput)" in source
+    assert "addOutputWithNoConnections" in source
+    assert "AVCaptureConnection(inputPorts: [dPort], output: dOutput)" in source
     assert "d405.lockForConfiguration()" in source
     assert "c922.lockForConfiguration()" in source
+    assert source.index("d405.lockForConfiguration()") < source.index(
+        "session.canAddInput(dInput)"
+    )
+    assert source.index("try configure(d405") < source.index(
+        "session.canAddInput(dInput)"
+    )
     assert source.index("session.startRunning()") < source.rindex(
         "d405.unlockForConfiguration()"
     )
+    assert "withExtendedLifetime((dDelegate, cDelegate))" in source
     result = subprocess.run(
         ["swiftc", "-typecheck", str(SOURCE)],
         capture_output=True,
@@ -286,6 +301,23 @@ def test_contract_and_runner_reject_mutation_or_arbitrary_root(
             source_path=SOURCE,
             evaluator_path=EVALUATOR,
             output_root=tmp_path / "fresh-arbitrary-root",
+        )
+
+
+def test_runner_canonical_root_does_not_follow_changed_cwd(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    cwd_relative_alias = (
+        tmp_path
+        / "outputs/avfoundation-dual-camera-common-session-v1/observed"
+    )
+    with pytest.raises(AVFoundationFormatInventoryError, match="not authorized"):
+        run_observation(
+            contract_path=CONTRACT,
+            source_path=SOURCE,
+            evaluator_path=EVALUATOR,
+            output_root=cwd_relative_alias,
         )
 
 
@@ -328,6 +360,13 @@ def test_runner_seals_timeout_after_prelaunch_without_raw(
     assert "observer_timeout" in (
         output / "raw/observer.stderr.log"
     ).read_text(encoding="utf-8")
+    evaluation, _ = evaluate(
+        contract_path=CONTRACT,
+        observation_root=output,
+        output_root=tmp_path / "evaluated",
+    )
+    assert evaluation["verdict"] == "common_session_callback_delivery_degraded"
+    assert evaluation["failed_gates"] == ["observer_execution_failure_no_raw"]
 
 
 def test_evaluator_accepts_only_exact_second_input_abstention(
@@ -351,7 +390,7 @@ def test_evaluator_accepts_only_exact_second_input_abstention(
         ),
         "d405_match_count": 1,
         "c922_match_count": 1,
-        "common_capture_sessions_used": 0,
+        "common_capture_sessions_used": 1,
         "independent_camera_sessions_used": 0,
         "robot_motion_trials_used": 0,
         "simulator_replays_used": 0,
@@ -362,6 +401,8 @@ def test_evaluator_accepts_only_exact_second_input_abstention(
         "d405_drop_count": 0,
         "c922_output_count": 0,
         "c922_drop_count": 0,
+        "callback_events_seen": 0,
+        "callback_events_truncated": False,
         "stages": [],
         "events": [],
     }
@@ -399,7 +440,17 @@ def test_evaluator_verifies_synthetic_common_session(
 
 @pytest.mark.parametrize(
     "mutation",
-    ["second_input", "drop", "format", "self_score", "independent_session"],
+    [
+        "second_input",
+        "binding",
+        "range",
+        "drop",
+        "format",
+        "truncation",
+        "duplicate_device",
+        "self_score",
+        "independent_session",
+    ],
 )
 def test_evaluator_fails_closed_on_observer_mutation(
     tmp_path: Path,
@@ -412,6 +463,10 @@ def test_evaluator_fails_closed_on_observer_mutation(
     raw = json.loads(raw_path.read_text(encoding="utf-8"))
     if mutation == "second_input":
         raw["stages"][2]["c922_input_admitted"] = False
+    elif mutation == "binding":
+        raw["stages"][2]["c922_output_bound_to_exact_input"] = False
+    elif mutation == "range":
+        raw["stages"][2]["d405"]["compatible_range_indices"] = [3, 4]
     elif mutation == "drop":
         device = load_contract(CONTRACT)["devices"]["d405"]
         raw["events"].append(
@@ -432,8 +487,16 @@ def test_evaluator_fails_closed_on_observer_mutation(
             }
         )
         raw["d405_drop_count"] = 1
+        raw["callback_events_seen"] += 1
     elif mutation == "format":
         raw["events"][0]["width"] = 999
+    elif mutation == "truncation":
+        raw["callback_events_truncated"] = True
+    elif mutation == "duplicate_device":
+        name = load_contract(CONTRACT)["devices"]["d405"]["exact_localized_name"]
+        raw["detected_device_names"].append(name)
+        raw["detected_device_names"].sort()
+        raw["d405_match_count"] = 2
     elif mutation == "self_score":
         raw["verdict"] = "verified"
     else:
@@ -443,7 +506,7 @@ def test_evaluator_fails_closed_on_observer_mutation(
     attempt = json.loads(attempt_path.read_text(encoding="utf-8"))
     attempt["raw_observation_sha256"] = _sha(raw_path)
     _write(attempt_path, attempt)
-    if mutation in {"self_score", "independent_session"}:
+    if mutation in {"duplicate_device", "self_score", "independent_session"}:
         with pytest.raises(AVFoundationFormatInventoryError):
             evaluate(
                 contract_path=CONTRACT,

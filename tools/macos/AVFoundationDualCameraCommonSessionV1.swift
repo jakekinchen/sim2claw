@@ -92,7 +92,7 @@ private struct FormatState: Codable {
     let uniqueID: String
     let modelID: String
     let formatIndex: Int
-    let rangeIndex: Int
+    let compatibleRangeIndices: [Int]
     let width: Int
     let height: Int
     let subtype: String
@@ -107,6 +107,8 @@ private struct Stage: Codable {
     let c922InputAdmitted: Bool
     let d405OutputAdmitted: Bool
     let c922OutputAdmitted: Bool
+    let d405OutputBoundToExactInput: Bool
+    let c922OutputBoundToExactInput: Bool
     let d405: FormatState?
     let c922: FormatState?
 }
@@ -147,6 +149,8 @@ private struct Observation: Codable {
     let d405DropCount: Int
     let c922OutputCount: Int
     let c922DropCount: Int
+    let callbackEventsSeen: Int
+    let callbackEventsTruncated: Bool
     let stages: [Stage]
     let events: [CallbackEvent]
 }
@@ -175,6 +179,8 @@ private final class Ledger: @unchecked Sendable {
     private let maximum: Int
     private var rows: [CallbackEvent] = []
     private var counts: [String: Int] = [:]
+    private var seen = 0
+    private var truncated = false
 
     init(maximum: Int) { self.maximum = maximum }
 
@@ -187,9 +193,13 @@ private final class Ledger: @unchecked Sendable {
     ) {
         lock.lock()
         defer { lock.unlock() }
-        guard rows.count < maximum else { return }
         let key = "\(role):\(kind)"
         counts[key, default: 0] += 1
+        seen += 1
+        guard rows.count < maximum else {
+            truncated = true
+            return
+        }
         let description = CMSampleBufferGetFormatDescription(sample)
         let dimensions = description.map(CMVideoFormatDescriptionGetDimensions)
         let pts = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sample))
@@ -213,10 +223,10 @@ private final class Ledger: @unchecked Sendable {
         )
     }
 
-    func snapshot() -> ([CallbackEvent], [String: Int]) {
+    func snapshot() -> ([CallbackEvent], [String: Int], Int, Bool) {
         lock.lock()
         defer { lock.unlock() }
-        return (rows, counts)
+        return (rows, counts, seen, truncated)
     }
 }
 
@@ -297,10 +307,21 @@ private func state(_ device: AVCaptureDevice, spec: DeviceSpec) -> FormatState {
     let subtype = fourCC(CMFormatDescriptionGetMediaSubType(description))
     let minimum = CMTimeGetSeconds(device.activeVideoMinFrameDuration)
     let maximum = CMTimeGetSeconds(device.activeVideoMaxFrameDuration)
+    let actualFormatIndex = device.formats.firstIndex {
+        $0 === device.activeFormat
+    } ?? -1
+    let compatibleRanges = device.activeFormat.videoSupportedFrameRateRanges
+        .enumerated()
+        .filter {
+            abs($0.element.minFrameRate - spec.fps) < 1e-9
+                && abs($0.element.maxFrameRate - spec.fps) < 1e-9
+        }
+        .map(\.offset)
     return FormatState(
         role: spec.role, localizedName: device.localizedName,
         uniqueID: device.uniqueID, modelID: device.modelID,
-        formatIndex: spec.formatIndex, rangeIndex: spec.rangeIndex,
+        formatIndex: actualFormatIndex,
+        compatibleRangeIndices: compatibleRanges,
         width: Int(dimensions.width), height: Int(dimensions.height),
         subtype: subtype,
         minimumDurationSeconds: minimum.isFinite ? minimum : nil,
@@ -324,6 +345,15 @@ private func write(_ observation: Observation, path: String) throws {
     try data.write(to: url, options: .withoutOverwriting)
 }
 
+private func connectionIsBound(
+    session: AVCaptureSession,
+    connection: AVCaptureConnection,
+    port: AVCaptureInput.Port
+) -> Bool {
+    session.connections.contains { $0 === connection }
+        && connection.inputPorts.contains { $0 === port }
+}
+
 private func run(_ options: Options) throws -> Int32 {
     let discovery = AVCaptureDevice.DiscoverySession(
         deviceTypes: [.external, .builtInWideAngleCamera],
@@ -342,35 +372,50 @@ private func run(_ options: Options) throws -> Int32 {
     let session = AVCaptureSession()
     session.beginConfiguration()
     session.sessionPreset = .high
+    try d405.lockForConfiguration()
+    var dLocked = true
+    defer { if dLocked { d405.unlockForConfiguration() } }
+    try c922.lockForConfiguration()
+    var cLocked = true
+    defer { if cLocked { c922.unlockForConfiguration() } }
+    try configure(d405, spec: options.d405)
+    try configure(c922, spec: options.c922)
+
     let dInput = try AVCaptureDeviceInput(device: d405)
     let cInput = try AVCaptureDeviceInput(device: c922)
     var dInputOK = false, cInputOK = false
     var dOutputOK = false, cOutputOK = false
     var stages: [Stage] = []
 
+    func abstain(_ reason: String) throws -> Int32 {
+        session.commitConfiguration()
+        try write(
+            Observation(
+                schemaVersion: schema, contractSHA256: options.contractSHA256,
+                observerRole: "dual_camera_common_session_callback_observer_only",
+                status: "prerequisite_unavailable", failureReason: reason,
+                detectedDeviceNames: detected, d405MatchCount: dMatches,
+                c922MatchCount: cMatches, commonCaptureSessionsUsed: 1,
+                independentCameraSessionsUsed: 0, robotMotionTrialsUsed: 0,
+                simulatorReplaysUsed: 0, providerCallsUsed: 0,
+                durationSecondsRequested: options.duration,
+                maximumCallbacks: options.maximumCallbacks,
+                d405OutputCount: 0, d405DropCount: 0,
+                c922OutputCount: 0, c922DropCount: 0,
+                callbackEventsSeen: 0, callbackEventsTruncated: false,
+                stages: [], events: []
+            ),
+            path: options.output
+        )
+        return 2
+    }
+
     guard session.canAddInput(dInput) else {
-        throw NSError(domain: "d405_input_not_admitted", code: 22)
+        return try abstain("d405_input_not_admitted")
     }
     session.addInput(dInput); dInputOK = true
     guard session.canAddInput(cInput) else {
-        session.commitConfiguration()
-        let observation = Observation(
-            schemaVersion: schema, contractSHA256: options.contractSHA256,
-            observerRole: "dual_camera_common_session_callback_observer_only",
-            status: "prerequisite_unavailable",
-            failureReason: "c922_second_video_input_not_admitted",
-            detectedDeviceNames: detected, d405MatchCount: dMatches,
-            c922MatchCount: cMatches, commonCaptureSessionsUsed: 0,
-            independentCameraSessionsUsed: 0, robotMotionTrialsUsed: 0,
-            simulatorReplaysUsed: 0, providerCallsUsed: 0,
-            durationSecondsRequested: options.duration,
-            maximumCallbacks: options.maximumCallbacks,
-            d405OutputCount: 0, d405DropCount: 0,
-            c922OutputCount: 0, c922DropCount: 0,
-            stages: [], events: []
-        )
-        try write(observation, path: options.output)
-        return 2
+        return try abstain("c922_second_video_input_not_admitted")
     }
     session.addInput(cInput); cInputOK = true
 
@@ -387,26 +432,40 @@ private func run(_ options: Options) throws -> Int32 {
             Int(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
     ]
     guard session.canAddOutput(dOutput) else {
-        throw NSError(domain: "d405_output_not_admitted", code: 23)
+        return try abstain("d405_output_not_admitted")
     }
-    session.addOutput(dOutput); dOutputOK = true
+    session.addOutputWithNoConnections(dOutput); dOutputOK = true
     guard session.canAddOutput(cOutput) else {
-        throw NSError(domain: "c922_output_not_admitted", code: 24)
+        return try abstain("c922_output_not_admitted")
     }
-    session.addOutput(cOutput); cOutputOK = true
+    session.addOutputWithNoConnections(cOutput); cOutputOK = true
+    guard
+        let dPort = dInput.ports.first(where: { $0.mediaType == .video }),
+        let cPort = cInput.ports.first(where: { $0.mediaType == .video })
+    else {
+        return try abstain("exact_video_input_port_unavailable")
+    }
+    let dConnection = AVCaptureConnection(inputPorts: [dPort], output: dOutput)
+    let cConnection = AVCaptureConnection(inputPorts: [cPort], output: cOutput)
+    guard session.canAddConnection(dConnection) else {
+        return try abstain("d405_exact_connection_not_admitted")
+    }
+    session.addConnection(dConnection)
+    guard session.canAddConnection(cConnection) else {
+        return try abstain("c922_exact_connection_not_admitted")
+    }
+    session.addConnection(cConnection)
 
-    try d405.lockForConfiguration()
-    var dLocked = true
-    defer { if dLocked { d405.unlockForConfiguration() } }
-    try c922.lockForConfiguration()
-    var cLocked = true
-    defer { if cLocked { c922.unlockForConfiguration() } }
-    try configure(d405, spec: options.d405)
-    try configure(c922, spec: options.c922)
     stages.append(Stage(
         name: "before_commit", sessionRunning: false,
         d405InputAdmitted: dInputOK, c922InputAdmitted: cInputOK,
         d405OutputAdmitted: dOutputOK, c922OutputAdmitted: cOutputOK,
+        d405OutputBoundToExactInput: connectionIsBound(
+            session: session, connection: dConnection, port: dPort
+        ),
+        c922OutputBoundToExactInput: connectionIsBound(
+            session: session, connection: cConnection, port: cPort
+        ),
         d405: state(d405, spec: options.d405),
         c922: state(c922, spec: options.c922)
     ))
@@ -415,6 +474,12 @@ private func run(_ options: Options) throws -> Int32 {
         name: "after_commit", sessionRunning: session.isRunning,
         d405InputAdmitted: dInputOK, c922InputAdmitted: cInputOK,
         d405OutputAdmitted: dOutputOK, c922OutputAdmitted: cOutputOK,
+        d405OutputBoundToExactInput: connectionIsBound(
+            session: session, connection: dConnection, port: dPort
+        ),
+        c922OutputBoundToExactInput: connectionIsBound(
+            session: session, connection: cConnection, port: cPort
+        ),
         d405: state(d405, spec: options.d405),
         c922: state(c922, spec: options.c922)
     ))
@@ -431,6 +496,12 @@ private func run(_ options: Options) throws -> Int32 {
         name: "after_start", sessionRunning: session.isRunning,
         d405InputAdmitted: dInputOK, c922InputAdmitted: cInputOK,
         d405OutputAdmitted: dOutputOK, c922OutputAdmitted: cOutputOK,
+        d405OutputBoundToExactInput: connectionIsBound(
+            session: session, connection: dConnection, port: dPort
+        ),
+        c922OutputBoundToExactInput: connectionIsBound(
+            session: session, connection: cConnection, port: cPort
+        ),
         d405: state(d405, spec: options.d405),
         c922: state(c922, spec: options.c922)
     ))
@@ -441,10 +512,17 @@ private func run(_ options: Options) throws -> Int32 {
         session.stopRunning()
     }
     dQueue.sync {}; cQueue.sync {}
+    withExtendedLifetime((dDelegate, cDelegate)) {}
     stages.append(Stage(
         name: "after_stop", sessionRunning: session.isRunning,
         d405InputAdmitted: dInputOK, c922InputAdmitted: cInputOK,
         d405OutputAdmitted: dOutputOK, c922OutputAdmitted: cOutputOK,
+        d405OutputBoundToExactInput: connectionIsBound(
+            session: session, connection: dConnection, port: dPort
+        ),
+        c922OutputBoundToExactInput: connectionIsBound(
+            session: session, connection: cConnection, port: cPort
+        ),
         d405: state(d405, spec: options.d405),
         c922: state(c922, spec: options.c922)
     ))
@@ -468,6 +546,8 @@ private func run(_ options: Options) throws -> Int32 {
             d405DropCount: count("d405", "drop"),
             c922OutputCount: count("c922", "output"),
             c922DropCount: count("c922", "drop"),
+            callbackEventsSeen: snapshot.2,
+            callbackEventsTruncated: snapshot.3,
             stages: stages, events: snapshot.0
         ),
         path: options.output
