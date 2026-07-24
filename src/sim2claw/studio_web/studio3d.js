@@ -85,7 +85,20 @@ class ThreeReplayViewer {
 
   async load(inspection) {
     const inspectionKey = `${inspection.scene_url}\u0000${inspection.trace_url}`;
-    if (this.loadedInspectionKey === inspectionKey && this.trace) return;
+    if (this.loadedInspectionKey === inspectionKey && this.trace) {
+      if (
+        this.loadingInspectionPromise
+        && this.loadingInspectionKey !== inspectionKey
+      ) {
+        // Returning to the rendered episode is still a newer request. Cancel
+        // any different queued/in-flight load before it can replace this scene.
+        this.loadRequestId += 1;
+        this.setStatus(
+          `${this.trace.frame_count} MuJoCo states · ${Number(this.trace.fps).toFixed(0)} Hz · drag to orbit`,
+        );
+      }
+      return;
+    }
     if (
       this.loadingInspectionKey === inspectionKey
       && this.loadingInspectionPromise
@@ -95,6 +108,7 @@ class ThreeReplayViewer {
 
     const requestId = ++this.loadRequestId;
     const execute = async () => {
+      if (requestId !== this.loadRequestId) return;
       this.pause();
       this.currentTime = 0;
       this.setStatus("Loading MuJoCo scene…");
@@ -123,11 +137,26 @@ class ThreeReplayViewer {
       }
       if (requestId !== this.loadRequestId) return;
 
+      // Build into a detached group. Only the still-current request may swap
+      // it into the viewer, so a stale fetch/build cannot partially mutate the
+      // episode that remains selected.
+      const nextSceneRoot = new THREE.Group();
+      const { bodyGroups: nextBodyGroups } = await buildSceneManifestLayer({
+        root: nextSceneRoot,
+        manifest,
+      });
+      if (requestId !== this.loadRequestId) {
+        disposeSceneLayer(nextSceneRoot);
+        return;
+      }
+
       this.clearScene();
+      this.scene.remove(this.sceneRoot);
+      this.sceneRoot = nextSceneRoot;
+      this.scene.add(this.sceneRoot);
       this.manifest = manifest;
       this.trace = trace;
-      await this.buildScene();
-      if (requestId !== this.loadRequestId) return;
+      this.bodyGroups = nextBodyGroups;
       this.bodyTraceIndices = trace.body_names.map((name) => this.bodyGroups.get(name) || null);
       this.buildContactMarkers();
       this.resetCamera();

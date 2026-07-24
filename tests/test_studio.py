@@ -1781,6 +1781,20 @@ class StudioCatalogTest(unittest.TestCase):
                 "requestId !== this.loadRequestId",
                 replay_javascript,
             )
+            self.assertIn("this.loadRequestId += 1", replay_javascript)
+            self.assertIn(
+                "const nextSceneRoot = new THREE.Group()",
+                replay_javascript,
+            )
+            self.assertIn("disposeSceneLayer(nextSceneRoot)", replay_javascript)
+            self.assertLess(
+                replay_javascript.index("this.loadRequestId += 1"),
+                replay_javascript.index("const requestId = ++this.loadRequestId"),
+            )
+            self.assertLess(
+                replay_javascript.index("const nextSceneRoot = new THREE.Group()"),
+                replay_javascript.index("this.scene.remove(this.sceneRoot)"),
+            )
 
             spark_license = (STATIC_ROOT / "vendor" / "spark" / "LICENSE").read_bytes()
             self.assertEqual(
