@@ -612,6 +612,16 @@ def build_parser() -> argparse.ArgumentParser:
     c922_capture.add_argument("--plan", type=Path, default=REPO_ROOT / "configs/acquisition/c922_exact_mode_calibration.json")
     c922_capture.add_argument("--output", type=Path, required=True)
     c922_capture.add_argument("--dry-run", action="store_true")
+    workcell_registration = subparsers.add_parser(
+        "workcell-registration",
+        help="write or evaluate the stationary board-to-workcell survey",
+    )
+    workcell_registration.add_argument(
+        "--phase", choices=("worksheet", "evaluate"), required=True
+    )
+    workcell_registration.add_argument("--output", type=Path, required=True)
+    workcell_registration.add_argument("--survey", type=Path)
+    workcell_registration.add_argument("--manifest", type=Path)
 
     sysid_capability = subparsers.add_parser(
         "sysid-capability",
@@ -1719,6 +1729,35 @@ def main(argv: Sequence[str] | None = None) -> int:
         try:
             report = acquire_corpus(args.plan, args.output, dry_run=args.dry_run)
         except (OSError, ValueError, C922CalibrationError, OverheadVideoError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "workcell-registration":
+        from .workcell_registration import (
+            WorkcellRegistrationError,
+            evaluate_stationary_registration,
+            write_survey_worksheet,
+        )
+
+        try:
+            if args.phase == "worksheet":
+                if args.survey is not None or args.manifest is not None:
+                    raise WorkcellRegistrationError(
+                        "Worksheet phase accepts only --output."
+                    )
+                report = write_survey_worksheet(args.output)
+            else:
+                if args.survey is None or args.manifest is None:
+                    raise WorkcellRegistrationError(
+                        "Evaluate phase requires --survey and --manifest."
+                    )
+                report = evaluate_stationary_registration(
+                    survey_path=args.survey,
+                    manifest_path=args.manifest,
+                    output_directory=args.output,
+                )
+        except (OSError, ValueError, WorkcellRegistrationError) as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))

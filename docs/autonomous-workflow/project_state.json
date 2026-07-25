@@ -3815,6 +3815,21 @@
     "metric_fit_authorized": false,
     "physical_authority": false
   },
+  "stationary_c922_workcell_registration": {
+    "status": "offline_path_verified_waiting_for_independently_reviewed_physical_survey",
+    "implementation": "src/sim2claw/workcell_registration.py",
+    "command": "sim2claw workcell-registration",
+    "survey_input_schema": "sim2claw.board_to_workcell_survey_input.v1",
+    "output_transform_schema": "sim2claw.camera_to_workcell_transform_receipt.v1",
+    "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "transform_convention": "workcell_from_board @ inverse(camera_from_board)",
+    "evaluation_method": "frozen_leave_one_out",
+    "real_survey_receipts_emitted": 0,
+    "camera_sessions_used": 0,
+    "robot_motion_used": 0,
+    "full_geometry_admission": false,
+    "physical_authority": false
+  },
   "eligible_physical_recorded_replay": {
     "status": "offline_path_verified_physical_catalog_unchanged",
     "implementation": "src/sim2claw/recorded_replay.py",
