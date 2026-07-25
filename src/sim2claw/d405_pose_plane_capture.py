@@ -40,6 +40,7 @@ from .paths import REPO_ROOT
 CONTRACT_PATH = REPO_ROOT / "configs/evaluations/d405_pose_plane_capture_v1.json"
 CONTRACT_SCHEMA = "sim2claw.d405_pose_plane_capture_contract.v1"
 RECEIPT_SCHEMA = "sim2claw.d405_pose_plane_capture_receipt.v1"
+NATIVE_RECORD_DURATION_SECONDS = 30
 
 
 class D405PosePlaneCaptureError(RuntimeError):
@@ -62,7 +63,13 @@ class _NativeRsRecord:
         executable = shutil.which("rs-record")
         if executable is None:
             raise D405PosePlaneCaptureError("rs-record is unavailable")
-        self.command = [executable, "-f", str(database_path)]
+        self.command = [
+            executable,
+            "-t",
+            str(NATIVE_RECORD_DURATION_SECONDS),
+            "-f",
+            str(database_path),
+        ]
         self.database_path = database_path
         self.process: subprocess.Popen[str] | None = None
 

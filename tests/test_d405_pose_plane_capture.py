@@ -266,3 +266,21 @@ def test_native_recorder_readiness_failure_releases_process(
     process.returncode = None
     recorder.process = process
     assert recorder.finish()["returncode"] == -2
+
+
+def test_native_recorder_uses_explicit_bounded_duration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        pose_plane_capture.shutil, "which", lambda name: f"/fixture/{name}"
+    )
+
+    recorder = pose_plane_capture._NativeRsRecord(tmp_path / "capture.db3")
+
+    assert recorder.command == [
+        "/fixture/rs-record",
+        "-t",
+        "30",
+        "-f",
+        str(tmp_path / "capture.db3"),
+    ]
