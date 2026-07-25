@@ -567,6 +567,16 @@ def build_parser() -> argparse.ArgumentParser:
     physical_replay_eligibility.add_argument(
         "--report-output", type=Path, required=True
     )
+    eligible_physical_replay = subparsers.add_parser(
+        "replay-eligible-physical-recording",
+        help="replay P4-eligible physical actions offline with exact tensor identity",
+    )
+    eligible_physical_replay.add_argument("--recording", type=Path, required=True)
+    eligible_physical_replay.add_argument("--manifest", type=Path, required=True)
+    eligible_physical_replay.add_argument(
+        "--config", type=Path, default=DEFAULT_SYSID_CONFIG
+    )
+    eligible_physical_replay.add_argument("--output", type=Path, required=True)
     c922_acquisition = subparsers.add_parser(
         "c922-calibration-acquisition-preflight",
         help="dry-run the frozen 18-view C922 calibration acquisition plan",
@@ -1598,6 +1608,24 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["exact_replay_eligible"] else 1
+    if args.command == "replay-eligible-physical-recording":
+        from .recorded_replay import (
+            ReplayContractError,
+            replay_exact_eligible_physical_recording,
+        )
+
+        try:
+            receipt = replay_exact_eligible_physical_recording(
+                args.recording,
+                args.manifest,
+                config_path=args.config,
+                output_directory=args.output,
+            )
+        except (ReplayContractError, ValueError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(receipt, indent=2, sort_keys=True))
+        return 0
     if args.command == "c922-calibration-acquisition-preflight":
         from .c922_calibration_acquisition import preflight_and_write
 

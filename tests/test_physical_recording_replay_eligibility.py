@@ -7,12 +7,21 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+import sim2claw.recorded_replay as recorded_replay_module
+from sim2claw.paths import REPO_ROOT
+from sim2claw.recorded_replay import (
+    ReplayContractError,
+    replay_exact_eligible_physical_recording,
+)
 from sim2claw.replay_eligibility import (
     PHYSICAL_SAMPLE_SCHEMA,
     action_sha256,
     materialize_physical_recording_exact_replay,
 )
 from sim2claw.scene import ROBOT_JOINTS
+
+
+REPLAY_CONFIG = REPO_ROOT / "configs/sysid/recorded_action_sysid_v1.json"
 
 
 def _recording(tmp_path: Path, rows: list[dict[str, object]] | None = None) -> Path:
@@ -73,6 +82,12 @@ def _run(recording: Path, tmp_path: Path) -> tuple[dict[str, object], dict[str, 
         recording, manifest_path, tmp_path / "report.json"
     )
     return json.loads(manifest_path.read_text(encoding="utf-8")), report
+
+
+def _eligible_inputs(tmp_path: Path) -> tuple[Path, Path]:
+    recording = _recording(tmp_path)
+    _run(recording, tmp_path)
+    return recording, tmp_path / "manifest.json"
 
 
 def test_finalized_physical_recording_materializes_eligible_manifest(
@@ -179,3 +194,139 @@ def test_missing_or_invalid_initial_velocity_fails_closed(
 
     with pytest.raises(ValueError, match="no valid measured follower velocity"):
         _run(_recording(tmp_path / "velocity", rows), tmp_path / "velocity")
+
+
+def test_eligible_physical_recording_replays_exact_gateway_sent_tensor(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def forbidden_access(*args: object, **kwargs: object) -> None:
+        raise AssertionError("hardware access is forbidden")
+
+    monkeypatch.setattr(
+        "sim2claw.teleop_recording.PhysicalFollowerBackend.sample",
+        forbidden_access,
+    )
+    recording, manifest_path = _eligible_inputs(tmp_path)
+
+    receipt = replay_exact_eligible_physical_recording(
+        recording,
+        manifest_path,
+        config_path=REPLAY_CONFIG,
+        output_directory=tmp_path / "replay",
+    )
+
+    manifest = json.loads(manifest_path.read_text())
+    assert receipt["proof"]["proof_class"] == "replay"
+    assert receipt["evaluator_admission"] is False
+    assert receipt["physical_authority"] is False
+    assert receipt["exact_replay_binding"]["byte_identical"] is True
+    assert receipt["exact_replay_binding"]["replay_consumed_action_sha256"] == (
+        manifest["applied_action_sha256"]
+    )
+    assert receipt["control_diagnostics"]["input_equals_replay_consumed"] is True
+    assert receipt["timing"]["command_interpolation"] == "zero_order_hold"
+    assert receipt["observable_availability"]["joint_position"]["available"] is True
+    for name in (
+        "end_effector_position",
+        "pawn_position",
+        "contact_active",
+        "contact_force",
+    ):
+        assert receipt["observable_availability"][name]["available"] is False
+    assert set(receipt["blockers"]) == {
+        "metric_geometry",
+        "timing_identification",
+        "actuator_application_or_ack",
+        "contact_and_load",
+        "task_consequence",
+    }
+
+
+def test_ineligible_manifest_is_rejected_before_replay(tmp_path: Path) -> None:
+    recording, manifest_path = _eligible_inputs(tmp_path)
+    manifest = json.loads(manifest_path.read_text())
+    manifest["modifications"]["assistance"] = True
+    manifest_path.write_text(json.dumps(manifest))
+
+    with pytest.raises(ReplayContractError, match="manifest is ineligible"):
+        replay_exact_eligible_physical_recording(
+            recording,
+            manifest_path,
+            config_path=REPLAY_CONFIG,
+            output_directory=tmp_path / "replay",
+        )
+
+
+def test_source_hash_drift_is_rejected(tmp_path: Path) -> None:
+    recording, manifest_path = _eligible_inputs(tmp_path)
+    samples_path = recording / "samples.jsonl"
+    samples_path.write_text(samples_path.read_text() + "\n")
+
+    with pytest.raises(ReplayContractError, match="hashes do not match"):
+        replay_exact_eligible_physical_recording(
+            recording,
+            manifest_path,
+            config_path=REPLAY_CONFIG,
+            output_directory=tmp_path / "replay",
+        )
+
+
+def test_manifest_action_hash_drift_is_rejected(tmp_path: Path) -> None:
+    recording, manifest_path = _eligible_inputs(tmp_path)
+    manifest = json.loads(manifest_path.read_text())
+    manifest["applied_action_sha256"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest))
+
+    with pytest.raises(ReplayContractError, match="manifest is ineligible"):
+        replay_exact_eligible_physical_recording(
+            recording,
+            manifest_path,
+            config_path=REPLAY_CONFIG,
+            output_directory=tmp_path / "replay",
+        )
+
+
+@pytest.mark.parametrize("mutation", ("timestamp", "clipping"))
+def test_timestamp_or_action_modification_is_rejected(
+    tmp_path: Path, mutation: str
+) -> None:
+    recording, manifest_path = _eligible_inputs(tmp_path)
+    manifest = json.loads(manifest_path.read_text())
+    if mutation == "timestamp":
+        manifest["timestamps_seconds"][1] = manifest["timestamps_seconds"][0]
+    else:
+        manifest["modifications"]["clipping"] = True
+    manifest_path.write_text(json.dumps(manifest))
+
+    with pytest.raises(ReplayContractError, match="manifest is ineligible"):
+        replay_exact_eligible_physical_recording(
+            recording,
+            manifest_path,
+            config_path=REPLAY_CONFIG,
+            output_directory=tmp_path / "replay",
+        )
+
+
+def test_replay_side_action_mutation_is_rejected(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    recording, manifest_path = _eligible_inputs(tmp_path)
+    original_simulate = recorded_replay_module.simulate_and_align
+
+    def mutate_after_simulation(*args: object, **kwargs: object) -> dict[str, object]:
+        replay = original_simulate(*args, **kwargs)
+        replay["episode"].commands[0, 0] += 0.001
+        return replay
+
+    monkeypatch.setattr(
+        recorded_replay_module,
+        "simulate_and_align",
+        mutate_after_simulation,
+    )
+    with pytest.raises(ReplayContractError, match="replay-side.*mutated"):
+        replay_exact_eligible_physical_recording(
+            recording,
+            manifest_path,
+            config_path=REPLAY_CONFIG,
+            output_directory=tmp_path / "replay",
+        )

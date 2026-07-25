@@ -1,6 +1,6 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T22:23:01-05:00",
+  "updated_at": "2026-07-24T22:34:30-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
   "current_milestone": "NATIVE_DUAL_CAMERA_PRODUCTION_RECORDER_VERIFIED_STATIONARY_GEOMETRY_INPUTS_REQUIRE_HUMAN",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
@@ -3815,6 +3815,28 @@
     "metric_fit_authorized": false,
     "physical_authority": false
   },
+  "eligible_physical_recorded_replay": {
+    "status": "offline_path_verified_physical_catalog_unchanged",
+    "implementation": "src/sim2claw/recorded_replay.py",
+    "command": "sim2claw replay-eligible-physical-recording",
+    "input": "current finalized recorder directory plus P4 exact-replay manifest",
+    "action_source": "canonical_float64_gateway_sent_tensor",
+    "input_action_equals_replay_consumed": true,
+    "command_interpolation": "zero_order_hold",
+    "parameter_fitting_or_mutation": false,
+    "diagnostic_observables": ["joint_position"],
+    "blocked_observables": [
+      "metric_geometry",
+      "timing_identification",
+      "actuator_application_or_ack",
+      "contact_and_load",
+      "task_consequence"
+    ],
+    "physical_catalog_eligible_episodes": 0,
+    "physical_catalog_total_episodes": 18,
+    "evaluator_admission": false,
+    "physical_authority": false
+  },
   "sim2real_transfer_queue": {
     "status": "active_fail_closed",
     "branch": "codex/sim2real-transfer-foundation",
@@ -3865,7 +3887,8 @@
       "P1_ordered_execution_queue",
       "P2_exact_replay_eligibility_foundation",
       "P3_c922_acquisition_preflight",
-      "P4_physical_recorder_exact_replay_adapter"
+      "P4_physical_recorder_exact_replay_adapter",
+      "P5_eligible_physical_recorded_replay"
     ],
     "next_gate": "owner_physical_inputs_for_metric_acquisition"
   },

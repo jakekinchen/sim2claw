@@ -164,6 +164,11 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def float64_tensor_sha256(values: np.ndarray) -> str:
+    canonical = np.asarray(values, dtype="<f8", order="C")
+    return hashlib.sha256(canonical.tobytes(order="C")).hexdigest()
+
+
 def _atomic_json(path: Path, payload: Mapping[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
@@ -1678,6 +1683,7 @@ def simulate_and_align(
     """Replay an episode and align native simulation values to measured times."""
 
     validate_sysid_config(config)
+    replay_input_action_sha256 = float64_tensor_sha256(episode.commands)
     parameters = validate_parameter_values(config, parameter_values or {})
     model, current_scene = _compile_model(
         config,
@@ -1810,6 +1816,8 @@ def simulate_and_align(
         requested_controls=requested_controls,
         applied_controls=applied_controls,
     )
+    if float64_tensor_sha256(episode.commands) != replay_input_action_sha256:
+        raise ReplayContractError("recorded action tensor mutated during replay")
     return {
         "episode": episode,
         "parameters": parameters,
@@ -1825,6 +1833,7 @@ def simulate_and_align(
         "simulated": simulated,
         "control_diagnostics": {
             "exact_command_replay": True,
+            "replay_input_action_sha256": replay_input_action_sha256,
             "requested_equals_applied": True,
             "clipping_performed": False,
             "clipped_row_count": 0,
@@ -2219,3 +2228,273 @@ def replay_recorded_episode(
         model_base_directory=config_path.resolve().parent,
     )
     return write_replay_receipt(replay, config, output_directory)
+
+
+def replay_exact_eligible_physical_recording(
+    recording_directory: Path,
+    exact_replay_manifest_path: Path,
+    *,
+    config_path: Path,
+    output_directory: Path,
+) -> dict[str, Any]:
+    """Replay only P4-admitted canonical gateway-sent actions, without fitting."""
+
+    from .replay_eligibility import (
+        action_sha256,
+        audit_exact_replay_manifest,
+    )
+    from .source_episode import RECEIPT_SCHEMA as RECORDING_RECEIPT_SCHEMA
+
+    recording_directory = recording_directory.resolve()
+    receipt_path = recording_directory / "recording_receipt.json"
+    samples_path = recording_directory / "samples.jsonl"
+    try:
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        manifest = json.loads(exact_replay_manifest_path.read_text(encoding="utf-8"))
+        sample_lines = samples_path.read_text(encoding="utf-8").splitlines()
+        samples = [json.loads(line) for line in sample_lines if line.strip()]
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ReplayContractError(f"physical exact-replay input is unreadable: {error}") from error
+    if not isinstance(receipt, Mapping) or not isinstance(manifest, Mapping):
+        raise ReplayContractError("recording receipt and exact-replay manifest must be objects")
+    if receipt.get("schema_version") != RECORDING_RECEIPT_SCHEMA:
+        raise ReplayContractError("recording receipt is not current finalized-recorder v1")
+    lineage = receipt.get("lineage")
+    backend = receipt.get("backend")
+    if (
+        receipt.get("mode") != "physical_follower"
+        or receipt.get("source_sample_schema") != PHYSICAL_SAMPLE_SCHEMA
+        or receipt.get("proof_class") != "physical_teleoperation_source_unqualified"
+        or receipt.get("assistance_frames") != 0
+        or receipt.get("intervention_frames") != 0
+        or not isinstance(lineage, Mapping)
+        or lineage.get("collection_kind") != "original_source_episode"
+        or lineage.get("corrective_suffix_parent_state_sha256") is not None
+        or not isinstance(backend, Mapping)
+        or backend.get("schema_version") != "sim2claw.so101_physical_gateway.v2"
+    ):
+        raise ReplayContractError("recording receipt is not an unmodified direct-gateway trace")
+
+    eligibility = audit_exact_replay_manifest(exact_replay_manifest_path)
+    if not eligibility["exact_replay_eligible"]:
+        codes = [reason["code"] for reason in eligibility["rejection_reasons"]]
+        raise ReplayContractError(f"exact-replay manifest is ineligible: {codes}")
+    episode_id = str(manifest.get("episode_id") or "")
+    if episode_id != receipt.get("recording_id"):
+        raise ReplayContractError("manifest and recording receipt episode identity differ")
+    provenance = manifest.get("conversion_provenance")
+    if not isinstance(provenance, Mapping):
+        raise ReplayContractError("exact-replay conversion provenance is required")
+    receipt_sha256 = sha256_file(receipt_path)
+    samples_sha256 = sha256_file(samples_path)
+    if (
+        provenance.get("recording_receipt_path") != "recording_receipt.json"
+        or provenance.get("samples_path") != "samples.jsonl"
+        or provenance.get("recording_receipt_sha256") != receipt_sha256
+        or provenance.get("samples_sha256") != samples_sha256
+        or receipt.get("samples_sha256") != samples_sha256
+        or receipt.get("sample_count") != len(samples)
+    ):
+        raise ReplayContractError("current recording receipt/sample hashes do not match manifest")
+    semantics = manifest.get("action_semantics")
+    if (
+        not isinstance(semantics, Mapping)
+        or semantics.get("applied_field_compatibility_meaning")
+        != "gateway_sent_command"
+        or semantics.get("actuator_applied_or_acknowledged") is not False
+    ):
+        raise ReplayContractError("manifest must bind gateway-sent, non-acknowledged actions")
+    if manifest.get("joint_order") != list(ROBOT_JOINTS) or manifest.get("units") != {
+        "joint_position": "radian",
+        "joint_velocity": "radian_per_second",
+        "action": "radian",
+    }:
+        raise ReplayContractError("manifest joint order/units are not canonical SO-101")
+
+    timestamps = np.asarray(manifest.get("timestamps_seconds"), dtype=np.float64)
+    requested_commands = np.asarray(manifest.get("requested_actions"), dtype=np.float64)
+    commands = np.asarray(manifest.get("applied_actions"), dtype=np.float64)
+    initial = manifest.get("initial_state")
+    if not isinstance(initial, Mapping):
+        raise ReplayContractError("manifest measured initial state is required")
+    initial_position = _finite_vector(
+        initial.get("joint_position"), size=len(ROBOT_JOINTS), field="initial position"
+    )
+    initial_velocity = _finite_vector(
+        initial.get("joint_velocity"), size=len(ROBOT_JOINTS), field="initial velocity"
+    )
+    expected_action_sha256 = str(manifest.get("applied_action_sha256") or "")
+    if action_sha256(commands) != expected_action_sha256:
+        raise ReplayContractError("manifest gateway-sent action tensor hash drifted")
+    expected_shape = (len(samples), len(ROBOT_JOINTS))
+    if (
+        len(samples) != len(timestamps)
+        or requested_commands.shape != expected_shape
+        or commands.shape != expected_shape
+    ):
+        raise ReplayContractError("manifest timestamps/actions do not align with source samples")
+
+    measured: list[dict[str, Any]] = []
+    source_timestamps: list[float] = []
+    for index, sample in enumerate(samples):
+        if (
+            not isinstance(sample, Mapping)
+            or sample.get("schema_version") != PHYSICAL_SAMPLE_SCHEMA
+            or sample.get("episode_id") != episode_id
+            or sample.get("sample_index") != index
+        ):
+            raise ReplayContractError(f"physical sample {index} identity/schema drifted")
+        if (
+            bool(sample.get("assistance"))
+            or bool(sample.get("intervention"))
+            or bool(sample.get("rate_limited"))
+            or bool(sample.get("safety_clamped"))
+        ):
+            raise ReplayContractError(f"physical sample {index} records action modification")
+        source_timestamps.append(float(sample.get("timestamp_monotonic_seconds")))
+        requested = np.deg2rad(
+            _finite_vector(
+                sample.get("follower_requested_degrees"),
+                size=len(ROBOT_JOINTS),
+                field=f"sample {index} requested command",
+            )
+        )
+        sent = np.deg2rad(
+            _finite_vector(
+                sample.get("follower_command_degrees"),
+                size=len(ROBOT_JOINTS),
+                field=f"sample {index} gateway-sent command",
+            )
+        )
+        if not np.array_equal(requested, requested_commands[index]) or not np.array_equal(
+            sent, commands[index]
+        ):
+            raise ReplayContractError(f"sample {index} requested/gateway-sent action drifted")
+        measured_position = np.deg2rad(
+            _finite_vector(
+                sample.get("follower_actual_position_degrees"),
+                size=len(ROBOT_JOINTS),
+                field=f"sample {index} measured joint position",
+            )
+        )
+        measured.append({"joint_position": measured_position.tolist()})
+        if index == 0:
+            measured_velocity = np.deg2rad(
+                _finite_vector(
+                    sample.get("follower_actual_velocity_degrees_s"),
+                    size=len(ROBOT_JOINTS),
+                    field="sample 0 measured joint velocity",
+                )
+            )
+            if not np.array_equal(measured_position, initial_position) or not np.array_equal(
+                measured_velocity, initial_velocity
+            ):
+                raise ReplayContractError(
+                    "manifest initial position/velocity differ from source sample 0"
+                )
+    if not np.array_equal(np.asarray(source_timestamps, dtype=np.float64), timestamps):
+        raise ReplayContractError(
+            "manifest timestamps differ from source; replay never repairs them"
+        )
+
+    config = load_sysid_config(config_path)
+    if config["replay"]["command_interpolation"] != "zero_order_hold":
+        raise ReplayContractError("eligible physical replay requires zero-order hold")
+    normalized_timestamps, original_timestamps = _validate_timestamps(
+        timestamps,
+        maximum_gap_seconds=float(config["replay"]["maximum_gap_seconds"]),
+        maximum_duration_seconds=float(config["replay"]["maximum_duration_seconds"]),
+    )
+    joint_names = tuple(f"left_{name}" for name in ROBOT_JOINTS)
+    episode = RecordedEpisode(
+        episode_id=episode_id,
+        proof_class="physical_teleoperation_source_unqualified",
+        proof_class_category="physical_read_only",
+        column=None,
+        joint_names=joint_names,
+        initial_joint_position=initial_position,
+        initial_joint_position_units=("radian",) * len(ROBOT_JOINTS),
+        initial_joint_velocity=initial_velocity,
+        initial_joint_velocity_units=("radian_per_second",) * len(ROBOT_JOINTS),
+        timestamps=normalized_timestamps,
+        original_timestamps=original_timestamps,
+        commands=commands.copy(),
+        measured=tuple(measured),
+        initial_object_state={
+            "status": "unavailable",
+            "reason": "no hash-bound metric object pose in the physical source",
+        },
+        unavailable_observables={
+            "end_effector_position": "no measured metric end-effector trajectory",
+            "end_effector_orientation": "no measured end-effector orientation",
+            "gripper_position": "covered only as a joint trajectory component",
+            "pawn_position": "no measured metric pawn trajectory",
+            "pawn_orientation": "no measured metric pawn orientation",
+            "contact_active": "no calibrated contact observable",
+            "contact_force": "no calibrated contact/load observable",
+        },
+        source_path=samples_path,
+        source_sha256=samples_sha256,
+        source_schema_version=PHYSICAL_SAMPLE_SCHEMA,
+        source_provenance={
+            "chain_complete": True,
+            "episode_id": episode_id,
+            "recording_receipt": {
+                "path": "recording_receipt.json",
+                "sha256": receipt_sha256,
+            },
+            "samples": {"path": "samples.jsonl", "sha256": samples_sha256},
+            "exact_replay_manifest": {
+                "sha256": eligibility["manifest_sha256"],
+                "action_sha256": expected_action_sha256,
+            },
+        },
+        joint_transform=None,
+    )
+    replay = simulate_and_align(
+        episode,
+        config,
+        parameter_values={},
+        model_base_directory=config_path.resolve().parent,
+    )
+    consumed_sha256 = str(
+        replay["control_diagnostics"].get("replay_input_action_sha256") or ""
+    )
+    if (
+        consumed_sha256 != expected_action_sha256
+        or action_sha256(replay["episode"].commands) != expected_action_sha256
+    ):
+        raise ReplayContractError("replay-side gateway-sent action tensor mutated")
+    if replay["parameters"] != nominal_parameter_values(config):
+        raise ReplayContractError("eligible physical replay cannot mutate parameters")
+    replay["control_diagnostics"].update(
+        {
+            "input_gateway_sent_action_sha256": expected_action_sha256,
+            "replay_consumed_action_sha256": consumed_sha256,
+            "input_equals_replay_consumed": True,
+            "action_semantics": "gateway_sent_command_not_actuator_ack",
+        }
+    )
+    result = write_replay_receipt(replay, config, output_directory)
+    result["evaluator_admission"] = False
+    result["physical_authority"] = False
+    result["exact_replay_binding"] = {
+        "manifest_sha256": eligibility["manifest_sha256"],
+        "input_gateway_sent_action_sha256": expected_action_sha256,
+        "replay_consumed_action_sha256": consumed_sha256,
+        "byte_identical": True,
+    }
+    result["blockers"] = {
+        "metric_geometry": "unavailable",
+        "timing_identification": "unavailable",
+        "actuator_application_or_ack": "unavailable",
+        "contact_and_load": "unavailable",
+        "task_consequence": "unavailable",
+    }
+    result.pop("receipt_path", None)
+    result.pop("receipt_sha256", None)
+    final_receipt_path = output_directory.resolve() / "replay_receipt.json"
+    _atomic_json(final_receipt_path, result)
+    result["receipt_path"] = final_receipt_path.name
+    result["receipt_sha256"] = sha256_file(final_receipt_path)
+    return result

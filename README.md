@@ -109,6 +109,21 @@ the finalized receipt and `samples.jsonl` hashes and rejects altered lineage,
 requested/sent divergence, rate limiting, clamping, assistance, intervention,
 nonmonotonic timestamps, or missing first-sample measured state.
 
+Replay an eligible manifest through the existing MuJoCo zero-order-hold path:
+
+```bash
+uv run sim2claw replay-eligible-physical-recording \
+  --recording runs/teleop_recordings/<recording-id> \
+  --manifest runs/exact_replay_eligibility/<recording-id>-manifest.json \
+  --output runs/recorded_replay/<recording-id>
+```
+
+The ignored replay receipt proves that the canonical float64 gateway-sent
+action hash equals the tensor consumed by replay. Only measured joint
+residuals are diagnostic; metric geometry, timing identification, actuator
+application/acknowledgement, contact/load, pawn motion, and task consequence
+remain unavailable. No parameter fitting or mutation occurs.
+
 Dry-run the fixed 12-fit / 3-validation / 3-held-out C922 calibration
 acquisition plan:
 
