@@ -1,5 +1,30 @@
 # Orchestration Ledger
 
+## Active bounded transaction — follower-only timing twin
+
+- Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`; canonical
+  implementation through `ad226ce`.
+- Owner objective: control only the SO-101 follower, without leader alignment
+  or teleoperation, until a tangible digital-twin result is obtained.
+- Physical proof: packet `P10-fa486d61dbdc303e` has five finalized
+  follower-only recordings. Every P4 report is exact-replay eligible and binds
+  identical requested/applied action bytes. Cohort SHA-256:
+  `ffdcdfaa2da83f3a19e70d000de4627ccdc257b2e5d87ae0b02109d3bcaa6460`.
+- Safety state: all motion was bounded by the reviewed follower gateway; the
+  real leader was not opened. The gateway closed torque after capture.
+- Current blocker: P9 rejects before optimization because the P10 cohort omits
+  the required robot/workspace evidence identity. The immutable receipts
+  already bind follower port, calibration hash, gateway schema, and workspace
+  pose, and P4 binds each receipt hash.
+- Active worker: background task `019f97b8-3ab8-7402-bbfc-e391b88b6814`
+  is implementing one fail-closed compatibility bridge that derives the
+  cohort identity only from those existing hash-bound fields. No hardware,
+  Brev, training, push, or broad testing is delegated.
+- Next proof target: complete the P9 timing/actuation fit, independently admit
+  or reject its frozen candidate, and feed an admitted result into the
+  geometry-plus-timing twin candidate. A fit rejection remains diagnostic and
+  does not create physical-task or policy-transfer authority.
+
 ## Active bounded transaction — Studio simulator-twin reconciliation
 
 - Owner objective: preserve evaluator/learning machinery while making Replay
