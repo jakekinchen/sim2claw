@@ -3824,6 +3824,15 @@
     "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
     "transform_convention": "workcell_from_board @ inverse(camera_from_board)",
     "evaluation_method": "frozen_leave_one_out",
+    "input_acquisition": {
+      "status": "offline_verified_waiting_for_stationary_operator_session",
+      "implementation": "src/sim2claw/workcell_registration_acquisition.py",
+      "command": "sim2claw workcell-registration-input",
+      "phases": ["capture", "bundle", "finalize"],
+      "independent_annotator_count": 2,
+      "predeclared_board_point_count": 8,
+      "dry_run_finalization_allowed": false
+    },
     "real_survey_receipts_emitted": 0,
     "camera_sessions_used": 0,
     "robot_motion_used": 0,

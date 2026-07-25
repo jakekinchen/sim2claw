@@ -22,6 +22,7 @@ BOARD_FIT_SCHEMA = "sim2claw.board_fit_evaluation_receipt.v1"
 WORKSPACE_POSE_ID = "workspace_board_fiducial_robotward_100mm_20260718_v3"
 BOARD_POSE_ID = "board_robotward_100mm_20260718_v3"
 MAX_REPROJECTION_RMS_PX = 2.0
+STATIONARY_CAPTURE_SCHEMA = "sim2claw.stationary_workcell_registration_capture.v1"
 
 
 class WorkcellRegistrationError(RuntimeError):
@@ -536,9 +537,16 @@ def evaluate_stationary_registration(
     source = manifest.get("physical_source")
     _require(isinstance(source, Mapping), "Physical source is missing.")
     frame = _inside(root, source.get("source_frame_path"), "source frame")
+    video = _inside(root, source.get("overhead_video_path"), "source video")
+    capture_path = _inside(root, source.get("capture_receipt_path"), "capture receipt")
     _require(
         frame.is_file()
         and source.get("source_frame_sha256") == readiness.sha256_file(frame)
+        and video.is_file()
+        and source.get("overhead_video_sha256") == readiness.sha256_file(video)
+        and capture_path.is_file()
+        and source.get("capture_receipt_sha256")
+        == readiness.sha256_file(capture_path)
         and source.get("source_frame_size_px") == [640, 480]
         and source.get("camera_id") == "logitech-overhead",
         "Stationary C922 frame identity changed.",
@@ -546,10 +554,42 @@ def evaluate_stationary_registration(
     contract = _load_json(
         readiness.DEFAULT_CONTRACT_PATH, "metric readiness contract"
     )
-    _, source_invalid = readiness._validate_source(  # noqa: SLF001
-        contract, manifest, root
+    capture_receipt = _load_json(
+        capture_path,
+        "capture receipt",
     )
-    _require(not source_invalid, f"Stationary capture lineage is invalid: {source_invalid}")
+    if capture_receipt.get("schema_version") == STATIONARY_CAPTURE_SCHEMA:
+        extraction, extraction_error = readiness._check_artifact_pointer(  # noqa: SLF001
+            source.get("frame_extraction_receipt"),
+            repo_root=root,
+            expected_schema="sim2claw.frame_extraction_receipt.v1",
+        )
+        _require(
+            source.get("proof_class") == "physical_camera_frame"
+            and capture_receipt.get("proof_class") == "physical_camera_frame"
+            and capture_receipt.get("synthetic") is False
+            and capture_receipt.get("robot_gateway_constructed") is False
+            and capture_receipt.get("robot_motion_used") == 0
+            and capture_receipt.get("selected_frame_sha256")
+            == source.get("source_frame_sha256")
+            and capture_receipt.get("source_video_sha256")
+            == source.get("overhead_video_sha256")
+            and extraction is not None
+            and extraction_error is None
+            and extraction.get("source_video_sha256")
+            == source.get("overhead_video_sha256")
+            and extraction.get("output_frame_sha256")
+            == source.get("source_frame_sha256"),
+            "Stationary capture lineage is invalid.",
+        )
+    else:
+        _, source_invalid = readiness._validate_source(  # noqa: SLF001
+            contract, manifest, root
+        )
+        _require(
+            not source_invalid,
+            f"Stationary capture lineage is invalid: {source_invalid}",
+        )
     board, _, board_sha = _artifact(
         manifest,
         "board_playing_side",

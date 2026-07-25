@@ -622,6 +622,28 @@ def build_parser() -> argparse.ArgumentParser:
     workcell_registration.add_argument("--output", type=Path, required=True)
     workcell_registration.add_argument("--survey", type=Path)
     workcell_registration.add_argument("--manifest", type=Path)
+    workcell_input = subparsers.add_parser(
+        "workcell-registration-input",
+        help="capture, annotate, or finalize stationary P13 inputs",
+    )
+    workcell_input.add_argument(
+        "--phase", choices=("capture", "bundle", "finalize"), required=True
+    )
+    workcell_input.add_argument("--output", type=Path, required=True)
+    workcell_input.add_argument("--capture-receipt", type=Path)
+    workcell_input.add_argument("--annotator-a", type=Path)
+    workcell_input.add_argument("--annotator-b", type=Path)
+    workcell_input.add_argument("--board-measurement", type=Path)
+    workcell_input.add_argument("--survey", type=Path)
+    workcell_input.add_argument("--intrinsics", type=Path)
+    workcell_input.add_argument("--distortion", type=Path)
+    workcell_input.add_argument("--focus-setting")
+    workcell_input.add_argument("--dry-run", action="store_true")
+    workcell_input.add_argument("--ack-board-camera-fixed", action="store_true")
+    workcell_input.add_argument("--ack-board-cleared", action="store_true")
+    workcell_input.add_argument("--ack-markers-visible", action="store_true")
+    workcell_input.add_argument("--ack-focus-locked", action="store_true")
+    workcell_input.add_argument("--ack-no-camera-owner", action="store_true")
 
     sysid_capability = subparsers.add_parser(
         "sysid-capability",
@@ -1756,6 +1778,60 @@ def main(argv: Sequence[str] | None = None) -> int:
                     survey_path=args.survey,
                     manifest_path=args.manifest,
                     output_directory=args.output,
+                )
+        except (OSError, ValueError, WorkcellRegistrationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "workcell-registration-input":
+        from .workcell_registration import WorkcellRegistrationError
+        from .workcell_registration_acquisition import (
+            capture_stationary_bundle,
+            finalize_metric_registration_input,
+            write_annotation_bundle,
+        )
+
+        try:
+            if args.phase == "capture":
+                report = capture_stationary_bundle(
+                    args.output,
+                    acknowledgements={
+                        "board_and_camera_fixed": args.ack_board_camera_fixed,
+                        "board_cleared": args.ack_board_cleared,
+                        "a1_h1_a8_markers_visible": args.ack_markers_visible,
+                        "focus_locked": args.ack_focus_locked,
+                        "no_competing_camera_owner": args.ack_no_camera_owner,
+                    },
+                    focus_setting=args.focus_setting,
+                    dry_run=args.dry_run,
+                )
+            elif args.phase == "bundle":
+                if args.capture_receipt is None:
+                    raise WorkcellRegistrationError(
+                        "Bundle phase requires --capture-receipt."
+                    )
+                report = write_annotation_bundle(
+                    args.capture_receipt, args.output
+                )
+            else:
+                required = {
+                    "capture_receipt_path": args.capture_receipt,
+                    "annotator_a_path": args.annotator_a,
+                    "annotator_b_path": args.annotator_b,
+                    "board_measurement_path": args.board_measurement,
+                    "survey_path": args.survey,
+                    "intrinsics_path": args.intrinsics,
+                    "distortion_path": args.distortion,
+                }
+                if any(value is None for value in required.values()):
+                    raise WorkcellRegistrationError(
+                        "Finalize phase requires capture, two annotations, board "
+                        "measurement, survey, intrinsics, and distortion."
+                    )
+                report = finalize_metric_registration_input(
+                    **required,
+                    output_path=args.output,
                 )
         except (OSError, ValueError, WorkcellRegistrationError) as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
