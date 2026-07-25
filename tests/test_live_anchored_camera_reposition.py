@@ -28,18 +28,22 @@ def _write(path: Path, value: object) -> None:
     path.write_text(json.dumps(value), encoding="utf-8")
 
 
-def _inputs(tmp_path: Path) -> tuple[Path, Path]:
+def _inputs(
+    tmp_path: Path,
+    *,
+    maximum_slew_degrees_s: float | None = None,
+) -> tuple[Path, Path]:
     route = tmp_path / "route.json"
     manifest = tmp_path / "candidate_manifest.json"
-    _write(
-        route,
-        {
-            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
-            "route_id": "fixture-live-route",
-            "reviewed_anchor_degrees": TORQUE_OFF.tolist(),
-            "stage_targets_degrees": [TARGET.tolist()],
-        },
-    )
+    route_value = {
+        "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+        "route_id": "fixture-live-route",
+        "reviewed_anchor_degrees": TORQUE_OFF.tolist(),
+        "stage_targets_degrees": [TARGET.tolist()],
+    }
+    if maximum_slew_degrees_s is not None:
+        route_value["setup_maximum_slew_degrees_s"] = maximum_slew_degrees_s
+    _write(route, route_value)
     _write(manifest, {"candidate_digest": "b" * 64})
     return route, manifest
 
@@ -136,9 +140,62 @@ def test_repositions_from_settled_live_anchor_and_remains_setup_only(
     assert receipt["live_anchor_degrees"] == SETTLED.tolist()
     assert receipt["evidence_limits"]["action_frozen_before_torque_on"] is False
     assert receipt["evidence_limits"]["sim_gap_evidence"] is False
+    assert receipt["trajectory"]["maximum_slew_degrees_s"] == 10.0
+    assert receipt["trajectory"]["route_overrides_default_slew"] is False
+    assert (
+        receipt["trajectory"]["action_sha256"]
+        == receipt["cpu_preview"]["stages"][0]["exact_physical_action_sha256"]
+    )
     assert np.array_equal(gateway.actions[0], SETTLED)
     assert np.array_equal(gateway.actions[-1], TARGET)
     assert gateway.closed
+
+
+def test_route_can_reduce_setup_slew_without_widening_default(
+    tmp_path: Path,
+) -> None:
+    route, manifest = _inputs(tmp_path, maximum_slew_degrees_s=3.0)
+    gateway = _Gateway()
+
+    receipt = execute_live_anchored_camera_reposition(
+        route_path=route,
+        candidate_manifest_path=manifest,
+        output_root=tmp_path / "output",
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda identity: gateway,
+        preview_fn=_preview,
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+
+    trajectory = receipt["trajectory"]
+    assert trajectory["maximum_slew_degrees_s"] == 3.0
+    assert trajectory["default_maximum_slew_degrees_s"] == 10.0
+    assert trajectory["route_overrides_default_slew"] is True
+    assert trajectory["sample_count"] > 200
+    assert (
+        trajectory["action_sha256"]
+        == receipt["cpu_preview"]["stages"][0]["exact_physical_action_sha256"]
+    )
+
+
+def test_route_cannot_widen_setup_slew_above_default(tmp_path: Path) -> None:
+    route, manifest = _inputs(tmp_path, maximum_slew_degrees_s=10.1)
+
+    with pytest.raises(
+        LiveAnchoredCameraRepositionError,
+        match="no greater than 10 degrees/s",
+    ):
+        execute_live_anchored_camera_reposition(
+            route_path=route,
+            candidate_manifest_path=manifest,
+            output_root=tmp_path / "output",
+            operator_acknowledged=True,
+            preflight_fn=_preflight,
+            gateway_factory=lambda identity: _Gateway(),
+            preview_fn=_preview,
+        )
 
 
 def test_preview_rejection_sends_no_route_sample_and_releases_torque(
@@ -168,7 +225,7 @@ def test_preview_rejection_sends_no_route_sample_and_releases_torque(
     stored = json.loads(
         (tmp_path / "output/execution_receipt.json").read_text(encoding="utf-8")
     )
-    assert stored["status"] == "stopped_safely"
+    assert stored["status"] == "stopped_safely_before_setup_motion"
     assert stored["physical_follower_torque_enabled"] is False
 
 
@@ -197,6 +254,12 @@ def test_bus_failure_preserves_partial_telemetry_and_releases_torque(
     stored = json.loads(
         (tmp_path / "output/execution_receipt.json").read_text(encoding="utf-8")
     )
-    assert stored["telemetry"]["completed_samples"] == 3
+    assert stored["status"] == "stopped_safely_after_partial_setup_motion"
+    assert stored["telemetry"]["planned_sample_count"] > 3
+    assert stored["telemetry"]["attempted_sample_count"] == 4
+    assert stored["telemetry"]["sent_sample_count"] == 3
+    assert stored["telemetry"]["partial_setup_motion_commanded"] is True
+    assert stored["telemetry"]["last_sent_sample_index"] == 2
+    assert stored["telemetry"]["first_unsent_sample_index"] == 3
     assert stored["telemetry"]["sha256"]
     assert stored["physical_follower_torque_enabled"] is False

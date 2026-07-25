@@ -1016,7 +1016,7 @@ class SO101PhysicalGateway:
                     else "Precompiled exact target"
                 )
                 + " would require rate limiting, clamping, or correction; "
-                "nothing was sent."
+                "the current sample was not sent."
             )
         command_call_started_monotonic = self.clock()
         sent = action_vector(self.follower.send_action(_position_dict(command)))

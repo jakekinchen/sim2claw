@@ -67,7 +67,9 @@ def _write_json(path: Path, value: Mapping[str, Any]) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def _load_target(route_path: Path) -> tuple[dict[str, Any], np.ndarray]:
+def _load_target(
+    route_path: Path,
+) -> tuple[dict[str, Any], np.ndarray, float]:
     route = _read_json(route_path, "camera-reposition route")
     _require(
         route.get("schema_version") == WRIST_VIEW_ROUTE_SCHEMA
@@ -80,7 +82,18 @@ def _load_target(route_path: Path) -> tuple[dict[str, Any], np.ndarray]:
         targets.shape == (1, 6) and np.all(np.isfinite(targets)),
         "live-anchored setup requires exactly one finite six-joint target",
     )
-    return route, targets[0]
+    configured_slew = route.get(
+        "setup_maximum_slew_degrees_s",
+        MAX_SLEW_DEGREES_S,
+    )
+    _require(
+        not isinstance(configured_slew, bool)
+        and isinstance(configured_slew, (int, float))
+        and math.isfinite(float(configured_slew))
+        and 0.0 < float(configured_slew) <= MAX_SLEW_DEGREES_S,
+        "setup route slew must be positive and no greater than 10 degrees/s",
+    )
+    return route, targets[0], float(configured_slew)
 
 
 def _preflight_identity_and_limits(
@@ -124,6 +137,8 @@ def _preflight_identity_and_limits(
 def _live_interpolation(
     anchor: np.ndarray,
     target: np.ndarray,
+    *,
+    maximum_slew_degrees_s: float = MAX_SLEW_DEGREES_S,
 ) -> tuple[np.ndarray, np.ndarray]:
     delta = target - anchor
     delta[4] = (float(target[4]) - float(anchor[4]) + 180.0) % 360.0 - 180.0
@@ -136,7 +151,7 @@ def _live_interpolation(
         int(
             math.ceil(
                 float(np.max(np.abs(delta)))
-                / MAX_SLEW_DEGREES_S
+                / maximum_slew_degrees_s
                 * SAMPLE_HZ
             )
         ),
@@ -150,8 +165,8 @@ def _live_interpolation(
     timestamps = np.arange(actions.shape[0], dtype="<f8") / SAMPLE_HZ
     rates = np.abs(np.diff(actions, axis=0) * SAMPLE_HZ)
     _require(
-        float(np.max(rates)) <= MAX_SLEW_DEGREES_S + 1e-9,
-        "live-anchored interpolation exceeds 10 degrees/s",
+        float(np.max(rates)) <= maximum_slew_degrees_s + 1e-9,
+        "live-anchored interpolation exceeds its route-bound setup slew",
     )
     return actions, timestamps
 
@@ -182,7 +197,7 @@ def execute_live_anchored_camera_reposition(
         f"candidate manifest does not exist: {candidate_manifest_path}",
     )
     _require(not output_root.exists(), f"refusing to overwrite output: {output_root}")
-    route, target = _load_target(route_path)
+    route, target, maximum_slew_degrees_s = _load_target(route_path)
     preflight = preflight_fn()
     identity, lower, upper = _preflight_identity_and_limits(preflight)
     _require(
@@ -200,6 +215,7 @@ def execute_live_anchored_camera_reposition(
     actions: np.ndarray | None = None
     timestamps: np.ndarray | None = None
     completed_samples = 0
+    attempted_samples = 0
     final_actual: list[float] | None = None
     failure: str | None = None
     shutdown_error: str | None = None
@@ -224,7 +240,11 @@ def execute_live_anchored_camera_reposition(
             and np.array_equal(upper, live_upper),
             "live gateway anchor or calibrated limits changed after preflight",
         )
-        actions, timestamps = _live_interpolation(anchor, target)
+        actions, timestamps = _live_interpolation(
+            anchor,
+            target,
+            maximum_slew_degrees_s=maximum_slew_degrees_s,
+        )
         _require(
             np.all(actions >= lower[None, :])
             and np.all(actions <= upper[None, :]),
@@ -253,6 +273,7 @@ def execute_live_anchored_camera_reposition(
                 delay = started_monotonic + float(timestamp) - clock_fn()
                 if delay > 0.0:
                     sleep_fn(delay)
+                attempted_samples += 1
                 sample = gateway.sample(
                     float(timestamp),
                     exact_requested_degrees=action,
@@ -269,10 +290,10 @@ def execute_live_anchored_camera_reposition(
                     "source_action_sha256": action_sha256(actions),
                     **sample,
                 }
-                telemetry.write(json.dumps(row, sort_keys=True) + "\n")
-                telemetry.flush()
                 completed_samples += 1
                 final_actual = sample.get("follower_actual_position_degrees")
+                telemetry.write(json.dumps(row, sort_keys=True) + "\n")
+                telemetry.flush()
         _require(
             final_actual is not None,
             "live-anchored setup produced no final follower observation",
@@ -299,12 +320,18 @@ def execute_live_anchored_camera_reposition(
         and actions is not None
         and completed_samples == actions.shape[0]
     )
+    planned_samples = int(actions.shape[0]) if actions is not None else 0
+    partial_motion = 0 < completed_samples < planned_samples
     receipt: dict[str, Any] = {
         "schema_version": RECEIPT_SCHEMA,
         "status": (
             "completed_live_anchored_camera_reposition"
             if completed
-            else "stopped_safely"
+            else (
+                "stopped_safely_after_partial_setup_motion"
+                if partial_motion
+                else "stopped_safely_before_setup_motion"
+            )
         ),
         "proof_class": "physical_camera_setup_only",
         "route": {
@@ -328,7 +355,11 @@ def execute_live_anchored_camera_reposition(
             {
                 "sample_hz": SAMPLE_HZ,
                 "sample_count": int(actions.shape[0]),
-                "maximum_slew_degrees_s": MAX_SLEW_DEGREES_S,
+                "maximum_slew_degrees_s": maximum_slew_degrees_s,
+                "default_maximum_slew_degrees_s": MAX_SLEW_DEGREES_S,
+                "route_overrides_default_slew": (
+                    maximum_slew_degrees_s != MAX_SLEW_DEGREES_S
+                ),
                 "maximum_excursion_degrees": float(
                     np.max(np.abs(actions[-1] - actions[0]))
                 ),
@@ -344,7 +375,18 @@ def execute_live_anchored_camera_reposition(
         "telemetry": {
             "path": str(telemetry_path),
             "sha256": _sha256(telemetry_path) if telemetry_path.is_file() else None,
-            "completed_samples": completed_samples,
+            "planned_sample_count": planned_samples,
+            "attempted_sample_count": attempted_samples,
+            "sent_sample_count": completed_samples,
+            "partial_setup_motion_commanded": partial_motion,
+            "last_sent_sample_index": (
+                completed_samples - 1 if completed_samples else None
+            ),
+            "first_unsent_sample_index": (
+                completed_samples
+                if completed_samples < planned_samples
+                else None
+            ),
             "final_actual_degrees": final_actual,
         },
         "failure": failure,

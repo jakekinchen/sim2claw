@@ -1,0 +1,35 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "d405_board_view_raise_wrist_pitch_20260725_v5",
+  "capture_during_motion": false,
+  "setup_maximum_slew_degrees_s": 3.0,
+  "reviewed_anchor_degrees": [
+    10.637362637362637,
+    -64.7032967032967,
+    102.10989010989012,
+    3.120879120879121,
+    -82.41758241758242,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [
+      10.0,
+      -64.520994,
+      94.0,
+      -20.0,
+      -74.5,
+      3.0878859857482186
+    ]
+  ],
+  "review_basis": {
+    "simulation_runtime": "cpu_mujoco_mj_forward",
+    "samples_per_stage": 361,
+    "external_contact_pairs": [],
+    "maximum_joint_excursion_degrees_by_stage": [
+      23.12087912087912
+    ],
+    "wrist_roll_motion": false,
+    "gripper_motion": false,
+    "target_visibility_basis": "The prior setup varied wrist roll rather than camera pitch. Continue the empirically useful wrist-flex sweep from the v24 target of 0 degrees to -20 degrees, restore wrist roll near the proven -74.5 degree view, and hold elbow near its achieved position to avoid tracking lag."
+  }
+}
