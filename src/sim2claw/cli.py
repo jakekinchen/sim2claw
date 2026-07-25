@@ -626,6 +626,17 @@ def build_parser() -> argparse.ArgumentParser:
     c922_capture.add_argument("--plan", type=Path, default=REPO_ROOT / "configs/acquisition/c922_exact_mode_calibration.json")
     c922_capture.add_argument("--output", type=Path, required=True)
     c922_capture.add_argument("--dry-run", action="store_true")
+    metrology_transaction = subparsers.add_parser(
+        "metrology-transaction-preflight",
+        help="readiness-only P8/P13 metrology transaction; never opens cameras",
+    )
+    metrology_transaction.add_argument(
+        "--transaction",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/acquisition/current_100mm_p8_p13_metrology_transaction_v1.json",
+    )
+    metrology_transaction.add_argument("--output", type=Path, required=True)
     workcell_registration = subparsers.add_parser(
         "workcell-registration",
         help="write or evaluate the stationary board-to-workcell survey",
@@ -1902,6 +1913,19 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
+    if args.command == "metrology-transaction-preflight":
+        from .metrology_transaction import (
+            MetrologyTransactionError,
+            preflight_and_write,
+        )
+
+        try:
+            report = preflight_and_write(args.transaction, args.output)
+        except (OSError, ValueError, MetrologyTransactionError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["status"] == "ready_for_live_capture_sequence" else 1
     if args.command == "workcell-registration":
         from .workcell_registration import (
             WorkcellRegistrationError,

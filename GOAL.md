@@ -39,6 +39,17 @@ large ACT data generation, isolated-host camera infrastructure, new evaluator
 families, and additional simulator-only contact sweeps. None is a substitute
 for missing action identity, physical measurement, or held-out consequence.
 
+The new versioned P8/P13 metrology transaction is now the single read-only
+control layer for the next geometry/scale attempt. It binds the existing C922
+acquisition/evaluator and stationary workcell-registration acquisition/evaluator
+to the same exact C922 mode, observable constant focus, current workspace and
+board pose identities, printed-grid and direct playing-side measurement
+requirements, fixed-board/no-motion boundary, 18-view `12 / 3 / 3` split,
+eight-point/two-annotator plan, and existing `1.5 mm / 1.5 mm / 2 px`
+residual gates. Its readiness command does not open cameras, capture frames,
+construct a gateway, or claim metric authority; the current result remains
+blocked on human physical inputs.
+
 ## Active evaluator-owned Twin fidelity closure
 
 “Perfect” is now an explicit six-domain evaluator verdict, not a visual
@@ -269,6 +280,16 @@ until a human supplies a physically measured printed target, one observable
 constant focus setting, and 18 distinct exact-mode views frozen into `12 / 3 /
 3` fit/validation/held-out splits with the preregistered position, scale, tilt,
 and orientation diversity.
+
+The successor P8/P13 transaction is implemented at
+`configs/acquisition/current_100mm_p8_p13_metrology_transaction_v1.json` with
+the readiness command `sim2claw metrology-transaction-preflight`. It is an
+operational sequencing manifest only: no camera session, new frame, robot
+motion, fit, evaluator admission, or physical authority has been used. Its
+first live action is the readiness command itself; human-only work remains to
+print/mount and physically measure the target, lock and record focus, hold the
+board and camera stationary, capture the frozen views, survey A1/H1/A8, and
+complete the two independent annotations.
 
 The isolated-host inventory is now terminal and exhausted. The sole strict
 metadata connection reached `silicon.local` on macOS `26.3.1` with no stderr
