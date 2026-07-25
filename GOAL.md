@@ -192,18 +192,19 @@ writer, exposure synchronization, motion reliability, metric depth,
 calibration, simulator, or task result. Per the preregistered decision rule,
 the next camera architecture is a separately preregistered isolated host.
 
-The isolated-host prerequisite is now preregistered before implementation or
-remote access. Its proposed architecture keeps the motion-coupled D405 and
-robot path on `kelly-claude` while assigning the fixed C922 overhead role to
-the separate `silicon.local` host. The first gate is one zero-session,
-zero-frame metadata inventory over strict noninteractive SSH. It may read only
-host, macOS, camera, and USB metadata, with no remote repo access or file
-write. The independent evaluator requires exactly one C922 USB `1133:2140`
-and zero D405 USB `32902:2907` matches on Silicon. An absent C922 becomes one
-explicit physical attachment prerequisite; it is not replaced with another
-camera or treated as capture evidence. This inventory cannot prove the future
-transport, source delivery, cross-host clocks, synchronization, calibration,
-simulator fidelity, or task success.
+The isolated-host inventory is now terminal and exhausted. The sole strict
+metadata connection reached `silicon.local` on macOS `26.3.1` with no stderr
+and no retry. It found zero C922 camera/USB matches and zero D405 camera/USB
+matches, so the frozen evaluator returned
+`isolated_overhead_host_requires_c922_attachment` on exactly the two target
+C922 match-count gates. Budget use was one inventory and one connection, with
+zero camera sessions, frames, remote files, robot motions, simulator replays,
+or provider calls. A tracked guard refuses any second inventory before process
+delegation. The proposed architecture remains to keep the D405 and robot path
+on `kelly-claude` and move only the fixed overhead C922 USB attachment to
+Silicon. Until that physical attachment occurs, no remote capture transport,
+source delivery, cross-host clock, synchronization, calibration, simulator,
+or task claim is available.
 
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load

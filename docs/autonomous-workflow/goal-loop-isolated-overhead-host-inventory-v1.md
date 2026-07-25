@@ -75,23 +75,23 @@ closed authority.
   SSH; the existing overhead snapshot contract is explicitly not live-verified.
 - The fixed overhead C922 is the lower-risk camera to move between hosts. The
   D405 remains motion-coupled to the robot-side path.
+- The sole strict inventory reached `silicon.local` on macOS `26.3.1` and
+  found zero C922 camera/USB matches and zero D405 camera/USB matches.
 
 ### Assumptions
 
-- SSH authentication and strict known-host verification may still work.
-- The C922 may or may not currently be connected to Silicon. The sole inventory
-  resolves this; no device presence is presumed.
+- No device-presence assumption remains. Silicon is reachable, but neither
+  target nor excluded camera is attached.
 
 ### Recommended Default
 
-- Inventory once. If the C922 is present and D405 absent, implement the
-  read-only remote capture/timing transport as a new transaction. If it is
-  absent, stop at the explicit physical C922 attachment prerequisite.
+- Do not retry this inventory. Physically attach the fixed overhead C922 to
+  Silicon while leaving the D405 on `kelly-claude`, then preregister a new
+  exact-device confirmation and capture-transport transaction.
 
 ### Open Questions
 
-- Whether Silicon currently enumerates the exact C922.
-- Whether required macOS metadata tools are available under noninteractive SSH.
+- When the physical C922 USB attachment can be moved to Silicon.
 - Future source timestamp transport and cross-host clock-alignment behavior;
   neither is part of this inventory.
 
@@ -107,10 +107,10 @@ closed authority.
 ## Progress Ledger
 
 ```text
-Current state: Preregistered before implementation or remote observation.
-Completed: Common-session terminal closeout 40e59f0 and independent PASS review.
-Evidence: Common-session receipt a33ada65 / digest 910f3347; exact active callback health but two post-stop identity failures.
-Remaining: Implement the strict zero-session SSH inventory and evaluate once.
-Blockers: Silicon C922 presence and noninteractive metadata access are unverified.
-Next step: Commit this preregistration, then implement offline without SSH.
+Current state: Terminal attachment-required result; one inventory/connection budget exhausted with no retry.
+Completed: Preregistration 76beee9; final reviewed implementation 7810c65; 1/1 zero-session inventory; tracked exhaustion control.
+Evidence: Raw f3cf7ed8; evaluation fdcd1359; receipt file 109532c8 / digest 44ad7049; Silicon macOS 26.3.1; C922 0 camera/0 USB; D405 0 camera/0 USB.
+Remaining: Physical C922 USB attachment to Silicon, then a new capture-transport transaction.
+Blockers: The fixed overhead C922 is not attached to Silicon.
+Next step: Do not retry. Await physical attachment while advancing independent offline Twin-fidelity prerequisites.
 ```

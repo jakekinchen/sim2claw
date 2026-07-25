@@ -1229,3 +1229,14 @@ goal. External provider campaigns and spending remain separately gated.
   training, promotion, and task authority remain closed. Exactly one C922
   `1133:2140` and zero D405 `32902:2907` matches are required before a separate
   remote capture-transport transaction.
+- 2026-07-24T18:58:18-05:00 — The sole zero-session Silicon inventory reached
+  `silicon.local` on macOS `26.3.1` and is terminal attachment-required.
+  Exact reviewed runner `1ceb83a8...` observed zero C922 camera/USB matches and
+  zero D405 camera/USB matches. The evaluator returned
+  `isolated_overhead_host_requires_c922_attachment`; raw is `f3cf7ed8...`,
+  evaluation `fdcd1359...`, receipt file `109532c8...`, and receipt digest
+  `44ad7049...`. Budget is one inventory/connection, zero retries, sessions,
+  frames, remote writes, motions, simulator replays, or providers. A tracked
+  guard closes this family. The physical next prerequisite is moving only the
+  fixed C922 USB attachment to Silicon; offline Twin-fidelity work may proceed
+  independently.
