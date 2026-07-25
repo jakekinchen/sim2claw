@@ -1,0 +1,55 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c922_rank_preflight_live_anchor_to_observed_midpoint_20260725_v1",
+  "capture_during_motion": false,
+  "setup_maximum_slew_degrees_s": 1.5,
+  "setup_elbow_tracking_error_limit_degrees": 15.0,
+  "setup_observed_elbow_target_degrees": 67.34065934065934,
+  "setup_target_hold_seconds": 2.0,
+  "stationary_capture_seconds": 0.0,
+  "reviewed_anchor_degrees": [
+    -18.285714285714285,
+    -59.86813186813187,
+    103.07692307692308,
+    23.78021978021978,
+    -75.38461538461539,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [
+      -18.68131868131868,
+      -60.08791208791209,
+      55.0,
+      24.395604395604394,
+      -74.94505494505495,
+      3.0285035629453683
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "future_c922_calibration_setup_only",
+    "target_source": "The non-elbow joints retain the frozen midpoint target. The elbow command extends past that midpoint only so the existing observed-pose stop can terminate at the frozen 67.34065934065934 degree actual elbow pose despite measured setup lag.",
+    "prior_attempt_receipt": "runs/c922-ordered-face/20260725-live/transition/execution_receipt.json",
+    "prior_attempt_observation": "The exact motion completed without a stall, clamp, or new simulated contact, but the actual elbow ended at 72.92307692307692 degrees for the 67.34065934065934 degree command. The follower was torque-off after the attempt.",
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "candidate_digest": "2da7425cbf0fd10e27822a415890ca180dde7a4f1b042bf3ed49030bcad018af"
+    },
+    "simulation_runtime": "cpu_mujoco_mj_forward_at_live_execution",
+    "capture_plan": "A separate bounded C922 recorder may observe the setup route. Only a future hold-bound receipt may admit a frame.",
+    "evidence_limits": {
+      "camera_to_robot_extrinsic_fitted": false,
+      "sim_gap_evidence": false,
+      "policy_evidence": false,
+      "task_authority": false
+    },
+    "authority": {
+      "capture": false,
+      "motion": false,
+      "fit": false,
+      "policy": false,
+      "task_success": false,
+      "physical_transfer": false
+    }
+  }
+}
