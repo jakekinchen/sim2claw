@@ -1,0 +1,51 @@
+{
+  "schema_version": "sim2claw.d405_wrist_apriltag_observation_contract.v1",
+  "contract_id": "current_100mm_d405_wrist_apriltag_observation_20260725_v1",
+  "status": "preregistered_camera_only_detection",
+  "camera": {
+    "role": "d405",
+    "localized_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+    "model_id": "UVC Camera VendorID_32902 ProductID_2907",
+    "width_px": 424,
+    "height_px": 240,
+    "media_subtype": "yuvs",
+    "format_index": 5,
+    "frame_interval_seconds": 0.2
+  },
+  "tag": {
+    "family": "tag36h11",
+    "id": 0,
+    "nominal_black_border_side_m": 0.08,
+    "nominal_full_printed_side_m": 0.1,
+    "physical_black_border_measured": false,
+    "minimum_mean_detected_edge_px": 12.0,
+    "maximum_instances_per_frame": 1
+  },
+  "detector": {
+    "backend": "opencv_aruco",
+    "dictionary": "DICT_APRILTAG_36h11",
+    "corner_refinement": "CORNER_REFINE_SUBPIX",
+    "maximum_video_frames": 600,
+    "selection": "largest_mean_edge_then_earliest_frame"
+  },
+  "required_for_wrist_registration": [
+    "native_d405_capture_report_binding",
+    "physical_black_border_side_measurement",
+    "exact_mode_d405_rgb_intrinsics_and_distortion",
+    "measured_tag_to_board_or_workcell_transform",
+    "measured_d405_optical_to_wrist_or_tool_transform",
+    "frame_synchronized_robot_joint_pose"
+  ],
+  "authority": {
+    "camera_open": false,
+    "robot_gateway": false,
+    "robot_motion": false,
+    "metric_depth": false,
+    "metric_scale": false,
+    "wrist_extrinsics": false,
+    "board_to_workcell_registration": false,
+    "simulator_parameter_promotion": false,
+    "training": false,
+    "physical_task_authority": false
+  }
+}

@@ -637,6 +637,20 @@ def build_parser() -> argparse.ArgumentParser:
         / "configs/acquisition/current_100mm_p8_p13_metrology_transaction_v1.json",
     )
     metrology_transaction.add_argument("--output", type=Path, required=True)
+    d405_apriltag = subparsers.add_parser(
+        "d405-apriltag-observe",
+        help="detect tag36h11 id 0 offline in an existing D405 RGB image or video",
+    )
+    d405_apriltag.add_argument("--source", type=Path, required=True)
+    d405_apriltag.add_argument(
+        "--contract",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/acquisition/d405_wrist_apriltag_observation_v1.json",
+    )
+    d405_apriltag.add_argument("--capture-report", type=Path)
+    d405_apriltag.add_argument("--selected-frame-output", type=Path)
+    d405_apriltag.add_argument("--output", type=Path, required=True)
     workcell_registration = subparsers.add_parser(
         "workcell-registration",
         help="write or evaluate the stationary board-to-workcell survey",
@@ -1926,6 +1940,25 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["status"] == "ready_for_live_capture_sequence" else 1
+    if args.command == "d405-apriltag-observe":
+        from .d405_apriltag_observation import (
+            D405AprilTagObservationError,
+            observe_d405_apriltag,
+        )
+
+        try:
+            report = observe_d405_apriltag(
+                source_path=args.source,
+                output_path=args.output,
+                contract_path=args.contract,
+                capture_report_path=args.capture_report,
+                selected_frame_output=args.selected_frame_output,
+            )
+        except (OSError, ValueError, D405AprilTagObservationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["status"] == "target_observed" else 1
     if args.command == "workcell-registration":
         from .workcell_registration import (
             WorkcellRegistrationError,
