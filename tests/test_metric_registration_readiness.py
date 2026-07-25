@@ -560,6 +560,28 @@ def test_valid_but_insufficient_correspondences_remain_missing(
     assert result["invalid_inputs"] == []
 
 
+@pytest.mark.parametrize("malformed", [{}, "", 0, False])
+def test_falsey_nonlist_correspondences_are_invalid(
+    tmp_path: Path,
+    malformed: object,
+) -> None:
+    contract, manifest, evidence = _complete_manifest(tmp_path)
+    values = manifest["metric_measurements"]
+    values["board_correspondences"] = malformed
+    values["board_fit_evaluation"] = None
+    result = readiness.evaluate_manifest(
+        contract, manifest, repo_root=evidence["root"]
+    )
+    assert result["verdict"] == "invalid_or_tampered_inputs"
+    assert (
+        "minimum_independent_board_correspondences:"
+        "malformed_nonindependent_or_not_spatial"
+    ) in result["invalid_inputs"]
+    assert "all_four_board_quadrants:malformed_nonindependent_or_not_spatial" in result[
+        "invalid_inputs"
+    ]
+
+
 def test_materializer_refuses_noncanonical_or_replayed_output(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

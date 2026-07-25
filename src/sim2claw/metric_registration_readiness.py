@@ -502,9 +502,9 @@ def _measurement_status(
         and len(board_points) == len(point_ids)
     )
     correspondence_reason: str | None
-    if not isinstance(correspondences, list) or not correspondences:
+    if correspondences is None or correspondences == []:
         correspondence_reason = None
-    elif not correspondence_valid:
+    elif not isinstance(correspondences, list) or not correspondence_valid:
         correspondence_reason = "malformed_nonindependent_or_not_spatial"
     elif len(point_ids) < minimum:
         correspondence_reason = None
@@ -526,11 +526,7 @@ def _measurement_status(
         and quadrants == expected_quadrants
         and all(quadrant_counts.get(name, 0) >= 2 for name in expected_quadrants)
     )
-    coverage_reason = (
-        "malformed_nonindependent_or_not_spatial"
-        if correspondences and not correspondence_valid
-        else None
-    )
+    coverage_reason = correspondence_reason
     record("all_four_board_quadrants", coverage, coverage_reason)
     observed["board_correspondence_count"] = len(point_ids)
     observed["board_quadrants"] = sorted(quadrants)
