@@ -21,6 +21,11 @@ from .physical_canary import (
     _default_preflight,
     _gateway_identity,
 )
+from .overhead_video import WristVideoRecorder
+from .physical_gateway import (
+    BODY_TRACKING_ERROR_LIMIT_DEG,
+    SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG,
+)
 from .replay_eligibility import action_sha256
 from .wrist_view_reposition import (
     FINAL_TOLERANCE_DEGREES,
@@ -69,7 +74,7 @@ def _write_json(path: Path, value: Mapping[str, Any]) -> None:
 
 def _load_target(
     route_path: Path,
-) -> tuple[dict[str, Any], np.ndarray, float]:
+) -> tuple[dict[str, Any], np.ndarray, float, float, float, float]:
     route = _read_json(route_path, "camera-reposition route")
     _require(
         route.get("schema_version") == WRIST_VIEW_ROUTE_SCHEMA
@@ -93,7 +98,58 @@ def _load_target(
         and 0.0 < float(configured_slew) <= MAX_SLEW_DEGREES_S,
         "setup route slew must be positive and no greater than 10 degrees/s",
     )
-    return route, targets[0], float(configured_slew)
+    setup_elbow_limit = route.get(
+        "setup_elbow_tracking_error_limit_degrees",
+        BODY_TRACKING_ERROR_LIMIT_DEG,
+    )
+    _require(
+        not isinstance(setup_elbow_limit, bool)
+        and isinstance(setup_elbow_limit, (int, float))
+        and float(setup_elbow_limit)
+        in {
+            BODY_TRACKING_ERROR_LIMIT_DEG,
+            SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG,
+        },
+        "setup elbow tracking limit must be exactly 6.0 or 7.0 degrees",
+    )
+    hold_seconds = route.get("setup_target_hold_seconds", 0.0)
+    capture_seconds = route.get("stationary_capture_seconds", 0.0)
+    for value, label in (
+        (hold_seconds, "setup target hold"),
+        (capture_seconds, "stationary capture"),
+    ):
+        _require(
+            not isinstance(value, bool)
+            and isinstance(value, (int, float))
+            and math.isfinite(float(value))
+            and float(value) >= 0.0,
+            f"{label} seconds must be finite and non-negative",
+        )
+    return (
+        route,
+        targets[0],
+        float(configured_slew),
+        float(setup_elbow_limit),
+        float(hold_seconds),
+        float(capture_seconds),
+    )
+
+
+def _camera_artifacts(output_root: Path) -> dict[str, dict[str, Any]]:
+    candidates = {
+        "lossless_video": output_root / "wrist_d405.mkv",
+        "ffmpeg_log": output_root / "wrist_d405.ffmpeg.log",
+        "browser_video": output_root / "wrist_d405.browser.mp4",
+    }
+    return {
+        name: {
+            "path": str(path),
+            "sha256": _sha256(path),
+            "size_bytes": path.stat().st_size,
+        }
+        for name, path in candidates.items()
+        if path.is_file()
+    }
 
 
 def _preflight_identity_and_limits(
@@ -182,6 +238,7 @@ def execute_live_anchored_camera_reposition(
     preview_fn: Callable[[list[np.ndarray], Path], dict[str, Any]] = (
         preview_wrist_view_actions
     ),
+    recorder_factory: Callable[[Path], Any] = WristVideoRecorder,
     clock_fn: Callable[[], float] = time.monotonic,
     sleep_fn: Callable[[float], None] = time.sleep,
 ) -> dict[str, Any]:
@@ -197,7 +254,14 @@ def execute_live_anchored_camera_reposition(
         f"candidate manifest does not exist: {candidate_manifest_path}",
     )
     _require(not output_root.exists(), f"refusing to overwrite output: {output_root}")
-    route, target, maximum_slew_degrees_s = _load_target(route_path)
+    (
+        route,
+        target,
+        maximum_slew_degrees_s,
+        setup_elbow_tracking_limit_degrees,
+        target_hold_seconds,
+        stationary_capture_seconds,
+    ) = _load_target(route_path)
     preflight = preflight_fn()
     identity, lower, upper = _preflight_identity_and_limits(preflight)
     _require(
@@ -220,6 +284,14 @@ def execute_live_anchored_camera_reposition(
     failure: str | None = None
     shutdown_error: str | None = None
     started_monotonic: float | None = None
+    movement_sample_count = 0
+    hold_sample_count = int(math.ceil(target_hold_seconds * SAMPLE_HZ))
+    capture_sample_count = int(math.ceil(stationary_capture_seconds * SAMPLE_HZ))
+    capture_start_report: dict[str, Any] | None = None
+    capture_report: dict[str, Any] | None = None
+    capture_failure: str | None = None
+    recorder: Any | None = None
+    recorder_started = False
 
     try:
         opened = gateway.open_live_anchored_setup()
@@ -240,11 +312,20 @@ def execute_live_anchored_camera_reposition(
             and np.array_equal(upper, live_upper),
             "live gateway anchor or calibrated limits changed after preflight",
         )
-        actions, timestamps = _live_interpolation(
+        movement_actions, _ = _live_interpolation(
             anchor,
             target,
             maximum_slew_degrees_s=maximum_slew_degrees_s,
         )
+        movement_sample_count = int(movement_actions.shape[0])
+        stationary_actions = np.repeat(
+            target[None, :],
+            hold_sample_count + capture_sample_count,
+            axis=0,
+        )
+        actions = np.concatenate((movement_actions, stationary_actions), axis=0)
+        actions = actions.astype("<f8", copy=False)
+        timestamps = np.arange(actions.shape[0], dtype="<f8") / SAMPLE_HZ
         _require(
             np.all(actions >= lower[None, :])
             and np.all(actions <= upper[None, :]),
@@ -266,34 +347,55 @@ def execute_live_anchored_camera_reposition(
         )
         action_path.write_bytes(actions.tobytes(order="C"))
         started_monotonic = clock_fn()
+
+        def send_sample(sample_index: int, phase_started: float, phase_index: int) -> None:
+            nonlocal attempted_samples, completed_samples, final_actual
+            assert actions is not None
+            delay = phase_started + float(phase_index) / SAMPLE_HZ - clock_fn()
+            if delay > 0.0:
+                sleep_fn(delay)
+            action = actions[sample_index]
+            attempted_samples += 1
+            sample = gateway.sample(
+                float(timestamps[sample_index]),
+                exact_requested_degrees=action,
+                setup_elbow_tracking_error_limit_degrees=(
+                    setup_elbow_tracking_limit_degrees
+                    if setup_elbow_tracking_limit_degrees
+                    == SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG
+                    else None
+                ),
+            )
+            _require(
+                sample.get("physical_follower_torque_enabled") is True
+                and sample.get("precompiled_exact_action") is True
+                and sample.get("safety_clamped") is False
+                and sample.get("rate_limited") is False,
+                "gateway modified or rejected a live-anchored setup sample",
+            )
+            row = {
+                "sample_index": sample_index,
+                "setup_phase": (
+                    "motion"
+                    if sample_index < movement_sample_count
+                    else (
+                        "target_hold"
+                        if sample_index
+                        < movement_sample_count + hold_sample_count
+                        else "stationary_capture"
+                    )
+                ),
+                "source_action_sha256": action_sha256(actions),
+                **sample,
+            }
+            completed_samples += 1
+            final_actual = sample.get("follower_actual_position_degrees")
+            telemetry.write(json.dumps(row, sort_keys=True) + "\n")
+            telemetry.flush()
+
         with telemetry_path.open("x", encoding="utf-8") as telemetry:
-            for sample_index, (timestamp, action) in enumerate(
-                zip(timestamps, actions, strict=True)
-            ):
-                delay = started_monotonic + float(timestamp) - clock_fn()
-                if delay > 0.0:
-                    sleep_fn(delay)
-                attempted_samples += 1
-                sample = gateway.sample(
-                    float(timestamp),
-                    exact_requested_degrees=action,
-                )
-                _require(
-                    sample.get("physical_follower_torque_enabled") is True
-                    and sample.get("precompiled_exact_action") is True
-                    and sample.get("safety_clamped") is False
-                    and sample.get("rate_limited") is False,
-                    "gateway modified or rejected a live-anchored setup sample",
-                )
-                row = {
-                    "sample_index": sample_index,
-                    "source_action_sha256": action_sha256(actions),
-                    **sample,
-                }
-                completed_samples += 1
-                final_actual = sample.get("follower_actual_position_degrees")
-                telemetry.write(json.dumps(row, sort_keys=True) + "\n")
-                telemetry.flush()
+            for sample_index in range(movement_sample_count):
+                send_sample(sample_index, started_monotonic, sample_index)
         _require(
             final_actual is not None,
             "live-anchored setup produced no final follower observation",
@@ -306,9 +408,58 @@ def execute_live_anchored_camera_reposition(
             np.all(np.abs(residual) <= FINAL_TOLERANCE_DEGREES),
             "follower did not reach the live-anchored camera target",
         )
+        with telemetry_path.open("a", encoding="utf-8") as telemetry:
+            hold_started = clock_fn()
+            for phase_index in range(hold_sample_count):
+                send_sample(
+                    movement_sample_count + phase_index,
+                    hold_started,
+                    phase_index,
+                )
+            if target_hold_seconds > 0.0:
+                delay = hold_started + target_hold_seconds - clock_fn()
+                if delay > 0.0:
+                    sleep_fn(delay)
+            if stationary_capture_seconds > 0.0:
+                recorder = recorder_factory(output_root / "wrist_d405.mkv")
+                capture_start_report = recorder.start()
+                recorder_started = True
+                capture_started = clock_fn()
+                for phase_index in range(capture_sample_count):
+                    send_sample(
+                        movement_sample_count + hold_sample_count + phase_index,
+                        capture_started,
+                        phase_index,
+                    )
+                delay = (
+                    capture_started + stationary_capture_seconds - clock_fn()
+                )
+                if delay > 0.0:
+                    sleep_fn(delay)
+                capture_stopped = clock_fn()
+                capture_report = recorder.finish(
+                    action_started_monotonic=capture_started,
+                    action_stopped_monotonic=capture_stopped,
+                    post_roll_seconds=0.0,
+                )
+                recorder_started = False
+                _require(
+                    capture_report.get("status") == "completed",
+                    "stationary D405 capture did not complete",
+                )
     except Exception as error:
         failure = f"{type(error).__name__}: {error}"
     finally:
+        if recorder_started and recorder is not None:
+            try:
+                capture_report = recorder.finish(
+                    action_started_monotonic=None,
+                    action_stopped_monotonic=clock_fn(),
+                    post_roll_seconds=0.0,
+                )
+            except Exception as error:
+                capture_failure = f"{type(error).__name__}: {error}"
+            recorder_started = False
         try:
             gateway.close()
         except Exception as error:
@@ -322,6 +473,21 @@ def execute_live_anchored_camera_reposition(
     )
     planned_samples = int(actions.shape[0]) if actions is not None else 0
     partial_motion = 0 < completed_samples < planned_samples
+    setup_motion_completed = (
+        planned_samples > 0 and completed_samples == planned_samples
+    )
+    sent_motion_samples = min(completed_samples, movement_sample_count)
+    sent_hold_samples = min(
+        max(completed_samples - movement_sample_count, 0),
+        hold_sample_count,
+    )
+    sent_capture_samples = min(
+        max(
+            completed_samples - movement_sample_count - hold_sample_count,
+            0,
+        ),
+        capture_sample_count,
+    )
     receipt: dict[str, Any] = {
         "schema_version": RECEIPT_SCHEMA,
         "status": (
@@ -330,7 +496,11 @@ def execute_live_anchored_camera_reposition(
             else (
                 "stopped_safely_after_partial_setup_motion"
                 if partial_motion
-                else "stopped_safely_before_setup_motion"
+                else (
+                    "stopped_safely_after_completed_setup_motion"
+                    if setup_motion_completed
+                    else "stopped_safely_before_setup_motion"
+                )
             )
         ),
         "proof_class": "physical_camera_setup_only",
@@ -360,6 +530,21 @@ def execute_live_anchored_camera_reposition(
                 "route_overrides_default_slew": (
                     maximum_slew_degrees_s != MAX_SLEW_DEGREES_S
                 ),
+                "setup_elbow_tracking_error_limit_degrees": (
+                    setup_elbow_tracking_limit_degrees
+                ),
+                "global_body_tracking_error_limit_degrees": (
+                    BODY_TRACKING_ERROR_LIMIT_DEG
+                ),
+                "setup_tracking_override_applied": (
+                    setup_elbow_tracking_limit_degrees
+                    != BODY_TRACKING_ERROR_LIMIT_DEG
+                ),
+                "movement_sample_count": movement_sample_count,
+                "target_hold_seconds": target_hold_seconds,
+                "target_hold_sample_count": hold_sample_count,
+                "stationary_capture_seconds": stationary_capture_seconds,
+                "stationary_capture_sample_count": capture_sample_count,
                 "maximum_excursion_degrees": float(
                     np.max(np.abs(actions[-1] - actions[0]))
                 ),
@@ -372,6 +557,17 @@ def execute_live_anchored_camera_reposition(
             else None
         ),
         "cpu_preview": preview,
+        "stationary_d405_capture": {
+            "requested": stationary_capture_seconds > 0.0,
+            "start_report": capture_start_report,
+            "completion_report": capture_report,
+            "failure": capture_failure,
+            "completed_before_gateway_close": (
+                capture_report is not None
+                and capture_report.get("status") == "completed"
+            ),
+            "artifacts": _camera_artifacts(output_root),
+        },
         "telemetry": {
             "path": str(telemetry_path),
             "sha256": _sha256(telemetry_path) if telemetry_path.is_file() else None,
@@ -379,6 +575,21 @@ def execute_live_anchored_camera_reposition(
             "attempted_sample_count": attempted_samples,
             "sent_sample_count": completed_samples,
             "partial_setup_motion_commanded": partial_motion,
+            "setup_motion_completed": setup_motion_completed,
+            "phase_sample_counts": {
+                "motion": {
+                    "planned": movement_sample_count,
+                    "sent": sent_motion_samples,
+                },
+                "target_hold": {
+                    "planned": hold_sample_count,
+                    "sent": sent_hold_samples,
+                },
+                "stationary_capture": {
+                    "planned": capture_sample_count,
+                    "sent": sent_capture_samples,
+                },
+            },
             "last_sent_sample_index": (
                 completed_samples - 1 if completed_samples else None
             ),

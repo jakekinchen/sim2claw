@@ -208,6 +208,29 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertEqual(command[0], tracking_limits[0])
         self.assertEqual(command[1], -tracking_limits[1])
 
+    def test_setup_elbow_tracking_override_changes_only_elbow(self) -> None:
+        requested = np.asarray([0, 0, 7, 0, 0, 0], dtype=np.float64)
+        previous_command = requested.copy()
+        actual = np.zeros(6, dtype=np.float64)
+        lower = np.asarray([-106] * 5 + [0], dtype=np.float64)
+        upper = np.asarray([106] * 5 + [100], dtype=np.float64)
+
+        command, _, tracking_limits = slew_limited_target(
+            requested,
+            previous_command,
+            actual,
+            0.05,
+            lower_limits=lower,
+            upper_limits=upper,
+            elbow_tracking_error_limit_degrees=7.0,
+        )
+
+        self.assertEqual(
+            tracking_limits.tolist(),
+            [6.0, 8.0, 7.0, 6.0, 8.0, 12.0],
+        )
+        self.assertEqual(command[2], 7.0)
+
     def test_open_sample_and_close_own_follower_torque(self) -> None:
         gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)
         opened = gateway.open(enable_motion=True, paired_pose_confirmed=True)

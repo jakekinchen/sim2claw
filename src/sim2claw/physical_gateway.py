@@ -27,6 +27,7 @@ BODY_COMMAND_RATE_LIMIT_DEG_S = 60.0
 WRIST_ROLL_COMMAND_RATE_LIMIT_DEG_S = 90.0
 GRIPPER_COMMAND_RATE_LIMIT_S = 100.0
 BODY_TRACKING_ERROR_LIMIT_DEG = 6.0
+SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG = 7.0
 SHOULDER_LIFT_TRACKING_ERROR_LIMIT_DEG = 8.0
 WRIST_ROLL_TRACKING_ERROR_LIMIT_DEG = 8.0
 GRIPPER_TRACKING_ERROR_LIMIT = 12.0
@@ -144,6 +145,7 @@ def slew_limited_target(
     *,
     lower_limits: np.ndarray,
     upper_limits: np.ndarray,
+    elbow_tracking_error_limit_degrees: float = BODY_TRACKING_ERROR_LIMIT_DEG,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Advance toward the full target without building an unsafe error backlog.
 
@@ -179,7 +181,7 @@ def slew_limited_target(
         [
             BODY_TRACKING_ERROR_LIMIT_DEG,
             SHOULDER_LIFT_TRACKING_ERROR_LIMIT_DEG,
-            BODY_TRACKING_ERROR_LIMIT_DEG,
+            elbow_tracking_error_limit_degrees,
             BODY_TRACKING_ERROR_LIMIT_DEG,
             WRIST_ROLL_TRACKING_ERROR_LIMIT_DEG,
             GRIPPER_TRACKING_ERROR_LIMIT,
@@ -356,6 +358,7 @@ class SO101PhysicalGateway:
         self.torque_enabled = False
         self.connected = False
         self.zero_displacement_arm_target: np.ndarray | None = None
+        self.live_anchored_setup_only = False
 
     def _calibrated_position_limits(self) -> tuple[np.ndarray, np.ndarray]:
         calibration = getattr(self.follower, "calibration", None)
@@ -675,6 +678,7 @@ class SO101PhysicalGateway:
         self.stall_started_at[:] = np.nan
         self.stall_command_direction[:] = 0.0
         self.consecutive_stall_samples[:] = 0
+        self.live_anchored_setup_only = True
         settle_excursion = settled - initial
         settle_excursion[4] = shortest_delta_degrees(
             float(settled[4]),
@@ -902,6 +906,7 @@ class SO101PhysicalGateway:
         *,
         zero_displacement_hold: bool = False,
         exact_requested_degrees: np.ndarray | None = None,
+        setup_elbow_tracking_error_limit_degrees: float | None = None,
     ) -> dict[str, Any]:
         if zero_displacement_hold and exact_requested_degrees is not None:
             raise PhysicalGatewayError(
@@ -921,6 +926,22 @@ class SO101PhysicalGateway:
         leader = self._motion_read("leader position", self.leader.get_action)
         leader_read_completed_monotonic = self.clock()
         exact_precompiled = exact_requested_degrees is not None
+        if setup_elbow_tracking_error_limit_degrees is not None:
+            if (
+                not self.live_anchored_setup_only
+                or not exact_precompiled
+                or setup_elbow_tracking_error_limit_degrees
+                != SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG
+            ):
+                raise PhysicalGatewayError(
+                    "The 7 degree elbow tracking envelope is restricted to "
+                    "exact live-anchored setup-only samples."
+                )
+        elbow_tracking_limit = (
+            setup_elbow_tracking_error_limit_degrees
+            if setup_elbow_tracking_error_limit_degrees is not None
+            else BODY_TRACKING_ERROR_LIMIT_DEG
+        )
         if zero_displacement_hold or exact_precompiled:
             if self.zero_displacement_arm_target is None:
                 raise PhysicalGatewayError(
@@ -980,6 +1001,7 @@ class SO101PhysicalGateway:
             control_dt,
             lower_limits=self.lower_limits,
             upper_limits=self.upper_limits,
+            elbow_tracking_error_limit_degrees=elbow_tracking_limit,
         )
         if exact_precompiled and not _same_float64_bytes(command, requested):
             requested_command_delta = requested - self.previous_command
@@ -1526,6 +1548,7 @@ class SO101PhysicalGateway:
         self.torque_enabled = False
         self.connected = False
         self.zero_displacement_arm_target = None
+        self.live_anchored_setup_only = False
         if errors:
             raise PhysicalGatewayError(
                 "Gateway shutdown reported: "

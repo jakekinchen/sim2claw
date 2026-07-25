@@ -32,6 +32,9 @@ def _inputs(
     tmp_path: Path,
     *,
     maximum_slew_degrees_s: float | None = None,
+    elbow_tracking_limit_degrees: float | None = None,
+    target_hold_seconds: float | None = None,
+    stationary_capture_seconds: float | None = None,
 ) -> tuple[Path, Path]:
     route = tmp_path / "route.json"
     manifest = tmp_path / "candidate_manifest.json"
@@ -43,6 +46,14 @@ def _inputs(
     }
     if maximum_slew_degrees_s is not None:
         route_value["setup_maximum_slew_degrees_s"] = maximum_slew_degrees_s
+    if elbow_tracking_limit_degrees is not None:
+        route_value["setup_elbow_tracking_error_limit_degrees"] = (
+            elbow_tracking_limit_degrees
+        )
+    if target_hold_seconds is not None:
+        route_value["setup_target_hold_seconds"] = target_hold_seconds
+    if stationary_capture_seconds is not None:
+        route_value["stationary_capture_seconds"] = stationary_capture_seconds
     _write(route, route_value)
     _write(manifest, {"candidate_digest": "b" * 64})
     return route, manifest
@@ -80,7 +91,11 @@ class _Gateway:
         }
 
     def sample(
-        self, elapsed_seconds: float, *, exact_requested_degrees: np.ndarray
+        self,
+        elapsed_seconds: float,
+        *,
+        exact_requested_degrees: np.ndarray,
+        setup_elbow_tracking_error_limit_degrees: float | None = None,
     ) -> dict[str, object]:
         if self.fail_at is not None and len(self.actions) == self.fail_at:
             raise RuntimeError("fixture bus failure")
@@ -93,10 +108,49 @@ class _Gateway:
             "precompiled_exact_action": True,
             "safety_clamped": False,
             "rate_limited": False,
+            "tracking_error_limits": [
+                6.0,
+                8.0,
+                setup_elbow_tracking_error_limit_degrees or 6.0,
+                6.0,
+                8.0,
+                12.0,
+            ],
         }
 
     def close(self) -> None:
         self.closed = True
+
+
+class _Recorder:
+    def __init__(self, output_path: Path) -> None:
+        self.output_path = output_path
+        self.started = False
+        self.finished = False
+
+    def start(self) -> dict[str, object]:
+        self.started = True
+        return {"status": "recording", "video_path": self.output_path.name}
+
+    def finish(
+        self,
+        *,
+        action_started_monotonic: float | None,
+        action_stopped_monotonic: float | None,
+        post_roll_seconds: float,
+    ) -> dict[str, object]:
+        assert self.started
+        assert action_stopped_monotonic is not None
+        assert post_roll_seconds == 0.0
+        self.output_path.write_bytes(b"fixture-d405-video")
+        self.output_path.with_suffix(".ffmpeg.log").write_text(
+            "fixture capture complete", encoding="utf-8"
+        )
+        self.finished = True
+        return {
+            "status": "completed",
+            "video_path": self.output_path.name,
+        }
 
 
 def _preview(actions: list[np.ndarray], manifest: Path) -> dict[str, object]:
@@ -142,6 +196,8 @@ def test_repositions_from_settled_live_anchor_and_remains_setup_only(
     assert receipt["evidence_limits"]["sim_gap_evidence"] is False
     assert receipt["trajectory"]["maximum_slew_degrees_s"] == 10.0
     assert receipt["trajectory"]["route_overrides_default_slew"] is False
+    assert receipt["trajectory"]["setup_elbow_tracking_error_limit_degrees"] == 6.0
+    assert receipt["trajectory"]["setup_tracking_override_applied"] is False
     assert (
         receipt["trajectory"]["action_sha256"]
         == receipt["cpu_preview"]["stages"][0]["exact_physical_action_sha256"]
@@ -186,6 +242,93 @@ def test_route_cannot_widen_setup_slew_above_default(tmp_path: Path) -> None:
     with pytest.raises(
         LiveAnchoredCameraRepositionError,
         match="no greater than 10 degrees/s",
+    ):
+        execute_live_anchored_camera_reposition(
+            route_path=route,
+            candidate_manifest_path=manifest,
+            output_root=tmp_path / "output",
+            operator_acknowledged=True,
+            preflight_fn=_preflight,
+            gateway_factory=lambda identity: _Gateway(),
+            preview_fn=_preview,
+        )
+
+
+def test_setup_only_seven_degree_elbow_envelope_and_stationary_capture(
+    tmp_path: Path,
+) -> None:
+    route, manifest = _inputs(
+        tmp_path,
+        maximum_slew_degrees_s=1.5,
+        elbow_tracking_limit_degrees=7.0,
+        target_hold_seconds=0.1,
+        stationary_capture_seconds=0.15,
+    )
+    gateway = _Gateway()
+    recorders: list[_Recorder] = []
+
+    def recorder_factory(path: Path) -> _Recorder:
+        recorder = _Recorder(path)
+        recorders.append(recorder)
+        return recorder
+
+    receipt = execute_live_anchored_camera_reposition(
+        route_path=route,
+        candidate_manifest_path=manifest,
+        output_root=tmp_path / "output",
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda identity: gateway,
+        preview_fn=_preview,
+        recorder_factory=recorder_factory,
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+
+    trajectory = receipt["trajectory"]
+    assert trajectory["setup_elbow_tracking_error_limit_degrees"] == 7.0
+    assert trajectory["global_body_tracking_error_limit_degrees"] == 6.0
+    assert trajectory["setup_tracking_override_applied"] is True
+    assert trajectory["target_hold_sample_count"] == 4
+    assert trajectory["stationary_capture_sample_count"] == 6
+    assert trajectory["sample_count"] == len(gateway.actions)
+    assert (
+        trajectory["action_sha256"]
+        == receipt["cpu_preview"]["stages"][0]["exact_physical_action_sha256"]
+    )
+    assert all(
+        row["setup_phase"] == "stationary_capture"
+        for row in [
+            json.loads(line)
+            for line in (
+                tmp_path / "output/telemetry.jsonl"
+            ).read_text(encoding="utf-8").splitlines()[-6:]
+        ]
+    )
+    capture = receipt["stationary_d405_capture"]
+    assert capture["completed_before_gateway_close"] is True
+    assert capture["artifacts"]["lossless_video"]["sha256"]
+    assert capture["artifacts"]["ffmpeg_log"]["sha256"]
+    assert receipt["telemetry"]["phase_sample_counts"] == {
+        "motion": {
+            "planned": trajectory["movement_sample_count"],
+            "sent": trajectory["movement_sample_count"],
+        },
+        "target_hold": {"planned": 4, "sent": 4},
+        "stationary_capture": {"planned": 6, "sent": 6},
+    }
+    assert recorders[0].finished
+    assert gateway.closed
+
+
+def test_setup_elbow_envelope_rejects_any_value_other_than_six_or_seven(
+    tmp_path: Path,
+) -> None:
+    route, manifest = _inputs(tmp_path, elbow_tracking_limit_degrees=7.1)
+
+    with pytest.raises(
+        LiveAnchoredCameraRepositionError,
+        match="exactly 6.0 or 7.0",
     ):
         execute_live_anchored_camera_reposition(
             route_path=route,
