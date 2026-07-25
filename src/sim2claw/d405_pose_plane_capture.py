@@ -40,7 +40,7 @@ from .paths import REPO_ROOT
 CONTRACT_PATH = REPO_ROOT / "configs/evaluations/d405_pose_plane_capture_v1.json"
 CONTRACT_SCHEMA = "sim2claw.d405_pose_plane_capture_contract.v1"
 RECEIPT_SCHEMA = "sim2claw.d405_pose_plane_capture_receipt.v1"
-NATIVE_RECORD_DURATION_SECONDS = 30
+NATIVE_RECORD_DURATION_SECONDS = 75
 
 
 class D405PosePlaneCaptureError(RuntimeError):

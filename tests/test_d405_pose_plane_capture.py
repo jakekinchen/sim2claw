@@ -280,7 +280,7 @@ def test_native_recorder_uses_explicit_bounded_duration(
     assert recorder.command == [
         "/fixture/rs-record",
         "-t",
-        "30",
+        "75",
         "-f",
         str(tmp_path / "capture.db3"),
     ]
