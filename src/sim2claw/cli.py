@@ -608,6 +608,22 @@ def build_parser() -> argparse.ArgumentParser:
     physical_canary.add_argument("--normalization-receipt", type=Path)
     physical_canary.add_argument("--output", type=Path)
     physical_canary.add_argument("--yes", action="store_true")
+    wrist_view_reposition = subparsers.add_parser(
+        "wrist-view-reposition",
+        help="compile, review, or execute one guarded follower-only D405 view stage",
+    )
+    wrist_view_reposition.add_argument(
+        "--phase", choices=("compile", "review", "execute"), required=True
+    )
+    wrist_view_reposition.add_argument("--packet", type=Path, required=True)
+    wrist_view_reposition.add_argument("--candidate-manifest", type=Path)
+    wrist_view_reposition.add_argument("--review", type=Path)
+    wrist_view_reposition.add_argument("--output", type=Path)
+    wrist_view_reposition.add_argument("--stage", type=int)
+    wrist_view_reposition.add_argument("--prior-receipt", type=Path)
+    wrist_view_reposition.add_argument("--reviewer")
+    wrist_view_reposition.add_argument("--decision-id")
+    wrist_view_reposition.add_argument("--yes", action="store_true")
     c922_acquisition = subparsers.add_parser(
         "c922-calibration-acquisition-preflight",
         help="dry-run the frozen 18-view C922 calibration acquisition plan",
@@ -1905,6 +1921,79 @@ def main(argv: Sequence[str] | None = None) -> int:
                     args.packet, args.output, operator_acknowledged=True
                 )
         except (OSError, ValueError, PhysicalCanaryError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "wrist-view-reposition":
+        from .wrist_view_reposition import (
+            WristViewRepositionError,
+            compile_wrist_view_reposition_packet,
+            execute_wrist_view_reposition_stage,
+            review_wrist_view_reposition_packet,
+        )
+
+        try:
+            if args.phase == "compile":
+                if (
+                    args.candidate_manifest is None
+                    or args.output is not None
+                    or args.review is not None
+                    or args.stage is not None
+                    or args.prior_receipt is not None
+                    or args.reviewer is not None
+                    or args.decision_id is not None
+                    or args.yes
+                ):
+                    raise WristViewRepositionError(
+                        "compile requires only --packet and --candidate-manifest"
+                    )
+                result = compile_wrist_view_reposition_packet(
+                    args.packet,
+                    candidate_manifest_path=args.candidate_manifest,
+                )
+            elif args.phase == "review":
+                if (
+                    args.output is None
+                    or not args.reviewer
+                    or not args.decision_id
+                    or args.candidate_manifest is not None
+                    or args.review is not None
+                    or args.stage is not None
+                    or args.prior_receipt is not None
+                    or args.yes
+                ):
+                    raise WristViewRepositionError(
+                        "review requires --packet, --output, --reviewer, and --decision-id"
+                    )
+                result = review_wrist_view_reposition_packet(
+                    args.packet,
+                    args.output,
+                    reviewer=args.reviewer,
+                    decision_id=args.decision_id,
+                )
+            else:
+                if (
+                    not args.yes
+                    or args.review is None
+                    or args.output is None
+                    or args.stage is None
+                    or args.candidate_manifest is not None
+                    or args.reviewer is not None
+                    or args.decision_id is not None
+                ):
+                    raise WristViewRepositionError(
+                        "execute requires --packet, --review, --output, --stage, and --yes"
+                    )
+                result = execute_wrist_view_reposition_stage(
+                    args.packet,
+                    args.review,
+                    args.output,
+                    stage_index=args.stage,
+                    prior_receipt_path=args.prior_receipt,
+                    operator_acknowledged=True,
+                )
+        except (OSError, ValueError, WristViewRepositionError) as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(result, indent=2, sort_keys=True))
