@@ -1104,7 +1104,7 @@ def _validate_excitation_plan(packet: dict[str, Any]) -> dict[str, Any]:
     action_tensors: list[np.ndarray] = []
     assignments = EXCITATION_ASSIGNMENTS
     expected_timestamps = (
-        np.arange(25, dtype=np.float64) / EXCITATION_SAMPLE_HZ
+        (np.arange(25, dtype=np.float64) + 1.0) / EXCITATION_SAMPLE_HZ
     )
     for episode_index, (episode, assignment) in enumerate(
         zip(episodes, assignments, strict=True), start=1
@@ -1122,7 +1122,7 @@ def _validate_excitation_plan(packet: dict[str, Any]) -> dict[str, Any]:
             or not np.all(np.isfinite(timestamps))
             or not np.all(np.isfinite(actions))
             or not np.all(np.diff(timestamps) > 0.0)
-            or timestamps[0] != 0.0
+            or timestamps[0] <= 0.0
             or timestamps[-1] < 1.0
         ):
             raise RecorderError("Excitation episode timing/action shape changed.")
@@ -1222,7 +1222,7 @@ def compile_physical_excitation_packet(
                 f"Fresh pose lacks ±3 degree calibrated margin on "
                 f"{ROBOT_JOINTS[joint_index]}."
             )
-    timestamps = np.arange(25, dtype=np.float64) / EXCITATION_SAMPLE_HZ
+    timestamps = (np.arange(25, dtype=np.float64) + 1.0) / EXCITATION_SAMPLE_HZ
     assignments = EXCITATION_ASSIGNMENTS
     episodes: list[dict[str, Any]] = []
     for index, (joint_index, direction) in enumerate(assignments, start=1):

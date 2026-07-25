@@ -307,7 +307,13 @@ def test_compile_is_deterministic_bounded_exciting_and_read_only(
         assert episode["canonical_action_radians_sha256"] == _float64_sha256(
             np.deg2rad(actions)
         )
-        assert timestamps[-1] >= 1.0
+        assert np.array_equal(
+            timestamps,
+            (np.arange(25, dtype=np.float64) + 1.0) / plan["sample_hz"],
+        )
+        assert episode["timestamp_sha256"] == _float64_sha256(timestamps)
+        assert timestamps[0] == pytest.approx(0.05)
+        assert timestamps[-1] == pytest.approx(1.25)
         assert np.unique(actions, axis=0).shape[0] > 3
         assert np.all(actions[:, 5] == plan["anchor_degrees"][5])
         ranges = np.ptp(actions[:, :5], axis=0)
