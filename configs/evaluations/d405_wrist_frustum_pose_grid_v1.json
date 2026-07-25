@@ -1,0 +1,43 @@
+{
+  "schema_version": "sim2claw.d405_wrist_frustum_pose_grid_contract.v1",
+  "proof_class": "simulation_only_action_free_camera_frustum_diagnostic",
+  "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+  "route_path": "configs/hardware/d405_board_view_reposition_route_v1.json",
+  "camera_name": "left_wrist_cam",
+  "render_width_px": 424,
+  "render_height_px": 240,
+  "minimum_boundary_margin_px": 10.0,
+  "boundary_sample_count": 17,
+  "minimum_visible_fraction_per_boundary": 0.5,
+  "ray_target_tolerance_m": 0.005,
+  "minimum_clearance_query_limit_m": 0.2,
+  "minimum_forbidden_geometry_clearance_m": 0.0001,
+  "gripper_percent": 3.0878859857482186,
+  "ranked_result_count": 10,
+  "grid_families": [
+    {
+      "name": "v24_local",
+      "shoulder_pan_degrees": [-20.0, 10.0, 40.0],
+      "shoulder_lift_degrees": [-90.0, -64.520994, -40.0],
+      "elbow_flex_degrees": [50.0, 70.0, 90.0],
+      "wrist_flex_degrees": [-35.0, -8.0, 20.0],
+      "wrist_roll_degrees": [-105.0, -74.5, -45.0]
+    },
+    {
+      "name": "current_reframe_local",
+      "shoulder_pan_degrees": [-15.0, -10.0, -5.0],
+      "shoulder_lift_degrees": [-100.0, -90.0, -80.0],
+      "elbow_flex_degrees": [20.0, 30.0, 40.0],
+      "wrist_flex_degrees": [70.0, 75.0, 80.0],
+      "wrist_roll_degrees": [-95.0, -90.0, -85.0]
+    }
+  ],
+  "authority": {
+    "physical_reachability": false,
+    "physical_motion": false,
+    "metric_camera_calibration": false,
+    "camera_extrinsic_calibration": false,
+    "evaluator_promotion": false,
+    "task_success": false
+  }
+}
