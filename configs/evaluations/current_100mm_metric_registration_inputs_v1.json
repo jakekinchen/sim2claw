@@ -1,0 +1,40 @@
+{
+  "schema_version": "sim2claw.metric_registration_inputs.v1",
+  "input_id": "current_100mm_metric_registration_inputs_v1",
+  "status": "frozen_incomplete_measurement_manifest",
+  "physical_source": {
+    "observation_id": "current_100mm_c2_c1_dual_003",
+    "capture_receipt_path": "runs/current-100mm-measurement-20260723/episode-c2-c1-dual-003/capture_receipt.json",
+    "capture_receipt_sha256": "3fafb113a7b89e0b80640b9c7b4cc2016db16ecafcb9f46cba79a79a1330499f",
+    "overhead_video_path": "runs/current-100mm-measurement-20260723/episode-c2-c1-dual-003/overhead_c922.mp4",
+    "overhead_video_sha256": "1643520f5e53ff4694df2cd3ffe102b9f947eb9742678a3e0f2d2f74ba0ececc",
+    "source_frame_path": "runs/current-100mm-measurement-20260723/episode-c2-c1-dual-003/overhead_start.png",
+    "source_frame_sha256": "2543230b795c8a61ab6f7ddb1e9c672588ea88958cddbbb84397d689034b5dfc",
+    "source_frame_size_px": [640, 480],
+    "frame_extraction_receipt": null,
+    "camera_id": "logitech-overhead",
+    "camera_name": "C922 Pro Stream Webcam",
+    "camera_role": "overhead_workspace",
+    "capture_orientation_filter": "hflip,vflip",
+    "proof_class": "physical_command_replay_observation_unqualified_dual_camera"
+  },
+  "metric_measurements": {
+    "board_playing_side": null,
+    "camera_intrinsics_receipt": null,
+    "lens_distortion_receipt": null,
+    "board_correspondences": [],
+    "board_fit_evaluation": null,
+    "object_keypoint_observations": [],
+    "overhead_camera_to_workcell_transform": null,
+    "wrist_camera_extrinsics": null
+  },
+  "authority": {
+    "nominal_board_size_is_measurement": false,
+    "proposal_homography_is_metric_calibration": false,
+    "synthetic_values_allowed": false,
+    "training_rows_authorized": 0,
+    "promotion_authority": false,
+    "physical_motion_authority": false,
+    "task_success_verified": false
+  }
+}

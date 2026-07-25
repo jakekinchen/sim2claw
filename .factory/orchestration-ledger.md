@@ -1240,3 +1240,13 @@ goal. External provider campaigns and spending remain separately gated.
   guard closes this family. The physical next prerequisite is moving only the
   fixed C922 USB attachment to Silicon; offline Twin-fidelity work may proceed
   independently.
+- 2026-07-24T19:16:00-05:00 — Independent review passed the isolated-host
+  closeout at exact `17d297b` with `38/38` focused tests and unchanged frozen
+  evidence. Opened one hardware-free metric-registration readiness transaction
+  against the hash-bound current-workcell C922 C2→C1 recording. The frozen
+  manifest distinguishes available RGB pixels from missing direct board
+  measurement, deterministic frame-extraction lineage, exact-mode
+  intrinsics/distortion, independent distributed correspondences, object
+  keypoints, and camera/workcell extrinsics. One readiness evaluation maximum;
+  zero capture, motion, simulator, provider, training, promotion, or
+  Twin-domain authority.
