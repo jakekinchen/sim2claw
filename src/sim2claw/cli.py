@@ -668,6 +668,16 @@ def build_parser() -> argparse.ArgumentParser:
     d405_apriltag.add_argument("--capture-report", type=Path)
     d405_apriltag.add_argument("--selected-frame-output", type=Path)
     d405_apriltag.add_argument("--output", type=Path, required=True)
+    d405_rgbd_readiness = subparsers.add_parser(
+        "d405-rgbd-readiness",
+        help="inventory D405/librealsense metric-depth access without streaming",
+    )
+    d405_rgbd_readiness.add_argument("--output", type=Path, required=True)
+    d405_rgbd_readiness.add_argument(
+        "--enumeration-file",
+        type=Path,
+        help="ingest the stdout from an operator-run privileged calibration inventory",
+    )
     workcell_registration = subparsers.add_parser(
         "workcell-registration",
         help="write or evaluate the stationary board-to-workcell survey",
@@ -2053,6 +2063,26 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["status"] == "target_observed" else 1
+    if args.command == "d405-rgbd-readiness":
+        from .d405_rgbd_readiness import (
+            D405RGBDReadinessError,
+            inventory_d405_rgbd_readiness,
+        )
+
+        try:
+            report = inventory_d405_rgbd_readiness(
+                output_path=args.output,
+                enumeration_file=args.enumeration_file,
+            )
+        except (OSError, ValueError, D405RGBDReadinessError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return (
+            0
+            if report["status"] == "metric_depth_calibration_enumerated"
+            else 1
+        )
     if args.command == "workcell-registration":
         from .workcell_registration import (
             WorkcellRegistrationError,
