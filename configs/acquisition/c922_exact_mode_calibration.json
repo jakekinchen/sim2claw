@@ -27,7 +27,30 @@
     "setting": null,
     "observation_method": null
   },
-  "owner_capture_approved": false,
+  "owner_capture_approved": true,
+  "owner_capture_authorization": {
+    "schema_version": "sim2claw.c922_stationary_capture_authorization.v1",
+    "authorization_id": "current_100mm_p8_stationary_capture_owner_20260725_v1",
+    "source": "direct_owner_instruction_in_current_codex_task",
+    "recorded_on": "2026-07-25",
+    "metrology_transaction": {
+      "path": "configs/acquisition/current_100mm_p8_p13_metrology_transaction_v1.json",
+      "transaction_id": "current_100mm_p8_p13_metrology_20260725_v1",
+      "sha256": "a0e0c0167ddbfb6b80c152a25d82857d58025cb03a88a85557e3e9c4cbd245ab"
+    },
+    "plan_id": "current_100mm_c922_exact_mode_calibration_acquisition",
+    "contract_sha256": "d586d262929063c924895f56142dfe88196c521cb039d2392dc4ba53259b087c",
+    "camera_unique_id": "0x8310000046d085c",
+    "stationary_exact_mode_camera_capture_authorized": true,
+    "new_camera_data_collection_authorized": true,
+    "frame_count": 18,
+    "robot_motion_authorized": false,
+    "target_measurement_focus_and_mounting_gates_waived": false,
+    "metric_fit_authorized": false,
+    "evaluator_admission": false,
+    "physical_authority": false,
+    "task_success_verified": false
+  },
   "frame_slots": [
     {"frame_id": "c922-cal-00", "split": "fit", "centroid_goal": "north_west", "scale_goal": "small", "pose_goal": "tilted", "orientation_goal": "negative"},
     {"frame_id": "c922-cal-01", "split": "fit", "centroid_goal": "north_east", "scale_goal": "medium", "pose_goal": "tilted", "orientation_goal": "center"},

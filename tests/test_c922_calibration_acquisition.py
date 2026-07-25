@@ -45,10 +45,19 @@ def test_pending_plan_reports_only_real_physical_inputs() -> None:
     }
     assert report["missing_physical_inputs"] == [
         "fixed_observable_focus_setting",
-        "owner_approved_capture",
         "printed_grid_measurement_receipt",
         "printed_target_mounted_flat",
     ]
+    assert report["owner_capture_authorization_ready"] is True
+    assert report["owner_capture_authorization_id"] == (
+        "current_100mm_p8_stationary_capture_owner_20260725_v1"
+    )
+    assert report["owner_actions"] == [
+        "print_and_mount_target_flat",
+        "measure_pitch_and_total_xy_dimensions_and_record_instrument_uncertainty",
+        "lock_c922_focus_and_record_the_observable_setting",
+    ]
+    assert report["d405_repair_required_for_stationary_c922_capture"] is False
     assert report["motion_qualification_blockers"] == [
         "d405_cable_connector_strain_relief_repair"
     ]
@@ -73,6 +82,36 @@ def test_frame_plan_drift_fails_before_capture(tmp_path: Path) -> None:
     assert report["frame_plan_valid"] is False
     assert "split_counts" in report["invalid_plan_reasons"]
     assert report["camera_sessions_used"] == 0
+
+
+def test_owner_capture_authorization_is_hash_bound_to_transaction(
+    tmp_path: Path,
+) -> None:
+    plan = copy.deepcopy(_plan())
+    plan["owner_capture_authorization"]["metrology_transaction"]["sha256"] = "0" * 64
+
+    report = preflight_acquisition(_write(tmp_path, plan))
+
+    assert report["status"] == "invalid_plan"
+    assert report["owner_capture_authorization_ready"] is False
+    assert "owner_capture_authorization_transaction_hash" in report[
+        "invalid_plan_reasons"
+    ]
+    assert report["camera_opened"] is False
+
+
+def test_owner_capture_boolean_without_authorization_artifact_fails_closed(
+    tmp_path: Path,
+) -> None:
+    plan = copy.deepcopy(_plan())
+    del plan["owner_capture_authorization"]
+
+    report = preflight_acquisition(_write(tmp_path, plan))
+
+    assert report["status"] == "blocked_physical_inputs"
+    assert report["owner_capture_authorization_ready"] is False
+    assert "owner_approved_capture" in report["missing_physical_inputs"]
+    assert report["camera_opened"] is False
 
 
 def test_nominal_target_values_cannot_substitute_for_measurement(

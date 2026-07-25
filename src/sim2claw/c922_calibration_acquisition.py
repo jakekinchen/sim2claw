@@ -29,6 +29,9 @@ from .native_dual_camera import NativeDualCameraRecorder
 
 PLAN_SCHEMA = "sim2claw.c922_exact_mode_calibration_acquisition_plan.v1"
 MEASUREMENT_SCHEMA = "sim2claw.printed_grid_measurement_receipt.v1"
+CAPTURE_AUTHORIZATION_SCHEMA = (
+    "sim2claw.c922_stationary_capture_authorization.v1"
+)
 REPORT_SCHEMA = "sim2claw.c922_calibration_acquisition_preflight.v1"
 CORPUS_SCHEMA = "sim2claw.c922_calibration_acquisition_result.v1"
 DEFAULT_PLAN_PATH = (
@@ -138,6 +141,80 @@ def _measurement_ready(
     if receipt.get("nominal_values_substituted") is not False:
         missing.append("nominal_values_must_not_be_substituted")
     return not missing, missing
+
+
+def _capture_authorization_ready(
+    plan: Mapping[str, Any],
+    *,
+    contract: Mapping[str, Any],
+) -> tuple[bool, str | None, list[str]]:
+    authorization = plan.get("owner_capture_authorization")
+    if (
+        plan.get("owner_capture_approved") is not True
+        or not isinstance(authorization, Mapping)
+    ):
+        return False, None, ["owner_approved_capture"]
+
+    invalid: list[str] = []
+    authorization_id = authorization.get("authorization_id")
+    if authorization.get("schema_version") != CAPTURE_AUTHORIZATION_SCHEMA:
+        invalid.append("owner_capture_authorization_schema")
+    if not str(authorization_id or "").strip():
+        invalid.append("owner_capture_authorization_id")
+    if authorization.get("source") != "direct_owner_instruction_in_current_codex_task":
+        invalid.append("owner_capture_authorization_source")
+    if not str(authorization.get("recorded_on") or "").strip():
+        invalid.append("owner_capture_authorization_date")
+    if authorization.get("plan_id") != plan.get("plan_id"):
+        invalid.append("owner_capture_authorization_plan")
+    if authorization.get("contract_sha256") != CONTRACT_SHA256:
+        invalid.append("owner_capture_authorization_contract")
+    if authorization.get("camera_unique_id") != contract["camera"]["unique_id"]:
+        invalid.append("owner_capture_authorization_camera")
+    if authorization.get("frame_count") != len(plan.get("frame_slots", [])):
+        invalid.append("owner_capture_authorization_frame_count")
+
+    transaction = authorization.get("metrology_transaction")
+    transaction_path = (
+        _repo_path(transaction.get("path"))
+        if isinstance(transaction, Mapping)
+        else None
+    )
+    if (
+        transaction_path is None
+        or not transaction_path.is_file()
+        or not isinstance(transaction, Mapping)
+        or sha256_file(transaction_path) != transaction.get("sha256")
+    ):
+        invalid.append("owner_capture_authorization_transaction_hash")
+    else:
+        transaction_payload = _load_json(transaction_path)
+        if (
+            transaction_payload is None
+            or transaction_payload.get("transaction_id")
+            != transaction.get("transaction_id")
+        ):
+            invalid.append("owner_capture_authorization_transaction_id")
+
+    expected_authority = {
+        "stationary_exact_mode_camera_capture_authorized": True,
+        "new_camera_data_collection_authorized": True,
+        "robot_motion_authorized": False,
+        "target_measurement_focus_and_mounting_gates_waived": False,
+        "metric_fit_authorized": False,
+        "evaluator_admission": False,
+        "physical_authority": False,
+        "task_success_verified": False,
+    }
+    for field, expected in expected_authority.items():
+        if authorization.get(field) is not expected:
+            invalid.append(f"owner_capture_authorization:{field}")
+
+    return (
+        not invalid,
+        str(authorization_id) if not invalid else None,
+        invalid,
+    )
 
 
 def _frame_plan(
@@ -256,8 +333,14 @@ def preflight_acquisition(
     )
     if not focus_ready:
         missing.append("fixed_observable_focus_setting")
-    if plan.get("owner_capture_approved") is not True:
-        missing.append("owner_approved_capture")
+    authorization_ready, authorization_id, authorization_reasons = (
+        _capture_authorization_ready(plan, contract=contract)
+    )
+    if not authorization_ready:
+        if authorization_reasons == ["owner_approved_capture"]:
+            missing.extend(authorization_reasons)
+        else:
+            invalid.extend(authorization_reasons)
 
     frame_plan_valid, frame_plan, frame_reasons = _frame_plan(
         plan.get("frame_slots"),
@@ -285,6 +368,17 @@ def preflight_acquisition(
         invalid.append("authority_boundary")
 
     capture_ready = not invalid and not missing
+    owner_actions: list[str] = []
+    if "printed_target_mounted_flat" in missing:
+        owner_actions.append("print_and_mount_target_flat")
+    if not measurement_ready:
+        owner_actions.append(
+            "measure_pitch_and_total_xy_dimensions_and_record_instrument_uncertainty"
+        )
+    if "fixed_observable_focus_setting" in missing:
+        owner_actions.append("lock_c922_focus_and_record_the_observable_setting")
+    if "owner_approved_capture" in missing:
+        owner_actions.append("approve_one_stationary_18_view_capture")
     return {
         "schema_version": REPORT_SCHEMA,
         "status": (
@@ -319,6 +413,8 @@ def preflight_acquisition(
         ],
         "target_measurement_ready": measurement_ready,
         "focus_ready": focus_ready,
+        "owner_capture_authorization_ready": authorization_ready,
+        "owner_capture_authorization_id": authorization_id,
         "frame_plan_valid": frame_plan_valid,
         "frame_plan": frame_plan,
         "missing_physical_inputs": sorted(set(missing)),
@@ -326,14 +422,13 @@ def preflight_acquisition(
         "motion_qualification_blockers": (
             [] if d405_repaired else ["d405_cable_connector_strain_relief_repair"]
         ),
-        "owner_actions": [
-            "print_and_mount_target_flat",
-            "measure_pitch_and_total_xy_dimensions_without_nominal_substitution",
-            "record_instrument_resolution_uncertainty_and_measurement_points",
-            "lock_c922_focus_and_record_the_observable_setting",
-            "approve_one_stationary_18_view_capture",
-            "repair_d405_cable_connector_and_strain_relief_before_robot_motion",
-        ],
+        "owner_actions": owner_actions,
+        "before_robot_motion_actions": (
+            []
+            if d405_repaired
+            else ["repair_d405_cable_connector_and_strain_relief"]
+        ),
+        "d405_repair_required_for_stationary_c922_capture": False,
         "camera_opened": False,
         "camera_sessions_used": 0,
         "new_frames_captured": 0,
