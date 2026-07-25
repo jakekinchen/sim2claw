@@ -46,6 +46,7 @@ from .physical_gateway import (
     synchronize_physical_gateway,
 )
 from .physical_sim_replay import replay_physical_recording
+from .replay_eligibility import audit_exact_replay_manifest
 from .render import write_rgb_png
 from .scene import (
     CURRENT_TASK_LAYOUT_ID,
@@ -1846,6 +1847,144 @@ def _wait_for_excitation_recording(
         sleep_fn(0.01)
 
 
+def _resume_finalized_excitation_episode(
+    *,
+    repo_root: Path,
+    output_directory: Path,
+    packet_id: str,
+    episode: dict[str, Any],
+) -> dict[str, Any] | None:
+    """Validate one already-finalized P10 episode without touching hardware."""
+
+    label = f"{packet_id.lower()}-{episode['episode_id']}"
+    receipt_matches: list[tuple[Path, dict[str, Any]]] = []
+    recording_root = repo_root / "datasets/manipulation_source_recordings"
+    for receipt_path in recording_root.glob("*/recording_receipt.json"):
+        try:
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+            raise RecorderError(
+                f"Cannot inspect finalized excitation receipt {receipt_path}: {error}"
+            ) from error
+        if isinstance(receipt, dict) and receipt.get("label") == label:
+            receipt_matches.append((receipt_path, receipt))
+    if not receipt_matches:
+        return None
+    if len(receipt_matches) != 1:
+        raise RecorderError(
+            f"Excitation episode {episode['episode_id']} has ambiguous finalized receipts."
+        )
+
+    receipt_path, receipt = receipt_matches[0]
+    expected_owner = "independently_reviewed_precompiled_excitation_packet"
+    source_identity = receipt.get("source_identity")
+    if (
+        receipt.get("schema_version") != RECEIPT_SCHEMA
+        or receipt.get("label") != label
+        or receipt.get("mode") != "physical_follower"
+        or receipt.get("proof_class") != EXCITATION_SOURCE_PROOF_CLASS
+        or receipt.get("action_owner") != expected_owner
+        or receipt.get("physical_motion_recorded") is not True
+        or receipt.get("sample_count") != 25
+        or not isinstance(source_identity, dict)
+        or source_identity.get("kind") != EXCITATION_CONTROL_SOURCE
+        or source_identity.get("proof_class") != EXCITATION_SOURCE_PROOF_CLASS
+    ):
+        raise RecorderError(
+            f"Finalized excitation receipt binding changed: {episode['episode_id']}."
+        )
+    recording_path = receipt_path.parent
+    samples_path = recording_path / str(receipt.get("samples_path") or "")
+    if receipt.get("samples_path") != "samples.jsonl" or not samples_path.is_file():
+        raise RecorderError(
+            f"Finalized excitation samples are missing: {episode['episode_id']}."
+        )
+    try:
+        samples_raw = samples_path.read_bytes()
+    except OSError as error:
+        raise RecorderError(
+            f"Finalized excitation samples are unreadable: {episode['episode_id']}."
+        ) from error
+    samples_sha256 = hashlib.sha256(samples_raw).hexdigest()
+    if receipt.get("samples_sha256") != samples_sha256:
+        raise RecorderError(
+            f"Finalized excitation samples hash changed: {episode['episode_id']}."
+        )
+    if len(samples_raw.splitlines()) != 25:
+        raise RecorderError(
+            f"Finalized excitation sample count changed: {episode['episode_id']}."
+        )
+    receipt_sha256 = _sha256(receipt_path)
+
+    episode_root = output_directory / "p4" / episode["episode_id"]
+    manifest_path = episode_root / "exact_replay_manifest.json"
+    report_path = episode_root / "exact_replay_report.json"
+    if not manifest_path.is_file() or not report_path.is_file():
+        raise RecorderError(
+            f"Finalized excitation P4 outputs are incomplete: {episode['episode_id']}."
+        )
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise RecorderError(
+            f"Finalized excitation P4 outputs are unreadable: {episode['episode_id']}."
+        ) from error
+    if not isinstance(manifest, dict) or not isinstance(report, dict):
+        raise RecorderError(
+            f"Finalized excitation P4 outputs are malformed: {episode['episode_id']}."
+        )
+    audited = audit_exact_replay_manifest(manifest_path)
+    canonical_hash = episode["canonical_action_radians_sha256"]
+    if (
+        report.get("exact_replay_eligible") is not True
+        or audited.get("exact_replay_eligible") is not True
+        or report.get("manifest_sha256") != _sha256(manifest_path)
+        or report.get("requested_action_sha256") != canonical_hash
+        or report.get("applied_action_sha256") != canonical_hash
+        or audited.get("requested_action_sha256") != canonical_hash
+        or audited.get("applied_action_sha256") != canonical_hash
+        or manifest.get("requested_action_sha256") != canonical_hash
+        or manifest.get("applied_action_sha256") != canonical_hash
+        or report.get("sample_count") != 25
+        or audited.get("sample_count") != 25
+        or manifest.get("proof_class") != EXCITATION_SOURCE_PROOF_CLASS
+        or report.get("proof_class") != EXCITATION_SOURCE_PROOF_CLASS
+    ):
+        raise RecorderError(
+            f"Finalized excitation P4 action or proof drifted: {episode['episode_id']}."
+        )
+    source_recording = report.get("source_recording")
+    provenance = manifest.get("conversion_provenance")
+    if (
+        not isinstance(source_recording, dict)
+        or source_recording.get("recording_receipt_sha256") != receipt_sha256
+        or source_recording.get("samples_sha256") != samples_sha256
+        or not isinstance(provenance, dict)
+        or provenance.get("recording_receipt_sha256") != receipt_sha256
+        or provenance.get("samples_sha256") != samples_sha256
+    ):
+        raise RecorderError(
+            f"Finalized excitation source hashes drifted: {episode['episode_id']}."
+        )
+    return {
+        "completed": {
+            "episode_id": episode["episode_id"],
+            "recording": str(recording_path),
+            "gateway_action_degrees_sha256": episode[
+                "gateway_action_degrees_sha256"
+            ],
+            "canonical_action_radians_sha256": canonical_hash,
+        },
+        "cohort": {
+            "recording": os.path.relpath(recording_path, output_directory),
+            "exact_replay_manifest": os.path.relpath(
+                manifest_path, output_directory
+            ),
+        },
+    }
+
+
 def execute_physical_excitation_packet(
     packet_path: Path,
     output_directory: Path,
@@ -1919,6 +2058,16 @@ def execute_physical_excitation_packet(
     p4_root = output_directory / "p4"
     cohort_entries: list[dict[str, str]] = []
     completed: list[dict[str, Any]] = []
+    resumed: dict[str, dict[str, Any]] = {}
+    for episode in plan["episodes"]:
+        existing = _resume_finalized_excitation_episode(
+            repo_root=repo_root,
+            output_directory=output_directory,
+            packet_id=packet["packet_id"],
+            episode=episode,
+        )
+        if existing is not None:
+            resumed[episode["episode_id"]] = existing
     manager_type = manager_factory or TeleopRecordingManager
     if materialize_fn is None:
         from .replay_eligibility import materialize_physical_recording_exact_replay
@@ -1927,14 +2076,11 @@ def execute_physical_excitation_packet(
     try:
         for index, episode in enumerate(plan["episodes"], start=1):
             label = f"{packet['packet_id'].lower()}-{episode['episode_id']}"
-            for receipt_path in (
-                repo_root / "datasets/manipulation_source_recordings"
-            ).glob("*/recording_receipt.json"):
-                receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
-                if receipt.get("label") == label:
-                    raise RecorderError(
-                        f"Single-use excitation already finalized: {episode['episode_id']}."
-                    )
+            existing = resumed.get(episode["episode_id"])
+            if existing is not None:
+                completed.append(existing["completed"])
+                cohort_entries.append(existing["cohort"])
+                continue
             manager = manager_type(
                 repo_root=repo_root,
                 backend_factory=lambda request, status, episode=episode: (

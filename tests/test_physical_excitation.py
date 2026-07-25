@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import builtins
+import hashlib
 import json
 import sys
 import types
@@ -16,6 +17,10 @@ from sim2claw.physical_gateway import (
     GatewayIdentity,
     PhysicalGatewayError,
     SO101PhysicalGateway,
+)
+from sim2claw.replay_eligibility import (
+    PHYSICAL_SAMPLE_SCHEMA,
+    materialize_physical_recording_exact_replay,
 )
 from sim2claw.scene import ROBOT_JOINTS
 from sim2claw.teleop_recording import (
@@ -720,6 +725,74 @@ def _execution_fakes(packet: dict[str, Any], *, fail_at: int | None = None):
     return materialize
 
 
+def _write_finalized_excitation_episode(
+    repo: Path, output: Path, packet: dict[str, Any], episode_index: int
+) -> Path:
+    episode = packet["plan"]["episodes"][episode_index - 1]
+    recording_id = f"resume-recording-{episode_index}"
+    recording = repo / "datasets/manipulation_source_recordings" / recording_id
+    recording.mkdir(parents=True)
+    actions = np.asarray(episode["actions_degrees"], dtype=np.float64)
+    rows = [
+        {
+            "schema_version": PHYSICAL_SAMPLE_SCHEMA,
+            "episode_id": recording_id,
+            "sample_index": index,
+            "timestamp_monotonic_seconds": 10.0 + (index * 0.05),
+            "follower_requested_degrees": action.tolist(),
+            "follower_command_degrees": action.tolist(),
+            "follower_actual_position_degrees": packet["plan"][
+                "anchor_degrees"
+            ],
+            "follower_actual_velocity_degrees_s": [0.0] * 6,
+            "assistance": 0,
+            "intervention": 0,
+            "rate_limited": False,
+            "safety_clamped": False,
+        }
+        for index, action in enumerate(actions)
+    ]
+    samples_raw = b"".join(
+        (json.dumps(row, sort_keys=True) + "\n").encode("utf-8") for row in rows
+    )
+    (recording / "samples.jsonl").write_bytes(samples_raw)
+    proof_class = "physical_precompiled_follower_excitation_source_unqualified"
+    receipt = {
+        "schema_version": "sim2claw.manipulation_source_recording_receipt.v1",
+        "source_sample_schema": PHYSICAL_SAMPLE_SCHEMA,
+        "recording_id": recording_id,
+        "label": f"{packet['packet_id'].lower()}-{episode['episode_id']}",
+        "mode": "physical_follower",
+        "proof_class": proof_class,
+        "source_identity": {
+            "kind": "frozen_precompiled_follower_actions",
+            "proof_class": proof_class,
+        },
+        "action_owner": "independently_reviewed_precompiled_excitation_packet",
+        "physical_motion_recorded": True,
+        "backend": {"schema_version": "sim2claw.so101_physical_gateway.v2"},
+        "sample_count": 25,
+        "samples_path": "samples.jsonl",
+        "samples_sha256": hashlib.sha256(samples_raw).hexdigest(),
+        "assistance_frames": 0,
+        "intervention_frames": 0,
+        "lineage": {
+            "collection_kind": "original_source_episode",
+            "corrective_suffix_parent_state_sha256": None,
+        },
+    }
+    (recording / "recording_receipt.json").write_text(
+        json.dumps(receipt), encoding="utf-8"
+    )
+    episode_root = output / "p4" / episode["episode_id"]
+    materialize_physical_recording_exact_replay(
+        recording,
+        episode_root / "exact_replay_manifest.json",
+        episode_root / "exact_replay_report.json",
+    )
+    return recording
+
+
 def test_five_outputs_emit_p9_cohort_only_after_p4(tmp_path: Path) -> None:
     packet_path, _ = _compile(tmp_path)
     packet = _admit(packet_path)
@@ -740,6 +813,99 @@ def test_five_outputs_emit_p9_cohort_only_after_p4(tmp_path: Path) -> None:
     cohort = json.loads((tmp_path / "output/p9_cohort.json").read_text())
     assert len(cohort["episodes"]) == 5
     assert len(result["completed"]) == 5
+
+
+def test_execution_resumes_four_finalized_episodes_and_runs_only_missing_one(
+    tmp_path: Path,
+) -> None:
+    packet_path, _ = _compile(tmp_path)
+    packet = _admit(packet_path)
+    repo = _repo_with_authority(tmp_path / "repo")
+    output = tmp_path / "output"
+    existing = [
+        _write_finalized_excitation_episode(repo, output, packet, index)
+        for index in range(1, 5)
+    ]
+    p4_bytes = {
+        (
+            output
+            / "p4"
+            / packet["plan"]["episodes"][index - 1]["episode_id"]
+            / filename
+        ): (
+            output
+            / "p4"
+            / packet["plan"]["episodes"][index - 1]["episode_id"]
+            / filename
+        ).read_bytes()
+        for index in range(1, 5)
+        for filename in ("exact_replay_manifest.json", "exact_replay_report.json")
+    }
+    manager_starts: list[str] = []
+    materialize_calls: list[Path] = []
+
+    class MissingManager(_FakeManager):
+        def start(self, request: dict[str, Any]) -> None:
+            manager_starts.append(request["source_identity_kind"])
+            super().start(request)
+
+    def materialize(
+        recording: Path, manifest: Path, report: Path
+    ) -> dict[str, Any]:
+        materialize_calls.append(recording)
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text("{}", encoding="utf-8")
+        report.write_text("{}", encoding="utf-8")
+        return {
+            "exact_replay_eligible": True,
+            "applied_action_sha256": packet["plan"]["episodes"][4][
+                "canonical_action_radians_sha256"
+            ],
+        }
+
+    _FakeManager.saved_count = 0
+    result = execute_physical_excitation_packet(
+        packet_path,
+        output,
+        repo_root=repo,
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        manager_factory=MissingManager,
+        materialize_fn=materialize,
+    )
+
+    assert len(existing) == 4
+    assert manager_starts == [EXCITATION_CONTROL_SOURCE]
+    assert len(materialize_calls) == 1
+    assert len(result["completed"]) == 5
+    assert len(json.loads((output / "p9_cohort.json").read_text())["episodes"]) == 5
+    for path, contents in p4_bytes.items():
+        assert path.read_bytes() == contents
+
+
+def test_execution_resume_rejects_source_hash_drift_before_new_motion(
+    tmp_path: Path,
+) -> None:
+    packet_path, _ = _compile(tmp_path)
+    packet = _admit(packet_path)
+    repo = _repo_with_authority(tmp_path / "repo")
+    output = tmp_path / "output"
+    recording = _write_finalized_excitation_episode(repo, output, packet, 1)
+    with (recording / "samples.jsonl").open("ab") as handle:
+        handle.write(b"drift\n")
+    touched: list[str] = []
+
+    with pytest.raises(RecorderError, match="samples hash changed"):
+        execute_physical_excitation_packet(
+            packet_path,
+            output,
+            repo_root=repo,
+            operator_acknowledged=True,
+            preflight_fn=_preflight,
+            manager_factory=lambda **_: touched.append("manager"),
+            materialize_fn=lambda *args: touched.append("materialize"),
+        )
+    assert touched == []
 
 
 def test_partial_run_fails_closed_without_cohort(tmp_path: Path) -> None:
