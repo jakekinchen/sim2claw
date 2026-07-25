@@ -96,6 +96,83 @@ def _finite_number(value: Any, *, positive: bool = False) -> bool:
     return math.isfinite(number) and (number > 0.0 if positive else True)
 
 
+def _verified_executable_identity(
+    value: Any,
+    *,
+    repo_root: Path,
+) -> bool:
+    if not isinstance(value, dict):
+        return False
+    if (
+        not isinstance(value.get("name"), str)
+        or not value["name"]
+        or not isinstance(value.get("version"), str)
+        or not value["version"]
+        or not isinstance(value.get("executable_sha256"), str)
+    ):
+        return False
+    try:
+        path = _inside_repo(repo_root, value.get("executable_path"))
+    except MetricRegistrationReadinessError:
+        return False
+    return path.is_file() and sha256_file(path) == value["executable_sha256"]
+
+
+def _valid_rigid_transform(value: Any) -> bool:
+    if (
+        not isinstance(value, list)
+        or len(value) != 4
+        or not all(isinstance(row, list) and len(row) == 4 for row in value)
+        or not all(_finite_number(item) for row in value for item in row)
+    ):
+        return False
+    matrix = [[float(item) for item in row] for row in value]
+    if any(abs(matrix[3][index]) > 1e-9 for index in range(3)):
+        return False
+    if abs(matrix[3][3] - 1.0) > 1e-9:
+        return False
+    rotation = [row[:3] for row in matrix[:3]]
+    for first in range(3):
+        for second in range(3):
+            dot = sum(
+                rotation[row][first] * rotation[row][second]
+                for row in range(3)
+            )
+            expected = 1.0 if first == second else 0.0
+            if abs(dot - expected) > 1e-6:
+                return False
+    determinant = (
+        rotation[0][0]
+        * (rotation[1][1] * rotation[2][2] - rotation[1][2] * rotation[2][1])
+        - rotation[0][1]
+        * (rotation[1][0] * rotation[2][2] - rotation[1][2] * rotation[2][0])
+        + rotation[0][2]
+        * (rotation[1][0] * rotation[2][1] - rotation[1][1] * rotation[2][0])
+    )
+    return abs(determinant - 1.0) <= 1e-6
+
+
+def _derived_board_quadrant(
+    board_xy_m: Any,
+    *,
+    half_side_m: float,
+) -> str | None:
+    if (
+        not isinstance(board_xy_m, list)
+        or len(board_xy_m) != 2
+        or not all(_finite_number(value) for value in board_xy_m)
+    ):
+        return None
+    x, y = (float(value) for value in board_xy_m)
+    if abs(x) > half_side_m or abs(y) > half_side_m:
+        return None
+    if abs(x) <= 1e-12 or abs(y) <= 1e-12:
+        return None
+    horizontal = "west" if x < 0.0 else "east"
+    vertical = "north" if y > 0.0 else "south"
+    return f"{vertical}_{horizontal}"
+
+
 def load_contract(
     path: Path = DEFAULT_CONTRACT_PATH,
 ) -> tuple[dict[str, Any], dict[str, Any], Path]:
@@ -274,7 +351,9 @@ def _measurement_status(
             == source.get("source_frame_sha256")
             and extraction.get("orientation_filter")
             == source.get("capture_orientation_filter")
-            and isinstance(extraction.get("decoder_identity"), dict)
+            and _verified_executable_identity(
+                extraction.get("decoder_identity"), repo_root=repo_root
+            )
             and _finite_number(
                 extraction.get("source_timestamp_seconds"), positive=False
             )
@@ -302,6 +381,7 @@ def _measurement_status(
         )
         error = None if valid else "not_direct_traceable_measurement"
     record("direct_board_measurement", board is not None and error is None, error)
+    board_measurement_ready = board is not None and error is None
 
     intrinsics, error = _check_artifact_pointer(
         values.get("camera_intrinsics_receipt"),
@@ -354,7 +434,14 @@ def _measurement_status(
     correspondences = values.get("board_correspondences")
     correspondence_valid = isinstance(correspondences, list)
     point_ids: set[str] = set()
+    board_points: set[tuple[float, float]] = set()
     quadrants: set[str] = set()
+    quadrant_counts: dict[str, int] = {}
+    board_side = (
+        float(board["playing_side_m"])
+        if board_measurement_ready
+        else None
+    )
     if correspondence_valid:
         for row in correspondences:
             if not isinstance(row, dict):
@@ -362,7 +449,15 @@ def _measurement_status(
                 break
             point_id = row.get("point_id")
             annotations = row.get("annotations")
-            quadrant = row.get("board_quadrant")
+            board_xy = row.get("board_xy_m")
+            derived_quadrant = (
+                _derived_board_quadrant(
+                    board_xy,
+                    half_side_m=board_side / 2.0,
+                )
+                if board_side is not None
+                else None
+            )
             annotators = (
                 {
                     item.get("annotator_id")
@@ -379,10 +474,8 @@ def _measurement_status(
             valid_row = (
                 isinstance(point_id, str)
                 and point_id not in point_ids
-                and isinstance(row.get("board_xy_m"), list)
-                and len(row["board_xy_m"]) == 2
-                and all(_finite_number(value) for value in row["board_xy_m"])
-                and quadrant in {"north_west", "north_east", "south_west", "south_east"}
+                and derived_quadrant is not None
+                and row.get("board_quadrant") == derived_quadrant
                 and len(annotators)
                 >= int(thresholds["minimum_independent_annotators_per_point"])
                 and row.get("source_frame_sha256")
@@ -392,24 +485,53 @@ def _measurement_status(
             if not valid_row:
                 correspondence_valid = False
                 break
+            point = tuple(float(value) for value in board_xy)
+            if point in board_points:
+                correspondence_valid = False
+                break
             point_ids.add(point_id)
-            quadrants.add(str(quadrant))
+            board_points.add(point)
+            quadrants.add(derived_quadrant)
+            quadrant_counts[derived_quadrant] = (
+                quadrant_counts.get(derived_quadrant, 0) + 1
+            )
     minimum = int(thresholds["minimum_spatially_distributed_correspondences"])
-    enough = correspondence_valid and len(point_ids) >= minimum
+    enough = (
+        correspondence_valid
+        and len(point_ids) >= minimum
+        and len(board_points) == len(point_ids)
+    )
+    correspondence_reason: str | None
+    if not isinstance(correspondences, list) or not correspondences:
+        correspondence_reason = None
+    elif not correspondence_valid:
+        correspondence_reason = "malformed_nonindependent_or_not_spatial"
+    elif len(point_ids) < minimum:
+        correspondence_reason = None
+    else:
+        correspondence_reason = None
     record(
         "minimum_independent_board_correspondences",
         enough,
-        None if isinstance(correspondences, list) and len(correspondences) < minimum else (
-            None if enough else "malformed_or_nonindependent"
-        ),
+        correspondence_reason,
     )
-    coverage = enough and quadrants == {
+    expected_quadrants = {
         "north_west",
         "north_east",
         "south_west",
         "south_east",
     }
-    record("all_four_board_quadrants", coverage)
+    coverage = (
+        enough
+        and quadrants == expected_quadrants
+        and all(quadrant_counts.get(name, 0) >= 2 for name in expected_quadrants)
+    )
+    coverage_reason = (
+        "malformed_nonindependent_or_not_spatial"
+        if correspondences and not correspondence_valid
+        else None
+    )
+    record("all_four_board_quadrants", coverage, coverage_reason)
     observed["board_correspondence_count"] = len(point_ids)
     observed["board_quadrants"] = sorted(quadrants)
 
@@ -419,6 +541,7 @@ def _measurement_status(
         expected_schema="sim2claw.board_fit_evaluation_receipt.v1",
     )
     if board_fit is not None:
+        evaluator_identity = board_fit.get("evaluator_identity")
         valid = (
             board_fit.get("evaluation_method") in {"held_out", "leave_one_out"}
             and _finite_number(board_fit.get("board_rms_m"))
@@ -433,12 +556,22 @@ def _measurement_status(
             and board_fit.get("evaluator_owned") is True
             and board_fit.get("self_scored") is False
             and board_fit.get("uncertainty_propagated") is True
+            and _verified_executable_identity(
+                evaluator_identity, repo_root=repo_root
+            )
+            and board_fit.get("source_frame_sha256")
+            == manifest["physical_source"]["source_frame_sha256"]
+            and board_fit.get("correspondences_digest")
+            == canonical_digest(correspondences)
+            and board_fit.get("thresholds_digest")
+            == canonical_digest(thresholds)
         )
         error = None if valid else "threshold_or_ownership_invalid"
     record("independent_board_fit_evaluation", board_fit is not None and error is None, error)
 
     object_rows = values.get("object_keypoint_observations")
     valid_objects = isinstance(object_rows, list) and len(object_rows) > 0
+    object_reason: str | None = None
     if valid_objects:
         for row in object_rows:
             valid_objects = (
@@ -455,8 +588,15 @@ def _measurement_status(
                 and row.get("synthetic") is False
             )
             if not valid_objects:
+                object_reason = "malformed_or_unreviewed"
                 break
-    record("metric_object_keypoints_with_uncertainty", valid_objects)
+    elif object_rows not in (None, []):
+        object_reason = "malformed_or_unreviewed"
+    record(
+        "metric_object_keypoints_with_uncertainty",
+        valid_objects,
+        object_reason,
+    )
     observed["object_keypoint_count"] = len(object_rows) if isinstance(object_rows, list) else 0
 
     overhead, error = _check_artifact_pointer(
@@ -469,10 +609,7 @@ def _measurement_status(
         valid = (
             overhead.get("camera_id")
             == contract["source_requirements"]["camera_id"]
-            and isinstance(matrix, list)
-            and len(matrix) == 4
-            and all(isinstance(row, list) and len(row) == 4 for row in matrix)
-            and all(_finite_number(item) for row in matrix for item in row)
+            and _valid_rigid_transform(matrix)
             and _finite_number(
                 overhead.get("translation_uncertainty_95_m"), positive=True
             )
@@ -493,14 +630,7 @@ def _measurement_status(
     if wrist is not None:
         valid = (
             wrist.get("camera_role") == "wrist_gripper_upward"
-            and isinstance(wrist.get("transform_4x4"), list)
-            and len(wrist["transform_4x4"]) == 4
-            and all(
-                isinstance(row, list)
-                and len(row) == 4
-                and all(_finite_number(item) for item in row)
-                for row in wrist["transform_4x4"]
-            )
+            and _valid_rigid_transform(wrist.get("transform_4x4"))
             and _finite_number(
                 wrist.get("translation_uncertainty_95_m"), positive=True
             )

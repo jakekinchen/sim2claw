@@ -119,6 +119,24 @@ def _complete_manifest(
     frame_sha = evidence["frame_sha"]
     video_sha = evidence["video_sha"]
     artifacts = root / "artifacts"
+    tools = root / "tools"
+    tools.mkdir(parents=True)
+    decoder = tools / "decoder"
+    decoder.write_bytes(b"reviewed-decoder-binary")
+    evaluator = tools / "board-fit-evaluator"
+    evaluator.write_bytes(b"independent-board-fit-evaluator")
+    decoder_identity = {
+        "name": "test-decoder",
+        "version": "1.0",
+        "executable_path": str(decoder.relative_to(root)),
+        "executable_sha256": hashlib.sha256(decoder.read_bytes()).hexdigest(),
+    }
+    evaluator_identity = {
+        "name": "test-board-fit-evaluator",
+        "version": "1.0",
+        "executable_path": str(evaluator.relative_to(root)),
+        "executable_sha256": hashlib.sha256(evaluator.read_bytes()).hexdigest(),
+    }
     extraction = artifacts / "extraction.json"
     _write_json(
         extraction,
@@ -126,7 +144,7 @@ def _complete_manifest(
             "schema_version": "sim2claw.frame_extraction_receipt.v1",
             "source_video_sha256": video_sha,
             "source_timestamp_seconds": 0.0,
-            "decoder_identity": {"name": "test-decoder", "sha256": "a" * 64},
+            "decoder_identity": decoder_identity,
             "orientation_filter": "hflip,vflip",
             "output_frame_sha256": frame_sha,
         },
@@ -169,14 +187,23 @@ def _complete_manifest(
             "self_scored": False,
         },
     )
-    quadrants = ["north_west", "north_east", "south_west", "south_east"]
+    board_points = [
+        (-0.12, 0.12, "north_west"),
+        (-0.04, 0.04, "north_west"),
+        (0.04, 0.04, "north_east"),
+        (0.12, 0.12, "north_east"),
+        (-0.12, -0.12, "south_west"),
+        (-0.04, -0.04, "south_west"),
+        (0.04, -0.04, "south_east"),
+        (0.12, -0.12, "south_east"),
+    ]
     correspondences = []
-    for index in range(8):
+    for index, (board_x, board_y, quadrant) in enumerate(board_points):
         correspondences.append(
             {
                 "point_id": f"grid-{index}",
-                "board_xy_m": [0.04 * (index % 4), 0.04 * (index // 4)],
-                "board_quadrant": quadrants[index % 4],
+                "board_xy_m": [board_x, board_y],
+                "board_quadrant": quadrant,
                 "source_frame_sha256": frame_sha,
                 "synthetic": False,
                 "annotations": [
@@ -197,6 +224,12 @@ def _complete_manifest(
             "evaluator_owned": True,
             "self_scored": False,
             "uncertainty_propagated": True,
+            "evaluator_identity": evaluator_identity,
+            "source_frame_sha256": frame_sha,
+            "correspondences_digest": readiness.canonical_digest(correspondences),
+            "thresholds_digest": readiness.canonical_digest(
+                contract["readiness_thresholds"]
+            ),
         },
     )
     overhead = artifacts / "overhead-transform.json"
@@ -306,9 +339,12 @@ def test_complete_independently_owned_measurements_pass_readiness_only(
         ("missing_distortion", "lens_distortion_control"),
         (
             "one_annotator",
-            "minimum_independent_board_correspondences:malformed_or_nonindependent",
+            "minimum_independent_board_correspondences:malformed_nonindependent_or_not_spatial",
         ),
-        ("three_quadrants", "all_four_board_quadrants"),
+        (
+            "three_quadrants",
+            "all_four_board_quadrants:malformed_nonindependent_or_not_spatial",
+        ),
         (
             "self_scored_fit",
             "independent_board_fit_evaluation:threshold_or_ownership_invalid",
@@ -396,6 +432,132 @@ def test_manifest_authority_cannot_self_promote() -> None:
     result = readiness.evaluate_manifest(contract, manifest, repo_root=ROOT)
     assert result["verdict"] == "invalid_or_tampered_inputs"
     assert "manifest_authority" in result["invalid_inputs"]
+
+
+def test_collapsed_points_cannot_self_declare_quadrant_coverage(
+    tmp_path: Path,
+) -> None:
+    contract, manifest, evidence = _complete_manifest(tmp_path)
+    values = manifest["metric_measurements"]
+    for row in values["board_correspondences"]:
+        row["board_xy_m"] = [0.01, 0.01]
+    result = readiness.evaluate_manifest(
+        contract, manifest, repo_root=evidence["root"]
+    )
+    assert result["verdict"] == "invalid_or_tampered_inputs"
+    assert (
+        "minimum_independent_board_correspondences:"
+        "malformed_nonindependent_or_not_spatial"
+    ) in result["invalid_inputs"]
+    assert "all_four_board_quadrants:malformed_nonindependent_or_not_spatial" in result[
+        "invalid_inputs"
+    ]
+
+
+def test_nonrigid_transforms_are_invalid_even_when_rehashed(
+    tmp_path: Path,
+) -> None:
+    contract, manifest, evidence = _complete_manifest(tmp_path)
+    root = evidence["root"]
+    values = manifest["metric_measurements"]
+    for field in (
+        "overhead_camera_to_workcell_transform",
+        "wrist_camera_extrinsics",
+    ):
+        pointer = values[field]
+        artifact_path = root / pointer["artifact_path"]
+        artifact = _load(artifact_path)
+        artifact["transform_4x4"] = [[0.0] * 4 for _ in range(4)]
+        pointer["artifact_sha256"] = _write_json(artifact_path, artifact)
+    result = readiness.evaluate_manifest(contract, manifest, repo_root=root)
+    assert result["verdict"] == "invalid_or_tampered_inputs"
+    assert (
+        "overhead_camera_to_workcell_transform:"
+        "identity_transform_or_ownership_invalid"
+    ) in result["invalid_inputs"]
+    assert "wrist_camera_extrinsics:transform_or_ownership_invalid" in result[
+        "invalid_inputs"
+    ]
+
+
+def test_board_fit_requires_bound_evaluator_inputs_and_thresholds(
+    tmp_path: Path,
+) -> None:
+    contract, manifest, evidence = _complete_manifest(tmp_path)
+    root = evidence["root"]
+    pointer = manifest["metric_measurements"]["board_fit_evaluation"]
+    artifact_path = root / pointer["artifact_path"]
+    artifact = _load(artifact_path)
+    artifact["evaluator_identity"]["executable_sha256"] = "0" * 64
+    artifact["correspondences_digest"] = "1" * 64
+    artifact["thresholds_digest"] = "2" * 64
+    pointer["artifact_sha256"] = _write_json(artifact_path, artifact)
+    result = readiness.evaluate_manifest(contract, manifest, repo_root=root)
+    assert result["verdict"] == "invalid_or_tampered_inputs"
+    assert (
+        "independent_board_fit_evaluation:threshold_or_ownership_invalid"
+        in result["invalid_inputs"]
+    )
+
+
+def test_supplied_malformed_objects_and_correspondences_are_invalid(
+    tmp_path: Path,
+) -> None:
+    contract, manifest, evidence = _complete_manifest(tmp_path)
+    values = manifest["metric_measurements"]
+    values["object_keypoint_observations"][0]["uncertainty_95_m"] = 0.0
+    values["board_correspondences"] = [
+        {
+            "point_id": "bad-point",
+            "board_xy_m": [0.0, 0.0],
+            "board_quadrant": "north_west",
+            "source_frame_sha256": evidence["frame_sha"],
+            "synthetic": False,
+            "annotations": [],
+        }
+    ]
+    result = readiness.evaluate_manifest(
+        contract, manifest, repo_root=evidence["root"]
+    )
+    assert result["verdict"] == "invalid_or_tampered_inputs"
+    assert "metric_object_keypoints_with_uncertainty:malformed_or_unreviewed" in result[
+        "invalid_inputs"
+    ]
+    assert (
+        "minimum_independent_board_correspondences:"
+        "malformed_nonindependent_or_not_spatial"
+    ) in result["invalid_inputs"]
+
+
+def test_empty_decoder_identity_is_invalid(
+    tmp_path: Path,
+) -> None:
+    contract, manifest, evidence = _complete_manifest(tmp_path)
+    root = evidence["root"]
+    pointer = manifest["physical_source"]["frame_extraction_receipt"]
+    artifact_path = root / pointer["artifact_path"]
+    artifact = _load(artifact_path)
+    artifact["decoder_identity"] = {}
+    pointer["artifact_sha256"] = _write_json(artifact_path, artifact)
+    result = readiness.evaluate_manifest(contract, manifest, repo_root=root)
+    assert result["verdict"] == "invalid_or_tampered_inputs"
+    assert "frame_extraction_lineage:lineage_mismatch" in result["invalid_inputs"]
+
+
+def test_valid_but_insufficient_correspondences_remain_missing(
+    tmp_path: Path,
+) -> None:
+    contract, manifest, evidence = _complete_manifest(tmp_path)
+    values = manifest["metric_measurements"]
+    values["board_correspondences"] = values["board_correspondences"][:4]
+    values["board_fit_evaluation"] = None
+    result = readiness.evaluate_manifest(
+        contract, manifest, repo_root=evidence["root"]
+    )
+    assert result["verdict"] == "measurement_prerequisites_missing"
+    assert "minimum_independent_board_correspondences" in result["missing_prerequisites"]
+    assert "independent_board_fit_evaluation" in result["missing_prerequisites"]
+    assert result["invalid_inputs"] == []
 
 
 def test_materializer_refuses_noncanonical_or_replayed_output(
