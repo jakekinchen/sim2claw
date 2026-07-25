@@ -728,12 +728,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="compose one admitted geometry/timing candidate and exact canary",
     )
     twin_candidate.add_argument("--p9-admission", type=Path, required=True)
-    twin_candidate.add_argument("--p13-transform", type=Path, required=True)
-    twin_candidate.add_argument("--p13-board-fit", type=Path, required=True)
+    twin_candidate.add_argument("--p13-transform", type=Path)
+    twin_candidate.add_argument("--p13-board-fit", type=Path)
     twin_candidate.add_argument("--baseline", type=Path, default=DEFAULT_SYSID_CONFIG)
-    twin_candidate.add_argument("--canary-input", type=Path, required=True)
+    twin_candidate.add_argument("--canary-input", type=Path)
+    twin_candidate.add_argument(
+        "--p10-cohort",
+        type=Path,
+        help="completed P10 cohort for the simulation-only stationary anchor",
+    )
     twin_candidate.add_argument("--output", type=Path, required=True)
     twin_candidate.add_argument("--synthetic-fixture", action="store_true")
+    twin_candidate.add_argument("--simulation-only", action="store_true")
     canary_contact = subparsers.add_parser(
         "canary-contact-preflight",
         help="audit one frozen P15 canary at every native MuJoCo step",
@@ -741,11 +747,11 @@ def build_parser() -> argparse.ArgumentParser:
     canary_contact.add_argument("--candidate", type=Path, required=True)
     canary_contact.add_argument("--canary", type=Path, required=True)
     canary_contact.add_argument("--baseline", type=Path, default=DEFAULT_SYSID_CONFIG)
-    canary_contact.add_argument("--p8-intrinsics", type=Path, required=True)
-    canary_contact.add_argument("--p8-distortion", type=Path, required=True)
+    canary_contact.add_argument("--p8-intrinsics", type=Path)
+    canary_contact.add_argument("--p8-distortion", type=Path)
     canary_contact.add_argument("--p9-admission", type=Path, required=True)
-    canary_contact.add_argument("--p13-transform", type=Path, required=True)
-    canary_contact.add_argument("--p13-board-fit", type=Path, required=True)
+    canary_contact.add_argument("--p13-transform", type=Path)
+    canary_contact.add_argument("--p13-board-fit", type=Path)
     canary_contact.add_argument(
         "--policy",
         type=Path,
@@ -754,6 +760,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     canary_contact.add_argument("--output", type=Path, required=True)
     canary_contact.add_argument("--synthetic-fixture", action="store_true")
+    canary_contact.add_argument("--simulation-only", action="store_true")
 
     actuator_external = subparsers.add_parser(
         "actuator-external-validate",
@@ -2015,6 +2022,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 canary_input_path=args.canary_input,
                 output_directory=args.output,
                 synthetic_fixture_mode=args.synthetic_fixture,
+                simulation_only=args.simulation_only,
+                p10_cohort_path=args.p10_cohort,
             )
         except (OSError, ValueError, TwinCandidateError) as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
@@ -2040,6 +2049,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 policy_path=args.policy,
                 output_path=args.output,
                 synthetic_fixture_mode=args.synthetic_fixture,
+                simulation_only=args.simulation_only,
             )
         except (OSError, ValueError, CanaryContactError) as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))

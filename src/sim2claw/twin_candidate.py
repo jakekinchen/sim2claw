@@ -10,6 +10,7 @@ import math
 from pathlib import Path
 from typing import Any, Mapping
 
+import mujoco
 import numpy as np
 
 from .recorded_replay import (
@@ -19,6 +20,7 @@ from .recorded_replay import (
     sha256_file,
     simulate_and_align,
     validate_parameter_values,
+    _compile_model,
 )
 from .replay_eligibility import (
     ACTION_HASH_ENCODING,
@@ -29,13 +31,15 @@ from .replay_eligibility import (
     audit_exact_replay_manifest,
 )
 from .scene import ROBOT_JOINTS
-from .system_identification import TIMING_ADMISSION_SCHEMA
 from .workcell_registration import BOARD_FIT_SCHEMA, TRANSFORM_SCHEMA
 
 
 CANDIDATE_SCHEMA = "sim2claw.geometry_timing_twin_candidate.v1"
 CANARY_INPUT_SCHEMA = "sim2claw.zero_contact_canary_input.v1"
 CANARY_SCHEMA = "sim2claw.zero_contact_canary_bundle.v1"
+# Keep this control-plane contract local: importing the fitter would import the
+# physical gateway module, which the simulation/contact path must never load.
+TIMING_ADMISSION_SCHEMA = "sim2claw.physical_timing_actuation_admission.v1"
 SUPPORTED_TIMING_TARGETS = {
     "command_latency_seconds": "second",
     "actuator_gain_scale": "dimensionless_scale",
@@ -400,17 +404,411 @@ def _compile_actions(start: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     return timestamps, actions
 
 
+def _load_simulation_only_anchor(
+    cohort_path: Path,
+    *,
+    p9_identity: Mapping[str, Any],
+    candidate_config: Mapping[str, Any],
+    baseline_directory: Path,
+) -> tuple[dict[str, Any], dict[str, Path]]:
+    """Load one hash-bound stationary P10 anchor without opening hardware."""
+
+    cohort_path = cohort_path.resolve()
+    cohort = _read_json(cohort_path, "P10 cohort")
+    _require(
+        cohort.get("schema_version") == "sim2claw.physical_timing_actuation_cohort.v1",
+        "simulation-only anchor requires the finalized P10 cohort schema",
+    )
+    episodes = cohort.get("episodes")
+    _require(isinstance(episodes, list) and episodes, "P10 cohort has no episodes")
+    row = episodes[0]
+    _require(isinstance(row, Mapping), "P10 cohort anchor episode is invalid")
+    recording_value = row.get("recording")
+    manifest_value = row.get("exact_replay_manifest")
+    _require(
+        isinstance(recording_value, str) and isinstance(manifest_value, str),
+        "P10 cohort anchor paths are missing",
+    )
+    recording = (cohort_path.parent / recording_value).resolve()
+    manifest_path = (cohort_path.parent / manifest_value).resolve()
+    receipt_path = recording / "recording_receipt.json"
+    samples_path = recording / "samples.jsonl"
+    for path, label in (
+        (receipt_path, "P10 recording receipt"),
+        (samples_path, "P10 measured samples"),
+        (manifest_path, "P10 exact-replay manifest"),
+    ):
+        _require(path.is_file(), f"{label} is missing: {path}")
+    receipt = _read_json(receipt_path, "P10 recording receipt")
+    manifest = _read_json(manifest_path, "P10 exact-replay manifest")
+    _require(receipt.get("mode") == "physical_follower", "P10 anchor is not a physical follower recording")
+    backend = receipt.get("backend")
+    workcell = receipt.get("workcell_registration")
+    _require(
+        isinstance(backend, Mapping)
+        and backend.get("schema_version") == p9_identity["robot"]["gateway_schema"]
+        and backend.get("follower_port") == p9_identity["robot"]["follower_port"]
+        and backend.get("follower_calibration_sha256")
+        == p9_identity["robot"]["follower_calibration_sha256"],
+        "P10 anchor robot identity drifted from admitted P9",
+    )
+    _require(
+        isinstance(workcell, Mapping)
+        and workcell.get("workspace_pose_id") == p9_identity["workspace_pose_id"],
+        "P10 anchor workcell identity drifted from admitted P9",
+    )
+    samples_sha256 = sha256_file(samples_path)
+    receipt_sha256 = sha256_file(receipt_path)
+    manifest_sha256 = sha256_file(manifest_path)
+    _require(
+        receipt.get("samples_sha256") == samples_sha256,
+        "P10 anchor sample hash drifted",
+    )
+    provenance = manifest.get("conversion_provenance")
+    _require(
+        isinstance(provenance, Mapping)
+        and provenance.get("recording_receipt_sha256") == receipt_sha256
+        and provenance.get("samples_sha256") == samples_sha256,
+        "P10 anchor receipt/sample hash chain is incomplete",
+    )
+    try:
+        samples = [
+            json.loads(line)
+            for line in samples_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        start_degrees = np.asarray(
+            samples[0]["follower_actual_position_degrees"], dtype=np.float64
+        )
+        velocity_degrees = np.asarray(
+            samples[0]["follower_actual_velocity_degrees_s"], dtype=np.float64
+        )
+    except (OSError, KeyError, TypeError, ValueError, IndexError, json.JSONDecodeError) as error:
+        raise TwinCandidateError("P10 anchor first measured state is invalid") from error
+    _require(
+        start_degrees.shape == (len(ROBOT_JOINTS),)
+        and velocity_degrees.shape == start_degrees.shape
+        and np.all(np.isfinite(start_degrees))
+        and np.all(np.isfinite(velocity_degrees)),
+        "P10 anchor first measured state must be a finite six-vector",
+    )
+    model, _ = _compile_model(candidate_config, base_directory=baseline_directory)
+    lower = np.empty(len(ROBOT_JOINTS), dtype=np.float64)
+    upper = np.empty(len(ROBOT_JOINTS), dtype=np.float64)
+    for index, name in enumerate(candidate_config["bindings"]["joint_names"]):
+        joint_id = int(mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name))
+        _require(joint_id >= 0, f"P10 anchor binding is absent from candidate model: {name}")
+        lower[index], upper[index] = model.jnt_range[joint_id]
+    start = np.deg2rad(start_degrees)
+    velocity = np.deg2rad(velocity_degrees)
+    _require(
+        np.all(start >= lower + CANARY_LIMIT_MARGIN_RADIANS)
+        and np.all(start <= upper - CANARY_LIMIT_MARGIN_RADIANS),
+        "P10 stationary anchor lacks conservative candidate-model joint-limit margin",
+    )
+    identity = {
+        "robot": copy.deepcopy(dict(p9_identity["robot"])),
+        "workspace_pose_id": p9_identity["workspace_pose_id"],
+    }
+    anchor = {
+        "identity": identity,
+        "workcell_registration": copy.deepcopy(dict(workcell)),
+        "source_recording": str(recording),
+        "source_receipt": str(receipt_path),
+        "source_receipt_sha256": receipt_sha256,
+        "source_samples": str(samples_path),
+        "source_samples_sha256": samples_sha256,
+        "source_manifest": str(manifest_path),
+        "source_manifest_sha256": manifest_sha256,
+        "initial_state": {
+            "joint_position": start.tolist(),
+            "joint_velocity": velocity.tolist(),
+            "joint_position_source": "measured",
+            "joint_velocity_source": "measured",
+            "measurement_id": f"{receipt.get('recording_id', 'p10-anchor')}:samples.jsonl:0",
+            "measurement_sha256": samples_sha256,
+        },
+        "joint_limits": {
+            "minimum": lower.tolist(),
+            "maximum": upper.tolist(),
+            "unit": "radian",
+            "source_id": "candidate_model_joint_ranges",
+            "source_sha256": canonical_json_sha256(
+                {"minimum": lower.tolist(), "maximum": upper.tolist()}
+            ),
+        },
+    }
+    paths = {
+        "p10_cohort": cohort_path,
+        "p10_recording_receipt": receipt_path,
+        "p10_samples": samples_path,
+        "p10_exact_replay_manifest": manifest_path,
+    }
+    return anchor, paths
+
+
+def _compose_simulation_only_twin_candidate_and_canary(
+    *,
+    p9_admission_path: Path,
+    p10_cohort_path: Path,
+    baseline_config_path: Path,
+    output_directory: Path,
+    synthetic_fixture_mode: bool,
+) -> dict[str, Any]:
+    """Compose partial simulation evidence when P13 is intentionally absent."""
+
+    _require(not synthetic_fixture_mode, "simulation-only real path cannot use synthetic fixture mode")
+    output = output_directory.resolve()
+    candidate_path = output / "candidate_manifest.json"
+    canary_path = output / "canary_bundle.json"
+    _require(
+        not candidate_path.exists() and not canary_path.exists(),
+        "refusing to overwrite pre-existing P15 output",
+    )
+    p9_path = p9_admission_path.resolve()
+    baseline_path = baseline_config_path.resolve()
+    before = baseline_path.read_bytes()
+    baseline_sha256 = sha256_file(baseline_path)
+    baseline = load_sysid_config(baseline_path)
+    baseline.pop("_config_path", None)
+    baseline.pop("_config_sha256", None)
+    p9 = _read_json(p9_path, "P9 admission")
+    selected = _validate_p9(
+        p9,
+        baseline,
+        baseline_sha256=baseline_sha256,
+        synthetic_fixture_mode=False,
+    )
+    _require(
+        isinstance(p9.get("source_cohort"), Mapping)
+        and p9["source_cohort"].get("sha256") == sha256_file(p10_cohort_path.resolve()),
+        "P10 cohort hash is not the admitted P9 source cohort",
+    )
+    candidate_config = copy.deepcopy(baseline)
+    timing_stage = [
+        stage for stage in candidate_config["parameter_stages"] if stage["name"] == "timing_control"
+    ]
+    _require(len(timing_stage) == 1, "baseline timing stage is ambiguous")
+    applied: list[dict[str, Any]] = []
+    for descriptor in timing_stage[0]["parameters"]:
+        name = descriptor["name"]
+        target = descriptor["target"]
+        _require(target in SUPPORTED_TIMING_TARGETS, f"unsupported admitted runtime field: {target}")
+        descriptor["nominal"] = float(selected[name])
+        applied.append(
+            {
+                "source": "P9",
+                "field": name,
+                "runtime_target": target,
+                "value": float(selected[name]),
+                "unit": SUPPORTED_TIMING_TARGETS[target],
+                "application": "recorded_replay_parameter_nominal",
+            }
+        )
+    validate_parameter_values(candidate_config, selected)
+    anchor, anchor_paths = _load_simulation_only_anchor(
+        p10_cohort_path,
+        p9_identity=p9["identity"],
+        candidate_config=candidate_config,
+        baseline_directory=baseline_path.parent,
+    )
+    candidate_config_sha256 = canonical_json_sha256(candidate_config)
+    source_hashes = {
+        "p9": sha256_file(p9_path),
+        "baseline": baseline_sha256,
+        **{name: sha256_file(path) for name, path in anchor_paths.items()},
+    }
+    identity = anchor["identity"]
+    geometry_provenance = {
+        "kind": "operator_current_workcell_registration",
+        "workcell_registration": anchor["workcell_registration"],
+        "source_receipt_sha256": anchor["source_receipt_sha256"],
+        "source_samples_sha256": anchor["source_samples_sha256"],
+        "source_manifest_sha256": anchor["source_manifest_sha256"],
+        "transform_applied": False,
+        "metric_geometry_available": False,
+        "physical_promotion_requires_p13": True,
+    }
+    unapplied = [
+        {
+            "source": "P13",
+            "field": "camera_to_workcell_transform",
+            "unit": "metre_and_dimensionless_rotation",
+            "convention": "workcell_from_camera",
+            "reason": "lineage-bound P13 is absent; current-workcell registration is provenance only",
+        }
+    ]
+    candidate_core = {
+        "identity": identity,
+        "source_hashes": source_hashes,
+        "baseline_sha256": baseline_sha256,
+        "candidate_config_sha256": candidate_config_sha256,
+        "applied_parameters": applied,
+        "unapplied_fields": unapplied,
+    }
+    candidate_digest = canonical_json_sha256(candidate_core)
+    canary_input = {
+        "schema_version": CANARY_INPUT_SCHEMA,
+        "synthetic": False,
+        "identity": identity,
+        "initial_state": anchor["initial_state"],
+        "joint_limits": anchor["joint_limits"],
+    }
+    start, initial_velocity, lower, upper = _validate_canary_input(
+        canary_input, identity=identity, synthetic_fixture_mode=False
+    )
+    timestamps, actions = _compile_actions(start)
+    _require(np.all(actions >= lower) and np.all(actions <= upper), "compiled canary exceeds measured joint limits")
+    velocities = np.diff(actions, axis=0) * CANARY_SAMPLE_HZ
+    accelerations = np.diff(velocities, axis=0) * CANARY_SAMPLE_HZ
+    maximum_velocity = float(np.max(np.abs(velocities)))
+    maximum_acceleration = float(np.max(np.abs(accelerations)))
+    _require(maximum_velocity <= CANARY_MAX_VELOCITY_RADIANS_S + 1e-12, "compiled canary exceeds velocity bound")
+    _require(maximum_acceleration <= CANARY_MAX_ACCELERATION_RADIANS_S2 + 1e-12, "compiled canary exceeds acceleration bound")
+    _require(np.array_equal(actions[0], start) and np.array_equal(actions[-1], start), "canary does not return exactly to start")
+    _require(np.array_equal(actions[:, 5], np.full(actions.shape[0], start[5])), "canary changes the gripper")
+    action_hash = action_sha256(actions)
+    action_bytes = np.asarray(actions, dtype="<f8", order="C").tobytes(order="C")
+    episode = RecordedEpisode(
+        episode_id=f"p15-zero-contact-canary-{candidate_digest[:16]}",
+        proof_class="simulation_only_canary_physical_unexecuted",
+        proof_class_category="replay",
+        column=None,
+        joint_names=tuple(baseline["bindings"]["joint_names"]),
+        initial_joint_position=start.copy(),
+        initial_joint_position_units=("radian",) * len(ROBOT_JOINTS),
+        initial_joint_velocity=initial_velocity.copy(),
+        initial_joint_velocity_units=("radian_per_second",) * len(ROBOT_JOINTS),
+        timestamps=timestamps,
+        original_timestamps=timestamps.copy(),
+        commands=actions.copy(),
+        measured=tuple({"joint_position": row.tolist()} for row in actions),
+        initial_object_state={"status": "unavailable"},
+        unavailable_observables={},
+        source_path=p10_cohort_path.resolve(),
+        source_sha256=source_hashes["p10_cohort"],
+        source_schema_version=CANARY_INPUT_SCHEMA,
+        source_provenance={"chain_complete": True, "p10_anchor": source_hashes["p10_samples"]},
+        joint_transform=None,
+    )
+    replay = simulate_and_align(episode, candidate_config, model_base_directory=baseline_path.parent)
+    consumed_hash = replay["control_diagnostics"]["replay_input_action_sha256"]
+    _require(consumed_hash == action_hash, "simulation did not consume the frozen canary bytes")
+    candidate_manifest = {
+        "schema_version": CANDIDATE_SCHEMA,
+        "status": "simulation_only_partial",
+        "proof_class": "simulation_only",
+        "simulation_only": True,
+        "identity": identity,
+        "sources": {
+            name: {
+                "sha256": digest,
+                "path": str(
+                    {
+                        "p9": p9_path,
+                        "baseline": baseline_path,
+                        **anchor_paths,
+                    }[name]
+                ),
+            }
+            for name, digest in source_hashes.items()
+        },
+        "baseline": {"config_id": baseline["config_id"], "sha256": baseline_sha256, "immutable": True},
+        "candidate_config": candidate_config,
+        "candidate_config_sha256": candidate_config_sha256,
+        "applied_parameters": applied,
+        "unapplied_fields": unapplied,
+        "geometry_provenance": geometry_provenance,
+        "candidate_digest": candidate_digest,
+        "runtime": {
+            "consumer": "sim2claw.recorded_replay.simulate_and_align",
+            "candidate_consumed": True,
+            "numeric_runtime": "cpu_mujoco_fp64",
+            "camera_transform_supported": False,
+            "p13_required_for_metric_or_physical": True,
+        },
+        "evaluator_admission": False,
+        "physical_authority": False,
+        "claim_limits": [
+            "simulation-only configuration and native no-contact eligibility",
+            "current-workcell registration is provenance only; no metric transform was applied",
+            "P13 is required for metric camera/workcell or physical promotion",
+            "no physical execution or task authority",
+        ],
+    }
+    canary_bundle = {
+        "schema_version": MANIFEST_SCHEMA,
+        "canary_schema_version": CANARY_SCHEMA,
+        "episode_id": episode.episode_id,
+        "proof_class": episode.proof_class,
+        "synthetic": False,
+        "simulation_only": True,
+        "evaluator_admission": False,
+        "physical_authority": False,
+        "identity": identity,
+        "candidate_digest": candidate_digest,
+        "source_canary_input": {"sha256": canonical_json_sha256(canary_input), "schema_version": CANARY_INPUT_SCHEMA},
+        "source_p10_anchor": {name: {"path": str(path), "sha256": source_hashes[name]} for name, path in anchor_paths.items()},
+        "geometry_provenance": geometry_provenance,
+        "joint_order": list(ROBOT_JOINTS),
+        "units": EXPECTED_UNITS,
+        "joint_transform": {"source_joint_order": list(ROBOT_JOINTS), "target_joint_order": list(ROBOT_JOINTS), "sign": [1.0] * len(ROBOT_JOINTS), "scale": [1.0] * len(ROBOT_JOINTS), "zero_offset": [0.0] * len(ROBOT_JOINTS)},
+        "initial_state": anchor["initial_state"],
+        "timestamps_seconds": timestamps.tolist(),
+        "requested_actions": actions.tolist(),
+        "applied_actions": actions.tolist(),
+        "action_dtype": "float64",
+        "requested_action_sha256": action_hash,
+        "applied_action_sha256": action_hash,
+        "action_semantics": {"requested_actions_source": "frozen_action_payload", "applied_actions_source": "frozen_action_payload", "applied_field_compatibility_meaning": "gateway_sent_command", "actuator_applied_or_acknowledged": False},
+        "modifications": {field: False for field in MODIFICATION_FIELDS},
+        "frozen_action_payload": {"encoding": ACTION_HASH_ENCODING, "shape": list(actions.shape), "sha256": action_hash, "base64": base64.b64encode(action_bytes).decode("ascii"), "simulation_consumer_sha256": consumed_hash, "future_physical_consumer_must_use_same_bytes": True},
+        "physical_handoff": {
+            "consumer": "reviewed_so101_follower_gateway_exact_target_path",
+            "payload_sha256": action_hash,
+            "payload_encoding": ACTION_HASH_ENCODING,
+            "recompute_or_mutation_required": False,
+            "physical_execution_admitted": False,
+        },
+        "safety": {"intent": "zero_contact", "initial_hold_samples": CANARY_INITIAL_HOLD_SAMPLES, "sample_hz": CANARY_SAMPLE_HZ, "excursion_radians": CANARY_EXCURSION_RADIANS, "maximum_velocity_radians_s": maximum_velocity, "velocity_bound_radians_s": CANARY_MAX_VELOCITY_RADIANS_S, "maximum_acceleration_radians_s2": maximum_acceleration, "acceleration_bound_radians_s2": CANARY_MAX_ACCELERATION_RADIANS_S2, "joint_limits_source_sha256": anchor["joint_limits"]["source_sha256"], "within_joint_limits": True, "return_to_exact_start": True, "gripper_unchanged": True, "ik_assistance_clipping_suffix_offsets": False},
+        "simulation": {"executed": True, "runtime": "cpu_mujoco_fp64", "zero_contact_verified": False, "contact_observable_available": False, "action_byte_identical": True, "physical_execution_admitted": False},
+    }
+    _require(baseline_path.read_bytes() == before, "baseline config mutated during composition")
+    _write_once(candidate_path, candidate_manifest)
+    _write_once(canary_path, canary_bundle)
+    _require(audit_exact_replay_manifest(canary_path)["exact_replay_eligible"] is True, "compiled canary failed existing replay eligibility")
+    return {"status": candidate_manifest["status"], "candidate_manifest_path": str(candidate_path), "candidate_manifest_sha256": sha256_file(candidate_path), "canary_bundle_path": str(canary_path), "canary_bundle_sha256": sha256_file(canary_path), "candidate_digest": candidate_digest, "action_sha256": action_hash, "simulation_action_byte_identical": True, "exact_replay_eligible": True, "physical_authority": False}
+
+
 def compose_twin_candidate_and_canary(
     *,
     p9_admission_path: Path,
-    p13_transform_path: Path,
-    p13_board_fit_path: Path,
+    p13_transform_path: Path | None = None,
+    p13_board_fit_path: Path | None = None,
     baseline_config_path: Path,
-    canary_input_path: Path,
+    canary_input_path: Path | None = None,
     output_directory: Path,
     synthetic_fixture_mode: bool = False,
+    simulation_only: bool = False,
+    p10_cohort_path: Path | None = None,
 ) -> dict[str, Any]:
     """Compose exactly one immutable candidate and one exact-replay canary bundle."""
+
+    if simulation_only:
+        _require(
+            p10_cohort_path is not None,
+            "simulation-only composition requires the completed P10 cohort",
+        )
+        return _compose_simulation_only_twin_candidate_and_canary(
+            p9_admission_path=p9_admission_path,
+            p10_cohort_path=p10_cohort_path,
+            baseline_config_path=baseline_config_path,
+            output_directory=output_directory,
+            synthetic_fixture_mode=synthetic_fixture_mode,
+        )
+    _require(p13_transform_path is not None, "exact composition requires a P13 transform")
+    _require(p13_board_fit_path is not None, "exact composition requires a P13 board fit")
+    _require(canary_input_path is not None, "exact composition requires a canary input")
 
     output = output_directory.resolve()
     candidate_path = output / "candidate_manifest.json"

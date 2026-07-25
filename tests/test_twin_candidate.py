@@ -25,9 +25,9 @@ from sim2claw.recorded_replay import (
     sha256_file,
 )
 from sim2claw.replay_eligibility import action_sha256, audit_exact_replay_manifest
-from sim2claw.system_identification import TIMING_ADMISSION_SCHEMA
 from sim2claw.twin_candidate import (
     CANARY_INPUT_SCHEMA,
+    TIMING_ADMISSION_SCHEMA,
     TwinCandidateError,
     compose_twin_candidate_and_canary,
 )
@@ -609,3 +609,110 @@ def test_contact_preflight_never_imports_robot_or_gateway_modules(
     )
     assert receipt["gateway_constructed"] is False
     assert forbidden_modules.isdisjoint(sys.modules)
+
+
+def test_simulation_only_composes_from_hash_bound_p10_anchor_and_native_preflight(
+    tmp_path: Path,
+) -> None:
+    fixture = _fixture(tmp_path)
+    p9 = fixture["values"]["p9"]
+    p9.update(
+        status="admitted_configuration_input",
+        proof_class="replay_evaluator",
+        synthetic=False,
+        evaluator_admission=True,
+    )
+    _write(fixture["paths"]["p9"], p9)
+    p10_root = tmp_path / "p10"
+    recording = p10_root / "recording"
+    recording.mkdir(parents=True)
+    start = np.asarray(
+        [1.1908479727818317, 0.02767843375388379, 1.1267926077044281,
+         -0.9730003915962206, 0.41239521366234166, 0.45],
+        dtype=np.float64,
+    )
+    samples_path = recording / "samples.jsonl"
+    samples_path.write_text(
+        json.dumps(
+            {
+                "timestamp_monotonic_seconds": 0.0,
+                "follower_actual_position_degrees": np.rad2deg(start).tolist(),
+                "follower_actual_velocity_degrees_s": [0.0] * 6,
+            }
+        ) + "\n",
+        encoding="utf-8",
+    )
+    receipt = {
+        "schema_version": "sim2claw.physical_recording_receipt.v1",
+        "recording_id": "p10-anchor",
+        "mode": "physical_follower",
+        "backend": {
+            "schema_version": p9["identity"]["robot"]["gateway_schema"],
+            "follower_port": p9["identity"]["robot"]["follower_port"],
+            "follower_calibration_sha256": p9["identity"]["robot"]["follower_calibration_sha256"],
+        },
+        "workcell_registration": {"workspace_pose_id": WORKSPACE_POSE_ID},
+        "samples_sha256": sha256_file(samples_path),
+    }
+    receipt_path = recording / "recording_receipt.json"
+    _write(receipt_path, receipt)
+    manifest = {
+        "schema_version": "sim2claw.replay_manifest.v1",
+        "conversion_provenance": {
+            "recording_receipt_sha256": sha256_file(receipt_path),
+            "samples_sha256": sha256_file(samples_path),
+        },
+    }
+    manifest_path = p10_root / "p4-manifest.json"
+    _write(manifest_path, manifest)
+    cohort_path = p10_root / "p9_cohort.json"
+    _write(
+        cohort_path,
+        {
+            "schema_version": "sim2claw.physical_timing_actuation_cohort.v1",
+            "episodes": [{"recording": "recording", "exact_replay_manifest": "p4-manifest.json"}],
+        },
+    )
+    p9["source_cohort"]["sha256"] = sha256_file(cohort_path)
+    _write(fixture["paths"]["p9"], p9)
+    p15 = compose_twin_candidate_and_canary(
+        p9_admission_path=fixture["paths"]["p9"],
+        baseline_config_path=BASELINE,
+        output_directory=tmp_path / "simulation-only",
+        simulation_only=True,
+        p10_cohort_path=cohort_path,
+    )
+    candidate = json.loads(Path(p15["candidate_manifest_path"]).read_text())
+    canary = json.loads(Path(p15["canary_bundle_path"]).read_text())
+    assert candidate["status"] == "simulation_only_partial"
+    assert candidate["geometry_provenance"]["transform_applied"] is False
+    assert candidate["runtime"]["p13_required_for_metric_or_physical"] is True
+    assert canary["simulation_only"] is True
+    assert canary["requested_actions"] == canary["applied_actions"]
+    receipt = evaluate_canary_contact_preflight(
+        candidate_path=Path(p15["candidate_manifest_path"]),
+        canary_path=Path(p15["canary_bundle_path"]),
+        baseline_path=BASELINE,
+        p9_admission_path=fixture["paths"]["p9"],
+        policy_path=DEFAULT_POLICY_PATH,
+        output_path=tmp_path / "simulation-contact.json",
+        simulation_only=True,
+    )
+    assert receipt["status"] == "simulation_only_no_contact_passed"
+    assert receipt["native_contact_audit"]["forbidden_contact_event_count"] == 0
+    assert receipt["ready_for_operator_hardware_preflight"] is False
+    assert receipt["simulation_no_contact_admitted"] is True
+    assert receipt["stop_before_robot_gateway"] is True
+    samples_path.write_text(
+        samples_path.read_text(encoding="utf-8") + "{}\n", encoding="utf-8"
+    )
+    with pytest.raises(CanaryContactError, match="source hash drifted"):
+        evaluate_canary_contact_preflight(
+            candidate_path=Path(p15["candidate_manifest_path"]),
+            canary_path=Path(p15["canary_bundle_path"]),
+            baseline_path=BASELINE,
+            p9_admission_path=fixture["paths"]["p9"],
+            policy_path=DEFAULT_POLICY_PATH,
+            output_path=tmp_path / "simulation-contact-drift.json",
+            simulation_only=True,
+        )

@@ -444,39 +444,52 @@ def evaluate_canary_contact_preflight(
     candidate_path: Path,
     canary_path: Path,
     baseline_path: Path,
-    p8_intrinsics_path: Path,
-    p8_distortion_path: Path,
+    p8_intrinsics_path: Path | None = None,
+    p8_distortion_path: Path | None = None,
     p9_admission_path: Path,
-    p13_transform_path: Path,
-    p13_board_fit_path: Path,
+    p13_transform_path: Path | None = None,
+    p13_board_fit_path: Path | None = None,
     policy_path: Path = DEFAULT_POLICY_PATH,
     output_path: Path,
     synthetic_fixture_mode: bool = False,
+    simulation_only: bool = False,
 ) -> dict[str, Any]:
     """Evaluate exact P15 action bytes and stop before every hardware surface."""
 
-    paths = {
+    paths: dict[str, Path] = {
         "candidate": candidate_path.resolve(),
         "canary": canary_path.resolve(),
         "baseline": baseline_path.resolve(),
         "policy": policy_path.resolve(),
-        "p8_intrinsics": p8_intrinsics_path.resolve(),
-        "p8_distortion": p8_distortion_path.resolve(),
         "p9": p9_admission_path.resolve(),
-        "p13_transform": p13_transform_path.resolve(),
-        "p13_board_fit": p13_board_fit_path.resolve(),
     }
+    if not simulation_only:
+        _require(
+            p8_intrinsics_path is not None
+            and p8_distortion_path is not None
+            and p13_transform_path is not None
+            and p13_board_fit_path is not None,
+            "exact contact preflight requires P8 and P13 artifacts",
+        )
+        paths.update(
+            {
+                "p8_intrinsics": p8_intrinsics_path.resolve(),
+                "p8_distortion": p8_distortion_path.resolve(),
+                "p13_transform": p13_transform_path.resolve(),
+                "p13_board_fit": p13_board_fit_path.resolve(),
+            }
+        )
     output_path = output_path.resolve()
     _require(not output_path.exists(), f"refusing to overwrite existing output: {output_path}")
     baseline_before = paths["baseline"].read_bytes()
     candidate = _read_json(paths["candidate"], "P15 candidate")
     canary = _read_json(paths["canary"], "P15 canary")
     policy = _read_json(paths["policy"], "forbidden-contact policy")
-    p8_intrinsics = _read_json(paths["p8_intrinsics"], "P8 intrinsics")
-    p8_distortion = _read_json(paths["p8_distortion"], "P8 distortion")
     p9 = _read_json(paths["p9"], "P9 admission")
-    p13_transform = _read_json(paths["p13_transform"], "P13 transform")
-    p13_board_fit = _read_json(paths["p13_board_fit"], "P13 board fit")
+    p8_intrinsics = _read_json(paths["p8_intrinsics"], "P8 intrinsics") if not simulation_only else None
+    p8_distortion = _read_json(paths["p8_distortion"], "P8 distortion") if not simulation_only else None
+    p13_transform = _read_json(paths["p13_transform"], "P13 transform") if not simulation_only else None
+    p13_board_fit = _read_json(paths["p13_board_fit"], "P13 board fit") if not simulation_only else None
     baseline = load_sysid_config(paths["baseline"])
     baseline.pop("_config_path", None)
     baseline.pop("_config_sha256", None)
@@ -491,7 +504,11 @@ def evaluate_canary_contact_preflight(
     )
     _require(
         candidate.get("status")
-        == ("synthetic_fixture_valid" if expected_synthetic else "configuration_valid"),
+        == (
+            "synthetic_fixture_valid"
+            if expected_synthetic
+            else ("simulation_only_partial" if simulation_only else "configuration_valid")
+        ),
         "candidate proof class does not match fixture mode",
     )
     _require(
@@ -505,21 +522,25 @@ def evaluate_canary_contact_preflight(
         and canary.get("evaluator_admission") is False,
         "P15 candidate or canary widened authority",
     )
-    for value, schema, label in (
-        (p8_intrinsics, INTRINSICS_SCHEMA, "P8 intrinsics"),
-        (p8_distortion, DISTORTION_SCHEMA, "P8 distortion"),
-    ):
-        _require(value.get("schema_version") == schema, f"{label} schema changed")
-        _require(
-            value.get("camera_id") == candidate["identity"]["camera_id"]
-            and value.get("evaluator_owned") is True
-            and value.get("self_scored") is False,
-            f"{label} identity or ownership changed",
-        )
-        _require(
-            bool(value.get("synthetic", False)) is expected_synthetic,
-            f"{label} synthetic proof class does not match fixture mode",
-        )
+    _require(candidate.get("simulation_only", False) is simulation_only, "candidate simulation-only mode drifted")
+    _require(canary.get("simulation_only", False) is simulation_only, "canary simulation-only mode drifted")
+    if not simulation_only:
+        for value, schema, label in (
+            (p8_intrinsics, INTRINSICS_SCHEMA, "P8 intrinsics"),
+            (p8_distortion, DISTORTION_SCHEMA, "P8 distortion"),
+        ):
+            assert value is not None
+            _require(value.get("schema_version") == schema, f"{label} schema changed")
+            _require(
+                value.get("camera_id") == candidate["identity"]["camera_id"]
+                and value.get("evaluator_owned") is True
+                and value.get("self_scored") is False,
+                f"{label} identity or ownership changed",
+            )
+            _require(
+                bool(value.get("synthetic", False)) is expected_synthetic,
+                f"{label} synthetic proof class does not match fixture mode",
+            )
     try:
         _validate_p9(
             p9,
@@ -527,10 +548,14 @@ def evaluate_canary_contact_preflight(
             baseline_sha256=baseline_sha256,
             synthetic_fixture_mode=synthetic_fixture_mode,
         )
-        p13_identity = _validate_p13(
-            p13_transform,
-            p13_board_fit,
-            synthetic_fixture_mode=synthetic_fixture_mode,
+        p13_identity = (
+            _validate_p13(
+                p13_transform,
+                p13_board_fit,
+                synthetic_fixture_mode=synthetic_fixture_mode,
+            )
+            if not simulation_only
+            else None
         )
     except TwinCandidateError as error:
         raise CanaryContactError(str(error)) from error
@@ -542,36 +567,54 @@ def evaluate_canary_contact_preflight(
         },
         "P9 robot/workspace identity drifted",
     )
+    if not simulation_only:
+        assert p13_identity is not None and p13_transform is not None
+        _require(
+            p13_identity
+            == {
+                "camera_id": candidate["identity"]["camera_id"],
+                "workspace_pose_id": candidate["identity"]["workspace_pose_id"],
+                "board_pose_id": candidate["identity"]["board_pose_id"],
+            },
+            "P13 camera/workspace/board identity drifted",
+        )
+        _require(
+            candidate.get("sources", {}).get("p13_transform", {}).get("sha256")
+            == sha256_file(paths["p13_transform"])
+            and candidate.get("sources", {}).get("p13_board_fit", {}).get("sha256")
+            == sha256_file(paths["p13_board_fit"]),
+            "P13 source hashes drifted from the candidate",
+        )
+        p13_hashes = p13_transform.get("input_hashes")
+        _require(
+            isinstance(p13_hashes, Mapping)
+            and p13_hashes.get("intrinsics_sha256")
+            == sha256_file(paths["p8_intrinsics"])
+            and p13_hashes.get("distortion_sha256")
+            == sha256_file(paths["p8_distortion"]),
+            "P8 source hashes drifted from P13",
+        )
+    else:
+        for name, descriptor in candidate.get("sources", {}).items():
+            if name == "p9":
+                continue
+            _require(
+                isinstance(descriptor, Mapping)
+                and isinstance(descriptor.get("path"), str)
+                and sha256_file(Path(descriptor["path"])) == descriptor.get("sha256"),
+                f"simulation-only source hash drifted: {name}",
+            )
+        geometry = candidate.get("geometry_provenance")
+        _require(
+            isinstance(geometry, Mapping)
+            and geometry.get("transform_applied") is False
+            and geometry.get("metric_geometry_available") is False
+            and geometry.get("physical_promotion_requires_p13") is True,
+            "simulation-only geometry provenance is invalid",
+        )
     _require(
-        p13_identity
-        == {
-            "camera_id": candidate["identity"]["camera_id"],
-            "workspace_pose_id": candidate["identity"]["workspace_pose_id"],
-            "board_pose_id": candidate["identity"]["board_pose_id"],
-        },
-        "P13 camera/workspace/board identity drifted",
-    )
-    _require(
-        candidate.get("sources", {}).get("p9", {}).get("sha256")
-        == sha256_file(paths["p9"])
-        and candidate.get("sources", {})
-        .get("p13_transform", {})
-        .get("sha256")
-        == sha256_file(paths["p13_transform"])
-        and candidate.get("sources", {})
-        .get("p13_board_fit", {})
-        .get("sha256")
-        == sha256_file(paths["p13_board_fit"]),
-        "P9/P13 source hashes drifted from the candidate",
-    )
-    p13_hashes = p13_transform.get("input_hashes")
-    _require(
-        isinstance(p13_hashes, Mapping)
-        and p13_hashes.get("intrinsics_sha256")
-        == sha256_file(paths["p8_intrinsics"])
-        and p13_hashes.get("distortion_sha256")
-        == sha256_file(paths["p8_distortion"]),
-        "P8 source hashes drifted from P13",
+        candidate.get("sources", {}).get("p9", {}).get("sha256") == sha256_file(paths["p9"]),
+        "P9 source hash drifted from the candidate",
     )
     _require(
         candidate.get("candidate_config_sha256")
@@ -702,6 +745,8 @@ def evaluate_canary_contact_preflight(
         if expected_synthetic and passed
         else "rejected_forbidden_contact"
         if not passed
+        else "simulation_only_no_contact_passed"
+        if simulation_only
         else "ready_for_operator_hardware_preflight"
     )
     receipt = {
@@ -734,10 +779,13 @@ def evaluate_canary_contact_preflight(
         },
         "native_contact_audit": native,
         "simulation_no_contact_admitted": passed and not expected_synthetic,
-        "ready_for_operator_hardware_preflight": passed and not expected_synthetic,
+        "ready_for_operator_hardware_preflight": passed and not expected_synthetic and not simulation_only,
+        "p13_required_for_metric_or_physical": simulation_only,
         "stop_before_robot_gateway": True,
         "next_operator_command_display_only": (
             "uv run sim2claw physical-gateway-preflight"
+            if status == "ready_for_operator_hardware_preflight"
+            else "STOP: resolve the native forbidden-contact verdict before any hardware preflight"
         ),
         "gateway_constructed": False,
         "physical_execution_admitted": False,
