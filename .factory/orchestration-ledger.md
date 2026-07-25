@@ -1260,3 +1260,10 @@ goal. External provider campaigns and spending remain separately gated.
   file is `12b1624d...` / digest `18bcbb02...`. A tracked guard exhausts v1.
   No capture, motion, simulator, provider, training, promotion, or
   Twin-domain change occurred.
+- 2026-07-24T19:44:00-05:00 — Opened one hardware-free C922 frame-lineage
+  transaction after a read-only audit found `overhead_start.png`
+  byte-identical to video frame index 29 at PTS `1.000000 s`. The formal gate
+  freezes the source and FFmpeg/FFprobe identities before implementation,
+  allows one metadata probe and one frame derivation with no retry or adjacent
+  search, and cannot open cameras, move the robot, run the simulator, or
+  change metric/Twin authority.
