@@ -249,6 +249,64 @@ class PhysicalGatewayTest(unittest.TestCase):
         gateway.close()
         self.assertFalse(self.follower.bus.torque)
 
+    def test_live_anchor_accepts_bounded_settle_and_rebases_exact_setup(self) -> None:
+        self.leader.values[:] = self.follower.values
+        sleeps = 0
+
+        def settle(_seconds: float) -> None:
+            nonlocal sleeps
+            sleeps += 1
+            if sleeps == 1:
+                self.follower.values[2] -= 10.0
+                self.leader.values[:] = self.follower.values
+
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            configure_devices=False,
+            sleep=settle,
+        )
+        try:
+            opened = gateway.open_live_anchored_setup()
+            self.assertEqual(opened["control_mode"], "live_anchored_setup_only")
+            self.assertEqual(opened["settle_excursion_degrees"][2], -10.0)
+            self.assertEqual(
+                opened["settled_torque_on_anchor_degrees"][2],
+                -7.0,
+            )
+            self.assertTrue(opened["passive_settle_observed"])
+            np.testing.assert_array_equal(
+                gateway.zero_displacement_arm_target,
+                self.follower.values,
+            )
+            self.assertTrue(self.follower.bus.torque)
+        finally:
+            gateway.close()
+        self.assertFalse(self.follower.bus.torque)
+
+    def test_live_anchor_rejects_unstable_settle(self) -> None:
+        self.leader.values[:] = self.follower.values
+
+        def keep_moving(_seconds: float) -> None:
+            self.follower.values[2] -= 2.0
+            self.leader.values[:] = self.follower.values
+
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            configure_devices=False,
+            sleep=keep_moving,
+        )
+        try:
+            with self.assertRaisesRegex(
+                PhysicalGatewayError,
+                "did not settle to a stable live torque-on anchor",
+            ):
+                gateway.open_live_anchored_setup()
+        finally:
+            gateway.close()
+        self.assertFalse(self.follower.bus.torque)
+
     def test_read_only_sample_reports_pose_without_commanding_motion(self) -> None:
         gateway = SO101PhysicalGateway(
             self.identity,

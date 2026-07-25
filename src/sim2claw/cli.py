@@ -625,6 +625,16 @@ def build_parser() -> argparse.ArgumentParser:
     wrist_view_reposition.add_argument("--reviewer")
     wrist_view_reposition.add_argument("--decision-id")
     wrist_view_reposition.add_argument("--yes", action="store_true")
+    live_anchored_reposition = subparsers.add_parser(
+        "live-anchored-camera-reposition",
+        help="preview and execute one setup-only route from a settled torque-on anchor",
+    )
+    live_anchored_reposition.add_argument("--route", type=Path, required=True)
+    live_anchored_reposition.add_argument(
+        "--candidate-manifest", type=Path, required=True
+    )
+    live_anchored_reposition.add_argument("--output", type=Path, required=True)
+    live_anchored_reposition.add_argument("--yes", action="store_true")
     c922_acquisition = subparsers.add_parser(
         "c922-calibration-acquisition-preflight",
         help="dry-run the frozen 18-view C922 calibration acquisition plan",
@@ -2009,6 +2019,24 @@ def main(argv: Sequence[str] | None = None) -> int:
                     operator_acknowledged=True,
                 )
         except (OSError, ValueError, WristViewRepositionError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "live-anchored-camera-reposition":
+        from .live_anchored_camera_reposition import (
+            LiveAnchoredCameraRepositionError,
+            execute_live_anchored_camera_reposition,
+        )
+
+        try:
+            result = execute_live_anchored_camera_reposition(
+                route_path=args.route,
+                candidate_manifest_path=args.candidate_manifest,
+                output_root=args.output,
+                operator_acknowledged=args.yes,
+            )
+        except (OSError, ValueError, LiveAnchoredCameraRepositionError) as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(result, indent=2, sort_keys=True))

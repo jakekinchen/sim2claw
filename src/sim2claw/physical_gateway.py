@@ -57,6 +57,12 @@ SYNC_LEADER_MOTION_TOLERANCE_DEG = 3.0
 HOLD_SETTLE_SECONDS = 0.1
 POST_HOLD_BODY_TOLERANCE_DEG = 3.0
 POST_HOLD_GRIPPER_TOLERANCE = 5.0
+LIVE_ANCHOR_SETTLE_SAMPLES = 4
+LIVE_ANCHOR_SETTLE_INTERVAL_SECONDS = 0.1
+LIVE_ANCHOR_MAX_BODY_EXCURSION_DEG = 15.0
+LIVE_ANCHOR_MAX_GRIPPER_EXCURSION = 10.0
+LIVE_ANCHOR_FINAL_BODY_DRIFT_DEG = 1.5
+LIVE_ANCHOR_FINAL_GRIPPER_DRIFT = 3.0
 
 
 class PhysicalGatewayError(RuntimeError):
@@ -570,6 +576,144 @@ class SO101PhysicalGateway:
             "device_configuration_rewritten": self.configure_devices,
             **registration,
             **registration_state,
+        }
+
+    def open_live_anchored_setup(self) -> dict[str, Any]:
+        """Arm once and rebase setup motion to the settled torque-on pose.
+
+        This is deliberately distinct from paired-pose or exact-replay
+        registration.  It accepts a bounded gravity-induced settle, follows
+        that settle with zero-displacement goals, and exposes the final live
+        pose as the only admissible start for a subsequently previewed
+        setup-only trajectory.
+        """
+
+        self._connect_torque_off()
+        initial = self._motion_read(
+            "live-anchor torque-off follower position",
+            self.follower.get_observation,
+        )
+        if not np.array_equal(
+            np.clip(initial, self.lower_limits, self.upper_limits),
+            initial,
+        ):
+            raise PhysicalGatewayError(
+                "Live-anchor torque-off pose is outside calibrated limits."
+            )
+        torque = self._read_optional("Torque_Enable")
+        if torque is not None and any(float(value) != 0.0 for value in torque.values()):
+            raise PhysicalGatewayError(
+                "Follower torque was not off before live-anchor setup."
+            )
+
+        self.follower.send_action(_position_dict(initial))
+        self.follower.bus.enable_torque(num_retry=BUS_READ_RETRIES)
+        self.torque_enabled = True
+        settled_samples: list[np.ndarray] = []
+        current_samples: list[dict[str, float] | None] = []
+        for index in range(LIVE_ANCHOR_SETTLE_SAMPLES):
+            self.sleep(LIVE_ANCHOR_SETTLE_INTERVAL_SECONDS)
+            actual = self._motion_read(
+                f"live-anchor settle position {index + 1}",
+                self.follower.get_observation,
+            )
+            excursion = actual - initial
+            excursion[4] = shortest_delta_degrees(
+                float(actual[4]),
+                float(initial[4]),
+            )
+            if (
+                float(np.max(np.abs(excursion[:5])))
+                > LIVE_ANCHOR_MAX_BODY_EXCURSION_DEG
+                or abs(float(excursion[5])) > LIVE_ANCHOR_MAX_GRIPPER_EXCURSION
+            ):
+                raise PhysicalGatewayError(
+                    "Follower exceeded the bounded passive live-anchor settle.",
+                    details=_pose_diagnostics(
+                        "live_anchor_settle_excursion",
+                        follower=actual,
+                        torque_off_start_degrees=initial.tolist(),
+                        settle_excursion_degrees=excursion.tolist(),
+                    ),
+                )
+            # Follow only the observed settle. No route target exists yet.
+            self.follower.send_action(_position_dict(actual))
+            settled_samples.append(actual)
+            current_samples.append(self._read_optional("Present_Current"))
+
+        settled = settled_samples[-1]
+        final_drift = settled - settled_samples[-2]
+        final_drift[4] = shortest_delta_degrees(
+            float(settled[4]),
+            float(settled_samples[-2][4]),
+        )
+        if (
+            float(np.max(np.abs(final_drift[:5])))
+            > LIVE_ANCHOR_FINAL_BODY_DRIFT_DEG
+            or abs(float(final_drift[5])) > LIVE_ANCHOR_FINAL_GRIPPER_DRIFT
+        ):
+            raise PhysicalGatewayError(
+                "Follower did not settle to a stable live torque-on anchor.",
+                details=_pose_diagnostics(
+                    "live_anchor_unstable",
+                    follower=settled,
+                    final_settle_drift_degrees=final_drift.tolist(),
+                    settle_samples_degrees=[
+                        sample.tolist() for sample in settled_samples
+                    ],
+                ),
+            )
+
+        self.zero_displacement_arm_target = settled.copy()
+        self.leader_start = settled.copy()
+        self.follower_start = settled.copy()
+        self.previous_actual = settled.copy()
+        self.previous_command = settled.copy()
+        self.previous_elapsed_seconds = 0.0
+        self.previous_time = self.clock()
+        self.stall_anchor_actual = settled.copy()
+        self.stall_started_at[:] = np.nan
+        self.stall_command_direction[:] = 0.0
+        self.consecutive_stall_samples[:] = 0
+        settle_excursion = settled - initial
+        settle_excursion[4] = shortest_delta_degrees(
+            float(settled[4]),
+            float(initial[4]),
+        )
+        return {
+            "schema_version": GATEWAY_SCHEMA,
+            "control_mode": "live_anchored_setup_only",
+            "follower_port": self.identity.follower_port,
+            "follower_calibration_sha256": (
+                self.identity.follower_calibration_sha256
+            ),
+            "follower_calibrated_minimum": self.lower_limits.tolist(),
+            "follower_calibrated_maximum": self.upper_limits.tolist(),
+            "torque_off_start_degrees": initial.tolist(),
+            "settle_samples_degrees": [
+                sample.tolist() for sample in settled_samples
+            ],
+            "settled_torque_on_anchor_degrees": settled.tolist(),
+            "settle_excursion_degrees": settle_excursion.tolist(),
+            "final_settle_drift_degrees": final_drift.tolist(),
+            "available_motor_current_raw": current_samples,
+            "settle_sample_count": LIVE_ANCHOR_SETTLE_SAMPLES,
+            "settle_interval_seconds": LIVE_ANCHOR_SETTLE_INTERVAL_SECONDS,
+            "maximum_body_settle_excursion_degrees": (
+                LIVE_ANCHOR_MAX_BODY_EXCURSION_DEG
+            ),
+            "maximum_gripper_settle_excursion": (
+                LIVE_ANCHOR_MAX_GRIPPER_EXCURSION
+            ),
+            "route_target_known_during_settle": False,
+            "physical_motion_commanded_during_settle": False,
+            "passive_settle_observed": bool(
+                np.max(np.abs(settle_excursion[:5])) > 0.25
+                or abs(float(settle_excursion[5])) > 0.5
+            ),
+            "physical_follower_torque_enabled": True,
+            "setup_only": True,
+            "evaluator_admission": False,
         }
 
     def _read_optional(self, register: str) -> dict[str, float] | None:
