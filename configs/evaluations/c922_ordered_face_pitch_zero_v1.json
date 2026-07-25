@@ -1,0 +1,150 @@
+{
+  "schema_version": "sim2claw.c922_ordered_link_face_rank_preflight_contract.v1",
+  "contract_id": "c922_fixed_camera_ordered_link_face_rank_preflight_20260725_v1",
+  "status": "preregistered_readiness_only_no_capture_fit_or_authority",
+  "purpose": "Fail closed unless future hash-bound C922 annotations have enough local Jacobian rank to make a later, separately reviewed 9-parameter camera-extrinsic and pitch-zero fit identifiable.",
+  "physical_fk_frame_contract": {
+    "path": "configs/calibration/so101_d405_physical_fk_frame_v1.json",
+    "sha256": "f531b9931e8a9a40745ef16b59d437e227b7a244a3d56e28349cb51063aed609"
+  },
+  "camera": {
+    "role": "c922",
+    "fixed_for_all_poses": true,
+    "intrinsics_schema": "sim2claw.c922_intrinsics.v1",
+    "intrinsics_lineage_status": "placeholder_missing_until_future_annotation_supplies_path_and_sha256",
+    "require_same_intrinsics_sha256_session_id_and_fixed_mount_token": true,
+    "fit_intrinsics": false
+  },
+  "joint_order": [
+    "shoulder_pan",
+    "shoulder_lift",
+    "elbow_flex",
+    "wrist_flex",
+    "wrist_roll",
+    "gripper"
+  ],
+  "offset_joint_order": [
+    "shoulder_lift",
+    "elbow_flex",
+    "wrist_flex"
+  ],
+  "candidate_poses": [
+    {
+      "pose_id": "P0_v4_reached",
+      "split": "rank",
+      "settled_actual": [-20.043956043956044, -63.64835164835165, 34.68131868131868, 88.83516483516483, -74.50549450549451, 2.9691211401425175]
+    },
+    {
+      "pose_id": "P1_v6_reached",
+      "split": "rank",
+      "settled_actual": [9.406593406593407, -64.61538461538461, 35.120879120879124, 71.34065934065934, -74.41758241758242, 3.0878859857482186]
+    },
+    {
+      "pose_id": "P2_v18_reached",
+      "split": "rank",
+      "settled_actual": [39.2967032967033, -65.14285714285714, 62.81318681318681, 64.83516483516483, -74.32967032967034, 3.0878859857482186]
+    },
+    {
+      "pose_id": "P3_v25_reached",
+      "split": "held_out",
+      "settled_actual": [19.34065934065934, -66.63736263736264, 85.05494505494505, 7.164835164835165, -74.41758241758242, 3.0878859857482186]
+    }
+  ],
+  "pose_receipt": {
+    "schema_version": "sim2claw.c922_ordered_link_face_pose_receipt.v1",
+    "maximum_candidate_pose_error": [0.75, 0.75, 0.75, 0.75, 1.0, 1.0],
+    "require_gateway_admitted": true,
+    "require_safety_clamped_false": true,
+    "require_stalled_false": true,
+    "require_empty_gripper": true,
+    "require_image_sha256_match": true
+  },
+  "faces": [
+    {
+      "face_id": "upper_arm_flat",
+      "mujoco_body": "left_upper_arm",
+      "ordered_points_body_xyz_m": [
+        [-0.0453076, -0.007, 0.0108778],
+        [-0.024, -0.007, 0.0015],
+        [-0.024, 0.007, 0.0015],
+        [-0.0453076, 0.007, 0.0108778]
+      ],
+      "source_visual_mesh": {
+        "path": "third_party/mujoco_menagerie/robotstudio_so101/assets/upper_arm_so101_v1.stl",
+        "sha256": "475056e03a17e71919b82fd88ab9a0b898ab50164f2a7943652a6b2941bb2d4f",
+        "triangle_indices_zero_based": [22746, 22747],
+        "mesh_to_body_position_m": [-0.065085, 0.012, 0.0182],
+        "mesh_to_body_quaternion_wxyz": [0, 1, 0, 0]
+      }
+    },
+    {
+      "face_id": "lower_arm_flat",
+      "mujoco_body": "left_lower_arm",
+      "ordered_points_body_xyz_m": [
+        [-0.0906999, -0.007, 0.0442],
+        [-0.0506999, -0.007, 0.0442],
+        [-0.0506999, 0.007, 0.0442],
+        [-0.0906999, 0.007, 0.0442]
+      ],
+      "source_visual_mesh": {
+        "path": "third_party/mujoco_menagerie/robotstudio_so101/assets/under_arm_so101_v1.stl",
+        "sha256": "d01d1f2de365651dcad9d6669e94ff87ff7652b5bb2d10752a66a456a86dbc71",
+        "triangle_indices_zero_based": [19212, 19213],
+        "mesh_to_body_position_m": [-0.06485, -0.032, 0.0182],
+        "mesh_to_body_quaternion_wxyz": [0, 1, 0, 0]
+      }
+    },
+    {
+      "face_id": "gripper_flat",
+      "mujoco_body": "left_gripper",
+      "ordered_points_body_xyz_m": [
+        [-0.015, -0.0159998, -0.0357497],
+        [-0.0062532, -0.0159998, -0.0357497],
+        [-0.0062532, 0.0160002, -0.0357497],
+        [-0.015, 0.0160002, -0.0357497]
+      ],
+      "source_visual_mesh": {
+        "path": "third_party/mujoco_menagerie/robotstudio_so101/assets/wrist_roll_follower_so101_v1.stl",
+        "sha256": "4b17b410a12d64ec39554abc3e8054d8a97384b2dc4a8d95a5ecb2a93670f5f4",
+        "triangle_indices_zero_based": [24866, 24867],
+        "mesh_to_body_position_m": [0, -0.000218, 0.00095],
+        "mesh_to_body_quaternion_wxyz": [0, 1, 0, 0]
+      }
+    }
+  ],
+  "annotation": {
+    "schema_version": "sim2claw.c922_ordered_link_face_annotations.v1",
+    "ordered_corners_per_face": 4,
+    "require_every_face_in_every_pose": true,
+    "coordinates": "distorted_source_image_pixels"
+  },
+  "rank_preflight": {
+    "parameter_order": [
+      "camera_rotvec_x",
+      "camera_rotvec_y",
+      "camera_rotvec_z",
+      "camera_translation_x_m",
+      "camera_translation_y_m",
+      "camera_translation_z_m",
+      "shoulder_lift_zero_offset_rad",
+      "elbow_flex_zero_offset_rad",
+      "wrist_flex_zero_offset_rad"
+    ],
+    "finite_difference_step": 0.000001,
+    "numerical_rank_relative_tolerance": 1e-9,
+    "required_jacobian_rank": 9,
+    "minimum_sigma_min_over_sigma_max": 0.0001,
+    "use_split": "rank",
+    "held_out_used_for_rank": false
+  },
+  "authority": {
+    "capture": false,
+    "motion": false,
+    "fit": false,
+    "extrinsic": false,
+    "joint_offset": false,
+    "policy": false,
+    "task_success": false,
+    "physical_transfer": false
+  }
+}
