@@ -12,6 +12,8 @@ from sim2claw.d405_hand_eye_identifiability import (
     evaluate_d405_hand_eye_identifiability,
 )
 from sim2claw.physical_fk_frame import physical_fk_base_from_wrist
+from sim2claw.d405_chessboard_surface_plane import CONTRACT_PATH as PLANE_CONTRACT
+from sim2claw.learning_factory_artifacts import sha256_file
 
 
 def _receipt(
@@ -21,7 +23,18 @@ def _receipt(
     offset: float,
     *,
     serial: str = "130322273474",
+    offset_drift: float = 0.0001,
 ) -> Path:
+    observations = [
+        {
+            "admitted": True,
+            "plane": {
+                "normal_camera_unit": normal,
+                "plane_equation": {"offset_m": offset + delta},
+            },
+        }
+        for delta in (0.0, offset_drift / 2.0, offset_drift)
+    ]
     value = {
         "schema_version": "sim2claw.d405_pose_plane_capture_receipt.v1",
         "proof_class": "physical_calibration_setup_pose_plane_observations_only",
@@ -39,20 +52,30 @@ def _receipt(
             "accepted_capture_receipt_sha256": "a" * 64
         },
         "terminal_hold": {"joint_pose": {"mean_degrees": joint}},
-        "observations": [
-            {
-                "plane": {
-                    "normal_camera_unit": normal,
-                    "plane_equation": {"offset_m": offset},
-                }
+        "plane_admission": {
+            "passed": True,
+            "surface_semantics": "visible_chessboard_surface_plane_with_piece_occlusion_not_board_origin",
+            "contract": {
+                "path": str(PLANE_CONTRACT.resolve()),
+                "sha256": sha256_file(PLANE_CONTRACT),
+                "schema_version": "sim2claw.d405_chessboard_surface_plane_contract.v1",
             },
-            {
-                "plane": {
-                    "normal_camera_unit": normal,
-                    "plane_equation": {"offset_m": offset + 0.0001},
-                }
+            "authority": {
+                "camera_to_robot_extrinsic": False,
+                "board_origin": False,
+                "robot_motion_replay": False,
+                "policy_evaluation": False,
+                "task_success": False,
+                "physical_task": False,
             },
-        ],
+            "checks": {"minimum_accepted_frame_count": True},
+            "input_frame_count": 3,
+            "accepted_frame_count": 3,
+            "rejected_frame_count": 0,
+            "minimum_accepted_frame_count": 3,
+        },
+        "observations": observations,
+        "rejected_observations": [],
         "verdict": {
             "passed": True,
             "camera_to_robot_extrinsic_fitted": False,
@@ -168,3 +191,44 @@ def test_identity_drift_rejects_receipt_set(tmp_path: Path) -> None:
         D405HandEyeIdentifiabilityError, match="identity or calibration"
     ):
         evaluate_d405_hand_eye_identifiability([first, second])
+
+
+def test_consumer_trusts_hash_bound_producer_frame_admission(
+    tmp_path: Path,
+) -> None:
+    paths = [
+        _receipt(
+            tmp_path / f"producer-{index}.json",
+            [10, -50, 90, 0, -75, 3],
+            [0, 0, 1],
+            -0.08,
+            offset_drift=0.0014,
+        )
+        for index in range(4)
+    ]
+
+    result = evaluate_d405_hand_eye_identifiability(paths)
+
+    assert result["diversity_metrics"][
+        "maximum_within_pose_offset_drift_m"
+    ] == pytest.approx(0.0014)
+    assert result["diversity_gates"]["producer_plane_admission"] is True
+    assert "within_pose_offset_stability" not in result["diversity_gates"]
+
+
+def test_producer_admission_hash_drift_fails_closed(tmp_path: Path) -> None:
+    path = _receipt(
+        tmp_path / "drift.json",
+        [10, -50, 90, 0, -75, 3],
+        [0, 0, 1],
+        -0.08,
+    )
+    value = json.loads(path.read_text())
+    value["plane_admission"]["contract"]["sha256"] = "0" * 64
+    path.write_text(json.dumps(value))
+
+    with pytest.raises(
+        D405HandEyeIdentifiabilityError,
+        match="producer plane admission lineage",
+    ):
+        evaluate_d405_hand_eye_identifiability([path])

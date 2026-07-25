@@ -1,9 +1,4 @@
-"""Screen pose-plane receipts before any hand-eye fit is allowed.
-
-The repository currently lacks approved physical FK and D405 wrist-mount frame
-contracts. This evaluator therefore reports observation diversity and numerical
-rank, but never substitutes simulator FK or invents a transform.
-"""
+"""Screen admitted pose-plane receipts and fit only identifiable hand-eye terms."""
 
 from __future__ import annotations
 
@@ -24,10 +19,10 @@ from .physical_fk_frame import (
 )
 
 CONTRACT_PATH = (
-    REPO_ROOT / "configs/evaluations/d405_hand_eye_identifiability_v1.json"
+    REPO_ROOT / "configs/evaluations/d405_hand_eye_identifiability_v2.json"
 )
-CONTRACT_SCHEMA = "sim2claw.d405_hand_eye_identifiability_contract.v1"
-RECEIPT_SCHEMA = "sim2claw.d405_hand_eye_identifiability_receipt.v1"
+CONTRACT_SCHEMA = "sim2claw.d405_hand_eye_identifiability_contract.v2"
+RECEIPT_SCHEMA = "sim2claw.d405_hand_eye_identifiability_receipt.v2"
 INPUT_SCHEMA = "sim2claw.d405_pose_plane_capture_receipt.v1"
 INPUT_PROOF = "physical_calibration_setup_pose_plane_observations_only"
 
@@ -208,7 +203,9 @@ def _fit_hand_eye(
     }
 
 
-def _representative(path: Path) -> dict[str, Any]:
+def _representative(
+    path: Path, contract: dict[str, Any]
+) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if (
         value.get("schema_version") != INPUT_SCHEMA
@@ -222,10 +219,47 @@ def _representative(path: Path) -> dict[str, Any]:
         raise D405HandEyeIdentifiabilityError(
             f"input receipt is not bounded pose-plane evidence: {path}"
         )
+    required_admission = contract["required_plane_admission"]
+    producer_path = (
+        REPO_ROOT / required_admission["contract_path"]
+    ).resolve()
+    producer_contract = json.loads(producer_path.read_text(encoding="utf-8"))
+    admission = value.get("plane_admission", {})
+    admission_contract = admission.get("contract", {})
+    observations = value.get("observations", [])
+    rejected = value.get("rejected_observations", [])
+    admission_checks = admission.get("checks", {})
+    if not (
+        admission.get("passed") is True
+        and admission.get("surface_semantics")
+        == required_admission["surface_semantics"]
+        and admission_contract.get("schema_version")
+        == required_admission["contract_schema"]
+        and Path(admission_contract.get("path", "")).resolve() == producer_path
+        and admission_contract.get("sha256") == sha256_file(producer_path)
+        and producer_contract.get("schema_version")
+        == required_admission["contract_schema"]
+        and admission.get("minimum_accepted_frame_count")
+        == producer_contract.get("minimum_accepted_frame_count")
+        and isinstance(admission.get("authority"), dict)
+        and admission["authority"] == producer_contract.get("authority")
+        and isinstance(admission_checks, dict)
+        and admission_checks
+        and all(admission_checks.values())
+        and admission.get("accepted_frame_count") == len(observations)
+        and admission.get("rejected_frame_count") == len(rejected)
+        and admission.get("input_frame_count")
+        == len(observations) + len(rejected)
+        and admission.get("accepted_frame_count", 0)
+        >= admission.get("minimum_accepted_frame_count", math.inf)
+        and all(item.get("admitted") is True for item in observations)
+    ):
+        raise D405HandEyeIdentifiabilityError(
+            f"producer plane admission lineage failed closed: {path}"
+        )
     joint = np.asarray(
         value["terminal_hold"]["joint_pose"]["mean_degrees"], dtype=np.float64
     )
-    observations = value.get("observations", [])
     normals = np.asarray(
         [item["plane"]["normal_camera_unit"] for item in observations],
         dtype=np.float64,
@@ -265,6 +299,7 @@ def _representative(path: Path) -> dict[str, Any]:
         "calibration_receipt_sha256": value["calibration_lineage"][
             "accepted_capture_receipt_sha256"
         ],
+        "plane_admission_contract_sha256": admission_contract["sha256"],
     }
 
 
@@ -274,10 +309,10 @@ def evaluate_d405_hand_eye_identifiability(
     output_path: Path | None = None,
     contract_path: Path = CONTRACT_PATH,
 ) -> dict[str, Any]:
-    """Screen diversity and seal missing FK/frame prerequisites."""
+    """Validate producer admission, screen diversity, then fit if determined."""
     contract = load_contract(contract_path)
     rows = sorted(
-        [_representative(path.resolve()) for path in receipt_paths],
+        [_representative(path.resolve(), contract) for path in receipt_paths],
         key=lambda row: row["sha256"],
     )
     if not rows:
@@ -326,14 +361,7 @@ def evaluate_d405_hand_eye_identifiability(
         >= float(contract["minimum_normal_angular_span_degrees"]),
         "offset_span": metrics["plane_offset_span_m"]
         >= float(contract["minimum_plane_offset_span_m"]),
-        "within_pose_normal_stability": metrics[
-            "maximum_within_pose_normal_angle_degrees"
-        ]
-        <= float(contract["maximum_within_pose_normal_angle_degrees"]),
-        "within_pose_offset_stability": metrics[
-            "maximum_within_pose_offset_drift_m"
-        ]
-        <= float(contract["maximum_within_pose_offset_drift_m"]),
+        "producer_plane_admission": True,
     }
     diversity_passed = all(gates.values())
     fk_path = (REPO_ROOT / contract["physical_fk_frame_contract_path"]).resolve()
@@ -389,6 +417,19 @@ def evaluate_d405_hand_eye_identifiability(
         "contract_lineage": {
             "path": str(contract_path.resolve()),
             "sha256": sha256_file(contract_path),
+        },
+        "producer_plane_admission_contract": {
+            "path": str(
+                (
+                    REPO_ROOT
+                    / contract["required_plane_admission"]["contract_path"]
+                ).resolve()
+            ),
+            "sha256": rows[0]["plane_admission_contract_sha256"],
+            "schema_version": contract["required_plane_admission"][
+                "contract_schema"
+            ],
+            "trusted_for_within_pose_frame_admission": True,
         },
         "diversity_metrics": metrics,
         "diversity_gates": gates,
