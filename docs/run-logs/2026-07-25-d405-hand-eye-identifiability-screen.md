@@ -1,89 +1,46 @@
-# D405 hand-eye identifiability screen
+# D405 physical-FK and hand-eye identifiability screen
 
 Date: 2026-07-25
 
 Proof class: `offline_pose_plane_hand_eye_identifiability_screen_only`
 
-Verdict for the current repository prerequisite state:
-`diversity_passed_kinematic_camera_frame_contract_missing` when a synthetic
-receipt set clears the observation-diversity gates. No extrinsic was fitted.
+The screen now uses the versioned
+`so101_left_arm_d405_hand_eye_fk_v1` contract. It binds the exact candidate
+manifest and hash, the six physical-to-model joint transforms, the compiled
+MuJoCo kinematic signature, `left_base`, and the explicit wrist/tool body
+`left_gripper`. The D405 depth optical frame is right-handed with x right,
+y down, and z forward. `wrist_from_d405_depth_optical` remains the unknown
+being estimated.
 
-## Repository prerequisite audit
+The contract is limited to physical-calibration setup FK. Its source adapter
+is still unapproved for replay or task authority; this contract does not widen
+that authority.
 
-The repository does not currently provide both contracts required to turn
-joint-pose/plane observations into a physical hand-eye calibration:
+The evaluator first applies the frozen observation-diversity gates. For a
+passing set it deterministically separates train and held-out observations,
+uses compiled-model FK to fit wrist-from-camera rotation against one fixed
+base-frame plane normal, and checks the actual rotation Jacobian rank,
+conditioning, and held-out normal-angle residuals.
 
-- an approved, hash-bound physical six-joint-to-robot forward-kinematics
-  contract with an authoritative wrist frame;
-- an approved D405 optical-frame-to-wrist-mount frame contract.
+Translation and the base-plane offset are then solved together. When their
+design matrix is rank-deficient, the result is explicitly
+`rotation_identifiable_translation_gauge_ambiguous`: rotation and its
+held-out residual may be reported, while wrist-camera translation and base
+plane remain null. A full-rank solution is still diagnostic-only and grants no
+extrinsic-promotion, motion, policy, or task-success authority.
 
-The existing system-identification references label the physical joint
-transform provisional/unapproved and measured end-effector orientation
-unavailable. Simulator FK and camera names are not substitutes for the missing
-physical frame contracts.
+Synthetic tests cover insufficient diversity, identity drift, the
+rotation-only gauge case, a fully determined consistent set, deterministic FK,
+and compiled-model hash drift. No camera or robot was accessed.
 
-The evaluator therefore seals those exact prerequisites. It never introduces a
-new kinematic model, borrows simulator FK as physical truth, or invents a
-wrist-camera transform.
+## Offline next-view recommendation
 
-## Implemented screen
-
-For every bounded pose-plane capture receipt, the evaluator verifies:
-
-- the exact pose-plane receipt schema and calibration-setup-only proof class;
-- a passing bounded-capture verdict with all authority bits false;
-- no pre-existing camera-to-robot fit claim;
-- finite six-joint terminal-hold means;
-- finite unit plane normals and metric offsets;
-- stable camera identity and accepted calibration receipt across the set.
-
-It then reports:
-
-- centered joint-pose singular values, rank, and retained-subspace condition;
-- maximum per-joint pose span;
-- centered plane-normal singular values, rank, and condition;
-- maximum plane-normal angular separation;
-- plane-offset span;
-- a normalized combined observation-space screening rank and condition;
-- within-pose normal and offset stability.
-
-The combined screening rank is explicitly not labeled a calibration-Jacobian
-rank. True hand-eye identifiability remains false until the missing physical FK
-and mount-frame contracts make that Jacobian definable.
-
-## Outcomes
-
-- Observation gates fail:
-  `insufficient_observations`; no fit or held-out residual exists.
-- Observation gates pass but current prerequisites remain absent:
-  `diversity_passed_kinematic_camera_frame_contract_missing`; no fit or
-  held-out residual exists.
-- Identity/calibration lineage drift or malformed evidence:
-  hard fail-closed evaluator error.
-
-Every receipt preserves:
-
-```text
-fit.attempted=false
-fit.wrist_camera_rotation=null
-fit.wrist_camera_translation_m=null
-fit.fixed_base_plane=null
-fit.held_out_residuals=null
-camera_to_robot_extrinsic_fitted=false
-promotion_authority=false
-```
-
-## Synthetic verification
-
-```text
-.venv/bin/pytest -q \
-  tests/test_d405_hand_eye_identifiability.py \
-  tests/test_d405_pose_plane_capture.py \
-  tests/test_d405_metric_surface_plane.py
-.............                                                            [100%]
-13 passed in 0.82s
-```
-
-The tests cover a repeated-pose insufficient set, a diverse set that clears
-the screening gates but remains blocked by the two explicit frame contracts,
-and camera-identity drift rejection. No camera or robot was accessed.
+`configs/calibration/d405_pose_plane_targets_from_anchor_v1.json` records six
+ordered targets from the fresh torque-off anchor
+`[-5.6264, -57.0549, 101.4945, -49.9780, -75.0330, 3.0879]`.
+An 81-sample-per-stage sequential CPU MuJoCo preview introduced no new or
+worsened kinematic contact, ended with no contact, and produced a 54.70-degree
+maximum tool-orientation separation. This is simulation contact evidence only:
+it does not prove physical safety, reach, tracking, or plane visibility. Every
+physical stage must be regenerated from a fresh live anchor through the
+existing guarded setup executor and closed torque-off.

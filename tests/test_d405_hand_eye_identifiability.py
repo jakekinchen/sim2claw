@@ -5,11 +5,13 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from scipy.spatial.transform import Rotation
 
 from sim2claw.d405_hand_eye_identifiability import (
     D405HandEyeIdentifiabilityError,
     evaluate_d405_hand_eye_identifiability,
 )
+from sim2claw.physical_fk_frame import physical_fk_base_from_wrist
 
 
 def _receipt(
@@ -76,35 +78,54 @@ def test_repeated_pose_set_is_insufficient_without_transform(tmp_path: Path) -> 
     assert result["verdict"]["classification"] == "insufficient_observations"
     assert result["diversity_passed"] is False
     assert result["fit"]["attempted"] is False
-    assert result["fit"]["wrist_camera_rotation"] is None
-    assert result["fit"]["held_out_residuals"] is None
+    assert result["fit"]["wrist_from_d405_depth_optical_rotation_matrix"] is None
+    assert result["fit"]["held_out_normal_residual_degrees"] is None
 
 
-def test_diverse_set_seals_missing_fk_and_camera_frame_contracts(
-    tmp_path: Path,
-) -> None:
+def test_diverse_consistent_set_fits_held_out_hand_eye(tmp_path: Path) -> None:
+    if not Path(
+        "runs/physical_excitation/20260725-follower-only-v1/"
+        "simulation-canary-v1/candidate_manifest.json"
+    ).is_file():
+        pytest.skip("ignored bound candidate manifest is absent")
+    joints = [
+        [-12.5, -70, 75, -15, -100, 3],
+        [-7.5, -56, 90, 15, -94, 3],
+        [-2.5, -42, 105, 9, -88, 3],
+        [2.5, -63, 85, 3, -82, 3],
+        [7.5, -49, 100, -3, -76, 3],
+        [12.5, -70, 80, -9, -70, 3],
+        [17.5, -56, 95, -15, -64, 3],
+        [22.5, -42, 75, 15, -58, 3],
+        [27.5, -63, 90, 9, -52, 3],
+        [32.5, -49, 105, 3, -46, 3],
+    ]
+    transforms = [physical_fk_base_from_wrist(joint) for joint in joints]
+    wrist_from_camera = Rotation.from_euler(
+        "xyz", [5, -7, 10], degrees=True
+    ).as_matrix()
+    first_camera_normal = np.asarray([-0.18, 0.17, 0.97])
+    first_camera_normal /= np.linalg.norm(first_camera_normal)
+    base_normal = (
+        transforms[0][:3, :3] @ wrist_from_camera @ first_camera_normal
+    )
+    base_normal /= np.linalg.norm(base_normal)
+    wrist_translation = np.asarray([0.03, -0.02, 0.04])
+    base_offset = -0.75
     paths = []
-    for index in range(8):
-        yaw, pitch = np.radians(index * 8), np.radians((index % 3) * 9)
-        normal = [
-            float(np.sin(yaw) * np.cos(pitch)),
-            float(np.sin(pitch)),
-            float(np.cos(yaw) * np.cos(pitch)),
-        ]
-        joint = [
-            10 + index * 3,
-            -60 + (index % 3) * 8,
-            100 - index * 4,
-            -8 + (index % 4) * 5,
-            -85 + index * 2,
-            3,
-        ]
+    for index, (joint, transform) in enumerate(zip(joints, transforms, strict=True)):
+        normal = (
+            wrist_from_camera.T @ transform[:3, :3].T @ base_normal
+        )
+        offset = base_offset + base_normal @ (
+            transform[:3, 3] + transform[:3, :3] @ wrist_translation
+        )
         paths.append(
             _receipt(
                 tmp_path / f"diverse-{index}.json",
                 joint,
-                normal,
-                -0.07 - index * 0.003,
+                normal.tolist(),
+                float(offset),
             )
         )
 
@@ -112,16 +133,25 @@ def test_diverse_set_seals_missing_fk_and_camera_frame_contracts(
 
     assert result["diversity_passed"] is True
     assert result["verdict"]["classification"] == (
-        "diversity_passed_kinematic_camera_frame_contract_missing"
+        "hand_eye_extrinsic_fit_diagnostic_only"
     )
-    assert result["missing_prerequisites"] == [
-        "approved_physical_joint_to_robot_fk_contract",
-        "approved_d405_optical_to_wrist_mount_frame_contract",
-    ]
-    assert result["true_hand_eye_identifiability_established"] is False
+    assert result["rotation_identifiability_established"] is True
+    assert result["translation_identifiability_established"] is True
     assert result["screening_rank_is_not_calibration_jacobian_rank"] is True
-    assert result["fit"]["attempted"] is False
-    assert result["verdict"]["camera_to_robot_extrinsic_fitted"] is False
+    assert result["fit"]["attempted"] is True
+    assert max(result["fit"]["held_out_normal_residual_degrees"]) < 1e-5
+    np.testing.assert_allclose(
+        result["fit"]["wrist_from_d405_depth_optical_rotation_matrix"],
+        wrist_from_camera,
+        atol=1e-6,
+    )
+    np.testing.assert_allclose(
+        result["fit"]["wrist_from_d405_depth_optical_translation_m"],
+        wrist_translation,
+        atol=1e-6,
+    )
+    assert result["verdict"]["camera_to_robot_extrinsic_fitted"] is True
+    assert result["verdict"]["promotion_authority"] is False
 
 
 def test_identity_drift_rejects_receipt_set(tmp_path: Path) -> None:

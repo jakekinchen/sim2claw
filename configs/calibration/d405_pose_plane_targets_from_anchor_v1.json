@@ -1,0 +1,83 @@
+{
+  "schema_version": "sim2claw.d405_pose_plane_target_recommendation.v1",
+  "proof_class": "offline_simulation_contact_screen_only",
+  "source": {
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+    "setup_recovery_execution_receipt_path": "runs/physical_excitation/20260725-follower-only-v1/d405-setup-recovery-v1/stage-1/execution_receipt.json",
+    "setup_recovery_execution_receipt_sha256": "0bc54f9e90c8a1d59b3090b7aeba0d73fb4995c3d11e0303f2dc988d63763045",
+    "anchor_provenance": "fresh post-close torque-off gateway observation supplied for this screen; execution must bind a fresh live anchor again"
+  },
+  "joint_order": [
+    "shoulder_pan",
+    "shoulder_lift",
+    "elbow_flex",
+    "wrist_flex",
+    "wrist_roll",
+    "gripper"
+  ],
+  "units": ["degree", "degree", "degree", "degree", "degree", "percent"],
+  "fresh_torque_off_anchor": [-5.6264, -57.0549, 101.4945, -49.978, -75.033, 3.0879],
+  "targets": [
+    {
+      "index": 1,
+      "values": [6.3736, -57.0549, 91.4945, -41.978, -75.033, 3.0879],
+      "exact_81_sample_action_sha256": "04c2c738c135a3fa3afa4c21d47c1cac4858e6704afb2ba96d433eb9d54ffe39"
+    },
+    {
+      "index": 2,
+      "values": [-5.6264, -47.0549, 86.4945, -34.978, -60.033, 3.0879],
+      "exact_81_sample_action_sha256": "2d8f33800bbf0d94a68797bc416f818038c1424aa01fc5f8eb585d1d1b750571"
+    },
+    {
+      "index": 3,
+      "values": [2.3736, -49.0549, 81.4945, -24.978, -50.033, 3.0879],
+      "exact_81_sample_action_sha256": "f8099cd50b169496d703cc00ed5995077ae7229a862ac406d5b2c1e10a058d0b"
+    },
+    {
+      "index": 4,
+      "values": [-17.6264, -57.0549, 91.4945, -41.978, -75.033, 3.0879],
+      "exact_81_sample_action_sha256": "0cfa902a8c86587b5c84be70131c3e3c0c1898d3917dcb08db4e845a75f73aa5"
+    },
+    {
+      "index": 5,
+      "values": [-5.6264, -67.0549, 86.4945, -34.978, -90.033, 3.0879],
+      "exact_81_sample_action_sha256": "42e116bb21379e1e9d7ecb0882b4eea085402298e69917451d1e615542a6957d"
+    },
+    {
+      "index": 6,
+      "values": [-13.6264, -65.0549, 81.4945, -24.978, -100.033, 3.0879],
+      "exact_81_sample_action_sha256": "10f77bce6029ede0a2ab25bfcd0e616a031df4d2b7c76df855e1703a5e65207c"
+    }
+  ],
+  "simulation_screen": {
+    "runtime": "cpu_mujoco_mj_forward",
+    "samples_per_stage": 81,
+    "no_new_or_worsened_kinematic_contact": true,
+    "external_contact_pairs": [],
+    "final_contact_pairs": [],
+    "baseline_self_contact_pairs": [
+      ["left_lower_arm", "left_shoulder"],
+      ["left_shoulder", "left_wrist"],
+      ["left_upper_arm", "left_wrist"]
+    ],
+    "baseline_minimum_distance_m": -0.018850963510044894,
+    "tool_orientation_pairwise_span_degrees": {
+      "minimum": 12.497276630090182,
+      "maximum": 54.7039808758288
+    },
+    "tool_position_axis_span_m": [0.02074542, 0.05211819, 0.03799052]
+  },
+  "limitations": [
+    "Simulation contact evidence does not prove physical reach, tracking, live safety, or D405 plane visibility.",
+    "Each target requires a fresh live-anchor binding, exact CPU preview, operator acknowledgement, observed stop or hold, and torque-off close.",
+    "This recommendation grants no robot, camera, calibration-promotion, policy, or task-success authority."
+  ],
+  "authority": {
+    "motion": false,
+    "camera": false,
+    "extrinsic_promotion": false,
+    "policy": false,
+    "task_success": false
+  }
+}

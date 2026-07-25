@@ -10,10 +10,12 @@
   "rank_relative_tolerance": 0.000001,
   "maximum_within_pose_normal_angle_degrees": 1.0,
   "maximum_within_pose_offset_drift_m": 0.001,
-  "required_prerequisites": {
-    "approved_physical_joint_to_robot_fk_contract": null,
-    "approved_d405_optical_to_wrist_mount_frame_contract": null
-  },
+  "physical_fk_frame_contract_path": "configs/calibration/so101_d405_physical_fk_frame_v1.json",
+  "held_out_fraction": 0.25,
+  "maximum_training_normal_residual_degrees": 1.0,
+  "maximum_held_out_normal_residual_degrees": 2.0,
+  "maximum_rotation_jacobian_condition": 10000.0,
+  "minimum_translation_design_rank": 4,
   "authority": {
     "camera_to_robot_extrinsic": false,
     "board_origin": false,

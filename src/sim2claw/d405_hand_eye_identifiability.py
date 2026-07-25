@@ -13,9 +13,15 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+from scipy.optimize import least_squares
+from scipy.spatial.transform import Rotation
 
 from .learning_factory_artifacts import atomic_write_json, sha256_file
 from .paths import REPO_ROOT
+from .physical_fk_frame import (
+    load_physical_fk_contract,
+    physical_fk_base_from_wrist,
+)
 
 CONTRACT_PATH = (
     REPO_ROOT / "configs/evaluations/d405_hand_eye_identifiability_v1.json"
@@ -39,15 +45,22 @@ def load_contract(path: Path = CONTRACT_PATH) -> dict[str, Any]:
     return value
 
 
-def _rank_condition(matrix: np.ndarray, relative_tolerance: float) -> dict[str, Any]:
-    centered = matrix - np.mean(matrix, axis=0, keepdims=True)
-    singular = np.linalg.svd(centered, compute_uv=False)
+def _rank_condition(
+    matrix: np.ndarray, relative_tolerance: float, *, center: bool = True
+) -> dict[str, Any]:
+    analyzed = (
+        matrix - np.mean(matrix, axis=0, keepdims=True)
+        if center
+        else matrix
+    )
+    singular = np.linalg.svd(analyzed, compute_uv=False)
     threshold = (
         float(singular[0]) * relative_tolerance if singular.size else 0.0
     )
     retained = singular[singular > threshold]
     return {
-        "shape": list(centered.shape),
+        "shape": list(analyzed.shape),
+        "centered": center,
         "singular_values": singular.tolist(),
         "relative_rank_tolerance": relative_tolerance,
         "rank": int(len(retained)),
@@ -60,6 +73,139 @@ def _rank_condition(matrix: np.ndarray, relative_tolerance: float) -> dict[str, 
 def _maximum_normal_angle(normals: np.ndarray) -> float:
     dots = np.clip(normals @ normals.T, -1.0, 1.0)
     return float(np.degrees(np.max(np.arccos(dots))))
+
+
+def _angular_residuals(
+    base_from_wrist: np.ndarray,
+    wrist_from_camera: np.ndarray,
+    camera_normals: np.ndarray,
+    base_normal: np.ndarray,
+) -> np.ndarray:
+    predicted = np.einsum(
+        "nij,jk,nk->ni",
+        base_from_wrist[:, :3, :3],
+        wrist_from_camera,
+        camera_normals,
+    )
+    dots = np.clip(predicted @ base_normal, -1.0, 1.0)
+    return np.degrees(np.arccos(dots))
+
+
+def _fit_hand_eye(
+    train_fk: np.ndarray,
+    train_normals: np.ndarray,
+    train_offsets: np.ndarray,
+    held_fk: np.ndarray,
+    held_normals: np.ndarray,
+    held_offsets: np.ndarray,
+    contract: dict[str, Any],
+) -> dict[str, Any]:
+    rotations = train_fk[:, :3, :3]
+
+    def residual(rotation_vector: np.ndarray) -> np.ndarray:
+        wrist_from_camera = Rotation.from_rotvec(rotation_vector).as_matrix()
+        predicted = np.einsum(
+            "nij,jk,nk->ni", rotations, wrist_from_camera, train_normals
+        )
+        base_normal = np.mean(predicted, axis=0)
+        base_normal /= np.linalg.norm(base_normal)
+        return (predicted - base_normal).ravel()
+
+    starts = (
+        np.zeros(3),
+        np.asarray([math.pi / 2, 0, 0]),
+        np.asarray([0, math.pi / 2, 0]),
+        np.asarray([0, 0, math.pi / 2]),
+    )
+    solutions = [least_squares(residual, start, method="trf") for start in starts]
+    solution = min(solutions, key=lambda item: float(np.sum(item.fun**2)))
+    wrist_from_camera = Rotation.from_rotvec(solution.x).as_matrix()
+    predicted = np.einsum(
+        "nij,jk,nk->ni", rotations, wrist_from_camera, train_normals
+    )
+    base_normal = np.mean(predicted, axis=0)
+    base_normal /= np.linalg.norm(base_normal)
+    jacobian = _rank_condition(
+        solution.jac,
+        float(contract["rank_relative_tolerance"]),
+        center=False,
+    )
+    training_angles = _angular_residuals(
+        train_fk, wrist_from_camera, train_normals, base_normal
+    )
+    held_angles = _angular_residuals(
+        held_fk, wrist_from_camera, held_normals, base_normal
+    )
+    rotation_passed = (
+        jacobian["rank"] == 3
+        and jacobian["condition_number_retained_subspace"]
+        <= float(contract["maximum_rotation_jacobian_condition"])
+        and float(np.max(training_angles))
+        <= float(contract["maximum_training_normal_residual_degrees"])
+        and float(np.max(held_angles))
+        <= float(contract["maximum_held_out_normal_residual_degrees"])
+    )
+
+    translation_rows = np.column_stack(
+        (
+            np.einsum("j,njk->nk", base_normal, rotations),
+            np.ones(len(train_fk)),
+        )
+    )
+    translation_rhs = train_offsets - np.einsum(
+        "j,nj->n", base_normal, train_fk[:, :3, 3]
+    )
+    translation_rank = _rank_condition(
+        translation_rows,
+        float(contract["rank_relative_tolerance"]),
+        center=False,
+    )
+    translation_observable = (
+        rotation_passed
+        and translation_rank["rank"]
+        >= int(contract["minimum_translation_design_rank"])
+    )
+    translation = None
+    base_offset = None
+    held_offset_residuals = None
+    if translation_observable:
+        parameters = np.linalg.lstsq(
+            translation_rows, translation_rhs, rcond=None
+        )[0]
+        translation, base_offset = parameters[:3], float(parameters[3])
+        held_design = np.column_stack(
+            (
+                np.einsum(
+                    "j,njk->nk", base_normal, held_fk[:, :3, :3]
+                ),
+                np.ones(len(held_fk)),
+            )
+        )
+        held_rhs = held_offsets - np.einsum(
+            "j,nj->n", base_normal, held_fk[:, :3, 3]
+        )
+        held_offset_residuals = (held_design @ parameters - held_rhs).tolist()
+    return {
+        "rotation_identifiable": rotation_passed,
+        "translation_identifiable": translation_observable,
+        "rotation_jacobian": jacobian,
+        "translation_design": translation_rank,
+        "wrist_from_d405_depth_optical_rotation_matrix": (
+            wrist_from_camera.tolist() if rotation_passed else None
+        ),
+        "wrist_from_d405_depth_optical_translation_m": (
+            translation.tolist() if translation is not None else None
+        ),
+        "fixed_base_plane": {
+            "normal": base_normal.tolist(),
+            "offset_m": base_offset,
+        }
+        if rotation_passed
+        else None,
+        "training_normal_residual_degrees": training_angles.tolist(),
+        "held_out_normal_residual_degrees": held_angles.tolist(),
+        "held_out_plane_offset_residual_m": held_offset_residuals,
+    }
 
 
 def _representative(path: Path) -> dict[str, Any]:
@@ -130,7 +276,10 @@ def evaluate_d405_hand_eye_identifiability(
 ) -> dict[str, Any]:
     """Screen diversity and seal missing FK/frame prerequisites."""
     contract = load_contract(contract_path)
-    rows = [_representative(path.resolve()) for path in receipt_paths]
+    rows = sorted(
+        [_representative(path.resolve()) for path in receipt_paths],
+        key=lambda row: row["sha256"],
+    )
     if not rows:
         raise D405HandEyeIdentifiabilityError("receipt set is empty")
     identities = {json.dumps(row["camera_identity"], sort_keys=True) for row in rows}
@@ -187,16 +336,49 @@ def evaluate_d405_hand_eye_identifiability(
         <= float(contract["maximum_within_pose_offset_drift_m"]),
     }
     diversity_passed = all(gates.values())
-    missing = [
-        name
-        for name, path in contract["required_prerequisites"].items()
-        if path is None
-    ]
-    classification = (
-        "insufficient_observations"
-        if not diversity_passed
-        else "diversity_passed_kinematic_camera_frame_contract_missing"
-    )
+    fk_path = (REPO_ROOT / contract["physical_fk_frame_contract_path"]).resolve()
+    fk_declaration = json.loads(fk_path.read_text(encoding="utf-8"))
+    fk_contract: dict[str, Any] | None = None
+    fit: dict[str, Any] | None = None
+    train_lineage: list[dict[str, str]] = []
+    held_lineage: list[dict[str, str]] = []
+    if diversity_passed:
+        fk_contract, _model = load_physical_fk_contract(fk_path)
+        held_count = max(
+            1, int(math.ceil(len(rows) * float(contract["held_out_fraction"])))
+        )
+        train, held = rows[:-held_count], rows[-held_count:]
+        train_lineage = [
+            {"path": row["path"], "sha256": row["sha256"]} for row in train
+        ]
+        held_lineage = [
+            {"path": row["path"], "sha256": row["sha256"]} for row in held
+        ]
+        train_fk = np.asarray(
+            [physical_fk_base_from_wrist(row["joint_degrees"]) for row in train]
+        )
+        held_fk = np.asarray(
+            [physical_fk_base_from_wrist(row["joint_degrees"]) for row in held]
+        )
+        fit = _fit_hand_eye(
+            train_fk,
+            np.asarray([row["normal"] for row in train]),
+            np.asarray([row["offset_m"] for row in train]),
+            held_fk,
+            np.asarray([row["normal"] for row in held]),
+            np.asarray([row["offset_m"] for row in held]),
+            contract,
+        )
+    rotation_identifiable = bool(fit and fit["rotation_identifiable"])
+    translation_identifiable = bool(fit and fit["translation_identifiable"])
+    if not diversity_passed:
+        classification = "insufficient_observations"
+    elif not rotation_identifiable:
+        classification = "hand_eye_rotation_not_identifiable"
+    elif not translation_identifiable:
+        classification = "rotation_identifiable_translation_gauge_ambiguous"
+    else:
+        classification = "hand_eye_extrinsic_fit_diagnostic_only"
     receipt = {
         "schema_version": RECEIPT_SCHEMA,
         "proof_class": contract["proof_class"],
@@ -211,30 +393,50 @@ def evaluate_d405_hand_eye_identifiability(
         "diversity_metrics": metrics,
         "diversity_gates": gates,
         "diversity_passed": diversity_passed,
-        "true_hand_eye_identifiability_established": False,
-        "missing_prerequisites": missing,
-        "screening_rank_is_not_calibration_jacobian_rank": True,
-        "fit": {
-            "attempted": False,
-            "wrist_camera_rotation": None,
-            "wrist_camera_translation_m": None,
-            "fixed_base_plane": None,
-            "held_out_residuals": None,
-            "reason": (
-                "observation diversity gates failed"
-                if not diversity_passed
-                else "approved physical FK and D405 wrist-mount frame contracts are absent"
-            ),
+        "physical_fk_frame_contract": {
+            "path": str(fk_path),
+            "sha256": sha256_file(fk_path),
+            "contract_id": fk_declaration["contract_id"],
+            "unknown_to_fit": fk_declaration["unknown_to_fit"],
+            "compiled_and_validated_for_fit": fk_contract is not None,
         },
+        "fit_split": {
+            "training": train_lineage,
+            "held_out": held_lineage,
+        },
+        "rotation_identifiability_established": rotation_identifiable,
+        "translation_identifiability_established": translation_identifiable,
+        "screening_rank_is_not_calibration_jacobian_rank": True,
+        "fit": (
+            {"attempted": True, **fit}
+            if fit is not None
+            else {
+                "attempted": False,
+                "wrist_from_d405_depth_optical_rotation_matrix": None,
+                "wrist_from_d405_depth_optical_translation_m": None,
+                "fixed_base_plane": None,
+                "held_out_normal_residual_degrees": None,
+                "held_out_plane_offset_residual_m": None,
+                "reason": "observation diversity gates failed",
+            }
+        ),
         "verdict": {
-            "passed": False,
+            "passed": rotation_identifiable,
             "classification": classification,
             "failure_reasons": (
                 [name for name, passed in gates.items() if not passed]
                 if not diversity_passed
-                else missing
+                else (
+                    ["rotation fit rank, conditioning, or residual gates failed"]
+                    if not rotation_identifiable
+                    else (
+                        ["translation and base-plane offset are gauge ambiguous"]
+                        if not translation_identifiable
+                        else []
+                    )
+                )
             ),
-            "camera_to_robot_extrinsic_fitted": False,
+            "camera_to_robot_extrinsic_fitted": translation_identifiable,
             "promotion_authority": False,
         },
     }

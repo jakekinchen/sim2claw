@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.so101_d405_physical_fk_frame_contract.v1",
+  "contract_id": "so101_left_arm_d405_hand_eye_fk_v1",
+  "scope": "physical_calibration_setup_fk_only",
+  "candidate_manifest": {
+    "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+    "candidate_digest": "2da7425cbf0fd10e27822a415890ca180dde7a4f1b042bf3ed49030bcad018af",
+    "candidate_config_sha256": "fbf451821e96c9f236b89feb076b964fd81f52416028f93e627118e296697368"
+  },
+  "compiled_kinematic_model_sha256": "0814b790d7eae6d3175d4abfcdc32aa72c986475509dca703c491a1efffc05a9",
+  "physical_joint_order": [
+    "shoulder_pan",
+    "shoulder_lift",
+    "elbow_flex",
+    "wrist_flex",
+    "wrist_roll",
+    "gripper"
+  ],
+  "model_joint_order": [
+    "left_shoulder_pan",
+    "left_shoulder_lift",
+    "left_elbow_flex",
+    "left_wrist_flex",
+    "left_wrist_roll",
+    "left_gripper"
+  ],
+  "physical_to_model_transform": {
+    "input_units": ["degree", "degree", "degree", "degree", "degree", "percent"],
+    "output_unit": "radian",
+    "sign": [1, 1, 1, 1, 1, 1],
+    "scale": [
+      0.017453292519943295,
+      0.017453292519943295,
+      0.017453292519943295,
+      0.017453292519943295,
+      0.017453292519943295,
+      0.0191986
+    ],
+    "zero_offset": [0, 0, 0, 0, 0, -0.17453],
+    "source_joint_transform_sha256": "72812016bfa9dba2ba97fe448724394ad290a2b22458177bcbdec95aae0689e6"
+  },
+  "frames": {
+    "base": {
+      "mujoco_body": "left_base",
+      "handedness": "right_handed",
+      "linear_unit": "metre"
+    },
+    "wrist": {
+      "mujoco_body": "left_gripper",
+      "semantic": "wrist_tool_body_after_wrist_roll",
+      "handedness": "right_handed",
+      "linear_unit": "metre"
+    },
+    "d405_depth_optical": {
+      "axes": {"x": "right", "y": "down", "z": "forward"},
+      "handedness": "right_handed",
+      "linear_unit": "metre"
+    }
+  },
+  "unknown_to_fit": "wrist_from_d405_depth_optical",
+  "authority": {
+    "motion": false,
+    "policy": false,
+    "task_success": false,
+    "extrinsic_promotion": false
+  }
+}
