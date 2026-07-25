@@ -1,0 +1,348 @@
+from __future__ import annotations
+
+import base64
+import copy
+import hashlib
+import json
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from sim2claw.paths import REPO_ROOT
+from sim2claw.recorded_replay import (
+    ReplayContractError,
+    canonical_json_sha256,
+    sha256_file,
+)
+from sim2claw.replay_eligibility import action_sha256, audit_exact_replay_manifest
+from sim2claw.system_identification import TIMING_ADMISSION_SCHEMA
+from sim2claw.twin_candidate import (
+    CANARY_INPUT_SCHEMA,
+    TwinCandidateError,
+    compose_twin_candidate_and_canary,
+)
+from sim2claw.workcell_registration import (
+    BOARD_FIT_SCHEMA,
+    TRANSFORM_SCHEMA,
+    WORKSPACE_POSE_ID,
+)
+
+
+BASELINE = REPO_ROOT / "configs/sysid/recorded_action_sysid_v1.json"
+
+
+def _write(path: Path, value: object) -> None:
+    path.write_text(json.dumps(value, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _fixture(tmp_path: Path) -> dict[str, object]:
+    baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
+    timing = [
+        stage
+        for stage in baseline["parameter_stages"]
+        if stage["name"] == "timing_control"
+    ][0]
+    family = {
+        "stage": "timing_control",
+        "parameters": copy.deepcopy(timing["parameters"]),
+        "excluded": ["geometry", "contact_object", "deadband", "friction", "load"],
+    }
+    family["digest"] = canonical_json_sha256(family)
+    split = {
+        "owner": "fixture-independent-evaluator",
+        "unit": "whole_episode",
+        "seed": "fixture",
+        "assignments": {
+            "fixture-train": "train",
+            "fixture-validation": "validation",
+            "fixture-held-out": "held_out",
+        },
+        "counts": {"train": 1, "validation": 1, "held_out": 1},
+    }
+    split["digest"] = canonical_json_sha256(split)
+    robot = {
+        "robot_id": "fixture-so101",
+        "follower_port": "/dev/fixture-so101",
+        "follower_calibration_sha256": "1" * 64,
+        "gateway_schema": "sim2claw.so101_physical_gateway.v2",
+    }
+    p9 = {
+        "schema_version": TIMING_ADMISSION_SCHEMA,
+        "status": "synthetic_fixture_admitted",
+        "proof_class": "synthetic_fixture",
+        "source_fit": {"sha256": "2" * 64},
+        "source_cohort": {"sha256": "3" * 64},
+        "source_config": {
+            "sha256": sha256_file(BASELINE),
+            "config_id": baseline["config_id"],
+        },
+        "identity": {"robot": robot, "workspace_pose_id": WORKSPACE_POSE_ID},
+        "candidate_family": family,
+        "selected_parameters": {
+            "command_latency_seconds": 0.04,
+            "actuator_gain_scale": 1.1,
+            "joint_damping_scale": 1.2,
+        },
+        "frozen_split": split,
+        "action_identity": {
+            "sha256_by_episode": {
+                "fixture-train": "5" * 64,
+                "fixture-validation": "6" * 64,
+                "fixture-held-out": "7" * 64,
+            },
+            "byte_identical": True,
+        },
+        "held_out_replay": {
+            "fit_or_selection_performed": False,
+            "improvement_gate": {"passed": True},
+        },
+        "evaluator_owned": True,
+        "self_scored": False,
+        "synthetic": True,
+        "evaluator_admission": False,
+        "parameters_promoted": False,
+        "physical_authority": False,
+    }
+    evaluator = {
+        "name": "fixture-registration-evaluator",
+        "version": "1",
+        "executable_sha256": "8" * 64,
+    }
+    assignment = "9" * 64
+    correspondences = "a" * 64
+    thresholds = {
+        "maximum_leave_one_out_board_rms_m": 0.0015,
+        "maximum_annotator_disagreement_m": 0.0015,
+        "maximum_leave_one_out_reprojection_rms_px": 2.0,
+    }
+    transform = {
+        "schema_version": TRANSFORM_SCHEMA,
+        "camera_id": "logitech-overhead",
+        "workspace_pose_id": WORKSPACE_POSE_ID,
+        "board_pose_id": "fixture-board",
+        "transform_4x4": np.eye(4).tolist(),
+        "transform_convention": {
+            "matrix_direction": "workcell_from_camera",
+            "camera_axes": "opencv_x_right_y_down_z_forward",
+            "workcell_axes": {"handedness": "right_handed"},
+            "composition": "workcell_from_board @ inverse(camera_from_board)",
+        },
+        "thresholds": thresholds,
+        "assignment_digest": assignment,
+        "input_hashes": {
+            "source_frame_sha256": "b" * 64,
+            "board_measurement_sha256": "c" * 64,
+            "survey_sha256": "d" * 64,
+            "camera_intrinsics_sha256": "e" * 64,
+            "lens_distortion_sha256": "f" * 64,
+            "correspondences_digest": correspondences,
+        },
+        "evaluator_identity": evaluator,
+        "evaluator_owned": True,
+        "self_scored": False,
+        "synthetic": True,
+        "physical_authority": False,
+    }
+    board = {
+        "schema_version": BOARD_FIT_SCHEMA,
+        "evaluation_method": "leave_one_out",
+        "board_rms_m": 0.0002,
+        "max_annotator_disagreement_m": 0.0003,
+        "leave_one_out_reprojection_rms_px": 0.4,
+        "point_ids": [f"point-{index}" for index in range(8)],
+        "assignment_digest": assignment,
+        "correspondences_digest": correspondences,
+        "uncertainty_propagated": True,
+        "evaluator_identity": evaluator,
+        "evaluator_owned": True,
+        "self_scored": False,
+        "synthetic": True,
+    }
+    start = [-0.2232741, 0.655613, -0.5256741, 0.7046496, 1.964844, 0.45]
+    identity = {
+        "robot": robot,
+        "camera_id": "logitech-overhead",
+        "workspace_pose_id": WORKSPACE_POSE_ID,
+        "board_pose_id": "fixture-board",
+    }
+    canary = {
+        "schema_version": CANARY_INPUT_SCHEMA,
+        "synthetic": True,
+        "identity": identity,
+        "initial_state": {
+            "joint_position": start,
+            "joint_velocity": [0.0] * 6,
+            "joint_position_source": "measured",
+            "joint_velocity_source": "measured",
+            "measurement_id": "fixture-anchor",
+            "measurement_sha256": "0" * 64,
+        },
+        "joint_limits": {
+            "minimum": [-3.0] * 5 + [0.0],
+            "maximum": [3.0] * 5 + [1.0],
+            "unit": "radian",
+            "source_id": "fixture-limits",
+            "source_sha256": "1" * 64,
+        },
+    }
+    paths = {}
+    for name, value in (
+        ("p9", p9),
+        ("transform", transform),
+        ("board", board),
+        ("canary", canary),
+    ):
+        path = tmp_path / f"{name}.json"
+        _write(path, value)
+        paths[name] = path
+    return {
+        "paths": paths,
+        "values": {"p9": p9, "transform": transform, "board": board, "canary": canary},
+        "baseline": BASELINE,
+    }
+
+
+def _compose(fixture: dict[str, object], output: Path) -> dict[str, object]:
+    paths = fixture["paths"]
+    return compose_twin_candidate_and_canary(
+        p9_admission_path=paths["p9"],
+        p13_transform_path=paths["transform"],
+        p13_board_fit_path=paths["board"],
+        baseline_config_path=fixture["baseline"],
+        canary_input_path=paths["canary"],
+        output_directory=output,
+        synthetic_fixture_mode=True,
+    )
+
+
+def test_valid_fixture_is_immutable_bounded_and_byte_identical(tmp_path: Path) -> None:
+    fixture = _fixture(tmp_path)
+    before = BASELINE.read_bytes()
+    result = _compose(fixture, tmp_path / "output")
+    assert BASELINE.read_bytes() == before
+    candidate = json.loads(Path(result["candidate_manifest_path"]).read_text())
+    assert [row["field"] for row in candidate["applied_parameters"]] == [
+        "command_latency_seconds",
+        "actuator_gain_scale",
+        "joint_damping_scale",
+    ]
+    assert candidate["unapplied_fields"][0]["field"] == "transform_4x4"
+    canary_path = Path(result["canary_bundle_path"])
+    canary = json.loads(canary_path.read_text())
+    actions = np.asarray(canary["applied_actions"], dtype=np.float64)
+    payload = base64.b64decode(canary["frozen_action_payload"]["base64"])
+    assert hashlib.sha256(payload).hexdigest() == action_sha256(actions)
+    assert canary["requested_actions"] == canary["applied_actions"]
+    assert actions[0].tolist() == actions[-1].tolist()
+    assert np.all(actions[:, 5] == actions[0, 5])
+    assert canary["safety"]["maximum_velocity_radians_s"] <= canary["safety"][
+        "velocity_bound_radians_s"
+    ]
+    assert canary["safety"]["maximum_acceleration_radians_s2"] <= canary["safety"][
+        "acceleration_bound_radians_s2"
+    ]
+    assert audit_exact_replay_manifest(canary_path)["exact_replay_eligible"] is True
+    assert result["physical_authority"] is False
+
+
+@pytest.mark.parametrize(
+    ("artifact", "mutation", "message"),
+    [
+        ("p9", lambda value: value.update(self_scored=True), "self-scored"),
+        (
+            "p9",
+            lambda value: value.update(synthetic=False),
+            "synthetic proof class",
+        ),
+        (
+            "p9",
+            lambda value: value["held_out_replay"]["improvement_gate"].update(passed=False),
+            "held-out replay gate failed",
+        ),
+        (
+            "p9",
+            lambda value: value["source_config"].update(sha256="0" * 64),
+            "source config hash or identity drifted",
+        ),
+        (
+            "transform",
+            lambda value: value.update(workspace_pose_id="wrong-workspace"),
+            "workspace identity drifted",
+        ),
+        (
+            "transform",
+            lambda value: value.update(assignment_digest="0" * 64),
+            "assignment lineage drifted",
+        ),
+    ],
+)
+def test_identity_hash_self_score_gate_and_order_fail_closed(
+    tmp_path: Path, artifact: str, mutation, message: str
+) -> None:
+    fixture = _fixture(tmp_path)
+    value = fixture["values"][artifact]
+    mutation(value)
+    _write(fixture["paths"][artifact], value)
+    with pytest.raises(TwinCandidateError, match=message):
+        _compose(fixture, tmp_path / "output")
+
+
+def test_real_mode_rejects_synthetic_inputs(tmp_path: Path) -> None:
+    fixture = _fixture(tmp_path)
+    paths = fixture["paths"]
+    with pytest.raises(TwinCandidateError, match="synthetic proof class"):
+        compose_twin_candidate_and_canary(
+            p9_admission_path=paths["p9"],
+            p13_transform_path=paths["transform"],
+            p13_board_fit_path=paths["board"],
+            baseline_config_path=fixture["baseline"],
+            canary_input_path=paths["canary"],
+            output_directory=tmp_path / "output",
+            synthetic_fixture_mode=False,
+        )
+
+
+def test_unsupported_runtime_field_fails_closed(tmp_path: Path) -> None:
+    fixture = _fixture(tmp_path)
+    baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
+    timing = [
+        stage
+        for stage in baseline["parameter_stages"]
+        if stage["name"] == "timing_control"
+    ][0]
+    timing["parameters"][0]["target"] = "camera_latency_seconds"
+    baseline_path = tmp_path / "unsupported-baseline.json"
+    _write(baseline_path, baseline)
+    fixture["baseline"] = baseline_path
+    p9 = fixture["values"]["p9"]
+    p9["candidate_family"]["parameters"] = copy.deepcopy(timing["parameters"])
+    family = p9["candidate_family"]
+    family["digest"] = canonical_json_sha256(
+        {key: value for key, value in family.items() if key != "digest"}
+    )
+    _write(fixture["paths"]["p9"], p9)
+    with pytest.raises(ReplayContractError, match="unsupported parameter target"):
+        _compose(fixture, tmp_path / "output")
+
+
+def test_family_ordering_drift_fails_even_with_recomputed_digest(tmp_path: Path) -> None:
+    fixture = _fixture(tmp_path)
+    p9 = fixture["values"]["p9"]
+    family = p9["candidate_family"]
+    family["parameters"].reverse()
+    family["digest"] = canonical_json_sha256(
+        {key: value for key, value in family.items() if key != "digest"}
+    )
+    _write(fixture["paths"]["p9"], p9)
+    with pytest.raises(TwinCandidateError, match="ordering drifted from baseline"):
+        _compose(fixture, tmp_path / "output")
+
+
+def test_preexisting_output_is_never_overwritten(tmp_path: Path) -> None:
+    fixture = _fixture(tmp_path)
+    output = tmp_path / "output"
+    output.mkdir()
+    (output / "candidate_manifest.json").write_text("occupied", encoding="utf-8")
+    with pytest.raises(TwinCandidateError, match="refusing to overwrite"):
+        _compose(fixture, output)

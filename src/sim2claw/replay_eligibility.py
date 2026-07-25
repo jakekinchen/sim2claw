@@ -532,6 +532,8 @@ def materialize_physical_recording_exact_replay(
             },
         },
     }
+    if receipt.get("evidence_identity") is not None:
+        manifest["evidence_identity"] = receipt["evidence_identity"]
     _atomic_write_json(manifest_output, manifest)
     report = audit_and_write_exact_replay_manifest(manifest_output, report_output)
     report["source_recording"] = {

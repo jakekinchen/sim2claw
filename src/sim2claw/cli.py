@@ -713,6 +713,26 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("auto", "official", "local"),
         default="auto",
     )
+    timing_admission = subparsers.add_parser(
+        "sysid-admit-physical-timing",
+        help="independently replay one frozen P9 candidate with CPU/fp32 metrics",
+    )
+    timing_admission.add_argument("--fit", type=Path, required=True)
+    timing_admission.add_argument("--cohort", type=Path, required=True)
+    timing_admission.add_argument("--config", type=Path, default=DEFAULT_SYSID_CONFIG)
+    timing_admission.add_argument("--output", type=Path, required=True)
+    timing_admission.add_argument("--synthetic-fixture", action="store_true")
+    twin_candidate = subparsers.add_parser(
+        "twin-candidate-canary",
+        help="compose one admitted geometry/timing candidate and exact canary",
+    )
+    twin_candidate.add_argument("--p9-admission", type=Path, required=True)
+    twin_candidate.add_argument("--p13-transform", type=Path, required=True)
+    twin_candidate.add_argument("--p13-board-fit", type=Path, required=True)
+    twin_candidate.add_argument("--baseline", type=Path, default=DEFAULT_SYSID_CONFIG)
+    twin_candidate.add_argument("--canary-input", type=Path, required=True)
+    twin_candidate.add_argument("--output", type=Path, required=True)
+    twin_candidate.add_argument("--synthetic-fixture", action="store_true")
 
     actuator_external = subparsers.add_parser(
         "actuator-external-validate",
@@ -1923,6 +1943,45 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["status"] == "diagnostic_fit_complete" else 1
+    if args.command == "sysid-admit-physical-timing":
+        from .recorded_replay import ReplayContractError
+        from .system_identification import SystemIdentificationError
+        from .timing_admission import admit_physical_timing_actuation_fit
+
+        try:
+            report = admit_physical_timing_actuation_fit(
+                args.fit,
+                args.cohort,
+                config_path=args.config,
+                output_path=args.output,
+                synthetic_fixture_mode=args.synthetic_fixture,
+            )
+        except (OSError, ValueError, ReplayContractError, SystemIdentificationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "twin-candidate-canary":
+        from .twin_candidate import (
+            TwinCandidateError,
+            compose_twin_candidate_and_canary,
+        )
+
+        try:
+            report = compose_twin_candidate_and_canary(
+                p9_admission_path=args.p9_admission,
+                p13_transform_path=args.p13_transform,
+                p13_board_fit_path=args.p13_board_fit,
+                baseline_config_path=args.baseline,
+                canary_input_path=args.canary_input,
+                output_directory=args.output,
+                synthetic_fixture_mode=args.synthetic_fixture,
+            )
+        except (OSError, ValueError, TwinCandidateError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     if args.command == "actuator-external-validate":
         from .actuator_external_validation import (
             ActuatorExternalValidationError,

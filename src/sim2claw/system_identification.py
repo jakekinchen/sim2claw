@@ -53,6 +53,7 @@ FIT_RECEIPT_SCHEMA = "sim2claw.sysid_fit_receipt.v1"
 INPUT_CAPABILITY_SCHEMA = "sim2claw.sysid_input_capability.v1"
 TIMING_COHORT_SCHEMA = "sim2claw.physical_timing_actuation_cohort.v1"
 TIMING_RESULT_SCHEMA = "sim2claw.physical_timing_actuation_fit.v1"
+TIMING_ADMISSION_SCHEMA = "sim2claw.physical_timing_actuation_admission.v1"
 
 OFFICIAL_REQUIRED_EXPORTS = (
     "Parameter",
@@ -248,6 +249,42 @@ def exercise_official_sysid() -> dict[str, Any]:
 def _is_sha256(value: Any) -> bool:
     text = str(value or "")
     return len(text) == 64 and all(character in "0123456789abcdef" for character in text)
+
+
+def _validated_timing_evidence_identity(value: Any) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        raise SystemIdentificationError("timing evidence identity must be an object")
+    if set(value) != {"robot", "workspace_pose_id"}:
+        raise SystemIdentificationError(
+            "timing evidence identity must bind robot and workspace_pose_id"
+        )
+    robot = value.get("robot")
+    if not isinstance(robot, Mapping) or set(robot) != {
+        "robot_id",
+        "follower_port",
+        "follower_calibration_sha256",
+        "gateway_schema",
+    }:
+        raise SystemIdentificationError("timing robot identity fields changed")
+    if any(
+        not str(robot.get(field) or "").strip()
+        for field in ("robot_id", "follower_port", "gateway_schema")
+    ) or not _is_sha256(robot.get("follower_calibration_sha256")):
+        raise SystemIdentificationError("timing robot identity is incomplete")
+    if not str(value.get("workspace_pose_id") or "").strip():
+        raise SystemIdentificationError("timing workspace identity is missing")
+    return copy.deepcopy(dict(value))
+
+
+def _timing_evaluator_identity() -> dict[str, Any]:
+    evaluator = Path(__file__).resolve()
+    return {
+        "name": "sim2claw-physical-timing-actuation-sysid",
+        "version": "1",
+        "executable_path": _portable_repo_path(evaluator),
+        "executable_sha256": sha256_file(evaluator),
+        "runtime": "cpu_mujoco_fp64_diagnostic_fit",
+    }
 
 
 def _square_column(value: Any) -> str | None:
@@ -2585,11 +2622,22 @@ def fit_timing_actuation_cohort(
     backend: str = "auto",
     verification_bindings: Sequence[Mapping[str, Any]] | None = None,
     model_base_directory: Path | None = None,
+    evidence_identity: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Fit only the existing timing/control stage with sealed episode groups."""
 
     output_directory = output_directory.resolve()
     output_directory.mkdir(parents=True, exist_ok=True)
+    identity = (
+        _validated_timing_evidence_identity(evidence_identity)
+        if evidence_identity is not None
+        else None
+    )
+    synthetic = any(
+        episode.proof_class_category in {"fixture", "synthetic"}
+        for episode in episodes
+    )
+    evaluator_identity = _timing_evaluator_identity()
     identities = {
         episode.episode_id: float64_tensor_sha256(episode.commands)
         for episode in episodes
@@ -2601,8 +2649,14 @@ def fit_timing_actuation_cohort(
         result = {
             "schema_version": TIMING_RESULT_SCHEMA,
             "status": "rejected_low_excitation",
+            "proof_class": "synthetic_fixture" if synthetic else "replay",
             "excitation": excitation,
             "action_identity": identities,
+            "identity": identity,
+            "fit_owner": evaluator_identity,
+            "evaluator_owned": False,
+            "self_scored": True,
+            "synthetic": synthetic,
             "parameters_promoted": False,
             "evaluator_admission": False,
             "physical_authority": False,
@@ -2718,7 +2772,12 @@ def fit_timing_actuation_cohort(
     result = {
         "schema_version": TIMING_RESULT_SCHEMA,
         "status": "diagnostic_fit_complete",
-        "proof_class": "replay",
+        "proof_class": "synthetic_fixture" if synthetic else "replay",
+        "identity": identity,
+        "fit_owner": evaluator_identity,
+        "evaluator_owned": False,
+        "self_scored": True,
+        "synthetic": synthetic,
         "excitation": excitation,
         "frozen_split": split,
         "candidate_family": family,
@@ -2799,6 +2858,7 @@ def _load_verified_physical_episode(
     config: Mapping[str, Any],
     config_path: Path,
     verification_directory: Path,
+    expected_identity: Mapping[str, Any] | None = None,
 ) -> tuple[RecordedEpisode, dict[str, Any]]:
     replay_receipt = replay_exact_eligible_physical_recording(
         recording_directory,
@@ -2808,10 +2868,34 @@ def _load_verified_physical_episode(
     )
     receipt_path = recording_directory / "recording_receipt.json"
     samples_path = recording_directory / "samples.jsonl"
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
     receipt_sha256 = sha256_file(receipt_path)
     samples_sha256 = sha256_file(samples_path)
     manifest_sha256 = sha256_file(manifest_path)
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if expected_identity is not None:
+        identity = _validated_timing_evidence_identity(expected_identity)
+        if manifest.get("evidence_identity") != identity:
+            raise ReplayContractError(
+                "exact replay manifest robot/workspace identity is missing or drifted"
+            )
+        if receipt.get("evidence_identity") != identity:
+            raise ReplayContractError(
+                "recording receipt robot/workspace identity is missing or drifted"
+            )
+        backend_identity = receipt.get("backend")
+        robot = identity["robot"]
+        if not isinstance(backend_identity, Mapping) or any(
+            backend_identity.get(source) != robot[target]
+            for source, target in (
+                ("schema_version", "gateway_schema"),
+                ("follower_port", "follower_port"),
+                ("follower_calibration_sha256", "follower_calibration_sha256"),
+            )
+        ):
+            raise ReplayContractError(
+                "recording receipt robot identity does not match the sealed cohort"
+            )
     samples = [
         json.loads(line)
         for line in samples_path.read_text(encoding="utf-8").splitlines()
@@ -2906,6 +2990,7 @@ def run_physical_timing_actuation_cohort(
         raise SystemIdentificationError("cohort episodes must be a non-empty list")
     config_path = config_path.resolve()
     config = load_sysid_config(config_path)
+    identity = _validated_timing_evidence_identity(cohort.get("identity"))
     episodes: list[RecordedEpisode] = []
     bindings: list[dict[str, Any]] = []
     base = cohort_path.parent
@@ -2928,6 +3013,7 @@ def run_physical_timing_actuation_cohort(
             verification_directory=output_directory.resolve()
             / "exact_replay_verification"
             / f"episode-{index:02d}",
+            expected_identity=identity,
         )
         binding["recording"] = recording_value
         binding["exact_replay_manifest"] = manifest_value
@@ -2940,4 +3026,5 @@ def run_physical_timing_actuation_cohort(
         backend=backend,
         verification_bindings=bindings,
         model_base_directory=config_path.parent,
+        evidence_identity=identity,
     )

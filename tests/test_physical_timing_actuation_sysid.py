@@ -27,6 +27,15 @@ from sim2claw.replay_eligibility import (
 
 
 CONFIG_PATH = REPO_ROOT / "configs/sysid/recorded_action_sysid_v1.json"
+TIMING_IDENTITY = {
+    "robot": {
+        "robot_id": "fixture-so101-follower",
+        "follower_port": "/dev/fixture-follower",
+        "follower_calibration_sha256": "9" * 64,
+        "gateway_schema": "sim2claw.so101_physical_gateway.v2",
+    },
+    "workspace_pose_id": "fixture-workspace",
+}
 
 
 def _base_episode(
@@ -127,6 +136,10 @@ def test_known_command_latency_recovery_is_grouped_and_action_frozen(
     )
 
     assert result["status"] == "diagnostic_fit_complete"
+    assert result["evaluator_owned"] is False
+    assert result["self_scored"] is True
+    assert result["evaluator_admission"] is False
+    assert result["parameters_promoted"] is False
     assert result["candidate_selection"]["selected_parameters"][
         "command_latency_seconds"
     ] == pytest.approx(0.05, abs=0.006)
@@ -216,6 +229,7 @@ def test_physical_cohort_reuses_p5_fail_closed_verification(
 ) -> None:
     cohort = {
         "schema_version": sysid.TIMING_COHORT_SCHEMA,
+        "identity": TIMING_IDENTITY,
         "episodes": [
             {
                 "recording": "recording",
@@ -332,14 +346,31 @@ def test_source_hash_drift_after_p5_verification_fails_closed(
 ) -> None:
     recording = tmp_path / "recording"
     recording.mkdir()
-    (recording / "recording_receipt.json").write_text("{}", encoding="utf-8")
+    (recording / "recording_receipt.json").write_text(
+        json.dumps(
+            {
+                "evidence_identity": TIMING_IDENTITY,
+                "backend": {
+                    "schema_version": TIMING_IDENTITY["robot"]["gateway_schema"],
+                    "follower_port": TIMING_IDENTITY["robot"]["follower_port"],
+                    "follower_calibration_sha256": TIMING_IDENTITY["robot"][
+                        "follower_calibration_sha256"
+                    ],
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
     samples = recording / "samples.jsonl"
     samples.write_text("{}\n", encoding="utf-8")
     manifest = tmp_path / "manifest.json"
-    manifest.write_text("{}", encoding="utf-8")
+    manifest.write_text(
+        json.dumps({"evidence_identity": TIMING_IDENTITY}), encoding="utf-8"
+    )
     original_samples_sha256 = sha256_file(samples)
     cohort = {
         "schema_version": sysid.TIMING_COHORT_SCHEMA,
+        "identity": TIMING_IDENTITY,
         "episodes": [
             {
                 "recording": "recording",
