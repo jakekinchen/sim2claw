@@ -92,6 +92,23 @@ float64 action hashes, requested/applied identity, and the absence of clipping,
 IK, offsets, suffixes, or assistance. It does not execute a replay or admit any
 physical episode; the canonical physical set remains 0/18.
 
+Materialize that same audit contract from one finalized physical recorder
+directory, without opening a camera or robot:
+
+```bash
+uv run sim2claw physical-recording-replay-eligibility \
+  --recording runs/teleop_recordings/<recording-id> \
+  --manifest-output runs/exact_replay_eligibility/<recording-id>-manifest.json \
+  --report-output runs/exact_replay_eligibility/<recording-id>-report.json
+```
+
+The v1 `applied_actions` compatibility field means the recorded
+`follower_command_degrees` converted to float64 radians: a command sent by the
+gateway, never actuator application or acknowledgement. The adapter preserves
+the finalized receipt and `samples.jsonl` hashes and rejects altered lineage,
+requested/sent divergence, rate limiting, clamping, assistance, intervention,
+nonmonotonic timestamps, or missing first-sample measured state.
+
 Dry-run the fixed 12-fit / 3-validation / 3-held-out C922 calibration
 acquisition plan:
 

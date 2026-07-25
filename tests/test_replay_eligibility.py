@@ -81,6 +81,16 @@ def test_synthetic_exact_replay_manifest_is_eligible(tmp_path: Path) -> None:
             ),
             "requested_action_hash_mismatch",
         ),
+        (
+            lambda payload: payload.__setitem__(
+                "action_semantics",
+                {
+                    "applied_field_compatibility_meaning": "actuator_applied",
+                    "actuator_applied_or_acknowledged": True,
+                },
+            ),
+            "action_semantics_invalid",
+        ),
     ),
 )
 def test_exact_replay_manifest_fails_closed(

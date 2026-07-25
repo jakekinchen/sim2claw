@@ -554,6 +554,19 @@ def build_parser() -> argparse.ArgumentParser:
     )
     replay_eligibility.add_argument("--manifest", type=Path, required=True)
     replay_eligibility.add_argument("--output", type=Path, required=True)
+    physical_replay_eligibility = subparsers.add_parser(
+        "physical-recording-replay-eligibility",
+        help="materialize and audit exact-replay identity from a finalized recording",
+    )
+    physical_replay_eligibility.add_argument(
+        "--recording", type=Path, required=True
+    )
+    physical_replay_eligibility.add_argument(
+        "--manifest-output", type=Path, required=True
+    )
+    physical_replay_eligibility.add_argument(
+        "--report-output", type=Path, required=True
+    )
     c922_acquisition = subparsers.add_parser(
         "c922-calibration-acquisition-preflight",
         help="dry-run the frozen 18-view C922 calibration acquisition plan",
@@ -1567,6 +1580,22 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.manifest,
             args.output,
         )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["exact_replay_eligible"] else 1
+    if args.command == "physical-recording-replay-eligibility":
+        from .replay_eligibility import (
+            materialize_physical_recording_exact_replay,
+        )
+
+        try:
+            report = materialize_physical_recording_exact_replay(
+                args.recording,
+                args.manifest_output,
+                args.report_output,
+            )
+        except ValueError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["exact_replay_eligible"] else 1
     if args.command == "c922-calibration-acquisition-preflight":

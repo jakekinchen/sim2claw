@@ -22,6 +22,12 @@ dual-camera recorder is verified only for stationary camera capture. Inspect
 Robots is an optional synthetic replay harness and grants neither evaluator
 admission nor physical authority.
 
+Future finalized physical recorder outputs can now be converted directly into
+the existing exact-replay v1 audit. Its legacy `applied` field is explicitly a
+gateway-sent command, not actuator acknowledgement. This operationalizes the
+gate but does not reclassify the existing 18 episodes or open physical,
+evaluator, timing-identification, or task authority.
+
 Until the relevant earlier gate opens, defer broad SAIL work, paid GR00T,
 large ACT data generation, isolated-host camera infrastructure, new evaluator
 families, and additional simulator-only contact sweeps. None is a substitute

@@ -9,6 +9,7 @@ from typing import Any, Mapping
 import numpy as np
 
 from .scene import ROBOT_JOINTS
+from .source_episode import RECEIPT_SCHEMA as RECORDING_RECEIPT_SCHEMA
 
 
 MANIFEST_SCHEMA = "sim2claw.exact_replay_eligibility_manifest.v1"
@@ -26,6 +27,7 @@ MODIFICATION_FIELDS = (
     "corrective_suffix",
     "assistance",
 )
+PHYSICAL_SAMPLE_SCHEMA = "sim2claw.physical_teleoperation_sample.v1"
 
 
 def _sha256_file(path: Path) -> str:
@@ -262,6 +264,21 @@ def audit_exact_replay_manifest(path: Path) -> dict[str, Any]:
             "requested_applied_mismatch",
             "exact replay requires distinct requested/applied records to agree exactly",
         )
+    action_semantics = payload.get("action_semantics")
+    action_semantics_ok = bool(
+        action_semantics is None
+        or (
+            isinstance(action_semantics, Mapping)
+            and action_semantics.get("applied_field_compatibility_meaning")
+            == "gateway_sent_command"
+            and action_semantics.get("actuator_applied_or_acknowledged") is False
+        )
+    )
+    if not action_semantics_ok:
+        reject(
+            "action_semantics_invalid",
+            "optional v1 action semantics must identify gateway-sent, non-acknowledged commands",
+        )
 
     modifications = payload.get("modifications")
     modifications_absent = bool(
@@ -287,6 +304,7 @@ def audit_exact_replay_manifest(path: Path) -> dict[str, Any]:
         "requested_action_hash_valid": requested_hash_ok,
         "applied_action_hash_valid": applied_hash_ok,
         "requested_applied_exact": requested_applied_exact,
+        "action_semantics_non_overclaiming": action_semantics_ok,
         "action_modifications_absent": modifications_absent,
     }
     eligible = not reasons
@@ -305,6 +323,7 @@ def audit_exact_replay_manifest(path: Path) -> dict[str, Any]:
         "action_hash_encoding": ACTION_HASH_ENCODING,
         "requested_action_sha256": requested_hash,
         "applied_action_sha256": applied_hash,
+        "action_semantics": action_semantics,
         "checks": checks,
         "rejection_reasons": reasons,
         "claim_limits": {
@@ -314,6 +333,220 @@ def audit_exact_replay_manifest(path: Path) -> dict[str, Any]:
             "task_success": False,
         },
     }
+
+
+def _read_json_object(path: Path, label: str) -> tuple[dict[str, Any], str]:
+    try:
+        raw = path.read_bytes()
+        payload = json.loads(raw)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ValueError(f"{label} is unreadable: {error}") from error
+    if not isinstance(payload, dict):
+        raise ValueError(f"{label} must be a JSON object")
+    return payload, hashlib.sha256(raw).hexdigest()
+
+
+def _read_physical_samples(path: Path) -> tuple[list[dict[str, Any]], str]:
+    try:
+        raw = path.read_bytes()
+        lines = raw.decode("utf-8").splitlines()
+    except (OSError, UnicodeDecodeError) as error:
+        raise ValueError(f"samples are unreadable: {error}") from error
+    if not lines:
+        raise ValueError("samples.jsonl must contain at least one sample")
+    rows: list[dict[str, Any]] = []
+    for index, line in enumerate(lines):
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError as error:
+            raise ValueError(f"sample {index} is invalid JSON: {error}") from error
+        if not isinstance(row, dict):
+            raise ValueError(f"sample {index} must be a JSON object")
+        rows.append(row)
+    return rows, hashlib.sha256(raw).hexdigest()
+
+
+def materialize_physical_recording_exact_replay(
+    recording_directory: Path,
+    manifest_output: Path,
+    report_output: Path,
+) -> dict[str, Any]:
+    """Convert a finalized physical recording into the existing v1 audit contract.
+
+    The legacy ``applied_actions`` field is populated with commands sent to the
+    gateway. It never means actuator-applied or actuator-acknowledged positions.
+    """
+
+    recording_directory = recording_directory.resolve()
+    receipt_path = recording_directory / "recording_receipt.json"
+    receipt, receipt_sha256 = _read_json_object(receipt_path, "recording receipt")
+    if receipt.get("schema_version") != RECORDING_RECEIPT_SCHEMA:
+        raise ValueError("recording receipt schema is not finalized-recorder v1")
+    if receipt.get("mode") != "physical_follower":
+        raise ValueError("recording receipt mode must be physical_follower")
+    if receipt.get("source_sample_schema") != PHYSICAL_SAMPLE_SCHEMA:
+        raise ValueError("recording receipt has the wrong physical sample schema")
+    samples_relative = receipt.get("samples_path")
+    if samples_relative != "samples.jsonl":
+        raise ValueError("recording receipt samples_path must be samples.jsonl")
+    samples_path = recording_directory / samples_relative
+    rows, samples_sha256 = _read_physical_samples(samples_path)
+    if receipt.get("samples_sha256") != samples_sha256:
+        raise ValueError("recording receipt samples hash does not match samples.jsonl")
+    if receipt.get("sample_count") != len(rows):
+        raise ValueError("recording receipt sample_count does not match samples.jsonl")
+    episode_id = str(receipt.get("recording_id") or "").strip()
+    if not episode_id:
+        raise ValueError("recording receipt recording_id is required")
+    if receipt.get("proof_class") != "physical_teleoperation_source_unqualified":
+        raise ValueError("recording receipt proof class is not physical unqualified")
+    source_identity = receipt.get("source_identity")
+    backend = receipt.get("backend")
+    if (
+        not isinstance(source_identity, Mapping)
+        or source_identity.get("kind") != "leader_teleoperation"
+        or source_identity.get("proof_class")
+        != "physical_teleoperation_source_unqualified"
+        or not isinstance(backend, Mapping)
+        or backend.get("schema_version") != "sim2claw.so101_physical_gateway.v2"
+    ):
+        raise ValueError("recording receipt is not from the direct physical gateway")
+    if receipt.get("assistance_frames") != 0 or receipt.get("intervention_frames") != 0:
+        raise ValueError("recording receipt records assistance or intervention")
+    lineage = receipt.get("lineage")
+    if (
+        not isinstance(lineage, Mapping)
+        or lineage.get("collection_kind") != "original_source_episode"
+        or lineage.get("corrective_suffix_parent_state_sha256") is not None
+    ):
+        raise ValueError("recording receipt lineage is modified or incomplete")
+
+    timestamps: list[float] = []
+    requested_degrees: list[list[float]] = []
+    sent_degrees: list[list[float]] = []
+    for index, row in enumerate(rows):
+        if row.get("schema_version") != PHYSICAL_SAMPLE_SCHEMA:
+            raise ValueError(f"sample {index} has the wrong physical sample schema")
+        if row.get("episode_id") != episode_id or row.get("sample_index") != index:
+            raise ValueError(f"sample {index} identity/index does not match the receipt")
+        if bool(row.get("assistance")) or bool(row.get("intervention")):
+            raise ValueError(f"sample {index} records assistance or intervention")
+        if bool(row.get("rate_limited")) or bool(row.get("safety_clamped")):
+            raise ValueError(f"sample {index} records rate limiting or safety clamping")
+        for field in (
+            "clipping",
+            "inverse_kinematics",
+            "joint_offset",
+            "corrective_suffix",
+            "offset",
+            "suffix",
+        ):
+            if field in row and bool(row[field]):
+                raise ValueError(f"sample {index} records action modification {field}")
+        try:
+            timestamp = float(row["timestamp_monotonic_seconds"])
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError(f"sample {index} has an invalid monotonic timestamp") from error
+        if not math.isfinite(timestamp):
+            raise ValueError(f"sample {index} has an invalid monotonic timestamp")
+        timestamps.append(timestamp)
+        for field, target in (
+            ("follower_requested_degrees", requested_degrees),
+            ("follower_command_degrees", sent_degrees),
+        ):
+            vector = _finite_vector(row.get(field))
+            if vector is None:
+                raise ValueError(f"sample {index} has invalid {field}")
+            target.append(vector.tolist())
+
+    timestamps_array = np.asarray(timestamps, dtype=np.float64)
+    if timestamps_array.size > 1 and not np.all(np.diff(timestamps_array) > 0):
+        raise ValueError("recorded monotonic timestamps are not strictly increasing")
+    requested = np.deg2rad(np.asarray(requested_degrees, dtype=np.float64))
+    sent = np.deg2rad(np.asarray(sent_degrees, dtype=np.float64))
+    first_position = _finite_vector(rows[0].get("follower_actual_position_degrees"))
+    first_velocity = _finite_vector(rows[0].get("follower_actual_velocity_degrees_s"))
+    if first_position is None:
+        raise ValueError("first sample has no valid measured follower position")
+    if first_velocity is None:
+        raise ValueError("first sample has no valid measured follower velocity")
+
+    manifest = {
+        "schema_version": MANIFEST_SCHEMA,
+        "episode_id": episode_id,
+        "proof_class": "physical_teleoperation_source_unqualified",
+        "evaluator_admission": False,
+        "physical_authority": False,
+        "joint_order": list(ROBOT_JOINTS),
+        "units": EXPECTED_UNITS,
+        "joint_transform": {
+            "source_joint_order": list(ROBOT_JOINTS),
+            "target_joint_order": list(ROBOT_JOINTS),
+            "sign": [1.0] * len(ROBOT_JOINTS),
+            "scale": [1.0] * len(ROBOT_JOINTS),
+            "zero_offset": [0.0] * len(ROBOT_JOINTS),
+        },
+        "initial_state": {
+            "joint_position": np.deg2rad(first_position).tolist(),
+            "joint_velocity": np.deg2rad(first_velocity).tolist(),
+            "joint_position_source": "measured",
+            "joint_velocity_source": "measured",
+            "measurement_id": f"{episode_id}:samples.jsonl:0",
+        },
+        "timestamps_seconds": timestamps,
+        "requested_actions": requested.tolist(),
+        "applied_actions": sent.tolist(),
+        "action_dtype": "float64",
+        "requested_action_sha256": action_sha256(requested),
+        "applied_action_sha256": action_sha256(sent),
+        "action_semantics": {
+            "requested_actions_source": "samples.jsonl#follower_requested_degrees",
+            "applied_actions_source": "samples.jsonl#follower_command_degrees",
+            "applied_field_compatibility_meaning": "gateway_sent_command",
+            "actuator_applied_or_acknowledged": False,
+        },
+        "modifications": {field: False for field in MODIFICATION_FIELDS},
+        "conversion_provenance": {
+            "adapter": "sim2claw.replay_eligibility.materialize_physical_recording_exact_replay",
+            "conversion": "degrees_to_radians_float64",
+            "timestamp_source": "samples.jsonl#timestamp_monotonic_seconds",
+            "timestamp_repaired_or_reordered": False,
+            "initial_position_source": "samples.jsonl:0#follower_actual_position_degrees",
+            "initial_velocity_source": "samples.jsonl:0#follower_actual_velocity_degrees_s",
+            "recording_receipt_path": "recording_receipt.json",
+            "recording_receipt_sha256": receipt_sha256,
+            "samples_path": "samples.jsonl",
+            "samples_sha256": samples_sha256,
+            "modification_checks": {
+                "receipt_gateway_schema": "sim2claw.so101_physical_gateway.v2",
+                "receipt_assistance_frames": "must_equal_zero",
+                "receipt_intervention_frames": "must_equal_zero",
+                "receipt_collection_kind": "must_equal_original_source_episode",
+                "receipt_corrective_suffix_parent": "must_be_null",
+                "sample_assistance": "must_be_false_for_every_sample",
+                "sample_intervention": "must_be_false_for_every_sample",
+                "sample_rate_limited": "must_be_false_for_every_sample",
+                "sample_safety_clamped": "must_be_false_for_every_sample",
+                "requested_sent_identity": "audited_after_float64_radian_conversion",
+                "ik_offsets_suffixes": "not_present_in_direct_physical_gateway_sample_contract",
+            },
+        },
+    }
+    _atomic_write_json(manifest_output, manifest)
+    report = audit_and_write_exact_replay_manifest(manifest_output, report_output)
+    report["source_recording"] = {
+        "recording_receipt_sha256": receipt_sha256,
+        "samples_sha256": samples_sha256,
+    }
+    report["claim_limits"].update(
+        {
+            "gateway_sent_is_actuator_ack": False,
+            "device_clock_synchronized": False,
+            "timing_identified": False,
+        }
+    )
+    _atomic_write_json(report_output, report)
+    return report
 
 
 def audit_and_write_exact_replay_manifest(

@@ -1,6 +1,6 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T22:14:43-05:00",
+  "updated_at": "2026-07-24T22:23:01-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
   "current_milestone": "NATIVE_DUAL_CAMERA_PRODUCTION_RECORDER_VERIFIED_STATIONARY_GEOMETRY_INPUTS_REQUIRE_HUMAN",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
@@ -3757,9 +3757,14 @@
     "main_harness_recommendation": "no_go_keep_optional_until_alpha_api_and_step_provenance_boundary_stabilize"
   },
   "exact_replay_eligibility_audit": {
-    "status": "offline_audit_verified_physical_catalog_unchanged",
+    "status": "physical_recorder_adapter_verified_catalog_unchanged",
     "implementation": "src/sim2claw/replay_eligibility.py",
     "command": "sim2claw replay-eligibility-audit",
+    "physical_recording_command": "sim2claw physical-recording-replay-eligibility",
+    "physical_recording_input": "finalized recording_receipt.json plus samples.jsonl",
+    "legacy_applied_action_semantics": "gateway_sent_command_not_actuator_applied_or_acknowledged",
+    "source_hash_and_degree_to_float64_radian_provenance_preserved": true,
+    "camera_or_robot_access": false,
     "large_foundation_branch_audited_read_only": "codex/recorded-replay-sysid-foundation",
     "large_foundation_branch_cherry_picked": false,
     "synthetic_fixture": "configs/replay/exact_replay_synthetic_fixture.json",
@@ -3859,7 +3864,8 @@
       "P0_clean_integration_branch",
       "P1_ordered_execution_queue",
       "P2_exact_replay_eligibility_foundation",
-      "P3_c922_acquisition_preflight"
+      "P3_c922_acquisition_preflight",
+      "P4_physical_recorder_exact_replay_adapter"
     ],
     "next_gate": "owner_physical_inputs_for_metric_acquisition"
   },
