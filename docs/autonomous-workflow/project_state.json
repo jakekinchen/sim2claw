@@ -1,6 +1,6 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T20:41:03-05:00",
+  "updated_at": "2026-07-24T21:17:17-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
   "current_milestone": "NATIVE_DUAL_CAMERA_PRODUCTION_RECORDER_VERIFIED_STATIONARY_GEOMETRY_INPUTS_REQUIRE_HUMAN",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
@@ -3723,6 +3723,36 @@
       "paid_compute": false,
       "push": false
     }
+  },
+  "inspect_robots_offline_integration": {
+    "status": "optional_offline_vertical_slice_verified",
+    "implementation_commit": "0ade935f750c8a59b6d48ebcf05b446fc9d24823",
+    "dependency": {
+      "package": "inspect-robots",
+      "version": "0.22.0",
+      "upstream_commit": "8bdc2a42b74dd5aa1c073bfa9dfa2a11605db75f",
+      "sdist_sha256": "f6563e46ff7eaf497a1f4b96697de36a673c4b0a449df53e6be35abbde9be332",
+      "optional": true
+    },
+    "run_log": "docs/run-logs/2026-07-24-inspect-robots-offline-integration.md",
+    "generated_eval_log": "runs/inspect_robots_offline/20260724-final/sim2claw-offline-replay_47a4d039.json",
+    "generated_eval_log_sha256": "5810921887a848c3d2cbfb0a208dd329ec6b3dd4533a0cfda56ab517dbb8302f",
+    "eval_log_schema_version": 1,
+    "transition_count": 3,
+    "two_camera_references_preserved": true,
+    "joint_state_preserved": true,
+    "requested_applied_action_identity_preserved": true,
+    "gateway_schema": "sim2claw.so101_physical_gateway.v2",
+    "gateway_invoked": false,
+    "proof_class": "synthetic_deterministic_replay_compatibility",
+    "evaluator_admission": false,
+    "physical_authority": false,
+    "task_success_claimed": false,
+    "twin_fidelity_changed": false,
+    "strict_task_score_changed": false,
+    "focused_tests_passed": 58,
+    "focused_subtests_passed": 2,
+    "main_harness_recommendation": "no_go_keep_optional_until_alpha_api_and_step_provenance_boundary_stabilize"
   },
   "physical_authority": false
 }
