@@ -1,0 +1,62 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c922_rank_preflight_p2_to_p3_20260725_v1",
+  "capture_during_motion": false,
+  "setup_maximum_slew_degrees_s": 1.5,
+  "setup_elbow_tracking_error_limit_degrees": 6.0,
+  "setup_target_hold_seconds": 2.0,
+  "stationary_capture_seconds": 0.0,
+  "reviewed_anchor_degrees": [
+    39.2967032967033,
+    -65.14285714285714,
+    62.81318681318681,
+    64.83516483516483,
+    -74.32967032967034,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [
+      19.34065934065934,
+      -66.63736263736264,
+      85.05494505494505,
+      7.164835164835165,
+      -74.41758241758242,
+      3.0878859857482186
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "future_c922_calibration_setup_only",
+    "sequence_index": 5,
+    "target_source": "configs/evaluations/c922_ordered_face_pitch_zero_v1.json P3_v25_reached held_out",
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "candidate_digest": "2da7425cbf0fd10e27822a415890ca180dde7a4f1b042bf3ed49030bcad018af"
+    },
+    "simulation_runtime": "cpu_mujoco_mj_forward",
+    "simulation_result": {
+      "maximum_joint_excursion_degrees": 57.670329670329664,
+      "movement_duration_seconds": 38.45,
+      "movement_sample_count": 1539,
+      "movement_action_sha256": "557238a1cd8e09b5fed3b19def86fc2f952125bc8fa0137d7979d2d48ec94826",
+      "terminal_hold_duration_seconds": 2.0,
+      "terminal_hold_sample_count": 80,
+      "terminal_hold_action_sha256": "4a678d087bcfad18b10aa6ca9d2f9c4f4a9143129e83bdecbbbe5b9823efe347",
+      "exact_preview_sample_count": 1619,
+      "exact_preview_action_sha256": "ba0a793bee3c36c1dc26cbde51d489e37df50f742483b6159353384145c27444",
+      "baseline_contact_pairs": [],
+      "baseline_minimum_distance_m": null,
+      "external_contact_pairs": [],
+      "final_contact_pairs": [],
+      "no_new_or_worsened_kinematic_contact": true
+    },
+    "authority": {
+      "capture": false,
+      "motion": false,
+      "fit": false,
+      "policy": false,
+      "task_success": false,
+      "physical_transfer": false
+    }
+  }
+}
