@@ -1,0 +1,42 @@
+{
+  "schema_version": "sim2claw.d405_stationary_rgbd_capture_contract.v1",
+  "proof_class": "physical_stationary_rgbd_capture_only",
+  "capture_database_name": "d405-stationary.db3",
+  "expected_device": {
+    "name": "RealSense D405",
+    "sdk_serial_number": "130322273474",
+    "asic_serial_number": "133323070214",
+    "firmware_update_id": "133323070214",
+    "usb_product_id_hex": "0B5B",
+    "physical_port": "0-2-1"
+  },
+  "expected_streams": {
+    "depth": {
+      "topic": "/device_0/sensor_0/Depth_0/image/data",
+      "metadata_topic": "/device_0/sensor_0/Depth_0/image/metadata",
+      "encoding": "Z16",
+      "width": 848,
+      "height": 480,
+      "fps": 30
+    },
+    "color": {
+      "topic": "/device_0/sensor_0/Color_0/image/data",
+      "metadata_topic": "/device_0/sensor_0/Color_0/image/metadata",
+      "encoding": "RGB8",
+      "width": 848,
+      "height": 480,
+      "fps": 30
+    }
+  },
+  "minimum_frames_per_stream": 2,
+  "maximum_absolute_rgb_depth_pair_delta_ms": 2.0,
+  "expected_depth_units_m_per_z16_unit": 0.0001,
+  "authority": {
+    "board_registration": false,
+    "camera_to_robot_extrinsic": false,
+    "robot_motion": false,
+    "task_success": false,
+    "policy_evaluation": false,
+    "physical_task": false
+  }
+}
