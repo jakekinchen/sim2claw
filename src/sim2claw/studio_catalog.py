@@ -92,6 +92,9 @@ DUAL_CAMERA_CAPTURE_SCHEMA = "sim2claw.dual_camera_physical_replay_capture.v1"
 DUAL_CAMERA_STUDIO_RECEIPT_SCHEMA = (
     "sim2claw.studio_dual_camera_browser_projection.v1"
 )
+PHYSICAL_CANARY_RECEIPT_SCHEMA = "sim2claw.physical_canary_execution_receipt.v1"
+PHYSICAL_CANARY_PACKET_SCHEMA = "sim2claw.physical_canary_packet.v1"
+PHYSICAL_CANARY_TASK = "physical_canary_follower_only_v1"
 
 
 def _media_relative_path(token: str) -> Path:
@@ -339,6 +342,9 @@ def _proof_label(proof_class: str) -> str:
         ),
         "physical_teleoperation_source_unqualified": (
             "Physical source · recorded, not admitted"
+        ),
+        "physical_canary_observation": (
+            "Physical canary · receipt-verified observation"
         ),
         "owner_provided_monocular_video": "Robo Scanner · owner video",
         "monocular_video_relative_scale_3dgs": "Robo Scanner · visual 3DGS",
@@ -1236,6 +1242,196 @@ def _current_dual_camera_episodes(repo_root: Path) -> list[dict[str, Any]]:
             "missing_evidence": list(declared.get("unresolved_observables") or []),
         }
     ]
+
+
+def _physical_canary_episodes(repo_root: Path) -> list[dict[str, Any]]:
+    """Expose completed follower canaries as receipt-verified observations."""
+
+    episodes: list[dict[str, Any]] = []
+    root = repo_root / "runs" / "physical_excitation"
+    for receipt_path in sorted(root.glob("**/execution-*/execution_receipt.json")):
+        receipt = _read_json(receipt_path)
+        if (
+            receipt.get("schema_version") != PHYSICAL_CANARY_RECEIPT_SCHEMA
+            or receipt.get("status") != "completed_physical_canary"
+            or receipt.get("physical_authority") is not False
+            or receipt.get("physical_follower_torque_enabled") is not False
+            or receipt.get("physical_motion_commanded") is not True
+            or receipt.get("gateway_constructed") is not True
+            or receipt.get("stop_before_further_robot_command") is not True
+            or not _is_sha256(receipt.get("packet_sha256"))
+            or not _is_sha256(receipt.get("action_sha256"))
+        ):
+            continue
+
+        packet_path: Path | None = None
+        packet: dict[str, Any] | None = None
+        for candidate in sorted(receipt_path.parent.parent.glob("physical-canary-packet*.json")):
+            value = _read_hash_bound_json(candidate, receipt.get("packet_sha256"))
+            if (
+                value is not None
+                and value.get("schema_version") == PHYSICAL_CANARY_PACKET_SCHEMA
+                and value.get("physical_authority") is False
+                and value.get("physical_packet_execution_admitted") is True
+                and value.get("simulation_contact_classification")
+                == "diagnostic_sim_model_baseline_self_contact"
+                and value.get("hardware_gate")
+                == "no_new_or_worsened_kinematic_contact_plus_clear_workspace_and_bounded_normalization"
+                and all(
+                    _as_mapping(value.get("independent_review")).get(field) is True
+                    for field in (
+                        "frozen_action_reviewed",
+                        "hardware_clear_workspace_acknowledged",
+                        "hardware_readiness_acknowledged",
+                        "diagnostic_sim_model_mismatch_acknowledged",
+                    )
+                )
+            ):
+                digest = hashlib.sha256(
+                    json.dumps(
+                        {key: item for key, item in value.items() if key != "plan_sha256"},
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    ).encode("utf-8")
+                ).hexdigest()
+                if digest == value.get("plan_sha256"):
+                    packet_path, packet = candidate, value
+                    break
+        if packet_path is None or packet is None:
+            continue
+
+        payload = _as_mapping(packet.get("frozen_action_payload"))
+        encoded = str(payload.get("base64") or "")
+        try:
+            raw_action_bytes = base64.b64decode(encoded, validate=True)
+        except (ValueError, TypeError):
+            continue
+        action_digest = hashlib.sha256(raw_action_bytes).hexdigest()
+        shape = payload.get("shape")
+        if (
+            not isinstance(shape, list)
+            or len(shape) != 2
+            or not all(isinstance(value, int) for value in shape)
+            or shape[0] < 1
+            or shape[1] != 6
+            or action_digest != receipt.get("action_sha256")
+            or action_digest != packet.get("action_sha256")
+            or action_digest != payload.get("sha256")
+            or action_digest != payload.get("simulation_consumer_sha256")
+            or int(receipt.get("completed_samples") or 0) != shape[0]
+        ):
+            continue
+
+        samples_path = Path(str(receipt.get("joint_samples_path") or ""))
+        if not samples_path.is_absolute():
+            samples_path = receipt_path.parent / samples_path
+        samples_path = samples_path.resolve()
+        if (
+            not samples_path.is_file()
+            or not samples_path.is_relative_to(receipt_path.parent.resolve())
+            or not _is_sha256(receipt.get("joint_samples_sha256"))
+        ):
+            continue
+        try:
+            samples_digest = hashlib.sha256(samples_path.read_bytes()).hexdigest()
+        except OSError:
+            continue
+        if samples_digest != receipt.get("joint_samples_sha256"):
+            continue
+
+        camera_finished = _as_mapping(receipt.get("camera_finished"))
+        feeds: list[dict[str, Any]] = []
+        valid_camera_evidence = True
+        for role, title, fallback in (
+            ("overhead", "Overhead C922", "overhead_c922.mp4"),
+            ("wrist", "Wrist D405", "wrist_d405.browser.mp4"),
+        ):
+            report = _as_mapping(camera_finished.get(role))
+            media_name = Path(str(report.get("browser_video_path") or fallback))
+            media_path = (receipt_path.parent / "dual_camera" / media_name.name).resolve()
+            try:
+                media_digest = hashlib.sha256(media_path.read_bytes()).hexdigest()
+            except OSError:
+                valid_camera_evidence = False
+                break
+            if (
+                media_name.name != str(report.get("browser_video_path") or fallback)
+                or not media_path.is_relative_to((receipt_path.parent / "dual_camera").resolve())
+                or report.get("status") != "completed"
+                or report.get("diagnostic_only") is not True
+                or report.get("metric_depth") is not False
+                or media_digest != report.get("browser_video_sha256")
+            ):
+                valid_camera_evidence = False
+                break
+            feeds.append(
+                {
+                    "id": role,
+                    "title": title,
+                    "camera": str(report.get("camera_name") or title),
+                    "kind": "physical_canary_observation",
+                    "role": "overhead_workspace" if role == "overhead" else "wrist_gripper_upward",
+                    "url": media_url(media_path, repo_root),
+                    "window_start_seconds": float(report.get("action_start_video_offset_seconds") or 0),
+                    "window_end_seconds": float(report.get("action_stop_video_offset_seconds") or 0),
+                    "display_rotation_degrees": int(report.get("orientation_rotation_degrees") or 0),
+                    "sha256": media_digest,
+                    "diagnostic_only": True,
+                    "metric_depth": False,
+                }
+            )
+        if not valid_camera_evidence or len(feeds) != 2:
+            continue
+
+        execution_id = receipt_path.parent.name
+        episodes.append(
+            {
+                "id": f"{PHYSICAL_CANARY_TASK}:{execution_id}",
+                "task_id": PHYSICAL_CANARY_TASK,
+                "title": "Follower-only physical canary",
+                "subtitle": f"{int(receipt['completed_samples'])} exact follower samples · shoulder-pan probe · torque off",
+                "sequence": 50_000,
+                "status": "observed",
+                "evaluator_verdict": None,
+                "terminal_outcome": "physical_canary_completed_no_task_claim",
+                "proof_class": "physical_canary_observation",
+                "proof_label": _proof_label("physical_canary_observation"),
+                "physical_authority": False,
+                "frame_count": int(_as_mapping(camera_finished.get("overhead")).get("browser_frame_count") or 0),
+                "fps": float(_as_mapping(camera_finished.get("overhead")).get("configured_fps") or 0),
+                "duration_seconds": max((feed["window_end_seconds"] for feed in feeds), default=0),
+                "recorded_at": receipt.get("completed_at") or _iso_timestamp(receipt_path),
+                "media": {"kind": "video", "url": feeds[0]["url"], "display_rotation_degrees": feeds[0]["display_rotation_degrees"]},
+                "recording_feeds": feeds,
+                "camera": "dual_camera_overhead_and_wrist",
+                "metrics": [
+                    _metric("Exact samples", int(receipt["completed_samples"])),
+                    _metric("Action hash", action_digest[:12]),
+                    _metric("Observed pan excursion", receipt.get("observed_pan_excursion_degrees", "not reported"), unit="deg"),
+                    _metric("Torque after close", "off", tone="good"),
+                ],
+                "notes": (
+                    "Receipt-verified physical follower canary observation. Both camera feeds "
+                    "are diagnostic-only; no P13 metric alignment, task consequence, or policy authority is claimed."
+                ),
+                "phases": [{"name": "Follower canary", "start": 0.0, "end": 1.0}],
+                "case_id": "follower_only_physical_canary",
+                "source_recording_id": execution_id,
+                "action_array_sha256": action_digest,
+                "evidence_receipt": {
+                    "path": receipt_path.relative_to(repo_root).as_posix(),
+                    "sha256": hashlib.sha256(receipt_path.read_bytes()).hexdigest(),
+                    "packet_path": packet_path.relative_to(repo_root).as_posix(),
+                    "packet_sha256": receipt.get("packet_sha256"),
+                    "joint_samples_sha256": receipt.get("joint_samples_sha256"),
+                },
+                "physical_task_success_verified": False,
+                "training_admission": False,
+                "promotion_authority": False,
+                "missing_evidence": ["P13 metric camera/workcell alignment", "task consequence", "policy baseline"],
+            }
+        )
+    return episodes
 
 
 def _hil_identifiability_episodes(repo_root: Path) -> list[dict[str, Any]]:
@@ -2221,6 +2417,7 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         + _grasp_episodes(repo_root)
         + _teleop_episodes(repo_root)
         + _current_dual_camera_episodes(repo_root)
+        + _physical_canary_episodes(repo_root)
         + _hil_identifiability_episodes(repo_root)
         + build_physical_release_episodes(repo_root, media_url)
     )
@@ -2236,6 +2433,7 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         "scripted_grasp_probe": "Scripted grasp probe",
         "pawn_bg_ranked_grasp_v3": "Top pawn grasp replays",
         "pawn_bg_rubber_sliding2_sensitivity": "Rubber friction sensitivity",
+        PHYSICAL_CANARY_TASK: "Physical canary observations",
     }
     for task_id in sorted(task_ids):
         contract = contracts.get(task_id, {})
@@ -2251,6 +2449,8 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
                 "role": (
                     "Recorded evidence"
                     if task_id == PHYSICAL_EPISODE_LIBRARY_TASK
+                    else "Physical diagnostic observation"
+                    if task_id == PHYSICAL_CANARY_TASK
                     else _task_role(contract)
                     if contract
                     else "Simulation probe"
@@ -2270,6 +2470,11 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
                         "measurement prerequisites are satisfied."
                     )
                     if task_id == CURRENT_MEASUREMENT_TASK
+                    else (
+                        "Receipt-verified follower canary observation with exact action bytes and "
+                        "diagnostic dual-camera evidence; no task, metric, or policy authority."
+                    )
+                    if task_id == PHYSICAL_CANARY_TASK
                     else "Frozen sliding-friction 2.0 sensitivity replays; diagnostic only because the all-episode EE RMS guard fails."
                     if task_id == "pawn_bg_rubber_sliding2_sensitivity"
                     else
