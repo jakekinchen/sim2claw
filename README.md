@@ -92,6 +92,20 @@ float64 action hashes, requested/applied identity, and the absence of clipping,
 IK, offsets, suffixes, or assistance. It does not execute a replay or admit any
 physical episode; the canonical physical set remains 0/18.
 
+Dry-run the fixed 12-fit / 3-validation / 3-held-out C922 calibration
+acquisition plan:
+
+```bash
+uv run sim2claw c922-calibration-acquisition-preflight \
+  --output runs/c922_calibration_acquisition/preflight.json
+```
+
+The expected blocked report opens no camera. It lists the remaining physical
+inputs: print and mount the target, measure pitch and total X/Y dimensions with
+instrument and uncertainty, lock and observe focus, obtain owner capture
+approval, and repair the D405 cable/connector/strain relief before any motion
+qualification. Nominal SVG dimensions are never accepted as measurement.
+
 ## Reproduce the demo
 
 ### 1. Run the deterministic simulation probe

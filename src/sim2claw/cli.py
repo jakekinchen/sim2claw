@@ -554,6 +554,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     replay_eligibility.add_argument("--manifest", type=Path, required=True)
     replay_eligibility.add_argument("--output", type=Path, required=True)
+    c922_acquisition = subparsers.add_parser(
+        "c922-calibration-acquisition-preflight",
+        help="dry-run the frozen 18-view C922 calibration acquisition plan",
+    )
+    c922_acquisition.add_argument(
+        "--plan",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/acquisition/c922_exact_mode_calibration.json",
+    )
+    c922_acquisition.add_argument("--output", type=Path, required=True)
 
     sysid_capability = subparsers.add_parser(
         "sysid-capability",
@@ -1558,6 +1569,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["exact_replay_eligible"] else 1
+    if args.command == "c922-calibration-acquisition-preflight":
+        from .c922_calibration_acquisition import preflight_and_write
+
+        report = preflight_and_write(args.plan, args.output)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["capture_ready"] else 1
     if args.command == "sysid-capability":
         from .system_identification import (
             mujoco_sysid_capability,
