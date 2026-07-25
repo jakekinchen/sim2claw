@@ -617,6 +617,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     wrist_view_reposition.add_argument("--packet", type=Path, required=True)
     wrist_view_reposition.add_argument("--candidate-manifest", type=Path)
+    wrist_view_reposition.add_argument("--route", type=Path)
     wrist_view_reposition.add_argument("--review", type=Path)
     wrist_view_reposition.add_argument("--output", type=Path)
     wrist_view_reposition.add_argument("--stage", type=int)
@@ -1937,6 +1938,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             if args.phase == "compile":
                 if (
                     args.candidate_manifest is None
+                    or args.route is None
                     or args.output is not None
                     or args.review is not None
                     or args.stage is not None
@@ -1946,11 +1948,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                     or args.yes
                 ):
                     raise WristViewRepositionError(
-                        "compile requires only --packet and --candidate-manifest"
+                        "compile requires only --packet, --candidate-manifest, and --route"
                     )
                 result = compile_wrist_view_reposition_packet(
                     args.packet,
                     candidate_manifest_path=args.candidate_manifest,
+                    route_path=args.route,
                 )
             elif args.phase == "review":
                 if (
@@ -1958,6 +1961,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     or not args.reviewer
                     or not args.decision_id
                     or args.candidate_manifest is not None
+                    or args.route is not None
                     or args.review is not None
                     or args.stage is not None
                     or args.prior_receipt is not None
@@ -1979,6 +1983,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     or args.output is None
                     or args.stage is None
                     or args.candidate_manifest is not None
+                    or args.route is not None
                     or args.reviewer is not None
                     or args.decision_id is not None
                 ):

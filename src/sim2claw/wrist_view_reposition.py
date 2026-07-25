@@ -13,7 +13,7 @@ import hashlib
 import json
 import time
 from pathlib import Path
-from typing import Any, Callable, Mapping
+from typing import Any, Callable, Mapping, Protocol
 
 import mujoco
 import numpy as np
@@ -31,25 +31,17 @@ from .replay_eligibility import ACTION_HASH_ENCODING, action_sha256
 from .scene import ROBOT_JOINTS
 
 
-WRIST_VIEW_PACKET_SCHEMA = "sim2claw.wrist_view_reposition_packet.v1"
-WRIST_VIEW_REVIEW_SCHEMA = "sim2claw.wrist_view_reposition_review.v1"
-WRIST_VIEW_EXECUTION_SCHEMA = "sim2claw.wrist_view_reposition_execution.v1"
+WRIST_VIEW_PACKET_SCHEMA = "sim2claw.wrist_view_reposition_packet.v2"
+WRIST_VIEW_REVIEW_SCHEMA = "sim2claw.wrist_view_reposition_review.v2"
+WRIST_VIEW_EXECUTION_SCHEMA = "sim2claw.wrist_view_reposition_execution.v2"
+WRIST_VIEW_ROUTE_SCHEMA = "sim2claw.wrist_view_reposition_route.v1"
+FRAME_JOINT_ALIGNMENT_SCHEMA = "sim2claw.wrist_view_frame_joint_alignment.v1"
 SAMPLE_HZ = 40
 SAMPLES_PER_STAGE = 361
+CAPTURE_HOLD_SECONDS = 2.0
+CAPTURE_HOLD_SAMPLES = int(SAMPLE_HZ * CAPTURE_HOLD_SECONDS)
 MAX_STAGE_EXCURSION_DEGREES = 90.0
 MAX_SLEW_DEGREES_S = 10.0
-EXPECTED_LIVE_ANCHOR_DEGREES = np.asarray(
-    [-4.131868, -106.901099, 99.912088, -106.153846, -74.769231, 2.969121],
-    dtype=np.float64,
-)
-STAGE_TARGETS_DEGREES = np.asarray(
-    [
-        [-20.383827, -64.520994, 31.204886, -16.153846, -86.104261, 2.969121],
-        [-20.383827, -64.520994, 31.204886, 73.846154, -86.104261, 2.969121],
-        [-20.383827, -64.520994, 31.204886, 90.0, -86.104261, 2.969121],
-    ],
-    dtype=np.float64,
-)
 COMPILE_ANCHOR_TOLERANCE_DEGREES = np.asarray(
     [0.5, 0.5, 0.5, 0.5, 0.5, 0.1], dtype=np.float64
 )
@@ -63,6 +55,24 @@ BASELINE_SELF_CONTACT_PAIRS = {
     tuple(sorted(("left_shoulder", "left_lower_arm"))),
     tuple(sorted(("left_shoulder", "left_wrist"))),
 }
+
+
+class CameraCapture(Protocol):
+    def start(self) -> dict[str, Any]: ...
+
+    def finish(
+        self,
+        *,
+        action_started_monotonic: float | None,
+        action_stopped_monotonic: float | None,
+        post_roll_seconds: float,
+    ) -> dict[str, Any]: ...
+
+
+def _default_capture(path: Path) -> CameraCapture:
+    from .native_dual_camera import NativeDualCameraRecorder
+
+    return NativeDualCameraRecorder(path)
 
 
 class WristViewRepositionError(RuntimeError):
@@ -152,6 +162,28 @@ def _joint_delta(current: np.ndarray, expected: np.ndarray) -> np.ndarray:
     delta = current - expected
     delta[4] = (float(current[4]) - float(expected[4]) + 180.0) % 360.0 - 180.0
     return delta
+
+
+def _load_route(route_path: Path) -> tuple[dict[str, Any], np.ndarray, np.ndarray]:
+    route = _read_json(route_path.resolve(), "wrist-view route")
+    _require(
+        route.get("schema_version") == WRIST_VIEW_ROUTE_SCHEMA
+        and isinstance(route.get("route_id"), str)
+        and bool(route["route_id"]),
+        "wrist-view route identity changed",
+    )
+    anchor = np.asarray(route.get("reviewed_anchor_degrees"), dtype=np.float64)
+    targets = np.asarray(route.get("stage_targets_degrees"), dtype=np.float64)
+    _require(
+        anchor.shape == (6,)
+        and np.all(np.isfinite(anchor))
+        and targets.ndim == 2
+        and targets.shape[1] == 6
+        and 1 <= targets.shape[0] <= 4
+        and np.all(np.isfinite(targets)),
+        "wrist-view route must contain one anchor and one to four six-joint targets",
+    )
+    return route, anchor, targets
 
 
 def _contact_pair(model: mujoco.MjModel, contact: Any) -> tuple[str, str]:
@@ -311,6 +343,40 @@ def _decode_stage(stage: Mapping[str, Any]) -> tuple[np.ndarray, np.ndarray, byt
     return actions, timestamps, raw
 
 
+def _decode_capture_hold(
+    stage: Mapping[str, Any],
+) -> tuple[np.ndarray, np.ndarray, bytes]:
+    payload = stage.get("frozen_capture_hold_payload") or {}
+    _require(payload.get("encoding") == ACTION_HASH_ENCODING, "hold encoding changed")
+    try:
+        raw = base64.b64decode(str(payload["base64"]), validate=True)
+        actions = np.frombuffer(raw, dtype="<f8").reshape(tuple(payload["shape"]))
+        timestamps = np.asarray(stage["capture_hold_timestamps_seconds"], dtype="<f8")
+    except (KeyError, TypeError, ValueError) as error:
+        raise WristViewRepositionError("capture-hold payload is malformed") from error
+    _require(
+        actions.shape == (CAPTURE_HOLD_SAMPLES, 6)
+        and timestamps.shape == (CAPTURE_HOLD_SAMPLES,)
+        and np.all(np.isfinite(actions))
+        and np.all(np.isfinite(timestamps)),
+        "capture-hold arrays changed shape or contain non-finite values",
+    )
+    _require(
+        action_sha256(actions) == stage.get("capture_hold_action_sha256")
+        == payload.get("sha256")
+        == payload.get("simulation_consumer_sha256")
+        and hashlib.sha256(raw).hexdigest()
+        == stage.get("capture_hold_action_bytes_sha256"),
+        "capture-hold exact action bytes drifted",
+    )
+    target = np.asarray(stage["target_degrees"], dtype="<f8")
+    _require(
+        np.all(actions == target[None, :]),
+        "capture-hold payload is not an exact final-target hold",
+    )
+    return actions, timestamps, raw
+
+
 def _validate_packet(packet_path: Path) -> dict[str, Any]:
     packet = _read_json(packet_path.resolve(), "wrist-view packet")
     _require(
@@ -319,12 +385,34 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
         == _canonical({key: value for key, value in packet.items() if key != "plan_sha256"}),
         "wrist-view packet digest changed",
     )
+    route = packet.get("route") or {}
+    _require(
+        isinstance(route.get("path"), str)
+        and len(str(route.get("sha256") or "")) == 64
+        and _sha256(Path(route["path"]).resolve()) == route["sha256"],
+        "reviewed wrist-view route drifted",
+    )
+    assistance = packet.get("action_assistance") or {}
+    _require(
+        assistance
+        == {
+            "inverse_kinematics": False,
+            "clipping": False,
+            "offsets": False,
+            "suffix_or_corrective_action": False,
+        },
+        "wrist-view action assistance changed",
+    )
     stages = packet.get("stages")
-    _require(isinstance(stages, list) and len(stages) == 3, "packet must contain three stages")
-    previous = np.asarray(packet["compile_anchor_degrees"], dtype=np.float64)
+    _require(
+        isinstance(stages, list) and 1 <= len(stages) <= 4,
+        "packet must contain one to four stages",
+    )
+    previous = np.asarray(packet["command_anchor_degrees"], dtype=np.float64)
     for stage_index, stage in enumerate(stages, start=1):
         _require(stage.get("stage_index") == stage_index, "stage order changed")
         actions, timestamps, _ = _decode_stage(stage)
+        hold_actions, hold_timestamps, _ = _decode_capture_hold(stage)
         target = np.asarray(stage["target_degrees"], dtype=np.float64)
         _require(
             actions[0].tobytes() == previous.astype("<f8").tobytes()
@@ -337,6 +425,18 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
                 (np.arange(SAMPLES_PER_STAGE, dtype="<f8") + 1.0) / SAMPLE_HZ,
             ),
             "stage timestamps changed",
+        )
+        _require(
+            np.array_equal(
+                hold_timestamps,
+                (np.arange(CAPTURE_HOLD_SAMPLES, dtype="<f8") + 1.0) / SAMPLE_HZ,
+            )
+            and np.all(hold_actions == target[None, :]),
+            "capture-hold timing or target changed",
+        )
+        _require(
+            stage.get("capture_hold_reuses_previewed_target") is True,
+            "capture hold is not bound to the previewed target",
         )
         _require(
             float(np.max(np.abs(target - previous)))
@@ -358,30 +458,39 @@ def compile_wrist_view_reposition_packet(
     packet_path: Path,
     *,
     candidate_manifest_path: Path,
+    route_path: Path,
     preflight_fn: Callable[[], dict[str, Any]] | None = None,
     preview_fn: Callable[[list[np.ndarray], Path], dict[str, Any]] = (
         preview_wrist_view_actions
     ),
 ) -> dict[str, Any]:
-    """Freeze the three reviewed direct-interpolation stages from a fresh anchor."""
+    """Freeze supplied reviewed direct-interpolation stages from a fresh anchor."""
 
     preflight = (preflight_fn or _default_preflight)()
     identity, anchor, lower, upper = _identity_and_limits(preflight)
+    route, reviewed_anchor, targets = _load_route(route_path)
     _require(
         np.all(
-            np.abs(_joint_delta(anchor, EXPECTED_LIVE_ANCHOR_DEGREES))
+            np.abs(_joint_delta(anchor, reviewed_anchor))
             <= COMPILE_ANCHOR_TOLERANCE_DEGREES
         ),
         "fresh follower pose no longer matches the reviewed live torque-off pose",
     )
-    targets = STAGE_TARGETS_DEGREES.copy()
     _require(
         np.all(targets >= lower[None, :]) and np.all(targets <= upper[None, :]),
         "reviewed wrist-view target exceeds fresh calibrated limits",
     )
+    _require(
+        np.all(anchor >= lower) and np.all(anchor <= upper),
+        "fresh torque-off pose is outside calibrated limits",
+    )
+    command_anchor = anchor.astype("<f8")
     timestamps = (np.arange(SAMPLES_PER_STAGE, dtype="<f8") + 1.0) / SAMPLE_HZ
+    hold_timestamps = (
+        np.arange(CAPTURE_HOLD_SAMPLES, dtype="<f8") + 1.0
+    ) / SAMPLE_HZ
     action_stages: list[np.ndarray] = []
-    previous = anchor.astype("<f8")
+    previous = command_anchor
     for target in targets:
         delta = target - previous
         _require(
@@ -415,11 +524,17 @@ def compile_wrist_view_reposition_packet(
     )
     stages: list[dict[str, Any]] = []
     previous = anchor.astype("<f8")
+    action_previous = command_anchor
     for stage_index, (target, actions, stage_preview) in enumerate(
         zip(targets, action_stages, preview_stages, strict=True), start=1
     ):
         raw = actions.tobytes(order="C")
         digest = action_sha256(actions)
+        hold_actions = np.repeat(
+            target.astype("<f8")[None, :], CAPTURE_HOLD_SAMPLES, axis=0
+        )
+        hold_raw = hold_actions.tobytes(order="C")
+        hold_digest = action_sha256(hold_actions)
         _require(
             stage_preview.get("exact_physical_action_sha256") == digest,
             "simulation preview did not consume the exact stage bytes",
@@ -428,6 +543,7 @@ def compile_wrist_view_reposition_packet(
             {
                 "stage_index": stage_index,
                 "expected_anchor_degrees": previous.tolist(),
+                "command_anchor_degrees": action_previous.tolist(),
                 "target_degrees": target.tolist(),
                 "maximum_joint_excursion_degrees": float(
                     np.max(np.abs(target - previous))
@@ -444,11 +560,28 @@ def compile_wrist_view_reposition_packet(
                 },
                 "action_sha256": digest,
                 "action_bytes_sha256": hashlib.sha256(raw).hexdigest(),
+                "capture_hold_timestamps_seconds": hold_timestamps.tolist(),
+                "frozen_capture_hold_payload": {
+                    "encoding": ACTION_HASH_ENCODING,
+                    "shape": list(hold_actions.shape),
+                    "base64": base64.b64encode(hold_raw).decode("ascii"),
+                    "sha256": hold_digest,
+                    "simulation_consumer_sha256": hold_digest,
+                    "hardware_consumer_must_use_same_bytes": True,
+                    "units": ["degree"] * 5 + ["percent"],
+                },
+                "capture_hold_action_sha256": hold_digest,
+                "capture_hold_action_bytes_sha256": hashlib.sha256(
+                    hold_raw
+                ).hexdigest(),
+                "capture_hold_seconds": CAPTURE_HOLD_SECONDS,
                 "simulation_preview": stage_preview,
-                "inspect_wrist_camera_before_next_stage": stage_index < 3,
+                "capture_hold_reuses_previewed_target": True,
+                "inspect_wrist_camera_before_next_stage": stage_index < len(targets),
             }
         )
         previous = target.astype("<f8")
+        action_previous = target.astype("<f8")
     packet = {
         "schema_version": WRIST_VIEW_PACKET_SCHEMA,
         "kind": "follower_only_staged_d405_tag_view_reposition",
@@ -456,11 +589,19 @@ def compile_wrist_view_reposition_packet(
         "hardware_identity": identity,
         "compile_anchor_source": "fresh_torque_off_follower_read",
         "compile_anchor_degrees": anchor.tolist(),
-        "reviewed_live_anchor_degrees": EXPECTED_LIVE_ANCHOR_DEGREES.tolist(),
+        "command_anchor_degrees": command_anchor.tolist(),
+        "reviewed_live_anchor_degrees": reviewed_anchor.tolist(),
+        "route": {
+            "route_id": route["route_id"],
+            "path": str(route_path.resolve()),
+            "sha256": _sha256(route_path.resolve()),
+        },
         "calibrated_minimum_degrees": lower.tolist(),
         "calibrated_maximum_degrees": upper.tolist(),
         "sample_hz": SAMPLE_HZ,
         "samples_per_stage": SAMPLES_PER_STAGE,
+        "capture_hold_samples": CAPTURE_HOLD_SAMPLES,
+        "capture_hold_seconds": CAPTURE_HOLD_SECONDS,
         "maximum_stage_excursion_degrees": MAX_STAGE_EXCURSION_DEGREES,
         "maximum_slew_degrees_s": MAX_SLEW_DEGREES_S,
         "stage_anchor_tolerance_degrees": STAGE_ANCHOR_TOLERANCE_DEGREES.tolist(),
@@ -485,7 +626,9 @@ def compile_wrist_view_reposition_packet(
             "fresh_preflight_each_stage": True,
             "prior_stage_receipt_required_after_stage_1": True,
             "torque_off_on_every_close": True,
-            "camera_opened_by_this_path": False,
+            "native_dual_camera_final_hold_capture": True,
+            "camera_capture_finishes_before_gateway_close": True,
+            "frame_joint_alignment_clock": "host_continuous_monotonic_nanoseconds",
         },
         "physical_motion_commanded": False,
         "physical_follower_torque_enabled": False,
@@ -524,6 +667,7 @@ def review_wrist_view_reposition_packet(
         "simulation_contact_preview_reviewed": True,
         "fresh_anchor_and_identity_checks_reviewed": True,
         "torque_off_close_reviewed": True,
+        "final_hold_capture_reviewed": True,
         "clear_workcell_acknowledged": True,
         "camera_inspection_between_stages_acknowledged": True,
         "physical_authority": False,
@@ -552,11 +696,139 @@ def _validate_review(
         "simulation_contact_preview_reviewed",
         "fresh_anchor_and_identity_checks_reviewed",
         "torque_off_close_reviewed",
+        "final_hold_capture_reviewed",
         "clear_workcell_acknowledged",
         "camera_inspection_between_stages_acknowledged",
     )
     _require(all(review.get(field) for field in fields), "review receipt is incomplete")
     return review
+
+
+def _capture_artifacts(
+    capture_root: Path, camera_finished: Mapping[str, Any]
+) -> list[dict[str, Any]]:
+    common = camera_finished.get("common_session") or {}
+    rows: list[tuple[str, str, str]] = [
+        (
+            "native_report",
+            str(common.get("report_path") or ""),
+            str(common.get("report_sha256") or ""),
+        ),
+        (
+            "callback_ledger",
+            str(common.get("callback_timestamp_path") or ""),
+            str(common.get("callback_timestamp_sha256") or ""),
+        ),
+    ]
+    for role in ("overhead", "wrist"):
+        stream = camera_finished.get(role) or {}
+        rows.extend(
+            [
+                (
+                    f"{role}_source_video",
+                    str(stream.get("video_path") or ""),
+                    str(stream.get("video_sha256") or ""),
+                ),
+                (
+                    f"{role}_browser_video",
+                    str(stream.get("browser_video_path") or ""),
+                    str(stream.get("browser_video_sha256") or ""),
+                ),
+            ]
+        )
+    artifacts: list[dict[str, Any]] = []
+    for kind, relative, expected_sha256 in rows:
+        path = capture_root / relative
+        _require(relative and len(expected_sha256) == 64, f"{kind} receipt is incomplete")
+        _require(
+            path.is_file() and _sha256(path) == expected_sha256,
+            f"{kind} artifact hash changed",
+        )
+        artifacts.append(
+            {
+                "kind": kind,
+                "path": str(path),
+                "sha256": expected_sha256,
+                "bytes": path.stat().st_size,
+            }
+        )
+    return artifacts
+
+
+def _align_d405_frames_to_hold_samples(
+    capture_root: Path,
+    camera_finished: Mapping[str, Any],
+    hold_samples: list[dict[str, Any]],
+    output_path: Path,
+) -> dict[str, Any]:
+    _require(len(hold_samples) == CAPTURE_HOLD_SAMPLES, "capture hold is incomplete")
+    common = camera_finished.get("common_session") or {}
+    ledger_path = capture_root / str(common.get("callback_timestamp_path") or "")
+    _require(ledger_path.is_file(), "native callback ledger is missing")
+    first_ns = int(hold_samples[0]["host_continuous_ns"])
+    last_ns = int(hold_samples[-1]["host_continuous_ns"])
+    frames: list[dict[str, Any]] = []
+    for line in ledger_path.read_text(encoding="utf-8").splitlines():
+        event = json.loads(line)
+        host_ns = event.get("host_continuous_ns")
+        if (
+            event.get("role") == "d405"
+            and event.get("kind") == "output"
+            and event.get("appended_to_writer") is True
+            and isinstance(host_ns, int)
+            and first_ns <= host_ns <= last_ns
+        ):
+            frames.append(event)
+    _require(len(frames) >= 2, "fewer than two D405 frames overlap the torque-on hold")
+    rows: list[dict[str, Any]] = []
+    maximum_delta_ns = 0
+    for frame in frames:
+        host_ns = int(frame["host_continuous_ns"])
+        nearest = min(
+            hold_samples,
+            key=lambda sample: abs(int(sample["host_continuous_ns"]) - host_ns),
+        )
+        delta_ns = abs(int(nearest["host_continuous_ns"]) - host_ns)
+        maximum_delta_ns = max(maximum_delta_ns, delta_ns)
+        rows.append(
+            {
+                "schema_version": FRAME_JOINT_ALIGNMENT_SCHEMA,
+                "camera_role": "d405",
+                "frame_sequence": frame.get("sequence"),
+                "frame_pts_seconds": frame.get("pts_seconds"),
+                "frame_host_continuous_ns": host_ns,
+                "nearest_joint_sample_index": nearest["sample_index"],
+                "joint_sample_host_continuous_ns": nearest["host_continuous_ns"],
+                "absolute_time_delta_ns": delta_ns,
+                "requested_physical_units": nearest["requested_physical_units"],
+                "actual_physical_units": nearest["actual_physical_units"],
+                "source_action_sha256": nearest["source_action_sha256"],
+            }
+        )
+    _require(
+        maximum_delta_ns <= 100_000_000,
+        "D405 frame-to-joint nearest-neighbor delta exceeds 100 ms",
+    )
+    _require(not output_path.exists(), f"refusing to overwrite alignment: {output_path}")
+    with output_path.open("x", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, sort_keys=True) + "\n")
+    return {
+        "schema_version": FRAME_JOINT_ALIGNMENT_SCHEMA,
+        "status": "host_clock_nearest_joint_sample_alignment",
+        "camera_role": "d405",
+        "aligned_frame_count": len(rows),
+        "hold_joint_sample_count": len(hold_samples),
+        "maximum_absolute_time_delta_ns": maximum_delta_ns,
+        "maximum_allowed_time_delta_ns": 100_000_000,
+        "path": str(output_path),
+        "sha256": _sha256(output_path),
+        "timestamp_semantics": {
+            "clock": "host_continuous_monotonic_nanoseconds",
+            "nearest_neighbor_only": True,
+            "camera_exposure_synchronized": False,
+        },
+    }
 
 
 def execute_wrist_view_reposition_stage(
@@ -569,6 +841,7 @@ def execute_wrist_view_reposition_stage(
     operator_acknowledged: bool = False,
     preflight_fn: Callable[[], dict[str, Any]] | None = None,
     gateway_factory: Callable[[Any], Any] | None = None,
+    capture_factory: Callable[[Path], CameraCapture] | None = None,
     clock_fn: Callable[[], float] = time.monotonic,
     sleep_fn: Callable[[float], None] = time.sleep,
 ) -> dict[str, Any]:
@@ -578,7 +851,10 @@ def execute_wrist_view_reposition_stage(
     packet = _validate_packet(packet_path)
     _validate_review(review_path, packet_path, packet)
     _require(operator_acknowledged, "fresh operator acknowledgement is required")
-    _require(stage_index in (1, 2, 3), "stage index must be 1, 2, or 3")
+    _require(
+        1 <= stage_index <= len(packet["stages"]),
+        "stage index is outside this route",
+    )
     if stage_index == 1:
         _require(prior_receipt_path is None, "stage 1 does not accept a prior receipt")
     else:
@@ -599,8 +875,14 @@ def execute_wrist_view_reposition_stage(
         _sha256(manifest_path) == manifest["sha256"],
         "candidate manifest drifted after packet compilation",
     )
+    route = packet["route"]
+    _require(
+        _sha256(Path(route["path"]).resolve()) == route["sha256"],
+        "reviewed wrist-view route drifted after packet compilation",
+    )
     stage = packet["stages"][stage_index - 1]
     actions, timestamps, _ = _decode_stage(stage)
+    hold_actions, hold_timestamps, _ = _decode_capture_hold(stage)
     fresh_preview = preview_wrist_view_actions(
         [np.asarray(item, dtype="<f8") for item in [actions]],
         manifest_path,
@@ -623,15 +905,21 @@ def execute_wrist_view_reposition_stage(
         "fresh follower pose does not match this stage anchor",
     )
     _require(
-        np.all(actions >= lower[None, :]) and np.all(actions <= upper[None, :]),
+        np.all(actions >= lower[None, :])
+        and np.all(actions <= upper[None, :])
+        and np.all(hold_actions >= lower[None, :])
+        and np.all(hold_actions <= upper[None, :]),
         "frozen actions exceed fresh calibrated limits",
     )
 
     output_directory = output_directory.resolve()
     receipt_path = output_directory / "execution_receipt.json"
     samples_path = output_directory / "joint_samples.jsonl"
+    alignment_path = output_directory / "d405_frame_joint_alignment.jsonl"
     _require(
-        not receipt_path.exists() and not samples_path.exists(),
+        not receipt_path.exists()
+        and not samples_path.exists()
+        and not alignment_path.exists(),
         "refusing to overwrite wrist-view execution output",
     )
     output_directory.mkdir(parents=True, exist_ok=True)
@@ -639,9 +927,17 @@ def execute_wrist_view_reposition_stage(
     gateway = (
         gateway_factory or _default_gateway
     )(_gateway_identity(identity) if gateway_factory is None else identity)
-    completed = 0
+    completed_motion = 0
+    completed_hold = 0
     actual = current.copy()
     started = clock_fn()
+    capture_root = output_directory / "final_hold_camera"
+    capture: CameraCapture | None = None
+    camera_started: dict[str, Any] | None = None
+    camera_finished: dict[str, Any] | None = None
+    hold_started: float | None = None
+    hold_stopped: float | None = None
+    hold_sample_records: list[dict[str, Any]] = []
     error: Exception | None = None
     try:
         opened = gateway.open(enable_motion=True, paired_pose_confirmed=True)
@@ -683,6 +979,8 @@ def execute_wrist_view_reposition_stage(
                     json.dumps(
                         {
                             "sample_index": sample_index,
+                            "phase": "motion",
+                            "host_continuous_ns": int(round(clock_fn() * 1e9)),
                             "timestamp_seconds": float(timestamp),
                             "source_action_sha256": stage["action_sha256"],
                             "requested_physical_units": target.tolist(),
@@ -692,7 +990,7 @@ def execute_wrist_view_reposition_stage(
                     )
                     + "\n"
                 )
-                completed += 1
+                completed_motion += 1
         target = np.asarray(stage["target_degrees"], dtype=np.float64)
         residual = _joint_delta(actual, target)
         _require(
@@ -702,13 +1000,101 @@ def execute_wrist_view_reposition_stage(
             ),
             "follower did not reach the staged target",
         )
+        capture = (capture_factory or _default_capture)(capture_root)
+        camera_started = capture.start()
+        hold_started = clock_fn()
+        with samples_path.open("a", encoding="utf-8") as handle:
+            for hold_index, (timestamp, target) in enumerate(
+                zip(hold_timestamps, hold_actions, strict=True)
+            ):
+                delay = hold_started + float(timestamp) - clock_fn()
+                if delay > 0.0:
+                    sleep_fn(delay)
+                ensure_running = getattr(capture, "ensure_running", None)
+                if callable(ensure_running):
+                    ensure_running()
+                sample = gateway.sample(
+                    float(timestamps[-1] + timestamp),
+                    exact_requested_degrees=target,
+                )
+                requested = np.asarray(
+                    sample.get("follower_requested_degrees"), dtype="<f8"
+                )
+                sent = np.asarray(
+                    sample.get("follower_command_degrees"), dtype="<f8"
+                )
+                _require(
+                    requested.tobytes() == target.tobytes()
+                    and sent.tobytes() == target.tobytes()
+                    and not sample.get("rate_limited")
+                    and not sample.get("safety_clamped"),
+                    "gateway modified, clipped, or rate-limited a frozen hold action",
+                )
+                actual = np.asarray(
+                    sample["follower_actual_position_degrees"], dtype=np.float64
+                )
+                host_ns = int(round(clock_fn() * 1e9))
+                record = {
+                    "sample_index": completed_motion + hold_index,
+                    "phase": "capture_hold",
+                    "host_continuous_ns": host_ns,
+                    "timestamp_seconds": float(timestamps[-1] + timestamp),
+                    "capture_hold_timestamp_seconds": float(timestamp),
+                    "source_action_sha256": stage["capture_hold_action_sha256"],
+                    "requested_physical_units": target.tolist(),
+                    "actual_physical_units": actual.tolist(),
+                    **sample,
+                }
+                hold_sample_records.append(record)
+                handle.write(json.dumps(record, sort_keys=True) + "\n")
+                completed_hold += 1
+        hold_stopped = clock_fn()
+        residual = _joint_delta(
+            actual, np.asarray(stage["target_degrees"], dtype=np.float64)
+        )
+        _require(
+            np.all(
+                np.abs(residual)
+                <= np.asarray(packet["final_tolerance_degrees"], dtype=np.float64)
+            ),
+            "follower left the staged target during camera hold",
+        )
+        camera_finished = capture.finish(
+            action_started_monotonic=hold_started,
+            action_stopped_monotonic=hold_stopped,
+            post_roll_seconds=0.0,
+        )
     except Exception as caught:
         error = caught
     finally:
+        if capture is not None and camera_started is not None and camera_finished is None:
+            try:
+                camera_finished = capture.finish(
+                    action_started_monotonic=hold_started,
+                    action_stopped_monotonic=hold_stopped or clock_fn(),
+                    post_roll_seconds=0.0,
+                )
+            except Exception as caught:
+                error = error or caught
         try:
             gateway.close()
         except Exception as caught:
             error = error or caught
+
+    capture_artifacts: list[dict[str, Any]] | None = None
+    frame_joint_alignment: dict[str, Any] | None = None
+    if error is None:
+        try:
+            _require(camera_finished is not None, "final hold camera did not finish")
+            capture_artifacts = _capture_artifacts(capture_root, camera_finished)
+            frame_joint_alignment = _align_d405_frames_to_hold_samples(
+                capture_root,
+                camera_finished,
+                hold_sample_records,
+                alignment_path,
+            )
+        except Exception as caught:
+            error = caught
 
     residual = _joint_delta(
         actual, np.asarray(stage["target_degrees"], dtype=np.float64)
@@ -724,20 +1110,28 @@ def execute_wrist_view_reposition_stage(
         "review_sha256": _sha256(review_path.resolve()),
         "stage_index": stage_index,
         "action_sha256": stage["action_sha256"],
-        "completed_samples": completed,
+        "capture_hold_action_sha256": stage["capture_hold_action_sha256"],
+        "completed_samples": completed_motion + completed_hold,
+        "completed_motion_samples": completed_motion,
+        "completed_capture_hold_samples": completed_hold,
         "joint_samples_path": str(samples_path),
         "joint_samples_sha256": _sha256(samples_path),
+        "camera_started": camera_started,
+        "camera_finished": camera_finished,
+        "capture_artifacts": capture_artifacts,
+        "frame_joint_alignment": frame_joint_alignment,
         "fresh_preflight_anchor_degrees": current.tolist(),
         "expected_anchor_degrees": expected_anchor.tolist(),
         "target_degrees": stage["target_degrees"],
         "final_actual_degrees": actual.tolist(),
         "final_residual_degrees": residual.tolist(),
         "error": str(error) if error is not None else None,
-        "physical_motion_commanded": completed > 0,
+        "physical_motion_commanded": (completed_motion + completed_hold) > 0,
         "physical_follower_torque_enabled": False,
         "physical_authority": False,
-        "camera_opened": False,
-        "inspect_wrist_camera_before_next_stage": stage_index < 3,
+        "camera_opened": camera_started is not None,
+        "camera_capture_completed_before_torque_off": camera_finished is not None,
+        "inspect_wrist_camera_before_next_stage": stage_index < len(packet["stages"]),
         "stop_before_further_robot_command": True,
         "wall_duration_seconds": max(0.0, clock_fn() - started),
     }
