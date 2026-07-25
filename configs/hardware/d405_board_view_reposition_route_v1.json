@@ -1,9 +1,10 @@
 {
   "schema_version": "sim2claw.wrist_view_reposition_route.v1",
-  "route_id": "d405_board_view_raise_elbow_and_pitch_20260725_v8",
+  "route_id": "d405_board_view_observed_elbow_termination_20260725_v9",
   "capture_during_motion": false,
   "setup_maximum_slew_degrees_s": 1.5,
-  "setup_elbow_tracking_error_limit_degrees": 15.0,
+  "setup_elbow_tracking_error_limit_degrees": 20.0,
+  "setup_observed_elbow_target_degrees": 82.0,
   "setup_target_hold_seconds": 2.0,
   "stationary_capture_seconds": 4.0,
   "reviewed_anchor_degrees": [
@@ -33,6 +34,6 @@
     ],
     "wrist_roll_motion": false,
     "gripper_motion": false,
-    "target_visibility_basis": "The v24 command targeted elbow 70 degrees and produced the useful observed full-board view near actual elbow 80.8 degrees, wrist flex 7.4 degrees, and wrist roll -74.4 degrees. Restore that empirical elbow command while keeping wrist flex and roll in the proven family; the route-bound 15 degree setup-only elbow envelope matches the existing live-anchor body bound and does not change the 6 degree replay or evidence limit."
+    "target_visibility_basis": "The v24 command targeted elbow 70 degrees and produced the useful observed full-board view near actual elbow 80.8 degrees. Preview the complete safe command path to 70 degrees, but terminate setup motion as soon as the measured elbow reaches 82 degrees or lower, then repeat that last exact command for hold and capture. The route-bound 20 degree setup-only ceiling does not change the 6 degree replay or evidence limit."
   }
 }

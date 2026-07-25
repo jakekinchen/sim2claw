@@ -35,6 +35,7 @@ def _inputs(
     elbow_tracking_limit_degrees: float | None = None,
     target_hold_seconds: float | None = None,
     stationary_capture_seconds: float | None = None,
+    observed_elbow_target_degrees: float | None = None,
 ) -> tuple[Path, Path]:
     route = tmp_path / "route.json"
     manifest = tmp_path / "candidate_manifest.json"
@@ -54,6 +55,10 @@ def _inputs(
         route_value["setup_target_hold_seconds"] = target_hold_seconds
     if stationary_capture_seconds is not None:
         route_value["stationary_capture_seconds"] = stationary_capture_seconds
+    if observed_elbow_target_degrees is not None:
+        route_value["setup_observed_elbow_target_degrees"] = (
+            observed_elbow_target_degrees
+        )
     _write(route, route_value)
     _write(manifest, {"candidate_digest": "b" * 64})
     return route, manifest
@@ -75,11 +80,17 @@ def _preflight() -> dict[str, object]:
 
 
 class _Gateway:
-    def __init__(self, *, fail_at: int | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        fail_at: int | None = None,
+        actual_elbow_offset_degrees: float = 0.0,
+    ) -> None:
         self.actions: list[np.ndarray] = []
         self.setup_elbow_limits: list[float | None] = []
         self.closed = False
         self.fail_at = fail_at
+        self.actual_elbow_offset_degrees = actual_elbow_offset_degrees
 
     def open_live_anchored_setup(self) -> dict[str, object]:
         return {
@@ -105,9 +116,11 @@ class _Gateway:
         )
         action = np.asarray(exact_requested_degrees, dtype=np.float64).copy()
         self.actions.append(action)
+        actual = action.copy()
+        actual[2] += self.actual_elbow_offset_degrees
         return {
             "elapsed_seconds": elapsed_seconds,
-            "follower_actual_position_degrees": action.tolist(),
+            "follower_actual_position_degrees": actual.tolist(),
             "physical_follower_torque_enabled": True,
             "precompiled_exact_action": True,
             "safety_clamped": False,
@@ -329,12 +342,12 @@ def test_setup_only_seven_degree_elbow_envelope_and_stationary_capture(
     assert gateway.closed
 
 
-def test_fifteen_degree_elbow_envelope_is_bound_to_setup_samples(
+def test_twenty_degree_elbow_envelope_is_bound_to_setup_samples(
     tmp_path: Path,
 ) -> None:
     route, manifest = _inputs(
         tmp_path,
-        elbow_tracking_limit_degrees=15.0,
+        elbow_tracking_limit_degrees=20.0,
     )
     gateway = _Gateway()
 
@@ -350,8 +363,82 @@ def test_fifteen_degree_elbow_envelope_is_bound_to_setup_samples(
         sleep_fn=lambda delay: None,
     )
 
-    assert receipt["trajectory"]["setup_elbow_tracking_error_limit_degrees"] == 15.0
-    assert set(gateway.setup_elbow_limits) == {15.0}
+    assert receipt["trajectory"]["setup_elbow_tracking_error_limit_degrees"] == 20.0
+    assert set(gateway.setup_elbow_limits) == {20.0}
+
+
+def test_observed_elbow_terminates_safe_prefix_and_holds_last_command(
+    tmp_path: Path,
+) -> None:
+    route, manifest = _inputs(
+        tmp_path,
+        elbow_tracking_limit_degrees=20.0,
+        target_hold_seconds=0.1,
+        observed_elbow_target_degrees=90.0,
+    )
+    gateway = _Gateway(actual_elbow_offset_degrees=5.0)
+
+    receipt = execute_live_anchored_camera_reposition(
+        route_path=route,
+        candidate_manifest_path=manifest,
+        output_root=tmp_path / "output",
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda identity: gateway,
+        preview_fn=_preview,
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+
+    trajectory = receipt["trajectory"]
+    stop = receipt["observed_pose_termination"]
+    assert stop["reached"] is True
+    assert stop["stop"]["observed_degrees"][2] <= 90.0
+    assert (
+        trajectory["executed_movement_prefix_sample_count"]
+        < trajectory["planned_full_movement_sample_count"]
+    )
+    assert trajectory["action_sha256"] != trajectory["executed_action_sha256"]
+    terminal_command = np.asarray(stop["stop"]["exact_command_degrees"])
+    np.testing.assert_array_equal(gateway.actions[-1], terminal_command)
+    assert receipt["evidence_limits"]["sim_gap_evidence"] is False
+    assert gateway.closed
+
+
+def test_observed_elbow_failure_closes_before_hold(
+    tmp_path: Path,
+) -> None:
+    route, manifest = _inputs(
+        tmp_path,
+        elbow_tracking_limit_degrees=20.0,
+        target_hold_seconds=0.1,
+        observed_elbow_target_degrees=82.0,
+    )
+    gateway = _Gateway(actual_elbow_offset_degrees=20.0)
+
+    with pytest.raises(
+        LiveAnchoredCameraRepositionError,
+        match="observed elbow target was not reached",
+    ):
+        execute_live_anchored_camera_reposition(
+            route_path=route,
+            candidate_manifest_path=manifest,
+            output_root=tmp_path / "output",
+            operator_acknowledged=True,
+            preflight_fn=_preflight,
+            gateway_factory=lambda identity: gateway,
+            preview_fn=_preview,
+            clock_fn=lambda: 0.0,
+            sleep_fn=lambda delay: None,
+        )
+
+    stored = json.loads(
+        (tmp_path / "output/execution_receipt.json").read_text(encoding="utf-8")
+    )
+    assert stored["observed_pose_termination"]["reached"] is False
+    assert stored["telemetry"]["phase_sample_counts"]["target_hold"]["sent"] == 0
+    assert stored["physical_follower_torque_enabled"] is False
+    assert gateway.closed
 
 
 def test_setup_elbow_envelope_rejects_other_values(
@@ -361,7 +448,7 @@ def test_setup_elbow_envelope_rejects_other_values(
 
     with pytest.raises(
         LiveAnchoredCameraRepositionError,
-        match="exactly 6.0, 7.0, 12.0, or 15.0",
+        match="exactly 6.0, 7.0, 12.0, 15.0, or 20.0",
     ):
         execute_live_anchored_camera_reposition(
             route_path=route,

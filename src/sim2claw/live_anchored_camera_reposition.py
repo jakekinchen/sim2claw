@@ -25,6 +25,7 @@ from .overhead_video import WristVideoRecorder
 from .physical_gateway import (
     BODY_REGISTRATION_OFFSET_LIMIT_DEG,
     BODY_TRACKING_ERROR_LIMIT_DEG,
+    SETUP_OBSERVED_POSE_ELBOW_TRACKING_ERROR_LIMIT_DEG,
     SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG,
 )
 from .replay_eligibility import action_sha256
@@ -92,7 +93,15 @@ def _write_json(path: Path, value: Mapping[str, Any]) -> None:
 
 def _load_target(
     route_path: Path,
-) -> tuple[dict[str, Any], np.ndarray, float, float, float, float]:
+) -> tuple[
+    dict[str, Any],
+    np.ndarray,
+    float,
+    float,
+    float,
+    float,
+    float | None,
+]:
     route = _read_json(route_path, "camera-reposition route")
     _require(
         route.get("schema_version") == WRIST_VIEW_ROUTE_SCHEMA
@@ -129,8 +138,21 @@ def _load_target(
             7.0,
             BODY_REGISTRATION_OFFSET_LIMIT_DEG,
             SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG,
+            SETUP_OBSERVED_POSE_ELBOW_TRACKING_ERROR_LIMIT_DEG,
         },
-        "setup elbow tracking limit must be exactly 6.0, 7.0, 12.0, or 15.0 degrees",
+        "setup elbow tracking limit must be exactly 6.0, 7.0, 12.0, 15.0, or 20.0 degrees",
+    )
+    observed_elbow_target = route.get(
+        "setup_observed_elbow_target_degrees"
+    )
+    _require(
+        observed_elbow_target is None
+        or (
+            not isinstance(observed_elbow_target, bool)
+            and isinstance(observed_elbow_target, (int, float))
+            and math.isfinite(float(observed_elbow_target))
+        ),
+        "setup observed elbow target must be finite when configured",
     )
     hold_seconds = route.get("setup_target_hold_seconds", 0.0)
     capture_seconds = route.get("stationary_capture_seconds", 0.0)
@@ -164,6 +186,11 @@ def _load_target(
         float(setup_elbow_limit),
         float(hold_seconds),
         float(capture_seconds),
+        (
+            float(observed_elbow_target)
+            if observed_elbow_target is not None
+            else None
+        ),
     )
 
 
@@ -293,6 +320,7 @@ def execute_live_anchored_camera_reposition(
         setup_elbow_tracking_limit_degrees,
         target_hold_seconds,
         stationary_capture_seconds,
+        observed_elbow_target_degrees,
     ) = _load_target(route_path)
     preflight = preflight_fn()
     identity, lower, upper = _preflight_identity_and_limits(preflight)
@@ -304,6 +332,7 @@ def execute_live_anchored_camera_reposition(
     output_root.mkdir(parents=True)
     telemetry_path = output_root / "telemetry.jsonl"
     action_path = output_root / "actions.float64le"
+    executed_action_path = output_root / "executed_actions.float64le"
     receipt_path = output_root / "execution_receipt.json"
     gateway = gateway_factory(_gateway_identity(identity))
     opened: dict[str, Any] | None = None
@@ -324,6 +353,9 @@ def execute_live_anchored_camera_reposition(
     capture_failure: str | None = None
     recorder: Any | None = None
     recorder_started = False
+    executed_actions: list[np.ndarray] = []
+    executed_movement_samples = 0
+    observed_pose_stop: dict[str, Any] | None = None
 
     try:
         opened = gateway.open_live_anchored_setup()
@@ -380,16 +412,22 @@ def execute_live_anchored_camera_reposition(
         action_path.write_bytes(actions.tobytes(order="C"))
         started_monotonic = clock_fn()
 
-        def send_sample(sample_index: int, phase_started: float, phase_index: int) -> None:
+        def send_sample(
+            action: np.ndarray,
+            *,
+            phase: str,
+            phase_started: float,
+            phase_index: int,
+            planned_sample_index: int | None,
+        ) -> dict[str, Any]:
             nonlocal attempted_samples, completed_samples, final_actual
             assert actions is not None
             delay = phase_started + float(phase_index) / SAMPLE_HZ - clock_fn()
             if delay > 0.0:
                 sleep_fn(delay)
-            action = actions[sample_index]
             attempted_samples += 1
             sample = gateway.sample(
-                float(timestamps[sample_index]),
+                float(completed_samples) / SAMPLE_HZ,
                 exact_requested_degrees=action,
                 setup_elbow_tracking_error_limit_degrees=(
                     setup_elbow_tracking_limit_degrees
@@ -398,6 +436,7 @@ def execute_live_anchored_camera_reposition(
                         7.0,
                         BODY_REGISTRATION_OFFSET_LIMIT_DEG,
                         SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG,
+                        SETUP_OBSERVED_POSE_ELBOW_TRACKING_ERROR_LIMIT_DEG,
                     }
                     else None
                 ),
@@ -410,47 +449,83 @@ def execute_live_anchored_camera_reposition(
                 "gateway modified or rejected a live-anchored setup sample",
             )
             row = {
-                "sample_index": sample_index,
-                "setup_phase": (
-                    "motion"
-                    if sample_index < movement_sample_count
-                    else (
-                        "target_hold"
-                        if sample_index
-                        < movement_sample_count + hold_sample_count
-                        else "stationary_capture"
-                    )
-                ),
-                "source_action_sha256": action_sha256(actions),
+                "sample_index": completed_samples,
+                "planned_sample_index": planned_sample_index,
+                "setup_phase": phase,
+                "planned_full_action_sha256": action_sha256(actions),
                 **sample,
             }
+            executed_actions.append(action.copy())
             completed_samples += 1
             final_actual = sample.get("follower_actual_position_degrees")
             telemetry.write(json.dumps(row, sort_keys=True) + "\n")
             telemetry.flush()
+            return sample
 
         with telemetry_path.open("x", encoding="utf-8") as telemetry:
             for sample_index in range(movement_sample_count):
-                send_sample(sample_index, started_monotonic, sample_index)
+                sample = send_sample(
+                    actions[sample_index],
+                    phase="motion",
+                    phase_started=started_monotonic,
+                    phase_index=sample_index,
+                    planned_sample_index=sample_index,
+                )
+                executed_movement_samples += 1
+                actual = np.asarray(
+                    sample.get("follower_actual_position_degrees"),
+                    dtype=np.float64,
+                )
+                if (
+                    observed_elbow_target_degrees is not None
+                    and actual.shape == (6,)
+                    and float(actual[2]) <= observed_elbow_target_degrees
+                ):
+                    stop_command = actions[sample_index].copy()
+                    observed_pose_stop = {
+                        "configured_observed_elbow_target_degrees": (
+                            observed_elbow_target_degrees
+                        ),
+                        "planned_sample_index": sample_index,
+                        "executed_sample_index": completed_samples - 1,
+                        "observed_degrees": actual.tolist(),
+                        "exact_command_degrees": stop_command.tolist(),
+                        "exact_command_sha256": action_sha256(
+                            stop_command[None, :]
+                        ),
+                        "planned_motion_prefix_sha256": action_sha256(
+                            actions[: sample_index + 1]
+                        ),
+                    }
+                    break
         _require(
             final_actual is not None,
             "live-anchored setup produced no final follower observation",
         )
-        residual = target - np.asarray(final_actual, dtype=np.float64)
-        residual[4] = (
-            float(target[4]) - float(final_actual[4]) + 180.0
-        ) % 360.0 - 180.0
-        _require(
-            np.all(np.abs(residual) <= FINAL_TOLERANCE_DEGREES),
-            "follower did not reach the live-anchored camera target",
-        )
+        if observed_elbow_target_degrees is not None:
+            _require(
+                observed_pose_stop is not None,
+                "observed elbow target was not reached before the full safe command path ended",
+            )
+        else:
+            residual = target - np.asarray(final_actual, dtype=np.float64)
+            residual[4] = (
+                float(target[4]) - float(final_actual[4]) + 180.0
+            ) % 360.0 - 180.0
+            _require(
+                np.all(np.abs(residual) <= FINAL_TOLERANCE_DEGREES),
+                "follower did not reach the live-anchored camera target",
+            )
+        hold_command = executed_actions[-1].copy()
         with telemetry_path.open("a", encoding="utf-8") as telemetry:
             hold_started = clock_fn()
             for phase_index in range(hold_sample_count):
                 send_sample(
-                    movement_sample_count + phase_index,
-                    hold_started,
-                    phase_index,
+                    hold_command,
+                    phase="target_hold",
+                    phase_started=hold_started,
+                    phase_index=phase_index,
+                    planned_sample_index=None,
                 )
             if target_hold_seconds > 0.0:
                 delay = hold_started + target_hold_seconds - clock_fn()
@@ -463,9 +538,11 @@ def execute_live_anchored_camera_reposition(
                 capture_started = clock_fn()
                 for phase_index in range(capture_sample_count):
                     send_sample(
-                        movement_sample_count + hold_sample_count + phase_index,
-                        capture_started,
-                        phase_index,
+                        hold_command,
+                        phase="stationary_capture",
+                        phase_started=capture_started,
+                        phase_index=phase_index,
+                        planned_sample_index=None,
                     )
                 delay = (
                     capture_started + stationary_capture_seconds - clock_fn()
@@ -483,6 +560,8 @@ def execute_live_anchored_camera_reposition(
                     capture_report.get("status") == "completed",
                     "stationary D405 capture did not complete",
                 )
+        executed_array = np.asarray(executed_actions, dtype="<f8")
+        executed_action_path.write_bytes(executed_array.tobytes(order="C"))
     except Exception as error:
         failure = f"{type(error).__name__}: {error}"
     finally:
@@ -501,25 +580,42 @@ def execute_live_anchored_camera_reposition(
         except Exception as error:
             shutdown_error = f"{type(error).__name__}: {error}"
 
+    if executed_actions:
+        executed_array = np.asarray(executed_actions, dtype="<f8")
+        executed_action_path.write_bytes(executed_array.tobytes(order="C"))
+    expected_executed_samples = (
+        executed_movement_samples + hold_sample_count + capture_sample_count
+    )
     completed = (
         failure is None
         and shutdown_error is None
         and actions is not None
-        and completed_samples == actions.shape[0]
+        and completed_samples == expected_executed_samples
+        and (
+            observed_elbow_target_degrees is None
+            or observed_pose_stop is not None
+        )
     )
     planned_samples = int(actions.shape[0]) if actions is not None else 0
-    partial_motion = 0 < completed_samples < planned_samples
-    setup_motion_completed = (
-        planned_samples > 0 and completed_samples == planned_samples
+    partial_motion = (
+        failure is not None
+        and 0 < executed_movement_samples < movement_sample_count
     )
-    sent_motion_samples = min(completed_samples, movement_sample_count)
+    setup_motion_completed = (
+        executed_movement_samples > 0
+        and (
+            observed_pose_stop is not None
+            or executed_movement_samples == movement_sample_count
+        )
+    )
+    sent_motion_samples = executed_movement_samples
     sent_hold_samples = min(
-        max(completed_samples - movement_sample_count, 0),
+        max(completed_samples - executed_movement_samples, 0),
         hold_sample_count,
     )
     sent_capture_samples = min(
         max(
-            completed_samples - movement_sample_count - hold_sample_count,
+            completed_samples - executed_movement_samples - hold_sample_count,
             0,
         ),
         capture_sample_count,
@@ -577,6 +673,10 @@ def execute_live_anchored_camera_reposition(
                     != BODY_TRACKING_ERROR_LIMIT_DEG
                 ),
                 "movement_sample_count": movement_sample_count,
+                "planned_full_movement_sample_count": movement_sample_count,
+                "executed_movement_prefix_sample_count": (
+                    executed_movement_samples
+                ),
                 "target_hold_seconds": target_hold_seconds,
                 "target_hold_effective_command_seconds": (
                     hold_sample_count / SAMPLE_HZ
@@ -599,12 +699,35 @@ def execute_live_anchored_camera_reposition(
                 "action_sha256": action_sha256(actions),
                 "action_bytes_path": str(action_path),
                 "action_bytes_sha256": _sha256(action_path),
+                "executed_action_sha256": (
+                    action_sha256(
+                        np.asarray(executed_actions, dtype="<f8")
+                    )
+                    if executed_actions
+                    else None
+                ),
+                "executed_action_bytes_path": str(executed_action_path),
+                "executed_action_bytes_sha256": (
+                    _sha256(executed_action_path)
+                    if executed_action_path.is_file()
+                    else None
+                ),
                 "timestamps_seconds": timestamps.tolist(),
             }
             if actions is not None and action_path.is_file()
             else None
         ),
         "cpu_preview": preview,
+        "observed_pose_termination": {
+            "configured": observed_elbow_target_degrees is not None,
+            "target_elbow_degrees": observed_elbow_target_degrees,
+            "reached": observed_pose_stop is not None,
+            "stop": observed_pose_stop,
+            "planned_full_path_was_cpu_previewed": True,
+            "executed_path_is_safe_prefix_plus_exact_terminal_hold": True,
+            "sim_gap_evidence": False,
+            "evaluator_admission": False,
+        },
         "stationary_d405_capture": {
             "requested": stationary_capture_seconds > 0.0,
             "start_report": capture_start_report,
@@ -643,7 +766,12 @@ def execute_live_anchored_camera_reposition(
             ),
             "first_unsent_sample_index": (
                 completed_samples
-                if completed_samples < planned_samples
+                if failure is not None and completed_samples < planned_samples
+                else None
+            ),
+            "first_unexecuted_planned_motion_sample_index": (
+                executed_movement_samples
+                if executed_movement_samples < movement_sample_count
                 else None
             ),
             "final_actual_degrees": final_actual,

@@ -49,6 +49,9 @@ MAX_CONSECUTIVE_STALL_SAMPLES = 100
 BODY_REGISTRATION_OFFSET_LIMIT_DEG = 12.0
 GRIPPER_REGISTRATION_OFFSET_LIMIT = 10.0
 SYNC_BODY_DELTA_LIMIT_DEG = 20.0
+SETUP_OBSERVED_POSE_ELBOW_TRACKING_ERROR_LIMIT_DEG = (
+    SYNC_BODY_DELTA_LIMIT_DEG
+)
 SYNC_GRIPPER_DELTA_LIMIT = 20.0
 SYNC_DURATION_SECONDS = 2.5
 SYNC_COMMAND_HZ = 40.0
@@ -937,10 +940,11 @@ class SO101PhysicalGateway:
                     7.0,
                     BODY_REGISTRATION_OFFSET_LIMIT_DEG,
                     SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG,
+                    SETUP_OBSERVED_POSE_ELBOW_TRACKING_ERROR_LIMIT_DEG,
                 }
             ):
                 raise PhysicalGatewayError(
-                    "The 7, 12, or 15 degree elbow tracking envelope is restricted to "
+                    "The 7, 12, 15, or 20 degree elbow tracking envelope is restricted to "
                     "exact live-anchored setup-only samples."
                 )
         elbow_tracking_limit = (
