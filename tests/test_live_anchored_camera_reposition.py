@@ -85,16 +85,29 @@ class _Gateway:
         *,
         fail_at: int | None = None,
         actual_elbow_offset_degrees: float = 0.0,
+        raw_anchor: np.ndarray = SETTLED,
+        command_anchor: np.ndarray | None = None,
     ) -> None:
         self.actions: list[np.ndarray] = []
         self.setup_elbow_limits: list[float | None] = []
         self.closed = False
         self.fail_at = fail_at
         self.actual_elbow_offset_degrees = actual_elbow_offset_degrees
+        self.raw_anchor = raw_anchor.copy()
+        self.command_anchor = (
+            command_anchor.copy()
+            if command_anchor is not None
+            else raw_anchor.copy()
+        )
 
     def open_live_anchored_setup(self) -> dict[str, object]:
         return {
-            "settled_torque_on_anchor_degrees": SETTLED.tolist(),
+            "settled_torque_on_anchor_degrees": self.raw_anchor.tolist(),
+            "setup_command_anchor_degrees": self.command_anchor.tolist(),
+            "setup_anchor_snap_delta_degrees": (
+                self.command_anchor - self.raw_anchor
+            ).tolist(),
+            "setup_anchor_snap_limit_degrees": 3.0,
             "torque_off_start_degrees": TORQUE_OFF.tolist(),
             "follower_calibrated_minimum": LOWER.tolist(),
             "follower_calibrated_maximum": UPPER.tolist(),
@@ -222,6 +235,52 @@ def test_repositions_from_settled_live_anchor_and_remains_setup_only(
     assert np.array_equal(gateway.actions[0], SETTLED)
     assert np.array_equal(gateway.actions[-1], TARGET)
     assert gateway.closed
+
+
+def test_elbow_only_anchor_snap_is_bound_to_preview_and_receipt(
+    tmp_path: Path,
+) -> None:
+    route, manifest = _inputs(tmp_path)
+    raw_anchor = SETTLED.copy()
+    raw_anchor[2] = UPPER[2] + 0.7
+    command_anchor = raw_anchor.copy()
+    command_anchor[2] = UPPER[2]
+    gateway = _Gateway(
+        raw_anchor=raw_anchor,
+        command_anchor=command_anchor,
+    )
+
+    def preview(actions: list[np.ndarray], path: Path) -> dict[str, object]:
+        assert path.is_file()
+        np.testing.assert_array_equal(actions[0][0], command_anchor)
+        return {
+            "no_new_or_worsened_kinematic_contact": True,
+            "external_contact_pairs": [],
+            "stages": [
+                {
+                    "exact_physical_action_sha256": action_sha256(actions[0]),
+                }
+            ],
+        }
+
+    receipt = execute_live_anchored_camera_reposition(
+        route_path=route,
+        candidate_manifest_path=manifest,
+        output_root=tmp_path / "output",
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda identity: gateway,
+        preview_fn=preview,
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+
+    snap = receipt["setup_command_anchor"]
+    assert snap["raw_observed_degrees"][2] == UPPER[2] + 0.7
+    assert snap["command_anchor_degrees"][2] == UPPER[2]
+    assert snap["snap_delta_degrees"][2] == pytest.approx(-0.7)
+    assert snap["calibrated_limits_widened"] is False
+    np.testing.assert_array_equal(gateway.actions[0], command_anchor)
 
 
 def test_route_can_reduce_setup_slew_without_widening_default(

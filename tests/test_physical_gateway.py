@@ -17,6 +17,7 @@ from sim2claw.physical_gateway import (
     GatewayIdentity,
     PhysicalGatewayError,
     SO101PhysicalGateway,
+    _live_setup_command_anchor,
     bounded_relative_target,
     inspect_physical_gateway,
     synchronize_physical_gateway,
@@ -230,6 +231,26 @@ class PhysicalGatewayTest(unittest.TestCase):
             [6.0, 8.0, 7.0, 6.0, 8.0, 12.0],
         )
         self.assertEqual(command[2], 7.0)
+
+    def test_live_setup_anchor_snap_is_elbow_only_and_bounded(self) -> None:
+        lower = np.asarray([-100.0] * 6)
+        upper = np.asarray([100.0] * 6)
+        observed = np.zeros(6)
+        observed[2] = 102.9
+
+        command, snap = _live_setup_command_anchor(observed, lower, upper)
+
+        self.assertEqual(command[2], 100.0)
+        self.assertAlmostEqual(snap[2], -2.9)
+        np.testing.assert_array_equal(snap[[0, 1, 3, 4, 5]], np.zeros(5))
+
+        observed[2] = 103.1
+        with self.assertRaisesRegex(PhysicalGatewayError, "3 degree elbow-only"):
+            _live_setup_command_anchor(observed, lower, upper)
+        observed[:] = 0.0
+        observed[1] = 100.1
+        with self.assertRaisesRegex(PhysicalGatewayError, "elbow-only"):
+            _live_setup_command_anchor(observed, lower, upper)
 
     def test_open_sample_and_close_own_follower_torque(self) -> None:
         gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)

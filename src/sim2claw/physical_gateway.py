@@ -69,6 +69,7 @@ SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG = (
 LIVE_ANCHOR_MAX_GRIPPER_EXCURSION = 10.0
 LIVE_ANCHOR_FINAL_BODY_DRIFT_DEG = 1.5
 LIVE_ANCHOR_FINAL_GRIPPER_DRIFT = 3.0
+LIVE_SETUP_ELBOW_ANCHOR_SNAP_LIMIT_DEG = 3.0
 
 
 class PhysicalGatewayError(RuntimeError):
@@ -77,6 +78,23 @@ class PhysicalGatewayError(RuntimeError):
     def __init__(self, message: str, *, details: dict[str, Any] | None = None):
         super().__init__(message)
         self.details = details
+
+
+def _live_setup_command_anchor(
+    observed: np.ndarray,
+    lower: np.ndarray,
+    upper: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    command = np.clip(observed, lower, upper)
+    snap = command - observed
+    disallowed = np.abs(snap) > 0.0
+    disallowed[2] = False
+    if np.any(disallowed) or abs(float(snap[2])) > LIVE_SETUP_ELBOW_ANCHOR_SNAP_LIMIT_DEG:
+        raise PhysicalGatewayError(
+            "Live setup anchor exceeds calibrated limits outside the bounded "
+            "3 degree elbow-only analytical snap."
+        )
+    return command, snap
 
 
 def action_vector(action: dict[str, float]) -> np.ndarray:
@@ -601,20 +619,18 @@ class SO101PhysicalGateway:
             "live-anchor torque-off follower position",
             self.follower.get_observation,
         )
-        if not np.array_equal(
-            np.clip(initial, self.lower_limits, self.upper_limits),
+        initial_command_anchor, initial_anchor_snap = _live_setup_command_anchor(
             initial,
-        ):
-            raise PhysicalGatewayError(
-                "Live-anchor torque-off pose is outside calibrated limits."
-            )
+            self.lower_limits,
+            self.upper_limits,
+        )
         torque = self._read_optional("Torque_Enable")
         if torque is not None and any(float(value) != 0.0 for value in torque.values()):
             raise PhysicalGatewayError(
                 "Follower torque was not off before live-anchor setup."
             )
 
-        self.follower.send_action(_position_dict(initial))
+        self.follower.send_action(_position_dict(initial_command_anchor))
         self.follower.bus.enable_torque(num_retry=BUS_READ_RETRIES)
         self.torque_enabled = True
         settled_samples: list[np.ndarray] = []
@@ -672,11 +688,16 @@ class SO101PhysicalGateway:
                 ),
             )
 
-        self.zero_displacement_arm_target = settled.copy()
+        settled_command_anchor, settled_anchor_snap = _live_setup_command_anchor(
+            settled,
+            self.lower_limits,
+            self.upper_limits,
+        )
+        self.zero_displacement_arm_target = settled_command_anchor.copy()
         self.leader_start = settled.copy()
         self.follower_start = settled.copy()
         self.previous_actual = settled.copy()
-        self.previous_command = settled.copy()
+        self.previous_command = settled_command_anchor.copy()
         self.previous_elapsed_seconds = 0.0
         self.previous_time = self.clock()
         self.stall_anchor_actual = settled.copy()
@@ -703,6 +724,17 @@ class SO101PhysicalGateway:
                 sample.tolist() for sample in settled_samples
             ],
             "settled_torque_on_anchor_degrees": settled.tolist(),
+            "setup_command_anchor_degrees": settled_command_anchor.tolist(),
+            "setup_anchor_snap_delta_degrees": settled_anchor_snap.tolist(),
+            "setup_anchor_snap_limit_degrees": (
+                LIVE_SETUP_ELBOW_ANCHOR_SNAP_LIMIT_DEG
+            ),
+            "torque_off_setup_command_anchor_degrees": (
+                initial_command_anchor.tolist()
+            ),
+            "torque_off_anchor_snap_delta_degrees": (
+                initial_anchor_snap.tolist()
+            ),
             "settle_excursion_degrees": settle_excursion.tolist(),
             "final_settle_drift_degrees": final_drift.tolist(),
             "available_motor_current_raw": current_samples,

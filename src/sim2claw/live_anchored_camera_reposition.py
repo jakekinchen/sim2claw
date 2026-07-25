@@ -359,8 +359,15 @@ def execute_live_anchored_camera_reposition(
 
     try:
         opened = gateway.open_live_anchored_setup()
-        anchor = np.asarray(
+        raw_anchor = np.asarray(
             opened.get("settled_torque_on_anchor_degrees"),
+            dtype=np.float64,
+        )
+        anchor = np.asarray(
+            opened.get(
+                "setup_command_anchor_degrees",
+                opened.get("settled_torque_on_anchor_degrees"),
+            ),
             dtype=np.float64,
         )
         live_lower = np.asarray(
@@ -370,7 +377,9 @@ def execute_live_anchored_camera_reposition(
             opened.get("follower_calibrated_maximum"), dtype=np.float64
         )
         _require(
-            anchor.shape == (6,)
+            raw_anchor.shape == (6,)
+            and np.all(np.isfinite(raw_anchor))
+            and anchor.shape == (6,)
             and np.all(np.isfinite(anchor))
             and np.array_equal(lower, live_lower)
             and np.array_equal(upper, live_upper),
@@ -650,6 +659,29 @@ def execute_live_anchored_camera_reposition(
         "gateway_open": opened,
         "live_anchor_degrees": (
             opened.get("settled_torque_on_anchor_degrees")
+            if opened is not None
+            else None
+        ),
+        "setup_command_anchor": (
+            {
+                "raw_observed_degrees": opened.get(
+                    "settled_torque_on_anchor_degrees"
+                ),
+                "command_anchor_degrees": opened.get(
+                    "setup_command_anchor_degrees",
+                    opened.get("settled_torque_on_anchor_degrees"),
+                ),
+                "snap_delta_degrees": opened.get(
+                    "setup_anchor_snap_delta_degrees",
+                    [0.0] * 6,
+                ),
+                "snap_limit_degrees": opened.get(
+                    "setup_anchor_snap_limit_degrees",
+                    3.0,
+                ),
+                "elbow_only": True,
+                "calibrated_limits_widened": False,
+            }
             if opened is not None
             else None
         ),
