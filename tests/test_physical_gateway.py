@@ -307,7 +307,7 @@ class PhysicalGatewayTest(unittest.TestCase):
             gateway.close()
         self.assertFalse(self.follower.bus.torque)
 
-    def test_twelve_degree_elbow_envelope_is_live_setup_only(self) -> None:
+    def test_fifteen_degree_elbow_envelope_is_live_setup_only(self) -> None:
         gateway = SO101PhysicalGateway(
             self.identity,
             device_factory=self.factory,
@@ -322,7 +322,7 @@ class PhysicalGatewayTest(unittest.TestCase):
                 gateway.sample(
                     0.1,
                     exact_requested_degrees=self.follower.values.copy(),
-                    setup_elbow_tracking_error_limit_degrees=12.0,
+                    setup_elbow_tracking_error_limit_degrees=15.0,
                 )
         finally:
             gateway.close()
@@ -343,9 +343,9 @@ class PhysicalGatewayTest(unittest.TestCase):
             sample = gateway.sample(
                 0.1,
                 exact_requested_degrees=self.follower.values.copy(),
-                setup_elbow_tracking_error_limit_degrees=12.0,
+                setup_elbow_tracking_error_limit_degrees=15.0,
             )
-            self.assertEqual(sample["tracking_error_limits"][2], 12.0)
+            self.assertEqual(sample["tracking_error_limits"][2], 15.0)
             self.assertTrue(sample["precompiled_exact_action"])
         finally:
             gateway.close()

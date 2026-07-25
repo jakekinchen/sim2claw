@@ -23,6 +23,7 @@ from .physical_canary import (
 )
 from .overhead_video import WristVideoRecorder
 from .physical_gateway import (
+    BODY_REGISTRATION_OFFSET_LIMIT_DEG,
     BODY_TRACKING_ERROR_LIMIT_DEG,
     SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG,
 )
@@ -126,9 +127,10 @@ def _load_target(
         in {
             BODY_TRACKING_ERROR_LIMIT_DEG,
             7.0,
+            BODY_REGISTRATION_OFFSET_LIMIT_DEG,
             SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG,
         },
-        "setup elbow tracking limit must be exactly 6.0, 7.0, or 12.0 degrees",
+        "setup elbow tracking limit must be exactly 6.0, 7.0, 12.0, or 15.0 degrees",
     )
     hold_seconds = route.get("setup_target_hold_seconds", 0.0)
     capture_seconds = route.get("stationary_capture_seconds", 0.0)
@@ -392,7 +394,11 @@ def execute_live_anchored_camera_reposition(
                 setup_elbow_tracking_error_limit_degrees=(
                     setup_elbow_tracking_limit_degrees
                     if setup_elbow_tracking_limit_degrees
-                    in {7.0, SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG}
+                    in {
+                        7.0,
+                        BODY_REGISTRATION_OFFSET_LIMIT_DEG,
+                        SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG,
+                    }
                     else None
                 ),
             )

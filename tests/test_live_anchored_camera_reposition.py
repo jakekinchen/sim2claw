@@ -329,12 +329,12 @@ def test_setup_only_seven_degree_elbow_envelope_and_stationary_capture(
     assert gateway.closed
 
 
-def test_twelve_degree_elbow_envelope_is_bound_to_setup_samples(
+def test_fifteen_degree_elbow_envelope_is_bound_to_setup_samples(
     tmp_path: Path,
 ) -> None:
     route, manifest = _inputs(
         tmp_path,
-        elbow_tracking_limit_degrees=12.0,
+        elbow_tracking_limit_degrees=15.0,
     )
     gateway = _Gateway()
 
@@ -350,8 +350,8 @@ def test_twelve_degree_elbow_envelope_is_bound_to_setup_samples(
         sleep_fn=lambda delay: None,
     )
 
-    assert receipt["trajectory"]["setup_elbow_tracking_error_limit_degrees"] == 12.0
-    assert set(gateway.setup_elbow_limits) == {12.0}
+    assert receipt["trajectory"]["setup_elbow_tracking_error_limit_degrees"] == 15.0
+    assert set(gateway.setup_elbow_limits) == {15.0}
 
 
 def test_setup_elbow_envelope_rejects_other_values(
@@ -361,7 +361,7 @@ def test_setup_elbow_envelope_rejects_other_values(
 
     with pytest.raises(
         LiveAnchoredCameraRepositionError,
-        match="exactly 6.0, 7.0, or 12.0",
+        match="exactly 6.0, 7.0, 12.0, or 15.0",
     ):
         execute_live_anchored_camera_reposition(
             route_path=route,
