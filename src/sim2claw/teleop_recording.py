@@ -864,9 +864,14 @@ EXCITATION_AMPLITUDE_DEGREES = 3.0
 EXCITATION_SLEW_DEGREES_S = 10.0
 REPOSITION_SAMPLE_HZ = 20
 REPOSITION_SLEW_DEGREES_S = 5.0
-REPOSITION_SHOULDER_DELTA_DEGREES = 1.5
-REPOSITION_ELBOW_DELTA_DEGREES = -1.5
+REPOSITION_SHOULDER_DELTA_DEGREES = 3.0
+REPOSITION_ELBOW_DELTA_DEGREES = -3.0
 REPOSITION_MARGIN_DEGREES = 3.0
+REPOSITION_MARGIN_CUSHION_DEGREES = 0.25
+REPOSITION_REQUIRED_MARGIN_DEGREES = (
+    REPOSITION_MARGIN_DEGREES + REPOSITION_MARGIN_CUSHION_DEGREES
+)
+REPOSITION_MINIMUM_DIRECTIONAL_PROGRESS_DEGREES = 0.5
 REPOSITION_SCHEMA = "sim2claw.physical_follower_reposition.v1"
 REPOSITION_PLAN_KIND = "sim2claw.follower_reposition_plan.v1"
 REPOSITION_REVIEW_FIELDS = (
@@ -1324,12 +1329,27 @@ def _build_reposition_plan(preflight: dict[str, Any]) -> dict[str, Any]:
     target[1] += REPOSITION_SHOULDER_DELTA_DEGREES
     target[2] += REPOSITION_ELBOW_DELTA_DEGREES
     delta = target - anchor
+    initial_directional_margin = []
+    minimum_directional_progress = []
+    for index in (1, 2):
+        initial_margin = (
+            anchor[index] - lower[index]
+            if delta[index] > 0.0
+            else upper[index] - anchor[index]
+        )
+        initial_directional_margin.append(float(initial_margin))
+        minimum_directional_progress.append(
+            max(
+                REPOSITION_MINIMUM_DIRECTIONAL_PROGRESS_DEGREES,
+                REPOSITION_REQUIRED_MARGIN_DEGREES - float(initial_margin),
+            )
+        )
     if np.any(target < lower) or np.any(target > upper):
         raise RecorderError("Follower reposition target exceeds calibrated limits.")
     for index in (1, 2):
         if (
-            target[index] - REPOSITION_MARGIN_DEGREES < lower[index]
-            or target[index] + REPOSITION_MARGIN_DEGREES > upper[index]
+            target[index] - REPOSITION_REQUIRED_MARGIN_DEGREES < lower[index]
+            or target[index] + REPOSITION_REQUIRED_MARGIN_DEGREES > upper[index]
         ):
             raise RecorderError(
                 "Follower reposition target lacks the required ±3 degree margin."
@@ -1362,6 +1382,9 @@ def _build_reposition_plan(preflight: dict[str, Any]) -> dict[str, Any]:
         "sample_hz": REPOSITION_SAMPLE_HZ,
         "slew_degrees_s": REPOSITION_SLEW_DEGREES_S,
         "maximum_delta_degrees": float(np.max(np.abs(delta[[1, 2]]))),
+        "required_calibrated_margin_degrees": REPOSITION_REQUIRED_MARGIN_DEGREES,
+        "initial_directional_margin_degrees": initial_directional_margin,
+        "minimum_directional_progress_degrees": minimum_directional_progress,
         "anchor_tolerance_degrees": [
             POST_HOLD_BODY_TOLERANCE_DEG,
             POST_HOLD_BODY_TOLERANCE_DEG,
@@ -1470,6 +1493,30 @@ def _validate_reposition_receipt(packet: dict[str, Any]) -> dict[str, Any]:
     expected_delta[2] = REPOSITION_ELBOW_DELTA_DEGREES
     if not np.array_equal(target - anchor, expected_delta):
         raise RecorderError("Follower reposition target delta changed.")
+    expected_initial_margins = []
+    expected_minimum_progress = []
+    for index in (1, 2):
+        initial_margin = (
+            anchor[index] - lower[index]
+            if expected_delta[index] > 0.0
+            else upper[index] - anchor[index]
+        )
+        expected_initial_margins.append(float(initial_margin))
+        expected_minimum_progress.append(
+            max(
+                REPOSITION_MINIMUM_DIRECTIONAL_PROGRESS_DEGREES,
+                REPOSITION_REQUIRED_MARGIN_DEGREES - float(initial_margin),
+            )
+        )
+    for field, expected in (
+        ("initial_directional_margin_degrees", expected_initial_margins),
+        ("minimum_directional_progress_degrees", expected_minimum_progress),
+    ):
+        observed = np.asarray(plan.get(field), dtype=np.float64)
+        if observed.shape != (2,) or not np.array_equal(
+            observed, np.asarray(expected, dtype=np.float64)
+        ):
+            raise RecorderError(f"Follower reposition {field} changed.")
     if not np.array_equal(actions[0], anchor) or not np.array_equal(
         actions[-1], target
     ):
@@ -1493,14 +1540,18 @@ def _validate_reposition_receipt(packet: dict[str, Any]) -> dict[str, Any]:
         raise RecorderError("Follower reposition target exceeds calibrated limits.")
     for index in (1, 2):
         if (
-            target[index] - REPOSITION_MARGIN_DEGREES < lower[index]
-            or target[index] + REPOSITION_MARGIN_DEGREES > upper[index]
+            target[index] - REPOSITION_REQUIRED_MARGIN_DEGREES < lower[index]
+            or target[index] + REPOSITION_REQUIRED_MARGIN_DEGREES > upper[index]
         ):
             raise RecorderError(
                 "Follower reposition target lacks the required ±3 degree margin."
             )
     if plan.get("action_sha256") != _float64_sha256(actions):
         raise RecorderError("Follower reposition action hash changed.")
+    if plan.get("required_calibrated_margin_degrees") != (
+        REPOSITION_REQUIRED_MARGIN_DEGREES
+    ):
+        raise RecorderError("Follower reposition calibrated margin requirement changed.")
     return {
         "plan": plan,
         "anchor": anchor,
@@ -1631,6 +1682,32 @@ def reposition_physical_follower(
             float(residual[5])
         ) > POST_HOLD_GRIPPER_TOLERANCE:
             raise RecorderError("Follower did not reach the reposition target.")
+        expected_delta = validated["target"] - validated["anchor"]
+        lower = np.asarray(
+            validated["plan"]["calibrated_minimum_degrees"], dtype=np.float64
+        )
+        upper = np.asarray(
+            validated["plan"]["calibrated_maximum_degrees"], dtype=np.float64
+        )
+        minimum_progress = np.asarray(
+            validated["plan"]["minimum_directional_progress_degrees"],
+            dtype=np.float64,
+        )
+        for position, index in enumerate((1, 2)):
+            directional_progress = (
+                (actual[index] - validated["anchor"][index])
+                * np.sign(expected_delta[index])
+            )
+            if directional_progress < minimum_progress[position]:
+                raise RecorderError(
+                    "Follower reposition did not make sufficient directional progress."
+                )
+            if min(
+                actual[index] - lower[index], upper[index] - actual[index]
+            ) < REPOSITION_REQUIRED_MARGIN_DEGREES:
+                raise RecorderError(
+                    "Follower reposition final pose lacks the required ±3 degree margin."
+                )
     finally:
         gateway.close()
     report = {

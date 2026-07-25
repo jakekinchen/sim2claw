@@ -353,7 +353,10 @@ def test_reposition_dry_run_derives_coupled_inward_move_and_refuses_overwrite(
     anchor = np.asarray(report["plan"]["anchor_degrees"], dtype=np.float64)
     target = np.asarray(report["plan"]["target_degrees"], dtype=np.float64)
     actions = np.asarray(report["plan"]["actions_degrees"], dtype=np.float64)
-    assert report["plan"]["relative_target_delta_degrees"][1:3] == [1.5, -1.5]
+    assert report["plan"]["relative_target_delta_degrees"][1:3] == [3.0, -3.0]
+    assert report["plan"]["required_calibrated_margin_degrees"] == pytest.approx(
+        3.25
+    )
     assert target[1] + target[2] == pytest.approx(anchor[1] + anchor[2])
     assert np.array_equal(target[[0, 3, 4, 5]], anchor[[0, 3, 4, 5]])
     assert np.array_equal(actions[0], anchor)
@@ -425,6 +428,67 @@ def test_reposition_live_uses_zero_hold_and_exact_follower_actions(
     assert _float64_sha256(np.stack(gateway.targets)) == report["plan"][
         "action_sha256"
     ]
+
+
+@pytest.mark.parametrize(
+    ("actual_mode", "message"),
+    [("margin", "final pose lacks"), ("zero", "directional progress")],
+)
+def test_reposition_rejects_unsafe_final_pose(
+    tmp_path: Path, actual_mode: str, message: str
+) -> None:
+    packet_path = tmp_path / "reposition.json"
+    output_path = tmp_path / "result.json"
+
+    def tight_preflight() -> dict[str, Any]:
+        report = _preflight()
+        report["follower_calibrated_minimum"][2] = -6.25
+        return report
+
+    reposition_physical_follower(
+        packet_path, dry_run=True, preflight_fn=tight_preflight
+    )
+    packet = _admit_reposition(packet_path)
+
+    class Gateway:
+        def __init__(self) -> None:
+            self.closed = False
+
+        def open(self, *, enable_motion: bool, paired_pose_confirmed: bool):
+            return {"follower_start_degrees": packet["plan"]["anchor_degrees"]}
+
+        def sample(self, elapsed_seconds: float, *, exact_requested_degrees):
+            del elapsed_seconds
+            target = np.asarray(exact_requested_degrees, dtype=np.float64)
+            actual = target.copy()
+            if actual_mode == "margin":
+                actual[2] -= 0.4
+            else:
+                actual[:] = np.asarray(packet["plan"]["anchor_degrees"])
+            return {
+                "follower_requested_degrees": target.tolist(),
+                "follower_command_degrees": target.tolist(),
+                "follower_actual_position_degrees": actual.tolist(),
+                "rate_limited": False,
+                "safety_clamped": False,
+            }
+
+        def close(self) -> None:
+            self.closed = True
+
+    gateway = Gateway()
+    with pytest.raises(RecorderError, match=message):
+        reposition_physical_follower(
+            packet_path,
+            output_path=output_path,
+            operator_acknowledged=True,
+            preflight_fn=tight_preflight,
+            gateway_factory=lambda _identity: gateway,
+            clock_fn=lambda: 0.0,
+            sleep_fn=lambda _seconds: None,
+        )
+    assert gateway.closed is True
+    assert not output_path.exists()
 
 
 def test_reposition_binds_fresh_anchor_and_requires_resulting_margin(
