@@ -272,6 +272,59 @@ def test_compile_previews_exact_supplied_float64_route(tmp_path: Path) -> None:
         previous = target
 
 
+def test_compile_allows_only_explicit_bounded_setup_recovery_snap(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    _candidate_manifest(manifest_path)
+    recovery_anchor = ROUTE_ANCHOR.copy()
+    recovery_anchor[1] = LOWER[1] - 0.8
+    recovery_anchor[3] = LOWER[3] - 2.4
+    recovery_target = recovery_anchor.copy()
+    recovery_target[1] = -60.0
+    recovery_target[3] = -20.0
+    _write(
+        route_path,
+        {
+            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+            "route_id": "fixture-recovery-route",
+            "setup_recovery_command_anchor_snap_limit_degrees": 3.0,
+            "reviewed_anchor_degrees": recovery_anchor.tolist(),
+            "stage_targets_degrees": [recovery_target.tolist()],
+            "review_basis": {"physical_scope": "setup_recovery_only"},
+        },
+    )
+
+    packet = compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=lambda: _preflight(recovery_anchor),
+        preview_fn=lambda stages, manifest: {
+            "candidate_digest": "b" * 64,
+            "no_new_or_worsened_kinematic_contact": True,
+            "external_contact_pairs": [],
+            "stages": [
+                {
+                    "exact_physical_action_sha256": action_sha256(stages[0]),
+                    "no_new_or_worsened_kinematic_contact": True,
+                    "external_contact_pairs": [],
+                }
+            ],
+        },
+    )
+
+    recovery = packet["setup_recovery_command_anchor"]
+    assert recovery["enabled"] is True
+    assert recovery["snap_delta_degrees"][1] == pytest.approx(0.8)
+    assert recovery["snap_delta_degrees"][3] == pytest.approx(2.4)
+    assert packet["stages"][0]["command_anchor_degrees"] == packet[
+        "command_anchor_degrees"
+    ]
+
+
 def test_review_and_execute_one_stage_exactly_then_torque_off(tmp_path: Path) -> None:
     manifest_path = tmp_path / "candidate_manifest.json"
     route_path = tmp_path / "route.json"

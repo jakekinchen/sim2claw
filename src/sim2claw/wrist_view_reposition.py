@@ -48,6 +48,7 @@ COMPILE_ANCHOR_TOLERANCE_DEGREES = np.asarray(
 COMPILE_COMMAND_ANCHOR_CLIP_TOLERANCE_DEGREES = np.asarray(
     [0.5, 0.5, 3.0, 0.5, 0.5, 0.1], dtype=np.float64
 )
+SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES = 3.0
 STAGE_ANCHOR_TOLERANCE_DEGREES = np.asarray(
     [3.0, 3.0, 3.0, 3.0, 3.0, 0.5], dtype=np.float64
 )
@@ -482,6 +483,18 @@ def compile_wrist_view_reposition_packet(
     preflight = (preflight_fn or _default_preflight)()
     identity, anchor, lower, upper = _identity_and_limits(preflight)
     route, reviewed_anchor, targets = _load_route(route_path)
+    recovery_snap_limit = route.get(
+        "setup_recovery_command_anchor_snap_limit_degrees"
+    )
+    setup_recovery = recovery_snap_limit is not None
+    if setup_recovery:
+        _require(
+            route.get("review_basis", {}).get("physical_scope")
+            == "setup_recovery_only"
+            and float(recovery_snap_limit)
+            == SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
+            "setup recovery anchor snap must be explicitly scoped and exactly 3 degrees",
+        )
     _require(
         np.all(
             np.abs(_joint_delta(anchor, reviewed_anchor))
@@ -494,10 +507,25 @@ def compile_wrist_view_reposition_packet(
         "reviewed wrist-view target exceeds fresh calibrated limits",
     )
     command_anchor = np.clip(anchor, lower, upper).astype("<f8")
+    command_anchor_tolerance = (
+        np.asarray(
+            [
+                SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
+                SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
+                SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
+                SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
+                SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
+                COMPILE_COMMAND_ANCHOR_CLIP_TOLERANCE_DEGREES[5],
+            ],
+            dtype=np.float64,
+        )
+        if setup_recovery
+        else COMPILE_COMMAND_ANCHOR_CLIP_TOLERANCE_DEGREES
+    )
     _require(
         np.all(
             np.abs(_joint_delta(command_anchor, anchor))
-            <= COMPILE_COMMAND_ANCHOR_CLIP_TOLERANCE_DEGREES
+            <= command_anchor_tolerance
         ),
         "fresh torque-off pose is too far outside calibrated limits",
     )
@@ -606,6 +634,15 @@ def compile_wrist_view_reposition_packet(
         "compile_anchor_source": "fresh_torque_off_follower_read",
         "compile_anchor_degrees": anchor.tolist(),
         "command_anchor_degrees": command_anchor.tolist(),
+        "setup_recovery_command_anchor": {
+            "enabled": setup_recovery,
+            "snap_delta_degrees": _joint_delta(
+                command_anchor, anchor
+            ).tolist(),
+            "snap_limit_degrees": command_anchor_tolerance.tolist(),
+            "setup_only": True,
+            "sim_gap_evidence": False,
+        },
         "reviewed_live_anchor_degrees": reviewed_anchor.tolist(),
         "route": {
             "route_id": route["route_id"],

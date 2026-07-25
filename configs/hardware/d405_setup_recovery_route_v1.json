@@ -2,6 +2,7 @@
   "schema_version": "sim2claw.wrist_view_reposition_route.v1",
   "route_id": "d405_setup_recover_collapsed_pose_to_inbounds_20260725_v1",
   "capture_during_motion": false,
+  "setup_recovery_command_anchor_snap_limit_degrees": 3.0,
   "reviewed_anchor_degrees": [
     -5.0989010989010985,
     -107.42857142857143,
