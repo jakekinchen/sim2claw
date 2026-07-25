@@ -595,6 +595,19 @@ def build_parser() -> argparse.ArgumentParser:
     physical_excitation.add_argument("--output", type=Path)
     physical_excitation.add_argument("--yes", action="store_true")
     physical_excitation.add_argument("--dry-run", action="store_true")
+    physical_canary = subparsers.add_parser(
+        "physical-canary",
+        help="normalize, compile, or execute one frozen simulation canary on the follower",
+    )
+    physical_canary.add_argument(
+        "--phase", choices=("normalize", "compile", "execute"), required=True
+    )
+    physical_canary.add_argument("--packet", type=Path, required=True)
+    physical_canary.add_argument("--bundle", type=Path)
+    physical_canary.add_argument("--contact-receipt", type=Path)
+    physical_canary.add_argument("--normalization-receipt", type=Path)
+    physical_canary.add_argument("--output", type=Path)
+    physical_canary.add_argument("--yes", action="store_true")
     c922_acquisition = subparsers.add_parser(
         "c922-calibration-acquisition-preflight",
         help="dry-run the frozen 18-view C922 calibration acquisition plan",
@@ -1799,6 +1812,74 @@ def main(argv: Sequence[str] | None = None) -> int:
                     operator_acknowledged=args.yes,
                 )
         except (OSError, ValueError, RecorderError, PhysicalGatewayError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "physical-canary":
+        from .physical_canary import (
+            PhysicalCanaryError,
+            compile_physical_canary_normalization,
+            compile_physical_canary_packet,
+            execute_physical_canary_normalization,
+            execute_physical_canary_packet,
+        )
+
+        try:
+            if args.phase == "normalize":
+                if args.yes:
+                    if args.output is None:
+                        raise PhysicalCanaryError(
+                            "--output is required for live normalization"
+                        )
+                    if (
+                        args.bundle is not None
+                        or args.contact_receipt is not None
+                        or args.normalization_receipt is not None
+                    ):
+                        raise PhysicalCanaryError(
+                            "bundle/receipt inputs are only valid during canary compilation"
+                        )
+                    result = execute_physical_canary_normalization(
+                        args.packet, args.output, operator_acknowledged=True
+                    )
+                else:
+                    if args.output is not None:
+                        raise PhysicalCanaryError(
+                            "--output is only valid for live normalization"
+                        )
+                    result = compile_physical_canary_normalization(args.packet)
+            elif args.phase == "compile":
+                if args.yes or args.output is not None:
+                    raise PhysicalCanaryError(
+                        "--yes/--output are only valid during execution or live normalization"
+                    )
+                if not all(
+                    value is not None
+                    for value in (
+                        args.bundle,
+                        args.contact_receipt,
+                        args.normalization_receipt,
+                    )
+                ):
+                    raise PhysicalCanaryError(
+                        "--bundle, --contact-receipt, and --normalization-receipt are required"
+                    )
+                result = compile_physical_canary_packet(
+                    args.bundle,
+                    args.packet,
+                    contact_receipt_path=args.contact_receipt,
+                    normalization_receipt_path=args.normalization_receipt,
+                )
+            else:
+                if not args.yes or args.output is None:
+                    raise PhysicalCanaryError(
+                        "--yes and --output are required for physical canary execution"
+                    )
+                result = execute_physical_canary_packet(
+                    args.packet, args.output, operator_acknowledged=True
+                )
+        except (OSError, ValueError, PhysicalCanaryError) as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(result, indent=2, sort_keys=True))
