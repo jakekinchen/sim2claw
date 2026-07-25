@@ -1289,3 +1289,16 @@ goal. External provider campaigns and spending remain separately gated.
   replays, and zero trials. This records the verification omitted from the
   initial closeout prose; no implementation, generated evidence, or authority
   changed.
+- 2026-07-24T20:27:18-05:00 — Integrated the physical Studio recorder with
+  one native dual-input `AVCaptureSession` at `5515e5d`. The single stationary
+  camera-only check wrote 323 C922 and 56 D405 callbacks with zero Apple drops
+  or writer backpressure and completed both native writers; it issued no robot
+  command. The check exposed the known D405 PTS-zero sentinel as a writer
+  timeline defect before its browser derivative. The committed repair retains
+  startup callbacks in the ledger and excludes the visible one-source-PTS-
+  second warm-up from both writers. Offline post-warm-up processing produced
+  53/53 D405 source/browser frames over 10.6 seconds. No second camera session
+  was opened; one post-repair camera-only verification remains. The frozen
+  common-session degraded verdict, Twin `0/6`, task `0/11`, and all motion,
+  metric-depth, synchronization, calibration, training, and promotion limits
+  remain unchanged.

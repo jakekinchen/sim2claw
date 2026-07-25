@@ -192,6 +192,34 @@ writer, exposure synchronization, motion reliability, metric depth,
 calibration, simulator, or task result. Per the preregistered decision rule,
 the next camera architecture is a separately preregistered isolated host.
 
+Production recorder integration now treats that frozen result more narrowly
+without changing it. The two failed post-stop indices are AVFoundation format
+object-identity lookups: the raw after-stop states retained the exact dimensions,
+subtypes, frame durations, device identities, and stream bindings, and no
+captured callback or finalized writer depends on the lookup. The physical
+Studio recorder at implementation `5515e5d` therefore uses one native common
+session and gates admission on exact active-session identity, first-frame
+delivery after the existing visible one-source-PTS-second warm-up, explicit
+input/output binding, per-stream writer completion, zero Apple drops, and zero
+writer backpressure. It retains separate source containers, callback/host
+timestamp lineage, hashes, frame counts, and browser derivatives.
+
+One bounded stationary production-path capture opened no robot gateway and
+made no robot command. The native session delivered and wrote `323` C922 plus
+`56` D405 callbacks with zero Apple drops or writer backpressure; both writers
+finalized, and the after-stop indices again reset while all operational format
+properties remained exact. That attempt exposed the D405's known initial
+source-PTS `0` sentinel as a writer-timeline defect before the browser
+derivative completed. The committed writer now keeps the sentinel and the
+remainder of the visible warm-up in the callback ledger but excludes them from
+both source containers. Offline replay of the captured post-warm-up D405 frames
+produced a `53 / 53` source/browser derivative over `10.6 s`. Because the sole
+allowed stationary camera session preceded that repair, one post-repair
+camera-only production recording remains the exact hardware verification step.
+This is recorder infrastructure, not motion reliability, exposure
+synchronization, metric depth, calibration, task success, or physical
+authority.
+
 The isolated-host inventory is now terminal and exhausted. The sole strict
 metadata connection reached `silicon.local` on macOS `26.3.1` with no stderr
 and no retry. It found zero C922 camera/USB matches and zero D405 camera/USB

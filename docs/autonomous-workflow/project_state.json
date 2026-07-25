@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T19:55:00-05:00",
+  "updated_at": "2026-07-24T20:27:18-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
-  "current_milestone": "C922_FRAME_LINEAGE_V1_VERIFIED_NEXT_METRIC_ACQUISITION",
+  "current_milestone": "NATIVE_DUAL_CAMERA_RECORDER_IMPLEMENTED_POST_WARMUP_HARDWARE_VERIFICATION_PENDING",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
@@ -3356,6 +3356,81 @@
         "metric_depth": false,
         "simulator_calibration": false,
         "task_success": false
+      }
+    },
+    "native_dual_camera_production_recorder": {
+      "status": "implemented_software_verified_one_stationary_pre_fix_writer_capture_complete_post_warmup_hardware_verification_pending",
+      "implementation_commit": "5515e5d7ba829bb1783c9f157c6c32456c4cd2f9",
+      "implementation": "src/sim2claw/native_dual_camera.py",
+      "native_helper": "tools/macos/AVFoundationDualCameraRecorder.swift",
+      "production_integration": "src/sim2claw/teleop_recording.py",
+      "studio_projection": "src/sim2claw/studio_catalog.py",
+      "run_log": "docs/run-logs/2026-07-24-native-dual-camera-production-recorder.md",
+      "mechanism": {
+        "session_type": "AVCaptureSession",
+        "session_count": 1,
+        "independent_camera_sessions": 0,
+        "explicit_per_input_output_bindings": true,
+        "active_session_exact_format_required": true,
+        "after_stop_format_object_identity_required": false,
+        "per_stream_source_container": true,
+        "per_stream_browser_derivative": true,
+        "per_callback_source_pts_and_host_clock_ledger": true
+      },
+      "post_stop_gate_rationale": {
+        "historical_frozen_verdict_changed": false,
+        "failed_historical_gates": [
+          "after_stop:c922_format_index",
+          "after_stop:d405_format_index"
+        ],
+        "operationally_relevant": false,
+        "reason": "after_stop_object_identity_lookup_returned_minus_one_while_exact_dimensions_subtypes_frame_durations_device_identities_and_bindings_remained_unchanged_no_writer_or_callback_depends_on_it"
+      },
+      "bounded_stationary_verification": {
+        "generated_evidence_root": "runs/native_dual_camera_verification/20260724-production-path",
+        "camera_sessions_used": 1,
+        "robot_gateway_constructed": false,
+        "robot_motion_trials_used": 0,
+        "c922_output_callbacks": 323,
+        "c922_writer_appends": 323,
+        "d405_output_callbacks": 56,
+        "d405_writer_appends": 56,
+        "apple_drop_callbacks": 0,
+        "writer_backpressure_events": 0,
+        "writers_completed": true,
+        "native_report_sha256": "b6c156ecf4017bde9a6a20cee6730fcd3e4bedc570260be1ec26fa9b2b6ee3f1",
+        "callback_ledger_sha256": "a9b98b5656c11761700f56e092f27c53cbab44c085a0953d64419a87ea2356f4",
+        "c922_source_sha256": "508836b26b5e261611b598ea05d8ee5b46255bfef635ead3dda02c30152471a7",
+        "d405_source_sha256": "d88462fd9a588627b88f2968941a6bd222585cf8683683ed82fbde8bf71b2720",
+        "c922_browser_sha256": "46ecb6bda68060d868a087d5e73137804d79644a059657f58059f2baedb944ff",
+        "discovered_issue": "d405_initial_pts_zero_sentinel_started_a_615228_second_source_timeline_and_blocked_browser_derivative",
+        "second_camera_session_used": false
+      },
+      "post_attempt_repair": {
+        "source_pts_warmup_seconds": 1.0,
+        "warmup_callbacks_retained_in_ledger": true,
+        "warmup_callbacks_excluded_from_source_writers": true,
+        "offline_post_warmup_d405_source_frames": 53,
+        "offline_post_warmup_d405_browser_frames": 53,
+        "offline_post_warmup_duration_seconds": 10.6,
+        "offline_source_sha256": "98da0037fcd761a9c8368a007e974e0ed45b9d0aa4e57aaa433c3fafb74f4bf8",
+        "offline_browser_sha256": "e136e3bab825c036b118439325260c1c5268ce0a4b6f2324033830a77c6d362f",
+        "post_repair_hardware_verification_pending": true
+      },
+      "verification": {
+        "focused_tests_passed": 54,
+        "focused_subtests_passed": 2,
+        "swift_compile_passed": true,
+        "ruff_new_module_passed": true
+      },
+      "claim_limits": {
+        "recorder_infrastructure_only": true,
+        "motion_capture_reliability": false,
+        "camera_exposure_synchronization": false,
+        "metric_depth": false,
+        "simulator_calibration": false,
+        "task_success": false,
+        "physical_authority": false
       }
     },
     "isolated_overhead_host_inventory_v1": {
