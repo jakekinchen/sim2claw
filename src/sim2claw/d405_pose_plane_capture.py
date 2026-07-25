@@ -20,10 +20,12 @@ from typing import Any, Callable
 
 import numpy as np
 
-from .d405_metric_surface_plane import (
-    fit_metric_surface_plane,
-    load_contract as load_plane_contract,
+from .d405_chessboard_surface_plane import (
+    CONTRACT_PATH as CHESSBOARD_PLANE_CONTRACT_PATH,
+    admit_chessboard_surface_planes,
+    load_contract as load_chessboard_plane_contract,
 )
+from .d405_metric_surface_plane import fit_metric_surface_plane
 from .d405_stationary_rgbd_capture import (
     _open_database_read_only,
     _parse_enumeration_device,
@@ -320,6 +322,7 @@ def orchestrate_d405_pose_plane_capture(
     identity_fn: Callable[[], dict[str, str]] = _native_camera_identity,
     clock_fn: Callable[[], float] = time.monotonic,
     contract_path: Path = CONTRACT_PATH,
+    plane_contract_path: Path = CHESSBOARD_PLANE_CONTRACT_PATH,
 ) -> dict[str, Any]:
     """Record one setup route and admit only its stationary hold depth."""
     if not operator_acknowledged:
@@ -334,7 +337,8 @@ def orchestrate_d405_pose_plane_capture(
         or accepted.get("verdict", {}).get("passed") is not True
     ):
         raise D405PosePlaneCaptureError("accepted D405 calibration lineage failed")
-    contract, plane_contract = load_contract(contract_path), load_plane_contract()
+    contract = load_contract(contract_path)
+    plane_contract = load_chessboard_plane_contract(plane_contract_path)
     intrinsics = accepted["calibration"]["intrinsics"]["depth"]
     units = float(accepted["streams"]["depth"]["depth_units_m_per_z16_unit"])
     expected_identity = accepted["device_identity"]["enumeration"]
@@ -415,21 +419,12 @@ def orchestrate_d405_pose_plane_capture(
         raise D405PosePlaneCaptureError("database identity differs from live D405")
     if len(observations) < int(contract["minimum_hold_depth_frames"]):
         raise D405PosePlaneCaptureError("no sufficient stationary hold depth frames")
-    for item in observations:
-        plane = item["plane"]
-        passed = (
-            plane["valid_pixel_fraction"]
-            >= float(plane_contract["minimum_valid_pixel_fraction"])
-            and plane["plane_inlier_fraction_of_valid"]
-            >= float(plane_contract["minimum_plane_inlier_fraction_of_valid"])
-            and plane["residuals_m"]["rms"]
-            <= float(plane_contract["maximum_plane_rms_residual_m"])
-            and plane["residuals_m"]["p95_absolute"]
-            <= float(plane_contract["maximum_plane_p95_absolute_residual_m"])
-        )
-        if not passed:
-            raise D405PosePlaneCaptureError("hold plane failed metric gates")
+    admission = admit_chessboard_surface_planes(
+        observations, contract_path=plane_contract_path
+    )
+    for item in admission["accepted_observations"]:
         item["joint_pose"] = joint_pose
+    passed = admission["passed"]
     receipt = {
         "schema_version": RECEIPT_SCHEMA,
         "proof_class": contract["proof_class"],
@@ -460,10 +455,20 @@ def orchestrate_d405_pose_plane_capture(
             "route_receipt_sha256": sha256_file(stored_route_path),
         },
         "conservative_hold_bag_window_seconds": list(window),
-        "observations": observations,
+        "plane_admission": {
+            key: value
+            for key, value in admission.items()
+            if key not in ("accepted_observations", "rejected_observations")
+        },
+        "observations": admission["accepted_observations"],
+        "rejected_observations": admission["rejected_observations"],
         "verdict": {
-            "passed": True,
-            "classification": "bounded_joint_pose_metric_plane_observations_captured",
+            "passed": passed,
+            "classification": (
+                "bounded_joint_pose_chessboard_plane_observations_captured"
+                if passed
+                else "insufficient_stable_chessboard_plane_frames_rejected"
+            ),
             "camera_to_robot_extrinsic_fitted": False,
             "policy_or_task_authority": False,
         },

@@ -121,7 +121,7 @@ def _accepted(path: Path) -> Path:
 def _fixture(
     tmp_path: Path,
     *,
-    timestamps_s: list[float] = [0.8, 1.3, 2.0, 2.6],
+    timestamps_s: list[float] = [0.8, 1.3, 1.7, 2.0, 2.6],
     torque_off: bool = True,
     identities: list[dict] | None = None,
     clocks: list[float] = [100.0, 100.1, 103.0, 103.1],
@@ -198,8 +198,11 @@ def test_capture_admits_only_frames_wholly_inside_terminal_hold(tmp_path: Path) 
     )
     assert [item["bag_timestamp_ns"] for item in receipt["observations"]] == [
         1_300_000_000,
+        1_700_000_000,
         2_000_000_000,
     ]
+    assert receipt["plane_admission"]["accepted_frame_count"] == 3
+    assert receipt["rejected_observations"] == []
     assert receipt["terminal_hold"]["joint_pose"]["sample_count"] == 3
     assert all(item["plane"]["residuals_m"]["rms"] < 1e-9 for item in receipt["observations"])
     assert all(value is False for value in receipt["authority"].values())
