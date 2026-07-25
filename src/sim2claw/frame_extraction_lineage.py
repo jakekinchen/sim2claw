@@ -21,6 +21,7 @@ DEFAULT_CONTRACT_PATH = (
     REPO_ROOT / "configs/evaluations/current_100mm_frame_lineage_v1.json"
 )
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "outputs/current-100mm-frame-lineage-v1"
+DECODER_WRAPPER_PATH = REPO_ROOT / "tools/current_frame_decoder_v1.zsh"
 
 
 class FrameExtractionLineageError(RuntimeError):
@@ -125,6 +126,7 @@ def load_contract(path: Path = DEFAULT_CONTRACT_PATH) -> dict[str, Any]:
             sha256_file(binary) == decoder[f"{name}_sha256"],
             f"{name} identity changed.",
         )
+    _require(DECODER_WRAPPER_PATH.is_file(), "Decoder wrapper is unavailable.")
     _require(
         contract["budgets"]
         == {
@@ -151,6 +153,7 @@ def _probe_arguments(contract: dict[str, Any]) -> list[str]:
         "error",
         "-select_streams",
         "v:0",
+        "-show_frames",
         "-show_entries",
         (
             "stream=codec_name,width,height,pix_fmt,avg_frame_rate,time_base,"
@@ -163,24 +166,10 @@ def _probe_arguments(contract: dict[str, Any]) -> list[str]:
 
 
 def _decode_arguments(contract: dict[str, Any], output_path: Path) -> list[str]:
-    decoder = contract["decoder"]
     video = _source_path(contract["source"]["video_path"])
-    frame_index = int(decoder["frame_index_zero_based"])
     return [
-        decoder["ffmpeg_path"],
-        "-v",
-        "error",
-        "-nostdin",
-        "-i",
+        str(DECODER_WRAPPER_PATH),
         str(video),
-        "-map",
-        "0:v:0",
-        "-vf",
-        f"select=eq(n\\,{frame_index})",
-        "-frames:v",
-        "1",
-        "-fps_mode",
-        "passthrough",
         str(output_path),
     ]
 
@@ -353,7 +342,12 @@ def materialize(
         derived_path=derived_path,
     )
     _write_json(output_root / "evaluation.json", evaluation)
+    if evaluation["verdict"] != contract["decision"]["pass_verdict"]:
+        raise FrameExtractionLineageError(
+            "Frame lineage did not pass; no consumable receipt was written."
+        )
     decoder = contract["decoder"]
+    wrapper_sha256 = sha256_file(DECODER_WRAPPER_PATH)
     unsigned = {
         "schema_version": RECEIPT_SCHEMA,
         "contract_id": contract["contract_id"],
@@ -364,6 +358,12 @@ def materialize(
         "source_timestamp_seconds": decoder["frame_pts_seconds"],
         "source_frame_index_zero_based": decoder["frame_index_zero_based"],
         "decoder_identity": {
+            "name": "sim2claw-current-frame-decoder",
+            "version": "1",
+            "executable_path": str(DECODER_WRAPPER_PATH.relative_to(REPO_ROOT)),
+            "executable_sha256": wrapper_sha256,
+        },
+        "underlying_decoder_identity": {
             "name": "ffmpeg",
             "version": decoder["ffmpeg_version"],
             "executable_path": decoder["ffmpeg_path"],
