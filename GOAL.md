@@ -2,6 +2,31 @@
 
 Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
 
+## Ordered sim-to-real transfer queue
+
+The active dependency order is:
+
+1. exact action and replay identity;
+2. metric geometry and frame registration;
+3. synchronized timing and actuation;
+4. calibrated contact and load observability;
+5. one frozen composite held-out evaluation;
+6. one deterministic geometric physical canary;
+7. ACT only after the canary is evaluator-admitted;
+8. a VLA or LLM challenger only after the ACT baseline is independently
+   admitted.
+
+Current entry conditions remain fail closed: Twin fidelity is `0 / 6`, strict
+task score is `0 / 11`, and exact-replay eligibility is `0 / 18`. The native
+dual-camera recorder is verified only for stationary camera capture. Inspect
+Robots is an optional synthetic replay harness and grants neither evaluator
+admission nor physical authority.
+
+Until the relevant earlier gate opens, defer broad SAIL work, paid GR00T,
+large ACT data generation, isolated-host camera infrastructure, new evaluator
+families, and additional simulator-only contact sweeps. None is a substitute
+for missing action identity, physical measurement, or held-out consequence.
+
 ## Active evaluator-owned Twin fidelity closure
 
 “Perfect” is now an explicit six-domain evaluator verdict, not a visual

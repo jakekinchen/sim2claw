@@ -1,6 +1,6 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T21:17:17-05:00",
+  "updated_at": "2026-07-24T22:05:05-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
   "current_milestone": "NATIVE_DUAL_CAMERA_PRODUCTION_RECORDER_VERIFIED_STATIONARY_GEOMETRY_INPUTS_REQUIRE_HUMAN",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
@@ -3726,7 +3726,8 @@
   },
   "inspect_robots_offline_integration": {
     "status": "optional_offline_vertical_slice_verified",
-    "implementation_commit": "0ade935f750c8a59b6d48ebcf05b446fc9d24823",
+    "implementation_origin_commit": "0ade935f750c8a59b6d48ebcf05b446fc9d24823",
+    "integrated_commit": "507c3c1",
     "dependency": {
       "package": "inspect-robots",
       "version": "0.22.0",
@@ -3737,6 +3738,7 @@
     "run_log": "docs/run-logs/2026-07-24-inspect-robots-offline-integration.md",
     "generated_eval_log": "runs/inspect_robots_offline/20260724-final/sim2claw-offline-replay_47a4d039.json",
     "generated_eval_log_sha256": "5810921887a848c3d2cbfb0a208dd329ec6b3dd4533a0cfda56ab517dbb8302f",
+    "generated_eval_log_present_in_current_worktree": false,
     "eval_log_schema_version": 1,
     "transition_count": 3,
     "two_camera_references_preserved": true,
@@ -3753,6 +3755,52 @@
     "focused_tests_passed": 58,
     "focused_subtests_passed": 2,
     "main_harness_recommendation": "no_go_keep_optional_until_alpha_api_and_step_provenance_boundary_stabilize"
+  },
+  "sim2real_transfer_queue": {
+    "status": "active_fail_closed",
+    "branch": "codex/sim2real-transfer-foundation",
+    "canonical_base_commit": "e32553ebc2682fa18e5c531b4b1404b073d4c6d8",
+    "recorder_integrated_commits": [
+      "a87636b",
+      "0500dde",
+      "788320d"
+    ],
+    "inspect_integrated_commits": [
+      "507c3c1",
+      "967c521"
+    ],
+    "ordered_dependencies": [
+      "exact_action_and_replay_identity",
+      "metric_geometry_and_frame_registration",
+      "synchronized_timing_and_actuation",
+      "calibrated_contact_and_load_observability",
+      "frozen_composite_held_out_evaluation",
+      "deterministic_geometric_physical_canary",
+      "act_after_canary_admission",
+      "vla_or_llm_challenger_after_act_admission"
+    ],
+    "current_evidence": {
+      "twin_fidelity_passed_domains": 0,
+      "twin_fidelity_total_domains": 6,
+      "strict_task_passed_gates": 0,
+      "strict_task_total_gates": 11,
+      "exact_replay_eligible_episodes": 0,
+      "exact_replay_total_episodes": 18,
+      "native_dual_camera_recorder": "verified_stationary_camera_only",
+      "inspect_robots": "optional_synthetic_replay_non_authoritative"
+    },
+    "deferred_until_prerequisites_open": [
+      "broad_sail",
+      "paid_groot",
+      "large_act_generation",
+      "isolated_host_camera_infrastructure",
+      "new_evaluator_families",
+      "additional_simulator_only_contact_sweeps"
+    ],
+    "training": false,
+    "paid_compute": false,
+    "physical_authority": false,
+    "push": false
   },
   "physical_authority": false
 }
