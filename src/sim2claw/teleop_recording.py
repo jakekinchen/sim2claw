@@ -862,6 +862,20 @@ EXCITATION_EPISODE_COUNT = 5
 EXCITATION_SAMPLE_HZ = 20
 EXCITATION_AMPLITUDE_DEGREES = 3.0
 EXCITATION_SLEW_DEGREES_S = 10.0
+REPOSITION_SAMPLE_HZ = 20
+REPOSITION_SLEW_DEGREES_S = 5.0
+REPOSITION_SHOULDER_DELTA_DEGREES = 1.5
+REPOSITION_ELBOW_DELTA_DEGREES = -1.5
+REPOSITION_MARGIN_DEGREES = 3.0
+REPOSITION_SCHEMA = "sim2claw.physical_follower_reposition.v1"
+REPOSITION_PLAN_KIND = "sim2claw.follower_reposition_plan.v1"
+REPOSITION_REVIEW_FIELDS = (
+    "reviewer",
+    "reviewed_at",
+    "decision_id",
+    "bounded_reposition_reviewed",
+    "collision_contact_free_workspace_confirmed",
+)
 
 
 def run_zero_displacement_hold_packet(
@@ -1272,6 +1286,368 @@ def compile_physical_excitation_packet(
     _validate_excitation_plan(packet)
     _atomic_json(packet_path, packet)
     return packet
+
+
+def _write_once(path: Path, payload: dict[str, Any]) -> None:
+    if path.exists():
+        raise RecorderError(f"Refusing to overwrite existing output: {path}.")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8") as handle:
+        json.dump(payload, handle, indent=2, sort_keys=True)
+        handle.write("\n")
+
+
+def _build_reposition_plan(preflight: dict[str, Any]) -> dict[str, Any]:
+    if not (
+        preflight.get("passed") is True
+        and preflight.get("control_source") == EXCITATION_CONTROL_SOURCE
+        and preflight.get("real_leader_opened") is False
+        and preflight.get("physical_follower_torque_enabled") is False
+        and preflight.get("device_configuration_rewritten") is False
+    ):
+        raise RecorderError("Follower-only reposition preflight did not pass.")
+    anchor = np.asarray(preflight["follower_start_degrees"], dtype=np.float64)
+    lower = np.asarray(
+        preflight["follower_calibrated_minimum"], dtype=np.float64
+    )
+    upper = np.asarray(
+        preflight["follower_calibrated_maximum"], dtype=np.float64
+    )
+    if anchor.shape != (6,) or not np.all(np.isfinite(anchor)):
+        raise RecorderError("Follower reposition start requires six finite joints.")
+    if any(
+        values.shape != (6,) or not np.all(np.isfinite(values))
+        for values in (lower, upper)
+    ):
+        raise RecorderError("Follower reposition limits require six finite joints.")
+    target = anchor.copy()
+    target[1] += REPOSITION_SHOULDER_DELTA_DEGREES
+    target[2] += REPOSITION_ELBOW_DELTA_DEGREES
+    delta = target - anchor
+    if np.any(target < lower) or np.any(target > upper):
+        raise RecorderError("Follower reposition target exceeds calibrated limits.")
+    for index in (1, 2):
+        if (
+            target[index] - REPOSITION_MARGIN_DEGREES < lower[index]
+            or target[index] + REPOSITION_MARGIN_DEGREES > upper[index]
+        ):
+            raise RecorderError(
+                "Follower reposition target lacks the required ±3 degree margin."
+            )
+    steps = max(
+        1,
+        int(
+            np.ceil(
+                float(np.max(np.abs(delta[[1, 2]])))
+                / REPOSITION_SLEW_DEGREES_S
+                * REPOSITION_SAMPLE_HZ
+            )
+        ),
+    )
+    fractions = np.arange(steps + 1, dtype=np.float64) / float(steps)
+    actions = anchor[None, :] + fractions[:, None] * delta[None, :]
+    timestamps = np.arange(steps + 1, dtype=np.float64) / REPOSITION_SAMPLE_HZ
+    plan = {
+        "schema_version": REPOSITION_SCHEMA,
+        "control_source": EXCITATION_CONTROL_SOURCE,
+        "gateway_schema": GATEWAY_SCHEMA,
+        "follower_port": preflight["follower_port"],
+        "follower_calibration_sha256": preflight["follower_calibration_sha256"],
+        "real_leader_identity_bound": False,
+        "anchor_degrees": anchor.tolist(),
+        "target_degrees": target.tolist(),
+        "relative_target_delta_degrees": delta.tolist(),
+        "changed_joints": ["shoulder_lift", "elbow_flex"],
+        "unchanged_joint_indices": [0, 3, 4, 5],
+        "sample_hz": REPOSITION_SAMPLE_HZ,
+        "slew_degrees_s": REPOSITION_SLEW_DEGREES_S,
+        "maximum_delta_degrees": float(np.max(np.abs(delta[[1, 2]]))),
+        "anchor_tolerance_degrees": [
+            POST_HOLD_BODY_TOLERANCE_DEG,
+            POST_HOLD_BODY_TOLERANCE_DEG,
+            POST_HOLD_BODY_TOLERANCE_DEG,
+            POST_HOLD_BODY_TOLERANCE_DEG,
+            POST_HOLD_BODY_TOLERANCE_DEG,
+            POST_HOLD_GRIPPER_TOLERANCE,
+        ],
+        "calibrated_minimum_degrees": lower.tolist(),
+        "calibrated_maximum_degrees": upper.tolist(),
+        "timestamps_seconds": timestamps.tolist(),
+        "actions_degrees": actions.tolist(),
+        "action_sha256": _float64_sha256(actions),
+        "dry_run": True,
+        "physical_authority": False,
+    }
+    plan["hardware_identity"] = {
+        "gateway_schema": GATEWAY_SCHEMA,
+        "follower_port": plan["follower_port"],
+        "follower_calibration_sha256": plan["follower_calibration_sha256"],
+        "real_leader_identity_bound": False,
+    }
+    return plan
+
+
+def _reposition_receipt(plan: dict[str, Any]) -> dict[str, Any]:
+    plan_sha256 = _canonical_sha256(plan)
+    return {
+        "kind": REPOSITION_PLAN_KIND,
+        "schema_version": REPOSITION_SCHEMA,
+        "packet_id": f"P18-{plan_sha256[:16]}",
+        "single_use": True,
+        "physical_packet_execution_admitted": False,
+        "independent_review": {
+            "reviewer": None,
+            "reviewed_at": None,
+            "decision_id": None,
+            "bounded_reposition_reviewed": False,
+            "collision_contact_free_workspace_confirmed": False,
+        },
+        "plan_sha256": plan_sha256,
+        "plan": plan,
+        "dry_run": True,
+        "physical_motion_commanded": False,
+        "physical_authority": False,
+    }
+
+
+def _validate_reposition_receipt(packet: dict[str, Any]) -> dict[str, Any]:
+    if (
+        packet.get("kind") != REPOSITION_PLAN_KIND
+        or packet.get("schema_version") != REPOSITION_SCHEMA
+        or packet.get("single_use") is not True
+        or not isinstance(packet.get("plan"), dict)
+    ):
+        raise RecorderError("Unsupported follower reposition plan.")
+    plan = packet["plan"]
+    if packet.get("plan_sha256") != _canonical_sha256(plan):
+        raise RecorderError("Follower reposition plan digest changed.")
+    if packet.get("packet_id") != f"P18-{packet['plan_sha256'][:16]}":
+        raise RecorderError("Follower reposition plan identity changed.")
+    if plan.get("control_source") != EXCITATION_CONTROL_SOURCE:
+        raise RecorderError("Follower reposition control source changed.")
+    hardware = plan.get("hardware_identity")
+    if (
+        not isinstance(hardware, dict)
+        or set(hardware)
+        != {
+            "gateway_schema",
+            "follower_port",
+            "follower_calibration_sha256",
+            "real_leader_identity_bound",
+        }
+        or hardware.get("gateway_schema") != GATEWAY_SCHEMA
+        or hardware.get("real_leader_identity_bound") is not False
+        or hardware.get("follower_port") != plan.get("follower_port")
+        or hardware.get("follower_calibration_sha256")
+        != plan.get("follower_calibration_sha256")
+        or not re.fullmatch(
+            r"[0-9a-f]{64}", str(hardware.get("follower_calibration_sha256") or "")
+        )
+    ):
+        raise RecorderError("Follower reposition hardware identity changed.")
+    anchor = np.asarray(plan.get("anchor_degrees"), dtype=np.float64)
+    target = np.asarray(plan.get("target_degrees"), dtype=np.float64)
+    lower = np.asarray(plan.get("calibrated_minimum_degrees"), dtype=np.float64)
+    upper = np.asarray(plan.get("calibrated_maximum_degrees"), dtype=np.float64)
+    actions = np.asarray(plan.get("actions_degrees"), dtype=np.float64)
+    timestamps = np.asarray(plan.get("timestamps_seconds"), dtype=np.float64)
+    if any(
+        values.shape != (6,) or not np.all(np.isfinite(values))
+        for values in (anchor, target, lower, upper)
+    ) or (
+        actions.ndim != 2
+        or actions.shape[1:] != (6,)
+        or timestamps.shape != (actions.shape[0],)
+        or actions.shape[0] < 2
+        or not np.all(np.isfinite(actions))
+        or not np.all(np.isfinite(timestamps))
+        or not np.all(np.diff(timestamps) > 0.0)
+        or timestamps[0] != 0.0
+    ):
+        raise RecorderError("Follower reposition trajectory is malformed.")
+    expected_delta = np.zeros(6, dtype=np.float64)
+    expected_delta[1] = REPOSITION_SHOULDER_DELTA_DEGREES
+    expected_delta[2] = REPOSITION_ELBOW_DELTA_DEGREES
+    if not np.array_equal(target - anchor, expected_delta):
+        raise RecorderError("Follower reposition target delta changed.")
+    if not np.array_equal(actions[0], anchor) or not np.array_equal(
+        actions[-1], target
+    ):
+        raise RecorderError("Follower reposition must start at anchor and end at target.")
+    if not np.all(
+        actions[:, [0, 3, 4, 5]] == anchor[[0, 3, 4, 5]][None, :]
+    ):
+        raise RecorderError("Follower reposition changed an uncommanded joint.")
+    expected_timestamps = (
+        np.arange(actions.shape[0], dtype=np.float64) / REPOSITION_SAMPLE_HZ
+    )
+    if plan.get("sample_hz") != REPOSITION_SAMPLE_HZ or not np.array_equal(
+        timestamps, expected_timestamps
+    ):
+        raise RecorderError("Follower reposition timestamps or sample rate changed.")
+    if np.max(
+        np.abs(np.diff(actions, axis=0) / np.diff(timestamps)[:, None])
+    ) > REPOSITION_SLEW_DEGREES_S + 1e-12:
+        raise RecorderError("Follower reposition interpolation exceeds its slew bound.")
+    if np.any(target < lower) or np.any(target > upper):
+        raise RecorderError("Follower reposition target exceeds calibrated limits.")
+    for index in (1, 2):
+        if (
+            target[index] - REPOSITION_MARGIN_DEGREES < lower[index]
+            or target[index] + REPOSITION_MARGIN_DEGREES > upper[index]
+        ):
+            raise RecorderError(
+                "Follower reposition target lacks the required ±3 degree margin."
+            )
+    if plan.get("action_sha256") != _float64_sha256(actions):
+        raise RecorderError("Follower reposition action hash changed.")
+    return {
+        "plan": plan,
+        "anchor": anchor,
+        "target": target,
+        "actions": actions,
+        "timestamps": timestamps,
+        "hardware": hardware,
+    }
+
+
+def reposition_physical_follower(
+    packet_path: Path,
+    *,
+    output_path: Path | None = None,
+    dry_run: bool = False,
+    operator_acknowledged: bool = False,
+    preflight_fn: Callable[[], dict[str, Any]] = (
+        physical_excitation_follower_preflight
+    ),
+    gateway_factory: Callable[[GatewayIdentity], SO101PhysicalGateway] = (
+        _physical_excitation_gateway
+    ),
+    clock_fn: Callable[[], float] = time.monotonic,
+    sleep_fn: Callable[[float], None] = time.sleep,
+) -> dict[str, Any]:
+    """Move only the follower through a bounded interpolated target."""
+
+    if dry_run:
+        if output_path is not None:
+            raise RecorderError("--output is not valid during reposition dry-run.")
+        preflight = preflight_fn()
+        receipt = _reposition_receipt(_build_reposition_plan(preflight))
+        _write_once(packet_path, receipt)
+        return receipt
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    validated = _validate_reposition_receipt(packet)
+    if not operator_acknowledged:
+        raise RecorderError("Fresh operator acknowledgement is required.")
+    if packet.get("physical_packet_execution_admitted") is not True or not all(
+        (packet.get("independent_review") or {}).get(field)
+        for field in REPOSITION_REVIEW_FIELDS
+    ):
+        raise RecorderError(
+            "Follower reposition requires the independently admitted packet."
+        )
+    if output_path is not None and output_path.exists():
+        raise RecorderError(f"Refusing to overwrite existing output: {output_path}.")
+    preflight = preflight_fn()
+    hardware = validated["hardware"]
+    for key in ("gateway_schema", "follower_port", "follower_calibration_sha256"):
+        observed = (
+            preflight.get("schema_version")
+            if key == "gateway_schema"
+            else preflight.get(key)
+        )
+        if observed != hardware[key]:
+            raise RecorderError(f"Reposition hardware identity mismatch: {key}.")
+    if not (
+        preflight.get("passed") is True
+        and preflight.get("control_source") == EXCITATION_CONTROL_SOURCE
+        and preflight.get("real_leader_opened") is False
+        and preflight.get("physical_follower_torque_enabled") is False
+        and preflight.get("device_configuration_rewritten") is False
+    ):
+        raise RecorderError("Follower-only reposition preflight did not pass.")
+    current = np.asarray(preflight["follower_start_degrees"], dtype=np.float64)
+    anchor = validated["anchor"]
+    anchor_delta = current - anchor
+    anchor_delta[4] = shortest_delta_degrees(float(current[4]), float(anchor[4]))
+    if np.any(
+        np.abs(anchor_delta)
+        > np.asarray(validated["plan"]["anchor_tolerance_degrees"])
+    ):
+        raise RecorderError("Fresh follower pose does not match the packet anchor.")
+
+    identity = GatewayIdentity(
+        leader_port=_EXCITATION_COMMAND_SOURCE_PORT,
+        follower_port=str(hardware["follower_port"]),
+        leader_calibration_sha256=_EXCITATION_COMMAND_SOURCE_SHA256,
+        follower_calibration_sha256=str(hardware["follower_calibration_sha256"]),
+    )
+    gateway = gateway_factory(identity)
+    completed = 0
+    actual: np.ndarray | None = None
+    started = clock_fn()
+    try:
+        opened = gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        opened_start = np.asarray(opened["follower_start_degrees"], dtype=np.float64)
+        opened_delta = opened_start - anchor
+        opened_delta[4] = shortest_delta_degrees(
+            float(opened_start[4]), float(anchor[4])
+        )
+        if np.any(
+            np.abs(opened_delta)
+            > np.asarray(packet["plan"]["anchor_tolerance_degrees"])
+        ):
+            raise RecorderError("Follower anchor drifted before reposition hold.")
+        for timestamp, action in zip(
+            validated["timestamps"], validated["actions"], strict=True
+        ):
+            delay = started + float(timestamp) - clock_fn()
+            if delay > 0.0:
+                sleep_fn(delay)
+            sample = gateway.sample(
+                float(timestamp),
+                exact_requested_degrees=np.asarray(action, dtype=np.float64),
+            )
+            if (
+                _float64_sha256([sample["follower_requested_degrees"]])
+                != _float64_sha256([action])
+                or _float64_sha256([sample["follower_command_degrees"]])
+                != _float64_sha256([action])
+                or sample.get("rate_limited")
+                or sample.get("safety_clamped")
+            ):
+                raise RecorderError("Follower reposition action was modified.")
+            actual = np.asarray(
+                sample["follower_actual_position_degrees"], dtype=np.float64
+            )
+            completed += 1
+        if actual is None:
+            raise RecorderError("Follower reposition produced no samples.")
+        residual = actual - validated["target"]
+        residual[4] = shortest_delta_degrees(
+            float(actual[4]), float(validated["target"][4])
+        )
+        if np.any(np.abs(residual[:5]) > POST_HOLD_BODY_TOLERANCE_DEG) or abs(
+            float(residual[5])
+        ) > POST_HOLD_GRIPPER_TOLERANCE:
+            raise RecorderError("Follower did not reach the reposition target.")
+    finally:
+        gateway.close()
+    report = {
+        **packet,
+        "status": "completed_follower_reposition",
+        "dry_run": False,
+        "completed_samples": completed,
+        "final_actual_degrees": actual.tolist(),
+        "final_residual_degrees": residual.tolist(),
+        "physical_follower_torque_enabled": False,
+        "physical_motion_commanded": True,
+        "physical_authority": False,
+        "wall_duration_seconds": max(0.0, clock_fn() - started),
+    }
+    if output_path is not None:
+        _write_once(output_path, report)
+    return report
 
 
 class PrecompiledExcitationBackend:

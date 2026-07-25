@@ -586,14 +586,15 @@ def build_parser() -> argparse.ArgumentParser:
     hold_record.add_argument("--yes", action="store_true")
     physical_excitation = subparsers.add_parser(
         "physical-excitation",
-        help="compile or execute one admitted five-episode excitation packet",
+        help="compile, reposition, or execute one follower-only excitation packet",
     )
     physical_excitation.add_argument(
-        "--phase", choices=("compile", "execute"), required=True
+        "--phase", choices=("compile", "reposition", "execute"), required=True
     )
     physical_excitation.add_argument("--packet", type=Path, required=True)
     physical_excitation.add_argument("--output", type=Path)
     physical_excitation.add_argument("--yes", action="store_true")
+    physical_excitation.add_argument("--dry-run", action="store_true")
     c922_acquisition = subparsers.add_parser(
         "c922-calibration-acquisition-preflight",
         help="dry-run the frozen 18-view C922 calibration acquisition plan",
@@ -1757,14 +1758,32 @@ def main(argv: Sequence[str] | None = None) -> int:
             RecorderError,
             compile_physical_excitation_packet,
             execute_physical_excitation_packet,
+            reposition_physical_follower,
         )
 
         try:
             if args.phase == "compile":
-                if args.output is not None:
-                    raise RecorderError("--output is only valid during execution.")
+                if args.output is not None or args.dry_run:
+                    raise RecorderError(
+                        "--output and --dry-run are only valid during reposition."
+                    )
                 result = compile_physical_excitation_packet(args.packet)
+            elif args.phase == "reposition":
+                if args.yes and args.dry_run:
+                    raise RecorderError("Choose either --yes or --dry-run.")
+                if not args.dry_run and args.output is None:
+                    raise RecorderError(
+                        "--output is required for a live reposition."
+                    )
+                result = reposition_physical_follower(
+                    args.packet,
+                    output_path=args.output,
+                    dry_run=args.dry_run,
+                    operator_acknowledged=args.yes,
+                )
             else:
+                if args.dry_run:
+                    raise RecorderError("--dry-run is only valid during reposition.")
                 if args.output is None:
                     raise RecorderError("--output is required during execution.")
                 result = execute_physical_excitation_packet(

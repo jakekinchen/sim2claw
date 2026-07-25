@@ -26,6 +26,7 @@ from sim2claw.teleop_recording import (
     compile_physical_excitation_packet,
     execute_physical_excitation_packet,
     physical_excitation_follower_preflight,
+    reposition_physical_follower,
 )
 
 
@@ -61,6 +62,20 @@ def _admit(packet_path: Path) -> dict[str, Any]:
         "reviewed_at": "2026-07-25T00:00:00Z",
         "decision_id": "P10-fixture-admission",
         "bounded_excitation_reviewed": True,
+        "collision_contact_free_workspace_confirmed": True,
+    }
+    packet_path.write_text(json.dumps(packet), encoding="utf-8")
+    return packet
+
+
+def _admit_reposition(packet_path: Path) -> dict[str, Any]:
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    packet["physical_packet_execution_admitted"] = True
+    packet["independent_review"] = {
+        "reviewer": "independent-reviewer",
+        "reviewed_at": "2026-07-25T00:00:00Z",
+        "decision_id": "P18-fixture-admission",
+        "bounded_reposition_reviewed": True,
         "collision_contact_free_workspace_confirmed": True,
     }
     packet_path.write_text(json.dumps(packet), encoding="utf-8")
@@ -320,6 +335,121 @@ def test_compile_rejects_unsafe_anchor_margin(tmp_path: Path) -> None:
     with pytest.raises(RecorderError, match="lacks ±3 degree"):
         compile_physical_excitation_packet(
             tmp_path / "packet.json", preflight_fn=lambda: report
+        )
+
+
+def test_reposition_dry_run_derives_coupled_inward_move_and_refuses_overwrite(
+    tmp_path: Path,
+) -> None:
+    packet_path = tmp_path / "reposition.json"
+    calls: list[str] = []
+
+    report = reposition_physical_follower(
+        packet_path,
+        dry_run=True,
+        preflight_fn=lambda: (_preflight(), calls.append("preflight"))[0],
+    )
+
+    anchor = np.asarray(report["plan"]["anchor_degrees"], dtype=np.float64)
+    target = np.asarray(report["plan"]["target_degrees"], dtype=np.float64)
+    actions = np.asarray(report["plan"]["actions_degrees"], dtype=np.float64)
+    assert report["plan"]["relative_target_delta_degrees"][1:3] == [1.5, -1.5]
+    assert target[1] + target[2] == pytest.approx(anchor[1] + anchor[2])
+    assert np.array_equal(target[[0, 3, 4, 5]], anchor[[0, 3, 4, 5]])
+    assert np.array_equal(actions[0], anchor)
+    assert np.array_equal(actions[-1], target)
+    assert np.max(np.abs(np.diff(actions, axis=0))) <= 5.0 / 20.0 + 1e-12
+    assert calls == ["preflight"]
+    assert report["physical_packet_execution_admitted"] is False
+    assert packet_path.is_file()
+    with pytest.raises(RecorderError, match="overwrite"):
+        reposition_physical_follower(
+            packet_path, dry_run=True, preflight_fn=_preflight
+        )
+
+
+def test_reposition_live_uses_zero_hold_and_exact_follower_actions(
+    tmp_path: Path,
+) -> None:
+    packet_path = tmp_path / "reposition.json"
+    _ = reposition_physical_follower(
+        packet_path, dry_run=True, preflight_fn=_preflight
+    )
+    packet = _admit_reposition(packet_path)
+    calls: list[tuple[bool, bool]] = []
+
+    class Gateway:
+        def __init__(self) -> None:
+            self.closed = False
+            self.targets: list[np.ndarray] = []
+            self.sample_times: list[float] = []
+
+        def open(self, *, enable_motion: bool, paired_pose_confirmed: bool):
+            calls.append((enable_motion, paired_pose_confirmed))
+            return {
+                "follower_start_degrees": packet["plan"]["anchor_degrees"],
+            }
+
+        def sample(self, elapsed_seconds: float, *, exact_requested_degrees):
+            target = np.asarray(exact_requested_degrees, dtype=np.float64)
+            self.targets.append(target.copy())
+            self.sample_times.append(float(elapsed_seconds))
+            return {
+                "follower_requested_degrees": target.tolist(),
+                "follower_command_degrees": target.tolist(),
+                "follower_actual_position_degrees": target.tolist(),
+                "rate_limited": False,
+                "safety_clamped": False,
+            }
+
+        def close(self) -> None:
+            self.closed = True
+
+    gateway = Gateway()
+    now = [0.0]
+    report = reposition_physical_follower(
+        packet_path,
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda _identity: gateway,
+        clock_fn=lambda: now[0],
+        sleep_fn=lambda seconds: now.__setitem__(0, now[0] + seconds),
+    )
+
+    assert calls == [(True, True)]
+    assert gateway.closed is True
+    assert report["status"] == "completed_follower_reposition"
+    assert report["physical_follower_torque_enabled"] is False
+    assert report["physical_motion_commanded"] is True
+    assert gateway.sample_times == report["plan"]["timestamps_seconds"]
+    assert _float64_sha256(np.stack(gateway.targets)) == report["plan"][
+        "action_sha256"
+    ]
+
+
+def test_reposition_binds_fresh_anchor_and_requires_resulting_margin(
+    tmp_path: Path,
+) -> None:
+    packet_path = tmp_path / "reposition.json"
+    reposition_physical_follower(
+        packet_path, dry_run=True, preflight_fn=_preflight
+    )
+    _admit_reposition(packet_path)
+    drifted = _preflight(anchor=[0.0, 4.0, 0.0, 0.0, 0.0, 50.0])
+    with pytest.raises(RecorderError, match="packet anchor"):
+        reposition_physical_follower(
+            packet_path,
+            operator_acknowledged=True,
+            preflight_fn=lambda: drifted,
+            gateway_factory=lambda _: pytest.fail("gateway opened before anchor check"),
+        )
+
+    marginal_packet_path = tmp_path / "marginal-packet.json"
+    marginal = _preflight(anchor=[0.0, 0.0, -86.0, 0.0, 0.0, 50.0])
+
+    with pytest.raises(RecorderError, match="required ±3 degree margin"):
+        reposition_physical_follower(
+            marginal_packet_path, dry_run=True, preflight_fn=lambda: marginal
         )
 
 
