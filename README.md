@@ -66,6 +66,17 @@ Then visit [http://127.0.0.1:4173](http://127.0.0.1:4173). The base simulator
 and Studio demo require no API key or `.env` file. FFmpeg with H.264/libx264 is
 optional for MP4 export; on macOS, install it with `brew install ffmpeg`.
 
+Run the optional Inspect Robots offline integration slice:
+
+```bash
+uv run --extra inspect-robots sim2claw inspect-robots-offline \
+  --output-dir runs/inspect_robots_offline
+```
+
+This writes an ignored upstream EvalLog from a deterministic replay fixture. It
+opens no camera, simulator, serial device, robot gateway, or motion authority;
+the result is compatibility proof, not evaluator admission or task success.
+
 ## Reproduce the demo
 
 ### 1. Run the deterministic simulation probe

@@ -209,6 +209,22 @@ def build_parser() -> argparse.ArgumentParser:
     )
     pipeline_status.add_argument("--project", type=Path, required=True)
 
+    inspect_robots_offline = subparsers.add_parser(
+        "inspect-robots-offline",
+        help="run the optional Inspect Robots deterministic offline replay slice",
+    )
+    inspect_robots_offline.add_argument(
+        "--fixture",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/integrations/inspect_robots_offline_fixture.json",
+    )
+    inspect_robots_offline.add_argument(
+        "--output-dir",
+        type=Path,
+        default=REPO_ROOT / "runs/inspect_robots_offline",
+    )
+
     factory_inspect = subparsers.add_parser(
         "factory-inspect",
         help="verify a project and resolve its complete learning-factory graph",
@@ -1111,6 +1127,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .teleop_recording import physical_gateway_preflight
 
         print(json.dumps(physical_gateway_preflight(), indent=2, sort_keys=True))
+        return 0
+    if args.command == "inspect-robots-offline":
+        try:
+            from .inspect_robots_adapter import (
+                InspectRobotsIntegrationError,
+                run_offline_slice,
+            )
+        except ImportError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        try:
+            report = run_offline_slice(
+                fixture_path=args.fixture,
+                output_dir=args.output_dir,
+            )
+        except InspectRobotsIntegrationError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
         return 0
     if args.command == "physical-measurement-baseline":
         from .current_workcell_measurement import capture_torque_off_baseline
