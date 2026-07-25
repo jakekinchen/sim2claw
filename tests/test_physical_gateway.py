@@ -476,6 +476,29 @@ class PhysicalGatewayTest(unittest.TestCase):
             gateway.sample(0.05, zero_displacement_hold=True)
         gateway.close()
 
+    def test_precompiled_target_is_sent_byte_identically(self) -> None:
+        self.follower.values[:] = self.leader.values
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            sleep=lambda _seconds: None,
+        )
+        gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        target = gateway.zero_displacement_arm_target.copy()
+        target[0] += 0.5
+
+        sample = gateway.sample(0.05, exact_requested_degrees=target)
+
+        np.testing.assert_array_equal(
+            sample["follower_requested_degrees"], target
+        )
+        np.testing.assert_array_equal(sample["follower_command_degrees"], target)
+        self.assertTrue(sample["precompiled_exact_action"])
+        self.assertFalse(sample["rate_limited"])
+        self.assertFalse(sample["safety_clamped"])
+        gateway.close()
+        self.assertFalse(self.follower.bus.torque)
+
     def test_large_starting_mismatch_blocks_registration_before_torque(self) -> None:
         self.follower.values[1] = 90.0
         gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)

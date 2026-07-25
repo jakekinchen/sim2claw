@@ -3853,6 +3853,16 @@
     "split_groups": ["train", "validation", "held_out"],
     "held_out_open_count": 1,
     "current_eligible_physical_cohort_count": 0,
+    "acquisition_seam": {
+      "status": "offline_verified_pending_independent_packet_admission",
+      "command": "sim2claw physical-excitation",
+      "episode_count": 5,
+      "body_joint_amplitude_degrees": 3.0,
+      "body_joint_peak_to_peak_degrees": 6.0,
+      "compiled_slew_degrees_s": 10.0,
+      "gripper_fixed": true,
+      "hardware_runs": 0
+    },
     "proof_class": "replay_diagnostic",
     "evaluator_admission": false,
     "physical_authority": false
@@ -3909,7 +3919,8 @@
       "P3_c922_acquisition_preflight",
       "P4_physical_recorder_exact_replay_adapter",
       "P5_eligible_physical_recorded_replay",
-      "P9_physical_timing_actuation_cohort_adapter"
+      "P9_physical_timing_actuation_cohort_adapter",
+      "P10_admission_gated_physical_excitation_acquisition"
     ],
     "next_gate": "owner_physical_inputs_for_metric_acquisition"
   },

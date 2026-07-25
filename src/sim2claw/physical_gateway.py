@@ -742,7 +742,12 @@ class SO101PhysicalGateway:
         elapsed_seconds: float,
         *,
         zero_displacement_hold: bool = False,
+        exact_requested_degrees: np.ndarray | None = None,
     ) -> dict[str, Any]:
+        if zero_displacement_hold and exact_requested_degrees is not None:
+            raise PhysicalGatewayError(
+                "Choose either the runtime hold target or one precompiled target."
+            )
         if (
             not self.connected
             or not self.torque_enabled
@@ -756,10 +761,11 @@ class SO101PhysicalGateway:
         retries_before = self.bus_read_retries_total
         leader = self._motion_read("leader position", self.leader.get_action)
         leader_read_completed_monotonic = self.clock()
-        if zero_displacement_hold:
+        exact_precompiled = exact_requested_degrees is not None
+        if zero_displacement_hold or exact_precompiled:
             if self.zero_displacement_arm_target is None:
                 raise PhysicalGatewayError(
-                    "Zero-displacement hold lacks a fresh pre-arm follower target."
+                    "Exact physical execution lacks a fresh pre-arm follower anchor."
                 )
             registration = paired_pose_registration_report(
                 leader,
@@ -767,10 +773,38 @@ class SO101PhysicalGateway:
             )
             if not registration["paired_pose_registration_ready"]:
                 raise PhysicalGatewayError(
-                    "Paired pose left the existing registration limits during hold."
+                    "Paired pose left the existing registration limits during "
+                    "exact physical execution."
                 )
-            requested = self.zero_displacement_arm_target.copy()
-            relative_delta = np.zeros(len(ROBOT_JOINTS), dtype=np.float64)
+            if exact_precompiled:
+                requested = np.asarray(
+                    exact_requested_degrees, dtype=np.float64
+                ).copy()
+                _finite(requested, "precompiled requested target")
+                relative_delta = requested - self.zero_displacement_arm_target
+                relative_delta[4] = shortest_delta_degrees(
+                    float(requested[4]),
+                    float(self.zero_displacement_arm_target[4]),
+                )
+                limits = np.asarray(
+                    [BODY_EXCURSION_LIMIT_DEG] * 4
+                    + [WRIST_ROLL_EXCURSION_LIMIT_DEG, GRIPPER_EXCURSION_LIMIT],
+                    dtype=np.float64,
+                )
+                if np.any(np.abs(relative_delta) > limits):
+                    raise PhysicalGatewayError(
+                        "Precompiled target exceeds the reviewed excursion envelope."
+                    )
+                if not np.array_equal(
+                    np.clip(requested, self.lower_limits, self.upper_limits),
+                    requested,
+                ):
+                    raise PhysicalGatewayError(
+                        "Precompiled target exceeds calibrated follower limits."
+                    )
+            else:
+                requested = self.zero_displacement_arm_target.copy()
+                relative_delta = np.zeros(len(ROBOT_JOINTS), dtype=np.float64)
         else:
             requested, relative_delta = bounded_relative_target(
                 leader,
@@ -788,17 +822,28 @@ class SO101PhysicalGateway:
             lower_limits=self.lower_limits,
             upper_limits=self.upper_limits,
         )
-        if zero_displacement_hold and not _same_float64_bytes(command, requested):
+        if (zero_displacement_hold or exact_precompiled) and not _same_float64_bytes(
+            command, requested
+        ):
             raise PhysicalGatewayError(
-                "Zero-displacement hold would require rate limiting, clamping, "
-                "or a target correction; nothing was sent."
+                (
+                    "Zero-displacement hold"
+                    if zero_displacement_hold
+                    else "Precompiled exact target"
+                )
+                + " would require rate limiting, clamping, or correction; "
+                "nothing was sent."
             )
         command_call_started_monotonic = self.clock()
         sent = action_vector(self.follower.send_action(_position_dict(command)))
         command_call_completed_monotonic = self.clock()
-        if zero_displacement_hold and not _same_float64_bytes(sent, requested):
+        if (zero_displacement_hold or exact_precompiled) and not _same_float64_bytes(
+            sent, requested
+        ):
             raise PhysicalGatewayError(
-                "Gateway did not report the exact hold target as sent; torque will be released."
+                "Gateway did not report the exact "
+                + ("hold target" if zero_displacement_hold else "precompiled target")
+                + " as sent; torque will be released."
             )
         actual = self._motion_read("follower position", self.follower.get_observation)
         position_read_completed_monotonic = self.clock()
@@ -986,6 +1031,7 @@ class SO101PhysicalGateway:
             "gripper_contact_hold": gripper_contact_hold,
             "gripper_contact_deflection": float(abs(sent_actual_delta[5])),
             "zero_displacement_hold": zero_displacement_hold,
+            "precompiled_exact_action": exact_precompiled,
             "zero_displacement_target_source": (
                 "fresh_torque_off_follower_read_immediately_before_arming"
                 if zero_displacement_hold

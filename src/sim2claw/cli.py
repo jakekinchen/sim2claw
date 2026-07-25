@@ -584,6 +584,16 @@ def build_parser() -> argparse.ArgumentParser:
         default=REPO_ROOT / "configs/hardware/p6_zero_displacement_hold_packet.json",
     )
     hold_record.add_argument("--yes", action="store_true")
+    physical_excitation = subparsers.add_parser(
+        "physical-excitation",
+        help="compile or execute one admitted five-episode excitation packet",
+    )
+    physical_excitation.add_argument(
+        "--phase", choices=("compile", "execute"), required=True
+    )
+    physical_excitation.add_argument("--packet", type=Path, required=True)
+    physical_excitation.add_argument("--output", type=Path)
+    physical_excitation.add_argument("--yes", action="store_true")
     c922_acquisition = subparsers.add_parser(
         "c922-calibration-acquisition-preflight",
         help="dry-run the frozen 18-view C922 calibration acquisition plan",
@@ -1668,6 +1678,32 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(receipt, indent=2, sort_keys=True))
+        return 0
+    if args.command == "physical-excitation":
+        from .physical_gateway import PhysicalGatewayError
+        from .teleop_recording import (
+            RecorderError,
+            compile_physical_excitation_packet,
+            execute_physical_excitation_packet,
+        )
+
+        try:
+            if args.phase == "compile":
+                if args.output is not None:
+                    raise RecorderError("--output is only valid during execution.")
+                result = compile_physical_excitation_packet(args.packet)
+            else:
+                if args.output is None:
+                    raise RecorderError("--output is required during execution.")
+                result = execute_physical_excitation_packet(
+                    args.packet,
+                    args.output,
+                    operator_acknowledged=args.yes,
+                )
+        except (OSError, ValueError, RecorderError, PhysicalGatewayError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     if args.command == "c922-calibration-acquisition-preflight":
         from .c922_calibration_acquisition import preflight_and_write

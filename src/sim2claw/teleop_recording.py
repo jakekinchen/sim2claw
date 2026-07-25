@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import shutil
 import threading
@@ -34,10 +35,14 @@ from .overhead_video import (
 )
 from .paths import REPO_ROOT
 from .physical_gateway import (
+    BODY_COMMAND_RATE_LIMIT_DEG_S,
     GATEWAY_SCHEMA,
     GatewayIdentity,
+    POST_HOLD_BODY_TOLERANCE_DEG,
+    POST_HOLD_GRIPPER_TOLERANCE,
     SO101PhysicalGateway,
     inspect_physical_gateway,
+    shortest_delta_degrees,
     synchronize_physical_gateway,
 )
 from .physical_sim_replay import replay_physical_recording
@@ -726,6 +731,11 @@ class ZeroDisplacementHoldBackend:
 
 
 HOLD_PACKET_KIND = "sim2claw.zero_displacement_hold_packet.v1"
+EXCITATION_PACKET_KIND = "sim2claw.precompiled_physical_excitation_packet.v1"
+EXCITATION_EPISODE_COUNT = 5
+EXCITATION_SAMPLE_HZ = 20
+EXCITATION_AMPLITUDE_DEGREES = 3.0
+EXCITATION_SLEW_DEGREES_S = 10.0
 
 
 def run_zero_displacement_hold_packet(
@@ -774,17 +784,7 @@ def run_zero_displacement_hold_packet(
     if any(constraints.get(key) != value for key, value in required_constraints.items()):
         raise RecorderError("Zero-displacement packet constraints changed.")
 
-    state = json.loads(
-        (repo_root / "docs/autonomous-workflow/project_state.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    authority = state["twin_fidelity_closure_transaction"]["authority"]
-    if not (
-        authority.get("owner_authorized_bounded_robot_motion") is True
-        and authority.get("owner_workspace_clear_assertion") is True
-    ):
-        raise RecorderError("Current owner motion/workspace authority is closed.")
+    _motion_authority(repo_root)
 
     label = str(packet["recording"]["label"])
     for receipt_path in (
@@ -850,6 +850,586 @@ def run_zero_displacement_hold_packet(
         "physical_authority_created": False,
         "proof_class": "physical_teleoperation_source_unqualified",
     }
+
+
+def _float64_sha256(values: Any) -> str:
+    array = np.asarray(values, dtype="<f8", order="C")
+    return hashlib.sha256(array.tobytes(order="C")).hexdigest()
+
+
+def _canonical_sha256(payload: Any) -> str:
+    return hashlib.sha256(
+        json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
+    ).hexdigest()
+
+
+def _motion_authority(repo_root: Path) -> None:
+    state = json.loads(
+        (repo_root / "docs/autonomous-workflow/project_state.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    authority = state["twin_fidelity_closure_transaction"]["authority"]
+    if not (
+        authority.get("owner_authorized_bounded_robot_motion") is True
+        and authority.get("owner_workspace_clear_assertion") is True
+    ):
+        raise RecorderError("Current owner motion/workspace authority is closed.")
+
+
+def _triangle_profile(direction: float) -> np.ndarray:
+    outward = np.arange(0.0, 3.0 + 0.5, 0.5)
+    across = np.arange(2.5, -3.0 - 0.5, -0.5)
+    home = np.arange(-2.5, 0.0 + 0.5, 0.5)
+    return direction * np.concatenate((outward, across, home)).astype(np.float64)
+
+
+def _validate_excitation_plan(packet: dict[str, Any]) -> dict[str, Any]:
+    if (
+        packet.get("kind") != EXCITATION_PACKET_KIND
+        or packet.get("single_use") is not True
+        or not isinstance(packet.get("plan"), dict)
+    ):
+        raise RecorderError("Unsupported physical excitation packet.")
+    plan = packet["plan"]
+    if packet.get("plan_sha256") != _canonical_sha256(plan):
+        raise RecorderError("Physical excitation plan digest changed.")
+    if packet.get("packet_id") != f"P10-{packet['plan_sha256'][:16]}":
+        raise RecorderError("Physical excitation packet identity changed.")
+    required_plan = {
+        "sample_hz": EXCITATION_SAMPLE_HZ,
+        "anchor_source": "fresh_torque_off_follower_read",
+        "amplitude_degrees": EXCITATION_AMPLITUDE_DEGREES,
+        "compiled_slew_degrees_s": EXCITATION_SLEW_DEGREES_S,
+        "gateway_body_slew_limit_degrees_s": BODY_COMMAND_RATE_LIMIT_DEG_S,
+        "gripper_fixed": True,
+        "no_ik_offset_clip_resample_suffix_or_assistance": True,
+    }
+    if any(plan.get(key) != value for key, value in required_plan.items()):
+        raise RecorderError("Physical excitation family or safety contract changed.")
+    expected_tolerance = [
+        POST_HOLD_BODY_TOLERANCE_DEG,
+        POST_HOLD_BODY_TOLERANCE_DEG,
+        POST_HOLD_BODY_TOLERANCE_DEG,
+        POST_HOLD_BODY_TOLERANCE_DEG,
+        POST_HOLD_BODY_TOLERANCE_DEG,
+        POST_HOLD_GRIPPER_TOLERANCE,
+    ]
+    if plan.get("anchor_tolerance_degrees") != expected_tolerance:
+        raise RecorderError("Physical excitation anchor tolerance changed.")
+    hardware = plan.get("hardware_identity")
+    if (
+        not isinstance(hardware, dict)
+        or hardware.get("gateway_schema") != GATEWAY_SCHEMA
+    ):
+        raise RecorderError("Physical excitation gateway identity changed.")
+    episodes = plan.get("episodes")
+    if not isinstance(episodes, list) or len(episodes) != EXCITATION_EPISODE_COUNT:
+        raise RecorderError("Physical excitation requires exactly five episodes.")
+    anchor = np.asarray(plan.get("anchor_degrees"), dtype=np.float64)
+    lower = np.asarray(plan.get("calibrated_minimum_degrees"), dtype=np.float64)
+    upper = np.asarray(plan.get("calibrated_maximum_degrees"), dtype=np.float64)
+    if any(values.shape != (6,) for values in (anchor, lower, upper)):
+        raise RecorderError("Excitation anchor and calibrated limits require six joints.")
+    if not all(np.all(np.isfinite(values)) for values in (anchor, lower, upper)):
+        raise RecorderError("Excitation anchor or calibrated limits are invalid.")
+    seen: set[str] = set()
+    covered: set[int] = set()
+    action_tensors: list[np.ndarray] = []
+    assignments = ((0, 1.0), (1, 1.0), (2, 1.0), (0, -1.0), (1, -1.0))
+    expected_timestamps = (
+        np.arange(25, dtype=np.float64) / EXCITATION_SAMPLE_HZ
+    )
+    for episode_index, (episode, assignment) in enumerate(
+        zip(episodes, assignments, strict=True), start=1
+    ):
+        episode_id = str(episode.get("episode_id") or "")
+        if episode_id != f"excitation-{episode_index:02d}" or episode_id in seen:
+            raise RecorderError("Excitation episode identities must be unique.")
+        seen.add(episode_id)
+        timestamps = np.asarray(episode.get("timestamps_seconds"), dtype=np.float64)
+        actions = np.asarray(episode.get("actions_degrees"), dtype=np.float64)
+        if (
+            timestamps.ndim != 1
+            or timestamps.size < 4
+            or actions.shape != (timestamps.size, 6)
+            or not np.all(np.isfinite(timestamps))
+            or not np.all(np.isfinite(actions))
+            or not np.all(np.diff(timestamps) > 0.0)
+            or timestamps[0] != 0.0
+            or timestamps[-1] < 1.0
+        ):
+            raise RecorderError("Excitation episode timing/action shape changed.")
+        joint_index, direction = assignment
+        expected_actions = np.repeat(anchor[None, :], timestamps.size, axis=0)
+        expected_actions[:, joint_index] += _triangle_profile(direction)
+        if (
+            not np.array_equal(timestamps, expected_timestamps)
+            or not np.array_equal(actions, expected_actions)
+            or episode.get("body_joint") != ROBOT_JOINTS[joint_index]
+            or episode.get("direction")
+            != ("positive_first" if direction > 0 else "negative_first")
+        ):
+            raise RecorderError("Physical excitation trajectory family changed.")
+        if episode.get("gateway_action_degrees_sha256") != _float64_sha256(actions):
+            raise RecorderError(
+                f"Excitation gateway-degree action hash changed: {episode_id}."
+            )
+        if episode.get("canonical_action_radians_sha256") != _float64_sha256(
+            np.deg2rad(actions)
+        ):
+            raise RecorderError(
+                f"Excitation canonical-radian action hash changed: {episode_id}."
+            )
+        if episode.get("timestamp_sha256") != _float64_sha256(timestamps):
+            raise RecorderError(f"Excitation timestamp hash changed: {episode_id}.")
+        if not np.array_equal(actions[0], anchor) or not np.array_equal(
+            actions[-1], anchor
+        ):
+            raise RecorderError("Every excitation must begin and end at its anchor.")
+        if not np.array_equal(actions[:, 5], np.full(timestamps.size, anchor[5])):
+            raise RecorderError("Excitation packet changed the gripper target.")
+        if np.any(actions < lower) or np.any(actions > upper):
+            raise RecorderError("Excitation packet exceeds calibrated joint limits.")
+        slew = np.abs(np.diff(actions, axis=0) / np.diff(timestamps)[:, None])
+        if float(np.max(slew)) > EXCITATION_SLEW_DEGREES_S + 1e-12:
+            raise RecorderError("Excitation packet exceeds its conservative slew.")
+        ranges = np.ptp(actions[:, :5], axis=0)
+        active = np.flatnonzero(ranges >= 5.0)
+        if active.size != 1 or np.count_nonzero(ranges) != 1:
+            raise RecorderError("Each excitation must vary exactly one body joint.")
+        covered.add(int(active[0]))
+        action_tensors.append(actions)
+    if len(covered) < 3:
+        raise RecorderError("Excitation cohort covers fewer than three body joints.")
+    aggregate_actions = np.concatenate(action_tensors, axis=0)
+    if plan.get("aggregate_gateway_action_degrees_sha256") != _float64_sha256(
+        aggregate_actions
+    ):
+        raise RecorderError("Aggregate excitation action digest changed.")
+    return {
+        "plan": plan,
+        "anchor": anchor,
+        "lower": lower,
+        "upper": upper,
+        "covered_body_joint_indices": sorted(covered),
+    }
+
+
+def compile_physical_excitation_packet(
+    packet_path: Path,
+    *,
+    preflight_fn: Callable[[], dict[str, Any]] = physical_gateway_preflight,
+) -> dict[str, Any]:
+    """Read one torque-off pose and freeze five conservative exact trajectories."""
+
+    preflight = preflight_fn()
+    if not (
+        preflight.get("passed") is True
+        and preflight.get("paired_pose_registration_ready") is True
+        and preflight.get("physical_follower_torque_enabled") is False
+        and preflight.get("device_configuration_rewritten") is False
+    ):
+        raise RecorderError("Fresh torque-off paired-pose preflight did not pass.")
+    anchor = np.asarray(preflight.get("follower_start_degrees"), dtype=np.float64)
+    lower = np.asarray(
+        preflight.get("follower_calibrated_minimum"), dtype=np.float64
+    )
+    upper = np.asarray(
+        preflight.get("follower_calibrated_maximum"), dtype=np.float64
+    )
+    if any(values.shape != (6,) for values in (anchor, lower, upper)):
+        raise RecorderError("Fresh follower pose or calibrated limits are incomplete.")
+    for joint_index in (0, 1, 2):
+        if (
+            anchor[joint_index] - EXCITATION_AMPLITUDE_DEGREES
+            < lower[joint_index]
+            or anchor[joint_index] + EXCITATION_AMPLITUDE_DEGREES
+            > upper[joint_index]
+        ):
+            raise RecorderError(
+                f"Fresh pose lacks ±3 degree calibrated margin on "
+                f"{ROBOT_JOINTS[joint_index]}."
+            )
+    timestamps = np.arange(25, dtype=np.float64) / EXCITATION_SAMPLE_HZ
+    assignments = ((0, 1.0), (1, 1.0), (2, 1.0), (0, -1.0), (1, -1.0))
+    episodes: list[dict[str, Any]] = []
+    for index, (joint_index, direction) in enumerate(assignments, start=1):
+        actions = np.repeat(anchor[None, :], timestamps.size, axis=0)
+        actions[:, joint_index] += _triangle_profile(direction)
+        episodes.append(
+            {
+                "episode_id": f"excitation-{index:02d}",
+                "body_joint": ROBOT_JOINTS[joint_index],
+                "direction": "positive_first" if direction > 0 else "negative_first",
+                "timestamps_seconds": timestamps.tolist(),
+                "actions_degrees": actions.tolist(),
+                "timestamp_sha256": _float64_sha256(timestamps),
+                "gateway_action_degrees_sha256": _float64_sha256(actions),
+                "canonical_action_radians_sha256": _float64_sha256(
+                    np.deg2rad(actions)
+                ),
+            }
+        )
+    plan = {
+        "sample_hz": EXCITATION_SAMPLE_HZ,
+        "anchor_source": "fresh_torque_off_follower_read",
+        "anchor_degrees": anchor.tolist(),
+        "anchor_tolerance_degrees": [
+            POST_HOLD_BODY_TOLERANCE_DEG,
+            POST_HOLD_BODY_TOLERANCE_DEG,
+            POST_HOLD_BODY_TOLERANCE_DEG,
+            POST_HOLD_BODY_TOLERANCE_DEG,
+            POST_HOLD_BODY_TOLERANCE_DEG,
+            POST_HOLD_GRIPPER_TOLERANCE,
+        ],
+        "calibrated_minimum_degrees": lower.tolist(),
+        "calibrated_maximum_degrees": upper.tolist(),
+        "amplitude_degrees": EXCITATION_AMPLITUDE_DEGREES,
+        "compiled_slew_degrees_s": EXCITATION_SLEW_DEGREES_S,
+        "gateway_body_slew_limit_degrees_s": BODY_COMMAND_RATE_LIMIT_DEG_S,
+        "gripper_fixed": True,
+        "no_ik_offset_clip_resample_suffix_or_assistance": True,
+        "hardware_identity": {
+            "gateway_schema": preflight["schema_version"],
+            "leader_port": preflight["leader_port"],
+            "follower_port": preflight["follower_port"],
+            "leader_calibration_sha256": preflight[
+                "leader_calibration_sha256"
+            ],
+            "follower_calibration_sha256": preflight[
+                "follower_calibration_sha256"
+            ],
+        },
+        "aggregate_gateway_action_degrees_sha256": _float64_sha256(
+            np.concatenate(
+                [
+                    np.asarray(episode["actions_degrees"], dtype=np.float64)
+                    for episode in episodes
+                ],
+                axis=0,
+            )
+        ),
+        "episodes": episodes,
+    }
+    plan_sha256 = _canonical_sha256(plan)
+    packet = {
+        "kind": EXCITATION_PACKET_KIND,
+        "packet_id": f"P10-{plan_sha256[:16]}",
+        "single_use": True,
+        "physical_packet_execution_admitted": False,
+        "independent_review": {
+            "reviewer": None,
+            "reviewed_at": None,
+            "decision_id": None,
+            "bounded_excitation_reviewed": False,
+            "collision_contact_free_workspace_confirmed": False,
+        },
+        "plan_sha256": plan_sha256,
+        "plan": plan,
+    }
+    _validate_excitation_plan(packet)
+    _atomic_json(packet_path, packet)
+    return packet
+
+
+class PrecompiledExcitationBackend:
+    proof_class = "physical_teleoperation_source_unqualified"
+
+    def __init__(
+        self,
+        request: dict[str, Any],
+        preflight: dict[str, Any],
+        *,
+        plan: dict[str, Any],
+        episode: dict[str, Any],
+        gateway_factory: Callable[[GatewayIdentity], SO101PhysicalGateway] = (
+            SO101PhysicalGateway
+        ),
+    ):
+        self.request = request
+        self.plan = plan
+        self.episode = episode
+        identity = _gateway_identity(preflight)
+        hardware = plan["hardware_identity"]
+        observed_identity = {
+            "gateway_schema": GATEWAY_SCHEMA,
+            "leader_port": identity.leader_port,
+            "follower_port": identity.follower_port,
+            "leader_calibration_sha256": identity.leader_calibration_sha256,
+            "follower_calibration_sha256": identity.follower_calibration_sha256,
+        }
+        if observed_identity != hardware:
+            raise RecorderError(
+                "Recorder hardware identity differs from the admitted packet."
+            )
+        self.gateway = gateway_factory(identity)
+        self.index = 0
+        self.actions = np.asarray(episode["actions_degrees"], dtype=np.float64)
+        self.timestamps = np.asarray(
+            episode["timestamps_seconds"], dtype=np.float64
+        )
+
+    @property
+    def recording_complete(self) -> bool:
+        return self.index == len(self.timestamps)
+
+    def open(self) -> dict[str, Any]:
+        report = self.gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        current = np.asarray(report["follower_registration_degrees"])
+        anchor = np.asarray(self.plan["anchor_degrees"])
+        delta = current - anchor
+        delta[4] = shortest_delta_degrees(float(current[4]), float(anchor[4]))
+        tolerance = np.asarray(self.plan["anchor_tolerance_degrees"])
+        if np.any(np.abs(delta) > tolerance):
+            self.gateway.close()
+            raise RecorderError(
+                "Fresh follower pose no longer matches the compiled anchor; "
+                "torque released."
+            )
+        return {
+            **report,
+            "proof_class": self.proof_class,
+            "pose_inputs_available": False,
+            "physical_follower_torque_enabled": True,
+            "precompiled_gateway_action_degrees_sha256": self.episode[
+                "gateway_action_degrees_sha256"
+            ],
+        }
+
+    def sample(self, _elapsed_seconds: float) -> dict[str, Any]:
+        if self.recording_complete:
+            raise RecorderError("Precompiled excitation was sampled after completion.")
+        target = self.actions[self.index]
+        sample = self.gateway.sample(
+            float(self.timestamps[self.index]),
+            exact_requested_degrees=target,
+        )
+        if (
+            _float64_sha256([sample["follower_requested_degrees"]])
+            != _float64_sha256(target[None, :])
+            or _float64_sha256([sample["follower_command_degrees"]])
+            != _float64_sha256(target[None, :])
+            or sample.get("rate_limited")
+            or sample.get("safety_clamped")
+        ):
+            raise RecorderError(
+                "Gateway did not preserve the precompiled float64 action bytes."
+            )
+        sample["elapsed_seconds"] = float(self.timestamps[self.index])
+        self.index += 1
+        return sample
+
+    def close(self) -> None:
+        self.gateway.close()
+
+
+def _wait_for_excitation_recording(
+    manager: Any,
+    *,
+    timeout_seconds: float,
+    clock_fn: Callable[[], float],
+    sleep_fn: Callable[[float], None],
+) -> None:
+    deadline = clock_fn() + timeout_seconds
+    while True:
+        state = manager.snapshot()
+        status = state.get("status")
+        if status == "awaiting_label":
+            return
+        if status == "error" or state.get("last_error"):
+            raise RecorderError(str(state.get("error") or state.get("last_error")))
+        if clock_fn() >= deadline:
+            raise RecorderError("Precompiled excitation recording timed out.")
+        sleep_fn(0.01)
+
+
+def execute_physical_excitation_packet(
+    packet_path: Path,
+    output_directory: Path,
+    *,
+    repo_root: Path = REPO_ROOT,
+    operator_acknowledged: bool = False,
+    preflight_fn: Callable[[], dict[str, Any]] = physical_gateway_preflight,
+    manager_factory: Callable[..., Any] | None = None,
+    materialize_fn: Callable[..., dict[str, Any]] | None = None,
+    clock_fn: Callable[[], float] = time.monotonic,
+    sleep_fn: Callable[[float], None] = time.sleep,
+) -> dict[str, Any]:
+    """Execute one admitted immutable five-episode packet and wire P4/P9."""
+
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    if (
+        packet.get("physical_packet_execution_admitted") is not True
+        or not all(
+            (packet.get("independent_review") or {}).get(field)
+            for field in (
+                "reviewer",
+                "reviewed_at",
+                "decision_id",
+                "bounded_excitation_reviewed",
+                "collision_contact_free_workspace_confirmed",
+            )
+        )
+    ):
+        raise RecorderError(
+            "This excitation packet is pending independent admission; "
+            "no devices were opened."
+        )
+    if not operator_acknowledged:
+        raise RecorderError("Fresh operator acknowledgement is required.")
+    validated = _validate_excitation_plan(packet)
+    _motion_authority(repo_root)
+    plan = validated["plan"]
+    preflight = preflight_fn()
+    hardware = plan["hardware_identity"]
+    for key, expected in hardware.items():
+        observed = (
+            preflight.get("schema_version")
+            if key == "gateway_schema"
+            else preflight.get(key)
+        )
+        if observed != expected:
+            raise RecorderError(f"Excitation hardware identity mismatch: {key}.")
+    if not (
+        preflight.get("passed") is True
+        and preflight.get("paired_pose_registration_ready") is True
+        and preflight.get("physical_follower_torque_enabled") is False
+        and preflight.get("device_configuration_rewritten") is False
+    ):
+        raise RecorderError("Fresh torque-off execution preflight did not pass.")
+    current = np.asarray(preflight["follower_start_degrees"], dtype=np.float64)
+    anchor = validated["anchor"]
+    delta = current - anchor
+    delta[4] = shortest_delta_degrees(float(current[4]), float(anchor[4]))
+    if np.any(np.abs(delta) > np.asarray(plan["anchor_tolerance_degrees"])):
+        raise RecorderError("Fresh follower pose does not match the packet anchor.")
+
+    output_directory = output_directory.resolve()
+    p4_root = output_directory / "p4"
+    cohort_entries: list[dict[str, str]] = []
+    completed: list[dict[str, Any]] = []
+    manager_type = manager_factory or TeleopRecordingManager
+    if materialize_fn is None:
+        from .replay_eligibility import materialize_physical_recording_exact_replay
+
+        materialize_fn = materialize_physical_recording_exact_replay
+    try:
+        for index, episode in enumerate(plan["episodes"], start=1):
+            label = f"{packet['packet_id'].lower()}-{episode['episode_id']}"
+            for receipt_path in (
+                repo_root / "datasets/manipulation_source_recordings"
+            ).glob("*/recording_receipt.json"):
+                receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+                if receipt.get("label") == label:
+                    raise RecorderError(
+                        f"Single-use excitation already finalized: {episode['episode_id']}."
+                    )
+            manager = manager_type(
+                repo_root=repo_root,
+                backend_factory=lambda request, status, episode=episode: (
+                    PrecompiledExcitationBackend(
+                        request,
+                        status,
+                        plan=plan,
+                        episode=episode,
+                    )
+                ),
+            )
+            manager.start(
+                {
+                    "mode": "physical_follower",
+                    "source_square": "a1",
+                    "target_square": "a1",
+                    "sample_hz": EXCITATION_SAMPLE_HZ,
+                    "physical_safety_acknowledged": True,
+                    "server_owned_prestart_sequence": True,
+                    "action_owner": (
+                        "independently_reviewed_precompiled_excitation_packet"
+                    ),
+                }
+            )
+            _wait_for_excitation_recording(
+                manager,
+                timeout_seconds=10.0,
+                clock_fn=clock_fn,
+                sleep_fn=sleep_fn,
+            )
+            saved = manager.finalize(
+                {
+                    "label": label,
+                    "skill": "recovery",
+                    "outcome": "unreviewed",
+                    "notes": (
+                        f"single-use {packet['packet_id']} "
+                        f"{episode['episode_id']}; exact packet bytes"
+                    ),
+                }
+            )
+            recording_path = repo_root / str(saved["saved_path"])
+            episode_root = p4_root / episode["episode_id"]
+            manifest_path = episode_root / "exact_replay_manifest.json"
+            report_path = episode_root / "exact_replay_report.json"
+            p4 = materialize_fn(recording_path, manifest_path, report_path)
+            if (
+                p4.get("exact_replay_eligible") is not True
+                or p4.get("applied_action_sha256")
+                != episode["canonical_action_radians_sha256"]
+            ):
+                raise RecorderError(
+                    f"P4 rejected or action hash changed: {episode['episode_id']}."
+                )
+            completed.append(
+                {
+                    "episode_id": episode["episode_id"],
+                    "recording": str(recording_path),
+                    "gateway_action_degrees_sha256": episode[
+                        "gateway_action_degrees_sha256"
+                    ],
+                    "canonical_action_radians_sha256": episode[
+                        "canonical_action_radians_sha256"
+                    ],
+                }
+            )
+            cohort_entries.append(
+                {
+                    "recording": os.path.relpath(recording_path, output_directory),
+                    "exact_replay_manifest": os.path.relpath(
+                        manifest_path, output_directory
+                    ),
+                }
+            )
+    except Exception as error:
+        _atomic_json(
+            output_directory / "execution_report.json",
+            {
+                "status": "partial_failed_closed",
+                "packet_id": packet.get("packet_id"),
+                "completed": completed,
+                "cohort_emitted": False,
+                "error": f"{type(error).__name__}: {error}",
+                "physical_authority": False,
+            },
+        )
+        raise
+    cohort = {
+        "schema_version": "sim2claw.physical_timing_actuation_cohort.v1",
+        "episodes": cohort_entries,
+    }
+    cohort_path = output_directory / "p9_cohort.json"
+    _atomic_json(cohort_path, cohort)
+    result = {
+        "status": "five_recordings_finalized_and_p4_eligible",
+        "packet_id": packet["packet_id"],
+        "plan_sha256": packet["plan_sha256"],
+        "completed": completed,
+        "cohort_path": cohort_path.name,
+        "cohort_sha256": _sha256(cohort_path),
+        "physical_authority": False,
+        "evaluator_admission": False,
+    }
+    _atomic_json(output_directory / "execution_report.json", result)
+    return result
 
 
 BackendFactory = Callable[[dict[str, Any], dict[str, Any]], RecorderBackend]
@@ -1522,6 +2102,8 @@ class TeleopRecordingManager:
                                 frame_index=live_frame.get("frame_index"),
                                 frame=live_frame.get("frame"),
                             )
+                    if bool(getattr(self.backend, "recording_complete", False)):
+                        self.stop_event.set()
                     next_tick += interval
                     self.stop_event.wait(max(0.0, next_tick - time.monotonic()))
             action_stopped_monotonic = time.monotonic()
