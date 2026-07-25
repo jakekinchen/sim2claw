@@ -49,7 +49,7 @@ def _write_native_video_and_report(directory: Path) -> tuple[Path, Path]:
         "width": 424,
         "height": 240,
         "subtype": "yuvs",
-        "format_index": 5,
+        "format_index": 6,
         "minimum_duration_seconds": 0.2,
         "maximum_duration_seconds": 0.2,
     }

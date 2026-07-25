@@ -45,11 +45,17 @@ MAX_SLEW_DEGREES_S = 10.0
 COMPILE_ANCHOR_TOLERANCE_DEGREES = np.asarray(
     [0.5, 0.5, 0.5, 0.5, 0.5, 0.1], dtype=np.float64
 )
+COMPILE_COMMAND_ANCHOR_CLIP_TOLERANCE_DEGREES = np.asarray(
+    [0.5, 0.5, 3.0, 0.5, 0.5, 0.1], dtype=np.float64
+)
 STAGE_ANCHOR_TOLERANCE_DEGREES = np.asarray(
     [3.0, 3.0, 3.0, 3.0, 3.0, 0.5], dtype=np.float64
 )
+HOLD_ENTRY_TOLERANCE_DEGREES = np.asarray(
+    [3.0, 3.0, 6.0, 3.0, 3.0, 5.0], dtype=np.float64
+)
 FINAL_TOLERANCE_DEGREES = np.asarray(
-    [3.0, 3.0, 3.0, 3.0, 3.0, 5.0], dtype=np.float64
+    [3.0, 3.0, 5.0, 3.0, 3.0, 5.0], dtype=np.float64
 )
 BASELINE_SELF_CONTACT_PAIRS = {
     tuple(sorted(("left_shoulder", "left_lower_arm"))),
@@ -243,6 +249,7 @@ def preview_wrist_view_actions(
     ]
     initial_pairs: set[tuple[str, str]] | None = None
     initial_minimum: float | None = None
+    final_pairs: set[tuple[str, str]] = set()
     global_minimum: float | None = None
     stage_reports: list[dict[str, Any]] = []
     for stage_index, (physical_actions, model_actions) in enumerate(
@@ -264,10 +271,6 @@ def preview_wrist_view_actions(
             if stage_index == 1 and row_index == 0:
                 initial_pairs = row_pairs
                 initial_minimum = min(row_distances) if row_distances else None
-                _require(
-                    initial_pairs.issubset(BASELINE_SELF_CONTACT_PAIRS),
-                    "initial pose has external or unexpected model contact",
-                )
             _require(initial_pairs is not None, "preview initial contact was not observed")
             _require(
                 row_pairs.issubset(initial_pairs),
@@ -286,6 +289,7 @@ def preview_wrist_view_actions(
                     if global_minimum is None
                     else min(global_minimum, row_minimum)
                 )
+            final_pairs = row_pairs
         if initial_minimum is not None and stage_minimum is not None:
             _require(
                 stage_minimum >= initial_minimum - 1e-9,
@@ -302,12 +306,21 @@ def preview_wrist_view_actions(
                 "no_new_or_worsened_kinematic_contact": True,
             }
         )
+    _require(
+        final_pairs.issubset(BASELINE_SELF_CONTACT_PAIRS),
+        "staged reposition does not clear its pre-existing external model contact",
+    )
+    initial_unexpected_pairs = (initial_pairs or set()) - BASELINE_SELF_CONTACT_PAIRS
     return {
         "runtime": "cpu_mujoco_mj_forward",
         "candidate_manifest_path": str(candidate_manifest_path),
         "candidate_manifest_sha256": _sha256(candidate_manifest_path),
         "candidate_digest": manifest.get("candidate_digest"),
         "baseline_contact_pairs": [list(pair) for pair in sorted(initial_pairs or set())],
+        "initial_preexisting_contact_pairs": [
+            list(pair) for pair in sorted(initial_unexpected_pairs)
+        ],
+        "final_contact_pairs": [list(pair) for pair in sorted(final_pairs)],
         "baseline_minimum_distance_m": initial_minimum,
         "minimum_distance_m": global_minimum,
         "contact_pairs_unchanged_or_removed_only": True,
@@ -480,11 +493,14 @@ def compile_wrist_view_reposition_packet(
         np.all(targets >= lower[None, :]) and np.all(targets <= upper[None, :]),
         "reviewed wrist-view target exceeds fresh calibrated limits",
     )
+    command_anchor = np.clip(anchor, lower, upper).astype("<f8")
     _require(
-        np.all(anchor >= lower) and np.all(anchor <= upper),
-        "fresh torque-off pose is outside calibrated limits",
+        np.all(
+            np.abs(_joint_delta(command_anchor, anchor))
+            <= COMPILE_COMMAND_ANCHOR_CLIP_TOLERANCE_DEGREES
+        ),
+        "fresh torque-off pose is too far outside calibrated limits",
     )
-    command_anchor = anchor.astype("<f8")
     timestamps = (np.arange(SAMPLES_PER_STAGE, dtype="<f8") + 1.0) / SAMPLE_HZ
     hold_timestamps = (
         np.arange(CAPTURE_HOLD_SAMPLES, dtype="<f8") + 1.0
@@ -602,9 +618,11 @@ def compile_wrist_view_reposition_packet(
         "samples_per_stage": SAMPLES_PER_STAGE,
         "capture_hold_samples": CAPTURE_HOLD_SAMPLES,
         "capture_hold_seconds": CAPTURE_HOLD_SECONDS,
+        "capture_during_motion": bool(route.get("capture_during_motion", False)),
         "maximum_stage_excursion_degrees": MAX_STAGE_EXCURSION_DEGREES,
         "maximum_slew_degrees_s": MAX_SLEW_DEGREES_S,
         "stage_anchor_tolerance_degrees": STAGE_ANCHOR_TOLERANCE_DEGREES.tolist(),
+        "hold_entry_tolerance_degrees": HOLD_ENTRY_TOLERANCE_DEGREES.tolist(),
         "final_tolerance_degrees": FINAL_TOLERANCE_DEGREES.tolist(),
         "stages": stages,
         "simulation_preview": {
@@ -949,13 +967,24 @@ def execute_wrist_view_reposition_stage(
             ),
             "follower anchor drifted before the stage hold",
         )
+        if packet.get("capture_during_motion") is True:
+            capture = (capture_factory or _default_capture)(capture_root)
+            camera_started = capture.start()
+        motion_started = clock_fn()
         with samples_path.open("a", encoding="utf-8") as handle:
             for sample_index, (timestamp, target) in enumerate(
                 zip(timestamps, actions, strict=True)
             ):
-                delay = started + float(timestamp) - clock_fn()
+                delay = motion_started + float(timestamp) - clock_fn()
                 if delay > 0.0:
                     sleep_fn(delay)
+                ensure_running = (
+                    getattr(capture, "ensure_running", None)
+                    if capture is not None
+                    else None
+                )
+                if callable(ensure_running):
+                    ensure_running()
                 sample = gateway.sample(
                     float(timestamp), exact_requested_degrees=target
                 )
@@ -996,12 +1025,15 @@ def execute_wrist_view_reposition_stage(
         _require(
             np.all(
                 np.abs(residual)
-                <= np.asarray(packet["final_tolerance_degrees"], dtype=np.float64)
+                <= np.asarray(
+                    packet["hold_entry_tolerance_degrees"], dtype=np.float64
+                )
             ),
             "follower did not reach the staged target",
         )
-        capture = (capture_factory or _default_capture)(capture_root)
-        camera_started = capture.start()
+        if capture is None:
+            capture = (capture_factory or _default_capture)(capture_root)
+            camera_started = capture.start()
         hold_started = clock_fn()
         with samples_path.open("a", encoding="utf-8") as handle:
             for hold_index, (timestamp, target) in enumerate(

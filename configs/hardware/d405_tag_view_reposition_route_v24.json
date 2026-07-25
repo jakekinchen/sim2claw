@@ -1,0 +1,34 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "d405_tag_view_wrist_only_vertical_sweep_20260725_v24",
+  "capture_during_motion": true,
+  "reviewed_anchor_degrees": [
+    10.461538461538462,
+    -76.48351648351648,
+    103.25274725274726,
+    38.46153846153846,
+    -74.50549450549451,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [
+      10.0,
+      -64.520994,
+      70.0,
+      0.0,
+      -74.50549450549451,
+      3.0878859857482186
+    ]
+  ],
+  "review_basis": {
+    "simulation_runtime": "cpu_mujoco_mj_forward",
+    "samples_per_stage": 361,
+    "external_contact_pairs": [],
+    "maximum_joint_excursion_degrees_by_stage": [
+      38.46153846153846
+    ],
+    "wrist_roll_motion": false,
+    "gripper_motion": false,
+    "target_visibility_basis": "The v23 final frame observed half the tag at wrist 38.9 degrees; holding elbow near its stable loaded pose and sweeping wrist toward zero carries the full quad through frame."
+  }
+}

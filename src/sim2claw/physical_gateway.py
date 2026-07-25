@@ -837,6 +837,31 @@ class SO101PhysicalGateway:
             lower_limits=self.lower_limits,
             upper_limits=self.upper_limits,
         )
+        if exact_precompiled and not _same_float64_bytes(command, requested):
+            requested_command_delta = requested - self.previous_command
+            requested_command_delta[4] = shortest_delta_degrees(
+                float(requested[4]), float(self.previous_command[4])
+            )
+            requested_tracking_delta = requested - self.previous_actual
+            requested_tracking_delta[4] = shortest_delta_degrees(
+                float(requested[4]), float(self.previous_actual[4])
+            )
+            exact_target_is_safe = (
+                np.all(
+                    np.abs(requested_command_delta)
+                    <= rate_limits
+                    * min(control_dt, MAX_CONTROL_INTERVAL_SECONDS)
+                )
+                and np.all(np.abs(requested_tracking_delta) <= tracking_limits)
+                and np.array_equal(
+                    np.clip(requested, self.lower_limits, self.upper_limits),
+                    requested,
+                )
+            )
+            if exact_target_is_safe:
+                # Reuse the preregistered bytes after independently confirming
+                # every rate, tracking, and calibrated-position constraint.
+                command = requested.copy()
         if (zero_displacement_hold or exact_precompiled) and not _same_float64_bytes(
             command, requested
         ):
