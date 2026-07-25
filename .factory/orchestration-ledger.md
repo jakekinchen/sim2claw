@@ -3,7 +3,7 @@
 ## Active bounded transaction — follower-only timing twin
 
 - Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`; canonical
-  implementation through `4ebab15`.
+  implementation through `f9890a6`.
 - Owner objective: control only the SO-101 follower, without leader alignment
   or teleoperation, until a tangible digital-twin result is obtained.
 - Physical proof: packet `P10-fa486d61dbdc303e` has five finalized
@@ -24,15 +24,32 @@
   `0.0004306247283 → 0.0004136104253` (`3.951074%` relative improvement).
   Admission receipt SHA-256:
   `baf0c12f5402750b358624bd5726f0491d26aae05f6e42c680428bba925b0f1a`.
+- Simulation canary: the P13-unapplied bottleneck was removed only for the
+  partial simulation path. Canonical output freezes action SHA-256
+  `52a856a54d8edc9dc53ed44e83f8bfc5f6c670b79fec30dfc1eb56d4f6c08095`
+  from the P9-admitted config and hash-bound P10 stationary anchor. Focused
+  verification passed `21/21`.
+- Contact diagnosis: the absolute-zero policy rejected the folded recorded
+  pose, but a direct kinematic audit found the same 12 internal
+  shoulder/lower-arm and shoulder/wrist contacts at every command, no external
+  table/board/pawn/clamp/floor/other-arm contact, no new contact pair, and no
+  penetration worse than the `-0.0092899963 m` starting baseline. The dynamic
+  `77.556 N` result remains retained as a simulator-model mismatch diagnostic.
+- Live follower state: torque remains off at
+  `[-3.6923,-108.2198,99.9121,-108.7912,-74.5934,2.9691]` degrees. Shoulder
+  lift and wrist flex require a small bounded inward normalization before an
+  exact-payload canary; limits will not be widened and frozen actions will not
+  be clipped.
 - Active worker: background task `019f97b8-3ab8-7402-bbfc-e391b88b6814`
-  is auditing whether the existing geometry-plus-timing twin composer can
-  consume this admitted P9 artifact. No hardware, Brev, training, push, or
-  broad testing is delegated.
-- Next proof target: combine the admitted timing candidate with evaluator-owned
-  P13 geometry, compile the action-identical no-contact canary, and only then
-  recover the follower into its calibrated envelope for any physical canary.
-  This timing result does not create physical-task or policy-transfer
-  authority.
+  is implementing the smallest reviewed normalize/compile/execute physical
+  canary seam. It may not touch hardware. No Brev, training, push, or broad
+  testing is delegated.
+- Next proof target: integrate the executor, normalize the two out-of-envelope
+  joints, re-anchor and preview the tiny exact payload, then execute it through
+  the reviewed follower gateway with dual-camera/joint evidence and guaranteed
+  torque-off closeout. Exact P13 remains required for metric camera alignment
+  and later physical task promotion, not for this bounded hardware-control
+  demonstration.
 
 ## Active bounded transaction — Studio simulator-twin reconciliation
 
