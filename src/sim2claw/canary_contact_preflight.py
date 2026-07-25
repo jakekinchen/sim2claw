@@ -32,9 +32,10 @@ from .twin_candidate import (
     CANDIDATE_SCHEMA,
     CANARY_MAX_ACCELERATION_RADIANS_S2,
     CANARY_MAX_VELOCITY_RADIANS_S,
+    TwinCandidateError,
+    _validate_p13,
+    _validate_p9,
 )
-from .system_identification import TIMING_ADMISSION_SCHEMA
-from .workcell_registration import BOARD_FIT_SCHEMA, TRANSFORM_SCHEMA
 
 
 POLICY_SCHEMA = "sim2claw.zero_contact_forbidden_policy.v1"
@@ -479,6 +480,7 @@ def evaluate_canary_contact_preflight(
     baseline = load_sysid_config(paths["baseline"])
     baseline.pop("_config_path", None)
     baseline.pop("_config_sha256", None)
+    baseline_sha256 = sha256_file(paths["baseline"])
     _require(candidate.get("schema_version") == CANDIDATE_SCHEMA, "candidate schema changed")
     _require(canary.get("schema_version") == MANIFEST_SCHEMA, "canary replay schema changed")
     _require(canary.get("canary_schema_version") == CANARY_SCHEMA, "canary schema changed")
@@ -518,13 +520,20 @@ def evaluate_canary_contact_preflight(
             bool(value.get("synthetic", False)) is expected_synthetic,
             f"{label} synthetic proof class does not match fixture mode",
         )
-    _require(
-        p9.get("schema_version") == TIMING_ADMISSION_SCHEMA
-        and p9.get("evaluator_owned") is True
-        and p9.get("self_scored") is False
-        and bool(p9.get("synthetic", False)) is expected_synthetic,
-        "P9 admission proof class or ownership changed",
-    )
+    try:
+        _validate_p9(
+            p9,
+            baseline,
+            baseline_sha256=baseline_sha256,
+            synthetic_fixture_mode=synthetic_fixture_mode,
+        )
+        p13_identity = _validate_p13(
+            p13_transform,
+            p13_board_fit,
+            synthetic_fixture_mode=synthetic_fixture_mode,
+        )
+    except TwinCandidateError as error:
+        raise CanaryContactError(str(error)) from error
     _require(
         p9.get("identity")
         == {
@@ -533,29 +542,13 @@ def evaluate_canary_contact_preflight(
         },
         "P9 robot/workspace identity drifted",
     )
-    if not expected_synthetic:
-        _require(
-            p9.get("status") == "admitted_configuration_input"
-            and p9.get("evaluator_admission") is True,
-            "real P9 admission is absent",
-        )
     _require(
-        p13_transform.get("schema_version") == TRANSFORM_SCHEMA
-        and p13_board_fit.get("schema_version") == BOARD_FIT_SCHEMA
-        and p13_transform.get("evaluator_owned") is True
-        and p13_board_fit.get("evaluator_owned") is True
-        and p13_transform.get("self_scored") is False
-        and p13_board_fit.get("self_scored") is False
-        and bool(p13_transform.get("synthetic", False)) is expected_synthetic
-        and bool(p13_board_fit.get("synthetic", False)) is expected_synthetic,
-        "P13 proof class or ownership changed",
-    )
-    _require(
-        p13_transform.get("camera_id") == candidate["identity"]["camera_id"]
-        and p13_transform.get("workspace_pose_id")
-        == candidate["identity"]["workspace_pose_id"]
-        and p13_transform.get("board_pose_id")
-        == candidate["identity"]["board_pose_id"],
+        p13_identity
+        == {
+            "camera_id": candidate["identity"]["camera_id"],
+            "workspace_pose_id": candidate["identity"]["workspace_pose_id"],
+            "board_pose_id": candidate["identity"]["board_pose_id"],
+        },
         "P13 camera/workspace/board identity drifted",
     )
     _require(
@@ -591,7 +584,6 @@ def evaluate_canary_contact_preflight(
         and canary.get("candidate_digest") == candidate.get("candidate_digest"),
         "candidate digest drifted",
     )
-    baseline_sha256 = sha256_file(paths["baseline"])
     _require(
         candidate.get("baseline", {}).get("sha256") == baseline_sha256
         and candidate.get("sources", {}).get("baseline", {}).get("sha256")
