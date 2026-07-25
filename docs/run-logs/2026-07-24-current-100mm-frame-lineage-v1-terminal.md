@@ -30,3 +30,9 @@ closes deterministic frame lineage for a future metric-readiness version. It
 does not modify the terminal v1 readiness packet or close metric scale,
 intrinsics, distortion, correspondences, object pose, extrinsics, Twin
 fidelity, or task authority.
+
+At exact closeout head `968566f7fc5c92b4e53bd038e3b8fa416124984b`,
+the focused lineage/control, metric-readiness/control, and exact project-state
+pin bracket passed `48 / 48` in `0.94 s`. Frozen S2 evidence remained
+`11 / 11` byte-identical at one event, four anchor replays, and zero
+measurement trials.

@@ -90,7 +90,7 @@ equality; budgets; focused tests; frozen evidence; and authority limits.
 
 ```text
 Current state: Terminal verified; one probe/derivation budget exhausted with no retry.
-Completed: Preregistration 4692bea; reviewed implementation cc30304; 1/1 probe and derivation; tracked exhaustion control.
+Completed: Preregistration 4692bea; reviewed implementation cc30304; 1/1 probe and derivation; tracked exhaustion control; exact-head closeout 48/48.
 Evidence: Video 1643520f; frame/file 2543230b; RGB24 7046a08b; evaluation 4788a827; receipt file 3b44795c / digest 15d90882.
 Remaining: Consume this pass in a new metric-readiness version; do not edit v1.
 Blockers: None for offline lineage.

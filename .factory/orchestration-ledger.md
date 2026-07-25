@@ -1275,3 +1275,9 @@ goal. External provider campaigns and spending remain separately gated.
   simulator/provider operations. A tracked guard exhausts v1. This closes one
   future readiness prerequisite without changing the terminal metric v1 result
   or the `0/6` Twin verdict.
+- 2026-07-24T20:02:00-05:00 — Exact closeout head `968566f` passed the
+  focused lineage/control, metric-readiness/control, and project-state-pin
+  bracket `48/48` in `0.94 s`; frozen S2 remained `11/11` at one event, four
+  replays, and zero trials. This records the verification omitted from the
+  initial closeout prose; no implementation, generated evidence, or authority
+  changed.
