@@ -1,0 +1,25 @@
+{
+  "schema_version": "sim2claw.d405_hand_eye_identifiability_contract.v1",
+  "proof_class": "offline_pose_plane_hand_eye_identifiability_screen_only",
+  "minimum_pose_receipts": 6,
+  "minimum_joint_centered_rank": 3,
+  "minimum_joint_span_degrees": 10.0,
+  "minimum_normal_centered_rank": 2,
+  "minimum_normal_angular_span_degrees": 15.0,
+  "minimum_plane_offset_span_m": 0.01,
+  "rank_relative_tolerance": 0.000001,
+  "maximum_within_pose_normal_angle_degrees": 1.0,
+  "maximum_within_pose_offset_drift_m": 0.001,
+  "required_prerequisites": {
+    "approved_physical_joint_to_robot_fk_contract": null,
+    "approved_d405_optical_to_wrist_mount_frame_contract": null
+  },
+  "authority": {
+    "camera_to_robot_extrinsic": false,
+    "board_origin": false,
+    "robot_motion": false,
+    "policy_evaluation": false,
+    "task_success": false,
+    "physical_task": false
+  }
+}
