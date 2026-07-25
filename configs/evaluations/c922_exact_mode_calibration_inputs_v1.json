@@ -1,0 +1,24 @@
+{
+  "schema_version": "sim2claw.c922_exact_mode_calibration_inputs.v1",
+  "dataset_id": "current_100mm_c922_calibration_dataset_pending_v1",
+  "camera": {
+    "camera_id": "logitech-overhead",
+    "localized_name": "C922 Pro Stream Webcam",
+    "model_id": "UVC Camera VendorID_1133 ProductID_2140",
+    "unique_id": "0x8310000046d085c",
+    "image_size_px": [640, 480],
+    "media_subtype": "420v",
+    "format_index": 16,
+    "frame_rate_range_index": 0,
+    "frame_rate_fps": 30.00003000003,
+    "orientation_filter": "hflip,vflip",
+    "focus_setting": null
+  },
+  "target": {
+    "asset_path": "assets/calibration/c922_checkerboard_9x6_inner_20mm_nominal_v1.svg",
+    "asset_sha256": "8841927738e7ee31af5fb7373121863cf518808479599e315657b69d1ceb9285",
+    "printed_grid_measurement_receipt": null
+  },
+  "splits_frozen_before_fit": true,
+  "frames": []
+}

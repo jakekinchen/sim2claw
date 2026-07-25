@@ -1260,6 +1260,14 @@ goal. External provider campaigns and spending remain separately gated.
   file is `12b1624d...` / digest `18bcbb02...`. A tracked guard exhausts v1.
   No capture, motion, simulator, provider, training, promotion, or
   Twin-domain change occurred.
+- 2026-07-24T20:18:00-05:00 — Opened the software-only exact-mode C922
+  calibration evaluator transaction at clean `d8046ca`. A read-only audit
+  rejected the 46-image `IMG_5349` SfM and retained one-view C922 visual fits
+  as camera-calibration evidence. The new contract freezes exact device/mode,
+  an 18-view `12/3/3` split, evaluator-detected corners, diversity and
+  held-out gates, two model fits, and a nominal-only printable target before
+  implementation. It authorizes zero camera sessions, frames, motions,
+  simulator replays, provider calls, training rows, or Twin/task changes.
 - 2026-07-24T19:44:00-05:00 — Opened one hardware-free C922 frame-lineage
   transaction after a read-only audit found `overhead_start.png`
   byte-identical to video frame index 29 at PTS `1.000000 s`. The formal gate
