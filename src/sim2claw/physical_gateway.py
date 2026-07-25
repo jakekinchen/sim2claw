@@ -73,6 +73,12 @@ def action_vector(action: dict[str, float]) -> np.ndarray:
     )
 
 
+def _same_float64_bytes(left: np.ndarray, right: np.ndarray) -> bool:
+    return np.asarray(left, dtype="<f8").tobytes() == np.asarray(
+        right, dtype="<f8"
+    ).tobytes()
+
+
 def shortest_delta_degrees(current: float, start: float) -> float:
     return (current - start + 180.0) % 360.0 - 180.0
 
@@ -338,6 +344,7 @@ class SO101PhysicalGateway:
         self.bus_read_retries_total = 0
         self.torque_enabled = False
         self.connected = False
+        self.zero_displacement_arm_target: np.ndarray | None = None
 
     def _calibrated_position_limits(self) -> tuple[np.ndarray, np.ndarray]:
         calibration = getattr(self.follower, "calibration", None)
@@ -443,6 +450,7 @@ class SO101PhysicalGateway:
                 )
             # Set the goal to the follower's current position before torque is
             # enabled. This intentionally commands no leader-to-follower sweep.
+            self.zero_displacement_arm_target = follower.copy()
             self.follower.send_action(_position_dict(follower))
             self.follower.bus.enable_torque(num_retry=BUS_READ_RETRIES)
             self.torque_enabled = True
@@ -729,7 +737,12 @@ class SO101PhysicalGateway:
         assert last_error is not None
         raise last_error
 
-    def sample(self, elapsed_seconds: float) -> dict[str, Any]:
+    def sample(
+        self,
+        elapsed_seconds: float,
+        *,
+        zero_displacement_hold: bool = False,
+    ) -> dict[str, Any]:
         if (
             not self.connected
             or not self.torque_enabled
@@ -743,13 +756,29 @@ class SO101PhysicalGateway:
         retries_before = self.bus_read_retries_total
         leader = self._motion_read("leader position", self.leader.get_action)
         leader_read_completed_monotonic = self.clock()
-        requested, relative_delta = bounded_relative_target(
-            leader,
-            self.leader_start,
-            self.follower_start,
-            lower_limits=self.lower_limits,
-            upper_limits=self.upper_limits,
-        )
+        if zero_displacement_hold:
+            if self.zero_displacement_arm_target is None:
+                raise PhysicalGatewayError(
+                    "Zero-displacement hold lacks a fresh pre-arm follower target."
+                )
+            registration = paired_pose_registration_report(
+                leader,
+                self.previous_actual,
+            )
+            if not registration["paired_pose_registration_ready"]:
+                raise PhysicalGatewayError(
+                    "Paired pose left the existing registration limits during hold."
+                )
+            requested = self.zero_displacement_arm_target.copy()
+            relative_delta = np.zeros(len(ROBOT_JOINTS), dtype=np.float64)
+        else:
+            requested, relative_delta = bounded_relative_target(
+                leader,
+                self.leader_start,
+                self.follower_start,
+                lower_limits=self.lower_limits,
+                upper_limits=self.upper_limits,
+            )
         control_dt = max(0.0, elapsed_seconds - self.previous_elapsed_seconds)
         command, rate_limits, tracking_limits = slew_limited_target(
             requested,
@@ -759,9 +788,18 @@ class SO101PhysicalGateway:
             lower_limits=self.lower_limits,
             upper_limits=self.upper_limits,
         )
+        if zero_displacement_hold and not _same_float64_bytes(command, requested):
+            raise PhysicalGatewayError(
+                "Zero-displacement hold would require rate limiting, clamping, "
+                "or a target correction; nothing was sent."
+            )
         command_call_started_monotonic = self.clock()
         sent = action_vector(self.follower.send_action(_position_dict(command)))
         command_call_completed_monotonic = self.clock()
+        if zero_displacement_hold and not _same_float64_bytes(sent, requested):
+            raise PhysicalGatewayError(
+                "Gateway did not report the exact hold target as sent; torque will be released."
+            )
         actual = self._motion_read("follower position", self.follower.get_observation)
         position_read_completed_monotonic = self.clock()
         _finite(sent, "follower command")
@@ -947,6 +985,12 @@ class SO101PhysicalGateway:
             },
             "gripper_contact_hold": gripper_contact_hold,
             "gripper_contact_deflection": float(abs(sent_actual_delta[5])),
+            "zero_displacement_hold": zero_displacement_hold,
+            "zero_displacement_target_source": (
+                "fresh_torque_off_follower_read_immediately_before_arming"
+                if zero_displacement_hold
+                else None
+            ),
         }
 
     def synchronize_to_leader(self) -> dict[str, Any]:
@@ -1251,6 +1295,7 @@ class SO101PhysicalGateway:
                 errors.append(error)
         self.torque_enabled = False
         self.connected = False
+        self.zero_displacement_arm_target = None
         if errors:
             raise PhysicalGatewayError(
                 "Gateway shutdown reported: "

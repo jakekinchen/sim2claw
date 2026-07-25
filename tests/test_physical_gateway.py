@@ -445,6 +445,37 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertEqual(self.follower.configure_calls, 0)
         self.assertFalse(self.follower.bus.torque)
 
+    def test_zero_displacement_hold_sends_fresh_follower_target_exactly(self) -> None:
+        self.follower.values[:] = self.leader.values
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            sleep=lambda _seconds: None,
+        )
+        gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        fresh_target = gateway.zero_displacement_arm_target.copy()
+        sample = gateway.sample(0.05, zero_displacement_hold=True)
+        np.testing.assert_array_equal(
+            sample["follower_requested_degrees"], fresh_target
+        )
+        np.testing.assert_array_equal(
+            sample["follower_command_degrees"], fresh_target
+        )
+        self.assertTrue(sample["zero_displacement_hold"])
+        self.assertFalse(sample["rate_limited"])
+        self.assertFalse(sample["safety_clamped"])
+        original_send = self.follower.send_action
+
+        def mismatched_send(action: dict[str, float]) -> dict[str, float]:
+            sent = original_send(action)
+            sent[f"{ROBOT_JOINTS[0]}.pos"] += 0.01
+            return sent
+
+        self.follower.send_action = mismatched_send
+        with self.assertRaisesRegex(PhysicalGatewayError, "exact hold target"):
+            gateway.sample(0.05, zero_displacement_hold=True)
+        gateway.close()
+
     def test_large_starting_mismatch_blocks_registration_before_torque(self) -> None:
         self.follower.values[1] = 90.0
         gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)

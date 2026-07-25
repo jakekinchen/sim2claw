@@ -27,6 +27,7 @@ from sim2claw.teleop_recording import (
     RecorderError,
     TeleopRecordingManager,
     discover_so101_devices,
+    run_zero_displacement_hold_packet,
 )
 
 
@@ -971,6 +972,20 @@ class TeleopRecordingTest(unittest.TestCase):
                     "target_square": "b5",
                 }
             )
+
+    def test_unadmitted_hold_packet_opens_no_hardware_or_recorder(self) -> None:
+        touched: list[str] = []
+        packet = Path(__file__).parents[1] / (
+            "configs/hardware/p6_zero_displacement_hold_packet.json"
+        )
+        with self.assertRaisesRegex(RecorderError, "not independently reviewed"):
+            run_zero_displacement_hold_packet(
+                packet,
+                operator_acknowledged=True,
+                preflight_fn=lambda: touched.append("gateway"),
+                manager_factory=lambda **_kwargs: touched.append("recorder"),
+            )
+        self.assertEqual(touched, [])
 
 
 if __name__ == "__main__":

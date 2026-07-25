@@ -696,6 +696,162 @@ class PhysicalFollowerBackend:
         self.gateway.close()
 
 
+class ZeroDisplacementHoldBackend:
+    proof_class = "physical_teleoperation_source_unqualified"
+
+    def __init__(self, request: dict[str, Any], preflight: dict[str, Any]):
+        self.request = request
+        self.gateway = SO101PhysicalGateway(_gateway_identity(preflight))
+
+    def open(self) -> dict[str, Any]:
+        report = self.gateway.open(
+            enable_motion=True,
+            paired_pose_confirmed=True,
+        )
+        return {
+            **report,
+            "proof_class": self.proof_class,
+            "pose_inputs_available": False,
+            "physical_follower_torque_enabled": True,
+        }
+
+    def sample(self, elapsed_seconds: float) -> dict[str, Any]:
+        return self.gateway.sample(
+            elapsed_seconds,
+            zero_displacement_hold=True,
+        )
+
+    def close(self) -> None:
+        self.gateway.close()
+
+
+HOLD_PACKET_KIND = "sim2claw.zero_displacement_hold_packet.v1"
+
+
+def run_zero_displacement_hold_packet(
+    packet_path: Path,
+    *,
+    repo_root: Path = REPO_ROOT,
+    operator_acknowledged: bool = False,
+    preflight_fn: Callable[[], dict[str, Any]] = physical_gateway_preflight,
+    manager_factory: Callable[..., Any] | None = None,
+    sleep_fn: Callable[[float], None] = time.sleep,
+) -> dict[str, Any]:
+    """Run one independently admitted hold through the production recorder."""
+
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    constraints = packet.get("constraints") or {}
+    recording = packet.get("recording") or {}
+    if (
+        packet.get("kind") != HOLD_PACKET_KIND
+        or packet.get("packet_id") != "P6-ZERO-DISPLACEMENT-HOLD-01"
+        or packet.get("duration_seconds") != 1.0
+        or recording != {"label": "p6-zero-displacement-hold-01", "square": "a1"}
+        or not packet.get("single_use")
+    ):
+        raise RecorderError("Unsupported or reusable zero-displacement packet.")
+    if (
+        packet.get("physical_packet_execution_admitted") is not True
+        or not all(
+            (packet.get("independent_review") or {}).get(field)
+            for field in ("reviewer", "reviewed_at", "decision_id")
+        )
+    ):
+        raise RecorderError(
+            "This packet is not independently reviewed and admitted; no devices were opened."
+        )
+    if not operator_acknowledged:
+        raise RecorderError("Fresh operator acknowledgement is required.")
+    required_constraints = {
+        "runtime_target": "fresh_torque_off_follower_read_immediately_before_arming",
+        "requested_equals_gateway_sent": True,
+        "zero_displacement_only": True,
+        "allow_gripper_closure": False,
+        "allow_ik_offsets_clipping_suffix_or_assistance": False,
+        "allow_device_configuration_rewrite": False,
+        "paired_pose_body_limit_degrees": 12.0,
+    }
+    if any(constraints.get(key) != value for key, value in required_constraints.items()):
+        raise RecorderError("Zero-displacement packet constraints changed.")
+
+    state = json.loads(
+        (repo_root / "docs/autonomous-workflow/project_state.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    authority = state["twin_fidelity_closure_transaction"]["authority"]
+    if not (
+        authority.get("owner_authorized_bounded_robot_motion") is True
+        and authority.get("owner_workspace_clear_assertion") is True
+    ):
+        raise RecorderError("Current owner motion/workspace authority is closed.")
+
+    label = str(packet["recording"]["label"])
+    for receipt_path in (
+        repo_root / "datasets/manipulation_source_recordings"
+    ).glob("*/recording_receipt.json"):
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        if receipt.get("label") == label:
+            raise RecorderError("Single-use hold packet already has a finalized recording.")
+
+    hardware = packet["hardware_identity"]
+    if hardware.get("gateway_schema") != GATEWAY_SCHEMA:
+        raise RecorderError("Hold packet gateway contract changed.")
+    preflight = preflight_fn()
+    for key in (
+        "leader_port",
+        "follower_port",
+        "leader_calibration_sha256",
+        "follower_calibration_sha256",
+    ):
+        if preflight.get(key) != hardware.get(key):
+            raise RecorderError(f"Hold packet hardware identity mismatch: {key}.")
+    if not (
+        preflight.get("passed") is True
+        and preflight.get("paired_pose_registration_ready") is True
+        and preflight.get("physical_follower_torque_enabled") is False
+        and preflight.get("device_configuration_rewritten") is False
+    ):
+        raise RecorderError("Fresh torque-off paired-pose preflight did not pass.")
+
+    manager = (manager_factory or TeleopRecordingManager)(
+        repo_root=repo_root,
+        backend_factory=lambda request, status: ZeroDisplacementHoldBackend(
+            request, status
+        ),
+    )
+    manager.start(
+        {
+            "mode": "physical_follower",
+            "source_square": recording["square"],
+            "target_square": recording["square"],
+            "sample_hz": 20,
+            "physical_safety_acknowledged": True,
+            "server_owned_prestart_sequence": True,
+            "action_owner": "independently_reviewed_zero_displacement_hold_packet",
+        }
+    )
+    try:
+        sleep_fn(float(packet["duration_seconds"]))
+    finally:
+        manager.stop()
+    saved = manager.finalize(
+        {
+            "label": label,
+            "skill": "recovery",
+            "outcome": "unreviewed",
+            "notes": f"single-use {packet['packet_id']}; exact hold enforced per sample",
+        }
+    )
+    return {
+        "packet_id": packet["packet_id"],
+        "saved_path": saved["saved_path"],
+        "requested_equals_gateway_sent": True,
+        "physical_authority_created": False,
+        "proof_class": "physical_teleoperation_source_unqualified",
+    }
+
+
 BackendFactory = Callable[[dict[str, Any], dict[str, Any]], RecorderBackend]
 VideoRecorderFactory = Callable[[Path], DiagnosticVideoRecorder]
 DualVideoRecorderFactory = Callable[[Path], DualDiagnosticVideoRecorder]

@@ -577,6 +577,13 @@ def build_parser() -> argparse.ArgumentParser:
         "--config", type=Path, default=DEFAULT_SYSID_CONFIG
     )
     eligible_physical_replay.add_argument("--output", type=Path, required=True)
+    hold_record = subparsers.add_parser("zero-displacement-hold-record")
+    hold_record.add_argument(
+        "--packet",
+        type=Path,
+        default=REPO_ROOT / "configs/hardware/p6_zero_displacement_hold_packet.json",
+    )
+    hold_record.add_argument("--yes", action="store_true")
     c922_acquisition = subparsers.add_parser(
         "c922-calibration-acquisition-preflight",
         help="dry-run the frozen 18-view C922 calibration acquisition plan",
@@ -1622,6 +1629,23 @@ def main(argv: Sequence[str] | None = None) -> int:
                 output_directory=args.output,
             )
         except (ReplayContractError, ValueError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(receipt, indent=2, sort_keys=True))
+        return 0
+    if args.command == "zero-displacement-hold-record":
+        from .physical_gateway import PhysicalGatewayError
+        from .teleop_recording import (
+            RecorderError,
+            run_zero_displacement_hold_packet,
+        )
+
+        try:
+            receipt = run_zero_displacement_hold_packet(
+                args.packet,
+                operator_acknowledged=args.yes,
+            )
+        except (OSError, ValueError, RecorderError, PhysicalGatewayError) as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(receipt, indent=2, sort_keys=True))
