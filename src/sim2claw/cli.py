@@ -595,6 +595,13 @@ def build_parser() -> argparse.ArgumentParser:
         / "configs/acquisition/c922_exact_mode_calibration.json",
     )
     c922_acquisition.add_argument("--output", type=Path, required=True)
+    c922_capture = subparsers.add_parser(
+        "c922-calibration-acquire",
+        help="acquire the frozen operator-guided 18-view C922 corpus",
+    )
+    c922_capture.add_argument("--plan", type=Path, default=REPO_ROOT / "configs/acquisition/c922_exact_mode_calibration.json")
+    c922_capture.add_argument("--output", type=Path, required=True)
+    c922_capture.add_argument("--dry-run", action="store_true")
 
     sysid_capability = subparsers.add_parser(
         "sysid-capability",
@@ -1656,6 +1663,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         report = preflight_and_write(args.plan, args.output)
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["capture_ready"] else 1
+    if args.command == "c922-calibration-acquire":
+        from .c922_calibration_acquisition import acquire_corpus
+        from .c922_exact_mode_calibration import C922CalibrationError
+        from .overhead_video import OverheadVideoError
+
+        try:
+            report = acquire_corpus(args.plan, args.output, dry_run=args.dry_run)
+        except (OSError, ValueError, C922CalibrationError, OverheadVideoError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     if args.command == "sysid-capability":
         from .system_identification import (
             mujoco_sysid_capability,
