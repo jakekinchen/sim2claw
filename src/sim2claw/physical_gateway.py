@@ -19,6 +19,7 @@ from .scene import ROBOT_JOINTS
 
 
 GATEWAY_SCHEMA = "sim2claw.so101_physical_gateway.v2"
+SO101_FOLLOWER_ID = "so101_follower"
 BODY_EXCURSION_LIMIT_DEG = 90.0
 WRIST_ROLL_EXCURSION_LIMIT_DEG = 180.0
 GRIPPER_EXCURSION_LIMIT = 100.0
@@ -288,7 +289,7 @@ def _lerobot_devices(identity: GatewayIdentity) -> tuple[Any, Any]:
     follower = SO101Follower(
         SO101FollowerConfig(
             port=identity.follower_port,
-            id="so101_follower",
+            id=SO101_FOLLOWER_ID,
             use_degrees=True,
             # The gateway owns rate and tracking-error bounds. LeRobot's
             # present-position clamp can permanently strand a loaded joint.

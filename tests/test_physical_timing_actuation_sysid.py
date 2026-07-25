@@ -11,6 +11,7 @@ import pytest
 
 import sim2claw.system_identification as sysid
 from sim2claw.paths import REPO_ROOT
+from sim2claw.physical_gateway import GATEWAY_SCHEMA, SO101_FOLLOWER_ID
 from sim2claw.recorded_replay import (
     RecordedEpisode,
     ReplayContractError,
@@ -251,6 +252,52 @@ def test_physical_cohort_reuses_p5_fail_closed_verification(
             output_directory=tmp_path / "fit",
             backend="local",
         )
+
+
+def test_timing_identity_derives_from_hash_bound_receipt_and_rejects_drift(
+    tmp_path: Path,
+) -> None:
+    recording = tmp_path / "recording"
+    recording.mkdir()
+    samples = recording / "samples.jsonl"
+    samples.write_bytes(b"sealed-sample\n")
+    receipt = {
+        "backend": {
+            "schema_version": GATEWAY_SCHEMA,
+            "follower_port": "/dev/fixture-follower",
+            "follower_calibration_sha256": "9" * 64,
+        },
+        "workcell_registration": {"workspace_pose_id": "fixture-workspace"},
+        "samples_sha256": sha256_file(samples),
+    }
+    receipt_path = recording / "recording_receipt.json"
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "conversion_provenance": {
+                    "recording_receipt_sha256": sha256_file(receipt_path),
+                    "samples_sha256": sha256_file(samples),
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert sysid._derive_timing_evidence_identity(recording, manifest) == {
+        "robot": {
+            "robot_id": SO101_FOLLOWER_ID,
+            "follower_port": "/dev/fixture-follower",
+            "follower_calibration_sha256": "9" * 64,
+            "gateway_schema": GATEWAY_SCHEMA,
+        },
+        "workspace_pose_id": "fixture-workspace",
+    }
+
+    samples.write_bytes(b"drifted-sample\n")
+    with pytest.raises(sysid.SystemIdentificationError, match="samples hash"):
+        sysid._derive_timing_evidence_identity(recording, manifest)
 
 
 def test_valid_p4_recording_loads_as_p9_episode(tmp_path: Path) -> None:

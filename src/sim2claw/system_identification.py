@@ -25,6 +25,7 @@ import mujoco
 import numpy as np
 
 from .paths import REPO_ROOT
+from .physical_gateway import GATEWAY_SCHEMA, SO101_FOLLOWER_ID
 from .recorded_replay import (
     RecordedEpisode,
     ReplayContractError,
@@ -274,6 +275,80 @@ def _validated_timing_evidence_identity(value: Any) -> dict[str, Any]:
     if not str(value.get("workspace_pose_id") or "").strip():
         raise SystemIdentificationError("timing workspace identity is missing")
     return copy.deepcopy(dict(value))
+
+
+def _derive_timing_evidence_identity(
+    recording_directory: Path, manifest_path: Path
+) -> dict[str, Any]:
+    """Derive identity from immutable physical receipt and P4 hash bindings."""
+
+    receipt_path = recording_directory / "recording_receipt.json"
+    samples_path = recording_directory / "samples.jsonl"
+    if not receipt_path.is_file() or not samples_path.is_file():
+        raise SystemIdentificationError(
+            "timing identity derivation requires receipt and samples files"
+        )
+    try:
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise SystemIdentificationError(
+            f"timing identity source is unreadable: {error}"
+        ) from error
+    backend = receipt.get("backend")
+    workcell = receipt.get("workcell_registration")
+    if (
+        not isinstance(backend, Mapping)
+        or not str(backend.get("follower_port") or "").strip()
+        or not _is_sha256(backend.get("follower_calibration_sha256"))
+        or backend.get("schema_version") != GATEWAY_SCHEMA
+        or not isinstance(workcell, Mapping)
+        or not str(workcell.get("workspace_pose_id") or "").strip()
+        or not isinstance(manifest, Mapping)
+    ):
+        raise SystemIdentificationError(
+            "timing identity source is missing backend or workspace bindings"
+        )
+    provenance = manifest.get("conversion_provenance")
+    samples_sha256 = sha256_file(samples_path)
+    if receipt.get("samples_sha256") != samples_sha256:
+        raise SystemIdentificationError(
+            "timing identity source samples hash is missing or drifted"
+        )
+    if (
+        not isinstance(provenance, Mapping)
+        or provenance.get("recording_receipt_sha256")
+        != sha256_file(receipt_path)
+        or provenance.get("samples_sha256") != samples_sha256
+    ):
+        raise SystemIdentificationError(
+            "timing identity source receipt/sample hash chain is missing or drifted"
+        )
+    identity = _validated_timing_evidence_identity(
+        {
+            "robot": {
+                "robot_id": SO101_FOLLOWER_ID,
+                "follower_port": backend["follower_port"],
+                "follower_calibration_sha256": backend[
+                    "follower_calibration_sha256"
+                ],
+                "gateway_schema": backend["schema_version"],
+            },
+            "workspace_pose_id": workcell["workspace_pose_id"],
+        }
+    )
+    for source_name, explicit in (
+        ("receipt", receipt.get("evidence_identity")),
+        ("manifest", manifest.get("evidence_identity")),
+    ):
+        if (
+            explicit is not None
+            and _validated_timing_evidence_identity(explicit) != identity
+        ):
+            raise SystemIdentificationError(
+                f"timing {source_name} evidence identity drifted"
+            )
+    return identity
 
 
 def _timing_evaluator_identity() -> dict[str, Any]:
@@ -2859,6 +2934,7 @@ def _load_verified_physical_episode(
     config_path: Path,
     verification_directory: Path,
     expected_identity: Mapping[str, Any] | None = None,
+    allow_implicit_identity: bool = False,
 ) -> tuple[RecordedEpisode, dict[str, Any]]:
     replay_receipt = replay_exact_eligible_physical_recording(
         recording_directory,
@@ -2875,13 +2951,23 @@ def _load_verified_physical_episode(
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if expected_identity is not None:
         identity = _validated_timing_evidence_identity(expected_identity)
-        if manifest.get("evidence_identity") != identity:
+        manifest_identity = manifest.get("evidence_identity")
+        if manifest_identity is None and not allow_implicit_identity:
             raise ReplayContractError(
-                "exact replay manifest robot/workspace identity is missing or drifted"
+                "exact replay manifest robot/workspace identity is missing"
             )
-        if receipt.get("evidence_identity") != identity:
+        if manifest_identity is not None and manifest_identity != identity:
             raise ReplayContractError(
-                "recording receipt robot/workspace identity is missing or drifted"
+                "exact replay manifest robot/workspace identity drifted"
+            )
+        receipt_identity = receipt.get("evidence_identity")
+        if receipt_identity is None and not allow_implicit_identity:
+            raise ReplayContractError(
+                "recording receipt robot/workspace identity is missing"
+            )
+        if receipt_identity is not None and receipt_identity != identity:
+            raise ReplayContractError(
+                "recording receipt robot/workspace identity drifted"
             )
         backend_identity = receipt.get("backend")
         robot = identity["robot"]
@@ -2990,10 +3076,16 @@ def run_physical_timing_actuation_cohort(
         raise SystemIdentificationError("cohort episodes must be a non-empty list")
     config_path = config_path.resolve()
     config = load_sysid_config(config_path)
-    identity = _validated_timing_evidence_identity(cohort.get("identity"))
+    explicit_identity = cohort.get("identity")
+    identity = (
+        _validated_timing_evidence_identity(explicit_identity)
+        if explicit_identity is not None
+        else None
+    )
     episodes: list[RecordedEpisode] = []
     bindings: list[dict[str, Any]] = []
     base = cohort_path.parent
+    resolved_rows: list[tuple[int, Mapping[str, Any], Path, Path]] = []
     for index, row in enumerate(rows):
         if not isinstance(row, Mapping):
             raise SystemIdentificationError(f"cohort episode {index} must be an object")
@@ -3005,6 +3097,20 @@ def run_physical_timing_actuation_cohort(
             )
         recording = (base / recording_value).resolve()
         manifest = (base / manifest_value).resolve()
+        if explicit_identity is None:
+            derived_identity = _derive_timing_evidence_identity(recording, manifest)
+            if identity is None:
+                identity = derived_identity
+            elif derived_identity != identity:
+                raise SystemIdentificationError(
+                    "physical timing cohort robot/workspace identities disagree"
+                )
+        resolved_rows.append((index, row, recording, manifest))
+    if identity is None:
+        raise SystemIdentificationError("timing evidence identity is unavailable")
+    for index, row, recording, manifest in resolved_rows:
+        recording_value = str(row["recording"])
+        manifest_value = str(row["exact_replay_manifest"])
         episode, binding = _load_verified_physical_episode(
             recording,
             manifest,
@@ -3014,6 +3120,7 @@ def run_physical_timing_actuation_cohort(
             / "exact_replay_verification"
             / f"episode-{index:02d}",
             expected_identity=identity,
+            allow_implicit_identity=explicit_identity is None,
         )
         binding["recording"] = recording_value
         binding["exact_replay_manifest"] = manifest_value
