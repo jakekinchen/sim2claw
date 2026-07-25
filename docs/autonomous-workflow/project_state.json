@@ -3837,6 +3837,26 @@
     "evaluator_admission": false,
     "physical_authority": false
   },
+  "physical_timing_actuation_sysid": {
+    "status": "offline_path_verified_waiting_for_exciting_current_traces",
+    "implementation": "src/sim2claw/system_identification.py",
+    "command": "sim2claw sysid-fit-physical-timing",
+    "input": "cohort of current finalized recordings plus P4 exact-replay manifests",
+    "supported_parameters": [
+      "command_latency_seconds",
+      "actuator_gain_scale",
+      "joint_damping_scale"
+    ],
+    "action_semantics": "gateway_sent_command_not_actuator_ack",
+    "actions_byte_identical_for_every_candidate": true,
+    "split_unit": "whole_episode",
+    "split_groups": ["train", "validation", "held_out"],
+    "held_out_open_count": 1,
+    "current_eligible_physical_cohort_count": 0,
+    "proof_class": "replay_diagnostic",
+    "evaluator_admission": false,
+    "physical_authority": false
+  },
   "sim2real_transfer_queue": {
     "status": "active_fail_closed",
     "branch": "codex/sim2real-transfer-foundation",
@@ -3888,7 +3908,8 @@
       "P2_exact_replay_eligibility_foundation",
       "P3_c922_acquisition_preflight",
       "P4_physical_recorder_exact_replay_adapter",
-      "P5_eligible_physical_recorded_replay"
+      "P5_eligible_physical_recorded_replay",
+      "P9_physical_timing_actuation_cohort_adapter"
     ],
     "next_gate": "owner_physical_inputs_for_metric_acquisition"
   },

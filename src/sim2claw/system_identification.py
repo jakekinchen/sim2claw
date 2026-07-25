@@ -30,23 +30,29 @@ from .recorded_replay import (
     ReplayContractError,
     ReplayRangeError,
     calculate_metrics,
+    float64_tensor_sha256,
     load_recorded_episode,
     load_sysid_config,
     inspect_episode_joint_limits,
     nominal_parameter_values,
     portable_content_identity,
+    replay_exact_eligible_physical_recording,
     replay_residual_blocks,
     sha256_file,
     simulate_and_align,
     validate_parameter_values,
     write_replay_receipt,
 )
+from .replay_eligibility import PHYSICAL_SAMPLE_SCHEMA
+from .scene import ROBOT_JOINTS
 
 
 CAPABILITY_SCHEMA = "sim2claw.mujoco_sysid_capability.v1"
 SPLIT_SCHEMA = "sim2claw.sysid_episode_split.v1"
 FIT_RECEIPT_SCHEMA = "sim2claw.sysid_fit_receipt.v1"
 INPUT_CAPABILITY_SCHEMA = "sim2claw.sysid_input_capability.v1"
+TIMING_COHORT_SCHEMA = "sim2claw.physical_timing_actuation_cohort.v1"
+TIMING_RESULT_SCHEMA = "sim2claw.physical_timing_actuation_fit.v1"
 
 OFFICIAL_REQUIRED_EXPORTS = (
     "Parameter",
@@ -1968,6 +1974,9 @@ def evaluate_episode_losses(
         by_episode[episode.episode_id] = {
             "loss": loss,
             "weighted_observables": metrics["aggregate"]["weighted_observables"],
+            "replay_input_action_sha256": replay["control_diagnostics"][
+                "replay_input_action_sha256"
+            ],
             "metrics": metrics,
         }
     if not losses:
@@ -2441,3 +2450,494 @@ def run_system_identification(
     result["receipt_path"] = receipt_path.name
     result["receipt_sha256"] = sha256_file(receipt_path)
     return result
+
+
+def _timing_excitation_report(
+    episodes: Sequence[RecordedEpisode],
+) -> dict[str, Any]:
+    """Reject holds and under-excited cohorts before any optimizer is opened."""
+
+    per_episode: list[dict[str, Any]] = []
+    reasons: list[str] = []
+    body_action_ranges: list[np.ndarray] = []
+    body_motion_ranges: list[np.ndarray] = []
+    total_duration = 0.0
+    for episode in episodes:
+        measured = episode.measured_array("joint_position")
+        if measured is None:
+            reasons.append(
+                f"{episode.episode_id}: measured joint trajectory is missing"
+            )
+            continue
+        action_range = np.ptp(episode.commands, axis=0)
+        motion_range = np.ptp(measured, axis=0)
+        duration = float(episode.duration_seconds)
+        total_duration += duration
+        unique_actions = int(np.unique(episode.commands, axis=0).shape[0])
+        entry_reasons: list[str] = []
+        if duration < 1.0:
+            entry_reasons.append("timestamp span is below 1.0 second")
+        if unique_actions < 3 or float(np.max(action_range[:5])) < math.radians(2.0):
+            entry_reasons.append("gateway-sent action is a hold or lacks variation")
+        if float(np.max(motion_range[:5])) < math.radians(1.0):
+            entry_reasons.append("measured body-joint movement is below 1 degree")
+        reasons.extend(f"{episode.episode_id}: {reason}" for reason in entry_reasons)
+        per_episode.append(
+            {
+                "episode_id": episode.episode_id,
+                "duration_seconds": duration,
+                "unique_action_rows": unique_actions,
+                "action_peak_to_peak_radians": action_range.tolist(),
+                "measured_peak_to_peak_radians": motion_range.tolist(),
+                "ready": not entry_reasons,
+            }
+        )
+        body_action_ranges.append(action_range[:5])
+        body_motion_ranges.append(motion_range[:5])
+
+    if len(episodes) < 5:
+        reasons.append(
+            "at least five whole episodes are required for "
+            "train/validation/held-out"
+        )
+    if total_duration < 5.0:
+        reasons.append("cohort timestamp span is below 5.0 episode-seconds")
+    if body_action_ranges and body_motion_ranges:
+        action_coverage = np.max(np.stack(body_action_ranges), axis=0)
+        motion_coverage = np.max(np.stack(body_motion_ranges), axis=0)
+        covered = np.flatnonzero(
+            (action_coverage >= math.radians(5.0))
+            & (motion_coverage >= math.radians(2.0))
+        )
+        if covered.size < 3:
+            reasons.append(
+                "fewer than three body joints have both 5 degree action variation "
+                "and 2 degree measured movement"
+            )
+    else:
+        action_coverage = np.zeros(5)
+        motion_coverage = np.zeros(5)
+        covered = np.asarray([], dtype=np.int64)
+    return {
+        "ready": not reasons,
+        "minimums": {
+            "episode_count": 5,
+            "per_episode_duration_seconds": 1.0,
+            "cohort_duration_seconds": 5.0,
+            "per_episode_unique_action_rows": 3,
+            "covered_body_joint_count": 3,
+            "covered_action_peak_to_peak_radians": math.radians(5.0),
+            "covered_measured_peak_to_peak_radians": math.radians(2.0),
+        },
+        "episode_count": len(episodes),
+        "total_episode_seconds": total_duration,
+        "covered_body_joint_indices": covered.tolist(),
+        "cohort_action_peak_to_peak_radians": action_coverage.tolist(),
+        "cohort_measured_peak_to_peak_radians": motion_coverage.tolist(),
+        "episodes": per_episode,
+        "rejection_reasons": reasons,
+    }
+
+
+def _freeze_timing_cohort_split(
+    episodes: Sequence[RecordedEpisode],
+    config: Mapping[str, Any],
+) -> dict[str, Any]:
+    seed = str(config["split"]["seed"])
+    ordered = sorted(
+        episodes,
+        key=lambda episode: (
+            hashlib.sha256(f"{seed}:{episode.episode_id}".encode()).hexdigest(),
+            episode.episode_id,
+        ),
+    )
+    assignments = {
+        episode.episode_id: (
+            "held_out"
+            if index == len(ordered) - 1
+            else "validation"
+            if index == len(ordered) - 2
+            else "train"
+        )
+        for index, episode in enumerate(ordered)
+    }
+    payload = {
+        "owner": config["split"]["owner"],
+        "unit": "whole_episode",
+        "seed": seed,
+        "assignments": assignments,
+        "counts": {
+            name: sum(split == name for split in assignments.values())
+            for name in ("train", "validation", "held_out")
+        },
+    }
+    payload["digest"] = hashlib.sha256(
+        json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
+    ).hexdigest()
+    return payload
+
+
+def fit_timing_actuation_cohort(
+    episodes: Sequence[RecordedEpisode],
+    config: Mapping[str, Any],
+    *,
+    output_directory: Path,
+    backend: str = "auto",
+    verification_bindings: Sequence[Mapping[str, Any]] | None = None,
+    model_base_directory: Path | None = None,
+) -> dict[str, Any]:
+    """Fit only the existing timing/control stage with sealed episode groups."""
+
+    output_directory = output_directory.resolve()
+    output_directory.mkdir(parents=True, exist_ok=True)
+    identities = {
+        episode.episode_id: float64_tensor_sha256(episode.commands)
+        for episode in episodes
+    }
+    if len(identities) != len(episodes):
+        raise SystemIdentificationError("cohort episode identities must be unique")
+    excitation = _timing_excitation_report(episodes)
+    if not excitation["ready"]:
+        result = {
+            "schema_version": TIMING_RESULT_SCHEMA,
+            "status": "rejected_low_excitation",
+            "excitation": excitation,
+            "action_identity": identities,
+            "parameters_promoted": False,
+            "evaluator_admission": False,
+            "physical_authority": False,
+        }
+        _atomic_json(output_directory / "timing_actuation_fit.json", result)
+        return result
+
+    split = _freeze_timing_cohort_split(episodes, config)
+    _atomic_json(output_directory / "frozen_split.json", split)
+    groups = {
+        name: [
+            episode
+            for episode in episodes
+            if split["assignments"][episode.episode_id] == name
+        ]
+        for name in ("train", "validation", "held_out")
+    }
+    timing_stages = [
+        stage
+        for stage in config["parameter_stages"]
+        if stage["name"] == "timing_control"
+    ]
+    if len(timing_stages) != 1:
+        raise SystemIdentificationError(
+            "config must contain exactly one timing_control stage"
+        )
+    stage = timing_stages[0]
+    family = {
+        "stage": "timing_control",
+        "parameters": copy.deepcopy(stage["parameters"]),
+        "excluded": ["geometry", "contact_object", "deadband", "friction", "load"],
+    }
+    family["digest"] = hashlib.sha256(
+        json.dumps(family, separators=(",", ":"), sort_keys=True).encode()
+    ).hexdigest()
+
+    baseline = nominal_parameter_values(config)
+    fit = fit_parameter_stage(
+        stage,
+        groups["train"],
+        config,
+        baseline,
+        backend=backend,
+        model_base_directory=model_base_directory,
+    )
+    if fit["status"] != "optimized":
+        raise SystemIdentificationError(
+            f"timing/control stage did not optimize: {fit.get('reason', fit['status'])}"
+        )
+    candidates: list[dict[str, Any]] = []
+    for attempt in fit["attempts"]:
+        if attempt["status"] != "completed":
+            continue
+        parameters = {**baseline, **attempt["parameters"]}
+        train_metrics = evaluate_episode_losses(
+            groups["train"],
+            config,
+            parameters,
+            model_base_directory=model_base_directory,
+        )
+        validation_metrics = evaluate_episode_losses(
+            groups["validation"],
+            config,
+            parameters,
+            model_base_directory=model_base_directory,
+        )
+        candidates.append(
+            {
+                "start_index": attempt["start_index"],
+                "parameters": attempt["parameters"],
+                "train": train_metrics,
+                "validation": validation_metrics,
+            }
+        )
+    if not candidates:
+        raise SystemIdentificationError(
+            "timing/control optimizer produced no evaluable candidate"
+        )
+    candidates.sort(
+        key=lambda candidate: (
+            candidate["validation"]["mean_loss"],
+            candidate["train"]["mean_loss"],
+            candidate["start_index"],
+        )
+    )
+    selected = candidates[0]
+    selected_parameters = {**baseline, **selected["parameters"]}
+
+    # This is the sole held-out opening, after the family and selected candidate freeze.
+    held_out_baseline = evaluate_episode_losses(
+        groups["held_out"],
+        config,
+        baseline,
+        model_base_directory=model_base_directory,
+    )
+    held_out_candidate = evaluate_episode_losses(
+        groups["held_out"],
+        config,
+        selected_parameters,
+        model_base_directory=model_base_directory,
+    )
+    held_out_gate = held_out_improvement_gate(
+        held_out_baseline["mean_loss"],
+        held_out_candidate["mean_loss"],
+        config["held_out_acceptance"],
+    )
+    after = {
+        episode.episode_id: float64_tensor_sha256(episode.commands)
+        for episode in episodes
+    }
+    if after != identities:
+        raise SystemIdentificationError("candidate evaluation mutated an action tensor")
+    result = {
+        "schema_version": TIMING_RESULT_SCHEMA,
+        "status": "diagnostic_fit_complete",
+        "proof_class": "replay",
+        "excitation": excitation,
+        "frozen_split": split,
+        "candidate_family": family,
+        "fit": fit,
+        "candidate_selection": {
+            "selected_on": ["train", "validation"],
+            "held_out_used_for_selection": False,
+            "selected_start_index": selected["start_index"],
+            "selected_parameters": selected["parameters"],
+            "candidates": candidates,
+        },
+        "held_out": {
+            "open_count": 1,
+            "opened_after_candidate_family_frozen": True,
+            "baseline": held_out_baseline,
+            "candidate": held_out_candidate,
+            "improvement_gate": held_out_gate,
+        },
+        "action_identity": {
+            "semantics": "gateway_sent_command_not_actuator_ack",
+            "sha256_by_episode": identities,
+            "unchanged_for_every_candidate": True,
+            "evaluated_splits": {
+                "candidate_train_and_validation": [
+                    {
+                        split_name: {
+                            episode_id: metrics["replay_input_action_sha256"]
+                            for episode_id, metrics in candidate[split_name][
+                                "by_episode"
+                            ].items()
+                        }
+                        for split_name in ("train", "validation")
+                    }
+                    for candidate in candidates
+                ],
+                "held_out_baseline": {
+                    episode_id: metrics["replay_input_action_sha256"]
+                    for episode_id, metrics in held_out_baseline["by_episode"].items()
+                },
+                "held_out_selected_candidate": {
+                    episode_id: metrics["replay_input_action_sha256"]
+                    for episode_id, metrics in held_out_candidate["by_episode"].items()
+                },
+            },
+        },
+        "verification_bindings": list(verification_bindings or []),
+        "uncertainty_and_sensitivity": {
+            "local_sensitivity": fit["sensitivity"],
+            "near_equivalent_train_fits": fit["near_equivalent"],
+            "non_identifiabilities": [
+                "command delay and actuator response may remain correlated "
+                "at recorder cadence",
+                "damping cannot be separated from unmeasured friction or load",
+                "deadband is not represented by the existing timing/control family",
+            ],
+        },
+        "parameters_promoted": False,
+        "evaluator_admission": False,
+        "physical_authority": False,
+        "claim_limits": [
+            "joint residual diagnostic only",
+            "gateway-sent commands are not actuator-applied acknowledgements",
+            "metric geometry, contact/load, end-effector, pawn, and task "
+            "consequence are unavailable",
+        ],
+    }
+    result_path = output_directory / "timing_actuation_fit.json"
+    _atomic_json(result_path, result)
+    result["result_path"] = result_path.name
+    result["result_sha256"] = sha256_file(result_path)
+    return result
+
+
+def _load_verified_physical_episode(
+    recording_directory: Path,
+    manifest_path: Path,
+    *,
+    config: Mapping[str, Any],
+    config_path: Path,
+    verification_directory: Path,
+) -> tuple[RecordedEpisode, dict[str, Any]]:
+    replay_receipt = replay_exact_eligible_physical_recording(
+        recording_directory,
+        manifest_path,
+        config_path=config_path,
+        output_directory=verification_directory,
+    )
+    receipt_path = recording_directory / "recording_receipt.json"
+    samples_path = recording_directory / "samples.jsonl"
+    receipt_sha256 = sha256_file(receipt_path)
+    samples_sha256 = sha256_file(samples_path)
+    manifest_sha256 = sha256_file(manifest_path)
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    samples = [
+        json.loads(line)
+        for line in samples_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    binding = replay_receipt["exact_replay_binding"]
+    if (
+        binding["manifest_sha256"] != manifest_sha256
+        or replay_receipt["source"]["provenance"]["samples"]["sha256"] != samples_sha256
+    ):
+        raise ReplayContractError(
+            "physical source changed after exact replay verification"
+        )
+    commands = np.asarray(manifest["applied_actions"], dtype=np.float64)
+    if float64_tensor_sha256(commands) != binding["replay_consumed_action_sha256"]:
+        raise ReplayContractError("verified gateway-sent action tensor hash drifted")
+    timestamps = np.asarray(manifest["timestamps_seconds"], dtype=np.float64)
+    measured = tuple(
+        {
+            "joint_position": np.deg2rad(
+                np.asarray(sample["follower_actual_position_degrees"], dtype=np.float64)
+            ).tolist()
+        }
+        for sample in samples
+    )
+    initial = manifest["initial_state"]
+    episode = RecordedEpisode(
+        episode_id=str(manifest["episode_id"]),
+        proof_class="physical_teleoperation_source_unqualified",
+        proof_class_category="physical_read_only",
+        column=None,
+        joint_names=tuple(config["bindings"]["joint_names"]),
+        initial_joint_position=np.asarray(initial["joint_position"], dtype=np.float64),
+        initial_joint_position_units=("radian",) * len(ROBOT_JOINTS),
+        initial_joint_velocity=np.asarray(initial["joint_velocity"], dtype=np.float64),
+        initial_joint_velocity_units=("radian_per_second",) * len(ROBOT_JOINTS),
+        timestamps=timestamps - timestamps[0],
+        original_timestamps=timestamps,
+        commands=commands.copy(),
+        measured=measured,
+        initial_object_state={"status": "unavailable"},
+        unavailable_observables={
+            name: "not measured by the physical recorder"
+            for name in (
+                "end_effector_position",
+                "end_effector_orientation",
+                "gripper_position",
+                "pawn_position",
+                "pawn_orientation",
+                "contact_active",
+                "contact_force",
+            )
+        },
+        source_path=samples_path,
+        source_sha256=samples_sha256,
+        source_schema_version=PHYSICAL_SAMPLE_SCHEMA,
+        source_provenance={
+            "chain_complete": True,
+            "recording_receipt": {"sha256": receipt_sha256},
+            "samples": {"sha256": samples_sha256},
+            "exact_replay_manifest": {"sha256": manifest_sha256},
+        },
+        joint_transform=None,
+    )
+    return episode, {
+        "episode_id": episode.episode_id,
+        "recording_receipt_sha256": receipt_sha256,
+        "samples_sha256": samples_sha256,
+        "exact_replay_manifest_sha256": manifest_sha256,
+        "gateway_sent_action_sha256": binding["replay_consumed_action_sha256"],
+        "p5_byte_identical": binding["byte_identical"],
+    }
+
+
+def run_physical_timing_actuation_cohort(
+    cohort_path: Path,
+    *,
+    config_path: Path,
+    output_directory: Path,
+    backend: str = "auto",
+) -> dict[str, Any]:
+    """Verify P4/P5 inputs, then run the existing timing/control fitter."""
+
+    cohort_path = cohort_path.resolve()
+    cohort = json.loads(cohort_path.read_text(encoding="utf-8"))
+    if cohort.get("schema_version") != TIMING_COHORT_SCHEMA:
+        raise SystemIdentificationError(
+            f"cohort schema must be {TIMING_COHORT_SCHEMA}"
+        )
+    rows = cohort.get("episodes")
+    if not isinstance(rows, list) or not rows:
+        raise SystemIdentificationError("cohort episodes must be a non-empty list")
+    config_path = config_path.resolve()
+    config = load_sysid_config(config_path)
+    episodes: list[RecordedEpisode] = []
+    bindings: list[dict[str, Any]] = []
+    base = cohort_path.parent
+    for index, row in enumerate(rows):
+        if not isinstance(row, Mapping):
+            raise SystemIdentificationError(f"cohort episode {index} must be an object")
+        recording_value = row.get("recording")
+        manifest_value = row.get("exact_replay_manifest")
+        if not isinstance(recording_value, str) or not isinstance(manifest_value, str):
+            raise SystemIdentificationError(
+                f"cohort episode {index} requires recording and exact_replay_manifest"
+            )
+        recording = (base / recording_value).resolve()
+        manifest = (base / manifest_value).resolve()
+        episode, binding = _load_verified_physical_episode(
+            recording,
+            manifest,
+            config=config,
+            config_path=config_path,
+            verification_directory=output_directory.resolve()
+            / "exact_replay_verification"
+            / f"episode-{index:02d}",
+        )
+        binding["recording"] = recording_value
+        binding["exact_replay_manifest"] = manifest_value
+        episodes.append(episode)
+        bindings.append(binding)
+    return fit_timing_actuation_cohort(
+        episodes,
+        config,
+        output_directory=output_directory,
+        backend=backend,
+        verification_bindings=bindings,
+        model_base_directory=config_path.parent,
+    )

@@ -1185,6 +1185,11 @@ substituted for the B--G benchmark.
   initial velocity and units, exact unclipped controls, immutable episode
   splits, object-state provenance, observable residuals, and sensitivity. The
   canonical report admits 0/18 episodes, so no project parameter was fit.
+- PASS (OFFLINE SEAM ONLY): the existing timing/control stage can now consume
+  a cohort of current-schema P4/P5-eligible recordings, reject holds and weak
+  excitation, freeze whole-episode train/validation/held-out groups, select
+  without held-out access, and prove every replay consumed the unchanged
+  gateway-sent action tensor. No current physical cohort is eligible or fit.
 - PASS: the exact 12-semantic B--G language surface, deterministic prompt
   provenance, group-before-prompt split rule, and evidence-count accounting are
   frozen. Current coverage is zero admitted source groups and zero training

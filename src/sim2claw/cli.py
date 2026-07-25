@@ -659,6 +659,18 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("auto", "official", "local"),
         default="auto",
     )
+    timing_fit = subparsers.add_parser(
+        "sysid-fit-physical-timing",
+        help="fit timing/control only from P4-eligible current physical recordings",
+    )
+    timing_fit.add_argument("--cohort", type=Path, required=True)
+    timing_fit.add_argument("--config", type=Path, default=DEFAULT_SYSID_CONFIG)
+    timing_fit.add_argument("--output", type=Path, required=True)
+    timing_fit.add_argument(
+        "--backend",
+        choices=("auto", "official", "local"),
+        default="auto",
+    )
 
     actuator_external = subparsers.add_parser(
         "actuator-external-validate",
@@ -1741,6 +1753,25 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["calibration_success"] else 1
+    if args.command == "sysid-fit-physical-timing":
+        from .recorded_replay import ReplayContractError
+        from .system_identification import (
+            SystemIdentificationError,
+            run_physical_timing_actuation_cohort,
+        )
+
+        try:
+            report = run_physical_timing_actuation_cohort(
+                args.cohort,
+                config_path=args.config,
+                output_directory=args.output,
+                backend=args.backend,
+            )
+        except (OSError, ValueError, ReplayContractError, SystemIdentificationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["status"] == "diagnostic_fit_complete" else 1
     if args.command == "actuator-external-validate":
         from .actuator_external_validation import (
             ActuatorExternalValidationError,
