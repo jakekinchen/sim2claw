@@ -48,6 +48,13 @@ abstraction error for this exact unloaded canary. It does not identify the
 remaining camera extrinsic, joint-zero ownership, contact/compliance, pawn
 consequence, or task-transfer domains.
 
+With the collision correction active, the independently admitted timing
+candidate still reduced aggregate canary RMSE from `0.177570°` to `0.168784°`
+and maximum absolute error from `0.625452°` to `0.515565°`. It was not uniformly
+better per joint: elbow RMSE changed from `0.140744°` to `0.176887°`, so this
+retrospective canary does not widen the timing candidate's existing
+configuration-input-only authority.
+
 ## Verification
 
 `uv run --offline pytest -q tests/test_scene.py tests/test_physical_canary.py tests/test_recorded_replay.py`
