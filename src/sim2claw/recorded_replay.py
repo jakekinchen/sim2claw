@@ -431,6 +431,7 @@ def validate_sysid_config(config: Mapping[str, Any]) -> None:
         "linear",
     }:
         raise ReplayContractError("command interpolation must be explicit")
+    _validated_calibrated_body_ranges(config)
     stages = config.get("parameter_stages")
     if not isinstance(stages, list) or [stage.get("name") for stage in stages] != [
         "geometry",
@@ -496,6 +497,63 @@ def validate_sysid_config(config: Mapping[str, Any]) -> None:
     if not math.isfinite(holdout_fraction) or not 0.0 < holdout_fraction < 1.0:
         raise ReplayContractError("split holdout_fraction must be between zero and one")
     _validated_physical_transform(config)
+
+
+def _validated_calibrated_body_ranges(
+    config: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    model_config = config.get("model")
+    if not isinstance(model_config, Mapping):
+        raise ReplayContractError("model config is required")
+    candidate = model_config.get("calibrated_body_ranges")
+    if candidate is None:
+        return None
+    if not isinstance(candidate, Mapping) or set(candidate) != {
+        "source_calibration_sha256",
+        "unit",
+        "joint_names",
+        "minimum",
+        "maximum",
+    }:
+        raise ReplayContractError(
+            "calibrated body ranges must use the reviewed compact schema"
+        )
+    source_sha256 = str(candidate.get("source_calibration_sha256") or "")
+    if not _is_sha256(source_sha256):
+        raise ReplayContractError(
+            "calibrated body ranges require a source calibration SHA-256"
+        )
+    bindings = config.get("bindings")
+    bound_names = (
+        list(bindings.get("joint_names") or [])[:5]
+        if isinstance(bindings, Mapping)
+        else []
+    )
+    names = candidate.get("joint_names")
+    if names != bound_names or len(bound_names) != 5:
+        raise ReplayContractError(
+            "calibrated body range names must match the five bound body joints"
+        )
+    lower = np.asarray(candidate.get("minimum"), dtype=np.float64)
+    upper = np.asarray(candidate.get("maximum"), dtype=np.float64)
+    if (
+        candidate.get("unit") != "degree"
+        or lower.shape != (5,)
+        or upper.shape != (5,)
+        or not np.all(np.isfinite(lower))
+        or not np.all(np.isfinite(upper))
+        or np.any(lower >= upper)
+    ):
+        raise ReplayContractError(
+            "calibrated body ranges require five finite increasing degree bounds"
+        )
+    return {
+        "source_calibration_sha256": source_sha256,
+        "unit": "degree",
+        "joint_names": list(names),
+        "minimum": lower.tolist(),
+        "maximum": upper.tolist(),
+    }
 
 
 def _finite_vector(value: Any, *, size: int, field: str) -> np.ndarray:
@@ -1115,11 +1173,11 @@ def _compile_model(
     model_config = config["model"]
     kind = model_config.get("kind")
     if kind == "current_chess_scene":
-        return (
-            build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT).compile(),
-            True,
-        )
-    if kind == "xml_path":
+        model = build_scene_spec(
+            piece_layout=CURRENT_TASK_PIECE_LAYOUT
+        ).compile()
+        current_scene = True
+    elif kind == "xml_path":
         xml_path = Path(model_config["path"])
         if not xml_path.is_absolute():
             if base_directory is None:
@@ -1127,10 +1185,40 @@ def _compile_model(
             xml_path = base_directory / xml_path
         if not xml_path.is_file():
             raise ReplayContractError(f"MuJoCo model does not exist: {xml_path}")
-        return mujoco.MjModel.from_xml_path(str(xml_path)), False
-    if kind == "xml_string":
-        return mujoco.MjModel.from_xml_string(str(model_config["xml"])), False
-    raise ReplayContractError(f"unsupported MuJoCo model kind: {kind}")
+        model = mujoco.MjModel.from_xml_path(str(xml_path))
+        current_scene = False
+    elif kind == "xml_string":
+        model = mujoco.MjModel.from_xml_string(str(model_config["xml"]))
+        current_scene = False
+    else:
+        raise ReplayContractError(f"unsupported MuJoCo model kind: {kind}")
+    calibrated_ranges = _validated_calibrated_body_ranges(config)
+    if calibrated_ranges is not None:
+        lower = np.deg2rad(
+            np.asarray(calibrated_ranges["minimum"], dtype=np.float64)
+        )
+        upper = np.deg2rad(
+            np.asarray(calibrated_ranges["maximum"], dtype=np.float64)
+        )
+        for index, name in enumerate(calibrated_ranges["joint_names"]):
+            joint_id = mujoco.mj_name2id(
+                model, mujoco.mjtObj.mjOBJ_JOINT, name
+            )
+            actuator_id = mujoco.mj_name2id(
+                model, mujoco.mjtObj.mjOBJ_ACTUATOR, name
+            )
+            if joint_id < 0 or actuator_id < 0:
+                raise ReplayContractError(
+                    f"calibrated body range target is missing: {name}"
+                )
+            model.jnt_limited[joint_id] = 1
+            model.jnt_range[joint_id] = [lower[index], upper[index]]
+            model.actuator_ctrllimited[actuator_id] = 1
+            model.actuator_ctrlrange[actuator_id] = [
+                lower[index],
+                upper[index],
+            ]
+    return model, current_scene
 
 
 def _parameter_descriptors(config: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]:

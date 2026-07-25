@@ -24,6 +24,7 @@ from .system_identification import (
     TIMING_COHORT_SCHEMA,
     TIMING_RESULT_SCHEMA,
     SystemIdentificationError,
+    _derive_timing_evidence_identity,
     _freeze_timing_cohort_split,
     _load_verified_physical_episode,
     _validated_timing_evidence_identity,
@@ -178,16 +179,38 @@ def admit_physical_timing_actuation_fit(
         )
     if cohort.get("schema_version") != TIMING_COHORT_SCHEMA:
         raise SystemIdentificationError("timing admission cohort schema changed")
-    identity = _validated_timing_evidence_identity(cohort.get("identity"))
-    if fit_result.get("identity") != identity:
-        raise SystemIdentificationError("timing fit robot/workspace identity drifted")
-
     rows = cohort.get("episodes")
     if not isinstance(rows, list) or not rows:
         raise SystemIdentificationError("timing admission cohort is empty")
+    base = cohort_path.parent
+    explicit_identity = cohort.get("identity")
+    if explicit_identity is not None:
+        identity = _validated_timing_evidence_identity(explicit_identity)
+    else:
+        source_identities = [
+            _derive_timing_evidence_identity(
+                (base / str(row.get("recording") or "")).resolve(),
+                (
+                    base / str(row.get("exact_replay_manifest") or "")
+                ).resolve(),
+            )
+            for row in rows
+            if isinstance(row, Mapping)
+        ]
+        if len(source_identities) != len(rows) or not source_identities:
+            raise SystemIdentificationError(
+                "timing admission cohort identity sources are malformed"
+            )
+        identity = source_identities[0]
+        if any(candidate != identity for candidate in source_identities[1:]):
+            raise SystemIdentificationError(
+                "timing admission source identities disagree"
+            )
+    if fit_result.get("identity") != identity:
+        raise SystemIdentificationError("timing fit robot/workspace identity drifted")
+
     episodes: list[RecordedEpisode] = []
     bindings: list[dict[str, Any]] = []
-    base = cohort_path.parent
     for index, row in enumerate(rows):
         if not isinstance(row, Mapping):
             raise SystemIdentificationError(
@@ -204,6 +227,7 @@ def admit_physical_timing_actuation_fit(
             / "timing_admission_exact_replay"
             / f"episode-{index:02d}",
             expected_identity=identity,
+            allow_implicit_identity=explicit_identity is None,
         )
         episodes.append(episode)
         bindings.append(binding)
