@@ -219,6 +219,14 @@ robot motions, simulator replays, provider calls, and training rows are zero.
 A tracked guard closes v1. Geometry/scale remains `missing`; any acquisition
 or fit requires a new preregistered transaction.
 
+One of those ten missing inputs now has a separately verified successor
+artifact. The C922 frame-lineage gate rederived video frame index `29` at PTS
+`1.000000 s` through the tracked, hash-bound decoder wrapper. Its PNG bytes and
+decoded RGB24 bytes both match `overhead_start.png` exactly. Budget use was one
+probe, one derivation, and zero retries or hardware/simulator operations. This
+receipt may remove the extraction-lineage item in a new metric-readiness
+version; it does not rewrite the terminal v1 packet or change geometry/scale.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining

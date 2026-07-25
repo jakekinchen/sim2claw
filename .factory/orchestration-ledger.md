@@ -1267,3 +1267,11 @@ goal. External provider campaigns and spending remain separately gated.
   allows one metadata probe and one frame derivation with no retry or adjacent
   search, and cannot open cameras, move the robot, run the simulator, or
   change metric/Twin authority.
+- 2026-07-24T19:55:00-05:00 — The sole reviewed frame-lineage derivation
+  passed at exact implementation `cc30304`: index 29 / PTS `1.000000 s`
+  reproduced the existing PNG and decoded RGB24 bytes exactly. Evaluation is
+  `4788a827...`; receipt file is `3b44795c...` / digest `15d90882...`.
+  Budget is one probe, one decode, zero retries, and zero camera/robot/
+  simulator/provider operations. A tracked guard exhausts v1. This closes one
+  future readiness prerequisite without changing the terminal metric v1 result
+  or the `0/6` Twin verdict.

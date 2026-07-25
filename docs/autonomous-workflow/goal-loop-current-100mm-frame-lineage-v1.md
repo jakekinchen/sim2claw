@@ -61,6 +61,8 @@ equality; budgets; focused tests; frozen evidence; and authority limits.
 - Read-only audit found the existing frame byte-identical to both an exact
   index-29 decode and an exact `1.000000 s` seek under FFmpeg `8.0.1`.
 - This audit is design input, not the formal one-shot receipt.
+- The reviewed formal derivation passed: frame index `29` / PTS `1.000000 s`
+  is byte-identical and decoded-RGB-identical to the existing frame.
 
 ### Assumptions
 
@@ -87,10 +89,10 @@ equality; budgets; focused tests; frozen evidence; and authority limits.
 ## Progress Ledger
 
 ```text
-Current state: Preregistered; formal derivation not executed.
-Completed: Read-only reproducibility audit selected frame index 29 / PTS 1.000000 s.
-Evidence: Video 1643520f; existing frame 2543230b; FFmpeg 0a96da27; FFprobe 68447e67.
-Remaining: Implement/test/review, one formal derivation, closeout.
+Current state: Terminal verified; one probe/derivation budget exhausted with no retry.
+Completed: Preregistration 4692bea; reviewed implementation cc30304; 1/1 probe and derivation; tracked exhaustion control.
+Evidence: Video 1643520f; frame/file 2543230b; RGB24 7046a08b; evaluation 4788a827; receipt file 3b44795c / digest 15d90882.
+Remaining: Consume this pass in a new metric-readiness version; do not edit v1.
 Blockers: None for offline lineage.
-Next step: Implement the fail-closed one-shot proof without camera access.
+Next step: Acquire direct scale/intrinsics/correspondence/object/extrinsic measurements under a new transaction.
 ```
