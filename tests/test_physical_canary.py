@@ -120,6 +120,7 @@ def _receipts(tmp_path: Path, bundle: dict[str, object]) -> tuple[Path, Path]:
                 "follower_calibration_sha256": CALIBRATION,
             },
             "final_actual_degrees": ANCHOR_DEGREES.tolist(),
+            "target_degrees": ANCHOR_DEGREES.tolist(),
             "physical_follower_torque_enabled": False,
             "physical_motion_commanded": True,
         },
@@ -166,7 +167,18 @@ class _Capture:
         return {"finished": True}
 
 
-def test_physical_canary_requires_shoulder_pan_only_and_reuses_exact_bytes(tmp_path: Path) -> None:
+def _preview(
+    actions: np.ndarray, bundle_path: Path, bundle: dict[str, object]
+) -> dict[str, object]:
+    del bundle_path, bundle
+    return {
+        "exact_physical_action_sha256": action_sha256(actions),
+        "no_new_or_worsened_kinematic_contact": True,
+        "external_contact_pairs": [],
+    }
+
+
+def test_physical_canary_freshly_freezes_post_normalization_pan_bytes(tmp_path: Path) -> None:
     bundle_path = tmp_path / "bundle.json"
     bundle = _bundle(bundle_path)
     contact_path, normalization_path = _receipts(tmp_path, bundle)
@@ -177,22 +189,22 @@ def test_physical_canary_requires_shoulder_pan_only_and_reuses_exact_bytes(tmp_p
         contact_receipt_path=contact_path,
         normalization_receipt_path=normalization_path,
         preflight_fn=_preflight,
+        preview_fn=_preview,
     )
     assert packet["schema_version"] == PHYSICAL_CANARY_PACKET_SCHEMA
-    assert packet["frozen_action_payload"] == bundle["frozen_action_payload"]
-    assert packet["action_sha256"] == bundle["frozen_action_payload"]["sha256"]
-
-    bad_bundle_path = tmp_path / "elbow-bundle.json"
-    bad_bundle = _bundle(bad_bundle_path, elbow_variation=True)
-    bad_contact, bad_normalization = _receipts(tmp_path / "bad", bad_bundle)
-    with pytest.raises(PhysicalCanaryError, match="non-shoulder-pan"):
-        compile_physical_canary_packet(
-            bad_bundle_path,
-            tmp_path / "bad-packet.json",
-            contact_receipt_path=bad_contact,
-            normalization_receipt_path=bad_normalization,
-            preflight_fn=_preflight,
-        )
+    payload = packet["frozen_action_payload"]
+    actions = np.frombuffer(
+        base64.b64decode(payload["base64"]), dtype="<f8"
+    ).reshape(payload["shape"])
+    assert packet["source_pre_normalization_bundle"]["actions_used_for_hardware"] is False
+    assert packet["action_sha256"] != bundle["frozen_action_payload"]["sha256"]
+    assert action_sha256(actions) == packet["action_sha256"]
+    assert np.array_equal(actions[-1], actions[0])
+    assert np.all(actions[:, 1:] == actions[0, 1:])
+    assert np.max(np.abs(actions[:, 0] - actions[0, 0])) == 1.0
+    assert packet["post_normalization_simulation_preview"][
+        "exact_physical_action_sha256"
+    ] == packet["action_sha256"]
 
 
 def test_normalization_plan_is_bounded_and_execution_is_torque_off(tmp_path: Path) -> None:
@@ -212,6 +224,8 @@ def test_normalization_plan_is_bounded_and_execution_is_torque_off(tmp_path: Pat
     assert plan["actions_degrees"][0][1] == -107.0
     assert plan["actions_degrees"][0][1] != plan["anchor_degrees"][1]
     assert max(abs(a - b) for a, b in zip(plan["anchor_degrees"], plan["target_degrees"])) <= 5.0
+    assert plan["target_degrees"][1] == -107.0
+    assert plan["target_degrees"][3] == -107.0
 
 
 def test_physical_canary_execution_requires_admission_and_never_overwrites(tmp_path: Path) -> None:
@@ -219,7 +233,7 @@ def test_physical_canary_execution_requires_admission_and_never_overwrites(tmp_p
     bundle = _bundle(bundle_path)
     contact_path, normalization_path = _receipts(tmp_path, bundle)
     packet_path = tmp_path / "packet.json"
-    compile_physical_canary_packet(bundle_path, packet_path, contact_receipt_path=contact_path, normalization_receipt_path=normalization_path, preflight_fn=_preflight)
+    compile_physical_canary_packet(bundle_path, packet_path, contact_receipt_path=contact_path, normalization_receipt_path=normalization_path, preflight_fn=_preflight, preview_fn=_preview)
     packet = json.loads(packet_path.read_text(encoding="utf-8"))
     packet["physical_packet_execution_admitted"] = True
     packet["independent_review"] = {

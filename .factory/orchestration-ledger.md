@@ -2,19 +2,18 @@
 
 ## Active bounded transaction — follower-only timing twin
 
-- Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`; canonical
-  implementation through `f9890a6`.
+- Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`; physical
+  canary implementation integrated at `71348fe` with the exact-byte
+  post-normalization correction pending in the current bounded commit.
 - Owner objective: control only the SO-101 follower, without leader alignment
   or teleoperation, until a tangible digital-twin result is obtained.
 - Physical proof: packet `P10-fa486d61dbdc303e` has five finalized
   follower-only recordings. Every P4 report is exact-replay eligible and binds
   identical requested/applied action bytes. Cohort SHA-256:
   `ffdcdfaa2da83f3a19e70d000de4627ccdc257b2e5d87ae0b02109d3bcaa6460`.
-- Safety state: all capture motion was bounded by the reviewed follower
-  gateway; the real leader was not opened. The follower is torque-off. After
-  capture the owner manually moved it to a pose whose shoulder lift and wrist
-  flex are just outside their calibrated minima; no torque-on command is
-  permitted until a bounded recovery returns both inside the envelope.
+- Safety state: all capture and canary motion was bounded by the reviewed
+  follower gateway; the real leader was not opened. Fresh post-canary
+  preflight confirms the follower is torque-off with zero reported current.
 - Completed proof: the immutable receipts now derive one unanimous
   robot/workspace identity without rewriting evidence. An explicit
   calibration-hash-bound range candidate enabled exact replay without clipping
@@ -35,21 +34,27 @@
   table/board/pawn/clamp/floor/other-arm contact, no new contact pair, and no
   penetration worse than the `-0.0092899963 m` starting baseline. The dynamic
   `77.556 N` result remains retained as a simulator-model mismatch diagnostic.
-- Live follower state: torque remains off at
-  `[-3.6923,-108.2198,99.9121,-108.7912,-74.5934,2.9691]` degrees. Shoulder
-  lift and wrist flex require a small bounded inward normalization before an
-  exact-payload canary; limits will not be widened and frozen actions will not
-  be clipped.
-- Active worker: background task `019f97b8-3ab8-7402-bbfc-e391b88b6814`
-  is implementing the smallest reviewed normalize/compile/execute physical
-  canary seam. It may not touch hardware. No Brev, training, push, or broad
-  testing is delegated.
-- Next proof target: integrate the executor, normalize the two out-of-envelope
-  joints, re-anchor and preview the tiny exact payload, then execute it through
-  the reviewed follower gateway with dual-camera/joint evidence and guaranteed
-  torque-off closeout. Exact P13 remains required for metric camera alignment
-  and later physical task promotion, not for this bounded hardware-control
-  demonstration.
+- Physical canary result: completed at
+  `runs/physical_excitation/20260725-follower-only-v1/physical-canary-v1/execution-v4`.
+  The fresh post-normalization payload contains 37 physical-unit float64
+  commands, action SHA-256
+  `129441d03791570782dc8771f13e0b6125dbd5e01369645bd0fd641ee4c22a20`.
+  MuJoCo `mj_forward` consumed that exact payload and found no external,
+  new, or worsened kinematic contact. Hardware requested/sent vectors were
+  byte-identical at all 37 samples with no gateway clamp or rate limit.
+  Measured pan excursion was `0.615385°`; the arm returned within the frozen
+  `0.5°` tolerance and torque was released.
+- Camera evidence: one native common AVFoundation session completed both
+  exact active streams after rebinding the currently enumerated D405 USB
+  identity/mode (`424x240 yuvs @ 5 fps`). C922 recorded 82 frames and D405 14,
+  with zero Apple drops, writer backpressure, inferred missing intervals, or
+  non-monotonic PTS. These are diagnostic videos, not exposure synchronization,
+  metric depth, or task proof.
+- Worker state: background task `019f97b8-3ab8-7402-bbfc-e391b88b6814`
+  is complete; its implementation was integrated and corrected in canonical.
+- Next proof target: use this executor as the hardware-control canary baseline,
+  then close metric P13 camera/workcell alignment and task-consequence
+  observability before promoting any geometric, ACT, VLA, or LLM policy.
 
 ## Active bounded transaction — Studio simulator-twin reconciliation
 
