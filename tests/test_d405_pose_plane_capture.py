@@ -247,7 +247,7 @@ def test_native_recorder_readiness_failure_releases_process(
 
     process = Process()
     monkeypatch.setattr(pose_plane_capture.subprocess, "Popen", lambda *_a, **_k: process)
-    clock = iter([0.0, 6.0])
+    clock = iter([0.0, 0.0, 0.0, 6.0, 7.0, 7.0])
     monkeypatch.setattr(pose_plane_capture.time, "monotonic", lambda: next(clock))
     recorder = pose_plane_capture._NativeRsRecord.__new__(
         pose_plane_capture._NativeRsRecord

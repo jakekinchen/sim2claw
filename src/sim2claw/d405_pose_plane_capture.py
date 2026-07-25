@@ -65,21 +65,38 @@ class _NativeRsRecord:
         self.process: subprocess.Popen[str] | None = None
 
     def start(self) -> dict[str, Any]:
+        process_start_lower = time.monotonic()
         self.process = subprocess.Popen(
             self.command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
+        process_start_upper = time.monotonic()
         deadline, ready = time.monotonic() + 5.0, False
+        last_empty_poll_completed = process_start_lower
+        clock_origin_bounds: list[float] | None = None
         while time.monotonic() < deadline and self.process.poll() is None:
+            poll_started = time.monotonic()
             try:
                 with _open_database_read_only(self.database_path) as connection:
-                    ready = connection.execute(
-                        "SELECT COUNT(*) FROM topics WHERE name=?",
+                    row = connection.execute(
+                        "SELECT MAX(messages.timestamp) FROM messages "
+                        "JOIN topics ON messages.topic_id=topics.id "
+                        "WHERE topics.name=?",
                         ("/device_0/sensor_0/Depth_0/image/data",),
-                    ).fetchone()[0] == 1
+                    ).fetchone()
+                    bag_timestamp_ns = row[0] if row is not None else None
+                    ready = bag_timestamp_ns is not None
             except Exception:
                 ready = False
+                bag_timestamp_ns = None
+            poll_completed = time.monotonic()
             if ready:
+                bag_timestamp_seconds = float(bag_timestamp_ns) / 1e9
+                clock_origin_bounds = [
+                    last_empty_poll_completed - bag_timestamp_seconds,
+                    poll_completed - bag_timestamp_seconds,
+                ]
                 break
+            last_empty_poll_completed = max(last_empty_poll_completed, poll_completed)
             time.sleep(0.02)
         if not ready:
             if self.process.poll() is None:
@@ -92,12 +109,25 @@ class _NativeRsRecord:
             raise D405PosePlaneCaptureError(
                 "rs-record did not expose the depth topic within 5 seconds"
             )
-        return {"command": self.command, "readiness": "depth_topic_observed"}
+        return {
+            "command": self.command,
+            "readiness": "first_depth_message_observed",
+            "process_start_monotonic_bounds": [
+                process_start_lower,
+                process_start_upper,
+            ],
+            "clock_origin_monotonic_bounds": clock_origin_bounds,
+            "clock_origin_method": (
+                "last_empty_database_poll_to_first_observed_depth_message"
+            ),
+        }
 
     def finish(self) -> dict[str, Any]:
         if self.process is None:
             raise D405PosePlaneCaptureError("rs-record was not started")
+        stop_signal_lower = time.monotonic()
         self.process.send_signal(signal.SIGINT)
+        stop_signal_upper = time.monotonic()
         try:
             stdout, stderr = self.process.communicate(timeout=15)
         except subprocess.TimeoutExpired as error:
@@ -109,7 +139,14 @@ class _NativeRsRecord:
             raise D405PosePlaneCaptureError(
                 f"rs-record exited {self.process.returncode}: {stderr.strip()}"
             )
-        return {"returncode": self.process.returncode, "stdout_tail": stdout[-512:]}
+        return {
+            "returncode": self.process.returncode,
+            "stdout_tail": stdout[-512:],
+            "stop_signal_monotonic_bounds": [
+                stop_signal_lower,
+                stop_signal_upper,
+            ],
+        }
 
 
 def _native_camera_identity() -> dict[str, str]:
@@ -310,6 +347,16 @@ def orchestrate_d405_pose_plane_capture(
     start_lower = clock_fn()
     start_report = recorder.start()
     start_upper = clock_fn()
+    origin_bounds = start_report.get("clock_origin_monotonic_bounds")
+    if (
+        isinstance(origin_bounds, list)
+        and len(origin_bounds) == 2
+        and all(
+            isinstance(value, (float, int)) and math.isfinite(value)
+            for value in origin_bounds
+        )
+    ):
+        start_lower, start_upper = map(float, origin_bounds)
     route_receipt, route_error = None, None
     try:
         route_receipt = route_executor(
@@ -323,6 +370,16 @@ def orchestrate_d405_pose_plane_capture(
     end_lower = clock_fn()
     finish_report = recorder.finish()
     end_upper = clock_fn()
+    stop_bounds = finish_report.get("stop_signal_monotonic_bounds")
+    if (
+        isinstance(stop_bounds, list)
+        and len(stop_bounds) == 2
+        and all(
+            isinstance(value, (float, int)) and math.isfinite(value)
+            for value in stop_bounds
+        )
+    ):
+        end_lower, end_upper = map(float, stop_bounds)
     after_identity = identity_fn()
     if route_error is not None or route_receipt is None:
         raise D405PosePlaneCaptureError(f"route failed: {route_error}")
