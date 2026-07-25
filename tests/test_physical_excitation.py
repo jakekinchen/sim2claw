@@ -1,19 +1,31 @@
 from __future__ import annotations
 
+import builtins
 import json
+import sys
+import types
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pytest
 
-from sim2claw.physical_gateway import GATEWAY_SCHEMA
+import sim2claw.teleop_recording as recording
+from sim2claw.physical_gateway import (
+    GATEWAY_SCHEMA,
+    GatewayIdentity,
+    PhysicalGatewayError,
+    SO101PhysicalGateway,
+)
+from sim2claw.scene import ROBOT_JOINTS
 from sim2claw.teleop_recording import (
+    EXCITATION_CONTROL_SOURCE,
     PrecompiledExcitationBackend,
     RecorderError,
     _float64_sha256,
     compile_physical_excitation_packet,
     execute_physical_excitation_packet,
+    physical_excitation_follower_preflight,
 )
 
 
@@ -21,12 +33,11 @@ def _preflight(anchor: list[float] | None = None) -> dict[str, Any]:
     return {
         "schema_version": GATEWAY_SCHEMA,
         "passed": True,
-        "paired_pose_registration_ready": True,
+        "control_source": EXCITATION_CONTROL_SOURCE,
+        "real_leader_opened": False,
         "physical_follower_torque_enabled": False,
         "device_configuration_rewritten": False,
-        "leader_port": "/dev/leader",
         "follower_port": "/dev/follower",
-        "leader_calibration_sha256": "1" * 64,
         "follower_calibration_sha256": "2" * 64,
         "follower_start_degrees": anchor or [0.0, 0.0, 0.0, 0.0, 0.0, 50.0],
         "follower_calibrated_minimum": [-90.0] * 5 + [0.0],
@@ -75,6 +86,166 @@ def _repo_with_authority(tmp_path: Path) -> Path:
     return tmp_path
 
 
+def test_follower_only_preflight_binds_no_real_leader(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    inventory = {
+        "devices": {
+            "leader": {"connected": True, "port": "/dev/must-not-open"},
+            "follower": {"connected": True, "port": "/dev/follower"},
+        },
+        "calibrations": {
+            "leader": {"present": True, "sha256": "1" * 64},
+            "follower": {"present": True, "sha256": "2" * 64},
+        },
+        "runtime": {"lerobot_version": "0.6.0"},
+    }
+    monkeypatch.setattr(recording, "recorder_preflight", lambda **_: inventory)
+    identities = []
+
+    class Gateway:
+        def open(self, *, enable_motion: bool) -> dict[str, Any]:
+            assert enable_motion is False
+            return {
+                "schema_version": GATEWAY_SCHEMA,
+                "follower_start_degrees": [0.0] * 6,
+                "follower_calibrated_minimum": [-90.0] * 5 + [0.0],
+                "follower_calibrated_maximum": [90.0] * 5 + [100.0],
+                "physical_follower_torque_enabled": False,
+                "device_configuration_rewritten": False,
+            }
+
+        def close(self) -> None:
+            return None
+
+    def gateway_factory(identity):
+        identities.append(identity)
+        return Gateway()
+
+    report = physical_excitation_follower_preflight(
+        gateway_factory=gateway_factory
+    )
+
+    assert report["follower_port"] == "/dev/follower"
+    assert report["real_leader_opened"] is False
+    assert "leader_port" not in report
+    assert identities[0].follower_port == "/dev/follower"
+    assert identities[0].leader_port.startswith("in-process://")
+
+
+def test_excitation_device_factory_never_imports_or_opens_real_leader(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    imports: list[str] = []
+    original_import = builtins.__import__
+
+    class Config:
+        def __init__(self, **values: Any):
+            self.values = values
+
+    class Follower:
+        def __init__(self, config: Config):
+            self.config = config
+            self.opened = False
+
+        def get_observation(self) -> dict[str, float]:
+            return {f"{joint}.pos": 0.0 for joint in ROBOT_JOINTS}
+
+    module = types.ModuleType("lerobot.robots.so_follower")
+    module.SO101Follower = Follower
+    module.SO101FollowerConfig = Config
+    monkeypatch.setitem(sys.modules, "lerobot.robots.so_follower", module)
+
+    def tracked_import(name: str, *args: Any, **kwargs: Any):
+        imports.append(name)
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", tracked_import)
+    source, follower = recording._physical_excitation_devices(
+        GatewayIdentity("in-process", "/dev/follower", "1" * 64, "2" * 64)
+    )
+
+    assert source.follower is follower
+    assert follower.opened is False
+    assert not any("so_leader" in name for name in imports)
+
+
+class _FollowerBus:
+    def __init__(
+        self, *, torque: bool = False, operating_mode: int = 0, busy: bool = False
+    ):
+        self.is_connected = False
+        self.torque = torque
+        self.operating_mode = operating_mode
+        self.busy = busy
+
+    def connect(self) -> None:
+        if self.busy:
+            raise OSError("follower holder conflict")
+        self.is_connected = True
+
+    def disable_torque(self, *, num_retry: int = 0) -> None:
+        del num_retry
+        self.torque = False
+
+    def disconnect(self, _disable_torque: bool = True) -> None:
+        self.torque = False
+        self.is_connected = False
+
+    def sync_read(
+        self, register: str, *, normalize: bool = True, num_retry: int = 0
+    ) -> dict[str, int]:
+        del normalize, num_retry
+        value = self.torque if register == "Torque_Enable" else self.operating_mode
+        return {joint: int(value) for joint in ROBOT_JOINTS}
+
+
+class _Follower:
+    def __init__(self, bus: _FollowerBus):
+        self.bus = bus
+        self.is_calibrated = True
+        self.calibration = None
+
+    def get_observation(self) -> dict[str, float]:
+        return {f"{joint}.pos": 0.0 for joint in ROBOT_JOINTS}
+
+
+class _EchoSource:
+    def __init__(self, follower: _Follower):
+        self.bus = _FollowerBus()
+        self.follower = follower
+        self.is_calibrated = True
+
+    def get_action(self) -> dict[str, float]:
+        return self.follower.get_observation()
+
+
+@pytest.mark.parametrize(
+    ("bus", "message"),
+    [
+        (_FollowerBus(torque=True), "torque must already be off"),
+        (_FollowerBus(operating_mode=1), "position mode"),
+        (_FollowerBus(busy=True), "holder conflict"),
+    ],
+)
+def test_follower_only_gateway_preflight_fails_closed(
+    bus: _FollowerBus, message: str
+) -> None:
+    follower = _Follower(bus)
+    gateway = SO101PhysicalGateway(
+        GatewayIdentity("in-process", "/dev/follower", "1" * 64, "2" * 64),
+        device_factory=lambda _identity: (_EchoSource(follower), follower),
+        configure_devices=False,
+        require_initial_follower_torque_off=True,
+    )
+
+    with pytest.raises((OSError, PhysicalGatewayError), match=message):
+        gateway.open(enable_motion=False)
+
+    assert bus.is_connected is False
+    assert bus.torque is False
+
+
 def test_compile_is_deterministic_bounded_exciting_and_read_only(
     tmp_path: Path,
 ) -> None:
@@ -95,6 +266,13 @@ def test_compile_is_deterministic_bounded_exciting_and_read_only(
     assert len(calls) == 2
     assert all(call["physical_follower_torque_enabled"] is False for call in calls)
     plan = first["plan"]
+    assert plan["control_source"] == EXCITATION_CONTROL_SOURCE
+    assert plan["hardware_identity"] == {
+        "gateway_schema": GATEWAY_SCHEMA,
+        "follower_port": "/dev/follower",
+        "follower_calibration_sha256": "2" * 64,
+        "real_leader_identity_bound": False,
+    }
     assert len(plan["episodes"]) == 5
     covered = set()
     for episode in plan["episodes"]:
@@ -117,6 +295,34 @@ def test_compile_is_deterministic_bounded_exciting_and_read_only(
     assert len(covered) >= 3
 
 
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"physical_follower_torque_enabled": True},
+        {"device_configuration_rewritten": True},
+        {"control_source": "real_leader"},
+        {"real_leader_opened": True},
+    ],
+)
+def test_compile_rejects_non_follower_only_preflight(
+    tmp_path: Path, change: dict[str, Any]
+) -> None:
+    report = {**_preflight(), **change}
+    with pytest.raises(RecorderError, match="preflight did not pass"):
+        compile_physical_excitation_packet(
+            tmp_path / "packet.json", preflight_fn=lambda: report
+        )
+
+
+def test_compile_rejects_unsafe_anchor_margin(tmp_path: Path) -> None:
+    report = _preflight()
+    report["follower_start_degrees"][0] = 89.0
+    with pytest.raises(RecorderError, match="lacks ±3 degree"):
+        compile_physical_excitation_packet(
+            tmp_path / "packet.json", preflight_fn=lambda: report
+        )
+
+
 def test_pending_admission_rejects_before_hardware_open(tmp_path: Path) -> None:
     packet_path, _ = _compile(tmp_path)
     touched: list[str] = []
@@ -130,6 +336,40 @@ def test_pending_admission_rejects_before_hardware_open(tmp_path: Path) -> None:
             preflight_fn=lambda: touched.append("preflight"),
             manager_factory=lambda **kwargs: touched.append("manager"),
         )
+    assert touched == []
+
+
+@pytest.mark.parametrize("failure", ["identity", "authority"])
+def test_execute_rejects_drift_before_manager(
+    tmp_path: Path, failure: str
+) -> None:
+    packet_path, _ = _compile(tmp_path)
+    _admit(packet_path)
+    repo = _repo_with_authority(tmp_path / "repo")
+    report = _preflight()
+    if failure == "identity":
+        report["follower_calibration_sha256"] = "3" * 64
+        match = "hardware identity mismatch"
+    else:
+        state = repo / "docs/autonomous-workflow/project_state.json"
+        payload = json.loads(state.read_text())
+        payload["twin_fidelity_closure_transaction"]["authority"][
+            "owner_workspace_clear_assertion"
+        ] = False
+        state.write_text(json.dumps(payload))
+        match = "authority is closed"
+    touched: list[str] = []
+
+    with pytest.raises(RecorderError, match=match):
+        execute_physical_excitation_packet(
+            packet_path,
+            tmp_path / "output",
+            repo_root=repo,
+            operator_acknowledged=True,
+            preflight_fn=lambda: report,
+            manager_factory=lambda **_: touched.append("manager"),
+        )
+
     assert touched == []
 
 
@@ -175,16 +415,7 @@ def test_pose_anchor_mismatch_releases_torque(tmp_path: Path) -> None:
     gateway = _FakeGateway(packet["plan"]["anchor_degrees"], mismatch=True)
     backend = PrecompiledExcitationBackend(
         {},
-        {
-            "devices": {
-                "leader": {"port": "/dev/leader"},
-                "follower": {"port": "/dev/follower"},
-            },
-            "calibrations": {
-                "leader": {"sha256": "1" * 64},
-                "follower": {"sha256": "2" * 64},
-            },
-        },
+        {},
         plan=packet["plan"],
         episode=packet["plan"]["episodes"][0],
         gateway_factory=lambda _identity: gateway,
@@ -203,16 +434,7 @@ def test_backend_consumes_every_precompiled_action_byte_identically(
     gateway = _FakeGateway(packet["plan"]["anchor_degrees"])
     backend = PrecompiledExcitationBackend(
         {},
-        {
-            "devices": {
-                "leader": {"port": "/dev/leader"},
-                "follower": {"port": "/dev/follower"},
-            },
-            "calibrations": {
-                "leader": {"sha256": "1" * 64},
-                "follower": {"sha256": "2" * 64},
-            },
-        },
+        {},
         plan=packet["plan"],
         episode=episode,
         gateway_factory=lambda _identity: gateway,

@@ -28,6 +28,10 @@ MODIFICATION_FIELDS = (
     "assistance",
 )
 PHYSICAL_SAMPLE_SCHEMA = "sim2claw.physical_teleoperation_sample.v1"
+PHYSICAL_TELEOP_PROOF_CLASS = "physical_teleoperation_source_unqualified"
+PHYSICAL_EXCITATION_PROOF_CLASS = (
+    "physical_precompiled_follower_excitation_source_unqualified"
+)
 
 
 def _sha256_file(path: Path) -> str:
@@ -398,15 +402,20 @@ def materialize_physical_recording_exact_replay(
     episode_id = str(receipt.get("recording_id") or "").strip()
     if not episode_id:
         raise ValueError("recording receipt recording_id is required")
-    if receipt.get("proof_class") != "physical_teleoperation_source_unqualified":
-        raise ValueError("recording receipt proof class is not physical unqualified")
+    proof_class = str(receipt.get("proof_class") or "")
     source_identity = receipt.get("source_identity")
     backend = receipt.get("backend")
+    admitted_source_pair = (
+        (PHYSICAL_TELEOP_PROOF_CLASS, "leader_teleoperation"),
+        (
+            PHYSICAL_EXCITATION_PROOF_CLASS,
+            "frozen_precompiled_follower_actions",
+        ),
+    )
     if (
         not isinstance(source_identity, Mapping)
-        or source_identity.get("kind") != "leader_teleoperation"
-        or source_identity.get("proof_class")
-        != "physical_teleoperation_source_unqualified"
+        or (proof_class, source_identity.get("kind")) not in admitted_source_pair
+        or source_identity.get("proof_class") != proof_class
         or not isinstance(backend, Mapping)
         or backend.get("schema_version") != "sim2claw.so101_physical_gateway.v2"
     ):
@@ -474,7 +483,7 @@ def materialize_physical_recording_exact_replay(
     manifest = {
         "schema_version": MANIFEST_SCHEMA,
         "episode_id": episode_id,
-        "proof_class": "physical_teleoperation_source_unqualified",
+        "proof_class": proof_class,
         "evaluator_admission": False,
         "physical_authority": False,
         "joint_order": list(ROBOT_JOINTS),

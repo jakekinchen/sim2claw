@@ -2924,7 +2924,7 @@ def _load_verified_physical_episode(
     initial = manifest["initial_state"]
     episode = RecordedEpisode(
         episode_id=str(manifest["episode_id"]),
-        proof_class="physical_teleoperation_source_unqualified",
+        proof_class=str(manifest["proof_class"]),
         proof_class_category="physical_read_only",
         column=None,
         joint_names=tuple(config["bindings"]["joint_names"]),

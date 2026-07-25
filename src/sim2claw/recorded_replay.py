@@ -35,6 +35,10 @@ SYNCHRONIZED_ROW_SCHEMA = "sim2claw.synchronized_replay_row.v1"
 CONFIG_SCHEMA = "sim2claw.recorded_action_sysid_config.v1"
 PHYSICAL_SAMPLE_SCHEMA = "sim2claw.physical_teleoperation_sample.v1"
 PHYSICAL_JOINT_TRANSFORM_SCHEMA = "sim2claw.physical_joint_transform.v1"
+PHYSICAL_SOURCE_PROOF_CLASSES = {
+    "physical_teleoperation_source_unqualified",
+    "physical_precompiled_follower_excitation_source_unqualified",
+}
 
 PROOF_CLASS_CATEGORIES = {
     "fixture",
@@ -2270,7 +2274,7 @@ def replay_exact_eligible_physical_recording(
     if (
         receipt.get("mode") != "physical_follower"
         or receipt.get("source_sample_schema") != PHYSICAL_SAMPLE_SCHEMA
-        or receipt.get("proof_class") != "physical_teleoperation_source_unqualified"
+        or receipt.get("proof_class") not in PHYSICAL_SOURCE_PROOF_CLASSES
         or receipt.get("assistance_frames") != 0
         or receipt.get("intervention_frames") != 0
         or not isinstance(lineage, Mapping)
@@ -2288,6 +2292,8 @@ def replay_exact_eligible_physical_recording(
     episode_id = str(manifest.get("episode_id") or "")
     if episode_id != receipt.get("recording_id"):
         raise ReplayContractError("manifest and recording receipt episode identity differ")
+    if manifest.get("proof_class") != receipt.get("proof_class"):
+        raise ReplayContractError("manifest and recording receipt proof classes differ")
     provenance = manifest.get("conversion_provenance")
     if not isinstance(provenance, Mapping):
         raise ReplayContractError("exact-replay conversion provenance is required")
@@ -2414,7 +2420,7 @@ def replay_exact_eligible_physical_recording(
     joint_names = tuple(f"left_{name}" for name in ROBOT_JOINTS)
     episode = RecordedEpisode(
         episode_id=episode_id,
-        proof_class="physical_teleoperation_source_unqualified",
+        proof_class=str(manifest["proof_class"]),
         proof_class_category="physical_read_only",
         column=None,
         joint_names=joint_names,

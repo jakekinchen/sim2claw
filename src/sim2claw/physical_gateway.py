@@ -311,6 +311,7 @@ class SO101PhysicalGateway:
         clock: Callable[[], float] = time.monotonic,
         configure_devices: bool = True,
         current_telemetry_hz: float = CURRENT_TELEMETRY_HZ,
+        require_initial_follower_torque_off: bool = False,
     ):
         if identity.leader_port == identity.follower_port:
             raise PhysicalGatewayError("Leader and follower must use distinct buses.")
@@ -319,6 +320,9 @@ class SO101PhysicalGateway:
         self.sleep = sleep
         self.clock = clock
         self.configure_devices = configure_devices
+        self.require_initial_follower_torque_off = (
+            require_initial_follower_torque_off
+        )
         if current_telemetry_hz < 0.0:
             raise PhysicalGatewayError("Current telemetry rate cannot be negative.")
         self.current_telemetry_hz = float(current_telemetry_hz)
@@ -374,6 +378,16 @@ class SO101PhysicalGateway:
             self.leader.bus.connect()
             self.leader.bus.disable_torque(num_retry=BUS_READ_RETRIES)
             self.follower.bus.connect()
+            if self.require_initial_follower_torque_off:
+                torque = self.follower.bus.sync_read(
+                    "Torque_Enable",
+                    normalize=False,
+                    num_retry=BUS_READ_RETRIES,
+                )
+                if any(int(value) != 0 for value in torque.values()):
+                    raise PhysicalGatewayError(
+                        "Follower torque must already be off before excitation preflight."
+                    )
             self.follower.bus.disable_torque(num_retry=BUS_READ_RETRIES)
             self.connected = True
             if not self.leader.is_calibrated:

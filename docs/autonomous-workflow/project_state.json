@@ -3878,8 +3878,12 @@
     "held_out_open_count": 1,
     "current_eligible_physical_cohort_count": 0,
     "acquisition_seam": {
-      "status": "offline_verified_pending_independent_packet_admission",
+      "status": "offline_verified_follower_only_pending_independent_packet_admission",
       "command": "sim2claw physical-excitation",
+      "control_source": "frozen_precompiled_follower_actions",
+      "real_leader_required": false,
+      "follower_only_torque_off_preflight": true,
+      "configuration_rewrite_allowed": false,
       "episode_count": 5,
       "body_joint_amplitude_degrees": 3.0,
       "body_joint_peak_to_peak_degrees": 6.0,

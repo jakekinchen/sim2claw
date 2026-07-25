@@ -126,6 +126,33 @@ def test_finalized_physical_recording_materializes_eligible_manifest(
     assert report["evaluator_admission"] is False
 
 
+def test_precompiled_follower_excitation_preserves_its_nonteleop_proof_class(
+    tmp_path: Path,
+) -> None:
+    recording = _recording(tmp_path)
+    receipt_path = recording / "recording_receipt.json"
+    receipt = json.loads(receipt_path.read_text())
+    proof_class = "physical_precompiled_follower_excitation_source_unqualified"
+    receipt["proof_class"] = proof_class
+    receipt["source_identity"] = {
+        "kind": "frozen_precompiled_follower_actions",
+        "proof_class": proof_class,
+    }
+    receipt_path.write_text(json.dumps(receipt))
+
+    manifest, report = _run(recording, tmp_path)
+    replay = replay_exact_eligible_physical_recording(
+        recording,
+        tmp_path / "manifest.json",
+        config_path=REPLAY_CONFIG,
+        output_directory=tmp_path / "replay",
+    )
+
+    assert manifest["proof_class"] == proof_class
+    assert report["exact_replay_eligible"] is True
+    assert replay["exact_replay_binding"]["byte_identical"] is True
+
+
 def test_requested_and_gateway_sent_divergence_is_rejected(tmp_path: Path) -> None:
     recording = _recording(tmp_path)
     rows = [

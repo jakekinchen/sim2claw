@@ -74,6 +74,14 @@ SOURCE_SCHEMA = SAMPLE_SCHEMA
 PHYSICAL_SAMPLE_SCHEMA = "sim2claw.physical_teleoperation_sample.v1"
 DEFAULT_LEADER_SERIAL_SUFFIX = "0448141"
 DEFAULT_FOLLOWER_SERIAL_SUFFIX = "0406411"
+EXCITATION_CONTROL_SOURCE = "frozen_precompiled_follower_actions"
+EXCITATION_SOURCE_PROOF_CLASS = (
+    "physical_precompiled_follower_excitation_source_unqualified"
+)
+_EXCITATION_COMMAND_SOURCE_PORT = "in-process://frozen-precompiled-actions"
+_EXCITATION_COMMAND_SOURCE_SHA256 = hashlib.sha256(
+    EXCITATION_CONTROL_SOURCE.encode()
+).hexdigest()
 DEFAULT_SAMPLE_HZ = 20
 LIVE_SIMULATION_SCHEMA = "sim2claw.live_simulation_recorder.v1"
 LABEL_PATTERN = re.compile(r"[^a-z0-9]+")
@@ -405,6 +413,124 @@ def physical_gateway_preflight(
     return inspect_physical_gateway(_gateway_identity(preflight))
 
 
+class _ExcitationCommandBus:
+    """In-process command source; it never opens a physical leader bus."""
+
+    def __init__(self) -> None:
+        self.is_connected = False
+
+    def connect(self) -> None:
+        self.is_connected = True
+
+    def disable_torque(self, *, num_retry: int = 0) -> None:
+        del num_retry
+
+    def disconnect(self, _disable_torque: bool = True) -> None:
+        self.is_connected = False
+
+
+class _ExcitationCommandSource:
+    def __init__(self, follower: Any):
+        self.bus = _ExcitationCommandBus()
+        self.follower = follower
+        self.is_calibrated = True
+
+    def get_action(self) -> dict[str, float]:
+        return self.follower.get_observation()
+
+
+def _physical_excitation_devices(identity: GatewayIdentity) -> tuple[Any, Any]:
+    from lerobot.robots.so_follower import SO101Follower, SO101FollowerConfig
+
+    follower = SO101Follower(
+        SO101FollowerConfig(
+            port=identity.follower_port,
+            id="so101_follower",
+            use_degrees=True,
+            max_relative_target=None,
+            disable_torque_on_disconnect=True,
+        )
+    )
+    return _ExcitationCommandSource(follower), follower
+
+
+def _physical_excitation_identity(preflight: dict[str, Any]) -> GatewayIdentity:
+    follower_port = preflight["devices"]["follower"]["port"]
+    follower_sha = preflight["calibrations"]["follower"]["sha256"]
+    if not all((follower_port, follower_sha)):
+        raise RecorderError("Physical excitation follower identity is incomplete.")
+    return GatewayIdentity(
+        leader_port=_EXCITATION_COMMAND_SOURCE_PORT,
+        follower_port=str(follower_port),
+        leader_calibration_sha256=_EXCITATION_COMMAND_SOURCE_SHA256,
+        follower_calibration_sha256=str(follower_sha),
+    )
+
+
+def _physical_excitation_gateway(
+    identity: GatewayIdentity,
+) -> SO101PhysicalGateway:
+    return SO101PhysicalGateway(
+        identity,
+        device_factory=_physical_excitation_devices,
+        configure_devices=False,
+        require_initial_follower_torque_off=True,
+    )
+
+
+def physical_excitation_follower_preflight(
+    *,
+    dev_root: Path = Path("/dev"),
+    calibration_root: Path | None = None,
+    gateway_factory: Callable[[GatewayIdentity], SO101PhysicalGateway] = (
+        _physical_excitation_gateway
+    ),
+) -> dict[str, Any]:
+    """Inspect only the expected follower and leave it torque-off."""
+
+    inventory = recorder_preflight(
+        dev_root=dev_root,
+        calibration_root=calibration_root,
+    )
+    follower = inventory["devices"]["follower"]
+    calibration = inventory["calibrations"]["follower"]
+    if not (
+        follower.get("connected")
+        and calibration.get("present")
+        and inventory["runtime"].get("lerobot_version")
+    ):
+        raise RecorderError(
+            "The expected follower bus, calibration, and LeRobot runtime are required."
+        )
+    identity = _physical_excitation_identity(inventory)
+    gateway = gateway_factory(identity)
+    try:
+        opened = gateway.open(enable_motion=False)
+        return {
+            "schema_version": opened["schema_version"],
+            "passed": True,
+            "control_source": EXCITATION_CONTROL_SOURCE,
+            "real_leader_opened": False,
+            "follower_port": identity.follower_port,
+            "follower_calibration_sha256": identity.follower_calibration_sha256,
+            "follower_start_degrees": opened["follower_start_degrees"],
+            "follower_calibrated_minimum": opened[
+                "follower_calibrated_minimum"
+            ],
+            "follower_calibrated_maximum": opened[
+                "follower_calibrated_maximum"
+            ],
+            "physical_follower_torque_enabled": opened[
+                "physical_follower_torque_enabled"
+            ],
+            "device_configuration_rewritten": opened[
+                "device_configuration_rewritten"
+            ],
+        }
+    finally:
+        gateway.close()
+
+
 def physical_gateway_sync(
     *,
     dev_root: Path = Path("/dev"),
@@ -731,7 +857,7 @@ class ZeroDisplacementHoldBackend:
 
 
 HOLD_PACKET_KIND = "sim2claw.zero_displacement_hold_packet.v1"
-EXCITATION_PACKET_KIND = "sim2claw.precompiled_physical_excitation_packet.v1"
+EXCITATION_PACKET_KIND = "sim2claw.precompiled_physical_excitation_packet.v2"
 EXCITATION_EPISODE_COUNT = 5
 EXCITATION_SAMPLE_HZ = 20
 EXCITATION_AMPLITUDE_DEGREES = 3.0
@@ -897,6 +1023,7 @@ def _validate_excitation_plan(packet: dict[str, Any]) -> dict[str, Any]:
     if packet.get("packet_id") != f"P10-{packet['plan_sha256'][:16]}":
         raise RecorderError("Physical excitation packet identity changed.")
     required_plan = {
+        "control_source": EXCITATION_CONTROL_SOURCE,
         "sample_hz": EXCITATION_SAMPLE_HZ,
         "anchor_source": "fresh_torque_off_follower_read",
         "amplitude_degrees": EXCITATION_AMPLITUDE_DEGREES,
@@ -920,7 +1047,20 @@ def _validate_excitation_plan(packet: dict[str, Any]) -> dict[str, Any]:
     hardware = plan.get("hardware_identity")
     if (
         not isinstance(hardware, dict)
+        or set(hardware)
+        != {
+            "gateway_schema",
+            "follower_port",
+            "follower_calibration_sha256",
+            "real_leader_identity_bound",
+        }
         or hardware.get("gateway_schema") != GATEWAY_SCHEMA
+        or not str(hardware.get("follower_port") or "")
+        or not re.fullmatch(
+            r"[0-9a-f]{64}",
+            str(hardware.get("follower_calibration_sha256") or ""),
+        )
+        or hardware.get("real_leader_identity_bound") is not False
     ):
         raise RecorderError("Physical excitation gateway identity changed.")
     episodes = plan.get("episodes")
@@ -1019,14 +1159,17 @@ def _validate_excitation_plan(packet: dict[str, Any]) -> dict[str, Any]:
 def compile_physical_excitation_packet(
     packet_path: Path,
     *,
-    preflight_fn: Callable[[], dict[str, Any]] = physical_gateway_preflight,
+    preflight_fn: Callable[[], dict[str, Any]] = (
+        physical_excitation_follower_preflight
+    ),
 ) -> dict[str, Any]:
     """Read one torque-off pose and freeze five conservative exact trajectories."""
 
     preflight = preflight_fn()
     if not (
         preflight.get("passed") is True
-        and preflight.get("paired_pose_registration_ready") is True
+        and preflight.get("control_source") == EXCITATION_CONTROL_SOURCE
+        and preflight.get("real_leader_opened") is False
         and preflight.get("physical_follower_torque_enabled") is False
         and preflight.get("device_configuration_rewritten") is False
     ):
@@ -1072,6 +1215,7 @@ def compile_physical_excitation_packet(
             }
         )
     plan = {
+        "control_source": EXCITATION_CONTROL_SOURCE,
         "sample_hz": EXCITATION_SAMPLE_HZ,
         "anchor_source": "fresh_torque_off_follower_read",
         "anchor_degrees": anchor.tolist(),
@@ -1092,14 +1236,11 @@ def compile_physical_excitation_packet(
         "no_ik_offset_clip_resample_suffix_or_assistance": True,
         "hardware_identity": {
             "gateway_schema": preflight["schema_version"],
-            "leader_port": preflight["leader_port"],
             "follower_port": preflight["follower_port"],
-            "leader_calibration_sha256": preflight[
-                "leader_calibration_sha256"
-            ],
             "follower_calibration_sha256": preflight[
                 "follower_calibration_sha256"
             ],
+            "real_leader_identity_bound": False,
         },
         "aggregate_gateway_action_degrees_sha256": _float64_sha256(
             np.concatenate(
@@ -1134,7 +1275,7 @@ def compile_physical_excitation_packet(
 
 
 class PrecompiledExcitationBackend:
-    proof_class = "physical_teleoperation_source_unqualified"
+    proof_class = EXCITATION_SOURCE_PROOF_CLASS
 
     def __init__(
         self,
@@ -1144,25 +1285,22 @@ class PrecompiledExcitationBackend:
         plan: dict[str, Any],
         episode: dict[str, Any],
         gateway_factory: Callable[[GatewayIdentity], SO101PhysicalGateway] = (
-            SO101PhysicalGateway
+            _physical_excitation_gateway
         ),
     ):
         self.request = request
         self.plan = plan
         self.episode = episode
-        identity = _gateway_identity(preflight)
+        del preflight
         hardware = plan["hardware_identity"]
-        observed_identity = {
-            "gateway_schema": GATEWAY_SCHEMA,
-            "leader_port": identity.leader_port,
-            "follower_port": identity.follower_port,
-            "leader_calibration_sha256": identity.leader_calibration_sha256,
-            "follower_calibration_sha256": identity.follower_calibration_sha256,
-        }
-        if observed_identity != hardware:
-            raise RecorderError(
-                "Recorder hardware identity differs from the admitted packet."
-            )
+        identity = GatewayIdentity(
+            leader_port=_EXCITATION_COMMAND_SOURCE_PORT,
+            follower_port=str(hardware["follower_port"]),
+            leader_calibration_sha256=_EXCITATION_COMMAND_SOURCE_SHA256,
+            follower_calibration_sha256=str(
+                hardware["follower_calibration_sha256"]
+            ),
+        )
         self.gateway = gateway_factory(identity)
         self.index = 0
         self.actions = np.asarray(episode["actions_degrees"], dtype=np.float64)
@@ -1190,6 +1328,8 @@ class PrecompiledExcitationBackend:
         return {
             **report,
             "proof_class": self.proof_class,
+            "control_source": EXCITATION_CONTROL_SOURCE,
+            "real_leader_opened": False,
             "pose_inputs_available": False,
             "physical_follower_torque_enabled": True,
             "precompiled_gateway_action_degrees_sha256": self.episode[
@@ -1250,7 +1390,9 @@ def execute_physical_excitation_packet(
     *,
     repo_root: Path = REPO_ROOT,
     operator_acknowledged: bool = False,
-    preflight_fn: Callable[[], dict[str, Any]] = physical_gateway_preflight,
+    preflight_fn: Callable[[], dict[str, Any]] = (
+        physical_excitation_follower_preflight
+    ),
     manager_factory: Callable[..., Any] | None = None,
     materialize_fn: Callable[..., dict[str, Any]] | None = None,
     clock_fn: Callable[[], float] = time.monotonic,
@@ -1283,7 +1425,12 @@ def execute_physical_excitation_packet(
     plan = validated["plan"]
     preflight = preflight_fn()
     hardware = plan["hardware_identity"]
-    for key, expected in hardware.items():
+    for key in (
+        "gateway_schema",
+        "follower_port",
+        "follower_calibration_sha256",
+    ):
+        expected = hardware[key]
         observed = (
             preflight.get("schema_version")
             if key == "gateway_schema"
@@ -1293,7 +1440,8 @@ def execute_physical_excitation_packet(
             raise RecorderError(f"Excitation hardware identity mismatch: {key}.")
     if not (
         preflight.get("passed") is True
-        and preflight.get("paired_pose_registration_ready") is True
+        and preflight.get("control_source") == EXCITATION_CONTROL_SOURCE
+        and preflight.get("real_leader_opened") is False
         and preflight.get("physical_follower_torque_enabled") is False
         and preflight.get("device_configuration_rewritten") is False
     ):
@@ -1335,6 +1483,41 @@ def execute_physical_excitation_packet(
                         episode=episode,
                     )
                 ),
+                **(
+                    {
+                        "preflight_provider": lambda preflight=preflight: {
+                            "schema_version": "sim2claw.teleop_preflight.v1",
+                            "checked_at": _utc_now(),
+                            "devices": {
+                                "follower": {
+                                    "role": "so101_follower",
+                                    "port": preflight["follower_port"],
+                                    "connected": True,
+                                }
+                            },
+                            "calibrations": {
+                                "follower": {
+                                    "present": True,
+                                    "sha256": preflight[
+                                        "follower_calibration_sha256"
+                                    ],
+                                }
+                            },
+                            "runtime": {"lerobot_version": "preflight-verified"},
+                            "modes": {
+                                "physical_follower": {
+                                    "ready": True,
+                                    "device_ready": True,
+                                    "physical_motion": True,
+                                    "reason": None,
+                                }
+                            },
+                            "control_source": EXCITATION_CONTROL_SOURCE,
+                        }
+                    }
+                    if manager_factory is None
+                    else {}
+                ),
             )
             manager.start(
                 {
@@ -1347,6 +1530,7 @@ def execute_physical_excitation_packet(
                     "action_owner": (
                         "independently_reviewed_precompiled_excitation_packet"
                     ),
+                    "source_identity_kind": EXCITATION_CONTROL_SOURCE,
                 }
             )
             _wait_for_excitation_recording(
@@ -1492,6 +1676,7 @@ class TeleopRecordingManager:
         ),
         dev_root: Path = Path("/dev"),
         calibration_root: Path | None = None,
+        preflight_provider: Callable[[], dict[str, Any]] | None = None,
     ):
         self.paths = RecorderPaths(repo_root.resolve())
         self.backend_factory = backend_factory
@@ -1515,6 +1700,7 @@ class TeleopRecordingManager:
         )
         self.dev_root = dev_root
         self.calibration_root = calibration_root
+        self.preflight_provider = preflight_provider
         self.lock = threading.RLock()
         self.stop_event = threading.Event()
         self.ready_event = threading.Event()
@@ -1637,6 +1823,8 @@ class TeleopRecordingManager:
             }
 
     def preflight(self) -> dict[str, Any]:
+        if self.preflight_provider is not None:
+            return self.preflight_provider()
         return recorder_preflight(
             dev_root=self.dev_root,
             calibration_root=self.calibration_root,
@@ -1733,6 +1921,26 @@ class TeleopRecordingManager:
         mode_status = preflight["modes"][mode]
         if not mode_status["ready"]:
             raise RecorderError(str(mode_status["reason"]))
+        source_identity_kind = str(
+            request.get("source_identity_kind") or "leader_teleoperation"
+        )
+        if source_identity_kind not in {
+            "leader_teleoperation",
+            EXCITATION_CONTROL_SOURCE,
+        }:
+            raise RecorderError("Physical source identity kind is unsupported.")
+        if (
+            source_identity_kind == EXCITATION_CONTROL_SOURCE
+            and (
+                mode != "physical_follower"
+                or preflight.get("control_source") != EXCITATION_CONTROL_SOURCE
+                or request.get("action_owner")
+                != "independently_reviewed_precompiled_excitation_packet"
+            )
+        ):
+            raise RecorderError(
+                "Precompiled follower source identity lacks its P10 control boundary."
+            )
         scene_registration = scene_summary(piece_layout=CURRENT_TASK_PIECE_LAYOUT)
         board_registration = scene_registration["board"]
         fiducial_registration = scene_registration["fiducial"]
@@ -1775,6 +1983,7 @@ class TeleopRecordingManager:
             "task_id": contract["contract_id"],
             "scene_reset_seed": int(request.get("scene_reset_seed") or 0),
             "action_owner": str(request.get("action_owner") or "human_teleoperator"),
+            "source_identity_kind": source_identity_kind,
         }
         if mode == "physical_follower" and not request["physical_safety_acknowledged"]:
             raise RecorderError("Physical safety acknowledgement is required.")
@@ -1810,11 +2019,16 @@ class TeleopRecordingManager:
                     piece_id, source_square, target_square
                 ),
                 "source_identity": {
-                    "kind": "leader_teleoperation",
+                    "kind": request["source_identity_kind"],
                     "proof_class": (
                         "simulation_teleoperation_source"
                         if mode == "simulation_follower"
-                        else "physical_teleoperation_source_unqualified"
+                        else (
+                            EXCITATION_SOURCE_PROOF_CLASS
+                            if request["source_identity_kind"]
+                            == EXCITATION_CONTROL_SOURCE
+                            else "physical_teleoperation_source_unqualified"
+                        )
                     ),
                 },
                 "model_identity": None,
