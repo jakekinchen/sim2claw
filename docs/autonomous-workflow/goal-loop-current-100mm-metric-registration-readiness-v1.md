@@ -88,6 +88,9 @@ proof; and closed authority.
   extrinsics, or evaluator-owned consequence.
 - Existing historical/proposal homographies are explicitly visual-only or
   unreviewed and cannot supply current metric authority.
+- The one reviewed evaluator execution verified the existing source lineage
+  and returned `measurement_prerequisites_missing` with ten missing gates and
+  zero invalid inputs.
 
 ### Assumptions
 
@@ -121,10 +124,10 @@ proof; and closed authority.
 ## Progress Ledger
 
 ```text
-Current state: Preregistered; evaluator not yet implemented or executed.
-Completed: Source audit and immutable current-workcell evidence selection.
-Evidence: C922 capture receipt 3fafb113; video 1643520f; source frame 2543230b.
-Remaining: Implement/test evaluator, exact-byte review, one readiness execution, closeout.
+Current state: Terminal measurement-prerequisites-missing result; one readiness-evaluation budget exhausted.
+Completed: Preregistration 86e7c85; final reviewed evaluator 4bdba09; 1/1 offline readiness evaluation; tracked exhaustion control.
+Evidence: Source receipt 3fafb113 / video 1643520f / frame 2543230b; evaluation 5900ff12 / digest bb7bd2f3; receipt file 12b1624d / digest 18bcbb02.
+Remaining: New versioned acquisition for the ten named metric measurements; no v1 retry.
 Blockers: Direct board measurement, extraction receipt, exact-mode intrinsics/distortion, independent annotations, object keypoints, and camera/workcell extrinsics are unavailable.
-Next step: Implement the fail-closed readiness evaluator without new capture.
+Next step: Measure and calibrate under a new preregistered transaction after the fixed C922 attachment is established; do not rerun v1.
 ```

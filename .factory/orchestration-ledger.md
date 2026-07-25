@@ -1250,3 +1250,13 @@ goal. External provider campaigns and spending remain separately gated.
   keypoints, and camera/workcell extrinsics. One readiness evaluation maximum;
   zero capture, motion, simulator, provider, training, promotion, or
   Twin-domain authority.
+- 2026-07-24T19:31:00-05:00 — Metric-registration readiness v1 reached its
+  sole terminal result after exact-byte review. The initial review blocked
+  execution on five fail-open proof defects; commits `95ff7f4` and `4bdba09`
+  closed them, and final rereview passed `22/22` focused tests plus direct
+  counterexamples. One offline evaluation verified the C922 receipt/video/frame
+  lineage and returned `measurement_prerequisites_missing` with ten missing
+  gates and zero invalid source inputs. Evaluation is `5900ff12...`; receipt
+  file is `12b1624d...` / digest `18bcbb02...`. A tracked guard exhausts v1.
+  No capture, motion, simulator, provider, training, promotion, or
+  Twin-domain change occurred.

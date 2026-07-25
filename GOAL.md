@@ -206,6 +206,19 @@ Silicon. Until that physical attachment occurs, no remote capture transport,
 source delivery, cross-host clock, synchronization, calibration, simulator,
 or task claim is available.
 
+The independent metric-registration readiness gate is also terminal. It
+verified the existing current-workcell C922 C2→C1 capture receipt, video, frame,
+camera identity, resolution, orientation, and closed authority, then returned
+`measurement_prerequisites_missing`. Available RGB pixels did not substitute
+for a deterministic frame-extraction receipt, direct board measurement,
+exact-mode intrinsics/distortion, eight independently annotated distributed
+board points with held-out scoring, metric object keypoints, or camera
+extrinsics. The result contains ten missing prerequisites, zero invalid source
+inputs, and one of one offline evaluations used; camera sessions, new frames,
+robot motions, simulator replays, provider calls, and training rows are zero.
+A tracked guard closes v1. Geometry/scale remains `missing`; any acquisition
+or fit requires a new preregistered transaction.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
