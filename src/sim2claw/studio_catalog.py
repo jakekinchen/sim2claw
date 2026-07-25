@@ -1596,7 +1596,14 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
         duration = float(receipt.get("duration_seconds") or 0)
         if video_end > video_start:
             duration = video_end - video_start
-        video_path = receipt_path.parent / "overhead_c922.mp4"
+        overhead_source_path = receipt_path.parent / str(
+            video_receipt.get("video_path") or "overhead_c922.mp4"
+        )
+        video_path = receipt_path.parent / str(
+            video_receipt.get("browser_video_path")
+            or video_receipt.get("video_path")
+            or "overhead_c922.mp4"
+        )
         wrist_browser_path = receipt_path.parent / str(
             wrist_video_receipt.get("browser_video_path")
             or "wrist_d405.browser.mp4"
@@ -1614,8 +1621,29 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
             and hashlib.sha256(wrist_source_path.read_bytes()).hexdigest()
             == wrist_video_receipt.get("video_sha256")
         )
+        overhead_source_hash = video_receipt.get("video_sha256")
+        overhead_source_hash_valid = overhead_source_path.is_file() and (
+            (
+                _is_sha256(overhead_source_hash)
+                and hashlib.sha256(overhead_source_path.read_bytes()).hexdigest()
+                == overhead_source_hash
+            )
+            or overhead_source_hash is None
+        )
+        overhead_browser_hash = video_receipt.get("browser_video_sha256")
+        overhead_hashes_valid = overhead_source_hash_valid and video_path.is_file() and (
+            (
+                _is_sha256(overhead_browser_hash)
+                and hashlib.sha256(video_path.read_bytes()).hexdigest()
+                == overhead_browser_hash
+            )
+            or (
+                video_path == overhead_source_path
+                and overhead_browser_hash in {None, overhead_source_hash}
+            )
+        )
         recording_feeds: list[dict[str, Any]] = []
-        if video_path.is_file():
+        if overhead_hashes_valid:
             recording_feeds.append(
                 {
                     "id": "overhead-c922",
@@ -1632,6 +1660,9 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                         video_receipt.get("orientation_rotation_degrees") or 0
                     ),
                     "sha256": video_receipt.get("video_sha256"),
+                    "browser_derivative_sha256": video_receipt.get(
+                        "browser_video_sha256"
+                    ),
                     "diagnostic_only": True,
                     "metric_depth": False,
                 }
@@ -1685,7 +1716,7 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                     video_receipt.get("orientation_rotation_degrees") or 0
                 ),
             }
-            if video_path.is_file()
+            if overhead_hashes_valid
             else {"kind": "none"}
         )
         metrics = [

@@ -14,10 +14,11 @@ import shutil
 import threading
 import time
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable, Protocol
+from typing import Any, Protocol
 
 import mujoco
 import numpy as np
@@ -25,6 +26,7 @@ import numpy as np
 from .act_pick_place import (
     resolve_structured_goal,
 )
+from .native_dual_camera import NativeDualCameraRecorder
 from .overhead_video import (
     OverheadVideoError,
     OverheadVideoRecorder,
@@ -39,6 +41,7 @@ from .physical_gateway import (
     synchronize_physical_gateway,
 )
 from .physical_sim_replay import replay_physical_recording
+from .render import write_rgb_png
 from .scene import (
     CURRENT_TASK_LAYOUT_ID,
     CURRENT_TASK_PIECE_LAYOUT,
@@ -47,7 +50,6 @@ from .scene import (
     initialize_robot_poses,
     scene_summary,
 )
-from .render import write_rgb_png
 from .source_episode import (
     CONTRACT_PATH_V4,
     EPISODE_SCHEMA,
@@ -95,6 +97,22 @@ class RecorderBackend(Protocol):
 
 
 class DiagnosticVideoRecorder(Protocol):
+    started_monotonic: float | None
+
+    def start(self) -> dict[str, Any]: ...
+
+    def ensure_running(self) -> None: ...
+
+    def finish(
+        self,
+        *,
+        action_started_monotonic: float | None,
+        action_stopped_monotonic: float | None,
+        post_roll_seconds: float,
+    ) -> dict[str, Any]: ...
+
+
+class DualDiagnosticVideoRecorder(Protocol):
     started_monotonic: float | None
 
     def start(self) -> dict[str, Any]: ...
@@ -171,9 +189,14 @@ def _physical_source_row(
     action_owner: str,
     assistance: bool,
     intervention: bool,
+    visual_streams: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Build a physical command trace without claiming simulator observations."""
 
+    streams = visual_streams or {
+        "overhead_workspace": "overhead_c922.mp4",
+        "wrist_gripper_upward": "wrist_d405.mkv",
+    }
     row = {
         **raw_sample,
         "schema_version": PHYSICAL_SAMPLE_SCHEMA,
@@ -188,17 +211,14 @@ def _physical_source_row(
         "visual_observation": (
             {
                 "kind": "dual_diagnostic_video",
-                "streams": {
-                    "overhead_workspace": "overhead_c922.mp4",
-                    "wrist_gripper_upward": "wrist_d405.mkv",
-                },
+                "streams": streams,
                 "training_data": False,
                 "metric_depth": False,
             }
             if raw_sample.get("wrist_video_time_seconds") is not None
             else {
                 "kind": "overhead_diagnostic_video_only",
-                "path": "overhead_c922.mp4",
+                "path": streams["overhead_workspace"],
                 "training_data": False,
             }
         ),
@@ -678,7 +698,9 @@ class PhysicalFollowerBackend:
 
 BackendFactory = Callable[[dict[str, Any], dict[str, Any]], RecorderBackend]
 VideoRecorderFactory = Callable[[Path], DiagnosticVideoRecorder]
+DualVideoRecorderFactory = Callable[[Path], DualDiagnosticVideoRecorder]
 _DEFAULT_WRIST_FACTORY = object()
+_DEFAULT_DUAL_FACTORY = object()
 
 
 def _default_backend_factory(request: dict[str, Any], preflight: dict[str, Any]) -> RecorderBackend:
@@ -696,6 +718,10 @@ def _default_video_recorder_factory(draft: Path) -> DiagnosticVideoRecorder:
 
 def _default_wrist_video_recorder_factory(draft: Path) -> DiagnosticVideoRecorder:
     return WristVideoRecorder(draft / "wrist_d405.mkv")
+
+
+def _default_dual_video_recorder_factory(draft: Path) -> DualDiagnosticVideoRecorder:
+    return NativeDualCameraRecorder(draft)
 
 
 @dataclass
@@ -725,6 +751,9 @@ class TeleopRecordingManager:
         wrist_video_recorder_factory: VideoRecorderFactory | None | object = (
             _DEFAULT_WRIST_FACTORY
         ),
+        dual_video_recorder_factory: DualVideoRecorderFactory | None | object = (
+            _DEFAULT_DUAL_FACTORY
+        ),
         dev_root: Path = Path("/dev"),
         calibration_root: Path | None = None,
     ):
@@ -739,6 +768,15 @@ class TeleopRecordingManager:
             if wrist_video_recorder_factory is _DEFAULT_WRIST_FACTORY
             else wrist_video_recorder_factory
         )
+        self.dual_video_recorder_factory = (
+            _default_dual_video_recorder_factory
+            if dual_video_recorder_factory is _DEFAULT_DUAL_FACTORY
+            and video_recorder_factory is _default_video_recorder_factory
+            and wrist_video_recorder_factory is _DEFAULT_WRIST_FACTORY
+            else None
+            if dual_video_recorder_factory is _DEFAULT_DUAL_FACTORY
+            else dual_video_recorder_factory
+        )
         self.dev_root = dev_root
         self.calibration_root = calibration_root
         self.lock = threading.RLock()
@@ -748,6 +786,7 @@ class TeleopRecordingManager:
         self.backend: RecorderBackend | None = None
         self.video_recorder: DiagnosticVideoRecorder | None = None
         self.wrist_video_recorder: DiagnosticVideoRecorder | None = None
+        self.dual_video_recorder: DualDiagnosticVideoRecorder | None = None
         self.live_simulation: dict[str, Any] = self._empty_live_simulation()
         self.state: dict[str, Any] = self._recover_existing_state()
 
@@ -1093,12 +1132,32 @@ class TeleopRecordingManager:
         action_started_monotonic: float | None = None
         action_stopped_monotonic: float | None = None
         action_stopped_at: str | None = None
+        video_started_monotonic: float | None = None
+        wrist_video_started_monotonic: float | None = None
+        visual_streams = {
+            "overhead_workspace": "overhead_c922.mp4",
+            "wrist_gripper_upward": "wrist_d405.mkv",
+        }
         errors: list[str] = []
         try:
-            self.video_recorder = self.video_recorder_factory(draft)
             wrist_video_state: dict[str, Any] | None = None
-            wrist_video_started_monotonic: float | None = None
-            if (
+            common_camera_state: dict[str, Any] | None = None
+            if request["mode"] == "physical_follower" and callable(
+                self.dual_video_recorder_factory
+            ):
+                self.dual_video_recorder = self.dual_video_recorder_factory(draft)
+                common_camera_state = self.dual_video_recorder.start()
+                video_state = dict(common_camera_state["overhead"])
+                wrist_video_state = dict(common_camera_state["wrist"])
+                video_started_monotonic = self.dual_video_recorder.started_monotonic
+                wrist_video_started_monotonic = video_started_monotonic
+                if video_started_monotonic is None:
+                    raise OverheadVideoError(
+                        "Native dual-camera capture did not publish its start clock."
+                    )
+            else:
+                self.video_recorder = self.video_recorder_factory(draft)
+            if self.dual_video_recorder is None and (
                 request["mode"] == "physical_follower"
                 and callable(self.wrist_video_recorder_factory)
             ):
@@ -1111,20 +1170,30 @@ class TeleopRecordingManager:
                     raise OverheadVideoError(
                         "D405 wrist capture did not publish its start clock."
                     )
-            # Keep every D405 lifecycle transition outside the C922 container
-            # window. The inverse order produced repeatable C922 PTS gaps at
-            # D405 open/close boundaries in the sealed stationary campaign.
-            video_state = self.video_recorder.start()
+            if self.dual_video_recorder is None:
+                # Retained only for injected/legacy recorders. The production
+                # physical path uses one native session and no nested lifecycle.
+                assert self.video_recorder is not None
+                video_state = self.video_recorder.start()
+                video_started_monotonic = self.video_recorder.started_monotonic
             sequence_started_monotonic = time.monotonic()
-            video_started_monotonic = self.video_recorder.started_monotonic
             if video_started_monotonic is None:
                 raise OverheadVideoError("C922 video capture did not publish its start clock.")
+            visual_streams = {
+                "overhead_workspace": str(
+                    video_state.get("video_path") or "overhead_c922.mp4"
+                ),
+                "wrist_gripper_upward": str(
+                    (wrist_video_state or {}).get("video_path") or "wrist_d405.mkv"
+                ),
+            }
             with self.lock:
                 self.live_simulation["active"] = False
                 self.state.update(
                     overhead_video=video_state,
                     wrist_video=wrist_video_state,
                     wrist_video_required=wrist_video_state is not None,
+                    native_common_camera_session=common_camera_state,
                     prestart_sequence_started_at=_utc_now(),
                     prestart_sequence_start_video_offset_seconds=(
                         sequence_started_monotonic - video_started_monotonic
@@ -1184,8 +1253,14 @@ class TeleopRecordingManager:
             ):
                 while not self.stop_event.is_set():
                     tick = time.monotonic()
-                    self.video_recorder.ensure_running()
-                    if self.wrist_video_recorder is not None:
+                    if self.dual_video_recorder is not None:
+                        self.dual_video_recorder.ensure_running()
+                    elif self.video_recorder is not None:
+                        self.video_recorder.ensure_running()
+                    if (
+                        self.dual_video_recorder is None
+                        and self.wrist_video_recorder is not None
+                    ):
                         self.wrist_video_recorder.ensure_running()
                     sample = self.backend.sample(tick - action_started_monotonic)
                     live_frame = sample.pop("_live_simulation_frame", None)
@@ -1220,6 +1295,7 @@ class TeleopRecordingManager:
                             action_owner=str(self.state["action_owner"]),
                             assistance=False,
                             intervention=False,
+                            visual_streams=visual_streams,
                         )
                     else:
                         rgb_references: dict[str, Any] = {}
@@ -1332,7 +1408,66 @@ class TeleopRecordingManager:
 
             video_metadata: dict[str, Any] | None = None
             wrist_video_metadata: dict[str, Any] | None = None
-            if self.video_recorder is not None:
+            if self.dual_video_recorder is not None:
+                try:
+                    video_stop_anchor = (
+                        action_stopped_monotonic or sequence_stopped_monotonic
+                    )
+                    common_result = self.dual_video_recorder.finish(
+                        action_started_monotonic=action_started_monotonic,
+                        action_stopped_monotonic=video_stop_anchor,
+                        post_roll_seconds=(
+                            1.0 if video_stop_anchor is not None else 0.0
+                        ),
+                    )
+                    video_metadata = dict(common_result["overhead"])
+                    wrist_video_metadata = dict(common_result["wrist"])
+                    common_started = self.dual_video_recorder.started_monotonic
+                    if common_started is not None:
+                        for metadata in (video_metadata, wrist_video_metadata):
+                            metadata.update(
+                                prestart_sequence_start_video_offset_seconds=(
+                                    sequence_started_monotonic - common_started
+                                    if sequence_started_monotonic is not None
+                                    else None
+                                ),
+                                prestart_sequence_stop_video_offset_seconds=(
+                                    sequence_stopped_monotonic - common_started
+                                    if sequence_stopped_monotonic is not None
+                                    else None
+                                ),
+                                teleoperation_start_video_offset_seconds=(
+                                    action_started_monotonic - common_started
+                                    if action_started_monotonic is not None
+                                    else None
+                                ),
+                                teleoperation_stop_video_offset_seconds=(
+                                    action_stopped_monotonic - common_started
+                                    if action_stopped_monotonic is not None
+                                    else None
+                                ),
+                            )
+                    _atomic_json(draft / "overhead_video.json", video_metadata)
+                    _atomic_json(draft / "wrist_video.json", wrist_video_metadata)
+                    if (
+                        video_metadata.get("status") != "completed"
+                        or wrist_video_metadata.get("status") != "completed"
+                    ):
+                        errors.append(
+                            "OverheadVideoError: native common-session capture "
+                            "did not complete both attributed streams."
+                        )
+                    with self.lock:
+                        self.state["native_common_camera_session"] = common_result[
+                            "common_session"
+                        ]
+                except Exception as error:
+                    errors.append(
+                        f"dual video close error: {type(error).__name__}: {error}"
+                    )
+                finally:
+                    self.dual_video_recorder = None
+            if self.dual_video_recorder is None and self.video_recorder is not None:
                 try:
                     video_stop_anchor = (
                         action_stopped_monotonic or sequence_stopped_monotonic
@@ -1473,7 +1608,7 @@ class TeleopRecordingManager:
                     }
             self.ready_event.set()
 
-    def stop(self, *, timeout_seconds: float = 12.0) -> dict[str, Any]:
+    def stop(self, *, timeout_seconds: float = 45.0) -> dict[str, Any]:
         with self.lock:
             if self.state["status"] not in {"starting", "recording"}:
                 raise RecorderConflict("There is no active recording to stop.")
@@ -1551,15 +1686,37 @@ class TeleopRecordingManager:
                 raise RecorderError(
                     f"Source recording validation failed; draft retained: {error}"
                 ) from error
-            overhead_video = draft / "overhead_c922.mp4"
+            overhead_state = dict(self.state.get("overhead_video") or {})
+            overhead_video_name = str(
+                overhead_state.get("video_path") or "overhead_c922.mp4"
+            )
+            overhead_browser_name = str(
+                overhead_state.get("browser_video_path") or overhead_video_name
+            )
+            overhead_video = draft / overhead_video_name
+            overhead_browser_video = draft / overhead_browser_name
             overhead_metadata = draft / "overhead_video.json"
-            if not overhead_video.is_file() or not overhead_metadata.is_file():
+            if not all(
+                path.is_file()
+                for path in (
+                    overhead_video,
+                    overhead_browser_video,
+                    overhead_metadata,
+                )
+            ):
                 raise RecorderError(
                     "The required C922 diagnostic video is incomplete; the draft was retained."
                 )
             wrist_required = bool(self.state.get("wrist_video_required"))
-            wrist_video = draft / "wrist_d405.mkv"
-            wrist_browser_video = draft / "wrist_d405.browser.mp4"
+            wrist_state = dict(self.state.get("wrist_video") or {})
+            wrist_video_name = str(
+                wrist_state.get("video_path") or "wrist_d405.mkv"
+            )
+            wrist_browser_name = str(
+                wrist_state.get("browser_video_path") or "wrist_d405.browser.mp4"
+            )
+            wrist_video = draft / wrist_video_name
+            wrist_browser_video = draft / wrist_browser_name
             wrist_metadata = draft / "wrist_video.json"
             if wrist_required and not all(
                 path.is_file()
@@ -1570,9 +1727,13 @@ class TeleopRecordingManager:
                 )
             shutil.move(str(draft), str(destination))
             video_receipt = {
-                **dict(self.state.get("overhead_video") or {}),
-                "video_path": "overhead_c922.mp4",
-                "video_sha256": _sha256(destination / "overhead_c922.mp4"),
+                **overhead_state,
+                "video_path": overhead_video_name,
+                "video_sha256": _sha256(destination / overhead_video_name),
+                "browser_video_path": overhead_browser_name,
+                "browser_video_sha256": _sha256(
+                    destination / overhead_browser_name
+                ),
                 "metadata_path": "overhead_video.json",
                 "metadata_sha256": _sha256(destination / "overhead_video.json"),
                 "ffmpeg_log_path": (
@@ -1590,12 +1751,12 @@ class TeleopRecordingManager:
             }
             wrist_video_receipt = (
                 {
-                    **dict(self.state.get("wrist_video") or {}),
-                    "video_path": "wrist_d405.mkv",
-                    "video_sha256": _sha256(destination / "wrist_d405.mkv"),
-                    "browser_video_path": "wrist_d405.browser.mp4",
+                    **wrist_state,
+                    "video_path": wrist_video_name,
+                    "video_sha256": _sha256(destination / wrist_video_name),
+                    "browser_video_path": wrist_browser_name,
                     "browser_video_sha256": _sha256(
-                        destination / "wrist_d405.browser.mp4"
+                        destination / wrist_browser_name
                     ),
                     "metadata_path": "wrist_video.json",
                     "metadata_sha256": _sha256(destination / "wrist_video.json"),
@@ -1683,12 +1844,27 @@ class TeleopRecordingManager:
                     "overhead_workspace": {
                         "receipt_field": "overhead_video",
                         "available": True,
+                        "source_path": overhead_video_name,
+                        "browser_path": overhead_browser_name,
                     },
                     "wrist_gripper_upward": {
                         "receipt_field": "wrist_video",
                         "available": wrist_video_receipt is not None,
+                        "source_path": (
+                            wrist_video_name
+                            if wrist_video_receipt is not None
+                            else None
+                        ),
+                        "browser_path": (
+                            wrist_browser_name
+                            if wrist_video_receipt is not None
+                            else None
+                        ),
                     },
                 },
+                "native_common_camera_session": self.state.get(
+                    "native_common_camera_session"
+                ),
                 "backend": self.state.get("backend"),
                 "scene_reset_seed": self.state["scene_reset_seed"],
                 "language_instruction": self.state["language_instruction"],
@@ -1766,7 +1942,7 @@ class TeleopRecordingManager:
             active = self.state["status"] in {"starting", "recording"}
         if active:
             try:
-                self.stop(timeout_seconds=5.0)
+                self.stop(timeout_seconds=45.0)
             except RecorderError:
                 self.stop_event.set()
         with self.lock:
