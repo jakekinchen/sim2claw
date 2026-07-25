@@ -862,6 +862,13 @@ EXCITATION_EPISODE_COUNT = 5
 EXCITATION_SAMPLE_HZ = 20
 EXCITATION_AMPLITUDE_DEGREES = 3.0
 EXCITATION_SLEW_DEGREES_S = 10.0
+EXCITATION_ASSIGNMENTS = (
+    (0, 1.0),
+    (1, 1.0),
+    (3, 1.0),
+    (0, -1.0),
+    (1, -1.0),
+)
 REPOSITION_SAMPLE_HZ = 20
 REPOSITION_SLEW_DEGREES_S = 5.0
 REPOSITION_SHOULDER_DELTA_DEGREES = 3.0
@@ -1095,7 +1102,7 @@ def _validate_excitation_plan(packet: dict[str, Any]) -> dict[str, Any]:
     seen: set[str] = set()
     covered: set[int] = set()
     action_tensors: list[np.ndarray] = []
-    assignments = ((0, 1.0), (1, 1.0), (2, 1.0), (0, -1.0), (1, -1.0))
+    assignments = EXCITATION_ASSIGNMENTS
     expected_timestamps = (
         np.arange(25, dtype=np.float64) / EXCITATION_SAMPLE_HZ
     )
@@ -1159,8 +1166,10 @@ def _validate_excitation_plan(packet: dict[str, Any]) -> dict[str, Any]:
             raise RecorderError("Each excitation must vary exactly one body joint.")
         covered.add(int(active[0]))
         action_tensors.append(actions)
-    if len(covered) < 3:
-        raise RecorderError("Excitation cohort covers fewer than three body joints.")
+    if covered != {0, 1, 3}:
+        raise RecorderError(
+            "Excitation cohort must cover base, shoulder_lift, and wrist_flex."
+        )
     aggregate_actions = np.concatenate(action_tensors, axis=0)
     if plan.get("aggregate_gateway_action_degrees_sha256") != _float64_sha256(
         aggregate_actions
@@ -1202,7 +1211,7 @@ def compile_physical_excitation_packet(
     )
     if any(values.shape != (6,) for values in (anchor, lower, upper)):
         raise RecorderError("Fresh follower pose or calibrated limits are incomplete.")
-    for joint_index in (0, 1, 2):
+    for joint_index in (0, 1, 3):
         if (
             anchor[joint_index] - EXCITATION_AMPLITUDE_DEGREES
             < lower[joint_index]
@@ -1214,7 +1223,7 @@ def compile_physical_excitation_packet(
                 f"{ROBOT_JOINTS[joint_index]}."
             )
     timestamps = np.arange(25, dtype=np.float64) / EXCITATION_SAMPLE_HZ
-    assignments = ((0, 1.0), (1, 1.0), (2, 1.0), (0, -1.0), (1, -1.0))
+    assignments = EXCITATION_ASSIGNMENTS
     episodes: list[dict[str, Any]] = []
     for index, (joint_index, direction) in enumerate(assignments, start=1):
         actions = np.repeat(anchor[None, :], timestamps.size, axis=0)

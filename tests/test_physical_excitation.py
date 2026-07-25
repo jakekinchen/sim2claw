@@ -290,7 +290,15 @@ def test_compile_is_deterministic_bounded_exciting_and_read_only(
     }
     assert len(plan["episodes"]) == 5
     covered = set()
-    for episode in plan["episodes"]:
+    expected_family = [
+        (ROBOT_JOINTS[0], "positive_first"),
+        (ROBOT_JOINTS[1], "positive_first"),
+        (ROBOT_JOINTS[3], "positive_first"),
+        (ROBOT_JOINTS[0], "negative_first"),
+        (ROBOT_JOINTS[1], "negative_first"),
+    ]
+    for episode, expected in zip(plan["episodes"], expected_family, strict=True):
+        assert (episode["body_joint"], episode["direction"]) == expected
         actions = np.asarray(episode["actions_degrees"], dtype=np.float64)
         timestamps = np.asarray(episode["timestamps_seconds"], dtype=np.float64)
         assert episode["gateway_action_degrees_sha256"] == _float64_sha256(
@@ -307,7 +315,7 @@ def test_compile_is_deterministic_bounded_exciting_and_read_only(
         assert np.max(ranges) >= 5.0
         slew = np.abs(np.diff(actions, axis=0) / np.diff(timestamps)[:, None])
         assert np.max(slew) <= 10.0 + 1e-12
-    assert len(covered) >= 3
+    assert covered == {0, 1, 3}
 
 
 @pytest.mark.parametrize(
@@ -336,6 +344,23 @@ def test_compile_rejects_unsafe_anchor_margin(tmp_path: Path) -> None:
         compile_physical_excitation_packet(
             tmp_path / "packet.json", preflight_fn=lambda: report
         )
+
+
+def test_compile_ignores_elbow_margin_when_elbow_is_not_in_family(
+    tmp_path: Path,
+) -> None:
+    report = _preflight()
+    report["follower_start_degrees"][2] = 100.5
+    report["follower_calibrated_maximum"][2] = 102.0
+    packet = compile_physical_excitation_packet(
+        tmp_path / "packet.json", preflight_fn=lambda: report
+    )
+    assert packet["plan"]["episodes"][2]["body_joint"] == ROBOT_JOINTS[3]
+    assert {episode["body_joint"] for episode in packet["plan"]["episodes"]} == {
+        ROBOT_JOINTS[0],
+        ROBOT_JOINTS[1],
+        ROBOT_JOINTS[3],
+    }
 
 
 def test_reposition_dry_run_derives_coupled_inward_move_and_refuses_overwrite(
