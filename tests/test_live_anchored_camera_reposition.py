@@ -36,6 +36,8 @@ def _inputs(
     target_hold_seconds: float | None = None,
     stationary_capture_seconds: float | None = None,
     observed_elbow_target_degrees: float | None = None,
+    observed_elbow_crossing_direction: str | None = None,
+    stage_target: np.ndarray = TARGET,
 ) -> tuple[Path, Path]:
     route = tmp_path / "route.json"
     manifest = tmp_path / "candidate_manifest.json"
@@ -43,7 +45,7 @@ def _inputs(
         "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
         "route_id": "fixture-live-route",
         "reviewed_anchor_degrees": TORQUE_OFF.tolist(),
-        "stage_targets_degrees": [TARGET.tolist()],
+        "stage_targets_degrees": [stage_target.tolist()],
     }
     if maximum_slew_degrees_s is not None:
         route_value["setup_maximum_slew_degrees_s"] = maximum_slew_degrees_s
@@ -58,6 +60,10 @@ def _inputs(
     if observed_elbow_target_degrees is not None:
         route_value["setup_observed_elbow_target_degrees"] = (
             observed_elbow_target_degrees
+        )
+    if observed_elbow_crossing_direction is not None:
+        route_value["setup_observed_elbow_crossing_direction"] = (
+            observed_elbow_crossing_direction
         )
     _write(route, route_value)
     _write(manifest, {"candidate_digest": "b" * 64})
@@ -517,6 +523,58 @@ def test_observed_elbow_terminates_safe_prefix_and_holds_last_command(
     ]
     assert receipt["evidence_limits"]["sim_gap_evidence"] is False
     assert gateway.closed
+
+
+def test_increasing_observed_elbow_terminates_only_after_upward_crossing(
+    tmp_path: Path,
+) -> None:
+    anchor = SETTLED.copy()
+    anchor[2] = 70.0
+    target = TARGET.copy()
+    target[2] = 80.0
+    route, manifest = _inputs(
+        tmp_path,
+        elbow_tracking_limit_degrees=20.0,
+        target_hold_seconds=0.1,
+        observed_elbow_target_degrees=75.0,
+        observed_elbow_crossing_direction="increasing",
+        stage_target=target,
+    )
+    gateway = _Gateway(raw_anchor=anchor, command_anchor=anchor)
+
+    def preview(actions: list[np.ndarray], path: Path) -> dict[str, object]:
+        assert path.is_file()
+        assert actions[0][0, 2] == 70.0
+        assert actions[0][-1, 2] == 80.0
+        return {
+            "no_new_or_worsened_kinematic_contact": True,
+            "external_contact_pairs": [],
+            "stages": [
+                {
+                    "exact_physical_action_sha256": action_sha256(actions[0]),
+                    "no_new_or_worsened_kinematic_contact": True,
+                    "external_contact_pairs": [],
+                }
+            ],
+        }
+
+    receipt = execute_live_anchored_camera_reposition(
+        route_path=route,
+        candidate_manifest_path=manifest,
+        output_root=tmp_path / "output",
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda identity: gateway,
+        preview_fn=preview,
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+
+    stop = receipt["observed_pose_termination"]
+    assert stop["crossing_direction"] == "increasing"
+    assert stop["stop"]["observed_degrees"][2] >= 75.0
+    assert stop["stop"]["planned_sample_index"] > 0
+    assert stop["executed_path_is_safe_prefix_plus_exact_terminal_hold"] is True
 
 
 def test_observed_elbow_failure_closes_before_hold(

@@ -498,6 +498,7 @@ def orchestrate_c922_terminal_hold_capture(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--contract", type=Path, default=CONTRACT_PATH)
     parser.add_argument("--camera-session-token", required=True)
     parser.add_argument("--fixed-mount-token", required=True)
     parser.add_argument("--route", type=Path)
@@ -513,6 +514,7 @@ def main() -> None:
         empty_gripper_confirmed=args.empty_gripper_confirmed,
         route_path=args.route,
         candidate_manifest_path=args.candidate_manifest,
+        contract_path=args.contract,
     )
     print(json.dumps(result, indent=2, sort_keys=True))
 

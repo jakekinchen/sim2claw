@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 
 import numpy as np
 import pytest
@@ -12,6 +13,7 @@ from sim2claw.c922_terminal_hold_capture import (
     CONTRACT_PATH,
     orchestrate_c922_terminal_hold_capture,
 )
+import sim2claw.c922_terminal_hold_capture as capture_module
 from sim2claw.learning_factory_artifacts import sha256_file
 from sim2claw.replay_eligibility import action_sha256
 
@@ -299,12 +301,92 @@ def test_callback_outside_terminal_hold_fails_closed(tmp_path: Path) -> None:
         )
 
 
-def test_contract_binds_one_frozen_route_and_all_authority_false() -> None:
-    contract = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
-    route = CONTRACT_PATH.parents[2] / contract["route"]["path"]
+@pytest.mark.parametrize(
+    "contract_path",
+    [
+        CONTRACT_PATH,
+        CONTRACT_PATH.with_name("c922_terminal_hold_still_capture_p1_v1.json"),
+        CONTRACT_PATH.with_name("c922_terminal_hold_still_capture_p2_v1.json"),
+    ],
+)
+def test_contract_binds_one_frozen_route_and_all_authority_false(
+    contract_path: Path,
+) -> None:
+    contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    route = contract_path.parents[2] / contract["route"]["path"]
     assert sha256_file(route) == contract["route"]["sha256"]
+    assert contract["route"]["frozen_candidate_pose_reached"] is False
     assert contract["camera"]["width"] == 640
     assert contract["camera"]["height"] == 480
     assert contract["camera"]["media_subtype_fourcc"] == "420v"
     assert contract["camera"]["supported_fps"] == pytest.approx(30.00003000003)
     assert not any(contract["authority"].values())
+
+
+def test_cli_passes_explicit_contract_to_orchestrator(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    contract = CONTRACT_PATH.with_name(
+        "c922_terminal_hold_still_capture_p1_v1.json"
+    )
+    seen: dict[str, object] = {}
+
+    def fake_orchestrate(**kwargs: object) -> dict[str, object]:
+        seen.update(kwargs)
+        return {"status": "fixture"}
+
+    monkeypatch.setattr(capture_module, "orchestrate_c922_terminal_hold_capture", fake_orchestrate)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "c922-terminal-hold-capture",
+            "--output",
+            str(tmp_path / "output"),
+            "--contract",
+            str(contract),
+            "--camera-session-token",
+            SESSION,
+            "--fixed-mount-token",
+            MOUNT,
+            "--empty-gripper-confirmed",
+            "--yes",
+        ],
+    )
+
+    capture_module.main()
+
+    assert seen["contract_path"] == contract
+    assert json.loads(capsys.readouterr().out)["status"] == "fixture"
+
+
+def test_p2_observed_route_preserves_frozen_pose_except_elbow_extension() -> None:
+    hardware = CONTRACT_PATH.parents[1] / "hardware"
+    frozen = json.loads(
+        (hardware / "c922_rank_preflight_p2_route_v1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    observed = json.loads(
+        (hardware / "c922_rank_preflight_p2_observed_v1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    frozen_target = np.asarray(frozen["stage_targets_degrees"][0])
+    observed_target = np.asarray(observed["stage_targets_degrees"][0])
+
+    assert observed["reviewed_anchor_degrees"] == frozen["reviewed_anchor_degrees"]
+    np.testing.assert_array_equal(
+        observed_target[[0, 1, 3, 4, 5]],
+        frozen_target[[0, 1, 3, 4, 5]],
+    )
+    assert (
+        observed["setup_observed_elbow_target_degrees"]
+        == frozen_target[2]
+    )
+    assert observed["setup_observed_elbow_crossing_direction"] == "increasing"
+    assert observed_target[2] > frozen_target[2]
+    assert observed["review_basis"]["evidence_limits"][
+        "full_three_face_rank_eligible"
+    ] is False
+    assert not any(observed["review_basis"]["authority"].values())

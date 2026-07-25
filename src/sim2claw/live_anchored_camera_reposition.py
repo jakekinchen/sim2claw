@@ -101,6 +101,7 @@ def _load_target(
     float,
     float,
     float | None,
+    str,
 ]:
     route = _read_json(route_path, "camera-reposition route")
     _require(
@@ -154,6 +155,18 @@ def _load_target(
         ),
         "setup observed elbow target must be finite when configured",
     )
+    observed_elbow_crossing_direction = route.get(
+        "setup_observed_elbow_crossing_direction",
+        "decreasing",
+    )
+    _require(
+        observed_elbow_crossing_direction in {"decreasing", "increasing"}
+        and (
+            observed_elbow_target is not None
+            or observed_elbow_crossing_direction == "decreasing"
+        ),
+        "setup observed elbow crossing direction must be decreasing or increasing and requires a target",
+    )
     hold_seconds = route.get("setup_target_hold_seconds", 0.0)
     capture_seconds = route.get("stationary_capture_seconds", 0.0)
     for value, label, maximum in (
@@ -191,6 +204,7 @@ def _load_target(
             if observed_elbow_target is not None
             else None
         ),
+        observed_elbow_crossing_direction,
     )
 
 
@@ -321,6 +335,7 @@ def execute_live_anchored_camera_reposition(
         target_hold_seconds,
         stationary_capture_seconds,
         observed_elbow_target_degrees,
+        observed_elbow_crossing_direction,
     ) = _load_target(route_path)
     preflight = preflight_fn()
     identity, lower, upper = _preflight_identity_and_limits(preflight)
@@ -490,7 +505,18 @@ def execute_live_anchored_camera_reposition(
                 if (
                     observed_elbow_target_degrees is not None
                     and actual.shape == (6,)
-                    and float(actual[2]) <= observed_elbow_target_degrees
+                    and (
+                        (
+                            observed_elbow_crossing_direction == "decreasing"
+                            and float(actual[2])
+                            <= observed_elbow_target_degrees
+                        )
+                        or (
+                            observed_elbow_crossing_direction == "increasing"
+                            and float(actual[2])
+                            >= observed_elbow_target_degrees
+                        )
+                    )
                 ):
                     stop_command = actions[sample_index].copy()
                     observed_pose_stop = {
@@ -757,6 +783,7 @@ def execute_live_anchored_camera_reposition(
         "observed_pose_termination": {
             "configured": observed_elbow_target_degrees is not None,
             "target_elbow_degrees": observed_elbow_target_degrees,
+            "crossing_direction": observed_elbow_crossing_direction,
             "reached": observed_pose_stop is not None,
             "stop": observed_pose_stop,
             "planned_full_path_was_cpu_previewed": True,
