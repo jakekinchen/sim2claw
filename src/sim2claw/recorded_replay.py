@@ -15,7 +15,7 @@ import math
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Callable, Iterable, Mapping, Sequence
 
 import mujoco
 import numpy as np
@@ -1679,6 +1679,8 @@ def simulate_and_align(
     *,
     parameter_values: Mapping[str, float] | None = None,
     model_base_directory: Path | None = None,
+    native_step_observer: Callable[[mujoco.MjModel, mujoco.MjData, int], None]
+    | None = None,
 ) -> dict[str, Any]:
     """Replay an episode and align native simulation values to measured times."""
 
@@ -1756,6 +1758,8 @@ def simulate_and_align(
     )
     data.ctrl[ids["actuator_ids"]] = initial_applied
     mujoco.mj_forward(model, data)
+    if native_step_observer is not None:
+        native_step_observer(model, data, 0)
     native_times: list[float] = [float(data.time)]
     native_rows: list[dict[str, Any]] = [
         _simulation_observables(model, data, ids)
@@ -1775,6 +1779,8 @@ def simulate_and_align(
         applied = _require_exact_control(model, ids["actuator_ids"], command)
         data.ctrl[ids["actuator_ids"]] = applied
         mujoco.mj_step(model, data)
+        if native_step_observer is not None:
+            native_step_observer(model, data, len(native_times))
         native_times.append(float(data.time))
         native_rows.append(_simulation_observables(model, data, ids))
         native_requested_controls.append(command.copy())

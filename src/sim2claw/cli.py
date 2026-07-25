@@ -733,6 +733,26 @@ def build_parser() -> argparse.ArgumentParser:
     twin_candidate.add_argument("--canary-input", type=Path, required=True)
     twin_candidate.add_argument("--output", type=Path, required=True)
     twin_candidate.add_argument("--synthetic-fixture", action="store_true")
+    canary_contact = subparsers.add_parser(
+        "canary-contact-preflight",
+        help="audit one frozen P15 canary at every native MuJoCo step",
+    )
+    canary_contact.add_argument("--candidate", type=Path, required=True)
+    canary_contact.add_argument("--canary", type=Path, required=True)
+    canary_contact.add_argument("--baseline", type=Path, default=DEFAULT_SYSID_CONFIG)
+    canary_contact.add_argument("--p8-intrinsics", type=Path, required=True)
+    canary_contact.add_argument("--p8-distortion", type=Path, required=True)
+    canary_contact.add_argument("--p9-admission", type=Path, required=True)
+    canary_contact.add_argument("--p13-transform", type=Path, required=True)
+    canary_contact.add_argument("--p13-board-fit", type=Path, required=True)
+    canary_contact.add_argument(
+        "--policy",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/evaluations/zero_contact_canary_policy_v1.json",
+    )
+    canary_contact.add_argument("--output", type=Path, required=True)
+    canary_contact.add_argument("--synthetic-fixture", action="store_true")
 
     actuator_external = subparsers.add_parser(
         "actuator-external-validate",
@@ -1982,6 +2002,31 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
+    if args.command == "canary-contact-preflight":
+        from .canary_contact_preflight import (
+            CanaryContactError,
+            evaluate_canary_contact_preflight,
+        )
+
+        try:
+            report = evaluate_canary_contact_preflight(
+                candidate_path=args.candidate,
+                canary_path=args.canary,
+                baseline_path=args.baseline,
+                p8_intrinsics_path=args.p8_intrinsics,
+                p8_distortion_path=args.p8_distortion,
+                p9_admission_path=args.p9_admission,
+                p13_transform_path=args.p13_transform,
+                p13_board_fit_path=args.p13_board_fit,
+                policy_path=args.policy,
+                output_path=args.output,
+                synthetic_fixture_mode=args.synthetic_fixture,
+            )
+        except (OSError, ValueError, CanaryContactError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["native_contact_audit"]["passed"] else 1
     if args.command == "actuator-external-validate":
         from .actuator_external_validation import (
             ActuatorExternalValidationError,

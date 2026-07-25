@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-25T00:00:00-05:00",
+  "updated_at": "2026-07-25T00:58:13-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
-  "current_milestone": "P15_IMMUTABLE_GEOMETRY_TIMING_CANDIDATE_AND_ACTION_FROZEN_CANARY_IMPLEMENTED_REAL_INPUTS_ABSENT",
+  "current_milestone": "P16_NATIVE_STEP_NO_CONTACT_PREFLIGHT_IMPLEMENTED_REAL_INPUTS_ABSENT",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "development_infrastructure_synthetic_executed_benchmark_bounded_action_frozen_simulator_unqualified_physical_observation_and_offline_joint_identifiability_evidence_no_task_or_transfer_authority",
@@ -3915,17 +3915,37 @@
     "action_payload": "little_endian_float64_c_order_single_hash_simulation_and_future_physical_consumer",
     "simulation_action_byte_identical": true,
     "zero_contact_verified": false,
-    "runtime_blocker": "configs/sysid/recorded_action_sysid_v1.json bindings.pawn_body is null so simulate_and_align emits no contact_active channel",
+    "runtime_blocker": null,
+    "native_contact_evaluator": "sim2claw canary-contact-preflight",
     "real_p9_admission_receipts": 0,
     "real_p13_receipts": 0,
     "real_canary_inputs": 0,
     "evaluator_admission": false,
     "physical_authority": false,
     "next": [
-      "P16_add_one_reviewed_contact_observable_binding_without_applying_the_camera_transform",
       "P17_acquire_and_independently_admit_real_P9_P13_and_fresh_hash_bound_canary_anchor",
       "P18_recompile_then_run_action_byte_identical_simulation_contact_gate_before_any_physical_review"
     ]
+  },
+  "native_step_zero_contact_preflight": {
+    "status": "offline_implementation_verified_real_inputs_absent",
+    "policy": "configs/evaluations/zero_contact_canary_policy_v1.json",
+    "audits": "every_native_mujoco_step",
+    "forbidden_sets": [
+      "commanded_left_arm_vs_table_board_clamps_floor",
+      "commanded_left_arm_vs_all_scene_pawns",
+      "commanded_left_arm_vs_right_arm",
+      "nonstructural_left_arm_self_contact"
+    ],
+    "synthetic_clean_fixture_passed": true,
+    "current_default_fixture_verdict": "rejected_left_camera_mount_contact_with_tan_pawn_d7_at_native_step_0",
+    "real_simulation_no_contact_admissions": 0,
+    "ready_for_operator_hardware_preflight": false,
+    "stop_before_robot_gateway": true,
+    "gateway_constructed": false,
+    "physical_execution_admitted": false,
+    "physical_authority": false,
+    "next": "P17_supply_real_P8_P9_P13_and_fresh_canary_then_run_offline_preflight"
   },
   "sim2real_transfer_queue": {
     "status": "active_fail_closed",
@@ -3981,9 +4001,10 @@
       "P5_eligible_physical_recorded_replay",
       "P9_physical_timing_actuation_cohort_adapter",
       "P10_admission_gated_physical_excitation_acquisition",
-      "P15_immutable_geometry_timing_candidate_and_canary_compiler"
+      "P15_immutable_geometry_timing_candidate_and_canary_compiler",
+      "P16_native_step_forbidden_contact_preflight"
     ],
-    "next_gate": "real_P9_independent_admission_P13_geometry_and_fresh_canary_anchor_then_P16_contact_observable"
+    "next_gate": "P17_real_P8_P9_P13_and_fresh_canary_offline_admission"
   },
   "physical_authority": false
 }

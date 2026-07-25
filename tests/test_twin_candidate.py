@@ -9,6 +9,15 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from sim2claw.canary_contact_preflight import (
+    CanaryContactError,
+    DEFAULT_POLICY_PATH,
+    evaluate_canary_contact_preflight,
+)
+from sim2claw.c922_exact_mode_calibration import (
+    DISTORTION_SCHEMA,
+    INTRINSICS_SCHEMA,
+)
 from sim2claw.paths import REPO_ROOT
 from sim2claw.recorded_replay import (
     ReplayContractError,
@@ -216,6 +225,66 @@ def _compose(fixture: dict[str, object], output: Path) -> dict[str, object]:
     )
 
 
+def _p16_evidence(
+    fixture: dict[str, object],
+    tmp_path: Path,
+) -> dict[str, Path]:
+    common = {
+        "camera_id": "logitech-overhead",
+        "evaluator_owned": True,
+        "self_scored": False,
+        "synthetic": True,
+    }
+    intrinsics_path = tmp_path / "p8-intrinsics.json"
+    distortion_path = tmp_path / "p8-distortion.json"
+    _write(
+        intrinsics_path,
+        {
+            "schema_version": INTRINSICS_SCHEMA,
+            **common,
+            "camera_matrix": np.eye(3).tolist(),
+        },
+    )
+    _write(
+        distortion_path,
+        {
+            "schema_version": DISTORTION_SCHEMA,
+            **common,
+            "model": "fixture",
+            "coefficients": [0.0] * 5,
+        },
+    )
+    transform = fixture["values"]["transform"]
+    transform["input_hashes"]["intrinsics_sha256"] = sha256_file(intrinsics_path)
+    transform["input_hashes"]["distortion_sha256"] = sha256_file(distortion_path)
+    _write(fixture["paths"]["transform"], transform)
+    return {
+        "p8_intrinsics_path": intrinsics_path,
+        "p8_distortion_path": distortion_path,
+        "p9_admission_path": fixture["paths"]["p9"],
+        "p13_transform_path": fixture["paths"]["transform"],
+        "p13_board_fit_path": fixture["paths"]["board"],
+    }
+
+
+def _clean_p16_fixture(
+    tmp_path: Path,
+) -> tuple[dict[str, object], dict[str, object], dict[str, Path]]:
+    fixture = _fixture(tmp_path)
+    fixture["values"]["canary"]["initial_state"]["joint_position"] = [
+        1.1908479727818317,
+        0.02767843375388379,
+        1.1267926077044281,
+        -0.9730003915962206,
+        0.41239521366234166,
+        0.45,
+    ]
+    _write(fixture["paths"]["canary"], fixture["values"]["canary"])
+    evidence = _p16_evidence(fixture, tmp_path)
+    p15 = _compose(fixture, tmp_path / "p15")
+    return fixture, p15, evidence
+
+
 def test_valid_fixture_is_immutable_bounded_and_byte_identical(tmp_path: Path) -> None:
     fixture = _fixture(tmp_path)
     before = BASELINE.read_bytes()
@@ -346,3 +415,197 @@ def test_preexisting_output_is_never_overwritten(tmp_path: Path) -> None:
     (output / "candidate_manifest.json").write_text("occupied", encoding="utf-8")
     with pytest.raises(TwinCandidateError, match="refusing to overwrite"):
         _compose(fixture, output)
+
+
+def test_native_step_contact_audit_passes_clean_frozen_motion(
+    tmp_path: Path,
+) -> None:
+    before = BASELINE.read_bytes()
+    _, p15, evidence = _clean_p16_fixture(tmp_path)
+    receipt = evaluate_canary_contact_preflight(
+        candidate_path=Path(p15["candidate_manifest_path"]),
+        canary_path=Path(p15["canary_bundle_path"]),
+        baseline_path=BASELINE,
+        **evidence,
+        policy_path=DEFAULT_POLICY_PATH,
+        output_path=tmp_path / "contact-admission.json",
+        synthetic_fixture_mode=True,
+    )
+    audit = receipt["native_contact_audit"]
+    assert receipt["status"] == "synthetic_fixture_no_contact_passed"
+    assert audit["native_step_count"] > 1
+    assert audit["forbidden_contact_event_count"] == 0
+    assert audit["first_forbidden_contact"] is None
+    assert receipt["simulation_no_contact_admitted"] is False
+    assert receipt["physical_authority"] is False
+    assert receipt["stop_before_robot_gateway"] is True
+    assert receipt["gateway_constructed"] is False
+    assert BASELINE.read_bytes() == before
+
+
+def test_native_step_contact_audit_detects_existing_scene_forbidden_contact(
+    tmp_path: Path,
+) -> None:
+    fixture = _fixture(tmp_path)
+    evidence = _p16_evidence(fixture, tmp_path)
+    p15 = _compose(fixture, tmp_path / "p15")
+    receipt = evaluate_canary_contact_preflight(
+        candidate_path=Path(p15["candidate_manifest_path"]),
+        canary_path=Path(p15["canary_bundle_path"]),
+        baseline_path=BASELINE,
+        **evidence,
+        policy_path=DEFAULT_POLICY_PATH,
+        output_path=tmp_path / "contact-admission.json",
+        synthetic_fixture_mode=True,
+    )
+    event = receipt["native_contact_audit"]["first_forbidden_contact"]
+    assert receipt["status"] == "rejected_forbidden_contact"
+    assert receipt["native_contact_audit"]["forbidden_contact_event_count"] > 0
+    assert {event["body_a"], event["body_b"]} == {
+        "left_camera_mount",
+        "tan_pawn_d7",
+    }
+    assert receipt["ready_for_operator_hardware_preflight"] is False
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (
+            lambda policy: policy.update(forbidden_object_body_roots=[]),
+            "object policy is empty",
+        ),
+        (
+            lambda policy: policy.update(
+                forbidden_static_geom_names=["missing-floor"]
+            ),
+            "unknown geom",
+        ),
+    ],
+)
+def test_native_contact_policy_empty_or_unknown_fails_closed(
+    tmp_path: Path,
+    mutation,
+    message: str,
+) -> None:
+    _, p15, evidence = _clean_p16_fixture(tmp_path)
+    policy = json.loads(DEFAULT_POLICY_PATH.read_text(encoding="utf-8"))
+    mutation(policy)
+    policy_path = tmp_path / "policy.json"
+    _write(policy_path, policy)
+    with pytest.raises(CanaryContactError, match=message):
+        evaluate_canary_contact_preflight(
+            candidate_path=Path(p15["candidate_manifest_path"]),
+            canary_path=Path(p15["canary_bundle_path"]),
+            baseline_path=BASELINE,
+            **evidence,
+            policy_path=policy_path,
+            output_path=tmp_path / "contact-admission.json",
+            synthetic_fixture_mode=True,
+        )
+
+
+@pytest.mark.parametrize(
+    ("artifact", "mutation", "message"),
+    [
+        (
+            "canary",
+            lambda value: value["applied_actions"][1].__setitem__(
+                0, value["applied_actions"][1][0] + 0.001
+            ),
+            "not byte-identical",
+        ),
+        (
+            "canary",
+            lambda value: value["initial_state"]["joint_position"].__setitem__(
+                0, value["initial_state"]["joint_position"][0] + 0.001
+            ),
+            "initial state drifted",
+        ),
+        (
+            "candidate",
+            lambda value: value["candidate_config"]["parameter_stages"][1][
+                "parameters"
+            ][0].update(nominal=0.03),
+            "candidate config hash drifted",
+        ),
+    ],
+)
+def test_contact_preflight_action_initial_state_and_config_drift_fail_closed(
+    tmp_path: Path,
+    artifact: str,
+    mutation,
+    message: str,
+) -> None:
+    _, p15, evidence = _clean_p16_fixture(tmp_path)
+    result_key = (
+        f"{artifact}_bundle_path"
+        if artifact == "canary"
+        else "candidate_manifest_path"
+    )
+    path = Path(p15[result_key])
+    value = json.loads(path.read_text(encoding="utf-8"))
+    mutation(value)
+    _write(path, value)
+    with pytest.raises(CanaryContactError, match=message):
+        evaluate_canary_contact_preflight(
+            candidate_path=Path(p15["candidate_manifest_path"]),
+            canary_path=Path(p15["canary_bundle_path"]),
+            baseline_path=BASELINE,
+            **evidence,
+            policy_path=DEFAULT_POLICY_PATH,
+            output_path=tmp_path / "contact-admission.json",
+            synthetic_fixture_mode=True,
+        )
+
+
+def test_contact_preflight_refuses_overwrite_before_evaluation(
+    tmp_path: Path,
+) -> None:
+    _, p15, evidence = _clean_p16_fixture(tmp_path)
+    output = tmp_path / "contact-admission.json"
+    output.write_text("occupied", encoding="utf-8")
+    with pytest.raises(CanaryContactError, match="refusing to overwrite"):
+        evaluate_canary_contact_preflight(
+            candidate_path=Path(p15["candidate_manifest_path"]),
+            canary_path=Path(p15["canary_bundle_path"]),
+            baseline_path=BASELINE,
+            **evidence,
+            policy_path=DEFAULT_POLICY_PATH,
+            output_path=output,
+            synthetic_fixture_mode=True,
+        )
+
+
+def test_contact_preflight_never_imports_robot_or_gateway_modules(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    import builtins
+    import sys
+
+    _, p15, evidence = _clean_p16_fixture(tmp_path)
+    forbidden_modules = {
+        "sim2claw.physical_gateway",
+        "sim2claw.teleop_recording",
+    }
+    assert forbidden_modules.isdisjoint(sys.modules)
+    original_import = builtins.__import__
+
+    def guarded_import(name, *args, **kwargs):
+        if name.endswith(("physical_gateway", "teleop_recording")):
+            raise AssertionError(f"hardware module import attempted: {name}")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", guarded_import)
+    receipt = evaluate_canary_contact_preflight(
+        candidate_path=Path(p15["candidate_manifest_path"]),
+        canary_path=Path(p15["canary_bundle_path"]),
+        baseline_path=BASELINE,
+        **evidence,
+        policy_path=DEFAULT_POLICY_PATH,
+        output_path=tmp_path / "contact-admission.json",
+        synthetic_fixture_mode=True,
+    )
+    assert receipt["gateway_constructed"] is False
+    assert forbidden_modules.isdisjoint(sys.modules)
