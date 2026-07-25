@@ -815,6 +815,35 @@ def _white_robot_materials(spec: mujoco.MjSpec) -> None:
             material.rgba = [0.94, 0.94, 0.91, 1.0]
 
 
+def _refine_shoulder_servo_collision(spec: mujoco.MjSpec) -> None:
+    """Tighten the over-broad shoulder servo collision approximation."""
+
+    shoulder = spec.body("shoulder")
+    if shoulder is None:
+        raise ValueError("vendored SO-101 model lacks the shoulder body")
+    coarse = [
+        geom
+        for geom in shoulder.geoms
+        if geom.type == mujoco.mjtGeom.mjGEOM_BOX
+        and all(
+            math.isclose(float(actual), expected, abs_tol=1e-12)
+            for actual, expected in zip(
+                geom.size,
+                (0.023, 0.015, 0.01),
+                strict=True,
+            )
+        )
+    ]
+    if len(coarse) != 1:
+        raise ValueError(
+            "vendored SO-101 shoulder collision layout changed"
+        )
+    # The upstream box makes the servo 46 mm wide on this local axis, while
+    # the bound STL spans approximately 24.8 mm. Keep the other two
+    # conservative box dimensions and correct only the over-broad axis.
+    coarse[0].size = [0.0124, 0.015, 0.01]
+
+
 def build_scene_spec(
     *,
     config_path: Path = DEFAULT_CAPTURE_CONFIG,
@@ -850,6 +879,7 @@ def build_scene_spec(
     for prefix in ("left_", "right_"):
         robot = mujoco.MjSpec.from_file(str(SO101_MODEL_PATH))
         _white_robot_materials(robot)
+        _refine_shoulder_servo_collision(robot)
         if mass_profile is not None:
             robot_name = prefix.removesuffix("_")
             payload_id = mass_profile["scene_defaults"]["robot_payloads"][robot_name]
