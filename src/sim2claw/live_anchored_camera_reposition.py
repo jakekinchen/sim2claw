@@ -38,6 +38,8 @@ from .wrist_view_reposition import (
 
 
 RECEIPT_SCHEMA = "sim2claw.live_anchored_camera_reposition.v1"
+MAX_SETUP_TARGET_HOLD_SECONDS = 2.0
+MAX_STATIONARY_CAPTURE_SECONDS = 4.0
 
 
 class LiveAnchoredCameraRepositionError(RuntimeError):
@@ -50,8 +52,23 @@ def _require(condition: bool, message: str) -> None:
 
 
 def _read_json(path: Path, label: str) -> dict[str, Any]:
+    def reject_duplicate_keys(
+        pairs: list[tuple[str, Any]],
+    ) -> dict[str, Any]:
+        value: dict[str, Any] = {}
+        for key, item in pairs:
+            if key in value:
+                raise LiveAnchoredCameraRepositionError(
+                    f"{label} contains duplicate key: {key}"
+                )
+            value[key] = item
+        return value
+
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
+        value = json.loads(
+            path.read_text(encoding="utf-8"),
+            object_pairs_hook=reject_duplicate_keys,
+        )
     except (OSError, json.JSONDecodeError) as error:
         raise LiveAnchoredCameraRepositionError(
             f"could not load {label}: {error}"
@@ -108,15 +125,24 @@ def _load_target(
         and float(setup_elbow_limit)
         in {
             BODY_TRACKING_ERROR_LIMIT_DEG,
+            7.0,
             SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG,
         },
-        "setup elbow tracking limit must be exactly 6.0 or 7.0 degrees",
+        "setup elbow tracking limit must be exactly 6.0, 7.0, or 12.0 degrees",
     )
     hold_seconds = route.get("setup_target_hold_seconds", 0.0)
     capture_seconds = route.get("stationary_capture_seconds", 0.0)
-    for value, label in (
-        (hold_seconds, "setup target hold"),
-        (capture_seconds, "stationary capture"),
+    for value, label, maximum in (
+        (
+            hold_seconds,
+            "setup target hold",
+            MAX_SETUP_TARGET_HOLD_SECONDS,
+        ),
+        (
+            capture_seconds,
+            "stationary capture",
+            MAX_STATIONARY_CAPTURE_SECONDS,
+        ),
     ):
         _require(
             not isinstance(value, bool)
@@ -124,6 +150,10 @@ def _load_target(
             and math.isfinite(float(value))
             and float(value) >= 0.0,
             f"{label} seconds must be finite and non-negative",
+        )
+        _require(
+            float(value) <= maximum,
+            f"{label} seconds cannot exceed {maximum:.1f}",
         )
     return (
         route,
@@ -362,7 +392,7 @@ def execute_live_anchored_camera_reposition(
                 setup_elbow_tracking_error_limit_degrees=(
                     setup_elbow_tracking_limit_degrees
                     if setup_elbow_tracking_limit_degrees
-                    == SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG
+                    in {7.0, SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG}
                     else None
                 ),
             )
@@ -542,8 +572,20 @@ def execute_live_anchored_camera_reposition(
                 ),
                 "movement_sample_count": movement_sample_count,
                 "target_hold_seconds": target_hold_seconds,
+                "target_hold_effective_command_seconds": (
+                    hold_sample_count / SAMPLE_HZ
+                ),
+                "target_hold_maximum_seconds": (
+                    MAX_SETUP_TARGET_HOLD_SECONDS
+                ),
                 "target_hold_sample_count": hold_sample_count,
                 "stationary_capture_seconds": stationary_capture_seconds,
+                "stationary_capture_effective_command_seconds": (
+                    capture_sample_count / SAMPLE_HZ
+                ),
+                "stationary_capture_maximum_seconds": (
+                    MAX_STATIONARY_CAPTURE_SECONDS
+                ),
                 "stationary_capture_sample_count": capture_sample_count,
                 "maximum_excursion_degrees": float(
                     np.max(np.abs(actions[-1] - actions[0]))

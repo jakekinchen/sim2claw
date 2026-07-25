@@ -307,6 +307,49 @@ class PhysicalGatewayTest(unittest.TestCase):
             gateway.close()
         self.assertFalse(self.follower.bus.torque)
 
+    def test_twelve_degree_elbow_envelope_is_live_setup_only(self) -> None:
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            configure_devices=False,
+        )
+        try:
+            gateway.open(enable_motion=True, paired_pose_confirmed=True)
+            with self.assertRaisesRegex(
+                PhysicalGatewayError,
+                "restricted to exact live-anchored setup-only samples",
+            ):
+                gateway.sample(
+                    0.1,
+                    exact_requested_degrees=self.follower.values.copy(),
+                    setup_elbow_tracking_error_limit_degrees=12.0,
+                )
+        finally:
+            gateway.close()
+
+        self.leader = FakeLeader(np.zeros(6, dtype=np.float64))
+        self.follower = FakeFollower(
+            np.asarray([5, 4, 3, 2, 1, 5], dtype=np.float64)
+        )
+        self.leader.values[:] = self.follower.values
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            configure_devices=False,
+            sleep=lambda seconds: None,
+        )
+        try:
+            gateway.open_live_anchored_setup()
+            sample = gateway.sample(
+                0.1,
+                exact_requested_degrees=self.follower.values.copy(),
+                setup_elbow_tracking_error_limit_degrees=12.0,
+            )
+            self.assertEqual(sample["tracking_error_limits"][2], 12.0)
+            self.assertTrue(sample["precompiled_exact_action"])
+        finally:
+            gateway.close()
+
     def test_live_anchor_rejects_unstable_settle(self) -> None:
         self.leader.values[:] = self.follower.values
 

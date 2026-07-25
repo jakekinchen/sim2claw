@@ -27,7 +27,6 @@ BODY_COMMAND_RATE_LIMIT_DEG_S = 60.0
 WRIST_ROLL_COMMAND_RATE_LIMIT_DEG_S = 90.0
 GRIPPER_COMMAND_RATE_LIMIT_S = 100.0
 BODY_TRACKING_ERROR_LIMIT_DEG = 6.0
-SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG = 7.0
 SHOULDER_LIFT_TRACKING_ERROR_LIMIT_DEG = 8.0
 WRIST_ROLL_TRACKING_ERROR_LIMIT_DEG = 8.0
 GRIPPER_TRACKING_ERROR_LIMIT = 12.0
@@ -48,6 +47,9 @@ MIN_PROGRESS_DEG = 0.5
 # the recorder sample rate no longer changes the physical fault threshold.
 MAX_CONSECUTIVE_STALL_SAMPLES = 100
 BODY_REGISTRATION_OFFSET_LIMIT_DEG = 12.0
+SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG = (
+    BODY_REGISTRATION_OFFSET_LIMIT_DEG
+)
 GRIPPER_REGISTRATION_OFFSET_LIMIT = 10.0
 SYNC_BODY_DELTA_LIMIT_DEG = 20.0
 SYNC_GRIPPER_DELTA_LIMIT = 20.0
@@ -931,10 +933,10 @@ class SO101PhysicalGateway:
                 not self.live_anchored_setup_only
                 or not exact_precompiled
                 or setup_elbow_tracking_error_limit_degrees
-                != SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG
+                not in {7.0, SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG}
             ):
                 raise PhysicalGatewayError(
-                    "The 7 degree elbow tracking envelope is restricted to "
+                    "The 7 or 12 degree elbow tracking envelope is restricted to "
                     "exact live-anchored setup-only samples."
                 )
         elbow_tracking_limit = (

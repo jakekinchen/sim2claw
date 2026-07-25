@@ -77,6 +77,7 @@ def _preflight() -> dict[str, object]:
 class _Gateway:
     def __init__(self, *, fail_at: int | None = None) -> None:
         self.actions: list[np.ndarray] = []
+        self.setup_elbow_limits: list[float | None] = []
         self.closed = False
         self.fail_at = fail_at
 
@@ -99,6 +100,9 @@ class _Gateway:
     ) -> dict[str, object]:
         if self.fail_at is not None and len(self.actions) == self.fail_at:
             raise RuntimeError("fixture bus failure")
+        self.setup_elbow_limits.append(
+            setup_elbow_tracking_error_limit_degrees
+        )
         action = np.asarray(exact_requested_degrees, dtype=np.float64).copy()
         self.actions.append(action)
         return {
@@ -291,6 +295,10 @@ def test_setup_only_seven_degree_elbow_envelope_and_stationary_capture(
     assert trajectory["setup_tracking_override_applied"] is True
     assert trajectory["target_hold_sample_count"] == 4
     assert trajectory["stationary_capture_sample_count"] == 6
+    assert trajectory["target_hold_effective_command_seconds"] == 0.1
+    assert trajectory["target_hold_maximum_seconds"] == 2.0
+    assert trajectory["stationary_capture_effective_command_seconds"] == 0.15
+    assert trajectory["stationary_capture_maximum_seconds"] == 4.0
     assert trajectory["sample_count"] == len(gateway.actions)
     assert (
         trajectory["action_sha256"]
@@ -321,15 +329,97 @@ def test_setup_only_seven_degree_elbow_envelope_and_stationary_capture(
     assert gateway.closed
 
 
-def test_setup_elbow_envelope_rejects_any_value_other_than_six_or_seven(
+def test_twelve_degree_elbow_envelope_is_bound_to_setup_samples(
+    tmp_path: Path,
+) -> None:
+    route, manifest = _inputs(
+        tmp_path,
+        elbow_tracking_limit_degrees=12.0,
+    )
+    gateway = _Gateway()
+
+    receipt = execute_live_anchored_camera_reposition(
+        route_path=route,
+        candidate_manifest_path=manifest,
+        output_root=tmp_path / "output",
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda identity: gateway,
+        preview_fn=_preview,
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+
+    assert receipt["trajectory"]["setup_elbow_tracking_error_limit_degrees"] == 12.0
+    assert set(gateway.setup_elbow_limits) == {12.0}
+
+
+def test_setup_elbow_envelope_rejects_other_values(
     tmp_path: Path,
 ) -> None:
     route, manifest = _inputs(tmp_path, elbow_tracking_limit_degrees=7.1)
 
     with pytest.raises(
         LiveAnchoredCameraRepositionError,
-        match="exactly 6.0 or 7.0",
+        match="exactly 6.0, 7.0, or 12.0",
     ):
+        execute_live_anchored_camera_reposition(
+            route_path=route,
+            candidate_manifest_path=manifest,
+            output_root=tmp_path / "output",
+            operator_acknowledged=True,
+            preflight_fn=_preflight,
+            gateway_factory=lambda identity: _Gateway(),
+            preview_fn=_preview,
+        )
+
+
+def test_route_rejects_duplicate_duration_keys(tmp_path: Path) -> None:
+    route, manifest = _inputs(tmp_path)
+    route.write_text(
+        '{"schema_version":"sim2claw.wrist_view_reposition_route.v1",'
+        '"route_id":"duplicate-route",'
+        f'"stage_targets_degrees":[{TARGET.tolist()}],'
+        '"setup_target_hold_seconds":2.0,'
+        '"setup_target_hold_seconds":1.0}',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        LiveAnchoredCameraRepositionError,
+        match="duplicate key: setup_target_hold_seconds",
+    ):
+        execute_live_anchored_camera_reposition(
+            route_path=route,
+            candidate_manifest_path=manifest,
+            output_root=tmp_path / "output",
+            operator_acknowledged=True,
+            preflight_fn=_preflight,
+            gateway_factory=lambda identity: _Gateway(),
+            preview_fn=_preview,
+        )
+
+
+@pytest.mark.parametrize(
+    ("hold_seconds", "capture_seconds", "message"),
+    [
+        (2.01, 0.0, "setup target hold seconds cannot exceed 2.0"),
+        (0.0, 4.01, "stationary capture seconds cannot exceed 4.0"),
+    ],
+)
+def test_route_cannot_expand_stationary_phase_maxima(
+    tmp_path: Path,
+    hold_seconds: float,
+    capture_seconds: float,
+    message: str,
+) -> None:
+    route, manifest = _inputs(
+        tmp_path,
+        target_hold_seconds=hold_seconds,
+        stationary_capture_seconds=capture_seconds,
+    )
+
+    with pytest.raises(LiveAnchoredCameraRepositionError, match=message):
         execute_live_anchored_camera_reposition(
             route_path=route,
             candidate_manifest_path=manifest,
