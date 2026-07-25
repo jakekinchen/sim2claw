@@ -1302,3 +1302,16 @@ goal. External provider campaigns and spending remain separately gated.
   common-session degraded verdict, Twin `0/6`, task `0/11`, and all motion,
   metric-depth, synchronization, calibration, training, and promotion limits
   remain unchanged.
+- 2026-07-24T20:41:03-05:00 — Consolidated evaluator commit `e32553e` onto
+  the recorder branch as `1eabc49`; its focused tests passed 13/13. The prior
+  empty-manifest result remains `calibration_dataset_not_ready` with zero
+  frames, zero fits, and no receipt. Canonical-only exhaustion/control files
+  were inspected read-only and not copied because they add no material
+  capability. One post-repair stationary camera-only production recording
+  then passed with no retry or robot gateway: 377/67 observed C922/D405
+  callbacks, 355/60 written source frames, matching browser counts, completed
+  writers, zero drops/backpressure, zero source gaps, and ~12-second
+  timelines. The D405 PTS-zero sentinel remains provenance-only. Studio read
+  a two-feed hash-bound receipt projection. Recorder stationary capability is
+  closed; Twin remains 0/6 and task score 0/11. Geometry waits on a physically
+  measured printed grid, fixed focus, and 18 diverse exact-mode views.

@@ -36,7 +36,7 @@ completed independently attributable writers.
 
 ## One bounded stationary verification
 
-The only camera session used by this task wrote ignored evidence under
+The initial recorder implementation session wrote ignored evidence under
 `runs/native_dual_camera_verification/20260724-production-path`. It constructed
 no robot gateway and issued no robot command.
 
@@ -76,9 +76,74 @@ frames over 10.6 seconds:
 - browser derivative:
   `e136e3bab825c036b118439325260c1c5268ce0a4b6f2324033830a77c6d362f`
 
-The exact remaining step is one camera-only production recording through the
-post-warm-up implementation, confirming both native and browser outputs from
-the current code. This task's one-session limit is exhausted.
+## Post-repair production-path confirmation
+
+One later stationary camera-only attempt exercised the committed warm-up
+repair directly through `NativeDualCameraRecorder`. Exact macOS camera
+identity matched the frozen C922 and D405 names, model IDs, and unique IDs;
+the loopback Studio recorder was idle and no competing capture process was
+present. The run constructed no robot gateway, issued no robot command, and
+used no retry.
+
+| Fact | C922 | D405 |
+| --- | ---: | ---: |
+| observed callbacks | 377 | 67 |
+| warm-up callbacks retained but not written | 22 | 7 |
+| source / browser frames | 355 / 355 | 60 / 60 |
+| source duration | 11.833333 s | 12.000000 s |
+| maximum written PTS interval | 0.034033 s | 0.200000 s |
+| inferred missing intervals / large gaps | 0 / 0 | 0 / 0 |
+| Apple drops / writer backpressure | 0 / 0 | 0 / 0 |
+
+The D405 source-PTS `0` sentinel is present in the callback ledger and absent
+from the writer. Both written streams are strictly increasing, both source
+containers and browser derivatives finalized, and no timeline exceeds 12
+seconds. A temporary standard receipt projection over the sealed files was
+accepted by the existing Studio catalog as the separate
+`overhead_workspace` and `wrist_gripper_upward` feeds with motion and physical
+authority false.
+
+- Generated evidence:
+  `runs/native_dual_camera_verification/20260724-post-repair-production-path`
+- Native report:
+  `0fba6b3e2f426649bb05dd111c12344d24e961e316a619ac9e8621b8e846fcf0`
+- Callback ledger:
+  `662fcbf4aa9be9c38ea2f4bd44635af7632ae4c8cd37939aa259ecd37df03e77`
+- C922 source / browser:
+  `c819601643d4566a6a31edb9c23fade414e73dffbfd95cf28b3fdd70d53a186a`
+  / `155a94a94b7cd520bc79b9473c78489685aca20c076eb1e43cf7c1b0e16a1c6c`
+- D405 source / browser:
+  `2c0b1b983c948a47a6d7f807cf49043bf87aabc7ecdeab82380cd132e3ea2e91`
+  / `2988f6e048c79a06f1d0e1bab006c311110c8c2ce78a9c9304db692891fe947c`
+- Acceptance:
+  `f4e219265b2e973ec112814d77a6255165086d71cb18a6db4b7703a7ce0465aa`
+- Receipt projection:
+  `bbef833d50e3a60dbb00a2f34d884282f208cb948add4f48c1ab7946bbbe44b7`
+
+The stationary production recorder capability is verified. Motion reliability
+remains blocked on the physical D405 cable/connector/strain-relief repair.
+
+## Next geometry inputs
+
+The repository contains the nominal checkerboard SVG, but the input manifest
+still has no printed-grid measurement receipt, focus value, or frames.
+Therefore metric fitting is not presently admissible. Human action is required:
+
+1. Print the 9×6-inner-corner target at fixed scale and mount it flat.
+2. Measure the actual square pitch and full grid width/height in both axes;
+   record the instrument, units, measurement points, and uncertainty. Do not
+   substitute the nominal 20 mm and 200×140 mm design values.
+3. Disable or otherwise hold C922 focus constant and record the observable
+   focus setting used for every frame.
+4. Capture at least 18 distinct 640×480 `420v` exact-mode frames with all 54
+   corners detected: all five centroid regions, three board-scale bins, at
+   least four tilted views, at least three near-frontal views, and all three
+   orientation bins.
+5. Freeze the accepted frames into 12 fit, 3 validation, and 3 held-out views
+   before any model fit.
+
+The exhausted empty-manifest evaluation was not rerun and no calibration model
+was fit.
 
 ## Focused verification
 
@@ -87,6 +152,10 @@ the current code. This task's one-session limit is exhausted.
   native recorder, teleop recording, Studio catalog/live workspace, container
   timing, and legacy diagnostic video.
 - New-module Ruff check passed.
+- Consolidated calibration/recorder/Studio focused bracket:
+  `52 passed`.
+- Evaluator-owned exact-mode calibration focused bracket:
+  `13 passed`.
 
 ## Proof boundary
 

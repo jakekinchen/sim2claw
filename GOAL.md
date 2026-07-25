@@ -204,21 +204,34 @@ input/output binding, per-stream writer completion, zero Apple drops, and zero
 writer backpressure. It retains separate source containers, callback/host
 timestamp lineage, hashes, frame counts, and browser derivatives.
 
-One bounded stationary production-path capture opened no robot gateway and
-made no robot command. The native session delivered and wrote `323` C922 plus
-`56` D405 callbacks with zero Apple drops or writer backpressure; both writers
-finalized, and the after-stop indices again reset while all operational format
-properties remained exact. That attempt exposed the D405's known initial
-source-PTS `0` sentinel as a writer-timeline defect before the browser
-derivative completed. The committed writer now keeps the sentinel and the
-remainder of the visible warm-up in the callback ledger but excludes them from
-both source containers. Offline replay of the captured post-warm-up D405 frames
-produced a `53 / 53` source/browser derivative over `10.6 s`. Because the sole
-allowed stationary camera session preceded that repair, one post-repair
-camera-only production recording remains the exact hardware verification step.
-This is recorder infrastructure, not motion reliability, exposure
-synchronization, metric depth, calibration, task success, or physical
-authority.
+The first bounded stationary production-path capture opened no robot gateway
+and made no robot command. It delivered `323` C922 plus `56` D405 callbacks
+with zero Apple drops or writer backpressure and completed both native writers,
+but exposed the D405's initial source-PTS `0` sentinel as a writer-timeline
+defect. The committed repair retains that sentinel and all warm-up callbacks in
+the ledger while excluding the first source-PTS second from both writers.
+
+One post-repair stationary camera-only production recording now closes the
+recorder verification step. The exact common session observed `377` C922 and
+`67` D405 callbacks, excluded `22` and `7` warm-up callbacks, and finalized
+`355 / 355` C922 plus `60 / 60` D405 source/browser frames. Both written
+timelines were strictly increasing with zero inferred missing intervals, zero
+large gaps, zero Apple drops, and zero writer backpressure. The D405 sentinel
+remained visible in provenance but was not written; source durations were
+`11.833333 s` and `12.000000 s`. An offline receipt projection was accepted by
+the existing Studio catalog as two hash-verified feeds. No robot gateway,
+motion, retry, metric depth, exposure synchronization, calibration, task
+success, or physical authority was involved.
+
+The evaluator-owned exact-mode C922 calibration implementation is consolidated
+at `1eabc49`. Its already-consumed offline evaluation remains honestly
+`calibration_dataset_not_ready`: zero declared or accepted frames, zero model
+fits, and no calibration receipt. The nominal `20 mm` square and
+`200 × 140 mm` grid values are not metric authority. Calibration cannot begin
+until a human supplies a physically measured printed target, one observable
+constant focus setting, and 18 distinct exact-mode views frozen into `12 / 3 /
+3` fit/validation/held-out splits with the preregistered position, scale, tilt,
+and orientation diversity.
 
 The isolated-host inventory is now terminal and exhausted. The sole strict
 metadata connection reached `silicon.local` on macOS `26.3.1` with no stderr
