@@ -548,6 +548,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         help="bounded candidate override in name=value form; repeat as needed",
     )
+    replay_eligibility = subparsers.add_parser(
+        "replay-eligibility-audit",
+        help="audit one manifest for exact-replay eligibility without replaying it",
+    )
+    replay_eligibility.add_argument("--manifest", type=Path, required=True)
+    replay_eligibility.add_argument("--output", type=Path, required=True)
 
     sysid_capability = subparsers.add_parser(
         "sysid-capability",
@@ -1543,6 +1549,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
+    if args.command == "replay-eligibility-audit":
+        from .replay_eligibility import audit_and_write_exact_replay_manifest
+
+        report = audit_and_write_exact_replay_manifest(
+            args.manifest,
+            args.output,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["exact_replay_eligible"] else 1
     if args.command == "sysid-capability":
         from .system_identification import (
             mujoco_sysid_capability,

@@ -1,6 +1,6 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-24T22:05:05-05:00",
+  "updated_at": "2026-07-24T22:10:04-05:00",
   "active_campaign": "current_100mm_twin_fidelity_closure",
   "current_milestone": "NATIVE_DUAL_CAMERA_PRODUCTION_RECORDER_VERIFIED_STATIONARY_GEOMETRY_INPUTS_REQUIRE_HUMAN",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
@@ -3755,6 +3755,34 @@
     "focused_tests_passed": 58,
     "focused_subtests_passed": 2,
     "main_harness_recommendation": "no_go_keep_optional_until_alpha_api_and_step_provenance_boundary_stabilize"
+  },
+  "exact_replay_eligibility_audit": {
+    "status": "offline_audit_verified_physical_catalog_unchanged",
+    "implementation": "src/sim2claw/replay_eligibility.py",
+    "command": "sim2claw replay-eligibility-audit",
+    "large_foundation_branch_audited_read_only": "codex/recorded-replay-sysid-foundation",
+    "large_foundation_branch_cherry_picked": false,
+    "synthetic_fixture": "configs/replay/exact_replay_synthetic_fixture.json",
+    "synthetic_fixture_exact_replay_eligible": true,
+    "generated_report": "runs/exact_replay_eligibility/p2-synthetic.json",
+    "generated_report_sha256": "3f27c16b581c0971d84bbeaf1e623986380974b723e421687ff7d2a52819a1bd",
+    "required_checks": [
+      "canonical_joint_order",
+      "exact_units",
+      "identity_sign_scale_zero_transform",
+      "measured_initial_position_and_velocity",
+      "strictly_monotonic_timestamps",
+      "float64_requested_and_applied_action_hashes",
+      "requested_applied_exact_identity",
+      "no_clipping_ik_offset_suffix_or_assistance"
+    ],
+    "physical_catalog_eligible_episodes": 0,
+    "physical_catalog_total_episodes": 18,
+    "physical_catalog_reclassified": false,
+    "simulator_replay_executed": false,
+    "evaluator_admission": false,
+    "physical_authority": false,
+    "task_success_claimed": false
   },
   "sim2real_transfer_queue": {
     "status": "active_fail_closed",

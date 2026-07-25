@@ -77,6 +77,21 @@ This writes an ignored upstream EvalLog from a deterministic replay fixture. It
 opens no camera, simulator, serial device, robot gateway, or motion authority;
 the result is compatibility proof, not evaluator admission or task success.
 
+Audit a manifest for exact-replay eligibility without opening MuJoCo or any
+hardware:
+
+```bash
+uv run sim2claw replay-eligibility-audit \
+  --manifest configs/replay/exact_replay_synthetic_fixture.json \
+  --output runs/exact_replay_eligibility/synthetic_fixture.json
+```
+
+The concise ignored report checks canonical joint order and units, identity
+transform, measured initial position and velocity, monotonic timestamps,
+float64 action hashes, requested/applied identity, and the absence of clipping,
+IK, offsets, suffixes, or assistance. It does not execute a replay or admit any
+physical episode; the canonical physical set remains 0/18.
+
 ## Reproduce the demo
 
 ### 1. Run the deterministic simulation probe
