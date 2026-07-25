@@ -356,6 +356,8 @@ def execute_live_anchored_camera_reposition(
     executed_actions: list[np.ndarray] = []
     executed_movement_samples = 0
     observed_pose_stop: dict[str, Any] | None = None
+    terminal_hold_started_monotonic: float | None = None
+    terminal_hold_ended_monotonic: float | None = None
 
     try:
         opened = gateway.open_live_anchored_setup()
@@ -528,6 +530,7 @@ def execute_live_anchored_camera_reposition(
         hold_command = executed_actions[-1].copy()
         with telemetry_path.open("a", encoding="utf-8") as telemetry:
             hold_started = clock_fn()
+            terminal_hold_started_monotonic = hold_started
             for phase_index in range(hold_sample_count):
                 send_sample(
                     hold_command,
@@ -540,6 +543,7 @@ def execute_live_anchored_camera_reposition(
                 delay = hold_started + target_hold_seconds - clock_fn()
                 if delay > 0.0:
                     sleep_fn(delay)
+            terminal_hold_ended_monotonic = clock_fn()
             if stationary_capture_seconds > 0.0:
                 recorder = recorder_factory(output_root / "wrist_d405.mkv")
                 capture_start_report = recorder.start()
@@ -759,6 +763,27 @@ def execute_live_anchored_camera_reposition(
             "executed_path_is_safe_prefix_plus_exact_terminal_hold": True,
             "sim_gap_evidence": False,
             "evaluator_admission": False,
+        },
+        "terminal_hold_monotonic_interval": {
+            "start": terminal_hold_started_monotonic,
+            "end": terminal_hold_ended_monotonic,
+            "duration_seconds": (
+                terminal_hold_ended_monotonic
+                - terminal_hold_started_monotonic
+                if terminal_hold_started_monotonic is not None
+                and terminal_hold_ended_monotonic is not None
+                else None
+            ),
+            "clock": "time.monotonic",
+            "exact_terminal_command_sha256": (
+                observed_pose_stop["exact_command_sha256"]
+                if observed_pose_stop is not None
+                else (
+                    action_sha256(executed_actions[-1][None, :])
+                    if executed_actions
+                    else None
+                )
+            ),
         },
         "stationary_d405_capture": {
             "requested": stationary_capture_seconds > 0.0,

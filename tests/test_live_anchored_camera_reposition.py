@@ -460,6 +460,12 @@ def test_observed_elbow_terminates_safe_prefix_and_holds_last_command(
     assert trajectory["action_sha256"] != trajectory["executed_action_sha256"]
     terminal_command = np.asarray(stop["stop"]["exact_command_degrees"])
     np.testing.assert_array_equal(gateway.actions[-1], terminal_command)
+    hold = receipt["terminal_hold_monotonic_interval"]
+    assert hold["start"] == 0.0
+    assert hold["end"] == 0.0
+    assert hold["exact_terminal_command_sha256"] == stop["stop"][
+        "exact_command_sha256"
+    ]
     assert receipt["evidence_limits"]["sim_gap_evidence"] is False
     assert gateway.closed
 
