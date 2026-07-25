@@ -394,7 +394,7 @@ def execute_live_anchored_camera_reposition(
         )
         movement_sample_count = int(movement_actions.shape[0])
         stationary_actions = np.repeat(
-            target[None, :],
+            movement_actions[-1][None, :],
             hold_sample_count + capture_sample_count,
             axis=0,
         )

@@ -310,6 +310,7 @@ def test_route_can_reduce_setup_slew_without_widening_default(
         trajectory["action_sha256"]
         == receipt["cpu_preview"]["stages"][0]["exact_physical_action_sha256"]
     )
+    assert trajectory["executed_action_sha256"] == trajectory["action_sha256"]
 
 
 def test_route_cannot_widen_setup_slew_above_default(tmp_path: Path) -> None:
@@ -376,6 +377,7 @@ def test_setup_only_seven_degree_elbow_envelope_and_stationary_capture(
         trajectory["action_sha256"]
         == receipt["cpu_preview"]["stages"][0]["exact_physical_action_sha256"]
     )
+    assert trajectory["executed_action_sha256"] == trajectory["action_sha256"]
     assert all(
         row["setup_phase"] == "stationary_capture"
         for row in [
@@ -399,6 +401,53 @@ def test_setup_only_seven_degree_elbow_envelope_and_stationary_capture(
     }
     assert recorders[0].finished
     assert gateway.closed
+
+
+def test_terminal_hold_bytes_match_preview_for_decimal_live_target(
+    tmp_path: Path,
+) -> None:
+    route, manifest = _inputs(tmp_path, target_hold_seconds=0.1)
+    anchor = np.asarray(
+        [-5.626373626373627, -56.967032967032964, 101.58241758241758,
+         -49.89010989010989, -75.03296703296704, 3.0878859857482186]
+    )
+    target = np.asarray(
+        [6.3736, -57.0549, 91.4945, -41.978, -75.033, 3.0879]
+    )
+    route_value = json.loads(route.read_text(encoding="utf-8"))
+    route_value["stage_targets_degrees"] = [target.tolist()]
+    _write(route, route_value)
+    gateway = _Gateway(raw_anchor=anchor)
+
+    def preview(actions: list[np.ndarray], path: Path) -> dict[str, object]:
+        assert path.is_file()
+        assert np.array_equal(actions[0][-1], actions[0][-2])
+        return {
+            "no_new_or_worsened_kinematic_contact": True,
+            "external_contact_pairs": [],
+            "stages": [
+                {
+                    "exact_physical_action_sha256": action_sha256(actions[0]),
+                }
+            ],
+        }
+
+    receipt = execute_live_anchored_camera_reposition(
+        route_path=route,
+        candidate_manifest_path=manifest,
+        output_root=tmp_path / "output",
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda identity: gateway,
+        preview_fn=preview,
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+
+    assert (
+        receipt["trajectory"]["executed_action_sha256"]
+        == receipt["trajectory"]["action_sha256"]
+    )
 
 
 def test_twenty_degree_elbow_envelope_is_bound_to_setup_samples(
