@@ -34,10 +34,17 @@ from .video_timing import VideoTimingError, probe_video_container_timing
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SOURCE_PATH = REPO_ROOT / "tools/macos/AVFoundationDualCameraRecorder.swift"
-PROVEN_CONTRACT_PATH = (
+SEALED_OBSERVATION_CONTRACT_PATH = (
     REPO_ROOT
     / "configs/evaluations/avfoundation_dual_camera_common_session_v1.json"
 )
+ACTIVE_RUNTIME_CONTRACT_PATH = (
+    REPO_ROOT
+    / "configs/evaluations/avfoundation_dual_camera_runtime_binding_v2.json"
+)
+# Backwards-compatible public name. Production capture now uses the explicit
+# live runtime binding; the sealed observation contract remains immutable.
+PROVEN_CONTRACT_PATH = ACTIVE_RUNTIME_CONTRACT_PATH
 READY_SCHEMA = "sim2claw.native_dual_camera_recorder_ready.v1"
 REPORT_SCHEMA = "sim2claw.native_dual_camera_recorder_report.v1"
 RUNTIME_SCHEMA = "sim2claw.native_dual_camera_recorder_runtime.v1"

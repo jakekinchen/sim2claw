@@ -1,0 +1,29 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_link_pose_shoulder_sag_recovery_20260726_v1",
+  "capture_during_motion": false,
+  "setup_recovery_command_anchor_snap_limit_degrees": 6.0,
+  "reviewed_anchor_degrees": [
+    3.1648351648351647,
+    -111.91208791208791,
+    100.87912087912088,
+    -94.9010989010989,
+    -71.42857142857143,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [4.0, -90.0, 95.0, -95.0, -71.0, 3.0878859857482186]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "source_pose": "Fresh torque-off follower read after the first admitted calibration pose sagged under gravity.",
+    "command_anchor_rule": "Clip only the 5.274725 degree shoulder-lift underrun to its calibrated minimum. The explicit setup-only recovery limit is 6 degrees; every other channel is already in range.",
+    "target_selection": "Return to the already CPU-previewed first calibration target with wrist flex held at -95 degrees so the pre-existing wrist proxy contact does not reappear.",
+    "evidence_limits": {
+      "setup_only": true,
+      "sim_gap_evidence": false,
+      "policy_evidence": false,
+      "task_authority": false
+    }
+  }
+}

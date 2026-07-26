@@ -1,0 +1,39 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_link_pose_calibration_pose_c_20260726_v5",
+  "capture_during_motion": true,
+  "setup_recovery_command_anchor_snap_limit_degrees": 10.0,
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "reviewed_anchor_degrees": [
+    14.065934065934066,
+    -115.86813186813187,
+    74.85714285714286,
+    -97.89010989010988,
+    -40.747252747252745,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [15.0, -75.0, 75.0, -95.0, -40.0, 3.0878859857482186]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "follower_only_static_pi_link_pose_calibration",
+    "source_pose": "Fresh torque-off follower read after pose C reached 3.241758 degrees of the shoulder target and stopped before capture.",
+    "command_anchor_rule": "Apply the separately reviewed 9.230769 degree shoulder-lift clip before torque enable.",
+    "target_selection": "The unchanged pose C target is admitted with a 4 degree shoulder hold-entry tolerance while retaining the original 3 degree final tolerance.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

@@ -456,6 +456,7 @@ class SO101PhysicalGateway:
         *,
         enable_motion: bool,
         paired_pose_confirmed: bool = False,
+        setup_command_anchor_degrees: np.ndarray | None = None,
     ) -> dict[str, Any]:
         self._connect_torque_off()
         # Startup pose reads are motion-critical too.  Route them through the
@@ -495,13 +496,34 @@ class SO101PhysicalGateway:
                         follower=follower,
                     ),
                 )
-            # Set the goal to the follower's current position before torque is
-            # enabled. This intentionally commands no leader-to-follower sweep.
-            self.zero_displacement_arm_target = follower.copy()
-            self.follower.send_action(_position_dict(follower))
+            hold_target = follower.copy()
+            if setup_command_anchor_degrees is not None:
+                hold_target = np.asarray(
+                    setup_command_anchor_degrees, dtype=np.float64
+                )
+                if (
+                    hold_target.shape != (6,)
+                    or not np.all(np.isfinite(hold_target))
+                    or np.any(hold_target < self.lower_limits)
+                    or np.any(hold_target > self.upper_limits)
+                ):
+                    raise PhysicalGatewayError(
+                        "Reviewed setup command anchor is invalid or out of range."
+                    )
+            # Normal execution holds the observed follower pose. Explicit
+            # setup-recovery execution instead uses its separately reviewed,
+            # in-range clipped anchor before torque enable.
+            self.zero_displacement_arm_target = hold_target.copy()
+            self.follower.send_action(_position_dict(hold_target))
             self.follower.bus.enable_torque(num_retry=BUS_READ_RETRIES)
             self.torque_enabled = True
-            self.sleep(HOLD_SETTLE_SECONDS)
+            if setup_command_anchor_degrees is not None:
+                self.follower.send_action(_position_dict(hold_target))
+            self.sleep(
+                0.35
+                if setup_command_anchor_degrees is not None
+                else HOLD_SETTLE_SECONDS
+            )
             actual = self._motion_read(
                 "post-hold follower position", self.follower.get_observation
             )
@@ -520,7 +542,7 @@ class SO101PhysicalGateway:
                         follower=actual,
                     ),
                 )
-            hold_residual = follower - actual
+            hold_residual = hold_target - actual
             hold_residual[4] = shortest_delta_degrees(
                 float(follower[4]),
                 float(actual[4]),
@@ -540,7 +562,7 @@ class SO101PhysicalGateway:
                         "post_hold_follower_drift",
                         leader=registered_leader,
                         follower=actual,
-                        follower_hold_start_degrees=follower.tolist(),
+                        follower_hold_start_degrees=hold_target.tolist(),
                         follower_hold_residual_degrees=hold_residual.tolist(),
                     ),
                 )

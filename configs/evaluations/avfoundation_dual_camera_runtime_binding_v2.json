@@ -1,0 +1,48 @@
+{
+  "schema_version": "sim2claw.avfoundation_dual_camera_common_session_contract.v1",
+  "contract_id": "current-100mm-avfoundation-dual-camera-runtime-binding-20260726-v2",
+  "status": "live_runtime_identity_binding",
+  "purpose": "Bind the production common-session recorder to the currently enumerated physical D405 USB topology while preserving the sealed v1 observation contract unchanged.",
+  "lineage": {
+    "sealed_contract": "configs/evaluations/avfoundation_dual_camera_common_session_v1.json",
+    "identity_change": "D405 macOS USB-topology unique ID only",
+    "same_localized_name_required": true,
+    "same_model_id_required": true,
+    "same_exact_format_required": true
+  },
+  "devices": {
+    "d405": {
+      "exact_localized_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+      "exact_unique_id": "0x812000080860b5b",
+      "exact_model_id": "UVC Camera VendorID_32902 ProductID_2907",
+      "format_index": 6,
+      "frame_rate_range_index": 4,
+      "width": 424,
+      "height": 240,
+      "media_subtype_fourcc": "yuvs",
+      "supported_fps": 5.0,
+      "frame_duration_seconds": 0.2
+    },
+    "c922": {
+      "exact_localized_name": "C922 Pro Stream Webcam",
+      "exact_unique_id": "0x8310000046d085c",
+      "exact_model_id": "UVC Camera VendorID_1133 ProductID_2140",
+      "format_index": 16,
+      "frame_rate_range_index": 0,
+      "width": 640,
+      "height": 480,
+      "media_subtype_fourcc": "420v",
+      "supported_fps": 30.00003000003,
+      "frame_duration_seconds": 0.03333330000003333
+    }
+  },
+  "claim_limits": {
+    "historical_v1_receipt_rewritten": false,
+    "camera_exposure_synchronization": false,
+    "metric_depth": false,
+    "camera_extrinsics": false,
+    "robot_motion_authority": false,
+    "policy_evidence": false,
+    "task_evidence": false
+  }
+}

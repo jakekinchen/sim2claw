@@ -7,9 +7,11 @@ from pathlib import Path
 import pytest
 
 from sim2claw.native_dual_camera import (
+    ACTIVE_RUNTIME_CONTRACT_PATH,
     PROVEN_CONTRACT_PATH,
     READY_SCHEMA,
     REPORT_SCHEMA,
+    SEALED_OBSERVATION_CONTRACT_PATH,
     NativeDualCameraRecorder,
     validate_native_report,
 )
@@ -80,6 +82,28 @@ def _report(contract: dict[str, object]) -> dict[str, object]:
             for role in ("c922", "d405")
         ],
     }
+
+
+def test_runtime_binding_preserves_sealed_contract_and_updates_only_topology() -> None:
+    sealed = json.loads(SEALED_OBSERVATION_CONTRACT_PATH.read_text(encoding="utf-8"))
+    active = json.loads(ACTIVE_RUNTIME_CONTRACT_PATH.read_text(encoding="utf-8"))
+
+    assert PROVEN_CONTRACT_PATH == ACTIVE_RUNTIME_CONTRACT_PATH
+    assert sealed["devices"]["d405"]["exact_unique_id"] == "0x20000080860b5b"
+    assert active["devices"]["d405"]["exact_unique_id"] == "0x812000080860b5b"
+    for role in ("d405", "c922"):
+        for field in (
+            "exact_localized_name",
+            "exact_model_id",
+            "format_index",
+            "frame_rate_range_index",
+            "width",
+            "height",
+            "media_subtype_fourcc",
+            "supported_fps",
+            "frame_duration_seconds",
+        ):
+            assert active["devices"][role][field] == sealed["devices"][role][field]
 
 
 def test_post_stop_object_identity_reset_is_not_an_operational_gate() -> None:

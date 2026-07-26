@@ -280,7 +280,7 @@ def test_compile_allows_only_explicit_bounded_setup_recovery_snap(
     packet_path = tmp_path / "packet.json"
     _candidate_manifest(manifest_path)
     recovery_anchor = ROUTE_ANCHOR.copy()
-    recovery_anchor[1] = LOWER[1] - 0.8
+    recovery_anchor[1] = LOWER[1] - 5.5
     recovery_anchor[3] = LOWER[3] - 2.4
     recovery_target = recovery_anchor.copy()
     recovery_target[1] = -60.0
@@ -290,7 +290,7 @@ def test_compile_allows_only_explicit_bounded_setup_recovery_snap(
         {
             "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
             "route_id": "fixture-recovery-route",
-            "setup_recovery_command_anchor_snap_limit_degrees": 3.0,
+            "setup_recovery_command_anchor_snap_limit_degrees": 6.0,
             "reviewed_anchor_degrees": recovery_anchor.tolist(),
             "stage_targets_degrees": [recovery_target.tolist()],
             "review_basis": {"physical_scope": "setup_recovery_only"},
@@ -318,7 +318,7 @@ def test_compile_allows_only_explicit_bounded_setup_recovery_snap(
 
     recovery = packet["setup_recovery_command_anchor"]
     assert recovery["enabled"] is True
-    assert recovery["snap_delta_degrees"][1] == pytest.approx(0.8)
+    assert recovery["snap_delta_degrees"][1] == pytest.approx(5.5)
     assert recovery["snap_delta_degrees"][3] == pytest.approx(2.4)
     assert packet["stages"][0]["command_anchor_degrees"] == packet[
         "command_anchor_degrees"

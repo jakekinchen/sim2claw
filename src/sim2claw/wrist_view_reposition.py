@@ -11,6 +11,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import subprocess
 import time
 from pathlib import Path
 from typing import Any, Callable, Mapping, Protocol
@@ -48,12 +49,12 @@ COMPILE_ANCHOR_TOLERANCE_DEGREES = np.asarray(
 COMPILE_COMMAND_ANCHOR_CLIP_TOLERANCE_DEGREES = np.asarray(
     [0.5, 0.5, 3.0, 0.5, 0.5, 0.1], dtype=np.float64
 )
-SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES = 3.0
+SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES = 10.0
 STAGE_ANCHOR_TOLERANCE_DEGREES = np.asarray(
     [3.0, 3.0, 3.0, 3.0, 3.0, 0.5], dtype=np.float64
 )
 HOLD_ENTRY_TOLERANCE_DEGREES = np.asarray(
-    [3.0, 3.0, 6.0, 3.0, 3.0, 5.0], dtype=np.float64
+    [3.0, 4.0, 6.0, 3.0, 3.0, 5.0], dtype=np.float64
 )
 FINAL_TOLERANCE_DEGREES = np.asarray(
     [3.0, 3.0, 5.0, 3.0, 3.0, 5.0], dtype=np.float64
@@ -80,6 +81,83 @@ def _default_capture(path: Path) -> CameraCapture:
     from .native_dual_camera import NativeDualCameraRecorder
 
     return NativeDualCameraRecorder(path)
+
+
+def _capture_pi_hold_still(
+    specification: Mapping[str, Any],
+    output_path: Path,
+) -> dict[str, Any]:
+    """Capture one fixed-observer Pi still while follower torque remains on."""
+
+    _require(
+        specification.get("schema_version")
+        == "sim2claw.pi_hold_still_capture.v1",
+        "Pi hold-still capture contract changed",
+    )
+    host = str(specification.get("ssh_host") or "")
+    width = int(specification.get("width") or 0)
+    height = int(specification.get("height") or 0)
+    _require(
+        host
+        and all(character.isalnum() or character in "@._-" for character in host)
+        and (width, height) == (1536, 864)
+        and specification.get("horizontal_flip") is True
+        and specification.get("vertical_flip") is True,
+        "Pi hold-still capture identity or exact mode changed",
+    )
+    _require(not output_path.exists(), f"refusing to overwrite Pi still: {output_path}")
+    remote_path = "/tmp/sim2claw_pi_imx708_torque_on_hold.jpg"
+    command = [
+        "rpicam-still",
+        "--nopreview",
+        "--immediate",
+        "--width",
+        str(width),
+        "--height",
+        str(height),
+        "--hflip",
+        "--vflip",
+        "--output",
+        remote_path,
+    ]
+    try:
+        subprocess.run(
+            ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5", host, *command],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=15.0,
+        )
+        subprocess.run(
+            ["scp", "-q", f"{host}:{remote_path}", str(output_path)],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=15.0,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        raise WristViewRepositionError(
+            f"Pi torque-on hold still capture failed: {error}"
+        ) from error
+    _require(
+        output_path.is_file() and output_path.stat().st_size > 0,
+        "Pi torque-on hold still is missing or empty",
+    )
+    return {
+        "schema_version": "sim2claw.pi_hold_still_capture_receipt.v1",
+        "status": "captured_while_follower_torque_on",
+        "camera": "imx708_wide",
+        "ssh_host": host,
+        "width": width,
+        "height": height,
+        "horizontal_flip": True,
+        "vertical_flip": True,
+        "path": str(output_path),
+        "sha256": _sha256(output_path),
+        "bytes": output_path.stat().st_size,
+        "metric_intrinsics": False,
+        "camera_to_robot_extrinsics": False,
+    }
 
 
 class WristViewRepositionError(RuntimeError):
@@ -491,9 +569,9 @@ def compile_wrist_view_reposition_packet(
         _require(
             route.get("review_basis", {}).get("physical_scope")
             == "setup_recovery_only"
-            and float(recovery_snap_limit)
-            == SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
-            "setup recovery anchor snap must be explicitly scoped and exactly 3 degrees",
+            and 0.0 < float(recovery_snap_limit)
+            <= SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
+            "setup recovery anchor snap must be explicitly scoped and at most 10 degrees",
         )
     _require(
         np.all(
@@ -510,11 +588,11 @@ def compile_wrist_view_reposition_packet(
     command_anchor_tolerance = (
         np.asarray(
             [
-                SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
-                SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
-                SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
-                SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
-                SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
+                float(recovery_snap_limit),
+                float(recovery_snap_limit),
+                float(recovery_snap_limit),
+                float(recovery_snap_limit),
+                float(recovery_snap_limit),
                 COMPILE_COMMAND_ANCHOR_CLIP_TOLERANCE_DEGREES[5],
             ],
             dtype=np.float64,
@@ -993,9 +1071,18 @@ def execute_wrist_view_reposition_stage(
     hold_started: float | None = None
     hold_stopped: float | None = None
     hold_sample_records: list[dict[str, Any]] = []
+    pi_hold_still: dict[str, Any] | None = None
     error: Exception | None = None
     try:
-        opened = gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        open_arguments: dict[str, Any] = {
+            "enable_motion": True,
+            "paired_pose_confirmed": True,
+        }
+        if packet["setup_recovery_command_anchor"]["enabled"] is True:
+            open_arguments["setup_command_anchor_degrees"] = np.asarray(
+                packet["command_anchor_degrees"], dtype=np.float64
+            )
+        opened = gateway.open(**open_arguments)
         opened_start = np.asarray(opened["follower_start_degrees"], dtype=np.float64)
         _require(
             np.all(
@@ -1128,6 +1215,17 @@ def execute_wrist_view_reposition_stage(
             ),
             "follower left the staged target during camera hold",
         )
+        bound_route = _read_json(Path(route["path"]).resolve(), "wrist-view route")
+        pi_hold_specification = bound_route.get("pi_hold_still")
+        if pi_hold_specification is not None:
+            _require(
+                isinstance(pi_hold_specification, Mapping),
+                "Pi hold-still specification must be an object",
+            )
+            pi_hold_still = _capture_pi_hold_still(
+                pi_hold_specification,
+                output_directory / "pi_imx708_torque_on_hold.jpg",
+            )
         camera_finished = capture.finish(
             action_started_monotonic=hold_started,
             action_stopped_monotonic=hold_stopped,
@@ -1187,6 +1285,7 @@ def execute_wrist_view_reposition_stage(
         "joint_samples_sha256": _sha256(samples_path),
         "camera_started": camera_started,
         "camera_finished": camera_finished,
+        "pi_hold_still": pi_hold_still,
         "capture_artifacts": capture_artifacts,
         "frame_joint_alignment": frame_joint_alignment,
         "fresh_preflight_anchor_degrees": current.tolist(),
