@@ -22,6 +22,15 @@ dual-camera recorder is verified only for stationary camera capture. Inspect
 Robots is an optional synthetic replay harness and grants neither evaluator
 admission nor physical authority.
 
+The current wide Pi view now has a provisional shared-camera three-link result:
+zero-distortion intrinsics validate at `1.021 px` mean RMSE, and the corrected
+tag-to-body map passed one fresh all-three-tag follower pose at `5.756 px`
+corner RMSE and `9.282 px` maximum without per-frame alignment. The full
+SO-101 visual tree, including `left_base`, is rendered in the same frame. This
+is static camera/kinematic evidence only; the fixed base has no independent
+silhouette gate, and none of the six evaluator-owned Twin fidelity domains is
+promoted by this result.
+
 Future finalized physical recorder outputs can now be converted directly into
 the existing exact-replay v1 audit. Its legacy `applied` field is explicitly a
 gateway-sent command, not actuator acknowledgement. This operationalizes the

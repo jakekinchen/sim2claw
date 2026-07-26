@@ -40,6 +40,8 @@ BODY_COLORS = {
 APRILTAG_DICTIONARY = cv2.aruco.getPredefinedDictionary(
     cv2.aruco.DICT_APRILTAG_36h11
 )
+THREE_LINK_TAG_PARAMETER_START = {2: 6, 1: 12, 0: 18}
+THREE_LINK_OFFSET_START = 24
 
 
 def sha256(path: Path) -> str:
@@ -159,9 +161,10 @@ def body_transform(data: mujoco.MjData, body_id: int) -> np.ndarray:
 def tag_world_corners(
     model: mujoco.MjModel,
     data: mujoco.MjData,
-    candidate: dict[str, Any],
+    tag_model: dict[str, Any],
+    parameters: dict[str, Any],
 ) -> dict[int, np.ndarray]:
-    half = float(candidate["tag_model"]["black_edge_m"]) / 2.0
+    half = float(tag_model["black_edge_m"]) / 2.0
     local = np.asarray(
         [
             [-half, half, 0.0, 1.0],
@@ -171,21 +174,122 @@ def tag_world_corners(
         ],
         dtype=np.float64,
     ).T
-    parameters = candidate["parameters"]
     result = {}
-    for role, prefix in (("proximal", "proximal"), ("distal", "distal")):
-        specification = candidate["tag_model"][role]
+    for tag_id_text, specification in tag_model["tags"].items():
+        tag_id = int(tag_id_text)
         body_id = mujoco.mj_name2id(
             model, mujoco.mjtObj.mjOBJ_BODY, specification["body"]
         )
+        mount = parameters["tag_mounts"][tag_id_text]
         body_tag = transform(
-            parameters[f"{prefix}_body_tag_rotation_vector_radians"],
-            parameters[f"{prefix}_body_tag_translation_m"],
+            mount["body_tag_rotation_vector_radians"],
+            mount["body_tag_translation_m"],
         )
-        result[int(specification["id"])] = (
+        result[tag_id] = (
             body_transform(data, body_id) @ body_tag @ local
         )[:3].T
     return result
+
+
+def normalized_calibration(
+    candidate: dict[str, Any],
+    body_map_family: str | None,
+) -> tuple[dict[str, Any], dict[str, Any], float, str]:
+    schema = candidate.get("schema_version")
+    if schema == "sim2claw.pi_current_three_link_candidate.v1":
+        if body_map_family is None:
+            body_map_family = str(candidate["body_selection"]["selected"])
+            vector = np.asarray(
+                candidate["parameters"]["parameter_vector"],
+                dtype=np.float64,
+            )
+            body_map = {
+                int(tag_id): specification["body"]
+                for tag_id, specification in candidate["tag_model"][
+                    "tags"
+                ].items()
+            }
+        else:
+            choices = candidate["body_selection"]["candidates"]
+            if body_map_family not in choices:
+                raise RuntimeError(
+                    f"unknown body-map family {body_map_family!r}; "
+                    f"expected one of {sorted(choices)}"
+                )
+            selection = choices[body_map_family]
+            vector = np.asarray(
+                selection["full_training_parameter_vector"],
+                dtype=np.float64,
+            )
+            body_map = {
+                int(tag_id): body
+                for tag_id, body in selection["body_map"].items()
+            }
+        parameters = {
+            "camera_world_rotation_vector_radians": vector[:3].tolist(),
+            "camera_world_translation_m": vector[3:6].tolist(),
+            "tag_mounts": {
+                str(tag_id): {
+                    "body_tag_rotation_vector_radians": vector[
+                        start : start + 3
+                    ].tolist(),
+                    "body_tag_translation_m": vector[
+                        start + 3 : start + 6
+                    ].tolist(),
+                }
+                for tag_id, start in THREE_LINK_TAG_PARAMETER_START.items()
+            },
+            "joint_zero_offsets_degrees": vector[
+                THREE_LINK_OFFSET_START : THREE_LINK_OFFSET_START + 5
+            ].tolist(),
+        }
+        tag_model = {
+            "family": candidate["tag_model"]["family"],
+            "black_edge_m": candidate["tag_model"]["black_edge_m"],
+            "tags": {
+                str(tag_id): {"body": body}
+                for tag_id, body in body_map.items()
+            },
+        }
+        return (
+            parameters,
+            tag_model,
+            float(candidate["intrinsics"]["focal_pixels"]),
+            body_map_family,
+        )
+    if body_map_family is not None:
+        raise RuntimeError(
+            "--body-map-family requires a current three-link candidate"
+        )
+    if schema != "sim2claw.pi_dual_link_tag_candidate.v1":
+        raise RuntimeError(f"unsupported candidate schema {schema!r}")
+    parameters = candidate["parameters"]
+    tag_model = {
+        "family": candidate["tag_model"]["family"],
+        "black_edge_m": candidate["tag_model"]["black_edge_m"],
+        "tags": {},
+    }
+    mounts = {}
+    for role, prefix in (("proximal", "proximal"), ("distal", "distal")):
+        specification = candidate["tag_model"][role]
+        tag_id = str(specification["id"])
+        tag_model["tags"][tag_id] = {"body": specification["body"]}
+        mounts[tag_id] = {
+            "body_tag_rotation_vector_radians": parameters[
+                f"{prefix}_body_tag_rotation_vector_radians"
+            ],
+            "body_tag_translation_m": parameters[
+                f"{prefix}_body_tag_translation_m"
+            ],
+        }
+    normalized = dict(parameters)
+    normalized["tag_mounts"] = mounts
+    return (
+        normalized,
+        tag_model,
+        float(candidate["camera_model"]["focal_pixels"]),
+        "legacy_two_link",
+    )
 
 
 def tag_errors(
@@ -370,6 +474,7 @@ def main() -> None:
     parser.add_argument("--output-receipt", type=Path, required=True)
     parser.add_argument("--align-tags", action="store_true")
     parser.add_argument("--camera-override-receipt", type=Path)
+    parser.add_argument("--body-map-family")
     arguments = parser.parse_args()
     if arguments.align_tags and arguments.camera_override_receipt is not None:
         raise RuntimeError(
@@ -379,6 +484,9 @@ def main() -> None:
         raise RuntimeError("refusing to overwrite CAD overlay output")
 
     candidate = json.loads(arguments.candidate.read_text(encoding="utf-8"))
+    parameters, tag_model, focal, body_map_family = normalized_calibration(
+        candidate, arguments.body_map_family
+    )
     execution = json.loads(arguments.receipt.read_text(encoding="utf-8"))
     image = cv2.imread(str(arguments.image))
     if image is None or image.shape[:2] != (864, 1536):
@@ -409,21 +517,20 @@ def main() -> None:
     data.qvel[:] = 0
     mujoco.mj_forward(model, data)
 
-    parameters = candidate["parameters"]
     camera_world = transform(
         parameters["camera_world_rotation_vector_radians"],
         parameters["camera_world_translation_m"],
     )
-    focal = float(candidate["camera_model"]["focal_pixels"])
     detected_tags = detect_tags(image)
+    follower_tag_ids = sorted(int(tag_id) for tag_id in tag_model["tags"])
     observed_tags = {
         tag_id: detected_tags[tag_id]
-        for tag_id in (1, 2)
+        for tag_id in follower_tag_ids
         if tag_id in detected_tags
     }
     if not observed_tags:
-        raise RuntimeError("no unique follower tags 1 or 2 detected")
-    world_tags = tag_world_corners(model, data, candidate)
+        raise RuntimeError("no unique follower tags detected")
+    world_tags = tag_world_corners(model, data, tag_model, parameters)
     _, initial_projected_tags = tag_errors(
         camera_world,
         world_tags,
@@ -574,7 +681,7 @@ def main() -> None:
     if not cv2.imwrite(str(arguments.output), overlay):
         raise RuntimeError("failed to write CAD overlay")
     receipt = {
-        "schema_version": "sim2claw.pi_cad_overlay.v3",
+        "schema_version": "sim2claw.pi_cad_overlay.v4",
         "proof_class": "physical_image_cad_projection_diagnostic_only",
         "status": "rendered",
         "candidate": {
@@ -594,6 +701,7 @@ def main() -> None:
             "sha256": sha256(arguments.output),
         },
         "focal_pixels": focal,
+        "body_map_family": body_map_family,
         "source_model": {
             "path": str(SO101_MODEL_PATH),
             "sha256": sha256(SO101_MODEL_PATH),
@@ -613,7 +721,7 @@ def main() -> None:
             "corner_max_px": float(np.max(projected_corner_errors)),
         },
         "fiducials": {
-            "family": "tag36h11",
+            "family": tag_model["family"],
             "follower_tag_ids": sorted(observed_tags),
             "excluded_detected_tag_ids": sorted(
                 set(detected_tags) - set(observed_tags)

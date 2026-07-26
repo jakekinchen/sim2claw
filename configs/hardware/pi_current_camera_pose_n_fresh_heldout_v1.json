@@ -1,0 +1,40 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_current_camera_pose_n_fresh_heldout_20260726_v1",
+  "capture_during_motion": true,
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "reviewed_anchor_degrees": [
+    -9.582417582417582,
+    -73.14285714285714,
+    105.0989010989011,
+    -95.07692307692308,
+    20.0,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [0.0, -62.0, 90.0, -92.0, -5.0, 3.0878859857482186]
+  ],
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "fresh_validation_of_current_pi_three_link_candidate",
+    "source_pose": "Fresh torque-off follower read after pose M and before route compilation.",
+    "command_anchor_rule": "No setup recovery; the fresh follower pose is within calibrated limits.",
+    "target_selection": "Pose N was frozen only after the shoulder-upper physical body map candidate was written. It stays near the all-three-tag pose H while changing pan, lift, elbow, wrist flex, and wrist roll from the prior pose M.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "fit_training_admission": false,
+      "fresh_held_out_evaluation": true,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}
