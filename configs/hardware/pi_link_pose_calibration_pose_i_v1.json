@@ -1,0 +1,39 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_link_pose_calibration_pose_i_20260726_v1",
+  "capture_during_motion": true,
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "reviewed_anchor_degrees": [
+    9.31868131868132,
+    -61.53846153846154,
+    101.67032967032966,
+    -95.16483516483517,
+    -30.54945054945055,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [30.0, -70.0, 82.0, -95.0, 50.0, 3.0878859857482186]
+  ],
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "follower_only_static_pi_proximal_tag_training_candidate",
+    "source_pose": "Fresh in-range torque-off follower read after sealed heldout pose H.",
+    "command_anchor_rule": "No setup recovery or clipping; the fresh follower pose is within calibrated limits.",
+    "target_selection": "Frozen pose I adds the largest positive pan and positive wrist-roll view in Brief 043 while heldout H remains sealed.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "fit_training_admission_requires_unique_tag_1_and_tag_2": true,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

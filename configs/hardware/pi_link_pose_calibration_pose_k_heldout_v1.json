@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_link_pose_calibration_pose_k_heldout_20260726_v1",
+  "capture_during_motion": true,
+  "setup_recovery_command_anchor_snap_limit_degrees": 3.0,
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "reviewed_anchor_degrees": [
+    29.0989010989011,
+    -69.89010989010988,
+    104.83516483516483,
+    -95.07692307692308,
+    49.18681318681319,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [40.0, -55.0, 72.0, -95.0, 80.0, 3.0878859857482186]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "follower_only_static_pi_focal_calibrated_dual_link_heldout",
+    "source_pose": "Fresh torque-off follower read after admitted pose I.",
+    "command_anchor_rule": "Clip only the 2.725275 degree elbow overrun into calibrated limits before torque enable.",
+    "target_selection": "Pose K is frozen before the focal-calibrated candidate fit and adds the largest positive pan plus a distinct shoulder-lift and wrist-roll combination.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "fit_training_admission": false,
+      "held_out_evaluation": true,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}
