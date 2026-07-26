@@ -15,6 +15,7 @@ import numpy as np
 from scipy.optimize import least_squares
 from scipy.spatial.transform import Rotation
 
+from sim2claw.paths import SO101_MODEL_PATH
 from sim2claw.physical_canary import _physical_to_model_position
 from sim2claw.recorded_replay import _compile_model
 
@@ -26,11 +27,14 @@ MANIFEST = (
     "simulation-canary-v1/candidate_manifest.json"
 )
 BODY_COLORS = {
+    "left_edge_clamp": (40, 170, 255),
+    "left_base": (40, 210, 255),
     "left_shoulder": (70, 210, 255),
     "left_upper_arm": (70, 255, 120),
     "left_lower_arm": (255, 210, 60),
     "left_wrist": (255, 100, 80),
     "left_gripper": (220, 80, 255),
+    "left_camera_mount": (190, 70, 230),
     "left_moving_jaw_so101_v1": (180, 80, 255),
 }
 APRILTAG_DICTIONARY = cv2.aruco.getPredefinedDictionary(
@@ -100,6 +104,24 @@ def geom_points(model: mujoco.MjModel, data: mujoco.MjData, geom_id: int) -> np.
         local = primitive_points(geom_type, np.asarray(model.geom_size[geom_id]))
     rotation = data.geom_xmat[geom_id].reshape(3, 3)
     return local @ rotation.T + data.geom_xpos[geom_id]
+
+
+def follower_visual_bodies(model: mujoco.MjModel) -> list[str]:
+    result = []
+    for body_id in range(model.nbody):
+        name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, body_id)
+        if not name or not name.startswith("left_"):
+            continue
+        has_visual_mesh = any(
+            int(model.geom_bodyid[geom_id]) == body_id
+            and int(model.geom_group[geom_id]) == 2
+            and int(model.geom_type[geom_id])
+            == int(mujoco.mjtGeom.mjGEOM_MESH)
+            for geom_id in range(model.ngeom)
+        )
+        if has_visual_mesh:
+            result.append(name)
+    return result
 
 
 def project(points: np.ndarray, camera_world: np.ndarray, focal: float) -> np.ndarray:
@@ -226,6 +248,12 @@ def align_camera_to_tags(
         "method": "bounded_six_dof_camera_only_tag_corner_fit",
         "observed_tag_ids": sorted(observed),
         "joint_or_geometry_parameters_changed": False,
+        "fitted_camera_world_rotation_vector_radians": Rotation.from_matrix(
+            fitted[:3, :3]
+        )
+        .as_rotvec()
+        .tolist(),
+        "fitted_camera_world_translation_m": fitted[:3, 3].tolist(),
         "initial_corner_rmse_px": float(
             np.sqrt(np.mean(before_norms**2))
         ),
@@ -341,7 +369,12 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--output-receipt", type=Path, required=True)
     parser.add_argument("--align-tags", action="store_true")
+    parser.add_argument("--camera-override-receipt", type=Path)
     arguments = parser.parse_args()
+    if arguments.align_tags and arguments.camera_override_receipt is not None:
+        raise RuntimeError(
+            "--align-tags and --camera-override-receipt are mutually exclusive"
+        )
     if arguments.output.exists() or arguments.output_receipt.exists():
         raise RuntimeError("refusing to overwrite CAD overlay output")
 
@@ -402,15 +435,59 @@ def main() -> None:
         camera_world, alignment = align_camera_to_tags(
             camera_world, world_tags, observed_tags, focal
         )
+    elif arguments.camera_override_receipt is not None:
+        source_receipt = json.loads(
+            arguments.camera_override_receipt.read_text(encoding="utf-8")
+        )
+        source_alignment = source_receipt.get("tag_alignment") or {}
+        if (
+            source_receipt.get("schema_version")
+            != "sim2claw.pi_cad_overlay.v3"
+            or source_receipt.get("candidate", {}).get("sha256")
+            != sha256(arguments.candidate)
+            or source_alignment.get("method")
+            != "bounded_six_dof_camera_only_tag_corner_fit"
+        ):
+            raise RuntimeError("invalid shared-camera overlay receipt")
+        camera_world = transform(
+            source_alignment[
+                "fitted_camera_world_rotation_vector_radians"
+            ],
+            source_alignment["fitted_camera_world_translation_m"],
+        )
+        alignment = {
+            "method": "shared_camera_from_overlay_receipt",
+            "source_receipt_path": str(arguments.camera_override_receipt),
+            "source_receipt_sha256": sha256(
+                arguments.camera_override_receipt
+            ),
+            "per_frame_fit_performed": False,
+            "fitted_camera_world_rotation_vector_radians": source_alignment[
+                "fitted_camera_world_rotation_vector_radians"
+            ],
+            "fitted_camera_world_translation_m": source_alignment[
+                "fitted_camera_world_translation_m"
+            ],
+        }
     _, projected_tags = tag_errors(
         camera_world,
         world_tags,
         {tag_id: observed_tags[tag_id] for tag_id in observed_tags},
         focal,
     )
+    projected_corner_errors = np.concatenate(
+        [
+            np.linalg.norm(
+                projected_tags[tag_id] - observed_tags[tag_id], axis=1
+            )
+            for tag_id in sorted(observed_tags)
+        ]
+    )
     layer = image.copy()
     projected_bodies: dict[str, dict[str, Any]] = {}
-    for body_name, color in BODY_COLORS.items():
+    visual_bodies = follower_visual_bodies(model)
+    for body_name in visual_bodies:
+        color = BODY_COLORS.get(body_name, (180, 180, 180))
         body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, body_name)
         body_pixels = []
         geom_count = 0
@@ -517,11 +594,24 @@ def main() -> None:
             "sha256": sha256(arguments.output),
         },
         "focal_pixels": focal,
+        "source_model": {
+            "path": str(SO101_MODEL_PATH),
+            "sha256": sha256(SO101_MODEL_PATH),
+            "compiled_scene_manifest_path": str(MANIFEST),
+            "compiled_scene_manifest_sha256": sha256(MANIFEST),
+        },
         "joint_degrees": execution["final_actual_degrees"],
         "joint_zero_offsets_degrees": offsets.tolist(),
         "calibrated_joint_degrees": calibrated_physical.tolist(),
         "joint_offsets_applied_to_cad": True,
         "tag_alignment": alignment,
+        "tag_projection_metrics": {
+            "observed_tag_ids": sorted(observed_tags),
+            "corner_rmse_px": float(
+                np.sqrt(np.mean(projected_corner_errors**2))
+            ),
+            "corner_max_px": float(np.max(projected_corner_errors)),
+        },
         "fiducials": {
             "family": "tag36h11",
             "follower_tag_ids": sorted(observed_tags),
@@ -530,6 +620,29 @@ def main() -> None:
             ),
             "virtual_tag_texture_rendered": True,
             "virtual_tag_mount_source": "candidate_shared_body_tag_transform",
+        },
+        "full_follower_visual_model": {
+            "selection": "all MuJoCo bodies with left_ prefix and group-2 visual meshes",
+            "body_names": visual_bodies,
+            "body_count": len(visual_bodies),
+            "visual_mesh_geom_count": int(
+                sum(
+                    int(model.geom_group[geom_id]) == 2
+                    and int(model.geom_type[geom_id])
+                    == int(mujoco.mjtGeom.mjGEOM_MESH)
+                    and (
+                        mujoco.mj_id2name(
+                            model,
+                            mujoco.mjtObj.mjOBJ_BODY,
+                            int(model.geom_bodyid[geom_id]),
+                        )
+                        or ""
+                    ).startswith("left_")
+                    for geom_id in range(model.ngeom)
+                )
+            ),
+            "omitted_visual_bodies": [],
+            "excluded_non_visual_fixture_bodies": ["left_edge_clamp"],
         },
         "projected_bodies": projected_bodies,
         "limitations": {
