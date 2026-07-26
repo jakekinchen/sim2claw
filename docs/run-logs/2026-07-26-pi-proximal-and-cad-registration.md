@@ -72,6 +72,34 @@ rendered depth/body IDs, silhouette and edge-distance losses, optional tag
 reprojection, encoder priors, explicit occlusion/out-of-frame handling, and a
 fresh heldout before promotion.
 
+### Corrected visual/tag overlay
+
+The initial projection was visually misleading for two implementation reasons:
+it omitted the candidate's fitted joint-zero offsets and drew collision proxy
+hulls together with the visual STL meshes. The corrected renderer now applies
+the offsets, projects visual mesh geoms only, and includes the actual virtual
+tag36h11 textures at the modeled tag-1 and tag-2 mounts. It also detects tag 0
+on the crossing arm and marks it as excluded.
+
+Pose L corrected output:
+
+- image:
+  `runs/pi-link-tag-calibration/20260726-dual-link-fit-v4-wrist-body/pose-l-visual-cad-virtual-tags-v3.png`;
+- image SHA-256:
+  `3e259e070a629ba8acd1f9a744e24b7da2c3eaf5d14ad0267e4348d17b945f83`;
+- initial two-tag corner error:
+  `20.8052 px RMSE / 31.6699 px max`; and
+- bounded per-frame camera-only error:
+  `6.2838 px RMSE / 10.7943 px max`.
+
+The required per-frame camera change was large (`7.0646 degrees`,
+`0.1601 m`), so this is useful correspondence evidence but not a replacement
+for one fixed global Pi calibration. A training-only comparison also rejected
+the visually plausible `left_lower_arm` assignment for tag 2: its mean
+leave-one-pose-out RMSE was `14.0305 px`, versus `11.3679 px` for
+`left_wrist`. The next fit therefore keeps tag 2 on `left_wrist` and adds dense
+visual-link residuals instead of selecting a body from this one picture.
+
 ## Verification and terminal state
 
 - `44 passed`: native dual camera, physical gateway, wrist-view reposition.

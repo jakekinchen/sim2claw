@@ -47,9 +47,13 @@ moving follower geometry.
 ## Current bootstrap
 
 `tools/render_pi_cad_overlay.py` already projects the exact follower geoms into
-pose L using the training-only focal and two-link candidate. Its output is
-diagnostic: no silhouette fitting, occlusion reasoning, or promotion occurs
-yet.
+pose L using the training-only focal and two-link candidate. The renderer
+applies the candidate joint-zero offsets, excludes collision proxies, projects
+only visual meshes, and draws virtual tag36h11 IDs 1 and 2 at their modeled
+link mounts. A bounded per-frame camera-only diagnostic may align those virtual
+corners to the detected follower tags; tag 0 on the crossing arm is explicitly
+excluded. Its output remains diagnostic: no silhouette fitting, occlusion
+reasoning, global-camera promotion, or simulator promotion occurs yet.
 
 ## Stop boundary
 
