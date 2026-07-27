@@ -608,6 +608,25 @@ def build_parser() -> argparse.ArgumentParser:
     physical_canary.add_argument("--normalization-receipt", type=Path)
     physical_canary.add_argument("--output", type=Path)
     physical_canary.add_argument("--yes", action="store_true")
+    geometric_physical = subparsers.add_parser(
+        "geometric-physical",
+        help=(
+            "compile, independently review, or execute one evaluator-admitted "
+            "geometric pawn episode"
+        ),
+    )
+    geometric_physical.add_argument(
+        "--phase", choices=("compile", "review", "execute"), required=True
+    )
+    geometric_physical.add_argument("--packet", type=Path, required=True)
+    geometric_physical.add_argument("--episode", type=Path)
+    geometric_physical.add_argument("--admission", type=Path)
+    geometric_physical.add_argument("--candidate-manifest", type=Path)
+    geometric_physical.add_argument("--review", type=Path)
+    geometric_physical.add_argument("--output", type=Path)
+    geometric_physical.add_argument("--reviewer")
+    geometric_physical.add_argument("--decision-id")
+    geometric_physical.add_argument("--yes", action="store_true")
     wrist_view_reposition = subparsers.add_parser(
         "wrist-view-reposition",
         help="compile, review, or execute one guarded follower-only D405 view stage",
@@ -1942,6 +1961,86 @@ def main(argv: Sequence[str] | None = None) -> int:
                     args.packet, args.output, operator_acknowledged=True
                 )
         except (OSError, ValueError, PhysicalCanaryError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "geometric-physical":
+        from .geometric_physical_gateway import (
+            GeometricPhysicalGatewayError,
+            compile_geometric_physical_packet,
+            execute_geometric_physical_packet,
+            review_geometric_physical_packet,
+        )
+
+        try:
+            if args.phase == "compile":
+                if (
+                    args.episode is None
+                    or args.admission is None
+                    or args.candidate_manifest is None
+                    or args.review is not None
+                    or args.output is not None
+                    or args.reviewer is not None
+                    or args.decision_id is not None
+                    or args.yes
+                ):
+                    raise GeometricPhysicalGatewayError(
+                        "compile requires --episode, --admission, and "
+                        "--candidate-manifest only"
+                    )
+                result = compile_geometric_physical_packet(
+                    args.episode,
+                    args.admission,
+                    args.candidate_manifest,
+                    args.packet,
+                )
+            elif args.phase == "review":
+                if (
+                    args.output is None
+                    or not args.reviewer
+                    or not args.decision_id
+                    or args.episode is not None
+                    or args.admission is not None
+                    or args.candidate_manifest is not None
+                    or args.review is not None
+                    or args.yes
+                ):
+                    raise GeometricPhysicalGatewayError(
+                        "review requires --output, --reviewer, and --decision-id only"
+                    )
+                result = review_geometric_physical_packet(
+                    args.packet,
+                    args.output,
+                    reviewer=args.reviewer,
+                    decision_id=args.decision_id,
+                )
+            else:
+                if (
+                    args.review is None
+                    or args.output is None
+                    or not args.yes
+                    or args.episode is not None
+                    or args.admission is not None
+                    or args.candidate_manifest is not None
+                    or args.reviewer is not None
+                    or args.decision_id is not None
+                ):
+                    raise GeometricPhysicalGatewayError(
+                        "execute requires --review, --output, and --yes only"
+                    )
+                result = execute_geometric_physical_packet(
+                    args.packet,
+                    args.review,
+                    args.output,
+                    operator_acknowledged=True,
+                )
+        except (
+            OSError,
+            TypeError,
+            ValueError,
+            GeometricPhysicalGatewayError,
+        ) as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(result, indent=2, sort_keys=True))
