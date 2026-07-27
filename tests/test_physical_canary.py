@@ -16,7 +16,6 @@ from sim2claw.physical_canary import (
     NORMALIZATION_PACKET_SCHEMA,
     NORMALIZATION_RECEIPT_SCHEMA,
     PHYSICAL_CANARY_PACKET_SCHEMA,
-    ROUNDTRIP_BOUNDS_PATH,
     PhysicalCanaryError,
     _compile_post_normalization_actions,
     compile_physical_canary_normalization,
@@ -458,8 +457,13 @@ def test_physical_canary_freezes_separate_pan_play_prediction(
         preflight_fn=_preflight,
         preview_fn=_preview,
     )
+    pan_contract_path = tmp_path / "pan-play-contract.json"
+    _write(
+        pan_contract_path,
+        {"schema_version": "fixture.pan-play-contract.v1"},
+    )
     contract_sha256 = hashlib.sha256(
-        ROUNDTRIP_BOUNDS_PATH.read_bytes()
+        pan_contract_path.read_bytes()
     ).hexdigest()
     diagnostic_path = tmp_path / "pan-play-receipt.json"
     _write(
@@ -470,7 +474,7 @@ def test_physical_canary_freezes_separate_pan_play_prediction(
             ),
             "status": "retrospective_validation_passed_no_promotion",
             "contract": {
-                "path": str(ROUNDTRIP_BOUNDS_PATH.resolve()),
+                "path": str(pan_contract_path.resolve()),
                 "sha256": contract_sha256,
             },
             "baseline_candidate_config_canonical_sha256": (

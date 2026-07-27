@@ -1246,11 +1246,19 @@ def compile_preexecution_dynamic_prediction(
         ),
     )
     evaluation_contract_sha256 = _sha256(evaluation_contract_path)
+    diagnostic_contract_sha256 = (
+        str(pan_play_binding["contract_sha256"])
+        if pan_play_binding is not None
+        else evaluation_contract_sha256
+    )
     source_provenance = {
         "chain_complete": True,
         "preexecution": True,
         "candidate_config_sha256": config_sha256,
-        "evaluation_contract_sha256": evaluation_contract_sha256,
+        "evaluation_contract_sha256": diagnostic_contract_sha256,
+        "prediction_evaluation_contract_sha256": (
+            evaluation_contract_sha256
+        ),
     }
     episode = RecordedEpisode(
         episode_id="preexecution-dynamic-canary-prediction",
@@ -1310,7 +1318,7 @@ def compile_preexecution_dynamic_prediction(
         source_provenance_sha256=canonical_json_sha256(
             source_provenance
         ),
-        evaluation_contract_sha256=evaluation_contract_sha256,
+        evaluation_contract_sha256=diagnostic_contract_sha256,
         measured_joint_tolerance=(0.0,) * len(ROBOT_JOINTS),
     )
     replay = simulate_and_align(
