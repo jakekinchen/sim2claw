@@ -1,0 +1,44 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c922_current_board_pose_p_fit_completion_20260726_v1",
+  "capture_during_motion": true,
+  "reviewed_anchor_degrees": [
+    76.13186813186813,
+    -19.604395604395606,
+    72.92307692307692,
+    -23.604395604395606,
+    -62.54945054945055,
+    2.494061757719715
+  ],
+  "stage_targets_degrees": [
+    [
+      89.0,
+      -16.5,
+      60.0,
+      -20.0,
+      -60.0,
+      2.494061757719715
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "complete_the_unchanged_preregistered_pose_P_target_after_the_first_exact_route_stopped_safely",
+    "source_pose": "Fresh torque-off follower read after the preregistered route stopped safely at motion sample 348 because the next exact command would have exceeded the gateway tracking-error limit.",
+    "target_selection": "The target is byte-for-byte unchanged from the preregistered pose-P acquisition. This continuation changes only the live anchor and reduces the maximum excursion to 12.923 degrees.",
+    "failed_predecessor_receipt": {
+      "path": "runs/c922-board-base-registration/20260726-pose-p-fit-acquisition-v1/stage-1/execution_receipt.json",
+      "sha256": "67f8dd2166c8ea7c320f2e598049a4171f7038f97d46a901c3b3ce7cf9e455b7",
+      "completed_motion_samples": 348,
+      "completed_capture_hold_samples": 0,
+      "physical_follower_torque_enabled": false
+    },
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "successor_fit_observation": true,
+      "future_heldout_validation": false,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}
