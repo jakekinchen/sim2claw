@@ -52,3 +52,27 @@ after compiling and independently reviewing the sign-reversed held-out packet.
 Continue metric camera and base registration offline. A later physical action
 requires separate authorization and must not inherit authority from this
 result.
+
+## Follow-on closeout
+
+- The frozen shoulder-pan play contract selected `0.40 deg` on historical
+  execution-v4 and passed every preregistered v2 retrospective gate.
+- V2 shoulder-pan RMSE changed from `0.3354721 deg` to `0.1359543 deg`;
+  maximum absolute error changed from `0.7142274 deg` to `0.3147316 deg`;
+  peak-to-peak disagreement changed to `0.1752865 deg`.
+- A current-anchor, negative-first 57-sample packet was compiled with physical
+  action SHA
+  `f4692749e5108e1b213ae0bbd536cf393193faecd86051a350c6e09d18bb294b`.
+  Its first nonzero pan offset is `-0.125 deg`, it spans exactly `[-1,+1] deg`,
+  all non-pan columns are invariant, and its final 20 samples equal the anchor.
+- The action-identical baseline and 0.40-degree fitted predictions reproduce
+  as
+  `bcc1976ed69b1f5ea6503fd3f35b397e3666392982f551c76fe65bdcf6b270b0`
+  and
+  `2a51d3f7ce8c0866f46882f4343c04971e13b1fc4b01d14b3ee9bc96e7382b97`.
+- Independent audit decision
+  `safe-canary-audit-20260727-heldout-sign-reversed-readiness-v1` approved
+  readiness only and found no execution artifact or readiness blocker.
+- The packet remains non-admitted, the fit remains non-promoted, and this
+  follow-on issued no physical motion. This executor stops here at the explicit
+  physical-readiness boundary.

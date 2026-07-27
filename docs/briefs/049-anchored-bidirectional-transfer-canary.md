@@ -1,6 +1,6 @@
 # Brief 049: anchored bidirectional transfer canary
 
-Status: prospective diagnostic complete; follow-on stops at physical readiness
+Status: complete; sign-reversed follow-on is ready but not execution-admitted
 Branch: `codex/anchored-transfer-20260727`
 Proof target: one prospective, action-frozen, shoulder-pan-only diagnostic
 whose dynamic simulation trace is sealed before motion and whose physical
@@ -102,3 +102,26 @@ The next sole writer has this bounded queue:
    hold as a genuinely prospective held-out packet.
 6. Stop once that packet and its baseline/candidate predictions are physically
    ready. Do not execute it in this campaign.
+
+## Follow-on closeout
+
+The preregistered one-parameter diagnostic selected `b=0.40 deg` using only
+historical execution-v4. On v2 retrospective validation it reduced pan RMSE
+from `0.3354721 deg` to `0.1359543 deg`, reduced maximum pan error from
+`0.7142274 deg` to `0.3147316 deg`, and reduced peak-to-peak disagreement to
+`0.1752865 deg`. All tighter gates passed, but this remains self-scored
+retrospective evidence with no parameter promotion.
+
+The held-out negative-first packet is frozen at
+`runs/anchored-transfer-canary/fresh-current-pose-v3-sign-reversed/physical-canary-packet.json`.
+Its exact 57-row action SHA is
+`f4692749e5108e1b213ae0bbd536cf393193faecd86051a350c6e09d18bb294b`.
+The baseline and fitted prediction SHAs are respectively
+`bcc1976ed69b1f5ea6503fd3f35b397e3666392982f551c76fe65bdcf6b270b0`
+and
+`2a51d3f7ce8c0866f46882f4343c04971e13b1fc4b01d14b3ee9bc96e7382b97`.
+
+Independent decision
+`safe-canary-audit-20260727-heldout-sign-reversed-readiness-v1` approved
+readiness only. No execution artifact exists, `physical_packet_execution_admitted`
+remains `false`, and no physical command was issued during this follow-on.
