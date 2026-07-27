@@ -1,0 +1,108 @@
+{
+  "schema_version": "sim2claw.public_phase_a_receipt.v1",
+  "created_at": "2026-07-27T21:32:17Z",
+  "repository": "jakekinchen/sim2claw",
+  "repository_visibility": "public",
+  "release_tag": "phase-a-real-to-sim-d1-d2-20260727",
+  "release_url": "https://github.com/jakekinchen/sim2claw/releases/tag/phase-a-real-to-sim-d1-d2-20260727",
+  "producer_commit": "a96a0c5",
+  "proof_class": "physical_source_to_visual_kinematic_simulator_partial",
+  "headline_scores": {
+    "twin_fidelity_passed": 0,
+    "twin_fidelity_total": 6,
+    "task_score_passed": 0,
+    "task_score_total": 11
+  },
+  "claim_boundary": {
+    "physical_d1_to_d2_endpoint_visually_verified": true,
+    "observed_joint_kinematic_twin_available": true,
+    "kinematic_twin_has_physics_authority": false,
+    "action_frozen_physics_executed": false,
+    "physics_task_success_verified": false,
+    "sim_to_real_task_transfer_verified": false,
+    "bidirectional_transfer_verified": false,
+    "training_admission_granted": false,
+    "physical_control_authority_granted": false
+  },
+  "physical_endpoint_review": {
+    "authority": "square_level_camera_review_only",
+    "initial_square": "d1",
+    "initial_upright": true,
+    "terminal_square": "d2",
+    "terminal_upright": true
+  },
+  "exact_replay_eligibility": {
+    "eligible": false,
+    "source_rows": 531,
+    "precompiled_exact_rows": 0,
+    "gateway_rate_limited_rows": 151,
+    "gateway_safety_clamped_rows": 151,
+    "requested_gateway_sent_mismatch_rows": 284,
+    "actuator_application_ack_rows": 0,
+    "source_dtype_contract": "float32_replay_required",
+    "required_prospective_dtype": "float64",
+    "direct_targets_within_current_mujoco_controls": false,
+    "fixed_step_timing_replay_without_retime": false
+  },
+  "timing_and_frame_lineage": {
+    "output_fps": 20,
+    "output_frame_count": 531,
+    "duration_seconds": 26.55,
+    "source_frame_missing_count": 15,
+    "source_frame_repair_count": 0,
+    "camera_exposure_synchronized": false,
+    "device_clock_synchronized": false,
+    "display_is_exact_actuator_timing": false
+  },
+  "assets": [
+    {
+      "name": "phase_a_comparison.mp4",
+      "kind": "browser_playable_three_lane_composite",
+      "bytes": 2035913,
+      "sha256": "fa265434d04ac25ed99264e866eb8b7563142d5580a135bcec78bfd4742c327d",
+      "codec": "h264",
+      "pixel_format": "yuv420p",
+      "width": 640,
+      "height": 1080,
+      "fps": 20,
+      "duration_seconds": 26.55
+    },
+    {
+      "name": "phase_a_comparison_poster.png",
+      "kind": "comparison_poster",
+      "bytes": 875143,
+      "sha256": "ef5fd26cd3815227ebb5dc8cff4725f6724a702cad2eff5f0933623fdb1a7e3a",
+      "width": 1280,
+      "height": 1080
+    },
+    {
+      "name": "CLAIMS_AND_METRICS.md",
+      "kind": "public_claim_boundary_and_metrics",
+      "bytes": 2628,
+      "sha256": "83d1a4dfa9eae429d7e18b0932c2fc24a96e9a6800ebe26b86ccaf62eb27b874"
+    }
+  ],
+  "studio_verification": {
+    "source_checkout": "codex/geometric-microtransfer-20260727",
+    "read_only": true,
+    "physical_authority": false,
+    "episode_title": "Phase A D1 to D2 REAL to SIM",
+    "status_label": "REAL to SIM Partial",
+    "physics_gate_label": "Blocked",
+    "media_ready_state": 4,
+    "media_error": null,
+    "playback_advanced_seconds": 1.963623
+  },
+  "privacy_review": {
+    "passed": true,
+    "published_asset_count": 4,
+    "raw_source_recordings_included": false,
+    "complete_dataset_included": false,
+    "kinematic_state_trace_included": false,
+    "credentials_included": false,
+    "absolute_private_paths_included": false,
+    "device_or_network_identifiers_included": false,
+    "unrelated_artifacts_included": false,
+    "private_source_provenance": "retained_locally_not_published"
+  }
+}
