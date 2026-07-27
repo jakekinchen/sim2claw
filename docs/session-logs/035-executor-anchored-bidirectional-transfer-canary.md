@@ -4,6 +4,19 @@
 
 - Sole writer branch: `codex/anchored-transfer-20260727`.
 - The prior writer is paused; latest handoff reported follower torque off.
+- Fresh current-pose v2 completed as
+  `prospective_diagnostic_bounds_satisfied_no_promotion` with zero fitting.
+- The v2 physical packet used 57 exact float64 rows: the current-anchor-relative
+  37-row shoulder-pan waveform plus a preregistered 20-row final hold.
+- All 57 gateway samples were exact and healthy. The observed shoulder-pan
+  excursion was `0.7032967 deg`; the final five samples were within the
+  `0.5 deg` return tolerance.
+- The C922, D405, and Pi IMX708 captures all enclosed the physical action
+  interval and completed with `144`, `24`, and `230` frames respectively.
+- A fresh follower-only read after replay reported
+  `physical_follower_torque_enabled=false`, no configuration rewrite, and pose
+  `[-8.3516484,-106.4615385,98.4175824,-100.1758242,-126.3736264,1.6627078]`
+  in physical mixed units.
 - Historical execution-v4 now materializes as
   `retrospective_metrics_within_bounds_no_promotion` while preserving candidate
   config canonical SHA
@@ -24,13 +37,15 @@
 - IMG_5431: hash-bound physical-video pixel observations only.
 - New teleop/ROM recordings: physical source diagnostics, not exact replay.
 - Historical canary reverse replay: retrospective replay diagnostic only.
-- Fresh canary, if completed: prospective bidirectional diagnostic only.
+- Fresh v2 canary: prospective bidirectional diagnostic only; all frozen bounds
+  passed, but neither transform nor evaluator is promoted.
 - C8→A6 pawn sequence: not physically admissible; nine robustness failures and
   the unpromoted metric registration remain.
 
 ## Next executable step
 
-Commit the implementation and evaluator freeze. Then compile a fresh
-current-pose normalization plan, execute normalization only if required,
-compile and independently review the new prebound canary packet, run the
-tri-camera exact canary, replay it, and leave the follower torque off.
+No broader robot command is admitted. Use the new prospective canary receipt as
+the timing/actuation diagnostic baseline, then continue metric camera and base
+registration offline. A later physical action requires a separately compiled,
+hash-frozen, independently reviewed packet and must not inherit authority from
+this result.
