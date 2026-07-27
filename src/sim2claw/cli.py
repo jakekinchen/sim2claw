@@ -697,6 +697,24 @@ def build_parser() -> argparse.ArgumentParser:
     d405_apriltag.add_argument("--capture-report", type=Path)
     d405_apriltag.add_argument("--selected-frame-output", type=Path)
     d405_apriltag.add_argument("--output", type=Path, required=True)
+    static_tricam = subparsers.add_parser(
+        "static-tricam-capture",
+        help="capture one rigid C922, D405 RGB-D, and Pi still bundle",
+    )
+    static_tricam.add_argument(
+        "--contract",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/acquisition/current_static_tricam_capture_v1.json",
+    )
+    static_tricam.add_argument("--output", type=Path, required=True)
+    static_tricam.add_argument("--camera-session-token", required=True)
+    static_tricam.add_argument("--fixed-mount-token", required=True)
+    static_tricam.add_argument(
+        "--yes",
+        action="store_true",
+        help="acknowledge that the scene and arm will remain rigid",
+    )
     d405_rgbd_readiness = subparsers.add_parser(
         "d405-rgbd-readiness",
         help="inventory D405/librealsense metric-depth access without streaming",
@@ -2191,6 +2209,25 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["status"] == "target_observed" else 1
+    if args.command == "static-tricam-capture":
+        from .static_tricam_capture import (
+            StaticTricamCaptureError,
+            capture_static_tricam_bundle,
+        )
+
+        try:
+            report = capture_static_tricam_bundle(
+                output_root=args.output,
+                operator_acknowledged=args.yes,
+                camera_session_token=args.camera_session_token,
+                fixed_mount_token=args.fixed_mount_token,
+                contract_path=args.contract,
+            )
+        except (OSError, ValueError, StaticTricamCaptureError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     if args.command == "d405-rgbd-readiness":
         from .d405_rgbd_readiness import (
             D405RGBDReadinessError,
