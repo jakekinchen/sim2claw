@@ -45,6 +45,7 @@ SAMPLE_HZ = 40
 SAMPLES_PER_STAGE = 361
 CAPTURE_HOLD_SECONDS = 2.0
 CAPTURE_HOLD_SAMPLES = int(SAMPLE_HZ * CAPTURE_HOLD_SECONDS)
+CAMERA_POST_ROLL_SECONDS = 0.25
 MAX_STAGE_EXCURSION_DEGREES = 90.0
 MAX_SLEW_DEGREES_S = 10.0
 COMPILE_ANCHOR_TOLERANCE_DEGREES = np.asarray(
@@ -1093,6 +1094,14 @@ def _capture_artifacts(
             and pi.get("action_interval_enclosed") is True,
             "Pi motion-video receipt is incomplete",
         )
+        for role in ("overhead", "wrist"):
+            _require(
+                (camera_finished.get(role) or {}).get(
+                    "action_interval_enclosed_by_callback_frames"
+                )
+                is True,
+                f"{role} video does not enclose the full motion interval",
+            )
         rows.extend(
             [
                 (
@@ -1417,6 +1426,7 @@ def execute_wrist_view_reposition_stage(
     capture: CameraCapture | None = None
     camera_started: dict[str, Any] | None = None
     camera_finished: dict[str, Any] | None = None
+    motion_started: float | None = None
     hold_started: float | None = None
     hold_stopped: float | None = None
     hold_sample_records: list[dict[str, Any]] = []
@@ -1628,9 +1638,13 @@ def execute_wrist_view_reposition_stage(
                 output_directory / "pi_imx708_torque_on_hold.jpg",
             )
         camera_finished = capture.finish(
-            action_started_monotonic=hold_started,
+            action_started_monotonic=motion_started,
             action_stopped_monotonic=hold_stopped,
-            post_roll_seconds=0.0,
+            post_roll_seconds=(
+                0.0
+                if capture_mode == CAPTURE_MODE_C922_PI
+                else CAMERA_POST_ROLL_SECONDS
+            ),
         )
     except Exception as caught:
         error = caught
@@ -1638,9 +1652,13 @@ def execute_wrist_view_reposition_stage(
         if capture is not None and camera_started is not None and camera_finished is None:
             try:
                 camera_finished = capture.finish(
-                    action_started_monotonic=hold_started,
+                    action_started_monotonic=motion_started,
                     action_stopped_monotonic=hold_stopped or clock_fn(),
-                    post_roll_seconds=0.0,
+                    post_roll_seconds=(
+                        0.0
+                        if capture_mode == CAPTURE_MODE_C922_PI
+                        else CAMERA_POST_ROLL_SECONDS
+                    ),
                 )
             except Exception as caught:
                 error = error or caught

@@ -337,6 +337,8 @@ class _C922Capture(_Capture):
 class _TricamCapture(_Capture):
     def finish(self, **kwargs: object) -> dict[str, object]:
         result = super().finish(**kwargs)
+        result["overhead"]["action_interval_enclosed_by_callback_frames"] = True
+        result["wrist"]["action_interval_enclosed_by_callback_frames"] = True
         pi_root = self.root / "pi_motion"
         pi_root.mkdir()
         raw = pi_root / "pi_imx708.mjpeg"
