@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import itertools
 import json
 import subprocess
 import time
@@ -470,6 +471,38 @@ def _freeze_waypoint_stage(
     return actions
 
 
+def _setup_recovery_preview_actions(
+    raw_anchor: np.ndarray,
+    command_anchor: np.ndarray,
+) -> np.ndarray:
+    """Enumerate the bounded setup snap joint-progress hyperrectangle."""
+
+    raw = np.asarray(raw_anchor, dtype="<f8")
+    command = np.asarray(command_anchor, dtype="<f8")
+    _require(
+        raw.shape == (6,)
+        and command.shape == (6,)
+        and np.all(np.isfinite(raw))
+        and np.all(np.isfinite(command)),
+        "setup recovery preview anchors are invalid",
+    )
+    changed = np.flatnonzero(raw != command)
+    if len(changed) == 0:
+        return raw[None, :].copy()
+    _require(
+        len(changed) <= 3,
+        "setup recovery preview supports at most three independently moving joints",
+    )
+    fractions = np.linspace(0.0, 1.0, 9, dtype=np.float64)
+    rows: list[np.ndarray] = []
+    delta = command - raw
+    for progress in itertools.product(fractions, repeat=len(changed)):
+        row = raw.copy()
+        row[changed] = raw[changed] + delta[changed] * np.asarray(progress)
+        rows.append(row)
+    return np.ascontiguousarray(np.asarray(rows, dtype="<f8"))
+
+
 def _contact_pair(model: mujoco.MjModel, contact: Any) -> tuple[str, str]:
     body_ids = [
         int(model.geom_bodyid[int(contact.geom1)]),
@@ -739,6 +772,41 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
         and np.all(np.isfinite(command_previous)),
         "packet anchors are malformed",
     )
+    setup_enabled = (
+        (packet.get("setup_recovery_command_anchor") or {}).get("enabled")
+        is True
+    )
+    setup_preview = packet.get("setup_recovery_simulation_preview")
+    if setup_enabled:
+        setup_actions = _setup_recovery_preview_actions(
+            expected_previous, command_previous
+        )
+        setup_stage_preview = (setup_preview or {}).get("stage") or {}
+        _require(
+            isinstance(setup_preview, Mapping)
+            and setup_preview.get("no_new_or_worsened_kinematic_contact")
+            is True
+            and not setup_preview.get("external_contact_pairs")
+            and setup_preview.get("joint_progress_semantics")
+            == "nine_point_cartesian_hyperrectangle_per_changed_joint"
+            and setup_preview.get("changed_joint_count")
+            == int(np.count_nonzero(expected_previous != command_previous))
+            and setup_preview.get("sample_count") == len(setup_actions)
+            and setup_preview.get("kinematic_action_sha256")
+            == action_sha256(setup_actions)
+            == setup_stage_preview.get("exact_physical_action_sha256")
+            and setup_stage_preview.get(
+                "no_new_or_worsened_kinematic_contact"
+            )
+            is True
+            and not setup_stage_preview.get("external_contact_pairs"),
+            "setup recovery simulation preview is not admitted",
+        )
+    else:
+        _require(
+            setup_preview is None,
+            "non-recovery packet unexpectedly contains a setup preview",
+        )
     for stage_index, stage in enumerate(stages, start=1):
         _require(stage.get("stage_index") == stage_index, "stage order changed")
         actions, timestamps, _ = _decode_stage(stage)
@@ -924,6 +992,42 @@ def compile_wrist_view_reposition_packet(
         )
         action_stages.append(actions)
         previous = waypoints[-1].astype("<f8")
+    setup_recovery_preview: dict[str, Any] | None = None
+    if setup_recovery:
+        setup_preview_actions = _setup_recovery_preview_actions(
+            anchor, command_anchor
+        )
+        setup_preview = preview_fn(
+            [setup_preview_actions], candidate_manifest_path
+        )
+        setup_preview_stages = setup_preview.get("stages")
+        _require(
+            setup_preview.get("no_new_or_worsened_kinematic_contact") is True
+            and not setup_preview.get("external_contact_pairs")
+            and isinstance(setup_preview_stages, list)
+            and len(setup_preview_stages) == 1
+            and setup_preview_stages[0].get("exact_physical_action_sha256")
+            == action_sha256(setup_preview_actions),
+            "simulation preview rejected the bounded setup recovery",
+        )
+        setup_recovery_preview = {
+            **{
+                key: value
+                for key, value in setup_preview.items()
+                if key != "stages"
+            },
+            "stage": setup_preview_stages[0],
+            "joint_progress_semantics": (
+                "nine_point_cartesian_hyperrectangle_per_changed_joint"
+            ),
+            "changed_joint_count": int(
+                np.count_nonzero(anchor != command_anchor)
+            ),
+            "sample_count": int(len(setup_preview_actions)),
+            "kinematic_action_sha256": action_sha256(
+                setup_preview_actions
+            ),
+        }
     preview = preview_fn(action_stages, candidate_manifest_path)
     _require(
         preview.get("no_new_or_worsened_kinematic_contact") is True
@@ -1020,6 +1124,7 @@ def compile_wrist_view_reposition_packet(
             "setup_only": True,
             "sim_gap_evidence": False,
         },
+        "setup_recovery_simulation_preview": setup_recovery_preview,
         "reviewed_live_anchor_degrees": reviewed_anchor.tolist(),
         "route": {
             "route_id": route["route_id"],
@@ -1530,6 +1635,44 @@ def execute_wrist_view_reposition_stage(
         np.all(np.abs(_joint_delta(current, expected_anchor)) <= anchor_tolerance),
         "fresh follower pose does not match this stage anchor",
     )
+    fresh_setup_recovery_preview: dict[str, Any] | None = None
+    if packet["setup_recovery_command_anchor"]["enabled"] is True:
+        setup_preview_actions = _setup_recovery_preview_actions(
+            current,
+            np.asarray(stage["command_anchor_degrees"], dtype=np.float64),
+        )
+        fresh_setup_recovery_preview = preview_wrist_view_actions(
+            [setup_preview_actions], manifest_path
+        )
+        _require(
+            fresh_setup_recovery_preview.get(
+                "no_new_or_worsened_kinematic_contact"
+            )
+            is True
+            and not fresh_setup_recovery_preview.get(
+                "external_contact_pairs"
+            ),
+            "fresh simulation preview rejected the bounded setup recovery",
+        )
+        fresh_setup_recovery_preview = {
+            **fresh_setup_recovery_preview,
+            "joint_progress_semantics": (
+                "nine_point_cartesian_hyperrectangle_per_changed_joint"
+            ),
+            "changed_joint_count": int(
+                np.count_nonzero(
+                    current
+                    != np.asarray(
+                        stage["command_anchor_degrees"],
+                        dtype=np.float64,
+                    )
+                )
+            ),
+            "sample_count": int(len(setup_preview_actions)),
+            "kinematic_action_sha256": action_sha256(
+                setup_preview_actions
+            ),
+        }
     _require(
         np.all(actions >= lower[None, :])
         and np.all(actions <= upper[None, :])
@@ -1847,6 +1990,9 @@ def execute_wrist_view_reposition_stage(
         "capture_artifacts": capture_artifacts,
         "frame_joint_alignment": frame_joint_alignment,
         "fresh_preflight_anchor_degrees": current.tolist(),
+        "fresh_setup_recovery_simulation_preview": (
+            fresh_setup_recovery_preview
+        ),
         "expected_anchor_degrees": expected_anchor.tolist(),
         "target_degrees": stage["target_degrees"],
         "final_actual_degrees": actual.tolist(),

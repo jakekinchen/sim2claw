@@ -1097,6 +1097,21 @@ def test_tricam_starts_before_setup_recovery_gateway_motion(
     assert events[:2] == ["capture_start", "gateway_open"]
     assert receipt["gateway_open_setup_motion_commanded"] is True
     assert receipt["camera_started_before_gateway_open_setup_motion"] is True
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    frozen_setup_preview = packet["setup_recovery_simulation_preview"]
+    assert (
+        frozen_setup_preview["joint_progress_semantics"]
+        == "nine_point_cartesian_hyperrectangle_per_changed_joint"
+    )
+    assert frozen_setup_preview["sample_count"] == 9
+    fresh_setup_preview = receipt[
+        "fresh_setup_recovery_simulation_preview"
+    ]
+    assert fresh_setup_preview["sample_count"] == 9
+    assert (
+        fresh_setup_preview["kinematic_action_sha256"]
+        == frozen_setup_preview["kinematic_action_sha256"]
+    )
 
 
 def test_setup_open_failure_conservatively_accounts_motion_before_sample_zero(
