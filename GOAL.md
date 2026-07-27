@@ -44,12 +44,42 @@ The physical follower returned torque off at
 Pi tags 1 and 2 returned within `0.494 px` and `1.150 px` respectively;
 the negative evaluator result is therefore not a physical non-return.
 
+The next zero-continuous-parameter wrist hypothesis fixed the asymmetric wrist
+play corridor to its positive branch instead of switching on simulated
+`qfrc_bias`. A retrospective three-trace screen favored that branch, but the
+first opposite-bias route exposed a real torque-off gravity-sag failure before
+its second triangle. The arm was recovered under a separately reviewed,
+all-three-camera route. That recovery now starts C922, D405, and Pi before any
+bounded setup clamp and packet-binds an `81`-state joint-progress
+hyperrectangle plus the full path back to the stable anchor.
+
+A replacement heldout kept the already stable positive-bias shoulder/lift/
+elbow configuration and changed only wrist flex by exactly `+10 deg`, flipping
+simulated wrist bias from `+0.019895 N m` to `-0.022116 N m`. Its normalized
+`361 x 6` triangle action was byte-identical to the positive trace
+(`32834e50...de40`). On positive bias, the fixed branch and dynamic parent were
+exactly equal. On negative bias, the fixed branch improved wrist RMS from
+`0.752302 deg` to `0.258030 deg` (`65.70%`), joint RMS from `0.338919 deg`
+to `0.122422 deg` (`63.88%`), and end-effector RMS from `2.199393 mm` to
+`0.715679 mm` (`67.46%`).
+
+The frozen aggregate evaluator still rejected: it required strict improvement
+rather than equality on both signs, and the positive/negative wrist return
+errors were `0.906939 deg` and `0.797049 deg`, both above the `0.75 deg`
+gate. No parameter is promoted. The result nevertheless supports fixed
+positive branching as the simplest next simulator mechanism and localizes the
+remaining actuator error to sub-degree wrist return/compliance. The final
+tricam return reached the stable anchor within `0.087912 deg` lift and
+`0.175824 deg` wrist, with follower torque off.
+
 The active queue is now:
 
-1. retain the twice-passing direction-conditioned model and reject the wrist
-   load-sign threshold family;
-2. test the zero-new-continuous-parameter alternative that keeps the frozen
-   asymmetric wrist corridor independent of simulated load sign;
+1. retain the fixed-positive wrist branch as strongly supported but
+   non-promoted, and reject both the wrist load-sign threshold family and any
+   claim that the strict two-sign promotion gate passed;
+2. freeze a future non-inferiority-on-positive/improvement-on-negative
+   replication before collecting any new trace, while separately modeling the
+   remaining sub-degree wrist return/compliance error;
 3. use the repeated Pi tag trajectories to fit one camera-time phase offset
    while camera geometry and actuator parameters remain frozen;
 4. compile pawn geometry from the current physical anchor rather than reusing
