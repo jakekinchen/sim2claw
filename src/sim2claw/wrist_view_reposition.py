@@ -37,6 +37,9 @@ WRIST_VIEW_REVIEW_SCHEMA = "sim2claw.wrist_view_reposition_review.v2"
 WRIST_VIEW_EXECUTION_SCHEMA = "sim2claw.wrist_view_reposition_execution.v2"
 WRIST_VIEW_ROUTE_SCHEMA = "sim2claw.wrist_view_reposition_route.v1"
 FRAME_JOINT_ALIGNMENT_SCHEMA = "sim2claw.wrist_view_frame_joint_alignment.v1"
+C922_MOTION_CAPTURE_SCHEMA = "sim2claw.c922_motion_capture_receipt.v1"
+CAPTURE_MODE_DUAL = "native_dual_camera"
+CAPTURE_MODE_C922_PI = "c922_plus_pi_hold"
 SAMPLE_HZ = 40
 SAMPLES_PER_STAGE = 361
 CAPTURE_HOLD_SECONDS = 2.0
@@ -81,6 +84,74 @@ def _default_capture(path: Path) -> CameraCapture:
     from .native_dual_camera import NativeDualCameraRecorder
 
     return NativeDualCameraRecorder(path)
+
+
+class _C922MotionCapture:
+    """Adapt the exact-mode C922 source owner to a staged motion capture."""
+
+    def __init__(
+        self,
+        output_root: Path,
+        *,
+        specification: Mapping[str, Any],
+        route_id: str,
+        stage_index: int,
+    ) -> None:
+        from .c922_terminal_hold_capture import NativeC922StillRecorder
+        from .static_tricam_capture import load_contract
+
+        contract_path = Path(str(specification["contract_path"]))
+        if not contract_path.is_absolute():
+            contract_path = Path(__file__).resolve().parents[2] / contract_path
+        contract_path = contract_path.resolve()
+        contract = load_contract(contract_path)
+        session_prefix = str(specification["camera_session_prefix"])
+        fixed_mount_token = str(specification["fixed_mount_token"])
+        self.contract_path = contract_path
+        self.recorder = NativeC922StillRecorder(
+            output_root,
+            contract=contract,
+            camera_session_token=f"{session_prefix}-{route_id}-stage-{stage_index:02d}",
+            fixed_mount_token=fixed_mount_token,
+        )
+
+    def start(self) -> dict[str, Any]:
+        return {
+            **self.recorder.start(),
+            "capture_mode": CAPTURE_MODE_C922_PI,
+            "contract_path": str(self.contract_path),
+            "contract_sha256": _sha256(self.contract_path),
+        }
+
+    def ensure_running(self) -> None:
+        process = self.recorder.process
+        _require(
+            process is not None and process.poll() is None,
+            "C922 source owner exited before capture teardown",
+        )
+
+    def finish(
+        self,
+        *,
+        action_started_monotonic: float | None,
+        action_stopped_monotonic: float | None,
+        post_roll_seconds: float,
+    ) -> dict[str, Any]:
+        del action_started_monotonic, action_stopped_monotonic, post_roll_seconds
+        report = self.recorder.finish()
+        return {
+            "schema_version": C922_MOTION_CAPTURE_SCHEMA,
+            "status": "completed",
+            "capture_mode": CAPTURE_MODE_C922_PI,
+            "contract_path": str(self.contract_path),
+            "contract_sha256": _sha256(self.contract_path),
+            "final_path": report["final_path"],
+            "final_sha256": report["final_sha256"],
+            "ledger_path": report["ledger_path"],
+            "ledger_sha256": report["ledger_sha256"],
+            "retained_frame_count": report["retainedFrameCount"],
+            "dropped_callback_count": report["droppedCallbackCount"],
+        }
 
 
 def _capture_pi_hold_still(
@@ -268,6 +339,21 @@ def _load_route(route_path: Path) -> tuple[dict[str, Any], np.ndarray, np.ndarra
         and np.all(np.isfinite(targets)),
         "wrist-view route must contain one anchor and one to four six-joint targets",
     )
+    capture_mode = str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+    _require(
+        capture_mode in {CAPTURE_MODE_DUAL, CAPTURE_MODE_C922_PI},
+        "unsupported wrist-view capture mode",
+    )
+    if capture_mode == CAPTURE_MODE_C922_PI:
+        capture = route.get("c922_capture")
+        _require(
+            route.get("capture_during_motion") is True
+            and isinstance(capture, Mapping)
+            and bool(str(capture.get("contract_path") or ""))
+            and bool(str(capture.get("camera_session_prefix") or ""))
+            and bool(str(capture.get("fixed_mount_token") or "")),
+            "C922-plus-Pi mode requires a bound motion-capture specification",
+        )
     return route, anchor, targets
 
 
@@ -483,6 +569,26 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
         and len(str(route.get("sha256") or "")) == 64
         and _sha256(Path(route["path"]).resolve()) == route["sha256"],
         "reviewed wrist-view route drifted",
+    )
+    bound_route = _read_json(Path(route["path"]).resolve(), "wrist-view route")
+    capture_mode = str(packet.get("capture_mode") or "")
+    _require(
+        capture_mode in {CAPTURE_MODE_DUAL, CAPTURE_MODE_C922_PI}
+        and capture_mode
+        == str(bound_route.get("capture_mode") or CAPTURE_MODE_DUAL),
+        "packet/route capture mode changed",
+    )
+    execution_contract = packet.get("execution_contract") or {}
+    _require(
+        execution_contract.get("motion_camera_owner")
+        == (
+            "NativeC922StillRecorder"
+            if capture_mode == CAPTURE_MODE_C922_PI
+            else "NativeDualCameraRecorder"
+        )
+        and execution_contract.get("d405_required")
+        is (capture_mode == CAPTURE_MODE_DUAL),
+        "packet camera ownership changed",
     )
     assistance = packet.get("action_assistance") or {}
     _require(
@@ -770,6 +876,7 @@ def compile_wrist_view_reposition_packet(
         "capture_hold_samples": CAPTURE_HOLD_SAMPLES,
         "capture_hold_seconds": CAPTURE_HOLD_SECONDS,
         "capture_during_motion": bool(route.get("capture_during_motion", False)),
+        "capture_mode": str(route.get("capture_mode") or CAPTURE_MODE_DUAL),
         "maximum_stage_excursion_degrees": MAX_STAGE_EXCURSION_DEGREES,
         "maximum_slew_degrees_s": MAX_SLEW_DEGREES_S,
         "stage_anchor_tolerance_degrees": STAGE_ANCHOR_TOLERANCE_DEGREES.tolist(),
@@ -795,7 +902,20 @@ def compile_wrist_view_reposition_packet(
             "fresh_preflight_each_stage": True,
             "prior_stage_receipt_required_after_stage_1": True,
             "torque_off_on_every_close": True,
-            "native_dual_camera_final_hold_capture": True,
+            "native_dual_camera_final_hold_capture": (
+                str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+                == CAPTURE_MODE_DUAL
+            ),
+            "motion_camera_owner": (
+                "NativeC922StillRecorder"
+                if str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+                == CAPTURE_MODE_C922_PI
+                else "NativeDualCameraRecorder"
+            ),
+            "d405_required": (
+                str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+                == CAPTURE_MODE_DUAL
+            ),
             "camera_capture_finishes_before_gateway_close": True,
             "frame_joint_alignment_clock": "host_continuous_monotonic_nanoseconds",
         },
@@ -876,6 +996,40 @@ def _validate_review(
 def _capture_artifacts(
     capture_root: Path, camera_finished: Mapping[str, Any]
 ) -> list[dict[str, Any]]:
+    if camera_finished.get("schema_version") == C922_MOTION_CAPTURE_SCHEMA:
+        rows = [
+            (
+                "c922_final_report",
+                str(camera_finished.get("final_path") or ""),
+                str(camera_finished.get("final_sha256") or ""),
+            ),
+            (
+                "c922_callback_ledger",
+                str(camera_finished.get("ledger_path") or ""),
+                str(camera_finished.get("ledger_sha256") or ""),
+            ),
+        ]
+        artifacts = []
+        for kind, raw_path, expected_sha256 in rows:
+            path = Path(raw_path)
+            if not path.is_absolute():
+                path = capture_root / path
+            _require(
+                len(expected_sha256) == 64
+                and path.is_file()
+                and _sha256(path) == expected_sha256,
+                f"{kind} artifact hash changed",
+            )
+            artifacts.append(
+                {
+                    "kind": kind,
+                    "path": str(path),
+                    "sha256": expected_sha256,
+                    "bytes": path.stat().st_size,
+                }
+            )
+        return artifacts
+
     common = camera_finished.get("common_session") or {}
     rows: list[tuple[str, str, str]] = [
         (
@@ -922,6 +1076,93 @@ def _capture_artifacts(
             }
         )
     return artifacts
+
+
+def _align_c922_frames_to_hold_samples(
+    capture_root: Path,
+    camera_finished: Mapping[str, Any],
+    hold_samples: list[dict[str, Any]],
+    output_path: Path,
+) -> dict[str, Any]:
+    _require(len(hold_samples) == CAPTURE_HOLD_SAMPLES, "capture hold is incomplete")
+    ledger_path = Path(str(camera_finished.get("ledger_path") or ""))
+    if not ledger_path.is_absolute():
+        ledger_path = capture_root / ledger_path
+    _require(ledger_path.is_file(), "C922 callback ledger is missing")
+    first_ns = int(hold_samples[0]["host_continuous_ns"])
+    last_ns = int(hold_samples[-1]["host_continuous_ns"])
+    frames = []
+    for line in ledger_path.read_text(encoding="utf-8").splitlines():
+        event = json.loads(line)
+        host_ns = event.get("hostContinuousNS")
+        if (
+            event.get("schemaVersion")
+            == "sim2claw.c922_terminal_hold_frame_event.v1"
+            and isinstance(host_ns, int)
+            and first_ns <= host_ns <= last_ns
+        ):
+            frames.append(event)
+    _require(len(frames) >= 2, "fewer than two C922 frames overlap the torque-on hold")
+    rows: list[dict[str, Any]] = []
+    maximum_delta_ns = 0
+    for frame in frames:
+        host_ns = int(frame["hostContinuousNS"])
+        nearest = min(
+            hold_samples,
+            key=lambda sample: abs(int(sample["host_continuous_ns"]) - host_ns),
+        )
+        delta_ns = abs(int(nearest["host_continuous_ns"]) - host_ns)
+        maximum_delta_ns = max(maximum_delta_ns, delta_ns)
+        png_path = Path(str(frame.get("pngPath") or ""))
+        if not png_path.is_absolute():
+            png_path = capture_root / png_path
+        expected_sha256 = str(frame.get("pngSHA256") or "")
+        _require(
+            len(expected_sha256) == 64
+            and png_path.is_file()
+            and _sha256(png_path) == expected_sha256,
+            "C922 aligned frame hash changed",
+        )
+        rows.append(
+            {
+                "schema_version": FRAME_JOINT_ALIGNMENT_SCHEMA,
+                "camera_role": "c922",
+                "frame_sequence": frame.get("sequence"),
+                "frame_host_continuous_ns": host_ns,
+                "frame_path": str(png_path),
+                "frame_sha256": expected_sha256,
+                "nearest_joint_sample_index": nearest["sample_index"],
+                "joint_sample_host_continuous_ns": nearest["host_continuous_ns"],
+                "absolute_time_delta_ns": delta_ns,
+                "requested_physical_units": nearest["requested_physical_units"],
+                "actual_physical_units": nearest["actual_physical_units"],
+                "source_action_sha256": nearest["source_action_sha256"],
+            }
+        )
+    _require(
+        maximum_delta_ns <= 100_000_000,
+        "C922 frame-to-joint nearest-neighbor delta exceeds 100 ms",
+    )
+    _require(not output_path.exists(), f"refusing to overwrite alignment: {output_path}")
+    with output_path.open("x", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, sort_keys=True) + "\n")
+    return {
+        "schema_version": FRAME_JOINT_ALIGNMENT_SCHEMA,
+        "status": "host_clock_nearest_joint_sample_alignment",
+        "camera_role": "c922",
+        "aligned_frame_count": len(rows),
+        "hold_joint_sample_count": len(hold_samples),
+        "maximum_absolute_time_delta_ns": maximum_delta_ns,
+        "maximum_allowed_time_delta_ns": 100_000_000,
+        "path": str(output_path),
+        "sha256": _sha256(output_path),
+        "timestamp_semantics": {
+            "clock": "host_continuous_monotonic_nanoseconds",
+            "nearest_neighbor_only": True,
+            "camera_exposure_synchronized": False,
+        },
+    }
 
 
 def _align_d405_frames_to_hold_samples(
@@ -1045,9 +1286,17 @@ def execute_wrist_view_reposition_stage(
         "candidate manifest drifted after packet compilation",
     )
     route = packet["route"]
+    bound_route_path = Path(route["path"]).resolve()
     _require(
-        _sha256(Path(route["path"]).resolve()) == route["sha256"],
+        _sha256(bound_route_path) == route["sha256"],
         "reviewed wrist-view route drifted after packet compilation",
+    )
+    bound_route = _read_json(bound_route_path, "wrist-view route")
+    capture_mode = str(packet.get("capture_mode") or CAPTURE_MODE_DUAL)
+    _require(
+        capture_mode
+        == str(bound_route.get("capture_mode") or CAPTURE_MODE_DUAL),
+        "packet/route capture mode drifted",
     )
     stage = packet["stages"][stage_index - 1]
     actions, timestamps, _ = _decode_stage(stage)
@@ -1089,7 +1338,11 @@ def execute_wrist_view_reposition_stage(
     output_directory = output_directory.resolve()
     receipt_path = output_directory / "execution_receipt.json"
     samples_path = output_directory / "joint_samples.jsonl"
-    alignment_path = output_directory / "d405_frame_joint_alignment.jsonl"
+    alignment_path = output_directory / (
+        "c922_frame_joint_alignment.jsonl"
+        if capture_mode == CAPTURE_MODE_C922_PI
+        else "d405_frame_joint_alignment.jsonl"
+    )
     _require(
         not receipt_path.exists()
         and not samples_path.exists()
@@ -1118,6 +1371,24 @@ def execute_wrist_view_reposition_stage(
     gateway_open_setup_motion_commanded = False
     gateway_open_setup_command_anchor: np.ndarray | None = None
     error: Exception | None = None
+
+    def make_capture() -> CameraCapture:
+        if capture_factory is not None:
+            return capture_factory(capture_root)
+        if capture_mode == CAPTURE_MODE_C922_PI:
+            specification = bound_route.get("c922_capture")
+            _require(
+                isinstance(specification, Mapping),
+                "bound route lacks its C922 motion-capture specification",
+            )
+            return _C922MotionCapture(
+                capture_root,
+                specification=specification,
+                route_id=str(bound_route["route_id"]),
+                stage_index=stage_index,
+            )
+        return _default_capture(capture_root)
+
     try:
         open_arguments: dict[str, Any] = {
             "enable_motion": True,
@@ -1146,7 +1417,7 @@ def execute_wrist_view_reposition_stage(
             "follower anchor drifted before the stage hold",
         )
         if packet.get("capture_during_motion") is True:
-            capture = (capture_factory or _default_capture)(capture_root)
+            capture = make_capture()
             camera_started = capture.start()
         motion_started = clock_fn()
         with samples_path.open("a", encoding="utf-8") as handle:
@@ -1210,7 +1481,7 @@ def execute_wrist_view_reposition_stage(
             "follower did not reach the staged target",
         )
         if capture is None:
-            capture = (capture_factory or _default_capture)(capture_root)
+            capture = make_capture()
             camera_started = capture.start()
         hold_started = clock_fn()
         with samples_path.open("a", encoding="utf-8") as handle:
@@ -1269,7 +1540,6 @@ def execute_wrist_view_reposition_stage(
             ),
             "follower left the staged target during camera hold",
         )
-        bound_route = _read_json(Path(route["path"]).resolve(), "wrist-view route")
         pi_hold_specification = bound_route.get("pi_hold_still")
         if pi_hold_specification is not None:
             _require(
@@ -1308,12 +1578,20 @@ def execute_wrist_view_reposition_stage(
         try:
             _require(camera_finished is not None, "final hold camera did not finish")
             capture_artifacts = _capture_artifacts(capture_root, camera_finished)
-            frame_joint_alignment = _align_d405_frames_to_hold_samples(
-                capture_root,
-                camera_finished,
-                hold_sample_records,
-                alignment_path,
-            )
+            if capture_mode == CAPTURE_MODE_C922_PI:
+                frame_joint_alignment = _align_c922_frames_to_hold_samples(
+                    capture_root,
+                    camera_finished,
+                    hold_sample_records,
+                    alignment_path,
+                )
+            else:
+                frame_joint_alignment = _align_d405_frames_to_hold_samples(
+                    capture_root,
+                    camera_finished,
+                    hold_sample_records,
+                    alignment_path,
+                )
         except Exception as caught:
             error = caught
 
@@ -1339,6 +1617,7 @@ def execute_wrist_view_reposition_stage(
         "joint_samples_sha256": _sha256(samples_path),
         "camera_started": camera_started,
         "camera_finished": camera_finished,
+        "capture_mode": capture_mode,
         "pi_hold_still": pi_hold_still,
         "capture_artifacts": capture_artifacts,
         "frame_joint_alignment": frame_joint_alignment,

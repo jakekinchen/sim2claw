@@ -12,6 +12,7 @@ from sim2claw.physical_canary import EXCITATION_CONTROL_SOURCE, GATEWAY_SCHEMA
 from sim2claw.replay_eligibility import action_sha256
 from sim2claw.scene import ROBOT_JOINTS
 from sim2claw.wrist_view_reposition import (
+    CAPTURE_MODE_C922_PI,
     CAPTURE_HOLD_SAMPLES,
     MAX_STAGE_EXCURSION_DEGREES,
     SAMPLES_PER_STAGE,
@@ -88,6 +89,25 @@ def _route(path: Path) -> None:
             "route_id": "fixture-route",
             "reviewed_anchor_degrees": ROUTE_ANCHOR.tolist(),
             "stage_targets_degrees": ROUTE_TARGETS.tolist(),
+        },
+    )
+
+
+def _c922_route(path: Path) -> None:
+    _write(
+        path,
+        {
+            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+            "route_id": "fixture-c922-route",
+            "capture_during_motion": True,
+            "capture_mode": CAPTURE_MODE_C922_PI,
+            "c922_capture": {
+                "contract_path": "fixture-c922-contract.json",
+                "camera_session_prefix": "fixture-c922-session",
+                "fixed_mount_token": "fixture-fixed-mount",
+            },
+            "reviewed_anchor_degrees": ROUTE_ANCHOR.tolist(),
+            "stage_targets_degrees": [ROUTE_TARGETS[0].tolist()],
         },
     )
 
@@ -253,6 +273,47 @@ class _Capture:
         }
 
 
+class _C922Capture(_Capture):
+    def finish(self, **kwargs: object) -> dict[str, object]:
+        del kwargs
+        if self.finished:
+            raise AssertionError("capture finished twice")
+        self.finished = True
+        final = self.root / "final.json"
+        ledger = self.root / "frames.jsonl"
+        frame_paths = [self.root / f"frame-{index}.png" for index in (1, 2)]
+        _write(final, {"status": "completed"})
+        for index, frame in enumerate(frame_paths, start=1):
+            frame.write_bytes(f"frame-{index}".encode())
+        ledger.write_text(
+            "\n".join(
+                json.dumps(
+                    {
+                        "schemaVersion": (
+                            "sim2claw.c922_terminal_hold_frame_event.v1"
+                        ),
+                        "hostContinuousNS": 0,
+                        "pngPath": frame.name,
+                        "pngSHA256": self._digest(frame),
+                        "sequence": index,
+                    }
+                )
+                for index, frame in enumerate(frame_paths, start=1)
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        return {
+            "schema_version": "sim2claw.c922_motion_capture_receipt.v1",
+            "status": "completed",
+            "capture_mode": CAPTURE_MODE_C922_PI,
+            "final_path": str(final),
+            "final_sha256": self._digest(final),
+            "ledger_path": str(ledger),
+            "ledger_sha256": self._digest(ledger),
+        }
+
+
 class _CaptureStartFailure:
     def start(self) -> dict[str, object]:
         raise RuntimeError("fixture camera failure")
@@ -312,6 +373,69 @@ def test_compile_previews_exact_supplied_float64_route(tmp_path: Path) -> None:
         assert stage["expected_anchor_degrees"] == previous.tolist()
         assert stage["command_anchor_degrees"] == actions[0].tolist()
         previous = target
+
+
+def test_compile_binds_c922_plus_pi_capture_mode(tmp_path: Path) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    _candidate_manifest(manifest_path)
+    _c922_route(route_path)
+
+    packet = compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+
+    assert packet["capture_mode"] == CAPTURE_MODE_C922_PI
+    assert packet["execution_contract"]["motion_camera_owner"] == (
+        "NativeC922StillRecorder"
+    )
+    assert packet["execution_contract"]["d405_required"] is False
+
+
+def test_execute_c922_mode_aligns_source_frames_and_never_requires_d405(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    review_path = tmp_path / "review.json"
+    _candidate_manifest(manifest_path)
+    _c922_route(route_path)
+    compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+    review_wrist_view_reposition_packet(
+        packet_path,
+        review_path,
+        reviewer="fixture-reviewer",
+        decision_id="fixture-decision",
+    )
+
+    receipt = execute_wrist_view_reposition_stage(
+        packet_path,
+        review_path,
+        tmp_path / "execution-c922-stage-1",
+        stage_index=1,
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda identity: _Gateway(ROUTE_ANCHOR),
+        capture_factory=lambda path: _C922Capture(path),
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+
+    assert receipt["status"] == "completed_wrist_view_reposition_stage"
+    assert receipt["capture_mode"] == CAPTURE_MODE_C922_PI
+    assert receipt["frame_joint_alignment"]["camera_role"] == "c922"
+    assert receipt["frame_joint_alignment"]["aligned_frame_count"] == 2
+    assert len(receipt["capture_artifacts"]) == 2
 
 
 @pytest.mark.parametrize(
