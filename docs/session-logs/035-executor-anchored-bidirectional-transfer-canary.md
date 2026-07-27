@@ -45,7 +45,10 @@
 ## Next executable step
 
 No broader robot command is admitted. Use the new prospective canary receipt as
-the timing/actuation diagnostic baseline, then continue metric camera and base
-registration offline. A later physical action requires a separately compiled,
-hash-frozen, independently reviewed packet and must not inherit authority from
-this result.
+the timing/actuation diagnostic baseline. Implement and retrospectively score
+only the one-parameter shoulder-pan play/deadband family frozen in Brief 049;
+do not reopen latency/gain/damping selection. If its tighter gate passes, stop
+after compiling and independently reviewing the sign-reversed held-out packet.
+Continue metric camera and base registration offline. A later physical action
+requires separate authorization and must not inherit authority from this
+result.

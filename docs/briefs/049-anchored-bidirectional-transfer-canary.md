@@ -1,6 +1,6 @@
 # Brief 049: anchored bidirectional transfer canary
 
-Status: implementation freeze before fresh physical evidence
+Status: prospective diagnostic complete; follow-on stops at physical readiness
 Branch: `codex/anchored-transfer-20260727`
 Proof target: one prospective, action-frozen, shoulder-pan-only diagnostic
 whose dynamic simulation trace is sealed before motion and whose physical
@@ -65,3 +65,38 @@ contact classification differs. Stop safely with torque off if any camera
 stalls, the gateway modifies an action, a rate/clamp/stall flag appears, or the
 arm fails to return within the reviewed tolerance. Do not escalate to a pawn
   move or broader trajectory in this campaign.
+
+## Follow-on calibration queue
+
+The v2 diagnostic passed its broad safety envelope, but it is not a parity
+pass. Simulation produced `2.0301017 deg` shoulder-pan peak-to-peak versus
+`1.0549451 deg` physically. The `0.9751567 deg` disagreement consumed all but
+`0.0248433 deg` of the frozen `1 deg` bound and overpredicted measured
+excursion by `92.4%`. Prebound and postexecution metrics are two evaluations of
+the same physical trace, not independent transfer trials.
+
+Do not reopen the non-unique latency/gain/damping sweep. Its admitted latency
+is `0.082581 s`, while near-equivalent prior fits spanned latency
+`0.0541–0.0826 s`, gain `0.5–1.5`, and damping `0.5–1.775`.
+
+The next sole writer has this bounded queue:
+
+1. Add one shoulder-pan-only stateful play/deadband parameter in the simulator
+   actuator, never in the action path:
+   `z_i = max(u_i - b, min(u_i + b, z_(i-1)))`.
+2. Freeze the one-parameter family before fitting. Keep the admitted latency,
+   gain, damping, geometry, transforms, contact, action bytes, and evaluator
+   ownership unchanged.
+3. Fit only `b` on current-pose v1 and historical execution-v4. A read-only
+   proxy selected `b=0.4301 deg`; this number is a post-hoc starting point, not
+   an admitted parameter.
+4. Use v2 only as retrospective validation because it motivated the family.
+   Require at least `50%` pan-RMSE reduction, pan maximum absolute error at
+   most `0.40 deg`, peak-to-peak disagreement at most `0.25 deg`, identical
+   source and mapped action hashes, no clipping/contact/limit change, and no
+   other body-joint RMSE worsening above `0.02 deg`.
+5. If the retrospective gate passes, freeze and independently review a
+   current-anchor, sign-reversed `+-1 deg` triangle with the same one-second
+   hold as a genuinely prospective held-out packet.
+6. Stop once that packet and its baseline/candidate predictions are physically
+   ready. Do not execute it in this campaign.
