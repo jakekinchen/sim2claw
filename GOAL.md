@@ -2,6 +2,38 @@
 
 Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
 
+## Latest contact-free geometric transfer evidence
+
+The first fresh heldout for the direction-conditioned joint-play model passed
+on 2026-07-27. The preregistered oblique route moved the follower by at most
+`6.6214 deg`, returned to its torque-off anchor, and used the exact same
+`361 x 6` float64 action bytes in preview and physical execution. C922
+(`373` frames), D405 (`62` frames), and Pi IMX708 (`440` frames) recordings
+all enclosed the complete action. The executor completed `441 / 441` motion
+and hold samples without clamp, rate limit, stall, assistance, intervention,
+or action repair, then closed with follower torque off.
+
+The frozen evaluator improved joint RMS from `0.6543 deg` to `0.2936 deg`
+(`55.12%`) and end-effector RMS from `5.4303 mm` to `2.1260 mm` (`60.85%`)
+against the parent stateful model. The receipt verdict is
+`reverse_joint_play_passed_fresh_geometric_heldout`. This is accepted
+contact-free physical actuator/kinematic transfer evidence. It is not pawn
+contact, task success, global simulator-parameter promotion, or full
+six-domain Twin fidelity, so the headline score remains `0 / 6`.
+
+The active queue is now:
+
+1. keep the passing model frozen while localizing its remaining wrist/timing
+   residual on the heldout;
+2. compile a small simulation-only geometric route matrix from the current
+   anchor and select one independent, contact-free falsifier;
+3. freeze that route and evaluator before any further physical measurement;
+4. require C922, D405, and Pi action-enclosing recordings on every physical
+   trial;
+5. after a second independent contact-free pass, evaluate geometric pawn
+   actions in simulation; do not inherit pawn-contact authority from the
+   contact-free receipts.
+
 ## Ordered sim-to-real transfer queue
 
 The active dependency order is:
