@@ -42,6 +42,11 @@ from .physical_canary import (
     _identity_from_preflight,
     _validate_limits,
 )
+from .physical_gateway import (
+    BODY_EXCURSION_LIMIT_DEG,
+    GRIPPER_EXCURSION_LIMIT,
+    WRIST_ROLL_EXCURSION_LIMIT_DEG,
+)
 from .recorded_replay import (
     ReplayContractError,
     _compile_model,
@@ -338,6 +343,45 @@ def _rate_audit(actions: np.ndarray, timestamps: np.ndarray) -> dict[str, Any]:
     }
 
 
+def _excursion_audit(actions: np.ndarray) -> dict[str, Any]:
+    """Apply the unchanged gateway episode-origin excursion envelope."""
+
+    _require(
+        actions.ndim == 2
+        and actions.shape[0] >= 1
+        and actions.shape[1] == len(ROBOT_JOINTS)
+        and np.all(np.isfinite(actions)),
+        "physical excursion audit requires finite six-vector actions",
+    )
+    origin = actions[0]
+    delta = actions - origin
+    delta[:, 4] = (delta[:, 4] + 180.0) % 360.0 - 180.0
+    maximum = np.max(np.abs(delta), axis=0)
+    limits = np.asarray(
+        [
+            BODY_EXCURSION_LIMIT_DEG,
+            BODY_EXCURSION_LIMIT_DEG,
+            BODY_EXCURSION_LIMIT_DEG,
+            BODY_EXCURSION_LIMIT_DEG,
+            WRIST_ROLL_EXCURSION_LIMIT_DEG,
+            GRIPPER_EXCURSION_LIMIT,
+        ],
+        dtype=np.float64,
+    )
+    _require(
+        np.all(maximum <= limits + 1e-9),
+        "inverse-mapped source actions exceed the reviewed gateway "
+        "per-session excursion envelope",
+    )
+    return {
+        "episode_origin_physical_units": origin.tolist(),
+        "maximum_absolute_excursion_from_origin": maximum.tolist(),
+        "reviewed_excursion_limit": limits.tolist(),
+        "wrist_roll_uses_shortest_angular_delta": True,
+        "all_excursions_within_reviewed_gateway_limits": True,
+    }
+
+
 def _mj_forward_preview(
     source_actions: np.ndarray,
     episode_directory: Path,
@@ -549,6 +593,7 @@ def compile_geometric_physical_packet(
         "inverse-mapped source actions exceed fresh calibrated follower limits",
     )
     rate_audit = _rate_audit(physical_actions, timestamps)
+    excursion_audit = _excursion_audit(physical_actions)
     preview = (preview_fn or _mj_forward_preview)(
         source_actions,
         episode_directory,
@@ -631,6 +676,7 @@ def compile_geometric_physical_packet(
             "hardware_consumer_must_use_same_bytes": True,
         },
         "rate_audit": rate_audit,
+        "excursion_audit": excursion_audit,
         "mj_forward_contact_preview": preview,
         "mj_forward_contact_preview_sha256": canonical_json_sha256(preview),
         "execution_contract": {
@@ -757,6 +803,10 @@ def _verify_packet_static(
         and physical_actions.tobytes(order="C") == physical_raw
         and np.array_equal(timestamps, expected_timestamps),
         "packet actions differ from the admitted source or inverse transform",
+    )
+    _require(
+        packet.get("excursion_audit") == _excursion_audit(physical_actions),
+        "geometric physical packet excursion audit drifted",
     )
     if rerun_preview:
         preview = (preview_fn or _mj_forward_preview)(
@@ -914,6 +964,7 @@ def execute_geometric_physical_packet(
         "reviewed physical actions exceed fresh calibrated limits",
     )
     _rate_audit(physical_actions, timestamps)
+    _excursion_audit(physical_actions)
 
     gateway = (gateway_factory or _default_gateway)(
         _gateway_identity(identity) if gateway_factory is None else identity

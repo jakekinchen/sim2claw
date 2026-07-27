@@ -11,6 +11,7 @@ from sim2claw.geometric_physical_gateway import (
     PACKET_SCHEMA,
     REVIEW_SCHEMA,
     GeometricPhysicalGatewayError,
+    _excursion_audit,
     compile_geometric_physical_packet,
     execute_geometric_physical_packet,
     review_geometric_physical_packet,
@@ -364,6 +365,9 @@ def test_compile_freezes_exact_inverse_mapping_and_lineage(tmp_path: Path) -> No
     assert packet["source_episode"]["recording_id"] == "geometric-fixture"
     assert packet["physical_joint_transform"]["calibration_approved"] is True
     assert packet["rate_audit"]["all_rates_within_reviewed_gateway_limits"]
+    assert packet["excursion_audit"][
+        "all_excursions_within_reviewed_gateway_limits"
+    ]
     source = np.frombuffer(
         __import__("base64").b64decode(packet["source_action_payload"]["base64"]),
         dtype="<f4",
@@ -378,6 +382,25 @@ def test_compile_freezes_exact_inverse_mapping_and_lineage(tmp_path: Path) -> No
     assert np.max(np.abs(physical[:, :5])) <= 1.00001
     assert np.allclose(physical[:, 5], [20.0, 22.0, 24.0], atol=1e-5)
     assert packet["physical_motion_commanded"] is False
+
+
+def test_excursion_audit_rejects_body_motion_beyond_session_origin() -> None:
+    actions = np.zeros((3, 6), dtype=np.float64)
+    actions[1, 3] = 90.0
+    actions[2, 3] = 90.0001
+    with pytest.raises(
+        GeometricPhysicalGatewayError, match="per-session excursion"
+    ):
+        _excursion_audit(actions)
+
+
+def test_excursion_audit_uses_shortest_wrist_roll_delta() -> None:
+    actions = np.zeros((2, 6), dtype=np.float64)
+    actions[0, 4] = -179.0
+    actions[1, 4] = 179.0
+    audit = _excursion_audit(actions)
+    assert audit["maximum_absolute_excursion_from_origin"][4] == pytest.approx(2.0)
+    assert audit["wrist_roll_uses_shortest_angular_delta"] is True
 
 
 def test_compile_rejects_unapproved_transform_before_hardware_read(
