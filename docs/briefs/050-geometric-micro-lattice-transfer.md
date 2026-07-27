@@ -1,6 +1,6 @@
 # Brief 050: geometric micro-lattice transfer
 
-Status: active
+Status: terminal negative; mechanism isolated
 Branch: `codex/geometric-microtransfer-20260727`
 Proof target: one prospective, no-contact, simulator-derived Cartesian loop
 whose exact joint commands are replayed on the follower and scored with
@@ -85,3 +85,23 @@ If it passes, the next campaign may compile one low-risk, currently occupied
 checkerboard pawn move. If it fails, fit only the mechanism identified by the
 frozen residual decomposition, then repeat this same loop as held-out
 validation before any contact action.
+
+## Closeout
+
+Stages 1 and 2 executed all 882 exact motion/hold rows without clipping, rate
+limiting, assistance, or a gateway stall. The physical follower stayed
+torque-off after each close. Stage 3 correctly stopped before gateway open
+because torque-off relaxation moved the elbow outside the frozen anchor gate.
+
+The camera-only Pi refresh fit tags 1 and 2 to `3.058 px` combined corner RMS
+on stage 1, but stage 2 did not uniquely decode tag 2. The view-dependent tag
+gate therefore rejected the refresh; it was not promoted.
+
+The action-frozen actuator check rejected the previously selected elbow
+load-bias term. Against a rigid actuator model it improved pooled joint RMS by
+`20.464%` and end-effector RMS by `6.353%`, confirming that actuator play is a
+real gap. Against the simpler two-degree lift/elbow deadband, however, it
+improved joint RMS by `8.605%` while worsening end-effector RMS by `32.985%`.
+The load-bias term is not retained. The next admitted mechanism is
+direction/load-conditioned joint play including wrist flex, with no pawn
+contact until a separately frozen geometric probe validates it.
