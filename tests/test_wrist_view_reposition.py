@@ -1007,6 +1007,98 @@ def test_later_setup_recovery_stage_opens_on_its_stage_anchor(
     assert receipt["physical_motion_commanded"] is True
 
 
+def test_tricam_starts_before_setup_recovery_gateway_motion(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    review_path = tmp_path / "review.json"
+    _candidate_manifest(manifest_path)
+    recovery_anchor = ROUTE_ANCHOR.copy()
+    recovery_anchor[1] = LOWER[1] - 1.0
+    _write(
+        route_path,
+        {
+            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+            "route_id": "fixture-tricam-setup-recovery-route",
+            "capture_during_motion": True,
+            "capture_mode": CAPTURE_MODE_TRICAM,
+            "pi_motion_video": {
+                "contract_path": (
+                    "configs/acquisition/pi_imx708_motion_video_15s_v1.json"
+                ),
+                "contract_sha256": PI_MOTION_CONTRACT_SHA256,
+            },
+            "setup_recovery_command_anchor_snap_limit_degrees": 2.0,
+            "reviewed_anchor_degrees": recovery_anchor.tolist(),
+            "stage_targets_degrees": [ROUTE_ANCHOR.tolist()],
+            "review_basis": {
+                "physical_scope": "calibration_capture_with_setup_recovery"
+            },
+        },
+    )
+    compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=lambda: _preflight(recovery_anchor),
+        preview_fn=lambda stages, manifest: {
+            "candidate_digest": "b" * 64,
+            "no_new_or_worsened_kinematic_contact": True,
+            "external_contact_pairs": [],
+            "stages": [
+                {
+                    "exact_physical_action_sha256": action_sha256(stages[0]),
+                    "no_new_or_worsened_kinematic_contact": True,
+                    "external_contact_pairs": [],
+                }
+            ],
+        },
+    )
+    review_wrist_view_reposition_packet(
+        packet_path,
+        review_path,
+        reviewer="fixture-reviewer",
+        decision_id="fixture-decision",
+    )
+    monkeypatch.setattr(
+        "sim2claw.wrist_view_reposition.preview_wrist_view_actions",
+        lambda stages, manifest: {
+            "no_new_or_worsened_kinematic_contact": True,
+            "external_contact_pairs": [],
+        },
+    )
+    events: list[str] = []
+
+    class OrderedGateway(_Gateway):
+        def open(self, **kwargs: object) -> dict[str, object]:
+            events.append("gateway_open")
+            return super().open(**kwargs)
+
+    class OrderedCapture(_Capture):
+        def start(self) -> dict[str, object]:
+            events.append("capture_start")
+            return super().start()
+
+    receipt = execute_wrist_view_reposition_stage(
+        packet_path,
+        review_path,
+        tmp_path / "execution-stage-1",
+        stage_index=1,
+        operator_acknowledged=True,
+        preflight_fn=lambda: _preflight(recovery_anchor),
+        gateway_factory=lambda identity: OrderedGateway(recovery_anchor),
+        capture_factory=lambda path: OrderedCapture(path),
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+
+    assert events[:2] == ["capture_start", "gateway_open"]
+    assert receipt["gateway_open_setup_motion_commanded"] is True
+    assert receipt["camera_started_before_gateway_open_setup_motion"] is True
+
+
 def test_setup_open_failure_conservatively_accounts_motion_before_sample_zero(
     tmp_path: Path,
 ) -> None:

@@ -1574,6 +1574,7 @@ def execute_wrist_view_reposition_stage(
     gateway_open_completed = False
     gateway_open_setup_motion_commanded = False
     gateway_open_setup_command_anchor: np.ndarray | None = None
+    camera_started_before_gateway_open_setup_motion = False
     error: Exception | None = None
 
     def make_capture() -> CameraCapture:
@@ -1623,13 +1624,21 @@ def execute_wrist_view_reposition_stage(
             "enable_motion": True,
             "paired_pose_confirmed": True,
         }
-        if packet["setup_recovery_command_anchor"]["enabled"] is True:
+        setup_recovery_enabled = (
+            packet["setup_recovery_command_anchor"]["enabled"] is True
+        )
+        if setup_recovery_enabled:
             gateway_open_setup_command_anchor = np.asarray(
                 stage["command_anchor_degrees"], dtype=np.float64
             )
             open_arguments["setup_command_anchor_degrees"] = np.asarray(
                 gateway_open_setup_command_anchor, dtype=np.float64
             )
+            if packet.get("capture_during_motion") is True:
+                capture = make_capture()
+                camera_started = capture.start()
+                motion_started = clock_fn()
+                camera_started_before_gateway_open_setup_motion = True
             # The gateway may send this command and move before open() either
             # returns or raises. Mark it conservatively before crossing that
             # boundary so a zero-sample failure cannot claim no motion.
@@ -1645,10 +1654,11 @@ def execute_wrist_view_reposition_stage(
             ),
             "follower anchor drifted before the stage hold",
         )
-        if packet.get("capture_during_motion") is True:
+        if packet.get("capture_during_motion") is True and capture is None:
             capture = make_capture()
             camera_started = capture.start()
-        motion_started = clock_fn()
+        if motion_started is None:
+            motion_started = clock_fn()
         with samples_path.open("a", encoding="utf-8") as handle:
             for sample_index, (timestamp, target) in enumerate(
                 zip(timestamps, actions, strict=True)
@@ -1851,6 +1861,9 @@ def execute_wrist_view_reposition_stage(
         ),
         "gateway_open_setup_motion_commanded": (
             gateway_open_setup_motion_commanded
+        ),
+        "camera_started_before_gateway_open_setup_motion": (
+            camera_started_before_gateway_open_setup_motion
         ),
         "physical_motion_commanded": (
             gateway_open_setup_motion_commanded
