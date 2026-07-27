@@ -34,4 +34,3 @@ Commit the implementation and evaluator freeze. Then compile a fresh
 current-pose normalization plan, execute normalization only if required,
 compile and independently review the new prebound canary packet, run the
 tri-camera exact canary, replay it, and leave the follower torque off.
-

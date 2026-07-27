@@ -1,7 +1,7 @@
 # Brief 049: anchored bidirectional transfer canary
 
-Status: implementation freeze before fresh physical evidence  
-Branch: `codex/anchored-transfer-20260727`  
+Status: implementation freeze before fresh physical evidence
+Branch: `codex/anchored-transfer-20260727`
 Proof target: one prospective, action-frozen, shoulder-pan-only diagnostic
 whose dynamic simulation trace is sealed before motion and whose physical
 execution returns to its starting anchor.
@@ -61,5 +61,4 @@ pose tolerance, camera owner, prebound simulation trace, review field, or
 contact classification differs. Stop safely with torque off if any camera
 stalls, the gateway modifies an action, a rate/clamp/stall flag appears, or the
 arm fails to return within the reviewed tolerance. Do not escalate to a pawn
-move or broader trajectory in this campaign.
-
+  move or broader trajectory in this campaign.
