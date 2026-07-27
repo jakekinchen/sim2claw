@@ -1,0 +1,49 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c922_pose_p2_to_episode_start_recovery_20260726_v1",
+  "capture_during_motion": false,
+  "setup_recovery_command_anchor_snap_limit_degrees": 5.0,
+  "reviewed_anchor_degrees": [
+    75.51648351648352,
+    9.846153846153847,
+    40.83516483516483,
+    -29.846153846153847,
+    -60.527472527472526,
+    2.494061757719715
+  ],
+  "stage_targets_degrees": [
+    [
+      12.0,
+      -68.0,
+      85.0,
+      -84.0,
+      -50.0,
+      2.494061757719715
+    ],
+    [
+      0.2666666666666675,
+      -105.26300366300367,
+      99.83858363858364,
+      -99.81636141636142,
+      -119.07692307692308,
+      2.494061757719715
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "restore_the_contact_free_near_start_boundary_after_the_pose_P2_C922_fit_capture",
+    "source_pose": "Fresh torque-off follower read after the completed pose-P2 capture.",
+    "command_anchor_rule": "The reviewed setup-only gateway may snap a fresh torque-off reading by at most 5 degrees to the calibrated command envelope before the frozen interpolation.",
+    "target_selection": "Two stages keep every per-stage excursion below 90 degrees. The final target is the last contact-free interpolation sample before the current exact CAD model introduces its known lower-arm versus shoulder duplicate-geometry self-overlap at the repeated source-episode start; it differs from that start by at most 0.847 degrees and does not change task or calibration evidence.",
+    "pose_p2_execution_receipt": {
+      "path": "runs/c922-board-base-registration/20260726-pose-p2-fit-acquisition-v1/stage-1/execution_receipt.json",
+      "sha256": "e59ca19049de7a1ad161e4d675e2b850f640ba9ca22d874291fc167941bb0d30"
+    },
+    "evidence_limits": {
+      "physical_calibration_observation": false,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}
