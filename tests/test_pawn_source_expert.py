@@ -70,6 +70,29 @@ class PawnSourceExpertTest(unittest.TestCase):
             payload["profile"]["partial_release_joint_target_rad"], 0.8
         )
 
+    def test_centered_grasp_follow_up_changes_only_preregistered_offset(self) -> None:
+        baseline = load_expert_profile(ROBUST_MARGIN_PROFILE_PATH)
+        candidate = load_expert_profile(
+            ROBUST_MARGIN_PROFILE_PATH.with_name(
+                "c8_a6_preregistered_centered_grasp_v1.json"
+            )
+        )
+        self.assertEqual(
+            candidate["profile_id"], "c8_a6_preregistered_centered_grasp_v1"
+        )
+        self.assertFalse(candidate["physical_authority"])
+        self.assertEqual(
+            candidate["selection_boundary"], baseline["selection_boundary"]
+        )
+        candidate_profile = dict(candidate["profile"])
+        baseline_profile = dict(baseline["profile"])
+        self.assertEqual(
+            candidate_profile.pop("grasp_offset_xyz_m"),
+            [-0.004, -0.002, 0.0015],
+        )
+        baseline_profile.pop("grasp_offset_xyz_m")
+        self.assertEqual(candidate_profile, baseline_profile)
+
 
 if __name__ == "__main__":
     unittest.main()
