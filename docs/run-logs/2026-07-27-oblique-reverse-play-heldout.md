@@ -68,10 +68,36 @@ improvement. The validation receipt is
 with SHA-256
 `29aa556d9b2e3e18d401fb3f2da4123857f993c4304e756da26256e53b7a0a75`.
 
+## Four-crossing confirmation
+
+A second evaluator-frozen trial repeated the same contact-clean oblique
+envelope twice. The exact action reversed at rows `90`, `180`, `270`, and
+`360`; the frozen simulator predicted wrist load-sign transitions at source
+indices `51`, `168`, `230`, and `348`. Maximum excursion remained
+`6.608050373 deg` and maximum slew was `2.936911277 deg/s`.
+
+The physical execution again completed `361` motion and `80` hold rows with no
+executor error and torque off. C922 retained `377` frames, D405 `62`, and Pi
+`440`; all three enclosed the full action. Absolute return residuals were at
+most `0.175824 deg`.
+
+The same unchanged model passed again:
+
+| Metric | Parent | Selected | Relative improvement |
+| --- | ---: | ---: | ---: |
+| Joint RMS | 0.732281 deg | 0.325790 deg | 55.51% |
+| End-effector RMS | 5.768063 mm | 2.280794 mm | 60.46% |
+
+The second validation receipt is
+`runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/heldout-validation.json`
+with SHA-256
+`be60ddceec07759538c7bf2c9544a53837ff9d957fe1372658c2dec254de4c9a`.
+Wrist flex still dominates selected-model error at `0.629545 deg` RMS.
+
 ## Next gate
 
-Keep this passing model frozen. Use the heldout only to localize residuals,
-not to retroactively alter this verdict. Select one independent contact-free
-route from a bounded simulation route matrix, freeze its evaluator, and
-require the same tricam execution contract. Pawn actions remain
-simulation-only until separately admitted.
+Keep the twice-passing model frozen. Use the opened traces only to determine
+whether one wrist load-sign hysteresis-band parameter is identifiable; do not
+retroactively alter either verdict. Any refinement requires a new fit and
+fresh opposite-direction contact-free heldout under the same tricam execution
+contract. Pawn actions remain simulation-only until separately admitted.

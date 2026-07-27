@@ -4,8 +4,8 @@ Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
 
 ## Latest contact-free geometric transfer evidence
 
-The first fresh heldout for the direction-conditioned joint-play model passed
-on 2026-07-27. The preregistered oblique route moved the follower by at most
+Two fresh heldouts for the direction-conditioned joint-play model passed on
+2026-07-27. The first preregistered oblique route moved the follower by at most
 `6.6214 deg`, returned to its torque-off anchor, and used the exact same
 `361 x 6` float64 action bytes in preview and physical execution. C922
 (`373` frames), D405 (`62` frames), and Pi IMX708 (`440` frames) recordings
@@ -21,18 +21,27 @@ contact-free physical actuator/kinematic transfer evidence. It is not pawn
 contact, task success, global simulator-parameter promotion, or full
 six-domain Twin fidelity, so the headline score remains `0 / 6`.
 
+The second heldout repeated the same contact-clean geometric envelope twice,
+with four frozen wrist load-sign crossings. It again completed `441 / 441`
+exact rows with torque off and all three camera intervals enclosed. The
+selected model improved joint RMS from `0.7323 deg` to `0.3258 deg` (`55.51%`)
+and end-effector RMS from `5.7681 mm` to `2.2808 mm` (`60.46%`). Its residual
+remains dominated by wrist flex (`0.6295 deg` RMS), so the repeated pass
+supports the seven-width model while localizing the next bounded mechanism.
+
 The active queue is now:
 
-1. keep the passing model frozen while localizing its remaining wrist/timing
-   residual on the heldout;
-2. compile a small simulation-only geometric route matrix from the current
-   anchor and select one independent, contact-free falsifier;
-3. freeze that route and evaluator before any further physical measurement;
+1. keep the twice-passing seven-width model frozen while checking whether a
+   single wrist load-sign hysteresis-band parameter is identified by the
+   opened crossing traces;
+2. if identified, freeze a bounded one-parameter fit and an opposite-direction
+   contact-free falsifier; otherwise retain the current model;
+3. freeze every route and evaluator before any further physical measurement;
 4. require C922, D405, and Pi action-enclosing recordings on every physical
    trial;
-5. after a second independent contact-free pass, evaluate geometric pawn
-   actions in simulation; do not inherit pawn-contact authority from the
-   contact-free receipts.
+5. evaluate geometric pawn actions in simulation while the actuator refinement
+   proceeds; do not inherit pawn-contact authority from the contact-free
+   receipts.
 
 ## Ordered sim-to-real transfer queue
 
