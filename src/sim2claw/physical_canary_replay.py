@@ -1048,7 +1048,6 @@ def _evaluation_contract(
         )
     contract = _read_json(path, "physical canary evaluation contract")
     authority = contract.get("authority")
-    evaluator = contract.get("evaluator")
     thresholds = contract.get("thresholds")
     required_thresholds = {
         "body_joint_rmse_degrees_maximum",
@@ -1702,6 +1701,7 @@ def fit_physical_canary_pan_play_diagnostic(
     family = contract.get("candidate_family")
     source_split = contract.get("source_split")
     authority = contract.get("authority")
+    evaluator = contract.get("evaluator")
     validation_thresholds = contract.get(
         "retrospective_validation_gates"
     )
