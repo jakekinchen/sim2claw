@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.pi_camera_extrinsic_refresh_contract.v1",
+  "contract_id": "pi_camera_extrinsic_refresh_geometric_hold_20260727_v1",
+  "status": "stage_1_consumed_for_camera_only_fit_stages_2_to_4_unopened",
+  "proof_class": "physical_pi_camera_extrinsic_refresh_diagnostic",
+  "source_candidate": {
+    "path": "runs/pi-link-tag-calibration/20260726-current-three-link-fresh-validation-v1/candidate.json",
+    "sha256": "115428d746867bd0ca1f25fb75f3ccaed7a928342fc980f995bcfce484ab50b5"
+  },
+  "packet": {
+    "path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/packet.json",
+    "sha256": "b98101e4903618eae8f3bfe7824d675cf8ba7295d05873c218d076b2d55d8ba1"
+  },
+  "fit_observation": {
+    "stage_index": 1,
+    "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-1/execution_receipt.json",
+    "execution_receipt_sha256": "34bae544980185770d78d0cc0cfb5803a9c663287f9f223fb8cffc9545cc1684",
+    "pi_image_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-1/pi_imx708_torque_on_hold.jpg",
+    "pi_image_sha256": "c704e5560a12fa0297be5a7b242d05965153b8c091887239b9fd408ea56336bc",
+    "action_sha256": "c6fe7c5462cf0c9448cbc944ea49d33f20cb18f60694eb2cc128503675acbd1d",
+    "fit_tag_ids": [1, 2],
+    "diagnostic_excluded_tag_ids": [0]
+  },
+  "heldout_stages": [
+    {
+      "stage_index": 2,
+      "action_sha256": "a2d1a4dc1c588a63b0cca345dd67f656b93291175cebf956c1302bd2e4a0d3e9",
+      "capture_hold_action_sha256": "2bad33b7dbaf9b1f8ef688b94eb5e261efc69158eb51840b4697324c5b707910"
+    },
+    {
+      "stage_index": 3,
+      "action_sha256": "8d14fd868a1f858a3b02e0b523a3c9b29d670ed0fe8af91663a01c184f62f1db",
+      "capture_hold_action_sha256": "98e43c731005dfab779b843fc6833d5e4952b8b057f907e609c1c42fbb6cf2e8"
+    },
+    {
+      "stage_index": 4,
+      "action_sha256": "3e84fa48f859c89361bf902c70cbade866df6b05555d5e2e77b5ef97eb5f41f6",
+      "capture_hold_action_sha256": "64dc46e63400e59ecc6e342414b1a6edf20adb9506975f33b427bb4a2ded70c3"
+    }
+  ],
+  "fit_scope": {
+    "optimized_parameters": ["camera_world_rotation_vector_radians", "camera_world_translation_m"],
+    "frozen_parameters": ["camera_intrinsics", "distortion", "tag_body_map", "tag_mounts", "joint_zero_offsets", "robot_CAD", "physical_joint_transform", "action_bytes"],
+    "fit_on_heldout_stages_forbidden": true
+  },
+  "gates": {
+    "fit_corner_rmse_max_px": 5.0,
+    "fit_corner_max_px": 8.0,
+    "heldout_corner_rmse_max_px": 8.0,
+    "heldout_corner_max_px": 15.0,
+    "heldout_anchor_relative_displacement_rmse_max_px": 5.0,
+    "heldout_anchor_relative_displacement_max_px": 10.0,
+    "minimum_fit_tag_count": 2,
+    "gateway_rate_limited_samples_maximum": 0,
+    "gateway_safety_clamped_samples_maximum": 0
+  },
+  "authority": {
+    "camera_extrinsic_diagnostic": true,
+    "camera_extrinsic_promotion": false,
+    "tag_mount_or_body_refit": false,
+    "joint_or_actuator_fit": false,
+    "simulator_parameter_promotion": false,
+    "pawn_contact": false,
+    "policy": false,
+    "task_success": false,
+    "physical_task": false
+  }
+}
