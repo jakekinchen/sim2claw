@@ -1,0 +1,117 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_stable_opposite_bias_wrist_triangle_tricam_20260727_v1",
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_15s_v1.json",
+    "contract_sha256": "457f2c142671851ddd60a3f1be5487125605957e38c1b2730ab683e08488393f"
+  },
+  "reviewed_anchor_degrees": [
+    -8.87912087912088,
+    -106.28571428571429,
+    99.20879120879121,
+    -94.37362637362638,
+    -126.37362637362638,
+    1.66270783847981
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -8.378658234855758,
+        -102.4398546188144,
+        90.61442428182887,
+        -89.23230909335841,
+        -126.49127735606807,
+        1.66270783847981
+      ],
+      [
+        -10.033202307635719,
+        -105.95897966485484,
+        94.34063127683152,
+        -83.20295106137854,
+        -126.47784355201212,
+        1.66270783847981
+      ]
+    ],
+    [
+      [
+        -10.033202307635719,
+        -105.95897966485484,
+        94.34063127683152,
+        -77.20295106137854,
+        -126.47784355201212,
+        1.66270783847981
+      ],
+      [
+        -10.033202307635719,
+        -105.95897966485484,
+        94.34063127683152,
+        -89.20295106137854,
+        -126.47784355201212,
+        1.66270783847981
+      ],
+      [
+        -10.033202307635719,
+        -105.95897966485484,
+        94.34063127683152,
+        -83.20295106137854,
+        -126.47784355201212,
+        1.66270783847981
+      ]
+    ],
+    [
+      [
+        -8.378658234855758,
+        -102.4398546188144,
+        90.61442428182887,
+        -89.23230909335841,
+        -126.49127735606807,
+        1.66270783847981
+      ],
+      [
+        -8.87912087912088,
+        -106.28571428571429,
+        99.20879120879121,
+        -94.37362637362638,
+        -126.37362637362638,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "geometric_derivation": {
+    "frame": "current_candidate_model_world",
+    "positive_configuration_path": "runs/geometric-microtransfer/20260727-geometric-dual-configuration-wrist-triangle-tricam-v1/stage-2/joint_samples.jsonl",
+    "positive_configuration_wrist_bias_nm": 0.019895419058364838,
+    "negative_configuration_wrist_bias_nm": -0.022115791346449476,
+    "negative_configuration_body_joints_other_than_wrist_equal_positive_configuration": true,
+    "negative_configuration_wrist_anchor_equals_positive_plus_degrees": 10.0,
+    "triangle_relative_wrist_flex_degrees": [
+      6.0,
+      -6.0,
+      0.0
+    ],
+    "triangle_body_joint_deltas_other_than_wrist_flex_degrees": 0.0,
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+  },
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "prospective_no_contact_fixed_wrist_branch_opposite_bias_falsifier",
+    "target_selection": "Use the already physically stable positive-bias shoulder/lift/elbow configuration and change only wrist flex by exactly +10 degrees to reverse simulated wrist bias. Stage 2 then applies the exact normalized +6/-6/0 wrist triangle; stage 3 returns through clearance to stable anchor A before campaign close.",
+    "prior_negative_configuration_rejected_reason": "Its altered lift/elbow configuration sagged beyond the next-stage torque-off anchor gate.",
+    "positive_stage_execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-dual-configuration-wrist-triangle-tricam-v1/stage-2/execution_receipt.json",
+    "positive_stage_execution_receipt_sha256": "76543bcdace47faa7d206f9edda044aac0188cb4b2c7835d9e8689806f30f3a5",
+    "pawn_contact_forbidden": true,
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}
