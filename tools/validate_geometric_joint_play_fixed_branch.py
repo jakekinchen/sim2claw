@@ -43,11 +43,11 @@ CONTRACT_PATH = (
     REPO_ROOT
     / "configs"
     / "evaluations"
-    / "geometric_joint_play_fixed_branch_holdout_v1.json"
+    / "geometric_joint_play_fixed_branch_holdout_v2.json"
 )
-SCHEMA = "sim2claw.geometric_joint_play_fixed_branch_holdout.v1"
+SCHEMA = "sim2claw.geometric_joint_play_fixed_branch_holdout.v2"
 RECEIPT_SCHEMA = (
-    "sim2claw.geometric_joint_play_fixed_branch_holdout_receipt.v1"
+    "sim2claw.geometric_joint_play_fixed_branch_holdout_receipt.v2"
 )
 
 
@@ -104,7 +104,10 @@ def validate(
     _require(contract.get("schema_version") == SCHEMA, "contract schema changed")
     _require(
         contract.get("status")
-        == "prospective_two_configuration_evaluator_frozen_heldout_unopened",
+        == (
+            "prospective_opposite_bias_evaluator_frozen_"
+            "positive_opened_negative_unopened"
+        ),
         "heldout status changed",
     )
     _require(
@@ -118,8 +121,11 @@ def validate(
     _require(
         contract.get("proof_boundary")
         == {
-            "both_heldouts_opened_when_contract_frozen": False,
-            "selection_may_run_after_heldout": False,
+            "fixed_branch_selected_before_both_traces": True,
+            "positive_trace_opened_before_replacement_contract_frozen": True,
+            "negative_trace_opened_when_contract_frozen": False,
+            "replacement_configuration_selected_for_torque_off_stability_not_metrics": True,
+            "selection_may_run_after_negative_trace": False,
             "evaluator_may_refit": False,
             "passing_result_may_admit_pawn_contact": False,
         },
@@ -190,22 +196,37 @@ def validate(
     mechanism = load_servo_load_bias_contract(mechanism_path)
     workcell = _workcell_candidate(selection)
 
-    packet_path = _bound_path(sources["packet"])
-    packet = _load_json(packet_path)
+    packet_bindings = sources["packets"]
     _require(
-        packet.get("plan_sha256") == sources["packet"]["plan_sha256"],
-        "heldout packet plan changed",
+        list(packet_bindings)
+        == ["positive_wrist_bias", "negative_wrist_bias"],
+        "heldout packet set changed",
     )
+    packets: dict[str, dict[str, Any]] = {}
+    packet_paths: dict[str, Path] = {}
+    for packet_id, binding in packet_bindings.items():
+        packet_path = _bound_path(binding)
+        packet = _load_json(packet_path)
+        _require(
+            packet.get("plan_sha256") == binding["plan_sha256"],
+            f"heldout packet plan changed: {packet_id}",
+        )
+        packet_paths[packet_id] = packet_path
+        packets[packet_id] = packet
     stage_specs = sources["heldout_stages"]
     _require(
         len(stage_specs) == 2
-        and [int(stage["stage_index"]) for stage in stage_specs] == [2, 4]
+        and [int(stage["stage_index"]) for stage in stage_specs] == [2, 2]
         and [stage["configuration"] for stage in stage_specs]
         == ["positive_wrist_bias", "negative_wrist_bias"],
         "heldout stage set changed",
     )
     triangle_actions = [
-        _decode_stage(packet["stages"][int(stage["stage_index"]) - 1])[0]
+        _decode_stage(
+            packets[stage["packet_id"]]["stages"][
+                int(stage["stage_index"]) - 1
+            ]
+        )[0]
         for stage in stage_specs
     ]
     triangle_deltas = [
@@ -217,10 +238,10 @@ def validate(
         for delta in triangle_deltas
     ]
     expected_delta_hash = str(
-        sources["packet"]["normalized_triangle_delta_sha256"]
+        sources["normalized_triangle_delta_sha256"]
     )
     _require(
-        sources["packet"]["normalized_triangle_delta_encoding"]
+        sources["normalized_triangle_delta_encoding"]
         == (
             "little_endian_float64_c_order_after_subtracting_"
             "each_stage_row_zero"
@@ -255,6 +276,14 @@ def validate(
     }
     heldouts: list[dict[str, Any]] = []
     for stage_spec in stage_specs:
+        packet_id = str(stage_spec["packet_id"])
+        _require(
+            packet_id == stage_spec["configuration"]
+            and packet_id in packets,
+            "heldout stage packet binding changed",
+        )
+        packet = packets[packet_id]
+        packet_path = packet_paths[packet_id]
         stage_index = int(stage_spec["stage_index"])
         packet_stage = packet["stages"][stage_index - 1]
         _require(
@@ -344,6 +373,7 @@ def validate(
         heldouts.append(
             {
                 "configuration": stage_spec["configuration"],
+                "packet_id": packet_id,
                 "stage_index": stage_index,
                 "source": loaded["source"],
                 "mapped_action_receipt": mapped["action_receipt"],
