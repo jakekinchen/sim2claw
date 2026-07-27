@@ -87,9 +87,11 @@ The next sole writer has this bounded queue:
 2. Freeze the one-parameter family before fitting. Keep the admitted latency,
    gain, damping, geometry, transforms, contact, action bytes, and evaluator
    ownership unchanged.
-3. Fit only `b` on current-pose v1 and historical execution-v4. A read-only
-   proxy selected `b=0.4301 deg`; this number is a post-hoc starting point, not
-   an admitted parameter.
+3. Fit only `b` on historical execution-v4. Current-pose v1 is excluded from
+   formal fitting because its terminal return failure intentionally produced
+   no execution receipt. A read-only proxy that included v1 selected
+   `b=0.4301 deg`; this number remains a post-hoc starting point, not an
+   admitted parameter.
 4. Use v2 only as retrospective validation because it motivated the family.
    Require at least `50%` pan-RMSE reduction, pan maximum absolute error at
    most `0.40 deg`, peak-to-peak disagreement at most `0.25 deg`, identical

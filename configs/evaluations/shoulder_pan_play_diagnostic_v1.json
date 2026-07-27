@@ -1,0 +1,73 @@
+{
+  "schema_version": "sim2claw.shoulder_pan_play_diagnostic.v1",
+  "contract_id": "shoulder_pan_play_diagnostic_20260727_v1",
+  "status": "preregistered_before_fit",
+  "proof_class": "retrospective_action_frozen_actuator_model_diagnostic",
+  "baseline_candidate_config_canonical_sha256": "fbf451821e96c9f236b89feb076b964fd81f52416028f93e627118e296697368",
+  "candidate_family": {
+    "joint_name": "left_shoulder_pan",
+    "formula": "z_i=max(u_i-b,min(u_i+b,z_(i-1)))",
+    "input": "exact_mapped_simulator_action",
+    "effective_target_is_internal_actuator_state": true,
+    "source_action_rewriting": false,
+    "radius_degrees": {
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "step": 0.01
+    },
+    "all_other_parameters_frozen": true
+  },
+  "source_split": {
+    "fit": {
+      "packet_path": "runs/physical_excitation/20260725-follower-only-v1/physical-canary-v1/physical-canary-packet-v2.json",
+      "packet_sha256": "3a3961f5df41836cfb712d28d592963aa7683f2cd6ec93e4e3a9a48ae257ceb3",
+      "execution_receipt_path": "runs/physical_excitation/20260725-follower-only-v1/physical-canary-v1/execution-v4/execution_receipt.json",
+      "execution_receipt_sha256": "2f2f136c5801351c84991782f5718417e92d3469501bb49d189ac31ce93b0c42",
+      "joint_samples_sha256": "08c373b70d5354675373cf20ed922bc23a0ea5654999f92aa1e9b9e8a1533f28",
+      "action_sha256": "129441d03791570782dc8771f13e0b6125dbd5e01369645bd0fd641ee4c22a20"
+    },
+    "retrospective_validation": {
+      "packet_path": "runs/anchored-transfer-canary/fresh-current-pose-v2/physical-canary-packet.json",
+      "packet_sha256": "f43ee003c5aac32e7d33fcc85d483edb3f6adecb15579148f35bf589e259648e",
+      "execution_receipt_path": "runs/anchored-transfer-canary/fresh-current-pose-v2/execution-v1/execution_receipt.json",
+      "execution_receipt_sha256": "fdc0262a34b270ec76263dab1073c109f5d647dd79012a5ba4961ec4544b9240",
+      "joint_samples_sha256": "ae889fa2937884fea36f200bdf08a3e16157192a901583cdd4f73a2e4c8950b6",
+      "action_sha256": "11bdce9bb3db55c446b35103f9ddb71aa45677196b8122edbf928ce3e59e90dd"
+    },
+    "excluded": {
+      "reason": "v1 completed exact samples but intentionally has no execution receipt after its terminal return failure",
+      "packet_path": "runs/anchored-transfer-canary/fresh-current-pose-v1/physical-canary-packet.json",
+      "packet_sha256": "e124dcfedeb593652caac3a31953f638663aa3508e4d1b405ed855cebe3be21d",
+      "joint_samples_path": "runs/anchored-transfer-canary/fresh-current-pose-v1/execution-v1/joint_samples.jsonl",
+      "joint_samples_sha256": "4bced0d7cbb28c8d9fe79f07aa10abbceca4d40e72326b0894cd146802383612",
+      "formal_fit_or_validation_admission": false
+    }
+  },
+  "selection": {
+    "fit_metric": "shoulder_pan_rmse_degrees",
+    "tie_break": "smallest_radius_degrees",
+    "retrospective_validation_used_for_selection": false
+  },
+  "retrospective_validation_gates": {
+    "minimum_pan_rmse_relative_reduction": 0.5,
+    "pan_maximum_absolute_error_degrees_maximum": 0.4,
+    "pan_excursion_disagreement_degrees_maximum": 0.25,
+    "other_body_joint_rmse_regression_degrees_maximum": 0.02,
+    "identical_source_and_mapped_action_hashes": true,
+    "clipping_or_action_assistance_allowed": false
+  },
+  "evaluator": {
+    "implementation": "src/sim2claw/physical_canary_replay.py",
+    "numeric_runtime": "cpu_mujoco_fp64",
+    "self_scored": true
+  },
+  "authority": {
+    "diagnostic_fit": true,
+    "parameter_promotion": false,
+    "transform_promotion": false,
+    "evaluator_admission": false,
+    "physical_execution": false,
+    "physical_task_success": false,
+    "policy": false
+  }
+}
