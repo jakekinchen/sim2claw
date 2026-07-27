@@ -1,0 +1,101 @@
+{
+  "schema_version": "sim2claw.geometric_joint_play_reverse_holdout.v1",
+  "evaluation_id": "geometric_joint_play_reverse_crossing_holdout_20260727_v1",
+  "status": "prospective_evaluator_frozen_heldout_unopened",
+  "proof_class": "action_frozen_no_contact_physical_reverse_play_crossing_heldout",
+  "sources": {
+    "support_implementation": {
+      "path": "tools/validate_geometric_joint_play.py",
+      "sha256": "f5faa010b326b6e7e46b070f90a0672383ac03151c4d591012ca5f844f0ae4c1"
+    },
+    "fit_contract": {
+      "path": "configs/evaluations/geometric_joint_play_reverse_fit_v1.json",
+      "sha256": "bd079713c6131daca61d494d17e01ca3e88ad295ed8c9f4b948dd45fc7def47c"
+    },
+    "fit_receipt": {
+      "path": "runs/geometric-microtransfer/20260727-geometric-joint-play-reverse-fit-v1/fit-receipt.json",
+      "sha256": "e688824554486896f79e0517b0ef660e752dda3a3acd5358b82c5727bad04cc5",
+      "receipt_digest": "2914bc8859e70f91bd81082cb70f09065ba65c701b350eee753baa2082de2415"
+    },
+    "packet": {
+      "path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/packet.json",
+      "sha256": "0d1135fbbc1eb724ac7b48ea461f7618064883d98936e3c2c9754fb8f305912e"
+    },
+    "heldout_stage": {
+      "stage_index": 1,
+      "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/execution_receipt.json",
+      "samples_path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/joint_samples.jsonl",
+      "expected_action_sha256": "51557accc71eac7b5fd2ecd6730ec2eafc16e0a8040e10db0ec59bdcf08f8018",
+      "expected_capture_hold_action_sha256": "f3f342d99e2728b58cfecf895eaf20b6e7f734d75a2896017781174d89e9e814",
+      "expected_sample_count": 441
+    }
+  },
+  "expected_fit": {
+    "parent_expanded_half_width_degrees": {
+      "shoulder_lift": {
+        "with_load": 2.125,
+        "against_load": 2.125
+      },
+      "elbow_flex": {
+        "with_load": 2.125,
+        "against_load": 0.125
+      },
+      "wrist_flex": {
+        "with_load": 1.0,
+        "against_load": 1.0
+      }
+    },
+    "selected_expanded_half_width_degrees": {
+      "shoulder_pan": {
+        "with_load": 0.4,
+        "against_load": 0.4
+      },
+      "shoulder_lift": {
+        "with_load": 2.125,
+        "against_load": 0.0
+      },
+      "elbow_flex": {
+        "with_load": 2.125,
+        "against_load": 0.125
+      },
+      "wrist_flex": {
+        "with_load": 1.0,
+        "against_load": 0.25
+      }
+    },
+    "parameters_promoted": false
+  },
+  "gates": {
+    "selected_joint_rms_must_improve_over_parent": true,
+    "selected_end_effector_rms_must_improve_over_parent": true,
+    "maximum_return_error_degrees": {
+      "shoulder_pan": 1.0,
+      "shoulder_lift": 1.0,
+      "elbow_flex": 1.0,
+      "wrist_flex": 1.0
+    },
+    "all_three_camera_intervals_must_enclose_action": true,
+    "follower_torque_must_be_off_at_close": true
+  },
+  "action_invariance": {
+    "same_packet_bytes_in_sim_and_physical": true,
+    "no_action_correction": true,
+    "no_assistance": true,
+    "no_intervention": true
+  },
+  "proof_boundary": {
+    "heldout_opened_when_contract_frozen": false,
+    "fit_may_run_after_heldout": false,
+    "evaluator_may_refit": false,
+    "passing_result_may_admit_pawn_contact": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_calibration": false,
+    "simulator_parameter_promotion": false,
+    "action_correction": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}
