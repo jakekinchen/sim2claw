@@ -41,7 +41,7 @@
     "capture_scope": "preview_bound_tricam_recovery_to_stable_anchor",
     "target_selection": "Record C922, D405, and Pi before the bounded setup clamp. Preview the full joint-progress hyperrectangle from the raw sagged pose to the clipped command anchor, then slew through the prior 20-mm clearance pose to the stable pre-falsifier anchor before torque-off.",
     "runtime_setup_preview_source_path": "src/sim2claw/wrist_view_reposition.py",
-    "runtime_setup_preview_source_sha256": "e27d49317b554b4188188545d30e571296501cdc7d5bf1b05ac6cedcd56623d6",
+    "runtime_setup_preview_source_sha256": "4f097c92013735d29ccd8100f5064086eb6ec0c83c07747ba00a2dd883fad36f",
     "rejected_predecessor_route_path": "configs/hardware/geometric_negative_bias_anchor_recovery_tricam_v1.json",
     "rejected_predecessor_reason": "Its setup clamp was omitted from the frozen and fresh simulation previews, and its negative-bias endpoint would sag again before a separate stage-4 invocation.",
     "fresh_torque_off_anchor_read": true,
