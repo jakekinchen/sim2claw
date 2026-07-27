@@ -93,6 +93,30 @@ class PawnSourceExpertTest(unittest.TestCase):
         baseline_profile.pop("grasp_offset_xyz_m")
         self.assertEqual(candidate_profile, baseline_profile)
 
+    def test_jaw_margin_follow_up_changes_only_closed_jaw_target(self) -> None:
+        centered_path = ROBUST_MARGIN_PROFILE_PATH.with_name(
+            "c8_a6_preregistered_centered_grasp_v1.json"
+        )
+        baseline = load_expert_profile(centered_path)
+        candidate = load_expert_profile(
+            centered_path.with_name("c8_a6_preregistered_jaw_margin_v1.json")
+        )
+        self.assertEqual(
+            candidate["profile_id"], "c8_a6_preregistered_jaw_margin_v1"
+        )
+        self.assertFalse(candidate["physical_authority"])
+        self.assertEqual(
+            candidate["selection_boundary"], baseline["selection_boundary"]
+        )
+        candidate_profile = dict(candidate["profile"])
+        baseline_profile = dict(baseline["profile"])
+        self.assertEqual(
+            candidate_profile.pop("closed_jaw_joint_target_rad"),
+            -0.1727003294848389,
+        )
+        baseline_profile.pop("closed_jaw_joint_target_rad")
+        self.assertEqual(candidate_profile, baseline_profile)
+
 
 if __name__ == "__main__":
     unittest.main()
