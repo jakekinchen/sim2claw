@@ -875,6 +875,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     source_expert.add_argument("--output", type=Path, required=True)
     source_expert.add_argument("--render-size", type=int, default=224)
+    source_expert.add_argument("--expert-profile", type=Path, default=None)
 
     source_adapt = subparsers.add_parser(
         "source-adapt",
@@ -2469,7 +2470,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .pawn_source_expert import collect_pawn_source_expert_candidate
 
         report = collect_pawn_source_expert_candidate(
-            args.output, render_size=args.render_size
+            args.output,
+            render_size=args.render_size,
+            expert_profile_path=args.expert_profile,
         )
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0

@@ -65,6 +65,10 @@ EXPERT_MECHANISM_ID = "c8_a6_camera_clear_strict_candidate_v10"
 PAWN_JAW_SHUT_RAD = -0.15
 PAWN_NECK_HEIGHT_M = 0.038
 LIFT_CLEARANCE_M = 0.09
+EXPERT_PROFILE_SCHEMA = "sim2claw.pawn_source_expert_profile.v1"
+ROBUST_MARGIN_PROFILE_PATH = (
+    REPO_ROOT / "configs" / "tasks" / "c8_a6_robust_margin_profile_v1.json"
+)
 
 
 def expert_phase_counts() -> dict[str, int]:
@@ -87,6 +91,45 @@ def expert_phase_counts() -> dict[str, int]:
 
 def expected_action_count() -> int:
     return sum(expert_phase_counts().values())
+
+
+def load_expert_profile(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    expected_keys = {
+        "schema_version",
+        "profile_id",
+        "purpose",
+        "selection_boundary",
+        "profile",
+        "proof_class",
+        "physical_authority",
+    }
+    if set(payload) != expected_keys:
+        raise ValueError("expert profile top-level keys differ")
+    if payload["schema_version"] != EXPERT_PROFILE_SCHEMA:
+        raise ValueError("unsupported expert profile schema")
+    if (
+        not isinstance(payload["profile_id"], str)
+        or not payload["profile_id"]
+    ):
+        raise ValueError("expert profile id is missing")
+    if payload["proof_class"] != "simulation_geometric_expert_profile_only":
+        raise ValueError("expert profile proof class changed")
+    if payload["physical_authority"] is not False:
+        raise ValueError("expert profile cannot grant physical authority")
+    boundary = payload["selection_boundary"]
+    if boundary != {
+        "action_frozen_after_selection": True,
+        "board_x_mm": 0.5,
+        "board_y_mm": 0.5,
+        "board_yaw_deg": 0.1,
+        "joint_zero_deg": 0.1,
+        "assistance_frames": 0,
+    }:
+        raise ValueError("expert profile selection boundary changed")
+    if not isinstance(payload["profile"], dict):
+        raise ValueError("expert profile payload is not an object")
+    return payload
 
 
 def _integration_state(model: mujoco.MjModel, data: mujoco.MjData) -> list[float]:
@@ -150,6 +193,8 @@ def collect_pawn_source_expert_candidate(
     render_size: int = 224,
     corrective_action_overrides: Mapping[int, Sequence[float]] | None = None,
     correction_lineage: Mapping[str, Any] | None = None,
+    expert_profile: Mapping[str, Any] | None = None,
+    expert_profile_path: Path | None = None,
 ) -> dict[str, Any]:
     """Write the bounded current-scene source candidate.
 
@@ -166,6 +211,63 @@ def collect_pawn_source_expert_candidate(
         raise ValueError("the frozen expert destination is no longer declared")
     if render_size < 64:
         raise ValueError("source RGB render size must be at least 64 pixels")
+    if expert_profile is not None and expert_profile_path is not None:
+        raise ValueError("provide expert profile values or a profile path, not both")
+    profile_payload = (
+        load_expert_profile(expert_profile_path)
+        if expert_profile_path is not None
+        else None
+    )
+    supplied_profile = (
+        profile_payload["profile"]
+        if profile_payload is not None
+        else expert_profile
+    )
+    profile = {
+        "pawn_neck_height_m": PAWN_NECK_HEIGHT_M,
+        "grasp_offset_xyz_m": [0.0, 0.0, 0.0],
+        "closed_jaw_joint_target_rad": PAWN_JAW_SHUT_RAD,
+        "lift_clearance_m": LIFT_CLEARANCE_M,
+        "release_clearance_m": 0.005,
+        "partial_release_joint_target_rad": 0.15,
+        "vertical_extract_m": 0.08,
+    }
+    if supplied_profile is not None:
+        unknown = set(supplied_profile) - set(profile)
+        if unknown:
+            raise ValueError(f"unknown expert profile keys: {sorted(unknown)}")
+        profile.update(supplied_profile)
+    grasp_offset = np.asarray(profile["grasp_offset_xyz_m"], dtype=np.float64)
+    if grasp_offset.shape != (3,) or not np.isfinite(grasp_offset).all():
+        raise ValueError("expert grasp offset must be a finite xyz vector")
+    if np.any(np.abs(grasp_offset) > 0.01):
+        raise ValueError("expert grasp offset exceeds the 10 mm search bound")
+    for field, lower, upper in (
+        ("pawn_neck_height_m", 0.025, 0.050),
+        ("closed_jaw_joint_target_rad", -0.17453, 0.20),
+        ("lift_clearance_m", 0.06, 0.12),
+        ("release_clearance_m", 0.001, 0.020),
+        ("partial_release_joint_target_rad", 0.05, 1.50),
+        ("vertical_extract_m", 0.05, 0.12),
+    ):
+        value = float(profile[field])
+        if not np.isfinite(value) or not lower <= value <= upper:
+            raise ValueError(f"expert profile {field} exceeds its search bound")
+        profile[field] = value
+    profile_id = (
+        profile_payload["profile_id"]
+        if profile_payload is not None
+        else (
+            "default_c8_a6_camera_clear_strict_candidate_v10"
+            if supplied_profile is None
+            else "ad_hoc_bounded_simulation_profile"
+        )
+    )
+    profile_sha256 = (
+        sha256_file(expert_profile_path)
+        if expert_profile_path is not None
+        else canonical_digest(profile)
+    )
 
     normalized_overrides: dict[int, np.ndarray] = {}
     if corrective_action_overrides is not None:
@@ -344,10 +446,10 @@ def collect_pawn_source_expert_candidate(
         [
             initial_piece_position[0],
             initial_piece_position[1],
-            initial_piece_position[2] + PAWN_NECK_HEIGHT_M,
+            initial_piece_position[2] + profile["pawn_neck_height_m"],
         ],
         dtype=np.float64,
-    )
+    ) + grasp_offset
     stand_off = neck + np.asarray([away[0] * 0.055, away[1] * 0.055, 0.03])
 
     initial_path = output_directory / "initial_evaluator_privileged_state.json"
@@ -561,11 +663,11 @@ def collect_pawn_source_expert_candidate(
         advance = solve_goal(neck, JAW_OPEN_RAD)
         execute_phase("advance", advance, 38)
         close = advance.copy()
-        close[-1] = PAWN_JAW_SHUT_RAD
+        close[-1] = profile["closed_jaw_joint_target_rad"]
         execute_phase("close", close, 42)
         lift_goal = solve_goal(
-            neck + np.asarray([0.0, 0.0, LIFT_CLEARANCE_M]),
-            PAWN_JAW_SHUT_RAD,
+            neck + np.asarray([0.0, 0.0, profile["lift_clearance_m"]]),
+            profile["closed_jaw_joint_target_rad"],
         )
         execute_phase("lift", lift_goal, 60)
         if float(data.xpos[piece_body][2] - initial_piece_position[2]) < 0.04:
@@ -576,7 +678,7 @@ def collect_pawn_source_expert_candidate(
         ]
         start_pinch = _pinch_point(model, data, "left", pinch_local).copy()
         target_pinch = target_position + held_offset + np.asarray(
-            [0.0, 0.0, LIFT_CLEARANCE_M]
+            [0.0, 0.0, profile["lift_clearance_m"]]
         )
         transit_start = len(rows)
         planned_action = lift_goal
@@ -584,7 +686,7 @@ def collect_pawn_source_expert_candidate(
             point = start_pinch + (waypoint / 40.0) * (target_pinch - start_pinch)
             planned_action = solve_goal(
                 point,
-                PAWN_JAW_SHUT_RAD,
+                profile["closed_jaw_joint_target_rad"],
                 seed_action=planned_action,
             )
             execute_phase("transit", planned_action, 3, ramp=3)
@@ -609,7 +711,7 @@ def collect_pawn_source_expert_candidate(
         )
         air_recenter_goal = solve_goal(
             _pinch_point(model, data, "left", pinch_local) + correction,
-            PAWN_JAW_SHUT_RAD,
+            profile["closed_jaw_joint_target_rad"],
             seed_action=planned_action,
         )
         execute_phase(
@@ -621,14 +723,16 @@ def collect_pawn_source_expert_candidate(
 
         start_pinch = _pinch_point(model, data, "left", pinch_local).copy()
         held_offset = start_pinch - data.xpos[piece_body]
-        target_pinch = target_position + held_offset + np.asarray([0.0, 0.0, 0.005])
+        target_pinch = target_position + held_offset + np.asarray(
+            [0.0, 0.0, profile["release_clearance_m"]]
+        )
         lower_start = len(rows)
         planned_action = air_recenter_goal
         for waypoint in range(1, 31):
             point = start_pinch + (waypoint / 30.0) * (target_pinch - start_pinch)
             planned_action = solve_goal(
                 point,
-                PAWN_JAW_SHUT_RAD,
+                profile["closed_jaw_joint_target_rad"],
                 seed_action=planned_action,
             )
             execute_phase(
@@ -648,14 +752,15 @@ def collect_pawn_source_expert_candidate(
         )
 
         partial_release = data.ctrl[actuator_ids].copy()
-        partial_release[-1] = 0.15
+        partial_release[-1] = profile["partial_release_joint_target_rad"]
         execute_phase("partial_release", partial_release, 30, ramp=20)
         current_pinch = _pinch_point(model, data, "left", pinch_local)
         execute_phase(
             "vertical_extract",
             solve_goal(
-                current_pinch + np.asarray([0.0, 0.0, 0.08]),
-                0.15,
+                current_pinch
+                + np.asarray([0.0, 0.0, profile["vertical_extract_m"]]),
+                profile["partial_release_joint_target_rad"],
                 seed_action=planned_action,
             ),
             35,
@@ -782,6 +887,8 @@ def collect_pawn_source_expert_candidate(
                 else None
             ),
             "generator_path": "src/sim2claw/pawn_source_expert.py",
+            "expert_profile_id": profile_id,
+            "expert_profile_sha256": profile_sha256,
             "generator_sha256": sha256_file(Path(__file__)),
             "source_episode_module_sha256": sha256_file(
                 REPO_ROOT / "src" / "sim2claw" / "source_episode.py"
@@ -838,17 +945,24 @@ def collect_pawn_source_expert_candidate(
         },
         "expert_schedule": {
             "mechanism_id": EXPERT_MECHANISM_ID,
+            "expert_profile_id": profile_id,
+            "expert_profile_sha256": profile_sha256,
             "phase_counts": expert_phase_counts(),
             "phase_runs": sorted(phase_runs, key=lambda run: run["start_sample_index"]),
             "maximum_ik_residual_m": maximum_ik_residual,
-            "release_clearance_m": 0.005,
-            "partial_release_joint_target_rad": 0.15,
-            "closed_jaw_joint_target_rad": PAWN_JAW_SHUT_RAD,
-            "pawn_neck_height_m": PAWN_NECK_HEIGHT_M,
-            "lift_clearance_m": LIFT_CLEARANCE_M,
+            "release_clearance_m": profile["release_clearance_m"],
+            "partial_release_joint_target_rad": profile[
+                "partial_release_joint_target_rad"
+            ],
+            "closed_jaw_joint_target_rad": profile[
+                "closed_jaw_joint_target_rad"
+            ],
+            "pawn_neck_height_m": profile["pawn_neck_height_m"],
+            "grasp_offset_xyz_m": grasp_offset.astype(float).tolist(),
+            "lift_clearance_m": profile["lift_clearance_m"],
             "transit_path": "cartesian_waypoints_with_previous_planned_ik_seed",
             "capture_guard_minimum_current_rise_m": 0.04,
-            "vertical_extract_m": 0.08,
+            "vertical_extract_m": profile["vertical_extract_m"],
             "corrective_override_start_sample_index": (
                 min(normalized_overrides) if normalized_overrides else None
             ),

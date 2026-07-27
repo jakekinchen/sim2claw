@@ -7,9 +7,11 @@ from sim2claw.pawn_source_expert import (
     LIFT_CLEARANCE_M,
     PAWN_JAW_SHUT_RAD,
     PAWN_NECK_HEIGHT_M,
+    ROBUST_MARGIN_PROFILE_PATH,
     SOURCE_PIECE_ID,
     expected_action_count,
     expert_phase_counts,
+    load_expert_profile,
 )
 from sim2claw.source_episode import CONTRACT_PATH_V3, load_source_contract
 
@@ -38,6 +40,34 @@ class PawnSourceExpertTest(unittest.TestCase):
         self.assertEqual(
             contract["simulation_reset"]["reset_id"],
             "c8_standoff_collision_free_reset_v1",
+        )
+
+    def test_robust_margin_profile_is_simulation_only_and_preregistered(self) -> None:
+        payload = load_expert_profile(ROBUST_MARGIN_PROFILE_PATH)
+        self.assertEqual(
+            payload["profile_id"], "c8_a6_robust_margin_profile_v1"
+        )
+        self.assertFalse(payload["physical_authority"])
+        self.assertEqual(
+            payload["selection_boundary"],
+            {
+                "action_frozen_after_selection": True,
+                "board_x_mm": 0.5,
+                "board_y_mm": 0.5,
+                "board_yaw_deg": 0.1,
+                "joint_zero_deg": 0.1,
+                "assistance_frames": 0,
+            },
+        )
+        self.assertEqual(
+            payload["profile"]["grasp_offset_xyz_m"],
+            [-0.004, -0.0015, 0.0],
+        )
+        self.assertEqual(
+            payload["profile"]["closed_jaw_joint_target_rad"], -0.17453
+        )
+        self.assertEqual(
+            payload["profile"]["partial_release_joint_target_rad"], 0.8
         )
 
 
