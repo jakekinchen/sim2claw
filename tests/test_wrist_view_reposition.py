@@ -30,6 +30,9 @@ from sim2claw.wrist_view_reposition import (
 
 PORT = "/dev/follower-fixture"
 CALIBRATION = "a" * 64
+PI_MOTION_CONTRACT_SHA256 = (
+    "457f2c142671851ddd60a3f1be5487125605957e38c1b2730ab683e08488393f"
+)
 LOWER = np.asarray([-120.263736, -107.5, -102.5, -107.5, -180.0, 0.0])
 UPPER = np.asarray([120.263736, 107.5, 102.5, 107.5, 180.0, 100.0])
 ROUTE_ANCHOR = np.asarray(
@@ -124,7 +127,8 @@ def _tricam_route(path: Path) -> None:
             "pi_motion_video": {
                 "contract_path": (
                     "configs/acquisition/pi_imx708_motion_video_15s_v1.json"
-                )
+                ),
+                "contract_sha256": PI_MOTION_CONTRACT_SHA256,
             },
             "reviewed_anchor_degrees": ROUTE_ANCHOR.tolist(),
             "stage_targets_degrees": [ROUTE_TARGETS[0].tolist()],
@@ -147,7 +151,8 @@ def _tricam_round_trip_route(path: Path) -> None:
             "pi_motion_video": {
                 "contract_path": (
                     "configs/acquisition/pi_imx708_motion_video_15s_v1.json"
-                )
+                ),
+                "contract_sha256": PI_MOTION_CONTRACT_SHA256,
             },
             "reviewed_anchor_degrees": ROUTE_ANCHOR.tolist(),
             "stage_waypoints_degrees": [
@@ -221,8 +226,13 @@ class _Gateway:
             "follower_requested_degrees": values,
             "follower_command_degrees": values,
             "follower_actual_position_degrees": values,
+            "tracking_error_limits": [6.0, 8.0, 6.0, 6.0, 8.0, 12.0],
             "rate_limited": False,
             "safety_clamped": False,
+            "stalled": False,
+            "stalled_joints": [],
+            "assistance": False,
+            "intervention": False,
         }
 
     def close(self) -> None:
@@ -243,6 +253,18 @@ class _GatewayOpenFailure(_Gateway):
             setup_command_anchor_degrees=setup_command_anchor_degrees,
         )
         raise RuntimeError("fixture gateway open failure")
+
+
+class _UnsafeSampleGateway(_Gateway):
+    def sample(
+        self, timestamp: float, *, exact_requested_degrees: np.ndarray
+    ) -> dict[str, object]:
+        sample = super().sample(
+            timestamp, exact_requested_degrees=exact_requested_degrees
+        )
+        sample["stalled"] = True
+        sample["stalled_joints"] = ["elbow_flex"]
+        return sample
 
 
 class _Capture:
@@ -1131,6 +1153,54 @@ def test_camera_start_failure_still_closes_gateway_torque_off(tmp_path: Path) ->
     )
     assert gateway.closed
     assert receipt["status"] == "stopped_safely"
+    assert receipt["physical_follower_torque_enabled"] is False
+
+
+def test_reported_unsafe_sample_aborts_immediately_and_closes_torque_off(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    review_path = tmp_path / "review.json"
+    output = tmp_path / "unsafe-sample-execution"
+    _candidate_manifest(manifest_path)
+    _route(route_path)
+    compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+    review_wrist_view_reposition_packet(
+        packet_path,
+        review_path,
+        reviewer="fixture-reviewer",
+        decision_id="fixture-decision",
+    )
+    gateway = _UnsafeSampleGateway(ROUTE_ANCHOR)
+
+    with pytest.raises(WristViewRepositionError, match="safely track"):
+        execute_wrist_view_reposition_stage(
+            packet_path,
+            review_path,
+            output,
+            stage_index=1,
+            operator_acknowledged=True,
+            preflight_fn=_preflight,
+            gateway_factory=lambda identity: gateway,
+            capture_factory=lambda path: _Capture(path),
+            clock_fn=lambda: 0.0,
+            sleep_fn=lambda delay: None,
+        )
+
+    receipt = json.loads(
+        (output / "execution_receipt.json").read_text(encoding="utf-8")
+    )
+    assert gateway.closed
+    assert len(gateway.samples) == 1
+    assert receipt["status"] == "stopped_safely"
+    assert receipt["completed_samples"] == 0
     assert receipt["physical_follower_torque_enabled"] is False
 
 

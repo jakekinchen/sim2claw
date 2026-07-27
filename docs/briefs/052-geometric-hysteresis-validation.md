@@ -1,6 +1,6 @@
 # Brief 052: geometric hysteresis validation
 
-Status: active
+Status: completed; frozen symmetric-deadband candidate rejected
 Branch: `codex/geometric-microtransfer-20260727`
 Proof target: one prospective, no-contact, simulator-derived Cartesian
 out-and-back whose exact float64 actions are replayed on the follower while
@@ -72,3 +72,24 @@ After motion:
 Failure rejects the tied symmetric-deadband assumption. It does not authorize
 post-hoc action correction. Pawn contact remains forbidden until a new
 held-out geometric route passes.
+
+## Closeout
+
+The exact 441-row action completed without clamp, rate limit, stall,
+assistance, intervention, or contact. C922, D405, and Pi all enclosed the
+motion and hold. Follower torque was off at close. The final return residuals
+were `+0.088°` lift, `-0.440°` elbow, and `+0.176°` wrist flex, so the physical
+return gate passed.
+
+On this previously unopened trace, the selected symmetric deadband improved
+joint RMS by `14.9%` over the prior lift/elbow deadband but worsened
+end-effector RMS by `12.0%`. It therefore failed the required two-metric gate
+and is not promoted. No pawn-contact action is admitted from this result.
+
+A readiness audit completed after the physical transaction and found two
+executor hardening gaps: unsafe gateway samples were not rejected immediately,
+and the Pi capture contract was path-bound but not content-hash-bound. The
+executed trace contained none of the unsafe sample conditions. Both guards are
+now required before compiling any future physical packet; the original
+executed route remains immutable, and a hash-bound v2 route supersedes it for
+future use.

@@ -1,0 +1,45 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_vertical_round_trip_tricam_20260727_v2",
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_15s_v1.json",
+    "contract_sha256": "457f2c142671851ddd60a3f1be5487125605957e38c1b2730ab683e08488393f"
+  },
+  "reviewed_anchor_degrees": [
+    -8.351648351648352,
+    -106.54945054945055,
+    100.0,
+    -95.34065934065934,
+    -126.37362637362638,
+    1.66270783847981
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -8.37183374056672,
+        -103.6912516433677,
+        93.55583228885439,
+        -91.215327522612,
+        -126.46198329960663,
+        1.66270783847981
+      ],
+      [
+        -8.351648351648352,
+        -106.54945054945055,
+        100.0,
+        -95.34065934065934,
+        -126.37362637362638,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "future_no_contact_geometric_hysteresis_validation",
+    "supersedes_route_for_future_execution": "geometric_vertical_round_trip_tricam_20260727_v1",
+    "executor_requires_immediate_sample_abort": true,
+    "pawn_contact_forbidden": true
+  }
+}

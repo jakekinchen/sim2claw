@@ -322,6 +322,49 @@ def _joint_delta(current: np.ndarray, expected: np.ndarray) -> np.ndarray:
     return delta
 
 
+def _validated_gateway_actual(
+    sample: Mapping[str, Any],
+    target: np.ndarray,
+    *,
+    phase: str,
+) -> np.ndarray:
+    requested = np.asarray(
+        sample.get("follower_requested_degrees"), dtype="<f8"
+    )
+    sent = np.asarray(sample.get("follower_command_degrees"), dtype="<f8")
+    actual = np.asarray(
+        sample.get("follower_actual_position_degrees"), dtype=np.float64
+    )
+    limits = np.asarray(sample.get("tracking_error_limits"), dtype=np.float64)
+    stalled_joints = sample.get("stalled_joints")
+    _require(
+        requested.shape == (6,)
+        and sent.shape == (6,)
+        and actual.shape == (6,)
+        and limits.shape == (6,)
+        and np.all(np.isfinite(requested))
+        and np.all(np.isfinite(sent))
+        and np.all(np.isfinite(actual))
+        and np.all(np.isfinite(limits))
+        and np.all(limits > 0.0),
+        f"gateway returned malformed or non-finite {phase} telemetry",
+    )
+    _require(
+        requested.tobytes() == target.tobytes()
+        and sent.tobytes() == target.tobytes()
+        and not bool(sample.get("rate_limited"))
+        and not bool(sample.get("safety_clamped"))
+        and not bool(sample.get("stalled"))
+        and isinstance(stalled_joints, list)
+        and not stalled_joints
+        and not bool(sample.get("assistance"))
+        and not bool(sample.get("intervention"))
+        and np.all(np.abs(_joint_delta(actual, target)) <= limits),
+        f"gateway modified or could not safely track a frozen {phase} action",
+    )
+    return actual
+
+
 def _load_route(
     route_path: Path,
 ) -> tuple[dict[str, Any], np.ndarray, list[np.ndarray]]:
@@ -377,11 +420,21 @@ def _load_route(
         )
     if capture_mode == CAPTURE_MODE_TRICAM:
         capture = route.get("pi_motion_video")
+        contract_path = Path(str((capture or {}).get("contract_path") or ""))
+        if not contract_path.is_absolute():
+            contract_path = Path(__file__).resolve().parents[2] / contract_path
+        contract_sha256 = str((capture or {}).get("contract_sha256") or "")
         _require(
             route.get("capture_during_motion") is True
             and isinstance(capture, Mapping)
             and bool(str(capture.get("contract_path") or "")),
-            "motion-tricam mode requires a bound Pi video contract",
+            "motion-tricam mode requires a Pi video contract",
+        )
+        _require(
+            contract_path.is_file()
+            and len(contract_sha256) == 64
+            and _sha256(contract_path.resolve()) == contract_sha256,
+            "motion-tricam mode requires a content-hash-bound Pi video contract",
         )
     return route, anchor, waypoint_stages
 
@@ -1553,8 +1606,11 @@ def execute_wrist_view_reposition_stage(
                 )
             contract_path = contract_path.resolve()
             _require(
-                contract_path.is_file(),
-                "bound Pi motion-video contract does not exist",
+                contract_path.is_file()
+                and len(str(specification.get("contract_sha256") or "")) == 64
+                and _sha256(contract_path)
+                == str(specification["contract_sha256"]),
+                "bound Pi motion-video contract changed after review",
             )
             return MotionTricamRecorder(
                 capture_root,
@@ -1610,21 +1666,10 @@ def execute_wrist_view_reposition_stage(
                 sample = gateway.sample(
                     float(timestamp), exact_requested_degrees=target
                 )
-                requested = np.asarray(
-                    sample.get("follower_requested_degrees"), dtype="<f8"
-                )
-                sent = np.asarray(
-                    sample.get("follower_command_degrees"), dtype="<f8"
-                )
-                _require(
-                    requested.tobytes() == target.tobytes()
-                    and sent.tobytes() == target.tobytes()
-                    and not sample.get("rate_limited")
-                    and not sample.get("safety_clamped"),
-                    "gateway modified, clipped, or rate-limited a frozen action",
-                )
-                actual = np.asarray(
-                    sample["follower_actual_position_degrees"], dtype=np.float64
+                actual = _validated_gateway_actual(
+                    sample,
+                    target,
+                    phase="motion",
                 )
                 handle.write(
                     json.dumps(
@@ -1671,21 +1716,10 @@ def execute_wrist_view_reposition_stage(
                     float(timestamps[-1] + timestamp),
                     exact_requested_degrees=target,
                 )
-                requested = np.asarray(
-                    sample.get("follower_requested_degrees"), dtype="<f8"
-                )
-                sent = np.asarray(
-                    sample.get("follower_command_degrees"), dtype="<f8"
-                )
-                _require(
-                    requested.tobytes() == target.tobytes()
-                    and sent.tobytes() == target.tobytes()
-                    and not sample.get("rate_limited")
-                    and not sample.get("safety_clamped"),
-                    "gateway modified, clipped, or rate-limited a frozen hold action",
-                )
-                actual = np.asarray(
-                    sample["follower_actual_position_degrees"], dtype=np.float64
+                actual = _validated_gateway_actual(
+                    sample,
+                    target,
+                    phase="hold",
                 )
                 host_ns = int(round(clock_fn() * 1e9))
                 record = {
