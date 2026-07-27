@@ -170,6 +170,31 @@ def build_parser() -> argparse.ArgumentParser:
             "disabled by default and incompatible with --read-only"
         ),
     )
+    real_to_sim = subparsers.add_parser(
+        "real-to-sim-transfer",
+        help=(
+            "publish one observed-joint REAL-to-SIM comparison in the existing "
+            "Studio episode library"
+        ),
+    )
+    real_to_sim.add_argument("--recording-directory", type=Path, required=True)
+    real_to_sim.add_argument("--source-square", required=True)
+    real_to_sim.add_argument("--destination-square", required=True)
+    real_to_sim.add_argument("--grasp-index", type=int, required=True)
+    real_to_sim.add_argument("--release-index", type=int, required=True)
+    real_to_sim.add_argument(
+        "--camera-evaluation",
+        type=Path,
+        default=REPO_ROOT
+        / "runs/c922-board-base-registration/"
+        "20260726-current-c922-pose-p2-successor-v1/evaluation.json",
+    )
+    real_to_sim.add_argument(
+        "--scene-registration",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/evaluations/img5349_3dgs_board_registration_v1.json",
+    )
 
     project_pack = subparsers.add_parser(
         "project-pack", help="create a hash-bound project evidence bundle"
@@ -1304,6 +1329,20 @@ def main(argv: Sequence[str] | None = None) -> int:
             read_only=args.read_only,
             enable_physical_demo=args.enable_physical_demo,
         )
+        return 0
+    if args.command == "real-to-sim-transfer":
+        from .real_to_sim_transfer import publish_real_to_sim_comparison
+
+        report = publish_real_to_sim_comparison(
+            args.recording_directory,
+            visual_source_square=args.source_square,
+            visual_destination_square=args.destination_square,
+            grasp_index=args.grasp_index,
+            release_index=args.release_index,
+            camera_evaluation_path=args.camera_evaluation,
+            scene_registration_path=args.scene_registration,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
         return 0
     if args.command == "project-pack":
         from .project_bundle import pack_project

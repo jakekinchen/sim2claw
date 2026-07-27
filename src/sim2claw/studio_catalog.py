@@ -87,6 +87,7 @@ RANKED_GRASP_PUBLICATION_SCHEMA = (
 )
 PHYSICAL_EPISODE_LIBRARY_TASK = "physical_pawn_episode_library_v1"
 COMPARISON_SCHEMA_VERSION = "sim2claw.studio_episode_comparison.v1"
+PHASE_A_COMPARISON_RECEIPT = "phase_a_comparison_receipt.json"
 CURRENT_MEASUREMENT_TASK = "current_100mm_measurement_v1"
 DUAL_CAMERA_CAPTURE_SCHEMA = "sim2claw.dual_camera_physical_replay_capture.v1"
 DUAL_CAMERA_STUDIO_RECEIPT_SCHEMA = (
@@ -323,6 +324,54 @@ def _verified_physical_sim_replay(
     if inspection is None:
         return {}, None
     return replay_receipt, inspection
+
+
+def _verified_phase_a_comparison(
+    source_receipt_path: Path,
+    source_receipt: dict[str, Any],
+    recording_id: str,
+) -> dict[str, Any]:
+    """Admit one adjacent, hash-bound REAL-to-SIM comparison artifact."""
+
+    path = source_receipt_path.parent / PHASE_A_COMPARISON_RECEIPT
+    comparison = _read_json(path)
+    selected = _as_mapping(comparison.get("selected_source"))
+    outputs = _as_mapping(comparison.get("outputs"))
+    evaluator = _as_mapping(comparison.get("evaluator"))
+    visual = _as_mapping(comparison.get("visual_twin"))
+    physics = _as_mapping(comparison.get("physics_replay"))
+    if (
+        comparison.get("schema_version") != COMPARISON_SCHEMA_VERSION
+        or comparison.get("phase") != "A_real_to_sim"
+        or selected.get("recording_id") != recording_id
+        or selected.get("source_receipt_sha256")
+        != sha256_file(source_receipt_path)
+        or selected.get("samples_sha256")
+        != source_receipt.get("samples_sha256")
+        or evaluator.get("phase_a_artifact_passed") is not True
+        or evaluator.get("physics_lane_fail_closed") is not True
+        or evaluator.get("physics_task_success") is not False
+        or visual.get("available") is not True
+        or visual.get("physics_authority") is not False
+        or physics.get("available") is not False
+        or physics.get("fail_closed") is not True
+        or physics.get("simulator_applied_action_sha256") is not None
+    ):
+        return {}
+
+    for path_field, digest_field in (
+        ("comparison_video_path", "comparison_video_sha256"),
+        ("poster_path", "poster_sha256"),
+        ("kinematic_state_trace_path", "kinematic_state_trace_sha256"),
+    ):
+        value = str(outputs.get(path_field) or "")
+        digest = str(outputs.get(digest_field) or "")
+        if not value or Path(value).name != value or not _is_sha256(digest):
+            return {}
+        artifact = source_receipt_path.parent / value
+        if not artifact.is_file() or sha256_file(artifact) != digest:
+            return {}
+    return comparison
 
 
 def _proof_label(proof_class: str) -> str:
@@ -1738,12 +1787,18 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
         recording_id = str(receipt.get("recording_id") or sequence)
         ranked_replay = ranked_by_recording.get(recording_id)
         replay_receipt: dict[str, Any] = {}
+        phase_a_comparison: dict[str, Any] = {}
         if mode == "physical_follower":
             replay_receipt, inspection = _verified_physical_sim_replay(
                 receipt_path,
                 receipt,
                 recording_id,
                 repo_root,
+            )
+            phase_a_comparison = _verified_phase_a_comparison(
+                receipt_path,
+                receipt,
+                recording_id,
             )
             if not replay_receipt:
                 inspection = (
@@ -1902,6 +1957,42 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                     "metric_depth": False,
                 }
             )
+        if phase_a_comparison:
+            phase_outputs = _as_mapping(phase_a_comparison.get("outputs"))
+            comparison_video_path = receipt_path.parent / str(
+                phase_outputs["comparison_video_path"]
+            )
+            comparison_duration = float(
+                phase_a_comparison.get("timing_and_frame_lineage", {}).get(
+                    "output_frame_count", 0
+                )
+            ) / max(
+                1.0,
+                float(
+                    phase_a_comparison.get(
+                        "timing_and_frame_lineage", {}
+                    ).get("output_fps", 0)
+                ),
+            )
+            recording_feeds.insert(
+                0,
+                {
+                    "id": "phase-a-comparison",
+                    "title": "Phase A proof",
+                    "camera": "C922 + observed-joint MuJoCo",
+                    "kind": "real_to_sim_comparison",
+                    "role": "reviewer_visible_three_lane_comparison",
+                    "url": media_url(comparison_video_path, repo_root),
+                    "window_start_seconds": 0.0,
+                    "window_end_seconds": comparison_duration,
+                    "display_rotation_degrees": 0,
+                    "sha256": phase_outputs[
+                        "comparison_video_sha256"
+                    ],
+                    "diagnostic_only": True,
+                    "metric_depth": False,
+                },
+            )
         media = (
             {
                 "kind": "video",
@@ -1915,6 +2006,20 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
             if overhead_hashes_valid
             else {"kind": "none"}
         )
+        if phase_a_comparison:
+            phase_outputs = _as_mapping(phase_a_comparison.get("outputs"))
+            comparison_video_path = receipt_path.parent / str(
+                phase_outputs["comparison_video_path"]
+            )
+            media = {
+                "kind": "video",
+                "url": media_url(comparison_video_path, repo_root),
+                "window_start_seconds": 0.0,
+                "window_end_seconds": recording_feeds[0][
+                    "window_end_seconds"
+                ],
+                "display_rotation_degrees": 0,
+            }
         metrics = [
             _metric("Samples", receipt.get("sample_count", "—")),
             _metric("Rate", receipt.get("sample_hz", "—"), unit="Hz"),
@@ -1946,6 +2051,25 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                             2,
                         ),
                         unit="deg",
+                    ),
+                ]
+            )
+        if phase_a_comparison:
+            phase_evaluator = _as_mapping(
+                phase_a_comparison.get("evaluator")
+            )
+            metrics.extend(
+                [
+                    _metric("REAL → SIM", "Partial", tone="warning"),
+                    _metric(
+                        "Physics gate",
+                        "Blocked"
+                        if phase_evaluator.get(
+                            "exact_action_replay_eligible"
+                        )
+                        is False
+                        else "Eligible",
+                        tone="warning",
                     ),
                 ]
             )
@@ -2152,21 +2276,132 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                     ),
                 },
             }
+            if phase_a_comparison:
+                phase_visual = _as_mapping(
+                    phase_a_comparison.get("visual_twin")
+                )
+                phase_physics = _as_mapping(
+                    phase_a_comparison.get("physics_replay")
+                )
+                phase_outputs = _as_mapping(
+                    phase_a_comparison.get("outputs")
+                )
+                comparison = {
+                    "schema_version": COMPARISON_SCHEMA_VERSION,
+                    "timeline_alignment": (
+                        "source_sample_index_with_original_camera_timestamp_lookup"
+                    ),
+                    "composite_video": {
+                        "available": True,
+                        "kind": "mobile_vertical_three_lane_mp4",
+                        "sha256": phase_outputs[
+                            "comparison_video_sha256"
+                        ],
+                    },
+                    "real": {
+                        "available": True,
+                        "proof_class": source_proof_class,
+                        "camera": "C922 overhead",
+                        "source_pixels": True,
+                    },
+                    "visual_twin": {
+                        "available": True,
+                        "kind": "observed_joint_kinematic_reconstruction",
+                        "camera_alignment": (
+                            "current_conditional_c922_visual_only"
+                        ),
+                        "source_pixels": False,
+                        "physics_authority": "none",
+                        "proof_class": phase_visual.get(
+                            "proof_class"
+                        ),
+                        "state_trace_sha256": phase_visual.get(
+                            "state_trace_sha256"
+                        ),
+                        "notice": phase_visual.get(
+                            "piece_motion_authority"
+                        ),
+                    },
+                    "simulator_twin": {
+                        "available": False,
+                        "kind": "fail_closed",
+                        "camera_alignment": (
+                            "current_conditional_c922_visual_only"
+                        ),
+                        "source_pixels": False,
+                        "physics_authority": "none",
+                        "proof_class": "unavailable",
+                        "action_array_sha256": None,
+                        "source_samples_sha256": receipt.get(
+                            "samples_sha256"
+                        ),
+                        "action_byte_identical": False,
+                        "command_transform": None,
+                        "notice": "; ".join(
+                            str(value)
+                            for value in phase_physics.get(
+                                "blockers", []
+                            )
+                        ),
+                    },
+                    "physics_replay": {
+                        "available": False,
+                        "kind": "fail_closed",
+                        "proof_class": "unavailable",
+                        "action_array_sha256": None,
+                        "source_samples_sha256": receipt.get(
+                            "samples_sha256"
+                        ),
+                        "action_byte_identical": False,
+                        "command_transform": None,
+                        "binding": {
+                            "kind": "phase_a_fail_closed_receipt",
+                            "recording_id": recording_id,
+                            "evidence_receipt": {
+                                "path": str(
+                                    (
+                                        receipt_path.parent
+                                        / PHASE_A_COMPARISON_RECEIPT
+                                    ).relative_to(repo_root)
+                                ),
+                                "sha256": sha256_file(
+                                    receipt_path.parent
+                                    / PHASE_A_COMPARISON_RECEIPT
+                                ),
+                            },
+                        },
+                        "notice": (
+                            "Physics was not executed. The third lane shows "
+                            "the receipt-owned blockers instead of substituting "
+                            "a visual reconstruction."
+                        ),
+                    },
+                }
         episodes.append(
             {
                 "id": f"{task_id}:{recording_id}",
                 "task_id": task_id,
                 "title": (
-                    "Physical episode"
+                    "Phase A · D1 → D2 REAL → SIM"
+                    if phase_a_comparison
+                    else "Physical episode"
                     if is_physical_library
                     else str(
                         receipt.get("label") or f"Teleop recording {sequence + 1}"
                     )
                 ),
                 "subtitle": (
-                    f"{_title(str(receipt.get('piece_id', 'piece')))} · "
-                    f"{source_square.upper()} → {destination_square.upper()} · "
-                    f"{'simulator replay paired' if physics_available else 'simulator trace missing'}"
+                    (
+                        "Visually verified D1 → D2 · raw receipt still says "
+                        f"{source_square.upper()} → {destination_square.upper()} · "
+                        "observed-joint twin available · physics fail-closed"
+                    )
+                    if phase_a_comparison
+                    else (
+                        f"{_title(str(receipt.get('piece_id', 'piece')))} · "
+                        f"{source_square.upper()} → {destination_square.upper()} · "
+                        f"{'simulator replay paired' if physics_available else 'simulator trace missing'}"
+                    )
                 ),
                 "sequence": 30_000 + sequence,
                 "status": (
@@ -2180,7 +2415,11 @@ def _teleop_episodes(repo_root: Path) -> list[dict[str, Any]]:
                     else "recorded"
                 ),
                 "terminal_outcome": (
-                    f"operator_label_{outcome}_unqualified"
+                    (
+                        "phase_a_visual_artifact_passed_physics_ineligible_fail_closed"
+                    )
+                    if phase_a_comparison
+                    else f"operator_label_{outcome}_unqualified"
                     if is_physical_library
                     else outcome
                 ),

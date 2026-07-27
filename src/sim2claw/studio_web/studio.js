@@ -1419,6 +1419,10 @@ function episodeComparison(episode = selectedEpisode()) {
     : null;
 }
 
+function hasCompositeComparison(episode = selectedEpisode()) {
+  return Boolean(episodeComparison(episode)?.composite_video?.available);
+}
+
 function hasSimulatorTwin(episode = selectedEpisode()) {
   const comparison = episodeComparison(episode);
   return Boolean(
@@ -1438,7 +1442,8 @@ function renderComparisonAvailability(episode) {
   const canGeneratePhysics = Boolean(
     state.readOnly === false
     && episode?.source_recording_id
-    && comparison,
+    && comparison
+    && !hasCompositeComparison(episode)
   );
   elements.replayModeSwitch.querySelectorAll("[data-replay-mode]").forEach((button) => {
     const mode = button.dataset.replayMode;
@@ -1466,6 +1471,8 @@ function renderComparisonAvailability(episode) {
       ? comparison.simulator_twin?.action_byte_identical
         ? "Byte-identical action · MuJoCo"
         : "Source-command diagnostic · MuJoCo"
+      : hasCompositeComparison(episode)
+        ? "Fail-closed · exact replay ineligible"
       : canGeneratePhysics
         ? "Generate source-command replay"
         : "Receipt-bound replay unavailable",
@@ -1561,6 +1568,13 @@ function selectEpisode(identifier, { updateRoute = true } = {}) {
   state.visualTwinReveal = 50;
   state.recordingFeedIndex = 0;
   state.recordingWindow = null;
+  elements.stage.dataset.compositeComparison = String(
+    hasCompositeComparison(episode),
+  );
+  elements.stage.style.setProperty(
+    "--stage-ratio",
+    hasCompositeComparison(episode) ? "640 / 1080" : "16 / 9",
+  );
   state.frameCache.clear();
   updateProgress(0, 0);
 
@@ -2073,7 +2087,8 @@ function setReplayMode(mode, { pauseCurrent = true } = {}) {
   const canGeneratePhysics = Boolean(
     state.readOnly === false
     && episode?.source_recording_id
-    && comparison,
+    && comparison
+    && !hasCompositeComparison(episode)
   );
   const next = (
     mode === "compare" && comparison
@@ -2112,7 +2127,9 @@ function setReplayMode(mode, { pauseCurrent = true } = {}) {
   elements.comparisonRealLabel.hidden = next !== "compare";
   elements.comparisonPhysicsLabel.hidden = next !== "compare";
   elements.physicsUnavailable.hidden = !(
-    ["visual", "compare"].includes(next) && !physicsAvailable
+    ["visual", "compare"].includes(next)
+    && !physicsAvailable
+    && !hasCompositeComparison(episode)
   );
   if (elements.generatePhysicsReplay) {
     elements.generatePhysicsReplay.hidden = physicsAvailable || !canGeneratePhysics;
@@ -2128,7 +2145,9 @@ function setReplayMode(mode, { pauseCurrent = true } = {}) {
     text(elements.cameraSourceLabel, "SIMULATOR TWIN");
     text(
       elements.cameraName,
-      physicsAvailable
+      hasCompositeComparison(episode)
+        ? "OBSERVED-JOINT VISUAL RECONSTRUCTION / PHYSICS FAIL-CLOSED"
+      : physicsAvailable
         ? comparison?.simulator_twin?.action_byte_identical
           ? "MUJOCO / BYTE-IDENTICAL ACTION TRACE"
           : "MUJOCO / SOURCE-COMMAND DIAGNOSTIC"
@@ -2139,7 +2158,9 @@ function setReplayMode(mode, { pauseCurrent = true } = {}) {
     text(elements.cameraSourceLabel, "SYNCED COMPARE");
     text(
       elements.cameraName,
-      physicsAvailable
+      hasCompositeComparison(episode)
+        ? "REAL + KINEMATIC + PHYSICS BLOCKER / ONE PLAYHEAD"
+      : physicsAvailable
         ? comparison?.simulator_twin?.action_byte_identical
           ? "REALITY + ACTION-FROZEN TWIN / ONE PLAYHEAD"
           : "REALITY + SOURCE-COMMAND TWIN / ONE PLAYHEAD"
