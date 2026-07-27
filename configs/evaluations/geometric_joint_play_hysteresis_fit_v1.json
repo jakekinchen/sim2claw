@@ -1,0 +1,107 @@
+{
+  "schema_version": "sim2claw.geometric_joint_play_hysteresis_fit.v1",
+  "fit_id": "geometric_joint_play_hysteresis_fit_20260727_v1",
+  "status": "bounded_one_parameter_fit_after_two_opened_heldouts",
+  "proof_class": "two_trace_action_frozen_no_contact_wrist_hysteresis_fit",
+  "sources": {
+    "joint_play_implementation": {
+      "path": "src/sim2claw/geometric_joint_play.py",
+      "sha256": "229d44fcfc9a174cf2e3907e8231fd141b4c588df0767813930f17b060049855"
+    },
+    "parent_fit_contract": {
+      "path": "configs/evaluations/geometric_joint_play_reverse_fit_v1.json",
+      "sha256": "bd079713c6131daca61d494d17e01ca3e88ad295ed8c9f4b948dd45fc7def47c"
+    },
+    "parent_fit_receipt": {
+      "path": "runs/geometric-microtransfer/20260727-geometric-joint-play-reverse-fit-v1/fit-receipt.json",
+      "sha256": "e688824554486896f79e0517b0ef660e752dda3a3acd5358b82c5727bad04cc5",
+      "receipt_digest": "2914bc8859e70f91bd81082cb70f09065ba65c701b350eee753baa2082de2415"
+    },
+    "stages": [
+      {
+        "fit_stage_index": 1,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-oblique-xm5-ym15-z15-round-trip-tricam-v1/packet.json",
+          "sha256": "753aec0e371a6f9c9eb60f45023011be51b355e5e21f42dd0bb37de901bcc7f3"
+        },
+        "stage_index": 1,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-oblique-xm5-ym15-z15-round-trip-tricam-v1/stage-1/joint_samples.jsonl",
+        "samples_sha256": "1060ec44371c2f641890e718497776d4ac5bb17e563248469a8bc710b29edbe9",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-oblique-xm5-ym15-z15-round-trip-tricam-v1/stage-1/execution_receipt.json",
+        "execution_receipt_sha256": "4818f9d06d12a614c8158111208fc22136ebf5f9bdf9eecd27430a9137aa545e",
+        "wrist_crossing_source_indices": [
+          96,
+          338
+        ]
+      },
+      {
+        "fit_stage_index": 2,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/packet.json",
+          "sha256": "0d1135fbbc1eb724ac7b48ea461f7618064883d98936e3c2c9754fb8f305912e"
+        },
+        "stage_index": 1,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/joint_samples.jsonl",
+        "samples_sha256": "571d782502d54ea643d95bdc9b3eab0b82daf2b472e4a77dd1a5e4fcd7db3dc0",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/execution_receipt.json",
+        "execution_receipt_sha256": "2532d0bfbc38febfe88d6355950d0b7eea66eba9e574493b0a0b18372818f35a",
+        "wrist_crossing_source_indices": [
+          51,
+          168,
+          230,
+          348
+        ]
+      }
+    ]
+  },
+  "frozen_parent": {
+    "application_delay_seconds": 0.11,
+    "load_sign_zero_threshold_nm": 0.001,
+    "selected_expanded_half_width_degrees": {
+      "shoulder_pan": {
+        "with_load": 0.4,
+        "against_load": 0.4
+      },
+      "shoulder_lift": {
+        "with_load": 2.125,
+        "against_load": 0.0
+      },
+      "elbow_flex": {
+        "with_load": 2.125,
+        "against_load": 0.125
+      },
+      "wrist_flex": {
+        "with_load": 1.0,
+        "against_load": 0.25
+      }
+    }
+  },
+  "candidate_wrist_load_sign_hysteresis_nm": [
+    0.001,
+    0.005,
+    0.01,
+    0.015,
+    0.02
+  ],
+  "fit_objective": {
+    "kind": "equal_trace_equal_crossing_wrist_huber",
+    "delta_degrees": 0.25,
+    "crossing_window_radius_samples": 20,
+    "selection": "lowest objective, then smallest threshold",
+    "end_effector_metrics_used_for_selection": false
+  },
+  "proof_boundary": {
+    "both_heldouts_are_opened_fit_sources": true,
+    "threshold_is_lower_bounded_not_point_identified": true,
+    "fresh_opposite_direction_heldout_required": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_calibration": false,
+    "simulator_parameter_promotion": false,
+    "action_correction": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}

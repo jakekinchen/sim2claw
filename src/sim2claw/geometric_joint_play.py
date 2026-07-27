@@ -63,6 +63,7 @@ def replay_joint_play(
     delay_seconds: float,
     half_width_degrees: Mapping[str, Mapping[str, float]],
     load_sign_zero_threshold_nm: float = 0.001,
+    load_sign_hysteresis_nm: Mapping[str, float] | None = None,
 ) -> tuple[np.ndarray, dict[str, Any]]:
     """Replay exact actions through a stateful bounded internal actuator target."""
 
@@ -99,6 +100,24 @@ def replay_joint_play(
         or float(load_sign_zero_threshold_nm) <= 0.0
     ):
         raise GeometricJointPlayError("load-sign threshold must be positive")
+    hysteresis: dict[int, float] = {}
+    normalized_hysteresis: dict[str, float] = {}
+    for joint_name, raw_threshold in (load_sign_hysteresis_nm or {}).items():
+        if joint_name not in half_width_degrees:
+            raise GeometricJointPlayError(
+                "load-sign hysteresis requires a configured play joint"
+            )
+        threshold = float(raw_threshold)
+        if (
+            not math.isfinite(threshold)
+            or threshold < float(load_sign_zero_threshold_nm)
+            or threshold > 0.1
+        ):
+            raise GeometricJointPlayError(
+                "load-sign hysteresis is outside the supported range"
+            )
+        hysteresis[BODY_JOINT_NAMES.index(joint_name)] = threshold
+        normalized_hysteresis[str(joint_name)] = threshold
 
     binding = build_workcell_model(candidate)
     model, data = binding["model"], binding["data"]
@@ -164,7 +183,10 @@ def replay_joint_play(
             upper_radii: dict[int, float] = {}
             for joint_index, (with_load, against_load) in widths.items():
                 bias = float(data.qfrc_bias[dof_addresses[joint_index]])
-                if abs(bias) >= float(load_sign_zero_threshold_nm):
+                sign_threshold = hysteresis.get(
+                    joint_index, float(load_sign_zero_threshold_nm)
+                )
+                if abs(bias) >= sign_threshold:
                     last_load_sign[joint_index] = 1 if bias > 0.0 else -1
                 if last_load_sign[joint_index] > 0:
                     lower_radii[joint_index] = with_load
@@ -207,5 +229,7 @@ def replay_joint_play(
         "effective_target_transitions": transitions,
         "source_actions_modified": False,
     }
+    if normalized_hysteresis:
+        schedule["load_sign_hysteresis_nm"] = normalized_hysteresis
     schedule["sha256"] = canonical_digest(schedule)
     return outputs, schedule
