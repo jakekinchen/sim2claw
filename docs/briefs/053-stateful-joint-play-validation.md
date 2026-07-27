@@ -55,6 +55,10 @@ After motion, all three camera intervals must enclose the action and hold.
 Parameter admission additionally requires the selected play model to improve
 both joint and end-effector RMS over the selected memoryless baseline on this
 new trace. Pawn contact remains forbidden regardless of this stage's outcome.
+The evaluator, exact packet, expected output paths, model parameters, and gates
+are frozen in
+`configs/evaluations/geometric_joint_play_holdout_v1.json` before the physical
+heldout is opened.
 
 ## Visual boundary
 
