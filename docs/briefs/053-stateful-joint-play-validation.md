@@ -1,6 +1,6 @@
 # Brief 053: stateful joint-play validation
 
-Status: candidate fit complete; new prospective route frozen but not executed
+Status: fresh lateral heldout completed; candidate rejected
 Branch: `codex/geometric-microtransfer-20260727`
 
 ## Mechanism result
@@ -68,3 +68,26 @@ position for this mounting. Absolute overlay RMSE and photometric parity are
 therefore invalid until a camera registration is frozen for this exact Pi
 mount and orientation. C922 and D405 remain failure-localization streams even
 when they do not see the link tags.
+
+## Heldout closeout
+
+The physical route completed all 361 motion rows and 80 hold rows with exact
+actions, no reported fault, and follower torque off. C922 recorded 372 frames,
+D405 recorded 62 frames, and Pi recorded 440 frames; every stream enclosed the
+action and hold. The final pitch residuals were `0.000°` lift, `-0.176°` elbow,
+and `+0.264°` wrist flex.
+
+The frozen model failed the two-metric gate. It improved overall joint RMS only
+from `0.544°` to `0.518°` (`4.7%`) while worsening end-effector RMS from
+`2.500 mm` to `4.584 mm` (`-83.3%`). It is rejected and remains unpromoted.
+
+Phase localization shows why. On the outbound half the stateful model was
+strong: `0.151°` joint RMS and `0.651 mm` end-effector RMS. On return it rose
+to `0.505°` and `4.546 mm`; during final hold it rose to `0.925°` and
+`8.267 mm`. The opened trace now identifies missing reverse-branch behavior
+for lift and wrist flex. It also exposes unmodeled shoulder-pan tracking error:
+`0.405°` RMS over the full trace and `0.785°` maximum command residual.
+
+This trace may be admitted to a later fit but can never validate that refit.
+Any expanded candidate requires a different prospective heldout. Pawn contact
+remains forbidden.
