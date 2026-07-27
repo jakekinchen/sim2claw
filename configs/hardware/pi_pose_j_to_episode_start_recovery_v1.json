@@ -1,0 +1,47 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_pose_j_to_episode_start_recovery_20260726_v1",
+  "capture_during_motion": true,
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "setup_recovery_command_anchor_snap_limit_degrees": 3.0,
+  "reviewed_anchor_degrees": [
+    -4.835164835164835,
+    -108.48351648351648,
+    102.72527472527473,
+    -90.85714285714286,
+    -60.527472527472526,
+    2.494061757719715
+  ],
+  "stage_targets_degrees": [
+    [
+      -0.17582417582417584,
+      -106.28571428571429,
+      99.73626373626374,
+      -100.43956043956044,
+      -119.6923076923077,
+      2.494061757719715
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "restore_the_exact_episode_start_and_capture_a_second_current_pi_view",
+    "source_pose": "Fresh torque-off follower read after pose J passively settled.",
+    "command_anchor_rule": "The reviewed setup-only gateway may snap the fresh torque-off reading by at most 3 degrees to the calibrated command envelope before the frozen interpolation.",
+    "target_selection": "Return to the exact repeated source-episode start target already executed and verified earlier in this session.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "joint_mapping_validation_candidate": true,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

@@ -325,6 +325,55 @@ def test_compile_allows_only_explicit_bounded_setup_recovery_snap(
     ]
 
 
+def test_compile_allows_explicit_calibration_capture_setup_recovery(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    _candidate_manifest(manifest_path)
+    recovery_anchor = ROUTE_ANCHOR.copy()
+    recovery_anchor[1] = LOWER[1] - 0.5
+    _write(
+        route_path,
+        {
+            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+            "route_id": "fixture-calibration-capture-recovery-route",
+            "capture_during_motion": True,
+            "setup_recovery_command_anchor_snap_limit_degrees": 2.0,
+            "reviewed_anchor_degrees": recovery_anchor.tolist(),
+            "stage_targets_degrees": [ROUTE_TARGETS[0].tolist()],
+            "review_basis": {
+                "physical_scope": "calibration_capture_with_setup_recovery"
+            },
+        },
+    )
+
+    packet = compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=lambda: _preflight(recovery_anchor),
+        preview_fn=lambda stages, manifest: {
+            "candidate_digest": "b" * 64,
+            "no_new_or_worsened_kinematic_contact": True,
+            "external_contact_pairs": [],
+            "stages": [
+                {
+                    "exact_physical_action_sha256": action_sha256(stages[0]),
+                    "no_new_or_worsened_kinematic_contact": True,
+                    "external_contact_pairs": [],
+                }
+            ],
+        },
+    )
+
+    recovery = packet["setup_recovery_command_anchor"]
+    assert recovery["enabled"] is True
+    assert recovery["setup_only"] is True
+    assert recovery["sim_gap_evidence"] is False
+
+
 def test_review_and_execute_one_stage_exactly_then_torque_off(tmp_path: Path) -> None:
     manifest_path = tmp_path / "candidate_manifest.json"
     route_path = tmp_path / "route.json"
@@ -422,6 +471,72 @@ def test_later_stage_requires_bound_prior_receipt(tmp_path: Path) -> None:
             preflight_fn=lambda: _preflight(ROUTE_TARGETS[0]),
             gateway_factory=lambda identity: _Gateway(ROUTE_TARGETS[0]),
         )
+
+
+def test_later_stage_repreviews_the_frozen_route_prefix(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    review_path = tmp_path / "review.json"
+    _candidate_manifest(manifest_path)
+    _route(route_path)
+    compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+    review_wrist_view_reposition_packet(
+        packet_path,
+        review_path,
+        reviewer="fixture-reviewer",
+        decision_id="fixture-decision",
+    )
+    prior_path = tmp_path / "prior.json"
+    _write(
+        prior_path,
+        {
+            "schema_version": WRIST_VIEW_EXECUTION_SCHEMA,
+            "status": "completed_wrist_view_reposition_stage",
+            "packet_sha256": hashlib.sha256(packet_path.read_bytes()).hexdigest(),
+            "stage_index": 1,
+            "physical_follower_torque_enabled": False,
+        },
+    )
+    preview_stage_counts: list[int] = []
+
+    def preview_prefix(
+        stages: list[np.ndarray], candidate_manifest: Path
+    ) -> dict[str, object]:
+        preview_stage_counts.append(len(stages))
+        return {
+            "no_new_or_worsened_kinematic_contact": True,
+            "external_contact_pairs": [],
+        }
+
+    monkeypatch.setattr(
+        "sim2claw.wrist_view_reposition.preview_wrist_view_actions",
+        preview_prefix,
+    )
+    receipt = execute_wrist_view_reposition_stage(
+        packet_path,
+        review_path,
+        tmp_path / "execution-stage-2",
+        stage_index=2,
+        prior_receipt_path=prior_path,
+        operator_acknowledged=True,
+        preflight_fn=lambda: _preflight(ROUTE_TARGETS[0]),
+        gateway_factory=lambda identity: _Gateway(ROUTE_TARGETS[0]),
+        capture_factory=lambda path: _Capture(path),
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+
+    assert preview_stage_counts == [2]
+    assert receipt["stage_index"] == 2
+    assert receipt["physical_follower_torque_enabled"] is False
 
 
 def test_camera_start_failure_still_closes_gateway_torque_off(tmp_path: Path) -> None:

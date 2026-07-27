@@ -1,0 +1,129 @@
+{
+  "schema_version": "sim2claw.current_pi_cad_keyed_joint_mapping_contract.v1",
+  "contract_id": "current_pi_cad_keyed_joint_mapping_20260726_v1",
+  "status": "fit_and_fresh_validation_split_frozen_before_pose_m_execution",
+  "proof_class": "physical_static_current_pi_exact_CAD_joint_mapping_validation",
+  "split": {
+    "fit_poses": [
+      "J",
+      "S",
+      "K",
+      "L"
+    ],
+    "fresh_validation_pose": "M",
+    "pose_m_observation_accessed_at_freeze": false
+  },
+  "sources": {
+    "intrinsics": {
+      "path": "runs/pi-link-tag-calibration/20260726-current-camera-intrinsics-v1/receipt.json",
+      "sha256": "38e851c5f356a3bea106229e53ff05eed2d839150fc192d23c243b3088bfa29b"
+    },
+    "camera_and_tag_initialization_only": {
+      "path": "runs/pi-link-tag-calibration/20260726-current-three-link-fresh-validation-v1/candidate.json",
+      "sha256": "115428d746867bd0ca1f25fb75f3ccaed7a928342fc980f995bcfce484ab50b5"
+    },
+    "stage_d": {
+      "path": "runs/pawn-bg-action-frozen-gap-v1/train_fit.json",
+      "sha256": "67700a15a26c5f67da788638745fecdf29acde5b29549b947af36455bfa5aa66"
+    },
+    "exact_CAD_scene": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "fit_observations": {
+      "J": {
+        "directory": "runs/pi-link-tag-calibration/20260726-new-scene-tags-pose-j-identity-validation-v1/stage-1",
+        "execution_receipt_sha256": "3d377ff0dd1c86301c636778df427bb5081609b8fef26c52304d1a37363cb962",
+        "pi_imx708_sha256": "c7c78cbdeefe8a1b6916491e403fc2259fae8bd3d2d813e4c1e3ca8861007832"
+      },
+      "S": {
+        "directory": "runs/pi-link-tag-calibration/20260726-pose-j-to-episode-start-recovery-v1/stage-1",
+        "execution_receipt_sha256": "cfdef59c7701a638fd73419e64b372b66a9ebd2fd83376ab0860619cf24a45c3",
+        "pi_imx708_sha256": "71f0febc93e848620a022119d77fd4e85cbb6604d8e3b761b800331af551f8b9"
+      },
+      "K": {
+        "directory": "runs/pi-link-tag-calibration/20260726-current-camera-pose-k-identity-validation-v1/stage-1",
+        "execution_receipt_sha256": "e96970ee5268f653ed4f9a90d3a42014c91f8d2b03bf238737e89e732ee28695",
+        "pi_imx708_sha256": "7bdb99a955ff3c8339896e70eb4a8efb605a08bbbb349fa35e638cbaf0326d84"
+      },
+      "L": {
+        "directory": "runs/pi-link-tag-calibration/20260726-current-camera-pose-l-heldout-v1/stage-1",
+        "execution_receipt_sha256": "0c6897d0ca8702706dd0bf90592d3e61e9c70b985d466521c3a5e1ccf506a2f3",
+        "pi_imx708_sha256": "1bb58865d6d12c2a30535254efc001269a57f18448e7e8872307cf97ae44fae6"
+      }
+    },
+    "fresh_validation_route": {
+      "path": "configs/hardware/pi_current_camera_pose_m_fresh_validation_v1.json",
+      "sha256": "f70a5a25e9bd939b1dc4f788309899f62b860bcc493a1fc7ca1a65161f81bb19",
+      "route_id": "pi_current_camera_pose_m_fresh_validation_20260726_v1"
+    },
+    "fresh_validation_packet": {
+      "path": "runs/pi-link-tag-calibration/20260726-current-camera-pose-m-fresh-validation-v1/packet.json",
+      "sha256": "3e4aff51b72c9e5f78f4f394b51df1a357fcd5c424cdcabbd9cf4cab64d98c19",
+      "plan_sha256": "c434881e2b269f7c47e70108604ccd1af7728b098a5bdbcc25123646704c8aa1",
+      "action_sha256": "71b6e95870c46c04b8e441496bef4fa4ba1299e357a065a7422e334a67d31195"
+    }
+  },
+  "fixed_hypotheses": {
+    "identity_joint_zero_offsets_degrees": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "stage_d_joint_zero_offsets_degrees": [
+      -0.000005075171669022712,
+      18.701248448127163,
+      -0.05582548395304593,
+      -0.023728784209850664,
+      0.0
+    ],
+    "tag_body_map": {
+      "0": "left_shoulder",
+      "1": "left_upper_arm",
+      "2": "left_wrist",
+      "3": "left_shoulder"
+    },
+    "tag_black_edge_m": 0.02,
+    "camera_model": "frozen_pinhole_zero_distortion_output_intrinsics"
+  },
+  "fit_method": {
+    "camera": "one_shared_6DOF_fixed_Pi_camera_for_all_poses",
+    "camera_constraint": "exact_fixed_base_CAD_visible_edges_and_landmarks",
+    "moving_geometry": "exact_full_SO101_visual_meshes_at_receipt_bound_joint_positions",
+    "tags": "supplementary_rigid_link_landmarks_only",
+    "tag_mounts": "one_rigid_mount_per_tag_fit_on_J_S_K_L_then_frozen",
+    "forbidden": [
+      "per_pose_camera_refit",
+      "heldout_tag_mount_refit",
+      "joint_offset_optimization",
+      "action_assistance",
+      "manual_pose_M_keypoints",
+      "candidate_specific_masks"
+    ],
+    "identifiability_fail_closed": true
+  },
+  "gates": {
+    "hold_maximum_drift_degrees": 0.3,
+    "landmark_and_tag_corner_rmse_max_px_per_heldout": 3.0,
+    "landmark_and_tag_corner_max_px_per_heldout": 6.0,
+    "symmetric_silhouette_median_max_px_per_heldout": 2.0,
+    "symmetric_silhouette_p90_max_px_per_heldout": 5.0,
+    "silhouette_iou_min_per_heldout": 0.9,
+    "fit_jacobian_condition_number_max": 1000.0,
+    "predicted_candidate_landmark_separation_min_px": 10.0,
+    "predicted_candidate_landmark_count_min": 4,
+    "winner_heldout_sse_improvement_min_fraction": 0.3,
+    "winner_heldout_rmse_margin_min_px": 5.0
+  },
+  "authority": {
+    "may_reject_a_joint_mapping_hypothesis_if_all_fixed_gates_are_evaluable": true,
+    "may_promote_a_joint_mapping_hypothesis_if_all_fixed_gates_pass": true,
+    "tag_only_promotion": false,
+    "metric_workcell_or_board_calibration": false,
+    "P8_or_P13_replacement": false,
+    "physical_task": false,
+    "policy": false
+  }
+}

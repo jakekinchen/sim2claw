@@ -1,0 +1,37 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_pose_m_prestage_recovery_20260726_v1",
+  "capture_during_motion": false,
+  "setup_recovery_command_anchor_snap_limit_degrees": 5.0,
+  "reviewed_anchor_degrees": [
+    -1.7582417582417582,
+    -107.16483516483517,
+    100.43956043956044,
+    -100.17582417582418,
+    -119.07692307692308,
+    2.494061757719715
+  ],
+  "stage_targets_degrees": [
+    [
+      -0.17582417582417584,
+      -106.28571428571429,
+      99.73626373626374,
+      -100.43956043956044,
+      -119.6923076923077,
+      2.494061757719715
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "restore_the_exact_episode_start_immediately_before_compiling_pose_m",
+    "source_pose": "Fresh torque-off follower read after the pose-L return passively settled just beyond the calibrated shoulder-lift minimum.",
+    "command_anchor_rule": "The reviewed setup-only gateway may snap the fresh torque-off reading by at most 5 degrees to the calibrated command envelope before the frozen interpolation.",
+    "target_selection": "Return to the exact repeated source-episode start target before the separately frozen calibration-capture route.",
+    "evidence_limits": {
+      "physical_calibration_observation": false,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

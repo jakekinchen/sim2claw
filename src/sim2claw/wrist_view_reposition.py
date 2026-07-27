@@ -566,12 +566,17 @@ def compile_wrist_view_reposition_packet(
     )
     setup_recovery = recovery_snap_limit is not None
     if setup_recovery:
+        recovery_scope = route.get("review_basis", {}).get("physical_scope")
         _require(
-            route.get("review_basis", {}).get("physical_scope")
-            == "setup_recovery_only"
+            recovery_scope
+            in {
+                "setup_recovery_only",
+                "calibration_capture_with_setup_recovery",
+            }
             and 0.0 < float(recovery_snap_limit)
             <= SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
-            "setup recovery anchor snap must be explicitly scoped and at most 10 degrees",
+            "setup recovery anchor snap must be explicitly scoped to setup "
+            "or calibration capture and at most 10 degrees",
         )
     _require(
         np.all(
@@ -1016,10 +1021,15 @@ def execute_wrist_view_reposition_stage(
     stage = packet["stages"][stage_index - 1]
     actions, timestamps, _ = _decode_stage(stage)
     hold_actions, hold_timestamps, _ = _decode_capture_hold(stage)
-    fresh_preview = preview_wrist_view_actions(
-        [np.asarray(item, dtype="<f8") for item in [actions]],
-        manifest_path,
-    )
+    # Re-run the route prefix, not the selected stage in isolation.  Contact
+    # admission is relative to the route's frozen initial pose; a later return
+    # stage may legitimately restore a baseline pair that is absent at that
+    # stage's local start.
+    preview_actions = [
+        np.asarray(_decode_stage(item)[0], dtype="<f8")
+        for item in packet["stages"][:stage_index]
+    ]
+    fresh_preview = preview_wrist_view_actions(preview_actions, manifest_path)
     _require(
         fresh_preview.get("no_new_or_worsened_kinematic_contact") is True
         and not fresh_preview.get("external_contact_pairs"),
