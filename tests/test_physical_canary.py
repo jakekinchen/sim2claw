@@ -162,6 +162,22 @@ class _Gateway:
         self.closed = True
 
 
+class _StallingGateway(_Gateway):
+    def sample(
+        self,
+        timestamp: float,
+        *,
+        exact_requested_degrees: np.ndarray,
+    ) -> dict[str, object]:
+        sample = super().sample(
+            timestamp,
+            exact_requested_degrees=exact_requested_degrees,
+        )
+        sample["stalled"] = True
+        sample["stalled_joints"] = ["shoulder_pan"]
+        return sample
+
+
 class _Capture:
     def __init__(self, draft: Path | None = None) -> None:
         self.draft = draft
@@ -442,6 +458,63 @@ def test_physical_canary_review_rejects_false_strings_and_bad_timestamp(
             clock_fn=lambda: 0.0,
             sleep_fn=lambda delay: None,
         )
+
+
+def test_physical_canary_stall_warning_aborts_and_closes_gateway(
+    tmp_path: Path,
+) -> None:
+    bundle_path = tmp_path / "bundle.json"
+    bundle = _bundle(bundle_path)
+    contact_path, normalization_path = _receipts(tmp_path, bundle)
+    packet_path = tmp_path / "packet.json"
+    compile_physical_canary_packet(
+        bundle_path,
+        packet_path,
+        contact_receipt_path=contact_path,
+        normalization_receipt_path=normalization_path,
+        preflight_fn=_preflight,
+        preview_fn=_preview,
+    )
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    packet["physical_packet_execution_admitted"] = True
+    packet["independent_review"] = {
+        "reviewer": "fixture-reviewer",
+        "reviewed_at": "2026-07-27T00:00:00Z",
+        "decision_id": "fixture-stall-rejection",
+        "frozen_action_reviewed": True,
+        "hardware_clear_workspace_acknowledged": True,
+        "hardware_readiness_acknowledged": True,
+        "diagnostic_sim_model_mismatch_acknowledged": True,
+    }
+    packet["plan_sha256"] = hashlib.sha256(
+        json.dumps(
+            {
+                key: value
+                for key, value in packet.items()
+                if key != "plan_sha256"
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    packet_path.write_text(
+        json.dumps(packet, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    gateway = _StallingGateway()
+
+    with pytest.raises(PhysicalCanaryError, match="stalled"):
+        execute_physical_canary_packet(
+            packet_path,
+            tmp_path / "execution",
+            operator_acknowledged=True,
+            preflight_fn=_preflight,
+            gateway_factory=lambda identity: gateway,
+            capture_factory=lambda path: _Capture(path),
+            clock_fn=lambda: 0.0,
+            sleep_fn=lambda delay: None,
+        )
+
+    assert gateway.closed is True
 
 
 def test_exact_mixed_unit_canary_roundtrips_without_promoting_transform(

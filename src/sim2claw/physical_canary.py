@@ -141,6 +141,66 @@ def _independent_review_admitted(review: Any) -> bool:
     return reviewed_at.tzinfo is not None
 
 
+def _normalization_review_admitted(review: Any) -> bool:
+    if not isinstance(review, Mapping):
+        return False
+    if not all(
+        isinstance(review.get(field), str)
+        and bool(str(review[field]).strip())
+        for field in ("reviewer", "reviewed_at", "decision_id")
+    ):
+        return False
+    if not all(
+        review.get(field) is True
+        for field in (
+            "bounded_normalization_reviewed",
+            "clear_workspace_acknowledged",
+        )
+    ):
+        return False
+    try:
+        reviewed_at = datetime.fromisoformat(
+            str(review["reviewed_at"]).replace("Z", "+00:00")
+        )
+    except ValueError:
+        return False
+    return reviewed_at.tzinfo is not None
+
+
+def _healthy_exact_sample(
+    sample: Mapping[str, Any],
+    exact_target: np.ndarray,
+    *,
+    label: str,
+) -> np.ndarray:
+    requested = np.asarray(
+        sample.get("follower_requested_degrees"), dtype="<f8"
+    )
+    sent = np.asarray(
+        sample.get("follower_command_degrees"), dtype="<f8"
+    )
+    actual = np.asarray(
+        sample.get("follower_actual_position_degrees"), dtype=np.float64
+    )
+    _require(
+        requested.shape == exact_target.shape
+        and sent.shape == exact_target.shape
+        and requested.tobytes() == exact_target.tobytes()
+        and sent.tobytes() == exact_target.tobytes()
+        and sample.get("precompiled_exact_action") is True
+        and sample.get("rate_limited") is False
+        and sample.get("safety_clamped") is False
+        and sample.get("stalled") is False
+        and sample.get("stalled_joints") == []
+        and not bool(sample.get("assistance"))
+        and not bool(sample.get("intervention"))
+        and actual.shape == exact_target.shape
+        and np.all(np.isfinite(actual)),
+        f"{label} was modified, stalled, assisted, or returned invalid state",
+    )
+    return actual
+
+
 def _read_json(path: Path, label: str) -> dict[str, Any]:
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -485,8 +545,12 @@ def execute_physical_canary_normalization(
     packet = _read_json(packet_path.resolve(), "normalization packet")
     _require(packet.get("schema_version") == NORMALIZATION_PACKET_SCHEMA and packet.get("plan_sha256") == _canonical({k: v for k, v in packet.items() if k != "plan_sha256"}), "normalization packet digest changed")
     _require(operator_acknowledged, "fresh operator acknowledgement is required")
-    review = packet.get("independent_review") or {}
-    _require(packet.get("physical_packet_execution_admitted") is True and all(review.get(field) for field in ("reviewer", "reviewed_at", "decision_id", "bounded_normalization_reviewed", "clear_workspace_acknowledged")), "normalization packet is not independently admitted")
+    review = packet.get("independent_review")
+    _require(
+        packet.get("physical_packet_execution_admitted") is True
+        and _normalization_review_admitted(review),
+        "normalization packet is not independently admitted",
+    )
     _require(not output_path.exists(), f"refusing to overwrite existing output: {output_path}")
     preflight = (preflight_fn or _default_preflight)()
     identity = _identity_from_preflight(preflight)
@@ -513,10 +577,11 @@ def execute_physical_canary_normalization(
             if delay > 0.0:
                 sleep_fn(delay)
             sample = gateway.sample(float(timestamp), exact_requested_degrees=action)
-            requested = np.asarray(sample.get("follower_requested_degrees"), dtype="<f8")
-            sent = np.asarray(sample.get("follower_command_degrees"), dtype="<f8")
-            _require(requested.tobytes() == action.tobytes() and sent.tobytes() == action.tobytes() and not sample.get("rate_limited") and not sample.get("safety_clamped"), "normalization action was modified by the gateway")
-            actual = np.asarray(sample["follower_actual_position_degrees"], dtype=np.float64)
+            actual = _healthy_exact_sample(
+                sample,
+                action,
+                label="normalization action",
+            )
             completed += 1
         target = np.asarray(packet["target_degrees"], dtype=np.float64)
         _require(np.all(np.abs(_anchor_delta(actual, target)) <= CANARY_START_TOLERANCE_DEGREES), "follower did not reach the normalization target")
@@ -784,10 +849,11 @@ def execute_physical_canary_packet(
                     sleep_fn(delay)
                 capture.ensure_running()
                 sample = gateway.sample(float(timestamp), exact_requested_degrees=target)
-                requested = np.asarray(sample.get("follower_requested_degrees"), dtype="<f8")
-                sent = np.asarray(sample.get("follower_command_degrees"), dtype="<f8")
-                _require(requested.tobytes() == target.tobytes() and sent.tobytes() == target.tobytes() and not sample.get("rate_limited") and not sample.get("safety_clamped"), "gateway modified or clipped the frozen canary target")
-                actual = np.asarray(sample["follower_actual_position_degrees"], dtype=np.float64)
+                actual = _healthy_exact_sample(
+                    sample,
+                    target,
+                    label="physical canary action",
+                )
                 actual_history.append(actual.copy())
                 handle.write(json.dumps({"sample_index": index, "timestamp_seconds": float(timestamp), "source_action_sha256": packet["action_sha256"], "requested_physical_units": target.tolist(), **sample}, sort_keys=True) + "\n")
                 completed += 1
