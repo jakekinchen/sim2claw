@@ -500,16 +500,46 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
         isinstance(stages, list) and 1 <= len(stages) <= 4,
         "packet must contain one to four stages",
     )
-    previous = np.asarray(packet["command_anchor_degrees"], dtype=np.float64)
+    expected_previous = np.asarray(
+        packet["compile_anchor_degrees"], dtype=np.float64
+    )
+    command_previous = np.asarray(
+        packet["command_anchor_degrees"], dtype=np.float64
+    )
+    _require(
+        expected_previous.shape == (6,)
+        and command_previous.shape == (6,)
+        and np.all(np.isfinite(expected_previous))
+        and np.all(np.isfinite(command_previous)),
+        "packet anchors are malformed",
+    )
     for stage_index, stage in enumerate(stages, start=1):
         _require(stage.get("stage_index") == stage_index, "stage order changed")
         actions, timestamps, _ = _decode_stage(stage)
         hold_actions, hold_timestamps, _ = _decode_capture_hold(stage)
         target = np.asarray(stage["target_degrees"], dtype=np.float64)
+        expected_anchor = np.asarray(
+            stage.get("expected_anchor_degrees"), dtype=np.float64
+        )
+        command_anchor = np.asarray(
+            stage.get("command_anchor_degrees"), dtype=np.float64
+        )
         _require(
-            actions[0].tobytes() == previous.astype("<f8").tobytes()
+            expected_anchor.shape == (6,)
+            and np.all(np.isfinite(expected_anchor))
+            and expected_anchor.astype("<f8").tobytes()
+            == expected_previous.astype("<f8").tobytes(),
+            "stage expected anchor drifted",
+        )
+        _require(
+            command_anchor.shape == (6,)
+            and np.all(np.isfinite(command_anchor))
+            and command_anchor.astype("<f8").tobytes()
+            == command_previous.astype("<f8").tobytes()
+            and actions[0].tobytes()
+            == command_anchor.astype("<f8").tobytes()
             and actions[-1].tobytes() == target.astype("<f8").tobytes(),
-            "stage endpoints drifted",
+            "stage command anchor or endpoints drifted",
         )
         _require(
             np.array_equal(
@@ -531,7 +561,7 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
             "capture hold is not bound to the previewed target",
         )
         _require(
-            float(np.max(np.abs(target - previous)))
+            float(np.max(np.abs(target - expected_anchor)))
             <= MAX_STAGE_EXCURSION_DEGREES + 1e-9,
             "stage excursion exceeds 90 degrees",
         )
@@ -542,7 +572,8 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
             and not preview.get("external_contact_pairs"),
             "stage simulation preview is not admitted",
         )
-        previous = target
+        expected_previous = target
+        command_previous = target
     return packet
 
 
@@ -1082,6 +1113,10 @@ def execute_wrist_view_reposition_stage(
     hold_stopped: float | None = None
     hold_sample_records: list[dict[str, Any]] = []
     pi_hold_still: dict[str, Any] | None = None
+    gateway_open_attempted = False
+    gateway_open_completed = False
+    gateway_open_setup_motion_commanded = False
+    gateway_open_setup_command_anchor: np.ndarray | None = None
     error: Exception | None = None
     try:
         open_arguments: dict[str, Any] = {
@@ -1089,10 +1124,19 @@ def execute_wrist_view_reposition_stage(
             "paired_pose_confirmed": True,
         }
         if packet["setup_recovery_command_anchor"]["enabled"] is True:
-            open_arguments["setup_command_anchor_degrees"] = np.asarray(
-                packet["command_anchor_degrees"], dtype=np.float64
+            gateway_open_setup_command_anchor = np.asarray(
+                stage["command_anchor_degrees"], dtype=np.float64
             )
+            open_arguments["setup_command_anchor_degrees"] = np.asarray(
+                gateway_open_setup_command_anchor, dtype=np.float64
+            )
+            # The gateway may send this command and move before open() either
+            # returns or raises. Mark it conservatively before crossing that
+            # boundary so a zero-sample failure cannot claim no motion.
+            gateway_open_setup_motion_commanded = True
+        gateway_open_attempted = True
         opened = gateway.open(**open_arguments)
+        gateway_open_completed = True
         opened_start = np.asarray(opened["follower_start_degrees"], dtype=np.float64)
         _require(
             np.all(
@@ -1304,7 +1348,20 @@ def execute_wrist_view_reposition_stage(
         "final_actual_degrees": actual.tolist(),
         "final_residual_degrees": residual.tolist(),
         "error": str(error) if error is not None else None,
-        "physical_motion_commanded": (completed_motion + completed_hold) > 0,
+        "gateway_open_attempted": gateway_open_attempted,
+        "gateway_open_completed": gateway_open_completed,
+        "gateway_open_setup_command_anchor_degrees": (
+            gateway_open_setup_command_anchor.tolist()
+            if gateway_open_setup_command_anchor is not None
+            else None
+        ),
+        "gateway_open_setup_motion_commanded": (
+            gateway_open_setup_motion_commanded
+        ),
+        "physical_motion_commanded": (
+            gateway_open_setup_motion_commanded
+            or (completed_motion + completed_hold) > 0
+        ),
         "physical_follower_torque_enabled": False,
         "physical_authority": False,
         "camera_opened": camera_started is not None,

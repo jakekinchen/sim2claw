@@ -92,6 +92,20 @@ def _route(path: Path) -> None:
     )
 
 
+def _setup_recovery_route(path: Path) -> None:
+    _write(
+        path,
+        {
+            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+            "route_id": "fixture-two-stage-setup-recovery-route",
+            "setup_recovery_command_anchor_snap_limit_degrees": 3.0,
+            "reviewed_anchor_degrees": ROUTE_ANCHOR.tolist(),
+            "stage_targets_degrees": ROUTE_TARGETS.tolist(),
+            "review_basis": {"physical_scope": "setup_recovery_only"},
+        },
+    )
+
+
 def _preflight(
     anchor: np.ndarray = ROUTE_ANCHOR,
 ) -> dict[str, object]:
@@ -115,11 +129,21 @@ class _Gateway:
         self.anchor = anchor
         self.samples: list[np.ndarray] = []
         self.closed = False
+        self.open_setup_command_anchor_degrees: np.ndarray | None = None
 
     def open(
-        self, *, enable_motion: bool, paired_pose_confirmed: bool
+        self,
+        *,
+        enable_motion: bool,
+        paired_pose_confirmed: bool,
+        setup_command_anchor_degrees: np.ndarray | None = None,
     ) -> dict[str, object]:
         assert enable_motion and paired_pose_confirmed
+        self.open_setup_command_anchor_degrees = (
+            np.asarray(setup_command_anchor_degrees, dtype=np.float64)
+            if setup_command_anchor_degrees is not None
+            else None
+        )
         return {"follower_start_degrees": self.anchor.tolist()}
 
     def sample(
@@ -138,6 +162,22 @@ class _Gateway:
 
     def close(self) -> None:
         self.closed = True
+
+
+class _GatewayOpenFailure(_Gateway):
+    def open(
+        self,
+        *,
+        enable_motion: bool,
+        paired_pose_confirmed: bool,
+        setup_command_anchor_degrees: np.ndarray | None = None,
+    ) -> dict[str, object]:
+        super().open(
+            enable_motion=enable_motion,
+            paired_pose_confirmed=paired_pose_confirmed,
+            setup_command_anchor_degrees=setup_command_anchor_degrees,
+        )
+        raise RuntimeError("fixture gateway open failure")
 
 
 class _Capture:
@@ -269,7 +309,57 @@ def test_compile_previews_exact_supplied_float64_route(tmp_path: Path) -> None:
         assert stage["inspect_wrist_camera_before_next_stage"] is (
             index < len(ROUTE_TARGETS)
         )
+        assert stage["expected_anchor_degrees"] == previous.tolist()
+        assert stage["command_anchor_degrees"] == actions[0].tolist()
         previous = target
+
+
+@pytest.mark.parametrize(
+    ("field", "message"),
+    (
+        ("expected_anchor_degrees", "stage expected anchor drifted"),
+        ("command_anchor_degrees", "stage command anchor"),
+    ),
+)
+def test_packet_rejects_tampered_later_stage_anchor_chain(
+    tmp_path: Path,
+    field: str,
+    message: str,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    review_path = tmp_path / "review.json"
+    _candidate_manifest(manifest_path)
+    _route(route_path)
+    compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    packet["stages"][1][field] = packet["compile_anchor_degrees"]
+    packet["plan_sha256"] = hashlib.sha256(
+        json.dumps(
+            {
+                key: value
+                for key, value in packet.items()
+                if key != "plan_sha256"
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    _write(packet_path, packet)
+
+    with pytest.raises(WristViewRepositionError, match=message):
+        review_wrist_view_reposition_packet(
+            packet_path,
+            review_path,
+            reviewer="fixture-reviewer",
+            decision_id="fixture-decision",
+        )
 
 
 def test_compile_allows_only_explicit_bounded_setup_recovery_snap(
@@ -537,6 +627,187 @@ def test_later_stage_repreviews_the_frozen_route_prefix(
     assert preview_stage_counts == [2]
     assert receipt["stage_index"] == 2
     assert receipt["physical_follower_torque_enabled"] is False
+
+
+def test_later_setup_recovery_stage_opens_on_its_stage_anchor(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    review_path = tmp_path / "review.json"
+    prior_path = tmp_path / "prior.json"
+    _candidate_manifest(manifest_path)
+    _setup_recovery_route(route_path)
+    compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+    review_wrist_view_reposition_packet(
+        packet_path,
+        review_path,
+        reviewer="fixture-reviewer",
+        decision_id="fixture-decision",
+    )
+    _write(
+        prior_path,
+        {
+            "schema_version": WRIST_VIEW_EXECUTION_SCHEMA,
+            "status": "completed_wrist_view_reposition_stage",
+            "packet_sha256": hashlib.sha256(
+                packet_path.read_bytes()
+            ).hexdigest(),
+            "stage_index": 1,
+            "physical_follower_torque_enabled": False,
+        },
+    )
+    monkeypatch.setattr(
+        "sim2claw.wrist_view_reposition.preview_wrist_view_actions",
+        lambda stages, manifest: {
+            "no_new_or_worsened_kinematic_contact": True,
+            "external_contact_pairs": [],
+        },
+    )
+    gateway = _Gateway(ROUTE_TARGETS[0])
+
+    receipt = execute_wrist_view_reposition_stage(
+        packet_path,
+        review_path,
+        tmp_path / "execution-stage-2",
+        stage_index=2,
+        prior_receipt_path=prior_path,
+        operator_acknowledged=True,
+        preflight_fn=lambda: _preflight(ROUTE_TARGETS[0]),
+        gateway_factory=lambda identity: gateway,
+        capture_factory=lambda path: _Capture(path),
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    stage_anchor = np.asarray(
+        packet["stages"][1]["command_anchor_degrees"],
+        dtype=np.float64,
+    )
+
+    assert np.array_equal(
+        gateway.open_setup_command_anchor_degrees, stage_anchor
+    )
+    assert not np.array_equal(
+        gateway.open_setup_command_anchor_degrees,
+        np.asarray(packet["command_anchor_degrees"]),
+    )
+    assert receipt["gateway_open_setup_command_anchor_degrees"] == (
+        stage_anchor.tolist()
+    )
+    assert receipt["gateway_open_setup_motion_commanded"] is True
+    assert receipt["physical_motion_commanded"] is True
+
+
+def test_setup_open_failure_conservatively_accounts_motion_before_sample_zero(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    review_path = tmp_path / "review.json"
+    output = tmp_path / "failed-setup-open"
+    _candidate_manifest(manifest_path)
+    _setup_recovery_route(route_path)
+    compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+    review_wrist_view_reposition_packet(
+        packet_path,
+        review_path,
+        reviewer="fixture-reviewer",
+        decision_id="fixture-decision",
+    )
+    gateway = _GatewayOpenFailure(ROUTE_ANCHOR)
+
+    with pytest.raises(
+        WristViewRepositionError, match="fixture gateway open failure"
+    ):
+        execute_wrist_view_reposition_stage(
+            packet_path,
+            review_path,
+            output,
+            stage_index=1,
+            operator_acknowledged=True,
+            preflight_fn=_preflight,
+            gateway_factory=lambda identity: gateway,
+            clock_fn=lambda: 0.0,
+            sleep_fn=lambda delay: None,
+        )
+
+    receipt = json.loads(
+        (output / "execution_receipt.json").read_text(encoding="utf-8")
+    )
+    assert gateway.closed
+    assert receipt["status"] == "stopped_safely"
+    assert receipt["completed_samples"] == 0
+    assert receipt["gateway_open_attempted"] is True
+    assert receipt["gateway_open_completed"] is False
+    assert receipt["gateway_open_setup_motion_commanded"] is True
+    assert receipt["gateway_open_setup_command_anchor_degrees"] == (
+        ROUTE_ANCHOR.tolist()
+    )
+    assert receipt["physical_motion_commanded"] is True
+
+
+def test_non_setup_open_failure_still_reports_no_motion(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    review_path = tmp_path / "review.json"
+    output = tmp_path / "failed-normal-open"
+    _candidate_manifest(manifest_path)
+    _route(route_path)
+    compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+    review_wrist_view_reposition_packet(
+        packet_path,
+        review_path,
+        reviewer="fixture-reviewer",
+        decision_id="fixture-decision",
+    )
+    gateway = _GatewayOpenFailure(ROUTE_ANCHOR)
+
+    with pytest.raises(
+        WristViewRepositionError, match="fixture gateway open failure"
+    ):
+        execute_wrist_view_reposition_stage(
+            packet_path,
+            review_path,
+            output,
+            stage_index=1,
+            operator_acknowledged=True,
+            preflight_fn=_preflight,
+            gateway_factory=lambda identity: gateway,
+            clock_fn=lambda: 0.0,
+            sleep_fn=lambda delay: None,
+        )
+
+    receipt = json.loads(
+        (output / "execution_receipt.json").read_text(encoding="utf-8")
+    )
+    assert gateway.closed
+    assert receipt["completed_samples"] == 0
+    assert receipt["gateway_open_attempted"] is True
+    assert receipt["gateway_open_completed"] is False
+    assert receipt["gateway_open_setup_command_anchor_degrees"] is None
+    assert receipt["gateway_open_setup_motion_commanded"] is False
+    assert receipt["physical_motion_commanded"] is False
 
 
 def test_camera_start_failure_still_closes_gateway_torque_off(tmp_path: Path) -> None:
