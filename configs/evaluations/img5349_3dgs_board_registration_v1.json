@@ -65,9 +65,30 @@
     ],
     "supersedes": "all_segment_sim3_and_3.21px_claim"
   },
+  "visual_overlay_palette": {
+    "status": "accepted_current_physical_visual_only",
+    "checker_even_parity_rgba": [0.27, 0.105, 0.025, 1.0],
+    "checker_odd_parity_rgba": [0.83, 0.63, 0.36, 1.0],
+    "logical_brown_pawn_display_rgba": [0.78, 0.62, 0.40, 1.0],
+    "logical_tan_pawn_display_rgba": [0.42, 0.24, 0.13, 1.0],
+    "current_c922_frame_sha256": {
+      "H": "5101bb896d580fd8a292ba659d2141a06b65ad46634e58732d74c7ab22d2e07b",
+      "I": "8a83135d7da877252913180c5fa49390abdf681da860341076658dd56888845d",
+      "D": "e846c270faf76322f0de9a0ef65cbbd8eb7eebc6ad36008d6ddbba24bac522f1"
+    },
+    "current_physical_result": {
+      "dark_robotward_pawns": 8,
+      "light_far_pawns": 8,
+      "mean_grayscale_separation": 89.341,
+      "nonoverlap_margin": 19.226
+    },
+    "semantic_piece_ids_changed": false,
+    "shared_scene_or_evaluator_changed": false
+  },
   "authority": {
     "automatic_studio_visual_overlay": true,
     "complete_splat_geometry_used": true,
+    "visual_appearance_correction": true,
     "metric_scale": false,
     "measured_robot_geometry": false,
     "collision_geometry": false,

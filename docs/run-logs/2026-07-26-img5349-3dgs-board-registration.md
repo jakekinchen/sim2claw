@@ -36,6 +36,13 @@ selected orientation had approximate white-splat-to-CAD median distances of
 `22.7 mm` on the left base and `39.0 mm` on the right base. Those distances
 select an orientation; they are not admitted robot-pose measurements.
 
+The source MOV reports creation at `2026-07-19T00:39:10Z`
+(`2026-07-18T19:39:10-05:00`). That is 46 minutes after the tracked 100 mm
+board/workcell registration commit at `2026-07-18T18:53:12-05:00`, so the
+source chronology is consistent with the current board pose rather than the
+older 72 mm pose. Timestamp/order evidence still does not replace a measured
+workcell survey.
+
 ## Held-out validation and rejected cameras
 
 Frames `1`, `6`, `20`, and `22` were excluded from the orthomosaic/grid fit.
@@ -65,6 +72,13 @@ layer independently. The board alignment is visibly coherent. Source/current
 arm-pose mismatch, pawn appearance differences, and reconstruction
 ghosting/noise remain visible and are therefore measurable follow-up gaps
 rather than being masked by a manual recentering.
+
+A subsequent current-frame audit bound the already captured H/I/D C922 images
+and proved eight dark pawns robotward plus eight light pawns far-side. The
+registered calibration overlay therefore swaps only the display colors of all
+64 checker squares and all 16 logical pawn bodies to the current physical
+palette. It does not rename a body, move geometry, alter physics, or change the
+shared/frozen evaluator scene.
 
 Validation commands:
 

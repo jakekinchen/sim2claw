@@ -47,6 +47,14 @@ def test_tracked_registration_is_proper_and_reproduces_heldout_summary() -> None
     ]
     assert result["authority"]["metric_scale"] is False
     assert result["authority"]["physical_robot_control"] is False
+    assert (
+        result["visual_overlay_palette"]["status"]
+        == "accepted_current_physical_visual_only"
+    )
+    assert (
+        result["visual_overlay_palette"]["shared_scene_or_evaluator_changed"]
+        is False
+    )
 
 
 def test_registration_fails_closed_on_authority_or_source_drift() -> None:

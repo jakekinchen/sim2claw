@@ -141,6 +141,27 @@ def validated_studio_registration(
     if validation.get("supersedes") != "all_segment_sim3_and_3.21px_claim":
         raise ValueError("superseded global-camera result must remain retracted")
 
+    palette = contract.get("visual_overlay_palette", {})
+    expected_palette = {
+        "checker_even_parity_rgba": [0.27, 0.105, 0.025, 1.0],
+        "checker_odd_parity_rgba": [0.83, 0.63, 0.36, 1.0],
+        "logical_brown_pawn_display_rgba": [0.78, 0.62, 0.40, 1.0],
+        "logical_tan_pawn_display_rgba": [0.42, 0.24, 0.13, 1.0],
+    }
+    if (
+        palette.get("status") != "accepted_current_physical_visual_only"
+        or palette.get("semantic_piece_ids_changed") is not False
+        or palette.get("shared_scene_or_evaluator_changed") is not False
+        or any(palette.get(key) != value for key, value in expected_palette.items())
+    ):
+        raise ValueError("registered visual-only palette contract drifted")
+    frame_hashes = palette.get("current_c922_frame_sha256", {})
+    if set(frame_hashes) != {"H", "I", "D"} or any(
+        not isinstance(value, str) or len(value) != 64
+        for value in frame_hashes.values()
+    ):
+        raise ValueError("visual-only palette requires three bound C922 frames")
+
     three_rotation = MUJOCO_TO_THREE @ rotation
     three_translation = MUJOCO_TO_THREE @ translation
     linear = scale * three_rotation
@@ -166,6 +187,13 @@ def validated_studio_registration(
             f"source[{index}]->{name}" for index, name in enumerate(target_names)
         ],
         "automatic_overlay": True,
+        "visual_overlay_palette": {
+            "status": palette["status"],
+            **expected_palette,
+            "current_c922_frame_sha256": frame_hashes,
+            "semantic_piece_ids_changed": False,
+            "shared_scene_or_evaluator_changed": False,
+        },
         "authority": authority,
     }
 

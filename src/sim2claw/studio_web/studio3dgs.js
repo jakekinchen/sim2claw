@@ -17,6 +17,8 @@ class CalibrationViewer {
     this.assetSha = null;
     this.mesh = null;
     this.sceneManifestRevision = null;
+    this.sceneManifest = null;
+    this.sceneOverlayMode = "calibration_overlay";
     this.loadGeneration = 0;
 
     this.renderer = new THREE.WebGLRenderer({
@@ -144,15 +146,8 @@ class CalibrationViewer {
       } else {
         this.populateSceneSynthesis(null);
       }
-      if (manifest.revision_sha256 !== this.sceneManifestRevision) {
-        disposeSceneLayer(this.sceneOverlay);
-        await buildSceneManifestLayer({
-          root: this.sceneOverlay,
-          manifest,
-          mode: "calibration_overlay",
-        });
-        this.sceneManifestRevision = manifest.revision_sha256;
-      }
+      this.sceneManifest = manifest;
+      await this.renderSceneOverlay();
       if (sceneState) {
         sceneState.textContent = `${manifest.model.body_count} bodies · reviewed geometry available`;
       }
@@ -161,6 +156,19 @@ class CalibrationViewer {
       const hierarchy = element("#scene-hierarchy");
       if (hierarchy) hierarchy.textContent = "Scene hierarchy unavailable.";
     }
+  }
+
+  async renderSceneOverlay() {
+    if (!this.sceneManifest) return;
+    const revision = `${this.sceneManifest.revision_sha256}:${this.sceneOverlayMode}`;
+    if (revision === this.sceneManifestRevision) return;
+    disposeSceneLayer(this.sceneOverlay);
+    await buildSceneManifestLayer({
+      root: this.sceneOverlay,
+      manifest: this.sceneManifest,
+      mode: this.sceneOverlayMode,
+    });
+    this.sceneManifestRevision = revision;
   }
 
   transformValue(name) {
@@ -203,9 +211,13 @@ class CalibrationViewer {
       && rows.flat().every((value) => Number.isFinite(Number(value)))
     ) {
       this.registrationGroup.matrix.set(...rows.flat().map(Number));
+      this.sceneOverlayMode = "registered_calibration_overlay";
+      void this.renderSceneOverlay();
       this.setSceneOverlayVisible(true);
       return true;
     }
+    this.sceneOverlayMode = "calibration_overlay";
+    void this.renderSceneOverlay();
     this.setSceneOverlayVisible(false);
     return false;
   }

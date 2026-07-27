@@ -1825,8 +1825,15 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertNotIn("new THREE.AxesHelper", calibration_javascript)
             self.assertIn("this.sceneOverlay.visible = false", calibration_javascript)
             self.assertIn("this.registrationGroup = new THREE.Group()", calibration_javascript)
+            self.assertIn('"registered_calibration_overlay"', calibration_javascript)
             self.assertIn("automatic board/CAD overlay", calibration_javascript)
             self.assertIn('"Show reviewed geometry"', calibration_javascript)
+
+            with urlopen(f"{base}/scene_adapter.js", timeout=3) as response:
+                scene_adapter_javascript = response.read().decode("utf-8")
+            self.assertIn("calibrationVisualRgba", scene_adapter_javascript)
+            self.assertIn('"brown_pawn_"', scene_adapter_javascript)
+            self.assertIn('"tan_pawn_"', scene_adapter_javascript)
 
             font_path = (
                 f"{base}/assets/fonts/"
