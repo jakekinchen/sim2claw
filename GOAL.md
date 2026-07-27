@@ -4,6 +4,68 @@ Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
 
 ## Latest contact-free geometric transfer evidence
 
+The current-session roll-separated Pose-J corridor has now also transferred
+physically. Its frozen `1161 x 6` float64 route first closed the measured
+connector residual, traversed the prior physically clean Pose-J corridor,
+held Pose J for `7.25 s`, and geometrically reversed to the prior anchor. The
+gateway completed `1161 / 1161` motion rows plus `80 / 80` hold rows with no
+error and closed torque off. C922 recorded `975` frames, D405 `162`, and Pi
+IMX708 `1040`; all three action intervals were enclosed and reported zero
+drops. The final maximum joint residual was `0.879 deg`. This adds a
+roll-separated full-arm view and a third successful contact-free geometric
+transfer; it is still not pawn contact or task success.
+
+That new view enabled three bounded full-CAD/static-tag fits over exact
+anchor/high/Pose-J joint/image bindings, with the already-inspected mid-hover
+image kept outside each optimizer. The offset-only v1 family failed six of
+seven gates and saturated three `5 deg` bounds. The historical tag-body v2
+family improved its training tag fit to `3.995 px` but failed the mid moving
+link tags. The affine joint-scale v3 family is locally full rank (`16 / 16`)
+and fits the three source poses at `5.180 px` combined tag-corner RMSE, but it
+still fails the mid pose at `56.099 px` tag RMSE and `98.970 px` maximum;
+its CAD edge p80 is `25.157 px`, and pan scale, elbow zero, and wrist-roll zero
+hit their bounds. None of these parameters is promoted. The fixed
+base/shoulder mid residual is only about `6.92 px`, while moving-link tags are
+about `41.73`, `90.27`, and `51.49 px`, localizing the remaining static-fit
+failure to the physical-degree-to-articulated-joint mapping rather than a
+single global camera shift.
+
+The independently accepted four-stage one-joint image-Jacobian sweep has now
+also completed physically. Every stage executed its exact `1161 x 6` float64
+action plus `80` capture-hold rows, returned to the same anchor, and closed
+torque off. Each action was enclosed by simultaneous C922, D405, and Pi
+IMX708 recordings: the four stages contain `977/983/983/982` C922 frames,
+`163/163/164/163` D405 frames, and `1040` Pi frames each, with no executor
+error. The opposite lift/elbow directions remained excluded because the exact
+CPU MuJoCo screen exceeded the frozen folded-arm contact envelope.
+
+Under the pre-sweep projection comparator, shoulder pan passes with
+`3.388 deg` direction error and a `0.743` observed/simulated magnitude ratio;
+shoulder lift passes with `4.257 deg` and `1.003`. Elbow flex fails only its
+direction gate at `22.129 deg` despite a `1.202` magnitude ratio and `0.828`
+observed R-squared. The weak tag-2 response under wrist flex is not a valid
+wrist failure: tag 2 moves strongly under lift and elbow but only weakly and
+non-gatingly under wrist, identifying it as upstream of the wrist-flex joint.
+
+A frozen lower-arm assignment for tag 2 was therefore tested as v4. It
+improves the shoulder-lift comparator to `0.287 deg` direction error and a
+`0.832` magnitude ratio, and makes tag 2 invariant to simulated wrist flex as
+the physical hierarchy predicts. It still fails the already-inspected mid
+pose at `57.787 px` tag RMSE and `109.227 px` maximum, saturates wrist-roll
+zero at the `25 deg` bound, and worsens the global pan comparator, so none of
+its fitted parameters is promoted. This is useful model-selection evidence:
+the prior tag-to-wrist assumption is rejected, but a global camera/joint-zero
+refit still cannot explain the distal CAD.
+
+The independently evaluated D405 recording supplies the missing wrist signal.
+Adjacent-frame background motion passes its physical signal gate for all four
+joints; wrist flex has `80` matched motion pairs, `0.519` combined R-squared,
+and a measured partial-affine derivative of
+`[-3.819 px, -1.768 px, -0.00357 rad, +0.01224 log-scale]` per degree.
+The D405-to-wrist extrinsic and scene geometry are not yet fitted, so this is
+diagnostic contact-free evidence rather than simulator-parameter promotion,
+pawn contact, or task success.
+
 Two exact geometric B7 hover round trips have now transferred from the current
 candidate simulation to the physical follower. The first high hover completed
 `481 / 481` motion rows plus `80 / 80` hold rows. The second approached the
@@ -21,10 +83,13 @@ hover, the physical-vs-commanded candidate-FK residual is `11.195 mm` RMS and
 `1.046 mm` maximum. This is accepted contact-free physical transfer evidence,
 not pawn contact or task success.
 
-The stationary Pi view uniquely decodes current tags `0, 1, 2, 3`; the
-complete current body map is now `6 -> left_base`, `3 -> left_shoulder`,
-`0 -> left_upper_arm`, `1 -> left_lower_arm`, and `2 -> left_wrist`. The
-previous camera-only refresh is prospectively rejected on this new pose:
+The stationary Pi view uniquely decodes current tags `0, 1, 2, 3`. The
+prospective one-joint motion signals support the hierarchy
+`6 -> left_base`, `0/3 -> left_shoulder`, `1 -> left_upper_arm`, and
+`2 -> left_lower_arm`: tag 1 moves strongly under shoulder lift but not elbow
+flex, while tag 2 moves under lift and elbow but is upstream of wrist flex.
+The previous camera-only refresh is prospectively rejected on the mid-hover
+pose:
 combined tag-corner RMSE is about `50.81 px`, dominated by tag 1 at
 `77.99 px`. A simultaneous camera/tag/joint-zero fit is structurally rank
 deficient (`26 / 29`), so the next calibration must anchor one session camera
@@ -101,19 +166,23 @@ tricam return reached the stable anchor within `0.087912 deg` lift and
 
 The active queue is now:
 
-1. retain the fixed-positive wrist branch as supported but non-promoted and
-   retain the measured `~11 mm` stationary B7 transfer residual as the current
-   physical geometric baseline;
-2. freeze the corrected five-tag body map and one session-wide Pi
-   camera-from-base transform using fixed-base CAD plus tag 6;
-3. fit articulated CAD/joint alignment before tag mounts, keeping focal,
-   distortion, link meshes, action bytes, and per-frame camera warps frozen;
-4. compile one separately reviewed roll-separated high-clearance hover as a
-   fresh heldout, with exact surface-distance checks rather than contact masks;
-5. require C922, D405, and Pi action-enclosing recordings on every physical
-   trial and torque off on every close;
+1. retain the fixed-positive wrist branch and the measured `~11 mm` stationary
+   B7 transfer residual as supported, non-promoted physical baselines;
+2. retain the completed all-three-camera one-joint sweep as diagnostic fit
+   evidence; pan and lift pass the original local comparator, elbow direction
+   remains wrong, and tag 2 is now identified as lower-arm rather than wrist;
+3. fit the recorded D405 background motion against the static 3DGS/workcell to
+   identify one rigid D405-to-wrist extrinsic and the wrist joint axis, while
+   using localized C922/Pi CAD motion to identify the elbow link independently
+   of tag mounts;
+4. freeze only the smallest supported distal correction family before one new,
+   prospectively held-out composite pose; the already-inspected mid image can
+   diagnose but cannot promote it;
+5. require simultaneous C922, D405, and Pi action-enclosing recordings, tag
+   gates, and full-CAD gates on that untouched heldout, with torque off on
+   close;
 6. admit pawn contact only after the composite heldout passes; do not inherit
-   contact or task authority from either successful hover.
+   contact or task authority from any successful hover or calibration sweep.
 
 ## Ordered sim-to-real transfer queue
 
@@ -131,9 +200,11 @@ The active dependency order is:
 
 Current entry conditions remain fail closed: Twin fidelity is `0 / 6`, strict
 task score is `0 / 11`, and exact-replay eligibility is `0 / 18`. The native
-dual-camera recorder is verified only for stationary camera capture. Inspect
-Robots is an optional synthetic replay harness and grants neither evaluator
-admission nor physical authority.
+dual-camera recorder plus Pi capture is now verified to enclose bounded
+geometric motion, but it does not provide cross-camera exposure
+synchronization or metric D405 depth in that mode. Inspect Robots is an
+optional synthetic replay harness and grants neither evaluator admission nor
+physical authority.
 
 The current wide Pi view now has a provisional shared-camera three-link result:
 zero-distortion intrinsics validate at `1.021 px` mean RMSE, and the corrected
