@@ -178,7 +178,10 @@ def _camera_completed(value: Any) -> bool:
 
 
 def _verify_camera_artifacts(
-    value: Mapping[str, Any], execution_directory: Path
+    value: Mapping[str, Any],
+    execution_directory: Path,
+    *,
+    require_action_enclosure: bool,
 ) -> None:
     from .video_timing import (
         VideoTimingError,
@@ -243,7 +246,7 @@ def _verify_camera_artifacts(
             == int(stream["browser_frame_count"]),
             f"{role} camera frame counts differ from the probed containers",
         )
-        if "action_interval_enclosed_by_callback_frames" in stream:
+        if require_action_enclosure:
             _require(
                 stream["action_interval_enclosed_by_callback_frames"] is True,
                 f"{role} callback frames do not enclose the action interval",
@@ -483,7 +486,11 @@ def load_verified_physical_canary_execution(
         "physical canary execution receipt is incomplete or unbound",
     )
     _verify_camera_artifacts(
-        execution["camera_finished"], execution_receipt_path.parent
+        execution["camera_finished"],
+        execution_receipt_path.parent,
+        require_action_enclosure=isinstance(
+            packet.get("preexecution_dynamic_prediction"), Mapping
+        ),
     )
 
     try:
@@ -1280,6 +1287,15 @@ def verify_packet_preexecution_dynamic_prediction(
         and _sha256(manifest_path)
         == preview.get("candidate_manifest_sha256"),
         "packet preexecution evaluator or candidate manifest changed",
+    )
+    verified_manifest_path, verified_manifest_sha256, _manifest, _config = (
+        _candidate_config(packet)
+    )
+    _require(
+        verified_manifest_path == manifest_path
+        and verified_manifest_sha256
+        == preview.get("candidate_manifest_sha256"),
+        "packet candidate robot identity or calibrated ranges changed",
     )
     actions, timestamps = _decode_actions(packet)
     reproduced = compile_preexecution_dynamic_prediction(

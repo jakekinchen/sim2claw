@@ -182,6 +182,10 @@ def _healthy_exact_sample(
     actual = np.asarray(
         sample.get("follower_actual_position_degrees"), dtype=np.float64
     )
+    actual_velocity = np.asarray(
+        sample.get("follower_actual_velocity_degrees_s"),
+        dtype=np.float64,
+    )
     _require(
         requested.shape == exact_target.shape
         and sent.shape == exact_target.shape
@@ -195,7 +199,9 @@ def _healthy_exact_sample(
         and not bool(sample.get("assistance"))
         and not bool(sample.get("intervention"))
         and actual.shape == exact_target.shape
-        and np.all(np.isfinite(actual)),
+        and np.all(np.isfinite(actual))
+        and actual_velocity.shape == exact_target.shape
+        and np.all(np.isfinite(actual_velocity)),
         f"{label} was modified, stalled, assisted, or returned invalid state",
     )
     return actual
