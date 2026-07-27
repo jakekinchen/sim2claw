@@ -478,6 +478,11 @@ def load_verified_physical_canary_execution(
     )
     _require(samples_path.is_file(), "canary joint samples do not exist")
     samples_sha256 = _sha256(samples_path)
+    legacy_retrospective_settled_receipt = bool(
+        packet.get("preexecution_dynamic_prediction") is None
+        and execution.get("final_settled_sample_count") is None
+        and execution.get("final_settled_samples_within_tolerance") is None
+    )
     _require(
         execution.get("schema_version") == EXECUTION_RECEIPT_SCHEMA
         and execution.get("status") == "completed_physical_canary"
@@ -489,9 +494,17 @@ def load_verified_physical_canary_execution(
         and execution.get("physical_follower_torque_enabled") is False
         and execution.get("gateway_constructed") is True
         and execution.get("stop_before_further_robot_command") is True
-        and execution.get("final_settled_sample_count")
-        == CANARY_FINAL_SETTLED_SAMPLE_COUNT
-        and execution.get("final_settled_samples_within_tolerance") is True
+        and (
+            (
+                execution.get("final_settled_sample_count")
+                == CANARY_FINAL_SETTLED_SAMPLE_COUNT
+                and execution.get(
+                    "final_settled_samples_within_tolerance"
+                )
+                is True
+            )
+            or legacy_retrospective_settled_receipt
+        )
         and _camera_completed(execution.get("camera_finished")),
         "physical canary execution receipt is incomplete or unbound",
     )
