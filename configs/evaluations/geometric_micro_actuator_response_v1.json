@@ -1,0 +1,76 @@
+{
+  "schema_version": "sim2claw.geometric_micro_actuator_response.v1",
+  "evaluation_id": "geometric_micro_actuator_response_20260727_v1",
+  "status": "retrospective_external_check_of_previously_frozen_variants",
+  "proof_class": "current_session_action_frozen_no_contact_actuator_diagnostic",
+  "sources": {
+    "packet": {
+      "path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/packet.json",
+      "sha256": "b98101e4903618eae8f3bfe7824d675cf8ba7295d05873c218d076b2d55d8ba1"
+    },
+    "selection_receipt": {
+      "path": "outputs/pawn_bg_servo_load_bias_v1/servo_load_bias_receipt.json",
+      "sha256": "1ea4a84a509e320bece0f4797c1e2ae6a824ce72946528b95b7af04a561d4357",
+      "receipt_digest": "192b236c781bbf5d88f3ac76d01000e15ccef39e9a4122c467ac995e94f74e51"
+    },
+    "mechanism_contract": {
+      "path": "configs/sysid/pawn_bg_servo_load_bias_v1.json",
+      "sha256": "a5d4851de580a070bc677c9475d90af54215e1c0081c7578a8340f8df30ec423"
+    },
+    "stages": [
+      {
+        "stage_index": 1,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-1/joint_samples.jsonl",
+        "samples_sha256": "19b121b755bc9bb963b37b4600dccc8c0614997fede15c73680f890aceb1a526",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-1/execution_receipt.json",
+        "execution_receipt_sha256": "34bae544980185770d78d0cc0cfb5803a9c663287f9f223fb8cffc9545cc1684"
+      },
+      {
+        "stage_index": 2,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-2/joint_samples.jsonl",
+        "samples_sha256": "f34aa7d2f27c919450f267d82e8a35d20e5eab1678aa8742b04af576e06ee3ba",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-2/execution_receipt.json",
+        "execution_receipt_sha256": "bfde83bf3f5ff677ef01528282520e1ed6d1ba81768522081c16567d57bc05d5"
+      }
+    ]
+  },
+  "variants": {
+    "rigid_zero_deadband": {
+      "shoulder_lift_deadband_degrees": 0.0,
+      "elbow_flex_deadband_degrees": 0.0,
+      "elbow_load_bias_coefficient": 0.0
+    },
+    "prior_deadband_baseline": {
+      "shoulder_lift_deadband_degrees": 2.0,
+      "elbow_flex_deadband_degrees": 2.0,
+      "elbow_load_bias_coefficient": 0.0
+    },
+    "frozen_selected_load_response": {
+      "shoulder_lift_deadband_degrees": 1.5,
+      "elbow_flex_deadband_degrees": 2.0,
+      "elbow_load_bias_coefficient": -1.5
+    }
+  },
+  "decision": {
+    "selection_or_refit_on_these_stages": false,
+    "retain_load_response_only_if_joint_and_end_effector_rms_both_improve_over_prior_deadband_baseline": true,
+    "post_result_parameter_sweep_allowed": false
+  },
+  "action_invariance": {
+    "require_exact_packet_motion_and_hold_rows": true,
+    "require_no_clipping": true,
+    "require_no_rate_limiting": true,
+    "require_no_stall": true,
+    "require_no_assistance": true,
+    "simulator_variants_may_not_change_action_values_or_order": true
+  },
+  "authority": {
+    "physical_calibration": false,
+    "physical_parameter_identification": false,
+    "simulator_parameter_promotion": false,
+    "action_correction": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}
