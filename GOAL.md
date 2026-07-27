@@ -4,6 +4,33 @@ Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
 
 ## Latest contact-free geometric transfer evidence
 
+Two exact geometric B7 hover round trips have now transferred from the current
+candidate simulation to the physical follower. The first high hover completed
+`481 / 481` motion rows plus `80 / 80` hold rows. The second approached the
+same pawn to a frozen `120 mm` hover, stayed there for `7.5 s`, returned to its
+fresh anchor, and completed `901 / 901` motion rows plus `80 / 80` hold rows.
+Neither trace used clipping, IK repair, offsets, corrective suffixes,
+assistance, rate limiting, or a gateway safety clamp. Both closed with torque
+off and with the C922, D405, and Pi IMX708 intervals enclosing the action.
+
+The second transfer is the more task-relevant measurement. At its stationary
+hover, the physical-vs-commanded candidate-FK residual is `11.195 mm` RMS and
+`11.285 mm` maximum; the mean error is
+`[+4.531, +2.877, -9.820] mm`. The largest complete-route residual is
+`19.997 mm` on retreat. The terminal anchor hold is `0.996 mm` RMS and
+`1.046 mm` maximum. This is accepted contact-free physical transfer evidence,
+not pawn contact or task success.
+
+The stationary Pi view uniquely decodes current tags `0, 1, 2, 3`; the
+complete current body map is now `6 -> left_base`, `3 -> left_shoulder`,
+`0 -> left_upper_arm`, `1 -> left_lower_arm`, and `2 -> left_wrist`. The
+previous camera-only refresh is prospectively rejected on this new pose:
+combined tag-corner RMSE is about `50.81 px`, dominated by tag 1 at
+`77.99 px`. A simultaneous camera/tag/joint-zero fit is structurally rank
+deficient (`26 / 29`), so the next calibration must anchor one session camera
+to fixed-base CAD/tag 6, fit articulated CAD/joint alignment before nuisance
+tag mounts, and reserve a roll-separated safe pose as heldout.
+
 Two fresh heldouts for the direction-conditioned joint-play model passed on
 2026-07-27. The first preregistered oblique route moved the follower by at most
 `6.6214 deg`, returned to its torque-off anchor, and used the exact same
@@ -74,20 +101,19 @@ tricam return reached the stable anchor within `0.087912 deg` lift and
 
 The active queue is now:
 
-1. retain the fixed-positive wrist branch as strongly supported but
-   non-promoted, and reject both the wrist load-sign threshold family and any
-   claim that the strict two-sign promotion gate passed;
-2. freeze a future non-inferiority-on-positive/improvement-on-negative
-   replication before collecting any new trace, while separately modeling the
-   remaining sub-degree wrist return/compliance error;
-3. use the repeated Pi tag trajectories to fit one camera-time phase offset
-   while camera geometry and actuator parameters remain frozen;
-4. compile pawn geometry from the current physical anchor rather than reusing
-   the old C8 packet, whose first action is roughly `90-180 deg` away on
-   multiple body joints;
-5. freeze every route and evaluator before any further physical measurement
-   and require C922, D405, and Pi action-enclosing recordings on every trial;
-6. do not inherit pawn-contact authority from contact-free receipts.
+1. retain the fixed-positive wrist branch as supported but non-promoted and
+   retain the measured `~11 mm` stationary B7 transfer residual as the current
+   physical geometric baseline;
+2. freeze the corrected five-tag body map and one session-wide Pi
+   camera-from-base transform using fixed-base CAD plus tag 6;
+3. fit articulated CAD/joint alignment before tag mounts, keeping focal,
+   distortion, link meshes, action bytes, and per-frame camera warps frozen;
+4. compile one separately reviewed roll-separated high-clearance hover as a
+   fresh heldout, with exact surface-distance checks rather than contact masks;
+5. require C922, D405, and Pi action-enclosing recordings on every physical
+   trial and torque off on every close;
+6. admit pawn contact only after the composite heldout passes; do not inherit
+   contact or task authority from either successful hover.
 
 ## Ordered sim-to-real transfer queue
 
