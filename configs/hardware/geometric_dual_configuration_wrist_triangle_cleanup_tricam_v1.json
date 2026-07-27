@@ -1,0 +1,76 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_dual_configuration_wrist_triangle_cleanup_tricam_20260727_v1",
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_15s_v1.json",
+    "contract_sha256": "457f2c142671851ddd60a3f1be5487125605957e38c1b2730ab683e08488393f"
+  },
+  "reviewed_anchor_degrees": [
+    -7.94094992495437,
+    -97.21529705572559,
+    85.00211937284479,
+    -83.20295106137854,
+    -126.59680526435972,
+    1.66270783847981
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -8.378658234855758,
+        -102.4398546188144,
+        90.61442428182887,
+        -89.23230909335841,
+        -126.49127735606807,
+        1.66270783847981
+      ],
+      [
+        -8.87912087912088,
+        -106.28571428571429,
+        99.20879120879121,
+        -94.37362637362638,
+        -126.37362637362638,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "mandatory_post_falsifier_cleanup_to_reviewed_torque_off_anchor",
+    "target_selection": "After the dual-configuration heldout finishes at its negative-bias anchor, return through the previously previewed 20-mm clearance pose to the exact pre-falsifier anchor. This route is compiled only from the fresh stage-4 torque-off read and separately reviewed before motion.",
+    "source_packet_path": "runs/geometric-microtransfer/20260727-geometric-dual-configuration-wrist-triangle-tricam-v1/packet.json",
+    "source_packet_sha256": "bf730f4d5da4b260c6ff96803301f0c3dd192c9c4ddc955652afe0ff767beda6",
+    "source_stage_index": 4,
+    "source_stage_action_sha256": "45dee084828461b0a47f39ffe25d99ab4508b7935efe8ddc08c490248953366c",
+    "source_stage_target_degrees": [
+      -7.94094992495437,
+      -97.21529705572559,
+      85.00211937284479,
+      -83.20295106137854,
+      -126.59680526435972,
+      1.66270783847981
+    ],
+    "destination_anchor_degrees": [
+      -8.87912087912088,
+      -106.28571428571429,
+      99.20879120879121,
+      -94.37362637362638,
+      -126.37362637362638,
+      1.66270783847981
+    ],
+    "tricam_readiness_summary_path": "runs/geometric-microtransfer/20260727-motion-tricam-readiness-v2/readiness_summary.json",
+    "tricam_readiness_summary_sha256": "f1f173148d4a8341e4071e632d88b232a63053db594717d9b47bf75f1e10d95f",
+    "pawn_contact_forbidden": true,
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}
