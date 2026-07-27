@@ -13,6 +13,7 @@ from sim2claw.replay_eligibility import action_sha256
 from sim2claw.scene import ROBOT_JOINTS
 from sim2claw.wrist_view_reposition import (
     CAPTURE_MODE_C922_PI,
+    CAPTURE_MODE_TRICAM,
     CAPTURE_HOLD_SAMPLES,
     MAX_STAGE_EXCURSION_DEGREES,
     SAMPLES_PER_STAGE,
@@ -105,6 +106,25 @@ def _c922_route(path: Path) -> None:
                 "contract_path": "fixture-c922-contract.json",
                 "camera_session_prefix": "fixture-c922-session",
                 "fixed_mount_token": "fixture-fixed-mount",
+            },
+            "reviewed_anchor_degrees": ROUTE_ANCHOR.tolist(),
+            "stage_targets_degrees": [ROUTE_TARGETS[0].tolist()],
+        },
+    )
+
+
+def _tricam_route(path: Path) -> None:
+    _write(
+        path,
+        {
+            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+            "route_id": "fixture-motion-tricam-route",
+            "capture_during_motion": True,
+            "capture_mode": CAPTURE_MODE_TRICAM,
+            "pi_motion_video": {
+                "contract_path": (
+                    "configs/acquisition/pi_imx708_motion_video_15s_v1.json"
+                )
             },
             "reviewed_anchor_degrees": ROUTE_ANCHOR.tolist(),
             "stage_targets_degrees": [ROUTE_TARGETS[0].tolist()],
@@ -314,6 +334,31 @@ class _C922Capture(_Capture):
         }
 
 
+class _TricamCapture(_Capture):
+    def finish(self, **kwargs: object) -> dict[str, object]:
+        result = super().finish(**kwargs)
+        pi_root = self.root / "pi_motion"
+        pi_root.mkdir()
+        raw = pi_root / "pi_imx708.mjpeg"
+        browser = pi_root / "pi_imx708.browser.mp4"
+        pts = pi_root / "pi_imx708.pts"
+        raw.write_bytes(b"pi-raw")
+        browser.write_bytes(b"pi-browser")
+        pts.write_text("0\n33333\n", encoding="utf-8")
+        result["pi"] = {
+            "schema_version": "sim2claw.pi_motion_video_capture.v1",
+            "status": "completed",
+            "action_interval_enclosed": True,
+            "raw_video_path": str(raw),
+            "raw_video_sha256": self._digest(raw),
+            "browser_video_path": str(browser),
+            "browser_video_sha256": self._digest(browser),
+            "pts_path": str(pts),
+            "pts_sha256": self._digest(pts),
+        }
+        return result
+
+
 class _CaptureStartFailure:
     def start(self) -> dict[str, object]:
         raise RuntimeError("fixture camera failure")
@@ -394,6 +439,59 @@ def test_compile_binds_c922_plus_pi_capture_mode(tmp_path: Path) -> None:
         "NativeC922StillRecorder"
     )
     assert packet["execution_contract"]["d405_required"] is False
+
+
+def test_compile_and_execute_requires_three_motion_cameras(tmp_path: Path) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    review_path = tmp_path / "review.json"
+    _candidate_manifest(manifest_path)
+    _tricam_route(route_path)
+
+    packet = compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+    review_wrist_view_reposition_packet(
+        packet_path,
+        review_path,
+        reviewer="fixture-reviewer",
+        decision_id="fixture-decision",
+    )
+    receipt = execute_wrist_view_reposition_stage(
+        packet_path,
+        review_path,
+        tmp_path / "execution-tricam-stage-1",
+        stage_index=1,
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda identity: _Gateway(ROUTE_ANCHOR),
+        capture_factory=lambda path: _TricamCapture(path),
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+
+    assert packet["capture_mode"] == CAPTURE_MODE_TRICAM
+    assert packet["execution_contract"]["motion_camera_owner"] == (
+        "MotionTricamRecorder"
+    )
+    assert packet["execution_contract"]["d405_required"] is True
+    assert receipt["capture_mode"] == CAPTURE_MODE_TRICAM
+    assert receipt["frame_joint_alignment"]["camera_role"] == "d405"
+    assert {row["kind"] for row in receipt["capture_artifacts"]} == {
+        "native_report",
+        "callback_ledger",
+        "overhead_source_video",
+        "overhead_browser_video",
+        "wrist_source_video",
+        "wrist_browser_video",
+        "pi_source_video",
+        "pi_browser_video",
+        "pi_pts_ledger",
+    }
 
 
 def test_execute_c922_mode_aligns_source_frames_and_never_requires_d405(

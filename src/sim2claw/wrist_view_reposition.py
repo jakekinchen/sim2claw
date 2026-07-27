@@ -40,6 +40,7 @@ FRAME_JOINT_ALIGNMENT_SCHEMA = "sim2claw.wrist_view_frame_joint_alignment.v1"
 C922_MOTION_CAPTURE_SCHEMA = "sim2claw.c922_motion_capture_receipt.v1"
 CAPTURE_MODE_DUAL = "native_dual_camera"
 CAPTURE_MODE_C922_PI = "c922_plus_pi_hold"
+CAPTURE_MODE_TRICAM = "native_motion_tricam"
 SAMPLE_HZ = 40
 SAMPLES_PER_STAGE = 361
 CAPTURE_HOLD_SECONDS = 2.0
@@ -341,7 +342,8 @@ def _load_route(route_path: Path) -> tuple[dict[str, Any], np.ndarray, np.ndarra
     )
     capture_mode = str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
     _require(
-        capture_mode in {CAPTURE_MODE_DUAL, CAPTURE_MODE_C922_PI},
+        capture_mode
+        in {CAPTURE_MODE_DUAL, CAPTURE_MODE_C922_PI, CAPTURE_MODE_TRICAM},
         "unsupported wrist-view capture mode",
     )
     if capture_mode == CAPTURE_MODE_C922_PI:
@@ -353,6 +355,14 @@ def _load_route(route_path: Path) -> tuple[dict[str, Any], np.ndarray, np.ndarra
             and bool(str(capture.get("camera_session_prefix") or ""))
             and bool(str(capture.get("fixed_mount_token") or "")),
             "C922-plus-Pi mode requires a bound motion-capture specification",
+        )
+    if capture_mode == CAPTURE_MODE_TRICAM:
+        capture = route.get("pi_motion_video")
+        _require(
+            route.get("capture_during_motion") is True
+            and isinstance(capture, Mapping)
+            and bool(str(capture.get("contract_path") or "")),
+            "motion-tricam mode requires a bound Pi video contract",
         )
     return route, anchor, targets
 
@@ -573,7 +583,8 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
     bound_route = _read_json(Path(route["path"]).resolve(), "wrist-view route")
     capture_mode = str(packet.get("capture_mode") or "")
     _require(
-        capture_mode in {CAPTURE_MODE_DUAL, CAPTURE_MODE_C922_PI}
+        capture_mode
+        in {CAPTURE_MODE_DUAL, CAPTURE_MODE_C922_PI, CAPTURE_MODE_TRICAM}
         and capture_mode
         == str(bound_route.get("capture_mode") or CAPTURE_MODE_DUAL),
         "packet/route capture mode changed",
@@ -582,12 +593,18 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
     _require(
         execution_contract.get("motion_camera_owner")
         == (
-            "NativeC922StillRecorder"
-            if capture_mode == CAPTURE_MODE_C922_PI
-            else "NativeDualCameraRecorder"
+            (
+                "NativeC922StillRecorder"
+                if capture_mode == CAPTURE_MODE_C922_PI
+                else (
+                    "MotionTricamRecorder"
+                    if capture_mode == CAPTURE_MODE_TRICAM
+                    else "NativeDualCameraRecorder"
+                )
+            )
         )
         and execution_contract.get("d405_required")
-        is (capture_mode == CAPTURE_MODE_DUAL),
+        is (capture_mode in {CAPTURE_MODE_DUAL, CAPTURE_MODE_TRICAM}),
         "packet camera ownership changed",
     )
     assistance = packet.get("action_assistance") or {}
@@ -907,14 +924,21 @@ def compile_wrist_view_reposition_packet(
                 == CAPTURE_MODE_DUAL
             ),
             "motion_camera_owner": (
-                "NativeC922StillRecorder"
-                if str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
-                == CAPTURE_MODE_C922_PI
-                else "NativeDualCameraRecorder"
+                (
+                    "NativeC922StillRecorder"
+                    if str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+                    == CAPTURE_MODE_C922_PI
+                    else (
+                        "MotionTricamRecorder"
+                        if str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+                        == CAPTURE_MODE_TRICAM
+                        else "NativeDualCameraRecorder"
+                    )
+                )
             ),
             "d405_required": (
                 str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
-                == CAPTURE_MODE_DUAL
+                in {CAPTURE_MODE_DUAL, CAPTURE_MODE_TRICAM}
             ),
             "camera_capture_finishes_before_gateway_close": True,
             "frame_joint_alignment_clock": "host_continuous_monotonic_nanoseconds",
@@ -1059,9 +1083,40 @@ def _capture_artifacts(
                 ),
             ]
         )
+    pi = camera_finished.get("pi")
+    if pi is not None:
+        _require(
+            isinstance(pi, Mapping)
+            and pi.get("schema_version")
+            == "sim2claw.pi_motion_video_capture.v1"
+            and pi.get("status") == "completed"
+            and pi.get("action_interval_enclosed") is True,
+            "Pi motion-video receipt is incomplete",
+        )
+        rows.extend(
+            [
+                (
+                    "pi_source_video",
+                    str(pi.get("raw_video_path") or ""),
+                    str(pi.get("raw_video_sha256") or ""),
+                ),
+                (
+                    "pi_browser_video",
+                    str(pi.get("browser_video_path") or ""),
+                    str(pi.get("browser_video_sha256") or ""),
+                ),
+                (
+                    "pi_pts_ledger",
+                    str(pi.get("pts_path") or ""),
+                    str(pi.get("pts_sha256") or ""),
+                ),
+            ]
+        )
     artifacts: list[dict[str, Any]] = []
     for kind, relative, expected_sha256 in rows:
-        path = capture_root / relative
+        path = Path(relative)
+        if not path.is_absolute():
+            path = capture_root / path
         _require(relative and len(expected_sha256) == 64, f"{kind} receipt is incomplete")
         _require(
             path.is_file() and _sha256(path) == expected_sha256,
@@ -1386,6 +1441,28 @@ def execute_wrist_view_reposition_stage(
                 specification=specification,
                 route_id=str(bound_route["route_id"]),
                 stage_index=stage_index,
+            )
+        if capture_mode == CAPTURE_MODE_TRICAM:
+            from .pi_motion_video import MotionTricamRecorder
+
+            specification = bound_route.get("pi_motion_video")
+            _require(
+                isinstance(specification, Mapping),
+                "bound route lacks its Pi motion-video specification",
+            )
+            contract_path = Path(str(specification.get("contract_path") or ""))
+            if not contract_path.is_absolute():
+                contract_path = (
+                    Path(__file__).resolve().parents[2] / contract_path
+                )
+            contract_path = contract_path.resolve()
+            _require(
+                contract_path.is_file(),
+                "bound Pi motion-video contract does not exist",
+            )
+            return MotionTricamRecorder(
+                capture_root,
+                pi_contract_path=contract_path,
             )
         return _default_capture(capture_root)
 
