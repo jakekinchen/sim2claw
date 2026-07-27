@@ -1,0 +1,106 @@
+{
+  "schema_version": "sim2claw.current_c922_pose_p2_fit_acquisition.v1",
+  "contract_id": "current_c922_pose_p2_fit_acquisition_20260726_v1",
+  "status": "frozen_before_physical_capture",
+  "proof_class": "physical_static_C922_calibration_fit_observation_only",
+  "selection_boundary": {
+    "failed_attempt_images_accessed": false,
+    "inputs": [
+      "exact_full_SO101_group2_visual_meshes",
+      "committed_conditional_C922_camera_and_base",
+      "fresh_torque_off_joint_anchor",
+      "observed_shoulder_pan_stall_boundary_only"
+    ],
+    "candidate_count": 324,
+    "shoulder_pan_cap_degrees": 80.0,
+    "selected_shoulder_pan_margin_below_cap_degrees": 5.0
+  },
+  "route": {
+    "path": "configs/hardware/c922_current_board_pose_p2_fit_acquisition_v1.json",
+    "sha256": "d7c264ecf9a109251e5b0595fc3058356dc905f5b8dc807d4fbe696313bb2de0",
+    "target_joint_position_degrees": [
+      75.0,
+      10.0,
+      40.0,
+      -30.0,
+      -60.0,
+      2.494061757719715
+    ],
+    "maximum_absolute_stage_excursion_degrees": 28.0,
+    "MuJoCo_robot_contact_count": 0,
+    "moving_CAD_visible_fraction": 1.0,
+    "moving_CAD_board_overlap_fraction": 0.00085324,
+    "projected_bbox_px": [
+      345.56,
+      250.21,
+      603.33,
+      398.81
+    ],
+    "selection_was_frozen_before_capture": true
+  },
+  "failed_predecessors": [
+    {
+      "packet_sha256": "78bb55d16a9b0e2073642012606ce0c5ea8d1fadb802f87314a31b6a77d58913",
+      "review_sha256": "a8d53919e8094cf3097113e15934483bf6902835899a61464e12b53fed4598be",
+      "receipt_sha256": "67f8dd2166c8ea7c320f2e598049a4171f7038f97d46a901c3b3ce7cf9e455b7",
+      "completed_capture_hold_samples": 0,
+      "usable_as_fit_observation": false
+    },
+    {
+      "packet_sha256": "b70f0f6fc1f2378c7750bf0984cfd6e850f75697a5697e0e4c36eceffec5b5d2",
+      "review_sha256": "0f605c6eaebbcad10e1c348054128b59916c956b2dd1fe033955e21d0b882747",
+      "receipt_sha256": "8a9d4650fe750231616626b24a8d3a4cb1a2d61094f76519b9c0f85ac39670e6",
+      "completed_capture_hold_samples": 0,
+      "usable_as_fit_observation": false
+    }
+  ],
+  "receipt_binding": {
+    "joint_rows": "final_completed_capture_hold_samples_block",
+    "target_host_time": "integer_median_host_continuous_ns_of_target_joint_rows",
+    "frame_selection": "minimum_absolute_host_time_delta_among_role_c922_and_appended_to_writer_callbacks",
+    "movie_index": "zero_based_ordinal_within_the_appended_C922_callback_sequence",
+    "maximum_joint_to_frame_delta_ms": 20.0,
+    "forbidden_inputs": [
+      "c922_final.png",
+      "operator_selected_frame",
+      "manually_adjusted_frame"
+    ]
+  },
+  "successor_fit_split": {
+    "fit_poses": [
+      "J",
+      "S",
+      "K",
+      "L",
+      "P2"
+    ],
+    "retrospective_diagnostic_only": [
+      "M"
+    ],
+    "future_heldout_required_after_candidate_freeze": true,
+    "pose_P2_is_not_future_heldout": true
+  },
+  "frozen_pose_P2_usability_checks": {
+    "line_extraction": "same_Canny_Hough_union_then_unique_seed_lattice_line_matching_as_predecessor",
+    "minimum_directly_supported_lattice_lines_per_axis": 7,
+    "full_OpenCV_7x7_corner_detection_attempted": true,
+    "exact_full_SO101_group2_visual_meshes_required": true,
+    "identity_and_Stage_D_receive_identical_frame_camera_base_edge_extraction_and_masks": true,
+    "per_pose_camera_refit_for_hypothesis_comparison": false,
+    "per_pose_base_refit_for_hypothesis_comparison": false
+  },
+  "stop_conditions": {
+    "reject_pose_P2_as_fit_observation_if_joint_frame_binding_fails": true,
+    "reject_pose_P2_as_board_support_if_either_lattice_axis_has_fewer_than_7_lines": true,
+    "do_not_promote_without_an_independent_metric_anchor": true,
+    "do_not_promote_without_nonplanar_intrinsic_or_distortion_evidence": true,
+    "do_not_promote_without_a_future_heldout_pose_captured_after_candidate_freeze": true
+  },
+  "authority": {
+    "physical_calibration_motion": true,
+    "simulator_parameter_promotion": false,
+    "metric_camera_or_workcell": false,
+    "policy": false,
+    "task": false
+  }
+}

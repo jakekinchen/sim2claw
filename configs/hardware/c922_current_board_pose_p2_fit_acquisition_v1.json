@@ -1,0 +1,49 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c922_current_board_pose_p2_fit_acquisition_20260726_v1",
+  "capture_during_motion": true,
+  "reviewed_anchor_degrees": [
+    76.3956043956044,
+    -16.967032967032967,
+    68.0,
+    -21.406593406593405,
+    -60.967032967032964,
+    2.494061757719715
+  ],
+  "stage_targets_degrees": [
+    [
+      75.0,
+      10.0,
+      40.0,
+      -30.0,
+      -60.0,
+      2.494061757719715
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "reachable_new_fit_observation_for_a_successor_C922_board_base_and_exact_full_CAD_registration",
+    "source_pose": "Fresh torque-off follower read after two routes toward the original 89 degree pan target stopped safely at the six-degree shoulder-pan tracking-error gate.",
+    "target_selection": "A new simulation-only constrained rank and tight local refinement were frozen without opening either failed-attempt video. Pose P2 leaves five degrees of margin below the requested 80-degree pan cap, has zero MuJoCo robot contacts, 100 percent sampled moving-CAD visibility, 0.085324 percent board overlap, and a projected CAD bounding box of [345.56, 250.21, 603.33, 398.81] pixels under the same bounded conditional camera.",
+    "failed_predecessors": [
+      {
+        "receipt_sha256": "67f8dd2166c8ea7c320f2e598049a4171f7038f97d46a901c3b3ce7cf9e455b7",
+        "completed_motion_samples": 348,
+        "completed_capture_hold_samples": 0
+      },
+      {
+        "receipt_sha256": "8a9d4650fe750231616626b24a8d3a4cb1a2d61094f76519b9c0f85ac39670e6",
+        "completed_motion_samples": 306,
+        "completed_capture_hold_samples": 0
+      }
+    ],
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "successor_fit_observation": true,
+      "future_heldout_validation": false,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}
