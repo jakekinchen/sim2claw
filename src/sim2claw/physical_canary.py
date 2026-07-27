@@ -53,6 +53,7 @@ NORMALIZATION_MAX_DELTA_DEGREES = 5.0
 NORMALIZATION_FINAL_HOLD_SECONDS = 1.0
 POST_NORMALIZATION_SAMPLE_HZ = 20
 POST_NORMALIZATION_PAN_EXCURSION_DEGREES = 1.0
+POST_NORMALIZATION_FINAL_HOLD_SECONDS = 1.0
 ROUNDTRIP_BOUNDS_PATH = (
     REPO_ROOT
     / "configs"
@@ -284,6 +285,15 @@ def _compile_post_normalization_actions(
             np.linspace(0.0, 1.0, 9, dtype=np.float64)[1:],
             np.linspace(1.0, -1.0, 17, dtype=np.float64)[1:],
             np.linspace(-1.0, 0.0, 9, dtype=np.float64)[1:],
+            np.zeros(
+                int(
+                    round(
+                        POST_NORMALIZATION_FINAL_HOLD_SECONDS
+                        * POST_NORMALIZATION_SAMPLE_HZ
+                    )
+                ),
+                dtype=np.float64,
+            ),
         )
     )
     actions = np.repeat(anchor_physical[None, :], offsets.size, axis=0).astype(
@@ -302,6 +312,20 @@ def _compile_post_normalization_actions(
         np.array_equal(actions[-1], actions[0])
         and np.all(actions[:, 1:] == actions[0, 1:][None, :]),
         "post-normalization canary is not shoulder-pan-only return-to-start",
+    )
+    _require(
+        np.all(
+            actions[
+                -int(
+                    round(
+                        POST_NORMALIZATION_FINAL_HOLD_SECONDS
+                        * POST_NORMALIZATION_SAMPLE_HZ
+                    )
+                ) :
+            ]
+            == actions[0]
+        ),
+        "post-normalization canary lacks its frozen final anchor hold",
     )
     return actions, timestamps, actions.tobytes(order="C")
 
@@ -754,6 +778,7 @@ def compile_physical_canary_packet(
         "source_normalization_receipt": {"path": str(normalization_receipt_path.resolve()), "sha256": _sha256(normalization_receipt_path.resolve())},
         "simulation_contact_classification": "diagnostic_sim_model_baseline_self_contact",
         "hardware_gate": "no_new_or_worsened_kinematic_contact_plus_clear_workspace_and_bounded_normalization",
+        "final_anchor_hold_seconds": POST_NORMALIZATION_FINAL_HOLD_SECONDS,
         "physical_authority": False,
     }
     packet["plan_sha256"] = _canonical(packet)

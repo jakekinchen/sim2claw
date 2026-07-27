@@ -23,8 +23,9 @@ execution returns to its starting anchor.
 1. Read the follower through the reviewed gateway with torque off.
 2. If necessary, execute only the existing bounded inward normalization for
    shoulder-lift and wrist-flex.
-3. Compile a fresh 37-sample, 20 Hz, ±1 degree shoulder-pan packet relative to
-   that normalized pose. No old absolute packet may be reused.
+3. Compile a fresh 57-sample, 20 Hz, ±1 degree shoulder-pan packet relative to
+   that normalized pose, including a frozen one-second final anchor hold. No
+   old absolute packet may be reused.
 4. Before review or motion, bind into the packet:
    - exact mixed-unit physical action bytes and SHA;
    - candidate manifest/config and provisional joint-transform SHAs;

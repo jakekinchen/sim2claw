@@ -351,6 +351,9 @@ def test_physical_canary_freshly_freezes_post_normalization_pan_bytes(tmp_path: 
     assert np.array_equal(actions[-1], actions[0])
     assert np.all(actions[:, 1:] == actions[0, 1:])
     assert np.max(np.abs(actions[:, 0] - actions[0, 0])) == 1.0
+    assert actions.shape == (57, 6)
+    assert np.all(actions[-20:] == actions[0])
+    assert packet["final_anchor_hold_seconds"] == 1.0
     assert packet["post_normalization_simulation_preview"][
         "exact_physical_action_sha256"
     ] == packet["action_sha256"]
