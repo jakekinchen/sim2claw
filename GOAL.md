@@ -29,19 +29,35 @@ and end-effector RMS from `5.7681 mm` to `2.2808 mm` (`60.46%`). Its residual
 remains dominated by wrist flex (`0.6295 deg` RMS), so the repeated pass
 supports the seven-width model while localizing the next bounded mechanism.
 
+The subsequent `0.015 N m` wrist load-sign hysteresis refinement was frozen
+before a third, raised-anchor tricam heldout and was rejected. The new packet
+completed three separately torque-off-closed stages—clearance/setup, a
+four-crossing heldout, and exact-anchor return—with `441 / 441` rows and
+C922, D405, and Pi action enclosure in every stage. On the heldout, hysteresis
+worsened wrist RMS from `0.6338 deg` to `0.7425 deg`, overall joint RMS from
+`0.3685 deg` to `0.4071 deg`, and end-effector RMS from `2.8024 mm` to
+`2.8654 mm`. The parameter is not promoted. The surviving no-hysteresis
+direction-conditioned model remains bounded on this harder route.
+
+The physical follower returned torque off at
+`[-8.8791, -106.2857, 99.2088, -94.3736, -126.3736, 1.6627]` degrees.
+Pi tags 1 and 2 returned within `0.494 px` and `1.150 px` respectively;
+the negative evaluator result is therefore not a physical non-return.
+
 The active queue is now:
 
-1. keep the twice-passing seven-width model frozen while checking whether a
-   single wrist load-sign hysteresis-band parameter is identified by the
-   opened crossing traces;
-2. if identified, freeze a bounded one-parameter fit and an opposite-direction
-   contact-free falsifier; otherwise retain the current model;
-3. freeze every route and evaluator before any further physical measurement;
-4. require C922, D405, and Pi action-enclosing recordings on every physical
-   trial;
-5. evaluate geometric pawn actions in simulation while the actuator refinement
-   proceeds; do not inherit pawn-contact authority from the contact-free
-   receipts.
+1. retain the twice-passing direction-conditioned model and reject the wrist
+   load-sign threshold family;
+2. test the zero-new-continuous-parameter alternative that keeps the frozen
+   asymmetric wrist corridor independent of simulated load sign;
+3. use the repeated Pi tag trajectories to fit one camera-time phase offset
+   while camera geometry and actuator parameters remain frozen;
+4. compile pawn geometry from the current physical anchor rather than reusing
+   the old C8 packet, whose first action is roughly `90-180 deg` away on
+   multiple body joints;
+5. freeze every route and evaluator before any further physical measurement
+   and require C922, D405, and Pi action-enclosing recordings on every trial;
+6. do not inherit pawn-contact authority from contact-free receipts.
 
 ## Ordered sim-to-real transfer queue
 
