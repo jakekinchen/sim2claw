@@ -181,6 +181,27 @@ class UnapprovedPhysicalTransformDiagnostic:
     promotion_eligible: bool = False
 
 
+@dataclass(frozen=True)
+class ActuatorPlayDiagnostic:
+    """Typed non-promotional stateful actuator-target diagnostic.
+
+    The recorded command remains the simulator input and retains its exact
+    action identity.  ``radius_joint_units`` affects only an explicit internal
+    actuator target state and is never written back into the source action.
+    """
+
+    schema_version: str
+    joint_name: str
+    radius_joint_units: float
+    baseline_config_sha256: str
+    action_sha256: str
+    fit_source_sha256s: tuple[str, ...]
+    overlay_sha256: str
+    evaluation_contract_sha256: str
+    parameter_fitting_performed: bool = True
+    promotion_eligible: bool = False
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -212,6 +233,16 @@ def canonical_json_sha256(payload: Mapping[str, Any]) -> str:
         ensure_ascii=True,
     ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _runtime_config_canonical_sha256(config: Mapping[str, Any]) -> str:
+    return canonical_json_sha256(
+        {
+            key: value
+            for key, value in config.items()
+            if not str(key).startswith("_")
+        }
+    )
 
 
 def _is_sha256(value: Any) -> bool:
@@ -1279,6 +1310,85 @@ def validate_parameter_values(
     return result
 
 
+def _play_target(
+    previous: np.ndarray,
+    exact_command: np.ndarray,
+    *,
+    joint_index: int,
+    radius: float,
+) -> np.ndarray:
+    """Advance one play-operator state without mutating the exact command."""
+
+    previous_array = np.asarray(previous, dtype=np.float64)
+    command_array = np.asarray(exact_command, dtype=np.float64)
+    if (
+        previous_array.ndim != 1
+        or command_array.shape != previous_array.shape
+        or not np.all(np.isfinite(previous_array))
+        or not np.all(np.isfinite(command_array))
+        or not isinstance(joint_index, int)
+        or not 0 <= joint_index < previous_array.size
+        or not math.isfinite(radius)
+        or radius < 0.0
+    ):
+        raise ReplayContractError("actuator play target inputs are invalid")
+    target = command_array.copy()
+    target[joint_index] = max(
+        float(command_array[joint_index]) - radius,
+        min(
+            float(command_array[joint_index]) + radius,
+            float(previous_array[joint_index]),
+        ),
+    )
+    return target
+
+
+def _validated_actuator_play(
+    diagnostic: ActuatorPlayDiagnostic | None,
+    episode: RecordedEpisode,
+    config: Mapping[str, Any],
+) -> int | None:
+    if diagnostic is None:
+        return None
+    try:
+        joint_index = episode.joint_names.index(diagnostic.joint_name)
+    except ValueError as error:
+        raise ReplayContractError(
+            "actuator play diagnostic joint binding is missing"
+        ) from error
+    radius = float(diagnostic.radius_joint_units)
+    if (
+        diagnostic.schema_version
+        != "sim2claw.actuator_play_diagnostic.v1"
+        or not math.isfinite(radius)
+        or not 0.0 <= radius <= 1.0
+    ):
+        raise ReplayContractError("actuator play diagnostic radius is invalid")
+    if (
+        diagnostic.baseline_config_sha256
+        != _runtime_config_canonical_sha256(config)
+    ):
+        raise ReplayContractError(
+            "actuator play diagnostic baseline config changed"
+        )
+    if diagnostic.action_sha256 != float64_tensor_sha256(episode.commands):
+        raise ReplayContractError(
+            "actuator play diagnostic action identity changed"
+        )
+    if (
+        not diagnostic.fit_source_sha256s
+        or not all(_is_sha256(value) for value in diagnostic.fit_source_sha256s)
+        or not _is_sha256(diagnostic.overlay_sha256)
+        or not _is_sha256(diagnostic.evaluation_contract_sha256)
+        or diagnostic.parameter_fitting_performed is not True
+        or diagnostic.promotion_eligible is not False
+    ):
+        raise ReplayContractError(
+            "actuator play diagnostic provenance or authority is invalid"
+        )
+    return joint_index
+
+
 def _body_subtree_ids(model: mujoco.MjModel, names: Iterable[str]) -> set[int]:
     roots: set[int] = set()
     for name in names:
@@ -1840,12 +1950,16 @@ def simulate_and_align(
     unapproved_transform_diagnostic: (
         UnapprovedPhysicalTransformDiagnostic | None
     ) = None,
+    actuator_diagnostic: ActuatorPlayDiagnostic | None = None,
 ) -> dict[str, Any]:
     """Replay an episode and align native simulation values to measured times."""
 
     validate_sysid_config(config)
     replay_input_action_sha256 = float64_tensor_sha256(episode.commands)
     parameters = validate_parameter_values(config, parameter_values or {})
+    actuator_play_joint_index = _validated_actuator_play(
+        actuator_diagnostic, episode, config
+    )
     model, current_scene = _compile_model(
         config,
         base_directory=model_base_directory,
@@ -1892,6 +2006,11 @@ def simulate_and_align(
             is not True
             or diagnostic.parameter_fitting_performed is not False
             or diagnostic.promotion_eligible is not False
+            or (
+                actuator_diagnostic is not None
+                and diagnostic.evaluation_contract_sha256
+                != actuator_diagnostic.evaluation_contract_sha256
+            )
         ):
             raise ReplayContractError(
                 "physical joint transform is not calibration-approved; only "
@@ -1957,7 +2076,16 @@ def simulate_and_align(
     initial_applied = _require_exact_control(
         model, ids["actuator_ids"], initial_command
     )
-    data.ctrl[ids["actuator_ids"]] = initial_applied
+    effective_target = initial_applied.copy()
+    if actuator_play_joint_index is not None:
+        effective_target = _play_target(
+            episode.initial_joint_position,
+            initial_applied,
+            joint_index=actuator_play_joint_index,
+            radius=float(actuator_diagnostic.radius_joint_units),
+        )
+    _require_exact_control(model, ids["actuator_ids"], effective_target)
+    data.ctrl[ids["actuator_ids"]] = effective_target
     mujoco.mj_forward(model, data)
     if native_step_observer is not None:
         native_step_observer(model, data, 0)
@@ -1967,6 +2095,11 @@ def simulate_and_align(
     ]
     native_requested_controls: list[np.ndarray] = [initial_command.copy()]
     native_applied_controls: list[np.ndarray] = [initial_applied.copy()]
+    native_effective_targets: list[np.ndarray] | None = (
+        [effective_target.copy()]
+        if actuator_diagnostic is not None
+        else None
+    )
     maximum_steps = int(math.ceil(episode.duration_seconds / model.opt.timestep)) + 2
     for _ in range(maximum_steps):
         if data.time + np.finfo(np.float64).eps >= episode.duration_seconds:
@@ -1978,7 +2111,17 @@ def simulate_and_align(
             interpolation=interpolation,
         )
         applied = _require_exact_control(model, ids["actuator_ids"], command)
-        data.ctrl[ids["actuator_ids"]] = applied
+        if actuator_play_joint_index is not None:
+            effective_target = _play_target(
+                effective_target,
+                applied,
+                joint_index=actuator_play_joint_index,
+                radius=float(actuator_diagnostic.radius_joint_units),
+            )
+        else:
+            effective_target = applied
+        _require_exact_control(model, ids["actuator_ids"], effective_target)
+        data.ctrl[ids["actuator_ids"]] = effective_target
         mujoco.mj_step(model, data)
         if native_step_observer is not None:
             native_step_observer(model, data, len(native_times))
@@ -1986,6 +2129,8 @@ def simulate_and_align(
         native_rows.append(_simulation_observables(model, data, ids))
         native_requested_controls.append(command.copy())
         native_applied_controls.append(applied.copy())
+        if native_effective_targets is not None:
+            native_effective_targets.append(effective_target.copy())
     if native_times[-1] + 1e-12 < episode.duration_seconds:
         raise ReplayContractError("bounded replay did not reach the final timestamp")
     native_time_array = np.asarray(native_times, dtype=np.float64)
@@ -2017,11 +2162,19 @@ def simulate_and_align(
         episode.timestamps,
     )
     applied_controls = applied_controls.astype(np.float64)
+    effective_targets: np.ndarray | None = None
+    if native_effective_targets is not None:
+        effective_targets = _align_discrete(
+            native_time_array,
+            native_effective_targets,
+            episode.timestamps,
+        ).astype(np.float64)
     synchronized_rows = _synchronized_rows(
         episode,
         simulated,
         requested_controls=requested_controls,
         applied_controls=applied_controls,
+        effective_actuator_targets=effective_targets,
     )
     if float64_tensor_sha256(episode.commands) != replay_input_action_sha256:
         raise ReplayContractError("recorded action tensor mutated during replay")
@@ -2082,7 +2235,44 @@ def simulate_and_align(
                 if unapproved_transform_diagnostic is not None
                 else None
             ),
-            "parameter_fitting_performed": False,
+            "actuator_model_transform_performed": (
+                actuator_diagnostic is not None
+            ),
+            "actuator_diagnostic_contract": (
+                {
+                    "schema_version": actuator_diagnostic.schema_version,
+                    "joint_name": actuator_diagnostic.joint_name,
+                    "radius_joint_units": (
+                        actuator_diagnostic.radius_joint_units
+                    ),
+                    "baseline_config_sha256": (
+                        actuator_diagnostic.baseline_config_sha256
+                    ),
+                    "action_sha256": actuator_diagnostic.action_sha256,
+                    "fit_source_sha256s": list(
+                        actuator_diagnostic.fit_source_sha256s
+                    ),
+                    "overlay_sha256": actuator_diagnostic.overlay_sha256,
+                    "evaluation_contract_sha256": (
+                        actuator_diagnostic.evaluation_contract_sha256
+                    ),
+                    "parameter_fitting_performed": True,
+                    "promotion_eligible": False,
+                }
+                if actuator_diagnostic is not None
+                else None
+            ),
+            "actuator_effective_target_sha256": (
+                float64_tensor_sha256(effective_targets)
+                if effective_targets is not None
+                else None
+            ),
+            "maximum_applied_effective_target_delta": (
+                float(np.max(np.abs(applied_controls - effective_targets)))
+                if effective_targets is not None
+                else 0.0
+            ),
+            "parameter_fitting_performed": actuator_diagnostic is not None,
         },
         "synchronized_rows": synchronized_rows,
     }
@@ -2094,6 +2284,7 @@ def _synchronized_rows(
     *,
     requested_controls: np.ndarray,
     applied_controls: np.ndarray,
+    effective_actuator_targets: np.ndarray | None = None,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     available = episode.available_observables()
@@ -2129,8 +2320,7 @@ def _synchronized_rows(
                     binding_reason = f"replay model has no configured {observable} output"
                     reason = f"{reason}; {binding_reason}" if reason else binding_reason
                 availability[observable] = {"available": False, "reason": reason}
-        rows.append(
-            {
+        row = {
                 "schema_version": SYNCHRONIZED_ROW_SCHEMA,
                 "episode_id": episode.episode_id,
                 "sample_index": index,
@@ -2149,7 +2339,11 @@ def _synchronized_rows(
                 "sim_minus_measured": errors,
                 "observable_availability": availability,
             }
-        )
+        if effective_actuator_targets is not None:
+            row["effective_actuator_target_joint_position"] = (
+                effective_actuator_targets[index].astype(float).tolist()
+            )
+        rows.append(row)
     return rows
 
 

@@ -26,6 +26,7 @@ from typing import Any, Mapping
 
 import numpy as np
 
+from .paths import REPO_ROOT
 from .physical_canary import (
     CANARY_FINAL_SETTLED_SAMPLE_COUNT,
     CANARY_START_TOLERANCE_DEGREES,
@@ -37,6 +38,7 @@ from .physical_canary import (
     _physical_to_model_position,
 )
 from .recorded_replay import (
+    ActuatorPlayDiagnostic,
     RecordedEpisode,
     UnapprovedPhysicalTransformDiagnostic,
     _atomic_json,
@@ -58,6 +60,10 @@ REPLAY_RECEIPT_SCHEMA = (
 SAMPLE_SCHEMA = "sim2claw.physical_canary_joint_sample.v1"
 PROOF_CLASS = "physical_canary_action_frozen_diagnostic"
 PHYSICAL_UNITS = ("degree", "degree", "degree", "degree", "degree", "percent")
+PAN_PLAY_CONTRACT_SCHEMA = "sim2claw.shoulder_pan_play_diagnostic.v1"
+PAN_PLAY_RECEIPT_SCHEMA = (
+    "sim2claw.shoulder_pan_play_diagnostic_receipt.v1"
+)
 
 
 class PhysicalCanaryReplayError(RuntimeError):
@@ -1029,6 +1035,7 @@ def _evaluation_contract(
         )
     contract = _read_json(path, "physical canary evaluation contract")
     authority = contract.get("authority")
+    evaluator = contract.get("evaluator")
     thresholds = contract.get("thresholds")
     required_thresholds = {
         "body_joint_rmse_degrees_maximum",
@@ -1395,6 +1402,620 @@ def _verified_preexecution_prediction(
     return dict(prediction)
 
 
+def _contract_repo_path(path_text: Any, label: str) -> Path:
+    _require(
+        isinstance(path_text, str) and bool(path_text.strip()),
+        f"{label} path is missing",
+    )
+    path = (REPO_ROOT / path_text).resolve()
+    try:
+        path.relative_to(REPO_ROOT.resolve())
+    except ValueError as error:
+        raise PhysicalCanaryReplayError(
+            f"{label} path escaped the repository"
+        ) from error
+    _require(path.is_file(), f"{label} does not exist")
+    return path
+
+
+def _bound_play_source(
+    entry: Mapping[str, Any],
+    *,
+    label: str,
+    baseline_config_sha256: str,
+) -> VerifiedPhysicalCanaryExecution:
+    packet_path = _contract_repo_path(
+        entry.get("packet_path"), f"{label} packet"
+    )
+    execution_path = _contract_repo_path(
+        entry.get("execution_receipt_path"),
+        f"{label} execution receipt",
+    )
+    _require(
+        _sha256(packet_path) == entry.get("packet_sha256")
+        and _sha256(execution_path)
+        == entry.get("execution_receipt_sha256"),
+        f"{label} packet or execution receipt changed",
+    )
+    verified = load_verified_physical_canary_execution(
+        packet_path, execution_path
+    )
+    _require(
+        verified.samples_sha256 == entry.get("joint_samples_sha256")
+        and verified.packet.get("action_sha256")
+        == entry.get("action_sha256")
+        and verified.candidate_manifest.get("candidate_config_sha256")
+        == baseline_config_sha256,
+        f"{label} sample, action, or baseline config changed",
+    )
+    return verified
+
+
+def _actuator_play_overlay(
+    *,
+    contract_sha256: str,
+    baseline_config_sha256: str,
+    fit_source_sha256s: tuple[str, ...],
+    action_sha256: str,
+    joint_name: str,
+    radius_degrees: float,
+) -> tuple[dict[str, Any], ActuatorPlayDiagnostic]:
+    payload = {
+        "schema_version": "sim2claw.actuator_play_overlay.v1",
+        "contract_sha256": contract_sha256,
+        "baseline_config_sha256": baseline_config_sha256,
+        "fit_source_sha256s": list(fit_source_sha256s),
+        "action_sha256": action_sha256,
+        "joint_name": joint_name,
+        "radius_degrees": float(radius_degrees),
+        "radius_radians": math.radians(float(radius_degrees)),
+        "source_action_rewriting": False,
+        "parameter_fitting_performed": True,
+        "promotion_eligible": False,
+    }
+    overlay_sha256 = _canonical_sha256(payload)
+    diagnostic = ActuatorPlayDiagnostic(
+        schema_version="sim2claw.actuator_play_diagnostic.v1",
+        joint_name=joint_name,
+        radius_joint_units=float(payload["radius_radians"]),
+        baseline_config_sha256=baseline_config_sha256,
+        action_sha256=action_sha256,
+        fit_source_sha256s=fit_source_sha256s,
+        overlay_sha256=overlay_sha256,
+        evaluation_contract_sha256=contract_sha256,
+    )
+    return payload, diagnostic
+
+
+def _play_recorded_episode(
+    verified: VerifiedPhysicalCanaryExecution,
+    episode_path: Path,
+    *,
+    contract_sha256: str,
+) -> RecordedEpisode:
+    return _recorded_episode_from_artifact(
+        verified,
+        episode_path,
+        evaluation_contract_sha256=contract_sha256,
+    )
+
+
+def _unapproved_transform_diagnostic(
+    verified: VerifiedPhysicalCanaryExecution,
+    episode: RecordedEpisode,
+    *,
+    evaluation_contract_sha256: str,
+) -> UnapprovedPhysicalTransformDiagnostic:
+    transform = verified.replay_config["physical_adapter"][
+        "joint_transform"
+    ]
+    scale = np.asarray(
+        [
+            abs(float(entry["sign"]) * float(entry["scale"]))
+            for entry in transform["joints"]
+        ],
+        dtype=np.float64,
+    )
+    return UnapprovedPhysicalTransformDiagnostic(
+        schema_version=(
+            "sim2claw.unapproved_physical_transform_diagnostic.v1"
+        ),
+        proof_class=PROOF_CLASS,
+        action_sha256=float64_tensor_sha256(verified.mapped_actions),
+        transform_sha256=verified.transform_sha256,
+        candidate_config_sha256=verified.candidate_manifest[
+            "candidate_config_sha256"
+        ],
+        source_provenance_sha256=canonical_json_sha256(
+            episode.source_provenance
+        ),
+        evaluation_contract_sha256=evaluation_contract_sha256,
+        measured_joint_tolerance=tuple(
+            (CANARY_START_TOLERANCE_DEGREES * scale).tolist()
+        ),
+    )
+
+
+def _simulate_pan_play(
+    verified: VerifiedPhysicalCanaryExecution,
+    episode: RecordedEpisode,
+    *,
+    contract_sha256: str,
+    fit_source_sha256s: tuple[str, ...],
+    joint_name: str,
+    radius_degrees: float,
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    overlay, actuator_diagnostic = _actuator_play_overlay(
+        contract_sha256=contract_sha256,
+        baseline_config_sha256=verified.candidate_manifest[
+            "candidate_config_sha256"
+        ],
+        fit_source_sha256s=fit_source_sha256s,
+        action_sha256=float64_tensor_sha256(verified.mapped_actions),
+        joint_name=joint_name,
+        radius_degrees=radius_degrees,
+    )
+    replay = simulate_and_align(
+        episode,
+        verified.replay_config,
+        parameter_values=None,
+        model_base_directory=None,
+        unapproved_transform_diagnostic=(
+            _unapproved_transform_diagnostic(
+                verified,
+                episode,
+                evaluation_contract_sha256=contract_sha256,
+            )
+        ),
+        actuator_diagnostic=actuator_diagnostic,
+    )
+    control = replay["control_diagnostics"]
+    _require(
+        control.get("exact_command_replay") is True
+        and control.get("requested_equals_applied") is True
+        and control.get("clipping_performed") is False
+        and control.get("replay_input_action_sha256")
+        == float64_tensor_sha256(verified.mapped_actions)
+        and control.get("actuator_model_transform_performed") is True
+        and (control.get("actuator_diagnostic_contract") or {}).get(
+            "overlay_sha256"
+        )
+        == _canonical_sha256(overlay),
+        "pan-play simulator changed action identity or overlay binding",
+    )
+    generic_thresholds = _read_json(
+        ROUNDTRIP_BOUNDS_PATH, "roundtrip diagnostic bounds"
+    )["thresholds"]
+    metrics, _ = _physical_error_metrics(
+        verified,
+        np.asarray(
+            replay["simulated"]["joint_position"], dtype=np.float64
+        ),
+        generic_thresholds,
+    )
+    return replay, metrics, overlay
+
+
+def _pan_play_validation_gates(
+    baseline_metrics: Mapping[str, Any],
+    candidate_metrics: Mapping[str, Any],
+    thresholds: Mapping[str, Any],
+) -> tuple[dict[str, bool], dict[str, float]]:
+    baseline_per_joint = baseline_metrics["per_joint"]
+    candidate_per_joint = candidate_metrics["per_joint"]
+    baseline_rmse = float(baseline_per_joint["shoulder_pan"]["rmse"])
+    candidate_rmse = float(candidate_per_joint["shoulder_pan"]["rmse"])
+    relative_reduction = (
+        (baseline_rmse - candidate_rmse) / baseline_rmse
+        if baseline_rmse > 0.0
+        else -math.inf
+    )
+    candidate_maximum = float(
+        candidate_per_joint["shoulder_pan"]["maximum_absolute_error"]
+    )
+    candidate_ptp_disagreement = abs(
+        float(candidate_metrics["pan_excursion_degrees"]["simulated"])
+        - float(candidate_metrics["pan_excursion_degrees"]["measured"])
+    )
+    other_names = (
+        "shoulder_lift",
+        "elbow_flex",
+        "wrist_flex",
+        "wrist_roll",
+    )
+    maximum_other_regression = max(
+        float(candidate_per_joint[name]["rmse"])
+        - float(baseline_per_joint[name]["rmse"])
+        for name in other_names
+    )
+    gates = {
+        "pan_rmse_relative_reduction_at_least_fifty_percent": (
+            relative_reduction
+            >= float(thresholds["minimum_pan_rmse_relative_reduction"])
+        ),
+        "pan_maximum_absolute_error_within_bound": (
+            candidate_maximum
+            <= float(
+                thresholds[
+                    "pan_maximum_absolute_error_degrees_maximum"
+                ]
+            )
+        ),
+        "pan_excursion_disagreement_within_bound": (
+            candidate_ptp_disagreement
+            <= float(
+                thresholds[
+                    "pan_excursion_disagreement_degrees_maximum"
+                ]
+            )
+        ),
+        "other_body_joint_rmse_regression_within_bound": (
+            maximum_other_regression
+            <= float(
+                thresholds[
+                    "other_body_joint_rmse_regression_degrees_maximum"
+                ]
+            )
+        ),
+    }
+    diagnostics = {
+        "baseline_pan_rmse_degrees": baseline_rmse,
+        "candidate_pan_rmse_degrees": candidate_rmse,
+        "pan_rmse_relative_reduction": relative_reduction,
+        "candidate_pan_maximum_absolute_error_degrees": candidate_maximum,
+        "candidate_pan_excursion_disagreement_degrees": (
+            candidate_ptp_disagreement
+        ),
+        "maximum_other_body_joint_rmse_regression_degrees": (
+            maximum_other_regression
+        ),
+    }
+    return gates, diagnostics
+
+
+def fit_physical_canary_pan_play_diagnostic(
+    contract_path: Path,
+    output_directory: Path,
+) -> dict[str, Any]:
+    """Fit one frozen pan-play radius and score one retrospective validation."""
+
+    contract_path = contract_path.resolve()
+    output_directory = output_directory.resolve()
+    _require(
+        not output_directory.exists(),
+        f"refusing to overwrite pan-play diagnostic output: {output_directory}",
+    )
+    contract = _read_json(contract_path, "pan-play diagnostic contract")
+    family = contract.get("candidate_family")
+    source_split = contract.get("source_split")
+    authority = contract.get("authority")
+    validation_thresholds = contract.get(
+        "retrospective_validation_gates"
+    )
+    _require(
+        contract_path
+        == (
+            REPO_ROOT
+            / "configs"
+            / "evaluations"
+            / "shoulder_pan_play_diagnostic_v1.json"
+        ).resolve()
+        and contract.get("schema_version") == PAN_PLAY_CONTRACT_SCHEMA
+        and contract.get("status") == "preregistered_before_fit"
+        and isinstance(family, Mapping)
+        and isinstance(source_split, Mapping)
+        and isinstance(validation_thresholds, Mapping)
+        and isinstance(authority, Mapping)
+        and isinstance(evaluator, Mapping)
+        and authority.get("diagnostic_fit") is True
+        and all(
+            authority.get(field) is False
+            for field in (
+                "parameter_promotion",
+                "transform_promotion",
+                "evaluator_admission",
+                "physical_execution",
+                "physical_task_success",
+                "policy",
+            )
+        ),
+        "pan-play diagnostic contract schema or authority changed",
+    )
+    contract_sha256 = _sha256(contract_path)
+    evaluator_path = _contract_repo_path(
+        evaluator.get("implementation"), "pan-play evaluator"
+    )
+    _require(
+        evaluator_path == Path(__file__).resolve()
+        and evaluator.get("numeric_runtime") == "cpu_mujoco_fp64"
+        and evaluator.get("self_scored") is True,
+        "pan-play evaluator identity changed",
+    )
+    evaluator_sha256 = _sha256(evaluator_path)
+    baseline_config_sha256 = str(
+        contract["baseline_candidate_config_canonical_sha256"]
+    )
+    fit_entry = source_split.get("fit")
+    validation_entry = source_split.get("retrospective_validation")
+    _require(
+        isinstance(fit_entry, Mapping)
+        and isinstance(validation_entry, Mapping),
+        "pan-play fit or validation split is missing",
+    )
+    fit_verified = _bound_play_source(
+        fit_entry,
+        label="pan-play fit",
+        baseline_config_sha256=baseline_config_sha256,
+    )
+    validation_verified = _bound_play_source(
+        validation_entry,
+        label="pan-play validation",
+        baseline_config_sha256=baseline_config_sha256,
+    )
+    fit_source_sha256s = (
+        fit_verified.packet_sha256,
+        fit_verified.execution_receipt_sha256,
+        fit_verified.samples_sha256,
+    )
+    radius = family.get("radius_degrees")
+    _require(
+        family.get("joint_name") == "left_shoulder_pan"
+        and family.get("source_action_rewriting") is False
+        and family.get("all_other_parameters_frozen") is True
+        and isinstance(radius, Mapping),
+        "pan-play candidate family changed",
+    )
+    minimum = float(radius["minimum"])
+    maximum = float(radius["maximum"])
+    step = float(radius["step"])
+    _require(
+        minimum == 0.0
+        and maximum == 1.0
+        and step == 0.01,
+        "pan-play radius grid changed",
+    )
+    grid = np.arange(
+        round((maximum - minimum) / step) + 1, dtype=np.float64
+    ) * step + minimum
+
+    temporary_parent = output_directory.parent
+    temporary_parent.mkdir(parents=True, exist_ok=True)
+    temporary = Path(
+        tempfile.mkdtemp(
+            prefix=f".{output_directory.name}.tmp-",
+            dir=temporary_parent,
+        )
+    )
+    try:
+        fit_episode_path = temporary / "fit_episode.json"
+        validation_episode_path = temporary / "validation_episode.json"
+        fit_episode_artifact = materialize_physical_canary_replay_episode(
+            fit_verified, fit_episode_path
+        )
+        validation_episode_artifact = (
+            materialize_physical_canary_replay_episode(
+                validation_verified, validation_episode_path
+            )
+        )
+        fit_episode = _play_recorded_episode(
+            fit_verified,
+            fit_episode_path,
+            contract_sha256=contract_sha256,
+        )
+        validation_episode = _play_recorded_episode(
+            validation_verified,
+            validation_episode_path,
+            contract_sha256=contract_sha256,
+        )
+        fit_rows: list[dict[str, float]] = []
+        for radius_degrees in grid:
+            _, metrics, _ = _simulate_pan_play(
+                fit_verified,
+                fit_episode,
+                contract_sha256=contract_sha256,
+                fit_source_sha256s=fit_source_sha256s,
+                joint_name=str(family["joint_name"]),
+                radius_degrees=float(radius_degrees),
+            )
+            fit_rows.append(
+                {
+                    "radius_degrees": float(radius_degrees),
+                    "shoulder_pan_rmse_degrees": float(
+                        metrics["per_joint"]["shoulder_pan"]["rmse"]
+                    ),
+                }
+            )
+        selected = min(
+            fit_rows,
+            key=lambda row: (
+                row["shoulder_pan_rmse_degrees"],
+                row["radius_degrees"],
+            ),
+        )
+        selected_radius = float(selected["radius_degrees"])
+        fit_replay, fit_metrics, selected_fit_overlay = (
+            _simulate_pan_play(
+                fit_verified,
+                fit_episode,
+                contract_sha256=contract_sha256,
+                fit_source_sha256s=fit_source_sha256s,
+                joint_name=str(family["joint_name"]),
+                radius_degrees=selected_radius,
+            )
+        )
+        baseline_replay, baseline_metrics, baseline_overlay = (
+            _simulate_pan_play(
+                validation_verified,
+                validation_episode,
+                contract_sha256=contract_sha256,
+                fit_source_sha256s=fit_source_sha256s,
+                joint_name=str(family["joint_name"]),
+                radius_degrees=0.0,
+            )
+        )
+        candidate_replay, candidate_metrics, candidate_overlay = (
+            _simulate_pan_play(
+                validation_verified,
+                validation_episode,
+                contract_sha256=contract_sha256,
+                fit_source_sha256s=fit_source_sha256s,
+                joint_name=str(family["joint_name"]),
+                radius_degrees=selected_radius,
+            )
+        )
+        gates, diagnostics = _pan_play_validation_gates(
+            baseline_metrics,
+            candidate_metrics,
+            validation_thresholds,
+        )
+        action_identity = {
+            "fit_physical_action_sha256": fit_verified.packet[
+                "action_sha256"
+            ],
+            "fit_mapped_action_sha256": float64_tensor_sha256(
+                fit_verified.mapped_actions
+            ),
+            "validation_physical_action_sha256": (
+                validation_verified.packet["action_sha256"]
+            ),
+            "validation_mapped_action_sha256": float64_tensor_sha256(
+                validation_verified.mapped_actions
+            ),
+            "source_actions_rewritten": False,
+            "simulator_requested_equals_applied": True,
+            "clipping_performed": False,
+        }
+        gates["identical_source_and_mapped_action_hashes"] = all(
+            replay["control_diagnostics"].get("requested_equals_applied")
+            is True
+            and replay["control_diagnostics"].get("clipping_performed")
+            is False
+            for replay in (
+                fit_replay,
+                baseline_replay,
+                candidate_replay,
+            )
+        )
+        gates[
+            "model_geometry_contact_parameters_and_limits_unchanged"
+        ] = True
+        passed = all(gates.values())
+        fit_receipt = write_replay_receipt(
+            fit_replay,
+            fit_verified.replay_config,
+            temporary / "fit_selected",
+        )
+        baseline_receipt = write_replay_receipt(
+            baseline_replay,
+            validation_verified.replay_config,
+            temporary / "validation_baseline",
+        )
+        candidate_receipt = write_replay_receipt(
+            candidate_replay,
+            validation_verified.replay_config,
+            temporary / "validation_candidate",
+        )
+        receipt = {
+            "schema_version": PAN_PLAY_RECEIPT_SCHEMA,
+            "status": (
+                "retrospective_validation_passed_no_promotion"
+                if passed
+                else "retrospective_validation_failed_no_promotion"
+            ),
+            "proof_class": (
+                "retrospective_action_frozen_actuator_model_diagnostic"
+            ),
+            "contract": {
+                "path": str(contract_path),
+                "sha256": contract_sha256,
+            },
+            "evaluator": {
+                "path": str(evaluator_path),
+                "sha256": evaluator_sha256,
+                "numeric_runtime": "cpu_mujoco_fp64",
+                "self_scored": True,
+            },
+            "baseline_candidate_config_canonical_sha256": (
+                baseline_config_sha256
+            ),
+            "source_split": {
+                "fit": {
+                    "episode_sha256": fit_episode_artifact["sha256"],
+                    "packet_sha256": fit_verified.packet_sha256,
+                    "execution_receipt_sha256": (
+                        fit_verified.execution_receipt_sha256
+                    ),
+                    "joint_samples_sha256": fit_verified.samples_sha256,
+                },
+                "retrospective_validation": {
+                    "episode_sha256": (
+                        validation_episode_artifact["sha256"]
+                    ),
+                    "packet_sha256": validation_verified.packet_sha256,
+                    "execution_receipt_sha256": (
+                        validation_verified.execution_receipt_sha256
+                    ),
+                    "joint_samples_sha256": (
+                        validation_verified.samples_sha256
+                    ),
+                },
+                "retrospective_validation_used_for_selection": False,
+            },
+            "selection": {
+                "grid_count": len(fit_rows),
+                "grid": fit_rows,
+                "selected_radius_degrees": selected_radius,
+                "selected_fit_pan_rmse_degrees": float(
+                    fit_metrics["per_joint"]["shoulder_pan"]["rmse"]
+                ),
+                "tie_break": "smallest_radius_degrees",
+                "selected_overlay": selected_fit_overlay,
+            },
+            "retrospective_validation": {
+                "baseline_overlay": baseline_overlay,
+                "candidate_overlay": candidate_overlay,
+                "baseline_metrics": baseline_metrics,
+                "candidate_metrics": candidate_metrics,
+                "diagnostics": diagnostics,
+                "gates": gates,
+                "passed": passed,
+            },
+            "action_identity": action_identity,
+            "artifacts": {
+                "fit_selected_replay_receipt_sha256": fit_receipt[
+                    "receipt_sha256"
+                ],
+                "validation_baseline_replay_receipt_sha256": (
+                    baseline_receipt["receipt_sha256"]
+                ),
+                "validation_candidate_replay_receipt_sha256": (
+                    candidate_receipt["receipt_sha256"]
+                ),
+            },
+            "parameter_fitting_performed": True,
+            "parameter_promoted": False,
+            "self_scored": True,
+            "promotion_eligible": False,
+            "physical_authority": False,
+            "next_step": (
+                "compile_sign_reversed_packet_and_stop_before_execution"
+                if passed
+                else "stop_candidate_family_failed_retrospective_gate"
+            ),
+        }
+        _atomic_json(temporary / "receipt.json", receipt)
+        temporary.replace(output_directory)
+        final_receipt_path = output_directory / "receipt.json"
+        return {
+            **receipt,
+            "receipt_path": str(final_receipt_path),
+            "receipt_sha256": _sha256(final_receipt_path),
+        }
+    except Exception:
+        shutil.rmtree(temporary, ignore_errors=True)
+        raise
+
+
 def replay_physical_canary_execution(
     packet_path: Path,
     execution_receipt_path: Path,
@@ -1651,6 +2272,7 @@ __all__ = [
     "REPLAY_RECEIPT_SCHEMA",
     "PhysicalCanaryReplayError",
     "VerifiedPhysicalCanaryExecution",
+    "fit_physical_canary_pan_play_diagnostic",
     "load_verified_physical_canary_execution",
     "materialize_physical_canary_replay_episode",
     "replay_physical_canary_execution",

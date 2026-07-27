@@ -629,6 +629,15 @@ def build_parser() -> argparse.ArgumentParser:
     physical_canary_replay.add_argument(
         "--output", type=Path, required=True
     )
+    pan_play = subparsers.add_parser(
+        "fit-physical-canary-pan-play",
+        help=(
+            "fit one preregistered shoulder-pan actuator play radius and "
+            "score its retrospective validation without physical execution"
+        ),
+    )
+    pan_play.add_argument("--contract", type=Path, required=True)
+    pan_play.add_argument("--output", type=Path, required=True)
     geometric_physical = subparsers.add_parser(
         "geometric-physical",
         help=(
@@ -2060,6 +2069,31 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0 if result["diagnostic_bounds_satisfied"] else 1
+    if args.command == "fit-physical-canary-pan-play":
+        from .physical_canary_replay import (
+            PhysicalCanaryReplayError,
+            fit_physical_canary_pan_play_diagnostic,
+        )
+
+        try:
+            result = fit_physical_canary_pan_play_diagnostic(
+                args.contract,
+                args.output,
+            )
+        except (
+            OSError,
+            ValueError,
+            PhysicalCanaryReplayError,
+        ) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return (
+            0
+            if result["status"]
+            == "retrospective_validation_passed_no_promotion"
+            else 1
+        )
     if args.command == "geometric-physical":
         from .geometric_physical_gateway import (
             GeometricPhysicalGatewayError,

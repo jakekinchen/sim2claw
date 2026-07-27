@@ -23,6 +23,7 @@ from sim2claw.physical_canary import (
 )
 from sim2claw.physical_canary_replay import (
     PhysicalCanaryReplayError,
+    _pan_play_validation_gates,
     replay_physical_canary_execution,
 )
 from sim2claw.replay_eligibility import MANIFEST_SCHEMA, action_sha256
@@ -33,6 +34,61 @@ CALIBRATION = "a" * 64
 ANCHOR_DEGREES = np.asarray(
     [-3.6923, -105.0, 99.9121, -105.0, -74.5934, 2.9691], dtype=np.float64
 )
+
+
+def test_pan_play_validation_gate_requires_material_improvement() -> None:
+    names = (
+        "shoulder_pan",
+        "shoulder_lift",
+        "elbow_flex",
+        "wrist_flex",
+        "wrist_roll",
+        "gripper",
+    )
+
+    def metrics(pan_rmse: float, pan_maximum: float, pan_ptp: float):
+        return {
+            "per_joint": {
+                name: {
+                    "rmse": (
+                        pan_rmse if name == "shoulder_pan" else 0.01
+                    ),
+                    "maximum_absolute_error": (
+                        pan_maximum if name == "shoulder_pan" else 0.02
+                    ),
+                }
+                for name in names
+            },
+            "pan_excursion_degrees": {
+                "simulated": pan_ptp,
+                "measured": 1.0,
+            },
+        }
+
+    thresholds = {
+        "minimum_pan_rmse_relative_reduction": 0.5,
+        "pan_maximum_absolute_error_degrees_maximum": 0.4,
+        "pan_excursion_disagreement_degrees_maximum": 0.25,
+        "other_body_joint_rmse_regression_degrees_maximum": 0.02,
+    }
+    gates, diagnostics = _pan_play_validation_gates(
+        metrics(0.4, 0.8, 2.0),
+        metrics(0.15, 0.3, 1.1),
+        thresholds,
+    )
+    assert all(gates.values())
+    assert diagnostics["pan_rmse_relative_reduction"] == pytest.approx(
+        0.625
+    )
+    failed, _ = _pan_play_validation_gates(
+        metrics(0.4, 0.8, 2.0),
+        metrics(0.25, 0.3, 1.1),
+        thresholds,
+    )
+    assert (
+        failed["pan_rmse_relative_reduction_at_least_fifty_percent"]
+        is False
+    )
 
 
 def _write(path: Path, value: object) -> None:
