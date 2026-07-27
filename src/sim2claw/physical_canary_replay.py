@@ -64,6 +64,9 @@ PAN_PLAY_CONTRACT_SCHEMA = "sim2claw.shoulder_pan_play_diagnostic.v1"
 PAN_PLAY_RECEIPT_SCHEMA = (
     "sim2claw.shoulder_pan_play_diagnostic_receipt.v1"
 )
+PAN_PLAY_PREDICTION_SCHEMA = (
+    "sim2claw.physical_canary_pan_play_preexecution_prediction.v1"
+)
 
 
 class PhysicalCanaryReplayError(RuntimeError):
@@ -1091,12 +1094,95 @@ def _evaluation_contract(
     return path, contract, digest, prospective
 
 
+def _validated_pan_play_prediction_binding(
+    receipt_path: Path,
+    *,
+    baseline_config_sha256: str,
+    mapped_action_sha256: str,
+) -> tuple[dict[str, Any], ActuatorPlayDiagnostic]:
+    """Bind one passed retrospective fit to a new action without refitting."""
+
+    receipt = _read_json(receipt_path, "pan-play diagnostic receipt")
+    gates = (
+        receipt.get("retrospective_validation") or {}
+    ).get("gates")
+    contract_binding = receipt.get("contract")
+    source_fit = (receipt.get("source_split") or {}).get("fit")
+    selection = receipt.get("selection")
+    _require(
+        receipt.get("schema_version") == PAN_PLAY_RECEIPT_SCHEMA
+        and receipt.get("status")
+        == "retrospective_validation_passed_no_promotion"
+        and receipt.get("parameter_fitting_performed") is True
+        and receipt.get("parameter_promoted") is False
+        and receipt.get("promotion_eligible") is False
+        and receipt.get("physical_authority") is False
+        and isinstance(gates, Mapping)
+        and bool(gates)
+        and all(value is True for value in gates.values())
+        and isinstance(contract_binding, Mapping)
+        and isinstance(source_fit, Mapping)
+        and isinstance(selection, Mapping),
+        "pan-play diagnostic did not pass its frozen retrospective gates",
+    )
+    contract_path = Path(str(contract_binding.get("path"))).resolve()
+    _require(
+        contract_path.is_file()
+        and _sha256(contract_path) == contract_binding.get("sha256")
+        and receipt.get("baseline_candidate_config_canonical_sha256")
+        == baseline_config_sha256,
+        "pan-play contract or baseline candidate changed",
+    )
+    fit_source_sha256s = tuple(
+        str(source_fit.get(field))
+        for field in (
+            "packet_sha256",
+            "execution_receipt_sha256",
+            "joint_samples_sha256",
+        )
+    )
+    radius_degrees = float(selection.get("selected_radius_degrees"))
+    _require(
+        all(
+            len(value) == 64
+            and all(character in "0123456789abcdef" for character in value)
+            for value in fit_source_sha256s
+        )
+        and math.isfinite(radius_degrees)
+        and 0.0 <= radius_degrees <= 1.0,
+        "pan-play fitted source or selected radius is invalid",
+    )
+    overlay, diagnostic = _actuator_play_overlay(
+        contract_sha256=str(contract_binding["sha256"]),
+        baseline_config_sha256=baseline_config_sha256,
+        fit_source_sha256s=fit_source_sha256s,
+        action_sha256=mapped_action_sha256,
+        joint_name="left_shoulder_pan",
+        radius_degrees=radius_degrees,
+    )
+    binding = {
+        "receipt_path": str(receipt_path),
+        "receipt_sha256": _sha256(receipt_path),
+        "contract_path": str(contract_path),
+        "contract_sha256": str(contract_binding["sha256"]),
+        "fit_source_sha256s": list(fit_source_sha256s),
+        "selected_radius_degrees": radius_degrees,
+        "overlay": overlay,
+        "overlay_sha256": _canonical_sha256(overlay),
+        "parameter_refit_for_prediction": False,
+        "parameter_promoted": False,
+        "physical_authority": False,
+    }
+    return binding, diagnostic
+
+
 def compile_preexecution_dynamic_prediction(
     *,
     physical_actions: np.ndarray,
     timestamps: np.ndarray,
     candidate_manifest_path: Path,
     evaluation_contract_path: Path = ROUNDTRIP_BOUNDS_PATH,
+    pan_play_diagnostic_receipt_path: Path | None = None,
 ) -> dict[str, Any]:
     """Freeze the exact dynamic trace before the physical packet is admitted."""
 
@@ -1142,6 +1228,16 @@ def compile_preexecution_dynamic_prediction(
         "preexecution action or timestamp shape is invalid",
     )
     mapped = _physical_to_model_position(physical_actions, config)
+    pan_play_binding = None
+    actuator_diagnostic = None
+    if pan_play_diagnostic_receipt_path is not None:
+        pan_play_binding, actuator_diagnostic = (
+            _validated_pan_play_prediction_binding(
+                pan_play_diagnostic_receipt_path.resolve(),
+                baseline_config_sha256=config_sha256,
+                mapped_action_sha256=float64_tensor_sha256(mapped),
+            )
+        )
     normalized, original = _validate_timestamps(
         timestamps,
         maximum_gap_seconds=float(config["replay"]["maximum_gap_seconds"]),
@@ -1223,6 +1319,7 @@ def compile_preexecution_dynamic_prediction(
         parameter_values=None,
         model_base_directory=None,
         unapproved_transform_diagnostic=diagnostic,
+        actuator_diagnostic=actuator_diagnostic,
     )
     control = replay["control_diagnostics"]
     _require(
@@ -1233,6 +1330,15 @@ def compile_preexecution_dynamic_prediction(
         == float64_tensor_sha256(mapped),
         "preexecution simulator modified the mapped action trace",
     )
+    if pan_play_binding is not None:
+        _require(
+            control.get("actuator_model_transform_performed") is True
+            and (
+                control.get("actuator_diagnostic_contract") or {}
+            ).get("overlay_sha256")
+            == pan_play_binding["overlay_sha256"],
+            "preexecution pan-play prediction changed its fitted overlay",
+        )
     simulated = np.asarray(
         replay["simulated"]["joint_position"], dtype=np.float64
     )
@@ -1247,7 +1353,9 @@ def compile_preexecution_dynamic_prediction(
     recorded_replay_source = Path(recorded_replay_module.__file__).resolve()
     payload = {
         "schema_version": (
-            "sim2claw.physical_canary_preexecution_dynamic_prediction.v1"
+            PAN_PLAY_PREDICTION_SCHEMA
+            if pan_play_binding is not None
+            else "sim2claw.physical_canary_preexecution_dynamic_prediction.v1"
         ),
         "status": "frozen_before_physical_execution",
         "physical_action_sha256": action_sha256(physical_actions),
@@ -1286,11 +1394,34 @@ def compile_preexecution_dynamic_prediction(
         ),
         "sample_count": int(simulated.shape[0]),
         "parameter_fitting_performed": False,
+        "uses_previously_fitted_parameter": (
+            pan_play_binding is not None
+        ),
         "clipping_performed": False,
         "promotion_authority": False,
     }
+    if pan_play_binding is not None:
+        payload["pan_play_diagnostic"] = pan_play_binding
     payload["prediction_sha256"] = _canonical_sha256(payload)
     return payload
+
+
+def compile_pan_play_preexecution_prediction(
+    *,
+    physical_actions: np.ndarray,
+    timestamps: np.ndarray,
+    candidate_manifest_path: Path,
+    diagnostic_receipt_path: Path,
+) -> dict[str, Any]:
+    """Freeze a previously fitted pan-play prediction for new exact actions."""
+
+    return compile_preexecution_dynamic_prediction(
+        physical_actions=physical_actions,
+        timestamps=timestamps,
+        candidate_manifest_path=candidate_manifest_path,
+        evaluation_contract_path=ROUNDTRIP_BOUNDS_PATH,
+        pan_play_diagnostic_receipt_path=diagnostic_receipt_path,
+    )
 
 
 def verify_packet_preexecution_dynamic_prediction(
@@ -1345,6 +1476,70 @@ def verify_packet_preexecution_dynamic_prediction(
         and reproduced["prediction_sha256"]
         == prediction.get("prediction_sha256"),
         "packet preexecution dynamic prediction is not reproducible",
+    )
+    return dict(prediction)
+
+
+def verify_packet_pan_play_preexecution_prediction(
+    packet: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Reproduce the held-out fitted prediction before hardware construction."""
+
+    prediction = packet.get("pan_play_preexecution_prediction")
+    preview = packet.get("post_normalization_simulation_preview")
+    _require(
+        isinstance(prediction, Mapping)
+        and prediction.get("schema_version") == PAN_PLAY_PREDICTION_SCHEMA
+        and prediction.get("status") == "frozen_before_physical_execution"
+        and isinstance(preview, Mapping),
+        "packet has no fitted pan-play preexecution prediction",
+    )
+    binding = prediction.get("pan_play_diagnostic")
+    _require(
+        isinstance(binding, Mapping)
+        and binding.get("parameter_promoted") is False
+        and binding.get("physical_authority") is False,
+        "packet pan-play diagnostic widened authority",
+    )
+    receipt_path = Path(str(binding.get("receipt_path"))).resolve()
+    manifest_path = Path(str(preview.get("candidate_manifest_path"))).resolve()
+    _require(
+        receipt_path.is_file()
+        and _sha256(receipt_path) == binding.get("receipt_sha256")
+        and manifest_path.is_file()
+        and _sha256(manifest_path)
+        == preview.get("candidate_manifest_sha256"),
+        "packet pan-play diagnostic or candidate manifest changed",
+    )
+    actions, timestamps = _decode_actions(packet)
+    reproduced = compile_pan_play_preexecution_prediction(
+        physical_actions=actions,
+        timestamps=timestamps,
+        candidate_manifest_path=manifest_path,
+        diagnostic_receipt_path=receipt_path,
+    )
+    _require(
+        prediction.get("prediction_sha256")
+        == _canonical_sha256(
+            {
+                key: value
+                for key, value in prediction.items()
+                if key != "prediction_sha256"
+            }
+        )
+        and reproduced.get("prediction_sha256")
+        == prediction.get("prediction_sha256")
+        and prediction.get("physical_action_sha256")
+        == packet.get("action_sha256")
+        and prediction.get("mapped_simulator_action_sha256")
+        == packet["preexecution_dynamic_prediction"].get(
+            "mapped_simulator_action_sha256"
+        )
+        and prediction.get("clipping_performed") is False
+        and prediction.get("parameter_fitting_performed") is False
+        and prediction.get("uses_previously_fitted_parameter") is True
+        and prediction.get("promotion_authority") is False,
+        "packet pan-play preexecution prediction is not reproducible",
     )
     return dict(prediction)
 
@@ -2285,8 +2480,12 @@ __all__ = [
     "REPLAY_RECEIPT_SCHEMA",
     "PhysicalCanaryReplayError",
     "VerifiedPhysicalCanaryExecution",
+    "compile_pan_play_preexecution_prediction",
+    "compile_preexecution_dynamic_prediction",
     "fit_physical_canary_pan_play_diagnostic",
     "load_verified_physical_canary_execution",
     "materialize_physical_canary_replay_episode",
     "replay_physical_canary_execution",
+    "verify_packet_pan_play_preexecution_prediction",
+    "verify_packet_preexecution_dynamic_prediction",
 ]

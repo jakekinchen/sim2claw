@@ -16,7 +16,9 @@ from sim2claw.physical_canary import (
     NORMALIZATION_PACKET_SCHEMA,
     NORMALIZATION_RECEIPT_SCHEMA,
     PHYSICAL_CANARY_PACKET_SCHEMA,
+    ROUNDTRIP_BOUNDS_PATH,
     PhysicalCanaryError,
+    _compile_post_normalization_actions,
     compile_physical_canary_normalization,
     compile_physical_canary_packet,
     execute_physical_canary_packet,
@@ -410,9 +412,124 @@ def test_physical_canary_freshly_freezes_post_normalization_pan_bytes(tmp_path: 
     assert actions.shape == (57, 6)
     assert np.all(actions[-20:] == actions[0])
     assert packet["final_anchor_hold_seconds"] == 1.0
+    assert packet["pan_direction"] == 1
+    assert packet["pan_play_preexecution_prediction"] is None
     assert packet["post_normalization_simulation_preview"][
         "exact_physical_action_sha256"
     ] == packet["action_sha256"]
+
+
+def test_physical_canary_negative_first_reverses_only_pan() -> None:
+    positive, positive_timestamps, _ = _compile_post_normalization_actions(
+        ANCHOR_DEGREES,
+        pan_direction=1,
+    )
+    negative, negative_timestamps, _ = _compile_post_normalization_actions(
+        ANCHOR_DEGREES,
+        pan_direction=-1,
+    )
+    assert positive.shape == negative.shape == (57, 6)
+    assert np.array_equal(positive_timestamps, negative_timestamps)
+    assert np.array_equal(positive[:, 1:], negative[:, 1:])
+    assert np.allclose(
+        positive[:, 0] - ANCHOR_DEGREES[0],
+        -(negative[:, 0] - ANCHOR_DEGREES[0]),
+    )
+    assert negative[5, 0] < negative[0, 0]
+    assert np.all(negative[-20:] == negative[0])
+    with pytest.raises(PhysicalCanaryError, match="exactly -1 or \\+1"):
+        _compile_post_normalization_actions(
+            ANCHOR_DEGREES,
+            pan_direction=0,
+        )
+
+
+def test_physical_canary_freezes_separate_pan_play_prediction(
+    tmp_path: Path,
+) -> None:
+    bundle_path = tmp_path / "bundle.json"
+    bundle = _bundle(bundle_path)
+    contact_path, normalization_path = _receipts(tmp_path, bundle)
+    baseline = compile_physical_canary_packet(
+        bundle_path,
+        tmp_path / "baseline-packet.json",
+        contact_receipt_path=contact_path,
+        normalization_receipt_path=normalization_path,
+        preflight_fn=_preflight,
+        preview_fn=_preview,
+    )
+    contract_sha256 = hashlib.sha256(
+        ROUNDTRIP_BOUNDS_PATH.read_bytes()
+    ).hexdigest()
+    diagnostic_path = tmp_path / "pan-play-receipt.json"
+    _write(
+        diagnostic_path,
+        {
+            "schema_version": (
+                "sim2claw.shoulder_pan_play_diagnostic_receipt.v1"
+            ),
+            "status": "retrospective_validation_passed_no_promotion",
+            "contract": {
+                "path": str(ROUNDTRIP_BOUNDS_PATH.resolve()),
+                "sha256": contract_sha256,
+            },
+            "baseline_candidate_config_canonical_sha256": (
+                baseline["preexecution_dynamic_prediction"][
+                    "candidate_config_sha256"
+                ]
+            ),
+            "source_split": {
+                "fit": {
+                    "packet_sha256": "1" * 64,
+                    "execution_receipt_sha256": "2" * 64,
+                    "joint_samples_sha256": "3" * 64,
+                }
+            },
+            "selection": {"selected_radius_degrees": 0.4},
+            "retrospective_validation": {
+                "gates": {"fixture_gate": True}
+            },
+            "parameter_fitting_performed": True,
+            "parameter_promoted": False,
+            "promotion_eligible": False,
+            "physical_authority": False,
+        },
+    )
+    packet = compile_physical_canary_packet(
+        bundle_path,
+        tmp_path / "negative-first-packet.json",
+        contact_receipt_path=contact_path,
+        normalization_receipt_path=normalization_path,
+        pan_direction=-1,
+        pan_play_diagnostic_receipt_path=diagnostic_path,
+        preflight_fn=_preflight,
+        preview_fn=_preview,
+    )
+    baseline_prediction = packet["preexecution_dynamic_prediction"]
+    candidate_prediction = packet["pan_play_preexecution_prediction"]
+    assert packet["pan_direction"] == -1
+    assert (
+        candidate_prediction["physical_action_sha256"]
+        == baseline_prediction["physical_action_sha256"]
+        == packet["action_sha256"]
+    )
+    assert (
+        candidate_prediction["mapped_simulator_action_sha256"]
+        == baseline_prediction["mapped_simulator_action_sha256"]
+    )
+    assert candidate_prediction["uses_previously_fitted_parameter"] is True
+    assert candidate_prediction["parameter_fitting_performed"] is False
+    assert candidate_prediction["promotion_authority"] is False
+    assert (
+        candidate_prediction["pan_play_diagnostic"][
+            "selected_radius_degrees"
+        ]
+        == 0.4
+    )
+    assert (
+        candidate_prediction["simulated_joint_position_sha256"]
+        != baseline_prediction["simulated_joint_position_sha256"]
+    )
 
 
 def test_normalization_plan_is_bounded_and_execution_is_torque_off(tmp_path: Path) -> None:

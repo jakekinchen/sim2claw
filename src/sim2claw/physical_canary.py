@@ -277,10 +277,17 @@ def _decode_bundle(bundle_path: Path) -> tuple[dict[str, Any], np.ndarray, np.nd
 
 def _compile_post_normalization_actions(
     anchor_physical: np.ndarray,
+    *,
+    pan_direction: int = 1,
 ) -> tuple[np.ndarray, np.ndarray, bytes]:
-    """Freeze a slow +1/-1 degree shoulder-pan probe in physical units."""
+    """Freeze a slow sign-controlled shoulder-pan probe in physical units."""
 
-    offsets = np.concatenate(
+    _require(
+        pan_direction in (-1, 1),
+        "post-normalization pan direction must be exactly -1 or +1",
+    )
+
+    offsets = float(pan_direction) * np.concatenate(
         (
             np.zeros(5, dtype=np.float64),
             np.linspace(0.0, 1.0, 9, dtype=np.float64)[1:],
@@ -640,6 +647,8 @@ def compile_physical_canary_packet(
     *,
     contact_receipt_path: Path,
     normalization_receipt_path: Path,
+    pan_direction: int = 1,
+    pan_play_diagnostic_receipt_path: Path | None = None,
     preflight_fn: Callable[[], dict[str, Any]] | None = None,
     preview_fn: Callable[
         [np.ndarray, Path, Mapping[str, Any]], dict[str, Any]
@@ -681,7 +690,8 @@ def compile_physical_canary_packet(
         "fresh follower pose is not within tolerance of the legal normalization target",
     )
     actions_physical, timestamps, raw = _compile_post_normalization_actions(
-        anchor_physical
+        anchor_physical,
+        pan_direction=pan_direction,
     )
     _require(
         float(
@@ -711,6 +721,7 @@ def compile_physical_canary_packet(
         "physical canary roundtrip bounds are not preregistered",
     )
     from .physical_canary_replay import (
+        compile_pan_play_preexecution_prediction,
         compile_preexecution_dynamic_prediction,
     )
 
@@ -724,6 +735,20 @@ def compile_physical_canary_packet(
             evaluation_contract_path=ROUNDTRIP_BOUNDS_PATH,
         )
     )
+    pan_play_preexecution_prediction = None
+    if pan_play_diagnostic_receipt_path is not None:
+        pan_play_preexecution_prediction = (
+            compile_pan_play_preexecution_prediction(
+                physical_actions=actions_physical,
+                timestamps=timestamps,
+                candidate_manifest_path=Path(
+                    str(preview["candidate_manifest_path"])
+                ),
+                diagnostic_receipt_path=(
+                    pan_play_diagnostic_receipt_path.resolve()
+                ),
+            )
+        )
     action_hash = action_sha256(actions_physical)
     _require(
         preview.get("exact_physical_action_sha256") == action_hash
@@ -760,6 +785,7 @@ def compile_physical_canary_packet(
         },
         "candidate_digest": bundle["candidate_digest"],
         "hardware_identity": identity,
+        "pan_direction": pan_direction,
         "anchor_degrees": anchor_physical.tolist(),
         "calibrated_minimum_degrees": lower.tolist(),
         "calibrated_maximum_degrees": upper.tolist(),
@@ -774,6 +800,9 @@ def compile_physical_canary_packet(
         },
         "preexecution_dynamic_prediction": (
             preexecution_dynamic_prediction
+        ),
+        "pan_play_preexecution_prediction": (
+            pan_play_preexecution_prediction
         ),
         "source_contact_receipt": {"path": str(contact_receipt_path.resolve()), "sha256": _sha256(contact_receipt_path.resolve())},
         "source_normalization_receipt": {"path": str(normalization_receipt_path.resolve()), "sha256": _sha256(normalization_receipt_path.resolve())},
@@ -840,10 +869,13 @@ def execute_physical_canary_packet(
         "physical canary frozen bytes drifted",
     )
     from .physical_canary_replay import (
+        verify_packet_pan_play_preexecution_prediction,
         verify_packet_preexecution_dynamic_prediction,
     )
 
     verify_packet_preexecution_dynamic_prediction(packet)
+    if packet.get("pan_play_preexecution_prediction") is not None:
+        verify_packet_pan_play_preexecution_prediction(packet)
     preflight = (preflight_fn or _default_preflight)()
     identity = _identity_from_preflight(preflight)
     _require(identity == packet["hardware_identity"], "physical canary follower identity drifted")

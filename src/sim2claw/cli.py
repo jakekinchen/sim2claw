@@ -607,6 +607,19 @@ def build_parser() -> argparse.ArgumentParser:
     physical_canary.add_argument("--contact-receipt", type=Path)
     physical_canary.add_argument("--normalization-receipt", type=Path)
     physical_canary.add_argument(
+        "--pan-direction",
+        choices=("positive-first", "negative-first"),
+        default="positive-first",
+        help="choose the frozen shoulder-pan sweep order during compilation",
+    )
+    physical_canary.add_argument(
+        "--pan-play-diagnostic-receipt",
+        type=Path,
+        help=(
+            "freeze a separate fitted pan-play prediction during compilation"
+        ),
+    )
+    physical_canary.add_argument(
         "--pi-video-contract",
         type=Path,
         help="add the bounded Pi IMX708 motion sidecar during execution",
@@ -1976,6 +1989,13 @@ def main(argv: Sequence[str] | None = None) -> int:
                     raise PhysicalCanaryError(
                         "--pi-video-contract is only valid during execution"
                     )
+                if (
+                    args.pan_direction != "positive-first"
+                    or args.pan_play_diagnostic_receipt is not None
+                ):
+                    raise PhysicalCanaryError(
+                        "pan prediction inputs are only valid during compilation"
+                    )
                 if args.yes:
                     if args.output is None:
                         raise PhysicalCanaryError(
@@ -2023,8 +2043,23 @@ def main(argv: Sequence[str] | None = None) -> int:
                     args.packet,
                     contact_receipt_path=args.contact_receipt,
                     normalization_receipt_path=args.normalization_receipt,
+                    pan_direction=(
+                        -1
+                        if args.pan_direction == "negative-first"
+                        else 1
+                    ),
+                    pan_play_diagnostic_receipt_path=(
+                        args.pan_play_diagnostic_receipt
+                    ),
                 )
             else:
+                if (
+                    args.pan_direction != "positive-first"
+                    or args.pan_play_diagnostic_receipt is not None
+                ):
+                    raise PhysicalCanaryError(
+                        "pan prediction inputs are only valid during compilation"
+                    )
                 if not args.yes or args.output is None:
                     raise PhysicalCanaryError(
                         "--yes and --output are required for physical canary execution"
