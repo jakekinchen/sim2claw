@@ -1648,6 +1648,7 @@ def synchronize_physical_gateway(
         identity,
         device_factory=device_factory,
         sleep=sleep,
+        configure_devices=False,
     )
     report: dict[str, Any] | None = None
     try:

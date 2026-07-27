@@ -24,8 +24,10 @@ from sim2claw.source_episode import (
 )
 from sim2claw.teleop_recording import (
     PHYSICAL_SAMPLE_SCHEMA,
+    PhysicalFollowerBackend,
     RecorderError,
     TeleopRecordingManager,
+    ZeroDisplacementHoldBackend,
     discover_so101_devices,
     run_zero_displacement_hold_packet,
 )
@@ -886,6 +888,15 @@ class TeleopRecordingTest(unittest.TestCase):
             )
         self.assertEqual(state["physical_gateway_sync"], report)
         self.assertFalse(state["physical_gateway_sync"]["physical_follower_torque_enabled"])
+
+    def test_physical_recording_backends_do_not_reconfigure_devices(self) -> None:
+        preflight = self.manager.preflight()
+        with patch("sim2claw.teleop_recording.SO101PhysicalGateway") as gateway:
+            PhysicalFollowerBackend({}, preflight)
+            ZeroDisplacementHoldBackend({}, preflight)
+        self.assertEqual(gateway.call_count, 2)
+        for call in gateway.call_args_list:
+            self.assertIs(call.kwargs["configure_devices"], False)
 
     def test_physical_mode_requires_server_owned_prestart_sequence(self) -> None:
         with self.assertRaisesRegex(RecorderError, "Server-owned"):

@@ -697,6 +697,8 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertLessEqual(report["maximum_sync_residual_degrees"], 3.0)
         self.assertFalse(report["physical_follower_torque_enabled"])
         self.assertFalse(self.follower.bus.torque)
+        self.assertEqual(self.leader.configure_calls, 0)
+        self.assertEqual(self.follower.configure_calls, 0)
 
     def test_replay_origin_rebase_preserves_episode_relative_excursion(self) -> None:
         gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)

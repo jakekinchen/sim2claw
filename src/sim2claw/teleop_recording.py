@@ -806,7 +806,10 @@ class PhysicalFollowerBackend:
 
     def __init__(self, request: dict[str, Any], preflight: dict[str, Any]):
         self.request = request
-        self.gateway = SO101PhysicalGateway(_gateway_identity(preflight))
+        self.gateway = SO101PhysicalGateway(
+            _gateway_identity(preflight),
+            configure_devices=False,
+        )
 
     def open(self) -> dict[str, Any]:
         if not self.request.get("physical_safety_acknowledged"):
@@ -833,7 +836,10 @@ class ZeroDisplacementHoldBackend:
 
     def __init__(self, request: dict[str, Any], preflight: dict[str, Any]):
         self.request = request
-        self.gateway = SO101PhysicalGateway(_gateway_identity(preflight))
+        self.gateway = SO101PhysicalGateway(
+            _gateway_identity(preflight),
+            configure_devices=False,
+        )
 
     def open(self) -> dict[str, Any]:
         report = self.gateway.open(
