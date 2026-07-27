@@ -51,6 +51,8 @@ The packet must hash-bind
 `configs/evaluations/physical_canary_roundtrip_bounds_v1.json` before motion.
 Both directions must satisfy every bound for the result to be described as
 `prospective_diagnostic_bounds_satisfied_no_promotion`.
+The final five 20 Hz encoder samples must each remain within the reviewed
+gateway return tolerance on every joint; a single final sample is insufficient.
 
 This result never promotes the provisional joint transform, camera
 registration, evaluator, policy, task success, or physical task capability.

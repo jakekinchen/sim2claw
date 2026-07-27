@@ -54,6 +54,7 @@ NORMALIZATION_FINAL_HOLD_SECONDS = 1.0
 POST_NORMALIZATION_SAMPLE_HZ = 20
 POST_NORMALIZATION_PAN_EXCURSION_DEGREES = 1.0
 POST_NORMALIZATION_FINAL_HOLD_SECONDS = 1.0
+CANARY_FINAL_SETTLED_SAMPLE_COUNT = 5
 ROUNDTRIP_BOUNDS_PATH = (
     REPO_ROOT
     / "configs"
@@ -904,8 +905,15 @@ def execute_physical_canary_packet(
     if error is not None:
         raise PhysicalCanaryError(f"physical canary stopped safely with torque off: {error}") from error
     _require(
-        np.all(np.abs(_anchor_delta(actual, anchor)) <= CANARY_START_TOLERANCE_DEGREES),
-        "physical canary did not return to its exact normalized start",
+        len(actual_history) >= CANARY_FINAL_SETTLED_SAMPLE_COUNT
+        and all(
+            np.all(
+                np.abs(_anchor_delta(row.copy(), anchor.copy()))
+                <= CANARY_START_TOLERANCE_DEGREES
+            )
+            for row in actual_history[-CANARY_FINAL_SETTLED_SAMPLE_COUNT:]
+        ),
+        "physical canary did not settle at its exact normalized start",
     )
     observed_pan_excursion = max(
         abs(float(row[0]) - float(actual_history[0][0]))
@@ -915,6 +923,6 @@ def execute_physical_canary_packet(
         observed_pan_excursion >= 0.5,
         "physical canary did not produce a measurable shoulder-pan excursion",
     )
-    receipt = {"schema_version": EXECUTION_RECEIPT_SCHEMA, "status": "completed_physical_canary", "packet_sha256": _sha256(packet_path), "action_sha256": packet["action_sha256"], "completed_samples": completed, "observed_pan_excursion_degrees": observed_pan_excursion, "joint_samples_path": str(samples_path), "joint_samples_sha256": _sha256(samples_path), "camera_started": camera_started, "camera_finished": camera_finished, "final_actual_degrees": actual.tolist(), "physical_motion_commanded": True, "physical_follower_torque_enabled": False, "physical_authority": False, "gateway_constructed": True, "stop_before_further_robot_command": True}
+    receipt = {"schema_version": EXECUTION_RECEIPT_SCHEMA, "status": "completed_physical_canary", "packet_sha256": _sha256(packet_path), "action_sha256": packet["action_sha256"], "completed_samples": completed, "observed_pan_excursion_degrees": observed_pan_excursion, "joint_samples_path": str(samples_path), "joint_samples_sha256": _sha256(samples_path), "camera_started": camera_started, "camera_finished": camera_finished, "final_actual_degrees": actual.tolist(), "final_settled_sample_count": CANARY_FINAL_SETTLED_SAMPLE_COUNT, "final_settled_samples_within_tolerance": True, "physical_motion_commanded": True, "physical_follower_torque_enabled": False, "physical_authority": False, "gateway_constructed": True, "stop_before_further_robot_command": True}
     _write_once(output_path, receipt)
     return receipt

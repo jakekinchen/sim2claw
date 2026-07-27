@@ -405,6 +405,8 @@ def test_physical_canary_execution_requires_admission_and_never_overwrites(tmp_p
     assert result["schema_version"] == EXECUTION_RECEIPT_SCHEMA
     assert result["physical_follower_torque_enabled"] is False
     assert result["physical_motion_commanded"] is True
+    assert result["final_settled_sample_count"] == 5
+    assert result["final_settled_samples_within_tolerance"] is True
     assert gateway.closed and capture.started and capture.finished
     assert capture.polled == result["completed_samples"] + 1
     with pytest.raises(PhysicalCanaryError, match="overwrite"):

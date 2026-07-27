@@ -27,6 +27,7 @@ from typing import Any, Mapping
 import numpy as np
 
 from .physical_canary import (
+    CANARY_FINAL_SETTLED_SAMPLE_COUNT,
     CANARY_START_TOLERANCE_DEGREES,
     EXECUTION_RECEIPT_SCHEMA,
     PHYSICAL_CANARY_PACKET_SCHEMA,
@@ -482,6 +483,9 @@ def load_verified_physical_canary_execution(
         and execution.get("physical_follower_torque_enabled") is False
         and execution.get("gateway_constructed") is True
         and execution.get("stop_before_further_robot_command") is True
+        and execution.get("final_settled_sample_count")
+        == CANARY_FINAL_SETTLED_SAMPLE_COUNT
+        and execution.get("final_settled_samples_within_tolerance") is True
         and _camera_completed(execution.get("camera_finished")),
         "physical canary execution receipt is incomplete or unbound",
     )
@@ -583,11 +587,17 @@ def load_verified_physical_canary_execution(
     )
     anchor = _finite_six(packet.get("anchor_degrees"), "packet anchor")
     _require(
-        np.all(
-            np.abs(_anchor_delta(final_actual.copy(), anchor.copy()))
-            <= CANARY_START_TOLERANCE_DEGREES
+        measured_position_array.shape[0] >= CANARY_FINAL_SETTLED_SAMPLE_COUNT
+        and all(
+            np.all(
+                np.abs(_anchor_delta(row.copy(), anchor.copy()))
+                <= CANARY_START_TOLERANCE_DEGREES
+            )
+            for row in measured_position_array[
+                -CANARY_FINAL_SETTLED_SAMPLE_COUNT:
+            ]
         ),
-        "canary final actual did not return to the frozen anchor",
+        "canary final encoder samples did not settle at the frozen anchor",
     )
     observed_excursion = max(
         abs(float(row[0]) - float(measured_position_array[0, 0]))
@@ -953,9 +963,9 @@ def _physical_error_metrics(
         "gripper_maximum_within_bound": bool(
             maximum[5] <= gripper_maximum
         ),
-        "final_state_within_gateway_return_tolerance": bool(
+        "final_settled_samples_within_gateway_return_tolerance": bool(
             np.all(
-                np.abs(final)
+                np.abs(errors[-CANARY_FINAL_SETTLED_SAMPLE_COUNT:])
                 <= CANARY_START_TOLERANCE_DEGREES + 1e-12
             )
         ),
