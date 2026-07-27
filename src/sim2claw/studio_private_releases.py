@@ -9,6 +9,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable
 
+from .img5349_registration import load_validated_studio_registration
+
 
 IPHONE_3DGS_MANIFEST = Path(
     "docs/reference/IPHONE_VIDEO_3DGS_RELEASE_20260719.json"
@@ -182,6 +184,16 @@ def build_calibration_assets(
     ready = model is not None
     source = manifest.get("source", {})
     authority = manifest.get("authority", {})
+    registration = (
+        load_validated_studio_registration(
+            repo_root,
+            release_manifest=manifest,
+            model_name=model_name,
+            model_sha256=str(model_spec.get("sha256") or ""),
+        )
+        if ready
+        else None
+    )
     return [
         {
             "id": "robo_scanner_img5349_3dgs",
@@ -227,11 +239,21 @@ def build_calibration_assets(
                 "scale": 1.0,
                 "scale_authority": "relative_visual_only",
             },
+            "registration": registration,
             "studio_view": manifest.get("studio_view", {}),
             "authority": authority,
             "proof_notice": (
-                "Interactive visual calibration only. The splat has arbitrary global "
-                "scale and cannot replace MuJoCo collision geometry or task coordinates."
+                (
+                    "Board-conditioned automatic visual registration: 3.76 px held-out "
+                    "corner RMS on the coherent early camera component. The complete "
+                    "splat and complete simulation CAD are overlaid; this remains "
+                    "non-authoritative for collision, contact, dynamics, or task transfer."
+                )
+                if registration is not None
+                else (
+                    "Interactive visual calibration only. The splat has arbitrary global "
+                    "scale and cannot replace MuJoCo collision geometry or task coordinates."
+                )
             ),
         }
     ]

@@ -1824,6 +1824,8 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertNotIn("new THREE.GridHelper", calibration_javascript)
             self.assertNotIn("new THREE.AxesHelper", calibration_javascript)
             self.assertIn("this.sceneOverlay.visible = false", calibration_javascript)
+            self.assertIn("this.registrationGroup = new THREE.Group()", calibration_javascript)
+            self.assertIn("automatic board/CAD overlay", calibration_javascript)
             self.assertIn('"Show reviewed geometry"', calibration_javascript)
 
             font_path = (

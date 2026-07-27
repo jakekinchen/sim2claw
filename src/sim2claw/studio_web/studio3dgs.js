@@ -43,8 +43,10 @@ class CalibrationViewer {
     this.spark = new SparkRenderer({ renderer: this.renderer });
     this.scene.add(this.spark);
     this.transformGroup = new THREE.Group();
+    this.registrationGroup = new THREE.Group();
     this.normalizationGroup = new THREE.Group();
-    this.transformGroup.add(this.normalizationGroup);
+    this.transformGroup.add(this.registrationGroup);
+    this.registrationGroup.add(this.normalizationGroup);
     this.scene.add(this.transformGroup);
 
     this.datum = new THREE.Group();
@@ -74,12 +76,19 @@ class CalibrationViewer {
     element("#calibration-fit")?.addEventListener("click", () => this.fit());
     element("#calibration-reset")?.addEventListener("click", () => this.reset());
     element("#calibration-scene-toggle")?.addEventListener("click", (event) => {
-      this.sceneOverlay.visible = !this.sceneOverlay.visible;
-      event.currentTarget.setAttribute("aria-pressed", String(this.sceneOverlay.visible));
-      event.currentTarget.textContent = this.sceneOverlay.visible
+      this.setSceneOverlayVisible(!this.sceneOverlay.visible);
+    });
+  }
+
+  setSceneOverlayVisible(visible) {
+    this.sceneOverlay.visible = Boolean(visible);
+    const button = element("#calibration-scene-toggle");
+    button?.setAttribute("aria-pressed", String(this.sceneOverlay.visible));
+    if (button) {
+      button.textContent = this.sceneOverlay.visible
         ? "Hide reviewed geometry"
         : "Show reviewed geometry";
-    });
+    }
   }
 
   formatIdentifier(value) {
@@ -181,6 +190,26 @@ class CalibrationViewer {
     });
   }
 
+  applyRegistration(asset) {
+    const registration = asset?.registration;
+    const rows = registration?.source_to_three_matrix_rows;
+    this.registrationGroup.matrixAutoUpdate = false;
+    this.registrationGroup.matrix.identity();
+    if (
+      registration?.status === "accepted_visual_registration_diagnostic"
+      && Array.isArray(rows)
+      && rows.length === 4
+      && rows.every((row) => Array.isArray(row) && row.length === 4)
+      && rows.flat().every((value) => Number.isFinite(Number(value)))
+    ) {
+      this.registrationGroup.matrix.set(...rows.flat().map(Number));
+      this.setSceneOverlayVisible(true);
+      return true;
+    }
+    this.setSceneOverlayVisible(false);
+    return false;
+  }
+
   reset() {
     document.querySelectorAll("[data-transform]").forEach((input) => {
       input.value = input.dataset.transform === "scale" ? "1" : "0";
@@ -221,6 +250,10 @@ class CalibrationViewer {
     write("#calibration-splats", model.splat_count?.toLocaleString?.() || "—");
     write("#calibration-source", asset?.source_name || "—");
     write("#calibration-renderer", asset?.renderer || "Spark · local WebGL2");
+    write(
+      "#calibration-scale",
+      asset?.registration ? "Board fit · visual only" : "Relative visual",
+    );
     write("#calibration-proof-notice p", asset?.proof_notice || "Visual alignment only; no physical or collision authority.");
 
     const preview = element("#calibration-preview");
@@ -242,6 +275,7 @@ class CalibrationViewer {
   async load(asset) {
     this.asset = asset || null;
     this.populateMetadata(asset);
+    const registered = this.applyRegistration(asset);
     if (!asset?.model?.url || asset.status !== "ready") {
       this.setStatus("Verified 3DGS release is not available on this device.");
       return;
@@ -282,7 +316,23 @@ class CalibrationViewer {
         ? new THREE.Vector3(...view.exact_camera_center.map(Number))
         : null;
       const rotation = view.exact_camera_world_to_camera_rotation;
-      if (target && exactCenter && target.toArray().every(Number.isFinite) && exactCenter.toArray().every(Number.isFinite)) {
+      if (registered) {
+        mesh.position.set(0, 0, 0);
+        this.normalizationGroup.scale.setScalar(1);
+        const rows = asset.registration.source_to_three_matrix_rows;
+        const sourceToThree = new THREE.Matrix4().set(...rows.flat().map(Number));
+        const targetCenter = new THREE.Vector3(
+          ...asset.registration.target_center_three.map(Number),
+        );
+        this.cameraTarget.copy(targetCenter);
+        if (exactCenter && exactCenter.toArray().every(Number.isFinite)) {
+          this.cameraHome.copy(exactCenter).applyMatrix4(sourceToThree);
+        } else {
+          this.cameraHome.copy(targetCenter).add(new THREE.Vector3(0.75, 0.55, 0.9));
+        }
+        this.cameraUp.set(0, 1, 0);
+        this.camera.fov = 43;
+      } else if (target && exactCenter && target.toArray().every(Number.isFinite) && exactCenter.toArray().every(Number.isFinite)) {
         mesh.position.copy(target).multiplyScalar(-1);
         this.normalizationGroup.scale.setScalar(1);
         this.cameraHome.copy(exactCenter).sub(target);
@@ -313,7 +363,11 @@ class CalibrationViewer {
       }
       this.mesh = mesh;
       this.fit();
-      this.setStatus(`${Number(asset.model.splat_count || mesh.numSplats).toLocaleString()} splats · orbit to inspect`);
+      this.setStatus(
+        registered
+          ? `${Number(asset.model.splat_count || mesh.numSplats).toLocaleString()} splats · automatic board/CAD overlay · ${asset.registration.heldout_weighted_rms_px.toFixed(2)} px held-out RMS`
+          : `${Number(asset.model.splat_count || mesh.numSplats).toLocaleString()} splats · orbit to inspect`,
+      );
     } catch (error) {
       if (generation !== this.loadGeneration) return;
       this.assetSha = null;

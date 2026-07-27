@@ -31,6 +31,19 @@ is static camera/kinematic evidence only; the fixed base has no independent
 silhouette gate, and none of the six evaluator-owned Twin fidelity domains is
 promoted by this result.
 
+The owner-supplied IMG_5349 Gaussian splat is now automatically registered to
+that same complete MuJoCo scene instead of opening at an arbitrary relative
+pose. A board-plane/lattice fit used only the coherent early SfM camera
+component; an exact two-base SO-101 CAD comparison selected the otherwise
+ambiguous board symmetry. Four held-out early-component frames score
+`3.759 px` weighted corner RMS over `166` corners. Studio applies the resulting
+Sim(3) to all `334,537` splats and shows the complete `45`-body reviewed scene
+overlay by default. Camera segments `40-49` and `59-77` are explicitly
+quarantined after global projection inconsistency, and the earlier broad
+all-segment claim is retracted. This is a concrete visual/geometry diagnostic,
+not metric, collision, contact, dynamics, task, or physical-control authority;
+Twin fidelity therefore remains `0 / 6`.
+
 Future finalized physical recorder outputs can now be converted directly into
 the existing exact-replay v1 audit. Its legacy `applied` field is explicitly a
 gateway-sent command, not actuator acknowledgement. This operationalizes the

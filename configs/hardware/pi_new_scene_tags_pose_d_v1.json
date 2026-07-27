@@ -1,0 +1,39 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_new_scene_tags_pose_d_20260726_v1",
+  "capture_during_motion": true,
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "reviewed_anchor_degrees": [
+    29.0989010989011,
+    -70.06593406593407,
+    104.74725274725274,
+    -94.1978021978022,
+    49.362637362637365,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [-20.0, -70.0, 85.0, -95.0, -20.0, 3.0878859857482186]
+  ],
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "inventory_new_arm_and_scene_fiducials_full_visibility_pose",
+    "source_pose": "Fresh torque-off follower read after the completed new-tag pose-I capture.",
+    "command_anchor_rule": "No setup recovery; compile must match the fresh follower pose within the existing guarded tolerances.",
+    "target_selection": "Reuse the previously executed collision-checked pose D because its prior Pi frame contained all three original link tags and the full proximal assembly.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "model_based_tag_body_classification": true,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}
