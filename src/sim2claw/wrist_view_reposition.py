@@ -322,7 +322,9 @@ def _joint_delta(current: np.ndarray, expected: np.ndarray) -> np.ndarray:
     return delta
 
 
-def _load_route(route_path: Path) -> tuple[dict[str, Any], np.ndarray, np.ndarray]:
+def _load_route(
+    route_path: Path,
+) -> tuple[dict[str, Any], np.ndarray, list[np.ndarray]]:
     route = _read_json(route_path.resolve(), "wrist-view route")
     _require(
         route.get("schema_version") == WRIST_VIEW_ROUTE_SCHEMA
@@ -331,15 +333,31 @@ def _load_route(route_path: Path) -> tuple[dict[str, Any], np.ndarray, np.ndarra
         "wrist-view route identity changed",
     )
     anchor = np.asarray(route.get("reviewed_anchor_degrees"), dtype=np.float64)
-    targets = np.asarray(route.get("stage_targets_degrees"), dtype=np.float64)
+    waypoint_value = route.get("stage_waypoints_degrees")
+    if waypoint_value is None:
+        targets = np.asarray(route.get("stage_targets_degrees"), dtype=np.float64)
+        waypoint_stages = [target[None, :] for target in targets]
+    else:
+        _require(
+            isinstance(waypoint_value, list) and 1 <= len(waypoint_value) <= 4,
+            "wrist-view route must contain one to four waypoint stages",
+        )
+        waypoint_stages = [
+            np.asarray(stage, dtype=np.float64) for stage in waypoint_value
+        ]
     _require(
         anchor.shape == (6,)
         and np.all(np.isfinite(anchor))
-        and targets.ndim == 2
-        and targets.shape[1] == 6
-        and 1 <= targets.shape[0] <= 4
-        and np.all(np.isfinite(targets)),
-        "wrist-view route must contain one anchor and one to four six-joint targets",
+        and 1 <= len(waypoint_stages) <= 4
+        and all(
+            stage.ndim == 2
+            and stage.shape[1] == 6
+            and 1 <= stage.shape[0] <= 4
+            and np.all(np.isfinite(stage))
+            for stage in waypoint_stages
+        ),
+        "wrist-view route must contain one anchor and one to four stages "
+        "of one to four six-joint waypoints",
     )
     capture_mode = str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
     _require(
@@ -365,7 +383,38 @@ def _load_route(route_path: Path) -> tuple[dict[str, Any], np.ndarray, np.ndarra
             and bool(str(capture.get("contract_path") or "")),
             "motion-tricam mode requires a bound Pi video contract",
         )
-    return route, anchor, targets
+    return route, anchor, waypoint_stages
+
+
+def _freeze_waypoint_stage(
+    start: np.ndarray,
+    waypoints: np.ndarray,
+) -> np.ndarray:
+    """Freeze one to four equal-duration linear segments into 361 exact rows."""
+
+    segment_count = int(waypoints.shape[0])
+    _require(
+        (SAMPLES_PER_STAGE - 1) % segment_count == 0,
+        "waypoint count does not divide the fixed stage interval",
+    )
+    intervals = (SAMPLES_PER_STAGE - 1) // segment_count
+    rows: list[np.ndarray] = []
+    previous = start.astype("<f8")
+    for waypoint_index, waypoint in enumerate(waypoints):
+        segment = np.linspace(
+            previous,
+            waypoint.astype("<f8"),
+            intervals + 1,
+            dtype=np.float64,
+        ).astype("<f8", copy=False)
+        rows.append(segment if waypoint_index == 0 else segment[1:])
+        previous = waypoint.astype("<f8")
+    actions = np.concatenate(rows, axis=0).astype("<f8", copy=False)
+    _require(
+        actions.shape == (SAMPLES_PER_STAGE, 6),
+        "frozen waypoint stage has the wrong shape",
+    )
+    return actions
 
 
 def _contact_pair(model: mujoco.MjModel, contact: Any) -> tuple[str, str]:
@@ -665,11 +714,35 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
             and actions[-1].tobytes() == target.astype("<f8").tobytes(),
             "stage command anchor or endpoints drifted",
         )
+        waypoint_values = np.asarray(
+            stage.get("waypoints_degrees", [target.tolist()]),
+            dtype=np.float64,
+        )
+        _require(
+            waypoint_values.ndim == 2
+            and waypoint_values.shape[1] == 6
+            and 1 <= waypoint_values.shape[0] <= 4
+            and np.all(np.isfinite(waypoint_values))
+            and waypoint_values[-1].astype("<f8").tobytes()
+            == target.astype("<f8").tobytes()
+            and float(stage.get("maximum_joint_excursion_degrees"))
+            == float(np.max(np.abs(actions - expected_anchor[None, :]))),
+            "stage waypoint or maximum excursion drifted",
+        )
         _require(
             np.array_equal(
                 timestamps,
                 (np.arange(SAMPLES_PER_STAGE, dtype="<f8") + 1.0) / SAMPLE_HZ,
-            ),
+            )
+            and float(
+                np.max(
+                    np.abs(
+                        np.diff(actions, axis=0)
+                        / np.diff(timestamps)[:, None]
+                    )
+                )
+            )
+            <= float(packet["maximum_slew_degrees_s"]) + 1e-9,
             "stage timestamps changed",
         )
         _require(
@@ -711,11 +784,14 @@ def compile_wrist_view_reposition_packet(
         preview_wrist_view_actions
     ),
 ) -> dict[str, Any]:
-    """Freeze supplied reviewed direct-interpolation stages from a fresh anchor."""
+    """Freeze reviewed one- or multi-segment stages from a fresh anchor."""
 
     preflight = (preflight_fn or _default_preflight)()
     identity, anchor, lower, upper = _identity_and_limits(preflight)
-    route, reviewed_anchor, targets = _load_route(route_path)
+    route, reviewed_anchor, waypoint_stages = _load_route(route_path)
+    targets = np.asarray(
+        [waypoints[-1] for waypoints in waypoint_stages], dtype=np.float64
+    )
     recovery_snap_limit = route.get(
         "setup_recovery_command_anchor_snap_limit_degrees"
     )
@@ -741,8 +817,12 @@ def compile_wrist_view_reposition_packet(
         "fresh follower pose no longer matches the reviewed live torque-off pose",
     )
     _require(
-        np.all(targets >= lower[None, :]) and np.all(targets <= upper[None, :]),
-        "reviewed wrist-view target exceeds fresh calibrated limits",
+        all(
+            np.all(waypoints >= lower[None, :])
+            and np.all(waypoints <= upper[None, :])
+            for waypoints in waypoint_stages
+        ),
+        "reviewed wrist-view waypoint exceeds fresh calibrated limits",
     )
     command_anchor = np.clip(anchor, lower, upper).astype("<f8")
     command_anchor_tolerance = (
@@ -773,15 +853,13 @@ def compile_wrist_view_reposition_packet(
     ) / SAMPLE_HZ
     action_stages: list[np.ndarray] = []
     previous = command_anchor
-    for target in targets:
-        delta = target - previous
+    for waypoints in waypoint_stages:
+        delta = waypoints - previous[None, :]
         _require(
             float(np.max(np.abs(delta))) <= MAX_STAGE_EXCURSION_DEGREES + 1e-9,
             "reviewed wrist-view stage exceeds 90 degrees",
         )
-        actions = np.linspace(
-            previous, target.astype("<f8"), SAMPLES_PER_STAGE, dtype=np.float64
-        ).astype("<f8", copy=False)
+        actions = _freeze_waypoint_stage(previous, waypoints)
         rates = np.abs(np.diff(actions, axis=0) / np.diff(timestamps)[:, None])
         _require(
             float(np.max(rates)) <= MAX_SLEW_DEGREES_S + 1e-9,
@@ -792,7 +870,7 @@ def compile_wrist_view_reposition_packet(
             "frozen wrist-view action exceeds calibrated limits",
         )
         action_stages.append(actions)
-        previous = target.astype("<f8")
+        previous = waypoints[-1].astype("<f8")
     preview = preview_fn(action_stages, candidate_manifest_path)
     _require(
         preview.get("no_new_or_worsened_kinematic_contact") is True
@@ -807,8 +885,15 @@ def compile_wrist_view_reposition_packet(
     stages: list[dict[str, Any]] = []
     previous = anchor.astype("<f8")
     action_previous = command_anchor
-    for stage_index, (target, actions, stage_preview) in enumerate(
-        zip(targets, action_stages, preview_stages, strict=True), start=1
+    for stage_index, (waypoints, target, actions, stage_preview) in enumerate(
+        zip(
+            waypoint_stages,
+            targets,
+            action_stages,
+            preview_stages,
+            strict=True,
+        ),
+        start=1,
     ):
         raw = actions.tobytes(order="C")
         digest = action_sha256(actions)
@@ -827,8 +912,9 @@ def compile_wrist_view_reposition_packet(
                 "expected_anchor_degrees": previous.tolist(),
                 "command_anchor_degrees": action_previous.tolist(),
                 "target_degrees": target.tolist(),
+                "waypoints_degrees": waypoints.tolist(),
                 "maximum_joint_excursion_degrees": float(
-                    np.max(np.abs(target - previous))
+                    np.max(np.abs(actions - previous[None, :]))
                 ),
                 "timestamps_seconds": timestamps.tolist(),
                 "frozen_action_payload": {

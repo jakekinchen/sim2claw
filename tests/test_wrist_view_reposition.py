@@ -132,6 +132,31 @@ def _tricam_route(path: Path) -> None:
     )
 
 
+def _tricam_round_trip_route(path: Path) -> None:
+    midpoint = ROUTE_ANCHOR.copy()
+    midpoint[1] += 4.0
+    midpoint[2] -= 5.0
+    midpoint[3] += 3.0
+    _write(
+        path,
+        {
+            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+            "route_id": "fixture-motion-tricam-round-trip-route",
+            "capture_during_motion": True,
+            "capture_mode": CAPTURE_MODE_TRICAM,
+            "pi_motion_video": {
+                "contract_path": (
+                    "configs/acquisition/pi_imx708_motion_video_15s_v1.json"
+                )
+            },
+            "reviewed_anchor_degrees": ROUTE_ANCHOR.tolist(),
+            "stage_waypoints_degrees": [
+                [midpoint.tolist(), ROUTE_ANCHOR.tolist()]
+            ],
+        },
+    )
+
+
 def _setup_recovery_route(path: Path) -> None:
     _write(
         path,
@@ -494,6 +519,37 @@ def test_compile_and_execute_requires_three_motion_cameras(tmp_path: Path) -> No
         "pi_browser_video",
         "pi_pts_ledger",
     }
+
+
+def test_compile_freezes_one_tricam_round_trip_without_torque_off_midpoint(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    _candidate_manifest(manifest_path)
+    _tricam_round_trip_route(route_path)
+
+    packet = compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+    stage = packet["stages"][0]
+    payload = stage["frozen_action_payload"]
+    actions = np.frombuffer(
+        base64.b64decode(payload["base64"]), dtype="<f8"
+    ).reshape(payload["shape"])
+    midpoint = np.asarray(stage["waypoints_degrees"][0], dtype="<f8")
+
+    assert actions.shape == (SAMPLES_PER_STAGE, 6)
+    assert actions[0].tobytes() == ROUTE_ANCHOR.astype("<f8").tobytes()
+    assert actions[180].tobytes() == midpoint.tobytes()
+    assert actions[-1].tobytes() == ROUTE_ANCHOR.astype("<f8").tobytes()
+    assert stage["target_degrees"] == ROUTE_ANCHOR.tolist()
+    assert packet["capture_mode"] == CAPTURE_MODE_TRICAM
+    assert packet["execution_contract"]["one_stage_per_invocation"] is True
 
 
 def test_execute_c922_mode_aligns_source_frames_and_never_requires_d405(

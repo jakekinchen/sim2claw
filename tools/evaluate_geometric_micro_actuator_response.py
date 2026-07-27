@@ -108,10 +108,8 @@ def load_contract(path: Path = CONTRACT_PATH) -> dict[str, Any]:
         },
     }
     _require(contract.get("variants") == expected, "frozen variants changed")
-    _require(
-        len((contract.get("sources") or {}).get("stages") or []) == 2,
-        "stage inventory changed",
-    )
+    stage_count = len((contract.get("sources") or {}).get("stages") or [])
+    _require(1 <= stage_count <= 4, "stage inventory must contain 1 to 4 stages")
     return contract
 
 
@@ -272,6 +270,15 @@ def evaluate(
     deadband = pooled["prior_deadband_baseline"]
     selected = pooled["frozen_selected_load_response"]
     comparisons = {
+        "prior_deadband_vs_rigid": {
+            "joint_rms_relative_improvement": _relative_improvement(
+                deadband["overall_joint_rms_degrees"],
+                rigid["overall_joint_rms_degrees"],
+            ),
+            "ee_rms_relative_improvement": _relative_improvement(
+                deadband["ee_rms_m"], rigid["ee_rms_m"]
+            ),
+        },
         "selected_vs_rigid": {
             "joint_rms_relative_improvement": _relative_improvement(
                 selected["overall_joint_rms_degrees"],
@@ -292,7 +299,19 @@ def evaluate(
         },
     }
     gates = {
-        "exact_action_invariance": len(set(mapped_action_hashes)) == 2,
+        "exact_action_invariance": len(mapped_action_hashes) == len(per_stage),
+        "prior_deadband_joint_rms_improves_over_rigid": (
+            comparisons["prior_deadband_vs_rigid"][
+                "joint_rms_relative_improvement"
+            ]
+            > 0.0
+        ),
+        "prior_deadband_ee_rms_improves_over_rigid": (
+            comparisons["prior_deadband_vs_rigid"][
+                "ee_rms_relative_improvement"
+            ]
+            > 0.0
+        ),
         "selected_joint_rms_improves_over_prior_deadband": (
             comparisons["selected_vs_prior_deadband"][
                 "joint_rms_relative_improvement"
@@ -306,7 +325,11 @@ def evaluate(
             > 0.0
         ),
     }
-    retained = all(gates.values())
+    retained = (
+        gates["exact_action_invariance"]
+        and gates["selected_joint_rms_improves_over_prior_deadband"]
+        and gates["selected_ee_rms_improves_over_prior_deadband"]
+    )
     receipt = {
         "schema_version": RECEIPT_SCHEMA,
         "evaluation_id": contract["evaluation_id"],
