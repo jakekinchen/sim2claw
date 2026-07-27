@@ -66,6 +66,24 @@ The D405-to-wrist extrinsic and scene geometry are not yet fitted, so this is
 diagnostic contact-free evidence rather than simulator-parameter promotion,
 pawn contact, or task success.
 
+The next frozen no-fit Pi differential-CAD gate has also run over the same
+sweep and rejected `0 / 4` joints. Lift has nearly exact motion magnitude
+(`0.991` observed/simulated) but `32.255 deg` direction error; elbow has
+`0.681` magnitude ratio and `28.867 deg` direction error. Wrist has strong
+physical and simulated linear signal (`0.724` and `0.997` R-squared) and only
+`0.532 deg` direction error, but the aggregate projected-CAD magnitude is
+`2.30x` physical (`0.435` observed/simulated) and `58.0%` of pre-rejection
+features agree with static consensus. Pan is not interpretable under the
+aggregate-body median because its simulated signal is non-linear/cancelling.
+
+No joint scale is promoted from that result. Narrow wrist-body probes retain
+roughly correct motion direction but yield body-dependent magnitude ratios
+from about `0.15` to `0.37`, and the true MuJoCo visibility render exposes the
+cause: the v4 camera/joint candidate does not place the complete visible robot
+silhouette accurately enough for its projected hull bands to be metrology.
+The next no-motion evaluator must use z-buffered robot segmentation and
+physical extreme-pose difference masks, not generic non-occluded hull edges.
+
 Two exact geometric B7 hover round trips have now transferred from the current
 candidate simulation to the physical follower. The first high hover completed
 `481 / 481` motion rows plus `80 / 80` hold rows. The second approached the
@@ -171,17 +189,20 @@ The active queue is now:
 2. retain the completed all-three-camera one-joint sweep as diagnostic fit
    evidence; pan and lift pass the original local comparator, elbow direction
    remains wrong, and tag 2 is now identified as lower-arm rather than wrist;
-3. fit the recorded D405 background motion against the static 3DGS/workcell to
-   identify one rigid D405-to-wrist extrinsic and the wrist joint axis, while
-   using localized C922/Pi CAD motion to identify the elbow link independently
-   of tag mounts;
-4. freeze only the smallest supported distal correction family before one new,
+3. replace the rejected non-occluded CAD hull bands with MuJoCo z-buffered
+   per-body segmentation; compare physical and simulated anchor/extreme
+   difference masks for all four already-recorded stages with zero new motion;
+4. use that visibility-correct differential gate to decide whether the
+   remaining error belongs to camera/base pose, elbow/wrist joint mapping, or
+   distal geometry; only then fit the D405-to-wrist/3DGS extrinsic if the
+   external visible-CAD signal remains ambiguous;
+5. freeze only the smallest supported correction family before one new,
    prospectively held-out composite pose; the already-inspected mid image can
    diagnose but cannot promote it;
-5. require simultaneous C922, D405, and Pi action-enclosing recordings, tag
+6. require simultaneous C922, D405, and Pi action-enclosing recordings, tag
    gates, and full-CAD gates on that untouched heldout, with torque off on
    close;
-6. admit pawn contact only after the composite heldout passes; do not inherit
+7. admit pawn contact only after the composite heldout passes; do not inherit
    contact or task authority from any successful hover or calibration sweep.
 
 ## Ordered sim-to-real transfer queue

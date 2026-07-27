@@ -1,0 +1,135 @@
+{
+  "schema_version": "sim2claw.pose_j_pi_differential_cad_motion_contract.v1",
+  "contract_id": "pose_j_pi_localized_full_cad_motion_20260727_v1",
+  "status": "frozen_read_only_existing_sweep_diagnostic",
+  "proof_class": "physical_no_contact_pi_localized_full_cad_motion_diagnostic",
+  "sources": {
+    "sweep_packet": {
+      "path": "runs/geometric-hover/20260727-pose-j-single-joint-image-jacobian-sweep-tricam-v1/packet.json",
+      "sha256": "e6e2f6f52aec3e1bc8edf89d4d0340f15769e37dfddbc064d4e6716ebc526c3b"
+    },
+    "independent_review": {
+      "path": "runs/geometric-hover/20260727-pose-j-single-joint-image-jacobian-sweep-tricam-v1/review.json",
+      "sha256": "755afcc852c3cbd7208421b80dd052c9d5f7e7a0f5e5960c95103eaf4539a89b"
+    },
+    "pi_tag_center_diagnostic": {
+      "path": "runs/geometric-hover/20260727-pose-j-single-joint-image-jacobian-sweep-tricam-v1/evaluation/single-joint-image-jacobian-v1.json",
+      "sha256": "c7d5082eb7c66ff494eb639848c85e419ba58de041bc652ab5d77457cd9532d6"
+    },
+    "d405_background_motion_witness": {
+      "path": "runs/geometric-hover/20260727-pose-j-single-joint-image-jacobian-sweep-tricam-v1/evaluation/d405-background-image-jacobian-v1.json",
+      "sha256": "77226e73da669b668bd10f5a979b9b3ff9ffc431eda6c4e438c161e2c1f529c2"
+    },
+    "projection_contract": {
+      "path": "configs/evaluations/current_session_pi_articulated_cad_bundle_v4.json",
+      "sha256": "124d384c2613232b38f98f8060dcec98dd692be9220a66eefad17761debb9b72"
+    },
+    "projection_candidate": {
+      "path": "runs/pi-link-tag-calibration/20260727-current-session-articulated-cad-bundle-v4/receipt.json",
+      "sha256": "527476fc7e5db6a7fbb97e4a6ae0f574e4ab6c688329dfb91c76707ad70f4a7d",
+      "limitation": "failed retrospective static heldout and used only as the frozen local differential projection comparator"
+    },
+    "stage_receipts": {
+      "1": {
+        "path": "runs/geometric-hover/20260727-pose-j-single-joint-image-jacobian-sweep-tricam-v1/stage-1/execution_receipt.json",
+        "sha256": "c408417122a7cd7b28555edd67c35271b6020c5bf207e4c5b2e067c013f46df7"
+      },
+      "2": {
+        "path": "runs/geometric-hover/20260727-pose-j-single-joint-image-jacobian-sweep-tricam-v1/stage-2/execution_receipt.json",
+        "sha256": "53125b56ea6f0e9714b312c49b2e2042975b3321220200a58fbbcfde0bb69224"
+      },
+      "3": {
+        "path": "runs/geometric-hover/20260727-pose-j-single-joint-image-jacobian-sweep-tricam-v1/stage-3/execution_receipt.json",
+        "sha256": "9ab53f826cb2e0daa937165fba808e74ef79d49b6290475535f757df0cfd39b6"
+      },
+      "4": {
+        "path": "runs/geometric-hover/20260727-pose-j-single-joint-image-jacobian-sweep-tricam-v1/stage-4/execution_receipt.json",
+        "sha256": "4e637503192bdf313c273559197b017b808c6e0feecb4fbdcb4b2c4b729bc2e1"
+      }
+    }
+  },
+  "frozen_model": {
+    "camera_intrinsics_and_extrinsic": true,
+    "joint_offsets_and_scales": true,
+    "full_so101_visual_meshes": true,
+    "hull_topology_pose": "pose_j",
+    "refit_parameters": 0,
+    "moving_bodies_by_joint": {
+      "shoulder_pan": [
+        "left_shoulder",
+        "left_upper_arm",
+        "left_lower_arm",
+        "left_wrist",
+        "left_gripper",
+        "left_moving_jaw_so101_v1",
+        "left_camera_mount"
+      ],
+      "shoulder_lift": [
+        "left_upper_arm",
+        "left_lower_arm",
+        "left_wrist",
+        "left_gripper",
+        "left_moving_jaw_so101_v1",
+        "left_camera_mount"
+      ],
+      "elbow_flex": [
+        "left_lower_arm",
+        "left_wrist",
+        "left_gripper",
+        "left_moving_jaw_so101_v1",
+        "left_camera_mount"
+      ],
+      "wrist_flex": [
+        "left_wrist",
+        "left_gripper",
+        "left_moving_jaw_so101_v1",
+        "left_camera_mount"
+      ]
+    }
+  },
+  "physical_image_method": {
+    "camera": "Pi IMX708",
+    "frame_stride": 3,
+    "pair_lag_sampled_frames": 5,
+    "maximum_frame_to_joint_delta_ms": 30.0,
+    "minimum_pair_joint_delta_degrees": 0.2,
+    "projected_cad_band_radius_px": 24,
+    "tag_polygon_mask_dilation_px": 8,
+    "feature_method": "Shi-Tomasi plus pyramidal Lucas-Kanade",
+    "background_motion_control": "partial affine fit outside projected CAD band",
+    "static_consensus_residual_max_px": 0.15,
+    "regression": "zero_intercept_median_residual_pixel_displacement_per_measured_joint_degree"
+  },
+  "gates": {
+    "minimum_accepted_motion_pairs_per_joint": 60,
+    "observed_combined_r_squared_minimum": 0.55,
+    "simulated_combined_r_squared_minimum": 0.95,
+    "observed_over_simulated_magnitude_ratio": [
+      0.65,
+      1.35
+    ],
+    "direction_difference_maximum_degrees": 20.0,
+    "minimum_passing_joint_count": 3,
+    "wrist_flex_must_pass": true,
+    "d405_nonzero_signal_required_for_each_pi_passing_joint": true,
+    "maximum_static_consensus_feature_fraction": 0.5
+  },
+  "split": {
+    "fit_or_selection_data": "none; this evaluator fits no simulator parameter",
+    "diagnostic_data": "completed four-stage Pose-J one-joint sweep",
+    "future_composite_heldout": "unselected_and_unopened",
+    "promotion_from_this_diagnostic": false
+  },
+  "deferred": {
+    "D405_to_wrist_and_3DGS_registration": "after this differential CAD gate because no exact current 424x240 D405 visibility/extrinsic contract exists",
+    "C922_motion_comparator": "after exact 640x480 mode calibration; current multiview tools are frozen to 1920x1080"
+  },
+  "authority": {
+    "diagnostic_only": true,
+    "physical_robot_control": false,
+    "simulator_parameter_promotion": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}
