@@ -44,6 +44,25 @@ all-segment claim is retracted. This is a concrete visual/geometry diagnostic,
 not metric, collision, contact, dynamics, task, or physical-control authority;
 Twin fidelity therefore remains `0 / 6`.
 
+The registered calibration overlay now also applies a visual-only palette
+correction proven by the existing 3DGS and today's H/I/D C922 captures: all
+`64 / 64` shared checker colors were inverted, and all `16 / 16` shared pawn
+display colors were on the wrong physical side. The correction changes no
+body ID, pose, physics, shared scene, or frozen evaluator render. Historical
+AprilTags cannot bridge the old splat to the newly mounted link tags: old ID 0
+triangulates cleanly at `2.961 px` RMS but is a board-adjacent datum, ID 1 has
+one view, and IDs 2/3 are absent, leaving zero legitimate cross-capture link
+correspondences.
+
+A complete-CAD retrospective fit identifies the arm visible in IMG_5349 as
+the simulator right arm and reduces held-out half-resolution contour median
+error from `37.39 px` to `25.38 px`. Distal CAD-to-splat medians improve to
+approximately `10-21 mm`, but the shoulder worsens, two joints saturate their
+MuJoCo limits, and no independent left-arm silhouette exists. The candidate
+is retained only as a historic-pose hypothesis. The active autonomous lane
+therefore uses today's H/I/D C922 silhouettes, Pi tags, exact joint receipts,
+and full CAD to seek a current-scene multiview signal without new motion.
+
 Future finalized physical recorder outputs can now be converted directly into
 the existing exact-replay v1 audit. Its legacy `applied` field is explicitly a
 gateway-sent command, not actuator acknowledgement. This operationalizes the
