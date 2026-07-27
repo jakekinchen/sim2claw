@@ -3,7 +3,7 @@
 Date: 2026-07-26
 Checkout: `/Users/kelly/Developer/sim2claw`
 Starting revision: `47ab12520edd11dc4607f9a8a4425ff49a77c444`
-Proof class: read-only historical-image-to-current-simulator visual diagnostic
+Proof class: read-only historical-and-current-physical-to-simulator visual diagnostic
 Physical authority: false
 
 ## Question
@@ -15,7 +15,8 @@ the sparse pawn layout?
 
 No hardware was opened or moved. No prior-project/archive material was read.
 The audit used the clean-room scene source, the private owner-provided
-IMG_5349 frames and COLMAP cameras, and the visual-registration values already
+IMG_5349 frames and COLMAP cameras, three already-completed current C922
+captures with follower torque off, and the visual-registration values already
 under review in this checkout.
 
 ## Reproducible image measurement
@@ -78,7 +79,44 @@ on the arm/robot edge. It does not agree with the current sparse render,
 which places tan pawn bodies on ranks 7/8, the robotward edge under the D4
 mapping.
 
-## Piece-layout result and boundary
+## Current sparse-scene measurement
+
+The already-completed H/I/D calibration captures provide a current,
+motion-free test of the side-color hypothesis:
+
+| Pose | C922 frame SHA-256 |
+| --- | --- |
+| H | `5101bb896d580fd8a292ba659d2141a06b65ad46634e58732d74c7ab22d2e07b` |
+| I | `8a83135d7da877252913180c5fa49390abdf681da860341076658dd56888845d` |
+| D | `e846c270faf76322f0de9a0ef65cbbd8eb7eebc6ad36008d6ddbba24bac522f1` |
+
+Each frame is
+`runs/pi-link-tag-calibration/20260726-new-scene-tags-pose-<h|i|d>-v1/stage-1/c922_1920x1080_torque_off.png`.
+
+Pose I exposes all eight light pawns on the window/far two rows and seven of
+the eight dark pawns on the robotward two rows. Pose D exposes the eighth dark
+pawn that the arm occludes in I. Nine-by-nine-pixel head-center patches were
+sampled with the same 8-bit gray equation used above. The eight light samples
+came from I; the dark samples use seven from I and the complementary eighth
+from D.
+
+| Current physical side | Pawns | Mean gray | Median gray | Range |
+| --- | ---: | ---: | ---: | ---: |
+| window/far, light | 8 | 131.163 | 132.231 | 102.686-157.868 |
+| robotward, dark | 8 | 41.822 | 32.634 | 22.745-83.460 |
+
+The means differ by 89.341 gray levels and the sample ranges have a
+19.226-level empty margin. The current sparse physical scene therefore
+preserves the same side-color orientation as IMG_5349: dark robotward, light
+windowward.
+
+Under the D4 mapping, the shared scene renders eight tan/light bodies on the
+robotward ranks 7/8 and eight brown/dark bodies on the far ranks 1/2. The
+current C922 captures prove that **16/16 sparse pawn render colors are on the
+wrong side in the shared scene**. This upgrades side color from a
+non-transferable historical inference to current physical read-only evidence.
+
+## Piece-layout result and remaining boundary
 
 IMG_5349 shows a full standard 32-piece arrangement: light pieces occupy all
 of ranks 1/2 and dark pieces occupy all of ranks 7/8 after the D4 mapping.
@@ -94,26 +132,27 @@ rank-7 bodies coincide with source pawns, while the eight rank-1/rank-8 pawn
 bodies replace source back-rank pieces. The side colors are opposite on all
 `16/16` current bodies.
 
-Those piece counts and colors are **not transferable proof that the current
-sparse physical setup is wrong**. IMG_5349 predates the sparse task layout and
-cannot distinguish an intentional later piece rearrangement from a simulator
-error.
+The historical piece counts and piece-family comparison remain
+**non-transferable**: IMG_5349 predates the sparse task layout and cannot prove
+whether replacing standard back-rank pieces with pawns was intentional. The
+new H/I/D captures do, however, independently prove the current eight-dark
+robotward/eight-light-far appearance and remove that uncertainty for side
+color.
 
 ## Decision
 
 Do not mutate the shared/frozen scene from this audit.
 
-The exact checker correction and the owner-reviewed piece-palette correction
-already exist in the visual-only
+The exact checker correction and the now-current-frame-confirmed piece-palette
+correction already exist in the visual-only
 `pawn_bg_source_fit_visuals._apply_bg_visual_layout` lane. It deliberately
 keeps semantic piece IDs and the frozen evaluator scene unchanged. Promoting
 that appearance into the shared scene would change rendered observations and
-invalidate frozen-evaluator continuity; the historical full-set capture does
-not authorize that promotion.
+invalidate frozen-evaluator continuity. The H/I/D evidence proves the visual
+mismatch, but it does not by itself authorize invalidating frozen evaluator
+artifacts or relabeling semantic piece identities.
 
-The next falsifiable measurement is one current, board-wide frame with the
-fixed robot base (or a base-linked tag) and all sparse pawns visible. Rectify
-the 8x8 board, classify the 16 pawn colors and centroids, and report the
-robotward edge without assuming chess convention. A single known board-corner
-tag transform or one registered labeled pawn centroid is additionally required
-to resolve file/rank semantics rather than appearance alone.
+The requested current-frame side-color measurement is now complete. The next
+unresolved falsifiable measurement is semantic orientation: a single known
+board-corner tag transform or one registered, externally labeled pawn centroid
+is required to decide file/rank names without assuming chess convention.
