@@ -95,3 +95,37 @@ does not duplicate or repair those frames.
 
 No robot bus was opened, torque was not enabled, and no physical motion
 occurred.
+
+## Public application bundle
+
+Publication completed on 2026-07-27:
+
+- Release:
+  `https://github.com/jakekinchen/sim2claw/releases/tag/phase-a-real-to-sim-d1-d2-20260727`
+- Release target:
+  `b66c951a7aa612062b0c9c437b7b84b436ed6a3b`
+- Release state: public, non-draft, non-prerelease.
+- Local ignored bundle:
+  `artifacts/publication/phase-a-real-to-sim-d1-d2-20260727`
+- Published asset count: exactly four.
+
+The four assets are:
+
+1. `phase_a_comparison.mp4` —
+   `fa265434d04ac25ed99264e866eb8b7563142d5580a135bcec78bfd4742c327d`
+2. `phase_a_comparison_poster.png` —
+   `ef5fd26cd3815227ebb5dc8cff4725f6724a702cad2eff5f0933623fdb1a7e3a`
+3. `CLAIMS_AND_METRICS.md` —
+   `83d1a4dfa9eae429d7e18b0932c2fc24a96e9a6800ebe26b86ccaf62eb27b874`
+4. `PUBLIC_RECEIPT.json` —
+   `c6edd5fa6ea3612bdb3c4fef2d8f636492151e4b25e6ec884c0f3e072f494e67`
+
+All four assets were downloaded again from the unauthenticated public release
+URLs and matched the local bundle byte for byte. The release page returned
+HTTP 200 without GitHub credentials.
+
+Privacy review passed. The release omits the raw source recordings, complete
+dataset, kinematic trace, credentials, absolute private paths, device and
+network identifiers, and unrelated artifacts. Generated media remains outside
+Git history; only the public claim/metrics and redacted receipt contracts are
+tracked.
