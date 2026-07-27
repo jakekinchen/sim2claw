@@ -792,6 +792,8 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
             and setup_preview.get("changed_joint_count")
             == int(np.count_nonzero(expected_previous != command_previous))
             and setup_preview.get("sample_count") == len(setup_actions)
+            and setup_preview.get("route_stage_count_in_combined_preview")
+            == len(stages)
             and setup_preview.get("kinematic_action_sha256")
             == action_sha256(setup_actions)
             == setup_stage_preview.get("exact_physical_action_sha256")
@@ -998,14 +1000,15 @@ def compile_wrist_view_reposition_packet(
             anchor, command_anchor
         )
         setup_preview = preview_fn(
-            [setup_preview_actions], candidate_manifest_path
+            [setup_preview_actions, *action_stages],
+            candidate_manifest_path,
         )
         setup_preview_stages = setup_preview.get("stages")
         _require(
             setup_preview.get("no_new_or_worsened_kinematic_contact") is True
             and not setup_preview.get("external_contact_pairs")
             and isinstance(setup_preview_stages, list)
-            and len(setup_preview_stages) == 1
+            and len(setup_preview_stages) >= 1
             and setup_preview_stages[0].get("exact_physical_action_sha256")
             == action_sha256(setup_preview_actions),
             "simulation preview rejected the bounded setup recovery",
@@ -1024,6 +1027,7 @@ def compile_wrist_view_reposition_packet(
                 np.count_nonzero(anchor != command_anchor)
             ),
             "sample_count": int(len(setup_preview_actions)),
+            "route_stage_count_in_combined_preview": len(action_stages),
             "kinematic_action_sha256": action_sha256(
                 setup_preview_actions
             ),
@@ -1642,7 +1646,8 @@ def execute_wrist_view_reposition_stage(
             np.asarray(stage["command_anchor_degrees"], dtype=np.float64),
         )
         fresh_setup_recovery_preview = preview_wrist_view_actions(
-            [setup_preview_actions], manifest_path
+            [setup_preview_actions, *preview_actions],
+            manifest_path,
         )
         _require(
             fresh_setup_recovery_preview.get(
@@ -1669,6 +1674,7 @@ def execute_wrist_view_reposition_stage(
                 )
             ),
             "sample_count": int(len(setup_preview_actions)),
+            "route_stage_count_in_combined_preview": len(preview_actions),
             "kinematic_action_sha256": action_sha256(
                 setup_preview_actions
             ),
