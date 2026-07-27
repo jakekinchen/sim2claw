@@ -1,0 +1,169 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_raised_opposite_four_crossing_tricam_20260727_v1",
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_15s_v1.json",
+    "contract_sha256": "457f2c142671851ddd60a3f1be5487125605957e38c1b2730ab683e08488393f"
+  },
+  "reviewed_anchor_degrees": [
+    -8.351648351648352,
+    -106.28571428571429,
+    99.20879120879121,
+    -94.72527472527473,
+    -126.37362637362638,
+    1.66270783847981
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -8.378658234855758,
+        -102.4398546188144,
+        90.61442428182887,
+        -89.23230909335841,
+        -126.49127735606807,
+        1.66270783847981
+      ],
+      [
+        -10.033202307635719,
+        -105.95897966485484,
+        94.34063127683152,
+        -93.20295106137854,
+        -126.47784355201212,
+        1.66270783847981
+      ]
+    ],
+    [
+      [
+        -7.94094992495437,
+        -97.21529705572559,
+        85.00211937284479,
+        -83.32506884369103,
+        -126.59680526435972,
+        1.66270783847981
+      ],
+      [
+        -10.033202307635719,
+        -105.95897966485484,
+        94.34063127683152,
+        -93.20295106137854,
+        -126.47784355201212,
+        1.66270783847981
+      ],
+      [
+        -7.94094992495437,
+        -97.21529705572559,
+        85.00211937284479,
+        -83.32506884369103,
+        -126.59680526435972,
+        1.66270783847981
+      ],
+      [
+        -10.033202307635719,
+        -105.95897966485484,
+        94.34063127683152,
+        -93.20295106137854,
+        -126.47784355201212,
+        1.66270783847981
+      ]
+    ],
+    [
+      [
+        -8.378658234855758,
+        -102.4398546188144,
+        90.61442428182887,
+        -89.23230909335841,
+        -126.49127735606807,
+        1.66270783847981
+      ],
+      [
+        -8.351648351648352,
+        -106.28571428571429,
+        99.20879120879121,
+        -94.72527472527473,
+        -126.37362637362638,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "geometric_derivation": {
+    "frame": "current_candidate_model_world",
+    "pinch_point_anchor_m": [
+      -0.028988669147055425,
+      0.8703222081326077,
+      1.0891875124315236
+    ],
+    "setup_raise_offset_m": [
+      0.0,
+      0.0,
+      0.02
+    ],
+    "raised_target_m": [
+      -0.028988669147055425,
+      0.8703222081326077,
+      1.1091875124315236
+    ],
+    "raised_solved_pinch_m": [
+      -0.028933261694576475,
+      0.8705859364840343,
+      1.1083310331793985
+    ],
+    "validation_cartesian_offset_m": [
+      0.003,
+      0.01,
+      -0.01
+    ],
+    "validation_target_m": [
+      -0.025933261694576475,
+      0.8805859364840343,
+      1.0983310331793985
+    ],
+    "setup_raise_ik_residual_m": 0.0008978749013404179,
+    "validation_waypoint_ik_residual_m": 0.001131620208187508,
+    "hysteresis_crossing_cartesian_offset_m": [
+      -0.003,
+      -0.015,
+      0.015
+    ],
+    "hysteresis_crossing_target_m": [
+      -0.03193326169457648,
+      0.8555859364840343,
+      1.1233310331793985
+    ],
+    "hysteresis_crossing_waypoint_ik_residual_m": 0.0014850708643123405,
+    "solver": "sim2claw.grasp._solve_reach",
+    "solver_module_sha256": "c4c0d4382c8319e0dec25d0e1d740fd92fdd7fdd6e8717e99a4aaa6c37e2e313",
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+    "maximum_ik_residual_m": 0.0015
+  },
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "prospective_no_contact_wrist_hysteresis_opposite_direction_validation",
+    "target_selection": "Stage 1 raises the pinch point by 20 mm and continues over D=(+3,+10,-10) mm to a positive-load raised anchor that remains above the original height. Stage 2 performs a new four-segment shuttle between that anchor and a negative-load raised waypoint, a relative D=(-6,-25,+25) mm excursion. Stage 3 returns through the raised midpoint to the exact fresh starting anchor. Each stage is separately torque-off closed and enclosed by C922, D405, and Pi video.",
+    "opposite_direction_setup_stage_index": 1,
+    "heldout_stage_index": 2,
+    "predicted_positive_load_anchor_wrist_bias_nm": 0.019895419058364838,
+    "predicted_negative_load_waypoint_wrist_bias_nm": -0.01917553225087454,
+    "expected_wrist_load_sign_crossings_minimum": 4,
+    "source_anchor_execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/execution_receipt.json",
+    "source_anchor_execution_receipt_sha256": "2532d0bfbc38febfe88d6355950d0b7eea66eba9e574493b0a0b18372818f35a",
+    "tricam_readiness_summary_path": "runs/geometric-microtransfer/20260727-motion-tricam-readiness-v2/readiness_summary.json",
+    "tricam_readiness_summary_sha256": "f1f173148d4a8341e4071e632d88b232a63053db594717d9b47bf75f1e10d95f",
+    "hysteresis_fit_receipt_path": "runs/geometric-microtransfer/20260727-geometric-joint-play-hysteresis-fit-v1/fit-receipt.json",
+    "hysteresis_fit_receipt_sha256": "aac30dd95ddaac1ec9fbf5a5f9833812128d49dfd10ad90ed8f79b4810e235a5",
+    "hysteresis_fit_receipt_digest": "2891bbf6e5696e6365df3ee6f42b3c1dd188a9ce0f274779e168d06e5f5df8e8",
+    "pawn_contact_forbidden": true,
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}
