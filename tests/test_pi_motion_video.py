@@ -132,6 +132,20 @@ def test_long_contract_is_bounded_for_full_geometric_stage(tmp_path: Path) -> No
     assert loaded["minimum_frames"] == 300
 
 
+def test_extended_contract_is_bounded_for_slow_roundtrip(tmp_path: Path) -> None:
+    contract = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
+    contract["contract_id"] = "fixture-extended-roundtrip"
+    contract["duration_seconds"] = 25
+    contract["minimum_frames"] = 600
+    path = tmp_path / "extended.json"
+    path.write_text(json.dumps(contract), encoding="utf-8")
+
+    loaded = load_contract(path)
+
+    assert loaded["duration_seconds"] == 25
+    assert loaded["minimum_frames"] == 600
+
+
 def test_fake_pi_capture_hash_binds_video_pts_and_action_interval(
     tmp_path: Path,
 ) -> None:

@@ -44,9 +44,12 @@ CAPTURE_MODE_C922_PI = "c922_plus_pi_hold"
 CAPTURE_MODE_TRICAM = "native_motion_tricam"
 SAMPLE_HZ = 40
 SAMPLES_PER_STAGE = 361
+MIN_SAMPLES_PER_STAGE = SAMPLES_PER_STAGE
+MAX_SAMPLES_PER_STAGE = 1441
 CAPTURE_HOLD_SECONDS = 2.0
 CAPTURE_HOLD_SAMPLES = int(SAMPLE_HZ * CAPTURE_HOLD_SECONDS)
 CAMERA_POST_ROLL_SECONDS = 0.25
+TRICAM_START_TO_ACTION_BUDGET_SECONDS = 3.0
 MAX_STAGE_EXCURSION_DEGREES = 90.0
 MAX_SLEW_DEGREES_S = 10.0
 COMPILE_ANCHOR_TOLERANCE_DEGREES = np.asarray(
@@ -443,15 +446,18 @@ def _load_route(
 def _freeze_waypoint_stage(
     start: np.ndarray,
     waypoints: np.ndarray,
+    *,
+    samples_per_stage: int = SAMPLES_PER_STAGE,
 ) -> np.ndarray:
-    """Freeze one to four equal-duration linear segments into 361 exact rows."""
+    """Freeze one to four equal-duration linear segments into exact rows."""
 
     segment_count = int(waypoints.shape[0])
     _require(
-        (SAMPLES_PER_STAGE - 1) % segment_count == 0,
+        MIN_SAMPLES_PER_STAGE <= samples_per_stage <= MAX_SAMPLES_PER_STAGE
+        and (samples_per_stage - 1) % segment_count == 0,
         "waypoint count does not divide the fixed stage interval",
     )
-    intervals = (SAMPLES_PER_STAGE - 1) // segment_count
+    intervals = (samples_per_stage - 1) // segment_count
     rows: list[np.ndarray] = []
     previous = start.astype("<f8")
     for waypoint_index, waypoint in enumerate(waypoints):
@@ -465,7 +471,7 @@ def _freeze_waypoint_stage(
         previous = waypoint.astype("<f8")
     actions = np.concatenate(rows, axis=0).astype("<f8", copy=False)
     _require(
-        actions.shape == (SAMPLES_PER_STAGE, 6),
+        actions.shape == (samples_per_stage, 6),
         "frozen waypoint stage has the wrong shape",
     )
     return actions
@@ -650,9 +656,11 @@ def _decode_stage(stage: Mapping[str, Any]) -> tuple[np.ndarray, np.ndarray, byt
         timestamps = np.asarray(stage["timestamps_seconds"], dtype="<f8")
     except (KeyError, TypeError, ValueError) as error:
         raise WristViewRepositionError("stage payload is malformed") from error
+    sample_count = int(stage.get("sample_count", SAMPLES_PER_STAGE))
     _require(
-        actions.shape == (SAMPLES_PER_STAGE, 6)
-        and timestamps.shape == (SAMPLES_PER_STAGE,)
+        MIN_SAMPLES_PER_STAGE <= sample_count <= MAX_SAMPLES_PER_STAGE
+        and actions.shape == (sample_count, 6)
+        and timestamps.shape == (sample_count,)
         and np.all(np.isfinite(actions))
         and np.all(np.isfinite(timestamps)),
         "stage arrays changed shape or contain non-finite values",
@@ -759,6 +767,11 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
         isinstance(stages, list) and 1 <= len(stages) <= 4,
         "packet must contain one to four stages",
     )
+    samples_per_stage = int(packet.get("samples_per_stage", SAMPLES_PER_STAGE))
+    _require(
+        MIN_SAMPLES_PER_STAGE <= samples_per_stage <= MAX_SAMPLES_PER_STAGE,
+        "packet stage sample count is outside the reviewed bound",
+    )
     expected_previous = np.asarray(
         packet["compile_anchor_degrees"], dtype=np.float64
     )
@@ -853,9 +866,12 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
             "stage waypoint or maximum excursion drifted",
         )
         _require(
-            np.array_equal(
+            int(stage.get("sample_count", SAMPLES_PER_STAGE))
+            == samples_per_stage
+            and len(actions) == samples_per_stage
+            and np.array_equal(
                 timestamps,
-                (np.arange(SAMPLES_PER_STAGE, dtype="<f8") + 1.0) / SAMPLE_HZ,
+                (np.arange(samples_per_stage, dtype="<f8") + 1.0) / SAMPLE_HZ,
             )
             and float(
                 np.max(
@@ -912,6 +928,31 @@ def compile_wrist_view_reposition_packet(
     preflight = (preflight_fn or _default_preflight)()
     identity, anchor, lower, upper = _identity_and_limits(preflight)
     route, reviewed_anchor, waypoint_stages = _load_route(route_path)
+    samples_per_stage = int(route.get("samples_per_stage", SAMPLES_PER_STAGE))
+    _require(
+        MIN_SAMPLES_PER_STAGE <= samples_per_stage <= MAX_SAMPLES_PER_STAGE,
+        "reviewed route stage sample count is outside the bounded range",
+    )
+    if str(route.get("capture_mode") or CAPTURE_MODE_DUAL) == CAPTURE_MODE_TRICAM:
+        specification = route["pi_motion_video"]
+        contract_path = Path(str(specification["contract_path"]))
+        if not contract_path.is_absolute():
+            contract_path = Path(__file__).resolve().parents[2] / contract_path
+        contract = _read_json(
+            contract_path.resolve(),
+            "bound Pi motion-video contract",
+        )
+        required_duration = (
+            samples_per_stage / SAMPLE_HZ
+            + CAPTURE_HOLD_SECONDS
+            + CAMERA_POST_ROLL_SECONDS
+            + TRICAM_START_TO_ACTION_BUDGET_SECONDS
+        )
+        _require(
+            float(contract.get("duration_seconds", 0.0)) >= required_duration,
+            "bound Pi motion-video duration cannot enclose the full stage, "
+            "hold, post-roll, and camera-to-action budget",
+        )
     targets = np.asarray(
         [waypoints[-1] for waypoints in waypoint_stages], dtype=np.float64
     )
@@ -970,7 +1011,9 @@ def compile_wrist_view_reposition_packet(
         ),
         "fresh torque-off pose is too far outside calibrated limits",
     )
-    timestamps = (np.arange(SAMPLES_PER_STAGE, dtype="<f8") + 1.0) / SAMPLE_HZ
+    timestamps = (
+        np.arange(samples_per_stage, dtype="<f8") + 1.0
+    ) / SAMPLE_HZ
     hold_timestamps = (
         np.arange(CAPTURE_HOLD_SAMPLES, dtype="<f8") + 1.0
     ) / SAMPLE_HZ
@@ -982,7 +1025,11 @@ def compile_wrist_view_reposition_packet(
             float(np.max(np.abs(delta))) <= MAX_STAGE_EXCURSION_DEGREES + 1e-9,
             "reviewed wrist-view stage exceeds 90 degrees",
         )
-        actions = _freeze_waypoint_stage(previous, waypoints)
+        actions = _freeze_waypoint_stage(
+            previous,
+            waypoints,
+            samples_per_stage=samples_per_stage,
+        )
         rates = np.abs(np.diff(actions, axis=0) / np.diff(timestamps)[:, None])
         _require(
             float(np.max(rates)) <= MAX_SLEW_DEGREES_S + 1e-9,
@@ -1070,6 +1117,7 @@ def compile_wrist_view_reposition_packet(
         stages.append(
             {
                 "stage_index": stage_index,
+                "sample_count": samples_per_stage,
                 "expected_anchor_degrees": previous.tolist(),
                 "command_anchor_degrees": action_previous.tolist(),
                 "target_degrees": target.tolist(),
@@ -1138,7 +1186,7 @@ def compile_wrist_view_reposition_packet(
         "calibrated_minimum_degrees": lower.tolist(),
         "calibrated_maximum_degrees": upper.tolist(),
         "sample_hz": SAMPLE_HZ,
-        "samples_per_stage": SAMPLES_PER_STAGE,
+        "samples_per_stage": samples_per_stage,
         "capture_hold_samples": CAPTURE_HOLD_SAMPLES,
         "capture_hold_seconds": CAPTURE_HOLD_SECONDS,
         "capture_during_motion": bool(route.get("capture_during_motion", False)),

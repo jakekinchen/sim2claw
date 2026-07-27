@@ -469,6 +469,49 @@ def test_compile_previews_exact_supplied_float64_route(tmp_path: Path) -> None:
         previous = target
 
 
+def test_compile_supports_bounded_long_roundtrip_stage(tmp_path: Path) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "long-route.json"
+    packet_path = tmp_path / "packet.json"
+    _candidate_manifest(manifest_path)
+    hover = ROUTE_ANCHOR.copy()
+    hover[0] += 10.0
+    _write(
+        route_path,
+        {
+            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+            "route_id": "fixture-long-roundtrip-route",
+            "samples_per_stage": 721,
+            "reviewed_anchor_degrees": ROUTE_ANCHOR.tolist(),
+            "stage_waypoints_degrees": [
+                [hover.tolist(), ROUTE_ANCHOR.tolist()]
+            ],
+        },
+    )
+
+    packet = compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+
+    stage = packet["stages"][0]
+    payload = stage["frozen_action_payload"]
+    actions = np.frombuffer(
+        base64.b64decode(payload["base64"]), dtype="<f8"
+    ).reshape(payload["shape"])
+    timestamps = np.asarray(stage["timestamps_seconds"], dtype="<f8")
+    assert packet["samples_per_stage"] == 721
+    assert stage["sample_count"] == 721
+    assert actions.shape == (721, 6)
+    assert np.array_equal(actions[360], hover)
+    assert np.array_equal(actions[-1], ROUTE_ANCHOR)
+    assert float(
+        np.max(np.abs(np.diff(actions, axis=0) / np.diff(timestamps)[:, None]))
+    ) <= packet["maximum_slew_degrees_s"]
+
+
 def test_compile_binds_c922_plus_pi_capture_mode(tmp_path: Path) -> None:
     manifest_path = tmp_path / "candidate_manifest.json"
     route_path = tmp_path / "route.json"
@@ -488,6 +531,30 @@ def test_compile_binds_c922_plus_pi_capture_mode(tmp_path: Path) -> None:
         "NativeC922StillRecorder"
     )
     assert packet["execution_contract"]["d405_required"] is False
+
+
+def test_compile_rejects_tricam_stage_longer_than_bound_pi_capture(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "route.json"
+    packet_path = tmp_path / "packet.json"
+    _candidate_manifest(manifest_path)
+    _tricam_route(route_path)
+    route = json.loads(route_path.read_text(encoding="utf-8"))
+    route["samples_per_stage"] = 481
+    _write(route_path, route)
+
+    with pytest.raises(
+        WristViewRepositionError,
+        match="Pi motion-video duration cannot enclose",
+    ):
+        compile_wrist_view_reposition_packet(
+            packet_path,
+            candidate_manifest_path=manifest_path,
+            route_path=route_path,
+            preflight_fn=_preflight,
+        )
 
 
 def test_compile_and_execute_requires_three_motion_cameras(tmp_path: Path) -> None:
