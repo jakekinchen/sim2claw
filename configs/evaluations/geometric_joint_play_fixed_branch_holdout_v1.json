@@ -19,8 +19,10 @@
     },
     "packet": {
       "path": "runs/geometric-microtransfer/20260727-geometric-dual-configuration-wrist-triangle-tricam-v1/packet.json",
-      "sha256": "ac1ab9b576900da60755d37204d1a3f9f1fa96ccc44689fe250594c8cc591244",
-      "plan_sha256": "2fc53db8771c8b18539800ba6cab4b7579917f07676a931c94ef171c17ee0778"
+      "sha256": "bf730f4d5da4b260c6ff96803301f0c3dd192c9c4ddc955652afe0ff767beda6",
+      "plan_sha256": "021507562609d60750ff8a7a78f67354ded0df89fa8f11518a13197c8db3a0e5",
+      "normalized_triangle_delta_encoding": "little_endian_float64_c_order_after_subtracting_each_stage_row_zero",
+      "normalized_triangle_delta_sha256": "32834e5010a5c35304bbf4e69d6692cce2acc643b40fa467b4c0ff46477cde40"
     },
     "heldout_stages": [
       {
@@ -35,8 +37,8 @@
       {
         "configuration": "negative_wrist_bias",
         "stage_index": 4,
-        "expected_action_sha256": "409c4e0d33a8fd6395111e7342742d38968850e1455f0f2ecd29c811c8fe7b06",
-        "expected_capture_hold_action_sha256": "df8fcc7ae550f8ac2e83dda208a934607494090d9af7a4e43091db61b1ad21c9",
+        "expected_action_sha256": "45dee084828461b0a47f39ffe25d99ab4508b7935efe8ddc08c490248953366c",
+        "expected_capture_hold_action_sha256": "5f92997160bf127576ff8247ab82b3346305f1e07150c04c8a16863fb0ae0a22",
         "expected_sample_count": 441,
         "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-dual-configuration-wrist-triangle-tricam-v1/stage-4/execution_receipt.json",
         "samples_path": "runs/geometric-microtransfer/20260727-geometric-dual-configuration-wrist-triangle-tricam-v1/stage-4/joint_samples.jsonl"

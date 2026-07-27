@@ -4,9 +4,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any, Mapping
+
+import numpy as np
 
 from sim2claw.actuator_external_validation import _workcell_candidate
 from sim2claw.geometric_joint_play import replay_joint_play
@@ -25,6 +28,7 @@ from sim2claw.pawn_bg_timing_ablation import (
     _mapped_episode,
     _strip_arrays,
 )
+from sim2claw.wrist_view_reposition import _decode_stage
 from tools.evaluate_geometric_micro_actuator_response import _stage_payload
 from tools.validate_geometric_joint_play import (
     _bound_path,
@@ -200,6 +204,36 @@ def validate(
         == ["positive_wrist_bias", "negative_wrist_bias"],
         "heldout stage set changed",
     )
+    triangle_actions = [
+        _decode_stage(packet["stages"][int(stage["stage_index"]) - 1])[0]
+        for stage in stage_specs
+    ]
+    triangle_deltas = [
+        np.ascontiguousarray(actions - actions[0], dtype="<f8")
+        for actions in triangle_actions
+    ]
+    triangle_delta_hashes = [
+        hashlib.sha256(delta.tobytes(order="C")).hexdigest()
+        for delta in triangle_deltas
+    ]
+    expected_delta_hash = str(
+        sources["packet"]["normalized_triangle_delta_sha256"]
+    )
+    _require(
+        sources["packet"]["normalized_triangle_delta_encoding"]
+        == (
+            "little_endian_float64_c_order_after_subtracting_"
+            "each_stage_row_zero"
+        )
+        and np.array_equal(triangle_deltas[0], triangle_deltas[1])
+        and triangle_delta_hashes
+        == [expected_delta_hash, expected_delta_hash]
+        and np.all(triangle_deltas[0][:, [0, 1, 2, 4, 5]] == 0.0)
+        and float(np.min(triangle_deltas[0][:, 3])) == -6.0
+        and float(np.max(triangle_deltas[0][:, 3])) == 6.0
+        and np.all(triangle_deltas[0][-1] == 0.0),
+        "heldout triangle normalized action invariance changed",
+    )
 
     settle_steps = int(mechanism["candidate_grid"]["initial_settle_steps"])
     replay_kwargs = {
@@ -363,6 +397,8 @@ def validate(
         "retrospective_receipt_sha256": sha256_file(
             retrospective_receipt_path
         ),
+        "normalized_triangle_delta_sha256": expected_delta_hash,
+        "normalized_triangle_delta_hashes": triangle_delta_hashes,
         "heldouts": heldouts,
         "overall_gates": overall_gates,
         "heldout_passed": passed,

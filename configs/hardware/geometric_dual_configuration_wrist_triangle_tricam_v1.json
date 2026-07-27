@@ -65,7 +65,7 @@
         -7.94094992495437,
         -97.21529705572559,
         85.00211937284479,
-        -83.32506884369103,
+        -83.20295106137854,
         -126.59680526435972,
         1.66270783847981
       ]
@@ -75,7 +75,7 @@
         -7.94094992495437,
         -97.21529705572559,
         85.00211937284479,
-        -77.32506884369103,
+        -77.20295106137854,
         -126.59680526435972,
         1.66270783847981
       ],
@@ -83,7 +83,7 @@
         -7.94094992495437,
         -97.21529705572559,
         85.00211937284479,
-        -89.32506884369103,
+        -89.20295106137854,
         -126.59680526435972,
         1.66270783847981
       ],
@@ -91,7 +91,7 @@
         -7.94094992495437,
         -97.21529705572559,
         85.00211937284479,
-        -83.32506884369103,
+        -83.20295106137854,
         -126.59680526435972,
         1.66270783847981
       ]
@@ -100,7 +100,7 @@
   "geometric_derivation": {
     "frame": "current_candidate_model_world",
     "configuration_positive_wrist_bias_nm": 0.019895419058364838,
-    "configuration_negative_wrist_bias_nm": -0.01917553225087454,
+    "configuration_negative_wrist_bias_nm": -0.01968752770619564,
     "triangle_relative_wrist_flex_degrees": [
       6.0,
       -6.0,
@@ -113,7 +113,7 @@
   "review_basis": {
     "physical_scope": "calibration_capture_only",
     "capture_scope": "prospective_no_contact_fixed_wrist_branch_falsifier",
-    "target_selection": "Stage 1 moves through the previously previewed 20-mm clearance pose to the positive-bias raised configuration. Stage 2 applies the frozen +6/-6/0-degree pure wrist-flex triangle. Stage 3 moves to the previously previewed negative-bias raised configuration. Stage 4 applies the byte-pattern-equivalent relative wrist triangle. All other triangle joints stay constant. A separately frozen cleanup packet is required afterward.",
+    "target_selection": "Stage 1 moves through the previously previewed 20-mm clearance pose to the positive-bias raised configuration. Stage 2 applies the frozen +6/-6/0-degree pure wrist-flex triangle. Stage 3 moves to a negative-bias raised configuration whose wrist anchor is exactly 10 degrees above the positive-bias wrist anchor. Stage 4 applies the exact byte-identical normalized relative wrist triangle. All other triangle joints stay constant. A separately frozen cleanup packet is required afterward.",
     "positive_configuration_triangle_stage_index": 2,
     "negative_configuration_triangle_stage_index": 4,
     "source_anchor_execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-raised-opposite-four-crossing-tricam-v1/stage-3/execution_receipt.json",
