@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.geometric_hover_transfer_diagnostic.v1",
+  "evaluation_id": "geometric_b7_mid_hover_transfer_diagnostic_20260727_v1",
+  "status": "retrospective_after_trace_opened_no_parameter_selection",
+  "proof_class": "retrospective_physical_contact_free_geometric_transfer_diagnostic",
+  "stage_index": 1,
+  "sources": {
+    "packet": {
+      "path": "runs/geometric-hover/20260727-b7-mid-hover-hold-roundtrip-tricam-v3/packet.json",
+      "sha256": "cd78a1ac35f029d084f6d2fad2ca5eb17e6f8ef6b6130e695f14e954d0c27a82"
+    },
+    "execution_receipt": {
+      "path": "runs/geometric-hover/20260727-b7-mid-hover-hold-roundtrip-tricam-v3/stage-1/execution_receipt.json",
+      "sha256": "b27343c5e095923fd4f666cf2f3c8ca21e820141ec77b83f13967d4da014bd48"
+    },
+    "joint_samples": {
+      "path": "runs/geometric-hover/20260727-b7-mid-hover-hold-roundtrip-tricam-v3/stage-1/joint_samples.jsonl",
+      "sha256": "d7839ce13682a4c166b00623521b9d1f1bf9d2b3647935825c1a86789b74b756"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    }
+  },
+  "expected": {
+    "plan_sha256": "7c4b6d6fd240befc9ee92a11510c94155382aba6d67580c7c0c5ac223d8060e2",
+    "action_sha256": "0e5fc8a079b90670144d057d06dcd6aaf70660ea7e9eb67d5f2d27c497af6ede",
+    "capture_hold_action_sha256": "c6fd83f5b71a213a9066421fbddee632769d4beaaaa59032c57fb761394809a3"
+  },
+  "apex_index": 450,
+  "phase_slices": [
+    {
+      "name": "approach",
+      "start_index": 0,
+      "end_index_exclusive": 301
+    },
+    {
+      "name": "stationary_hover",
+      "start_index": 301,
+      "end_index_exclusive": 601
+    },
+    {
+      "name": "return",
+      "start_index": 601,
+      "end_index_exclusive": 901
+    },
+    {
+      "name": "terminal_hold",
+      "start_index": 901,
+      "end_index_exclusive": 981
+    }
+  ],
+  "gates": {
+    "maximum_cartesian_tracking_error_m": 0.02,
+    "screen_semantics": "retrospective_safety_screen_for_a_separate_no_contact_route_only"
+  },
+  "authority": {
+    "diagnostic_analysis": true,
+    "parameter_fitting": false,
+    "simulator_parameter_promotion": false,
+    "physical_motion": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}
