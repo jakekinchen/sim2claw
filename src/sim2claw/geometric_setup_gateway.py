@@ -58,6 +58,9 @@ SETUP_EXECUTION_SCHEMA = "sim2claw.geometric_setup_phase_execution.v1"
 SETUP_SIM_ACTION_ENCODING = "little_endian_float64_c_order"
 SAMPLE_HZ = 20
 PHYSICS_STEPS_PER_ACTION = 10
+PREEXISTING_SELF_CONTACT_MAX_PENETRATION_M = 1e-4
+CONTACT_NUMERICAL_EPSILON_M = 1e-9
+MAX_EGRESS_RESOLUTION_PHYSICS_SUBSTEP = 2
 
 
 PreviewFunction = Callable[
@@ -372,6 +375,20 @@ def _validate_preview(
     phase_simulator: np.ndarray,
 ) -> None:
     raw_sha256 = _sha256_bytes(phase_simulator.tobytes(order="C"))
+    contact_mode = preview.get("contact_gate_mode")
+    resolving_baseline_valid = (
+        contact_mode == "resolving_preexisting_self_contact"
+        and preview.get("preexisting_self_contact_only") is True
+        and float(
+            preview.get("preexisting_contact_max_penetration_m", float("inf"))
+        )
+        <= PREEXISTING_SELF_CONTACT_MAX_PENETRATION_M
+        + CONTACT_NUMERICAL_EPSILON_M
+        and preview.get("preexisting_contact_never_worsened") is True
+        and preview.get("preexisting_contact_resolved_during_egress") is True
+        and int(preview.get("new_contact_pair_count", -1)) == 0
+        and int(preview.get("recurrent_contact_pair_count", -1)) == 0
+    )
     _require(
         preview.get("passed") is True
         and preview.get("sample_count") == len(phase_simulator)
@@ -380,6 +397,169 @@ def _validate_preview(
         and int(preview.get("robot_pawn_contact_count", -1)) == 0,
         "setup phase simulation contact preview rejected or used other bytes",
     )
+    _require(
+        contact_mode == "strict_zero_contact" or resolving_baseline_valid,
+        "setup preview contact mode does not prove zero or resolving baseline contact",
+    )
+
+
+def _classify_contact_snapshots(
+    snapshots: list[dict[str, Any]],
+    *,
+    first_changed_sample_index: int | None,
+) -> dict[str, Any]:
+    """Admit only a tiny, internal, monotonically resolving origin overlap.
+
+    A literal zero-contact gate is retained whenever the origin is clear.  If
+    CAD reports contact at the exact origin, the only exception is the same
+    robot/robot pair already present at the initial ``mj_forward``.  It must be
+    shallower than 0.1 mm, never deepen, disappear during the first changing
+    command, and never recur.  Pawn, environment, new-pair, and worsened
+    contacts remain forbidden.
+    """
+
+    _require(bool(snapshots), "setup preview produced no contact snapshots")
+    baseline_records = list(snapshots[0].get("contacts") or [])
+    observed_count = sum(
+        len(snapshot.get("contacts") or []) for snapshot in snapshots
+    )
+    if not baseline_records:
+        forbidden_count = observed_count
+        return {
+            "contact_gate_mode": "strict_zero_contact",
+            "observed_robot_contact_count": observed_count,
+            "allowed_preexisting_self_contact_observation_count": 0,
+            "forbidden_robot_contact_count": forbidden_count,
+            "robot_pawn_contact_count": sum(
+                int(record.get("touches_pawn") is True)
+                for snapshot in snapshots
+                for record in snapshot.get("contacts") or []
+            ),
+            "new_contact_pair_count": forbidden_count,
+            "recurrent_contact_pair_count": 0,
+            "preexisting_self_contact_only": True,
+            "preexisting_contact_max_penetration_m": 0.0,
+            "preexisting_contact_never_worsened": True,
+            "preexisting_contact_resolved_during_egress": True,
+            "passed": forbidden_count == 0,
+        }
+
+    baseline_pairs = {
+        tuple(str(value) for value in record["pair"])
+        for record in baseline_records
+    }
+    baseline_internal = all(
+        record.get("both_robot") is True
+        and record.get("touches_pawn") is False
+        for record in baseline_records
+    )
+    baseline_penetration = max(
+        max(0.0, -float(record["distance_m"]))
+        for record in baseline_records
+    )
+    baseline_within_cap = (
+        baseline_penetration
+        <= PREEXISTING_SELF_CONTACT_MAX_PENETRATION_M
+        + CONTACT_NUMERICAL_EPSILON_M
+    )
+    previous_severity = {
+        pair: max(
+            max(0.0, -float(record["distance_m"]))
+            for record in baseline_records
+            if tuple(str(value) for value in record["pair"]) == pair
+        )
+        for pair in baseline_pairs
+    }
+    resolved_pairs: set[tuple[str, str]] = set()
+    new_pairs: set[tuple[str, str]] = set()
+    recurrent_pairs: set[tuple[str, str]] = set()
+    worsened_pairs: set[tuple[str, str]] = set()
+    external_or_pawn_count = 0
+    allowed_observations = len(baseline_records)
+    last_baseline_sample = int(snapshots[0]["sample_index"])
+    last_baseline_substep = int(snapshots[0]["physics_substep"])
+
+    for snapshot in snapshots[1:]:
+        records = list(snapshot.get("contacts") or [])
+        current: dict[tuple[str, str], float] = {}
+        for record in records:
+            pair = tuple(str(value) for value in record["pair"])
+            severity = max(0.0, -float(record["distance_m"]))
+            current[pair] = max(current.get(pair, 0.0), severity)
+            if (
+                record.get("both_robot") is not True
+                or record.get("touches_pawn") is True
+            ):
+                external_or_pawn_count += 1
+            if pair not in baseline_pairs:
+                new_pairs.add(pair)
+            else:
+                allowed_observations += 1
+                last_baseline_sample = int(snapshot["sample_index"])
+                last_baseline_substep = int(snapshot["physics_substep"])
+        for pair in baseline_pairs:
+            severity = current.get(pair, 0.0)
+            if pair in resolved_pairs and pair in current:
+                recurrent_pairs.add(pair)
+            if (
+                severity
+                > previous_severity[pair] + CONTACT_NUMERICAL_EPSILON_M
+            ):
+                worsened_pairs.add(pair)
+            if pair not in current:
+                resolved_pairs.add(pair)
+            previous_severity[pair] = severity
+
+    all_resolved = resolved_pairs == baseline_pairs
+    resolved_during_egress = (
+        first_changed_sample_index is not None
+        and all_resolved
+        and (
+            last_baseline_sample < first_changed_sample_index
+            or (
+                last_baseline_sample == first_changed_sample_index
+                and last_baseline_substep
+                <= MAX_EGRESS_RESOLUTION_PHYSICS_SUBSTEP
+            )
+        )
+    )
+    forbidden_count = (
+        external_or_pawn_count
+        + len(new_pairs)
+        + len(recurrent_pairs)
+        + len(worsened_pairs)
+        + int(not baseline_internal)
+        + int(not baseline_within_cap)
+        + int(not resolved_during_egress)
+    )
+    return {
+        "contact_gate_mode": "resolving_preexisting_self_contact",
+        "observed_robot_contact_count": observed_count,
+        "allowed_preexisting_self_contact_observation_count": (
+            allowed_observations
+        ),
+        "forbidden_robot_contact_count": forbidden_count,
+        "robot_pawn_contact_count": sum(
+            int(record.get("touches_pawn") is True)
+            for snapshot in snapshots
+            for record in snapshot.get("contacts") or []
+        ),
+        "baseline_contact_pairs": [list(pair) for pair in sorted(baseline_pairs)],
+        "new_contact_pair_count": len(new_pairs),
+        "recurrent_contact_pair_count": len(recurrent_pairs),
+        "worsened_contact_pair_count": len(worsened_pairs),
+        "preexisting_self_contact_only": baseline_internal,
+        "preexisting_contact_max_penetration_m": baseline_penetration,
+        "preexisting_contact_penetration_limit_m": (
+            PREEXISTING_SELF_CONTACT_MAX_PENETRATION_M
+        ),
+        "preexisting_contact_never_worsened": not worsened_pairs,
+        "preexisting_contact_resolved_during_egress": resolved_during_egress,
+        "last_preexisting_contact_sample_index": last_baseline_sample,
+        "last_preexisting_contact_physics_substep": last_baseline_substep,
+        "first_changed_sample_index": first_changed_sample_index,
+        "passed": forbidden_count == 0,
+    }
 
 
 def _dynamic_setup_preview(
@@ -477,12 +657,11 @@ def _dynamic_setup_preview(
             or ""
         )
     }
-    forbidden_count = 0
-    robot_pawn_count = 0
+    snapshots: list[dict[str, Any]] = []
     first_contacts: list[dict[str, Any]] = []
 
     def audit(sample_index: int, physics_substep: int) -> None:
-        nonlocal forbidden_count, robot_pawn_count
+        snapshot_contacts: list[dict[str, Any]] = []
         for contact_index in range(data.ncon):
             contact = data.contact[contact_index]
             body_a = int(model.geom_bodyid[int(contact.geom1)])
@@ -490,32 +669,46 @@ def _dynamic_setup_preview(
             bodies = {body_a, body_b}
             if not bodies & robot_ids:
                 continue
-            forbidden_count += 1
-            robot_pawn_count += int(bool(bodies & pawn_ids))
+            name_a = str(
+                mujoco.mj_id2name(
+                    model,
+                    mujoco.mjtObj.mjOBJ_BODY,
+                    body_a,
+                )
+                or f"body#{body_a}"
+            )
+            name_b = str(
+                mujoco.mj_id2name(
+                    model,
+                    mujoco.mjtObj.mjOBJ_BODY,
+                    body_b,
+                )
+                or f"body#{body_b}"
+            )
+            record = {
+                "pair": sorted([name_a, name_b]),
+                "body_a": name_a,
+                "body_b": name_b,
+                "distance_m": float(contact.dist),
+                "both_robot": body_a in robot_ids and body_b in robot_ids,
+                "touches_pawn": bool(bodies & pawn_ids),
+            }
+            snapshot_contacts.append(record)
             if len(first_contacts) < 32:
                 first_contacts.append(
                     {
                         "sample_index": sample_index,
                         "physics_substep": physics_substep,
-                        "body_a": str(
-                            mujoco.mj_id2name(
-                                model,
-                                mujoco.mjtObj.mjOBJ_BODY,
-                                body_a,
-                            )
-                            or f"body#{body_a}"
-                        ),
-                        "body_b": str(
-                            mujoco.mj_id2name(
-                                model,
-                                mujoco.mjtObj.mjOBJ_BODY,
-                                body_b,
-                            )
-                            or f"body#{body_b}"
-                        ),
-                        "distance_m": float(contact.dist),
+                        **record,
                     }
                 )
+        snapshots.append(
+            {
+                "sample_index": sample_index,
+                "physics_substep": physics_substep,
+                "contacts": snapshot_contacts,
+            }
+        )
 
     audit(0, -1)
     for sample_index, action in enumerate(phase_simulator):
@@ -523,6 +716,14 @@ def _dynamic_setup_preview(
         for physics_substep in range(PHYSICS_STEPS_PER_ACTION):
             mujoco.mj_step(model, data)
             audit(sample_index, physics_substep)
+    changed = np.flatnonzero(
+        np.any(phase_simulator != phase_simulator[0], axis=1)
+    )
+    first_changed_sample_index = int(changed[0]) if len(changed) else None
+    contact_gate = _classify_contact_snapshots(
+        snapshots,
+        first_changed_sample_index=first_changed_sample_index,
+    )
     return {
         "runtime": "cpu_mujoco_fp64_dynamic_setup_preview",
         "sample_count": len(phase_simulator),
@@ -531,10 +732,8 @@ def _dynamic_setup_preview(
         "exact_setup_sim_action_sha256": _sha256_bytes(
             phase_simulator.tobytes(order="C")
         ),
-        "forbidden_robot_contact_count": forbidden_count,
-        "robot_pawn_contact_count": robot_pawn_count,
-        "first_forbidden_robot_contacts": first_contacts,
-        "passed": forbidden_count == 0 and robot_pawn_count == 0,
+        "first_observed_robot_contacts": first_contacts,
+        **contact_gate,
     }
 
 

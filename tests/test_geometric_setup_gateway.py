@@ -65,6 +65,7 @@ def _preview(
         ).hexdigest(),
         "forbidden_robot_contact_count": 0,
         "robot_pawn_contact_count": 0,
+        "contact_gate_mode": "strict_zero_contact",
         "passed": True,
     }
 
@@ -405,6 +406,147 @@ def test_contact_preview_rejects_before_hardware_read(
             preview_fn=rejected_preview,
         )
     assert hardware_read is False
+
+
+def _contact_snapshot(
+    sample_index: int,
+    physics_substep: int,
+    *,
+    distance_m: float | None,
+    pair: tuple[str, str] = ("left_lower_arm", "left_shoulder"),
+    both_robot: bool = True,
+    touches_pawn: bool = False,
+) -> dict[str, object]:
+    contacts: list[dict[str, object]] = []
+    if distance_m is not None:
+        contacts.append(
+            {
+                "pair": list(pair),
+                "distance_m": distance_m,
+                "both_robot": both_robot,
+                "touches_pawn": touches_pawn,
+            }
+        )
+    return {
+        "sample_index": sample_index,
+        "physics_substep": physics_substep,
+        "contacts": contacts,
+    }
+
+
+def test_tiny_preexisting_self_contact_must_resolve_without_worsening() -> None:
+    result = setup_gateway._classify_contact_snapshots(
+        [
+            _contact_snapshot(0, -1, distance_m=-7.15e-5),
+            _contact_snapshot(0, 0, distance_m=-7.15e-5),
+            _contact_snapshot(1, 0, distance_m=-2.51e-5),
+            _contact_snapshot(1, 1, distance_m=None),
+            _contact_snapshot(1, 2, distance_m=None),
+        ],
+        first_changed_sample_index=1,
+    )
+    assert result["passed"] is True
+    assert result["contact_gate_mode"] == (
+        "resolving_preexisting_self_contact"
+    )
+    assert result["preexisting_contact_never_worsened"] is True
+    assert result["preexisting_contact_resolved_during_egress"] is True
+    assert result["forbidden_robot_contact_count"] == 0
+
+
+@pytest.mark.parametrize(
+    "bad_snapshot, expected_field",
+    [
+        (
+            _contact_snapshot(
+                1,
+                0,
+                distance_m=-2e-5,
+                pair=("left_lower_arm", "tan_pawn_c8"),
+                both_robot=False,
+                touches_pawn=True,
+            ),
+            "new_contact_pair_count",
+        ),
+        (
+            _contact_snapshot(1, 0, distance_m=-9e-5),
+            "worsened_contact_pair_count",
+        ),
+    ],
+)
+def test_preexisting_contact_rule_rejects_new_or_worsened_contact(
+    bad_snapshot: dict[str, object],
+    expected_field: str,
+) -> None:
+    result = setup_gateway._classify_contact_snapshots(
+        [
+            _contact_snapshot(0, -1, distance_m=-7.15e-5),
+            bad_snapshot,
+            _contact_snapshot(1, 1, distance_m=None),
+        ],
+        first_changed_sample_index=1,
+    )
+    assert result["passed"] is False
+    assert int(result[expected_field]) > 0
+    assert int(result["forbidden_robot_contact_count"]) > 0
+
+
+def test_preexisting_contact_rule_rejects_recurrence() -> None:
+    result = setup_gateway._classify_contact_snapshots(
+        [
+            _contact_snapshot(0, -1, distance_m=-7.15e-5),
+            _contact_snapshot(1, 0, distance_m=None),
+            _contact_snapshot(1, 1, distance_m=-1e-6),
+        ],
+        first_changed_sample_index=1,
+    )
+    assert result["passed"] is False
+    assert result["recurrent_contact_pair_count"] == 1
+
+
+@pytest.mark.parametrize(
+    "snapshots, first_changed",
+    [
+        (
+            [
+                _contact_snapshot(0, -1, distance_m=-1.01e-4),
+                _contact_snapshot(1, 0, distance_m=None),
+            ],
+            1,
+        ),
+        (
+            [
+                _contact_snapshot(
+                    0,
+                    -1,
+                    distance_m=-1e-6,
+                    pair=("chess_board", "left_lower_arm"),
+                    both_robot=False,
+                ),
+                _contact_snapshot(1, 0, distance_m=None),
+            ],
+            1,
+        ),
+        (
+            [
+                _contact_snapshot(0, -1, distance_m=-7.15e-5),
+                _contact_snapshot(1, 3, distance_m=-1e-6),
+                _contact_snapshot(1, 4, distance_m=None),
+            ],
+            1,
+        ),
+    ],
+)
+def test_preexisting_contact_rule_rejects_deep_external_or_late_resolution(
+    snapshots: list[dict[str, object]],
+    first_changed: int,
+) -> None:
+    result = setup_gateway._classify_contact_snapshots(
+        snapshots,
+        first_changed_sample_index=first_changed,
+    )
+    assert result["passed"] is False
+    assert int(result["forbidden_robot_contact_count"]) > 0
 
 
 def test_rate_gate_is_rechecked_per_phase(
