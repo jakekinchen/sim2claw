@@ -1,0 +1,39 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c922_recovery_sag_to_m_waypoint_20260726_v1",
+  "capture_during_motion": false,
+  "reviewed_anchor_degrees": [
+    40.79120879120879,
+    6.593406593406593,
+    90.50549450549451,
+    -60.79120879120879,
+    -79.86813186813187,
+    2.375296912114014
+  ],
+  "stage_targets_degrees": [
+    [
+      12.0,
+      -68.0,
+      85.0,
+      -84.0,
+      -50.0,
+      2.494061757719715
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "move_from_the_torque_off_gravity_settled_waypoint_to_the_previously_verified_M_like_recovery_waypoint",
+    "source_pose": "Fresh torque-off follower read after the first independent recovery waypoint completed and gravity settled.",
+    "target_selection": "The previously verified M-like waypoint is reachable in one stage, stays below 90 degrees excursion, and has previously retained a stable torque-off anchor for the final return.",
+    "prior_recovery_receipt": {
+      "path": "runs/c922-board-base-registration/20260726-stage2-drift-recovery-waypoint-v1/stage-1/execution_receipt.json",
+      "sha256": "7c6157773337cf5a1a9795ac1d6282157b38a94d9d4a9ff577a2bde66a5c5908"
+    },
+    "evidence_limits": {
+      "physical_calibration_observation": false,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}
