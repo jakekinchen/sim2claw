@@ -160,6 +160,27 @@ class RecordedEpisode:
         }
 
 
+@dataclass(frozen=True)
+class UnapprovedPhysicalTransformDiagnostic:
+    """Narrow authority for one zero-fit, non-promotional replay.
+
+    The tolerance applies only to observed physical joint positions.  Initial
+    simulator state and every recorded control remain subject to the candidate
+    model's exact joint and actuator limits.
+    """
+
+    schema_version: str
+    proof_class: str
+    action_sha256: str
+    transform_sha256: str
+    candidate_config_sha256: str
+    source_provenance_sha256: str
+    evaluation_contract_sha256: str
+    measured_joint_tolerance: tuple[float, ...]
+    parameter_fitting_performed: bool = False
+    promotion_eligible: bool = False
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -1615,15 +1636,58 @@ def _require_episode_joint_limits(
     model: mujoco.MjModel,
     ids: Mapping[str, Any],
     episode: RecordedEpisode,
+    *,
+    diagnostic: UnapprovedPhysicalTransformDiagnostic | None = None,
 ) -> dict[str, Any]:
     diagnostics = episode_joint_limit_diagnostics(model, ids, episode)
-    if not diagnostics["all_within_limits"]:
-        raise ReplayRangeError(
-            "episode initial state, measured trajectory, or exact recorded commands "
-            "exceed simulator joint/control limits; replay refuses silent assignment or clipping",
-            diagnostics,
+    if diagnostics["all_within_limits"]:
+        return diagnostics
+    if diagnostic is not None:
+        tolerance = np.asarray(
+            diagnostic.measured_joint_tolerance, dtype=np.float64
         )
-    return diagnostics
+        measured = diagnostics["measured_trajectory"]
+        within_observation_tolerance = bool(
+            tolerance.shape == (len(episode.joint_names),)
+            and np.all(np.isfinite(tolerance))
+            and np.all(tolerance >= 0.0)
+            and diagnostics["recorded_commands"][
+                "violating_joint_value_count"
+            ]
+            == 0
+            and all(
+                float(
+                    diagnostics["initial_measured_state"]["per_joint"][name][
+                        "maximum_exceedance"
+                    ]
+                )
+                <= float(tolerance[index]) + 1e-12
+                for index, name in enumerate(episode.joint_names)
+            )
+            and all(
+                float(measured["per_joint"][name]["maximum_exceedance"])
+                <= float(tolerance[index]) + 1e-12
+                for index, name in enumerate(episode.joint_names)
+            )
+        )
+        if within_observation_tolerance:
+            diagnostics["diagnostic_observed_state_tolerance"] = {
+                "applied_to": (
+                    "initial_physical_observation_and_measured_trajectory"
+                ),
+                "tolerance": tolerance.tolist(),
+                "initial_state_tolerance": True,
+                "recorded_command_tolerance": False,
+                "model_or_control_range_modified": False,
+            }
+            diagnostics["diagnostic_replay_admitted"] = True
+            diagnostics["exact_replay_eligible"] = False
+            return diagnostics
+    raise ReplayRangeError(
+        "episode initial state, measured trajectory, or exact recorded commands "
+        "exceed simulator joint/control limits; replay refuses silent assignment or clipping",
+        diagnostics,
+    )
 
 
 def inspect_episode_joint_limits(
@@ -1773,6 +1837,9 @@ def simulate_and_align(
     model_base_directory: Path | None = None,
     native_step_observer: Callable[[mujoco.MjModel, mujoco.MjData, int], None]
     | None = None,
+    unapproved_transform_diagnostic: (
+        UnapprovedPhysicalTransformDiagnostic | None
+    ) = None,
 ) -> dict[str, Any]:
     """Replay an episode and align native simulation values to measured times."""
 
@@ -1795,14 +1862,56 @@ def simulate_and_align(
         object_body_name=object_body_name,
     )
     ids = _binding_ids(model, episode, config)
-    joint_limit_diagnostics = _require_episode_joint_limits(model, ids, episode)
-    if episode.joint_transform is not None and not bool(
-        episode.joint_transform.get("calibration_approved")
-    ):
+    unapproved_physical_transform = bool(
+        episode.joint_transform is not None
+        and not bool(episode.joint_transform.get("calibration_approved"))
+    )
+    if unapproved_physical_transform:
+        diagnostic = unapproved_transform_diagnostic
+        expected_action_sha256 = float64_tensor_sha256(episode.commands)
+        if (
+            diagnostic is None
+            or diagnostic.schema_version
+            != "sim2claw.unapproved_physical_transform_diagnostic.v1"
+            or diagnostic.proof_class
+            != "physical_canary_action_frozen_diagnostic"
+            or episode.proof_class != diagnostic.proof_class
+            or diagnostic.action_sha256 != expected_action_sha256
+            or episode.joint_transform is None
+            or diagnostic.transform_sha256
+            != episode.joint_transform.get("sha256")
+            or diagnostic.candidate_config_sha256
+            != canonical_json_sha256(config)
+            or diagnostic.source_provenance_sha256
+            != canonical_json_sha256(episode.source_provenance)
+            or episode.source_provenance.get("candidate_config_sha256")
+            != diagnostic.candidate_config_sha256
+            or episode.source_provenance.get("evaluation_contract_sha256")
+            != diagnostic.evaluation_contract_sha256
+            or episode.joint_transform.get("zero_fit_diagnostic_only")
+            is not True
+            or diagnostic.parameter_fitting_performed is not False
+            or diagnostic.promotion_eligible is not False
+        ):
+            raise ReplayContractError(
+                "physical joint transform is not calibration-approved; only "
+                "the typed action-frozen canary diagnostic may replay it"
+            )
+        if parameter_values is not None:
+            raise ReplayContractError(
+                "an unapproved physical transform may only enter a zero-fit diagnostic replay"
+            )
+    elif unapproved_transform_diagnostic is not None:
         raise ReplayContractError(
-            "physical joint transform is not calibration-approved; exact replay and fitting "
-            "remain blocked even when individual rows are range-feasible"
+            "unapproved-transform diagnostic authority was supplied to an "
+            "approved or transform-free episode"
         )
+    joint_limit_diagnostics = _require_episode_joint_limits(
+        model,
+        ids,
+        episode,
+        diagnostic=unapproved_transform_diagnostic,
+    )
     data = mujoco.MjData(model)
     if current_scene:
         initialize_robot_poses(model, data)
@@ -1941,6 +2050,39 @@ def simulate_and_align(
                 name: 0 for name in episode.joint_names
             },
             "joint_limit_validation": joint_limit_diagnostics,
+            "physical_transform_calibration_approved": not (
+                unapproved_physical_transform
+            ),
+            "unapproved_physical_transform_diagnostic": (
+                unapproved_physical_transform
+            ),
+            "unapproved_transform_diagnostic_contract": (
+                {
+                    "schema_version": (
+                        unapproved_transform_diagnostic.schema_version
+                    ),
+                    "proof_class": unapproved_transform_diagnostic.proof_class,
+                    "action_sha256": (
+                        unapproved_transform_diagnostic.action_sha256
+                    ),
+                    "transform_sha256": (
+                        unapproved_transform_diagnostic.transform_sha256
+                    ),
+                    "candidate_config_sha256": (
+                        unapproved_transform_diagnostic.candidate_config_sha256
+                    ),
+                    "source_provenance_sha256": (
+                        unapproved_transform_diagnostic.source_provenance_sha256
+                    ),
+                    "evaluation_contract_sha256": (
+                        unapproved_transform_diagnostic.evaluation_contract_sha256
+                    ),
+                    "promotion_eligible": False,
+                }
+                if unapproved_transform_diagnostic is not None
+                else None
+            ),
+            "parameter_fitting_performed": False,
         },
         "synchronized_rows": synchronized_rows,
     }

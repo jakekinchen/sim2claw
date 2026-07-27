@@ -683,6 +683,22 @@ class NativeDualCameraRecorder:
         assert start is not None
         device = self.contract["devices"][role]
         overhead = role == "c922"
+        first_frame_recorder_offset = (
+            float(stream["first_host_continuous_ns"]) / 1_000_000_000.0
+            - start
+        )
+        last_frame_recorder_offset = (
+            float(stream["last_host_continuous_ns"]) / 1_000_000_000.0
+            - start
+        )
+        action_interval_enclosed = bool(
+            action_started_monotonic is not None
+            and action_stopped_monotonic is not None
+            and first_frame_recorder_offset
+            <= action_started_monotonic - start
+            <= action_stopped_monotonic - start
+            <= last_frame_recorder_offset
+        )
         return {
             "schema_version": (
                 OVERHEAD_VIDEO_SCHEMA if overhead else WRIST_VIDEO_SCHEMA
@@ -714,6 +730,15 @@ class NativeDualCameraRecorder:
             "last_source_pts_seconds": stream["last_pts_seconds"],
             "first_host_continuous_ns": stream["first_host_continuous_ns"],
             "last_host_continuous_ns": stream["last_host_continuous_ns"],
+            "first_frame_recorder_offset_seconds": (
+                first_frame_recorder_offset
+            ),
+            "last_frame_recorder_offset_seconds": (
+                last_frame_recorder_offset
+            ),
+            "action_interval_enclosed_by_callback_frames": (
+                action_interval_enclosed
+            ),
             "apple_drop_callback_count": stream["apple_drop_callback_count"],
             "writer_backpressure_count": stream["writer_backpressure_count"],
             "callback_timestamp_path": common["callback_timestamp_path"],

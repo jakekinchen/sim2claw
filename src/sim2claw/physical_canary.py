@@ -13,12 +13,14 @@ import hashlib
 import json
 import math
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Mapping, Protocol
 
 import numpy as np
 
 from .replay_eligibility import ACTION_HASH_ENCODING, MANIFEST_SCHEMA, action_sha256
+from .paths import REPO_ROOT
 from .scene import ROBOT_JOINTS
 
 
@@ -51,6 +53,12 @@ NORMALIZATION_MAX_DELTA_DEGREES = 5.0
 NORMALIZATION_FINAL_HOLD_SECONDS = 1.0
 POST_NORMALIZATION_SAMPLE_HZ = 20
 POST_NORMALIZATION_PAN_EXCURSION_DEGREES = 1.0
+ROUNDTRIP_BOUNDS_PATH = (
+    REPO_ROOT
+    / "configs"
+    / "evaluations"
+    / "physical_canary_roundtrip_bounds_v1.json"
+)
 
 
 class PhysicalCanaryError(RuntimeError):
@@ -59,6 +67,8 @@ class PhysicalCanaryError(RuntimeError):
 
 class CameraCapture(Protocol):
     def start(self) -> dict[str, Any]: ...
+
+    def ensure_running(self) -> None: ...
 
     def finish(
         self,
@@ -101,6 +111,34 @@ def _gateway_identity(identity: Mapping[str, Any]) -> Any:
 def _require(condition: bool, message: str) -> None:
     if not condition:
         raise PhysicalCanaryError(message)
+
+
+def _independent_review_admitted(review: Any) -> bool:
+    if not isinstance(review, Mapping):
+        return False
+    if not all(
+        isinstance(review.get(field), str)
+        and bool(str(review[field]).strip())
+        for field in ("reviewer", "reviewed_at", "decision_id")
+    ):
+        return False
+    if not all(
+        review.get(field) is True
+        for field in (
+            "frozen_action_reviewed",
+            "hardware_clear_workspace_acknowledged",
+            "hardware_readiness_acknowledged",
+            "diagnostic_sim_model_mismatch_acknowledged",
+        )
+    ):
+        return False
+    try:
+        reviewed_at = datetime.fromisoformat(
+            str(review["reviewed_at"]).replace("Z", "+00:00")
+        )
+    except ValueError:
+        return False
+    return reviewed_at.tzinfo is not None
 
 
 def _read_json(path: Path, label: str) -> dict[str, Any]:
@@ -564,6 +602,32 @@ def compile_physical_canary_packet(
     preview = (preview_fn or _kinematic_preview)(
         actions_physical, bundle_path, bundle
     )
+    roundtrip_bounds = _read_json(
+        ROUNDTRIP_BOUNDS_PATH, "physical canary roundtrip bounds"
+    )
+    _require(
+        roundtrip_bounds.get("schema_version")
+        == "sim2claw.physical_canary_roundtrip_bounds.v1"
+        and roundtrip_bounds.get("status")
+        == "preregistered_before_fresh_current_pose_canary"
+        and roundtrip_bounds.get("fresh_evidence_requires_packet_hash_binding")
+        is True,
+        "physical canary roundtrip bounds are not preregistered",
+    )
+    from .physical_canary_replay import (
+        compile_preexecution_dynamic_prediction,
+    )
+
+    preexecution_dynamic_prediction = (
+        compile_preexecution_dynamic_prediction(
+            physical_actions=actions_physical,
+            timestamps=timestamps,
+            candidate_manifest_path=Path(
+                str(preview["candidate_manifest_path"])
+            ),
+            evaluation_contract_path=ROUNDTRIP_BOUNDS_PATH,
+        )
+    )
     action_hash = action_sha256(actions_physical)
     _require(
         preview.get("exact_physical_action_sha256") == action_hash
@@ -608,6 +672,13 @@ def compile_physical_canary_packet(
         "action_sha256": action_hash,
         "action_bytes_sha256": hashlib.sha256(raw).hexdigest(),
         "post_normalization_simulation_preview": preview,
+        "reverse_replay_evaluation_contract": {
+            "path": str(ROUNDTRIP_BOUNDS_PATH.resolve()),
+            "sha256": _sha256(ROUNDTRIP_BOUNDS_PATH.resolve()),
+        },
+        "preexecution_dynamic_prediction": (
+            preexecution_dynamic_prediction
+        ),
         "source_contact_receipt": {"path": str(contact_receipt_path.resolve()), "sha256": _sha256(contact_receipt_path.resolve())},
         "source_normalization_receipt": {"path": str(normalization_receipt_path.resolve()), "sha256": _sha256(normalization_receipt_path.resolve())},
         "simulation_contact_classification": "diagnostic_sim_model_baseline_self_contact",
@@ -634,8 +705,12 @@ def execute_physical_canary_packet(
     packet = _read_json(packet_path, "physical canary packet")
     _require(packet.get("schema_version") == PHYSICAL_CANARY_PACKET_SCHEMA and packet.get("plan_sha256") == _canonical({k: v for k, v in packet.items() if k != "plan_sha256"}), "physical canary packet digest changed")
     _require(operator_acknowledged, "fresh operator acknowledgement is required")
-    review = packet.get("independent_review") or {}
-    _require(packet.get("physical_packet_execution_admitted") is True and all(review.get(field) for field in ("reviewer", "reviewed_at", "decision_id", "frozen_action_reviewed", "hardware_clear_workspace_acknowledged", "hardware_readiness_acknowledged", "diagnostic_sim_model_mismatch_acknowledged")), "physical canary packet is not independently admitted")
+    review = packet.get("independent_review")
+    _require(
+        packet.get("physical_packet_execution_admitted") is True
+        and _independent_review_admitted(review),
+        "physical canary packet is not independently admitted",
+    )
     output_directory = output_directory.resolve()
     output_path = output_directory / "execution_receipt.json"
     samples_path = output_directory / "joint_samples.jsonl"
@@ -667,6 +742,11 @@ def execute_physical_canary_packet(
         == packet["action_sha256"],
         "physical canary frozen bytes drifted",
     )
+    from .physical_canary_replay import (
+        verify_packet_preexecution_dynamic_prediction,
+    )
+
+    verify_packet_preexecution_dynamic_prediction(packet)
     preflight = (preflight_fn or _default_preflight)()
     identity = _identity_from_preflight(preflight)
     _require(identity == packet["hardware_identity"], "physical canary follower identity drifted")
@@ -692,6 +772,7 @@ def execute_physical_canary_packet(
         samples_path.open("x").close()
         capture = (capture_factory or _default_capture)(output_directory / "dual_camera")
         camera_started = capture.start()
+        capture.ensure_running()
         opened = gateway.open(enable_motion=True, paired_pose_confirmed=True)
         opened_start = np.asarray(opened["follower_start_degrees"], dtype=np.float64)
         _require(np.all(np.abs(_anchor_delta(opened_start, anchor)) <= CANARY_START_TOLERANCE_DEGREES), "follower anchor drifted before canary hold")
@@ -701,6 +782,7 @@ def execute_physical_canary_packet(
                 delay = action_started + float(timestamp) - clock_fn()
                 if delay > 0.0:
                     sleep_fn(delay)
+                capture.ensure_running()
                 sample = gateway.sample(float(timestamp), exact_requested_degrees=target)
                 requested = np.asarray(sample.get("follower_requested_degrees"), dtype="<f8")
                 sent = np.asarray(sample.get("follower_command_degrees"), dtype="<f8")

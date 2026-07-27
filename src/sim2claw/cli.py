@@ -606,8 +606,29 @@ def build_parser() -> argparse.ArgumentParser:
     physical_canary.add_argument("--bundle", type=Path)
     physical_canary.add_argument("--contact-receipt", type=Path)
     physical_canary.add_argument("--normalization-receipt", type=Path)
+    physical_canary.add_argument(
+        "--pi-video-contract",
+        type=Path,
+        help="add the bounded Pi IMX708 motion sidecar during execution",
+    )
     physical_canary.add_argument("--output", type=Path)
     physical_canary.add_argument("--yes", action="store_true")
+    physical_canary_replay = subparsers.add_parser(
+        "replay-physical-canary",
+        help=(
+            "verify and replay one exact mixed-unit physical canary in "
+            "simulation without fitting"
+        ),
+    )
+    physical_canary_replay.add_argument(
+        "--packet", type=Path, required=True
+    )
+    physical_canary_replay.add_argument(
+        "--execution-receipt", type=Path, required=True
+    )
+    physical_canary_replay.add_argument(
+        "--output", type=Path, required=True
+    )
     geometric_physical = subparsers.add_parser(
         "geometric-physical",
         help=(
@@ -697,6 +718,21 @@ def build_parser() -> argparse.ArgumentParser:
     d405_apriltag.add_argument("--capture-report", type=Path)
     d405_apriltag.add_argument("--selected-frame-output", type=Path)
     d405_apriltag.add_argument("--output", type=Path, required=True)
+    img5431_multitag = subparsers.add_parser(
+        "observe-img5431-multitags",
+        help=(
+            "materialize hash-bound frame-local AprilTag pixels from "
+            "IMG_5431 without assigning tracks or poses"
+        ),
+    )
+    img5431_multitag.add_argument("--source", type=Path, required=True)
+    img5431_multitag.add_argument(
+        "--contract",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/acquisition/img5431_multitag_observation_v1.json",
+    )
+    img5431_multitag.add_argument("--output", type=Path, required=True)
     static_tricam = subparsers.add_parser(
         "static-tricam-capture",
         help="capture one rigid C922, D405 RGB-D, and Pi still bundle",
@@ -1927,6 +1963,10 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         try:
             if args.phase == "normalize":
+                if args.pi_video_contract is not None:
+                    raise PhysicalCanaryError(
+                        "--pi-video-contract is only valid during execution"
+                    )
                 if args.yes:
                     if args.output is None:
                         raise PhysicalCanaryError(
@@ -1950,7 +1990,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                         )
                     result = compile_physical_canary_normalization(args.packet)
             elif args.phase == "compile":
-                if args.yes or args.output is not None:
+                if (
+                    args.yes
+                    or args.output is not None
+                    or args.pi_video_contract is not None
+                ):
                     raise PhysicalCanaryError(
                         "--yes/--output are only valid during execution or live normalization"
                     )
@@ -1976,14 +2020,46 @@ def main(argv: Sequence[str] | None = None) -> int:
                     raise PhysicalCanaryError(
                         "--yes and --output are required for physical canary execution"
                     )
+                capture_factory = None
+                if args.pi_video_contract is not None:
+                    from .pi_motion_video import MotionTricamRecorder
+
+                    capture_factory = lambda path: MotionTricamRecorder(
+                        path,
+                        pi_contract_path=args.pi_video_contract,
+                    )
                 result = execute_physical_canary_packet(
-                    args.packet, args.output, operator_acknowledged=True
+                    args.packet,
+                    args.output,
+                    operator_acknowledged=True,
+                    capture_factory=capture_factory,
                 )
         except (OSError, ValueError, PhysicalCanaryError) as error:
             print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
             return 1
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
+    if args.command == "replay-physical-canary":
+        from .physical_canary_replay import (
+            PhysicalCanaryReplayError,
+            replay_physical_canary_execution,
+        )
+
+        try:
+            result = replay_physical_canary_execution(
+                args.packet,
+                args.execution_receipt,
+                args.output,
+            )
+        except (
+            OSError,
+            ValueError,
+            PhysicalCanaryReplayError,
+        ) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0 if result["diagnostic_bounds_satisfied"] else 1
     if args.command == "geometric-physical":
         from .geometric_physical_gateway import (
             GeometricPhysicalGatewayError,
@@ -2209,6 +2285,23 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["status"] == "target_observed" else 1
+    if args.command == "observe-img5431-multitags":
+        from .img5431_multitag_observation import (
+            Img5431ObservationError,
+            observe_img5431_multitags,
+        )
+
+        try:
+            report = observe_img5431_multitags(
+                source_path=args.source,
+                output_path=args.output,
+                contract_path=args.contract,
+            )
+        except (OSError, ValueError, Img5431ObservationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["summary"]["all_required_ids_observed"] else 1
     if args.command == "static-tricam-capture":
         from .static_tricam_capture import (
             StaticTricamCaptureError,
