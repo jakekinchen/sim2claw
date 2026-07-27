@@ -21,6 +21,7 @@ from sim2claw.wrist_view_reposition import (
     WRIST_VIEW_PACKET_SCHEMA,
     WRIST_VIEW_ROUTE_SCHEMA,
     WristViewRepositionError,
+    _validate_contact_pair_minimums,
     compile_wrist_view_reposition_packet,
     execute_wrist_view_reposition_stage,
     preview_wrist_view_actions,
@@ -44,6 +45,33 @@ ROUTE_TARGETS = np.asarray(
         [-20.383827, -64.520994, 31.204886, 90.0, -74.5934065934, 2.9691211401],
     ]
 )
+
+
+def test_known_safe_contact_envelope_is_pair_and_depth_bounded() -> None:
+    pair = ("left_lower_arm", "left_shoulder")
+    _validate_contact_pair_minimums(
+        {pair: -0.00007153393},
+        {},
+        {pair: 0.000071634},
+    )
+    with pytest.raises(
+        WristViewRepositionError,
+        match="exceeds a frozen known-safe",
+    ):
+        _validate_contact_pair_minimums(
+            {pair: -0.000071635},
+            {},
+            {pair: 0.000071634},
+        )
+    with pytest.raises(
+        WristViewRepositionError,
+        match="creates a new model contact pair",
+    ):
+        _validate_contact_pair_minimums(
+            {("left_base", "board"): -1e-9},
+            {},
+            {pair: 0.000071634},
+        )
 
 
 def _write(path: Path, value: object) -> None:

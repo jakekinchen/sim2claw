@@ -1,0 +1,48 @@
+{
+  "schema_version": "sim2claw.wrist_view_known_safe_self_contact_envelope.v1",
+  "envelope_id": "pose_j_shoulder_lower_arm_prior_physical_safe_20260727_v1",
+  "status": "frozen_prior_physical_safe_envelope",
+  "candidate_manifest": {
+    "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+  },
+  "allowed_pairs": [
+    {
+      "bodies": [
+        "left_lower_arm",
+        "left_shoulder"
+      ],
+      "maximum_penetration_m": 0.000071634,
+      "observed_prior_maximum_penetration_m": 0.00007153393,
+      "numerical_tolerance_m": 0.00000010007,
+      "evidence_pose_degrees": [
+        -0.17582417582417584,
+        -106.28571428571429,
+        99.73626373626374,
+        -100.43956043956044,
+        -119.6923076923077,
+        2.494061757719715
+      ]
+    }
+  ],
+  "physical_evidence": {
+    "packet": {
+      "path": "runs/pi-link-tag-calibration/20260726-new-scene-tags-pose-j-identity-validation-v1/packet.json",
+      "sha256": "7e84e2f46f8a6a79a1101b10060d45f4ff888503e7e003df0adb9cb6acb29f0b"
+    },
+    "execution_receipt": {
+      "path": "runs/pi-link-tag-calibration/20260726-new-scene-tags-pose-j-identity-validation-v1/stage-1/execution_receipt.json",
+      "sha256": "3d377ff0dd1c86301c636778df427bb5081609b8fef26c52304d1a37363cb962"
+    },
+    "execution_status": "completed_wrist_view_reposition_stage",
+    "physical_follower_torque_enabled_at_close": false
+  },
+  "semantics": {
+    "path_independent_for_listed_pair_only": true,
+    "every_unlisted_new_pair_rejected": true,
+    "listed_pair_deeper_than_envelope_rejected": true,
+    "does_not_disable_collision": true,
+    "does_not_admit_board_table_pawn_or_task_contact": true,
+    "purpose": "Prevent a previously demonstrated folded-arm collision-box overlap from being reclassified as a novel contact solely because a new route begins outside that pose."
+  }
+}

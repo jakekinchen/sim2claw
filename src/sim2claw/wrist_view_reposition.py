@@ -72,6 +72,10 @@ BASELINE_SELF_CONTACT_PAIRS = {
     tuple(sorted(("left_shoulder", "left_lower_arm"))),
     tuple(sorted(("left_shoulder", "left_wrist"))),
 }
+KNOWN_SAFE_CONTACT_ENVELOPE_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "configs/evaluations/wrist_view_known_safe_self_contact_envelope_v1.json"
+)
 
 
 class CameraCapture(Protocol):
@@ -522,6 +526,144 @@ def _contact_pair(model: mujoco.MjModel, contact: Any) -> tuple[str, str]:
     return tuple(sorted((names[0], names[1])))
 
 
+def _known_safe_contact_envelopes(
+    candidate_manifest_path: Path,
+) -> tuple[dict[tuple[str, str], float], dict[str, Any] | None]:
+    """Load a receipt-bound envelope only for its exact candidate scene."""
+
+    specification = _read_json(
+        KNOWN_SAFE_CONTACT_ENVELOPE_PATH,
+        "known-safe self-contact envelope",
+    )
+    binding = specification.get("candidate_manifest") or {}
+    bound_path = Path(str(binding.get("path") or ""))
+    if not bound_path.is_absolute():
+        bound_path = Path(__file__).resolve().parents[2] / bound_path
+    bound_path = bound_path.resolve()
+    expected_manifest_sha256 = str(binding.get("sha256") or "")
+    if (
+        candidate_manifest_path != bound_path
+        or _sha256(candidate_manifest_path) != expected_manifest_sha256
+    ):
+        return {}, None
+
+    _require(
+        specification.get("schema_version")
+        == "sim2claw.wrist_view_known_safe_self_contact_envelope.v1"
+        and specification.get("status") == "frozen_prior_physical_safe_envelope",
+        "known-safe self-contact envelope identity changed",
+    )
+    physical_evidence = specification.get("physical_evidence") or {}
+    evidence_public: dict[str, Any] = {}
+    for label in ("packet", "execution_receipt"):
+        evidence_binding = physical_evidence.get(label) or {}
+        evidence_path = Path(str(evidence_binding.get("path") or ""))
+        if not evidence_path.is_absolute():
+            evidence_path = Path(__file__).resolve().parents[2] / evidence_path
+        evidence_path = evidence_path.resolve()
+        expected_sha256 = str(evidence_binding.get("sha256") or "")
+        _require(
+            evidence_path.is_file()
+            and len(expected_sha256) == 64
+            and _sha256(evidence_path) == expected_sha256,
+            f"known-safe self-contact {label} evidence changed",
+        )
+        evidence_public[label] = {
+            "path": str(evidence_path),
+            "sha256": expected_sha256,
+        }
+    receipt = _read_json(
+        Path(evidence_public["execution_receipt"]["path"]),
+        "known-safe self-contact execution receipt",
+    )
+    _require(
+        receipt.get("status")
+        == physical_evidence.get("execution_status")
+        == "completed_wrist_view_reposition_stage"
+        and receipt.get("physical_follower_torque_enabled")
+        is physical_evidence.get("physical_follower_torque_enabled_at_close")
+        is False
+        and receipt.get("packet_sha256")
+        == evidence_public["packet"]["sha256"],
+        "known-safe self-contact physical evidence is not a completed torque-off run",
+    )
+
+    envelopes: dict[tuple[str, str], float] = {}
+    allowed_pairs = specification.get("allowed_pairs")
+    _require(
+        isinstance(allowed_pairs, list) and allowed_pairs,
+        "known-safe self-contact envelope has no allowed pairs",
+    )
+    public_pairs: list[dict[str, Any]] = []
+    for row in allowed_pairs:
+        bodies = row.get("bodies") if isinstance(row, Mapping) else None
+        maximum = (
+            float(row.get("maximum_penetration_m"))
+            if isinstance(row, Mapping)
+            else float("nan")
+        )
+        pair = (
+            tuple(sorted(str(body) for body in bodies))
+            if isinstance(bodies, list)
+            else ()
+        )
+        _require(
+            len(pair) == 2
+            and pair in BASELINE_SELF_CONTACT_PAIRS
+            and np.isfinite(maximum)
+            and 0.0 < maximum <= 0.0001
+            and pair not in envelopes,
+            "known-safe self-contact pair or penetration bound changed",
+        )
+        envelopes[pair] = maximum
+        public_pairs.append(
+            {
+                "bodies": list(pair),
+                "maximum_penetration_m": maximum,
+                "observed_prior_maximum_penetration_m": float(
+                    row["observed_prior_maximum_penetration_m"]
+                ),
+                "numerical_tolerance_m": float(
+                    row["numerical_tolerance_m"]
+                ),
+            }
+        )
+    return envelopes, {
+        "path": str(KNOWN_SAFE_CONTACT_ENVELOPE_PATH),
+        "sha256": _sha256(KNOWN_SAFE_CONTACT_ENVELOPE_PATH),
+        "envelope_id": specification.get("envelope_id"),
+        "candidate_manifest_sha256": expected_manifest_sha256,
+        "allowed_pairs": public_pairs,
+        "physical_evidence": evidence_public,
+    }
+
+
+def _validate_contact_pair_minimums(
+    row_pair_minimums: Mapping[tuple[str, str], float],
+    initial_pair_minimums: Mapping[tuple[str, str], float],
+    known_safe_envelopes: Mapping[tuple[str, str], float],
+) -> None:
+    effective_allowed_pairs = set(initial_pair_minimums) | set(
+        known_safe_envelopes
+    )
+    _require(
+        set(row_pair_minimums).issubset(effective_allowed_pairs),
+        "staged reposition creates a new model contact pair",
+    )
+    for pair, minimum in row_pair_minimums.items():
+        if pair in known_safe_envelopes:
+            _require(
+                minimum >= -known_safe_envelopes[pair],
+                "staged reposition exceeds a frozen known-safe "
+                "self-contact penetration envelope",
+            )
+        else:
+            _require(
+                minimum >= initial_pair_minimums[pair] - 1e-9,
+                "staged reposition worsens baseline model penetration",
+            )
+
+
 def preview_wrist_view_actions(
     stages: list[np.ndarray],
     candidate_manifest_path: Path,
@@ -560,19 +702,25 @@ def preview_wrist_view_actions(
         for name in joint_names
     ]
     _require(all(joint_id >= 0 for joint_id in joint_ids), "candidate joint is missing")
+    known_safe_envelopes, envelope_receipt = _known_safe_contact_envelopes(
+        candidate_manifest_path
+    )
 
     model_stages = [
         _physical_to_model_position(actions, candidate_config) for actions in stages
     ]
     initial_pairs: set[tuple[str, str]] | None = None
+    initial_pair_minimums: dict[tuple[str, str], float] = {}
     initial_minimum: float | None = None
     final_pairs: set[tuple[str, str]] = set()
     global_minimum: float | None = None
+    global_pair_minimums: dict[tuple[str, str], float] = {}
     stage_reports: list[dict[str, Any]] = []
     for stage_index, (physical_actions, model_actions) in enumerate(
         zip(stages, model_stages, strict=True), start=1
     ):
         stage_pairs: set[tuple[str, str]] = set()
+        stage_pair_minimums: dict[tuple[str, str], float] = {}
         stage_minimum: float | None = None
         for row_index, row in enumerate(model_actions):
             for joint_index, joint_id in enumerate(joint_ids):
@@ -581,19 +729,34 @@ def preview_wrist_view_actions(
             mujoco.mj_forward(model, data)
             row_pairs: set[tuple[str, str]] = set()
             row_distances: list[float] = []
+            row_pair_minimums: dict[tuple[str, str], float] = {}
             for contact_index in range(data.ncon):
                 contact = data.contact[contact_index]
-                row_pairs.add(_contact_pair(model, contact))
-                row_distances.append(float(contact.dist))
+                pair = _contact_pair(model, contact)
+                distance = float(contact.dist)
+                row_pairs.add(pair)
+                row_distances.append(distance)
+                row_pair_minimums[pair] = min(
+                    distance, row_pair_minimums.get(pair, distance)
+                )
             if stage_index == 1 and row_index == 0:
                 initial_pairs = row_pairs
+                initial_pair_minimums = dict(row_pair_minimums)
                 initial_minimum = min(row_distances) if row_distances else None
             _require(initial_pairs is not None, "preview initial contact was not observed")
-            _require(
-                row_pairs.issubset(initial_pairs),
-                "staged reposition creates a new model contact pair",
+            _validate_contact_pair_minimums(
+                row_pair_minimums,
+                initial_pair_minimums,
+                known_safe_envelopes,
             )
             stage_pairs.update(row_pairs)
+            for pair, minimum in row_pair_minimums.items():
+                stage_pair_minimums[pair] = min(
+                    minimum, stage_pair_minimums.get(pair, minimum)
+                )
+                global_pair_minimums[pair] = min(
+                    minimum, global_pair_minimums.get(pair, minimum)
+                )
             if row_distances:
                 row_minimum = min(row_distances)
                 stage_minimum = (
@@ -607,11 +770,6 @@ def preview_wrist_view_actions(
                     else min(global_minimum, row_minimum)
                 )
             final_pairs = row_pairs
-        if initial_minimum is not None and stage_minimum is not None:
-            _require(
-                stage_minimum >= initial_minimum - 1e-9,
-                "staged reposition worsens baseline model penetration",
-            )
         stage_reports.append(
             {
                 "stage_index": stage_index,
@@ -619,6 +777,14 @@ def preview_wrist_view_actions(
                 "sample_count": int(physical_actions.shape[0]),
                 "observed_contact_pairs": [list(pair) for pair in sorted(stage_pairs)],
                 "minimum_distance_m": stage_minimum,
+                "contact_pair_minimum_distances_m": [
+                    {"bodies": list(pair), "minimum_distance_m": minimum}
+                    for pair, minimum in sorted(stage_pair_minimums.items())
+                ],
+                "known_safe_envelope_pairs_observed": [
+                    list(pair)
+                    for pair in sorted(stage_pairs & set(known_safe_envelopes))
+                ],
                 "external_contact_pairs": [],
                 "no_new_or_worsened_kinematic_contact": True,
             }
@@ -640,6 +806,11 @@ def preview_wrist_view_actions(
         "final_contact_pairs": [list(pair) for pair in sorted(final_pairs)],
         "baseline_minimum_distance_m": initial_minimum,
         "minimum_distance_m": global_minimum,
+        "contact_pair_minimum_distances_m": [
+            {"bodies": list(pair), "minimum_distance_m": minimum}
+            for pair, minimum in sorted(global_pair_minimums.items())
+        ],
+        "known_safe_contact_envelope": envelope_receipt,
         "contact_pairs_unchanged_or_removed_only": True,
         "external_contact_pairs": [],
         "no_new_or_worsened_kinematic_contact": True,
