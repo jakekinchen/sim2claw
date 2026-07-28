@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_START_BRIDGE_REVIEW_CONTINUE_PENDING_EXECUTION_RECHECK`
+Status: `ACTIVE_V04_CAPTURE_COMPLETE_FIT_ONLY`
 
 Created: `2026-07-28`
 
@@ -243,8 +243,11 @@ Current state:
   packet v3, and fresh deterministic review SHA-256
   `b3ccca0e06549caeb13b6e520e003fd29fde00ae2e9ebab1246744444b69df94`
   returned `CONTINUE`, evidence anchor `100`, with all `13/13` gates true.
-  Physical execution remains pending an immediate committed-state, process,
-  identity, C922, torque-off, and output-path recheck.
+  Execution-v2 completed the one reviewed no-contact acquisition-v2
+  transaction. All `716 + 2596` exact rows executed byte-identically, all ten
+  targets were captured with zero C922 drops, and torque-off cleanup passed.
+  Fit-only annotation and candidate freeze are active; the four heldouts remain
+  sealed and forbidden.
 - Counted actions do not exist.
 
 Completed:
@@ -534,9 +537,9 @@ Blockers:
 
 Next action:
 
-- Commit and push this review-binding transition, perform the immediate
-  pre-motion recheck, announce the exact authority packet, then execute the
-  single no-contact acquisition-v2 transaction once through packet v3.
+- Annotate only the six fit images using the frozen feature protocol, fit and
+  independently review the bounded rigid robot-to-board candidate, then commit
+  its family/hash and decision before authorizing a one-time heldout open.
 
 Attempt ledger:
 
@@ -1252,3 +1255,39 @@ commanded no motion, opened no held-out, and consumed no registration
 transaction or task attempt. Physical execution is authorized only after this
 transition is committed/pushed and the same live gates are rechecked
 immediately.
+
+### V04 acquisition-v2 capture complete / fit-only start — 2026-07-28
+
+The exact committed packet-v3 command completed successfully in
+`168.487068 s`. Immutable execution receipt
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/execution-v2/execution_receipt.json`,
+SHA-256
+`ce0b1e294c14c1d18a3ceace413dbd2b908bfd3d921474158fa80f0366cd8ae7`,
+records proof class
+`physical_rgb_no_contact_registration_observation_only`.
+
+- Source egress completed `716/716` rows with planned/executed action SHA-256
+  `a2536181add1aaf901aac5b94929a5a7117974e571354a68abd94b3a361d4bab`.
+- Capture/return completed `2596/2596` rows with planned/executed action
+  SHA-256
+  `06d531afba308c3582cb67972c735bf963c6cae35df365325e36139ba8eac1c2`.
+- Requested, mapped, and sent bytes are identical; there was no clamp, rate
+  limit, correction, retry, assistance, contact, stall, or executor error.
+- The time-only bridge emitted zero commands, measured `0.057937 s`, and saw
+  `0.118765 deg` post-hold-to-row-zero delta.
+- Ten target captures and the return are enclosed by eleven sequential C922
+  sessions with zero drops. Maximum scored-hold error is `1.538462 deg`.
+- Fit manifest SHA-256 is
+  `f338f3598007c83db70f5b3d9e52bd0ad8dc741986b6270cbe339dba75be91ee`;
+  sealed heldout manifest SHA-256 is
+  `8ffb94790cbf0120c92bfd54a90f128468b022eac0ec57c0249f6a4d403af627`.
+- Final and independent fresh preflight prove torque false and no device
+  configuration rewrite. Camera/gateway processes and serial ownership are
+  closed.
+
+This is no-contact registration observation, not task action or transfer.
+Heldout open count remains `0`; REAL->SIM and SIM->REAL remain `0/0`; counted
+task attempts remain `0/10`. V04 remains the only `IN_PROGRESS` card and now
+authorizes fit-image annotation only. The fit process must not read the
+execution receipt's heldout target mapping, sealed heldout directory, or
+heldout manifest contents before candidate freeze.
