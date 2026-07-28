@@ -21,12 +21,25 @@ PACKET = (
     / "configs/hardware/"
     "bidirectional_pawn_push_v2_registration_capture_v1.json"
 )
+RECOVERY_PACKET = (
+    ROOT
+    / "configs/hardware/"
+    "bidirectional_pawn_push_v2_registration_capture_v2.json"
+)
 START = [
     -11.164835164835164,
     -71.38461538461539,
     99.47252747252747,
     -25.714285714285715,
     -102.81318681318682,
+    2.494061757719715,
+]
+RECOVERY_START = [
+    -8.263736263736265,
+    -106.1978021978022,
+    99.20879120879121,
+    -94.02197802197803,
+    -125.31868131868131,
     2.494061757719715,
 ]
 
@@ -59,6 +72,12 @@ def _preflight() -> dict[str, object]:
         "physical_follower_torque_enabled": False,
         "device_configuration_rewritten": False,
     }
+
+
+def _recovery_preflight() -> dict[str, object]:
+    result = _preflight()
+    result["follower_start_degrees"] = RECOVERY_START
+    return result
 
 
 class _Clock:
@@ -210,6 +229,27 @@ def test_review_is_motion_free_and_binds_exact_arrays(tmp_path: Path) -> None:
         1541,
         6,
     ]
+
+
+def test_recovery_review_binds_ten_new_targets_and_exact_arrays(
+    tmp_path: Path,
+) -> None:
+    result = review_capture_plan(
+        packet_path=RECOVERY_PACKET,
+        review_path=tmp_path / "review-v2.json",
+        preflight_fn=_recovery_preflight,
+    )
+    assert result["reviewer"]["decision"] == "CONTINUE"
+    assert all(result["gates"].values())
+    assert len(result["capture_slices"]) == 10
+    assert result["exact_setup_arrays"]["source_egress"]["shape"] == [716, 6]
+    assert result["exact_setup_arrays"]["capture_and_return"]["shape"] == [
+        2596,
+        6,
+    ]
+    assert result["physical_motion_commanded"] is False
+    assert result["camera_opened"] is False
+    assert result["gateway_constructed"] is False
 
 
 def test_execute_captures_eight_targets_and_closes_torque(

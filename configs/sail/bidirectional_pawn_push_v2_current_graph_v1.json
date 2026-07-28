@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "cf444ffc2b01e4ab8cc55af3d5ffda8b718f346b0c8884e9e4391bbcaed5be45",
+      "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -136,6 +136,16 @@
         "proof_class": "cpu_fp64_static_registration_route_preview_only"
       }
     },
+    "v04_recap_packet": {
+      "path": "configs/hardware/bidirectional_pawn_push_v2_registration_capture_v2.json",
+      "sha256": "f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41",
+      "proof_class": "prospective_camera_enclosed_no_contact_registration_motion_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture.v1",
+        "status": "frozen_before_registration_motion",
+        "proof_class": "prospective_camera_enclosed_no_contact_registration_motion_only"
+      }
+    },
     "simulator_candidate": {
       "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
       "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
@@ -172,7 +182,7 @@
       "id": "session:bidirectional-pawn-push-v2",
       "type": "session",
       "label": "Bidirectional pawn-push v2",
-      "status": "active_v04_recapture_static_gate_passed",
+      "status": "active_v04_recapture_packet_ready",
       "source_binding": "queue",
       "data": {
         "counted_attempts": 0,
@@ -391,6 +401,21 @@
       }
     },
     {
+      "id": "checkpoint:v04-recapture-packet",
+      "type": "checkpoint",
+      "label": "V04 replacement capture packet",
+      "status": "frozen_pending_commit_and_live_review",
+      "source_binding": "v04_recap_packet",
+      "data": {
+        "packet_sha256": "f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41",
+        "capture_target_count": 10,
+        "counted_task_attempts": 0,
+        "camera_open_authorized": false,
+        "gateway_construction_authorized": false,
+        "physical_motion_authorized": false
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -549,6 +574,16 @@
       }
     },
     {
+      "source": "checkpoint:v04-recapture-packet",
+      "type": "generated-from",
+      "target": "checkpoint:v04-recapture-static-gate",
+      "metadata": {
+        "packet_frozen": true,
+        "live_review_pending": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -654,14 +689,23 @@
       "node_ids_added": [
         "checkpoint:v04-recapture-static-gate"
       ]
+    },
+    {
+      "revision": 7,
+      "event_id": "V04_CAPTURE_PACKET_FREEZE",
+      "status": "replacement_capture_packet_frozen",
+      "source_binding": "v04_recap_packet",
+      "node_ids_added": [
+        "checkpoint:v04-recapture-packet"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v04-recapture-static-gate",
+    "node_id": "checkpoint:v04-recapture-packet",
     "milestone_id": "V04",
-    "status": "active_recapture_static_gate_passed",
-    "queue_status": "ACTIVE_V04_RECAPTURE_STATIC_GATE_PASSED",
-    "resume_action": "commit_exact_inputs_then_live_preflight_and_capture",
+    "status": "active_recapture_packet_ready",
+    "queue_status": "ACTIVE_V04_RECAPTURE_PACKET_READY",
+    "resume_action": "commit_packet_then_live_review_and_capture",
     "resume_authorized": true,
     "heldout_open_count": 0,
     "counted_task_attempts": 0

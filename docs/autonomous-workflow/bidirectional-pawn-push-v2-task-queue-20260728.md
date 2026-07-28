@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_RECAPTURE_STATIC_GATE_PASSED`
+Status: `ACTIVE_V04_RECAPTURE_PACKET_READY`
 
 Created: `2026-07-28`
 
@@ -158,7 +158,7 @@ denominators before any counted action is compiled.
 | V01 | `DONE` | Preregister a new camera-owned registration acquisition, board-plane metric model, fit/held-out split, and sealed-input rules. | Versioned contract declares visible board features, camera model inputs, gripper reference, fit targets, held-out targets, pixel/reprojection sanity gate, `<25 mm` metric gate, hashes, and recapture fallback before capture. | Contract `configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v1.json`, SHA-256 `f345d9ff55ed38b8509dac061af7d0ce7aeaefb59cb78f92ba4460b5dbe82024`. Four fit targets and four held-out targets are disjoint and prospectively frozen; v1 B7 reuse forbidden; C922 owns board/task; D405 depth omitted; normalized zero-distortion `3x4` DLT family and pixel/annotation/`<25 mm` gates fixed; held-out single-open and versioned recapture fallback fixed. Validation attempt 1 failed only on a mistyped C922-contract digest before freeze; corrected to the live digest. Attempt 2: `3 passed in 0.04s`. No capture or motion. |
 | V02 | `DONE` | Prove hover poses and visibility using CPU/fp64 simulation and static camera projections/images. | Every proposed target passes joint limits, self/table/board/pawn clearance, no-contact height, slow-path preview, C922 field of view, simultaneous gripper/board visibility, and guaranteed return/torque-off logic. Reviewer decision `CONTINUE`. No motion. | Route `configs/hardware/bidirectional_pawn_push_v2_registration_route_v1.json`, SHA-256 `b7464a34a6abe744d778323a7a017f5ab8f40d6f6556b7691f5944e1bbd52d8e`. Final receipt `runs/bidirectional-pawn-push-v2/20260728-v02-static-route-v2/evaluation.json`, SHA-256 `53c6b4dec93cae8f41e9bc24a106fcc0883d3c11d97c887aec3c630491bdbcf6`; deterministic reviewer `CONTINUE`, evidence anchor `100`, all `11/11` gates true. Fresh torque-off start matched the frozen rebase exactly. Source egress: `92` float64 rows, `4.55 s`, hash `9a3ccff7ba26e94f2cce2963480e33a2999b07efa16777edc73530a8fa28e142`. Capture/return: `1541` float64 rows, `77.0 s`, hash `6d05f2471ec0ca8f83beadbc9bbfcc4b6d8ae4c679198414fad600bf29a1dbdf`. Maximum slew `2.999531 deg/s`; minimum jaw clearance `66.282 mm` to any pawn and `93.975 mm` to board; C922 proxy minimum image margin `206.268 px`. All eight camera rays first hit the intended moving jaw `5.865-7.045 mm` before the registered midpoint, within the frozen `15 mm` surface-offset gate. No motion occurred; no camera opened, gateway was constructed, or attempt was counted. |
 | V03 | `DONE` | Capture the prospective fit and held-out registration observations through the reviewed gateway. | Cameras precede motion; only approved slow no-contact paths run; requested/mapped/sent and tracking receipts close; every planned target is captured; torque false on exit; input hashes freeze; no pawn contact. | Execution receipt `runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/execution_receipt.json`, SHA-256 `a1692a5b87d88b7b2c37151159660546d9104c9b3973de85f0801de0d9e793a3`, status `completed_no_contact_registration_capture`, proof class `physical_rgb_no_contact_registration_observation_only`. All exact `92 + 1541` requested/mapped/sent rows are byte-identical to the reviewed arrays; all eight scored holds pass; nine C922 sessions have zero drops; fit and sealed-heldout manifests hash to `933f121a60b741d5a555b865caccf8fedce1ea0b6accd0e007cd42f77eafa8a5` and `6fd932ddf33c2e5aae87680e141eb1a41f05feb19196eac2fd2343ad3f5a18d6`; final preflight proves torque false. No pawn contact or task attempt. |
-| V04 | `IN_PROGRESS` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Acquisition-v1 fit attempt 1 remains rejected before held-out: receipt `runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1/fit_receipt.json`, SHA-256 `9b6378fc32a3f22fc6c9c6379a86df2a96562b3c0207f07488494d68c13adedb`. Held-out open count remains `0`. Replacement acquisition v2 is prospectively frozen at `configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v2.json`, SHA-256 `b308ef3d24e37893e13c6b28c00f338374ee2a21d84a464c9ccec073bd0b5483`; route v2 SHA-256 `40460c83750f8ea35670498758a5ad5b0e52a31351c957106f37154df6546756`. Static receipt `runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/static-preview-v1/evaluation.json`, SHA-256 `37b73f61d8a1c2124989d42bac16b8fd532ee0f15c385798ac5feed2a6b597e5`, has deterministic reviewer `CONTINUE` and all `11/11` gates true. No camera, gateway, motion, pawn contact, held-out open, or task attempt occurred. |
+| V04 | `IN_PROGRESS` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Acquisition-v1 fit attempt 1 remains rejected before held-out: receipt `runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1/fit_receipt.json`, SHA-256 `9b6378fc32a3f22fc6c9c6379a86df2a96562b3c0207f07488494d68c13adedb`. Held-out open count remains `0`. Replacement acquisition v2 is prospectively frozen at `configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v2.json`, SHA-256 `b308ef3d24e37893e13c6b28c00f338374ee2a21d84a464c9ccec073bd0b5483`; route v2 SHA-256 `40460c83750f8ea35670498758a5ad5b0e52a31351c957106f37154df6546756`. Static receipt `runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/static-preview-v1/evaluation.json`, SHA-256 `37b73f61d8a1c2124989d42bac16b8fd532ee0f15c385798ac5feed2a6b597e5`, has deterministic reviewer `CONTINUE` and all `11/11` gates true. Capture packet v2 SHA-256 `f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41` binds the exact arrays, C922 identity/mount, one-use transaction, no-contact authority, stop rules, and torque-off cleanup. No camera, gateway, motion, pawn contact, held-out open, or task attempt occurred. |
 | V05 | `PENDING` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Pending. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
@@ -202,9 +202,11 @@ Current state:
   replacement-family recovery. Acquisition-v1 held-out remains prohibited.
   Acquisition-v2, its new six-fit/four-heldout split, rigid candidate family,
   and exact no-contact route are frozen; the CPU/fp64 static reviewer returned
-  `CONTINUE`. Camera open, gateway construction, and robot motion remain
-  unauthorized until these exact inputs are committed and a fresh live
-  identity/torque/process preflight passes.
+  `CONTINUE`. Commit `f205bcbb097813a0c9050624e3895c9f2065aecb`
+  binds and publishes those exact inputs. Capture packet v2 is now frozen but
+  camera open, gateway construction, and robot motion remain unauthorized
+  until the packet implementation is committed and a fresh deterministic live
+  identity/torque/process review returns `CONTINUE`.
 - Counted actions do not exist.
 
 Completed:
@@ -442,6 +444,14 @@ Verification evidence:
   moving-tip ray first hits `left_moving_jaw_so101_v1`; maximum observed
   endpoint surface offset is `15.710085 mm` under the geometry-derived
   `20 mm` cap. The reviewer decision is `CONTINUE`, evidence anchor `100`.
+- Replacement capture packet SHA-256:
+  `f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41`.
+  It binds the exact `716 + 2596` setup arrays, all ten capture slices, C922
+  exact-mode contract and source, fixed-mount token, one sequential owner
+  session per target plus return, maximum `2 deg` hold tracking error, exact
+  requested/mapped/sent bytes, stop rules, one-use registration transaction,
+  and unconditional torque-off. It grants no pawn contact, counted task,
+  policy, success, transfer, or training authority.
 
 Remaining:
 
@@ -459,8 +469,8 @@ Blockers:
 
 Next action:
 
-- Commit the exact acquisition-v2 contract, route, evaluator code, tests,
-  queue, and graph. Then run the fresh live preflight and, only if every
+- Commit the exact capture packet, generalized ten-target executor, tests,
+  queue, and graph. Then run the fresh live preflight/reviewer and, only if every
   frozen identity/safety gate still passes, execute the one no-contact
   replacement registration transaction. Do not open acquisition-v1 held-out.
 
@@ -931,3 +941,49 @@ OPENCV_OPENCL_RUNTIME=disabled uv run --offline pytest -q \
 The repository runtime does not contain `ruff`; the optional lint invocation
 exited before running with `Failed to spawn: ruff / No such file or
 directory`. This does not change any hardware or evidence authority.
+
+### V04 replacement capture packet freeze — 2026-07-28
+
+Scoped commit `f205bcbb097813a0c9050624e3895c9f2065aecb` was pushed to
+`origin/codex/geometric-microtransfer-20260727` and binds the replacement
+acquisition, route, static evaluator, tests, queue, and graph. The only
+remaining worktree paths after that push were the six preserved unrelated
+untracked paths.
+
+Capture packet
+`configs/hardware/bidirectional_pawn_push_v2_registration_capture_v2.json`,
+SHA-256
+`f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41`,
+was then prospectively frozen without opening a camera or gateway. It binds
+the committed acquisition/route identities, immutable static receipt,
+`716 + 2596` exact float64 setup rows, C922 exact-mode identity and fixed
+mount, ten sequential target sessions plus return, tracking/stall/camera
+stops, no-contact authority, one-use transaction, and unconditional
+torque-off. The executor now derives the capture count from the frozen split
+and preserves each replacement held-out `opaque_id`; the historical
+eight-target packet remains supported and unchanged.
+
+Focused success, forced-stop cleanup, historical-packet, replacement-packet,
+route, acquisition, and graph validation passed:
+
+```text
+OPENCV_OPENCL_RUNTIME=disabled uv run --offline pytest -q \
+  tests/test_bidirectional_registration_v2_capture.py \
+  tests/test_bidirectional_registration_v2_route.py \
+  tests/test_bidirectional_pawn_push_v2_registration_acquisition_v2.py \
+  tests/test_current_campaign_graph.py
+.............                                                            [100%]
+13 passed in 9.16s
+```
+
+No camera opened, no gateway was constructed, no motion occurred, held-out
+open count remains `0`, and counted attempts remain `0/10`. The packet still
+requires a newly emitted deterministic live review after its own scoped
+commit; authority remains false until that review passes.
+
+After the packet tests, the external C922-calibration owner advanced local
+HEAD to `afd0f85` and independently committed four of the formerly untracked
+calibration paths plus its run log. This campaign did not modify or stage
+them. `output/` remains ignored/present and `tools/build_fiducial_sheet.py`
+remains the sole visible unrelated untracked path. The packet changes remain
+scoped and are based on top of that external commit.

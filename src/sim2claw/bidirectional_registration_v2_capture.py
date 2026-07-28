@@ -159,7 +159,7 @@ def _load_array(binding: Mapping[str, Any]) -> tuple[Path, np.ndarray]:
 def _validate_static_receipt(
     packet: Mapping[str, Any],
 ) -> tuple[Path, dict[str, Any]]:
-    binding = packet["v02_static_receipt"]
+    binding = packet.get("static_receipt") or packet["v02_static_receipt"]
     path = _bound(binding)
     receipt = _json(path)
     _require(
@@ -172,7 +172,7 @@ def _validate_static_receipt(
         and receipt.get("physical_motion_commanded") is False
         and receipt.get("camera_opened") is False
         and receipt.get("gateway_constructed") is False,
-        "V02 static authority did not pass or widened",
+        "static route authority did not pass or widened",
     )
     return path, receipt
 
@@ -213,7 +213,7 @@ def review_capture_plan(
     review_path: Path,
     preflight_fn: Callable[[], dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Emit the final deterministic, motion-free V03 reviewer decision."""
+    """Emit the final deterministic, motion-free capture reviewer decision."""
 
     packet, acquisition, route, _ = load_packet(packet_path)
     static_path, static = _validate_static_receipt(packet)
@@ -255,7 +255,11 @@ def review_capture_plan(
         and np.all(egress <= upper)
         and np.all(main >= lower)
         and np.all(main <= upper)
-        and len(compiled["capture_slices"]) == 8
+        and len(compiled["capture_slices"])
+        == sum(
+            len(acquisition["split"][name])
+            for name in ("fit_targets", "heldout_targets")
+        )
         and safety["torque_off_every_exit"] is True
         and safety["pawn_contact_forbidden"] is True,
         "fresh pre-motion safety binding failed",
@@ -270,8 +274,8 @@ def review_capture_plan(
         "fresh_follower_start_degrees": start.tolist(),
         "fresh_calibrated_minimum": lower.tolist(),
         "fresh_calibrated_maximum": upper.tolist(),
-        "v02_static_receipt_path": str(static_path),
-        "v02_static_receipt_sha256": sha256_file(static_path),
+        "static_receipt_path": str(static_path),
+        "static_receipt_sha256": sha256_file(static_path),
         "exact_setup_arrays": {
             "source_egress": {
                 "path": str(egress_path),
@@ -294,12 +298,12 @@ def review_capture_plan(
         "gates": {
             "fresh_torque_off_preflight": True,
             "fresh_start_inside_frozen_rebase": True,
-            "v02_reviewer_continue": True,
-            "all_v02_gates": True,
+            "static_reviewer_continue": True,
+            "all_static_gates": True,
             "exact_arrays_match_fresh_compile": True,
             "exact_arrays_match_v02_receipt": True,
             "fresh_joint_limits": True,
-            "eight_capture_slices": True,
+            "capture_slice_count_matches_frozen_split": True,
             "camera_contract_and_source_bound": True,
             "camera_before_motion_contract": True,
             "torque_off_every_exit_contract": True,
@@ -342,7 +346,7 @@ def _validate_review(
         and review.get("physical_motion_commanded") is False
         and review.get("camera_opened") is False
         and review.get("gateway_constructed") is False,
-        "V03 pre-motion review did not admit execution",
+        "pre-motion capture review did not admit execution",
     )
     return review
 
@@ -527,7 +531,7 @@ def execute_registration_capture(
         "fresh execution arrays changed or exceed limits",
     )
     output_root = output_root.resolve()
-    _require(not output_root.exists(), "refusing to overwrite V03 execution")
+    _require(not output_root.exists(), "refusing to overwrite capture execution")
     output_root.mkdir(parents=True)
     telemetry_path = output_root / "joint_samples.jsonl"
     telemetry_path.open("x").close()
@@ -551,12 +555,11 @@ def execute_registration_capture(
         }
     )
     heldout_ids = {
-        target_id: f"heldout-{index:02d}"
-        for index, target_id in enumerate(
-            [
-                item["target_id"]
-                for item in acquisition["split"]["heldout_targets"]
-            ],
+        item["target_id"]: str(
+            item.get("opaque_id") or f"heldout-{index:02d}"
+        )
+        for index, item in enumerate(
+            acquisition["split"]["heldout_targets"],
             start=1,
         )
     }
@@ -795,7 +798,7 @@ def execute_registration_capture(
         _require(
             np.array_equal(np.asarray(executed_egress, dtype="<f8"), egress)
             and np.array_equal(np.asarray(executed_main, dtype="<f8"), main)
-            and len(target_records) == 8,
+            and len(target_records) == len(slices),
             "executed registration rows or capture count changed",
         )
     except Exception as caught:
@@ -913,7 +916,7 @@ def execute_registration_capture(
             and len(executed_main) == len(main)
         ),
         "all_target_scored_holds_pass_tracking": bool(
-            len(target_records) == 8
+            len(target_records) == len(compiled["capture_slices"])
             and all(
                 row["maximum_absolute_tracking_error"]
                 <= float(safety["joint_hold_tracking_maximum_degrees"])

@@ -3,11 +3,11 @@
     "counted_task_attempts": 0,
     "heldout_open_count": 0,
     "milestone_id": "V04",
-    "node_id": "checkpoint:v04-recapture-static-gate",
-    "queue_status": "ACTIVE_V04_RECAPTURE_STATIC_GATE_PASSED",
-    "resume_action": "commit_exact_inputs_then_live_preflight_and_capture",
+    "node_id": "checkpoint:v04-recapture-packet",
+    "queue_status": "ACTIVE_V04_RECAPTURE_PACKET_READY",
+    "resume_action": "commit_packet_then_live_review_and_capture",
     "resume_authorized": true,
-    "status": "active_recapture_static_gate_passed"
+    "status": "active_recapture_packet_ready"
   },
   "authority": {
     "camera_open": false,
@@ -32,23 +32,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 25,
+    "edges": 26,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 1,
       "evaluated-on": 1,
       "fitted-on": 3,
-      "generated-from": 11,
+      "generated-from": 12,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 1,
-    "nodes": 24,
+    "nodes": 25,
     "nodes_by_type": {
       "candidate": 1,
-      "checkpoint": 3,
+      "checkpoint": 4,
       "context": 1,
       "counterexample": 1,
       "dataset": 1,
@@ -145,6 +145,16 @@
       },
       "source": "checkpoint:v04-owner-resume",
       "target": "checkpoint:v04-owner-integration-barrier",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "live_review_pending": true,
+        "packet_frozen": true,
+        "physical_motion": false
+      },
+      "source": "checkpoint:v04-recapture-packet",
+      "target": "checkpoint:v04-recapture-static-gate",
       "type": "generated-from"
     },
     {
@@ -286,7 +296,7 @@
     }
   ],
   "generated_at": "2026-07-28T07:52:00-05:00",
-  "graph_digest": "403481ca6bfe943c1a48c7d972aa5b13ad49c235fd5256a6dd1df062dba7472c",
+  "graph_digest": "52494885c469d46e132076418c6756f27a71214fca6c2954dda3cc67d7f5bd24",
   "node_types": [
     "workcell",
     "session",
@@ -341,7 +351,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "cf444ffc2b01e4ab8cc55af3d5ffda8b718f346b0c8884e9e4391bbcaed5be45"
+        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -359,7 +369,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "cf444ffc2b01e4ab8cc55af3d5ffda8b718f346b0c8884e9e4391bbcaed5be45"
+        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -380,9 +390,36 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "cf444ffc2b01e4ab8cc55af3d5ffda8b718f346b0c8884e9e4391bbcaed5be45"
+        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
       },
       "status": "active_versioned_recapture_design",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "camera_open_authorized": false,
+        "capture_target_count": 10,
+        "counted_task_attempts": 0,
+        "gateway_construction_authorized": false,
+        "packet_sha256": "f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41",
+        "physical_motion_authorized": false,
+        "source_binding_id": "v04_recap_packet"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v04-recapture-packet",
+      "label": "V04 replacement capture packet",
+      "proof_class": "prospective_camera_enclosed_no_contact_registration_motion_only",
+      "source": {
+        "path": "configs/hardware/bidirectional_pawn_push_v2_registration_capture_v2.json",
+        "payload_contract": {
+          "proof_class": "prospective_camera_enclosed_no_contact_registration_motion_only",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture.v1",
+          "status": "frozen_before_registration_motion"
+        },
+        "proof_class": "prospective_camera_enclosed_no_contact_registration_motion_only",
+        "sha256": "f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41"
+      },
+      "status": "frozen_pending_commit_and_live_review",
       "type": "checkpoint"
     },
     {
@@ -605,7 +642,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "cf444ffc2b01e4ab8cc55af3d5ffda8b718f346b0c8884e9e4391bbcaed5be45"
+        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -665,7 +702,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "cf444ffc2b01e4ab8cc55af3d5ffda8b718f346b0c8884e9e4391bbcaed5be45"
+        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -683,7 +720,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "cf444ffc2b01e4ab8cc55af3d5ffda8b718f346b0c8884e9e4391bbcaed5be45"
+        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -751,9 +788,9 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "cf444ffc2b01e4ab8cc55af3d5ffda8b718f346b0c8884e9e4391bbcaed5be45"
+        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
       },
-      "status": "active_v04_recapture_static_gate_passed",
+      "status": "active_v04_recapture_packet_ready",
       "type": "session"
     },
     {
@@ -898,7 +935,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "cf444ffc2b01e4ab8cc55af3d5ffda8b718f346b0c8884e9e4391bbcaed5be45",
+      "source_sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -910,6 +947,16 @@
       "source_binding": "v04_recap_static",
       "source_sha256": "37b73f61d8a1c2124989d42bac16b8fd532ee0f15c385798ac5feed2a6b597e5",
       "status": "replacement_contract_and_static_route_passed"
+    },
+    {
+      "event_id": "V04_CAPTURE_PACKET_FREEZE",
+      "node_ids_added": [
+        "checkpoint:v04-recapture-packet"
+      ],
+      "revision": 7,
+      "source_binding": "v04_recap_packet",
+      "source_sha256": "f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41",
+      "status": "replacement_capture_packet_frozen"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -918,7 +965,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "cf444ffc2b01e4ab8cc55af3d5ffda8b718f346b0c8884e9e4391bbcaed5be45"
+      "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
     },
     {
       "id": "simulator_candidate",
@@ -1006,6 +1053,17 @@
       },
       "proof_class": "prospective_rgb_registration_recovery_contract_only",
       "sha256": "b308ef3d24e37893e13c6b28c00f338374ee2a21d84a464c9ccec073bd0b5483"
+    },
+    {
+      "id": "v04_recap_packet",
+      "path": "configs/hardware/bidirectional_pawn_push_v2_registration_capture_v2.json",
+      "payload_contract": {
+        "proof_class": "prospective_camera_enclosed_no_contact_registration_motion_only",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture.v1",
+        "status": "frozen_before_registration_motion"
+      },
+      "proof_class": "prospective_camera_enclosed_no_contact_registration_motion_only",
+      "sha256": "f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41"
     },
     {
       "id": "v04_recap_route",
