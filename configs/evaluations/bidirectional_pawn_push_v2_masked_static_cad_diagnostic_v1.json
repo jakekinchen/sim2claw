@@ -1,0 +1,133 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_masked_static_cad_diagnostic.v1",
+  "diagnostic_id": "bidirectional-pawn-push-v2-masked-static-cad-diagnostic-v1",
+  "status": "frozen_fit_only_read_only_diagnostic",
+  "proof_class": "fit_only_masked_static_and_compiled_transform_diagnostic",
+  "inputs": {
+    "acquisition_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v3.json",
+      "sha256": "26f470db40ac666b26b26b4b0bcf3096fbb1a2e4ff9f47173f4f30e2e5fcdbfe"
+    },
+    "route": {
+      "path": "configs/hardware/bidirectional_pawn_push_v2_registration_route_v3.json",
+      "sha256": "779bddd3feeac475d380a564e3be48a728334a885e30b85c975c45ae5ab4b780"
+    },
+    "capture_packet": {
+      "path": "configs/hardware/bidirectional_pawn_push_v2_registration_capture_v4.json",
+      "sha256": "14d95c677e5cbfb574c9a4130d921c1e63e6c2c8d5d5e96e91240f13972b9145"
+    },
+    "static_review": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/static-review-v3/evaluation.json",
+      "sha256": "46efba3a137e9af3e69da5ea4ab0782675c5b004aba72f79fa3d3f806d808d78"
+    },
+    "execution_receipt_identity_only": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/execution_receipt.json",
+      "sha256": "6fe2373d4f776c48c8255cc26234ef2301fba3190af9d3dead8204dc7eb8fd0b",
+      "content_read_forbidden": true
+    },
+    "fit_manifest": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit_manifest.json",
+      "sha256": "341db2264aa3ee486c6cdc4b61330dabe8b376f3a848aea87b550c4aa0c47537"
+    },
+    "joint_samples": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/joint_samples.jsonl",
+      "sha256": "1a17fe3fc5d26af121c7764355ee5d6b28cfa9e1e10cf4883fac18de722463a7"
+    },
+    "compiled_candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "rejected_fit_only_camera_diagnostic": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1/candidate.json",
+      "sha256": "ea9caa941517956ca6115d71137ead7456d72548ee4fcb8acbcd8ee1e4f92dab",
+      "admission_authority": false
+    }
+  },
+  "fit_targets": [
+    {
+      "target_id": "v2r3-fit-panm19-liftm85",
+      "image_path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit/v2r3-fit-panm19-liftm85/selected.png",
+      "image_sha256": "993b70383c4811859c16619bafaee116ddc66033f747fbd68167c58172067387",
+      "capture_receipt_path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit/v2r3-fit-panm19-liftm85/capture_receipt.json",
+      "capture_receipt_sha256": "17837455b6c2068c4ebf5dad6755602489a6689e9b75b2de172e52b04f3aadf1",
+      "pass_a_tip_pixels": [[205.0, 138.0], [235.0, 150.0]],
+      "pass_b_tip_pixels": [[206.0, 139.0], [235.0, 149.0]]
+    },
+    {
+      "target_id": "v2r3-fit-panm19-liftm90",
+      "image_path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit/v2r3-fit-panm19-liftm90/selected.png",
+      "image_sha256": "a57a2da6303ce4fd5a45bcb5c9021893e71270919f6e567d4e03209e887e2676",
+      "capture_receipt_path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit/v2r3-fit-panm19-liftm90/capture_receipt.json",
+      "capture_receipt_sha256": "553ad0c095b00e7fa821a035769d7ef1f67af9b7ea6c2a9389cb6808fd03e605",
+      "pass_a_tip_pixels": [[205.0, 129.0], [236.0, 142.0]],
+      "pass_b_tip_pixels": [[205.0, 130.0], [237.0, 142.0]]
+    },
+    {
+      "target_id": "v2r3-fit-panm05-liftm90",
+      "image_path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit/v2r3-fit-panm05-liftm90/selected.png",
+      "image_sha256": "00b073055efc76b1907e53ff2618315e2f4161bfa7ae07e02866cb1dc67c8bc1",
+      "capture_receipt_path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit/v2r3-fit-panm05-liftm90/capture_receipt.json",
+      "capture_receipt_sha256": "cc2ffcfaf132e34764fc9f97e45bcb7df5274f0d46341157fc03fbc7873124f6",
+      "pass_a_tip_pixels": [[286.0, 104.0], [320.0, 116.0]],
+      "pass_b_tip_pixels": [[286.0, 105.0], [319.0, 116.0]]
+    },
+    {
+      "target_id": "v2r3-fit-panm05-liftm85",
+      "image_path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit/v2r3-fit-panm05-liftm85/selected.png",
+      "image_sha256": "384c1651a6b3c4fdd0aeef7c42a795b99ab2bf6e17a84cec73a1f81df77895b8",
+      "capture_receipt_path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit/v2r3-fit-panm05-liftm85/capture_receipt.json",
+      "capture_receipt_sha256": "ccf9fe6ac484afdb77a71d8bf31ee097fb81e84edb56ae42007b1a0dbc3c611b",
+      "pass_a_tip_pixels": [[286.0, 108.0], [323.0, 122.0]],
+      "pass_b_tip_pixels": [[287.0, 108.0], [323.0, 121.0]]
+    }
+  ],
+  "static_scene_test": {
+    "reference_target_id": "v2r3-fit-panm05-liftm85",
+    "mask_rectangle_xyxy": [20, 80, 180, 340],
+    "maximum_corners": 120,
+    "quality_level": 0.02,
+    "minimum_distance_px": 7.0,
+    "lk_window_px": 21,
+    "ransac_reprojection_threshold_px": 0.75
+  },
+  "target_09_settle_test": {
+    "array_id": "capture_and_return",
+    "pre_score_first_row": 802,
+    "frozen_score_first_row": 812,
+    "last_available_row": 851,
+    "tracking_gate_degrees": 2.0,
+    "minimum_stationary_hold_seconds": 2.0
+  },
+  "gates": {
+    "maximum_tip_annotation_disagreement_px": 2.0,
+    "maximum_static_postwarp_rms_px": 0.5,
+    "maximum_static_postwarp_max_px": 1.0,
+    "maximum_translation_corrected_compiled_midpoint_rms_px": 8.0,
+    "maximum_pairwise_compiled_delta_error_px": 15.0
+  },
+  "decision_policy": {
+    "schedule_fault_requires": [
+      "first frozen score row exceeds unchanged 2 degree gate",
+      "immediately subsequent observed row is within unchanged 2 degree gate",
+      "frozen score tail spans less than the required 2 seconds"
+    ],
+    "compiled_transform_is_coherent_only_if_all_compiled_transform_gates_pass": true,
+    "prospective_action": "create a new versioned registration acquisition; preserve the visible wrist family and 2 degree gate; enforce a monotonic-time >=2.0 second score window after tracking first enters gate; retain a prospective shared rigid correction candidate rather than admitting the rejected v1 camera"
+  },
+  "sealing": {
+    "fit_only": true,
+    "forbidden_path_substring": "heldout",
+    "heldout_open_count": 0,
+    "heldout_content_read": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway_construction": false,
+    "physical_motion": false,
+    "heldout_open": false,
+    "candidate_admission": false,
+    "counted_task_action": false,
+    "task_success": false,
+    "bidirectional_transfer": false
+  }
+}

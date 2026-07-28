@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_MASKED_STATIC_SCENE_CAD_AUDIT`
+Status: `ACTIVE_V04_PROSPECTIVE_V4_TRUE_TIME_REGISTRATION_DESIGN`
 
 Created: `2026-07-28`
 
@@ -1436,3 +1436,55 @@ bounded masked-static-scene/CAD audit from the consolidated critical path.
 That audit may use fit-only completed images and existing static/CAD evidence,
 must not read heldout inputs, and grants no fit, simulator promotion, physical
 motion, task action, or transfer authority.
+
+### V04 fit-only masked-static/CAD diagnostic complete — 2026-07-28
+
+Frozen diagnostic contract
+`configs/evaluations/bidirectional_pawn_push_v2_masked_static_cad_diagnostic_v1.json`,
+SHA-256
+`26ff32aaf5d95ed5255d806a7f8ef859915280ee7ef5c9930c6e148508ce7ffa`,
+binds exactly the four completed fit images, their fit receipts, the joint
+ledger, the compiled CAD candidate, and the older rejected fit-only camera
+diagnostic. The execution receipt is hash-checked for identity but its content
+is not read. Every bound path containing `heldout` fails closed. Heldout open
+count remains `0`.
+
+Deterministic receipt
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/masked-static-cad-diagnostic-v1/receipt.json`,
+SHA-256
+`8e2bb5af0646e77dee2106e50e25fce84298b59d78e93798f05bf306c5c4c880`,
+has status `diagnostic_complete`. Both physical pink endpoints are visible and
+independently annotated in all four eligible fit images; maximum pass
+disagreement is `1.414214 px`.
+
+The masked board/background is internally stable: across the three
+reference comparisons, maximum post-homography residual is `0.267353 px` RMS
+and `0.695752 px` maximum. One frame has a `2.647810 px` median global raw
+shift, but its post-warp residual is only `0.171990 px` RMS and `0.695185 px`
+maximum. This supports a small whole-image camera shift, not moving board
+geometry inside the masked region.
+
+The target-9 stop is isolated to the scoring schedule. The first frozen score
+row was `2.021978 deg`; row `813`, only `0.003232 s` later, was
+`1.934066 deg`, and every remaining observed row stayed within the unchanged
+`2.0 deg` gate through a final `0.703297 deg` error. The frozen 40-row score
+tail spans only `1.468962 s`, failing the contract's true `>=2.0 s`
+stationary requirement even though it was labeled a two-second hold.
+
+The older rejected v1 fit-only camera does not make the current compiled
+jaw/wrist transform coherent after a best 2D translation:
+translation-corrected midpoint RMS is `13.380437 px` against the frozen
+`8 px` diagnostic gate, and maximum pairwise motion-delta error is
+`29.849916 px` against `15 px`. Because that camera has no admission
+authority, this is a targeted counterexample rather than a metric CAD verdict.
+It prevents silently treating a longer wait as sufficient registration proof.
+
+The next bounded action is prospective design only: freeze a new versioned
+registration acquisition that preserves the empirically visible wrist family
+and unchanged `2 deg` tracking gate, starts scoring only after tracking enters
+gate, and accepts a hold only when its monotonic-time scored interval is at
+least `2.0 s`. The candidate must retain one shared rigid robot-board
+correction and enough prospective fit diversity to adjudicate the transform;
+it must not admit the rejected v1 camera or reuse V3 images/heldouts for
+admission. This diagnostic grants no camera, gateway, motion, heldout, task,
+or transfer authority.

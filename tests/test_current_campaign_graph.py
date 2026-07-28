@@ -31,19 +31,19 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V04"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v04-acquisition-v3-stop",
+        "node_id": "checkpoint:v04-masked-static-cad-diagnostic",
         "milestone_id": "V04",
-        "status": "incomplete_dataset_ineligible_masked_static_audit_active",
-        "queue_status": "ACTIVE_V04_MASKED_STATIC_SCENE_CAD_AUDIT",
+        "status": "schedule_fault_isolated_transform_fit_required_v4_design_active",
+        "queue_status": "ACTIVE_V04_PROSPECTIVE_V4_TRUE_TIME_REGISTRATION_DESIGN",
         "resume_action": (
-            "run_fit_only_masked_static_cad_and_targeted_transform_diagnostic"
+            "freeze_v4_true_time_registration_contract_and_static_route"
         ),
         "resume_authorized": True,
         "heldout_open_count": 0,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(19)
+        range(20)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +54,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V04_ACQUISITION_V3_STOP"
+        == "V04_MASKED_STATIC_CAD_DIAGNOSTIC"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v04-acquisition-v3-stop"
+        "checkpoint:v04-masked-static-cad-diagnostic"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]
