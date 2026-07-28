@@ -1,0 +1,104 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "prospective_d1_d2_elbow_sag_recovery_tricam_20260727_v1",
+  "samples_per_stage": 721,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_25s_v1.json",
+    "contract_sha256": "317a428884de0b55066dfee0e67b84853af5bb88f6f0da05e53d341fdd702930"
+  },
+  "setup_recovery_command_anchor_snap_limit_degrees": 3.0,
+  "reviewed_anchor_degrees": [
+    -6.857142857142857,
+    -89.58241758241758,
+    104.48351648351648,
+    -40.83516483516483,
+    -101.05494505494505,
+    1.66270783847981
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -6.857142857142857,
+        -89.58241758241758,
+        90.61442428182887,
+        -40.83516483516483,
+        -101.05494505494505,
+        1.66270783847981
+      ],
+      [
+        -0.7912087912087912,
+        -105.75824175824175,
+        90.61442428182887,
+        -100.0,
+        -119.07692307692308,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "recovery_derivation": {
+    "fresh_anchor_source": "configuration_free_follower_only_torque_off_preflight",
+    "fresh_anchor_observed_at": "2026-07-27",
+    "live_elbow_anchor_degrees": 104.48351648351648,
+    "calibrated_elbow_upper_degrees": 102.10989010989012,
+    "setup_clamp_elbow_delta_degrees": -2.373626373626365,
+    "setup_clamp_direction": "monotonically_inward",
+    "destination_anchor_source": "previously_observed_contact_free_torque_off_camera_pose_v1_start_geometry_with_prior_completed_recovery_clearance_elbow_preload",
+    "destination_packet_path": "runs/prospective-real-to-sim/20260727-d1-d2-camera-pose-setup-v1/packet.json",
+    "destination_packet_sha256": "5b44df20f3f503d9d25de896dd4515e4c76f419e3aedb1d3f9f9f2e16fcf8553",
+    "destination_prior_status": "other_five_joints_from_fresh_torque_off_follower_read_accepted_without_setup_snap",
+    "destination_prior_torque_off_geometry": true,
+    "destination_prior_no_new_or_worsened_kinematic_contact": true,
+    "destination_prior_external_contact_pairs": [],
+    "elbow_preload_degrees": 90.61442428182887,
+    "elbow_preload_source": "completed_gravity_sag_recovery_clearance_waypoint",
+    "elbow_preload_execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-sag-to-stable-anchor-recovery-tricam-v2/stage-1/execution_receipt.json",
+    "elbow_preload_execution_receipt_sha256": "a5e5128088319c074a13ca30e8068babfd1927d48e0e7d3addd6631518b65ad7",
+    "expected_torque_off_settle_basis": "the_same_other_five_joint_geometry_was_previously_observed_torque_off_at_elbow_99.296703_degrees",
+    "elbow_route_monotonic_nonincreasing": true,
+    "maximum_frozen_slew_degrees_s": 6.573870573870574
+  },
+  "recovery_source_contact_admission": {
+    "schema_version": "sim2claw.recovery_source_contact_admission.v1",
+    "enabled": true,
+    "source_state_only": true,
+    "source_joint": "elbow_flex",
+    "inward_direction": "decreasing",
+    "require_source_robot_self_contact_only": true,
+    "require_contact_pairs_subset_of_source": true,
+    "require_penetration_never_worse_than_source": true,
+    "require_final_contact_clear": true,
+    "exclude_from_task_and_transfer_claims": true,
+    "visual_source_review_path": "runs/prospective-real-to-sim/20260727-d1-d2-wrist-dominant-setup-v2/visual_scene_review.json",
+    "visual_source_review_sha256": "85bd06d98fa615bb9130f450738414035f89f973c4d07aad9085d2a097695ec6"
+  },
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "preview_bound_tricam_elbow_sag_recovery_to_prior_stable_anchor",
+    "target_selection": "Start C922, native D405 RGB, and Pi before the bounded elbow-only setup clamp. Preview every frozen setup-clamp progress fraction under the source-only recovery admission, move elbow monotonically inward to the previously completed 90.614424-degree recovery-clearance value until the model contact is cleared, then hold elbow there while moving the other five joints at low slew to the contact-free torque-off geometry previously consumed without clipping by camera-pose v1. This replaces three unfrozen offline corridor candidates rejected before packet creation.",
+    "runtime_setup_preview_source_path": "src/sim2claw/wrist_view_reposition.py",
+    "runtime_setup_preview_source_sha256": "736c137a7e5fba0d617d721b99f2d95d240bef402142fbf836897344cdd3591f",
+    "separate_from_prior_campaigns": true,
+    "prior_action_bytes_reused": false,
+    "recovery_bytes_excluded_from_task_action_hash": true,
+    "fresh_torque_off_anchor_read": true,
+    "setup_recovery_snap_limit_degrees": 3.0,
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "evidence_limits": {
+      "physical_recovery_only": true,
+      "setup_recovery_motion_is_sim_gap_evidence": false,
+      "task_action": false,
+      "task_success": false,
+      "transfer": false,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false
+    }
+  }
+}

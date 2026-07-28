@@ -2,6 +2,22 @@
 
 Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
 
+## Latest prospective D1→D2 gate
+
+The single reviewed elbow-sag recovery campaign stopped safely after `399 /
+721` frozen motion rows. The last persisted row showed elbow requested at
+`90.614424 deg`, observed at `93.934066 deg`, and at `0.975 s` of
+no-progress; the next planned row hit the gateway's one-second stall-warning
+boundary. C922, native D405 RGB, and Pi enclosed the motion with zero reported
+C922/D405 drops, no pawn/board/table contact was observed, and torque-off plus
+camera cleanup were verified.
+
+The fresh torque-off elbow settled to `103.956044 deg`, still `1.846154 deg`
+above the calibrated exact-gateway maximum. Recovery Slice A is therefore a
+terminal safe stop. No D1→D2 task action was frozen or attempted, REAL→SIM
+physics was not run, and SIM→REAL remains forbidden. Accepted proof class:
+`physical_recovery_terminal_safe_stop_elbow_stall_no_task_or_transfer_authority`.
+
 ## Latest contact-free geometric transfer evidence
 
 The current-session roll-separated Pose-J corridor has now also transferred

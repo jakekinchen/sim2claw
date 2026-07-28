@@ -74,6 +74,42 @@ def test_known_safe_contact_envelope_is_pair_and_depth_bounded() -> None:
         )
 
 
+def test_recovery_source_contact_admission_is_source_bounded() -> None:
+    source = {
+        ("left_lower_arm", "left_shoulder"): -0.0099,
+        ("left_upper_arm", "left_wrist"): -0.0041,
+    }
+    _validate_contact_pair_minimums(
+        {
+            ("left_lower_arm", "left_shoulder"): -0.0044,
+            ("left_upper_arm", "left_wrist"): -0.0032,
+        },
+        source,
+        {("left_lower_arm", "left_shoulder"): 0.000071634},
+        recovery_source_contact_admission=True,
+    )
+    with pytest.raises(
+        WristViewRepositionError,
+        match="worsens source-only model penetration",
+    ):
+        _validate_contact_pair_minimums(
+            {("left_lower_arm", "left_shoulder"): -0.0100},
+            source,
+            {},
+            recovery_source_contact_admission=True,
+        )
+    with pytest.raises(
+        WristViewRepositionError,
+        match="absent from its source-only admission",
+    ):
+        _validate_contact_pair_minimums(
+            {("left_base", "board"): -1e-9},
+            source,
+            {},
+            recovery_source_contact_admission=True,
+        )
+
+
 def _write(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, sort_keys=True) + "\n", encoding="utf-8")

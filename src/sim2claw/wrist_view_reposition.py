@@ -447,6 +447,93 @@ def _load_route(
     return route, anchor, waypoint_stages
 
 
+def _recovery_source_contact_admission(
+    route: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    specification = route.get("recovery_source_contact_admission")
+    if specification is None:
+        return None
+    _require(
+        isinstance(specification, Mapping)
+        and specification.get("schema_version")
+        == "sim2claw.recovery_source_contact_admission.v1"
+        and specification.get("enabled") is True
+        and specification.get("source_state_only") is True
+        and specification.get("source_joint") == "elbow_flex"
+        and specification.get("inward_direction") == "decreasing"
+        and specification.get("require_source_robot_self_contact_only") is True
+        and specification.get("require_contact_pairs_subset_of_source") is True
+        and specification.get("require_penetration_never_worse_than_source")
+        is True
+        and specification.get("require_final_contact_clear") is True
+        and specification.get("exclude_from_task_and_transfer_claims") is True
+        and (route.get("review_basis") or {}).get("physical_scope")
+        == "setup_recovery_only",
+        "recovery source-contact admission semantics changed",
+    )
+    review_path = Path(str(specification.get("visual_source_review_path") or ""))
+    if not review_path.is_absolute():
+        review_path = Path(__file__).resolve().parents[2] / review_path
+    review_path = review_path.resolve()
+    review_sha256 = str(specification.get("visual_source_review_sha256") or "")
+    _require(
+        review_path.is_file()
+        and len(review_sha256) == 64
+        and _sha256(review_path) == review_sha256,
+        "recovery source-contact visual evidence changed",
+    )
+    review = _read_json(review_path, "recovery source-contact visual review")
+    frames = review.get("review_frames") or {}
+    pi_frame = frames.get("pi_imx708_rgb") or {}
+    transport = review.get("transport_checks") or {}
+    authority = review.get("authority") or {}
+    _require(
+        review.get("schema_version")
+        == "sim2claw.degraded_rgb_tricam_visual_scene_review.v1"
+        and review.get("status")
+        == "degraded_rgb_lanes_admitted_for_task_action_review"
+        and review.get("proof_class")
+        == "physical_motion_free_degraded_rgb_tricam_readiness_only"
+        and pi_frame.get("contact_free_high_arm_visible") is True
+        and transport.get("exact_c922_identity") is True
+        and transport.get("exact_d405_identity") is True
+        and transport.get("c922_apple_drops") == 0
+        and transport.get("d405_apple_drops") == 0
+        and authority.get("robot_gateway_opened") is False
+        and authority.get("robot_motion") is False,
+        "recovery source-contact visual evidence does not admit the live "
+        "contact-free high arm",
+    )
+    return {
+        **dict(specification),
+        "visual_source_review_path": str(review_path),
+        "visual_source_review_sha256": review_sha256,
+        "visual_source_contact_free_high_arm": True,
+        "physical_scope": "setup_recovery_only",
+        "model_contact_authority": "source_bound_clearance_only",
+    }
+
+
+def _preview_bound_route(
+    preview_fn: Callable[[list[np.ndarray], Path], dict[str, Any]],
+    stages: list[np.ndarray],
+    candidate_manifest_path: Path,
+    recovery_admission: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    if recovery_admission is None:
+        return preview_fn(stages, candidate_manifest_path)
+    _require(
+        preview_fn is preview_wrist_view_actions,
+        "recovery source-contact admission requires the production CPU/fp64 "
+        "preview",
+    )
+    return preview_wrist_view_actions(
+        stages,
+        candidate_manifest_path,
+        recovery_source_contact_admission=True,
+    )
+
+
 def _freeze_waypoint_stage(
     start: np.ndarray,
     waypoints: np.ndarray,
@@ -642,7 +729,21 @@ def _validate_contact_pair_minimums(
     row_pair_minimums: Mapping[tuple[str, str], float],
     initial_pair_minimums: Mapping[tuple[str, str], float],
     known_safe_envelopes: Mapping[tuple[str, str], float],
+    *,
+    recovery_source_contact_admission: bool = False,
 ) -> None:
+    if recovery_source_contact_admission:
+        _require(
+            set(row_pair_minimums).issubset(initial_pair_minimums),
+            "recovery trajectory creates a contact pair absent from its "
+            "source-only admission",
+        )
+        for pair, minimum in row_pair_minimums.items():
+            _require(
+                minimum >= initial_pair_minimums[pair] - 1e-9,
+                "recovery trajectory worsens source-only model penetration",
+            )
+        return
     effective_allowed_pairs = set(initial_pair_minimums) | set(
         known_safe_envelopes
     )
@@ -667,6 +768,8 @@ def _validate_contact_pair_minimums(
 def preview_wrist_view_actions(
     stages: list[np.ndarray],
     candidate_manifest_path: Path,
+    *,
+    recovery_source_contact_admission: bool = False,
 ) -> dict[str, Any]:
     """Preview exact staged float64 actions without dynamics or action repair."""
 
@@ -748,6 +851,9 @@ def preview_wrist_view_actions(
                 row_pair_minimums,
                 initial_pair_minimums,
                 known_safe_envelopes,
+                recovery_source_contact_admission=(
+                    recovery_source_contact_admission
+                ),
             )
             stage_pairs.update(row_pairs)
             for pair, minimum in row_pair_minimums.items():
@@ -789,10 +895,23 @@ def preview_wrist_view_actions(
                 "no_new_or_worsened_kinematic_contact": True,
             }
         )
-    _require(
-        final_pairs.issubset(BASELINE_SELF_CONTACT_PAIRS),
-        "staged reposition does not clear its pre-existing external model contact",
-    )
+    if recovery_source_contact_admission:
+        _require(
+            all(
+                first.startswith("left_") and second.startswith("left_")
+                for first, second in (initial_pairs or set())
+            ),
+            "recovery source-only admission contains an external model contact",
+        )
+        _require(
+            not final_pairs,
+            "recovery trajectory does not clear every source-only model contact",
+        )
+    else:
+        _require(
+            final_pairs.issubset(BASELINE_SELF_CONTACT_PAIRS),
+            "staged reposition does not clear its pre-existing external model contact",
+        )
     initial_unexpected_pairs = (initial_pairs or set()) - BASELINE_SELF_CONTACT_PAIRS
     return {
         "runtime": "cpu_mujoco_mj_forward",
@@ -814,6 +933,21 @@ def preview_wrist_view_actions(
         "contact_pairs_unchanged_or_removed_only": True,
         "external_contact_pairs": [],
         "no_new_or_worsened_kinematic_contact": True,
+        "recovery_source_contact_admission": {
+            "enabled": recovery_source_contact_admission,
+            "source_pairs_robot_self_contact_only": (
+                recovery_source_contact_admission
+            ),
+            "contact_pairs_subset_of_source": (
+                recovery_source_contact_admission
+            ),
+            "penetration_never_worse_than_source": (
+                recovery_source_contact_admission
+            ),
+            "final_contact_pairs_cleared": (
+                recovery_source_contact_admission and not final_pairs
+            ),
+        },
         "stages": stage_reports,
     }
 
@@ -896,6 +1030,11 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
         "reviewed wrist-view route drifted",
     )
     bound_route = _read_json(Path(route["path"]).resolve(), "wrist-view route")
+    recovery_admission = _recovery_source_contact_admission(bound_route)
+    _require(
+        packet.get("recovery_source_contact_admission") == recovery_admission,
+        "packet recovery source-contact admission changed",
+    )
     capture_mode = str(packet.get("capture_mode") or "")
     _require(
         capture_mode
@@ -988,6 +1127,24 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
             and not setup_stage_preview.get("external_contact_pairs"),
             "setup recovery simulation preview is not admitted",
         )
+        if recovery_admission is not None:
+            source_preview = setup_preview.get(
+                "recovery_source_contact_admission"
+            ) or {}
+            _require(
+                source_preview.get("enabled") is True
+                and source_preview.get(
+                    "source_pairs_robot_self_contact_only"
+                )
+                is True
+                and source_preview.get("contact_pairs_subset_of_source") is True
+                and source_preview.get(
+                    "penetration_never_worse_than_source"
+                )
+                is True
+                and source_preview.get("final_contact_pairs_cleared") is True,
+                "setup recovery source-contact preview changed",
+            )
     else:
         _require(
             setup_preview is None,
@@ -1079,8 +1236,24 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
             and not preview.get("external_contact_pairs"),
             "stage simulation preview is not admitted",
         )
+        if recovery_admission is not None:
+            _require(
+                np.all(np.diff(actions[:, 2]) <= 1e-12),
+                "recovery stage elbow route is not monotonically inward",
+            )
         expected_previous = target
         command_previous = target
+    if recovery_admission is not None:
+        source_preview = (
+            packet.get("simulation_preview") or {}
+        ).get("recovery_source_contact_admission") or {}
+        _require(
+            source_preview.get("enabled") is True
+            and source_preview.get("contact_pairs_subset_of_source") is True
+            and source_preview.get("penetration_never_worse_than_source") is True
+            and source_preview.get("final_contact_pairs_cleared") is True,
+            "packet recovery source-contact preview changed",
+        )
     return packet
 
 
@@ -1099,6 +1272,7 @@ def compile_wrist_view_reposition_packet(
     preflight = (preflight_fn or _default_preflight)()
     identity, anchor, lower, upper = _identity_and_limits(preflight)
     route, reviewed_anchor, waypoint_stages = _load_route(route_path)
+    recovery_admission = _recovery_source_contact_admission(route)
     samples_per_stage = int(route.get("samples_per_stage", SAMPLES_PER_STAGE))
     _require(
         MIN_SAMPLES_PER_STAGE <= samples_per_stage <= MAX_SAMPLES_PER_STAGE,
@@ -1212,14 +1386,37 @@ def compile_wrist_view_reposition_packet(
         )
         action_stages.append(actions)
         previous = waypoints[-1].astype("<f8")
+    if recovery_admission is not None:
+        outside = (anchor < lower) | (anchor > upper)
+        route_actions = np.concatenate(action_stages, axis=0)
+        _require(
+            setup_recovery
+            and np.array_equal(
+                outside,
+                np.asarray([False, False, True, False, False, False]),
+            )
+            and anchor[2] > upper[2]
+            and command_anchor[2] == upper[2]
+            and np.array_equal(
+                command_anchor[[0, 1, 3, 4, 5]],
+                anchor[[0, 1, 3, 4, 5]],
+            )
+            and command_anchor[2] < anchor[2]
+            and np.all(np.diff(route_actions[:, 2]) <= 1e-12),
+            "recovery source-contact admission requires one high out-of-range "
+            "elbow source, an elbow-only inward setup clamp, and a "
+            "monotonically non-increasing frozen elbow route",
+        )
     setup_recovery_preview: dict[str, Any] | None = None
     if setup_recovery:
         setup_preview_actions = _setup_recovery_preview_actions(
             anchor, command_anchor
         )
-        setup_preview = preview_fn(
+        setup_preview = _preview_bound_route(
+            preview_fn,
             [setup_preview_actions, *action_stages],
             candidate_manifest_path,
+            recovery_admission,
         )
         setup_preview_stages = setup_preview.get("stages")
         _require(
@@ -1250,7 +1447,12 @@ def compile_wrist_view_reposition_packet(
                 setup_preview_actions
             ),
         }
-    preview = preview_fn(action_stages, candidate_manifest_path)
+    preview = _preview_bound_route(
+        preview_fn,
+        action_stages,
+        candidate_manifest_path,
+        recovery_admission,
+    )
     _require(
         preview.get("no_new_or_worsened_kinematic_contact") is True
         and not preview.get("external_contact_pairs"),
@@ -1348,6 +1550,7 @@ def compile_wrist_view_reposition_packet(
             "sim_gap_evidence": False,
         },
         "setup_recovery_simulation_preview": setup_recovery_preview,
+        "recovery_source_contact_admission": recovery_admission,
         "reviewed_live_anchor_degrees": reviewed_anchor.tolist(),
         "route": {
             "route_id": route["route_id"],
@@ -1446,6 +1649,9 @@ def review_wrist_view_reposition_packet(
         "stage_excursions_reviewed": True,
         "bounded_slew_reviewed": True,
         "simulation_contact_preview_reviewed": True,
+        "recovery_source_contact_admission_reviewed": (
+            packet.get("recovery_source_contact_admission") is not None
+        ),
         "fresh_anchor_and_identity_checks_reviewed": True,
         "torque_off_close_reviewed": True,
         "final_hold_capture_reviewed": True,
@@ -1482,6 +1688,11 @@ def _validate_review(
         "camera_inspection_between_stages_acknowledged",
     )
     _require(all(review.get(field) for field in fields), "review receipt is incomplete")
+    _require(
+        review.get("recovery_source_contact_admission_reviewed")
+        is (packet.get("recovery_source_contact_admission") is not None),
+        "review recovery source-contact decision changed",
+    )
     return review
 
 
@@ -1840,7 +2051,16 @@ def execute_wrist_view_reposition_stage(
         np.asarray(_decode_stage(item)[0], dtype="<f8")
         for item in packet["stages"][:stage_index]
     ]
-    fresh_preview = preview_wrist_view_actions(preview_actions, manifest_path)
+    recovery_admission = packet.get("recovery_source_contact_admission")
+    fresh_preview = (
+        preview_wrist_view_actions(
+            preview_actions,
+            manifest_path,
+            recovery_source_contact_admission=True,
+        )
+        if recovery_admission is not None
+        else preview_wrist_view_actions(preview_actions, manifest_path)
+    )
     _require(
         fresh_preview.get("no_new_or_worsened_kinematic_contact") is True
         and not fresh_preview.get("external_contact_pairs"),
@@ -1858,15 +2078,39 @@ def execute_wrist_view_reposition_stage(
         np.all(np.abs(_joint_delta(current, expected_anchor)) <= anchor_tolerance),
         "fresh follower pose does not match this stage anchor",
     )
+    if recovery_admission is not None:
+        outside = (current < lower) | (current > upper)
+        command_anchor = np.asarray(
+            stage["command_anchor_degrees"], dtype=np.float64
+        )
+        _require(
+            np.array_equal(
+                outside,
+                np.asarray([False, False, True, False, False, False]),
+            )
+            and current[2] > upper[2]
+            and command_anchor[2] == upper[2]
+            and command_anchor[2] < current[2],
+            "fresh recovery source is not the reviewed high out-of-range "
+            "elbow-only state",
+        )
     fresh_setup_recovery_preview: dict[str, Any] | None = None
     if packet["setup_recovery_command_anchor"]["enabled"] is True:
         setup_preview_actions = _setup_recovery_preview_actions(
             current,
             np.asarray(stage["command_anchor_degrees"], dtype=np.float64),
         )
-        fresh_setup_recovery_preview = preview_wrist_view_actions(
-            [setup_preview_actions, *preview_actions],
-            manifest_path,
+        fresh_setup_recovery_preview = (
+            preview_wrist_view_actions(
+                [setup_preview_actions, *preview_actions],
+                manifest_path,
+                recovery_source_contact_admission=True,
+            )
+            if recovery_admission is not None
+            else preview_wrist_view_actions(
+                [setup_preview_actions, *preview_actions],
+                manifest_path,
+            )
         )
         _require(
             fresh_setup_recovery_preview.get(
@@ -2215,9 +2459,11 @@ def execute_wrist_view_reposition_stage(
         "capture_artifacts": capture_artifacts,
         "frame_joint_alignment": frame_joint_alignment,
         "fresh_preflight_anchor_degrees": current.tolist(),
+        "fresh_simulation_preview": fresh_preview,
         "fresh_setup_recovery_simulation_preview": (
             fresh_setup_recovery_preview
         ),
+        "recovery_source_contact_admission": recovery_admission,
         "expected_anchor_degrees": expected_anchor.tolist(),
         "target_degrees": stage["target_degrees"],
         "final_actual_degrees": actual.tolist(),
