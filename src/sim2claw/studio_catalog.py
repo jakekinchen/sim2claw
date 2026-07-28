@@ -96,6 +96,7 @@ DUAL_CAMERA_STUDIO_RECEIPT_SCHEMA = (
 PHYSICAL_CANARY_RECEIPT_SCHEMA = "sim2claw.physical_canary_execution_receipt.v1"
 PHYSICAL_CANARY_PACKET_SCHEMA = "sim2claw.physical_canary_packet.v1"
 PHYSICAL_CANARY_TASK = "physical_canary_follower_only_v1"
+BIDIRECTIONAL_TERMINAL_TASK = "bidirectional_pawn_push_terminal_boundary_v1"
 
 
 def _media_relative_path(token: str) -> Path:
@@ -1483,6 +1484,87 @@ def _physical_canary_episodes(repo_root: Path) -> list[dict[str, Any]]:
     return episodes
 
 
+def _bidirectional_terminal_boundary_episodes(
+    repo_root: Path,
+) -> list[dict[str, Any]]:
+    """Admit the local Q13 safety-boundary package without task inflation."""
+
+    receipt_path = (
+        repo_root
+        / "runs"
+        / "bidirectional-pawn-push"
+        / "20260727-terminal-evidence-v1"
+        / "terminal_evidence_package.json"
+    )
+    receipt = _read_json(receipt_path)
+    denominator = _as_mapping(receipt.get("denominator"))
+    poster = _as_mapping(receipt.get("poster"))
+    poster_path = repo_root / str(poster.get("path") or "")
+    try:
+        receipt_digest = hashlib.sha256(receipt_path.read_bytes()).hexdigest()
+        poster_digest = hashlib.sha256(poster_path.read_bytes()).hexdigest()
+    except OSError:
+        return []
+    if (
+        receipt.get("schema_version")
+        != "sim2claw.bidirectional_terminal_evidence_package.v1"
+        or receipt.get("status")
+        != "terminal_safety_boundary_no_admissible_case"
+        or receipt.get("task_id") != BIDIRECTIONAL_TERMINAL_TASK
+        or receipt.get("counted_action_hashes") != []
+        or _as_mapping(denominator.get("real_to_sim"))
+        != {"successful": 0, "attempted": 0}
+        or _as_mapping(denominator.get("sim_to_real"))
+        != {"successful": 0, "attempted": 0}
+        or denominator.get("physical_attempts") != 0
+        or poster_digest != poster.get("sha256")
+    ):
+        return []
+    return [
+        {
+            "id": f"{BIDIRECTIONAL_TERMINAL_TASK}:q06-scene-gate",
+            "task_id": BIDIRECTIONAL_TERMINAL_TASK,
+            "title": "Bidirectional pawn push safety stop",
+            "subtitle": (
+                "10/10 preregistered lanes rejected before compilation · "
+                "0 physical attempts"
+            ),
+            "sequence": 60_000,
+            "status": "blocked",
+            "terminal_outcome": "no_admissible_case_before_action_compilation",
+            "proof_class": receipt.get("proof_class"),
+            "proof_label": "Terminal safety boundary · no task result",
+            "physical_authority": False,
+            "frame_count": 1,
+            "fps": 0,
+            "duration_seconds": 0,
+            "recorded_at": _iso_timestamp(receipt_path),
+            "media": {"kind": "image", "url": media_url(poster_path, repo_root)},
+            "recording_feeds": [],
+            "camera": "C922 + D405 color + Pi IMX708 RGB",
+            "metrics": [
+                _metric("REAL→SIM", "0/0", tone="warning"),
+                _metric("SIM→REAL", "0/0", tone="warning"),
+                _metric("Rejected lanes", "10/10", tone="warning"),
+                _metric("Physical attempts", 0),
+            ],
+            "notes": str(receipt.get("claim_boundary") or ""),
+            "phases": [{"name": "Motion-free scene gate", "start": 0.0, "end": 1.0}],
+            "case_id": "q06_all_cases_exclusion_rejected",
+            "action_array_sha256": None,
+            "evidence_receipt": {
+                "path": receipt_path.relative_to(repo_root).as_posix(),
+                "sha256": receipt_digest,
+            },
+            "physical_task_success_verified": False,
+            "simulator_task_success_verified": False,
+            "bidirectional_transfer_verified": False,
+            "training_admission": False,
+            "promotion_authority": False,
+        }
+    ]
+
+
 def _hil_identifiability_episodes(repo_root: Path) -> list[dict[str, Any]]:
     """Project only the four receipt-verified HIL packets into Replay."""
 
@@ -2657,6 +2739,7 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         + _teleop_episodes(repo_root)
         + _current_dual_camera_episodes(repo_root)
         + _physical_canary_episodes(repo_root)
+        + _bidirectional_terminal_boundary_episodes(repo_root)
         + _hil_identifiability_episodes(repo_root)
         + build_physical_release_episodes(repo_root, media_url)
     )
@@ -2673,6 +2756,7 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         "pawn_bg_ranked_grasp_v3": "Top pawn grasp replays",
         "pawn_bg_rubber_sliding2_sensitivity": "Rubber friction sensitivity",
         PHYSICAL_CANARY_TASK: "Physical canary observations",
+        BIDIRECTIONAL_TERMINAL_TASK: "Bidirectional pawn-push boundary",
     }
     for task_id in sorted(task_ids):
         contract = contracts.get(task_id, {})
@@ -2690,6 +2774,8 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
                     if task_id == PHYSICAL_EPISODE_LIBRARY_TASK
                     else "Physical diagnostic observation"
                     if task_id == PHYSICAL_CANARY_TASK
+                    else "Terminal safety evidence"
+                    if task_id == BIDIRECTIONAL_TERMINAL_TASK
                     else _task_role(contract)
                     if contract
                     else "Simulation probe"
@@ -2714,6 +2800,11 @@ def build_catalog(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
                         "diagnostic dual-camera evidence; no task, metric, or policy authority."
                     )
                     if task_id == PHYSICAL_CANARY_TASK
+                    else (
+                        "Fresh RGB and frozen exclusion geometry reject all "
+                        "ten preregistered cases before action compilation."
+                    )
+                    if task_id == BIDIRECTIONAL_TERMINAL_TASK
                     else "Frozen sliding-friction 2.0 sensitivity replays; diagnostic only because the all-episode EE RMS guard fails."
                     if task_id == "pawn_bg_rubber_sliding2_sensitivity"
                     else

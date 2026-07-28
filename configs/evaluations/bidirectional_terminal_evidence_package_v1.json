@@ -1,0 +1,57 @@
+{
+  "schema_version": "sim2claw.bidirectional_terminal_evidence_package_contract.v1",
+  "package_id": "bidirectional_pawn_push_terminal_boundary_20260727_v1",
+  "task_id": "bidirectional_pawn_push_terminal_boundary_v1",
+  "proof_class": "terminal_safety_boundary_without_physical_attempt",
+  "status": "no_admissible_case",
+  "inputs": [
+    {
+      "role": "frozen_evaluator",
+      "path": "configs/evaluations/bidirectional_off_source_push_evaluator_v1.json",
+      "sha256": "8450682fac61ac064198b90858f58e6753b0d701ed55f067f91d88ed04604479"
+    },
+    {
+      "role": "rejected_scene_candidate",
+      "path": "configs/scenes/bidirectional_pawn_push_scene_registration_v4.json",
+      "sha256": "c7c2b19d7bdf64e85c20f515b4d7fa859b2fd33948fa1a36438265571a752b7b"
+    },
+    {
+      "role": "heldout_registration_receipt",
+      "path": "runs/bidirectional-pawn-push/20260727-registration-v4-heldout/evaluation.json",
+      "sha256": "7bfd06be5dd397a8c25dc7a4e3cdadd08fa006271fec38d4abcac27d04c125bf"
+    },
+    {
+      "role": "c2_retrospective_receipt",
+      "path": "runs/bidirectional-pawn-push/20260727-c2-v4-retrospective/evaluation.json",
+      "sha256": "36110ee04a6625a3607c657855c92d99e6feac35f38a5541610542dc719e1664"
+    },
+    {
+      "role": "fresh_rgb_capture_receipt",
+      "path": "runs/bidirectional-pawn-push/20260727-q06-scene-v1/capture_receipt.json",
+      "sha256": "ee6d71d98723e5133097c24c30ab8d2b16881e6554d22078aae632fe99966730"
+    },
+    {
+      "role": "q06_scene_gate_receipt",
+      "path": "runs/bidirectional-pawn-push/20260727-q06-scene-v1/scene_gate_receipt.json",
+      "sha256": "3c81caaa626043d1a12c34bf9b05e11fa0e0823070b516f001e8857b5c59ec0c"
+    }
+  ],
+  "output": {
+    "receipt_path": "runs/bidirectional-pawn-push/20260727-terminal-evidence-v1/terminal_evidence_package.json",
+    "viewer_path": "runs/bidirectional-pawn-push/20260727-terminal-evidence-v1/index.html"
+  },
+  "claim_boundary": {
+    "bidirectional_transfer_verified": false,
+    "physical_task_success_verified": false,
+    "simulator_task_success_verified": false,
+    "new_action_compiled": false,
+    "counted_action_hashes": [],
+    "real_to_sim_successful": 0,
+    "real_to_sim_attempted": 0,
+    "sim_to_real_successful": 0,
+    "sim_to_real_attempted": 0,
+    "total_physical_attempts": 0,
+    "maximum_physical_attempts": 10,
+    "statement": "Fresh RGB scene evidence proves that every frozen case violates the preregistered exclusion clearance. No action was compiled and no physical or bidirectional task result exists."
+  }
+}
