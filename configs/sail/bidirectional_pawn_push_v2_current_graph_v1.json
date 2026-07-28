@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T14:37:48-05:00",
+  "generated_at": "2026-07-28T14:42:34-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b",
+      "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -736,6 +736,16 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_progress_exclusion_successor_authorization.v1",
         "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
         "proof_class": "prospective_manager_authorized_static_only_slow_elevated_long_stroke_successor"
+      }
+    },
+    "v05_ty_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_slow_elevated_static_v1.json",
+      "sha256": "fb71ad3e22141b890e46062a2fca36a92eb70066e6efd57cf763931a57dc2aa4",
+      "proof_class": "prospective_cpu_fp64_static_slow_elevated_long_stroke_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static.v1",
+        "status": "preregistered_before_model_loading_static_enumeration_or_action_generation",
+        "proof_class": "prospective_cpu_fp64_static_slow_elevated_long_stroke_action_freeze"
       }
     },
     "simulator_candidate": {
@@ -2132,6 +2142,33 @@
       }
     },
     {
+      "id": "checkpoint:v05-ty-slow-elevated-static-frozen",
+      "type": "checkpoint",
+      "label": "V05-TY fresh slow/elevated long-stroke static grid frozen",
+      "status": "preregistered_slow_elevated_static_execution_active",
+      "source_binding": "v05_ty_static_contract",
+      "data": {
+        "prequarantine_family_count": 48,
+        "cumulative_quarantined_case_count": 8,
+        "postquarantine_family_count": 40,
+        "fresh_families_only": true,
+        "setup_branch_count": 3,
+        "approach_lateral_offset_count": 3,
+        "maximum_total_cells": 360,
+        "precontact_clearance_mm": 75.0,
+        "lateral_clearance_mm": 50.0,
+        "setup_joint_speed_physical_units_s": 1.5,
+        "stroke_mm": 120.0,
+        "minimum_distinct_families_per_direction": 2,
+        "model_loading_authorized": true,
+        "static_simulation_authorized": true,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2929,6 +2966,19 @@
       }
     },
     {
+      "source": "checkpoint:v05-ty-slow-elevated-static-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-ty-manager-authorization-bound",
+      "metadata": {
+        "preregistered_before_model_loading_or_enumeration": true,
+        "maximum_total_cells": 360,
+        "cumulative_quarantined_case_count": 8,
+        "fresh_families_only": true,
+        "static_simulation_only": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -3531,14 +3581,23 @@
       "node_ids_added": [
         "checkpoint:v05-ty-manager-authorization-bound"
       ]
+    },
+    {
+      "revision": 62,
+      "event_id": "V05_TY_SLOW_ELEVATED_STATIC_FREEZE",
+      "status": "preregistered_slow_elevated_static_execution_active",
+      "source_binding": "v05_ty_static_contract",
+      "node_ids_added": [
+        "checkpoint:v05-ty-slow-elevated-static-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-ty-manager-authorization-bound",
+    "node_id": "checkpoint:v05-ty-slow-elevated-static-frozen",
     "milestone_id": "V05-TY",
-    "status": "manager_authorized_static_design_active",
-    "queue_status": "ACTIVE_V05_TY_MANAGER_AUTHORIZATION_BOUND_STATIC_DESIGN",
-    "resume_action": "freeze_finite_slow_elevated_long_stroke_fresh_family_grid",
+    "status": "preregistered_slow_elevated_static_execution_active",
+    "queue_status": "ACTIVE_V05_TY_PROSPECTIVE_STATIC_GRID_FROZEN",
+    "resume_action": "execute_one_bounded_360_cell_static_enumeration",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

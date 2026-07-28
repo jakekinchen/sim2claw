@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "V05-TY",
-    "node_id": "checkpoint:v05-ty-manager-authorization-bound",
-    "queue_status": "ACTIVE_V05_TY_MANAGER_AUTHORIZATION_BOUND_STATIC_DESIGN",
-    "resume_action": "freeze_finite_slow_elevated_long_stroke_fresh_family_grid",
+    "node_id": "checkpoint:v05-ty-slow-elevated-static-frozen",
+    "queue_status": "ACTIVE_V05_TY_PROSPECTIVE_STATIC_GRID_FROZEN",
+    "resume_action": "execute_one_bounded_360_cell_static_enumeration",
     "resume_authorized": true,
-    "status": "manager_authorized_static_design_active"
+    "status": "preregistered_slow_elevated_static_execution_active"
   },
   "authority": {
     "camera_open": false,
@@ -35,23 +35,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 83,
+    "edges": 84,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 3,
       "evaluated-on": 13,
       "fitted-on": 4,
-      "generated-from": 54,
+      "generated-from": 55,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 81,
+    "nodes": 82,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 48,
+      "checkpoint": 49,
       "context": 1,
       "counterexample": 4,
       "dataset": 1,
@@ -667,6 +667,19 @@
       "type": "generated-from"
     },
     {
+      "metadata": {
+        "cumulative_quarantined_case_count": 8,
+        "fresh_families_only": true,
+        "maximum_total_cells": 360,
+        "physical_motion": false,
+        "preregistered_before_model_loading_or_enumeration": true,
+        "static_simulation_only": true
+      },
+      "source": "checkpoint:v05-ty-slow-elevated-static-frozen",
+      "target": "checkpoint:v05-ty-manager-authorization-bound",
+      "type": "generated-from"
+    },
+    {
       "metadata": {},
       "source": "context:c922-rgb-no-depth",
       "target": "session:bidirectional-pawn-push-v2",
@@ -931,8 +944,8 @@
       "type": "evaluated-on"
     }
   ],
-  "generated_at": "2026-07-28T14:37:48-05:00",
-  "graph_digest": "3b23a2bd46a644e7bc42389eab758b104148626f1b4675ad7b5d3e557dbc0a71",
+  "generated_at": "2026-07-28T14:42:34-05:00",
+  "graph_digest": "59fce1afc5d3e8fae5688040525f9d1e0c789bf044dd873fefc870a9c002d22c",
   "node_types": [
     "workcell",
     "session",
@@ -1015,7 +1028,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b"
+        "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1447,7 +1460,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b"
+        "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1498,7 +1511,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b"
+        "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1519,7 +1532,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b"
+        "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1548,7 +1561,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b"
+        "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -1957,7 +1970,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b"
+        "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -2519,6 +2532,45 @@
     },
     {
       "data": {
+        "approach_lateral_offset_count": 3,
+        "cumulative_quarantined_case_count": 8,
+        "dynamic_replay_authorized": false,
+        "fresh_families_only": true,
+        "lateral_clearance_mm": 50.0,
+        "maximum_total_cells": 360,
+        "minimum_distinct_families_per_direction": 2,
+        "model_loading_authorized": true,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "postquarantine_family_count": 40,
+        "precontact_clearance_mm": 75.0,
+        "prequarantine_family_count": 48,
+        "setup_branch_count": 3,
+        "setup_joint_speed_physical_units_s": 1.5,
+        "source_binding_id": "v05_ty_static_contract",
+        "static_simulation_authorized": true,
+        "stroke_mm": 120.0,
+        "v06_evaluator_freeze_authorized": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-ty-slow-elevated-static-frozen",
+      "label": "V05-TY fresh slow/elevated long-stroke static grid frozen",
+      "proof_class": "prospective_cpu_fp64_static_slow_elevated_long_stroke_action_freeze",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_slow_elevated_static_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_static_slow_elevated_long_stroke_action_freeze",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static.v1",
+          "status": "preregistered_before_model_loading_static_enumeration_or_action_generation"
+        },
+        "proof_class": "prospective_cpu_fp64_static_slow_elevated_long_stroke_action_freeze",
+        "sha256": "fb71ad3e22141b890e46062a2fca36a92eb70066e6efd57cf763931a57dc2aa4"
+      },
+      "status": "preregistered_slow_elevated_static_execution_active",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "source_binding_id": "v01",
         "task_camera": "C922",
         "wrist_depth_required": false
@@ -2788,7 +2840,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b"
+        "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -2848,7 +2900,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b"
+        "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -2866,7 +2918,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b"
+        "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -2934,7 +2986,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b"
+        "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -3365,7 +3417,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b",
+      "source_sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -3395,7 +3447,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b",
+      "source_sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -3425,7 +3477,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b",
+      "source_sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -3707,7 +3759,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b",
+      "source_sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -3929,6 +3981,16 @@
       "source_binding": "v05_ty_manager_authorization",
       "source_sha256": "ffe06a1d274a5c9fc2f8605fcaf1dfa96b0b68d31bd11d18e18170c39469635f",
       "status": "manager_authorized_static_design_active"
+    },
+    {
+      "event_id": "V05_TY_SLOW_ELEVATED_STATIC_FREEZE",
+      "node_ids_added": [
+        "checkpoint:v05-ty-slow-elevated-static-frozen"
+      ],
+      "revision": 62,
+      "source_binding": "v05_ty_static_contract",
+      "source_sha256": "fb71ad3e22141b890e46062a2fca36a92eb70066e6efd57cf763931a57dc2aa4",
+      "status": "preregistered_slow_elevated_static_execution_active"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -3937,7 +3999,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b"
+      "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f"
     },
     {
       "id": "simulator_candidate",
@@ -4706,6 +4768,17 @@
       },
       "proof_class": "prospective_manager_authorized_static_only_slow_elevated_long_stroke_successor",
       "sha256": "ffe06a1d274a5c9fc2f8605fcaf1dfa96b0b68d31bd11d18e18170c39469635f"
+    },
+    {
+      "id": "v05_ty_static_contract",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_slow_elevated_static_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_static_slow_elevated_long_stroke_action_freeze",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static.v1",
+        "status": "preregistered_before_model_loading_static_enumeration_or_action_generation"
+      },
+      "proof_class": "prospective_cpu_fp64_static_slow_elevated_long_stroke_action_freeze",
+      "sha256": "fb71ad3e22141b890e46062a2fca36a92eb70066e6efd57cf763931a57dc2aa4"
     },
     {
       "id": "world_visual",

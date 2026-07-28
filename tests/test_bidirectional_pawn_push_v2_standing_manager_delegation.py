@@ -36,6 +36,10 @@ PROGRESS_SUCCESSOR_AUTHORIZATION = ROOT / (
     "bidirectional_pawn_push_v2_progress_exclusion_"
     "successor_authorization_v1.json"
 )
+SLOW_ELEVATED_STATIC_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_slow_elevated_static_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -105,6 +109,40 @@ def test_manager_authorization_is_static_design_only_and_source_bound() -> None:
         for key, value in authorization["authority"].items()
         if key != "static_design"
     )
+
+
+def test_slow_elevated_static_contract_is_finite_and_fresh_only() -> None:
+    contract = json.loads(
+        SLOW_ELEVATED_STATIC_CONTRACT.read_text(encoding="utf-8")
+    )
+    for key in (
+        "authorization",
+        "base_static_contract",
+        "previous_temporal_receipt",
+        "base_implementation",
+        "implementation",
+    ):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    overrides = contract["frozen_overrides"]
+    assert len(overrides["quarantine_case_ids"]) == 8
+    assert overrides["expected_postquarantine_family_count"] == 40
+    assert overrides["approach_lateral_offsets_m"] == [-0.05, 0.0, 0.05]
+    assert overrides["maximum_total_cells"] == 360
+    assert overrides["setup_joint_speed_physical_units_s"] == 1.5
+    assert overrides["endpoint_geometry"]["contact_height_m"] == 0.024
+    assert overrides["endpoint_geometry"]["stroke_m"] == 0.12
+    assert (
+        overrides["endpoint_geometry"][
+            "precontact_clearance_height_above_pawn_base_m"
+        ]
+        == 0.075
+    )
+    assert contract["selection"]["fresh_nonquarantined_families_only"] is True
+    assert contract["authority"]["model_loading"] is True
+    assert contract["authority"]["static_simulation"] is True
+    assert contract["authority"]["dynamic_replay"] is False
+    assert contract["authority"]["physical_motion"] is False
 
 
 def test_multistart_approach_static_contract_is_finite_and_fail_closed() -> None:

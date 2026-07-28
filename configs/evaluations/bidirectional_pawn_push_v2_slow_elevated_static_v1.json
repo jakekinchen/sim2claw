@@ -1,0 +1,107 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static.v1",
+  "enumeration_id": "bidirectional-pawn-push-v2-slow-elevated-static-v1",
+  "status": "preregistered_before_model_loading_static_enumeration_or_action_generation",
+  "proof_class": "prospective_cpu_fp64_static_slow_elevated_long_stroke_action_freeze",
+  "authorization": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_progress_exclusion_successor_authorization_v1.json",
+    "sha256": "ffe06a1d274a5c9fc2f8605fcaf1dfa96b0b68d31bd11d18e18170c39469635f"
+  },
+  "base_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_multistart_approach_static_v1.json",
+    "sha256": "abef58960f678569d1ecbe4270910cff873cf0ba0b5aa8776a36ff9b8c58c8fa"
+  },
+  "previous_temporal_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tx-multistart-approach-v1/temporal-replay-v1/receipt.json",
+    "sha256": "50548090c8628aa0d85cd8a72696215a8a8fcbdb2f89dc9b230f9c3883bde37c"
+  },
+  "base_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_multistart_approach_static.py",
+    "sha256": "191a60be161a2bb4c6b842785cfc91e7dc5ac46c2daeb28d12b197af92165ff7"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_slow_elevated_static.py",
+    "sha256": "f2bf273c288f7fce984b1feb9a4163ecda20aa63cf785bd98d1f40b8279ed30e"
+  },
+  "frozen_overrides": {
+    "quarantine_case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8"
+    ],
+    "expected_prequarantine_family_count": 48,
+    "expected_postquarantine_family_count": 40,
+    "approach_lateral_offsets_m": [
+      -0.05,
+      0.0,
+      0.05
+    ],
+    "setup_branch_count": 3,
+    "approach_azimuth_count": 3,
+    "cells_per_family": 9,
+    "maximum_total_cells": 360,
+    "setup_joint_speed_physical_units_s": 1.5,
+    "endpoint_geometry": {
+      "contact_offset_m": 0.022,
+      "contact_height_m": 0.024,
+      "stroke_m": 0.12,
+      "precontact_clearance_height_above_pawn_base_m": 0.075,
+      "inside_v05_tk_bounds": true,
+      "static_only_subset_rule": "maximum modeled offset, mid-band contact height, and maximum in-bounds stroke prospectively address glancing progress while remaining inside the pre-existing endpoint bounds"
+    },
+    "geometry_derivation": {
+      "detailed_pawn_max_body_radius_m": 0.0138,
+      "fixed_jaw_collision_half_width_m": 0.015,
+      "existing_grid_quantum_m": 0.003,
+      "lateral_clearance_unrounded_m": 0.0498,
+      "lateral_clearance_m": 0.05,
+      "lateral_clearance_rule": "13.8 mm pawn radius plus twice the 15 mm fixed-jaw collision half-width plus two 3 mm grid quanta, rounded upward from 49.8 mm",
+      "detailed_pawn_top_above_base_m": 0.0532,
+      "precontact_clearance_unrounded_m": 0.0742,
+      "precontact_clearance_m": 0.075,
+      "precontact_clearance_rule": "53.2 mm pawn top plus 15 mm fixed-jaw collision half-width plus two 3 mm grid quanta, rounded upward from 74.2 mm",
+      "setup_speed_rule": "half the already reviewed and physically completed 3 degrees per second V4 setup speed, prospectively reducing dynamic tracking deviation without post-hoc retiming",
+      "dynamic_consequence_used_only_for_mechanism_choice": true,
+      "dynamic_case_or_value_reused": false
+    }
+  },
+  "selection": {
+    "one_winner_per_statically_eligible_family": true,
+    "selected_family_count": 4,
+    "direction_assignment": "alternate selected families REAL_TO_SIM then SIM_TO_REAL",
+    "minimum_distinct_families_per_direction": 2,
+    "fresh_nonquarantined_families_only": true,
+    "grid_expansion_after_result": false,
+    "dynamic_outcome_used_for_family_or_cell_ranking": false
+  },
+  "unchanged_gates": {
+    "closed_jaw_rad": -0.1727003294848389,
+    "sample_hz": 40.0,
+    "maximum_ik_residual_m": 0.003,
+    "minimum_arm_joint_limit_margin_rad": 0.03490658503988659,
+    "minimum_signed_progress_mm": 36.025,
+    "diagnostic_zoh_delay_seconds": 0.11,
+    "collision_contact_exclusion_camera_gateway_identity": true,
+    "no_clipping_smoothing_posthoc_retiming_offset_repair_or_assistance": true
+  },
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective frozen overrides of the hash-bound V05-TX static enumerator. One bounded 360-cell CPU/fp64 static execution only; no dynamic, V06, physical, promotion, or transfer authority."
+}
