@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T16:09:24-05:00",
+  "generated_at": "2026-07-28T16:15:26-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35",
+      "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -975,6 +975,39 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_seeded_funnel_static.v1",
         "status": "preregistered_before_seeded_funnel_model_loading_or_static_enumeration",
         "proof_class": "prospective_cpu_fp64_static_seeded_orientation_open_loop_ik_guiding_contact_action_freeze"
+      }
+    },
+    "v05_ud_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ud-seeded-funnel-v1/static-freeze-v1/receipt.json",
+      "sha256": "2196435cc8d21d245d2df6e6c099e9857cbc4c68f7e6a9d62665edd8e4ace7b4",
+      "proof_class": "cpu_fp64_static_seeded_orientation_open_loop_ik_guiding_contact_collision_camera_gateway_action_freeze_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_seeded_funnel_static_receipt.v1",
+        "status": "orientation_funnel_static_freeze_reject",
+        "proof_class": "cpu_fp64_static_seeded_orientation_open_loop_ik_guiding_contact_collision_camera_gateway_action_freeze_only",
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    "v05_ue_manager_authorization": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_successor_authorization_v1.json",
+      "sha256": "a38ea99808bdd84bdb61c0d4604169596091aa20a91b1c6f0c330feda514a1d3",
+      "proof_class": "prospective_manager_authorized_static_only_ramped_fingertip_funnel_successor",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_ramped_funnel_successor_authorization.v1",
+        "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
+        "proof_class": "prospective_manager_authorized_static_only_ramped_fingertip_funnel_successor"
+      }
+    },
+    "v05_ue_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_static_v1.json",
+      "sha256": "0b67546df86915e01531b773860e9c3cc774f342edd78c6b928608e8b326974a",
+      "proof_class": "prospective_cpu_fp64_static_ramped_fingertip_open_loop_guiding_contact_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_ramped_funnel_static.v1",
+        "status": "preregistered_before_ramped_funnel_model_loading_or_static_enumeration",
+        "proof_class": "prospective_cpu_fp64_static_ramped_fingertip_open_loop_guiding_contact_action_freeze"
       }
     },
     "simulator_candidate": {
@@ -2842,6 +2875,71 @@
       }
     },
     {
+      "id": "verdict:v05-ud-seeded-funnel-static-reject",
+      "type": "evaluator_verdict",
+      "label": "V05-UD seeded-orientation guiding-contact static terminal negative",
+      "status": "terminal_static_family_gate_negative_no_dynamic_admission",
+      "source_binding": "v05_ud_static_receipt",
+      "evaluator_identity": "2196435cc8d21d245d2df6e6c099e9857cbc4c68f7e6a9d62665edd8e4ace7b4",
+      "data": {
+        "evaluated_cells": 576,
+        "positional_ik_rejects": 510,
+        "compiled_cells": 66,
+        "collision_rejects": 66,
+        "reachable_fresh_families": 4,
+        "statically_eligible_families": 0,
+        "quarantine_leak": false,
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-ue-manager-authorization-bound",
+      "type": "checkpoint",
+      "label": "V05-UE delegated ramped-fingertip guiding-contact successor authorized",
+      "status": "manager_authorized_static_design_bound",
+      "source_binding": "v05_ue_manager_authorization",
+      "data": {
+        "mechanism": "level_engagement_then_ramped_fingertip_clearance",
+        "cumulative_quarantined_case_count": 16,
+        "level_engagement_mm": 10.0,
+        "ramp_rise_mm": 6.0,
+        "ramp_end_planar_progress_mm": 25.0,
+        "planar_endpoint_mm": 75.0,
+        "selected_pawn_grasped": false,
+        "closed_loop_or_feedback": false,
+        "static_design_authorized": true,
+        "model_loading_authorized": false,
+        "static_simulation_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-ue-ramped-funnel-static-frozen",
+      "type": "checkpoint",
+      "label": "V05-UE finite ramped-fingertip guiding-contact grid frozen",
+      "status": "preregistered_ramped_funnel_static_execution_active",
+      "source_binding": "v05_ue_static_contract",
+      "data": {
+        "postquarantine_family_count": 32,
+        "setup_branch_count": 3,
+        "wrist_seed_count": 3,
+        "guide_side_count": 2,
+        "cells_per_family": 18,
+        "maximum_total_cells": 576,
+        "selected_pawn_grasped": false,
+        "closed_loop_or_feedback": false,
+        "model_loading_authorized": true,
+        "static_simulation_authorized": true,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -3918,6 +4016,47 @@
       }
     },
     {
+      "source": "verdict:v05-ud-seeded-funnel-static-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-ud-seeded-funnel-static-frozen",
+      "metadata": {
+        "evaluated_cells": 576,
+        "positional_ik_rejects": 510,
+        "compiled_cells": 66,
+        "collision_rejects": 66,
+        "reachable_fresh_families": 4,
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-ue-manager-authorization-bound",
+      "type": "generated-from",
+      "target": "verdict:v05-ud-seeded-funnel-static-reject",
+      "metadata": {
+        "manager_authorized_under_standing_delegation": true,
+        "prior_verdict_immutable": true,
+        "cumulative_quarantined_case_count": 16,
+        "ramped_path_targets_adjacent_pawn_collision": true,
+        "scalar_sweep": false,
+        "static_design_only": true,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-ue-ramped-funnel-static-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-ue-manager-authorization-bound",
+      "metadata": {
+        "preregistered_before_model_loading_or_enumeration": true,
+        "maximum_total_cells": 576,
+        "cumulative_quarantined_case_count": 16,
+        "fresh_families_only": true,
+        "static_simulation_only": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -4718,14 +4857,41 @@
       "node_ids_added": [
         "checkpoint:v05-ud-seeded-funnel-static-frozen"
       ]
+    },
+    {
+      "revision": 84,
+      "event_id": "V05_UD_SEEDED_FUNNEL_STATIC_REJECT",
+      "status": "terminal_static_family_gate_negative_no_dynamic_admission",
+      "source_binding": "v05_ud_static_receipt",
+      "node_ids_added": [
+        "verdict:v05-ud-seeded-funnel-static-reject"
+      ]
+    },
+    {
+      "revision": 85,
+      "event_id": "V05_UE_MANAGER_AUTHORIZATION_BOUND",
+      "status": "manager_authorized_static_design_bound",
+      "source_binding": "v05_ue_manager_authorization",
+      "node_ids_added": [
+        "checkpoint:v05-ue-manager-authorization-bound"
+      ]
+    },
+    {
+      "revision": 86,
+      "event_id": "V05_UE_RAMPED_FUNNEL_STATIC_FREEZE",
+      "status": "preregistered_ramped_funnel_static_execution_active",
+      "source_binding": "v05_ue_static_contract",
+      "node_ids_added": [
+        "checkpoint:v05-ue-ramped-funnel-static-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-ud-seeded-funnel-static-frozen",
-    "milestone_id": "V05-UD",
-    "status": "preregistered_seeded_funnel_static_execution_active",
-    "queue_status": "ACTIVE_V05_UD_SEEDED_FUNNEL_STATIC_FROZEN",
-    "resume_action": "execute_one_bounded_576_cell_seeded_funnel_static_enumeration",
+    "node_id": "checkpoint:v05-ue-ramped-funnel-static-frozen",
+    "milestone_id": "V05-UE",
+    "status": "preregistered_ramped_funnel_static_execution_active",
+    "queue_status": "ACTIVE_V05_UE_RAMPED_FUNNEL_STATIC_FROZEN",
+    "resume_action": "execute_one_bounded_576_cell_ramped_funnel_static_enumeration",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

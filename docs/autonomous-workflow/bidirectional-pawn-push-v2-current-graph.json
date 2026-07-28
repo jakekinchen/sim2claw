@@ -3,12 +3,12 @@
     "counted_task_attempts": 0,
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
-    "milestone_id": "V05-UD",
-    "node_id": "checkpoint:v05-ud-seeded-funnel-static-frozen",
-    "queue_status": "ACTIVE_V05_UD_SEEDED_FUNNEL_STATIC_FROZEN",
-    "resume_action": "execute_one_bounded_576_cell_seeded_funnel_static_enumeration",
+    "milestone_id": "V05-UE",
+    "node_id": "checkpoint:v05-ue-ramped-funnel-static-frozen",
+    "queue_status": "ACTIVE_V05_UE_RAMPED_FUNNEL_STATIC_FROZEN",
+    "resume_action": "execute_one_bounded_576_cell_ramped_funnel_static_enumeration",
     "resume_authorized": true,
-    "status": "preregistered_seeded_funnel_static_execution_active"
+    "status": "preregistered_ramped_funnel_static_execution_active"
   },
   "authority": {
     "camera_open": false,
@@ -35,27 +35,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 105,
+    "edges": 108,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 3,
-      "evaluated-on": 21,
+      "evaluated-on": 22,
       "fitted-on": 4,
-      "generated-from": 68,
+      "generated-from": 70,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 103,
+    "nodes": 106,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 64,
+      "checkpoint": 66,
       "context": 1,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 14,
+      "evaluator_verdict": 15,
       "evidence": 5,
       "intervention": 1,
       "mechanism": 3,
@@ -872,6 +872,33 @@
       "type": "generated-from"
     },
     {
+      "metadata": {
+        "cumulative_quarantined_case_count": 16,
+        "manager_authorized_under_standing_delegation": true,
+        "physical_motion": false,
+        "prior_verdict_immutable": true,
+        "ramped_path_targets_adjacent_pawn_collision": true,
+        "scalar_sweep": false,
+        "static_design_only": true
+      },
+      "source": "checkpoint:v05-ue-manager-authorization-bound",
+      "target": "verdict:v05-ud-seeded-funnel-static-reject",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "cumulative_quarantined_case_count": 16,
+        "fresh_families_only": true,
+        "maximum_total_cells": 576,
+        "physical_motion": false,
+        "preregistered_before_model_loading_or_enumeration": true,
+        "static_simulation_only": true
+      },
+      "source": "checkpoint:v05-ue-ramped-funnel-static-frozen",
+      "target": "checkpoint:v05-ue-manager-authorization-bound",
+      "type": "generated-from"
+    },
+    {
       "metadata": {},
       "source": "context:c922-rgb-no-depth",
       "target": "session:bidirectional-pawn-push-v2",
@@ -1208,10 +1235,24 @@
       "source": "verdict:v05-uc-orientation-funnel-static-reject",
       "target": "checkpoint:v05-uc-orientation-funnel-static-frozen",
       "type": "evaluated-on"
+    },
+    {
+      "metadata": {
+        "collision_rejects": 66,
+        "compiled_cells": 66,
+        "dynamic_replay_executed": false,
+        "evaluated_cells": 576,
+        "physical_motion": false,
+        "positional_ik_rejects": 510,
+        "reachable_fresh_families": 4
+      },
+      "source": "verdict:v05-ud-seeded-funnel-static-reject",
+      "target": "checkpoint:v05-ud-seeded-funnel-static-frozen",
+      "type": "evaluated-on"
     }
   ],
-  "generated_at": "2026-07-28T16:09:24-05:00",
-  "graph_digest": "8be872c4140ed62b3b5cc472a07603a0e2af4ae0445ef478def143ef9d67afcd",
+  "generated_at": "2026-07-28T16:15:26-05:00",
+  "graph_digest": "8ff11a6987a4b3db6f7ed873175b4ea7650cf2dca1c0c32270bb75c6a02b4b45",
   "node_types": [
     "workcell",
     "session",
@@ -1294,7 +1335,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35"
+        "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1726,7 +1767,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35"
+        "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1777,7 +1818,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35"
+        "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1798,7 +1839,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35"
+        "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1827,7 +1868,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35"
+        "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -2236,7 +2277,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35"
+        "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -3341,6 +3382,75 @@
     },
     {
       "data": {
+        "closed_loop_or_feedback": false,
+        "cumulative_quarantined_case_count": 16,
+        "level_engagement_mm": 10.0,
+        "mechanism": "level_engagement_then_ramped_fingertip_clearance",
+        "model_loading_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "planar_endpoint_mm": 75.0,
+        "ramp_end_planar_progress_mm": 25.0,
+        "ramp_rise_mm": 6.0,
+        "selected_pawn_grasped": false,
+        "source_binding_id": "v05_ue_manager_authorization",
+        "static_design_authorized": true,
+        "static_simulation_authorized": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-ue-manager-authorization-bound",
+      "label": "V05-UE delegated ramped-fingertip guiding-contact successor authorized",
+      "proof_class": "prospective_manager_authorized_static_only_ramped_fingertip_funnel_successor",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_successor_authorization_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_manager_authorized_static_only_ramped_fingertip_funnel_successor",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_ramped_funnel_successor_authorization.v1",
+          "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading"
+        },
+        "proof_class": "prospective_manager_authorized_static_only_ramped_fingertip_funnel_successor",
+        "sha256": "a38ea99808bdd84bdb61c0d4604169596091aa20a91b1c6f0c330feda514a1d3"
+      },
+      "status": "manager_authorized_static_design_bound",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "cells_per_family": 18,
+        "closed_loop_or_feedback": false,
+        "dynamic_replay_authorized": false,
+        "guide_side_count": 2,
+        "maximum_total_cells": 576,
+        "model_loading_authorized": true,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "postquarantine_family_count": 32,
+        "selected_pawn_grasped": false,
+        "setup_branch_count": 3,
+        "source_binding_id": "v05_ue_static_contract",
+        "static_simulation_authorized": true,
+        "v06_evaluator_freeze_authorized": false,
+        "wrist_seed_count": 3
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-ue-ramped-funnel-static-frozen",
+      "label": "V05-UE finite ramped-fingertip guiding-contact grid frozen",
+      "proof_class": "prospective_cpu_fp64_static_ramped_fingertip_open_loop_guiding_contact_action_freeze",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_static_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_static_ramped_fingertip_open_loop_guiding_contact_action_freeze",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_ramped_funnel_static.v1",
+          "status": "preregistered_before_ramped_funnel_model_loading_or_static_enumeration"
+        },
+        "proof_class": "prospective_cpu_fp64_static_ramped_fingertip_open_loop_guiding_contact_action_freeze",
+        "sha256": "0b67546df86915e01531b773860e9c3cc774f342edd78c6b928608e8b326974a"
+      },
+      "status": "preregistered_ramped_funnel_static_execution_active",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "source_binding_id": "v01",
         "task_camera": "C922",
         "wrist_depth_required": false
@@ -3639,7 +3749,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35"
+        "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -3699,7 +3809,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35"
+        "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -3717,7 +3827,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35"
+        "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -3785,7 +3895,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35"
+        "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -4297,6 +4407,40 @@
     },
     {
       "data": {
+        "collision_rejects": 66,
+        "compiled_cells": 66,
+        "dynamic_replay_executed": false,
+        "evaluated_cells": 576,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "positional_ik_rejects": 510,
+        "quarantine_leak": false,
+        "reachable_fresh_families": 4,
+        "source_binding_id": "v05_ud_static_receipt",
+        "statically_eligible_families": 0
+      },
+      "evaluator_identity": "2196435cc8d21d245d2df6e6c099e9857cbc4c68f7e6a9d62665edd8e4ace7b4",
+      "id": "verdict:v05-ud-seeded-funnel-static-reject",
+      "label": "V05-UD seeded-orientation guiding-contact static terminal negative",
+      "proof_class": "cpu_fp64_static_seeded_orientation_open_loop_ik_guiding_contact_collision_camera_gateway_action_freeze_only",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ud-seeded-funnel-v1/static-freeze-v1/receipt.json",
+        "payload_contract": {
+          "dynamic_replay_executed": false,
+          "physical_motion": false,
+          "physical_task_attempts": 0,
+          "proof_class": "cpu_fp64_static_seeded_orientation_open_loop_ik_guiding_contact_collision_camera_gateway_action_freeze_only",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_seeded_funnel_static_receipt.v1",
+          "status": "orientation_funnel_static_freeze_reject"
+        },
+        "proof_class": "cpu_fp64_static_seeded_orientation_open_loop_ik_guiding_contact_collision_camera_gateway_action_freeze_only",
+        "sha256": "2196435cc8d21d245d2df6e6c099e9857cbc4c68f7e6a9d62665edd8e4ace7b4"
+      },
+      "status": "terminal_static_family_gate_negative_no_dynamic_admission",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "human_physical_intervention_required": false,
         "source_binding_id": "v00"
       },
@@ -4393,7 +4537,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35",
+      "source_sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -4423,7 +4567,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35",
+      "source_sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -4453,7 +4597,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35",
+      "source_sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -4735,7 +4879,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35",
+      "source_sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -5177,6 +5321,36 @@
       "source_binding": "v05_ud_static_contract",
       "source_sha256": "153c22e0252d9d4736bbc0a3f67dbf927a0a95424e01aa34ddf107b43802803f",
       "status": "preregistered_seeded_funnel_static_execution_active"
+    },
+    {
+      "event_id": "V05_UD_SEEDED_FUNNEL_STATIC_REJECT",
+      "node_ids_added": [
+        "verdict:v05-ud-seeded-funnel-static-reject"
+      ],
+      "revision": 84,
+      "source_binding": "v05_ud_static_receipt",
+      "source_sha256": "2196435cc8d21d245d2df6e6c099e9857cbc4c68f7e6a9d62665edd8e4ace7b4",
+      "status": "terminal_static_family_gate_negative_no_dynamic_admission"
+    },
+    {
+      "event_id": "V05_UE_MANAGER_AUTHORIZATION_BOUND",
+      "node_ids_added": [
+        "checkpoint:v05-ue-manager-authorization-bound"
+      ],
+      "revision": 85,
+      "source_binding": "v05_ue_manager_authorization",
+      "source_sha256": "a38ea99808bdd84bdb61c0d4604169596091aa20a91b1c6f0c330feda514a1d3",
+      "status": "manager_authorized_static_design_bound"
+    },
+    {
+      "event_id": "V05_UE_RAMPED_FUNNEL_STATIC_FREEZE",
+      "node_ids_added": [
+        "checkpoint:v05-ue-ramped-funnel-static-frozen"
+      ],
+      "revision": 86,
+      "source_binding": "v05_ue_static_contract",
+      "source_sha256": "0b67546df86915e01531b773860e9c3cc774f342edd78c6b928608e8b326974a",
+      "status": "preregistered_ramped_funnel_static_execution_active"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -5185,7 +5359,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "aeeb33132be70584b7975b5fc7e5424a91f364c1b9b9ad9d9d0d1d904b440a35"
+      "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8"
     },
     {
       "id": "simulator_candidate",
@@ -6215,6 +6389,42 @@
       },
       "proof_class": "prospective_cpu_fp64_static_seeded_orientation_open_loop_ik_guiding_contact_action_freeze",
       "sha256": "153c22e0252d9d4736bbc0a3f67dbf927a0a95424e01aa34ddf107b43802803f"
+    },
+    {
+      "id": "v05_ud_static_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ud-seeded-funnel-v1/static-freeze-v1/receipt.json",
+      "payload_contract": {
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "proof_class": "cpu_fp64_static_seeded_orientation_open_loop_ik_guiding_contact_collision_camera_gateway_action_freeze_only",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_seeded_funnel_static_receipt.v1",
+        "status": "orientation_funnel_static_freeze_reject"
+      },
+      "proof_class": "cpu_fp64_static_seeded_orientation_open_loop_ik_guiding_contact_collision_camera_gateway_action_freeze_only",
+      "sha256": "2196435cc8d21d245d2df6e6c099e9857cbc4c68f7e6a9d62665edd8e4ace7b4"
+    },
+    {
+      "id": "v05_ue_manager_authorization",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_successor_authorization_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_manager_authorized_static_only_ramped_fingertip_funnel_successor",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_ramped_funnel_successor_authorization.v1",
+        "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading"
+      },
+      "proof_class": "prospective_manager_authorized_static_only_ramped_fingertip_funnel_successor",
+      "sha256": "a38ea99808bdd84bdb61c0d4604169596091aa20a91b1c6f0c330feda514a1d3"
+    },
+    {
+      "id": "v05_ue_static_contract",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_static_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_static_ramped_fingertip_open_loop_guiding_contact_action_freeze",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_ramped_funnel_static.v1",
+        "status": "preregistered_before_ramped_funnel_model_loading_or_static_enumeration"
+      },
+      "proof_class": "prospective_cpu_fp64_static_ramped_fingertip_open_loop_guiding_contact_action_freeze",
+      "sha256": "0b67546df86915e01531b773860e9c3cc774f342edd78c6b928608e8b326974a"
     },
     {
       "id": "world_visual",

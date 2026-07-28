@@ -124,6 +124,19 @@ SEEDED_FUNNEL_STATIC_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_seeded_funnel_static_v1.json"
 )
+SEEDED_FUNNEL_STATIC_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-ud-seeded-funnel-v1/static-freeze-v1/receipt.json"
+)
+RAMPED_FUNNEL_AUTHORIZATION = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_ramped_funnel_"
+    "successor_authorization_v1.json"
+)
+RAMPED_FUNNEL_STATIC_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_ramped_funnel_static_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -660,6 +673,62 @@ def test_orientation_funnel_static_reject_and_seeded_successor_freeze() -> None:
     assert overrides["endpoint_geometry"]["contact_offset_m"] == 0.022
     assert overrides["endpoint_geometry"]["contact_height_m"] == 0.024
     assert overrides["endpoint_geometry"]["stroke_m"] == 0.075
+    assert contract["authority"]["static_simulation"] is True
+    assert contract["authority"]["dynamic_replay"] is False
+    assert contract["authority"]["physical_motion"] is False
+
+
+def test_seeded_funnel_reject_and_ramped_successor_freeze() -> None:
+    receipt = json.loads(
+        SEEDED_FUNNEL_STATIC_RECEIPT.read_text(encoding="utf-8")
+    )
+    assert _sha(SEEDED_FUNNEL_STATIC_RECEIPT) == (
+        "2196435cc8d21d245d2df6e6c099e9857cbc4c68f7e6a9d62665edd8e4ace7b4"
+    )
+    assert receipt["status"] == "orientation_funnel_static_freeze_reject"
+    assert receipt["grid_result_count"] == 576
+    assert sum(
+        row["status"] == "compile_reject" for row in receipt["grid_results"]
+    ) == 510
+    assert sum(
+        row["status"] == "static_reject" for row in receipt["grid_results"]
+    ) == 66
+    assert receipt["statically_eligible_family_count"] == 0
+    assert receipt["dynamic_replay_executed"] is False
+    assert receipt["physical_motion"] is False
+
+    authorization = json.loads(
+        RAMPED_FUNNEL_AUTHORIZATION.read_text(encoding="utf-8")
+    )
+    for binding in authorization["immutable_predecessors"].values():
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert authorization["quarantine"]["exact_count"] == 16
+    design = authorization["authorized_static_design"]
+    assert design["level_engagement_m"] == 0.01
+    assert design["ramp_end_planar_progress_m"] == 0.025
+    assert design["ramp_rise_m"] == 0.006
+    assert design["finite_maximum_cells"] == 576
+    assert design["selected_pawn_grasped"] is False
+    assert design["closed_loop_or_feedback"] is False
+
+    contract = json.loads(
+        RAMPED_FUNNEL_STATIC_CONTRACT.read_text(encoding="utf-8")
+    )
+    for key in (
+        "authorization",
+        "base_static_contract",
+        "v05_ud_static_receipt",
+        "base_implementation",
+        "multistart_implementation",
+        "implementation",
+    ):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    overrides = contract["frozen_overrides"]
+    assert overrides["cells_per_family"] == 18
+    assert overrides["maximum_total_cells"] == 576
+    assert overrides["level_engagement_m"] == 0.01
+    assert overrides["ramp_rise_m"] == 0.006
     assert contract["authority"]["static_simulation"] is True
     assert contract["authority"]["dynamic_replay"] is False
     assert contract["authority"]["physical_motion"] is False

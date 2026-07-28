@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_UD_SEEDED_FUNNEL_STATIC_FROZEN`
+Status: `ACTIVE_V05_UE_RAMPED_FUNNEL_STATIC_FROZEN`
 
 Created: `2026-07-28`
 
@@ -198,7 +198,8 @@ denominators before any counted action is compiled.
 | V05-UA | `DONE_TERMINAL_NEGATIVE` | Prospectively lower and center contact using the pre-existing `18 mm` height and `16 mm` center offset over fresh nonquarantined cases. | Exact cumulative twelve-case quarantine; low-center values remain inside the frozen pawn ring/source-square geometry; all setup, clearance, `90 mm` stroke, identity, selection, and gates remain unchanged; four static-safe fresh families alternate `2/2`. | Receipt `171d634b...` evaluated all `324` cells: `279` IK rejects, `45` collision rejects, zero eligible families. No dynamic/V06/physical admission. |
 | V05-UB | `DONE_TERMINAL_NEGATIVE` | Prospectively stop the low-center push at the immediate empty-neighbor center using a `60 mm` tool stroke. | `60−16≈44 mm` center travel is one square and `1.6655×` the unchanged progress gate; exact twelve-case quarantine, low-center contact, setup, clearance, identity, selection, and gates remain unchanged; four static-safe fresh families alternate `2/2`. | Static receipt `ed2a7aef...` PASS selected four actions `2/2`. Temporal receipt `9c3ea9b6...` REJECT: `0/2` each direction; every identity/gateway check passed, all cases failed progress robustness, and three variant/path results also failed excluded-object gates. No V06/physical admission. |
 | V05-UC | `DONE_TERMINAL_NEGATIVE` | Replace the exhausted single-straight-push family with a fixed-wrist, deterministic guide-to-center initial-contact mechanism. | Exact sixteen-case quarantine; three geometry-derived wrist rolls × two `±3 mm` guide sides × three demonstrated setup branches over 32 fresh families; full setup/exact jaw/40 Hz bytes; selected pawn never grasped; no feedback; four static-safe actions alternate `2/2`. | Receipt `127434f6...` REJECT: all `576` cells evaluated, `510` fixed-wrist IK rejects and every one of the `66` compiled cells collision-rejected. Zero families/lanes; no dynamics or physical admission. |
-| V05-UD | `IN_PROGRESS` | Preserve the orientation seeds and guide-to-center mechanism while releasing the fixed-wrist overconstraint after the exact demonstrated setup seed. | Exact sixteen-case quarantine; three demonstrated setup branches × three exact wrist seeds × two `±3 mm` guide sides over 32 fresh families; fixed prior static-safe `22 mm` offset/`24 mm` height and `75 mm` stroke; full setup/exact jaw/40 Hz bytes; no grasp/feedback; four static-safe actions alternate `2/2`. | Manager authorization `70e056b4...`; contract `153c22e0...`; wrapper `8943d6be...`; exact maximum `32 × 18 = 576` cells. One static execution active; dynamic/V06/counted/physical false. |
+| V05-UD | `DONE_TERMINAL_NEGATIVE` | Preserve the orientation seeds and guide-to-center mechanism while releasing the fixed-wrist overconstraint after the exact demonstrated setup seed. | Exact sixteen-case quarantine; three demonstrated setup branches × three exact wrist seeds × two `±3 mm` guide sides over 32 fresh families; fixed prior static-safe `22 mm` offset/`24 mm` height and `75 mm` stroke; full setup/exact jaw/40 Hz bytes; no grasp/feedback; four static-safe actions alternate `2/2`. | Receipt `2196435c...` REJECT: `510` positional IK rejects and all `66` compiled cells collision-rejected across four reachable fresh families. Zero lanes/dynamics/physical admission. |
+| V05-UE | `IN_PROGRESS` | Preserve the reachable four-family funnel while replacing its level push with a deterministic ramped-fingertip path that clears adjacent pawns. | Exact sixteen-case quarantine and unchanged 576-cell seed/guide grid; `10 mm` level engagement, `6 mm` rise over the next `15 mm`, then lifted continuation to the unchanged `75 mm` planar endpoint; no scalar sweep, grasp, feedback, or gate change; four static-safe actions alternate `2/2`. | Manager authorization `a38ea998...`; contract `0b67546d...`; wrapper `c22663fe...`. One static execution active; dynamic/V06/counted/physical false. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2085,6 +2086,44 @@ observable hardware receipts close with torque false; torque was not re-read
 because opening the gateway is outside this milestone. `brev ls` reports no
 instances. The sole unrelated untracked
 `tools/build_fiducial_sheet.py` remains untouched.
+
+### V05-UD static terminal negative and V05-UE ramped-funnel freeze — 2026-07-28
+
+The one V05-UD static execution produced
+`runs/bidirectional-pawn-push-v2/20260728-v05-ud-seeded-funnel-v1/static-freeze-v1/receipt.json`,
+SHA-256
+`2196435cc8d21d245d2df6e6c099e9857cbc4c68f7e6a9d62665edd8e4ace7b4`,
+with status `orientation_funnel_static_freeze_reject`. All `576` cells were
+evaluated. Releasing wrist roll after its exact setup seed did not alter the
+positional reach boundary: `510` cells failed IK. The `66` compiled cells
+covered exactly four fresh families, but every one failed the collision gate.
+No dynamics, V06, counted attempt, or physical motion followed.
+
+The next smallest distinct mechanism targets that collision boundary without
+expanding reach or sweeping scalar geometry. Manager authorization
+`configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_successor_authorization_v1.json`,
+SHA-256
+`a38ea99808bdd84bdb61c0d4604169596091aa20a91b1c6f0c330feda514a1d3`,
+contract
+`configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_static_v1.json`,
+SHA-256
+`0b67546df86915e01531b773860e9c3cc774f342edd78c6b928608e8b326974a`,
+and wrapper
+`src/sim2claw/bidirectional_pawn_push_v2_ramped_funnel_static_v1.py`,
+SHA-256
+`c22663fee33065aecd203883a11ce4632f7d6b2ef50038b90c97c85fbeba751e`,
+are frozen before model loading.
+
+V05-UE retains the exact sixteen-case quarantine and every V05-UD seed,
+guide, identity, selection, camera, collision, gateway, and no-grasp/no-
+feedback gate. After guide-to-center contact, the tool executes `10 mm` of
+level engagement, rises `6 mm` over the next `15 mm`, then continues at the
+lifted height to the unchanged `75 mm` planar endpoint. These values form one
+geometry-derived path, not a grid: `10 mm` is below the modeled `13.8 mm`
+pawn-base radius, and `6 mm` is two existing `3 mm` robustness quanta. The
+finite grid remains exactly `32 × 3 × 3 × 2 = 576` cells. One static
+execution is active; dynamic, V06, counted, camera, gateway/serial, physical,
+promotion, and transfer authority remains false.
 
 ### V05-TK owner-authorized action-geometry successor — 2026-07-28
 

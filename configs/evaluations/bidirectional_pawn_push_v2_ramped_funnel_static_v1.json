@@ -1,0 +1,88 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_ramped_funnel_static.v1",
+  "enumeration_id": "bidirectional-pawn-push-v2-ramped-funnel-static-v1",
+  "status": "preregistered_before_ramped_funnel_model_loading_or_static_enumeration",
+  "proof_class": "prospective_cpu_fp64_static_ramped_fingertip_open_loop_guiding_contact_action_freeze",
+  "authorization": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_successor_authorization_v1.json",
+    "sha256": "a38ea99808bdd84bdb61c0d4604169596091aa20a91b1c6f0c330feda514a1d3"
+  },
+  "base_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_seeded_funnel_static_v1.json",
+    "sha256": "153c22e0252d9d4736bbc0a3f67dbf927a0a95424e01aa34ddf107b43802803f"
+  },
+  "v05_ud_static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ud-seeded-funnel-v1/static-freeze-v1/receipt.json",
+    "sha256": "2196435cc8d21d245d2df6e6c099e9857cbc4c68f7e6a9d62665edd8e4ace7b4"
+  },
+  "base_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_seeded_funnel_static_v1.py",
+    "sha256": "8943d6be84e0fa6d080bb7d96404a2b389b0b758c9816f24485cce86ad0fbdf8"
+  },
+  "multistart_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_multistart_approach_static.py",
+    "sha256": "191a60be161a2bb4c6b842785cfc91e7dc5ac46c2daeb28d12b197af92165ff7"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_ramped_funnel_static_v1.py",
+    "sha256": "c22663fee33065aecd203883a11ce4632f7d6b2ef50038b90c97c85fbeba751e"
+  },
+  "frozen_overrides": {
+    "path_shape": "guide-side vertical descent; 3 mm sweep to center; 10 mm level fingertip engagement; 6 mm rise over the next 15 mm; lifted continuation to the unchanged 75 mm planar endpoint",
+    "level_engagement_m": 0.01,
+    "ramp_end_planar_progress_m": 0.025,
+    "ramp_rise_m": 0.006,
+    "planar_endpoint_m": 0.075,
+    "derivation": "10 mm is below the 13.8 mm modeled pawn base radius; 6 mm is two existing 3 mm robustness quanta; 25 mm adds approximately one base radius after engagement.",
+    "same_exact_sixteen_case_quarantine": true,
+    "same_postquarantine_family_count": 32,
+    "same_setup_branch_count": 3,
+    "same_wrist_seed_count": 3,
+    "same_guide_side_count": 2,
+    "cells_per_family": 18,
+    "maximum_total_cells": 576,
+    "finite_and_nonexpandable_after_freeze": true
+  },
+  "unchanged_gates": {
+    "minimum_distinct_families_per_direction": 2,
+    "selected_family_count": 4,
+    "maximum_ik_residual_m": 0.003,
+    "minimum_arm_joint_limit_margin_rad": 0.03490658503988659,
+    "exact_setup_wrist_seed_tolerance_rad": 1e-12,
+    "jaw_target_tolerance_rad": 1e-12,
+    "selected_static_jaw_contact_required": true,
+    "new_disallowed_robot_collision_count": 0,
+    "camera_margin_required": true,
+    "calibrated_gateway_bounds_required": true,
+    "reviewed_gateway_rates_required": true,
+    "requested_sent_identity_required": true
+  },
+  "forbidden": {
+    "dynamic_outcome_selection": true,
+    "quarantined_case_reuse": true,
+    "scalar_geometry_sweep": true,
+    "grasp": true,
+    "feedback_or_adaptation": true,
+    "clipping_smoothing_retiming_offset_or_assistance": true,
+    "randomization_or_posterior": true,
+    "manual_intervention": true,
+    "physical_motion": true,
+    "paid_compute": true
+  },
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "action_freeze_if_static_gate_passes": true,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective CPU/fp64 static-only ramped-fingertip guide-to-center action search over exactly 576 cells. No dynamic consequence, calibrated plant, physical packet, promotion, or transfer authority."
+}
