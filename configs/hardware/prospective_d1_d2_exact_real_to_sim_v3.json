@@ -1,0 +1,112 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "prospective_d1_d2_exact_real_to_sim_20260727_v3",
+  "samples_per_stage": 1121,
+  "capture_hold_seconds": 0.25,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "frame_joint_alignment_camera_role": "c922",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_35s_v1.json",
+    "contract_sha256": "744a0c63c1d7282265299397c4a9bf3083bb3c35899878aa5480f3362feeef23"
+  },
+  "setup_recovery_command_anchor_snap_limit_degrees": 4.0,
+  "reviewed_anchor_degrees": [
+    -6.769230769230769,
+    -92.3956043956044,
+    105.53846153846153,
+    -50.417582417582416,
+    -104.13186813186813,
+    1.66270783847981
+  ],
+  "stage_targets_degrees": [
+    [
+      -5.274725274725275,
+      -106.63736263736264,
+      98.32967032967034,
+      -99.56043956043956,
+      -152.13186813186815,
+      1.66270783847981
+    ]
+  ],
+  "maximum_slew_degrees_s_by_joint": [
+    60.0,
+    60.0,
+    60.0,
+    60.0,
+    90.0,
+    100.0
+  ],
+  "frozen_stage_action": {
+    "schema_version": "sim2claw.bound_frozen_stage_action.v1",
+    "path": "runs/prospective-real-to-sim/20260727-d1-d2-exact-v3/compiled/full_action.npy",
+    "npy_sha256": "17a79e541662602b1256f8a59a05ea5446613add82ba99004af3f52ebbbf797e",
+    "raw_c_order_sha256": "96be626a3180da05f44fc8a7077ef2f22bf98f31354ecff0a26d214929e8f3f3",
+    "dtype": "float64_little_endian",
+    "shape": [
+      1121,
+      6
+    ],
+    "derivation_receipt_path": "runs/prospective-real-to-sim/20260727-d1-d2-exact-v3/compiled/derivation_receipt.json",
+    "derivation_receipt_sha256": "64e4b9d932dc900cf1a58b2d9566abed5f8c15e24a48e09d3b8d594747539f5c",
+    "counted_task_start_index": 80,
+    "counted_task_action_sha256": "360f22d790897dc4634ed28ddfea64c7d2b201c2a0094d83ff62d728fded9e69",
+    "setup_prefix_action_sha256": "bd487907db96b8740a18af27c39fc07350fe1eb4b2c0eda605acd7e7dee68126"
+  },
+  "recovery_source_contact_admission": {
+    "schema_version": "sim2claw.recovery_source_contact_admission.v1",
+    "enabled": true,
+    "source_state_only": true,
+    "source_joint": "elbow_flex",
+    "inward_direction": "decreasing",
+    "require_source_robot_self_contact_only": true,
+    "require_contact_pairs_subset_of_source": true,
+    "require_penetration_never_worse_than_source": true,
+    "require_final_contact_clear": true,
+    "exclude_from_task_and_transfer_claims": true,
+    "visual_source_review_path": "runs/prospective-real-to-sim/20260727-d1-d2-wrist-dominant-setup-v2/visual_scene_review.json",
+    "visual_source_review_sha256": "85bd06d98fa615bb9130f450738414035f89f973c4d07aad9085d2a097695ec6"
+  },
+  "task_derivation": {
+    "task": "D1_to_D2_pawn_pick_lift_carry_release",
+    "fresh_counted_task_anchor_degrees": [
+      -6.681318681318682,
+      -92.3956043956044,
+      85.0,
+      -50.417582417582416,
+      -104.13186813186813,
+      1.66270783847981
+    ],
+    "setup_prefix_sample_count": 80,
+    "counted_task_sample_count": 1041,
+    "source_provenance_start_index": 100,
+    "source_provenance_end_index": 530,
+    "source_observed_state_path_only": true,
+    "old_source_initial_pose_used": false,
+    "fixed_sample_hz": 40,
+    "float64": true,
+    "piecewise_linear_resampling": true,
+    "smoothing": false,
+    "ik": false,
+    "clipping": false,
+    "offsets": false,
+    "runtime_repair": false,
+    "corrective_suffix": false
+  },
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "counted_task_scope": "prospective_exact_real_to_sim_d1_to_d2",
+    "scene_authority": "fresh_C922_upright_D1_empty_D2_with_Pi_external_context",
+    "d405_role": "action_enclosing_supporting_rgb_only",
+    "metric_depth": false,
+    "setup_and_task_share_one_torque_on_transaction": true,
+    "setup_bytes_excluded_from_task_action_hash": true,
+    "counted_task_bytes_frozen_before_physical_execution": true,
+    "physical_task_attempt_limit": 1,
+    "real_before_simulation_task_evidence": true,
+    "same_canonical_task_bytes_required_in_simulator": true,
+    "pawn_contact_allowed_only_during_counted_task": true,
+    "guaranteed_torque_off_close": true,
+    "phase_2_forbidden_until_real_and_physics_task_success": true
+  }
+}

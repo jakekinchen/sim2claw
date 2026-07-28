@@ -1,0 +1,84 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c2_c1_terminal_scene_reveal_tricam_20260727_v2",
+  "samples_per_stage": 801,
+  "capture_hold_seconds": 1.0,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "frame_joint_alignment_camera_role": "c922",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_35s_v1.json",
+    "contract_sha256": "744a0c63c1d7282265299397c4a9bf3083bb3c35899878aa5480f3362feeef23"
+  },
+  "reviewed_anchor_degrees": [
+    -11.868131868131869,
+    -67.6923076923077,
+    101.14285714285714,
+    -17.714285714285715,
+    -100.87912087912088,
+    2.494061757719715
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -11.252747252747254,
+        -68.83516483516483,
+        94.28571428571429,
+        -17.89010989010989,
+        -100.26373626373626,
+        2.019002375296912
+      ],
+      [
+        -3.4285714285714284,
+        -105.93406593406593,
+        97.45054945054945,
+        -39.69230769230769,
+        -108.17582417582418,
+        1.66270783847981
+      ],
+      [
+        -1.6703296703296704,
+        -106.63736263736264,
+        98.94505494505495,
+        -80.83516483516483,
+        -111.25274725274726,
+        1.66270783847981
+      ],
+      [
+        -2.197802197802198,
+        -106.63736263736264,
+        98.85714285714286,
+        -100.17582417582418,
+        -124.7032967032967,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_only",
+    "capture_scope": "motion_enclosing_tricam_terminal_scene_reveal",
+    "source_anchor": "fresh_configuration_free_torque_off_preflight_after_terminal_c2_c1_v1",
+    "waypoint_source": "successful_c2_to_c1_provenance_recording_observed_rows_350_375_400_465",
+    "explicit_in_range_lift_target": -106.63736263736264,
+    "raw_observed_lift_below_limit_degrees": -106.72527472527473,
+    "route_semantics": "contact_free_post_release_withdrawal_provenance_with_explicit_legal_lift_minimum",
+    "maximum_slew_degrees_s": 10.0,
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "one_physical_attempt": true,
+    "guaranteed_torque_off_close": true,
+    "bytes_excluded_from_task_action_hash": true,
+    "cannot_repair_or_promote_terminal_c2_c1_trace": true,
+    "supersedes_compile_rejected_route": "configs/hardware/c2_c1_terminal_scene_reveal_tricam_v1.json",
+    "evidence_limits": {
+      "physical_setup_only": true,
+      "task_action": false,
+      "task_success": false,
+      "transfer": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false
+    }
+  }
+}

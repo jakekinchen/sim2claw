@@ -1,0 +1,83 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c2_c1_terminal_scene_reveal_tricam_20260727_v3",
+  "samples_per_stage": 721,
+  "capture_hold_seconds": 1.0,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "frame_joint_alignment_camera_role": "c922",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_25s_v1.json",
+    "contract_sha256": "317a428884de0b55066dfee0e67b84853af5bb88f6f0da05e53d341fdd702930"
+  },
+  "reviewed_anchor_degrees": [
+    -11.868131868131869,
+    -67.6923076923077,
+    101.14285714285714,
+    -17.714285714285715,
+    -100.87912087912088,
+    2.494061757719715
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -11.868131868131869,
+        -67.6923076923077,
+        93.93406593406593,
+        -17.714285714285715,
+        -100.87912087912088,
+        2.494061757719715
+      ],
+      [
+        -0.7912087912087912,
+        -105.75824175824175,
+        93.93406593406593,
+        -100.0,
+        -119.07692307692308,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "recovery_source_contact_admission": {
+    "schema_version": "sim2claw.recovery_source_contact_admission.v1",
+    "enabled": true,
+    "source_state_only": true,
+    "source_joint": "elbow_flex",
+    "inward_direction": "decreasing",
+    "require_source_robot_self_contact_only": true,
+    "require_contact_pairs_subset_of_source": true,
+    "require_penetration_never_worse_than_source": true,
+    "require_final_contact_clear": true,
+    "exclude_from_task_and_transfer_claims": true,
+    "visual_source_review_path": "runs/prospective-real-to-sim/20260727-d1-d2-wrist-dominant-setup-v2/visual_scene_review.json",
+    "visual_source_review_sha256": "85bd06d98fa615bb9130f450738414035f89f973c4d07aad9085d2a097695ec6"
+  },
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "motion_enclosing_tricam_terminal_scene_reveal",
+    "source_anchor": "fresh_configuration_free_torque_off_preflight_after_terminal_c2_c1_v1",
+    "target_source": "previously_previewed_and_physically_executed_stable_high_geometry_from_recovery_v2",
+    "route_semantics": "elbow_only_inward_model_contact_clearance_then_fixed_elbow_contact_free_retreat",
+    "maximum_slew_degrees_s": 10.0,
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "one_physical_attempt": true,
+    "guaranteed_torque_off_close": true,
+    "bytes_excluded_from_task_action_hash": true,
+    "cannot_repair_or_promote_terminal_c2_c1_trace": true,
+    "supersedes_compile_rejected_routes": [
+      "configs/hardware/c2_c1_terminal_scene_reveal_tricam_v1.json",
+      "configs/hardware/c2_c1_terminal_scene_reveal_tricam_v2.json"
+    ],
+    "evidence_limits": {
+      "physical_setup_recovery_only": true,
+      "task_action": false,
+      "task_success": false,
+      "transfer": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false
+    }
+  }
+}

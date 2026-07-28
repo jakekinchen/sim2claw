@@ -44,14 +44,19 @@ CAPTURE_MODE_C922_PI = "c922_plus_pi_hold"
 CAPTURE_MODE_TRICAM = "native_motion_tricam"
 SAMPLE_HZ = 40
 SAMPLES_PER_STAGE = 361
-MIN_SAMPLES_PER_STAGE = SAMPLES_PER_STAGE
+MIN_SAMPLES_PER_STAGE = 41
 MAX_SAMPLES_PER_STAGE = 1441
 CAPTURE_HOLD_SECONDS = 2.0
 CAPTURE_HOLD_SAMPLES = int(SAMPLE_HZ * CAPTURE_HOLD_SECONDS)
+MIN_CAPTURE_HOLD_SECONDS = 0.25
+MAX_CAPTURE_HOLD_SECONDS = CAPTURE_HOLD_SECONDS
 CAMERA_POST_ROLL_SECONDS = 0.25
 TRICAM_START_TO_ACTION_BUDGET_SECONDS = 3.0
 MAX_STAGE_EXCURSION_DEGREES = 90.0
 MAX_SLEW_DEGREES_S = 10.0
+GATEWAY_MAX_SLEW_DEGREES_S = np.asarray(
+    [60.0, 60.0, 60.0, 60.0, 90.0, 100.0], dtype=np.float64
+)
 COMPILE_ANCHOR_TOLERANCE_DEGREES = np.asarray(
     [0.5, 0.5, 0.5, 0.5, 0.5, 0.1], dtype=np.float64
 )
@@ -447,6 +452,91 @@ def _load_route(
     return route, anchor, waypoint_stages
 
 
+def _load_bound_frozen_stage_action(
+    route: Mapping[str, Any],
+) -> tuple[np.ndarray, dict[str, Any]] | None:
+    descriptor = route.get("frozen_stage_action")
+    if descriptor is None:
+        return None
+    _require(
+        isinstance(descriptor, Mapping)
+        and descriptor.get("schema_version")
+        == "sim2claw.bound_frozen_stage_action.v1"
+        and descriptor.get("dtype") == "float64_little_endian",
+        "bound frozen stage-action descriptor changed",
+    )
+    action_path = Path(str(descriptor.get("path") or ""))
+    receipt_path = Path(str(descriptor.get("derivation_receipt_path") or ""))
+    repository_root = Path(__file__).resolve().parents[2]
+    if not action_path.is_absolute():
+        action_path = repository_root / action_path
+    if not receipt_path.is_absolute():
+        receipt_path = repository_root / receipt_path
+    action_path = action_path.resolve()
+    receipt_path = receipt_path.resolve()
+    _require(
+        action_path.is_file()
+        and receipt_path.is_file()
+        and _sha256(action_path) == descriptor.get("npy_sha256")
+        and _sha256(receipt_path) == descriptor.get("derivation_receipt_sha256"),
+        "bound frozen stage action or derivation receipt drifted",
+    )
+    try:
+        actions = np.asarray(
+            np.load(action_path, allow_pickle=False),
+            dtype="<f8",
+            order="C",
+        )
+        expected_shape = tuple(int(value) for value in descriptor["shape"])
+    except (KeyError, OSError, TypeError, ValueError) as error:
+        raise WristViewRepositionError(
+            f"bound frozen stage action is malformed: {error}"
+        ) from error
+    raw = actions.tobytes(order="C")
+    counted_start = int(descriptor.get("counted_task_start_index", -1))
+    _require(
+        actions.ndim == 2
+        and actions.shape == expected_shape
+        and actions.shape[1] == len(ROBOT_JOINTS)
+        and np.all(np.isfinite(actions))
+        and hashlib.sha256(raw).hexdigest()
+        == descriptor.get("raw_c_order_sha256")
+        and 1 <= counted_start < len(actions),
+        "bound frozen stage-action bytes, shape, or task boundary changed",
+    )
+    counted = np.ascontiguousarray(actions[counted_start:], dtype="<f8")
+    setup = np.ascontiguousarray(actions[:counted_start], dtype="<f8")
+    receipt = _read_json(receipt_path, "frozen stage-action derivation receipt")
+    counted_digest = action_sha256(counted)
+    setup_digest = action_sha256(setup)
+    _require(
+        receipt.get("schema_version")
+        == "sim2claw.prospective_demonstration_derived_action.v1"
+        and receipt.get("status") == "frozen_before_physical_execution"
+        and receipt.get("canonical_task_action_sha256") == counted_digest
+        == descriptor.get("counted_task_action_sha256")
+        and descriptor.get("setup_prefix_action_sha256") == setup_digest
+        and ((receipt.get("boundary") or {}).get(
+            "counted_task_start_index_in_full_action"
+        ))
+        == counted_start,
+        "bound stage-action derivation or counted task hash changed",
+    )
+    return actions, {
+        "schema_version": descriptor["schema_version"],
+        "path": str(action_path),
+        "npy_sha256": descriptor["npy_sha256"],
+        "raw_c_order_sha256": descriptor["raw_c_order_sha256"],
+        "shape": list(actions.shape),
+        "derivation_receipt_path": str(receipt_path),
+        "derivation_receipt_sha256": descriptor["derivation_receipt_sha256"],
+        "counted_task_start_index": counted_start,
+        "counted_task_action_sha256": counted_digest,
+        "setup_prefix_action_sha256": setup_digest,
+        "setup_prefix_excluded_from_task_and_transfer_claims": True,
+    }
+
+
 def _recovery_source_contact_admission(
     route: Mapping[str, Any],
 ) -> dict[str, Any] | None:
@@ -566,6 +656,41 @@ def _freeze_waypoint_stage(
         "frozen waypoint stage has the wrong shape",
     )
     return actions
+
+
+def _is_in_range_elbow_recovery_egress(
+    actions: np.ndarray,
+    anchor: np.ndarray,
+) -> bool:
+    """Admit elbow-only clearance followed by a fixed-elbow setup retreat."""
+
+    values = np.asarray(actions, dtype="<f8")
+    source = np.asarray(anchor, dtype="<f8")
+    other = np.asarray([0, 1, 3, 4, 5], dtype=np.int64)
+    if (
+        values.ndim != 2
+        or values.shape[1] != 6
+        or source.shape != (6,)
+        or not np.array_equal(values[0], source)
+        or not np.all(np.diff(values[:, 2]) <= 1e-12)
+    ):
+        return False
+    other_changed = np.any(
+        values[:, other] != source[None, other],
+        axis=1,
+    )
+    changed_indices = np.flatnonzero(other_changed)
+    if not len(changed_indices):
+        return bool(values[-1, 2] < source[2])
+    first_other_change = int(changed_indices[0])
+    return bool(
+        first_other_change > 0
+        and values[first_other_change, 2] < source[2]
+        and np.all(
+            values[first_other_change:, 2]
+            == values[first_other_change, 2]
+        )
+    )
 
 
 def _setup_recovery_preview_actions(
@@ -982,6 +1107,8 @@ def _decode_stage(stage: Mapping[str, Any]) -> tuple[np.ndarray, np.ndarray, byt
 
 def _decode_capture_hold(
     stage: Mapping[str, Any],
+    *,
+    expected_samples: int = CAPTURE_HOLD_SAMPLES,
 ) -> tuple[np.ndarray, np.ndarray, bytes]:
     payload = stage.get("frozen_capture_hold_payload") or {}
     _require(payload.get("encoding") == ACTION_HASH_ENCODING, "hold encoding changed")
@@ -992,8 +1119,8 @@ def _decode_capture_hold(
     except (KeyError, TypeError, ValueError) as error:
         raise WristViewRepositionError("capture-hold payload is malformed") from error
     _require(
-        actions.shape == (CAPTURE_HOLD_SAMPLES, 6)
-        and timestamps.shape == (CAPTURE_HOLD_SAMPLES,)
+        actions.shape == (expected_samples, 6)
+        and timestamps.shape == (expected_samples,)
         and np.all(np.isfinite(actions))
         and np.all(np.isfinite(timestamps)),
         "capture-hold arrays changed shape or contain non-finite values",
@@ -1030,6 +1157,7 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
         "reviewed wrist-view route drifted",
     )
     bound_route = _read_json(Path(route["path"]).resolve(), "wrist-view route")
+    bound_frozen_stage = _load_bound_frozen_stage_action(bound_route)
     recovery_admission = _recovery_source_contact_admission(bound_route)
     _require(
         packet.get("recovery_source_contact_admission") == recovery_admission,
@@ -1081,6 +1209,56 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
     _require(
         MIN_SAMPLES_PER_STAGE <= samples_per_stage <= MAX_SAMPLES_PER_STAGE,
         "packet stage sample count is outside the reviewed bound",
+    )
+    maximum_slew_by_joint = np.asarray(
+        packet.get(
+            "maximum_slew_degrees_s_by_joint",
+            [MAX_SLEW_DEGREES_S] * len(ROBOT_JOINTS),
+        ),
+        dtype=np.float64,
+    )
+    _require(
+        maximum_slew_by_joint.shape == (len(ROBOT_JOINTS),)
+        and np.all(maximum_slew_by_joint > 0.0)
+        and np.all(
+            maximum_slew_by_joint
+            <= GATEWAY_MAX_SLEW_DEGREES_S + 1e-12
+        ),
+        "packet per-joint slew bounds exceed the exact gateway",
+    )
+    alignment_role = str(
+        packet.get("frame_joint_alignment_camera_role") or ""
+    )
+    _require(
+        alignment_role in {"c922", "d405"}
+        and alignment_role
+        == str(
+            bound_route.get("frame_joint_alignment_camera_role")
+            or (
+                "d405"
+                if capture_mode != CAPTURE_MODE_C922_PI
+                else "c922"
+            )
+        )
+        and not (
+            alignment_role == "d405"
+            and capture_mode == CAPTURE_MODE_C922_PI
+        ),
+        "packet frame/joint alignment role changed",
+    )
+    capture_hold_samples = int(
+        packet.get("capture_hold_samples", CAPTURE_HOLD_SAMPLES)
+    )
+    capture_hold_seconds = float(
+        packet.get("capture_hold_seconds", CAPTURE_HOLD_SECONDS)
+    )
+    _require(
+        MIN_CAPTURE_HOLD_SECONDS
+        <= capture_hold_seconds
+        <= MAX_CAPTURE_HOLD_SECONDS
+        and capture_hold_samples == int(round(capture_hold_seconds * SAMPLE_HZ))
+        and abs(capture_hold_seconds - capture_hold_samples / SAMPLE_HZ) <= 1e-12,
+        "packet capture hold is outside the reviewed duration bound",
     )
     expected_previous = np.asarray(
         packet["compile_anchor_degrees"], dtype=np.float64
@@ -1153,7 +1331,10 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
     for stage_index, stage in enumerate(stages, start=1):
         _require(stage.get("stage_index") == stage_index, "stage order changed")
         actions, timestamps, _ = _decode_stage(stage)
-        hold_actions, hold_timestamps, _ = _decode_capture_hold(stage)
+        hold_actions, hold_timestamps, _ = _decode_capture_hold(
+            stage,
+            expected_samples=capture_hold_samples,
+        )
         target = np.asarray(stage["target_degrees"], dtype=np.float64)
         expected_anchor = np.asarray(
             stage.get("expected_anchor_degrees"), dtype=np.float64
@@ -1201,21 +1382,23 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
                 timestamps,
                 (np.arange(samples_per_stage, dtype="<f8") + 1.0) / SAMPLE_HZ,
             )
-            and float(
+            and np.all(
                 np.max(
                     np.abs(
                         np.diff(actions, axis=0)
                         / np.diff(timestamps)[:, None]
-                    )
+                    ),
+                    axis=0,
                 )
-            )
-            <= float(packet["maximum_slew_degrees_s"]) + 1e-9,
+                <= maximum_slew_by_joint + 1e-9
+            ),
             "stage timestamps changed",
         )
         _require(
             np.array_equal(
                 hold_timestamps,
-                (np.arange(CAPTURE_HOLD_SAMPLES, dtype="<f8") + 1.0) / SAMPLE_HZ,
+                (np.arange(capture_hold_samples, dtype="<f8") + 1.0)
+                / SAMPLE_HZ,
             )
             and np.all(hold_actions == target[None, :]),
             "capture-hold timing or target changed",
@@ -1236,10 +1419,101 @@ def _validate_packet(packet_path: Path) -> dict[str, Any]:
             and not preview.get("external_contact_pairs"),
             "stage simulation preview is not admitted",
         )
-        if recovery_admission is not None:
+        evidence_boundary = stage.get("evidence_action_boundary")
+        if bound_frozen_stage is not None:
             _require(
-                np.all(np.diff(actions[:, 2]) <= 1e-12),
-                "recovery stage elbow route is not monotonically inward",
+                isinstance(evidence_boundary, Mapping),
+                "bound frozen task stage lacks its evidence boundary",
+            )
+            counted_start = int(
+                evidence_boundary.get("counted_task_start_index", -1)
+            )
+            counted_payload = evidence_boundary.get("counted_task_payload") or {}
+            try:
+                counted_raw = base64.b64decode(
+                    str(counted_payload["base64"]), validate=True
+                )
+                counted_actions = np.frombuffer(
+                    counted_raw, dtype="<f8"
+                ).reshape(tuple(counted_payload["shape"]))
+            except (KeyError, TypeError, ValueError) as error:
+                raise WristViewRepositionError(
+                    "counted task payload is malformed"
+                ) from error
+            setup_actions = np.ascontiguousarray(
+                actions[:counted_start], dtype="<f8"
+            )
+            expected_counted = np.ascontiguousarray(
+                actions[counted_start:], dtype="<f8"
+            )
+            prefix_preview = evidence_boundary.get(
+                "setup_prefix_simulation_preview"
+            ) or {}
+            prefix_contact = (
+                prefix_preview.get("recovery_source_contact_admission")
+                or {}
+            )
+            prefix_preview_admitted = (
+                prefix_preview.get(
+                    "no_new_or_worsened_kinematic_contact"
+                )
+                is True
+                and not prefix_preview.get("external_contact_pairs")
+                and (
+                    (
+                        recovery_admission is not None
+                        and prefix_contact.get(
+                            "final_contact_pairs_cleared"
+                        )
+                        is True
+                    )
+                    or (
+                        recovery_admission is None
+                        and prefix_contact.get("enabled") is False
+                    )
+                )
+            )
+            _require(
+                evidence_boundary.get("path")
+                == bound_frozen_stage[1]["path"]
+                and evidence_boundary.get("npy_sha256")
+                == bound_frozen_stage[1]["npy_sha256"]
+                and evidence_boundary.get("derivation_receipt_sha256")
+                == bound_frozen_stage[1]["derivation_receipt_sha256"]
+                and counted_start
+                == bound_frozen_stage[1]["counted_task_start_index"]
+                and counted_actions.tobytes()
+                == expected_counted.tobytes()
+                and action_sha256(counted_actions)
+                == counted_payload.get("sha256")
+                == counted_payload.get("simulation_consumer_sha256")
+                == evidence_boundary.get("counted_task_action_sha256")
+                and action_sha256(setup_actions)
+                == evidence_boundary.get("setup_prefix_action_sha256")
+                and evidence_boundary.get(
+                    "setup_prefix_excluded_from_task_and_transfer_claims"
+                )
+                is True
+                and prefix_preview_admitted,
+                "stage evidence boundary, setup prefix, or counted task "
+                "bytes changed",
+            )
+        else:
+            _require(
+                evidence_boundary is None,
+                "ordinary reposition stage unexpectedly claims a task boundary",
+            )
+        if recovery_admission is not None:
+            recovery_actions = (
+                actions[
+                    : int(evidence_boundary["counted_task_start_index"]) + 1
+                ]
+                if isinstance(evidence_boundary, Mapping)
+                else actions
+            )
+            _require(
+                np.all(np.diff(recovery_actions[:, 2]) <= 1e-12),
+                "recovery setup prefix elbow route is not monotonically inward",
             )
         expected_previous = target
         command_previous = target
@@ -1272,11 +1546,46 @@ def compile_wrist_view_reposition_packet(
     preflight = (preflight_fn or _default_preflight)()
     identity, anchor, lower, upper = _identity_and_limits(preflight)
     route, reviewed_anchor, waypoint_stages = _load_route(route_path)
+    bound_frozen_stage = _load_bound_frozen_stage_action(route)
     recovery_admission = _recovery_source_contact_admission(route)
     samples_per_stage = int(route.get("samples_per_stage", SAMPLES_PER_STAGE))
     _require(
         MIN_SAMPLES_PER_STAGE <= samples_per_stage <= MAX_SAMPLES_PER_STAGE,
         "reviewed route stage sample count is outside the bounded range",
+    )
+    maximum_slew_by_joint = np.asarray(
+        route.get(
+            "maximum_slew_degrees_s_by_joint",
+            [MAX_SLEW_DEGREES_S] * len(ROBOT_JOINTS),
+        ),
+        dtype=np.float64,
+    )
+    _require(
+        maximum_slew_by_joint.shape == (len(ROBOT_JOINTS),)
+        and np.all(np.isfinite(maximum_slew_by_joint))
+        and np.all(maximum_slew_by_joint > 0.0)
+        and np.all(
+            maximum_slew_by_joint
+            <= GATEWAY_MAX_SLEW_DEGREES_S + 1e-12
+        )
+        and (
+            bound_frozen_stage is not None
+            or np.all(maximum_slew_by_joint <= MAX_SLEW_DEGREES_S)
+        ),
+        "reviewed per-joint slew bound exceeds the exact gateway or is "
+        "not restricted to a bound frozen task action",
+    )
+    capture_hold_seconds = float(
+        route.get("capture_hold_seconds", CAPTURE_HOLD_SECONDS)
+    )
+    capture_hold_samples = int(round(capture_hold_seconds * SAMPLE_HZ))
+    _require(
+        MIN_CAPTURE_HOLD_SECONDS
+        <= capture_hold_seconds
+        <= MAX_CAPTURE_HOLD_SECONDS
+        and abs(capture_hold_seconds - capture_hold_samples / SAMPLE_HZ) <= 1e-12,
+        "reviewed route capture hold is outside the bounded range or not "
+        "aligned to the fixed sample rate",
     )
     if str(route.get("capture_mode") or CAPTURE_MODE_DUAL) == CAPTURE_MODE_TRICAM:
         specification = route["pi_motion_video"]
@@ -1289,7 +1598,7 @@ def compile_wrist_view_reposition_packet(
         )
         required_duration = (
             samples_per_stage / SAMPLE_HZ
-            + CAPTURE_HOLD_SECONDS
+            + capture_hold_seconds
             + CAMERA_POST_ROLL_SECONDS
             + TRICAM_START_TO_ACTION_BUDGET_SECONDS
         )
@@ -1360,25 +1669,43 @@ def compile_wrist_view_reposition_packet(
         np.arange(samples_per_stage, dtype="<f8") + 1.0
     ) / SAMPLE_HZ
     hold_timestamps = (
-        np.arange(CAPTURE_HOLD_SAMPLES, dtype="<f8") + 1.0
+        np.arange(capture_hold_samples, dtype="<f8") + 1.0
     ) / SAMPLE_HZ
     action_stages: list[np.ndarray] = []
     previous = command_anchor
-    for waypoints in waypoint_stages:
+    for stage_position, waypoints in enumerate(waypoint_stages):
         delta = waypoints - previous[None, :]
         _require(
             float(np.max(np.abs(delta))) <= MAX_STAGE_EXCURSION_DEGREES + 1e-9,
             "reviewed wrist-view stage exceeds 90 degrees",
         )
-        actions = _freeze_waypoint_stage(
-            previous,
-            waypoints,
-            samples_per_stage=samples_per_stage,
+        actions = (
+            np.ascontiguousarray(bound_frozen_stage[0], dtype="<f8")
+            if bound_frozen_stage is not None and stage_position == 0
+            else _freeze_waypoint_stage(
+                previous,
+                waypoints,
+                samples_per_stage=samples_per_stage,
+            )
+        )
+        _require(
+            bound_frozen_stage is None
+            or (
+                len(waypoint_stages) == 1
+                and actions.shape == (samples_per_stage, len(ROBOT_JOINTS))
+                and actions[0].tobytes()
+                == previous.astype("<f8").tobytes()
+                and actions[-1].tobytes()
+                == waypoints[-1].astype("<f8").tobytes()
+            ),
+            "bound frozen task action does not match the reviewed stage "
+            "count, anchor, target, or sample count",
         )
         rates = np.abs(np.diff(actions, axis=0) / np.diff(timestamps)[:, None])
         _require(
-            float(np.max(rates)) <= MAX_SLEW_DEGREES_S + 1e-9,
-            "reviewed wrist-view stage exceeds 10 degrees/s",
+            np.all(np.max(rates, axis=0) <= maximum_slew_by_joint + 1e-9),
+            "reviewed wrist-view stage exceeds its frozen per-joint slew "
+            "bounds",
         )
         _require(
             np.all(actions >= lower[None, :]) and np.all(actions <= upper[None, :]),
@@ -1389,7 +1716,17 @@ def compile_wrist_view_reposition_packet(
     if recovery_admission is not None:
         outside = (anchor < lower) | (anchor > upper)
         route_actions = np.concatenate(action_stages, axis=0)
-        _require(
+        counted_task_start = (
+            int(bound_frozen_stage[1]["counted_task_start_index"])
+            if bound_frozen_stage is not None
+            else None
+        )
+        recovery_actions = (
+            route_actions[: counted_task_start + 1]
+            if counted_task_start is not None
+            else route_actions
+        )
+        out_of_range_setup_egress = (
             setup_recovery
             and np.array_equal(
                 outside,
@@ -1402,10 +1739,24 @@ def compile_wrist_view_reposition_packet(
                 anchor[[0, 1, 3, 4, 5]],
             )
             and command_anchor[2] < anchor[2]
-            and np.all(np.diff(route_actions[:, 2]) <= 1e-12),
-            "recovery source-contact admission requires one high out-of-range "
-            "elbow source, an elbow-only inward setup clamp, and a "
-            "monotonically non-increasing frozen elbow route",
+        )
+        in_range_elbow_recovery_egress = (
+            not setup_recovery
+            and not np.any(outside)
+            and np.array_equal(command_anchor, anchor)
+            and _is_in_range_elbow_recovery_egress(
+                recovery_actions,
+                anchor,
+            )
+        )
+        _require(
+            (out_of_range_setup_egress or in_range_elbow_recovery_egress)
+            and np.all(np.diff(recovery_actions[:, 2]) <= 1e-12),
+            "recovery source-contact admission requires either one high "
+            "out-of-range elbow source with an inward setup clamp or one "
+            "in-range elbow-clearance preload followed by a fixed-elbow "
+            "setup retreat, plus a monotonically inward setup/recovery "
+            "prefix",
         )
     setup_recovery_preview: dict[str, Any] | None = None
     if setup_recovery:
@@ -1458,6 +1809,44 @@ def compile_wrist_view_reposition_packet(
         and not preview.get("external_contact_pairs"),
         "simulation preview rejected the staged reposition",
     )
+    setup_prefix_preview: dict[str, Any] | None = None
+    if bound_frozen_stage is not None:
+        counted_task_start = int(
+            bound_frozen_stage[1]["counted_task_start_index"]
+        )
+        setup_prefix_preview = preview_wrist_view_actions(
+            [action_stages[0][: counted_task_start + 1]],
+            candidate_manifest_path,
+            recovery_source_contact_admission=(
+                recovery_admission is not None
+            ),
+        )
+        setup_prefix_contact = (
+            setup_prefix_preview.get("recovery_source_contact_admission")
+            or {}
+        )
+        _require(
+            setup_prefix_preview.get(
+                "no_new_or_worsened_kinematic_contact"
+            )
+            is True
+            and not setup_prefix_preview.get("external_contact_pairs")
+            and (
+                (
+                    recovery_admission is not None
+                    and setup_prefix_contact.get(
+                        "final_contact_pairs_cleared"
+                    )
+                    is True
+                )
+                or (
+                    recovery_admission is None
+                    and setup_prefix_contact.get("enabled") is False
+                )
+            ),
+            "simulation preview did not safely reach the counted task "
+            "boundary",
+        )
     preview_stages = preview.get("stages")
     _require(
         isinstance(preview_stages, list) and len(preview_stages) == len(action_stages),
@@ -1479,10 +1868,41 @@ def compile_wrist_view_reposition_packet(
         raw = actions.tobytes(order="C")
         digest = action_sha256(actions)
         hold_actions = np.repeat(
-            target.astype("<f8")[None, :], CAPTURE_HOLD_SAMPLES, axis=0
+            target.astype("<f8")[None, :], capture_hold_samples, axis=0
         )
         hold_raw = hold_actions.tobytes(order="C")
         hold_digest = action_sha256(hold_actions)
+        evidence_boundary: dict[str, Any] | None = None
+        if bound_frozen_stage is not None:
+            counted_task_start = int(
+                bound_frozen_stage[1]["counted_task_start_index"]
+            )
+            counted_task_actions = np.ascontiguousarray(
+                actions[counted_task_start:], dtype="<f8"
+            )
+            counted_task_raw = counted_task_actions.tobytes(order="C")
+            setup_prefix_actions = np.ascontiguousarray(
+                actions[:counted_task_start], dtype="<f8"
+            )
+            evidence_boundary = {
+                **bound_frozen_stage[1],
+                "counted_task_payload": {
+                    "encoding": ACTION_HASH_ENCODING,
+                    "shape": list(counted_task_actions.shape),
+                    "base64": base64.b64encode(counted_task_raw).decode("ascii"),
+                    "sha256": action_sha256(counted_task_actions),
+                    "simulation_consumer_sha256": action_sha256(
+                        counted_task_actions
+                    ),
+                    "hardware_consumer_consumes_identical_suffix_bytes": True,
+                    "units": ["degree"] * 5 + ["percent"],
+                },
+                "setup_prefix_sample_count": counted_task_start,
+                "setup_prefix_action_sha256": action_sha256(
+                    setup_prefix_actions
+                ),
+                "setup_prefix_simulation_preview": setup_prefix_preview,
+            }
         _require(
             stage_preview.get("exact_physical_action_sha256") == digest,
             "simulation preview did not consume the exact stage bytes",
@@ -1524,8 +1944,9 @@ def compile_wrist_view_reposition_packet(
                 "capture_hold_action_bytes_sha256": hashlib.sha256(
                     hold_raw
                 ).hexdigest(),
-                "capture_hold_seconds": CAPTURE_HOLD_SECONDS,
+                "capture_hold_seconds": capture_hold_seconds,
                 "simulation_preview": stage_preview,
+                "evidence_action_boundary": evidence_boundary,
                 "capture_hold_reuses_previewed_target": True,
                 "inspect_wrist_camera_before_next_stage": stage_index < len(targets),
             }
@@ -1534,7 +1955,11 @@ def compile_wrist_view_reposition_packet(
         action_previous = target.astype("<f8")
     packet = {
         "schema_version": WRIST_VIEW_PACKET_SCHEMA,
-        "kind": "follower_only_staged_d405_tag_view_reposition",
+        "kind": (
+            "prospective_exact_real_to_sim_task_with_setup_prefix"
+            if bound_frozen_stage is not None
+            else "follower_only_staged_d405_tag_view_reposition"
+        ),
         "single_use_per_stage": True,
         "hardware_identity": identity,
         "compile_anchor_source": "fresh_torque_off_follower_read",
@@ -1561,12 +1986,13 @@ def compile_wrist_view_reposition_packet(
         "calibrated_maximum_degrees": upper.tolist(),
         "sample_hz": SAMPLE_HZ,
         "samples_per_stage": samples_per_stage,
-        "capture_hold_samples": CAPTURE_HOLD_SAMPLES,
-        "capture_hold_seconds": CAPTURE_HOLD_SECONDS,
+        "capture_hold_samples": capture_hold_samples,
+        "capture_hold_seconds": capture_hold_seconds,
         "capture_during_motion": bool(route.get("capture_during_motion", False)),
         "capture_mode": str(route.get("capture_mode") or CAPTURE_MODE_DUAL),
         "maximum_stage_excursion_degrees": MAX_STAGE_EXCURSION_DEGREES,
         "maximum_slew_degrees_s": MAX_SLEW_DEGREES_S,
+        "maximum_slew_degrees_s_by_joint": maximum_slew_by_joint.tolist(),
         "stage_anchor_tolerance_degrees": STAGE_ANCHOR_TOLERANCE_DEGREES.tolist(),
         "hold_entry_tolerance_degrees": HOLD_ENTRY_TOLERANCE_DEGREES.tolist(),
         "final_tolerance_degrees": FINAL_TOLERANCE_DEGREES.tolist(),
@@ -1574,6 +2000,15 @@ def compile_wrist_view_reposition_packet(
         "simulation_preview": {
             key: value for key, value in preview.items() if key != "stages"
         },
+        "frame_joint_alignment_camera_role": str(
+            route.get("frame_joint_alignment_camera_role")
+            or (
+                "d405"
+                if str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+                != CAPTURE_MODE_C922_PI
+                else "c922"
+            )
+        ),
         "candidate_manifest": {
             "path": str(candidate_manifest_path.resolve()),
             "sha256": _sha256(candidate_manifest_path.resolve()),
@@ -1826,7 +2261,7 @@ def _align_c922_frames_to_hold_samples(
     hold_samples: list[dict[str, Any]],
     output_path: Path,
 ) -> dict[str, Any]:
-    _require(len(hold_samples) == CAPTURE_HOLD_SAMPLES, "capture hold is incomplete")
+    _require(len(hold_samples) >= 2, "capture hold is incomplete")
     ledger_path = Path(str(camera_finished.get("ledger_path") or ""))
     if not ledger_path.is_absolute():
         ledger_path = capture_root / ledger_path
@@ -1913,7 +2348,7 @@ def _align_d405_frames_to_hold_samples(
     hold_samples: list[dict[str, Any]],
     output_path: Path,
 ) -> dict[str, Any]:
-    _require(len(hold_samples) == CAPTURE_HOLD_SAMPLES, "capture hold is incomplete")
+    _require(len(hold_samples) >= 2, "capture hold is incomplete")
     common = camera_finished.get("common_session") or {}
     ledger_path = capture_root / str(common.get("callback_timestamp_path") or "")
     _require(ledger_path.is_file(), "native callback ledger is missing")
@@ -2042,7 +2477,21 @@ def execute_wrist_view_reposition_stage(
     )
     stage = packet["stages"][stage_index - 1]
     actions, timestamps, _ = _decode_stage(stage)
-    hold_actions, hold_timestamps, _ = _decode_capture_hold(stage)
+    evidence_boundary = stage.get("evidence_action_boundary")
+    counted_task_start = (
+        int(evidence_boundary["counted_task_start_index"])
+        if isinstance(evidence_boundary, Mapping)
+        else None
+    )
+    counted_task_action_sha256 = (
+        str(evidence_boundary["counted_task_action_sha256"])
+        if isinstance(evidence_boundary, Mapping)
+        else None
+    )
+    hold_actions, hold_timestamps, _ = _decode_capture_hold(
+        stage,
+        expected_samples=int(packet["capture_hold_samples"]),
+    )
     # Re-run the route prefix, not the selected stage in isolation.  Contact
     # admission is relative to the route's frozen initial pose; a later return
     # stage may legitimately restore a baseline pair that is absent at that
@@ -2083,16 +2532,41 @@ def execute_wrist_view_reposition_stage(
         command_anchor = np.asarray(
             stage["command_anchor_degrees"], dtype=np.float64
         )
-        _require(
-            np.array_equal(
+        setup_enabled = (
+            packet["setup_recovery_command_anchor"]["enabled"] is True
+        )
+        out_of_range_setup_egress = (
+            setup_enabled
+            and np.array_equal(
                 outside,
                 np.asarray([False, False, True, False, False, False]),
             )
             and current[2] > upper[2]
             and command_anchor[2] == upper[2]
-            and command_anchor[2] < current[2],
-            "fresh recovery source is not the reviewed high out-of-range "
-            "elbow-only state",
+            and command_anchor[2] < current[2]
+        )
+        recovery_actions = actions[
+            : counted_task_start + 1
+            if counted_task_start is not None
+            else len(actions)
+        ]
+        in_range_elbow_recovery_egress = (
+            not setup_enabled
+            and not np.any(outside)
+            and np.array_equal(
+                command_anchor,
+                np.asarray(packet["command_anchor_degrees"], dtype=np.float64),
+            )
+            and _is_in_range_elbow_recovery_egress(
+                recovery_actions,
+                command_anchor,
+            )
+        )
+        _require(
+            out_of_range_setup_egress or in_range_elbow_recovery_egress,
+            "fresh recovery source is neither the reviewed high out-of-range "
+            "setup egress nor the reviewed in-range elbow-clearance preload "
+            "and fixed-elbow setup retreat",
         )
     fresh_setup_recovery_preview: dict[str, Any] | None = None
     if packet["setup_recovery_command_anchor"]["enabled"] is True:
@@ -2171,6 +2645,7 @@ def execute_wrist_view_reposition_stage(
     )(_gateway_identity(identity) if gateway_factory is None else identity)
     completed_motion = 0
     completed_hold = 0
+    counted_task_boundary_actual: list[float] | None = None
     actual = current.copy()
     started = clock_fn()
     capture_root = output_directory / "final_hold_camera"
@@ -2293,14 +2768,44 @@ def execute_wrist_view_reposition_stage(
                     target,
                     phase="motion",
                 )
+                counted_phase = (
+                    counted_task_start is not None
+                    and sample_index >= counted_task_start
+                )
+                if (
+                    counted_task_start is not None
+                    and sample_index == counted_task_start
+                ):
+                    counted_task_boundary_actual = actual.tolist()
                 handle.write(
                     json.dumps(
                         {
                             "sample_index": sample_index,
-                            "phase": "motion",
+                            "phase": (
+                                "counted_task_action"
+                                if counted_phase
+                                else (
+                                    "setup_recovery_prefix"
+                                    if counted_task_start is not None
+                                    else "motion"
+                                )
+                            ),
+                            "counted_task_sample_index": (
+                                sample_index - counted_task_start
+                                if counted_phase
+                                and counted_task_start is not None
+                                else None
+                            ),
                             "host_continuous_ns": int(round(clock_fn() * 1e9)),
                             "timestamp_seconds": float(timestamp),
-                            "source_action_sha256": stage["action_sha256"],
+                            "source_action_sha256": (
+                                counted_task_action_sha256
+                                if counted_phase
+                                else stage["action_sha256"]
+                            ),
+                            "full_transaction_action_sha256": stage[
+                                "action_sha256"
+                            ],
                             "requested_physical_units": target.tolist(),
                             **sample,
                         },
@@ -2415,7 +2920,7 @@ def execute_wrist_view_reposition_stage(
         try:
             _require(camera_finished is not None, "final hold camera did not finish")
             capture_artifacts = _capture_artifacts(capture_root, camera_finished)
-            if capture_mode == CAPTURE_MODE_C922_PI:
+            if packet["frame_joint_alignment_camera_role"] == "c922":
                 frame_joint_alignment = _align_c922_frames_to_hold_samples(
                     capture_root,
                     camera_finished,
@@ -2446,6 +2951,11 @@ def execute_wrist_view_reposition_stage(
         "review_sha256": _sha256(review_path.resolve()),
         "stage_index": stage_index,
         "action_sha256": stage["action_sha256"],
+        "evidence_action_boundary": evidence_boundary,
+        "counted_task_action_sha256": counted_task_action_sha256,
+        "counted_task_boundary_actual_degrees": (
+            counted_task_boundary_actual
+        ),
         "capture_hold_action_sha256": stage["capture_hold_action_sha256"],
         "completed_samples": completed_motion + completed_hold,
         "completed_motion_samples": completed_motion,

@@ -21,6 +21,7 @@ from sim2claw.wrist_view_reposition import (
     WRIST_VIEW_PACKET_SCHEMA,
     WRIST_VIEW_ROUTE_SCHEMA,
     WristViewRepositionError,
+    _is_in_range_elbow_recovery_egress,
     _validate_contact_pair_minimums,
     compile_wrist_view_reposition_packet,
     execute_wrist_view_reposition_stage,
@@ -574,6 +575,440 @@ def test_compile_supports_bounded_long_roundtrip_stage(tmp_path: Path) -> None:
     assert float(
         np.max(np.abs(np.diff(actions, axis=0) / np.diff(timestamps)[:, None]))
     ) <= packet["maximum_slew_degrees_s"]
+
+
+def test_compile_supports_explicit_short_diagnostic_stage_and_hold(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    route_path = tmp_path / "short-diagnostic-route.json"
+    packet_path = tmp_path / "packet.json"
+    _candidate_manifest(manifest_path)
+    target = ROUTE_ANCHOR.copy()
+    target[2] -= 16.0
+    _write(
+        route_path,
+        {
+            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+            "route_id": "fixture-short-diagnostic-route",
+            "samples_per_stage": 81,
+            "capture_hold_seconds": 0.25,
+            "reviewed_anchor_degrees": ROUTE_ANCHOR.tolist(),
+            "stage_targets_degrees": [target.tolist()],
+        },
+    )
+
+    packet = compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+
+    stage = packet["stages"][0]
+    actions = np.frombuffer(
+        base64.b64decode(stage["frozen_action_payload"]["base64"]),
+        dtype="<f8",
+    ).reshape(stage["frozen_action_payload"]["shape"])
+    hold = np.frombuffer(
+        base64.b64decode(stage["frozen_capture_hold_payload"]["base64"]),
+        dtype="<f8",
+    ).reshape(stage["frozen_capture_hold_payload"]["shape"])
+    assert actions.shape == (81, 6)
+    assert hold.shape == (10, 6)
+    assert packet["capture_hold_samples"] == 10
+    assert packet["capture_hold_seconds"] == 0.25
+    assert stage["capture_hold_seconds"] == 0.25
+    assert float(
+        np.max(
+            np.abs(
+                np.diff(actions, axis=0)
+                / np.diff(np.asarray(stage["timestamps_seconds"]))[:, None]
+            )
+        )
+    ) <= packet["maximum_slew_degrees_s"]
+
+
+def test_compile_allows_in_range_elbow_source_contact_egress_without_snap(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    visual_review_path = tmp_path / "visual-review.json"
+    route_path = tmp_path / "in-range-source-egress-route.json"
+    packet_path = tmp_path / "packet.json"
+    review_path = tmp_path / "review.json"
+    _candidate_manifest(manifest_path)
+    _write(
+        visual_review_path,
+        {
+            "schema_version": (
+                "sim2claw.degraded_rgb_tricam_visual_scene_review.v1"
+            ),
+            "status": "degraded_rgb_lanes_admitted_for_task_action_review",
+            "proof_class": (
+                "physical_motion_free_degraded_rgb_tricam_readiness_only"
+            ),
+            "review_frames": {
+                "pi_imx708_rgb": {"contact_free_high_arm_visible": True}
+            },
+            "transport_checks": {
+                "exact_c922_identity": True,
+                "exact_d405_identity": True,
+                "c922_apple_drops": 0,
+                "d405_apple_drops": 0,
+            },
+            "authority": {
+                "robot_gateway_opened": False,
+                "robot_motion": False,
+            },
+        },
+    )
+    target = ROUTE_ANCHOR.copy()
+    target[2] -= 16.0
+    _write(
+        route_path,
+        {
+            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+            "route_id": "fixture-in-range-source-egress-route",
+            "samples_per_stage": 81,
+            "capture_hold_seconds": 0.25,
+            "reviewed_anchor_degrees": ROUTE_ANCHOR.tolist(),
+            "stage_targets_degrees": [target.tolist()],
+            "recovery_source_contact_admission": {
+                "schema_version": (
+                    "sim2claw.recovery_source_contact_admission.v1"
+                ),
+                "enabled": True,
+                "source_state_only": True,
+                "source_joint": "elbow_flex",
+                "inward_direction": "decreasing",
+                "require_source_robot_self_contact_only": True,
+                "require_contact_pairs_subset_of_source": True,
+                "require_penetration_never_worse_than_source": True,
+                "require_final_contact_clear": True,
+                "exclude_from_task_and_transfer_claims": True,
+                "visual_source_review_path": str(visual_review_path),
+                "visual_source_review_sha256": hashlib.sha256(
+                    visual_review_path.read_bytes()
+                ).hexdigest(),
+            },
+            "review_basis": {"physical_scope": "setup_recovery_only"},
+        },
+    )
+
+    packet = compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+
+    assert packet["setup_recovery_command_anchor"]["enabled"] is False
+    assert packet["compile_anchor_degrees"] == packet["command_anchor_degrees"]
+    assert packet["recovery_source_contact_admission"]["enabled"] is True
+    assert packet["simulation_preview"]["recovery_source_contact_admission"] == {
+        "enabled": True,
+        "source_pairs_robot_self_contact_only": True,
+        "contact_pairs_subset_of_source": True,
+        "penetration_never_worse_than_source": True,
+        "final_contact_pairs_cleared": True,
+    }
+    review_wrist_view_reposition_packet(
+        packet_path,
+        review_path,
+        reviewer="fixture-reviewer",
+        decision_id="fixture-in-range-source-egress",
+    )
+    receipt = execute_wrist_view_reposition_stage(
+        packet_path,
+        review_path,
+        tmp_path / "execution",
+        stage_index=1,
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda identity: _Gateway(ROUTE_ANCHOR),
+        capture_factory=lambda path: _Capture(path),
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+    assert receipt["status"] == "completed_wrist_view_reposition_stage"
+    assert receipt["physical_follower_torque_enabled"] is False
+
+
+def test_in_range_recovery_allows_elbow_preload_then_fixed_elbow_retreat() -> None:
+    anchor = ROUTE_ANCHOR.astype("<f8")
+    preload = anchor.copy()
+    preload[2] -= 8.0
+    target = preload.copy()
+    target[[0, 1, 3, 4, 5]] += np.asarray(
+        [4.0, -12.0, -18.0, -6.0, -0.5]
+    )
+    actions = np.concatenate(
+        [
+            np.linspace(anchor, preload, 41, dtype=np.float64),
+            np.linspace(preload, target, 41, dtype=np.float64)[1:],
+        ],
+        axis=0,
+    ).astype("<f8")
+
+    assert _is_in_range_elbow_recovery_egress(actions, anchor)
+    invalid = actions.copy()
+    invalid[50:, 2] -= 0.1
+    assert not _is_in_range_elbow_recovery_egress(invalid, anchor)
+
+
+def test_bound_frozen_stage_preserves_setup_task_byte_boundary(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    visual_review_path = tmp_path / "visual-review.json"
+    action_path = tmp_path / "full-action.npy"
+    derivation_path = tmp_path / "derivation.json"
+    route_path = tmp_path / "bound-action-route.json"
+    packet_path = tmp_path / "packet.json"
+    review_path = tmp_path / "review.json"
+    _candidate_manifest(manifest_path)
+    _write(
+        visual_review_path,
+        {
+            "schema_version": (
+                "sim2claw.degraded_rgb_tricam_visual_scene_review.v1"
+            ),
+            "status": "degraded_rgb_lanes_admitted_for_task_action_review",
+            "proof_class": (
+                "physical_motion_free_degraded_rgb_tricam_readiness_only"
+            ),
+            "review_frames": {
+                "pi_imx708_rgb": {"contact_free_high_arm_visible": True}
+            },
+            "transport_checks": {
+                "exact_c922_identity": True,
+                "exact_d405_identity": True,
+                "c922_apple_drops": 0,
+                "d405_apple_drops": 0,
+            },
+            "authority": {
+                "robot_gateway_opened": False,
+                "robot_motion": False,
+            },
+        },
+    )
+    target = ROUTE_ANCHOR.copy()
+    target[2] -= 16.0
+    actions = np.linspace(
+        ROUTE_ANCHOR, target, 81, dtype=np.float64
+    ).astype("<f8")
+    with action_path.open("xb") as handle:
+        np.save(handle, actions, allow_pickle=False)
+    counted_start = 40
+    setup = np.ascontiguousarray(actions[:counted_start], dtype="<f8")
+    counted = np.ascontiguousarray(actions[counted_start:], dtype="<f8")
+    setup_sha256 = action_sha256(setup)
+    counted_sha256 = action_sha256(counted)
+    _write(
+        derivation_path,
+        {
+            "schema_version": (
+                "sim2claw.prospective_demonstration_derived_action.v1"
+            ),
+            "status": "frozen_before_physical_execution",
+            "canonical_task_action_sha256": counted_sha256,
+            "boundary": {
+                "counted_task_start_index_in_full_action": counted_start
+            },
+        },
+    )
+    _write(
+        route_path,
+        {
+            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+            "route_id": "fixture-bound-frozen-action-route",
+            "samples_per_stage": len(actions),
+            "capture_hold_seconds": 0.25,
+            "reviewed_anchor_degrees": ROUTE_ANCHOR.tolist(),
+            "stage_targets_degrees": [target.tolist()],
+            "frozen_stage_action": {
+                "schema_version": "sim2claw.bound_frozen_stage_action.v1",
+                "path": str(action_path),
+                "npy_sha256": hashlib.sha256(
+                    action_path.read_bytes()
+                ).hexdigest(),
+                "raw_c_order_sha256": action_sha256(actions),
+                "dtype": "float64_little_endian",
+                "shape": list(actions.shape),
+                "derivation_receipt_path": str(derivation_path),
+                "derivation_receipt_sha256": hashlib.sha256(
+                    derivation_path.read_bytes()
+                ).hexdigest(),
+                "counted_task_start_index": counted_start,
+                "counted_task_action_sha256": counted_sha256,
+                "setup_prefix_action_sha256": setup_sha256,
+            },
+            "recovery_source_contact_admission": {
+                "schema_version": (
+                    "sim2claw.recovery_source_contact_admission.v1"
+                ),
+                "enabled": True,
+                "source_state_only": True,
+                "source_joint": "elbow_flex",
+                "inward_direction": "decreasing",
+                "require_source_robot_self_contact_only": True,
+                "require_contact_pairs_subset_of_source": True,
+                "require_penetration_never_worse_than_source": True,
+                "require_final_contact_clear": True,
+                "exclude_from_task_and_transfer_claims": True,
+                "visual_source_review_path": str(visual_review_path),
+                "visual_source_review_sha256": hashlib.sha256(
+                    visual_review_path.read_bytes()
+                ).hexdigest(),
+            },
+            "review_basis": {"physical_scope": "setup_recovery_only"},
+        },
+    )
+
+    packet = compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=_preflight,
+    )
+    boundary = packet["stages"][0]["evidence_action_boundary"]
+    payload = boundary["counted_task_payload"]
+    frozen_counted = np.frombuffer(
+        base64.b64decode(payload["base64"]), dtype="<f8"
+    ).reshape(payload["shape"])
+    assert packet["kind"] == (
+        "prospective_exact_real_to_sim_task_with_setup_prefix"
+    )
+    assert boundary["setup_prefix_sample_count"] == counted_start
+    assert boundary["setup_prefix_action_sha256"] == setup_sha256
+    assert frozen_counted.tobytes() == counted.tobytes()
+    assert payload["sha256"] == counted_sha256
+    review_wrist_view_reposition_packet(
+        packet_path,
+        review_path,
+        reviewer="fixture-reviewer",
+        decision_id="fixture-bound-task-action",
+    )
+    receipt = execute_wrist_view_reposition_stage(
+        packet_path,
+        review_path,
+        tmp_path / "execution",
+        stage_index=1,
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda identity: _Gateway(ROUTE_ANCHOR),
+        capture_factory=lambda path: _Capture(path),
+        clock_fn=lambda: 0.0,
+        sleep_fn=lambda delay: None,
+    )
+    assert receipt["counted_task_action_sha256"] == counted_sha256
+    records = [
+        json.loads(line)
+        for line in Path(receipt["joint_samples_path"])
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+    assert records[counted_start - 1]["phase"] == "setup_recovery_prefix"
+    assert records[counted_start]["phase"] == "counted_task_action"
+    assert records[counted_start]["counted_task_sample_index"] == 0
+
+
+def test_bound_frozen_stage_allows_contact_free_setup_prefix(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate_manifest.json"
+    action_path = tmp_path / "full-action.npy"
+    derivation_path = tmp_path / "derivation.json"
+    route_path = tmp_path / "bound-action-route.json"
+    packet_path = tmp_path / "packet.json"
+    review_path = tmp_path / "review.json"
+    _candidate_manifest(manifest_path)
+    anchor = np.asarray(
+        [
+            -2.7252747252747254,
+            -24.175824175824175,
+            66.5934065934066,
+            -11.032967032967033,
+            -82.5934065934066,
+            6.88836104513064,
+        ],
+        dtype="<f8",
+    )
+    target = anchor.copy()
+    target[0] += 1.0
+    actions = np.linspace(anchor, target, 81, dtype=np.float64).astype("<f8")
+    with action_path.open("xb") as handle:
+        np.save(handle, actions, allow_pickle=False)
+    counted_start = 40
+    setup = np.ascontiguousarray(actions[:counted_start], dtype="<f8")
+    counted = np.ascontiguousarray(actions[counted_start:], dtype="<f8")
+    _write(
+        derivation_path,
+        {
+            "schema_version": (
+                "sim2claw.prospective_demonstration_derived_action.v1"
+            ),
+            "status": "frozen_before_physical_execution",
+            "canonical_task_action_sha256": action_sha256(counted),
+            "boundary": {
+                "counted_task_start_index_in_full_action": counted_start
+            },
+        },
+    )
+    _write(
+        route_path,
+        {
+            "schema_version": WRIST_VIEW_ROUTE_SCHEMA,
+            "route_id": "fixture-contact-free-bound-action-route",
+            "samples_per_stage": len(actions),
+            "capture_hold_seconds": 0.25,
+            "reviewed_anchor_degrees": anchor.tolist(),
+            "stage_targets_degrees": [target.tolist()],
+            "frozen_stage_action": {
+                "schema_version": "sim2claw.bound_frozen_stage_action.v1",
+                "path": str(action_path),
+                "npy_sha256": hashlib.sha256(
+                    action_path.read_bytes()
+                ).hexdigest(),
+                "raw_c_order_sha256": action_sha256(actions),
+                "dtype": "float64_little_endian",
+                "shape": list(actions.shape),
+                "derivation_receipt_path": str(derivation_path),
+                "derivation_receipt_sha256": hashlib.sha256(
+                    derivation_path.read_bytes()
+                ).hexdigest(),
+                "counted_task_start_index": counted_start,
+                "counted_task_action_sha256": action_sha256(counted),
+                "setup_prefix_action_sha256": action_sha256(setup),
+            },
+            "review_basis": {"physical_scope": "setup_only"},
+        },
+    )
+    preflight = _preflight()
+    preflight["follower_start_degrees"] = anchor.tolist()
+
+    packet = compile_wrist_view_reposition_packet(
+        packet_path,
+        candidate_manifest_path=manifest_path,
+        route_path=route_path,
+        preflight_fn=lambda: preflight,
+    )
+    prefix_preview = packet["stages"][0][
+        "evidence_action_boundary"
+    ]["setup_prefix_simulation_preview"]
+    assert prefix_preview["no_new_or_worsened_kinematic_contact"] is True
+    assert prefix_preview["external_contact_pairs"] == []
+    assert (
+        prefix_preview["recovery_source_contact_admission"]["enabled"]
+        is False
+    )
+    review_wrist_view_reposition_packet(
+        packet_path,
+        review_path,
+        reviewer="fixture-reviewer",
+        decision_id="fixture-contact-free-task-action",
+    )
 
 
 def test_compile_binds_c922_plus_pi_capture_mode(tmp_path: Path) -> None:

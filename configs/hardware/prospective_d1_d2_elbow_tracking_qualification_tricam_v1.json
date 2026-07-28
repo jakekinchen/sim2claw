@@ -1,0 +1,86 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "prospective_d1_d2_elbow_tracking_qualification_tricam_20260727_v1",
+  "samples_per_stage": 81,
+  "capture_hold_seconds": 0.25,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_15s_v1.json",
+    "contract_sha256": "457f2c142671851ddd60a3f1be5487125605957e38c1b2730ab683e08488393f"
+  },
+  "reviewed_anchor_degrees": [
+    -6.681318681318682,
+    -92.3956043956044,
+    101.67032967032966,
+    -50.417582417582416,
+    -104.13186813186813,
+    1.66270783847981
+  ],
+  "stage_targets_degrees": [
+    [
+      -6.681318681318682,
+      -92.3956043956044,
+      85.0,
+      -50.417582417582416,
+      -104.13186813186813,
+      1.66270783847981
+    ]
+  ],
+  "recovery_source_contact_admission": {
+    "schema_version": "sim2claw.recovery_source_contact_admission.v1",
+    "enabled": true,
+    "source_state_only": true,
+    "source_joint": "elbow_flex",
+    "inward_direction": "decreasing",
+    "require_source_robot_self_contact_only": true,
+    "require_contact_pairs_subset_of_source": true,
+    "require_penetration_never_worse_than_source": true,
+    "require_final_contact_clear": true,
+    "exclude_from_task_and_transfer_claims": true,
+    "visual_source_review_path": "runs/prospective-real-to-sim/20260727-d1-d2-wrist-dominant-setup-v2/visual_scene_review.json",
+    "visual_source_review_sha256": "85bd06d98fa615bb9130f450738414035f89f973c4d07aad9085d2a097695ec6"
+  },
+  "mechanism_hypothesis": {
+    "classification": "trajectory_controller_load_interaction",
+    "prior_slow_route_rate_degrees_s": [
+      1.051,
+      1.678
+    ],
+    "prior_terminal_tracking_lag_degrees": [
+      3.253,
+      3.648
+    ],
+    "maximum_frozen_rate_degrees_s": 8.335164835164835,
+    "qualification_target_degrees": 85.0,
+    "unchanged_failed_command_repeated": false,
+    "changed_mechanism": "Move the elbow inward at a previously demonstrated trackable speed instead of accumulating low-speed steady lag past the one-second stall-warning boundary.",
+    "historical_id_4_packet_error_implicated_joint": "wrist_flex",
+    "historical_id_4_packet_error_implicates_elbow": false
+  },
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "preview_bound_motion_tricam_contact_free_elbow_tracking_qualification",
+    "source_anchor": "fresh_configuration_free_torque_off_preflight_20260727",
+    "joint_scope": "elbow_flex_only",
+    "route_direction": "monotonically_inward",
+    "other_joints_exactly_held_at_anchor": true,
+    "maximum_slew_degrees_s": 10.0,
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "one_physical_attempt": true,
+    "guaranteed_torque_off_close": true,
+    "recovery_bytes_excluded_from_task_action_hash": true,
+    "evidence_limits": {
+      "physical_diagnostic_recovery_only": true,
+      "task_action": false,
+      "task_success": false,
+      "transfer": false,
+      "metric_depth": false,
+      "actuator_application_ack_timestamp_available": false,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false
+    }
+  }
+}
