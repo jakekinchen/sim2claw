@@ -9,6 +9,7 @@ from PIL import Image
 
 from sim2claw.bidirectional_registration_v2_capture import (
     RegistrationCaptureV2Error,
+    _scoring_window,
     execute_registration_capture,
     review_capture_plan,
 )
@@ -247,6 +248,57 @@ class _Gateway:
 
     def close(self) -> None:
         self.closed = True
+
+
+def _true_time_safety() -> dict[str, object]:
+    return {
+        "hold_gate_mode": "monotonic_true_time_v1",
+        "hold_maximum_rows": 71,
+        "hold_maximum_monotonic_seconds": 3.6,
+        "hold_minimum_unscored_settle_seconds": 0.5,
+        "hold_scoring_seconds": 2.0,
+        "joint_hold_tracking_maximum_degrees": 2.0,
+    }
+
+
+def test_true_time_scoring_uses_elapsed_monotonic_time() -> None:
+    records = [
+        {
+            "host_continuous_ns": 1_000_000_000 + index * 50_000_000,
+            "tracking_error": (
+                [2.5, 0, 0, 0, 0, 0]
+                if index < 10
+                else [1.5, 0, 0, 0, 0, 0]
+            ),
+        }
+        for index in range(71)
+    ]
+
+    scoring, metadata = _scoring_window(
+        records,
+        safety=_true_time_safety(),
+    )
+
+    assert scoring[0] is records[10]
+    assert scoring[-1] is records[50]
+    assert metadata["unscored_settle_elapsed_seconds"] == pytest.approx(0.5)
+    assert metadata["scored_hold_elapsed_seconds"] == pytest.approx(2.0)
+
+
+def test_true_time_scoring_rejects_nominal_rows_with_short_elapsed_time() -> None:
+    records = [
+        {
+            "host_continuous_ns": 1_000_000_000 + index * 20_000_000,
+            "tracking_error": [1.0, 0, 0, 0, 0, 0],
+        }
+        for index in range(71)
+    ]
+
+    with pytest.raises(
+        RegistrationCaptureV2Error,
+        match="true-time scoring duration",
+    ):
+        _scoring_window(records, safety=_true_time_safety())
 
 
 def test_review_is_motion_free_and_binds_exact_arrays(tmp_path: Path) -> None:

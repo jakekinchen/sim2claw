@@ -290,6 +290,25 @@ def review_capture_plan(
     )
     safety = packet["tracking_and_safety"]
     start_bridge = _validated_start_bridge(packet, safety)
+    hold_mode = str(safety.get("hold_gate_mode", "legacy_sample_tail_v1"))
+    true_time_hold_gate_bound = True
+    if hold_mode == "monotonic_true_time_v1":
+        hold_rows = int(route["compile"]["stationary_hold_samples_per_target"])
+        true_time_hold_gate_bound = bool(
+            safety.get("reset_deadline_on_camera_start") is True
+            and int(safety["hold_maximum_rows"]) == hold_rows
+            and float(safety["hold_minimum_unscored_settle_seconds"]) >= 0.5
+            and float(safety["hold_scoring_seconds"]) >= 2.0
+            and float(safety["hold_maximum_monotonic_seconds"])
+            >= (
+                float(safety["hold_minimum_unscored_settle_seconds"])
+                + float(safety["hold_scoring_seconds"])
+            )
+            and all(
+                int(item["sample_count"]) == hold_rows
+                for item in compiled["capture_slices"]
+            )
+        )
     _require(
         compiled["sample_hz"] == safety["sample_hz"]
         and np.all(egress >= lower)
@@ -302,7 +321,8 @@ def review_capture_plan(
             for name in ("fit_targets", "heldout_targets")
         )
         and safety["torque_off_every_exit"] is True
-        and safety["pawn_contact_forbidden"] is True,
+        and safety["pawn_contact_forbidden"] is True
+        and true_time_hold_gate_bound,
         "fresh pre-motion safety binding failed",
     )
     review = {
@@ -349,6 +369,7 @@ def review_capture_plan(
             "camera_contract_and_source_bound": True,
             "camera_before_motion_contract": True,
             "live_rebase_setup_bridge_bound": True,
+            "true_time_hold_gate_bound": true_time_hold_gate_bound,
             "torque_off_every_exit_contract": True,
             "no_task_or_pawn_contact_authority": True,
         },
@@ -436,7 +457,7 @@ def _finish_target_camera(
     opaque_id: str,
     split: str,
     hold_records: list[dict[str, Any]],
-    maximum_tracking_error: float,
+    safety: Mapping[str, Any],
 ) -> dict[str, Any]:
     finished = recorder.finish()
     _validate_camera_record(started, contract, token, mount)
@@ -446,10 +467,12 @@ def _finish_target_camera(
         and finished.get("droppedCallbackCount") == 0,
         "C922 target capture did not close without drops",
     )
-    scoring = hold_records[-40:]
-    _require(
-        len(scoring) == 40,
-        "target lacks the frozen two-second scoring tail",
+    maximum_tracking_error = float(
+        safety["joint_hold_tracking_maximum_degrees"]
+    )
+    scoring, scoring_metadata = _scoring_window(
+        hold_records,
+        safety=safety,
     )
     first_ns = int(scoring[0]["host_continuous_ns"])
     last_ns = int(scoring[-1]["host_continuous_ns"])
@@ -521,6 +544,7 @@ def _finish_target_camera(
         "scored_hold_first_host_continuous_ns": first_ns,
         "scored_hold_last_host_continuous_ns": last_ns,
         "scored_hold_sample_count": len(scoring),
+        **scoring_metadata,
         "maximum_absolute_tracking_error": max(
             max(abs(value) for value in row["tracking_error"])
             for row in scoring
@@ -532,6 +556,120 @@ def _finish_target_camera(
         **receipt,
         "capture_receipt_path": str(receipt_path),
         "capture_receipt_sha256": sha256_file(receipt_path),
+    }
+
+
+def _maximum_tracking_error(record: Mapping[str, Any]) -> float:
+    return max(abs(float(value)) for value in record["tracking_error"])
+
+
+def _scoring_window(
+    hold_records: list[dict[str, Any]],
+    *,
+    safety: Mapping[str, Any],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Select a legacy row tail or a bounded authoritative monotonic window."""
+
+    mode = str(safety.get("hold_gate_mode", "legacy_sample_tail_v1"))
+    if mode == "legacy_sample_tail_v1":
+        scoring = hold_records[-40:]
+        _require(
+            len(scoring) == 40,
+            "target lacks the frozen two-second scoring tail",
+        )
+        return scoring, {
+            "hold_gate_mode": mode,
+            "unscored_settle_elapsed_seconds": None,
+            "scored_hold_elapsed_seconds": (
+                int(scoring[-1]["host_continuous_ns"])
+                - int(scoring[0]["host_continuous_ns"])
+            )
+            / 1e9,
+        }
+
+    _require(
+        mode == "monotonic_true_time_v1",
+        "unknown registration hold gate mode",
+    )
+    maximum_rows = int(safety["hold_maximum_rows"])
+    maximum_seconds = float(safety["hold_maximum_monotonic_seconds"])
+    settle_seconds = float(safety["hold_minimum_unscored_settle_seconds"])
+    scoring_seconds = float(safety["hold_scoring_seconds"])
+    maximum_error = float(safety["joint_hold_tracking_maximum_degrees"])
+    _require(
+        2 <= len(hold_records) <= maximum_rows,
+        "target exceeded the frozen true-time row bound",
+    )
+    first_ns = int(hold_records[0]["host_continuous_ns"])
+    final_ns = int(hold_records[-1]["host_continuous_ns"])
+    hold_elapsed = (final_ns - first_ns) / 1e9
+    _require(
+        0.0 < hold_elapsed <= maximum_seconds,
+        "target exceeded the frozen true-time duration bound",
+    )
+    earliest_score_ns = first_ns + int(round(settle_seconds * 1e9))
+    score_start_index = next(
+        (
+            index
+            for index, record in enumerate(hold_records)
+            if int(record["host_continuous_ns"]) >= earliest_score_ns
+            and _maximum_tracking_error(record) <= maximum_error
+        ),
+        None,
+    )
+    _require(
+        score_start_index is not None,
+        "target never entered the unchanged tracking gate after true-time settle",
+    )
+    score_start_ns = int(
+        hold_records[score_start_index]["host_continuous_ns"]
+    )
+    score_end_index = next(
+        (
+            index
+            for index in range(score_start_index, len(hold_records))
+            if (
+                int(hold_records[index]["host_continuous_ns"])
+                - score_start_ns
+            )
+            / 1e9
+            >= scoring_seconds
+        ),
+        None,
+    )
+    _require(
+        score_end_index is not None,
+        "target lacks the frozen true-time scoring duration",
+    )
+    post_entry = hold_records[score_start_index:]
+    _require(
+        all(
+            _maximum_tracking_error(record) <= maximum_error
+            for record in post_entry
+        ),
+        "target left the unchanged tracking gate after scoring began",
+    )
+    scoring = hold_records[score_start_index : score_end_index + 1]
+    score_elapsed = (
+        int(scoring[-1]["host_continuous_ns"])
+        - int(scoring[0]["host_continuous_ns"])
+    ) / 1e9
+    _require(
+        score_elapsed >= scoring_seconds,
+        "target true-time score window shortened",
+    )
+    return scoring, {
+        "hold_gate_mode": mode,
+        "hold_elapsed_seconds": hold_elapsed,
+        "hold_maximum_rows": maximum_rows,
+        "hold_maximum_monotonic_seconds": maximum_seconds,
+        "unscored_settle_elapsed_seconds": (
+            int(scoring[0]["host_continuous_ns"]) - first_ns
+        )
+        / 1e9,
+        "required_unscored_settle_seconds": settle_seconds,
+        "scored_hold_elapsed_seconds": score_elapsed,
+        "required_scored_hold_seconds": scoring_seconds,
     }
 
 
@@ -645,6 +783,7 @@ def execute_registration_capture(
 
     def start_camera(label: str) -> None:
         nonlocal active_recorder, active_started, active_camera_root, active_token
+        nonlocal next_deadline
         _require(active_recorder is None, "overlapping C922 owner sessions")
         active_camera_root = output_root / "camera-sessions" / label
         active_token = (
@@ -667,6 +806,8 @@ def execute_registration_capture(
             _camera_process_running(active_recorder),
             "C922 source owner is not running",
         )
+        if safety.get("reset_deadline_on_camera_start") is True:
+            next_deadline = None
 
     def finish_non_target_camera(label: str) -> None:
         nonlocal active_recorder, active_started, active_camera_root, active_token
@@ -862,9 +1003,7 @@ def execute_registration_capture(
                     opaque_id=opaque_id,
                     split=split,
                     hold_records=hold,
-                    maximum_tracking_error=float(
-                        safety["joint_hold_tracking_maximum_degrees"]
-                    ),
+                    safety=safety,
                 )
                 target_records.append(target_receipt)
                 camera_records.append(
