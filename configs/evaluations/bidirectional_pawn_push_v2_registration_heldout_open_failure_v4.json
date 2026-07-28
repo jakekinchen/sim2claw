@@ -1,0 +1,40 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_heldout_open_failure_binding.v1",
+  "binding_id": "bidirectional-pawn-push-v2-registration-heldout-open-failure-v4",
+  "status": "manifest_only_access_failure_bound_before_recovery",
+  "proof_class": "sealed_manifest_only_access_failure_binding",
+  "failed_open_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/heldout_open_failure_v1.json",
+    "sha256": "54017f1facb2e1e38ab01f78c77134522f74552eabbd46d847d3cace50252ef4"
+  },
+  "attempted_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_heldout_v4.json",
+    "sha256": "be9d0c5366d6cbeff193e3324c7283614993dd79bc1bd960e340fef9a80ebe4e"
+  },
+  "candidate_sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c",
+  "sealed_manifest_sha256": "0116025742193193a73c6060335ccfb36f9a7123c43bd82157eb41b58f923bca",
+  "exception_type": "KeyError",
+  "exception_message": "'image_path'",
+  "cumulative_manifest_read_count": 1,
+  "raw_image_read_count_total": 0,
+  "heldout_pixel_open_count": 0,
+  "heldout_pixel_content_read": false,
+  "open_marker_exists": false,
+  "open_receipt_exists": false,
+  "contact_sheet_exists": false,
+  "evaluation_exists": false,
+  "heldout_output_root_exists": false,
+  "candidate_refit": false,
+  "threshold_update": false,
+  "z_bound_expansion": false,
+  "authority": {
+    "additional_manifest_read": false,
+    "heldout_pixel_open": false,
+    "candidate_refit": false,
+    "physical_motion": false,
+    "task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Immutable manifest-only parser failure. No heldout pixel, evaluation, task, motion, promotion, or transfer evidence."
+}

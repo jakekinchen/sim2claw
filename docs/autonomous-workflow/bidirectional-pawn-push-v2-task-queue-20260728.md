@@ -1711,3 +1711,22 @@ heldout-contract tests pass `4/4`. At this checkpoint no heldout manifest or
 pixel has been read, no open marker/output exists, and heldout open count
 remains `0`. The graph open-authority checkpoint must be committed and pushed
 before the one all-four open.
+
+### V04 first heldout open failed closed before pixel access — 2026-07-28
+
+The committed `a6106ff` one-open command read the sealed manifest once and
+then failed before reading any raw image because the intentionally opaque
+member schema has no top-level `image_path`. Immutable failure receipt
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/heldout_open_failure_v1.json`,
+SHA-256
+`54017f1facb2e1e38ab01f78c77134522f74552eabbd46d847d3cace50252ef4`,
+records exact `KeyError: 'image_path'`, cumulative manifest reads `1`, raw
+image reads `0`, heldout pixel content unread, and no marker, receipt,
+contact sheet, evaluation, or heldout output root.
+
+The candidate remains `4d08518f...`; no candidate refit, camera/rigid
+parameter update, threshold update, Z-bound expansion, motion, or task action
+occurred. This is a consumed manifest-only access and must not be represented
+as the successful one-pixel-open transaction. A separately committed,
+independently reviewed recovery protocol is required before any additional
+manifest or pixel access.
