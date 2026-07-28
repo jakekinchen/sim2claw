@@ -31,17 +31,17 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V04"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v04-execution-stop-1",
+        "node_id": "checkpoint:v04-owner-resume-start-bridge",
         "milestone_id": "V04",
-        "status": "paused_execution_stopped_before_first_row",
-        "queue_status": "PAUSED_V04_EXECUTION_STOPPED_BEFORE_FIRST_ROW",
-        "resume_action": "owner_merge_pause_no_retry",
-        "resume_authorized": False,
+        "status": "active_start_bridge_design_no_motion_authority",
+        "queue_status": "ACTIVE_V04_OWNER_RESUMED_START_BRIDGE_DESIGN",
+        "resume_action": "freeze_commit_and_review_versioned_start_bridge",
+        "resume_authorized": True,
         "heldout_open_count": 0,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(11)
+        range(12)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -52,10 +52,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V04_EXECUTION_STOP_1"
+        == "V04_OWNER_RESUME_START_BRIDGE"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v04-execution-stop-1"
+        "checkpoint:v04-owner-resume-start-bridge"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]

@@ -3,11 +3,11 @@
     "counted_task_attempts": 0,
     "heldout_open_count": 0,
     "milestone_id": "V04",
-    "node_id": "checkpoint:v04-execution-stop-1",
-    "queue_status": "PAUSED_V04_EXECUTION_STOPPED_BEFORE_FIRST_ROW",
-    "resume_action": "owner_merge_pause_no_retry",
-    "resume_authorized": false,
-    "status": "paused_execution_stopped_before_first_row"
+    "node_id": "checkpoint:v04-owner-resume-start-bridge",
+    "queue_status": "ACTIVE_V04_OWNER_RESUMED_START_BRIDGE_DESIGN",
+    "resume_action": "freeze_commit_and_review_versioned_start_bridge",
+    "resume_authorized": true,
+    "status": "active_start_bridge_design_no_motion_authority"
   },
   "authority": {
     "camera_open": false,
@@ -32,23 +32,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 29,
+    "edges": 30,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 1,
       "evaluated-on": 1,
       "fitted-on": 3,
-      "generated-from": 15,
+      "generated-from": 16,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 1,
-    "nodes": 28,
+    "nodes": 29,
     "nodes_by_type": {
       "candidate": 1,
-      "checkpoint": 7,
+      "checkpoint": 8,
       "context": 1,
       "counterexample": 1,
       "dataset": 1,
@@ -175,6 +175,16 @@
       },
       "source": "checkpoint:v04-owner-resume",
       "target": "checkpoint:v04-owner-integration-barrier",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "owner_resume": true,
+        "physical_motion": false,
+        "prospective_design_only": true
+      },
+      "source": "checkpoint:v04-owner-resume-start-bridge",
+      "target": "checkpoint:v04-execution-stop-1",
       "type": "generated-from"
     },
     {
@@ -326,7 +336,7 @@
     }
   ],
   "generated_at": "2026-07-28T07:52:00-05:00",
-  "graph_digest": "e8f1df1c5548a2c4a3191dce3b8c2a745c4333b16c168d4a3007a201ccc57720",
+  "graph_digest": "368f095d8a4cf784047083444629a4ff37b6d46ab29e333737e16dcae57ee903",
   "node_types": [
     "workcell",
     "session",
@@ -381,7 +391,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "3447e5a0d421b34d19c77d68fa198568e645c9107e8d415ea06c203199baa682"
+        "sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -466,7 +476,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "3447e5a0d421b34d19c77d68fa198568e645c9107e8d415ea06c203199baa682"
+        "sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -484,7 +494,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "3447e5a0d421b34d19c77d68fa198568e645c9107e8d415ea06c203199baa682"
+        "sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -505,9 +515,38 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "3447e5a0d421b34d19c77d68fa198568e645c9107e8d415ea06c203199baa682"
+        "sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e"
       },
       "status": "active_versioned_recapture_design",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "branch": "codex/bidirectional-transfer-goal-loop-20260728",
+        "camera_opened": false,
+        "counted_task_attempts": 0,
+        "execution_retry_authorized": false,
+        "frozen_arrays_preserved": true,
+        "gateway_constructed": false,
+        "heldout_open_count": 0,
+        "maximum_live_rebase_delta_degrees": 1.0,
+        "owner_resume_authorized": true,
+        "physical_motion": false,
+        "source_binding_id": "queue",
+        "start_bridge_pattern": "time_only_pre_row_bridge",
+        "start_bridge_seconds": 0.05,
+        "torque_enabled": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v04-owner-resume-start-bridge",
+      "label": "V04 owner resume and start-bridge design",
+      "proof_class": "campaign_control_state",
+      "source": {
+        "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
+        "proof_class": "campaign_control_state",
+        "sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e"
+      },
+      "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
     },
     {
@@ -757,7 +796,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "3447e5a0d421b34d19c77d68fa198568e645c9107e8d415ea06c203199baa682"
+        "sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -817,7 +856,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "3447e5a0d421b34d19c77d68fa198568e645c9107e8d415ea06c203199baa682"
+        "sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -835,7 +874,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "3447e5a0d421b34d19c77d68fa198568e645c9107e8d415ea06c203199baa682"
+        "sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -903,7 +942,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "3447e5a0d421b34d19c77d68fa198568e645c9107e8d415ea06c203199baa682"
+        "sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -1050,7 +1089,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "3447e5a0d421b34d19c77d68fa198568e645c9107e8d415ea06c203199baa682",
+      "source_sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -1080,7 +1119,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "3447e5a0d421b34d19c77d68fa198568e645c9107e8d415ea06c203199baa682",
+      "source_sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -1102,6 +1141,16 @@
       "source_binding": "v04_recap_execution_stop",
       "source_sha256": "d17d901f5a18ac7e7fccc4b1c3d45538f290e06d62736c040530648f07197e04",
       "status": "stopped_safely_before_first_row_owner_merge_pause"
+    },
+    {
+      "event_id": "V04_OWNER_RESUME_START_BRIDGE",
+      "node_ids_added": [
+        "checkpoint:v04-owner-resume-start-bridge"
+      ],
+      "revision": 11,
+      "source_binding": "queue",
+      "source_sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e",
+      "status": "active_start_bridge_design_no_motion_authority"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -1110,7 +1159,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "3447e5a0d421b34d19c77d68fa198568e645c9107e8d415ea06c203199baa682"
+      "sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e"
     },
     {
       "id": "simulator_candidate",

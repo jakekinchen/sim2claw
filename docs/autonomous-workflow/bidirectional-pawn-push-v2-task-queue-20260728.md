@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `PAUSED_V04_EXECUTION_STOPPED_BEFORE_FIRST_ROW`
+Status: `ACTIVE_V04_OWNER_RESUMED_START_BRIDGE_DESIGN`
 
 Created: `2026-07-28`
 
@@ -8,7 +8,7 @@ Owner/operator: sole active Codex writer in the live checkout
 
 Checkout: `/Users/kelly/Developer/sim2claw`
 
-Branch: `codex/geometric-microtransfer-20260727`
+Branch: `codex/bidirectional-transfer-goal-loop-20260728`
 
 ## Mission and exact claim boundary
 
@@ -48,6 +48,33 @@ pick-and-place, learned-policy transfer, or broad sim-to-real transfer.
 Repository evidence outranks hypotheses. Every transition, retry, blocker,
 fallback, metric, attempt, and reviewer decision must be recorded here
 immediately. Exactly one card may be `IN_PROGRESS`.
+
+## Consolidated critical path
+
+The 2026-07-28 owner instruction resumes V04 and authorizes this sole writer
+to goal-loop through the smallest honest bidirectional proof. The ordered path
+is:
+
+1. repair V04's row-zero start exactness with a versioned, hash-bound setup
+   bridge while preserving the frozen `716 + 2596` rows and the immutable
+   execution-v1 stop;
+2. complete the one acquisition-v2 transaction, fit only its six fit targets,
+   freeze the bounded rigid robot-to-board candidate, and open the four sealed
+   heldouts once;
+3. use exactly one acquisition-v3 family if that fit fails, then only the
+   bounded masked-static-scene/CAD audit described below after a second
+   registration failure;
+4. run a sim-only closed-jaw push rehearsal before evaluator freeze;
+5. freeze evaluator v2, feasible cases, mappings, hashes, safety rules, and a
+   maximum ten-attempt ledger;
+6. obtain one admitted REAL->SIM case and one distinct admitted SIM->REAL case;
+7. connect admitted evidence to the existing Studio spatial/temporal surfaces
+   and belief graph, validate and clean up, then obtain final read-only Fable 5
+   defect review.
+
+RoboPose training, EasyHeC expansion, the 24-pose fiducial sweep, SAIL/graph
+expansion, learned world-model work, depth restoration, and paid compute are
+deferred unless a later recorded gate explicitly activates them.
 
 ## V1 preservation boundary
 
@@ -209,8 +236,12 @@ Current state:
   `7dc3e08ff3d0cbea2bdb6ed640aaa5792abea2b0d826967c04a3bae195c00868`
   returned `CONTINUE`. Execution-v1 then stopped before sending its first row
   because the exact target would require forbidden rate limiting, clamping,
-  or correction. Torque-off cleanup passed. The owner has paused V04; no
-  retry, new milestone, camera, gateway, or motion is authorized.
+  or correction. Torque-off cleanup passed. The owner has now explicitly
+  resumed V04 on the sole-writer branch
+  `codex/bidirectional-transfer-goal-loop-20260728`. Camera, gateway, and
+  physical motion remain unauthorized until a new versioned start-bridge
+  packet is committed, hash-bound, independently reviewed, and returns
+  `CONTINUE`.
 - Counted actions do not exist.
 
 Completed:
@@ -489,16 +520,21 @@ Remaining:
 
 Blockers:
 
-- No terminal blocker is established. The owner integration barrier is
-  complete. The replacement contract and CPU/fp64 collision/visibility review
-  pass; physical recapture remains gated only on a scoped commit plus fresh
-  live identity, camera ownership, process, and torque-off checks.
+- No terminal blocker is established. Execution-v1 exposed a deterministic
+  row-zero timing defect: the executor sampled the first frozen target at
+  elapsed time `0`, leaving zero gateway slew allowance for the observed
+  `0.118765 deg` torque-on settle. The already-frozen `20 Hz` interval gives
+  `0.05 s`; under the reviewed `60 deg/s` gateway body limit that admits up to
+  `3 deg` without rate limiting. The repair must freeze that time-only pre-row
+  bridge in a new packet and must not widen the `1 deg` live-start envelope,
+  alter either action array, or send an unreviewed command.
 
 Next action:
 
-- Stop after recording, testing, committing, and pushing this no-motion
-  execution result. Do not retry execution or start another milestone while
-  the owner coordinates PR #16.
+- Implement and test the versioned `0.05 s` time-only pre-row start bridge,
+  freeze it in a new packet with the unchanged action hashes, commit it, then
+  emit a fresh deterministic review. Do not open a camera or gateway until
+  that committed packet's independent reviewer returns `CONTINUE`.
 
 Attempt ledger:
 
@@ -1121,3 +1157,35 @@ This is a no-motion setup rejection, not a physical task attempt, registration
 success, or transfer result. The owner ordered an immediate merge pause after
 recording it. V04 remains the sole `IN_PROGRESS` card, no new milestone is
 started, and no execution retry is authorized.
+
+### V04 owner resume / sole-writer start-bridge design — 2026-07-28
+
+The owner explicitly authorized a new High-reasoning agent to consolidate the
+critical path into this existing queue and goal-loop until bidirectional proof
+or a genuine receipt-backed safety/authority boundary. Merged `main` was
+verified at `98acce5`, including campaign tip `dc1dee3`. The sole writer
+created branch `codex/bidirectional-transfer-goal-loop-20260728` from that
+merge and preserved unrelated untracked
+`tools/build_fiducial_sheet.py` without reading it into campaign evidence.
+
+The workflow audit passed. V04 remains the only `IN_PROGRESS` card,
+held-out open count remains `0`, REAL->SIM and SIM->REAL remain `0/0`, and
+counted attempts remain `0/10`. The immutable execution-v1 stop remains
+authoritative negative evidence.
+
+Inspection localized the stop to row-zero timing rather than an unsafe frozen
+route. `execute_registration_capture` established its motion epoch and
+immediately requested row zero at elapsed `0`, while the reviewed gateway
+correctly required any nonzero difference from its post-hold live pose to be
+rate limited. The maximum recorded live-to-frozen delta was
+`0.118765 deg`. A single frozen `20 Hz` interval is `0.05 s`, within the
+gateway's `0.1 s` bounded control interval and providing up to `3 deg` of
+reviewed body slew allowance at `60 deg/s`.
+
+The prospective repair is a separately named, packet-bound,
+`time_only_pre_row_bridge` of exactly one `0.05 s` interval. It sends no
+command, changes no array, keeps the existing `1 deg` live-start tolerance,
+and is excluded from policy, task, and transfer evidence. A new packet and
+fresh deterministic reviewer `CONTINUE` are mandatory before any camera or
+gateway opens. This transition grants design/test authority only and no
+physical-motion authority.
