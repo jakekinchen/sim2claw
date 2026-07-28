@@ -29,24 +29,20 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     )
 
     assert rebuilt == tracked
-    assert tracked["active_pointer"]["milestone_id"] == "V05-TK"
+    assert tracked["active_pointer"]["milestone_id"] == "V05-TW"
     assert tracked["active_pointer"] == {
-        "node_id": "verdict:v05-tk-static-action-geometry-reject",
-        "milestone_id": "V05-TK",
-        "status": "terminal_static_family_count_negative_no_dynamic_admission",
-        "queue_status": (
-            "STOPPED_V05_TK_STATIC_ACTION_GEOMETRY_TERMINAL_NEGATIVE"
-        ),
-        "resume_action": (
-            "stop_without_grid_expansion_dynamic_replay_or_physical_execution"
-        ),
-        "resume_authorized": False,
+        "node_id": "checkpoint:v05-tw-owner-authorization-bound",
+        "milestone_id": "V05-TW",
+        "status": "owner_authorized_static_design_active",
+        "queue_status": "ACTIVE_V05_TW_OWNER_AUTHORIZATION_BOUND_STATIC_DESIGN",
+        "resume_action": "freeze_finite_wrist_orientation_precontact_path_grid",
+        "resume_authorized": True,
         "heldout_open_count": 1,
         "cumulative_manifest_read_count": 2,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(52)
+        range(53)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -57,10 +53,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_TK_STATIC_ACTION_GEOMETRY_REJECT"
+        == "V05_TW_OWNER_AUTHORIZATION_BOUND"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "verdict:v05-tk-static-action-geometry-reject"
+        "checkpoint:v05-tw-owner-authorization-bound"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]

@@ -1,0 +1,126 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_wrist_path_successor_authorization.v1",
+  "authorization_id": "bidirectional-pawn-push-v2-wrist-path-successor-20260728",
+  "status": "owner_authorized_before_static_design_or_model_loading",
+  "proof_class": "prospective_owner_authorized_static_only_wrist_orientation_and_precontact_path_successor",
+  "authorized_at": "2026-07-28",
+  "owner_authorization": "Authorize a prospectively frozen wrist-orientation and pre-contact path-shape successor. Derive a finite static-only grid from modeled joint, jaw, and collision geometry; preserve the existing quarantine, jaw target, geometry bounds, collision/progress/family gates, baseline/ZOH test, and false physical authority. Do not dynamically replay until at least two statically safe families per direction are frozen.",
+  "immutable_predecessors": {
+    "v05_tk_authorization": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_action_geometry_successor_authorization_v1.json",
+      "sha256": "6b439aaa67b48110b161139695a8f10732b8de9e61cc8cc3702e2e26a4fc783b"
+    },
+    "v05_tk_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_action_geometry_static_v1.json",
+      "sha256": "9a8cb66eca1b7acf5010a858d6dabef7bc8842dc9069126cf8eb077a8f31f458"
+    },
+    "v05_tk_static_v1_failure": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_action_geometry_static_v1_binding_failure.json",
+      "sha256": "9dd32bb11b238f9697f0cb82c13e4635fd69fa4aca8c4bd8247ae00ece3887d0"
+    },
+    "v05_tk_static_v2_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_action_geometry_static_v2.json",
+      "sha256": "f30a9178415d3aa3222de8378d4a5ae2aee7b875224c57f3c18026a350d9b2b1"
+    },
+    "v05_tk_terminal_negative": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tk-action-geometry-v2/static-freeze-v1/receipt.json",
+      "sha256": "c333180a3c30dff2640bae4e2a45e907b56df26d46a3777c4ea68c3cfcbcc6f2"
+    },
+    "temporal_plant_plan": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json",
+      "sha256": "5e8058e0bc46d60879d962a1e2ee9e8161a12197dfe9aee3faab73f7b1f23e9e"
+    }
+  },
+  "quarantine": {
+    "case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3"
+    ],
+    "exact_count": 4,
+    "permitted_use": "read_only_diagnostics_and_exact_quarantine_only"
+  },
+  "v05_tk_selected_static_cases": {
+    "case_ids": [
+      "brown_pawn_e2__e2_d2",
+      "brown_pawn_e2__e2_f2"
+    ],
+    "dynamic_outcomes_observed": false,
+    "prospective_universe_status": "may_remain_but_receive_no_privilege_beyond_frozen_static_rule"
+  },
+  "authorized_static_design": {
+    "new_dimensions": [
+      "wrist_orientation",
+      "single_explicit_precontact_collision_clearance_waypoint"
+    ],
+    "preserved_dimensions": {
+      "contact_center_offsets_m": [
+        0.016,
+        0.019,
+        0.022
+      ],
+      "contact_heights_m": [
+        0.018,
+        0.024,
+        0.03
+      ],
+      "stroke_lengths_m": [
+        0.09,
+        0.105,
+        0.12
+      ]
+    },
+    "permitted_sources": [
+      "articulated model joint limits",
+      "calibrated joint mapping",
+      "modeled fixed and moving jaw geometry",
+      "detailed pawn geometry",
+      "board square dimensions",
+      "static collision-clearance semantics"
+    ],
+    "static_selection_only": true,
+    "finite_maximum_cell_budget_required": true,
+    "no_post_outcome_expansion": true
+  },
+  "frozen_invariants": {
+    "closed_jaw_rad": -0.1727003294848389,
+    "action_dtype": "little_endian_float64",
+    "sample_hz": 40.0,
+    "deterministic_compilation": true,
+    "no_clipping_smoothing_posthoc_retiming_offset_or_assistance": true,
+    "minimum_signed_progress_mm": 36.025,
+    "minimum_distinct_families_per_direction": 2,
+    "canonical_direct_target_path": true,
+    "diagnostic_zoh_delay_seconds": 0.11,
+    "requested_sent_byte_identical": true,
+    "separate_requested_sent_applied_traces_and_timestamps": true,
+    "unchanged_collision_contact_exclusion_camera_gateway_gates": true
+  },
+  "forbidden": [
+    "ACT changes",
+    "reward shaping",
+    "filtering",
+    "randomization or posterior",
+    "second simulator",
+    "gate relaxation",
+    "dynamic replay before four statically safe families freeze",
+    "physical work"
+  ],
+  "authority": {
+    "static_design": true,
+    "model_loading": false,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Owner authorization to design and prospectively freeze one finite static-only wrist-orientation and precontact-path successor. It does not authorize model loading, enumeration, dynamic replay, V06, hardware, or transfer."
+}

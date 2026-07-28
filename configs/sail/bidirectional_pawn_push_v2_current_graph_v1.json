@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T13:12:52-05:00",
+  "generated_at": "2026-07-28T13:29:44-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819",
+      "sha256": "78cf5d44afe2286ef459a6d090456d736ee9a52b1e7d3b4dbfcfbb8655fb89b9",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -628,6 +628,16 @@
         "dynamic_replay_executed": false,
         "physical_motion": false,
         "physical_task_attempts": 0
+      }
+    },
+    "v05_tw_authorization": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_wrist_path_successor_authorization_v1.json",
+      "sha256": "d856ae9aa61d49ae43f1a3d917817c34d693ca0c014df01e6356a6bfece8c98a",
+      "proof_class": "prospective_owner_authorized_static_only_wrist_orientation_and_precontact_path_successor",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_wrist_path_successor_authorization.v1",
+        "status": "owner_authorized_before_static_design_or_model_loading",
+        "proof_class": "prospective_owner_authorized_static_only_wrist_orientation_and_precontact_path_successor"
       }
     },
     "simulator_candidate": {
@@ -1763,6 +1773,33 @@
       }
     },
     {
+      "id": "checkpoint:v05-tw-owner-authorization-bound",
+      "type": "checkpoint",
+      "label": "V05-TW wrist-orientation and precontact-path successor authorized",
+      "status": "owner_authorized_static_design_active",
+      "source_binding": "v05_tw_authorization",
+      "data": {
+        "quarantined_case_count": 4,
+        "quarantine_exact": true,
+        "new_static_design_dimensions": [
+          "wrist_orientation",
+          "single_explicit_precontact_collision_clearance_waypoint"
+        ],
+        "preserved_contact_offset_count": 3,
+        "preserved_contact_height_count": 3,
+        "preserved_stroke_count": 3,
+        "minimum_signed_progress_mm": 36.025,
+        "minimum_distinct_families_per_direction": 2,
+        "static_design_authorized": true,
+        "model_loading_authorized": false,
+        "static_simulation_authorized": false,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2433,6 +2470,18 @@
       }
     },
     {
+      "source": "checkpoint:v05-tw-owner-authorization-bound",
+      "type": "generated-from",
+      "target": "verdict:v05-tk-static-action-geometry-reject",
+      "metadata": {
+        "owner_authorized_wrist_and_precontact_path_successor": true,
+        "prior_verdict_immutable": true,
+        "quarantined_case_count": 4,
+        "static_design_only": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -2945,15 +2994,24 @@
       "node_ids_added": [
         "verdict:v05-tk-static-action-geometry-reject"
       ]
+    },
+    {
+      "revision": 52,
+      "event_id": "V05_TW_OWNER_AUTHORIZATION_BOUND",
+      "status": "owner_authorized_static_design_active",
+      "source_binding": "v05_tw_authorization",
+      "node_ids_added": [
+        "checkpoint:v05-tw-owner-authorization-bound"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:v05-tk-static-action-geometry-reject",
-    "milestone_id": "V05-TK",
-    "status": "terminal_static_family_count_negative_no_dynamic_admission",
-    "queue_status": "STOPPED_V05_TK_STATIC_ACTION_GEOMETRY_TERMINAL_NEGATIVE",
-    "resume_action": "stop_without_grid_expansion_dynamic_replay_or_physical_execution",
-    "resume_authorized": false,
+    "node_id": "checkpoint:v05-tw-owner-authorization-bound",
+    "milestone_id": "V05-TW",
+    "status": "owner_authorized_static_design_active",
+    "queue_status": "ACTIVE_V05_TW_OWNER_AUTHORIZATION_BOUND_STATIC_DESIGN",
+    "resume_action": "freeze_finite_wrist_orientation_precontact_path_grid",
+    "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0
