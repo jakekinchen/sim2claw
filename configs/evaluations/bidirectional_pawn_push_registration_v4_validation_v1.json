@@ -1,0 +1,27 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_registration_validation.v1",
+  "evaluation_id": "bidirectional_pawn_push_registration_v4_validation_v1",
+  "status": "frozen_gates_inherited_from_q03",
+  "candidate_path": "configs/scenes/bidirectional_pawn_push_scene_registration_v4.json",
+  "candidate_sha256": "c7c2b19d7bdf64e85c20f515b4d7fa859b2fd33948fa1a36438265571a752b7b",
+  "dataset_path": "configs/evaluations/bidirectional_pawn_push_registration_dataset_v1.json",
+  "dataset_sha256": "da203fae0e84ceb722631676858762e1ee3d5962be95c4555afb44f97bf51fdf",
+  "gates": {
+    "maximum_fit_residual_mm": 25.0,
+    "maximum_held_out_residual_mm": 25.0,
+    "require_no_new_external_contact": true,
+    "held_out_open_count": 1
+  },
+  "held_out_correspondence": {
+    "physical_square": "b7",
+    "apex_sample_index": 240,
+    "task_relative_offset_source": "route geometric_derivation hover target minus piece center",
+    "observed_point_source": "frozen diagnostic actual_pinch_xyz_m"
+  },
+  "fallback_on_failure": "F1",
+  "authority": {
+    "physical_motion": false,
+    "training": false,
+    "promotion": false
+  }
+}
