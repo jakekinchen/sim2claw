@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V03_PROSPECTIVE_REGISTRATION_CAPTURE`
+Status: `PAUSED_V04_OWNER_INTEGRATION_BARRIER`
 
 Created: `2026-07-28`
 
@@ -157,8 +157,8 @@ denominators before any counted action is compiled.
 | V00 | `DONE` | Read-only inventory, v1 verification, live torque/process/camera/Git state, and pre-freeze camera/feasibility design. | V1 closeout and hashes resolve; torque false; no competing writer or repo-owned camera/gateway process; all unrelated paths preserved; fixed-C922 adjudication design and candidate no-contact hover strategy documented from live evidence. No motion. | Receipt `runs/bidirectional-pawn-push-v2/20260728-v00-read-only-design/v00_read_only_design_receipt.json`, SHA-256 `2c818ed0b70458ca0cd2d2758ec2c4a74790dcc6bc0733bc82dafca157908ebf`. Fresh exact-mode C922 frame SHA-256 `00e1e84b83e28344849400c502975bdca70ad40975815c31b10c20073483cebe`; `92` callbacks, zero drops. Gateway preflight passed with torque false and no motion/config rewrite. CPU/fp64 found a fixed-elbow `13.615385 deg` source egress that monotonically clears the two source-only modeled folded-arm contacts, then a contact-free seven-pan hover family spanning `106.558 mm` in model x plus a separate elevated held-out. No physical motion. |
 | V01 | `DONE` | Preregister a new camera-owned registration acquisition, board-plane metric model, fit/held-out split, and sealed-input rules. | Versioned contract declares visible board features, camera model inputs, gripper reference, fit targets, held-out targets, pixel/reprojection sanity gate, `<25 mm` metric gate, hashes, and recapture fallback before capture. | Contract `configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v1.json`, SHA-256 `f345d9ff55ed38b8509dac061af7d0ce7aeaefb59cb78f92ba4460b5dbe82024`. Four fit targets and four held-out targets are disjoint and prospectively frozen; v1 B7 reuse forbidden; C922 owns board/task; D405 depth omitted; normalized zero-distortion `3x4` DLT family and pixel/annotation/`<25 mm` gates fixed; held-out single-open and versioned recapture fallback fixed. Validation attempt 1 failed only on a mistyped C922-contract digest before freeze; corrected to the live digest. Attempt 2: `3 passed in 0.04s`. No capture or motion. |
 | V02 | `DONE` | Prove hover poses and visibility using CPU/fp64 simulation and static camera projections/images. | Every proposed target passes joint limits, self/table/board/pawn clearance, no-contact height, slow-path preview, C922 field of view, simultaneous gripper/board visibility, and guaranteed return/torque-off logic. Reviewer decision `CONTINUE`. No motion. | Route `configs/hardware/bidirectional_pawn_push_v2_registration_route_v1.json`, SHA-256 `b7464a34a6abe744d778323a7a017f5ab8f40d6f6556b7691f5944e1bbd52d8e`. Final receipt `runs/bidirectional-pawn-push-v2/20260728-v02-static-route-v2/evaluation.json`, SHA-256 `53c6b4dec93cae8f41e9bc24a106fcc0883d3c11d97c887aec3c630491bdbcf6`; deterministic reviewer `CONTINUE`, evidence anchor `100`, all `11/11` gates true. Fresh torque-off start matched the frozen rebase exactly. Source egress: `92` float64 rows, `4.55 s`, hash `9a3ccff7ba26e94f2cce2963480e33a2999b07efa16777edc73530a8fa28e142`. Capture/return: `1541` float64 rows, `77.0 s`, hash `6d05f2471ec0ca8f83beadbc9bbfcc4b6d8ae4c679198414fad600bf29a1dbdf`. Maximum slew `2.999531 deg/s`; minimum jaw clearance `66.282 mm` to any pawn and `93.975 mm` to board; C922 proxy minimum image margin `206.268 px`. All eight camera rays first hit the intended moving jaw `5.865-7.045 mm` before the registered midpoint, within the frozen `15 mm` surface-offset gate. No motion occurred; no camera opened, gateway was constructed, or attempt was counted. |
-| V03 | `IN_PROGRESS` | Capture the prospective fit and held-out registration observations through the reviewed gateway. | Cameras precede motion; only approved slow no-contact paths run; requested/mapped/sent and tracking receipts close; every planned target is captured; torque false on exit; input hashes freeze; no pawn contact. | Pre-motion implementation and review pass. Packet `configs/hardware/bidirectional_pawn_push_v2_registration_capture_v1.json`, SHA-256 `673458da820e977646151e08e84b5aff246302889f6e4da890554ba5cce15cbe`. Review `runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/pre-motion-review.json`, SHA-256 `6d5e7e25ec6c8fbff48142466b94849463e7748431e1dd77c37387497219b040`; deterministic reviewer `CONTINUE`, evidence anchor `100`, all `12/12` gates true. The single registration-only transaction is eligible after the packet/executor/queue commit and one final fresh torque/process check. No V03 motion or camera capture yet. |
-| V04 | `PENDING` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Pending. |
+| V03 | `DONE` | Capture the prospective fit and held-out registration observations through the reviewed gateway. | Cameras precede motion; only approved slow no-contact paths run; requested/mapped/sent and tracking receipts close; every planned target is captured; torque false on exit; input hashes freeze; no pawn contact. | Execution receipt `runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/execution_receipt.json`, SHA-256 `a1692a5b87d88b7b2c37151159660546d9104c9b3973de85f0801de0d9e793a3`, status `completed_no_contact_registration_capture`, proof class `physical_rgb_no_contact_registration_observation_only`. All exact `92 + 1541` requested/mapped/sent rows are byte-identical to the reviewed arrays; all eight scored holds pass; nine C922 sessions have zero drops; fit and sealed-heldout manifests hash to `933f121a60b741d5a555b865caccf8fedce1ea0b6accd0e007cd42f77eafa8a5` and `6fd932ddf33c2e5aae87680e141eb1a41f05feb19196eac2fd2343ad3f5a18d6`; final preflight proves torque false. No pawn contact or task attempt. |
+| V04 | `IN_PROGRESS` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Acquisition-v1 fit attempt 1 was rejected before held-out: receipt `runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1/fit_receipt.json`, SHA-256 `9b6378fc32a3f22fc6c9c6379a86df2a96562b3c0207f07488494d68c13adedb`. Board and annotation gates pass, but hover reprojection is `11.281007 px` RMS / `15.767004 px` max versus frozen `6/10 px` gates. Held-out open count remains `0`. The preregistered nonterminal recapture fallback is pending but is not authorized while the owner pause barrier is active. |
 | V05 | `PENDING` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Pending. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
@@ -195,11 +195,12 @@ denominators before any counted action is compiled.
 
 Current state:
 
-- V03 is the only active card.
-- One registration-only no-contact transaction is eligible after the V03
-  packet/executor/queue commit and one final fresh torque/process check. It
-  must use the exact V02 setup arrays, sequential fixed-C922 enclosure, and
-  unconditional torque-off path. No task action or pawn contact is authorized.
+- V04 is the only active card.
+- The fit manifest is frozen and the held-out manifest remains separately
+  sealed. Acquisition-v1 failed its fit-only pixel gate without a held-out
+  open. V04 remains active but paused at the owner integration barrier.
+  Replacement-family design, recapture, camera open, gateway construction,
+  held-out open, and robot motion are not authorized while paused.
 - Counted actions do not exist.
 
 Completed:
@@ -213,6 +214,9 @@ Completed:
   authoritative capture or motion.
 - V02 froze and passed the exact CPU/fp64 source-egress, eight-hover,
   camera-visibility, and safe-return proof without motion.
+- V03 completed the single reviewed no-contact registration transaction,
+  froze four fit and four sealed-heldout C922 observations, and closed with
+  torque false. It consumed zero task attempts.
 
 Verification evidence:
 
@@ -349,26 +353,90 @@ Verification evidence:
   torque-off and zero counted attempts. Python bytecode compilation and Git
   diff checks pass. The optional `ruff` executable is absent from the offline
   runtime, so no lint claim is made.
+- V03 physical execution receipt:
+  `runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/execution_receipt.json`,
+  SHA-256
+  `a1692a5b87d88b7b2c37151159660546d9104c9b3973de85f0801de0d9e793a3`.
+  The `83.450816 s` transaction completed with proof class
+  `physical_rgb_no_contact_registration_observation_only`. The source egress
+  executed all `92/92` reviewed rows with identical hash
+  `9a3ccff7ba26e94f2cce2963480e33a2999b07efa16777edc73530a8fa28e142`;
+  capture/return executed all `1541/1541` rows with identical hash
+  `6d05f2471ec0ca8f83beadbc9bbfcc4b6d8ae4c679198414fad600bf29a1dbdf`.
+  Requested, mapped, and sent bytes were identical. Every final `40`-sample
+  hold passed the exclusive `2 deg` tracking gate; the maximum target error
+  ranged from `0.516484` to `0.681319 deg`. Nine sequential C922 sessions
+  completed with zero callback drops. The joint-sample digest is
+  `946813baa7fa3ad6e66a80bcadc59963d5d911fffb88d47d89313742e3a4a613`.
+- The V03 fit manifest is
+  `runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/fit_manifest.json`,
+  SHA-256
+  `933f121a60b741d5a555b865caccf8fedce1ea0b6accd0e007cd42f77eafa8a5`.
+  Its four selected-image hashes are
+  `0366cc50ab509c4e7b1c75299239e6447922c4f5d48105debd76e47f0673e996`,
+  `6332f495f471bdffe48a314bad1fae19c60fa9e9cf96aefcdff20456c3ae627a`,
+  `8cedd6534147119c01aeb8dd688ecedec7c79d7d45c624af48d53d4ae02ee641`,
+  and
+  `2f62561294d78c592991258e38293856bf18edb69196753ef708c8b7fc15dab4`.
+  The separately sealed held-out manifest is
+  `runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/heldout_sealed_manifest.json`,
+  SHA-256
+  `6fd932ddf33c2e5aae87680e141eb1a41f05feb19196eac2fd2343ad3f5a18d6`.
+  Its opaque image hashes are
+  `91190ac222b3934e0192b4aa56627195e585ad6d2b29e968bdd44cf1e4ac9073`,
+  `1ae033388daa488387787ce1426eaf8bcec48b6a590762d2b160ea95cddaa485`,
+  `0905a2d22cf18ce5b83ac734f43fef3755f19bc75a3cce3566e85e25e5afad39`,
+  and
+  `2f739cbd0453a52b42ad9954a15bc53192514601015288d89767e879d317bf14`.
+  The physical frames show both distal jaw tips and the complete board lattice
+  without pawn contact. This visual audit is observation-only and grants no
+  registration or task success by itself.
+- Final V03 gateway preflight passed with torque false,
+  `device_configuration_rewritten:false`, and follower anchor
+  `[-8.263736,-106.197802,99.208791,-94.021978,-125.318681,2.494062] deg`.
+  The recorder and gateway were closed, no repo-owned C922 process remained,
+  and no task action or physical attempt was counted.
+- V04 acquisition-v1 fit annotations:
+  `configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v1.json`,
+  SHA-256
+  `35d60b5a9123ee9bb351538c90f00d3a6821e01b33563ea85730250268ee983a`.
+  The fit process reads only the four fit images and their scored joint holds.
+  Two independent jaw-tip passes agree within `0.707107 px`; the extracted
+  board lattice has `1.486607 px` RMS and `3.9 px` maximum line residual, so
+  all annotation and board gates pass.
+- Frozen acquisition-v1 fit candidate SHA-256:
+  `ea9caa941517956ca6115d71137ead7456d72548ee4fcb8acbcd8ee1e4f92dab`.
+  Fit receipt SHA-256:
+  `9b6378fc32a3f22fc6c9c6379a86df2a96562b3c0207f07488494d68c13adedb`.
+  The exact contract feature is the midpoint of the means of the three fixed
+  and three moving distal tip sphere centers at each observed hold. The
+  normalized DLT condition number is `10.406306`, but hover reprojection is
+  `11.281007 px` RMS and `15.767004 px` maximum, failing the frozen `6/10 px`
+  gates. Board reprojection remains `1.604546 px` RMS / `1.955275 px` max.
+  Status is `rejected_before_heldout`; held-out inputs were not read and
+  held-out open count remains `0`.
 
 Remaining:
 
-- Complete V03 reviewed camera-enclosed registration capture and freeze its
-  inputs.
-- V04-V15.
+- After explicit owner resume, complete V04's preregistered new-version
+  registration recapture, fit-only candidate freeze, and one-time held-out
+  evaluation.
+- V05-V15.
 
 Blockers:
 
-- No terminal blocker is established. The V03 pre-motion implementation and
-  reviewer gates pass. The only eligible physical operation is the one
-  prospective no-contact registration transaction after its scoped commit and
-  final torque/process check.
+- No terminal blocker is established. The owner imposed a deliberate pause so
+  a separate current-campaign graph integration and visual 3DGS/simulator
+  comparison can land before V04 resumes. This campaign will not implement
+  either integration. V04 remains active; no recapture, camera, gateway,
+  held-out open, or motion is authorized while paused.
 
 Next action:
 
-- Commit the V03 packet, executor, tests, and queue; recheck live HEAD, Git
-  lock, competing process, camera ownership, and torque false; then execute
-  the single reviewed no-contact registration transaction. Stop safely on any
-  camera, tracking, stall, hash, or identity failure.
+- Remain paused. After an explicit owner resume following the external graph
+  and visual-comparison integration, prospectively freeze a replacement
+  registration family and newly split dataset before any recapture. Do not
+  reuse acquisition-v1 held-out or weaken any gate.
 
 Attempt ledger:
 
@@ -525,3 +593,130 @@ Review SHA-256:
 It records torque-off fresh start, exact-array/V02 equality, and no camera,
 gateway, motion, or counted attempt. V03 remains the only active card and
 attempts remain `0/10`.
+
+### V03 complete / V04 start — 2026-07-28
+
+Immediately before the single physical transaction, the live branch HEAD
+remained the committed V03 implementation `b7c00e8`; no Git lock or competing
+repository writer was present; the exact packet, V02 receipt, and setup hashes
+matched; no repo-owned C922 or gateway process was running; a fresh gateway
+preflight passed without start alignment or configuration rewrite and proved
+follower torque false.
+
+The exact committed execution command was:
+
+```text
+OPENCV_OPENCL_RUNTIME=disabled uv run --offline python \
+  scripts/capture_bidirectional_registration_v2.py \
+  --packet \
+  configs/hardware/bidirectional_pawn_push_v2_registration_capture_v1.json \
+  --review \
+  runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/pre-motion-review.json \
+  --output \
+  runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution \
+  --yes
+```
+
+It exited successfully after `83.450816 s`. All eight target captures and the
+return were enclosed by sequential exact-mode C922 owner sessions. The exact
+reviewed `92`-row egress and `1541`-row capture/return arrays executed with
+planned/executed semantic hashes unchanged, requested/mapped/sent byte
+identity true, every target hold below `0.682 deg` maximum absolute error, and
+zero camera drops. No pawn contact was authorized or observed. The gateway
+closed unconditionally and a fresh post-close preflight proved torque false.
+
+Execution receipt SHA-256:
+`a1692a5b87d88b7b2c37151159660546d9104c9b3973de85f0801de0d9e793a3`.
+Fit-manifest SHA-256:
+`933f121a60b741d5a555b865caccf8fedce1ea0b6accd0e007cd42f77eafa8a5`.
+Sealed-heldout-manifest SHA-256:
+`6fd932ddf33c2e5aae87680e141eb1a41f05feb19196eac2fd2343ad3f5a18d6`.
+
+V03 is `DONE`; V04 is the only active card. Held-out open count is `0`.
+Counted physical attempts remain `0/10`.
+
+### V04 acquisition-v1 fit rejection / recapture fallback — 2026-07-28
+
+The fit-only annotation file froze four image hashes, two independent
+distal-tip passes per image, fit-only board-lattice extraction, exact scored
+joint-hold telemetry, and the exact modeled feature before executing the fit.
+The implementation uses the arithmetic mean of the three fixed distal-tip
+sphere centers and the three moving distal-tip sphere centers at each actual
+hold, then their midpoint. It does not reuse the reach planner's closed-jaw
+local offset.
+
+Focused validation:
+
+```text
+uv run --offline pytest -q \
+  tests/test_bidirectional_registration_v2_fit.py
+..                                                                       [100%]
+2 passed in 0.29s
+```
+
+The exact fit command was:
+
+```text
+OPENCV_OPENCL_RUNTIME=disabled uv run --offline python \
+  scripts/fit_bidirectional_registration_v2.py \
+  --annotations \
+  configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v1.json \
+  --output \
+  runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1
+```
+
+The seeded board lattice passed at `1.486607 px` RMS and `3.9 px` maximum.
+Annotation tip and midpoint agreement passed. The normalized DLT design
+condition number passed at `10.406306`. The fit hover reprojection did not
+pass: `11.281007 px` RMS and `15.767004 px` maximum versus frozen limits of
+`6 px` and `10 px`. Receipt status is `rejected_before_heldout`.
+
+No held-out image or annotation was read by the fit evaluator; held-out open
+count is `0`. The v1 candidate and failed receipt are immutable diagnostics
+and grant no registration or task success. The acquisition contract's
+versioned recapture fallback is mandatory and nonterminal, but is pending and
+not authorized during the owner pause. V04 remains the only active card.
+Counted attempts remain `0/10`.
+
+### V04 owner pause checkpoint — 2026-07-28
+
+The owner imposed a pause at the safe fit-rejection boundary so separate
+current-campaign graph integration and visual 3DGS/simulator comparison work
+can complete. This writer will not implement those integrations and will not
+open a camera, construct a gateway, open held-out, design or execute a
+replacement capture, or issue robot motion while paused.
+
+The clean checkpoint scope is limited to the V03 completion record, frozen
+fit annotations, deterministic fit-only implementation and tests, immutable
+acquisition-v1 rejection receipt/hash, and this queue transition. V04 remains
+`IN_PROGRESS` as the sole active card because its acceptance gate has not
+passed. The replacement recapture fallback is pending explicit resume.
+
+Checkpoint verification:
+
+```text
+OPENCV_OPENCL_RUNTIME=disabled uv run --offline pytest -q \
+  tests/test_bidirectional_registration_v2_fit.py \
+  tests/test_bidirectional_registration_v2_capture.py \
+  tests/test_bidirectional_registration_v2_route.py \
+  tests/test_bidirectional_pawn_push_v2_registration_acquisition.py
+..........                                                               [100%]
+10 passed in 22.99s
+```
+
+Python bytecode compilation and `git diff --check` pass. The live HEAD before
+the checkpoint commit is `b7c00e86585d180c454a45b06673015182b1ce50`; the
+index lock is absent. The long-lived Claude Desktop process `46361` has no
+open regular file in this repository and is not treated as a competing
+writer.
+
+The last live post-motion gateway preflight is embedded in the immutable V03
+execution receipt. It reports `passed:true`,
+`physical_follower_torque_enabled:false`,
+`torque_off_confirmed:true`, no configuration rewrite, and no error. A fresh
+process/device-owner audit at this pause found no repo-owned C922 capture or
+gateway/controller process and no open handle on follower device
+`/dev/cu.usbmodem5B3D0406411`. Because the pause forbids gateway construction,
+the checkpoint intentionally did not perform another bus-opening preflight;
+there has been no subsequent motion command after the receipt-backed
+torque-off close.

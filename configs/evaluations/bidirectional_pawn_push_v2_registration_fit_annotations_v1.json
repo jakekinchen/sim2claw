@@ -1,0 +1,89 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_fit_annotations.v1",
+  "annotation_id": "bidirectional-pawn-push-v2-registration-fit-annotations-v1",
+  "status": "frozen_before_candidate_fit",
+  "proof_class": "agent_rgb_annotation_fit_split_only",
+  "acquisition_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v1.json",
+    "sha256": "f345d9ff55ed38b8509dac061af7d0ce7aeaefb59cb78f92ba4460b5dbe82024"
+  },
+  "fit_manifest": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/fit_manifest.json",
+    "sha256": "933f121a60b741d5a555b865caccf8fedce1ea0b6accd0e007cd42f77eafa8a5"
+  },
+  "joint_samples": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/joint_samples.jsonl",
+    "sha256": "946813baa7fa3ad6e66a80bcadc59963d5d911fffb88d47d89313742e3a4a613"
+  },
+  "candidate_manifest": {
+    "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+  },
+  "board_lattice": {
+    "source": "pixelwise median of the four hash-bound fit images only",
+    "seed_source": "V00 inventory frame only; seed is not a measurement",
+    "extractor": "seeded grayscale directional-gradient 9x9 projective lattice fit",
+    "optimizer": "scipy differential_evolution seed 20260728",
+    "playing_corner_order": [
+      "a8_outer",
+      "h8_outer",
+      "h1_outer",
+      "a1_outer"
+    ],
+    "playing_corners_px": [
+      [45.03126607622057, 96.08157680913227],
+      [383.63687134996053, 118.03979595275159],
+      [514.9877910248706, 306.0458238138264],
+      [66.86756912313133, 290.2488933389766]
+    ],
+    "direct_column_line_indices": [0, 1, 2, 3, 5, 6, 8],
+    "direct_column_line_residual_px": [0.6, -1.7, -0.7, 2.0, -0.8, 0.4, -3.9],
+    "direct_row_line_indices": [0, 1, 2, 3, 5, 6, 8],
+    "direct_row_line_residual_px": [-0.5, -0.7, -0.9, 0.3, -0.4, 2.1, -1.6],
+    "residual_rms_px": 1.4866068747318506,
+    "residual_max_px": 3.9,
+    "visual_audit": "All four outer playing corners and at least seven direct lines on each axis are visible across the fit-only median. No pixel was changed by the audit."
+  },
+  "jaw_endpoint_annotations": {
+    "protocol": {
+      "agent_only": true,
+      "two_independent_visual_passes": true,
+      "both_distal_pink_tip_endpoints_recorded": true,
+      "pass_order_blinded_to_target_model_projection_and_fit_result": true,
+      "midpoint_rule": "arithmetic mean of both endpoints within a pass, then arithmetic mean of pass midpoints",
+      "postfit_adjustment_forbidden": true
+    },
+    "targets": [
+      {
+        "target_id": "v2-fit-pan-m21",
+        "image_sha256": "0366cc50ab509c4e7b1c75299239e6447922c4f5d48105debd76e47f0673e996",
+        "pass_a_tip_pixels": [[204.0, 184.0], [219.0, 188.0]],
+        "pass_b_tip_pixels": [[203.5, 184.5], [219.5, 188.0]]
+      },
+      {
+        "target_id": "v2-fit-pan-m11",
+        "image_sha256": "6332f495f471bdffe48a314bad1fae19c60fa9e9cf96aefcdff20456c3ae627a",
+        "pass_a_tip_pixels": [[238.0, 173.0], [252.0, 180.0]],
+        "pass_b_tip_pixels": [[238.5, 173.5], [252.5, 180.5]]
+      },
+      {
+        "target_id": "v2-fit-pan-m01",
+        "image_sha256": "8cedd6534147119c01aeb8dd688ecedec7c79d7d45c624af48d53d4ae02ee641",
+        "pass_a_tip_pixels": [[290.0, 160.0], [304.0, 174.0]],
+        "pass_b_tip_pixels": [[289.5, 160.5], [304.5, 173.5]]
+      },
+      {
+        "target_id": "v2-fit-pan-p09",
+        "image_sha256": "2f62561294d78c592991258e38293856bf18edb69196753ef708c8b7fc15dab4",
+        "pass_a_tip_pixels": [[350.0, 148.0], [364.0, 161.0]],
+        "pass_b_tip_pixels": [[350.5, 148.5], [364.5, 161.5]]
+      }
+    ]
+  },
+  "heldout_authority": {
+    "heldout_images_read": false,
+    "heldout_annotations_exist": false,
+    "heldout_open_count": 0
+  },
+  "claim_boundary": "These fit-only RGB annotations are measurements, not registration or task success."
+}
