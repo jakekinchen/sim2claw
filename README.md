@@ -34,6 +34,22 @@ retained separately instead of being rewritten.
 - Tracked contracts, decisions, run logs, release indexes, and tests; generated
   datasets, checkpoints, recordings, caches, and runtime output stay out of Git.
 
+## Public workspace data
+
+The checksum-bound
+[2026-07-28 workspace-data release](./docs/reference/WORKSPACE_DATA_RELEASE_20260728.md)
+publishes the reusable source episodes, actions, camera footage, raw sensor
+captures, transfer/calibration runs, receipts, and selected analysis outputs as
+GitHub Release assets. Generated data remains outside Git history.
+
+List or hydrate the release from a clone:
+
+```bash
+python3 scripts/download_workspace_data.py --list
+python3 scripts/download_workspace_data.py \
+  --destination workspace-data-20260728
+```
+
 ## Quick start
 
 The verified local path is Apple Silicon macOS with

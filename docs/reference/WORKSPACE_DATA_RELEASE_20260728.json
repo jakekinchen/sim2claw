@@ -1,0 +1,304 @@
+{
+  "schema_version": "sim2claw.workspace_data_release.v1",
+  "release_tag": "workspace-data-20260728-v1",
+  "release_url": "https://github.com/jakekinchen/sim2claw/releases/tag/workspace-data-20260728-v1",
+  "repository": "jakekinchen/sim2claw",
+  "repository_visibility": "public",
+  "source_branch": "codex/geometric-microtransfer-20260727",
+  "source_commit": "3649574499d3716287666c1628e8739a06904223",
+  "snapshot_date": "2026-07-28",
+  "archive_format": "tar.zst",
+  "archive_sha256_covers_complete_payload": true,
+  "compressed_asset_bytes": 10838457910,
+  "proof_boundary": {
+    "source_recording_is_training_admission": false,
+    "camera_observation_is_metric_calibration": false,
+    "visual_reconstruction_is_physics_replay": false,
+    "contact_free_geometric_transfer_is_task_success": false,
+    "bidirectional_task_transfer_claimed": false,
+    "twin_fidelity_score": "0/6",
+    "task_score": "0/11"
+  },
+  "corpus_summary": {
+    "manipulation_source_episode_count": 29,
+    "manipulation_source_sample_count": 13800,
+    "manipulation_source_duration_seconds": 688.91,
+    "manipulation_episode_samples_sha256_verified": "29/29",
+    "manipulation_episode_overhead_c922_count": 29,
+    "manipulation_episode_paired_d405_rgb_count": 9,
+    "act_source_episode_count": 6,
+    "act_source_sample_count": 2512,
+    "act_source_duration_seconds": 178.46,
+    "act_episode_samples_sha256_verified": "6/6",
+    "training_admitted_episode_count": 0
+  },
+  "support_assets": [
+    {
+      "name": "download_workspace_data.py",
+      "bytes": 7784,
+      "sha256": "34119f989d9ab2e55cb551398b53fc57e20c61248952514f0654cf5f33560759"
+    },
+    {
+      "name": "WORKSPACE_DATA_README.md",
+      "bytes": 3701,
+      "sha256": "0c991c468c5a12f1cb509b3f2e6368b20f82422391facace85430681faf13d92"
+    }
+  ],
+  "components": [
+    {
+      "id": "source-episodes",
+      "description": "Finalized source/training datasets, actions, receipts, camera footage, and the workcell-only IMG_5431 phone source.",
+      "proof_class": "source_data_unqualified_pending_separate_replay_and_evaluator",
+      "source_paths": [
+        "datasets/",
+        "external_sources/IMG_5431.MOV"
+      ],
+      "assets": [
+        {
+          "name": "source-episodes-and-datasets.tar.zst",
+          "format": "tar.zst",
+          "bytes": 640845786,
+          "sha256": "05446e26a45af1db971bc2ff41447f7fda699fd9dbc8d27058b121892f236b24"
+        },
+        {
+          "name": "phone-source-img5431.tar.zst",
+          "format": "tar.zst",
+          "bytes": 359173388,
+          "sha256": "4d087e54b4fd5b83fa5dac98cfe3c073c76768e2bdd409541a4d529e97a8c09a"
+        }
+      ]
+    },
+    {
+      "id": "d405-pose-plane",
+      "description": "Raw D405 pose-plane ROS DB3 recordings with associated action, telemetry, and capture receipts.",
+      "proof_class": "physical_calibration_observation_setup_only",
+      "source_paths": [
+        "runs/d405-pose-plane-capture/"
+      ],
+      "assets": [
+        {
+          "name": "d405-pose-plane-targets1-2-recovery.tar.zst",
+          "format": "tar.zst",
+          "bytes": 1565653266,
+          "sha256": "f5334cc817a3b868f93605b6bc2960b4fcf877738265b3852ed64af0be3ff7e4"
+        },
+        {
+          "name": "d405-pose-plane-targets3-5.tar.zst",
+          "format": "tar.zst",
+          "bytes": 1676110362,
+          "sha256": "3cc0b5d5705de930768837e219cdde7a1a46223d3f3436c6c0174d4b2d5294bf"
+        },
+        {
+          "name": "d405-pose-plane-target6.tar.zst",
+          "format": "tar.zst",
+          "bytes": 1143461995,
+          "sha256": "c6ee2c3fb2c0c625281725aefcc77dba5074c49450036b47ad9b0aef2713b10a"
+        }
+      ]
+    },
+    {
+      "id": "d405-rgbd",
+      "description": "Raw stationary and elbow-hold D405 RGBD recordings and reports.",
+      "proof_class": "physical_rgbd_observation_calibration_input_only",
+      "source_paths": [
+        "runs/d405-rgbd-capture/"
+      ],
+      "assets": [
+        {
+          "name": "d405-rgbd-capture.tar.zst",
+          "format": "tar.zst",
+          "bytes": 634008640,
+          "sha256": "1bf00d3a06aa000656e78aa1d92a988de7cff8f9171ad139019f8e047f146c13"
+        }
+      ]
+    },
+    {
+      "id": "bidirectional-registration",
+      "description": "V00-V04 bidirectional registration observations, actions, receipts, fit results, and return footage, excluding still-sealed heldouts.",
+      "proof_class": "registration_fit_rejected_before_heldout_no_task_transfer_authority",
+      "source_paths": [
+        "runs/bidirectional-pawn-push-v2/"
+      ],
+      "assets": [
+        {
+          "name": "bidirectional-registration.tar.zst",
+          "format": "tar.zst",
+          "bytes": 453458545,
+          "sha256": "fcae539c0103720fafff7f3c4378568cc6e669cef2a6a810d5fa1d0ab83c0456"
+        }
+      ]
+    },
+    {
+      "id": "geometric-transfer",
+      "description": "Contact-free geometric microtransfer and hover actions, physical traces, tricam footage, receipts, and evaluations.",
+      "proof_class": "accepted_and_rejected_contact_free_physical_geometric_transfer_evidence",
+      "source_paths": [
+        "runs/geometric-microtransfer/",
+        "runs/geometric-hover/"
+      ],
+      "assets": [
+        {
+          "name": "geometric-microtransfer.tar.zst",
+          "format": "tar.zst",
+          "bytes": 1055976873,
+          "sha256": "2b4d9177fc6f21820aaf1751c1279fd581b48de86b79ff2ee211eaa1203e2404"
+        },
+        {
+          "name": "geometric-hover.tar.zst",
+          "format": "tar.zst",
+          "bytes": 798165949,
+          "sha256": "c1700c161ef666b4317a99d0da24103a4d1fd9359f808d0abcd1e8544ad28c9e"
+        }
+      ]
+    },
+    {
+      "id": "prospective-real-to-sim",
+      "description": "Prospective REAL-to-SIM preflight, recovery, camera, execution, and terminal-negative evidence.",
+      "proof_class": "prospective_real_to_sim_terminal_safety_and_eligibility_evidence",
+      "source_paths": [
+        "runs/prospective-real-to-sim/"
+      ],
+      "assets": [
+        {
+          "name": "prospective-real-to-sim.tar.zst",
+          "format": "tar.zst",
+          "bytes": 709146825,
+          "sha256": "f299df417212102f96064f82bf85ae79f1e64a3b0b818d766b0627c7a0e11842"
+        }
+      ]
+    },
+    {
+      "id": "camera-registration",
+      "description": "Pi link-tag, C922 ordered-face, and current 100 mm measurement observations and registration inputs.",
+      "proof_class": "camera_and_geometry_diagnostic_inputs_no_parameter_promotion",
+      "source_paths": [
+        "runs/pi-link-tag-calibration/",
+        "runs/c922-ordered-face/",
+        "runs/current-100mm-measurement-20260723/"
+      ],
+      "assets": [
+        {
+          "name": "pi-link-tag-calibration.tar.zst",
+          "format": "tar.zst",
+          "bytes": 293980331,
+          "sha256": "66b507602e313dd4dd8da0951e32878b728371c3e52598fc0796eba5490d9c9e"
+        },
+        {
+          "name": "c922-ordered-face.tar.zst",
+          "format": "tar.zst",
+          "bytes": 318724108,
+          "sha256": "3f8faeca08d9a2521a8fd8f68cabba7c24a258b8bc12fef4cff04653387b2cf9"
+        },
+        {
+          "name": "current-100mm-measurement.tar.zst",
+          "format": "tar.zst",
+          "bytes": 328001879,
+          "sha256": "71615ddaaa908a53bff10d95cbd5c15c0db9baccd13f64fff5eabccf2df6cff1"
+        }
+      ]
+    },
+    {
+      "id": "physical-calibration-replay",
+      "description": "Smaller HIL, excitation, replay, canary, camera, telemetry, metrology, and system-identification evidence roots.",
+      "proof_class": "mixed_hash_bound_physical_observation_and_diagnostic_replay_evidence",
+      "source_paths": [
+        "runs/current-100mm-hil-multilevel-20260724/",
+        "runs/current-100mm-hil-identifiability-20260724/",
+        "runs/physical_excitation/",
+        "runs/physical_replays/",
+        "runs/multicamera_physical_replays/",
+        "runs/anchored-transfer-canary/",
+        "runs/c922-board-base-registration/",
+        "runs/physical_calibration_checks/",
+        "runs/physical-telemetry-trace-v1/"
+      ],
+      "assets": [
+        {
+          "name": "physical-calibration-and-replay-evidence.tar.zst",
+          "format": "tar.zst",
+          "bytes": 529803281,
+          "sha256": "0c4aa7d9c242d31abe567974c46167e86b88250ef20aac7859d915a01565ea97"
+        }
+      ]
+    },
+    {
+      "id": "analysis-outputs",
+      "description": "Selected analysis outputs, including D405 reliability, visual workcell, grasp, timing, actuator, and evidence reports.",
+      "proof_class": "derived_analysis_and_diagnostics_not_independent_physical_authority",
+      "source_paths": [
+        "outputs/"
+      ],
+      "assets": [
+        {
+          "name": "selected-analysis-outputs.tar.zst",
+          "format": "tar.zst",
+          "bytes": 331946682,
+          "sha256": "a021a00be09f6580f03585078aa14bd38c52c5bc9aca2a996aeac974ba050c52"
+        }
+      ]
+    }
+  ],
+  "intentional_exclusions": [
+    {
+      "paths": [
+        ".env",
+        "**/.env"
+      ],
+      "reason": "credentials_and_local_configuration"
+    },
+    {
+      "paths": [
+        "datasets/**/evaluator_privileged_state.jsonl",
+        "datasets/**/initial_evaluator_privileged_state.json"
+      ],
+      "reason": "evaluator_privileged_state_not_public_analysis_input"
+    },
+    {
+      "paths": [
+        "runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/heldout-sealed/"
+      ],
+      "reason": "publication_would_invalidate_still_sealed_heldout_gate"
+    },
+    {
+      "paths": [
+        "runs/teleop_recordings/failed_attempts/"
+      ],
+      "reason": "incomplete_attempts_not_finalized_source_episodes"
+    },
+    {
+      "paths": [
+        "artifacts/private/releases/",
+        "artifacts/publication/"
+      ],
+      "reason": "duplicate_assets_already_available_in_existing_github_releases"
+    },
+    {
+      "paths": [
+        "runs/geometric-pawn-sequence/",
+        "runs/near-rank8-search/",
+        "runs/transfers/",
+        "outputs/sail/",
+        "outputs/dev-loop/",
+        "output/playwright/",
+        "outputs/playwright/"
+      ],
+      "reason": "regenerable_bulk_frames_search_caches_test_receipts_or_duplicate_archives"
+    },
+    {
+      "paths": [
+        "**/runtime/",
+        "**/.DS_Store",
+        "**/*.lock"
+      ],
+      "reason": "platform_specific_binaries_or_ephemeral_metadata"
+    }
+  ],
+  "privacy_review": {
+    "strong_credential_pattern_matches": 0,
+    "repository_and_release_are_public": true,
+    "img5431_visual_review": "workcell_only_no_person_visible",
+    "raw_receipts_may_contain_historical_local_paths": true,
+    "raw_receipts_may_contain_hardware_identifiers": true,
+    "third_party_or_collaborator_messages_and_photos_included": false
+  }
+}
