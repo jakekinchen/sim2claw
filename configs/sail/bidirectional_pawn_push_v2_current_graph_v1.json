@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d",
+      "sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -254,6 +254,16 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_masked_static_cad_receipt.v1",
         "status": "diagnostic_complete",
         "proof_class": "fit_only_masked_static_and_compiled_transform_diagnostic"
+      }
+    },
+    "v04_acquisition_v4_static": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/static-review-v4/evaluation.json",
+      "sha256": "f407a89d939c1be8353d36eed1602056225139d1bcf1109876a7ca89fb4f95b3",
+      "proof_class": "cpu_fp64_static_registration_route_preview_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_route_preview.v1",
+        "status": "completed_cpu_fp64_static_route_and_visibility_preview",
+        "proof_class": "cpu_fp64_static_registration_route_preview_only"
       }
     },
     "simulator_candidate": {
@@ -776,6 +786,27 @@
       }
     },
     {
+      "id": "checkpoint:v04-acquisition-v4-static-ready",
+      "type": "checkpoint",
+      "label": "V04 acquisition-v4 true-time static route CONTINUE",
+      "status": "static_continue_true_time_packet_freeze_active",
+      "source_binding": "v04_acquisition_v4_static",
+      "data": {
+        "receipt_sha256": "f407a89d939c1be8353d36eed1602056225139d1bcf1109876a7ca89fb4f95b3",
+        "source_egress_action_sha256": "2229c16f28aa09bde94b021ff5f9cbde44087d26da4b844cca7b521bd347d424",
+        "capture_return_action_sha256": "80d558d3c179582b4927a59641b6946a55a0ccaff2fbf11416462a5c0f5eb0ef",
+        "true_time_unscored_settle_seconds": 0.5,
+        "true_time_scored_seconds": 2.0,
+        "tracking_gate_degrees": 2.0,
+        "maximum_hold_rows": 71,
+        "maximum_hold_seconds": 3.6,
+        "target_xyz_smallest_singular_value_mm": 7.34070573112927,
+        "physical_motion": false,
+        "heldout_open_count": 0,
+        "counted_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -1075,6 +1106,17 @@
       }
     },
     {
+      "source": "checkpoint:v04-acquisition-v4-static-ready",
+      "type": "generated-from",
+      "target": "checkpoint:v04-masked-static-cad-diagnostic",
+      "metadata": {
+        "fresh_split": true,
+        "true_time_gate": true,
+        "static_reviewer_continue": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -1298,14 +1340,23 @@
       "node_ids_added": [
         "checkpoint:v04-masked-static-cad-diagnostic"
       ]
+    },
+    {
+      "revision": 20,
+      "event_id": "V04_ACQUISITION_V4_STATIC_CONTINUE",
+      "status": "static_continue_true_time_packet_freeze_active",
+      "source_binding": "v04_acquisition_v4_static",
+      "node_ids_added": [
+        "checkpoint:v04-acquisition-v4-static-ready"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v04-masked-static-cad-diagnostic",
+    "node_id": "checkpoint:v04-acquisition-v4-static-ready",
     "milestone_id": "V04",
-    "status": "schedule_fault_isolated_transform_fit_required_v4_design_active",
-    "queue_status": "ACTIVE_V04_PROSPECTIVE_V4_TRUE_TIME_REGISTRATION_DESIGN",
-    "resume_action": "freeze_v4_true_time_registration_contract_and_static_route",
+    "status": "static_continue_true_time_packet_freeze_active",
+    "queue_status": "ACTIVE_V04_V4_TRUE_TIME_PACKET_FREEZE",
+    "resume_action": "freeze_v4_exact_packet_then_run_motion_free_live_review",
     "resume_authorized": true,
     "heldout_open_count": 0,
     "counted_task_attempts": 0

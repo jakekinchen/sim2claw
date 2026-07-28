@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_PROSPECTIVE_V4_TRUE_TIME_REGISTRATION_DESIGN`
+Status: `ACTIVE_V04_V4_TRUE_TIME_PACKET_FREEZE`
 
 Created: `2026-07-28`
 
@@ -1488,3 +1488,55 @@ correction and enough prospective fit diversity to adjudicate the transform;
 it must not admit the rejected v1 camera or reuse V3 images/heldouts for
 admission. This diagnostic grants no camera, gateway, motion, heldout, task,
 or transfer authority.
+
+### V04 acquisition-v4 true-time static route CONTINUE — 2026-07-28
+
+Fresh acquisition contract
+`configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v4.json`,
+SHA-256
+`605f8973553e14d488dd43a5aab51e2b6915215553033878aba6a2577d0e01da`,
+freezes six new `v2r4` fit targets and four new separately sealed heldouts.
+No V3 target ID, image, receipt, or heldout can be used for candidate
+admission. The empirical fit-only endpoint-visible wrist family and the
+physical D405-housing occlusion counterexample remain bound. Pan stays inside
+`[-21,+9] deg`, wrist flex/roll remain `-20/-102.813187 deg`, and lifts span
+four levels from `-85` through `-90 deg`.
+
+Route
+`configs/hardware/bidirectional_pawn_push_v2_registration_route_v4.json`,
+SHA-256
+`a18e263a380f091ae98c84c77d7da5e0bfe4a4210dada7ce7d5012113c1b4d0b`,
+uses the V3 postflight pose
+`[7.208791,-85.538462,99.472527,-20.087912,-103.340659,2.375297]`
+as a separately hash-bound torque-off start and return anchor. The V3 safe
+stop grants pose evidence only, not image, candidate, heldout, task, or
+transfer evidence.
+
+The route freezes `71` identical rows per target as a hard upper bound, but
+rows never define hold validity. Runtime mode `monotonic_true_time_v1`
+resets its deadline after each camera-owner transition, requires at least
+`0.5 s` of unscored monotonic settle, then at least `2.0 s` continuously
+inside the unchanged `2.0 deg` gate. Total hold is bounded by `71` rows and
+`3.6 s`; inability to enter, stay within, or complete the true-time window
+fails closed.
+
+Static receipt
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/static-review-v4/evaluation.json`,
+SHA-256
+`f407a89d939c1be8353d36eed1602056225139d1bcf1109876a7ca89fb4f95b3`,
+returned deterministic reviewer `CONTINUE`, evidence anchor `100`, with all
+authoritative gates true. Source egress is `123x6`, `6.10 s`, action SHA-256
+`2229c16f28aa09bde94b021ff5f9cbde44087d26da4b844cca7b521bd347d424`.
+Capture/return is `1274x6`, `63.65 s`, action SHA-256
+`80d558d3c179582b4927a59641b6946a55a0ccaff2fbf11416462a5c0f5eb0ef`.
+Maximum commanded slew is `3.000000000000114 deg/s`; modeled board and pawn
+clearance lower bounds are `80 mm` and `50 mm`; predicted reference image
+margin is `86.537645 px`; modeled target midpoint singular values are
+`[115.296,18.092,7.341] mm`. Joint reach, collision/contact previews,
+empirical visibility family, target count/diversity, and exact torque-off
+anchor all pass.
+
+Focused route and true-time capture tests pass `15/15`. No camera, gateway,
+or physical motion was used. The only active action is to bind the exact
+arrays and true-time contract into a new packet, then run a fresh motion-free
+live review before any possible V4 execution.

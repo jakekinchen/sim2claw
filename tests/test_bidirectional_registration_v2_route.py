@@ -28,6 +28,11 @@ EMPIRICAL_RECOVERY_ROUTE = (
     / "configs/hardware/"
     "bidirectional_pawn_push_v2_registration_route_v3.json"
 )
+TRUE_TIME_RECOVERY_ROUTE = (
+    ROOT
+    / "configs/hardware/"
+    "bidirectional_pawn_push_v2_registration_route_v4.json"
+)
 
 
 def test_v2_route_compiles_disjoint_capture_holds_and_no_authority() -> None:
@@ -155,3 +160,51 @@ def test_v3_route_binds_empirical_occlusion_family_and_height_diversity(
     assert result["camera_opened"] is False
     assert result["gateway_constructed"] is False
     assert result["counted_physical_attempts"] == 0
+
+
+def test_v4_true_time_route_uses_fresh_split_and_safe_stop_anchor(
+    tmp_path: Path,
+) -> None:
+    route, acquisition, _ = load_route(TRUE_TIME_RECOVERY_ROUTE)
+    compiled = compile_exact_route(route, acquisition)
+
+    assert len(acquisition["split"]["fit_targets"]) == 6
+    assert len(acquisition["split"]["heldout_targets"]) == 4
+    assert all(
+        str(row["target_id"]).startswith("v2r4-")
+        for split in ("fit_targets", "heldout_targets")
+        for row in acquisition["split"][split]
+    )
+    assert len(compiled["capture_slices"]) == 10
+    assert all(row["sample_count"] == 71 for row in compiled["capture_slices"])
+    assert compiled["egress"].shape == (123, 6)
+    assert compiled["main"].shape == (1274, 6)
+    assert np.array_equal(
+        compiled["main"][-1],
+        np.asarray(route["source_rebase"]["expected_degrees_percent"]),
+    )
+    assert not any(route["motion_contract"].values())
+
+    result = evaluate_route(
+        route_path=TRUE_TIME_RECOVERY_ROUTE,
+        output_root=tmp_path / "v04-recovery-v4",
+    )
+    assert result["reviewer"] == {
+        "kind": "deterministic_static_gate_reviewer",
+        "decision": "CONTINUE",
+        "evidence_anchor": 100,
+    }
+    assert all(result["gates"].values())
+    assert result["source_egress"]["action_sha256"] == (
+        "2229c16f28aa09bde94b021ff5f9cbde44087d26da4b844cca7b521bd347d424"
+    )
+    assert result["capture_and_return"]["action_sha256"] == (
+        "80d558d3c179582b4927a59641b6946a55a0ccaff2fbf11416462a5c0f5eb0ef"
+    )
+    assert result["final_anchor_review"]["pose_ok"]
+    assert result["final_anchor_review"]["torque_off_ok"]
+    assert result["empirical_visibility"]["all_passed"]
+    assert result["target_geometry"][
+        "smallest_model_midpoint_singular_value_mm"
+    ] >= 5.0
+    assert result["physical_motion_commanded"] is False

@@ -32,6 +32,7 @@ ACQUISITION_SCHEMAS = {
     "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v1",
     "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v2",
     "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v3",
+    "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v4",
 }
 RECEIPT_SCHEMA = (
     "sim2claw.bidirectional_pawn_push_v2_registration_route_preview.v1"
@@ -939,11 +940,50 @@ def evaluate_route(
         route["return"]["final_anchor_prior_physical_evidence"]
     )
     anchor_receipt = _json(anchor_receipt_path)
+    anchor_binding = route["return"]["final_anchor_prior_physical_evidence"]
+    accepted_status = anchor_binding.get(
+        "accepted_status",
+        "completed_wrist_view_reposition_stage",
+    )
+    expected_anchor_pose = anchor_binding.get(
+        "expected_torque_off_pose_degrees_percent"
+    )
+    observed_anchor_pose = (
+        anchor_receipt.get("final_preflight", {}).get(
+            "follower_start_degrees"
+        )
+        if expected_anchor_pose is not None
+        else None
+    )
+    anchor_pose_ok = (
+        True
+        if expected_anchor_pose is None
+        else observed_anchor_pose is not None
+        and float(
+            np.max(
+                np.abs(
+                    np.asarray(observed_anchor_pose, dtype=np.float64)
+                    - np.asarray(expected_anchor_pose, dtype=np.float64)
+                )
+            )
+        )
+        <= float(anchor_binding["maximum_anchor_pose_delta_degrees"])
+    )
+    torque_off_ok = bool(
+        anchor_receipt.get("physical_follower_torque_enabled") is False
+        and (
+            anchor_binding.get("require_torque_off_confirmation") is not True
+            or anchor_receipt.get("torque_off_confirmed") is True
+        )
+    )
     final_anchor_ok = bool(
-        anchor_receipt.get("status")
-        == "completed_wrist_view_reposition_stage"
-        and anchor_receipt.get("physical_follower_torque_enabled") is False
-        and anchor_receipt.get("error") is None
+        anchor_receipt.get("status") == accepted_status
+        and torque_off_ok
+        and (
+            anchor_binding.get("allow_terminal_safe_stop_error") is True
+            or anchor_receipt.get("error") is None
+        )
+        and anchor_pose_ok
         and np.array_equal(
             compiled["main"][-1],
             np.asarray(
@@ -1066,6 +1106,14 @@ def evaluate_route(
         "target_geometry": target_geometry,
         "final_anchor_prior_receipt_path": str(anchor_receipt_path),
         "final_anchor_prior_receipt_sha256": sha256_file(anchor_receipt_path),
+        "final_anchor_review": {
+            "accepted_status": accepted_status,
+            "observed_status": anchor_receipt.get("status"),
+            "torque_off_ok": torque_off_ok,
+            "expected_torque_off_pose_degrees_percent": expected_anchor_pose,
+            "observed_torque_off_pose_degrees_percent": observed_anchor_pose,
+            "pose_ok": anchor_pose_ok,
+        },
         "gates": gates,
         "reviewer": {
             "kind": "deterministic_static_gate_reviewer",

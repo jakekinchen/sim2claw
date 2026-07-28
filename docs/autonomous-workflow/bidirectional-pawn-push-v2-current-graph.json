@@ -3,11 +3,11 @@
     "counted_task_attempts": 0,
     "heldout_open_count": 0,
     "milestone_id": "V04",
-    "node_id": "checkpoint:v04-masked-static-cad-diagnostic",
-    "queue_status": "ACTIVE_V04_PROSPECTIVE_V4_TRUE_TIME_REGISTRATION_DESIGN",
-    "resume_action": "freeze_v4_true_time_registration_contract_and_static_route",
+    "node_id": "checkpoint:v04-acquisition-v4-static-ready",
+    "queue_status": "ACTIVE_V04_V4_TRUE_TIME_PACKET_FREEZE",
+    "resume_action": "freeze_v4_exact_packet_then_run_motion_free_live_review",
     "resume_authorized": true,
-    "status": "schedule_fault_isolated_transform_fit_required_v4_design_active"
+    "status": "static_continue_true_time_packet_freeze_active"
   },
   "authority": {
     "camera_open": false,
@@ -33,23 +33,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 39,
+    "edges": 40,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 1,
       "evaluated-on": 1,
       "fitted-on": 3,
-      "generated-from": 25,
+      "generated-from": 26,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 1,
-    "nodes": 38,
+    "nodes": 39,
     "nodes_by_type": {
       "candidate": 1,
-      "checkpoint": 17,
+      "checkpoint": 18,
       "context": 1,
       "counterexample": 1,
       "dataset": 1,
@@ -191,6 +191,17 @@
       },
       "source": "checkpoint:v04-acquisition-v3-stop",
       "target": "checkpoint:v04-acquisition-v3-review-continue",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "fresh_split": true,
+        "physical_motion": false,
+        "static_reviewer_continue": true,
+        "true_time_gate": true
+      },
+      "source": "checkpoint:v04-acquisition-v4-static-ready",
+      "target": "checkpoint:v04-masked-static-cad-diagnostic",
       "type": "generated-from"
     },
     {
@@ -428,7 +439,7 @@
     }
   ],
   "generated_at": "2026-07-28T07:52:00-05:00",
-  "graph_digest": "37163090a8877723ca785f7964c282b0f38afe8a5545b3cf7d4260fa6eb4a86b",
+  "graph_digest": "85737a396a70ab8e95c1da888ffac9f89d058f280c76cd62c559891fdbdc6235",
   "node_types": [
     "workcell",
     "session",
@@ -483,7 +494,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d"
+        "sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -675,6 +686,39 @@
     },
     {
       "data": {
+        "capture_return_action_sha256": "80d558d3c179582b4927a59641b6946a55a0ccaff2fbf11416462a5c0f5eb0ef",
+        "counted_task_attempts": 0,
+        "heldout_open_count": 0,
+        "maximum_hold_rows": 71,
+        "maximum_hold_seconds": 3.6,
+        "physical_motion": false,
+        "receipt_sha256": "f407a89d939c1be8353d36eed1602056225139d1bcf1109876a7ca89fb4f95b3",
+        "source_binding_id": "v04_acquisition_v4_static",
+        "source_egress_action_sha256": "2229c16f28aa09bde94b021ff5f9cbde44087d26da4b844cca7b521bd347d424",
+        "target_xyz_smallest_singular_value_mm": 7.34070573112927,
+        "tracking_gate_degrees": 2.0,
+        "true_time_scored_seconds": 2.0,
+        "true_time_unscored_settle_seconds": 0.5
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v04-acquisition-v4-static-ready",
+      "label": "V04 acquisition-v4 true-time static route CONTINUE",
+      "proof_class": "cpu_fp64_static_registration_route_preview_only",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/static-review-v4/evaluation.json",
+        "payload_contract": {
+          "proof_class": "cpu_fp64_static_registration_route_preview_only",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_route_preview.v1",
+          "status": "completed_cpu_fp64_static_route_and_visibility_preview"
+        },
+        "proof_class": "cpu_fp64_static_registration_route_preview_only",
+        "sha256": "f407a89d939c1be8353d36eed1602056225139d1bcf1109876a7ca89fb4f95b3"
+      },
+      "status": "static_continue_true_time_packet_freeze_active",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "camera_started_before_gateway_open": true,
         "capture_return_rows_executed": 0,
         "counted_task_attempts": 0,
@@ -753,7 +797,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d"
+        "sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -804,7 +848,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d"
+        "sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -825,7 +869,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d"
+        "sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -854,7 +898,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d"
+        "sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -1170,7 +1214,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d"
+        "sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -1230,7 +1274,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d"
+        "sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -1248,7 +1292,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d"
+        "sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -1316,7 +1360,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d"
+        "sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -1463,7 +1507,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d",
+      "source_sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -1493,7 +1537,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d",
+      "source_sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -1523,7 +1567,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d",
+      "source_sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -1606,6 +1650,16 @@
       "source_binding": "v04_masked_static_cad_diagnostic",
       "source_sha256": "8e2bb5af0646e77dee2106e50e25fce84298b59d78e93798f05bf306c5c4c880",
       "status": "schedule_fault_isolated_transform_fit_required_v4_design_active"
+    },
+    {
+      "event_id": "V04_ACQUISITION_V4_STATIC_CONTINUE",
+      "node_ids_added": [
+        "checkpoint:v04-acquisition-v4-static-ready"
+      ],
+      "revision": 20,
+      "source_binding": "v04_acquisition_v4_static",
+      "source_sha256": "f407a89d939c1be8353d36eed1602056225139d1bcf1109876a7ca89fb4f95b3",
+      "status": "static_continue_true_time_packet_freeze_active"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -1614,7 +1668,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "a5bf7662c19c640b98ce4dbdd9c2edc064ed1fc6cd7c81cb789af5cd706ce83d"
+      "sha256": "11b918cd795e9332ce14ef393044e5b258d100ca226b9b0ab6a078c214bf04fe"
     },
     {
       "id": "simulator_candidate",
@@ -1714,6 +1768,17 @@
       },
       "proof_class": "physical_rgb_no_contact_registration_observation_only",
       "sha256": "6fe2373d4f776c48c8255cc26234ef2301fba3190af9d3dead8204dc7eb8fd0b"
+    },
+    {
+      "id": "v04_acquisition_v4_static",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/static-review-v4/evaluation.json",
+      "payload_contract": {
+        "proof_class": "cpu_fp64_static_registration_route_preview_only",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_route_preview.v1",
+        "status": "completed_cpu_fp64_static_route_and_visibility_preview"
+      },
+      "proof_class": "cpu_fp64_static_registration_route_preview_only",
+      "sha256": "f407a89d939c1be8353d36eed1602056225139d1bcf1109876a7ca89fb4f95b3"
     },
     {
       "id": "v04_candidate",
