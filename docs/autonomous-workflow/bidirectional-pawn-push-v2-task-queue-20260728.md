@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_TK_OWNER_AUTHORIZATION_BOUND_STATIC_DESIGN`
+Status: `ACTIVE_V05_TK_FROZEN_STATIC_ACTION_GEOMETRY_EXECUTION`
 
 Created: `2026-07-28`
 
@@ -189,7 +189,7 @@ denominators before any counted action is compiled.
 | V05 | `DONE_TERMINAL_NEGATIVE` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Final admissible rehearsal-v4 receipt `cb722beb...` rejects: REAL_TO_SIM `2` feasible, SIM_TO_REAL `1`, versus unchanged `2` per-direction gate. No case admitted. |
 | V05-T | `DONE_TERMINAL_NEGATIVE` | Challenge every prospectively broadened static/IK-eligible action with canonical direct-target MuJoCo and diagnostic-only `0.11 s` ZOH command delay; prove exact 40 Hz action bytes and gateway slew/rate compatibility. | At least two distinct cases per direction pass both plant paths with unchanged contact/progress/exclusion/collision/camera gates; requested/sent/applied traces and timestamps bind; gateway accepts bytes without transform. | Static receipt `3a8593cf...` rejects before dynamics: `48` routes, `432` cells, `352` IK compile rejects, `80` static rejects, `0` eligible actions. Unchanged jaw bytes inverse-map below the frozen physical lower bound; no clamp or byte change allowed. |
 | V05-TJ | `DONE_TERMINAL_NEGATIVE` | Prospectively generate the owner-authorized jaw-margin successor family by changing only the gripper column to exact float64 `-0.1727003294848389 rad`, then repeat frozen static and temporal gates. | New action hashes bind before dynamics; at least two distinct cases per direction pass unchanged direct-target and `0.11 s` ZOH paths; every other V05-T identity, geometry, evaluator, exclusion, camera, collision, and gateway rule remains unchanged. | Static receipt `64e8c443...` PASS selected four exact actions, two per direction, with every arm column byte-identical. Frozen temporal receipt `41338d08...` REJECT: REAL_TO_SIM `0/2`, SIM_TO_REAL `1/2` passed both paths versus required `2/2` each. Only `brown_pawn_e2__e2_e3` passed all five variants on both paths. All identity/gateway checks passed; failures are consequence/progress robustness. V06 and physical execution remain closed. |
-| V05-TK | `IN_PROGRESS` | Prospectively freeze a bounded static-only action-geometry successor over contact offset, contact height, stroke, and nonquarantined source→destination families in the unchanged reset layout. | Exactly four outcome-informed V05-TJ cases are quarantined; deterministic family selection and lane assignment use only IK, collision, camera, calibrated bounds, and gateway margins; exact new action hashes freeze before dynamics; at least two distinct families per direction must later pass both unchanged plant paths and all unchanged gates. | Owner authorization `6b439aaa...` is bound before static design or enumeration. Static design is active; enumeration, dynamic replay, V06, cameras, gateway/serial, physical motion, and transfer authority remain false. |
+| V05-TK | `IN_PROGRESS` | Prospectively freeze a bounded static-only action-geometry successor over contact offset, contact height, stroke, and nonquarantined source→destination families in the unchanged reset layout. | Exactly four outcome-informed V05-TJ cases are quarantined; deterministic family selection and lane assignment use only IK, collision, camera, calibrated bounds, and gateway margins; exact new action hashes freeze before dynamics; at least two distinct families per direction must later pass both unchanged plant paths and all unchanged gates. | Authorization `6b439aaa...`, static contract `9a8cb66e...`, and implementation `5001238b...` bind 44 nonquarantined route families and a finite `44 × 3 × 3 × 3 = 1188` cell grid before enumeration. One static execution is active; dynamic/V06/physical authority false. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2114,6 +2114,51 @@ remain unchanged.
 
 V05-TK currently authorizes static design only. Static enumeration, dynamic
 replay, V06 evaluator freeze, counted actions, cameras, gateway/serial,
+physical motion, simulator promotion, and transfer claims remain false.
+
+### V05-TK prospective static action-geometry freeze — 2026-07-28
+
+Static contract
+`configs/evaluations/bidirectional_pawn_push_v2_action_geometry_static_v1.json`,
+SHA-256
+`9a8cb66eca1b7acf5010a858d6dabef7bc8842dc9069126cf8eb077a8f31f458`,
+and implementation
+`src/sim2claw/bidirectional_pawn_push_v2_action_geometry_static.py`,
+SHA-256
+`5001238bd7e13142a8165f137b902da042dc22e665e7e2aa474e8519ddce91b6`,
+are frozen before any static cell is generated. Focused contract and graph
+tests pass `4/4`.
+
+The unchanged sparse reset layout deterministically contains `48` empty
+orthogonal route families after retaining the existing `c2` source exclusion.
+Removing exactly the four quarantined routes before cell generation leaves
+`44` families. No transformed board layout or human pawn repositioning is
+introduced.
+
+The finite nonexpandable grid is:
+
+- contact-center offset: `0.016`, `0.019`, `0.022 m`;
+- contact height: `0.018`, `0.024`, `0.030 m`;
+- stroke: `0.090`, `0.105`, `0.120 m`;
+- total maximum cells: `44 × 3 × 3 × 3 = 1188`.
+
+The board is `0.3556 m` wide, so each square is `0.04445 m` and its half width
+is `0.022225 m`. The detailed pawn maximum body radius is `0.0138 m`; all
+offsets are above that radius and no farther than the source-square half
+width. Heights lie on the existing detailed pawn ring/body band, and strokes
+retain the already frozen `90-120 mm` geometry range.
+
+For each route, one all-static-gates-passing cell is selected by largest arm
+joint margin, gateway bound margin, gateway rate margin, and camera margin,
+then smallest IK residual and frozen grid order. The same static-only order
+selects exactly four distinct families. Lanes alternate
+REAL_TO_SIM/SIM_TO_REAL, yielding two per direction. Fewer than four eligible
+families is a terminal static reject; the grid cannot expand afterward.
+
+The exact jaw remains `-0.1727003294848389 rad`, and every IK, collision,
+selected static contact, camera, calibrated-bound, gateway-rate, and
+requested/sent identity gate remains unchanged. One static execution is now
+authorized. Dynamic replay, V06, counted actions, cameras, gateway/serial,
 physical motion, simulator promotion, and transfer claims remain false.
 
 ### V05-T prospective static enumerator freeze — 2026-07-28
