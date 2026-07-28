@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1",
+      "sha256": "659ac55097708da174a815f1475941d535f9af53d481f2fc02e5ba1c373f1b19",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -182,7 +182,7 @@
       "id": "session:bidirectional-pawn-push-v2",
       "type": "session",
       "label": "Bidirectional pawn-push v2",
-      "status": "active_v04_recapture_packet_ready",
+      "status": "active_v04_live_review_repair",
       "source_binding": "queue",
       "data": {
         "counted_attempts": 0,
@@ -416,6 +416,22 @@
       }
     },
     {
+      "id": "checkpoint:v04-live-review-stop-1",
+      "type": "checkpoint",
+      "label": "V04 live review attempt 1 safe stop",
+      "status": "implementation_repair_pending_no_motion",
+      "source_binding": "queue",
+      "data": {
+        "maximum_live_rebase_delta_degrees": 0.118765,
+        "review_receipt_emitted": false,
+        "camera_opened": false,
+        "gateway_constructed": false,
+        "physical_motion": false,
+        "torque_enabled": false,
+        "counted_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -584,6 +600,16 @@
       }
     },
     {
+      "source": "checkpoint:v04-live-review-stop-1",
+      "type": "generated-from",
+      "target": "checkpoint:v04-recapture-packet",
+      "metadata": {
+        "fail_closed": true,
+        "implementation_repair_only": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -698,14 +724,23 @@
       "node_ids_added": [
         "checkpoint:v04-recapture-packet"
       ]
+    },
+    {
+      "revision": 8,
+      "event_id": "V04_LIVE_REVIEW_STOP_1",
+      "status": "live_review_stopped_before_camera_for_rebase_repair",
+      "source_binding": "queue",
+      "node_ids_added": [
+        "checkpoint:v04-live-review-stop-1"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v04-recapture-packet",
+    "node_id": "checkpoint:v04-live-review-stop-1",
     "milestone_id": "V04",
-    "status": "active_recapture_packet_ready",
-    "queue_status": "ACTIVE_V04_RECAPTURE_PACKET_READY",
-    "resume_action": "commit_packet_then_live_review_and_capture",
+    "status": "active_live_review_repair",
+    "queue_status": "ACTIVE_V04_LIVE_REVIEW_REPAIR",
+    "resume_action": "commit_rebase_repair_then_rerun_live_review",
     "resume_authorized": true,
     "heldout_open_count": 0,
     "counted_task_attempts": 0

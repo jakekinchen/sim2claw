@@ -219,9 +219,16 @@ def review_capture_plan(
     static_path, static = _validate_static_receipt(packet)
     preflight = (preflight_fn or _default_preflight)()
     identity, start, lower, upper = _identity_and_limits(preflight)
-    compiled = compile_exact_route(
-        route, acquisition, observed_start=start
+    expected_start = np.asarray(
+        route["source_rebase"]["expected_degrees_percent"],
+        dtype=np.float64,
     )
+    _require(
+        float(np.max(np.abs(start - expected_start)))
+        <= float(route["source_rebase"]["maximum_absolute_delta_degrees"]),
+        "fresh start differs from the frozen rebase envelope",
+    )
+    compiled = compile_exact_route(route, acquisition)
     egress_path, egress = _load_array(
         packet["exact_setup_arrays"]["source_egress"]
     )
@@ -518,7 +525,16 @@ def execute_registration_capture(
         identity == review["hardware_identity"],
         "hardware identity changed after V03 review",
     )
-    compiled = compile_exact_route(route, acquisition, observed_start=start)
+    expected_start = np.asarray(
+        route["source_rebase"]["expected_degrees_percent"],
+        dtype=np.float64,
+    )
+    _require(
+        float(np.max(np.abs(start - expected_start)))
+        <= float(route["source_rebase"]["maximum_absolute_delta_degrees"]),
+        "fresh execution start differs from the frozen rebase envelope",
+    )
+    compiled = compile_exact_route(route, acquisition)
     _, egress = _load_array(packet["exact_setup_arrays"]["source_egress"])
     _, main = _load_array(packet["exact_setup_arrays"]["capture_and_return"])
     _require(

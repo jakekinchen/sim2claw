@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_RECAPTURE_PACKET_READY`
+Status: `ACTIVE_V04_LIVE_REVIEW_REPAIR`
 
 Created: `2026-07-28`
 
@@ -205,8 +205,8 @@ Current state:
   `CONTINUE`. Commit `f205bcbb097813a0c9050624e3895c9f2065aecb`
   binds and publishes those exact inputs. Capture packet v2 is now frozen but
   camera open, gateway construction, and robot motion remain unauthorized
-  until the packet implementation is committed and a fresh deterministic live
-  identity/torque/process review returns `CONTINUE`.
+  until the live-review rebase repair is committed and a fresh deterministic
+  live identity/torque/process review returns `CONTINUE`.
 - Counted actions do not exist.
 
 Completed:
@@ -452,6 +452,13 @@ Verification evidence:
   requested/mapped/sent bytes, stop rules, one-use registration transaction,
   and unconditional torque-off. It grants no pawn contact, counted task,
   policy, success, transfer, or training authority.
+- Live pre-motion review attempt 1 stopped before emitting a receipt, opening
+  a camera, or constructing a gateway. The follower remained torque-off and
+  was within `0.118765 deg` of the frozen anchor, inside the `1 deg` rebase
+  envelope. The reviewer incorrectly substituted that passive live readback
+  into frozen array row zero and then rejected its own byte comparison. The
+  repair keeps the committed arrays immutable and checks live-start proximity
+  as a separate fail-closed gate.
 
 Remaining:
 
@@ -469,8 +476,8 @@ Blockers:
 
 Next action:
 
-- Commit the exact capture packet, generalized ten-target executor, tests,
-  queue, and graph. Then run the fresh live preflight/reviewer and, only if every
+- Commit the live-review rebase repair, tests, queue, and graph. Then rerun the
+  fresh live preflight/reviewer and, only if every
   frozen identity/safety gate still passes, execute the one no-contact
   replacement registration transaction. Do not open acquisition-v1 held-out.
 
@@ -987,3 +994,49 @@ calibration paths plus its run log. This campaign did not modify or stage
 them. `output/` remains ignored/present and `tools/build_fiducial_sheet.py`
 remains the sole visible unrelated untracked path. The packet changes remain
 scoped and are based on top of that external commit.
+
+### V04 live review attempt 1 safe stop — 2026-07-28
+
+Capture-packet commit `8922412632f47c279e5594c9ae9cbe0d636ab007`
+was pushed and matched origin. Immediately before review there was no Git
+lock, no C922 recorder/capture process, no follower-device owner, and no
+repo-owned gateway process. Two read-only Studio servers were present and did
+not own the C922 or serial gateway. `system_profiler` resolved the exact C922
+model and unique ID. Packet and array SHA-256 values rechecked exactly:
+
+- packet:
+  `f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41`;
+- source egress NPY:
+  `b2e141f99aa2deedd381d3d666c76c280d5aa5e900d0bcd00a4b49ef6a2453e7`;
+- capture/return NPY:
+  `27a06d80dae807cf27a8c11dc33194b73c8e5e11825009c9cef0dd97e20c56a1`.
+
+The physical preflight passed with torque false and no configuration rewrite.
+Fresh follower start was
+`[-8.351648,-106.285714,99.208791,-94.109890,-125.318681,2.612827]`,
+whose maximum absolute difference from the frozen anchor is
+`0.118765 deg`. Review attempt 1 then stopped with:
+
+```text
+RegistrationCaptureV2Error:
+frozen setup arrays differ from fresh compile or V02 receipt
+```
+
+No review receipt was emitted. Inspection proved that the reviewer had
+recompiled row zero from the passive live readback even though the contract
+requires the committed expected-anchor array; it then compared that altered
+array against the frozen bytes. The fix compiles the immutable expected-anchor
+arrays and separately checks the live readback against the frozen `1 deg`
+rebase envelope in both review and execution. The packet, action arrays,
+thresholds, and route are unchanged. Focused validation passes:
+
+```text
+OPENCV_OPENCL_RUNTIME=disabled uv run --offline pytest -q \
+  tests/test_bidirectional_registration_v2_capture.py
+....                                                                     [100%]
+4 passed in 0.37s
+```
+
+The failed review opened no camera or gateway, issued no motion, and consumed
+no registration transaction or task attempt. Torque remained false, held-out
+open count remained `0`, and counted attempts remained `0/10`.

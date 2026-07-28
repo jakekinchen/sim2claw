@@ -76,7 +76,9 @@ def _preflight() -> dict[str, object]:
 
 def _recovery_preflight() -> dict[str, object]:
     result = _preflight()
-    result["follower_start_degrees"] = RECOVERY_START
+    result["follower_start_degrees"] = [
+        value + 0.1 for value in RECOVERY_START
+    ]
     return result
 
 

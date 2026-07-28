@@ -3,11 +3,11 @@
     "counted_task_attempts": 0,
     "heldout_open_count": 0,
     "milestone_id": "V04",
-    "node_id": "checkpoint:v04-recapture-packet",
-    "queue_status": "ACTIVE_V04_RECAPTURE_PACKET_READY",
-    "resume_action": "commit_packet_then_live_review_and_capture",
+    "node_id": "checkpoint:v04-live-review-stop-1",
+    "queue_status": "ACTIVE_V04_LIVE_REVIEW_REPAIR",
+    "resume_action": "commit_rebase_repair_then_rerun_live_review",
     "resume_authorized": true,
-    "status": "active_recapture_packet_ready"
+    "status": "active_live_review_repair"
   },
   "authority": {
     "camera_open": false,
@@ -32,23 +32,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 26,
+    "edges": 27,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 1,
       "evaluated-on": 1,
       "fitted-on": 3,
-      "generated-from": 12,
+      "generated-from": 13,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 1,
-    "nodes": 25,
+    "nodes": 26,
     "nodes_by_type": {
       "candidate": 1,
-      "checkpoint": 4,
+      "checkpoint": 5,
       "context": 1,
       "counterexample": 1,
       "dataset": 1,
@@ -130,6 +130,16 @@
       },
       "source": "certificate:bidirectional-transfer",
       "target": "checkpoint:v04-owner-integration-barrier",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "fail_closed": true,
+        "implementation_repair_only": true,
+        "physical_motion": false
+      },
+      "source": "checkpoint:v04-live-review-stop-1",
+      "target": "checkpoint:v04-recapture-packet",
       "type": "generated-from"
     },
     {
@@ -296,7 +306,7 @@
     }
   ],
   "generated_at": "2026-07-28T07:52:00-05:00",
-  "graph_digest": "52494885c469d46e132076418c6756f27a71214fca6c2954dda3cc67d7f5bd24",
+  "graph_digest": "c40e84d9a6e7ea24cb82e350a15e408236725db68c0d5834657a869ea5ea397d",
   "node_types": [
     "workcell",
     "session",
@@ -351,10 +361,33 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
+        "sha256": "659ac55097708da174a815f1475941d535f9af53d481f2fc02e5ba1c373f1b19"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
+    },
+    {
+      "data": {
+        "camera_opened": false,
+        "counted_task_attempts": 0,
+        "gateway_constructed": false,
+        "maximum_live_rebase_delta_degrees": 0.118765,
+        "physical_motion": false,
+        "review_receipt_emitted": false,
+        "source_binding_id": "queue",
+        "torque_enabled": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v04-live-review-stop-1",
+      "label": "V04 live review attempt 1 safe stop",
+      "proof_class": "campaign_control_state",
+      "source": {
+        "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
+        "proof_class": "campaign_control_state",
+        "sha256": "659ac55097708da174a815f1475941d535f9af53d481f2fc02e5ba1c373f1b19"
+      },
+      "status": "implementation_repair_pending_no_motion",
+      "type": "checkpoint"
     },
     {
       "data": {
@@ -369,7 +402,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
+        "sha256": "659ac55097708da174a815f1475941d535f9af53d481f2fc02e5ba1c373f1b19"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -390,7 +423,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
+        "sha256": "659ac55097708da174a815f1475941d535f9af53d481f2fc02e5ba1c373f1b19"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -642,7 +675,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
+        "sha256": "659ac55097708da174a815f1475941d535f9af53d481f2fc02e5ba1c373f1b19"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -702,7 +735,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
+        "sha256": "659ac55097708da174a815f1475941d535f9af53d481f2fc02e5ba1c373f1b19"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -720,7 +753,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
+        "sha256": "659ac55097708da174a815f1475941d535f9af53d481f2fc02e5ba1c373f1b19"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -788,9 +821,9 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
+        "sha256": "659ac55097708da174a815f1475941d535f9af53d481f2fc02e5ba1c373f1b19"
       },
-      "status": "active_v04_recapture_packet_ready",
+      "status": "active_v04_live_review_repair",
       "type": "session"
     },
     {
@@ -935,7 +968,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1",
+      "source_sha256": "659ac55097708da174a815f1475941d535f9af53d481f2fc02e5ba1c373f1b19",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -957,6 +990,16 @@
       "source_binding": "v04_recap_packet",
       "source_sha256": "f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41",
       "status": "replacement_capture_packet_frozen"
+    },
+    {
+      "event_id": "V04_LIVE_REVIEW_STOP_1",
+      "node_ids_added": [
+        "checkpoint:v04-live-review-stop-1"
+      ],
+      "revision": 8,
+      "source_binding": "queue",
+      "source_sha256": "659ac55097708da174a815f1475941d535f9af53d481f2fc02e5ba1c373f1b19",
+      "status": "live_review_stopped_before_camera_for_rebase_repair"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -965,7 +1008,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "b6b0a8b34ad6cc2369ecf0c3db6597d4d23d97d718861e4877ecda0df166afd1"
+      "sha256": "659ac55097708da174a815f1475941d535f9af53d481f2fc02e5ba1c373f1b19"
     },
     {
       "id": "simulator_candidate",
