@@ -31,19 +31,17 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V04"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v04-acquisition-v4-capture-complete",
+        "node_id": "checkpoint:v04-rigid-heldout-preregistered",
         "milestone_id": "V04",
-        "status": "physical_rgb_capture_complete_fit_only_active",
-        "queue_status": "ACTIVE_V04_V4_FIT_ONLY_ANNOTATION_AND_CANDIDATE",
-        "resume_action": (
-            "fit_only_annotations_and_shared_rigid_candidate"
-        ),
+        "status": "single_all_four_heldout_open_authorized",
+        "queue_status": "AUTHORIZED_V04_SINGLE_SEALED_HELDOUT_OPEN",
+        "resume_action": "open_all_four_once_annotate_and_evaluate_zero_refit",
         "resume_authorized": True,
         "heldout_open_count": 0,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(24)
+        range(26)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +52,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V04_ACQUISITION_V4_CAPTURE_COMPLETE"
+        == "V04_RIGID_HELDOUT_PREREGISTERED"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v04-acquisition-v4-capture-complete"
+        "checkpoint:v04-rigid-heldout-preregistered"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]

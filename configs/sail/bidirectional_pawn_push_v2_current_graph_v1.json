@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "63360f100c13e176bee17d9e3246663be2ebe95408153db8d932c117f3ea56f1",
+      "sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -294,6 +294,55 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture_execution.v1",
         "status": "completed_no_contact_registration_capture",
         "proof_class": "physical_rgb_no_contact_registration_observation_only"
+      }
+    },
+    "v04_rigid_fit_annotations": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v4.json",
+      "sha256": "2a22f21601ed8cafccdee1f2666ead7b9c194ab1af091610082597238dffe5b3",
+      "proof_class": "fit_only_manual_endpoint_and_projective_board_lattice_annotation",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_fit_annotations.v4",
+        "status": "frozen_before_candidate_fit",
+        "proof_class": "fit_only_manual_endpoint_and_projective_board_lattice_annotation"
+      }
+    },
+    "v04_rigid_candidate": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+      "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c",
+      "proof_class": "fit_only_registration_candidate",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_rigid_registration_candidate.v1",
+        "heldout_open_count": 0
+      }
+    },
+    "v04_rigid_fit_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/fit_receipt.json",
+      "sha256": "eef26fd6ea349070fc7d40094b6ec09753464be467071ff3c66fed3c870848ca",
+      "proof_class": "fit_only_registration_candidate_evaluation",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_rigid_registration_fit_receipt.v1",
+        "status": "fit_candidate_frozen",
+        "proof_class": "fit_only_registration_candidate_evaluation"
+      }
+    },
+    "v04_rigid_fit_review": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/independent_review.json",
+      "sha256": "2020d906ea27f8e4c4e3b405c6dd1d0ab6237168f9e689ebed28c81bb9633b31",
+      "proof_class": "independent_fit_only_registration_candidate_review",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_rigid_registration_fit_review_receipt.v1",
+        "status": "CONTINUE_TO_SINGLE_SEALED_HELDOUT_OPEN",
+        "proof_class": "independent_fit_only_registration_candidate_review"
+      }
+    },
+    "v04_rigid_heldout_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_heldout_v4.json",
+      "sha256": "be9d0c5366d6cbeff193e3324c7283614993dd79bc1bd960e340fef9a80ebe4e",
+      "proof_class": "prospective_single_open_frozen_registration_heldout_evaluation_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_heldout_evaluation.v1",
+        "status": "preregistered_before_any_heldout_content_access",
+        "proof_class": "prospective_single_open_frozen_registration_heldout_evaluation_only"
       }
     },
     "simulator_candidate": {
@@ -892,6 +941,58 @@
       }
     },
     {
+      "id": "candidate:v04-rigid-fit-v4",
+      "type": "candidate",
+      "label": "V04 fit-only shared camera and rigid robot-board candidate",
+      "status": "fit_gates_passed_independent_review_continue",
+      "source_binding": "v04_rigid_candidate",
+      "evaluator_identity": "2020d906ea27f8e4c4e3b405c6dd1d0ab6237168f9e689ebed28c81bb9633b31",
+      "data": {
+        "candidate_sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c",
+        "fit_receipt_sha256": "eef26fd6ea349070fc7d40094b6ec09753464be467071ff3c66fed3c870848ca",
+        "hover_rms_px": 2.927792020564297,
+        "task_plane_rms_mm": 3.007454156978871,
+        "translation_z_mm": 100.0,
+        "translation_z_active_bound_risk": true,
+        "heldout_open_count": 0,
+        "promoted": false
+      }
+    },
+    {
+      "id": "checkpoint:v04-rigid-fit-independent-review",
+      "type": "checkpoint",
+      "label": "V04 rigid fit independent review CONTINUE",
+      "status": "single_sealed_heldout_open_authorized_after_preregistration",
+      "source_binding": "v04_rigid_fit_review",
+      "data": {
+        "review_sha256": "2020d906ea27f8e4c4e3b405c6dd1d0ab6237168f9e689ebed28c81bb9633b31",
+        "all_review_checks_passed": true,
+        "jacobian_rank": 15,
+        "jacobian_condition_number": 624329.6992573986,
+        "candidate_refit": false,
+        "heldout_open_count": 0
+      }
+    },
+    {
+      "id": "checkpoint:v04-rigid-heldout-preregistered",
+      "type": "checkpoint",
+      "label": "V04 one-open rigid heldout gate preregistered",
+      "status": "single_all_four_heldout_open_authorized",
+      "source_binding": "v04_rigid_heldout_contract",
+      "data": {
+        "contract_sha256": "be9d0c5366d6cbeff193e3324c7283614993dd79bc1bd960e340fef9a80ebe4e",
+        "expected_opaque_member_count": 4,
+        "maximum_per_case_reprojection_px": 8.0,
+        "maximum_aggregate_reprojection_rms_px": 8.0,
+        "maximum_per_case_task_plane_mm_exclusive": 25.0,
+        "maximum_aggregate_task_plane_rms_mm_exclusive": 25.0,
+        "candidate_refit": false,
+        "threshold_update_after_open": false,
+        "heldout_open_count": 0,
+        "counted_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -1235,6 +1336,37 @@
       }
     },
     {
+      "source": "candidate:v04-rigid-fit-v4",
+      "type": "fitted-on",
+      "target": "checkpoint:v04-acquisition-v4-capture-complete",
+      "metadata": {
+        "fit_targets": 6,
+        "heldout_opened": false,
+        "candidate_refit": false
+      }
+    },
+    {
+      "source": "checkpoint:v04-rigid-fit-independent-review",
+      "type": "evaluated-on",
+      "target": "candidate:v04-rigid-fit-v4",
+      "metadata": {
+        "optimizer_free": true,
+        "all_review_checks_passed": true,
+        "z_active_bound_risk": true
+      }
+    },
+    {
+      "source": "checkpoint:v04-rigid-heldout-preregistered",
+      "type": "generated-from",
+      "target": "checkpoint:v04-rigid-fit-independent-review",
+      "metadata": {
+        "single_open": true,
+        "expected_members": 4,
+        "zero_refit": true,
+        "heldout_opened": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -1494,14 +1626,33 @@
       "node_ids_added": [
         "checkpoint:v04-acquisition-v4-capture-complete"
       ]
+    },
+    {
+      "revision": 24,
+      "event_id": "V04_RIGID_FIT_INDEPENDENT_REVIEW_CONTINUE",
+      "status": "single_sealed_heldout_open_authorized_after_preregistration",
+      "source_binding": "v04_rigid_fit_review",
+      "node_ids_added": [
+        "candidate:v04-rigid-fit-v4",
+        "checkpoint:v04-rigid-fit-independent-review"
+      ]
+    },
+    {
+      "revision": 25,
+      "event_id": "V04_RIGID_HELDOUT_PREREGISTERED",
+      "status": "single_all_four_heldout_open_authorized",
+      "source_binding": "v04_rigid_heldout_contract",
+      "node_ids_added": [
+        "checkpoint:v04-rigid-heldout-preregistered"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v04-acquisition-v4-capture-complete",
+    "node_id": "checkpoint:v04-rigid-heldout-preregistered",
     "milestone_id": "V04",
-    "status": "physical_rgb_capture_complete_fit_only_active",
-    "queue_status": "ACTIVE_V04_V4_FIT_ONLY_ANNOTATION_AND_CANDIDATE",
-    "resume_action": "fit_only_annotations_and_shared_rigid_candidate",
+    "status": "single_all_four_heldout_open_authorized",
+    "queue_status": "AUTHORIZED_V04_SINGLE_SEALED_HELDOUT_OPEN",
+    "resume_action": "open_all_four_once_annotate_and_evaluate_zero_refit",
     "resume_authorized": true,
     "heldout_open_count": 0,
     "counted_task_attempts": 0
@@ -1514,6 +1665,7 @@
     "simulator_candidate_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
     "world_visual_registration_sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4",
     "fit_only_masked_static_cad_receipt_sha256": "8e2bb5af0646e77dee2106e50e25fce84298b59d78e93798f05bf306c5c4c880",
+    "rigid_registration_candidate_sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c",
     "policy_action_hash": null,
     "evaluator_v2": "not_frozen",
     "physical_torque_enabled": false
@@ -1529,11 +1681,12 @@
     },
     "current_camera_robot_registration": {
       "detected": true,
-      "rms_px": 13.38043666369223,
-      "max_px": 29.849916299151147,
-      "status": "fit_only_compiled_relative_diagnostic_requires_shared_rigid_transform_fit",
+      "rms_px": 2.927792020564297,
+      "max_px": 4.9261048526586215,
+      "task_plane_rms_mm": 3.007454156978871,
+      "status": "fit_only_rigid_candidate_independently_reviewed_single_heldout_open_preregistered",
       "heldout_open_count": 0,
-      "scope": "translation_corrected_current_compiled_midpoint_and_pairwise_motion_delta_under_rejected_v1_camera_not_action_transfer"
+      "scope": "fit_only_shared_camera_and_rigid_robot_board_candidate_not_yet_heldout_evaluated_or_action_transfer"
     },
     "directional_task_action": {
       "directional_rmse_available": false,

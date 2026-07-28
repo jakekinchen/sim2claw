@@ -1686,3 +1686,28 @@ gateway, physical motion, task action, simulator promotion, or transfer claim
 is authorized by this fit-only admission. The next action is to commit and
 push this exact fit/reviewer state, verify clean HEAD lineage, then perform
 the single all-four sealed heldout evaluation.
+
+### V04 single-open heldout gate preregistered — 2026-07-28
+
+Prospective contract
+`configs/evaluations/bidirectional_pawn_push_v2_registration_heldout_v4.json`,
+SHA-256
+`be9d0c5366d6cbeff193e3324c7283614993dd79bc1bd960e340fef9a80ebe4e`,
+binds candidate `4d08518f...`, fit receipt `eef26fd6...`, independent
+review `2020d906...`, the four expected opaque members
+`heldout-r4-01` through `heldout-r4-04`, and the sealed manifest SHA-256
+`0116025742193193a73c6060335ccfb36f9a7123c43bd82157eb41b58f923bca`.
+
+The evaluator may read the sealed manifest once and each raw member image
+once, together in one transaction, to create a single derived 2x2 annotation
+surface. Any existing marker or output fails closed. It freezes per-member
+and aggregate reprojection gates at `<=8 px`, per-member and aggregate
+task-plane gates at `<25 mm`, requires all four members to be scorable and
+pass, and forbids candidate refit, camera/rigid updates, post-open threshold
+changes, or Z-bound expansion.
+
+The preregistration commit is `fa9b18e`. Focused fit, independent-review, and
+heldout-contract tests pass `4/4`. At this checkpoint no heldout manifest or
+pixel has been read, no open marker/output exists, and heldout open count
+remains `0`. The graph open-authority checkpoint must be committed and pushed
+before the one all-four open.
