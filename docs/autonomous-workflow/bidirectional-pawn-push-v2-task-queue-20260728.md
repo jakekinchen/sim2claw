@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `AWAITING_ACKNOWLEDGEMENT_V04_V4_REGISTRATION_MOTION`
+Status: `ACTIVE_V04_V4_FIT_ONLY_ANNOTATION_AND_CANDIDATE`
 
 Created: `2026-07-28`
 
@@ -1597,3 +1597,46 @@ forbidden. The runtime must fail closed on identity, camera, tracking,
 true-time, stall, contact, or exact-byte mismatch and torque off on every
 exit. Physical execution remains paused for explicit acknowledgement of this
 committed/pushed pre-motion notice.
+
+### V04 acquisition-v4 physical capture complete — 2026-07-28
+
+The explicitly acknowledged single V4 no-contact registration transaction
+completed successfully. Immutable receipt
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/execution_receipt.json`,
+SHA-256
+`7fee16d78479c467b9084e49bfc8520fdae5aef04d00dc72bcd3be9f49515d44`,
+has status `completed_no_contact_registration_capture` and `error:null`.
+
+Source egress completed exact `123/123` rows with action
+`2229c16f28aa09bde94b021ff5f9cbde44087d26da4b844cca7b521bd347d424`.
+Capture/return completed exact `1274/1274` rows with action
+`80d558d3c179582b4927a59641b6946a55a0ccaff2fbf11416462a5c0f5eb0ef`.
+Requested, mapped, and sent bytes are identical.
+
+All ten true-time holds passed. Observed total hold spans were
+`3.491166–3.506415 s`; unscored settles were `0.500161–0.555660 s`; scored
+windows were `2.000008–2.051200 s`. Maximum absolute tracking errors were
+`0.527473–0.890110 deg`, all below the unchanged `2 deg` gate. There were
+eleven sequential C922 sessions including return, with zero drops.
+
+The six-member fit manifest SHA-256 is
+`71f704ee95a2c1966f23f1ff96db04d6448bb409a86b209ea54b06e25e9f1f46`;
+the four-member opaque sealed-heldout manifest SHA-256 is
+`0116025742193193a73c6060335ccfb36f9a7123c43bd82157eb41b58f923bca`;
+the joint ledger SHA-256 is
+`32e623dc0d8ec219cdb329b79cdd2a8647ab4f0ba597af72606cf32d8de90f9f`.
+Heldout open count remains `0`.
+
+Torque-off postflight passed at
+`[6.593407,-85.538462,99.472527,-20.087912,-103.340659,2.375297]`,
+with no device configuration rewrite. No camera/gateway process, serial
+owner, or Git lock remained. No pawn, board, or table contact or task action
+occurred; counted task attempts remain `0/10`.
+
+The active operation is fit-only: create two independent annotations for
+both physical endpoints in each of the six fit images, freeze the annotation
+hash, fit only the preregistered shared projective-camera plus one rigid
+robot-board yaw/XYZ correction, and apply every frozen fit gate. The fit
+process must not read the execution receipt, sealed manifest, or heldout
+directory. Heldouts may open together exactly once only if the candidate
+passes every fit gate and is hash-frozen first.
