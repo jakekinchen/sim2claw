@@ -4,6 +4,10 @@ import hashlib
 import json
 from pathlib import Path
 
+from sim2claw.bidirectional_pawn_push_v2_action_geometry_static_v2 import (
+    _hash_only_aware_binding,
+)
+
 
 ROOT = Path(__file__).resolve().parents[1]
 AUTHORIZATION = ROOT / (
@@ -13,6 +17,14 @@ AUTHORIZATION = ROOT / (
 STATIC_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_action_geometry_static_v1.json"
+)
+STATIC_V1_FAILURE = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_action_geometry_static_v1_binding_failure.json"
+)
+STATIC_V2_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_action_geometry_static_v2.json"
 )
 
 
@@ -87,6 +99,42 @@ def test_action_geometry_static_contract_is_finite_bound_and_nonphysical() -> No
     assert contract["unchanged_dynamic_future_gate"][
         "minimum_signed_progress_mm"
     ] == 36.025
+    assert contract["authority"]["static_simulation"] is True
+    assert not any(
+        value
+        for key, value in contract["authority"].items()
+        if key != "static_simulation"
+    )
+
+
+def test_action_geometry_static_v2_changes_only_hash_only_binding_loader() -> None:
+    failure = json.loads(STATIC_V1_FAILURE.read_text(encoding="utf-8"))
+    assert failure["status"] == (
+        "failed_closed_before_model_or_static_enumeration"
+    )
+    assert failure["execution_boundary"]["static_grid_cell_generated"] is False
+    assert failure["execution_boundary"]["action_generated"] is False
+
+    contract = json.loads(STATIC_V2_CONTRACT.read_text(encoding="utf-8"))
+    for field in (
+        "frozen_v1_contract",
+        "v1_binding_failure",
+        "v1_implementation",
+        "implementation",
+    ):
+        binding = contract[field]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert contract["only_change"] == {
+        "separate_hash_only_file_binding_from_json_binding": True,
+        "quarantine_family_grid_parameters_selection_gates_unchanged": True,
+        "dynamic_or_physical_authority_changed": False,
+    }
+    _, payload = _hash_only_aware_binding(
+        json.loads(STATIC_CONTRACT.read_text(encoding="utf-8"))[
+            "scene_implementation"
+        ]
+    )
+    assert payload == {}
     assert contract["authority"]["static_simulation"] is True
     assert not any(
         value

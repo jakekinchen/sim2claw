@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T13:03:10-05:00",
+  "generated_at": "2026-07-28T13:08:08-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "68e012c1b4efb60b3f61cb433413e24ce0d45e6c39fa17d6e1ad21f5457d65bd",
+      "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -595,6 +595,26 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_action_geometry_static.v1",
         "status": "preregistered_before_static_enumeration_or_action_generation",
         "proof_class": "prospective_cpu_fp64_static_action_geometry_action_freeze"
+      }
+    },
+    "v05_tk_static_v1_failure": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_action_geometry_static_v1_binding_failure.json",
+      "sha256": "9dd32bb11b238f9697f0cb82c13e4635fd69fa4aca8c4bd8247ae00ece3887d0",
+      "proof_class": "orchestration_binding_failure_no_static_or_dynamic_outcome",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_action_geometry_static_failure.v1",
+        "status": "failed_closed_before_model_or_static_enumeration",
+        "proof_class": "orchestration_binding_failure_no_static_or_dynamic_outcome"
+      }
+    },
+    "v05_tk_static_v2_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_action_geometry_static_v2.json",
+      "sha256": "f30a9178415d3aa3222de8378d4a5ae2aee7b875224c57f3c18026a350d9b2b1",
+      "proof_class": "prospective_cpu_fp64_static_action_geometry_action_freeze_v2",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_action_geometry_static.v2",
+        "status": "preregistered_binding_loader_correction_before_static_enumeration",
+        "proof_class": "prospective_cpu_fp64_static_action_geometry_action_freeze_v2"
       }
     },
     "simulator_candidate": {
@@ -1669,6 +1689,40 @@
       }
     },
     {
+      "id": "counterexample:v05-tk-static-v1-binding-failure",
+      "type": "counterexample",
+      "label": "V05-TK v1 hash binding JSON-decoding failure",
+      "status": "failed_closed_before_model_or_static_enumeration",
+      "source_binding": "v05_tk_static_v1_failure",
+      "data": {
+        "model_constructed": false,
+        "candidate_family_enumerated": false,
+        "static_grid_cell_generated": false,
+        "action_generated": false,
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-tk-static-action-geometry-v2-frozen",
+      "type": "checkpoint",
+      "label": "V05-TK v2 hash-only binding correction frozen",
+      "status": "preregistered_static_action_geometry_v2_execution_active",
+      "source_binding": "v05_tk_static_v2_contract",
+      "data": {
+        "hash_only_file_binding_separated": true,
+        "quarantine_family_grid_parameters_selection_gates_unchanged": true,
+        "maximum_static_cells": 1188,
+        "dynamic_outcomes_used": false,
+        "static_simulation_authorized": true,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2304,6 +2358,28 @@
       }
     },
     {
+      "source": "counterexample:v05-tk-static-v1-binding-failure",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-tk-static-action-geometry-frozen",
+      "metadata": {
+        "failed_before_model": true,
+        "failed_before_static_enumeration": true,
+        "grid_or_action_outcome_observed": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-tk-static-action-geometry-v2-frozen",
+      "type": "generated-from",
+      "target": "counterexample:v05-tk-static-v1-binding-failure",
+      "metadata": {
+        "versioned_binding_loader_correction": true,
+        "grid_or_gate_changed": false,
+        "dynamic_or_physical_authority_changed": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -2789,14 +2865,32 @@
       "node_ids_added": [
         "checkpoint:v05-tk-static-action-geometry-frozen"
       ]
+    },
+    {
+      "revision": 49,
+      "event_id": "V05_TK_STATIC_V1_BINDING_FAILURE",
+      "status": "failed_closed_before_model_or_static_enumeration",
+      "source_binding": "v05_tk_static_v1_failure",
+      "node_ids_added": [
+        "counterexample:v05-tk-static-v1-binding-failure"
+      ]
+    },
+    {
+      "revision": 50,
+      "event_id": "V05_TK_STATIC_V2_FREEZE",
+      "status": "preregistered_static_action_geometry_v2_execution_active",
+      "source_binding": "v05_tk_static_v2_contract",
+      "node_ids_added": [
+        "checkpoint:v05-tk-static-action-geometry-v2-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-tk-static-action-geometry-frozen",
+    "node_id": "checkpoint:v05-tk-static-action-geometry-v2-frozen",
     "milestone_id": "V05-TK",
-    "status": "preregistered_static_action_geometry_execution_active",
-    "queue_status": "ACTIVE_V05_TK_FROZEN_STATIC_ACTION_GEOMETRY_EXECUTION",
-    "resume_action": "execute_frozen_static_action_geometry_grid_once",
+    "status": "preregistered_static_action_geometry_v2_execution_active",
+    "queue_status": "ACTIVE_V05_TK_FROZEN_STATIC_ACTION_GEOMETRY_V2_EXECUTION",
+    "resume_action": "execute_frozen_static_action_geometry_v2_grid_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

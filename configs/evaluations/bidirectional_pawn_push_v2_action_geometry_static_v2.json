@@ -1,0 +1,54 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_action_geometry_static.v2",
+  "enumeration_id": "bidirectional-pawn-push-v2-action-geometry-static-v2",
+  "status": "preregistered_binding_loader_correction_before_static_enumeration",
+  "proof_class": "prospective_cpu_fp64_static_action_geometry_action_freeze_v2",
+  "frozen_v1_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_action_geometry_static_v1.json",
+    "sha256": "9a8cb66eca1b7acf5010a858d6dabef7bc8842dc9069126cf8eb077a8f31f458"
+  },
+  "v1_binding_failure": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_action_geometry_static_v1_binding_failure.json",
+    "sha256": "9dd32bb11b238f9697f0cb82c13e4635fd69fa4aca8c4bd8247ae00ece3887d0"
+  },
+  "v1_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_action_geometry_static.py",
+    "sha256": "5001238bd7e13142a8165f137b902da042dc22e665e7e2aa474e8519ddce91b6"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_action_geometry_static_v2.py",
+    "sha256": "a236ea28634cb9ae7bde2b7ee55703745b879142b84f2095cc121aab0c19def7"
+  },
+  "only_change": {
+    "separate_hash_only_file_binding_from_json_binding": true,
+    "quarantine_family_grid_parameters_selection_gates_unchanged": true,
+    "dynamic_or_physical_authority_changed": false
+  },
+  "inherited_frozen_identity": {
+    "prequarantine_family_count": 48,
+    "quarantined_family_count": 4,
+    "postquarantine_family_count": 44,
+    "cells_per_family": 27,
+    "maximum_total_cells": 1188,
+    "selected_family_count": 4,
+    "minimum_distinct_families_per_direction": 2,
+    "closed_jaw_rad": -0.1727003294848389,
+    "sample_hz": 40.0,
+    "minimum_signed_progress_mm": 36.025,
+    "diagnostic_zoh_delay_seconds": 0.11
+  },
+  "authority": {
+    "static_simulation": true,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Versioned binding-loader correction over the exact frozen v1 static action-geometry grid. No static result yet, dynamic consequence, physical packet, promotion, or transfer authority."
+}

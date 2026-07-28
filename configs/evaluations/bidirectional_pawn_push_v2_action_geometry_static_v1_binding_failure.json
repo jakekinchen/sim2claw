@@ -1,0 +1,47 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_action_geometry_static_failure.v1",
+  "failure_id": "bidirectional-pawn-push-v2-action-geometry-static-v1-binding-failure",
+  "status": "failed_closed_before_model_or_static_enumeration",
+  "proof_class": "orchestration_binding_failure_no_static_or_dynamic_outcome",
+  "frozen_commit": "b39eb61",
+  "contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_action_geometry_static_v1.json",
+    "sha256": "9a8cb66eca1b7acf5010a858d6dabef7bc8842dc9069126cf8eb077a8f31f458"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_action_geometry_static.py",
+    "sha256": "5001238bd7e13142a8165f137b902da042dc22e665e7e2aa474e8519ddce91b6"
+  },
+  "failure": {
+    "exception_type": "json.decoder.JSONDecodeError",
+    "message": "Expecting value: line 1 column 1 (char 0)",
+    "location": "bidirectional_pawn_push_v2_action_geometry_static.py:_bound",
+    "trigger": "scene_implementation binding points to src/sim2claw/scene.py and the generic binding helper verified its hash then attempted to parse it as JSON"
+  },
+  "execution_boundary": {
+    "model_constructed": false,
+    "candidate_family_enumerated": false,
+    "static_grid_cell_generated": false,
+    "action_generated": false,
+    "dynamic_replay_executed": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "output_files_created": 0
+  },
+  "permitted_versioned_correction": "Separate hash-only file verification from JSON binding loading without changing quarantine, family universe, parameter grid, selection, lane assignment, action identity, static gates, future dynamic gates, simulator, or authority.",
+  "authority": {
+    "versioned_orchestration_correction": true,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Immutable pre-enumeration orchestration failure only. It contains no static candidate result, dynamic consequence, physical evidence, or transfer authority."
+}

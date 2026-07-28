@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_TK_FROZEN_STATIC_ACTION_GEOMETRY_EXECUTION`
+Status: `ACTIVE_V05_TK_FROZEN_STATIC_ACTION_GEOMETRY_V2_EXECUTION`
 
 Created: `2026-07-28`
 
@@ -189,7 +189,7 @@ denominators before any counted action is compiled.
 | V05 | `DONE_TERMINAL_NEGATIVE` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Final admissible rehearsal-v4 receipt `cb722beb...` rejects: REAL_TO_SIM `2` feasible, SIM_TO_REAL `1`, versus unchanged `2` per-direction gate. No case admitted. |
 | V05-T | `DONE_TERMINAL_NEGATIVE` | Challenge every prospectively broadened static/IK-eligible action with canonical direct-target MuJoCo and diagnostic-only `0.11 s` ZOH command delay; prove exact 40 Hz action bytes and gateway slew/rate compatibility. | At least two distinct cases per direction pass both plant paths with unchanged contact/progress/exclusion/collision/camera gates; requested/sent/applied traces and timestamps bind; gateway accepts bytes without transform. | Static receipt `3a8593cf...` rejects before dynamics: `48` routes, `432` cells, `352` IK compile rejects, `80` static rejects, `0` eligible actions. Unchanged jaw bytes inverse-map below the frozen physical lower bound; no clamp or byte change allowed. |
 | V05-TJ | `DONE_TERMINAL_NEGATIVE` | Prospectively generate the owner-authorized jaw-margin successor family by changing only the gripper column to exact float64 `-0.1727003294848389 rad`, then repeat frozen static and temporal gates. | New action hashes bind before dynamics; at least two distinct cases per direction pass unchanged direct-target and `0.11 s` ZOH paths; every other V05-T identity, geometry, evaluator, exclusion, camera, collision, and gateway rule remains unchanged. | Static receipt `64e8c443...` PASS selected four exact actions, two per direction, with every arm column byte-identical. Frozen temporal receipt `41338d08...` REJECT: REAL_TO_SIM `0/2`, SIM_TO_REAL `1/2` passed both paths versus required `2/2` each. Only `brown_pawn_e2__e2_e3` passed all five variants on both paths. All identity/gateway checks passed; failures are consequence/progress robustness. V06 and physical execution remain closed. |
-| V05-TK | `IN_PROGRESS` | Prospectively freeze a bounded static-only action-geometry successor over contact offset, contact height, stroke, and nonquarantined source→destination families in the unchanged reset layout. | Exactly four outcome-informed V05-TJ cases are quarantined; deterministic family selection and lane assignment use only IK, collision, camera, calibrated bounds, and gateway margins; exact new action hashes freeze before dynamics; at least two distinct families per direction must later pass both unchanged plant paths and all unchanged gates. | Authorization `6b439aaa...`, static contract `9a8cb66e...`, and implementation `5001238b...` bind 44 nonquarantined route families and a finite `44 × 3 × 3 × 3 = 1188` cell grid before enumeration. One static execution is active; dynamic/V06/physical authority false. |
+| V05-TK | `IN_PROGRESS` | Prospectively freeze a bounded static-only action-geometry successor over contact offset, contact height, stroke, and nonquarantined source→destination families in the unchanged reset layout. | Exactly four outcome-informed V05-TJ cases are quarantined; deterministic family selection and lane assignment use only IK, collision, camera, calibrated bounds, and gateway margins; exact new action hashes freeze before dynamics; at least two distinct families per direction must later pass both unchanged plant paths and all unchanged gates. | V1 frozen grid remains immutable but failed before model/enumeration because its generic binding loader JSON-decoded a Python source. Failure `9dd32bb1...`; zero cells/actions. V2 contract `f30a9178...` and wrapper `a236ea28...` change only hash-only file verification and preserve the exact 44-family/1188-cell grid. One v2 static execution is active; dynamic/V06/physical authority false. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2160,6 +2160,36 @@ selected static contact, camera, calibrated-bound, gateway-rate, and
 requested/sent identity gate remains unchanged. One static execution is now
 authorized. Dynamic replay, V06, counted actions, cameras, gateway/serial,
 physical motion, simulator promotion, and transfer claims remain false.
+
+### V05-TK v1 pre-enumeration binding failure and v2 freeze — 2026-07-28
+
+The frozen v1 execution failed closed before model construction or static
+enumeration. Immutable failure
+`configs/evaluations/bidirectional_pawn_push_v2_action_geometry_static_v1_binding_failure.json`,
+SHA-256
+`9dd32bb11b238f9697f0cb82c13e4635fd69fa4aca8c4bd8247ae00ece3887d0`,
+records that the generic binding loader verified the Python scene source hash
+then attempted to parse the source as JSON. No family, grid cell, action,
+dynamic consequence, or output file was created.
+
+Versioned v2 contract
+`configs/evaluations/bidirectional_pawn_push_v2_action_geometry_static_v2.json`,
+SHA-256
+`f30a9178415d3aa3222de8378d4a5ae2aee7b875224c57f3c18026a350d9b2b1`,
+and wrapper
+`src/sim2claw/bidirectional_pawn_push_v2_action_geometry_static_v2.py`,
+SHA-256
+`a236ea28634cb9ae7bde2b7ee55703745b879142b84f2095cc121aab0c19def7`,
+are frozen before retry. The v1 implementation remains byte-identical at
+SHA-256
+`5001238bd7e13142a8165f137b902da042dc22e665e7e2aa474e8519ddce91b6`.
+
+V2 separates hash-only source binding from JSON payload loading and changes
+nothing else. Quarantine, 44 route families, 27 cells per family, 1188-cell
+maximum, geometry values, static selection/lane assignment, jaw/action
+identity, static gates, future temporal gates, simulator, and all false
+physical authority remain identical. One v2 static execution is now
+authorized.
 
 ### V05-T prospective static enumerator freeze — 2026-07-28
 
