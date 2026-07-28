@@ -1,0 +1,130 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_orientation_funnel_successor_authorization.v1",
+  "authorization_id": "bidirectional-pawn-push-v2-orientation-funnel-successor-20260728",
+  "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
+  "proof_class": "prospective_manager_authorized_static_only_orientation_funnel_successor",
+  "authorized_at": "2026-07-28",
+  "authorizer": "Codex Manager",
+  "standing_delegation": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json",
+    "sha256": "8e59b7385ca14083d6ddd571ecc13fbec2f884cba41b3583ccfb317737e81ed5"
+  },
+  "immutable_predecessors": {
+    "v05_ub_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_neighbor_corridor_static_v1.json",
+      "sha256": "4b3cd6e0626b39449d46b6732de2f4fa035b379a7b8fbdf0dc8721183b1a40f0"
+    },
+    "v05_ub_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ub-neighbor-corridor-v1/static-freeze-v1/receipt.json",
+      "sha256": "ed2a7aef30069330fcff83b9359b006f5999cbf4fe7478239c6394654bf02a2d"
+    },
+    "v05_ub_temporal_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_replay_neighbor_corridor_v1.json",
+      "sha256": "3e9c43fe971ba31e4a9073468c1689f9c856d375b7eea8aa3b88d92e474f52c3"
+    },
+    "v05_ub_temporal_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ub-neighbor-corridor-v1/temporal-replay-v1/receipt.json",
+      "sha256": "9c3ea9b6d0ee79adbd007f87ad1badee218f923c181c18b1b477933a25834bb5"
+    },
+    "v05_tw_orientation_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_wrist_path_static_v1.json",
+      "sha256": "b5730808a3b7afca8ea911b4c81f6b7cbafbbf8a3e38be3aad8b91636af200ad"
+    },
+    "v05_tw_orientation_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tw-wrist-path-v1/static-freeze-v1/receipt.json",
+      "sha256": "8d32d1138dc0d250cf75599e1b855aa586dbf27bcfa425d5e90e9d737d0411e6"
+    }
+  },
+  "mechanism_evidence": {
+    "straight_push_family_exhausted": true,
+    "all_identity_and_gateway_checks_passed": true,
+    "v05_ub_progress_gate_failures": 34,
+    "collision_free_60mm_not_robustly_sufficient": true,
+    "90_to_120mm_next_occupied_square_collision_or_exclusion": true,
+    "existing_fixed_wrist_static_infrastructure": true,
+    "mechanism": "Use a fixed wrist-roll face and a deterministic plus-or-minus 3 mm initial-contact lateral sweep into the centerline before an open-loop push, creating a bounded guiding surface without grasping or feedback.",
+    "permitted_use": "Authorize one prospective fresh-case static family with fixed wrist orientation, deterministic guide-to-center contact sweep, and one geometry-derived 75 mm push."
+  },
+  "quarantine": {
+    "case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8",
+      "tan_pawn_g8__g8_g7",
+      "tan_pawn_g8__g8_h8",
+      "tan_pawn_f7__f7_f6",
+      "brown_pawn_e2__e2_f2",
+      "brown_pawn_a2__a2_b2",
+      "tan_pawn_g8__g8_f8",
+      "tan_pawn_f7__f7_e7",
+      "tan_pawn_f7__f7_g7"
+    ],
+    "exact_count": 16,
+    "permitted_use": "read only diagnostics and exact exclusion before future cell generation"
+  },
+  "authorized_static_design": {
+    "wrist_roll_targets_rad": [
+      -1.9562840850723129,
+      -1.8036347566770476,
+      -1.6509854282817824
+    ],
+    "wrist_provenance": "V05-TW seed wrist roll plus/minus atan2(15 mm fixed-jaw half width, 97.5 mm tip distance), all inside modeled and calibrated bounds.",
+    "guide_lateral_offsets_m": [
+      -0.003,
+      0.003
+    ],
+    "guide_provenance": "The existing plus/minus 3 mm robustness quantum, used prospectively as a deterministic initial-contact sweep to centerline.",
+    "path_shape": "full source-to-demonstrated-branch setup; fixed-wrist vertical descent at guide side; 3 mm guide-to-center initial-contact sweep; one straight open-loop push",
+    "selected_pawn_grasped": false,
+    "closed_loop_or_feedback": false,
+    "stroke_m": 0.075,
+    "stroke_provenance": "44.45 mm square width plus 13.8 mm pawn radius plus two 3 mm quanta equals 64.25 mm center travel; adding 16 mm behind-center contact offset gives 80.25 mm, conservatively bounded to 75 mm to retain next-square clearance.",
+    "same_low_center_contact": true,
+    "same_three_demonstrated_setup_branches": true,
+    "same_setup_speed": true,
+    "same_precontact_clearance": true,
+    "same_exact_jaw": true,
+    "same_40hz_timing": true,
+    "same_selection_and_gates": true,
+    "same_physical_layout": true,
+    "manual_intervention_required": false,
+    "postquarantine_family_count": 32,
+    "cells_per_family": 18,
+    "finite_maximum_cells": 576,
+    "static_selection_only": true,
+    "no_post_outcome_expansion": true
+  },
+  "forbidden": [
+    "reuse of any of the sixteen quarantined cases",
+    "another scalar stroke height or offset sweep",
+    "grasping the selected pawn",
+    "closed-loop correction or perception adaptation",
+    "force or current feedback",
+    "physical pawn layout change",
+    "manual intervention",
+    "gate weakening",
+    "paid compute",
+    "physical work before V06 and all safety gates"
+  ],
+  "authority": {
+    "static_design": true,
+    "model_loading": false,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Manager authorization under standing delegation for one finite open-loop fixed-wrist guiding-contact successor. No model loading, simulation, V06, hardware, or transfer authority yet."
+}

@@ -98,6 +98,19 @@ NEIGHBOR_CORRIDOR_TEMPORAL_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_temporal_replay_neighbor_corridor_v1.json"
 )
+NEIGHBOR_CORRIDOR_TEMPORAL_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-ub-neighbor-corridor-v1/temporal-replay-v1/receipt.json"
+)
+ORIENTATION_FUNNEL_AUTHORIZATION = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_orientation_funnel_"
+    "successor_authorization_v1.json"
+)
+ORIENTATION_FUNNEL_STATIC_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_orientation_funnel_static_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -497,6 +510,85 @@ def test_neighbor_corridor_static_pass_and_temporal_freeze_bind_actions() -> Non
     assert contract["acceptance"]["minimum_cases_per_direction"] == 2
     assert contract["authority"]["dynamic_simulation"] is True
     assert contract["authority"]["v06_evaluator_freeze"] is False
+    assert contract["authority"]["physical_motion"] is False
+
+
+def test_neighbor_corridor_temporal_receipt_closes_straight_push_family() -> None:
+    receipt = json.loads(
+        NEIGHBOR_CORRIDOR_TEMPORAL_RECEIPT.read_text(encoding="utf-8")
+    )
+    assert _sha(NEIGHBOR_CORRIDOR_TEMPORAL_RECEIPT) == (
+        "9c3ea9b6d0ee79adbd007f87ad1badee218f923c181c18b1b477933a25834bb5"
+    )
+    assert receipt["status"] == "temporal_replay_reject"
+    assert receipt["passing_case_ids"] == []
+    assert receipt["lane_counts"] == {
+        "REAL_TO_SIM": 0,
+        "SIM_TO_REAL": 0,
+    }
+    for case in receipt["results"]:
+        for path in case["plant_paths"]:
+            assert all(path["identity_checks"].values())
+            assert path["gateway"]["all_rows_inside_calibrated_limits"]
+            assert path["gateway"]["all_rates_within_reviewed_gateway_limits"]
+            assert path["gateway"]["requested_sent_byte_identical"]
+    assert receipt["authority"]["v06_evaluator_freeze"] is False
+    assert receipt["physical_motion"] is False
+    assert receipt["physical_task_attempts"] == 0
+
+
+def test_orientation_funnel_successor_is_finite_open_loop_and_fresh() -> None:
+    authorization = json.loads(
+        ORIENTATION_FUNNEL_AUTHORIZATION.read_text(encoding="utf-8")
+    )
+    for binding in authorization["immutable_predecessors"].values():
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert authorization["quarantine"]["exact_count"] == 16
+    design = authorization["authorized_static_design"]
+    assert design["cells_per_family"] == 18
+    assert design["finite_maximum_cells"] == 576
+    assert design["selected_pawn_grasped"] is False
+    assert design["closed_loop_or_feedback"] is False
+    assert authorization["authority"]["static_design"] is True
+    assert authorization["authority"]["model_loading"] is False
+    assert authorization["authority"]["physical_motion"] is False
+
+    contract = json.loads(
+        ORIENTATION_FUNNEL_STATIC_CONTRACT.read_text(encoding="utf-8")
+    )
+    for key in (
+        "authorization",
+        "v1_binding_failure",
+        "standing_delegation",
+        "rehearsal_contract",
+        "temporal_plan",
+        "geometry_source",
+        "scene_implementation",
+        "articulated_robot_model",
+        "candidate_manifest",
+        "registration_candidate",
+        "implementation",
+    ):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert contract["quarantine"]["exact_count"] == 16
+    assert contract["family_grid"]["expected_postquarantine_family_count"] == 32
+    assert contract["parameter_grid"]["cells_per_family"] == 18
+    assert contract["parameter_grid"]["maximum_total_cells"] == 576
+    assert len(contract["parameter_grid"]["wrist_roll_targets_rad"]) == 3
+    assert contract["parameter_grid"]["guide_lateral_offsets_m"] == [
+        -0.003,
+        0.003,
+    ]
+    assert contract["endpoint_geometry"]["stroke_m"] == 0.075
+    assert contract["action_identity"]["selected_pawn_grasped"] is False
+    assert contract["action_identity"]["closed_loop_or_feedback"] is False
+    assert contract["action_identity"]["sample_hz"] == 40.0
+    assert contract["action_identity"]["closed_jaw_rad"] == (
+        -0.1727003294848389
+    )
+    assert contract["authority"]["static_simulation"] is True
+    assert contract["authority"]["dynamic_replay"] is False
     assert contract["authority"]["physical_motion"] is False
 
 
