@@ -720,3 +720,9 @@ gateway/controller process and no open handle on follower device
 the checkpoint intentionally did not perform another bus-opening preflight;
 there has been no subsequent motion command after the receipt-backed
 torque-off close.
+
+The five-path scoped V04 implementation checkpoint was committed as
+`23b410d` (`Checkpoint rejected v2 registration fit`) and pushed to
+`origin/codex/geometric-microtransfer-20260727`. This queue-only successor
+records that completed handoff; the six unrelated untracked paths remain
+unstaged and untouched.
