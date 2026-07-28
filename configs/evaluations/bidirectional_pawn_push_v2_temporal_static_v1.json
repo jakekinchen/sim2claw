@@ -1,0 +1,85 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_static.v1",
+  "enumeration_id": "bidirectional-pawn-push-v2-temporal-static-v1",
+  "status": "preregistered_before_static_enumeration_or_action_compilation",
+  "proof_class": "prospective_cpu_fp64_static_layout_ik_collision_camera_gateway_action_freeze",
+  "temporal_plan": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json",
+    "sha256": "5e8058e0bc46d60879d962a1e2ee9e8161a12197dfe9aee3faab73f7b1f23e9e"
+  },
+  "rehearsal_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v2.json",
+    "sha256": "d57fc89a5874d630536ae6f981b78988c6da40bfb8934fee78ab2cfc02ac847f"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_temporal_static.py",
+    "sha256": "5584bf831f12580851e3a397d318f9fba8d865cdf6464b6b25174d4511a8d687"
+  },
+  "gateway_semantics": {
+    "path": "src/sim2claw/physical_gateway.py",
+    "sha256": "700f9e657e42d7e8fe67b00f4909f177f1ee7e8f4c97ef753611a21f8bad4cbb",
+    "gateway_opened": false,
+    "serial_opened": false
+  },
+  "enumeration": {
+    "source": "modeled reset-layout pawn body names and board squares only",
+    "neighbor_rule": "all on-board orthogonal adjacent squares empty in reset layout",
+    "ordering": "source rank then file, destination rank then file",
+    "excluded_squares": [
+      "c2"
+    ],
+    "maximum_candidates": 64,
+    "lane_partition": "alternate statically eligible cases beginning REAL_TO_SIM",
+    "v05_dynamic_outcomes_available_to_selection": false
+  },
+  "grid_and_selection": {
+    "grid_source": "frozen rehearsal-v2 contract",
+    "all_nine_cells_statically_audited": true,
+    "one_action_per_eligible_case": true,
+    "selection_order": [
+      "shortest statically eligible stroke",
+      "contact height nearest 0.024 m",
+      "largest arm-joint limit margin"
+    ],
+    "dynamic_outcome_used": false
+  },
+  "static_gates": [
+    "IK residual",
+    "arm-joint margin",
+    "declared jaw target",
+    "new robot collision excluding selected jaw-pawn contact",
+    "source and intended terminal camera margin",
+    "calibrated physical command bounds",
+    "reviewed gateway per-joint rate bounds at 40 Hz",
+    "requested/sent byte identity"
+  ],
+  "action_freeze": {
+    "dtype": "little_endian_float64",
+    "sample_hz": 40.0,
+    "row_order_preserved": true,
+    "one_raw_tensor_per_eligible_case": true,
+    "forbidden": [
+      "clipping",
+      "smoothing",
+      "retiming",
+      "offset",
+      "rate limiting",
+      "IK repair",
+      "corrective suffix",
+      "assistance"
+    ]
+  },
+  "authority": {
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective simulator-only static enumeration/action-freeze contract. It cannot establish a task outcome, calibrated plant, physical packet, or transfer."
+}

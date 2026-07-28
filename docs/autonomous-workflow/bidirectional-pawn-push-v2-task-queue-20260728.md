@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_T_IMPLEMENTATION`
+Status: `ACTIVE_V05_T_FROZEN_STATIC_ENUMERATION_EXECUTION`
 
 Created: `2026-07-28`
 
@@ -2074,3 +2074,32 @@ observable hardware receipts close with torque false; torque was not re-read
 because opening the gateway is outside this milestone. `brev ls` reports no
 instances. The sole unrelated untracked
 `tools/build_fiducial_sheet.py` remains untouched.
+
+### V05-T prospective static enumerator freeze — 2026-07-28
+
+Static enumerator contract
+`configs/evaluations/bidirectional_pawn_push_v2_temporal_static_v1.json`,
+SHA-256
+`0f47cd5ee1f11d18b42f200a9f35c1f8b36ffd5f114f4eda95ec9be3c1f40810`,
+and implementation
+`src/sim2claw/bidirectional_pawn_push_v2_temporal_static.py`, SHA-256
+`5584bf831f12580851e3a397d318f9fba8d865cdf6464b6b25174d4511a8d687`,
+are frozen before enumeration or action compilation. Focused contract and
+enumeration tests pass `4/4`.
+
+The reset scene deterministically yields `48` candidate source/destination
+routes before static filtering, below the frozen maximum `64`. This is the
+complete set of modeled pawns except the still-excluded `c2`, crossed with
+on-board empty orthogonal neighbors, sorted by source rank/file then
+destination rank/file. No V05 dynamic outcome is available to selection.
+
+Each route audits all nine frozen V05 height/stroke cells. Static eligibility
+requires unchanged IK, arm margin, jaw target, new-collision, camera,
+calibrated command-bound, reviewed gateway rate, and requested/sent byte
+identity checks. One action per eligible route is selected by shortest stroke,
+height nearest `24 mm`, then largest arm margin. Eligible cases are assigned
+alternately to the two proof lanes. The immediate unknown bottleneck is how
+many of the broader tan-side and lateral routes survive IK and new-robot-
+collision checks; no dynamic task consequence has been observed. The frozen
+static enumeration may now execute once. Dynamic replay remains unauthorized
+until its concrete action manifest is separately bound and pushed.

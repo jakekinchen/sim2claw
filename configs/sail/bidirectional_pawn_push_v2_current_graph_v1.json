@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T10:04:00-05:00",
+  "generated_at": "2026-07-28T10:20:00-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "fea0bdd75c1c83fa40a370d95658a117df549a4ba75d077c252c01cc4e23f353",
+      "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -497,6 +497,16 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_plant_challenger.v1",
         "status": "preregistered_plan_only_implementation_and_execution_paused",
         "proof_class": "prospective_cpu_fp64_sim_only_temporal_plant_challenger_plan"
+      }
+    },
+    "v05_t_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_static_v1.json",
+      "sha256": "0f47cd5ee1f11d18b42f200a9f35c1f8b36ffd5f114f4eda95ec9be3c1f40810",
+      "proof_class": "prospective_cpu_fp64_static_layout_ik_collision_camera_gateway_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_static.v1",
+        "status": "preregistered_before_static_enumeration_or_action_compilation",
+        "proof_class": "prospective_cpu_fp64_static_layout_ik_collision_camera_gateway_action_freeze"
       }
     },
     "simulator_candidate": {
@@ -1387,6 +1397,22 @@
       }
     },
     {
+      "id": "checkpoint:v05-t-static-enumerator-frozen",
+      "type": "checkpoint",
+      "label": "V05-T reset-layout static enumerator frozen",
+      "status": "preregistered_static_enumeration_execution_active",
+      "source_binding": "v05_t_static_contract",
+      "data": {
+        "prospective_route_count": 48,
+        "maximum_route_count": 64,
+        "grid_cells_per_route": 9,
+        "dynamic_outcomes_used": false,
+        "dynamic_replay_authorized": false,
+        "camera_or_gateway_authorized": false,
+        "physical_motion": false
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -1918,6 +1944,16 @@
       }
     },
     {
+      "source": "checkpoint:v05-t-static-enumerator-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-t-simulator-implementation-active",
+      "metadata": {
+        "prospective_before_static_execution": true,
+        "dynamic_outcomes_used": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -2322,14 +2358,23 @@
       "node_ids_added": [
         "checkpoint:v05-t-simulator-implementation-active"
       ]
+    },
+    {
+      "revision": 40,
+      "event_id": "V05_T_STATIC_ENUMERATOR_FREEZE",
+      "status": "preregistered_static_enumeration_execution_active",
+      "source_binding": "v05_t_static_contract",
+      "node_ids_added": [
+        "checkpoint:v05-t-static-enumerator-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-t-simulator-implementation-active",
+    "node_id": "checkpoint:v05-t-static-enumerator-frozen",
     "milestone_id": "V05-T",
-    "status": "active_simulator_only_no_physical_authority",
-    "queue_status": "ACTIVE_V05_T_IMPLEMENTATION",
-    "resume_action": "implement_and_freeze_static_enumeration_before_dynamic_replay",
+    "status": "preregistered_static_enumeration_execution_active",
+    "queue_status": "ACTIVE_V05_T_FROZEN_STATIC_ENUMERATION_EXECUTION",
+    "resume_action": "execute_frozen_static_enumeration_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
