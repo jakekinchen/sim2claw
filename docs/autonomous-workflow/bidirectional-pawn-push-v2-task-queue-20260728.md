@@ -1640,3 +1640,49 @@ robot-board yaw/XYZ correction, and apply every frozen fit gate. The fit
 process must not read the execution receipt, sealed manifest, or heldout
 directory. Heldouts may open together exactly once only if the candidate
 passes every fit gate and is hash-frozen first.
+
+### V04 fit-only rigid candidate independently admitted for one sealed open — 2026-07-28
+
+Fit-only annotations are frozen in
+`configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v4.json`,
+SHA-256
+`2a22f21601ed8cafccdee1f2666ead7b9c194ab1af091610082597238dffe5b3`.
+All six fit images contain both physical pink jaw endpoints. Two annotation
+passes have maximum tip disagreement `0.707107 px` and maximum midpoint
+disagreement `0.559017 px`. The 25-point board lattice is generated through
+one projective homography from the prior fit-only playing-corner seed; its
+small residual is projective consistency and is not an independent current
+board remeasurement.
+
+The frozen shared projective-camera plus rigid robot-board yaw/XYZ candidate
+is
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json`,
+SHA-256
+`4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c`.
+Immutable fit receipt SHA-256 is
+`eef26fd6ea349070fc7d40094b6ec09753464be467071ff3c66fed3c870848ca`.
+All `13/13` fit checks pass: board RMS/max are `0.039779/0.062698 px`,
+hover RMS/max are `2.927792/4.926105 px`, and task-plane RMS/max are
+`3.007454/5.493515 mm`. The refinement Jacobian is `62x15`, rank `15`,
+condition number `624330.43`.
+
+Independent optimizer-free review receipt
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/independent_review.json`,
+SHA-256
+`2020d906ea27f8e4c4e3b405c6dd1d0ab6237168f9e689ebed28c81bb9633b31`,
+rederives the metrics and Jacobian without fitting. It passes all `11/11`
+checks and returns `CONTINUE_TO_SINGLE_SEALED_HELDOUT_OPEN`.
+
+The fitted robot-board translation is
+`[126.674204,-107.533152,100.000000] mm` with yaw `17.090982 deg`.
+The Z value exactly saturates the unchanged `+100 mm` bound. This is an
+explicit extrapolation/identifiability risk, not an automatic threshold
+expansion or promotion. All four frozen heldouts must open together exactly
+once and pass the unchanged per-heldout and aggregate reprojection and
+task-plane gates with this exact candidate and zero refit.
+
+Heldout content remains unread and heldout open count remains `0`. No camera,
+gateway, physical motion, task action, simulator promotion, or transfer claim
+is authorized by this fit-only admission. The next action is to commit and
+push this exact fit/reviewer state, verify clean HEAD lineage, then perform
+the single all-four sealed heldout evaluation.

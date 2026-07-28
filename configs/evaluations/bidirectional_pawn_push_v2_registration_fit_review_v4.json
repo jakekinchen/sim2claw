@@ -1,0 +1,30 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_rigid_registration_fit_review.v1",
+  "review_id": "bidirectional-pawn-push-v2-rigid-registration-fit-review-v4",
+  "status": "frozen_fit_only_independent_review",
+  "annotations": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v4.json",
+    "sha256": "2a22f21601ed8cafccdee1f2666ead7b9c194ab1af091610082597238dffe5b3"
+  },
+  "candidate": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+    "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+  },
+  "fit_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/fit_receipt.json",
+    "sha256": "eef26fd6ea349070fc7d40094b6ec09753464be467071ff3c66fed3c870848ca"
+  },
+  "maximum_metric_rederivation_delta": 0.000001,
+  "z_bound_saturation_policy": {
+    "active_bound_is_explicit_risk": true,
+    "does_not_expand_bound": true,
+    "requires_all_four_frozen_heldouts_to_pass": true
+  },
+  "authority": {
+    "heldout_open": false,
+    "candidate_refit": false,
+    "physical_motion": false,
+    "task_success": false,
+    "transfer": false
+  }
+}
