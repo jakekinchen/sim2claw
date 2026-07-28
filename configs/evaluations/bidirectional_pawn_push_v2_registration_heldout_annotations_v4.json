@@ -1,0 +1,73 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_heldout_annotations.v1",
+  "annotation_id": "bidirectional-pawn-push-v2-registration-heldout-annotations-v4",
+  "status": "frozen_after_single_pixel_open_before_evaluation",
+  "proof_class": "sealed_registration_heldout_derived_surface_annotation",
+  "recovery_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_heldout_recovery_v4.json",
+    "sha256": "cb5de6f91d240c6683ad5c4f29c1439fadaf4d49b21bc77cbbedcca87ffa217e"
+  },
+  "open_receipt_path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/heldout-rigid-v4/single_open_recovery_receipt.json",
+  "open_receipt_sha256": "e35cf89214543c0ad47b11abb254a4aeec72a695eb3f0f1dcf7e50c6a2278607",
+  "open_marker_sha256": "cbe783d8fddb4299af6cf930a50f7b074e3c05a5b12def473244ef8d1cefaef8",
+  "contact_sheet_path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/heldout-rigid-v4/heldout_contact_sheet.png",
+  "contact_sheet_sha256": "9533dde5a16ac29d49b5aef76b210f733f6e40442d49677975c4129af014caa2",
+  "candidate_sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c",
+  "annotation_surface": "single derived 2x2 contact sheet; no raw heldout image reopened",
+  "coordinate_frame": "local 640x480 member coordinates after removing 2x2 contact-sheet quadrant offsets",
+  "protocol": "two independent visual passes; fixed then moving pink endpoint center",
+  "members": [
+    {
+      "opaque_id": "heldout-r4-01",
+      "image_sha256": "e6d6424db945bc5ee36129b369c6f19e0262a75e7bca1e1a6895c79d3f7944cc",
+      "pass_a_tip_pixels": [
+        [224.5, 137.0],
+        [254.0, 147.0]
+      ],
+      "pass_b_tip_pixels": [
+        [225.0, 137.5],
+        [253.5, 147.0]
+      ]
+    },
+    {
+      "opaque_id": "heldout-r4-02",
+      "image_sha256": "15d9b8b18b576d5ceda7696f6bbc8422d1b7ef56edaddcfcf9f9c73a8ec471a6",
+      "pass_a_tip_pixels": [
+        [272.5, 126.0],
+        [304.0, 137.0]
+      ],
+      "pass_b_tip_pixels": [
+        [273.0, 126.5],
+        [304.5, 137.0]
+      ]
+    },
+    {
+      "opaque_id": "heldout-r4-03",
+      "image_sha256": "9a0755baa99e2e9a692894bcb594d3a7ec8032bc889d4d052a229816c8b37931",
+      "pass_a_tip_pixels": [
+        [316.5, 109.5],
+        [347.0, 121.5]
+      ],
+      "pass_b_tip_pixels": [
+        [317.0, 110.0],
+        [347.5, 121.0]
+      ]
+    },
+    {
+      "opaque_id": "heldout-r4-04",
+      "image_sha256": "b739e114de6eae544cc56230a44374a24bb9323f64f450926c1041075d50ec53",
+      "pass_a_tip_pixels": [
+        [338.0, 110.0],
+        [369.0, 122.0]
+      ],
+      "pass_b_tip_pixels": [
+        [338.5, 110.5],
+        [369.0, 122.5]
+      ]
+    }
+  ],
+  "candidate_refit": false,
+  "threshold_update": false,
+  "z_bound_expansion": false,
+  "claim_boundary": "Heldout derived-surface endpoint annotations only; no registration pass, promotion, task, motion, or transfer claim."
+}

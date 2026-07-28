@@ -1761,3 +1761,56 @@ Focused heldout/fit/review tests pass `5/5`. No additional manifest read or
 raw pixel access occurred during design or review. Cumulative manifest reads
 remain `1`; heldout pixel open count remains `0`. The recovery and graph
 authorization must be committed/pushed before the single recovery execution.
+
+### V04 frozen registration heldout PASS — 2026-07-28
+
+The committed versioned recovery opened all four heldout pixel sets together.
+Open marker SHA-256 is
+`cbe783d8fddb4299af6cf930a50f7b074e3c05a5b12def473244ef8d1cefaef8`;
+open receipt SHA-256 is
+`e35cf89214543c0ad47b11abb254a4aeec72a695eb3f0f1dcf7e50c6a2278607`;
+the sole derived contact-sheet SHA-256 is
+`9533dde5a16ac29d49b5aef76b210f733f6e40442d49677975c4129af014caa2`.
+Cumulative manifest reads are exactly `2`: one failed manifest-only access and
+one authorized recovery read. Heldout pixel open count is exactly `1`, with
+one raw-image read per member.
+
+The four member image SHA-256 values are, in opaque-ID order:
+
+- `heldout-r4-01`: `e6d6424db945bc5ee36129b369c6f19e0262a75e7bca1e1a6895c79d3f7944cc`
+- `heldout-r4-02`: `15d9b8b18b576d5ceda7696f6bbc8422d1b7ef56edaddcfcf9f9c73a8ec471a6`
+- `heldout-r4-03`: `9a0755baa99e2e9a692894bcb594d3a7ec8032bc889d4d052a229816c8b37931`
+- `heldout-r4-04`: `b739e114de6eae544cc56230a44374a24bb9323f64f450926c1041075d50ec53`
+
+Two-pass derived-surface annotations are frozen in
+`configs/evaluations/bidirectional_pawn_push_v2_registration_heldout_annotations_v4.json`,
+SHA-256
+`654b32fbe4dbb35096d9ed361e574f92a563d9241c0d434a9c756df06db2105d`.
+No raw image was reopened for annotation.
+
+Zero-refit evaluation receipt
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/heldout-rigid-v4/evaluation_receipt.json`,
+SHA-256
+`5eaf763b7f5beec9be8c38c61693ad0e5cd868cab7984853b54e417a690311f0`,
+has status `registration_heldout_pass`. Per-member reprojection errors are
+`[6.471232,5.222237,2.760176,3.315923] px`; per-member task-plane errors are
+`[7.104333,4.539534,2.305403,3.679939] mm`. Aggregate RMS/max are
+`4.684083/6.471232 px` and `4.741723/7.104333 mm`. All four members are
+scorable, all four pass, and all seven aggregate/identity/open-count checks
+pass against unchanged `<=8 px` and `<25 mm` gates.
+
+Candidate SHA-256 remains
+`4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c`.
+There was no refit, camera/rigid update, threshold change, or Z-bound
+expansion. V04 closes as accepted heldout camera/robot registration only. It
+does not establish pawn contact, displacement, task success, simulator
+promotion, physical transfer, or bidirectional transfer. REAL->SIM and
+SIM->REAL task attempts remain `0/0`; counted physical task attempts remain
+`0/10`.
+
+V05 activates only a deterministic sim-only straight closed-jaw push
+rehearsal using the accepted registration candidate. It must test feasible
+rank-3-ward primitives, jaw/stroke/contact geometry, pawn fully off source,
+exclusions, reach/collision/camera margins, and robustness without consuming
+or using any physical task outcome. The evaluator and physical task packet
+remain unfrozen until this rehearsal identifies one exact case family.

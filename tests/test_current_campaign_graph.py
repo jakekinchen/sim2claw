@@ -29,22 +29,20 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     )
 
     assert rebuilt == tracked
-    assert tracked["active_pointer"]["milestone_id"] == "V04"
+    assert tracked["active_pointer"]["milestone_id"] == "V05"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v04-rigid-heldout-recovery-authorized",
-        "milestone_id": "V04",
-        "status": "versioned_single_pixel_open_authorized",
-        "queue_status": "AUTHORIZED_V04_VERSIONED_HELDOUT_PIXEL_OPEN_RECOVERY",
-        "resume_action": (
-            "execute_versioned_recovery_once_annotate_and_evaluate_zero_refit"
-        ),
+        "node_id": "verdict:v04-rigid-heldout-pass",
+        "milestone_id": "V05",
+        "status": "registration_heldout_pass_v05_sim_rehearsal_active",
+        "queue_status": "ACTIVE_V05_SIM_ONLY_STRAIGHT_CLOSED_JAW_PUSH_REHEARSAL",
+        "resume_action": "rehearse_rank3_ward_case_families_before_evaluator_freeze",
         "resume_authorized": True,
-        "heldout_open_count": 0,
-        "cumulative_manifest_read_count": 1,
+        "heldout_open_count": 1,
+        "cumulative_manifest_read_count": 2,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(28)
+        range(30)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -55,10 +53,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V04_RIGID_HELDOUT_RECOVERY_AUTHORIZED"
+        == "V04_RIGID_HELDOUT_PASS"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v04-rigid-heldout-recovery-authorized"
+        "verdict:v04-rigid-heldout-pass"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]
