@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `PAUSED_V04_OWNER_INTEGRATION_BARRIER`
+Status: `ACTIVE_V04_VERSIONED_RECAPTURE_DESIGN`
 
 Created: `2026-07-28`
 
@@ -158,7 +158,7 @@ denominators before any counted action is compiled.
 | V01 | `DONE` | Preregister a new camera-owned registration acquisition, board-plane metric model, fit/held-out split, and sealed-input rules. | Versioned contract declares visible board features, camera model inputs, gripper reference, fit targets, held-out targets, pixel/reprojection sanity gate, `<25 mm` metric gate, hashes, and recapture fallback before capture. | Contract `configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v1.json`, SHA-256 `f345d9ff55ed38b8509dac061af7d0ce7aeaefb59cb78f92ba4460b5dbe82024`. Four fit targets and four held-out targets are disjoint and prospectively frozen; v1 B7 reuse forbidden; C922 owns board/task; D405 depth omitted; normalized zero-distortion `3x4` DLT family and pixel/annotation/`<25 mm` gates fixed; held-out single-open and versioned recapture fallback fixed. Validation attempt 1 failed only on a mistyped C922-contract digest before freeze; corrected to the live digest. Attempt 2: `3 passed in 0.04s`. No capture or motion. |
 | V02 | `DONE` | Prove hover poses and visibility using CPU/fp64 simulation and static camera projections/images. | Every proposed target passes joint limits, self/table/board/pawn clearance, no-contact height, slow-path preview, C922 field of view, simultaneous gripper/board visibility, and guaranteed return/torque-off logic. Reviewer decision `CONTINUE`. No motion. | Route `configs/hardware/bidirectional_pawn_push_v2_registration_route_v1.json`, SHA-256 `b7464a34a6abe744d778323a7a017f5ab8f40d6f6556b7691f5944e1bbd52d8e`. Final receipt `runs/bidirectional-pawn-push-v2/20260728-v02-static-route-v2/evaluation.json`, SHA-256 `53c6b4dec93cae8f41e9bc24a106fcc0883d3c11d97c887aec3c630491bdbcf6`; deterministic reviewer `CONTINUE`, evidence anchor `100`, all `11/11` gates true. Fresh torque-off start matched the frozen rebase exactly. Source egress: `92` float64 rows, `4.55 s`, hash `9a3ccff7ba26e94f2cce2963480e33a2999b07efa16777edc73530a8fa28e142`. Capture/return: `1541` float64 rows, `77.0 s`, hash `6d05f2471ec0ca8f83beadbc9bbfcc4b6d8ae4c679198414fad600bf29a1dbdf`. Maximum slew `2.999531 deg/s`; minimum jaw clearance `66.282 mm` to any pawn and `93.975 mm` to board; C922 proxy minimum image margin `206.268 px`. All eight camera rays first hit the intended moving jaw `5.865-7.045 mm` before the registered midpoint, within the frozen `15 mm` surface-offset gate. No motion occurred; no camera opened, gateway was constructed, or attempt was counted. |
 | V03 | `DONE` | Capture the prospective fit and held-out registration observations through the reviewed gateway. | Cameras precede motion; only approved slow no-contact paths run; requested/mapped/sent and tracking receipts close; every planned target is captured; torque false on exit; input hashes freeze; no pawn contact. | Execution receipt `runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/execution_receipt.json`, SHA-256 `a1692a5b87d88b7b2c37151159660546d9104c9b3973de85f0801de0d9e793a3`, status `completed_no_contact_registration_capture`, proof class `physical_rgb_no_contact_registration_observation_only`. All exact `92 + 1541` requested/mapped/sent rows are byte-identical to the reviewed arrays; all eight scored holds pass; nine C922 sessions have zero drops; fit and sealed-heldout manifests hash to `933f121a60b741d5a555b865caccf8fedce1ea0b6accd0e007cd42f77eafa8a5` and `6fd932ddf33c2e5aae87680e141eb1a41f05feb19196eac2fd2343ad3f5a18d6`; final preflight proves torque false. No pawn contact or task attempt. |
-| V04 | `IN_PROGRESS` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Acquisition-v1 fit attempt 1 was rejected before held-out: receipt `runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1/fit_receipt.json`, SHA-256 `9b6378fc32a3f22fc6c9c6379a86df2a96562b3c0207f07488494d68c13adedb`. Board and annotation gates pass, but hover reprojection is `11.281007 px` RMS / `15.767004 px` max versus frozen `6/10 px` gates. Held-out open count remains `0`. The preregistered nonterminal recapture fallback is pending but is not authorized while the owner pause barrier is active. |
+| V04 | `IN_PROGRESS` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Acquisition-v1 fit attempt 1 was rejected before held-out: receipt `runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1/fit_receipt.json`, SHA-256 `9b6378fc32a3f22fc6c9c6379a86df2a96562b3c0207f07488494d68c13adedb`. Board and annotation gates pass, but hover reprojection is `11.281007 px` RMS / `15.767004 px` max versus frozen `6/10 px` gates. Held-out open count remains `0`. Owner resume authorizes the preregistered nonterminal fallback. A new family and newly split observations must freeze and pass CPU/fp64 route/visibility review before any camera or gateway opens. |
 | V05 | `PENDING` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Pending. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
@@ -198,9 +198,11 @@ Current state:
 - V04 is the only active card.
 - The fit manifest is frozen and the held-out manifest remains separately
   sealed. Acquisition-v1 failed its fit-only pixel gate without a held-out
-  open. V04 remains active but paused at the owner integration barrier.
-  Replacement-family design, recapture, camera open, gateway construction,
-  held-out open, and robot motion are not authorized while paused.
+  open. The owner integration barrier is closed and V04 is active in
+  replacement-family design. Acquisition-v1 held-out remains prohibited.
+  Camera open, gateway construction, and robot motion remain unauthorized
+  until the new split/family and CPU/fp64 route/visibility gate freeze and
+  pass.
 - Counted actions do not exist.
 
 Completed:
@@ -418,25 +420,21 @@ Verification evidence:
 
 Remaining:
 
-- After explicit owner resume, complete V04's preregistered new-version
-  registration recapture, fit-only candidate freeze, and one-time held-out
-  evaluation.
+- Complete V04's preregistered new-version registration recapture, fit-only
+  candidate freeze, and one-time held-out evaluation.
 - V05-V15.
 
 Blockers:
 
-- No terminal blocker is established. The owner imposed a deliberate pause so
-  a separate current-campaign graph integration and visual 3DGS/simulator
-  comparison can land before V04 resumes. This campaign will not implement
-  either integration. V04 remains active; no recapture, camera, gateway,
-  held-out open, or motion is authorized while paused.
+- No terminal blocker is established. The owner integration barrier is
+  complete. Registration design is authorized; physical recapture remains
+  gated on a new frozen contract plus CPU/fp64 collision/visibility review.
 
 Next action:
 
-- Remain paused. After an explicit owner resume following the external graph
-  and visual-comparison integration, prospectively freeze a replacement
-  registration family and newly split dataset before any recapture. Do not
-  reuse acquisition-v1 held-out or weaken any gate.
+- Prospectively freeze a task-plane registration family and newly split
+  non-collinear hover dataset, then prove the exact route and visibility in
+  CPU/fp64. Do not reuse acquisition-v1 held-out or weaken any gate.
 
 Attempt ledger:
 
@@ -773,3 +771,57 @@ integration. After its graph digest and browser verification are reported,
 the sole V04 writer may resume only through a new explicit thread prompt that
 preserves the graph as its active context and continues the prospectively
 versioned recapture fallback.
+
+### V04 owner resume / versioned recapture design start — 2026-07-28
+
+The owner explicitly closed the integration barrier and authorized the
+existing V04 fallback. The live branch and origin both resolve to integration
+commit `084a9e33f8cd2b701bba47d35fa4e53d69f2972f`. The tracked graph's embedded
+canonical digest is
+`44a856941a16a736de302e55d4c025220786b7d7fca88ea641436dfa4a383153`;
+its outer file SHA-256 is
+`923962215759f80107e18c7067d6f28a00f082475864e38652e4b648a558ff9b`.
+The distinction is intentional. The graph adapter baseline passes:
+
+```text
+uv run --offline pytest -q tests/test_current_campaign_graph.py
+..                                                                       [100%]
+2 passed in 0.40s
+```
+
+Read-only resumption checks found exactly one `IN_PROGRESS` card, held-out
+open count `0`, counted task attempts `0/10`, no repo-owned C922 or gateway
+process, no follower-device owner, and no Git index lock. The immutable V03
+post-close receipt still binds torque false and no later motion exists.
+
+The six previously named unrelated untracked paths remain preserved. Three
+additional externally authored paths are also out of campaign scope and
+must not be staged or edited:
+
+- modified `README.md`, SHA-256
+  `e62164ad178aaaf047d4bf168b2f04d1a5962241e303b4464fda54f02a8f2e4a`;
+- untracked `docs/reference/WORKSPACE_DATA_RELEASE_20260728.md`, SHA-256
+  `9402b626d02e44e0ec8dd6f8be7d11871c020704b50738c580bf2cc86dcbfa1e`;
+- untracked `docs/reference/WORKSPACE_DATA_RELEASE_20260728.json`, SHA-256
+  `9365d5a6fa8216d1463c134495657cd49868044a5fdcbc178910f084b215b499`;
+- untracked `scripts/download_workspace_data.py`, SHA-256
+  `34119f989d9ab2e55cb551398b53fc57e20c61248952514f0654cf5f33560759`.
+
+This transition authorizes prospective registration design only. A new
+acquisition contract, fit/held-out split, candidate family, and exact route
+must freeze and pass CPU/fp64 collision/visibility review before camera open,
+gateway construction, or motion. Acquisition-v1 held-out remains sealed and
+forbidden.
+
+The first post-transition graph test rebuilt the graph successfully but its
+assertions still required the former paused pointer and five-revision length:
+`2 failed in 0.27s`. The test was updated to require the source-bound
+`V04_RESUME` revision while explicitly preserving event IDs `V00` through
+`V04`; the fail-closed lineage mutation now targets the new nonempty revision.
+Validation attempt 2 passed:
+
+```text
+uv run --offline pytest -q tests/test_current_campaign_graph.py
+..                                                                       [100%]
+2 passed in 0.28s
+```

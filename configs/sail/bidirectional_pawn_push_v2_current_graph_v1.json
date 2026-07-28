@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "bbbb2cc64a7779984a18bd912d7ffc1aa539c28f5ebe2aaa5d3d0380dac475b4",
+      "sha256": "995fd59052694e59cbc3b8c6efb68526bf61b583424db31e7e888214e0ec7e05",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -143,7 +143,7 @@
       "id": "session:bidirectional-pawn-push-v2",
       "type": "session",
       "label": "Bidirectional pawn-push v2",
-      "status": "paused_v04",
+      "status": "active_v04_versioned_recapture_design",
       "source_binding": "queue",
       "data": {
         "counted_attempts": 0,
@@ -265,7 +265,7 @@
       "id": "intervention:v04-versioned-recapture",
       "type": "intervention",
       "label": "Prospectively versioned registration recapture",
-      "status": "pending_not_authorized_while_paused",
+      "status": "authorized_prospective_design_only",
       "source_binding": "v01",
       "data": {
         "camera_open": false,
@@ -328,6 +328,20 @@
       "data": {
         "checkpoint_commit": "3649574",
         "motion_authorized": false
+      }
+    },
+    {
+      "id": "checkpoint:v04-owner-resume",
+      "type": "checkpoint",
+      "label": "V04 owner resume",
+      "status": "active_versioned_recapture_design",
+      "source_binding": "queue",
+      "data": {
+        "checkpoint_commit": "084a9e3",
+        "resume_authorized": true,
+        "camera_open_authorized": false,
+        "gateway_construction_authorized": false,
+        "physical_motion_authorized": false
       }
     },
     {
@@ -470,6 +484,15 @@
       "target": "verdict:v04-fit-reject"
     },
     {
+      "source": "checkpoint:v04-owner-resume",
+      "type": "generated-from",
+      "target": "checkpoint:v04-owner-integration-barrier",
+      "metadata": {
+        "owner_resume": true,
+        "prospective_design_only": true
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -557,15 +580,24 @@
         "checkpoint:v04-owner-integration-barrier",
         "counterexample:v04-shared-camera-miss"
       ]
+    },
+    {
+      "revision": 5,
+      "event_id": "V04_RESUME",
+      "status": "owner_resume_versioned_recapture_design",
+      "source_binding": "queue",
+      "node_ids_added": [
+        "checkpoint:v04-owner-resume"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v04-owner-integration-barrier",
+    "node_id": "checkpoint:v04-owner-resume",
     "milestone_id": "V04",
-    "status": "paused_owner_integration_barrier",
-    "queue_status": "PAUSED_V04_OWNER_INTEGRATION_BARRIER",
-    "resume_action": "prospectively_versioned_registration_recapture",
-    "resume_authorized": false,
+    "status": "active_versioned_recapture_design",
+    "queue_status": "ACTIVE_V04_VERSIONED_RECAPTURE_DESIGN",
+    "resume_action": "freeze_replacement_family_split_and_static_route",
+    "resume_authorized": true,
     "heldout_open_count": 0,
     "counted_task_attempts": 0
   },

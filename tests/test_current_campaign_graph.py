@@ -30,10 +30,30 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
 
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V04"
-    assert tracked["active_pointer"]["status"] == "paused_owner_integration_barrier"
+    assert tracked["active_pointer"] == {
+        "node_id": "checkpoint:v04-owner-resume",
+        "milestone_id": "V04",
+        "status": "active_versioned_recapture_design",
+        "queue_status": "ACTIVE_V04_VERSIONED_RECAPTURE_DESIGN",
+        "resume_action": "freeze_replacement_family_split_and_static_route",
+        "resume_authorized": True,
+        "heldout_open_count": 0,
+        "counted_task_attempts": 0,
+    }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(5)
+        range(6)
     )
+    assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
+        "V00",
+        "V01",
+        "V02",
+        "V03",
+        "V04",
+    ]
+    assert tracked["revision_timeline"][-1]["event_id"] == "V04_RESUME"
+    assert tracked["revision_timeline"][-1]["node_ids_added"] == [
+        "checkpoint:v04-owner-resume"
+    ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]
     )
@@ -57,7 +77,7 @@ def test_current_campaign_graph_fails_closed_on_source_or_lineage_drift() -> Non
 
     changed = copy.deepcopy(config)
     changed["revision_timeline"][-1]["node_ids_added"].pop()
-    with pytest.raises(BeliefGraphError, match="lineage is incomplete"):
+    with pytest.raises(BeliefGraphError, match="revision lineage is invalid"):
         build_current_campaign_graph(changed, repo_root=ROOT)
 
     tracked = json.loads((ROOT / GRAPH).read_text(encoding="utf-8"))

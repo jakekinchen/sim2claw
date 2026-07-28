@@ -3,11 +3,11 @@
     "counted_task_attempts": 0,
     "heldout_open_count": 0,
     "milestone_id": "V04",
-    "node_id": "checkpoint:v04-owner-integration-barrier",
-    "queue_status": "PAUSED_V04_OWNER_INTEGRATION_BARRIER",
-    "resume_action": "prospectively_versioned_registration_recapture",
-    "resume_authorized": false,
-    "status": "paused_owner_integration_barrier"
+    "node_id": "checkpoint:v04-owner-resume",
+    "queue_status": "ACTIVE_V04_VERSIONED_RECAPTURE_DESIGN",
+    "resume_action": "freeze_replacement_family_split_and_static_route",
+    "resume_authorized": true,
+    "status": "active_versioned_recapture_design"
   },
   "authority": {
     "camera_open": false,
@@ -32,23 +32,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 23,
+    "edges": 24,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 1,
       "evaluated-on": 1,
       "fitted-on": 3,
-      "generated-from": 9,
+      "generated-from": 10,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 1,
-    "nodes": 22,
+    "nodes": 23,
     "nodes_by_type": {
       "candidate": 1,
-      "checkpoint": 1,
+      "checkpoint": 2,
       "context": 1,
       "counterexample": 1,
       "dataset": 1,
@@ -136,6 +136,15 @@
       "metadata": {},
       "source": "checkpoint:v04-owner-integration-barrier",
       "target": "verdict:v04-fit-reject",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "owner_resume": true,
+        "prospective_design_only": true
+      },
+      "source": "checkpoint:v04-owner-resume",
+      "target": "checkpoint:v04-owner-integration-barrier",
       "type": "generated-from"
     },
     {
@@ -267,7 +276,7 @@
     }
   ],
   "generated_at": "2026-07-28T07:52:00-05:00",
-  "graph_digest": "44a856941a16a736de302e55d4c025220786b7d7fca88ea641436dfa4a383153",
+  "graph_digest": "a8786f79a6442c0d39089b03b3fe6fe6924e15e3614ee07650fd99b607e4b1b0",
   "node_types": [
     "workcell",
     "session",
@@ -322,7 +331,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "bbbb2cc64a7779984a18bd912d7ffc1aa539c28f5ebe2aaa5d3d0380dac475b4"
+        "sha256": "995fd59052694e59cbc3b8c6efb68526bf61b583424db31e7e888214e0ec7e05"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -340,9 +349,30 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "bbbb2cc64a7779984a18bd912d7ffc1aa539c28f5ebe2aaa5d3d0380dac475b4"
+        "sha256": "995fd59052694e59cbc3b8c6efb68526bf61b583424db31e7e888214e0ec7e05"
       },
       "status": "active_paused",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "camera_open_authorized": false,
+        "checkpoint_commit": "084a9e3",
+        "gateway_construction_authorized": false,
+        "physical_motion_authorized": false,
+        "resume_authorized": true,
+        "source_binding_id": "queue"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v04-owner-resume",
+      "label": "V04 owner resume",
+      "proof_class": "campaign_control_state",
+      "source": {
+        "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
+        "proof_class": "campaign_control_state",
+        "sha256": "995fd59052694e59cbc3b8c6efb68526bf61b583424db31e7e888214e0ec7e05"
+      },
+      "status": "active_versioned_recapture_design",
       "type": "checkpoint"
     },
     {
@@ -521,7 +551,7 @@
         "proof_class": "prospective_rgb_registration_acquisition_contract_only",
         "sha256": "f345d9ff55ed38b8509dac061af7d0ce7aeaefb59cb78f92ba4460b5dbe82024"
       },
-      "status": "pending_not_authorized_while_paused",
+      "status": "authorized_prospective_design_only",
       "type": "intervention"
     },
     {
@@ -536,7 +566,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "bbbb2cc64a7779984a18bd912d7ffc1aa539c28f5ebe2aaa5d3d0380dac475b4"
+        "sha256": "995fd59052694e59cbc3b8c6efb68526bf61b583424db31e7e888214e0ec7e05"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -596,7 +626,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "bbbb2cc64a7779984a18bd912d7ffc1aa539c28f5ebe2aaa5d3d0380dac475b4"
+        "sha256": "995fd59052694e59cbc3b8c6efb68526bf61b583424db31e7e888214e0ec7e05"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -614,7 +644,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "bbbb2cc64a7779984a18bd912d7ffc1aa539c28f5ebe2aaa5d3d0380dac475b4"
+        "sha256": "995fd59052694e59cbc3b8c6efb68526bf61b583424db31e7e888214e0ec7e05"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -682,9 +712,9 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "bbbb2cc64a7779984a18bd912d7ffc1aa539c28f5ebe2aaa5d3d0380dac475b4"
+        "sha256": "995fd59052694e59cbc3b8c6efb68526bf61b583424db31e7e888214e0ec7e05"
       },
-      "status": "paused_v04",
+      "status": "active_v04_versioned_recapture_design",
       "type": "session"
     },
     {
@@ -821,6 +851,16 @@
       "source_binding": "v04_fit",
       "source_sha256": "9b6378fc32a3f22fc6c9c6379a86df2a96562b3c0207f07488494d68c13adedb",
       "status": "fit_rejected_before_heldout_owner_pause"
+    },
+    {
+      "event_id": "V04_RESUME",
+      "node_ids_added": [
+        "checkpoint:v04-owner-resume"
+      ],
+      "revision": 5,
+      "source_binding": "queue",
+      "source_sha256": "995fd59052694e59cbc3b8c6efb68526bf61b583424db31e7e888214e0ec7e05",
+      "status": "owner_resume_versioned_recapture_design"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -829,7 +869,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "bbbb2cc64a7779984a18bd912d7ffc1aa539c28f5ebe2aaa5d3d0380dac475b4"
+      "sha256": "995fd59052694e59cbc3b8c6efb68526bf61b583424db31e7e888214e0ec7e05"
     },
     {
       "id": "simulator_candidate",
