@@ -31,7 +31,7 @@ Acceptance:
 - Structure-only tests, graph compilation, and workflow audit pass.
 - Milestone A is committed and pushed separately before any model load.
 
-Current status: `IN_PROGRESS_AUDIT_PENDING`.
+Current status: `COMPLETE_COMMITTED_PUSHED_F154AC1`.
 
 Execution authority: false for model loading, enumeration, simulation, dynamic
 replay, camera, gateway, serial, physical motion, paid compute, promotion, and
@@ -76,9 +76,9 @@ Stop conditions:
 
 - A audit/design: complete.
 - A implementation/tests: complete; graph/workflow audit pending.
-- A commit/push: pending.
-- B prospective freeze: blocked until A commit/push.
-- B static: blocked until B freeze.
+- A commit/push: complete at `f154ac1`.
+- B prospective freeze: complete; exact six families and 108 cells.
+- B static: active for one bounded CPU/fp64 execution.
 - B temporal/final: blocked until static `2+2`.
 
 Unrelated user-owned files remain out of scope, including

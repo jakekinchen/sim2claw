@@ -3,12 +3,12 @@
     "counted_task_attempts": 0,
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
-    "milestone_id": "POST-FABLE-MILESTONE-A",
-    "node_id": "checkpoint:post-fable-current-task-scene-label-wiring",
-    "queue_status": "MILESTONE_A_AUDIT_PENDING_COMMIT",
-    "resume_action": "audit_commit_and_push_milestone_a_then_freeze_new_milestone_b_contract",
-    "resume_authorized": false,
-    "status": "milestone_a_contract_wiring_complete_audit_pending_commit"
+    "milestone_id": "POST-FABLE-MILESTONE-B-STATIC",
+    "node_id": "checkpoint:post-fable-low-planar-static-v2-frozen",
+    "queue_status": "MILESTONE_B_STATIC_FROZEN_READY_TO_RUN",
+    "resume_action": "run_one_bounded_cpu_fp64_static_execution",
+    "resume_authorized": true,
+    "status": "prospective_six_family_108_cell_static_execution_authorized"
   },
   "authority": {
     "camera_open": false,
@@ -40,23 +40,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 122,
+    "edges": 124,
     "edges_by_type": {
       "affected-by": 1,
-      "applied-to": 3,
+      "applied-to": 4,
       "counterexample-to": 3,
       "evaluated-on": 25,
       "fitted-on": 4,
-      "generated-from": 79,
+      "generated-from": 80,
       "invalidates": 2,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 118,
+    "nodes": 119,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 74,
+      "checkpoint": 75,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
@@ -174,6 +174,29 @@
       },
       "source": "checkpoint:post-fable-current-task-scene-label-wiring",
       "target": "context:canonical-board-orientation",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "dynamic_outcomes_available_to_ranking": false,
+        "maximum_total_cells": 108,
+        "physical_motion": false,
+        "priority_family_count": 6,
+        "static_only": true
+      },
+      "source": "checkpoint:post-fable-low-planar-static-v2-frozen",
+      "target": "workcell:current-so101-chessboard",
+      "type": "applied-to"
+    },
+    {
+      "metadata": {
+        "frozen_v05_ug_preserved": true,
+        "milestone_a_committed_and_pushed": true,
+        "new_versioned_contract": true,
+        "physical_motion": false
+      },
+      "source": "checkpoint:post-fable-low-planar-static-v2-frozen",
+      "target": "checkpoint:post-fable-current-task-scene-label-wiring",
       "type": "generated-from"
     },
     {
@@ -1434,8 +1457,8 @@
       "type": "evaluated-on"
     }
   ],
-  "generated_at": "2026-07-28T17:52:46-05:00",
-  "graph_digest": "744c33f95fbb793467df1db94cb1ec1fbe2d3a0e9fe6bc8401f682651f5fbd29",
+  "generated_at": "2026-07-28T18:06:32-05:00",
+  "graph_digest": "e1cb77dbeedf0115f26c9d02a048531f0fa13c6cc5682d41da899cd5ac1c07c5",
   "node_types": [
     "workcell",
     "session",
@@ -1518,7 +1541,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961"
+        "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1563,6 +1586,52 @@
         "sha256": "36ace12fa97892a3265153e5616d0bbbdeaabeb2a926cce0044fb000ea7d4a53"
       },
       "status": "milestone_a_contract_wiring_complete_audit_pending_commit",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "authorization_source_binding": "post_fable_low_planar_authorization_v2",
+        "camera_authorized": false,
+        "cells_per_family": 18,
+        "closed_jaw_anti_wedge_hedge_count": 0,
+        "contact_height_mm": 18.0,
+        "contact_offset_mm": 16.0,
+        "direction_counts": {
+          "REAL_TO_SIM": 3,
+          "SIM_TO_REAL": 3
+        },
+        "dynamic_outcomes_available_to_ranking": false,
+        "dynamic_replay_authorized": false,
+        "gateway_authorized": false,
+        "maximum_total_cells": 108,
+        "milestone_a_commit": "f154ac1",
+        "next_action": "run_one_bounded_cpu_fp64_static_execution",
+        "paid_compute_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "priority_case_count": 6,
+        "serial_authorized": false,
+        "source_binding_id": "post_fable_low_planar_static_v2",
+        "static_execution_authorized": true,
+        "stroke_mm": 90.0,
+        "substitution_allowed": false,
+        "vertical_rise_mm": 0.0
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:post-fable-low-planar-static-v2-frozen",
+      "label": "Post-Fable finite low-planar static v2 freeze",
+      "proof_class": "prospective_current_task_low_planar_static_ranking_and_action_freeze_only",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_post_fable_static_v2.json",
+        "payload_contract": {
+          "proof_class": "prospective_current_task_low_planar_static_ranking_and_action_freeze_only",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_post_fable_static.v2",
+          "status": "frozen_before_model_loading"
+        },
+        "proof_class": "prospective_current_task_low_planar_static_ranking_and_action_freeze_only",
+        "sha256": "60bfc48317b6fda9b4e91cbcb41f83c5d9eaf055d9ac98ed4e7b24a3bcc00dcb"
+      },
+      "status": "prospective_six_family_108_cell_static_execution_authorized",
       "type": "checkpoint"
     },
     {
@@ -1992,7 +2061,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961"
+        "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -2043,7 +2112,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961"
+        "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -2064,7 +2133,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961"
+        "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -2093,7 +2162,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961"
+        "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -2502,7 +2571,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961"
+        "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -4254,7 +4323,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961"
+        "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -4314,7 +4383,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961"
+        "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -4332,7 +4401,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961"
+        "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -4400,7 +4469,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961"
+        "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -5157,7 +5226,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961",
+      "source_sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -5187,7 +5256,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961",
+      "source_sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -5217,7 +5286,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961",
+      "source_sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -5499,7 +5568,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961",
+      "source_sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -6091,6 +6160,16 @@
       "source_binding": "post_fable_scene_contract_decision",
       "source_sha256": "36ace12fa97892a3265153e5616d0bbbdeaabeb2a926cce0044fb000ea7d4a53",
       "status": "milestone_a_contract_wiring_complete_audit_pending_commit"
+    },
+    {
+      "event_id": "POST_FABLE_LOW_PLANAR_STATIC_V2_FROZEN",
+      "node_ids_added": [
+        "checkpoint:post-fable-low-planar-static-v2-frozen"
+      ],
+      "revision": 99,
+      "source_binding": "post_fable_low_planar_static_v2",
+      "source_sha256": "60bfc48317b6fda9b4e91cbcb41f83c5d9eaf055d9ac98ed4e7b24a3bcc00dcb",
+      "status": "prospective_six_family_108_cell_static_execution_authorized"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -6129,6 +6208,28 @@
       "sha256": "187b91a51fe3a51adda64c7dd682025e2143edaae16ad3fdd1c1a9d9c43550ed"
     },
     {
+      "id": "post_fable_low_planar_authorization_v2",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_post_fable_authorization_v2.json",
+      "payload_contract": {
+        "proof_class": "prospective_manager_authorized_current_task_static_design_only",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_post_fable_authorization.v2",
+        "status": "authorized_static_only_after_milestone_a_commit"
+      },
+      "proof_class": "prospective_manager_authorized_current_task_static_design_only",
+      "sha256": "5540452a548d82f1543e975aaf00caae105a0094069c3d5215aae02f5f8dec51"
+    },
+    {
+      "id": "post_fable_low_planar_static_v2",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_post_fable_static_v2.json",
+      "payload_contract": {
+        "proof_class": "prospective_current_task_low_planar_static_ranking_and_action_freeze_only",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_post_fable_static.v2",
+        "status": "frozen_before_model_loading"
+      },
+      "proof_class": "prospective_current_task_low_planar_static_ranking_and_action_freeze_only",
+      "sha256": "60bfc48317b6fda9b4e91cbcb41f83c5d9eaf055d9ac98ed4e7b24a3bcc00dcb"
+    },
+    {
       "id": "post_fable_scene_contract_decision",
       "path": "configs/decisions/bidirectional_pawn_push_v2_post_fable_scene_contract_decision_v1.json",
       "payload_contract": {
@@ -6143,7 +6244,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961"
+      "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92"
     },
     {
       "id": "simulator_candidate",

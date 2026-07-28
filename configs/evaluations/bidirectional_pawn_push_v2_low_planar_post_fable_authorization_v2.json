@@ -1,0 +1,123 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_post_fable_authorization.v2",
+  "authorization_id": "bidirectional-pawn-push-v2-low-planar-post-fable-20260728-v2",
+  "status": "authorized_static_only_after_milestone_a_commit",
+  "proof_class": "prospective_manager_authorized_current_task_static_design_only",
+  "authorized_at": "2026-07-28",
+  "authorizer": "Codex Manager under owner goal-loop delegation",
+  "milestone_a_commit": "f154ac1",
+  "post_fable_decision": {
+    "path": "configs/decisions/bidirectional_pawn_push_v2_post_fable_scene_contract_decision_v1.json",
+    "sha256": "36ace12fa97892a3265153e5616d0bbbdeaabeb2a926cce0044fb000ea7d4a53"
+  },
+  "current_task_scene_labels": {
+    "path": "configs/scenes/bidirectional_pawn_push_v2_current_task_scene_labels_v1.json",
+    "sha256": "187b91a51fe3a51adda64c7dd682025e2143edaae16ad3fdd1c1a9d9c43550ed"
+  },
+  "supersedes_without_edit_or_execution": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.json",
+    "sha256": "bb04adf78b55fe16726b8bb20f18ed92795b6f9a58cad2ee7deb3f57b16a939d",
+    "status": "paused_unexecuted_frozen_history"
+  },
+  "static_only_selection_source": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/static-freeze-v1/receipt.json",
+    "sha256": "6235d6ab7b531c2119df6c70ec30e3e9a5dea2b1a445d9553fb196d5e3fa972e",
+    "temporal_outcomes_opened_for_selection": false
+  },
+  "quarantine": {
+    "case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8",
+      "tan_pawn_g8__g8_g7",
+      "tan_pawn_g8__g8_h8",
+      "tan_pawn_f7__f7_f6",
+      "brown_pawn_e2__e2_f2",
+      "brown_pawn_a2__a2_b2",
+      "tan_pawn_g8__g8_f8",
+      "tan_pawn_f7__f7_e7",
+      "tan_pawn_f7__f7_g7",
+      "tan_pawn_h7__h7_g7",
+      "tan_pawn_e8__e8_d8",
+      "brown_pawn_b1__b1_a1",
+      "tan_pawn_d7__d7_c7"
+    ],
+    "exact_count": 20,
+    "semantic_frame": "standard_robot_near_rank1_v1",
+    "dynamic_outcome_reuse": false
+  },
+  "prospective_static_design": {
+    "selected_family_count": 6,
+    "priority_case_ids": [
+      "brown_pawn_d1__d1_c1",
+      "tan_pawn_b7__b7_b8",
+      "tan_pawn_b7__b7_a7",
+      "tan_pawn_c8__c8_b8",
+      "tan_pawn_c8__c8_c7",
+      "tan_pawn_a8__a8_b8"
+    ],
+    "direction_composition": {
+      "REAL_TO_SIM": [
+        "brown_pawn_d1__d1_c1",
+        "tan_pawn_b7__b7_a7",
+        "tan_pawn_c8__c8_c7"
+      ],
+      "SIM_TO_REAL": [
+        "tan_pawn_b7__b7_b8",
+        "tan_pawn_c8__c8_b8",
+        "tan_pawn_a8__a8_b8"
+      ],
+      "derivation": "the frozen selector alternates ranked families beginning REAL_TO_SIM"
+    },
+    "substitution_if_priority_family_is_ineligible": false,
+    "ranking": [
+      "largest minimum arm-joint margin",
+      "largest fractional gateway bound margin",
+      "largest fractional gateway rate margin",
+      "largest camera margin",
+      "smallest IK residual",
+      "frozen grid indices",
+      "case id"
+    ],
+    "dynamic_outcomes_available_to_ranking": false,
+    "contact_height_m": 0.018,
+    "contact_offset_m": 0.016,
+    "stroke_m": 0.09,
+    "vertical_rise_m": 0.0,
+    "flat_closed_jaw_side_or_back_anti_wedge_hedge_count": 0,
+    "flat_closed_jaw_side_or_back_anti_wedge_hedge_geometry": null,
+    "zero_hedge_reason": "The bound static-only source contains no fresh quarantine-clean flat closed-jaw 18 mm by 16 mm by 90 mm zero-rise candidate with the required unilateral contact and safety margins; adding one would introduce unranked geometry before the deadline.",
+    "evaluated_family_count": 6,
+    "cells_per_family": 18,
+    "maximum_total_cells": 108,
+    "minimum_statically_admitted_families_per_direction": 2
+  },
+  "temporal_if_static_passes": {
+    "minimum_signed_progress_mm": 36.025,
+    "maximum_selected_vertical_rise_mm": 2.0,
+    "minimum_families_per_direction": 2,
+    "direct_target_baseline": true,
+    "diagnostic_zoh_delay_seconds": 0.11,
+    "stop_at_first_frozen_2_plus_2": true
+  },
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "one_static_execution": true,
+    "dynamic_replay": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "paid_compute": false,
+    "promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "One bounded CPU/fp64 static enumeration only after Milestone A. No dynamic, camera, gateway, serial, hardware, paid-compute, promotion, or transfer authority."
+}

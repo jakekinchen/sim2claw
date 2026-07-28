@@ -2137,6 +2137,44 @@ is terminal and prohibits V05-UH/V05-UI before the deadline; a `2+2` pass
 stops before camera/physical work at the `<=25 mm` task-plane registration
 gate with at most one recapture.
 
+### Milestone B post-Fable finite static freeze — 2026-07-28
+
+Milestone A was committed and pushed separately as `f154ac1` before this
+freeze. New authorization
+`configs/evaluations/bidirectional_pawn_push_v2_low_planar_post_fable_authorization_v2.json`
+and new static contract
+`configs/evaluations/bidirectional_pawn_push_v2_low_planar_post_fable_static_v2.json`
+supersede the paused V05-UG draft without editing or executing it.
+
+The exact action-selection family list is frozen from the existing
+static-only V05-UF receipt `6235d6ab...` after applying the exact 20-case
+quarantine and source exclusions. No new temporal outcome was opened or used:
+
+1. REAL_TO_SIM `brown_pawn_d1__d1_c1`
+2. SIM_TO_REAL `tan_pawn_b7__b7_b8`
+3. REAL_TO_SIM `tan_pawn_b7__b7_a7`
+4. SIM_TO_REAL `tan_pawn_c8__c8_b8`
+5. REAL_TO_SIM `tan_pawn_c8__c8_c7`
+6. SIM_TO_REAL `tan_pawn_a8__a8_b8`
+
+The prior static-only rank is number of passed static checks, then arm-joint,
+gateway-bound, gateway-rate, camera, and IK margins, followed by frozen grid
+indices and case ID. Substitution is forbidden: if any listed family has no
+eligible cell in the aligned scene, static closes negative. Exactly six
+families by 18 cells will run, for 108 cells total. Geometry is frozen at
+`18 mm` contact height, `16 mm` behind-center offset, `90 mm` stroke, and zero
+rise.
+
+The optional flat closed-jaw anti-wedge hedge count is prospectively zero.
+The bound static-only source contains no fresh, quarantine-clean flat
+closed-jaw `18/16/90/0` candidate with the required unilateral contact and
+safety margins; adding one would introduce unranked geometry before the
+deadline.
+
+Focused freeze verification passes `10/10`. Static authority is true for one
+bounded CPU/fp64 run. Dynamic, camera, gateway, serial, physical motion,
+physical task, paid compute, promotion, and transfer authority remain false.
+
 ### V05-UD static terminal negative and V05-UE ramped-funnel freeze — 2026-07-28
 
 The one V05-UD static execution produced

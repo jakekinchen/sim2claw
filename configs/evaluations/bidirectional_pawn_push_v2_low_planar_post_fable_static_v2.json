@@ -1,0 +1,195 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_post_fable_static.v2",
+  "enumeration_id": "bidirectional-pawn-push-v2-low-planar-post-fable-static-20260728-v2",
+  "status": "frozen_before_model_loading",
+  "proof_class": "prospective_current_task_low_planar_static_ranking_and_action_freeze_only",
+  "resume": true,
+  "authorization": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_post_fable_authorization_v2.json",
+    "sha256": "5540452a548d82f1543e975aaf00caae105a0094069c3d5215aae02f5f8dec51"
+  },
+  "post_fable_decision": {
+    "path": "configs/decisions/bidirectional_pawn_push_v2_post_fable_scene_contract_decision_v1.json",
+    "sha256": "36ace12fa97892a3265153e5616d0bbbdeaabeb2a926cce0044fb000ea7d4a53"
+  },
+  "current_task_scene_labels": {
+    "path": "configs/scenes/bidirectional_pawn_push_v2_current_task_scene_labels_v1.json",
+    "sha256": "187b91a51fe3a51adda64c7dd682025e2143edaae16ad3fdd1c1a9d9c43550ed"
+  },
+  "supersedes_paused_v05_ug": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.json",
+    "sha256": "bb04adf78b55fe16726b8bb20f18ed92795b6f9a58cad2ee7deb3f57b16a939d"
+  },
+  "selection_source_static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/static-freeze-v1/receipt.json",
+    "sha256": "6235d6ab7b531c2119df6c70ec30e3e9a5dea2b1a445d9553fb196d5e3fa972e"
+  },
+  "v05_uf_temporal_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/temporal-replay-v1/receipt.json",
+    "sha256": "526e5f98acb1058d15bc61220f25fdc3fe7b14f96b1172de2df99a80da2455c4"
+  },
+  "orientation_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_orientation_funnel_static_v1.json",
+    "sha256": "3bbcbb7748d5e5032accdd1afa80f65700f8e36c7e1a951ec1494591924d0513"
+  },
+  "seeded_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_seeded_funnel_static_v1.json",
+    "sha256": "153c22e0252d9d4736bbc0a3f67dbf927a0a95424e01aa34ddf107b43802803f"
+  },
+  "ramped_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_static_v1.json",
+    "sha256": "0b67546df86915e01531b773860e9c3cc774f342edd78c6b928608e8b326974a"
+  },
+  "open_jaw_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.json",
+    "sha256": "44db6475d24038f1bee12ce4a7128461310431007c2f5d2ae22fac31050ec3ea"
+  },
+  "base_implementations": {
+    "orientation": {
+      "path": "src/sim2claw/bidirectional_pawn_push_v2_orientation_funnel_static_v1.py",
+      "sha256": "b3b98ba3489737a105d7fc3a3a9b30d2ba7287aee1ec0b3ef370e46b204e6d61"
+    },
+    "seeded": {
+      "path": "src/sim2claw/bidirectional_pawn_push_v2_seeded_funnel_static_v1.py",
+      "sha256": "8943d6be84e0fa6d080bb7d96404a2b389b0b758c9816f24485cce86ad0fbdf8"
+    },
+    "planar": {
+      "path": "src/sim2claw/bidirectional_pawn_push_v2_ramped_funnel_static_v1.py",
+      "sha256": "c22663fee33065aecd203883a11ce4632f7d6b2ef50038b90c97c85fbeba751e"
+    },
+    "unilateral": {
+      "path": "src/sim2claw/bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.py",
+      "sha256": "b1fc14e57b37608c091b9736fc854a63ef39ca81b74673e624152815e3528b46"
+    }
+  },
+  "legacy_compatibility_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.py",
+    "sha256": "214d0ba1e218f4c6c42894dc33b556ce08182acff8ea1cff04d3058c4855ad64"
+  },
+  "current_task_adapter": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_current_task_static_v1.py",
+    "sha256": "6f6c4c1e35a11a15b165eeb611c4adf147768b862549d431bf78d4f501b45ae4"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_low_planar_post_fable_static_v2.py",
+    "sha256": "e10236332cdbeff0156e0801194877d3ae1d743ddac06afb8b88eaafc9e1859c"
+  },
+  "frozen_design": {
+    "cumulative_quarantine_case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8",
+      "tan_pawn_g8__g8_g7",
+      "tan_pawn_g8__g8_h8",
+      "tan_pawn_f7__f7_f6",
+      "brown_pawn_e2__e2_f2",
+      "brown_pawn_a2__a2_b2",
+      "tan_pawn_g8__g8_f8",
+      "tan_pawn_f7__f7_e7",
+      "tan_pawn_f7__f7_g7",
+      "tan_pawn_h7__h7_g7",
+      "tan_pawn_e8__e8_d8",
+      "brown_pawn_b1__b1_a1",
+      "tan_pawn_d7__d7_c7"
+    ],
+    "compatibility_excluded_source_squares": [
+      "b1",
+      "c2",
+      "d7",
+      "e8",
+      "h7"
+    ],
+    "selected_family_count": 6,
+    "priority_case_ids": [
+      "brown_pawn_d1__d1_c1",
+      "tan_pawn_b7__b7_b8",
+      "tan_pawn_b7__b7_a7",
+      "tan_pawn_c8__c8_b8",
+      "tan_pawn_c8__c8_c7",
+      "tan_pawn_a8__a8_b8"
+    ],
+    "direction_composition": {
+      "REAL_TO_SIM": [
+        "brown_pawn_d1__d1_c1",
+        "tan_pawn_b7__b7_a7",
+        "tan_pawn_c8__c8_c7"
+      ],
+      "SIM_TO_REAL": [
+        "tan_pawn_b7__b7_b8",
+        "tan_pawn_c8__c8_b8",
+        "tan_pawn_a8__a8_b8"
+      ],
+      "derivation": "the frozen selector alternates ranked families beginning REAL_TO_SIM"
+    },
+    "priority_case_selection_source": "existing V05-UF static-only receipt after exact 20-case quarantine and source exclusions",
+    "priority_case_order": [
+      "largest number of passed static checks",
+      "largest minimum arm-joint margin",
+      "largest fractional gateway bound margin",
+      "largest fractional gateway rate margin",
+      "largest camera margin",
+      "smallest IK residual",
+      "frozen grid indices",
+      "case id"
+    ],
+    "substitution_if_priority_family_is_ineligible": false,
+    "contact_height_m": 0.018,
+    "contact_offset_m": 0.016,
+    "stroke_m": 0.09,
+    "vertical_rise_m": 0.0,
+    "evaluated_family_count": 6,
+    "cells_per_family": 18,
+    "maximum_total_cells": 108,
+    "flat_closed_jaw_side_or_back_anti_wedge_hedge_count": 0,
+    "flat_closed_jaw_side_or_back_anti_wedge_hedge_geometry": null,
+    "zero_hedge_reason": "The bound static-only source contains no fresh quarantine-clean flat closed-jaw 18 mm by 16 mm by 90 mm zero-rise candidate with the required unilateral contact and safety margins; adding one would introduce unranked geometry before the deadline.",
+    "dynamic_outcomes_available_to_ranking": false,
+    "ranking": [
+      "largest minimum arm-joint margin",
+      "largest fractional gateway bound margin",
+      "largest fractional gateway rate margin",
+      "largest camera margin",
+      "smallest IK residual",
+      "setup branch grid index",
+      "wrist orientation grid index",
+      "guide side grid index",
+      "case id"
+    ],
+    "path_shape": "source-pose monotonic open preamble; exact demonstrated setup and wrist seed; guide-side overhead; vertical descent to 18 mm; 3 mm guide-to-center sweep; 10 mm level engagement; completely level continuation to the 90 mm planar endpoint",
+    "geometry_derivation": "Exact 18 mm contact height, 16 mm behind-center offset, 90 mm planar stroke, and zero rise frozen before model loading. Selection uses static safety and feasibility margins only."
+  },
+  "static_acceptance": {
+    "minimum_statically_eligible_families": 6,
+    "minimum_families_per_direction": 2,
+    "all_collision_camera_gateway_identity_and_unilateral_gates": true,
+    "quarantine_leak_count": 0
+  },
+  "temporal_gates_if_static_passes": {
+    "minimum_signed_progress_mm": 36.025,
+    "maximum_selected_vertical_rise_mm": 2.0,
+    "minimum_families_per_direction": 2,
+    "direct_target_baseline": true,
+    "diagnostic_zoh_delay_seconds": 0.11,
+    "all_existing_strict_gates": true
+  },
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "one_static_execution": true,
+    "dynamic_replay": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "paid_compute": false,
+    "promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Frozen prospective current-task CPU/fp64 static design. Dynamic outcomes cannot affect ranking. No dynamic, camera, gateway, serial, physical, paid-compute, promotion, or transfer authority."
+}

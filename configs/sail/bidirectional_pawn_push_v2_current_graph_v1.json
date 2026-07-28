@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T17:52:46-05:00",
+  "generated_at": "2026-07-28T18:06:32-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961",
+      "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -1147,6 +1147,26 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_post_fable_scene_contract_decision.v1",
         "status": "milestone_a_wiring_implemented_pending_commit_no_execution_authority",
         "proof_class": "manager_bound_external_advisory_decision_and_structure_only_implementation"
+      }
+    },
+    "post_fable_low_planar_authorization_v2": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_post_fable_authorization_v2.json",
+      "sha256": "5540452a548d82f1543e975aaf00caae105a0094069c3d5215aae02f5f8dec51",
+      "proof_class": "prospective_manager_authorized_current_task_static_design_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_post_fable_authorization.v2",
+        "status": "authorized_static_only_after_milestone_a_commit",
+        "proof_class": "prospective_manager_authorized_current_task_static_design_only"
+      }
+    },
+    "post_fable_low_planar_static_v2": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_post_fable_static_v2.json",
+      "sha256": "60bfc48317b6fda9b4e91cbcb41f83c5d9eaf055d9ac98ed4e7b24a3bcc00dcb",
+      "proof_class": "prospective_current_task_low_planar_static_ranking_and_action_freeze_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_post_fable_static.v2",
+        "status": "frozen_before_model_loading",
+        "proof_class": "prospective_current_task_low_planar_static_ranking_and_action_freeze_only"
       }
     },
     "v05_ug_paused_manager_authorization": {
@@ -3386,6 +3406,40 @@
       }
     },
     {
+      "id": "checkpoint:post-fable-low-planar-static-v2-frozen",
+      "type": "checkpoint",
+      "label": "Post-Fable finite low-planar static v2 freeze",
+      "status": "prospective_six_family_108_cell_static_execution_authorized",
+      "source_binding": "post_fable_low_planar_static_v2",
+      "data": {
+        "authorization_source_binding": "post_fable_low_planar_authorization_v2",
+        "milestone_a_commit": "f154ac1",
+        "priority_case_count": 6,
+        "cells_per_family": 18,
+        "maximum_total_cells": 108,
+        "direction_counts": {
+          "REAL_TO_SIM": 3,
+          "SIM_TO_REAL": 3
+        },
+        "substitution_allowed": false,
+        "dynamic_outcomes_available_to_ranking": false,
+        "contact_height_mm": 18.0,
+        "contact_offset_mm": 16.0,
+        "stroke_mm": 90.0,
+        "vertical_rise_mm": 0.0,
+        "closed_jaw_anti_wedge_hedge_count": 0,
+        "static_execution_authorized": true,
+        "dynamic_replay_authorized": false,
+        "camera_authorized": false,
+        "gateway_authorized": false,
+        "serial_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "paid_compute_authorized": false,
+        "next_action": "run_one_bounded_cpu_fp64_static_execution"
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -4681,6 +4735,29 @@
       }
     },
     {
+      "source": "checkpoint:post-fable-low-planar-static-v2-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:post-fable-current-task-scene-label-wiring",
+      "metadata": {
+        "milestone_a_committed_and_pushed": true,
+        "frozen_v05_ug_preserved": true,
+        "new_versioned_contract": true,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:post-fable-low-planar-static-v2-frozen",
+      "type": "applied-to",
+      "target": "workcell:current-so101-chessboard",
+      "metadata": {
+        "priority_family_count": 6,
+        "maximum_total_cells": 108,
+        "static_only": true,
+        "dynamic_outcomes_available_to_ranking": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -5616,15 +5693,24 @@
       "node_ids_added": [
         "checkpoint:post-fable-current-task-scene-label-wiring"
       ]
+    },
+    {
+      "revision": 99,
+      "event_id": "POST_FABLE_LOW_PLANAR_STATIC_V2_FROZEN",
+      "status": "prospective_six_family_108_cell_static_execution_authorized",
+      "source_binding": "post_fable_low_planar_static_v2",
+      "node_ids_added": [
+        "checkpoint:post-fable-low-planar-static-v2-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:post-fable-current-task-scene-label-wiring",
-    "milestone_id": "POST-FABLE-MILESTONE-A",
-    "status": "milestone_a_contract_wiring_complete_audit_pending_commit",
-    "queue_status": "MILESTONE_A_AUDIT_PENDING_COMMIT",
-    "resume_action": "audit_commit_and_push_milestone_a_then_freeze_new_milestone_b_contract",
-    "resume_authorized": false,
+    "node_id": "checkpoint:post-fable-low-planar-static-v2-frozen",
+    "milestone_id": "POST-FABLE-MILESTONE-B-STATIC",
+    "status": "prospective_six_family_108_cell_static_execution_authorized",
+    "queue_status": "MILESTONE_B_STATIC_FROZEN_READY_TO_RUN",
+    "resume_action": "run_one_bounded_cpu_fp64_static_execution",
+    "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0
