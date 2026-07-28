@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `BLOCKED_NON_GRASP_FUNNEL_FAMILY_EXHAUSTED`
+Status: `ACTIVE_V05_UF_UNILATERAL_OPEN_JAW_STATIC_FROZEN`
 
 Created: `2026-07-28`
 
@@ -200,6 +200,7 @@ denominators before any counted action is compiled.
 | V05-UC | `DONE_TERMINAL_NEGATIVE` | Replace the exhausted single-straight-push family with a fixed-wrist, deterministic guide-to-center initial-contact mechanism. | Exact sixteen-case quarantine; three geometry-derived wrist rolls × two `±3 mm` guide sides × three demonstrated setup branches over 32 fresh families; full setup/exact jaw/40 Hz bytes; selected pawn never grasped; no feedback; four static-safe actions alternate `2/2`. | Receipt `127434f6...` REJECT: all `576` cells evaluated, `510` fixed-wrist IK rejects and every one of the `66` compiled cells collision-rejected. Zero families/lanes; no dynamics or physical admission. |
 | V05-UD | `DONE_TERMINAL_NEGATIVE` | Preserve the orientation seeds and guide-to-center mechanism while releasing the fixed-wrist overconstraint after the exact demonstrated setup seed. | Exact sixteen-case quarantine; three demonstrated setup branches × three exact wrist seeds × two `±3 mm` guide sides over 32 fresh families; fixed prior static-safe `22 mm` offset/`24 mm` height and `75 mm` stroke; full setup/exact jaw/40 Hz bytes; no grasp/feedback; four static-safe actions alternate `2/2`. | Receipt `2196435c...` REJECT: `510` positional IK rejects and all `66` compiled cells collision-rejected across four reachable fresh families. Zero lanes/dynamics/physical admission. |
 | V05-UE | `DONE_TERMINAL_PARTIAL_STATIC` | Preserve the reachable four-family funnel while replacing its level push with a deterministic ramped-fingertip path that clears adjacent pawns. | Exact sixteen-case quarantine and unchanged 576-cell seed/guide grid; `10 mm` level engagement, `6 mm` rise over the next `15 mm`, then lifted continuation to the unchanged `75 mm` planar endpoint; no scalar sweep, grasp, feedback, or gate change; four static-safe actions alternate `2/2`. | Receipt `35442bc9...`: one fresh family (`tan_pawn_h7__h7_g7`) passes static gates in 10 cells, but the other 56 compiled cells collide and 510 fail IK. Lane `1/0`, below unchanged `2/2`; dynamics/V06/physical remain closed. |
+| V05-UF | `IN_PROGRESS` | Use one constant open gripper and independently target either the fixed or moving jaw as a unilateral pawn pusher. | Exact `1.2 rad` jaw target yields modeled `34.0 mm` aperture versus `27.6 mm` pawn diameter plus `6.4 mm` buffer; monotonic source-pose opening preamble, then constant jaw through setup/push; exact sixteen-case quarantine; 32 fresh families × three setup branches × three wrist seeds × two unilateral sides = `576`; no opposite/bilateral contact, enclosure, grasp, lift, board contact, closing, feedback, or gate change. | Manager authorization `33878838...`; contract `44db6475...`; implementation `b1fc14e5...`. One static execution active; dynamic/V06/counted/physical false. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2951,6 +2952,43 @@ orientation-constrained or centering/funneling contact mechanism, with its own
 finite static grid and unchanged evaluator. V06, counted actions, camera,
 gateway/serial, physical motion, promotion, and transfer claims remain false.
 Physical task attempts remain `0/10`.
+
+### V05-UF unilateral open-jaw push freeze — 2026-07-28
+
+The manager redirect keeps grasp-and-place out of scope and resumes the
+pawn-push loop with a distinct unilateral action family. Authorization
+`configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_successor_authorization_v1.json`,
+SHA-256
+`33878838bf4a8bfaf8b6e86579815c29fe9c71e30aa65ddfd3ccb719dce3c677`,
+static contract
+`configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.json`,
+SHA-256
+`44db6475d24038f1bee12ce4a7128461310431007c2f5d2ae22fac31050ec3ea`,
+and implementation
+`src/sim2claw/bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.py`,
+SHA-256
+`b1fc14e57b37608c091b9736fc854a63ef39ca81b74673e624152815e3528b46`,
+are frozen before model loading.
+
+The exact open target is `1.2 rad`. The bound affine model
+`aperture = 0.02 × q + 0.01` yields `34.0 mm`, exceeding the modeled
+`27.6 mm` pawn diameter by `6.4 mm`: two existing `3 mm` robustness quanta
+plus `0.4 mm` deterministic mapping tolerance. The calibrated inverse is
+`71.59532465908973%`, inside the unchanged gateway range. At the unchanged
+source arm pose, a monotonic preamble opens from the observed source jaw to
+the exact target; every setup and push row thereafter remains exactly
+`1.2 rad`, with no closing command.
+
+The articulated model exposes separate fixed- and moving-jaw tip clusters.
+The `-3 mm` guide side targets the fixed-jaw tip and `+3 mm` targets the
+moving-jaw tip. Static selection now additionally requires exactly the
+expected unilateral contact and rejects opposite-jaw contact, simultaneous
+bilateral contact, enclosure/grasp, robot-board contact, any lift command, or
+jaw drift after the preamble. All prior IK, collision, camera, gateway,
+identity, progress, exclusion, family, plant-path, and variant gates remain
+unchanged. The finite grid is `32 × 3 × 3 × 2 = 576` cells. One static
+execution is active; dynamics, V06, counted attempts, cameras, gateway/
+serial, physical motion, promotion, and transfer claims remain false.
 
 ### V05-UC fixed-wrist guiding-contact successor freeze — 2026-07-28
 

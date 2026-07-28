@@ -3,12 +3,12 @@
     "counted_task_attempts": 0,
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
-    "milestone_id": "V05-UE",
-    "node_id": "verdict:v05-ue-ramped-funnel-static-partial",
-    "queue_status": "BLOCKED_NON_GRASP_FUNNEL_FAMILY_EXHAUSTED",
-    "resume_action": "request_scope_for_distinct_cage_or_grasp_action_family",
-    "resume_authorized": false,
-    "status": "blocked_non_grasp_funnel_family_exhausted"
+    "milestone_id": "V05-UF",
+    "node_id": "checkpoint:v05-uf-unilateral-open-jaw-static-frozen",
+    "queue_status": "ACTIVE_V05_UF_UNILATERAL_OPEN_JAW_STATIC_FROZEN",
+    "resume_action": "execute_one_bounded_576_cell_unilateral_open_jaw_static_enumeration",
+    "resume_authorized": true,
+    "status": "preregistered_unilateral_open_jaw_static_execution_active"
   },
   "authority": {
     "camera_open": false,
@@ -35,23 +35,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 109,
+    "edges": 111,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 3,
       "evaluated-on": 23,
       "fitted-on": 4,
-      "generated-from": 70,
+      "generated-from": 72,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 107,
+    "nodes": 109,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 66,
+      "checkpoint": 68,
       "context": 1,
       "counterexample": 4,
       "dataset": 1,
@@ -899,6 +899,33 @@
       "type": "generated-from"
     },
     {
+      "metadata": {
+        "distinct_in_scope_pawn_push_mechanism": true,
+        "grasp_and_place_rejected": true,
+        "manager_redirect_under_standing_delegation": true,
+        "physical_motion": false,
+        "prior_verdict_immutable": true,
+        "static_design_only": true
+      },
+      "source": "checkpoint:v05-uf-manager-authorization-bound",
+      "target": "verdict:v05-ue-ramped-funnel-static-partial",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "cumulative_quarantined_case_count": 16,
+        "fresh_families_only": true,
+        "maximum_total_cells": 576,
+        "no_bilateral_contact_or_grasp": true,
+        "physical_motion": false,
+        "preregistered_before_model_loading_or_enumeration": true,
+        "static_simulation_only": true
+      },
+      "source": "checkpoint:v05-uf-unilateral-open-jaw-static-frozen",
+      "target": "checkpoint:v05-uf-manager-authorization-bound",
+      "type": "generated-from"
+    },
+    {
       "metadata": {},
       "source": "context:c922-rgb-no-depth",
       "target": "session:bidirectional-pawn-push-v2",
@@ -1268,8 +1295,8 @@
       "type": "evaluated-on"
     }
   ],
-  "generated_at": "2026-07-28T16:18:46-05:00",
-  "graph_digest": "52e62c69e86d05d0f14222770693175edb2fdf585538e5e05b0442a9a194aea7",
+  "generated_at": "2026-07-28T16:27:57-05:00",
+  "graph_digest": "e41dffb4cd13d39c333138f4b53424be9c06935f86fa82e20aa2a2340933cb76",
   "node_types": [
     "workcell",
     "session",
@@ -1352,7 +1379,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9"
+        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1784,7 +1811,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9"
+        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1835,7 +1862,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9"
+        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1856,7 +1883,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9"
+        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1885,7 +1912,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9"
+        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -2294,7 +2321,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9"
+        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -3468,6 +3495,82 @@
     },
     {
       "data": {
+        "calibrated_open_target_percent": 71.59532465908973,
+        "contact_sides": [
+          "fixed_jaw",
+          "moving_jaw"
+        ],
+        "grasp_and_place": false,
+        "jaw_closing": false,
+        "mechanism": "constant_open_gripper_single_jaw_push",
+        "model_loading_authorized": false,
+        "modeled_open_aperture_mm": 34.0,
+        "open_jaw_target_rad": 1.2,
+        "pawn_diameter_mm": 27.6,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "v05_uf_manager_authorization",
+        "static_clearance_buffer_mm": 6.4,
+        "static_design_authorized": true,
+        "static_simulation_authorized": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-uf-manager-authorization-bound",
+      "label": "V05-UF unilateral open-jaw pawn-push successor authorized",
+      "proof_class": "prospective_manager_authorized_static_only_unilateral_open_jaw_push_successor",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_successor_authorization_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_manager_authorized_static_only_unilateral_open_jaw_push_successor",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_successor_authorization.v1",
+          "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading"
+        },
+        "proof_class": "prospective_manager_authorized_static_only_unilateral_open_jaw_push_successor",
+        "sha256": "33878838bf4a8bfaf8b6e86579815c29fe9c71e30aa65ddfd3ccb719dce3c677"
+      },
+      "status": "manager_authorized_static_design_bound",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "cells_per_family": 18,
+        "cumulative_quarantined_case_count": 16,
+        "dynamic_replay_authorized": false,
+        "maximum_total_cells": 576,
+        "model_loading_authorized": true,
+        "no_bilateral_contact_gate": true,
+        "no_board_contact_gate": true,
+        "no_grasp_or_enclosure_gate": true,
+        "no_lift_gate": true,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "postquarantine_family_count": 32,
+        "setup_branch_count": 3,
+        "source_binding_id": "v05_uf_static_contract",
+        "static_simulation_authorized": true,
+        "unilateral_contact_side_count": 2,
+        "v06_evaluator_freeze_authorized": false,
+        "wrist_seed_count": 3
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-uf-unilateral-open-jaw-static-frozen",
+      "label": "V05-UF finite unilateral open-jaw pawn-push grid frozen",
+      "proof_class": "prospective_cpu_fp64_static_unilateral_open_jaw_pawn_push_action_freeze",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_static_unilateral_open_jaw_pawn_push_action_freeze",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_static.v1",
+          "status": "preregistered_before_unilateral_open_jaw_model_loading_or_static_enumeration"
+        },
+        "proof_class": "prospective_cpu_fp64_static_unilateral_open_jaw_pawn_push_action_freeze",
+        "sha256": "44db6475d24038f1bee12ce4a7128461310431007c2f5d2ae22fac31050ec3ea"
+      },
+      "status": "preregistered_unilateral_open_jaw_static_execution_active",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "source_binding_id": "v01",
         "task_camera": "C922",
         "wrist_depth_required": false
@@ -3766,7 +3869,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9"
+        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -3826,7 +3929,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9"
+        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -3844,7 +3947,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9"
+        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -3912,7 +4015,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9"
+        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -4592,7 +4695,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9",
+      "source_sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -4622,7 +4725,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9",
+      "source_sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -4652,7 +4755,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9",
+      "source_sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -4934,7 +5037,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9",
+      "source_sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -5416,6 +5519,26 @@
       "source_binding": "v05_ue_static_receipt",
       "source_sha256": "35442bc9afd5bb28f87f1ed4dab70d3b8b9eca4bf82b26e89a27a6b5c38a9b68",
       "status": "terminal_partial_static_family_gate_negative_no_dynamic_admission"
+    },
+    {
+      "event_id": "V05_UF_MANAGER_AUTHORIZATION_BOUND",
+      "node_ids_added": [
+        "checkpoint:v05-uf-manager-authorization-bound"
+      ],
+      "revision": 88,
+      "source_binding": "v05_uf_manager_authorization",
+      "source_sha256": "33878838bf4a8bfaf8b6e86579815c29fe9c71e30aa65ddfd3ccb719dce3c677",
+      "status": "manager_authorized_static_design_bound"
+    },
+    {
+      "event_id": "V05_UF_UNILATERAL_OPEN_JAW_STATIC_FREEZE",
+      "node_ids_added": [
+        "checkpoint:v05-uf-unilateral-open-jaw-static-frozen"
+      ],
+      "revision": 89,
+      "source_binding": "v05_uf_static_contract",
+      "source_sha256": "44db6475d24038f1bee12ce4a7128461310431007c2f5d2ae22fac31050ec3ea",
+      "status": "preregistered_unilateral_open_jaw_static_execution_active"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -5424,7 +5547,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9"
+      "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
     },
     {
       "id": "simulator_candidate",
@@ -6504,6 +6627,28 @@
       },
       "proof_class": "cpu_fp64_static_ramped_fingertip_open_loop_guiding_contact_collision_camera_gateway_action_freeze_only",
       "sha256": "35442bc9afd5bb28f87f1ed4dab70d3b8b9eca4bf82b26e89a27a6b5c38a9b68"
+    },
+    {
+      "id": "v05_uf_manager_authorization",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_successor_authorization_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_manager_authorized_static_only_unilateral_open_jaw_push_successor",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_successor_authorization.v1",
+        "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading"
+      },
+      "proof_class": "prospective_manager_authorized_static_only_unilateral_open_jaw_push_successor",
+      "sha256": "33878838bf4a8bfaf8b6e86579815c29fe9c71e30aa65ddfd3ccb719dce3c677"
+    },
+    {
+      "id": "v05_uf_static_contract",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_static_unilateral_open_jaw_pawn_push_action_freeze",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_static.v1",
+        "status": "preregistered_before_unilateral_open_jaw_model_loading_or_static_enumeration"
+      },
+      "proof_class": "prospective_cpu_fp64_static_unilateral_open_jaw_pawn_push_action_freeze",
+      "sha256": "44db6475d24038f1bee12ce4a7128461310431007c2f5d2ae22fac31050ec3ea"
     },
     {
       "id": "world_visual",

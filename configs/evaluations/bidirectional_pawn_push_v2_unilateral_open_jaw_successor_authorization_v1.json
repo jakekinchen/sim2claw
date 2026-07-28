@@ -1,0 +1,132 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_successor_authorization.v1",
+  "authorization_id": "bidirectional-pawn-push-v2-unilateral-open-jaw-successor-20260728",
+  "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
+  "proof_class": "prospective_manager_authorized_static_only_unilateral_open_jaw_push_successor",
+  "authorized_at": "2026-07-28",
+  "authorizer": "Codex Manager",
+  "standing_delegation": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json",
+    "sha256": "8e59b7385ca14083d6ddd571ecc13fbec2f884cba41b3583ccfb317737e81ed5"
+  },
+  "manager_redirect": "Continue the pawn-push campaign with a prospectively frozen open-gripper single-jaw push. Grasp-and-place remains out of scope.",
+  "immutable_predecessors": {
+    "v05_ue_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_static_v1.json",
+      "sha256": "0b67546df86915e01531b773860e9c3cc774f342edd78c6b928608e8b326974a"
+    },
+    "v05_ue_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ue-ramped-funnel-v1/static-freeze-v1/receipt.json",
+      "sha256": "35442bc9afd5bb28f87f1ed4dab70d3b8b9eca4bf82b26e89a27a6b5c38a9b68"
+    },
+    "articulated_robot_model": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+      "sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+    },
+    "calibrated_gateway_candidate": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "reviewed_aperture_mapping_source": {
+      "path": "src/sim2claw/goal_act_evaluator.py",
+      "sha256": "bff145892cdacaf54ce9cfa85e87ab8eb0ceb58877408938e029cb85eb3b0b46"
+    }
+  },
+  "open_jaw_derivation": {
+    "exact_model_target_rad": 1.2,
+    "reviewed_affine_aperture_mapping": {
+      "mapping_id": "so101_parallel_jaw_affine_v1",
+      "scale_m_per_rad": 0.02,
+      "offset_m": 0.01,
+      "source_path": "src/sim2claw/goal_act_evaluator.py"
+    },
+    "modeled_open_aperture_m": 0.034,
+    "modeled_pawn_max_body_diameter_m": 0.0276,
+    "static_clearance_buffer_m": 0.0064,
+    "buffer_derivation": "two existing 3 mm robustness quanta plus 0.4 mm deterministic affine/model tolerance",
+    "calibrated_physical_target_percent": 71.59532465908973,
+    "physical_inverse_mapping": "(1.2 - -0.17453) / 0.0191986",
+    "inside_simulator_joint_range": true,
+    "inside_calibrated_gateway_range": true,
+    "jaw_opening_preamble_allowed": true,
+    "jaw_command_constant_during_setup_and_push": true,
+    "jaw_closing_forbidden": true
+  },
+  "quarantine": {
+    "case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8",
+      "tan_pawn_g8__g8_g7",
+      "tan_pawn_g8__g8_h8",
+      "tan_pawn_f7__f7_f6",
+      "brown_pawn_e2__e2_f2",
+      "brown_pawn_a2__a2_b2",
+      "tan_pawn_g8__g8_f8",
+      "tan_pawn_f7__f7_e7",
+      "tan_pawn_f7__f7_g7"
+    ],
+    "exact_count": 16
+  },
+  "authorized_static_design": {
+    "contact_sides": [
+      "fixed_jaw",
+      "moving_jaw"
+    ],
+    "contact_side_rule": "negative 3 mm guide side targets the fixed-jaw tip; positive 3 mm guide side targets the moving-jaw tip",
+    "same_three_demonstrated_setup_branches": true,
+    "same_three_exact_wrist_seeds": true,
+    "same_v05_ue_ramped_planar_path": true,
+    "same_postquarantine_family_count": 32,
+    "cells_per_family": 18,
+    "finite_maximum_cells": 576,
+    "static_selection_only": true,
+    "no_post_outcome_expansion": true
+  },
+  "new_static_invariants": {
+    "exactly_one_selected_pawn_jaw_side_contacts": true,
+    "opposite_jaw_selected_pawn_contact_forbidden": true,
+    "simultaneous_bilateral_selected_pawn_contact_forbidden": true,
+    "selected_pawn_enclosure_or_grasp_forbidden": true,
+    "robot_board_contact_forbidden": true,
+    "selected_pawn_lift_command_forbidden": true,
+    "jaw_closing_command_forbidden": true,
+    "constant_open_jaw_after_preamble_required": true
+  },
+  "forbidden": [
+    "grasp-and-place",
+    "jaw closing",
+    "bilateral jaw contact",
+    "selected pawn enclosure",
+    "selected pawn lift",
+    "force or current feedback",
+    "perception feedback",
+    "adaptive control",
+    "manual intervention",
+    "gate weakening",
+    "quarantined case reuse",
+    "paid compute",
+    "physical work before V06 and all safety gates"
+  ],
+  "authority": {
+    "static_design": true,
+    "model_loading": false,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Manager authorization under standing delegation for one finite static-only unilateral open-jaw pawn-push successor. No model loading, simulation, dynamics, V06, hardware, or transfer authority yet."
+}

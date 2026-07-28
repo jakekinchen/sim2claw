@@ -1,0 +1,141 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_static.v1",
+  "enumeration_id": "bidirectional-pawn-push-v2-unilateral-open-jaw-static-v1",
+  "status": "preregistered_before_unilateral_open_jaw_model_loading_or_static_enumeration",
+  "proof_class": "prospective_cpu_fp64_static_unilateral_open_jaw_pawn_push_action_freeze",
+  "authorization": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_successor_authorization_v1.json",
+    "sha256": "33878838bf4a8bfaf8b6e86579815c29fe9c71e30aa65ddfd3ccb719dce3c677"
+  },
+  "base_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_static_v1.json",
+    "sha256": "0b67546df86915e01531b773860e9c3cc774f342edd78c6b928608e8b326974a"
+  },
+  "v05_ue_static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ue-ramped-funnel-v1/static-freeze-v1/receipt.json",
+    "sha256": "35442bc9afd5bb28f87f1ed4dab70d3b8b9eca4bf82b26e89a27a6b5c38a9b68"
+  },
+  "base_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_ramped_funnel_static_v1.py",
+    "sha256": "c22663fee33065aecd203883a11ce4632f7d6b2ef50038b90c97c85fbeba751e"
+  },
+  "multistart_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_multistart_approach_static.py",
+    "sha256": "191a60be161a2bb4c6b842785cfc91e7dc5ac46c2daeb28d12b197af92165ff7"
+  },
+  "temporal_static_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_temporal_static.py",
+    "sha256": "5584bf831f12580851e3a397d318f9fba8d865cdf6464b6b25174d4511a8d687"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.py",
+    "sha256": "b1fc14e57b37608c091b9736fc854a63ef39ca81b74673e624152815e3528b46"
+  },
+  "frozen_overrides": {
+    "quarantine_case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8",
+      "tan_pawn_g8__g8_g7",
+      "tan_pawn_g8__g8_h8",
+      "tan_pawn_f7__f7_f6",
+      "brown_pawn_e2__e2_f2",
+      "brown_pawn_a2__a2_b2",
+      "tan_pawn_g8__g8_f8",
+      "tan_pawn_f7__f7_e7",
+      "tan_pawn_f7__f7_g7"
+    ],
+    "open_jaw_target_rad": 1.2,
+    "source_jaw_model_rad": -0.12892762470308788,
+    "modeled_open_aperture_m": 0.034,
+    "modeled_pawn_max_body_diameter_m": 0.0276,
+    "static_clearance_buffer_m": 0.0064,
+    "calibrated_physical_open_target_percent": 71.59532465908973,
+    "sample_hz": 40.0,
+    "jaw_opening_speed_percent_per_second": 20.0,
+    "open_jaw_preamble": "at unchanged source arm pose, monotonically open from the observed source jaw to the exact 1.2 rad target",
+    "constant_jaw_scope": "from completion of the open-jaw preamble through every demonstrated setup and push row",
+    "contact_sides": [
+      "fixed_jaw",
+      "moving_jaw"
+    ],
+    "contact_side_rule": "negative 3 mm guide side targets the fixed-jaw tip; positive 3 mm guide side targets the moving-jaw tip",
+    "path_shape": "V05-UE ramped planar path, but the selected unilateral jaw tip rather than the pinch midpoint is solved to every Cartesian waypoint",
+    "same_postquarantine_family_count": 32,
+    "same_setup_branch_count": 3,
+    "same_wrist_seed_count": 3,
+    "contact_side_count": 2,
+    "cells_per_family": 18,
+    "maximum_total_cells": 576,
+    "finite_and_nonexpandable_after_freeze": true
+  },
+  "unchanged_gates": {
+    "minimum_signed_progress_mm": 36.025,
+    "minimum_distinct_families_per_direction": 2,
+    "selected_family_count": 4,
+    "maximum_ik_residual_m": 0.003,
+    "minimum_arm_joint_limit_margin_rad": 0.03490658503988659,
+    "camera_margin_required": true,
+    "calibrated_gateway_bounds_required": true,
+    "reviewed_gateway_rates_required": true,
+    "requested_sent_identity_required": true,
+    "source_arm_and_gripper_envelope_required": true,
+    "new_disallowed_robot_collision_count": 0
+  },
+  "new_static_gates": {
+    "exact_open_jaw_target_after_preamble_tolerance_rad": 1e-12,
+    "jaw_closing_command_count": 0,
+    "expected_unilateral_contact_required": true,
+    "opposite_jaw_selected_pawn_contact_count": 0,
+    "simultaneous_bilateral_selected_pawn_contact_count": 0,
+    "selected_pawn_enclosure_or_grasp_count": 0,
+    "robot_board_contact_count": 0,
+    "selected_pawn_lift_command_count": 0
+  },
+  "future_temporal_gates_if_static_passes": {
+    "canonical_direct_target": true,
+    "diagnostic_zoh_delay_seconds": 0.11,
+    "five_variants": true,
+    "minimum_signed_progress_mm": 36.025,
+    "minimum_cases_per_direction": 2,
+    "no_bilateral_contact": true,
+    "no_grasp_or_enclosure": true,
+    "no_selected_pawn_lift": true,
+    "no_robot_board_contact": true,
+    "all_prior_collision_camera_exclusion_and_identity_gates": true
+  },
+  "forbidden": {
+    "dynamic_outcome_selection": true,
+    "quarantined_case_reuse": true,
+    "grasp_and_place": true,
+    "jaw_closing": true,
+    "bilateral_contact": true,
+    "force_current_or_perception_feedback": true,
+    "adaptive_control": true,
+    "manual_intervention": true,
+    "gate_weakening": true,
+    "physical_motion": true,
+    "paid_compute": true
+  },
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "action_freeze_if_static_gate_passes": true,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective CPU/fp64 static-only unilateral open-jaw pawn-push search over exactly 576 cells. No grasp, lift, dynamic consequence, calibrated plant, physical packet, promotion, or transfer authority."
+}

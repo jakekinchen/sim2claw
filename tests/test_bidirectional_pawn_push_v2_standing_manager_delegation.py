@@ -141,6 +141,15 @@ RAMPED_FUNNEL_STATIC_RECEIPT = ROOT / (
     "runs/bidirectional-pawn-push-v2/"
     "20260728-v05-ue-ramped-funnel-v1/static-freeze-v1/receipt.json"
 )
+UNILATERAL_OPEN_JAW_AUTHORIZATION = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_unilateral_open_jaw_"
+    "successor_authorization_v1.json"
+)
+UNILATERAL_OPEN_JAW_STATIC_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -764,6 +773,56 @@ def test_ramped_funnel_partial_result_stays_below_dynamic_gate() -> None:
     ]
     assert receipt["dynamic_replay_executed"] is False
     assert receipt["physical_motion"] is False
+
+
+def test_unilateral_open_jaw_successor_is_finite_and_non_grasping() -> None:
+    authorization = json.loads(
+        UNILATERAL_OPEN_JAW_AUTHORIZATION.read_text(encoding="utf-8")
+    )
+    for binding in authorization["immutable_predecessors"].values():
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    opening = authorization["open_jaw_derivation"]
+    assert opening["exact_model_target_rad"] == 1.2
+    assert opening["modeled_open_aperture_m"] == 0.034
+    assert opening["modeled_pawn_max_body_diameter_m"] == 0.0276
+    assert opening["static_clearance_buffer_m"] == 0.0064
+    assert opening["inside_calibrated_gateway_range"] is True
+    assert opening["jaw_command_constant_during_setup_and_push"] is True
+    assert opening["jaw_closing_forbidden"] is True
+    assert authorization["quarantine"]["exact_count"] == 16
+    design = authorization["authorized_static_design"]
+    assert design["contact_sides"] == ["fixed_jaw", "moving_jaw"]
+    assert design["cells_per_family"] == 18
+    assert design["finite_maximum_cells"] == 576
+    invariants = authorization["new_static_invariants"]
+    assert all(invariants.values())
+    assert authorization["authority"]["model_loading"] is False
+    assert authorization["authority"]["physical_motion"] is False
+
+    contract = json.loads(
+        UNILATERAL_OPEN_JAW_STATIC_CONTRACT.read_text(encoding="utf-8")
+    )
+    for key in (
+        "authorization",
+        "base_static_contract",
+        "v05_ue_static_receipt",
+        "base_implementation",
+        "multistart_implementation",
+        "temporal_static_implementation",
+        "implementation",
+    ):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    overrides = contract["frozen_overrides"]
+    assert len(overrides["quarantine_case_ids"]) == 16
+    assert overrides["open_jaw_target_rad"] == 1.2
+    assert overrides["contact_sides"] == ["fixed_jaw", "moving_jaw"]
+    assert overrides["cells_per_family"] == 18
+    assert overrides["maximum_total_cells"] == 576
+    assert all(value == 0 for value in contract["new_static_gates"].values() if isinstance(value, int) and not isinstance(value, bool))
+    assert contract["authority"]["static_simulation"] is True
+    assert contract["authority"]["dynamic_replay"] is False
+    assert contract["authority"]["physical_motion"] is False
 
 
 def test_multistart_approach_static_contract_is_finite_and_fail_closed() -> None:
