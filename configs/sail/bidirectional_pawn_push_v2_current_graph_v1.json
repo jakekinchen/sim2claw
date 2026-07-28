@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T14:16:34-05:00",
+  "generated_at": "2026-07-28T14:18:59-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "1a9617b60403e87755fd7fab874515d66bb23587043acd7d91538d7e0e469961",
+      "sha256": "f26403817ff2ed0f698de2f7d6e0c11ad98341b9f4102e9dce796e0b233e5df5",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -691,6 +691,19 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_multistart_approach_static.v1",
         "status": "preregistered_before_model_loading_static_enumeration_or_action_generation",
         "proof_class": "prospective_cpu_fp64_static_alternate_start_multistart_ik_approach_action_freeze"
+      }
+    },
+    "v05_tx_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tx-multistart-approach-v1/static-freeze-v1/receipt.json",
+      "sha256": "60554324e566c3b53513cb207f8eb7890a35afc6c18be945be50c0a1f31c7d13",
+      "proof_class": "cpu_fp64_static_alternate_start_multistart_ik_approach_collision_camera_gateway_action_freeze_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_multistart_approach_static_receipt.v1",
+        "status": "multistart_approach_static_freeze_pass",
+        "proof_class": "cpu_fp64_static_alternate_start_multistart_ik_approach_collision_camera_gateway_action_freeze_only",
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
       }
     },
     "simulator_candidate": {
@@ -1987,6 +2000,30 @@
       }
     },
     {
+      "id": "checkpoint:v05-tx-multistart-approach-static-pass",
+      "type": "checkpoint",
+      "label": "V05-TX alternate-start multi-IK approach static pass",
+      "status": "static_action_freeze_pass_temporal_freeze_next",
+      "source_binding": "v05_tx_static_receipt",
+      "data": {
+        "grid_result_count": 396,
+        "compile_rejects": 316,
+        "compiled_static_rejects": 56,
+        "statically_eligible_cells": 24,
+        "statically_eligible_families": 5,
+        "selected_family_count": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "quarantine_leaked": false,
+        "setup_in_exact_action_bytes": true,
+        "dynamic_replay_executed": false,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2732,6 +2769,20 @@
       }
     },
     {
+      "source": "checkpoint:v05-tx-multistart-approach-static-pass",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-tx-multistart-approach-static-frozen",
+      "metadata": {
+        "all_396_cells_evaluated": true,
+        "eligible_families": 5,
+        "selected_families": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -3298,14 +3349,23 @@
       "node_ids_added": [
         "checkpoint:v05-tx-multistart-approach-static-frozen"
       ]
+    },
+    {
+      "revision": 58,
+      "event_id": "V05_TX_MULTISTART_APPROACH_STATIC_PASS",
+      "status": "static_action_freeze_pass_temporal_freeze_next",
+      "source_binding": "v05_tx_static_receipt",
+      "node_ids_added": [
+        "checkpoint:v05-tx-multistart-approach-static-pass"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-tx-multistart-approach-static-frozen",
+    "node_id": "checkpoint:v05-tx-multistart-approach-static-pass",
     "milestone_id": "V05-TX",
-    "status": "preregistered_multistart_approach_static_execution_active",
-    "queue_status": "ACTIVE_V05_TX_PROSPECTIVE_STATIC_GRID_FROZEN",
-    "resume_action": "execute_one_bounded_396_cell_static_enumeration",
+    "status": "static_action_freeze_pass_temporal_freeze_next",
+    "queue_status": "ACTIVE_V05_TX_STATIC_PASS_TEMPORAL_FREEZE_NEXT",
+    "resume_action": "freeze_exact_four_action_direct_target_and_zoh_temporal_contract",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

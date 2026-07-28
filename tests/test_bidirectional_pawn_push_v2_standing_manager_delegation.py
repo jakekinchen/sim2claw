@@ -19,6 +19,10 @@ STATIC_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_multistart_approach_static_v1.json"
 )
+STATIC_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-tx-multistart-approach-v1/static-freeze-v1/receipt.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -140,3 +144,24 @@ def test_multistart_approach_static_contract_is_finite_and_fail_closed() -> None
     assert contract["authority"]["static_simulation"] is True
     assert contract["authority"]["dynamic_replay"] is False
     assert contract["authority"]["physical_motion"] is False
+
+
+def test_multistart_approach_static_receipt_admits_four_families_only() -> None:
+    receipt = json.loads(STATIC_RECEIPT.read_text(encoding="utf-8"))
+    assert _sha(STATIC_RECEIPT) == (
+        "60554324e566c3b53513cb207f8eb7890a35afc6c18be945be50c0a1f31c7d13"
+    )
+    assert receipt["status"] == "multistart_approach_static_freeze_pass"
+    assert receipt["grid_result_count"] == 396
+    assert receipt["quarantine_leaked_into_candidates"] is False
+    assert receipt["selection_used_dynamic_outcomes"] is False
+    assert receipt["statically_eligible_family_count"] == 5
+    assert receipt["selected_family_count"] == 4
+    assert receipt["lane_counts"] == {
+        "REAL_TO_SIM": 2,
+        "SIM_TO_REAL": 2,
+    }
+    assert len({row["family_id"] for row in receipt["eligible_cases"]}) == 4
+    assert receipt["dynamic_replay_executed"] is False
+    assert receipt["physical_motion"] is False
+    assert receipt["physical_task_attempts"] == 0
