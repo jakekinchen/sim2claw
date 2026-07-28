@@ -29,22 +29,24 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     )
 
     assert rebuilt == tracked
-    assert tracked["active_pointer"]["milestone_id"] == "V05-TW"
+    assert tracked["active_pointer"]["milestone_id"] == "V05-TX"
     assert tracked["active_pointer"] == {
-        "node_id": "verdict:v05-tw-wrist-path-static-reject",
-        "milestone_id": "V05-TW",
-        "status": "terminal_static_family_count_negative_no_dynamic_admission",
-        "queue_status": "STOPPED_V05_TW_WRIST_PATH_STATIC_TERMINAL_NEGATIVE",
-        "resume_action": (
-            "stop_without_grid_expansion_dynamic_replay_or_physical_execution"
+        "node_id": "checkpoint:standing-manager-delegation-bound",
+        "milestone_id": "V05-TX",
+        "status": "standing_manager_authority_active_successor_design_only",
+        "queue_status": (
+            "ACTIVE_V05_TX_STANDING_DELEGATION_BOUND_SUCCESSOR_DESIGN"
         ),
-        "resume_authorized": False,
+        "resume_action": (
+            "derive_and_freeze_finite_alternate_start_multistart_approach_grid"
+        ),
+        "resume_authorized": True,
         "heldout_open_count": 1,
         "cumulative_manifest_read_count": 2,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(55)
+        range(56)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -55,10 +57,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_TW_WRIST_PATH_STATIC_REJECT"
+        == "STANDING_MANAGER_DELEGATION_BOUND"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "verdict:v05-tw-wrist-path-static-reject"
+        "checkpoint:standing-manager-delegation-bound"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]

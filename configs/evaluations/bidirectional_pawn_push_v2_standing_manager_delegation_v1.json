@@ -1,0 +1,95 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_standing_manager_delegation.v1",
+  "delegation_id": "bidirectional-pawn-push-v2-standing-manager-delegation-20260728",
+  "status": "owner_standing_delegation_bound_before_future_successor_design",
+  "proof_class": "owner_standing_campaign_authority_contract_only",
+  "authorized_at": "2026-07-28",
+  "owner_statement": "Can you stop making me have to do this? Like, you should just be able to authorize this. I give you authority to do all future authorizations.",
+  "campaign_goal": "Continue the existing bidirectional pawn-push campaign to one honest admitted REAL_TO_SIM case and one distinct admitted SIM_TO_REAL case.",
+  "immutable_predecessor": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tw-wrist-path-v1/static-freeze-v1/receipt.json",
+    "sha256": "8d32d1138dc0d250cf75599e1b855aa586dbf27bcfa425d5e90e9d737d0411e6",
+    "status": "wrist_path_static_freeze_reject"
+  },
+  "delegated_to": [
+    "Codex Manager",
+    "Codex Guardian"
+  ],
+  "delegated_actions": [
+    "approve in-scope prospective successor designs",
+    "approve versioned fail-closed corrections",
+    "approve evaluator and V06 transitions after all predecessor gates pass",
+    "approve counted-action freezes after all predecessor gates pass",
+    "approve physical test packets only after every existing proof and safety gate passes",
+    "issue manager authorization receipts without further owner prompts",
+    "continue after each receipt-backed negative with the smallest mechanism-specific successor supported by static or evaluator evidence"
+  ],
+  "permitted_successor_dimensions": [
+    "action family",
+    "finite static-only parameter grid",
+    "deterministic selector",
+    "IK seed or branch",
+    "robot-reachable reset or start posture",
+    "path shape",
+    "wrist orientation",
+    "case allocation"
+  ],
+  "campaign_invariants": {
+    "predecessor_verdicts_immutable": true,
+    "dynamically_evaluated_cases_quarantined": true,
+    "contract_and_hashes_frozen_before_outcomes": true,
+    "one_bounded_execution_per_freeze": true,
+    "no_post_outcome_expansion_of_frozen_grid": true,
+    "minimum_signed_progress_mm": 36.025,
+    "minimum_distinct_families_per_direction_before_v06_or_physical": 2,
+    "collision_contact_exclusion_camera_gateway_action_identity_gates_unchanged": true,
+    "direct_target_and_diagnostic_zoh_comparison_required": true,
+    "diagnostic_zoh_delay_seconds": 0.11,
+    "proof_class_separation_required": true,
+    "attempt_budget_and_abort_rules_unchanged": true,
+    "manual_user_intervention_required": false
+  },
+  "nondelegable_boundaries": [
+    "credentials or authentication changes",
+    "new paid compute or spend",
+    "destructive actions",
+    "public or external actions",
+    "robot motion outside a prospectively reviewed physical packet",
+    "manual user intervention",
+    "weakening or rewriting past evidence",
+    "weakening safety, start-envelope, torque, camera, serial, gateway, or abort gates",
+    "leaving paid Brev resources running"
+  ],
+  "brev_policy": "Brev remains empty unless separately explicitly authorized.",
+  "initial_successor": {
+    "milestone_id": "V05-TX",
+    "mechanism": "alternate robot start posture, deterministic multi-start IK branch, and minimal approach-azimuth or lateral-clearance waypoint family",
+    "physical_pawn_layout_changed": false,
+    "manual_intervention_required": false,
+    "design_sources": [
+      "existing gateway-admissible robot states",
+      "modeled joint limits",
+      "calibrated start envelope",
+      "modeled jaw and arm collision geometry",
+      "modeled obstacle clearances"
+    ],
+    "dynamic_outcomes_permitted_for_design": false,
+    "minimum_static_families_per_direction": 2
+  },
+  "authority": {
+    "manager_authorization_receipts": true,
+    "successor_design": true,
+    "versioned_fail_closed_correction": true,
+    "evaluator_transition_after_gates": true,
+    "counted_action_freeze_after_gates": true,
+    "physical_packet_authorization_after_all_gates": true,
+    "credentials": false,
+    "paid_compute": false,
+    "destructive_actions": false,
+    "public_external_actions": false,
+    "unreviewed_physical_motion": false,
+    "manual_user_intervention": false,
+    "gate_weakening": false
+  },
+  "claim_boundary": "Standing campaign delegation for in-scope prospective authorization decisions. It does not itself authorize model loading, simulation, V06, counted action compilation, camera, gateway, serial, physical motion, simulator promotion, or a transfer claim; each still requires its own prospective contract and every predecessor gate."
+}

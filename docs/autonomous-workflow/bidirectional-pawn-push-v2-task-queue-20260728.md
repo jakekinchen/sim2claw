@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `STOPPED_V05_TW_WRIST_PATH_STATIC_TERMINAL_NEGATIVE`
+Status: `ACTIVE_V05_TX_STANDING_DELEGATION_BOUND_SUCCESSOR_DESIGN`
 
 Created: `2026-07-28`
 
@@ -181,6 +181,7 @@ denominators before any counted action is compiled.
 
 | ID | Status | Task | Acceptance gate | Evidence |
 |---|---|---|---|---|
+| AUTH-S | `DONE` | Bind the owner's standing delegation to the Codex Manager/Guardian for all future in-scope campaign authorizations while preserving every proof and safety gate. | Delegation is source-bound before any new successor design; predecessor verdicts remain immutable; no credentials, spend, destructive/public/external action, unreviewed motion, manual intervention, or gate weakening is delegated. | Standing delegation `configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json`, SHA-256 `8e59b738...`. It authorizes future manager receipts but grants no immediate model, simulation, V06, counted-action, camera, gateway, serial, motion, promotion, or transfer authority. |
 | V00 | `DONE` | Read-only inventory, v1 verification, live torque/process/camera/Git state, and pre-freeze camera/feasibility design. | V1 closeout and hashes resolve; torque false; no competing writer or repo-owned camera/gateway process; all unrelated paths preserved; fixed-C922 adjudication design and candidate no-contact hover strategy documented from live evidence. No motion. | Receipt `runs/bidirectional-pawn-push-v2/20260728-v00-read-only-design/v00_read_only_design_receipt.json`, SHA-256 `2c818ed0b70458ca0cd2d2758ec2c4a74790dcc6bc0733bc82dafca157908ebf`. Fresh exact-mode C922 frame SHA-256 `00e1e84b83e28344849400c502975bdca70ad40975815c31b10c20073483cebe`; `92` callbacks, zero drops. Gateway preflight passed with torque false and no motion/config rewrite. CPU/fp64 found a fixed-elbow `13.615385 deg` source egress that monotonically clears the two source-only modeled folded-arm contacts, then a contact-free seven-pan hover family spanning `106.558 mm` in model x plus a separate elevated held-out. No physical motion. |
 | V01 | `DONE` | Preregister a new camera-owned registration acquisition, board-plane metric model, fit/held-out split, and sealed-input rules. | Versioned contract declares visible board features, camera model inputs, gripper reference, fit targets, held-out targets, pixel/reprojection sanity gate, `<25 mm` metric gate, hashes, and recapture fallback before capture. | Contract `configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v1.json`, SHA-256 `f345d9ff55ed38b8509dac061af7d0ce7aeaefb59cb78f92ba4460b5dbe82024`. Four fit targets and four held-out targets are disjoint and prospectively frozen; v1 B7 reuse forbidden; C922 owns board/task; D405 depth omitted; normalized zero-distortion `3x4` DLT family and pixel/annotation/`<25 mm` gates fixed; held-out single-open and versioned recapture fallback fixed. Validation attempt 1 failed only on a mistyped C922-contract digest before freeze; corrected to the live digest. Attempt 2: `3 passed in 0.04s`. No capture or motion. |
 | V02 | `DONE` | Prove hover poses and visibility using CPU/fp64 simulation and static camera projections/images. | Every proposed target passes joint limits, self/table/board/pawn clearance, no-contact height, slow-path preview, C922 field of view, simultaneous gripper/board visibility, and guaranteed return/torque-off logic. Reviewer decision `CONTINUE`. No motion. | Route `configs/hardware/bidirectional_pawn_push_v2_registration_route_v1.json`, SHA-256 `b7464a34a6abe744d778323a7a017f5ab8f40d6f6556b7691f5944e1bbd52d8e`. Final receipt `runs/bidirectional-pawn-push-v2/20260728-v02-static-route-v2/evaluation.json`, SHA-256 `53c6b4dec93cae8f41e9bc24a106fcc0883d3c11d97c887aec3c630491bdbcf6`; deterministic reviewer `CONTINUE`, evidence anchor `100`, all `11/11` gates true. Fresh torque-off start matched the frozen rebase exactly. Source egress: `92` float64 rows, `4.55 s`, hash `9a3ccff7ba26e94f2cce2963480e33a2999b07efa16777edc73530a8fa28e142`. Capture/return: `1541` float64 rows, `77.0 s`, hash `6d05f2471ec0ca8f83beadbc9bbfcc4b6d8ae4c679198414fad600bf29a1dbdf`. Maximum slew `2.999531 deg/s`; minimum jaw clearance `66.282 mm` to any pawn and `93.975 mm` to board; C922 proxy minimum image margin `206.268 px`. All eight camera rays first hit the intended moving jaw `5.865-7.045 mm` before the registered midpoint, within the frozen `15 mm` surface-offset gate. No motion occurred; no camera opened, gateway was constructed, or attempt was counted. |
@@ -191,6 +192,7 @@ denominators before any counted action is compiled.
 | V05-TJ | `DONE_TERMINAL_NEGATIVE` | Prospectively generate the owner-authorized jaw-margin successor family by changing only the gripper column to exact float64 `-0.1727003294848389 rad`, then repeat frozen static and temporal gates. | New action hashes bind before dynamics; at least two distinct cases per direction pass unchanged direct-target and `0.11 s` ZOH paths; every other V05-T identity, geometry, evaluator, exclusion, camera, collision, and gateway rule remains unchanged. | Static receipt `64e8c443...` PASS selected four exact actions, two per direction, with every arm column byte-identical. Frozen temporal receipt `41338d08...` REJECT: REAL_TO_SIM `0/2`, SIM_TO_REAL `1/2` passed both paths versus required `2/2` each. Only `brown_pawn_e2__e2_e3` passed all five variants on both paths. All identity/gateway checks passed; failures are consequence/progress robustness. V06 and physical execution remain closed. |
 | V05-TK | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a bounded static-only action-geometry successor over contact offset, contact height, stroke, and nonquarantined source→destination families in the unchanged reset layout. | Exactly four outcome-informed V05-TJ cases are quarantined; deterministic family selection and lane assignment use only IK, collision, camera, calibrated bounds, and gateway margins; exact new action hashes freeze before dynamics; at least two distinct families per direction must later pass both unchanged plant paths and all unchanged gates. | V2 receipt `c333180a...` exhausts all `1188` cells with no quarantine leak: only `2` of required `4` families statically eligible, yielding REAL_TO_SIM `1/2` and SIM_TO_REAL `1/2`. `1037` compile rejects, `148` static rejects, `3` eligible cells across two e2 lateral families. Dynamic replay, V06, and physical execution remain closed. |
 | V05-TW | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a finite wrist-orientation and single-waypoint pre-contact path-shape successor while preserving the V05-TK geometry grid and all gates. | Exact four-case quarantine remains; wrist/path values derive only from articulated joint/jaw/pawn/square/collision geometry; deterministic static selector freezes four distinct safe families, assigned `2/2`, before any dynamic replay. | Receipt `8d32d113...` exhausts all `3564` cells with no quarantine leak: `3111` fixed-wrist IK rejects, `443` static rejects, `10` eligible cells but still only the same `2` e2 lateral families. Lane counts are `1/2` each, so the frozen family gate rejects and dynamic/V06/physical execution remain closed. |
+| V05-TX | `IN_PROGRESS` | Under standing delegation, prospectively authorize and freeze an alternate robot start-posture, deterministic multi-start IK-branch, and minimal approach-azimuth/lateral-clearance family with unchanged pawn layout and no manual intervention. | Finite grid derives only from gateway-admissible robot states, modeled/calibrated joint and start envelopes, jaw/arm collision geometry, and obstacle clearances; setup posture is robot-reachable and part of action identity; at least four distinct nonquarantined static-safe families freeze, alternating `2/2`, before dynamics. | Standing delegation `8e59b738...` is bound before successor design. Static design only; model loading, static/dynamic execution, V06, counted actions, and physical authority remain false. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2357,6 +2359,44 @@ serial devices are unowned; no wrist/path, replay, camera, gateway, or serial
 worker remains. `brev ls` reports no instances. Only the user-facing
 read-only Studio servers remain. The unrelated untracked
 `tools/build_fiducial_sheet.py` remains untouched.
+
+### Standing campaign delegation bound — 2026-07-28
+
+The owner granted the Codex Manager and Guardian standing authority to issue
+all future in-scope campaign authorizations without returning for routine
+prompts. Contract
+`configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json`,
+SHA-256
+`8e59b7385ca14083d6ddd571ecc13fbec2f884cba41b3583ccfb317737e81ed5`,
+binds that delegation after the immutable V05-TW terminal receipt and before
+any V05-TX successor design.
+
+The delegation covers prospective successor designs, versioned fail-closed
+corrections, evaluator/V06 transitions, counted-action freezes, and physical
+packet authorizations only after every existing predecessor and safety gate
+passes. It permits finite action families, static grids, deterministic
+selectors, IK branches, robot-reachable reset/start postures, path shapes,
+wrist orientations, and case allocations. Every predecessor remains
+immutable; dynamically evaluated cases remain quarantined; contracts and
+hashes freeze before outcomes; every freeze gets one bounded execution and no
+post-outcome expansion.
+
+The delegation does not waive `36.025 mm` fully-off-source progress, two
+distinct families per direction before V06/physical, collision/contact,
+exclusion, camera, gateway, action identity, direct-target plus diagnostic
+`0.11 s` ZOH, attempt, start-envelope, torque, serial, camera, or abort gates.
+It does not authorize credentials, spend or paid compute, destructive,
+public, or external actions, unreviewed robot motion, manual intervention, or
+rewriting prior evidence. Brev remains empty unless separately explicitly
+authorized.
+
+The first delegated successor is V05-TX: a prospectively frozen alternate
+robot start-posture, deterministic multi-start IK-branch, and minimal
+approach-azimuth/lateral-clearance family addressing V05-TW's `3111` IK
+rejects and `443` collision rejects dominated by `c2`. At this checkpoint,
+only static design is active. Model loading, simulation, V06, counted actions,
+camera, gateway/serial, physical motion, promotion, and transfer claims remain
+false.
 
 ### V05-T prospective static enumerator freeze — 2026-07-28
 

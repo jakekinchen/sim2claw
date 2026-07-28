@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T13:42:29-05:00",
+  "generated_at": "2026-07-28T14:07:00-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "04db12167a21d0e1e02828b995ca3ea34a76d6df2b9306569236f6337e7ec3e8",
+      "sha256": "feeed51151106bb16cf5c55c5cc21651920831c812b8a283562e4bf459115bb1",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -661,6 +661,16 @@
         "dynamic_replay_executed": false,
         "physical_motion": false,
         "physical_task_attempts": 0
+      }
+    },
+    "standing_manager_delegation": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json",
+      "sha256": "8e59b7385ca14083d6ddd571ecc13fbec2f884cba41b3583ccfb317737e81ed5",
+      "proof_class": "owner_standing_campaign_authority_contract_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_standing_manager_delegation.v1",
+        "status": "owner_standing_delegation_bound_before_future_successor_design",
+        "proof_class": "owner_standing_campaign_authority_contract_only"
       }
     },
     "simulator_candidate": {
@@ -1877,6 +1887,32 @@
       }
     },
     {
+      "id": "checkpoint:standing-manager-delegation-bound",
+      "type": "checkpoint",
+      "label": "Standing in-scope campaign delegation bound",
+      "status": "standing_manager_authority_active_successor_design_only",
+      "source_binding": "standing_manager_delegation",
+      "data": {
+        "manager_authorization_receipts": true,
+        "successor_design_authorized": true,
+        "versioned_fail_closed_corrections_authorized": true,
+        "v06_after_all_gates_authorized": true,
+        "counted_action_freeze_after_all_gates_authorized": true,
+        "physical_packet_after_all_gates_authorized": true,
+        "minimum_signed_progress_mm": 36.025,
+        "minimum_distinct_families_per_direction": 2,
+        "paid_compute_authorized": false,
+        "unreviewed_physical_motion_authorized": false,
+        "gate_weakening_authorized": false,
+        "current_model_loading_authorized": false,
+        "current_static_simulation_authorized": false,
+        "current_dynamic_replay_authorized": false,
+        "current_v06_evaluator_freeze_authorized": false,
+        "current_physical_motion_authorized": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2585,6 +2621,18 @@
       }
     },
     {
+      "source": "checkpoint:standing-manager-delegation-bound",
+      "type": "generated-from",
+      "target": "verdict:v05-tw-wrist-path-static-reject",
+      "metadata": {
+        "owner_standing_delegation": true,
+        "prior_verdict_immutable": true,
+        "routine_owner_prompts_required": false,
+        "successor_design_only_at_this_checkpoint": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -3124,15 +3172,24 @@
       "node_ids_added": [
         "verdict:v05-tw-wrist-path-static-reject"
       ]
+    },
+    {
+      "revision": 55,
+      "event_id": "STANDING_MANAGER_DELEGATION_BOUND",
+      "status": "standing_manager_authority_active_successor_design_only",
+      "source_binding": "standing_manager_delegation",
+      "node_ids_added": [
+        "checkpoint:standing-manager-delegation-bound"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:v05-tw-wrist-path-static-reject",
-    "milestone_id": "V05-TW",
-    "status": "terminal_static_family_count_negative_no_dynamic_admission",
-    "queue_status": "STOPPED_V05_TW_WRIST_PATH_STATIC_TERMINAL_NEGATIVE",
-    "resume_action": "stop_without_grid_expansion_dynamic_replay_or_physical_execution",
-    "resume_authorized": false,
+    "node_id": "checkpoint:standing-manager-delegation-bound",
+    "milestone_id": "V05-TX",
+    "status": "standing_manager_authority_active_successor_design_only",
+    "queue_status": "ACTIVE_V05_TX_STANDING_DELEGATION_BOUND_SUCCESSOR_DESIGN",
+    "resume_action": "derive_and_freeze_finite_alternate_start_multistart_approach_grid",
+    "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0
