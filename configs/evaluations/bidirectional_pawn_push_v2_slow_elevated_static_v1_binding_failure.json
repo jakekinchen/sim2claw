@@ -1,0 +1,38 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static_failure.v1",
+  "failure_id": "bidirectional-pawn-push-v2-v05-ty-static-v1-binding-failure",
+  "status": "failed_closed_before_model_loading_or_static_enumeration",
+  "proof_class": "orchestration_binding_failure_no_static_or_dynamic_outcome",
+  "failed_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_slow_elevated_static_v1.json",
+    "sha256": "fb71ad3e22141b890e46062a2fca36a92eb70066e6efd57cf763931a57dc2aa4"
+  },
+  "failed_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_slow_elevated_static.py",
+    "sha256": "f2bf273c288f7fce984b1feb9a4163ecda20aa63cf785bd98d1f40b8279ed30e"
+  },
+  "derived_contract_artifact": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ty-slow-elevated-v1/static-freeze-v1/derived_contract.json",
+    "sha256": "5efffb90a728aee028bcf8a094caba476f15f381d7da846d46f4579811792239"
+  },
+  "failure": {
+    "exception_type": "MultistartApproachStaticError",
+    "message": "V05-TX quarantine is not exact",
+    "cause": "The inherited V05-TX enumerator hardcoded a four-case quarantine and rejected the prospectively correct eight-case V05-TY quarantine.",
+    "model_loaded": false,
+    "static_cells_generated": 0,
+    "static_cells_evaluated": 0,
+    "actions_generated": 0,
+    "dynamic_replay_executed": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "recovery_boundary": {
+    "frozen_grid_changed": false,
+    "quarantine_changed": false,
+    "gate_changed": false,
+    "allowed_change": "Version only the static enumerator schema and replace the predecessor-specific four-case assertion with an exact contract-bound eight-case assertion before model loading.",
+    "requires_new_preregistered_contract": true
+  },
+  "claim_boundary": "Fail-closed orchestration receipt only. No model, static outcome, dynamic outcome, physical packet, promotion, or transfer claim."
+}

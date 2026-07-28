@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_TY_PROSPECTIVE_STATIC_GRID_FROZEN`
+Status: `ACTIVE_V05_TY_STATIC_V2_LOADER_FIX_FROZEN`
 
 Created: `2026-07-28`
 
@@ -193,7 +193,7 @@ denominators before any counted action is compiled.
 | V05-TK | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a bounded static-only action-geometry successor over contact offset, contact height, stroke, and nonquarantined source→destination families in the unchanged reset layout. | Exactly four outcome-informed V05-TJ cases are quarantined; deterministic family selection and lane assignment use only IK, collision, camera, calibrated bounds, and gateway margins; exact new action hashes freeze before dynamics; at least two distinct families per direction must later pass both unchanged plant paths and all unchanged gates. | V2 receipt `c333180a...` exhausts all `1188` cells with no quarantine leak: only `2` of required `4` families statically eligible, yielding REAL_TO_SIM `1/2` and SIM_TO_REAL `1/2`. `1037` compile rejects, `148` static rejects, `3` eligible cells across two e2 lateral families. Dynamic replay, V06, and physical execution remain closed. |
 | V05-TW | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a finite wrist-orientation and single-waypoint pre-contact path-shape successor while preserving the V05-TK geometry grid and all gates. | Exact four-case quarantine remains; wrist/path values derive only from articulated joint/jaw/pawn/square/collision geometry; deterministic static selector freezes four distinct safe families, assigned `2/2`, before any dynamic replay. | Receipt `8d32d113...` exhausts all `3564` cells with no quarantine leak: `3111` fixed-wrist IK rejects, `443` static rejects, `10` eligible cells but still only the same `2` e2 lateral families. Lane counts are `1/2` each, so the frozen family gate rejects and dynamic/V06/physical execution remain closed. |
 | V05-TX | `DONE_TERMINAL_NEGATIVE` | Under standing delegation, prospectively authorize and freeze an alternate robot start-posture, deterministic multi-start IK-branch, and minimal approach-azimuth/lateral-clearance family with unchanged pawn layout and no manual intervention. | Finite grid derives only from gateway-admissible robot states, modeled/calibrated joint and start envelopes, jaw/arm collision geometry, and obstacle clearances; setup posture is robot-reachable and part of action identity; at least four distinct nonquarantined static-safe families freeze, alternating `2/2`, before dynamics. | Static PASS `60554324...`; temporal receipt `50548090...` REJECT: `0/2` each direction. Every identity/gateway check passed. h7 routes failed progress robustness with stationary exclusions; e2/f7 routes also displaced exclusions during the long dynamic setup/action. Four evaluated cases enter the immutable quarantine. No V06 or physical admission. |
-| V05-TY | `IN_PROGRESS` | Under standing delegation, prospectively freeze a slower-setup, higher-clearance, longer-stroke successor over fresh nonquarantined families. | Exact cumulative eight-case quarantine; reused setup branches remain robot-reachable and inside action bytes; higher clearance and longer in-bounds stroke derive from modeled geometry and V05-TX consequence mechanism; four distinct static-safe fresh families alternate `2/2` before dynamics. | Authorization `ffe06a1d...`; frozen override contract `fb71ad3e...`; wrapper `f2bf273c...`; unchanged base enumerator `191a60be...`. Maximum `40 × 3 × 3 = 360` cells. One bounded static execution active; dynamic/V06/counted/physical false. |
+| V05-TY | `IN_PROGRESS` | Under standing delegation, prospectively freeze a slower-setup, higher-clearance, longer-stroke successor over fresh nonquarantined families. | Exact cumulative eight-case quarantine; reused setup branches remain robot-reachable and inside action bytes; higher clearance and longer in-bounds stroke derive from modeled geometry and V05-TX consequence mechanism; four distinct static-safe fresh families alternate `2/2` before dynamics. | V1 failed closed before model loading because its inherited loader asserted four quarantine cases. Failure `df2e91cb...` is bound. V2 contract `5e341544...` and implementation `617e1258...` preserve the same maximum `40 × 3 × 3 = 360` cells and generalize only the exact quarantine assertion. One bounded static execution active; dynamic/V06/counted/physical false. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2626,6 +2626,35 @@ unchanged. Four distinct fresh families alternating `2/2` are required before
 dynamics. One bounded static execution is authorized. Dynamic replay, V06,
 counted actions, camera, gateway/serial, physical motion, promotion, and
 transfer claims remain false.
+
+### V05-TY v1 fail-closed binding and versioned v2 freeze — 2026-07-28
+
+The first v1 invocation stopped before model loading or cell enumeration with
+`MultistartApproachStaticError: V05-TX quarantine is not exact`. The inherited
+enumerator still asserted the predecessor-specific four-case quarantine while
+the frozen V05-TY contract correctly supplied the cumulative eight. Binding
+failure
+`configs/evaluations/bidirectional_pawn_push_v2_slow_elevated_static_v1_binding_failure.json`,
+SHA-256
+`df2e91cb885d4511f48c3d1c451225072941e13dcb648e6293d11b9667fb6ac3`,
+records zero model loads, static cells, actions, dynamic replays, or physical
+attempts.
+
+Versioned contract
+`configs/evaluations/bidirectional_pawn_push_v2_slow_elevated_static_v2.json`,
+SHA-256
+`5e3415445a9bdb25a0b2c959a891e48816a0dbe337dfef7be2d9264ce04dae41`,
+and implementation
+`src/sim2claw/bidirectional_pawn_push_v2_slow_elevated_static_v2.py`,
+SHA-256
+`617e12581aab17039850dc3d962a221b3dd144d9cd80ef3a36c362d467b736df`,
+are frozen before model loading. The only loader correction replaces the
+V05-TX-specific count-of-four assertion with the contract-bound exact count
+and a second explicit count-of-eight check. The same exact quarantine, `40`
+fresh families, three setup branches, three lateral approaches, `360`-cell
+maximum, speed, geometry, selection, gates, and authority remain unchanged.
+One bounded v2 static execution is active. Dynamic/V06/counted/physical
+authority remains false.
 
 ### V05-T prospective static enumerator freeze — 2026-07-28
 

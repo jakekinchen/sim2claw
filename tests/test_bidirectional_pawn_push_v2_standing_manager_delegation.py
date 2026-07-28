@@ -40,6 +40,14 @@ SLOW_ELEVATED_STATIC_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_slow_elevated_static_v1.json"
 )
+SLOW_ELEVATED_STATIC_V1_FAILURE = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_slow_elevated_static_v1_binding_failure.json"
+)
+SLOW_ELEVATED_STATIC_V2_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_slow_elevated_static_v2.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -139,6 +147,43 @@ def test_slow_elevated_static_contract_is_finite_and_fresh_only() -> None:
         == 0.075
     )
     assert contract["selection"]["fresh_nonquarantined_families_only"] is True
+    assert contract["authority"]["model_loading"] is True
+    assert contract["authority"]["static_simulation"] is True
+    assert contract["authority"]["dynamic_replay"] is False
+    assert contract["authority"]["physical_motion"] is False
+
+
+def test_slow_elevated_v1_failure_and_v2_loader_fix_are_source_bound() -> None:
+    failure = json.loads(
+        SLOW_ELEVATED_STATIC_V1_FAILURE.read_text(encoding="utf-8")
+    )
+    for key in (
+        "failed_contract",
+        "failed_implementation",
+        "derived_contract_artifact",
+    ):
+        binding = failure[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert failure["failure"]["model_loaded"] is False
+    assert failure["failure"]["static_cells_evaluated"] == 0
+    assert failure["failure"]["dynamic_replay_executed"] is False
+    assert failure["failure"]["physical_motion"] is False
+
+    contract = json.loads(
+        SLOW_ELEVATED_STATIC_V2_CONTRACT.read_text(encoding="utf-8")
+    )
+    for key in ("authorization", "v1_binding_failure", "implementation"):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert contract["quarantine"]["exact_count"] == 8
+    assert len(contract["quarantine"]["case_ids"]) == 8
+    assert contract["family_grid"]["expected_postquarantine_family_count"] == 40
+    assert contract["parameter_grid"]["maximum_total_cells"] == 360
+    assert (
+        contract["action_identity"]["setup_joint_speed_physical_units_s"]
+        == 1.5
+    )
+    assert contract["endpoint_geometry"]["stroke_m"] == 0.12
     assert contract["authority"]["model_loading"] is True
     assert contract["authority"]["static_simulation"] is True
     assert contract["authority"]["dynamic_replay"] is False

@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T14:42:34-05:00",
+  "generated_at": "2026-07-28T14:47:44-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "096d9ffe7dd3bd098c0175aa762898e7f86b76e014ea5fe55a35e92cd473cd5f",
+      "sha256": "62c9ca1705ff84b00298f269fc90e2f90fe34b6b001be6a008d4bb960952b559",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -746,6 +746,26 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static.v1",
         "status": "preregistered_before_model_loading_static_enumeration_or_action_generation",
         "proof_class": "prospective_cpu_fp64_static_slow_elevated_long_stroke_action_freeze"
+      }
+    },
+    "v05_ty_static_v1_failure": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_slow_elevated_static_v1_binding_failure.json",
+      "sha256": "df2e91cb885d4511f48c3d1c451225072941e13dcb648e6293d11b9667fb6ac3",
+      "proof_class": "orchestration_binding_failure_no_static_or_dynamic_outcome",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static_failure.v1",
+        "status": "failed_closed_before_model_loading_or_static_enumeration",
+        "proof_class": "orchestration_binding_failure_no_static_or_dynamic_outcome"
+      }
+    },
+    "v05_ty_static_v2_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_slow_elevated_static_v2.json",
+      "sha256": "5e3415445a9bdb25a0b2c959a891e48816a0dbe337dfef7be2d9264ce04dae41",
+      "proof_class": "prospective_cpu_fp64_static_slow_elevated_long_stroke_action_freeze_v2",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static.v2",
+        "status": "preregistered_binding_loader_correction_before_model_loading_static_enumeration_or_action_generation",
+        "proof_class": "prospective_cpu_fp64_static_slow_elevated_long_stroke_action_freeze_v2"
       }
     },
     "simulator_candidate": {
@@ -2169,6 +2189,45 @@
       }
     },
     {
+      "id": "failure:v05-ty-static-v1-binding",
+      "type": "evidence",
+      "label": "V05-TY v1 predecessor-specific quarantine assertion failed closed",
+      "status": "failed_closed_before_model_loading_or_static_enumeration",
+      "source_binding": "v05_ty_static_v1_failure",
+      "data": {
+        "cause": "inherited_v05_tx_enumerator_asserted_four_quarantined_cases",
+        "expected_quarantined_case_count": 8,
+        "model_loaded": false,
+        "static_cells_evaluated": 0,
+        "actions_generated": 0,
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-ty-slow-elevated-static-v2-frozen",
+      "type": "checkpoint",
+      "label": "V05-TY versioned exact-eight quarantine loader fix frozen",
+      "status": "preregistered_static_v2_loader_fix_execution_active",
+      "source_binding": "v05_ty_static_v2_contract",
+      "data": {
+        "loader_change_only": true,
+        "predecessor_specific_count_removed": 4,
+        "contract_bound_quarantined_case_count": 8,
+        "postquarantine_family_count": 40,
+        "maximum_total_cells": 360,
+        "grid_changed_from_v1": false,
+        "gate_changed_from_v1": false,
+        "model_loading_authorized": true,
+        "static_simulation_authorized": true,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2979,6 +3038,30 @@
       }
     },
     {
+      "source": "failure:v05-ty-static-v1-binding",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-ty-slow-elevated-static-frozen",
+      "metadata": {
+        "failed_before_model_loading": true,
+        "static_cells_evaluated": 0,
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-ty-slow-elevated-static-v2-frozen",
+      "type": "generated-from",
+      "target": "failure:v05-ty-static-v1-binding",
+      "metadata": {
+        "versioned_loader_correction_only": true,
+        "grid_changed": false,
+        "gate_changed": false,
+        "maximum_total_cells": 360,
+        "static_simulation_only": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -3590,14 +3673,32 @@
       "node_ids_added": [
         "checkpoint:v05-ty-slow-elevated-static-frozen"
       ]
+    },
+    {
+      "revision": 63,
+      "event_id": "V05_TY_STATIC_V1_BINDING_FAILURE",
+      "status": "failed_closed_before_model_loading_or_static_enumeration",
+      "source_binding": "v05_ty_static_v1_failure",
+      "node_ids_added": [
+        "failure:v05-ty-static-v1-binding"
+      ]
+    },
+    {
+      "revision": 64,
+      "event_id": "V05_TY_STATIC_V2_LOADER_FIX_FREEZE",
+      "status": "preregistered_static_v2_loader_fix_execution_active",
+      "source_binding": "v05_ty_static_v2_contract",
+      "node_ids_added": [
+        "checkpoint:v05-ty-slow-elevated-static-v2-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-ty-slow-elevated-static-frozen",
+    "node_id": "checkpoint:v05-ty-slow-elevated-static-v2-frozen",
     "milestone_id": "V05-TY",
-    "status": "preregistered_slow_elevated_static_execution_active",
-    "queue_status": "ACTIVE_V05_TY_PROSPECTIVE_STATIC_GRID_FROZEN",
-    "resume_action": "execute_one_bounded_360_cell_static_enumeration",
+    "status": "preregistered_static_v2_loader_fix_execution_active",
+    "queue_status": "ACTIVE_V05_TY_STATIC_V2_LOADER_FIX_FROZEN",
+    "resume_action": "execute_one_bounded_360_cell_static_v2_enumeration",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
