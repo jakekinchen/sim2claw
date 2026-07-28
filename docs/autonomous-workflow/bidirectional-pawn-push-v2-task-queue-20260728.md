@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_TW_PROSPECTIVE_STATIC_GRID_FROZEN`
+Status: `STOPPED_V05_TW_WRIST_PATH_STATIC_TERMINAL_NEGATIVE`
 
 Created: `2026-07-28`
 
@@ -190,7 +190,7 @@ denominators before any counted action is compiled.
 | V05-T | `DONE_TERMINAL_NEGATIVE` | Challenge every prospectively broadened static/IK-eligible action with canonical direct-target MuJoCo and diagnostic-only `0.11 s` ZOH command delay; prove exact 40 Hz action bytes and gateway slew/rate compatibility. | At least two distinct cases per direction pass both plant paths with unchanged contact/progress/exclusion/collision/camera gates; requested/sent/applied traces and timestamps bind; gateway accepts bytes without transform. | Static receipt `3a8593cf...` rejects before dynamics: `48` routes, `432` cells, `352` IK compile rejects, `80` static rejects, `0` eligible actions. Unchanged jaw bytes inverse-map below the frozen physical lower bound; no clamp or byte change allowed. |
 | V05-TJ | `DONE_TERMINAL_NEGATIVE` | Prospectively generate the owner-authorized jaw-margin successor family by changing only the gripper column to exact float64 `-0.1727003294848389 rad`, then repeat frozen static and temporal gates. | New action hashes bind before dynamics; at least two distinct cases per direction pass unchanged direct-target and `0.11 s` ZOH paths; every other V05-T identity, geometry, evaluator, exclusion, camera, collision, and gateway rule remains unchanged. | Static receipt `64e8c443...` PASS selected four exact actions, two per direction, with every arm column byte-identical. Frozen temporal receipt `41338d08...` REJECT: REAL_TO_SIM `0/2`, SIM_TO_REAL `1/2` passed both paths versus required `2/2` each. Only `brown_pawn_e2__e2_e3` passed all five variants on both paths. All identity/gateway checks passed; failures are consequence/progress robustness. V06 and physical execution remain closed. |
 | V05-TK | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a bounded static-only action-geometry successor over contact offset, contact height, stroke, and nonquarantined source→destination families in the unchanged reset layout. | Exactly four outcome-informed V05-TJ cases are quarantined; deterministic family selection and lane assignment use only IK, collision, camera, calibrated bounds, and gateway margins; exact new action hashes freeze before dynamics; at least two distinct families per direction must later pass both unchanged plant paths and all unchanged gates. | V2 receipt `c333180a...` exhausts all `1188` cells with no quarantine leak: only `2` of required `4` families statically eligible, yielding REAL_TO_SIM `1/2` and SIM_TO_REAL `1/2`. `1037` compile rejects, `148` static rejects, `3` eligible cells across two e2 lateral families. Dynamic replay, V06, and physical execution remain closed. |
-| V05-TW | `IN_PROGRESS` | Prospectively freeze a finite wrist-orientation and single-waypoint pre-contact path-shape successor while preserving the V05-TK geometry grid and all gates. | Exact four-case quarantine remains; wrist/path values derive only from articulated joint/jaw/pawn/square/collision geometry; deterministic static selector freezes four distinct safe families, assigned `2/2`, before any dynamic replay. | Authorization `d856ae9a...`; static contract `b5730808...`; implementation `2752169b...`. Grid is frozen at `44 × 3 × 3 × 3 × 3 × 1 = 3564` maximum cells before model loading. Static execution only; dynamic replay, V06, and physical authority remain false. |
+| V05-TW | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a finite wrist-orientation and single-waypoint pre-contact path-shape successor while preserving the V05-TK geometry grid and all gates. | Exact four-case quarantine remains; wrist/path values derive only from articulated joint/jaw/pawn/square/collision geometry; deterministic static selector freezes four distinct safe families, assigned `2/2`, before any dynamic replay. | Receipt `8d32d113...` exhausts all `3564` cells with no quarantine leak: `3111` fixed-wrist IK rejects, `443` static rejects, `10` eligible cells but still only the same `2` e2 lateral families. Lane counts are `1/2` each, so the frozen family gate rejects and dynamic/V06/physical execution remain closed. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2311,6 +2311,43 @@ than four closes terminally without dynamics. Static model loading and one
 bounded static execution are authorized by this prospective freeze. Dynamic
 replay, V06, counted actions, cameras, gateway/serial, physical motion,
 promotion, and transfer claims remain false.
+
+### V05-TW wrist/path static terminal negative — 2026-07-28
+
+The one frozen static execution produced
+`runs/bidirectional-pawn-push-v2/20260728-v05-tw-wrist-path-v1/static-freeze-v1/receipt.json`,
+SHA-256
+`8d32d1138dc0d250cf75599e1b855aa586dbf27bcfa425d5e90e9d737d0411e6`,
+with status `wrist_path_static_freeze_reject`. All `3564` prospectively frozen
+cells were evaluated across all `44` nonquarantined reset-layout families.
+There was no quarantine leak and no dynamic outcome was read.
+
+The result contains `3111` fixed-wrist IK rejects, `443` compiled static
+rejects, and `10` statically eligible cells. Every compiled static reject
+failed the unchanged collision gate; `24` also failed the unchanged gateway
+rate gate. The dominant newly disallowed contacts were against the retained
+reset-layout `brown_pawn_c2`: `371` left-gripper and `329` moving-jaw pairs.
+The explicit clearance waypoint and wrist targets therefore improved the
+number of eligible cells from V05-TK's `3` to `10`, but did not broaden the
+eligible family set.
+
+Only `brown_pawn_e2__e2_d2` and `brown_pawn_e2__e2_f2` remain statically
+eligible. Their frozen static winners both use wrist roll
+`-1.6509854282817824 rad`, contact offset `22 mm`, contact height `30 mm`,
+stroke `90 mm`, and the `60 mm` precontact waypoint. Exact static action
+hashes are respectively
+`8ea9dd6503249e73a0e57424328744f8821c06492fcef3ac6b3185908cec931a`
+and
+`51fe2ec61d504a3465e2a4edaa9a6f03b5ec48240541e44ad7bc98bc4c4015ef`,
+each shape `[157,6]`. They are assigned one per direction for diagnostic
+bookkeeping only.
+
+The frozen gate required four distinct statically safe families, alternating
+to at least two per direction, before any dynamic replay. The result is only
+REAL_TO_SIM `1/2` and SIM_TO_REAL `1/2`, so V05-TW closes terminally. No grid
+expansion, dynamic replay, V06 evaluator freeze, counted action compilation,
+camera, gateway/serial, physical motion, simulator promotion, or transfer
+claim is authorized. Physical task attempts remain `0/10`.
 
 ### V05-T prospective static enumerator freeze — 2026-07-28
 

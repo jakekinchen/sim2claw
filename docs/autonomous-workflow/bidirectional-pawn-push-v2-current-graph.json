@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "V05-TW",
-    "node_id": "checkpoint:v05-tw-wrist-path-static-frozen",
-    "queue_status": "ACTIVE_V05_TW_PROSPECTIVE_STATIC_GRID_FROZEN",
-    "resume_action": "execute_one_bounded_3564_cell_static_enumeration",
-    "resume_authorized": true,
-    "status": "preregistered_wrist_path_static_execution_active"
+    "node_id": "verdict:v05-tw-wrist-path-static-reject",
+    "queue_status": "STOPPED_V05_TW_WRIST_PATH_STATIC_TERMINAL_NEGATIVE",
+    "resume_action": "stop_without_grid_expansion_dynamic_replay_or_physical_execution",
+    "resume_authorized": false,
+    "status": "terminal_static_family_count_negative_no_dynamic_admission"
   },
   "authority": {
     "camera_open": false,
@@ -35,12 +35,12 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 75,
+    "edges": 76,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 3,
-      "evaluated-on": 10,
+      "evaluated-on": 11,
       "fitted-on": 4,
       "generated-from": 49,
       "invalidates": 1,
@@ -48,14 +48,14 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 73,
+    "nodes": 74,
     "nodes_by_type": {
       "candidate": 2,
       "checkpoint": 42,
       "context": 1,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 7,
+      "evaluator_verdict": 8,
       "evidence": 4,
       "intervention": 1,
       "mechanism": 3,
@@ -826,10 +826,24 @@
       "source": "verdict:v05-tk-static-action-geometry-reject",
       "target": "checkpoint:v05-tk-static-action-geometry-v2-frozen",
       "type": "evaluated-on"
+    },
+    {
+      "metadata": {
+        "all_3564_cells_evaluated": true,
+        "dynamic_replay_executed": false,
+        "eligible_cells": 10,
+        "eligible_families": 2,
+        "grid_expanded": false,
+        "physical_motion": false,
+        "required_families": 4
+      },
+      "source": "verdict:v05-tw-wrist-path-static-reject",
+      "target": "checkpoint:v05-tw-wrist-path-static-frozen",
+      "type": "evaluated-on"
     }
   ],
-  "generated_at": "2026-07-28T13:36:50-05:00",
-  "graph_digest": "855994916baa05dd875358689681d2b0bfa2718a2804c47595215862c1e5a8ba",
+  "generated_at": "2026-07-28T13:40:52-05:00",
+  "graph_digest": "3fd0ce7f6833dd6070cfd5bb7e08283b5eccf53808235a207211e4c4e639a12e",
   "node_types": [
     "workcell",
     "session",
@@ -912,7 +926,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d"
+        "sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1306,7 +1320,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d"
+        "sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1357,7 +1371,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d"
+        "sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1378,7 +1392,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d"
+        "sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1407,7 +1421,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d"
+        "sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -1816,7 +1830,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d"
+        "sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -2455,7 +2469,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d"
+        "sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -2515,7 +2529,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d"
+        "sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -2533,7 +2547,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d"
+        "sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -2601,7 +2615,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d"
+        "sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -2857,6 +2871,47 @@
     },
     {
       "data": {
+        "compile_rejects": 3111,
+        "compiled_static_rejects": 443,
+        "dynamic_replay_executed": false,
+        "grid_result_count": 3564,
+        "minimum_distinct_families_per_direction": 2,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "postquarantine_family_count": 44,
+        "prequarantine_family_count": 48,
+        "quarantine_leaked": false,
+        "quarantined_family_count": 4,
+        "real_to_sim_lanes": 1,
+        "required_selected_families": 4,
+        "sim_to_real_lanes": 1,
+        "source_binding_id": "v05_tw_static_receipt",
+        "statically_eligible_cells": 10,
+        "statically_eligible_families": 2,
+        "v06_evaluator_freeze_authorized": false
+      },
+      "evaluator_identity": "8d32d1138dc0d250cf75599e1b855aa586dbf27bcfa425d5e90e9d737d0411e6",
+      "id": "verdict:v05-tw-wrist-path-static-reject",
+      "label": "V05-TW finite wrist-orientation and precontact-path terminal negative",
+      "proof_class": "cpu_fp64_static_wrist_orientation_precontact_path_ik_collision_camera_gateway_action_freeze_only",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tw-wrist-path-v1/static-freeze-v1/receipt.json",
+        "payload_contract": {
+          "dynamic_replay_executed": false,
+          "physical_motion": false,
+          "physical_task_attempts": 0,
+          "proof_class": "cpu_fp64_static_wrist_orientation_precontact_path_ik_collision_camera_gateway_action_freeze_only",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_wrist_path_static_receipt.v1",
+          "status": "wrist_path_static_freeze_reject"
+        },
+        "proof_class": "cpu_fp64_static_wrist_orientation_precontact_path_ik_collision_camera_gateway_action_freeze_only",
+        "sha256": "8d32d1138dc0d250cf75599e1b855aa586dbf27bcfa425d5e90e9d737d0411e6"
+      },
+      "status": "terminal_static_family_count_negative_no_dynamic_admission",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "human_physical_intervention_required": false,
         "source_binding_id": "v00"
       },
@@ -2953,7 +3008,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d",
+      "source_sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -2983,7 +3038,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d",
+      "source_sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -3013,7 +3068,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d",
+      "source_sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -3295,7 +3350,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d",
+      "source_sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -3437,6 +3492,16 @@
       "source_binding": "v05_tw_static_contract",
       "source_sha256": "b5730808a3b7afca8ea911b4c81f6b7cbafbbf8a3e38be3aad8b91636af200ad",
       "status": "preregistered_wrist_path_static_execution_active"
+    },
+    {
+      "event_id": "V05_TW_WRIST_PATH_STATIC_REJECT",
+      "node_ids_added": [
+        "verdict:v05-tw-wrist-path-static-reject"
+      ],
+      "revision": 54,
+      "source_binding": "v05_tw_static_receipt",
+      "source_sha256": "8d32d1138dc0d250cf75599e1b855aa586dbf27bcfa425d5e90e9d737d0411e6",
+      "status": "terminal_static_family_count_negative_no_dynamic_admission"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -3445,7 +3510,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d"
+      "sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc"
     },
     {
       "id": "simulator_candidate",
@@ -4118,6 +4183,20 @@
       },
       "proof_class": "prospective_cpu_fp64_static_wrist_orientation_precontact_path_action_freeze",
       "sha256": "b5730808a3b7afca8ea911b4c81f6b7cbafbbf8a3e38be3aad8b91636af200ad"
+    },
+    {
+      "id": "v05_tw_static_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tw-wrist-path-v1/static-freeze-v1/receipt.json",
+      "payload_contract": {
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "proof_class": "cpu_fp64_static_wrist_orientation_precontact_path_ik_collision_camera_gateway_action_freeze_only",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_wrist_path_static_receipt.v1",
+        "status": "wrist_path_static_freeze_reject"
+      },
+      "proof_class": "cpu_fp64_static_wrist_orientation_precontact_path_ik_collision_camera_gateway_action_freeze_only",
+      "sha256": "8d32d1138dc0d250cf75599e1b855aa586dbf27bcfa425d5e90e9d737d0411e6"
     },
     {
       "id": "world_visual",

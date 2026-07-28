@@ -14,6 +14,10 @@ STATIC_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_wrist_path_static_v1.json"
 )
+STATIC_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-tw-wrist-path-v1/static-freeze-v1/receipt.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -106,3 +110,23 @@ def test_wrist_path_static_contract_is_finite_static_only_and_hash_bound() -> No
             "transfer_claim",
         )
     )
+
+
+def test_wrist_path_static_receipt_closes_before_dynamic_replay() -> None:
+    receipt = json.loads(STATIC_RECEIPT.read_text(encoding="utf-8"))
+    assert _sha(STATIC_RECEIPT) == (
+        "8d32d1138dc0d250cf75599e1b855aa586dbf27bcfa425d5e90e9d737d0411e6"
+    )
+    assert receipt["status"] == "wrist_path_static_freeze_reject"
+    assert receipt["grid_result_count"] == 3564
+    assert receipt["quarantine_leaked_into_candidates"] is False
+    assert receipt["selection_used_dynamic_outcomes"] is False
+    assert receipt["statically_eligible_family_count"] == 2
+    assert receipt["selected_family_count"] == 2
+    assert receipt["lane_counts"] == {
+        "REAL_TO_SIM": 1,
+        "SIM_TO_REAL": 1,
+    }
+    assert receipt["dynamic_replay_executed"] is False
+    assert receipt["physical_motion"] is False
+    assert receipt["physical_task_attempts"] == 0
