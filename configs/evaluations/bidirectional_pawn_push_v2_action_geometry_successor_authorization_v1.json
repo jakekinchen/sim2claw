@@ -1,0 +1,117 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_action_geometry_successor_authorization.v1",
+  "authorization_id": "bidirectional-pawn-push-v2-action-geometry-successor-20260728",
+  "status": "owner_authorized_before_static_design_or_enumeration",
+  "proof_class": "prospective_owner_authorized_static_only_action_geometry_successor",
+  "authorized_at": "2026-07-28",
+  "owner_authorization": "Authorize a new prospectively frozen action-geometry successor. Quarantine the four evaluated cases as outcome-informed diagnostics; search a bounded static-only contact-offset, contact-height, stroke, and reset-layout grid using only IK, collision, camera, and gateway margins. Preserve the 36.025 mm progress gate, two-family-per-direction requirement, baseline/ZOH test, and false physical authority until both simulator paths pass.",
+  "immutable_predecessors": {
+    "v05_rehearsal_terminal_negative": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-sim-rehearsal-v4/receipt.json",
+      "sha256": "cb722bebdfa7134958bab103214112ede29525416c8d999f6fbcbd321ed8ceee"
+    },
+    "v05_t_static_terminal_negative": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-t-temporal-v1/static-freeze-v1/receipt.json",
+      "sha256": "3a8593cf4d97e776760ff9dfbac2f4e688696226521ab01c73e7a07dab306b3f"
+    },
+    "v05_tj_static_pass": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/static-freeze-v1/receipt.json",
+      "sha256": "64e8c4435e033e0f9c83b88374b11206ed02b80fcdbb62765ad9834c2248566c"
+    },
+    "v05_tj_temporal_terminal_negative": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/receipt.json",
+      "sha256": "41338d0846b84a73390eb4654ac55b11cf778a695097bad5c4aeb7e4c3f60f75"
+    },
+    "temporal_plant_plan": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json",
+      "sha256": "5e8058e0bc46d60879d962a1e2ee9e8161a12197dfe9aee3faab73f7b1f23e9e"
+    },
+    "rehearsal_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v2.json",
+      "sha256": "d57fc89a5874d630536ae6f981b78988c6da40bfb8934fee78ab2cfc02ac847f"
+    }
+  },
+  "quarantine": {
+    "reason": "dynamically evaluated outcome-informed diagnostics",
+    "case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3"
+    ],
+    "exact_count": 4,
+    "permitted_use": "read_only_diagnostics_and_exact_quarantine_only",
+    "forbidden_use": [
+      "candidate selection",
+      "family promotion",
+      "grid expansion",
+      "parameter tuning",
+      "gate revision"
+    ]
+  },
+  "authorized_static_design": {
+    "dimensions": [
+      "contact_center_offset_m",
+      "contact_height_m",
+      "stroke_m",
+      "reset_layout_source_destination_family"
+    ],
+    "permitted_evidence": [
+      "repository geometry",
+      "existing calibrated mappings",
+      "pawn and board dimensions",
+      "IK residual and joint margin",
+      "static collision audit",
+      "static camera projection margin",
+      "gateway command bounds and rate margins"
+    ],
+    "forbidden_evidence": [
+      "V05-TJ dynamic consequence values except exact quarantine",
+      "reward or task outcome",
+      "posterior or random search",
+      "second simulator"
+    ],
+    "selection_must_be_deterministic": true,
+    "direction_assignment_must_be_deterministic": true,
+    "no_grid_expansion_after_dynamic_outcome": true
+  },
+  "frozen_invariants": {
+    "closed_jaw_rad": -0.1727003294848389,
+    "action_dtype": "little_endian_float64",
+    "sample_hz": 40.0,
+    "no_clipping_smoothing_retiming_offset_repair_or_rate_limit": true,
+    "canonical_direct_target_path": true,
+    "diagnostic_zoh_delay_seconds": 0.11,
+    "requested_sent_byte_identical": true,
+    "separate_requested_sent_applied_traces_and_timestamps": true,
+    "minimum_signed_progress_mm": 36.025,
+    "minimum_distinct_families_per_direction": 2,
+    "unchanged_contact_collision_exclusion_camera_gateway_gates": true,
+    "unchanged_five_robustness_variants": true
+  },
+  "forbidden": [
+    "ACT rewrite",
+    "filtering",
+    "posterior or randomization",
+    "reward shaping",
+    "new simulator",
+    "gate relaxation",
+    "reuse of quarantined outcomes for tuning",
+    "physical execution before both simulator paths pass"
+  ],
+  "authority": {
+    "static_design": true,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Owner authorization to design and prospectively freeze one bounded static-only action-geometry successor. It does not authorize enumeration, dynamic replay, evaluator freeze, counted actions, hardware, or transfer."
+}

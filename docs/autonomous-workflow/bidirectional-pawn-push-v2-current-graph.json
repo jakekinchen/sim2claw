@@ -3,12 +3,12 @@
     "counted_task_attempts": 0,
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
-    "milestone_id": "V05-TJ",
-    "node_id": "verdict:v05-tj-temporal-replay-reject",
-    "queue_status": "STOPPED_V05_TJ_TEMPORAL_REPLAY_TERMINAL_NEGATIVE",
-    "resume_action": "stop_without_gate_weakening_or_physical_execution",
-    "resume_authorized": false,
-    "status": "terminal_direction_gate_negative_no_physical_admission"
+    "milestone_id": "V05-TK",
+    "node_id": "checkpoint:v05-tk-owner-authorization-bound",
+    "queue_status": "ACTIVE_V05_TK_OWNER_AUTHORIZATION_BOUND_STATIC_DESIGN",
+    "resume_action": "freeze_bounded_static_only_action_geometry_design",
+    "resume_authorized": true,
+    "status": "owner_authorized_static_design_active"
   },
   "authority": {
     "camera_open": false,
@@ -35,23 +35,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 68,
+    "edges": 69,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 3,
       "evaluated-on": 8,
       "fitted-on": 4,
-      "generated-from": 44,
+      "generated-from": 45,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 66,
+    "nodes": 67,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 37,
+      "checkpoint": 38,
       "context": 1,
       "counterexample": 3,
       "dataset": 1,
@@ -532,6 +532,18 @@
       "type": "generated-from"
     },
     {
+      "metadata": {
+        "owner_authorized_new_action_geometry_family": true,
+        "physical_motion": false,
+        "prior_verdict_immutable": true,
+        "quarantined_case_count": 4,
+        "static_design_only": true
+      },
+      "source": "checkpoint:v05-tk-owner-authorization-bound",
+      "target": "verdict:v05-tj-temporal-replay-reject",
+      "type": "generated-from"
+    },
+    {
       "metadata": {},
       "source": "context:c922-rgb-no-depth",
       "target": "session:bidirectional-pawn-push-v2",
@@ -745,8 +757,8 @@
       "type": "evaluated-on"
     }
   ],
-  "generated_at": "2026-07-28T12:50:09-05:00",
-  "graph_digest": "700caa08b4bb7183d5b8b87af0f6a6ea3627034994fcccb296d1a2265992cdd7",
+  "generated_at": "2026-07-28T12:57:48-05:00",
+  "graph_digest": "76dda9d57d323c5c4761d7c73e12f6ff07e0416bd8454ee19af5ed60cf1f9a72",
   "node_types": [
     "workcell",
     "session",
@@ -829,7 +841,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c"
+        "sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1223,7 +1235,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c"
+        "sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1274,7 +1286,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c"
+        "sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1295,7 +1307,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c"
+        "sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1324,7 +1336,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c"
+        "sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -1733,7 +1745,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c"
+        "sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -1918,6 +1930,43 @@
         "sha256": "5ceb39be92954ff8d59ac53bca64b1e03968c3e2603d75c94e23ed8d43d7f768"
       },
       "status": "preregistered_temporal_replay_execution_active",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "dynamic_replay_authorized": false,
+        "minimum_distinct_families_per_direction": 2,
+        "minimum_signed_progress_mm": 36.025,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "quarantine_exact": true,
+        "quarantined_case_count": 4,
+        "source_binding_id": "v05_tk_authorization",
+        "static_design_authorized": true,
+        "static_design_dimensions": [
+          "contact_center_offset_m",
+          "contact_height_m",
+          "stroke_m",
+          "reset_layout_source_destination_family"
+        ],
+        "static_simulation_authorized": false,
+        "v06_evaluator_freeze_authorized": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-tk-owner-authorization-bound",
+      "label": "V05-TK bounded static action-geometry successor authorized",
+      "proof_class": "prospective_owner_authorized_static_only_action_geometry_successor",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_action_geometry_successor_authorization_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_owner_authorized_static_only_action_geometry_successor",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_action_geometry_successor_authorization.v1",
+          "status": "owner_authorized_before_static_design_or_enumeration"
+        },
+        "proof_class": "prospective_owner_authorized_static_only_action_geometry_successor",
+        "sha256": "6b439aaa67b48110b161139695a8f10732b8de9e61cc8cc3702e2e26a4fc783b"
+      },
+      "status": "owner_authorized_static_design_active",
       "type": "checkpoint"
     },
     {
@@ -2163,7 +2212,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c"
+        "sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -2223,7 +2272,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c"
+        "sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -2241,7 +2290,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c"
+        "sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -2309,7 +2358,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c"
+        "sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -2620,7 +2669,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c",
+      "source_sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -2650,7 +2699,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c",
+      "source_sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -2680,7 +2729,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c",
+      "source_sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -2962,7 +3011,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c",
+      "source_sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -3034,6 +3083,16 @@
       "source_binding": "v05_tj_temporal_receipt",
       "source_sha256": "41338d0846b84a73390eb4654ac55b11cf778a695097bad5c4aeb7e4c3f60f75",
       "status": "terminal_direction_gate_negative_no_physical_admission"
+    },
+    {
+      "event_id": "V05_TK_OWNER_AUTHORIZATION_BOUND",
+      "node_ids_added": [
+        "checkpoint:v05-tk-owner-authorization-bound"
+      ],
+      "revision": 47,
+      "source_binding": "v05_tk_authorization",
+      "source_sha256": "6b439aaa67b48110b161139695a8f10732b8de9e61cc8cc3702e2e26a4fc783b",
+      "status": "owner_authorized_static_design_active"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -3042,7 +3101,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c"
+      "sha256": "20f04a430b28cc40602c1680d94ae15768a8ea2711d2a0f78df5447483ce532b"
     },
     {
       "id": "simulator_candidate",
@@ -3635,6 +3694,17 @@
       },
       "proof_class": "cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
       "sha256": "41338d0846b84a73390eb4654ac55b11cf778a695097bad5c4aeb7e4c3f60f75"
+    },
+    {
+      "id": "v05_tk_authorization",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_action_geometry_successor_authorization_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_owner_authorized_static_only_action_geometry_successor",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_action_geometry_successor_authorization.v1",
+        "status": "owner_authorized_before_static_design_or_enumeration"
+      },
+      "proof_class": "prospective_owner_authorized_static_only_action_geometry_successor",
+      "sha256": "6b439aaa67b48110b161139695a8f10732b8de9e61cc8cc3702e2e26a4fc783b"
     },
     {
       "id": "world_visual",
