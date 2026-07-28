@@ -31,18 +31,18 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V05-TW"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v05-tw-owner-authorization-bound",
+        "node_id": "checkpoint:v05-tw-wrist-path-static-frozen",
         "milestone_id": "V05-TW",
-        "status": "owner_authorized_static_design_active",
-        "queue_status": "ACTIVE_V05_TW_OWNER_AUTHORIZATION_BOUND_STATIC_DESIGN",
-        "resume_action": "freeze_finite_wrist_orientation_precontact_path_grid",
+        "status": "preregistered_wrist_path_static_execution_active",
+        "queue_status": "ACTIVE_V05_TW_PROSPECTIVE_STATIC_GRID_FROZEN",
+        "resume_action": "execute_one_bounded_3564_cell_static_enumeration",
         "resume_authorized": True,
         "heldout_open_count": 1,
         "cumulative_manifest_read_count": 2,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(53)
+        range(54)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -53,10 +53,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_TW_OWNER_AUTHORIZATION_BOUND"
+        == "V05_TW_WRIST_PATH_STATIC_FREEZE"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v05-tw-owner-authorization-bound"
+        "checkpoint:v05-tw-wrist-path-static-frozen"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]

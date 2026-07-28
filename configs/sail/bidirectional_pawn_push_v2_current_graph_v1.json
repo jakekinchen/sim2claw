@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T13:29:44-05:00",
+  "generated_at": "2026-07-28T13:36:50-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "78cf5d44afe2286ef459a6d090456d736ee9a52b1e7d3b4dbfcfbb8655fb89b9",
+      "sha256": "45b373354f36a1c7cfe3e9fefebb03ef9c1392855fefd64cb55314e83d5b997d",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -638,6 +638,16 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_wrist_path_successor_authorization.v1",
         "status": "owner_authorized_before_static_design_or_model_loading",
         "proof_class": "prospective_owner_authorized_static_only_wrist_orientation_and_precontact_path_successor"
+      }
+    },
+    "v05_tw_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_wrist_path_static_v1.json",
+      "sha256": "b5730808a3b7afca8ea911b4c81f6b7cbafbbf8a3e38be3aad8b91636af200ad",
+      "proof_class": "prospective_cpu_fp64_static_wrist_orientation_precontact_path_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_wrist_path_static.v1",
+        "status": "preregistered_before_model_loading_static_enumeration_or_action_generation",
+        "proof_class": "prospective_cpu_fp64_static_wrist_orientation_precontact_path_action_freeze"
       }
     },
     "simulator_candidate": {
@@ -1800,6 +1810,33 @@
       }
     },
     {
+      "id": "checkpoint:v05-tw-wrist-path-static-frozen",
+      "type": "checkpoint",
+      "label": "V05-TW finite wrist-orientation and precontact-path grid frozen",
+      "status": "preregistered_wrist_path_static_execution_active",
+      "source_binding": "v05_tw_static_contract",
+      "data": {
+        "prequarantine_family_count": 48,
+        "quarantined_family_count": 4,
+        "postquarantine_family_count": 44,
+        "wrist_orientation_count": 3,
+        "precontact_path_shape_count": 1,
+        "contact_offset_count": 3,
+        "contact_height_count": 3,
+        "stroke_count": 3,
+        "maximum_static_cells": 3564,
+        "selected_family_count_if_pass": 4,
+        "minimum_distinct_families_per_direction": 2,
+        "dynamic_outcomes_used": false,
+        "model_loading_authorized": true,
+        "static_simulation_authorized": true,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2482,6 +2519,18 @@
       }
     },
     {
+      "source": "checkpoint:v05-tw-wrist-path-static-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-tw-owner-authorization-bound",
+      "metadata": {
+        "prospective_before_model_loading_or_static_enumeration": true,
+        "quarantined_case_count": 4,
+        "maximum_static_cells": 3564,
+        "dynamic_outcomes_used": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -3003,14 +3052,23 @@
       "node_ids_added": [
         "checkpoint:v05-tw-owner-authorization-bound"
       ]
+    },
+    {
+      "revision": 53,
+      "event_id": "V05_TW_WRIST_PATH_STATIC_FREEZE",
+      "status": "preregistered_wrist_path_static_execution_active",
+      "source_binding": "v05_tw_static_contract",
+      "node_ids_added": [
+        "checkpoint:v05-tw-wrist-path-static-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-tw-owner-authorization-bound",
+    "node_id": "checkpoint:v05-tw-wrist-path-static-frozen",
     "milestone_id": "V05-TW",
-    "status": "owner_authorized_static_design_active",
-    "queue_status": "ACTIVE_V05_TW_OWNER_AUTHORIZATION_BOUND_STATIC_DESIGN",
-    "resume_action": "freeze_finite_wrist_orientation_precontact_path_grid",
+    "status": "preregistered_wrist_path_static_execution_active",
+    "queue_status": "ACTIVE_V05_TW_PROSPECTIVE_STATIC_GRID_FROZEN",
+    "resume_action": "execute_one_bounded_3564_cell_static_enumeration",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
