@@ -278,8 +278,8 @@ remaining cards to complete.
 | Q10 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Create a separate SIM→REAL push on a different admitted pawn/file and evaluate it in simulation before freeze. | Simulator task success and robustness gate pass before action freeze; action/mappings/scene/evaluator hashes sealed; prior physical outcomes do not tune this case. | Q06 found no admitted case in either direction; no SIM→REAL action may be compiled. |
 | Q11 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Execute the Q10 frozen SIM→REAL action physically once. | C922 reports selected-pawn destination success; exclusions remain stationary; bytes unchanged; no clamp/rate/repair/retry; torque-off and camera cleanup pass. Count pass/fail. At least one SIM→REAL case must pass. | No Q10 action exists and no counted motion began. SIM→REAL denominator remains `0/0`. |
 | Q12 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Continue distinct preregistered cases only as needed, up to the frozen maximum of ten. | Stop new cases immediately after one complete bidirectional result exists. Every failure remains in the denominator; no post-hoc family expansion. | Every one of the ten preregistered cases was rejected before compilation by the same frozen Q06 clearance gate; expansion and post-observation weakening are forbidden. |
-| Q13 | `IN_PROGRESS_REOPENED_Q15_PROPAGATION` | Produce the bidirectional evidence package. | Synchronized browser-playable comparisons, posters, action/mapping/evaluator receipts, case-index denominator, first-divergence summaries, Studio catalog entry, and exact claim boundary verified. Raw private recordings remain unpublished. | Rebuild the package against corrected Q03/Q05/Q06 receipts. Remove “v4 rejected” and “safety boundary”; expose the unscorable held-out, preregistered contract infeasibility, `0/0` per direction, empty action hashes, and no physical/simulator/transfer authority. |
-| Q14 | `DONE` | Final verification and publication closeout. | Focused/full relevant tests pass; workflow audit passes; Git diff is scoped; branch commit is pushed; public release/portfolio surface is updated only if already authorized and privacy-reviewed; torque and processes are clean. | `41 passed, 2 subtests passed`; workflow audit clean; torque-off receipt SHA-256 `ca50d9dae4aa9a7dd672edee625dfe51ff2e4ad65cb76e7a28e39f3f06457d09`; no camera/gateway processes; no Brev; unrelated files preserved; public release skipped as unauthorized. Closeout commit `f3e7394` pushed to `origin/codex/geometric-microtransfer-20260727`. Executor `049`; reviewer `047` (`CONTINUE`, anchor `100`). |
+| Q13 | `DONE_CORRECTED_TERMINAL_PACKAGE` | Produce the bidirectional evidence package. | Synchronized browser-playable comparisons, posters, action/mapping/evaluator receipts, case-index denominator, first-divergence summaries, Studio catalog entry, and exact claim boundary verified. Raw private recordings remain unpublished. | Corrected receipt SHA-256 `5ad9376a4be007bef22bbf93f08e5d54576e87db40b4fa08a78b716c91727e44`; viewer SHA-256 `6f13722a9be419e44d40de5526bdf1a042ae6bee0838bffc88fff05919911fbe`; contract SHA-256 `86c64da69ffce7ee9729d9f757daef9d500e9e45b57a2d3496e570f1c5c8dbc8`. Viewer/Studio expose unscorable held-out, contract infeasibility, `0/0` per direction, empty action hashes, and no task/transfer/safety-event authority. `24 passed, 2 subtests passed in 7.87s`; executor `053`; raw recordings unpublished. |
+| Q14 | `IN_PROGRESS_REOPENED_FINAL_VERIFICATION` | Final verification and publication closeout. | Focused/full relevant tests pass; workflow audit passes; Git diff is scoped; branch commit is pushed; public release/portfolio surface is updated only if already authorized and privacy-reviewed; torque and processes are clean. | Re-run the full focused suite, workflow audit, artifact/hash checks, torque/process/Brev checks, commit and push all scoped corrections while preserving unrelated files. |
 | Q15 | `DEFECT_OPEN_Q03` | Fable 5 post-result review. After Q00-Q14 and the Definition of Done are locally verified, or after a genuine receipt-backed terminal boundary, return via Computer Use to the existing Claude Desktop conversation titled `Sim-to-real transfer evaluation`; do not start a replacement unless the existing conversation is genuinely unavailable. Submit a concise evidence-complete report covering the original goal, exact actions, per-direction numerator/denominator, proof class, action/mapping/scene/evaluator hashes and versions, fit and held-out registration metrics, simulator and physical outcomes, camera paths, failures and stop conditions, tests, commits/branch, and limitations. Ask Fable to audit claim support, strongest result, weakest proof link, overlooked concrete defects or missing verification, and highest-leverage application/demo and sim2real next steps. | Existing Fable thread received the report on 2026-07-27 using `claude-fable-5`. Fable verified the hashes/denominators and Q06 infeasibility, but identified a concrete Q03 physical-square label-provenance defect. Per this gate, Q15 remains incomplete and Q03 is reopened. |
 
 ## Fallback queue
@@ -306,10 +306,11 @@ remaining cards to complete.
 
 Current state:
 
-- Q00-Q06 are verified complete, including Q03's correction to an unscorable
-  held-out and the Q05/Q06 contract-infeasibility correction. Q13 is reopened
-  for downstream evidence propagation and is the only active card. Q07-Q12
-  are not authorized; Q14-Q15 require reconciliation.
+- Q00-Q13 are dispositioned, including Q03's correction to an unscorable
+  held-out, Q05/Q06 contract-infeasibility correction, and Q13's rebuilt
+  terminal package. Q07-Q12 remain explicitly unauthorized. Q14 is reopened
+  for final verification and is the only active card; Q15 requires final
+  reconciliation.
 - Commit `0b3afab` adopted this queue and its goal-loop contract.
 - Existing prior receipts remain unchanged.
 - Robot motion remains unauthorized. Q06 admitted no case and Q07 cannot
@@ -437,11 +438,11 @@ Verification evidence:
 - Q13 receipt:
   `runs/bidirectional-pawn-push/20260727-terminal-evidence-v1/terminal_evidence_package.json`,
   SHA-256
-  `97e689864e0e4f3a04602c341415166b8971bee7fa77be95378807781bba8124`.
+  `5ad9376a4be007bef22bbf93f08e5d54576e87db40b4fa08a78b716c91727e44`.
 - Q13 viewer:
   `runs/bidirectional-pawn-push/20260727-terminal-evidence-v1/index.html`,
   SHA-256
-  `d8d31f83c880cf741dd8941a509db43770f6a3391323d42e1ea2fb0ac87d90b2`.
+  `6f13722a9be419e44d40de5526bdf1a042ae6bee0838bffc88fff05919911fbe`.
 - Q13 executor/reviewer:
   `docs/session-logs/048-executor-q13-terminal-evidence-package.md`;
   `docs/reviewer-messages/046-q13-terminal-evidence-package.md`,
@@ -449,8 +450,8 @@ Verification evidence:
 
 Remaining:
 
-- Q13 downstream package correction, Q14 re-verification/push, and Q15
-  reconciliation. Q07-Q12 remain visibly not authorized, not passed.
+- Q14 re-verification/push and Q15 reconciliation. Q07-Q12 remain visibly
+  not authorized, not passed.
 
 Blockers:
 
@@ -467,7 +468,8 @@ Blockers:
 
 Next step:
 
-- Rebuild Q13 and Studio against the corrected Q03/Q05/Q06 evidence.
+- Run the full relevant verification, workflow/hash/cleanup audits, then
+  commit and push the corrected package.
 
 Attempt ledger:
 
@@ -760,6 +762,35 @@ rows; it does not pretend there was an action replay. Studio admits the
 receipt as a blocked terminal episode with no action hash and no physical,
 simulator, transfer, training, or promotion authority. Raw recordings were not
 published. Q14 is the only active card.
+
+### Q13 post-Q15 package correction
+
+```text
+uv run --offline python scripts/build_bidirectional_terminal_evidence.py
+PASS
+
+uv run --offline pytest -q \
+  tests/test_bidirectional_terminal_evidence.py \
+  tests/test_bidirectional_q06_scene_gate.py \
+  tests/test_bidirectional_off_source_feasibility_audit.py \
+  tests/test_bidirectional_registration_v4_label_audit.py \
+  tests/test_studio.py
+........................                                                 [100%]
+24 passed, 2 subtests passed in 7.87s
+
+shasum -a 256 \
+  configs/evaluations/bidirectional_terminal_evidence_package_v1.json \
+  runs/bidirectional-pawn-push/20260727-terminal-evidence-v1/terminal_evidence_package.json \
+  runs/bidirectional-pawn-push/20260727-terminal-evidence-v1/index.html
+86c64da69ffce7ee9729d9f757daef9d500e9e45b57a2d3496e570f1c5c8dbc8
+5ad9376a4be007bef22bbf93f08e5d54576e87db40b4fa08a78b716c91727e44
+6f13722a9be419e44d40de5526bdf1a042ae6bee0838bffc88fff05919911fbe
+```
+
+The rebuilt viewer and Studio entry say “frozen contract infeasibility,” not
+“safety boundary,” and say the held-out is unscorable, not that v4 is
+rejected. Exact denominators remain `0/0` in each direction and `0/10`
+overall; action hashes remain empty. Q14 is the only active card.
 
 ## Q14 transition record
 

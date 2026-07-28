@@ -1487,7 +1487,7 @@ def _physical_canary_episodes(repo_root: Path) -> list[dict[str, Any]]:
 def _bidirectional_terminal_boundary_episodes(
     repo_root: Path,
 ) -> list[dict[str, Any]]:
-    """Admit the local Q13 safety-boundary package without task inflation."""
+    """Admit the local Q13 contract-infeasibility package without task inflation."""
 
     receipt_path = (
         repo_root
@@ -1509,7 +1509,7 @@ def _bidirectional_terminal_boundary_episodes(
         receipt.get("schema_version")
         != "sim2claw.bidirectional_terminal_evidence_package.v1"
         or receipt.get("status")
-        != "terminal_safety_boundary_no_admissible_case"
+        != "terminal_preregistered_contract_infeasibility_without_physical_attempt"
         or receipt.get("task_id") != BIDIRECTIONAL_TERMINAL_TASK
         or receipt.get("counted_action_hashes") != []
         or _as_mapping(denominator.get("real_to_sim"))
@@ -1524,7 +1524,7 @@ def _bidirectional_terminal_boundary_episodes(
         {
             "id": f"{BIDIRECTIONAL_TERMINAL_TASK}:q06-scene-gate",
             "task_id": BIDIRECTIONAL_TERMINAL_TASK,
-            "title": "Bidirectional pawn push safety stop",
+            "title": "Bidirectional pawn push contract stop",
             "subtitle": (
                 "10/10 preregistered lanes rejected before compilation · "
                 "0 physical attempts"
@@ -1533,7 +1533,7 @@ def _bidirectional_terminal_boundary_episodes(
             "status": "blocked",
             "terminal_outcome": "no_admissible_case_before_action_compilation",
             "proof_class": receipt.get("proof_class"),
-            "proof_label": "Terminal safety boundary · no task result",
+            "proof_label": "Frozen contract infeasibility · no task result",
             "physical_authority": False,
             "frame_count": 1,
             "fps": 0,

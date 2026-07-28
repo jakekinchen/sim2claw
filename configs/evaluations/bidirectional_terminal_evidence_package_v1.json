@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.bidirectional_terminal_evidence_package_contract.v1",
   "package_id": "bidirectional_pawn_push_terminal_boundary_20260727_v1",
   "task_id": "bidirectional_pawn_push_terminal_boundary_v1",
-  "proof_class": "terminal_safety_boundary_without_physical_attempt",
+  "proof_class": "terminal_preregistered_contract_infeasibility_without_physical_attempt",
   "status": "no_admissible_case",
   "inputs": [
     {
@@ -16,9 +16,19 @@
       "sha256": "c7c2b19d7bdf64e85c20f515b4d7fa859b2fd33948fa1a36438265571a752b7b"
     },
     {
-      "role": "heldout_registration_receipt",
+      "role": "original_heldout_registration_receipt",
       "path": "runs/bidirectional-pawn-push/20260727-registration-v4-heldout/evaluation.json",
       "sha256": "7bfd06be5dd397a8c25dc7a4e3cdadd08fa006271fec38d4abcac27d04c125bf"
+    },
+    {
+      "role": "corrected_registration_label_audit",
+      "path": "runs/bidirectional-pawn-push/20260727-registration-v4-heldout-label-audit-v2/evaluation.json",
+      "sha256": "efaf436bdba9e52df781973abaabf0a2b346261daddbb8e9fe259a1cd61efd02"
+    },
+    {
+      "role": "q05_feasibility_audit",
+      "path": "runs/bidirectional-pawn-push/20260727-q05-feasibility-audit-v1/evaluation.json",
+      "sha256": "0dbe2cbdb078b219c172e20ffd08c7be96e01f68abbca84355c4d04afa3bd591"
     },
     {
       "role": "c2_retrospective_receipt",
@@ -33,7 +43,7 @@
     {
       "role": "q06_scene_gate_receipt",
       "path": "runs/bidirectional-pawn-push/20260727-q06-scene-v1/scene_gate_receipt.json",
-      "sha256": "3c81caaa626043d1a12c34bf9b05e11fa0e0823070b516f001e8857b5c59ec0c"
+      "sha256": "9863ccdeadb2d5d01dd959d14bd226f997eec1b2755156f6c441a9d98e7010f1"
     }
   ],
   "output": {
@@ -52,6 +62,6 @@
     "sim_to_real_attempted": 0,
     "total_physical_attempts": 0,
     "maximum_physical_attempts": 10,
-    "statement": "Fresh RGB scene evidence proves that every frozen case violates the preregistered exclusion clearance. No action was compiled and no physical or bidirectional task result exists."
+    "statement": "The frozen evaluator was structurally infeasible for the reset layout before Q06: its 88.9 mm route-clearance requirement exceeded the 62.861793 mm global upper bound, and every frozen case measured 44.45 mm. The registration fit passed at 24.631505 mm, but the single-open held-out is unscorable because no exact camera-owned physical square exists. No action was compiled and no physical, simulator, safety-event, mechanical-failure, or bidirectional task result exists."
   }
 }

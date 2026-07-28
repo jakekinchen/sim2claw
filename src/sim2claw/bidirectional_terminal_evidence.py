@@ -74,7 +74,9 @@ def _viewer_html(
 ) -> str:
     scene_gate = inputs["q06_scene_gate_receipt"]
     capture = inputs["fresh_rgb_capture_receipt"]
-    heldout = inputs["heldout_registration_receipt"]
+    original_heldout = inputs["original_heldout_registration_receipt"]
+    heldout_audit = inputs["corrected_registration_label_audit"]
+    feasibility = inputs["q05_feasibility_audit"]
     retrospective = inputs["c2_retrospective_receipt"]
     frames = scene_gate["camera_frames"]
     claim = contract["claim_boundary"]
@@ -83,7 +85,7 @@ def _viewer_html(
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bidirectional pawn push — terminal safety boundary</title>
+<title>Bidirectional pawn push — frozen contract infeasibility</title>
 <style>
 body{{font:16px/1.45 system-ui,sans-serif;margin:0;background:#0d1117;color:#e6edf3}}
 main{{max-width:1100px;margin:auto;padding:24px}} h1{{font-size:2rem}}
@@ -95,7 +97,7 @@ th,td{{padding:8px;border-bottom:1px solid #30363d;text-align:left}} code{{color
 </style>
 </head>
 <body><main>
-<h1>Bidirectional pawn push: terminal safety boundary</h1>
+<h1>Bidirectional pawn push: frozen contract infeasibility</h1>
 <div class="warning"><strong>No task-transfer result.</strong>
 {html.escape(claim['statement'])}</div>
 <p>Proof class: <code>{html.escape(contract['proof_class'])}</code>.
@@ -117,13 +119,16 @@ Physical attempts: 0 / 10 maximum.</p>
 <h2>Registration and retrospective diagnostics</h2>
 <ul>
 <li>V4 fit residual: 24.631505 mm.</li>
-<li>Single-open held-out B7 residual: 164.353128 mm; v4 rejected.</li>
+<li>Single-open held-out: unscorable; no camera-owned physical square.</li>
+<li>Original B7-provenance score: 164.353128 mm; preserved but invalid as a held-out decision.</li>
 <li>Immutable C2 old/v4 clearance: 312.326353 / 75.624879 mm.</li>
 <li>C2 v4 contact, rise, and off-source displacement: zero.</li>
 </ul>
 <p>Capture status: {html.escape(capture['status'])}.
-Held-out status: {html.escape(heldout['status'])}.
+Held-out correction: {html.escape(heldout_audit['status'])}.
 C2 retrospective status: {html.escape(retrospective['status'])}.</p>
+<p>Frozen evaluator feasibility: {feasibility['geometry']['global_route_clearance_upper_bound_mm']:.6f} mm
+upper bound versus {feasibility['geometry']['required_route_clearance_mm']:.1f} mm required.</p>
 <p>No synchronized action comparison exists because Q06 rejected every case
 before action compilation. The three fresh RGB frames are presented as
 separate camera views, not as exposure-synchronized media or task evidence.</p>
@@ -137,9 +142,12 @@ def build(
 ) -> dict[str, Any]:
     contract, inputs = load_and_verify_inputs(repo_root, contract_path)
     scene_gate = inputs["q06_scene_gate_receipt"]
+    original_heldout = inputs["original_heldout_registration_receipt"]
+    heldout_audit = inputs["corrected_registration_label_audit"]
+    feasibility = inputs["q05_feasibility_audit"]
     if (
         scene_gate.get("status")
-        != "terminal_safety_boundary_no_admissible_case"
+        != "terminal_preregistered_contract_infeasibility_without_physical_attempt"
         or scene_gate.get("admitted_case_ids") != []
         or scene_gate.get("counted_physical_attempts") != 0
         or scene_gate.get("robot_motion_commands") != 0
@@ -164,7 +172,7 @@ def build(
         "schema_version": "sim2claw.bidirectional_terminal_evidence_package.v1",
         "package_id": contract["package_id"],
         "task_id": contract["task_id"],
-        "status": "terminal_safety_boundary_no_admissible_case",
+        "status": "terminal_preregistered_contract_infeasibility_without_physical_attempt",
         "proof_class": contract["proof_class"],
         "contract_sha256": sha256(contract_path or CONTRACT_PATH),
         "input_hashes": {
@@ -180,8 +188,18 @@ def build(
         "registration": {
             "candidate": "bidirectional_pawn_push_scene_registration_v4",
             "fit_residual_mm": 24.631505,
-            "heldout_residual_mm": 164.353128,
+            "heldout_residual_mm": None,
+            "heldout_physical_square": None,
+            "heldout_status": heldout_audit["status"],
+            "original_provenance_label": original_heldout["held_out"][
+                "physical_square"
+            ],
+            "original_provenance_residual_mm": original_heldout["held_out"][
+                "residual_mm"
+            ],
+            "original_score_valid_as_heldout_decision": False,
             "accepted": False,
+            "rejected_by_heldout": False,
         },
         "retrospective_c2": {
             "old_minimum_clearance_mm": 312.326353,
@@ -194,6 +212,13 @@ def build(
             "id": "bidirectional_off_source_push_float64_40hz_v1",
             "sha256": inputs["q06_scene_gate_receipt"]["evaluator_sha256"],
             "format": "native little-endian float64 C-order at 40 Hz",
+            "contract_feasible_for_reset_layout": False,
+            "required_route_clearance_mm": feasibility["geometry"][
+                "required_route_clearance_mm"
+            ],
+            "global_route_clearance_upper_bound_mm": feasibility["geometry"][
+                "global_route_clearance_upper_bound_mm"
+            ],
         },
         "counted_action_hashes": [],
         "denominator": {

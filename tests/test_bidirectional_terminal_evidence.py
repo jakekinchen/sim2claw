@@ -4,7 +4,10 @@ from sim2claw.studio_catalog import build_catalog
 
 def test_terminal_package_keeps_zero_attempt_claim_boundary() -> None:
     receipt = build()
-    assert receipt["status"] == "terminal_safety_boundary_no_admissible_case"
+    assert (
+        receipt["status"]
+        == "terminal_preregistered_contract_infeasibility_without_physical_attempt"
+    )
     assert receipt["counted_action_hashes"] == []
     assert receipt["denominator"] == {
         "real_to_sim": {"successful": 0, "attempted": 0},
@@ -16,6 +19,15 @@ def test_terminal_package_keeps_zero_attempt_claim_boundary() -> None:
     assert all(case["admitted"] is False for case in receipt["case_results"])
     assert receipt["browser_comparison"]["available"] is False
     assert receipt["raw_recordings_published"] is False
+    assert receipt["registration"]["heldout_residual_mm"] is None
+    assert receipt["registration"]["heldout_physical_square"] is None
+    assert receipt["registration"]["rejected_by_heldout"] is False
+    assert (
+        receipt["registration"]["original_score_valid_as_heldout_decision"]
+        is False
+    )
+    assert receipt["evaluator"]["contract_feasible_for_reset_layout"] is False
+    assert receipt["evaluator"]["global_route_clearance_upper_bound_mm"] < 88.9
 
 
 def test_studio_catalog_labels_terminal_package_without_success() -> None:
