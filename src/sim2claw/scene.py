@@ -63,6 +63,17 @@ TELEOP_TAN_PAWN_SQUARES = (
     "h7",
 )
 
+BOARD_D4_TRANSFORMS = (
+    "identity",
+    "rotate_90",
+    "rotate_180",
+    "rotate_270",
+    "reflect_files",
+    "reflect_ranks",
+    "reflect_main_diagonal",
+    "reflect_anti_diagonal",
+)
+
 
 @dataclass(frozen=True)
 class SceneGeometry:
@@ -195,6 +206,34 @@ def board_square_center(
     )
 
 
+def transform_board_square(square: str, transform: str = "identity") -> str:
+    """Map a physical square label through one frozen D4 board symmetry."""
+
+    if len(square) != 2 or square[0] not in "abcdefgh" or square[1] not in "12345678":
+        raise ValueError(f"invalid chess square: {square}")
+    if transform not in BOARD_D4_TRANSFORMS:
+        raise ValueError(f"unknown board D4 transform: {transform}")
+    file_index = ord(square[0]) - ord("a")
+    rank_index = int(square[1]) - 1
+    if transform == "identity":
+        mapped_file, mapped_rank = file_index, rank_index
+    elif transform == "rotate_90":
+        mapped_file, mapped_rank = 7 - rank_index, file_index
+    elif transform == "rotate_180":
+        mapped_file, mapped_rank = 7 - file_index, 7 - rank_index
+    elif transform == "rotate_270":
+        mapped_file, mapped_rank = rank_index, 7 - file_index
+    elif transform == "reflect_files":
+        mapped_file, mapped_rank = 7 - file_index, rank_index
+    elif transform == "reflect_ranks":
+        mapped_file, mapped_rank = file_index, 7 - rank_index
+    elif transform == "reflect_main_diagonal":
+        mapped_file, mapped_rank = rank_index, file_index
+    else:
+        mapped_file, mapped_rank = 7 - rank_index, 7 - file_index
+    return f"{chr(ord('a') + mapped_file)}{mapped_rank + 1}"
+
+
 def _format_vector(values: tuple[float, ...] | list[float]) -> str:
     return " ".join(f"{value:.9g}" for value in values)
 
@@ -280,6 +319,7 @@ def _piece_bodies(
     geometry: SceneGeometry,
     *,
     piece_layout: str = "standard",
+    piece_square_transform: str = "identity",
 ) -> list[str]:
     back_rank = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
     colors = {
@@ -326,10 +366,13 @@ def _piece_bodies(
     detailed_pawns = piece_layout in {CURRENT_TASK_PIECE_LAYOUT, "teleop_pawns"}
     bodies: list[str] = []
     for color, kind, file_index, rank_index in pieces:
-        local_x = (file_index - 3.5) * geometry.square_size
-        local_y = (rank_index - 3.5) * geometry.square_size
-        dx, dy = _rotate_xy(local_x, local_y, geometry.board_yaw_degrees)
         square = f"{chr(ord('a') + file_index)}{rank_index + 1}"
+        mapped_square = transform_board_square(square, piece_square_transform)
+        mapped_file_index = ord(mapped_square[0]) - ord("a")
+        mapped_rank_index = int(mapped_square[1]) - 1
+        local_x = (mapped_file_index - 3.5) * geometry.square_size
+        local_y = (mapped_rank_index - 3.5) * geometry.square_size
+        dx, dy = _rotate_xy(local_x, local_y, geometry.board_yaw_degrees)
         name = f"{color}_{kind}_{square}"
         piece_geoms = _piece_geoms(
             kind,
@@ -715,6 +758,7 @@ def build_scene_xml(
     external_root: Path = DEFAULT_EXTERNAL_ROOT,
     scan_overlay: bool = False,
     piece_layout: str = "standard",
+    piece_square_transform: str = "identity",
     board_center_in_table_frame_xy_m: tuple[float, float] | None = None,
     board_yaw_relative_to_table_degrees: float | None = None,
     include_visual_props: bool = True,
@@ -782,7 +826,11 @@ def build_scene_xml(
         *_table_body(geometry),
         *_fiducial_body(config, geometry),
         *_board_body(geometry),
-        *_piece_bodies(geometry, piece_layout=piece_layout),
+        *_piece_bodies(
+            geometry,
+            piece_layout=piece_layout,
+            piece_square_transform=piece_square_transform,
+        ),
         *_robot_mounts(config, geometry),
     ]
     return "\n".join(
@@ -852,6 +900,7 @@ def build_scene_spec(
     scan_overlay: bool = False,
     include_robots: bool = True,
     piece_layout: str = "standard",
+    piece_square_transform: str = "identity",
     board_center_in_table_frame_xy_m: tuple[float, float] | None = None,
     board_yaw_relative_to_table_degrees: float | None = None,
     include_visual_props: bool = True,
@@ -862,6 +911,7 @@ def build_scene_spec(
             external_root=external_root,
             scan_overlay=scan_overlay,
             piece_layout=piece_layout,
+            piece_square_transform=piece_square_transform,
             board_center_in_table_frame_xy_m=board_center_in_table_frame_xy_m,
             board_yaw_relative_to_table_degrees=board_yaw_relative_to_table_degrees,
             include_visual_props=include_visual_props,
