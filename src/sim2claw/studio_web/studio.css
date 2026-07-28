@@ -2445,6 +2445,109 @@ body[data-studio-mode="read_only_evidence"] .live-trigger {
   fill: var(--motion);
 }
 
+.board-orientation-contract {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(300px, 1.3fr);
+  gap: 18px 24px;
+  align-items: center;
+  margin: 0 16px 16px;
+  padding: 16px;
+  border: 1px solid #92513b;
+  border-radius: 6px;
+  background: #fffaf0;
+}
+
+.board-orientation-contract header h3 {
+  margin: 5px 0 7px;
+  font-family: var(--display);
+  font-size: 24px;
+}
+
+.board-orientation-contract header > p,
+.board-orientation-contract footer {
+  color: var(--graphite-dark);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.canonical-board-frame {
+  display: grid;
+  gap: 6px;
+  width: min(100%, 520px);
+  justify-self: center;
+}
+
+.canonical-board-cue {
+  color: #78301e;
+  font-family: var(--utility);
+  font-size: clamp(8px, 1.2vw, 11px);
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.canonical-board-cue.is-near {
+  color: #0b654f;
+}
+
+.canonical-orientation-board {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  overflow: hidden;
+  border: 5px solid #4b2c1d;
+  border-radius: 4px;
+  box-shadow: 0 8px 22px rgb(42 26 17 / 15%);
+}
+
+.canonical-orientation-cell {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: clamp(2px, 0.6vw, 6px);
+  aspect-ratio: 1;
+  background: #e8d2aa;
+  color: #211812;
+  font-family: var(--utility);
+  font-size: clamp(7px, 1.15vw, 11px);
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 1px rgb(255 255 255 / 70%);
+}
+
+.canonical-orientation-cell.is-dark {
+  background: #9b6b49;
+  color: #fff9ec;
+  text-shadow: 0 1px rgb(0 0 0 / 45%);
+}
+
+.board-orientation-contract footer {
+  display: flex;
+  justify-content: space-between;
+  grid-column: 2;
+  gap: 12px;
+  font-family: var(--utility);
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .board-orientation-contract {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 13px;
+  }
+
+  .board-orientation-contract footer {
+    grid-column: 1;
+    flex-direction: column;
+    gap: 2px;
+    text-align: center;
+  }
+
+  .canonical-board-frame {
+    width: min(100%, 440px);
+  }
+}
+
 .safety-check {
   display: flex;
   align-items: flex-start;

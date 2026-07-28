@@ -1,0 +1,213 @@
+{
+  "schema_version": "sim2claw.chessboard_canonical_orientation.v1",
+  "orientation_id": "standard_robot_near_rank1_v1",
+  "status": "accepted_coordinate_contract_no_execution_authority",
+  "proof_class": "operator_defined_coordinate_convention_bound_to_existing_metric_scene",
+  "canonical_semantics": {
+    "rank_1_side": "near_operator_and_board_reaching_left_arm",
+    "rank_8_side": "far_from_operator_and_board_reaching_left_arm",
+    "file_order_from_operator_view": "a_to_h_left_to_right",
+    "rank_order_from_operator_view": "1_to_8_near_to_far",
+    "all_64_labels_required_in_visualizations": true
+  },
+  "physical_landmark_binding": {
+    "source": "configs/polycam/8873B66C-774C-48B1-B51D-338645867009.json",
+    "source_sha256": "0dbe0c95fe50f84a8ff8e60f9727f7123c15c921ace55a0460b49ffa4c34dc05",
+    "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "board_pose_id": "board_robotward_100mm_20260718_v3",
+    "board_center_table_xy_m": [
+      0.04,
+      -0.065
+    ],
+    "board_reaching_left_arm_mount_table_xy_m": [
+      -0.04,
+      0.365
+    ],
+    "board_to_left_arm_table_xy_m": [
+      -0.08,
+      0.43
+    ],
+    "robotward_axis_in_table_frame": "+y",
+    "near_side_reason": "The current board-reaching left arm is 0.43 m in +table-y from board center; +table-y is independently declared robotward in the current physical-layout configuration.",
+    "physical_calibration_authority": false
+  },
+  "metric_frames": {
+    "table_frame": {
+      "handedness": "right_handed_z_up",
+      "board_center_xy_m": [
+        0.04,
+        -0.065
+      ],
+      "board_yaw_degrees": 1.55,
+      "playing_surface_side_m": 0.3556,
+      "square_side_m": 0.04445,
+      "canonical_playing_surface_a1_outer_corner_xy_m": [
+        0.212925576875494,
+        0.11754430931222598
+      ],
+      "canonical_file_a_to_h_unit_xy": [
+        -0.999634101,
+        -0.027049304
+      ],
+      "canonical_rank_1_to_8_unit_xy": [
+        0.027049304,
+        -0.999634101
+      ]
+    },
+    "world_frame": {
+      "handedness": "right_handed_z_up",
+      "table_center_xy_m": [
+        -0.10014410632358403,
+        0.5659250486677556
+      ],
+      "table_yaw_degrees": -20.388574,
+      "board_center_xy_m": [
+        -0.0852950801962051,
+        0.49106179718167314
+      ],
+      "canonical_playing_surface_a1_outer_corner_xy_m": [
+        0.1403926881018228,
+        0.6019252773753587
+      ],
+      "canonical_file_a_to_h_unit_xy": [
+        -0.946432082,
+        0.322902947
+      ],
+      "canonical_rank_1_to_8_unit_xy": [
+        -0.322902947,
+        -0.946432082
+      ],
+      "board_reaching_left_arm_mount_xy_m": [
+        -0.01047759453695446,
+        0.9219937452194439
+      ]
+    }
+  },
+  "legacy_scene_adapter": {
+    "legacy_frame_id": "frozen_scene_raw_grid_robot_near_rank8_v1",
+    "canonical_frame_id": "standard_robot_near_rank1_v1",
+    "transform": "rotate_180",
+    "semantic_body_name_rule": "Pawn body suffixes and task case IDs already use canonical physical labels and are preserved. Only their raw scene-grid placement crosses this adapter.",
+    "formula": {
+      "legacy_file_index_zero_based_to_canonical": "7 - legacy_file_index",
+      "legacy_rank_to_canonical": "9 - legacy_rank"
+    },
+    "self_inverse": true,
+    "bijection_size": 64,
+    "examples": {
+      "a1": "h8",
+      "h8": "a1",
+      "g8": "b1",
+      "f7": "c2",
+      "e8": "d1",
+      "d7": "e2",
+      "c8": "f1",
+      "b7": "g2"
+    },
+    "implementation": {
+      "path": "src/sim2claw/board_orientation.py",
+      "sha256": "102e4ef7fa287e296b185852608461ab3d6122aa7ba1dc27483d8fff8e4c18c3"
+    },
+    "immutable_legacy_geometry": {
+      "path": "src/sim2claw/scene.py",
+      "sha256": "4b7dd7b251c87580505a40164117cc0999f36960244a5c66c2065165afcf3e46"
+    }
+  },
+  "sparse_reset_layout": {
+    "canonical_semantic_body_labels": {
+      "brown": [
+        "a2",
+        "b1",
+        "c2",
+        "d1",
+        "e2",
+        "f1",
+        "g2",
+        "h1"
+      ],
+      "tan": [
+        "a8",
+        "b7",
+        "c8",
+        "d7",
+        "e8",
+        "f7",
+        "g8",
+        "h7"
+      ]
+    },
+    "raw_legacy_grid_positions_for_canonical_body_labels": {
+      "brown": [
+        "a8",
+        "b7",
+        "c8",
+        "d7",
+        "e8",
+        "f7",
+        "g8",
+        "h7"
+      ],
+      "tan": [
+        "a2",
+        "b1",
+        "c2",
+        "d1",
+        "e2",
+        "f1",
+        "g2",
+        "h1"
+      ]
+    },
+    "owner_reviewed_robot_side_subset": [
+      "b1",
+      "c2",
+      "d1",
+      "e2",
+      "f1",
+      "g2"
+    ],
+    "owner_reviewed_robot_side_material": "brown",
+    "example": {
+      "canonical_body_id": "brown_pawn_b1",
+      "canonical_square": "b1",
+      "raw_legacy_grid_square": "g8",
+      "required_position_equality": "position(brown_pawn_b1) == canonical_square_center(b1) == legacy_board_square_center(g8)"
+    }
+  },
+  "historical_frame_separation": {
+    "owner_reviewed_orientation_diagnosis": {
+      "path": "src/sim2claw/pawn_bg_workcell_fit.py",
+      "sha256": "17190f9d81f6ade18f51036bf80a140e21643c1b06e8ad57a3295784cb7e0a4d"
+    },
+    "v04_fit_only_candidate": {
+      "path": "configs/scenes/bidirectional_pawn_push_scene_registration_v4.json",
+      "sha256": "c7c2b19d7bdf64e85c20f515b4d7fa859b2fd33948fa1a36438265571a752b7b",
+      "transform": "reflect_ranks",
+      "scope": "historical single-source fit-only candidate mapping physical c2 to fit c7",
+      "not_the_global_frame_transform": true,
+      "preserved_without_edit": true
+    }
+  },
+  "invariants": {
+    "historical_receipts_and_raw_square_labels_are_never_rewritten": true,
+    "historical_action_arrays_and_hashes_are_never_rewritten": true,
+    "new_square_dependent_code_must_declare_canonical_semantic_or_raw_grid_frame": true,
+    "canonical_body_ids_and_task_case_ids_are_not_relabelled": true,
+    "canonical_body_raw_grid_placement_must_cross_the_adapter": true,
+    "rank_only_reflection_is_forbidden_as_global_frame_mapping": true
+  },
+  "authority": {
+    "model_loading": false,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Coordinate convention and deterministic adapter only. It does not recalibrate geometry, alter any historical action or receipt, establish physical task success, or authorize model, camera, gateway, serial, hardware, paid-compute, promotion, or transfer work."
+}

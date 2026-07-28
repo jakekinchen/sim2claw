@@ -252,6 +252,7 @@ const elements = {
   simReplayMetrics: document.querySelector("#sim-replay-metrics"),
   generatePhysicsReplay: document.querySelector("#generate-physics-replay"),
   pawnPreviewBoard: document.querySelector("#pawn-preview-board"),
+  canonicalOrientationBoard: document.querySelector("#canonical-orientation-board"),
   pawnBoardInstruction: document.querySelector("#pawn-board-instruction"),
   pawnPreviewSource: document.querySelector("#pawn-preview-source"),
   pawnPreviewTarget: document.querySelector("#pawn-preview-target"),
@@ -3407,6 +3408,23 @@ function boardSquareDescription(square, { brown, tan } = previewPawnSquares()) {
   return `${coordinate}, empty square`;
 }
 
+function renderCanonicalOrientationBoard() {
+  const board = elements.canonicalOrientationBoard;
+  if (!board) return;
+  board.replaceChildren();
+  for (const rank of [8, 7, 6, 5, 4, 3, 2, 1]) {
+    for (const file of boardFiles) {
+      const square = `${file}${rank}`;
+      const cell = document.createElement("span");
+      cell.className = "canonical-orientation-cell";
+      cell.dataset.canonicalSquare = square;
+      if ((boardFiles.indexOf(file) + rank) % 2 === 0) cell.classList.add("is-dark");
+      text(cell, square.toUpperCase());
+      board.append(cell);
+    }
+  }
+}
+
 function updatePawnBoardInteractivity(locked = elements.sourceSquare.disabled) {
   const selectingSource = state.pawnBoardSelectionStep === "source";
   const validSquares = selectingSource ? recorderSourceSquares() : recorderDestinationSquares();
@@ -4335,6 +4353,7 @@ window.addEventListener("hashchange", restoreRoute);
 window.addEventListener("pagehide", () => stopLiveWorkspace({ useBeacon: true }));
 
 initializeRecorderForm();
+renderCanonicalOrientationBoard();
 fetchHealth().finally(() => {
   fetchCatalog({ initial: true }).then(restoreRoute);
   fetchProjectMap();

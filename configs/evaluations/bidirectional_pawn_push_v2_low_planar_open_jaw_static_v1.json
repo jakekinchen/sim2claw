@@ -1,0 +1,187 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_open_jaw_static.v1",
+  "enumeration_id": "bidirectional-pawn-push-v2-low-planar-open-jaw-static-v1",
+  "status": "paused_orientation_migration_complete_awaiting_fable_no_resume_authority",
+  "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter",
+  "pre_migration_sha256": "6184a0b8f787bd09b0bbc96f1015077f83d47040610e04f21dd845074da99571",
+  "resume": false,
+  "resume_requires": "fresh_post_fable_manager_authorization_and_contract_revision",
+  "authorization": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization_v1.json",
+    "sha256": "fb88f8672120bdaa223c1ab44c2cd04dabe4eb16561b9672a973d9869e5896bc"
+  },
+  "orientation_contract": {
+    "path": "configs/scenes/chessboard_canonical_orientation_v1.json",
+    "sha256": "d67168f6f1163a1bc67dfe977fa00e69d27b07148b807c3f953f1874e112d129",
+    "active_square_frame": "standard_robot_near_rank1_v1",
+    "legacy_scene_adapter": "rotate_180"
+  },
+  "v05_uf_temporal_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/temporal-replay-v1/receipt.json",
+    "sha256": "526e5f98acb1058d15bc61220f25fdc3fe7b14f96b1172de2df99a80da2455c4"
+  },
+  "orientation_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_orientation_funnel_static_v1.json",
+    "sha256": "3bbcbb7748d5e5032accdd1afa80f65700f8e36c7e1a951ec1494591924d0513"
+  },
+  "seeded_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_seeded_funnel_static_v1.json",
+    "sha256": "153c22e0252d9d4736bbc0a3f67dbf927a0a95424e01aa34ddf107b43802803f"
+  },
+  "ramped_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_ramped_funnel_static_v1.json",
+    "sha256": "0b67546df86915e01531b773860e9c3cc774f342edd78c6b928608e8b326974a"
+  },
+  "open_jaw_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.json",
+    "sha256": "44db6475d24038f1bee12ce4a7128461310431007c2f5d2ae22fac31050ec3ea"
+  },
+  "base_implementations": {
+    "orientation": {
+      "path": "src/sim2claw/bidirectional_pawn_push_v2_orientation_funnel_static_v1.py",
+      "sha256": "b3b98ba3489737a105d7fc3a3a9b30d2ba7287aee1ec0b3ef370e46b204e6d61"
+    },
+    "seeded": {
+      "path": "src/sim2claw/bidirectional_pawn_push_v2_seeded_funnel_static_v1.py",
+      "sha256": "8943d6be84e0fa6d080bb7d96404a2b389b0b758c9816f24485cce86ad0fbdf8"
+    },
+    "planar_scaffold": {
+      "path": "src/sim2claw/bidirectional_pawn_push_v2_ramped_funnel_static_v1.py",
+      "sha256": "c22663fee33065aecd203883a11ce4632f7d6b2ef50038b90c97c85fbeba751e"
+    },
+    "unilateral_open_jaw": {
+      "path": "src/sim2claw/bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.py",
+      "sha256": "b1fc14e57b37608c091b9736fc854a63ef39ca81b74673e624152815e3528b46"
+    }
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.py",
+    "sha256": "214d0ba1e218f4c6c42894dc33b556ce08182acff8ea1cff04d3058c4855ad64",
+    "pre_migration_sha256": "ee052c02ff6fde7acabd6c074bb3b010861be2824a1c3c4f26d84f46de9aa8a1",
+    "fail_closed_before_model_loading": true
+  },
+  "frozen_overrides": {
+    "cumulative_quarantine_case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8",
+      "tan_pawn_g8__g8_g7",
+      "tan_pawn_g8__g8_h8",
+      "tan_pawn_f7__f7_f6",
+      "brown_pawn_e2__e2_f2",
+      "brown_pawn_a2__a2_b2",
+      "tan_pawn_g8__g8_f8",
+      "tan_pawn_f7__f7_e7",
+      "tan_pawn_f7__f7_g7",
+      "tan_pawn_h7__h7_g7",
+      "tan_pawn_e8__e8_d8",
+      "brown_pawn_b1__b1_a1",
+      "tan_pawn_d7__d7_c7"
+    ],
+    "case_ids_are_semantic_and_preserved": true,
+    "semantic_square_frame": "standard_robot_near_rank1_v1",
+    "raw_scene_grid_frame": "frozen_scene_raw_grid_robot_near_rank8_v1",
+    "compatibility_excluded_source_squares": [
+      "b1",
+      "c2",
+      "d7",
+      "e8",
+      "h7"
+    ],
+    "compatibility_prior_quarantine_count": 16,
+    "cumulative_quarantine_count": 20,
+    "preexclusion_family_count": 48,
+    "post_source_exclusion_family_count": 35,
+    "postquarantine_family_count": 22,
+    "setup_branch_count": 3,
+    "wrist_seed_count": 3,
+    "unilateral_contact_side_count": 2,
+    "cells_per_family": 18,
+    "maximum_total_cells": 396,
+    "contact_height_m": 0.018,
+    "contact_offset_m": 0.016,
+    "stroke_m": 0.09,
+    "precontact_clearance_height_m": 0.075,
+    "level_engagement_m": 0.01,
+    "vertical_rise_m": 0.0,
+    "open_jaw_target_rad": 1.2,
+    "source_jaw_model_rad": -0.12892762470308788,
+    "sample_hz": 40.0,
+    "jaw_opening_speed_percent_per_second": 20.0,
+    "path_shape": "source-pose monotonic open preamble; exact demonstrated setup and wrist seed; unilateral guide-side overhead; vertical descent to 18 mm; 3 mm guide-to-center sweep; 10 mm level engagement; completely level continuation to the 90 mm planar endpoint",
+    "geometry_derivation": "The 18 mm center is the prior low-center value inside the 17-31.2 mm detailed-pawn stable body band; the 0.75 mm tip bottom remains at 17.25 mm. The 16 mm behind-center offset exceeds 13.8 mm pawn radius plus 0.75 mm tip radius by 1.45 mm. The prior static-safe 90 mm stroke reaches 74 mm beyond center, is 2.49 times the 36.025 mm gate, and adds 15 mm beyond the failed 75 mm ramp.",
+    "finite_and_nonexpandable_after_freeze": true
+  },
+  "unchanged_gates": {
+    "minimum_signed_progress_mm": 36.025,
+    "minimum_distinct_families_per_direction": 2,
+    "selected_family_count": 4,
+    "maximum_ik_residual_m": 0.003,
+    "minimum_arm_joint_limit_margin_rad": 0.03490658503988659,
+    "camera_margin_required": true,
+    "calibrated_gateway_bounds_required": true,
+    "reviewed_gateway_rates_required": true,
+    "requested_sent_identity_required": true,
+    "source_arm_and_gripper_envelope_required": true,
+    "new_disallowed_robot_collision_count": 0
+  },
+  "unilateral_no_grasp_gates": {
+    "exact_open_jaw_target_after_preamble_tolerance_rad": 1e-12,
+    "jaw_closing_command_count": 0,
+    "upward_or_rising_segment_count": 0,
+    "expected_unilateral_contact_required": true,
+    "opposite_jaw_selected_pawn_contact_count": 0,
+    "simultaneous_bilateral_selected_pawn_contact_count": 0,
+    "selected_pawn_enclosure_or_grasp_count": 0,
+    "robot_board_contact_count": 0,
+    "future_maximum_selected_vertical_rise_mm": 2.0
+  },
+  "future_temporal_gates_if_static_passes": {
+    "canonical_direct_target": true,
+    "diagnostic_zoh_delay_seconds": 0.11,
+    "five_variants": true,
+    "minimum_signed_progress_mm": 36.025,
+    "minimum_cases_per_direction": 2,
+    "maximum_selected_vertical_rise_mm": 2.0,
+    "no_opposite_or_bilateral_contact": true,
+    "no_grasp_or_enclosure": true,
+    "no_robot_board_contact": true,
+    "all_prior_collision_camera_exclusion_gateway_and_identity_gates": true
+  },
+  "forbidden": {
+    "dynamic_outcome_selection": true,
+    "quarantined_case_or_source_reuse": true,
+    "scalar_geometry_sweep": true,
+    "upward_or_rising_segment": true,
+    "grasp_and_place": true,
+    "jaw_closing": true,
+    "bilateral_contact": true,
+    "force_current_or_perception_feedback": true,
+    "adaptive_control": true,
+    "manual_intervention": true,
+    "gate_weakening": true,
+    "physical_motion": true,
+    "paid_compute": true
+  },
+  "authority": {
+    "model_loading": false,
+    "static_simulation": false,
+    "action_freeze_if_static_gate_passes": false,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Paused, unexecuted V05-UG static draft after canonical orientation migration. Legacy quarantine/source labels and the pre-migration hash remain explicit; canonical aliases are rotate_180 derivations only. Resume is false and the implementation fails before model loading unless a fresh post-Fable authorization revises this contract. No simulation, dynamics, action freeze, V06, camera, gateway, serial, hardware, paid compute, promotion, or transfer authority."
+}

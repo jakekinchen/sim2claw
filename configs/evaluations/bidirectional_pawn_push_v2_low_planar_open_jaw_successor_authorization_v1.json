@@ -1,0 +1,180 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization.v1",
+  "authorization_id": "bidirectional-pawn-push-v2-low-planar-open-jaw-successor-20260728",
+  "status": "paused_orientation_migration_complete_awaiting_fable_no_resume_authority",
+  "proof_class": "paused_unexecuted_successor_draft_with_canonical_semantics_and_raw_grid_adapter",
+  "pre_migration_sha256": "c063d5ccf70c088f53d83305409708bebfb71a63f44a0481aebe1cf13babe566",
+  "authorized_at": "2026-07-28",
+  "authorizer": "Codex Manager",
+  "standing_delegation": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json",
+    "sha256": "8e59b7385ca14083d6ddd571ecc13fbec2f884cba41b3583ccfb317737e81ed5"
+  },
+  "orientation_contract": {
+    "path": "configs/scenes/chessboard_canonical_orientation_v1.json",
+    "sha256": "d67168f6f1163a1bc67dfe977fa00e69d27b07148b807c3f953f1874e112d129",
+    "active_square_frame": "standard_robot_near_rank1_v1",
+    "legacy_scene_adapter": "rotate_180"
+  },
+  "resume": false,
+  "resume_requires": "fresh_post_fable_manager_authorization_bound_to_this_orientation_contract",
+  "manager_direction": "Preserve the exact open-jaw unilateral single-side architecture and no-grasp invariants, remove every upward or rising segment, and prospectively freeze one low-contact planar push over fresh cases. Use no scalar sweep, feedback, adaptation, or grasp.",
+  "immutable_predecessors": {
+    "v05_uf_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.json",
+      "sha256": "44db6475d24038f1bee12ce4a7128461310431007c2f5d2ae22fac31050ec3ea"
+    },
+    "v05_uf_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/static-freeze-v1/receipt.json",
+      "sha256": "6235d6ab7b531c2119df6c70ec30e3e9a5dea2b1a445d9553fb196d5e3fa972e",
+      "verdict": "unilateral_open_jaw_static_freeze_pass"
+    },
+    "v05_uf_temporal_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_replay_unilateral_open_jaw_v1.json",
+      "sha256": "fd31b8a0370c137e684041f6a6c31674097c14850aac1bd34abd061189420f54"
+    },
+    "v05_uf_temporal_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/temporal-replay-v1/receipt.json",
+      "sha256": "526e5f98acb1058d15bc61220f25fdc3fe7b14f96b1172de2df99a80da2455c4",
+      "verdict": "unilateral_open_jaw_temporal_replay_reject",
+      "lane_counts": {
+        "REAL_TO_SIM": 0,
+        "SIM_TO_REAL": 0
+      }
+    },
+    "detailed_pawn_geometry": {
+      "path": "src/sim2claw/scene.py",
+      "sha256": "4b7dd7b251c87580505a40164117cc0999f36960244a5c66c2065165afcf3e46"
+    },
+    "articulated_robot_model": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+      "sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+    }
+  },
+  "terminal_negative": {
+    "evaluated_case_count": 4,
+    "variant_path_outcome_count": 40,
+    "passing_outcome_count": 0,
+    "signed_progress_range_mm": [
+      13.562589007493933,
+      31.075921679879734
+    ],
+    "selected_vertical_rise_range_mm": [
+      12.275856073287406,
+      14.06376936945275
+    ],
+    "expected_unilateral_contact_pass_count": 40,
+    "opposite_jaw_absent_pass_count": 40,
+    "bilateral_absent_pass_count": 40,
+    "enclosure_or_grasp_absent_pass_count": 40,
+    "robot_board_contact_absent_pass_count": 40,
+    "exclusion_collision_camera_gateway_and_identity_pass_count": 40,
+    "isolated_failure": "the 6 mm rising path lifts or tips the selected pawn and never reaches the unchanged 36.025 mm progress gate"
+  },
+  "geometry_derivation": {
+    "contact_height_m": 0.018,
+    "contact_height_rule": "The prior static evidence defines a detailed-pawn stable contact band from 17.0 to 31.2 mm. An 18.0 mm jaw-tip center is the already frozen low-center value inside that band; the modeled 0.75 mm spherical tip bottom remains 17.25 mm above the pawn base and clear of the board.",
+    "contact_offset_m": 0.016,
+    "contact_offset_rule": "The already frozen 16 mm behind-center low-center offset exceeds the 13.8 mm maximum pawn base radius plus the 0.75 mm spherical tip radius by 1.45 mm before engagement.",
+    "stroke_m": 0.09,
+    "stroke_rule": "The 90 mm stroke was previously static-safe. From the 16 mm behind-center start it reaches 74 mm beyond center, is 2.49 times the 36.025 mm progress gate, and adds 15 mm beyond the failed 75 mm ramp whose best observed progress was 31.076 mm.",
+    "precontact_clearance_height_m": 0.075,
+    "path_shape": "source-pose monotonic open preamble; exact demonstrated setup and wrist seed; guide-side overhead; vertical descent to the exact low contact; 3 mm guide-to-center sweep; completely level 90 mm planar continuation",
+    "upward_or_rising_segment_count": 0,
+    "scalar_sweep": false,
+    "dynamic_case_tuning": false,
+    "dynamic_outcome_used_only_for_mechanism_choice": true
+  },
+  "quarantine": {
+    "prior_case_count": 16,
+    "new_case_ids": [
+      "tan_pawn_h7__h7_g7",
+      "tan_pawn_e8__e8_d8",
+      "brown_pawn_b1__b1_a1",
+      "tan_pawn_d7__d7_c7"
+    ],
+    "case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8",
+      "tan_pawn_g8__g8_g7",
+      "tan_pawn_g8__g8_h8",
+      "tan_pawn_f7__f7_f6",
+      "brown_pawn_e2__e2_f2",
+      "brown_pawn_a2__a2_b2",
+      "tan_pawn_g8__g8_f8",
+      "tan_pawn_f7__f7_e7",
+      "tan_pawn_f7__f7_g7",
+      "tan_pawn_h7__h7_g7",
+      "tan_pawn_e8__e8_d8",
+      "brown_pawn_b1__b1_a1",
+      "tan_pawn_d7__d7_c7"
+    ],
+    "semantic_frame": "standard_robot_near_rank1_v1",
+    "raw_scene_grid_frame": "frozen_scene_raw_grid_robot_near_rank8_v1",
+    "case_ids_are_semantic_and_preserved": true,
+    "exact_count": 20,
+    "compatibility_source_exclusion": {
+      "source_squares": [
+        "b1",
+        "d7",
+        "e8",
+        "h7"
+      ],
+      "semantic_frame": "standard_robot_near_rank1_v1",
+      "rule": "The versioned compatibility evaluator removes every route from each newly dynamic selected source before applying the immutable prior sixteen-case exact filter, which is stricter than excluding only the four new case ids and prevents all outcome-informed source reuse."
+    }
+  },
+  "required_invariants": {
+    "open_jaw_target_rad": 1.2,
+    "monotonic_opening_preamble": true,
+    "constant_open_jaw_during_setup_and_push": true,
+    "expected_unilateral_side_contact_required": true,
+    "opposite_jaw_selected_contact_forbidden": true,
+    "bilateral_selected_contact_forbidden": true,
+    "selected_pawn_enclosure_or_grasp_forbidden": true,
+    "maximum_selected_vertical_rise_mm": 2.0,
+    "robot_board_contact_forbidden": true,
+    "minimum_signed_progress_mm": 36.025,
+    "minimum_cases_per_direction": 2,
+    "direct_target_and_diagnostic_zoh_110ms": true,
+    "five_robustness_variants": true,
+    "all_prior_collision_exclusion_camera_gateway_and_identity_gates": true
+  },
+  "forbidden": [
+    "upward or rising push segment",
+    "scalar geometry sweep",
+    "dynamic-case reuse",
+    "jaw closing",
+    "bilateral contact",
+    "enclosure or grasp",
+    "selected-pawn lift",
+    "force, current, or perception feedback",
+    "adaptive control",
+    "manual intervention",
+    "gate weakening",
+    "paid compute",
+    "physical work before V06 and every safety gate"
+  ],
+  "authority": {
+    "static_design": false,
+    "model_loading": false,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Paused, unexecuted V05-UG draft after canonical orientation migration. The original legacy square labels and draft hash are retained, canonical aliases are derived only through rotate_180, and resume is false pending fresh Fable-informed manager review. No static design, model loading, simulation, dynamics, V06, camera, gateway, serial, hardware, paid compute, promotion, or transfer authority."
+}

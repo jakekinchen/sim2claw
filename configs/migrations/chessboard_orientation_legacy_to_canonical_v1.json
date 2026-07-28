@@ -1,0 +1,129 @@
+{
+  "schema_version": "sim2claw.chessboard_orientation_migration.v1",
+  "migration_id": "chessboard-legacy-scene-to-standard-robot-near-rank1-20260728",
+  "status": "complete_awaiting_fable_review",
+  "proof_class": "metadata_and_visualization_coordinate_migration_only",
+  "orientation_contract": {
+    "path": "configs/scenes/chessboard_canonical_orientation_v1.json",
+    "sha256": "d67168f6f1163a1bc67dfe977fa00e69d27b07148b807c3f953f1874e112d129"
+  },
+  "mapping": {
+    "from": "frozen_scene_raw_grid_robot_near_rank8_v1",
+    "to": "standard_robot_near_rank1_v1",
+    "transform": "rotate_180",
+    "rank_only_reflection_forbidden": true,
+    "bijection_size": 64
+  },
+  "pre_migration_inventory": {
+    "v05_ug_authorization_draft": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization_v1.json",
+      "sha256": "c063d5ccf70c088f53d83305409708bebfb71a63f44a0481aebe1cf13babe566"
+    },
+    "v05_ug_static_draft": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.json",
+      "sha256": "6184a0b8f787bd09b0bbc96f1015077f83d47040610e04f21dd845074da99571"
+    },
+    "v05_ug_implementation_draft": {
+      "path": "src/sim2claw/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.py",
+      "sha256": "ee052c02ff6fde7acabd6c074bb3b010861be2824a1c3c4f26d84f46de9aa8a1"
+    },
+    "queue": {
+      "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
+      "sha256": "7aa209a7c6f26f43bc10a067b28eee0791f7e9f39d1ee6a772432a628c123fc4"
+    },
+    "graph_config": {
+      "path": "configs/sail/bidirectional_pawn_push_v2_current_graph_v1.json",
+      "sha256": "3f36e4ba8d76b832301112ad72a132041be78fcab46b9a8edfdeaa2e96b389f5"
+    }
+  },
+  "historical_preservation": {
+    "rule": "Historical raw labels, receipts, actions, hashes, source manifests, and fit candidates remain byte-for-byte in their original declared frame.",
+    "preserved_without_edit": [
+      {
+        "path": "src/sim2claw/scene.py",
+        "sha256": "4b7dd7b251c87580505a40164117cc0999f36960244a5c66c2065165afcf3e46",
+        "reason": "legacy MuJoCo body and square geometry owner"
+      },
+      {
+        "path": "src/sim2claw/pawn_bg_workcell_fit.py",
+        "sha256": "17190f9d81f6ade18f51036bf80a140e21643c1b06e8ad57a3295784cb7e0a4d",
+        "reason": "owner-reviewed 180-degree orientation diagnosis"
+      },
+      {
+        "path": "configs/scenes/bidirectional_pawn_push_scene_registration_v4.json",
+        "sha256": "c7c2b19d7bdf64e85c20f515b4d7fa859b2fd33948fa1a36438265571a752b7b",
+        "reason": "historical fit-only reflect-ranks candidate"
+      },
+      {
+        "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/temporal-replay-v1/receipt.json",
+        "sha256": "526e5f98acb1058d15bc61220f25fdc3fe7b14f96b1172de2df99a80da2455c4",
+        "reason": "immutable V05-UF terminal dynamic negative"
+      }
+    ]
+  },
+  "active_migrations": [
+    {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization_v1.json",
+      "before_sha256": "c063d5ccf70c088f53d83305409708bebfb71a63f44a0481aebe1cf13babe566",
+      "after_sha256": "fb88f8672120bdaa223c1ab44c2cd04dabe4eb16561b9672a973d9869e5896bc",
+      "change": "paused; canonical semantic case IDs preserved; raw grid adapter bound; all authority false"
+    },
+    {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.json",
+      "before_sha256": "6184a0b8f787bd09b0bbc96f1015077f83d47040610e04f21dd845074da99571",
+      "after_sha256": "bb04adf78b55fe16726b8bb20f18ed92795b6f9a58cad2ee7deb3f57b16a939d",
+      "change": "paused; canonical semantic case IDs preserved; raw grid adapter bound; model/static/action authority removed"
+    },
+    {
+      "path": "src/sim2claw/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.py",
+      "before_sha256": "ee052c02ff6fde7acabd6c074bb3b010861be2824a1c3c4f26d84f46de9aa8a1",
+      "after_sha256": "214d0ba1e218f4c6c42894dc33b556ce08182acff8ea1cff04d3058c4855ad64",
+      "change": "fail closed before verification, directory creation, model loading, or enumeration unless a fresh contract explicitly resumes"
+    }
+  ],
+  "studio_visualization": {
+    "coordinate_frame": "standard_robot_near_rank1_v1",
+    "all_64_labels_visible": true,
+    "rank_1_near_cue_visible": true,
+    "rank_8_far_cue_visible": true,
+    "desktop_and_mobile_responsive": true,
+    "files": [
+      {
+        "path": "src/sim2claw/studio_web/index.html",
+        "sha256": "86a2192712a05ef8f3de84d896f15263b193fccfeb5c3dfda959160836afe7c5"
+      },
+      {
+        "path": "src/sim2claw/studio_web/studio.js",
+        "sha256": "f02ea1dd8e4cfc20b2945cba08b26ad7c642474fd123e985148f282f056fec5f"
+      },
+      {
+        "path": "src/sim2claw/studio_web/studio.css",
+        "sha256": "a123ac0b0c3305ca5b9b9adb922336ff8813bdc04870b9f90835aa566f140283"
+      }
+    ],
+    "claim_boundary": "Inspection-only coordinate reference. Existing legacy recorder/body identifiers are not silently rewritten."
+  },
+  "excluded_user_owned_path": {
+    "path": "tools/build_fiducial_sheet.py",
+    "sha256": "c4cb0f5753c87ae47696309694934c535bb5f37d86b2007580c68768404f738d",
+    "edited": false,
+    "stage_or_commit": false
+  },
+  "resume": false,
+  "next_review": "existing_Fable_thread",
+  "authority": {
+    "model_loading": false,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "training": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Completed coordinate migration for active draft metadata and inspection UI only. No historical evidence was rewritten, V05-UG was not executed, and no model, simulator, camera, gateway, serial, robot, paid-compute, promotion, or transfer authority exists."
+}

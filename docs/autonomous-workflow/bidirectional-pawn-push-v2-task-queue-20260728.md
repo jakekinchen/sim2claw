@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_UF_UNILATERAL_OPEN_JAW_TEMPORAL_FROZEN`
+Status: `PAUSED_ORIENTATION_MIGRATION_COMPLETE_AWAITING_FABLE`
 
 Created: `2026-07-28`
 
@@ -200,7 +200,8 @@ denominators before any counted action is compiled.
 | V05-UC | `DONE_TERMINAL_NEGATIVE` | Replace the exhausted single-straight-push family with a fixed-wrist, deterministic guide-to-center initial-contact mechanism. | Exact sixteen-case quarantine; three geometry-derived wrist rolls × two `±3 mm` guide sides × three demonstrated setup branches over 32 fresh families; full setup/exact jaw/40 Hz bytes; selected pawn never grasped; no feedback; four static-safe actions alternate `2/2`. | Receipt `127434f6...` REJECT: all `576` cells evaluated, `510` fixed-wrist IK rejects and every one of the `66` compiled cells collision-rejected. Zero families/lanes; no dynamics or physical admission. |
 | V05-UD | `DONE_TERMINAL_NEGATIVE` | Preserve the orientation seeds and guide-to-center mechanism while releasing the fixed-wrist overconstraint after the exact demonstrated setup seed. | Exact sixteen-case quarantine; three demonstrated setup branches × three exact wrist seeds × two `±3 mm` guide sides over 32 fresh families; fixed prior static-safe `22 mm` offset/`24 mm` height and `75 mm` stroke; full setup/exact jaw/40 Hz bytes; no grasp/feedback; four static-safe actions alternate `2/2`. | Receipt `2196435c...` REJECT: `510` positional IK rejects and all `66` compiled cells collision-rejected across four reachable fresh families. Zero lanes/dynamics/physical admission. |
 | V05-UE | `DONE_TERMINAL_PARTIAL_STATIC` | Preserve the reachable four-family funnel while replacing its level push with a deterministic ramped-fingertip path that clears adjacent pawns. | Exact sixteen-case quarantine and unchanged 576-cell seed/guide grid; `10 mm` level engagement, `6 mm` rise over the next `15 mm`, then lifted continuation to the unchanged `75 mm` planar endpoint; no scalar sweep, grasp, feedback, or gate change; four static-safe actions alternate `2/2`. | Receipt `35442bc9...`: one fresh family (`tan_pawn_h7__h7_g7`) passes static gates in 10 cells, but the other 56 compiled cells collide and 510 fail IK. Lane `1/0`, below unchanged `2/2`; dynamics/V06/physical remain closed. |
-| V05-UF | `IN_PROGRESS_TEMPORAL` | Use one constant open gripper and independently target either the fixed or moving jaw as a unilateral pawn pusher. | Exact `1.2 rad` jaw target yields modeled `34.0 mm` aperture versus `27.6 mm` pawn diameter plus `6.4 mm` buffer; monotonic source-pose opening preamble, then constant jaw through setup/push; exact sixteen-case quarantine; 32 fresh families × three setup branches × three wrist seeds × two unilateral sides = `576`; no opposite/bilateral contact, enclosure, grasp, lift, board contact, closing, feedback, or gate change. | Static PASS receipt `6235d6ab...`: all `576` cells evaluated, eight eligible families, four actions frozen `2/2`. Temporal authorization `7825faa4...`, strict contract `fd31b8a0...`, and implementation `301b3581...` freeze the exact four action hashes before one direct-target plus `0.11 s` ZOH execution. V06/counted/physical false. |
+| V05-UF | `DONE_TERMINAL_NEGATIVE` | Use one constant open gripper and independently target either the fixed or moving jaw as a unilateral pawn pusher. | Exact `1.2 rad` jaw target yields modeled `34.0 mm` aperture versus `27.6 mm` pawn diameter plus `6.4 mm` buffer; monotonic source-pose opening preamble, then constant jaw through setup/push; exact sixteen-case quarantine; 32 fresh families × three setup branches × three wrist seeds × two unilateral sides = `576`; no opposite/bilateral contact, enclosure, grasp, lift, board contact, closing, feedback, or gate change. | Static PASS `6235d6ab...` froze four actions `2/2`. Temporal receipt `526e5f98...` REJECT: `0/2` each direction and `0/40` outcomes. All 40 preserve expected-side-only contact, exclusions, collision, camera, gateway, and identity; all fail progress (`13.563–31.076 mm`) and no-lift (`12.276–14.064 mm`). No V06/physical admission. |
+| V05-UG | `PAUSED_ORIENTATION_MIGRATION_COMPLETE_AWAITING_FABLE` | Preserve the unexecuted low-planar draft, reconcile canonical semantic body/task IDs with the rotated raw simulator grid, and obtain Fable review before any successor decision. | Rank 1 is operator/left-arm near; body/case IDs remain canonical; only raw grid placement uses `rotate_180`; all 64 labels visible in Studio; historical receipts/actions/hashes unchanged; implementation fails closed before model loading; resume false. | Orientation contract `d67168f6...`; migration ledger `e638c538...`; paused authorization `fb88f867...`; paused static contract `bb04adf7...`; fail-closed implementation `214d0ba1...`. No enumeration, model load, simulation, V06, camera, gateway, serial, physical, paid-compute, promotion, or transfer authority. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -3011,8 +3012,102 @@ to every prior progress, exclusion, collision, camera, gateway, and identity
 gate, the temporal evaluator rejects missing expected-side contact, any
 opposite or bilateral selected-pawn contact, enclosure/grasp, robot-board
 contact, or more than `2.0 mm` selected-pawn vertical rise. One temporal
-execution is active; V06, counted attempts, cameras, gateway/serial, physical
-motion, promotion, and transfer claims remain false.
+execution completed with terminal receipt SHA-256
+`526e5f98acb1058d15bc61220f25fdc3fe7b14f96b1172de2df99a80da2455c4`.
+No case passed either path: lane counts are `0/2` each direction and all 40
+variant/path outcomes reject. The result isolates the rising-path mechanism:
+all 40 outcomes preserve exact action/gateway identity, expected single-side
+contact, zero opposite/bilateral/enclosure, zero robot-board contact, zero
+excluded contact, at most `0.8234 mm` excluded displacement, collision
+clearance, and camera margin. All 40 miss progress (`13.563–31.076 mm`) and
+all 40 exceed the no-lift gate (`12.276–14.064 mm`). V06, counted attempts,
+cameras, gateway/serial, physical motion, promotion, and transfer claims
+remain false.
+
+### V05-UG low-contact planar unilateral open-jaw freeze — 2026-07-28
+
+Manager authorization
+`configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization_v1.json`,
+SHA-256
+`c063d5ccf70c088f53d83305409708bebfb71a63f44a0481aebe1cf13babe566`,
+binds the V05-UF terminal receipt and adds its exact four cases to the
+cumulative 20-case quarantine. The compatibility evaluator more strictly
+removes every route from source squares `b1`, `d7`, `e8`, and `h7` before
+applying the immutable prior sixteen-case filter, so no outcome-informed
+source can re-enter. This leaves 22 fresh families.
+
+The exact geometry is frozen without a scalar sweep. The `18 mm` tip-center
+height is the prior low-center value inside the detailed pawn's `17–31.2 mm`
+stable body band; the modeled `0.75 mm` tip bottom remains at `17.25 mm`.
+The `16 mm` behind-center offset exceeds the `13.8 mm` pawn radius plus the
+tip radius by `1.45 mm`. The previously static-safe `90 mm` stroke reaches
+`74 mm` beyond center, is `2.49×` the `36.025 mm` gate, and adds `15 mm`
+beyond the failed `75 mm` ramp. After the vertical descent and `3 mm`
+guide-to-center sweep, every remaining segment is level: upward/rising
+segment count is exactly zero.
+
+Static contract
+`configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.json`,
+SHA-256
+`6184a0b8f787bd09b0bbc96f1015077f83d47040610e04f21dd845074da99571`,
+and implementation
+`src/sim2claw/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.py`,
+SHA-256
+`ee052c02ff6fde7acabd6c074bb3b010861be2824a1c3c4f26d84f46de9aa8a1`,
+freeze `22 × 3 × 3 × 2 = 396` cells. One static execution is active;
+dynamics, V06, counted attempts, cameras, gateway/serial, physical motion,
+promotion, and transfer claims remain false.
+
+### Canonical board-orientation migration and V05-UG pause — 2026-07-28
+
+The preceding V05-UG paragraph is retained as the exact pre-migration draft
+state, including its original hashes. It was stopped before enumeration or
+model loading. The current state supersedes its execution pointer; it does not
+rewrite that historical draft record.
+
+The physical near side is bound to the current board-reaching left-arm mount:
+board center is `(0.04, -0.065)` and the left-arm mount is
+`(-0.04, +0.365)` in table XY, so board-to-arm is `(-0.08, +0.43) m`.
+The current layout also declares table `+y` robotward. Standard canonical
+rank 1 is therefore nearest the operator/left arm and rank 8 is farthest.
+
+`src/sim2claw/scene.py` keeps semantic square labels in body IDs such as
+`brown_pawn_b1`; only `mapped_square` controls raw grid position. The
+owner-reviewed physical B1/C2/D1/E2/F1/G2 brown row and the frozen raw grid
+are related by `rotate_180`, not rank-only reflection. Thus
+`brown_pawn_b1` remains canonically B1 while occupying raw grid G8. The
+historical V04 `reflect_ranks` candidate remains a separate fit-only mapping
+and is not promoted to the global frame transform.
+
+The accepted coordinate-only contract is
+`configs/scenes/chessboard_canonical_orientation_v1.json`, SHA-256
+`d67168f6f1163a1bc67dfe977fa00e69d27b07148b807c3f953f1874e112d129`.
+The migration ledger is
+`configs/migrations/chessboard_orientation_legacy_to_canonical_v1.json`,
+SHA-256
+`e638c538b276d78c4d9dd438a1902b23d5df52953e05a83024a3ae5c5bce2c3f`.
+It preserves the original authorization, static-contract, implementation,
+queue, graph, V04 fit candidate, V05-UF receipt, body IDs, action bytes, raw
+labels, and hashes. The untracked user-owned
+`tools/build_fiducial_sheet.py` remains excluded.
+
+V05-UG is now paused: authorization `fb88f867...`, static contract
+`bb04adf7...`, and fail-closed implementation `214d0ba1...`. The
+implementation rejects the paused contract before bound-input verification,
+output-directory creation, model loading, or enumeration. Resume is false
+pending a fresh post-Fable manager authorization and contract revision.
+
+Studio now includes a responsive inspection-only orientation reference with
+all 64 canonical labels, a visible rank-8 far cue, and a rank-1
+operator/left-arm near cue. Desktop and `390 × 844` mobile screenshots were
+inspected; the deterministic SVG reference was also inspected after correcting
+an overlapping axis caption. Focused mapping, semantic-body placement,
+contract/hash, Studio, SVG, and fail-closed tests pass `7/7`.
+
+Current state:
+`PAUSED_ORIENTATION_MIGRATION_COMPLETE_AWAITING_FABLE`. No enumeration, model
+load, static or dynamic simulation, V06, counted action, camera, gateway,
+serial, hardware, paid compute, promotion, or transfer authority exists.
 
 ### V05-UC fixed-wrist guiding-contact successor freeze — 2026-07-28
 

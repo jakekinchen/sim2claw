@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T16:27:57-05:00",
+  "generated_at": "2026-07-28T17:28:02-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67",
+      "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -1075,6 +1075,78 @@
         "strict_extension": "unilateral_open_jaw_v1",
         "status": "preregistered_after_unilateral_open_jaw_static_pass_and_action_freeze_before_dynamic_replay",
         "proof_class": "prospective_cpu_fp64_action_frozen_strict_unilateral_open_jaw_direct_target_and_diagnostic_zoh_replay"
+      }
+    },
+    "v05_uf_temporal_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/temporal-replay-v1/receipt.json",
+      "sha256": "526e5f98acb1058d15bc61220f25fdc3fe7b14f96b1172de2df99a80da2455c4",
+      "proof_class": "cpu_fp64_action_frozen_unilateral_open_jaw_direct_target_and_diagnostic_zoh_consequence_replay",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_temporal_receipt.v1",
+        "status": "unilateral_open_jaw_temporal_replay_reject",
+        "proof_class": "cpu_fp64_action_frozen_unilateral_open_jaw_direct_target_and_diagnostic_zoh_consequence_replay",
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    "v05_ug_manager_authorization": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization_v1.json",
+      "sha256": "fb88f8672120bdaa223c1ab44c2cd04dabe4eb16561b9672a973d9869e5896bc",
+      "proof_class": "paused_unexecuted_successor_draft_with_canonical_semantics_and_raw_grid_adapter",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization.v1",
+        "status": "paused_orientation_migration_complete_awaiting_fable_no_resume_authority",
+        "proof_class": "paused_unexecuted_successor_draft_with_canonical_semantics_and_raw_grid_adapter"
+      }
+    },
+    "v05_ug_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.json",
+      "sha256": "bb04adf78b55fe16726b8bb20f18ed92795b6f9a58cad2ee7deb3f57b16a939d",
+      "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_open_jaw_static.v1",
+        "status": "paused_orientation_migration_complete_awaiting_fable_no_resume_authority",
+        "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter"
+      }
+    },
+    "canonical_board_orientation": {
+      "path": "configs/scenes/chessboard_canonical_orientation_v1.json",
+      "sha256": "d67168f6f1163a1bc67dfe977fa00e69d27b07148b807c3f953f1874e112d129",
+      "proof_class": "operator_defined_coordinate_convention_bound_to_existing_metric_scene",
+      "payload_contract": {
+        "schema_version": "sim2claw.chessboard_canonical_orientation.v1",
+        "status": "accepted_coordinate_contract_no_execution_authority",
+        "proof_class": "operator_defined_coordinate_convention_bound_to_existing_metric_scene"
+      }
+    },
+    "canonical_orientation_migration": {
+      "path": "configs/migrations/chessboard_orientation_legacy_to_canonical_v1.json",
+      "sha256": "e638c538b276d78c4d9dd438a1902b23d5df52953e05a83024a3ae5c5bce2c3f",
+      "proof_class": "metadata_and_visualization_coordinate_migration_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.chessboard_orientation_migration.v1",
+        "status": "complete_awaiting_fable_review",
+        "proof_class": "metadata_and_visualization_coordinate_migration_only"
+      }
+    },
+    "v05_ug_paused_manager_authorization": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization_v1.json",
+      "sha256": "fb88f8672120bdaa223c1ab44c2cd04dabe4eb16561b9672a973d9869e5896bc",
+      "proof_class": "paused_unexecuted_successor_draft_with_canonical_semantics_and_raw_grid_adapter",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization.v1",
+        "status": "paused_orientation_migration_complete_awaiting_fable_no_resume_authority",
+        "proof_class": "paused_unexecuted_successor_draft_with_canonical_semantics_and_raw_grid_adapter"
+      }
+    },
+    "v05_ug_paused_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.json",
+      "sha256": "bb04adf78b55fe16726b8bb20f18ed92795b6f9a58cad2ee7deb3f57b16a939d",
+      "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_open_jaw_static.v1",
+        "status": "paused_orientation_migration_complete_awaiting_fable_no_resume_authority",
+        "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter"
       }
     },
     "simulator_candidate": {
@@ -3151,6 +3223,119 @@
       }
     },
     {
+      "id": "verdict:v05-uf-unilateral-open-jaw-temporal-reject",
+      "type": "evaluator_verdict",
+      "label": "V05-UF unilateral open-jaw rising path terminal negative",
+      "status": "terminal_dynamic_progress_and_lift_negative_no_v06_admission",
+      "source_binding": "v05_uf_temporal_receipt",
+      "evaluator_identity": "526e5f98acb1058d15bc61220f25fdc3fe7b14f96b1172de2df99a80da2455c4",
+      "data": {
+        "evaluated_cases": 4,
+        "variant_path_outcomes": 40,
+        "passing_outcomes": 0,
+        "real_to_sim_lanes": 0,
+        "sim_to_real_lanes": 0,
+        "minimum_signed_progress_mm": 36.025,
+        "observed_progress_min_mm": 13.562589007493933,
+        "observed_progress_max_mm": 31.075921679879734,
+        "maximum_selected_vertical_rise_mm": 2.0,
+        "observed_vertical_rise_min_mm": 12.275856073287406,
+        "observed_vertical_rise_max_mm": 14.06376936945275,
+        "unilateral_purity_outcomes_passed": 40,
+        "exclusion_collision_camera_gateway_identity_outcomes_passed": 40,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-ug-manager-authorization-bound",
+      "type": "checkpoint",
+      "label": "V05-UG pre-migration low-contact planar successor draft",
+      "status": "historical_pre_migration_draft_superseded_by_orientation_pause",
+      "source_binding": "v05_ug_manager_authorization",
+      "data": {
+        "contact_height_mm": 18.0,
+        "contact_offset_mm": 16.0,
+        "stroke_mm": 90.0,
+        "vertical_rise_mm": 0.0,
+        "cumulative_quarantined_case_count": 20,
+        "strict_dynamic_source_exclusion_count": 4,
+        "scalar_sweep": false,
+        "static_design_authorized": false,
+        "model_loading_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-ug-low-planar-open-jaw-static-frozen",
+      "type": "checkpoint",
+      "label": "V05-UG pre-migration finite low-contact planar grid draft",
+      "status": "historical_preregistration_superseded_before_execution",
+      "source_binding": "v05_ug_static_contract",
+      "data": {
+        "postquarantine_family_count": 22,
+        "setup_branch_count": 3,
+        "wrist_seed_count": 3,
+        "unilateral_contact_side_count": 2,
+        "cells_per_family": 18,
+        "maximum_total_cells": 396,
+        "contact_height_mm": 18.0,
+        "contact_offset_mm": 16.0,
+        "stroke_mm": 90.0,
+        "upward_or_rising_segment_count": 0,
+        "no_bilateral_contact_or_grasp": true,
+        "enumeration_executed": false,
+        "model_loading_authorized": false,
+        "static_simulation_authorized": false,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "context:canonical-board-orientation",
+      "type": "context",
+      "label": "Canonical semantic board frame over rotated raw grid",
+      "status": "accepted_coordinate_contract_no_execution_authority",
+      "source_binding": "canonical_board_orientation",
+      "data": {
+        "canonical_rank_1_side": "near_operator_and_board_reaching_left_arm",
+        "canonical_rank_8_side": "far_from_operator_and_board_reaching_left_arm",
+        "semantic_body_and_case_ids_preserved": true,
+        "raw_scene_grid_transform": "rotate_180",
+        "all_64_labels_visible_in_studio": true,
+        "historical_v04_reflect_ranks_scope": "fit_only_not_global_frame",
+        "physical_motion": false
+      }
+    },
+    {
+      "id": "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable",
+      "type": "checkpoint",
+      "label": "V05-UG paused after canonical orientation migration",
+      "status": "paused_orientation_migration_complete_awaiting_fable",
+      "source_binding": "canonical_orientation_migration",
+      "data": {
+        "pre_migration_authorization_sha256": "c063d5ccf70c088f53d83305409708bebfb71a63f44a0481aebe1cf13babe566",
+        "pre_migration_static_contract_sha256": "6184a0b8f787bd09b0bbc96f1015077f83d47040610e04f21dd845074da99571",
+        "pre_migration_implementation_sha256": "ee052c02ff6fde7acabd6c074bb3b010861be2824a1c3c4f26d84f46de9aa8a1",
+        "model_loading_authorized": false,
+        "static_simulation_authorized": false,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "camera_authorized": false,
+        "gateway_authorized": false,
+        "serial_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "paid_compute_authorized": false,
+        "resume_authorized": false,
+        "next_review": "existing_Fable_thread"
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -4351,6 +4536,79 @@
       }
     },
     {
+      "source": "verdict:v05-uf-unilateral-open-jaw-temporal-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-uf-unilateral-open-jaw-temporal-frozen",
+      "metadata": {
+        "evaluated_cases": 4,
+        "variant_path_outcomes": 40,
+        "progress_pass_count": 0,
+        "no_lift_pass_count": 0,
+        "unilateral_purity_pass_count": 40,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-ug-manager-authorization-bound",
+      "type": "generated-from",
+      "target": "verdict:v05-uf-unilateral-open-jaw-temporal-reject",
+      "metadata": {
+        "standing_manager_delegation": true,
+        "prior_verdict_immutable": true,
+        "new_dynamic_cases_quarantined": 4,
+        "cumulative_quarantine_count": 20,
+        "rising_path_removed": true,
+        "scalar_sweep": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-ug-low-planar-open-jaw-static-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-ug-manager-authorization-bound",
+      "metadata": {
+        "preregistered_before_model_loading_or_static_enumeration": true,
+        "maximum_total_cells": 396,
+        "fresh_sources_only": true,
+        "exact_low_planar_geometry": true,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "context:canonical-board-orientation",
+      "type": "applied-to",
+      "target": "workcell:current-so101-chessboard",
+      "metadata": {
+        "coordinate_only": true,
+        "semantic_body_and_case_ids_preserved": true,
+        "raw_grid_transform": "rotate_180",
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable",
+      "type": "generated-from",
+      "target": "context:canonical-board-orientation",
+      "metadata": {
+        "migration_complete": true,
+        "resume_authorized": false,
+        "model_loading_authorized": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable",
+      "type": "invalidates",
+      "target": "checkpoint:v05-ug-low-planar-open-jaw-static-frozen",
+      "metadata": {
+        "scope": "active_execution_pointer_only",
+        "historical_preregistration_preserved": true,
+        "enumeration_executed": false,
+        "model_loaded": false,
+        "resume_authorized": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -5232,15 +5490,60 @@
       "node_ids_added": [
         "checkpoint:v05-uf-unilateral-open-jaw-temporal-frozen"
       ]
+    },
+    {
+      "revision": 93,
+      "event_id": "V05_UF_UNILATERAL_OPEN_JAW_TEMPORAL_REJECT",
+      "status": "terminal_dynamic_progress_and_lift_negative_no_v06_admission",
+      "source_binding": "v05_uf_temporal_receipt",
+      "node_ids_added": [
+        "verdict:v05-uf-unilateral-open-jaw-temporal-reject"
+      ]
+    },
+    {
+      "revision": 94,
+      "event_id": "V05_UG_MANAGER_AUTHORIZATION_BOUND",
+      "status": "manager_authorized_low_planar_static_design_bound",
+      "source_binding": "v05_ug_manager_authorization",
+      "node_ids_added": [
+        "checkpoint:v05-ug-manager-authorization-bound"
+      ]
+    },
+    {
+      "revision": 95,
+      "event_id": "V05_UG_LOW_PLANAR_OPEN_JAW_STATIC_FREEZE",
+      "status": "preregistered_low_planar_open_jaw_static_execution_active",
+      "source_binding": "v05_ug_static_contract",
+      "node_ids_added": [
+        "checkpoint:v05-ug-low-planar-open-jaw-static-frozen"
+      ]
+    },
+    {
+      "revision": 96,
+      "event_id": "CANONICAL_BOARD_ORIENTATION_CONTRACT_ACCEPTED",
+      "status": "accepted_coordinate_contract_no_execution_authority",
+      "source_binding": "canonical_board_orientation",
+      "node_ids_added": [
+        "context:canonical-board-orientation"
+      ]
+    },
+    {
+      "revision": 97,
+      "event_id": "V05_UG_ORIENTATION_MIGRATION_PAUSED_AWAITING_FABLE",
+      "status": "paused_orientation_migration_complete_awaiting_fable",
+      "source_binding": "canonical_orientation_migration",
+      "node_ids_added": [
+        "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-uf-unilateral-open-jaw-temporal-frozen",
-    "milestone_id": "V05-UF",
-    "status": "preregistered_unilateral_open_jaw_temporal_execution_active",
-    "queue_status": "ACTIVE_V05_UF_UNILATERAL_OPEN_JAW_TEMPORAL_FROZEN",
-    "resume_action": "execute_one_strict_unilateral_open_jaw_direct_and_zoh_temporal_replay",
-    "resume_authorized": true,
+    "node_id": "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable",
+    "milestone_id": "ORIENTATION-MIGRATION",
+    "status": "paused_orientation_migration_complete_awaiting_fable",
+    "queue_status": "PAUSED_ORIENTATION_MIGRATION_COMPLETE_AWAITING_FABLE",
+    "resume_action": "report_migration_to_existing_fable_thread_and_request_feedback",
+    "resume_authorized": false,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0
@@ -5250,6 +5553,10 @@
     "task_camera": "fixed_c922_rgb",
     "wrist_depth": "omitted_not_required",
     "piece_layout": "sparse_two_sided_pawns",
+    "canonical_board_frame": "standard_robot_near_rank1_v1",
+    "raw_scene_grid_frame": "frozen_scene_raw_grid_robot_near_rank8_v1",
+    "canonical_to_raw_grid_transform": "rotate_180",
+    "semantic_body_and_case_ids_preserved": true,
     "simulator_candidate_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
     "world_visual_registration_sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4",
     "fit_only_masked_static_cad_receipt_sha256": "8e2bb5af0646e77dee2106e50e25fce84298b59d78e93798f05bf306c5c4c880",

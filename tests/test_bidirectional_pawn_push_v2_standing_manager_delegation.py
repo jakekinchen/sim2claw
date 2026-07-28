@@ -164,6 +164,19 @@ UNILATERAL_OPEN_JAW_TEMPORAL_CONTRACT = ROOT / (
     "bidirectional_pawn_push_v2_temporal_replay_"
     "unilateral_open_jaw_v1.json"
 )
+UNILATERAL_OPEN_JAW_TEMPORAL_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-uf-unilateral-open-jaw-v1/temporal-replay-v1/receipt.json"
+)
+LOW_PLANAR_OPEN_JAW_AUTHORIZATION = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_low_planar_open_jaw_"
+    "successor_authorization_v1.json"
+)
+LOW_PLANAR_OPEN_JAW_STATIC_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -917,6 +930,117 @@ def test_unilateral_open_jaw_static_pass_and_temporal_freeze() -> None:
         "maximum_selected_vertical_rise_mm": 2.0,
     }
     assert contract["authority"]["dynamic_simulation"] is True
+    assert contract["authority"]["physical_motion"] is False
+
+
+def test_unilateral_temporal_negative_and_low_planar_freeze() -> None:
+    receipt = json.loads(
+        UNILATERAL_OPEN_JAW_TEMPORAL_RECEIPT.read_text(encoding="utf-8")
+    )
+    assert _sha(UNILATERAL_OPEN_JAW_TEMPORAL_RECEIPT) == (
+        "526e5f98acb1058d15bc61220f25fdc3fe7b14f96b1172de2df99a80da2455c4"
+    )
+    assert receipt["status"] == "unilateral_open_jaw_temporal_replay_reject"
+    assert receipt["lane_counts"] == {"REAL_TO_SIM": 0, "SIM_TO_REAL": 0}
+    variants = [
+        variant
+        for case in receipt["results"]
+        for path in case["plant_paths"]
+        for variant in path["robustness"]
+    ]
+    assert len(variants) == 40
+    assert not any(row["checks"]["fully_off_source"] for row in variants)
+    assert not any(
+        row["checks"]["selected_pawn_not_lifted"] for row in variants
+    )
+    for key in (
+        "expected_unilateral_contact",
+        "opposite_jaw_contact_absent",
+        "bilateral_contact_absent",
+        "enclosure_or_grasp_absent",
+        "robot_board_contact_absent",
+        "excluded_contact",
+        "excluded_displacement",
+        "collision",
+        "camera_margin",
+    ):
+        assert all(row["checks"][key] for row in variants)
+    assert min(row["signed_progress_mm"] for row in variants) == (
+        13.562589007493933
+    )
+    assert max(row["signed_progress_mm"] for row in variants) == (
+        31.075921679879734
+    )
+    assert min(
+        row["maximum_selected_vertical_rise_mm"] for row in variants
+    ) == 12.275856073287406
+    assert max(
+        row["maximum_selected_vertical_rise_mm"] for row in variants
+    ) == 14.06376936945275
+    assert receipt["physical_motion"] is False
+
+    authorization = json.loads(
+        LOW_PLANAR_OPEN_JAW_AUTHORIZATION.read_text(encoding="utf-8")
+    )
+    for binding in (
+        authorization["standing_delegation"],
+        *authorization["immutable_predecessors"].values(),
+    ):
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert authorization["geometry_derivation"]["contact_height_m"] == 0.018
+    assert authorization["geometry_derivation"]["contact_offset_m"] == 0.016
+    assert authorization["geometry_derivation"]["stroke_m"] == 0.09
+    assert authorization["geometry_derivation"][
+        "upward_or_rising_segment_count"
+    ] == 0
+    assert authorization["geometry_derivation"]["scalar_sweep"] is False
+    assert authorization["quarantine"]["exact_count"] == 20
+    assert len(authorization["quarantine"]["new_case_ids"]) == 4
+    assert authorization["status"] == (
+        "paused_orientation_migration_complete_awaiting_fable_"
+        "no_resume_authority"
+    )
+    assert authorization["resume"] is False
+    assert authorization["quarantine"]["case_ids_are_semantic_and_preserved"] is True
+    assert authorization["authority"]["static_design"] is False
+    assert authorization["authority"]["model_loading"] is False
+    assert authorization["authority"]["physical_motion"] is False
+
+    contract = json.loads(
+        LOW_PLANAR_OPEN_JAW_STATIC_CONTRACT.read_text(encoding="utf-8")
+    )
+    for key in (
+        "authorization",
+        "v05_uf_temporal_receipt",
+        "orientation_static_contract",
+        "seeded_static_contract",
+        "ramped_static_contract",
+        "open_jaw_static_contract",
+        "orientation_contract",
+        "implementation",
+    ):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    for binding in contract["base_implementations"].values():
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    frozen = contract["frozen_overrides"]
+    assert frozen["cumulative_quarantine_count"] == 20
+    assert frozen["postquarantine_family_count"] == 22
+    assert frozen["cells_per_family"] == 18
+    assert frozen["maximum_total_cells"] == 396
+    assert frozen["contact_height_m"] == 0.018
+    assert frozen["contact_offset_m"] == 0.016
+    assert frozen["stroke_m"] == 0.09
+    assert frozen["vertical_rise_m"] == 0.0
+    assert contract["status"] == (
+        "paused_orientation_migration_complete_awaiting_fable_"
+        "no_resume_authority"
+    )
+    assert contract["resume"] is False
+    assert frozen["case_ids_are_semantic_and_preserved"] is True
+    assert contract["authority"]["model_loading"] is False
+    assert contract["authority"]["static_simulation"] is False
+    assert contract["authority"]["dynamic_replay"] is False
     assert contract["authority"]["physical_motion"] is False
 
 

@@ -3,12 +3,12 @@
     "counted_task_attempts": 0,
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
-    "milestone_id": "V05-UF",
-    "node_id": "checkpoint:v05-uf-unilateral-open-jaw-temporal-frozen",
-    "queue_status": "ACTIVE_V05_UF_UNILATERAL_OPEN_JAW_TEMPORAL_FROZEN",
-    "resume_action": "execute_one_strict_unilateral_open_jaw_direct_and_zoh_temporal_replay",
-    "resume_authorized": true,
-    "status": "preregistered_unilateral_open_jaw_temporal_execution_active"
+    "milestone_id": "ORIENTATION-MIGRATION",
+    "node_id": "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable",
+    "queue_status": "PAUSED_ORIENTATION_MIGRATION_COMPLETE_AWAITING_FABLE",
+    "resume_action": "report_migration_to_existing_fable_thread_and_request_feedback",
+    "resume_authorized": false,
+    "status": "paused_orientation_migration_complete_awaiting_fable"
   },
   "authority": {
     "camera_open": false,
@@ -22,12 +22,16 @@
   "campaign_id": "bidirectional_pawn_push_v2",
   "claim_boundary": "This graph preserves declared lineage and influence scope. Connectivity, similarity, and chronology are not causal identification, simulator promotion, training admission, policy selection, or physical-transfer evidence.",
   "configuration_context": {
+    "canonical_board_frame": "standard_robot_near_rank1_v1",
+    "canonical_to_raw_grid_transform": "rotate_180",
     "evaluator_v2": "not_frozen",
     "fit_only_masked_static_cad_receipt_sha256": "8e2bb5af0646e77dee2106e50e25fce84298b59d78e93798f05bf306c5c4c880",
     "physical_torque_enabled": false,
     "piece_layout": "sparse_two_sided_pawns",
     "policy_action_hash": null,
+    "raw_scene_grid_frame": "frozen_scene_raw_grid_robot_near_rank8_v1",
     "rigid_registration_candidate_sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c",
+    "semantic_body_and_case_ids_preserved": true,
     "simulator_candidate_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
     "task_camera": "fixed_c922_rgb",
     "workcell": "current_so101_chessboard_workspace",
@@ -35,27 +39,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 114,
+    "edges": 120,
     "edges_by_type": {
       "affected-by": 1,
-      "applied-to": 2,
+      "applied-to": 3,
       "counterexample-to": 3,
-      "evaluated-on": 24,
+      "evaluated-on": 25,
       "fitted-on": 4,
-      "generated-from": 74,
-      "invalidates": 1,
+      "generated-from": 77,
+      "invalidates": 2,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 112,
+    "nodes": 117,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 70,
-      "context": 1,
+      "checkpoint": 73,
+      "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 17,
+      "evaluator_verdict": 18,
       "evidence": 5,
       "intervention": 1,
       "mechanism": 3,
@@ -951,9 +955,69 @@
       "type": "generated-from"
     },
     {
+      "metadata": {
+        "exact_low_planar_geometry": true,
+        "fresh_sources_only": true,
+        "maximum_total_cells": 396,
+        "physical_motion": false,
+        "preregistered_before_model_loading_or_static_enumeration": true
+      },
+      "source": "checkpoint:v05-ug-low-planar-open-jaw-static-frozen",
+      "target": "checkpoint:v05-ug-manager-authorization-bound",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "cumulative_quarantine_count": 20,
+        "new_dynamic_cases_quarantined": 4,
+        "physical_motion": false,
+        "prior_verdict_immutable": true,
+        "rising_path_removed": true,
+        "scalar_sweep": false,
+        "standing_manager_delegation": true
+      },
+      "source": "checkpoint:v05-ug-manager-authorization-bound",
+      "target": "verdict:v05-uf-unilateral-open-jaw-temporal-reject",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "migration_complete": true,
+        "model_loading_authorized": false,
+        "physical_motion": false,
+        "resume_authorized": false
+      },
+      "source": "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable",
+      "target": "context:canonical-board-orientation",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "enumeration_executed": false,
+        "historical_preregistration_preserved": true,
+        "model_loaded": false,
+        "resume_authorized": false,
+        "scope": "active_execution_pointer_only"
+      },
+      "source": "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable",
+      "target": "checkpoint:v05-ug-low-planar-open-jaw-static-frozen",
+      "type": "invalidates"
+    },
+    {
       "metadata": {},
       "source": "context:c922-rgb-no-depth",
       "target": "session:bidirectional-pawn-push-v2",
+      "type": "applied-to"
+    },
+    {
+      "metadata": {
+        "coordinate_only": true,
+        "physical_motion": false,
+        "raw_grid_transform": "rotate_180",
+        "semantic_body_and_case_ids_preserved": true
+      },
+      "source": "context:canonical-board-orientation",
+      "target": "workcell:current-so101-chessboard",
       "type": "applied-to"
     },
     {
@@ -1332,10 +1396,23 @@
       "source": "verdict:v05-uf-unilateral-open-jaw-static-pass",
       "target": "checkpoint:v05-uf-unilateral-open-jaw-static-frozen",
       "type": "evaluated-on"
+    },
+    {
+      "metadata": {
+        "evaluated_cases": 4,
+        "no_lift_pass_count": 0,
+        "physical_motion": false,
+        "progress_pass_count": 0,
+        "unilateral_purity_pass_count": 40,
+        "variant_path_outcomes": 40
+      },
+      "source": "verdict:v05-uf-unilateral-open-jaw-temporal-reject",
+      "target": "checkpoint:v05-uf-unilateral-open-jaw-temporal-frozen",
+      "type": "evaluated-on"
     }
   ],
-  "generated_at": "2026-07-28T16:27:57-05:00",
-  "graph_digest": "8542a3748bd95ed745496a12bcb3b3e836e1551d863db18ce45731a4b567ca6f",
+  "generated_at": "2026-07-28T17:28:02-05:00",
+  "graph_digest": "3671a77a398d012d5e10d8056968adcf35f9a75f0a1334065e63c6ae70b52be6",
   "node_types": [
     "workcell",
     "session",
@@ -1418,7 +1495,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
+        "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1850,7 +1927,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
+        "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1901,7 +1978,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
+        "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1922,7 +1999,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
+        "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1951,7 +2028,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
+        "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -2360,7 +2437,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
+        "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -3679,6 +3756,113 @@
     },
     {
       "data": {
+        "cells_per_family": 18,
+        "contact_height_mm": 18.0,
+        "contact_offset_mm": 16.0,
+        "dynamic_replay_authorized": false,
+        "enumeration_executed": false,
+        "maximum_total_cells": 396,
+        "model_loading_authorized": false,
+        "no_bilateral_contact_or_grasp": true,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "postquarantine_family_count": 22,
+        "setup_branch_count": 3,
+        "source_binding_id": "v05_ug_static_contract",
+        "static_simulation_authorized": false,
+        "stroke_mm": 90.0,
+        "unilateral_contact_side_count": 2,
+        "upward_or_rising_segment_count": 0,
+        "v06_evaluator_freeze_authorized": false,
+        "wrist_seed_count": 3
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-ug-low-planar-open-jaw-static-frozen",
+      "label": "V05-UG pre-migration finite low-contact planar grid draft",
+      "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.json",
+        "payload_contract": {
+          "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_open_jaw_static.v1",
+          "status": "paused_orientation_migration_complete_awaiting_fable_no_resume_authority"
+        },
+        "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter",
+        "sha256": "bb04adf78b55fe16726b8bb20f18ed92795b6f9a58cad2ee7deb3f57b16a939d"
+      },
+      "status": "historical_preregistration_superseded_before_execution",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "contact_height_mm": 18.0,
+        "contact_offset_mm": 16.0,
+        "cumulative_quarantined_case_count": 20,
+        "model_loading_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "scalar_sweep": false,
+        "source_binding_id": "v05_ug_manager_authorization",
+        "static_design_authorized": false,
+        "strict_dynamic_source_exclusion_count": 4,
+        "stroke_mm": 90.0,
+        "vertical_rise_mm": 0.0
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-ug-manager-authorization-bound",
+      "label": "V05-UG pre-migration low-contact planar successor draft",
+      "proof_class": "paused_unexecuted_successor_draft_with_canonical_semantics_and_raw_grid_adapter",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization_v1.json",
+        "payload_contract": {
+          "proof_class": "paused_unexecuted_successor_draft_with_canonical_semantics_and_raw_grid_adapter",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization.v1",
+          "status": "paused_orientation_migration_complete_awaiting_fable_no_resume_authority"
+        },
+        "proof_class": "paused_unexecuted_successor_draft_with_canonical_semantics_and_raw_grid_adapter",
+        "sha256": "fb88f8672120bdaa223c1ab44c2cd04dabe4eb16561b9672a973d9869e5896bc"
+      },
+      "status": "historical_pre_migration_draft_superseded_by_orientation_pause",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "camera_authorized": false,
+        "dynamic_replay_authorized": false,
+        "gateway_authorized": false,
+        "model_loading_authorized": false,
+        "next_review": "existing_Fable_thread",
+        "paid_compute_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "pre_migration_authorization_sha256": "c063d5ccf70c088f53d83305409708bebfb71a63f44a0481aebe1cf13babe566",
+        "pre_migration_implementation_sha256": "ee052c02ff6fde7acabd6c074bb3b010861be2824a1c3c4f26d84f46de9aa8a1",
+        "pre_migration_static_contract_sha256": "6184a0b8f787bd09b0bbc96f1015077f83d47040610e04f21dd845074da99571",
+        "resume_authorized": false,
+        "serial_authorized": false,
+        "source_binding_id": "canonical_orientation_migration",
+        "static_simulation_authorized": false,
+        "v06_evaluator_freeze_authorized": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable",
+      "label": "V05-UG paused after canonical orientation migration",
+      "proof_class": "metadata_and_visualization_coordinate_migration_only",
+      "source": {
+        "path": "configs/migrations/chessboard_orientation_legacy_to_canonical_v1.json",
+        "payload_contract": {
+          "proof_class": "metadata_and_visualization_coordinate_migration_only",
+          "schema_version": "sim2claw.chessboard_orientation_migration.v1",
+          "status": "complete_awaiting_fable_review"
+        },
+        "proof_class": "metadata_and_visualization_coordinate_migration_only",
+        "sha256": "e638c538b276d78c4d9dd438a1902b23d5df52953e05a83024a3ae5c5bce2c3f"
+      },
+      "status": "paused_orientation_migration_complete_awaiting_fable",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "source_binding_id": "v01",
         "task_camera": "C922",
         "wrist_depth_required": false
@@ -3698,6 +3882,34 @@
         "sha256": "f345d9ff55ed38b8509dac061af7d0ce7aeaefb59cb78f92ba4460b5dbe82024"
       },
       "status": "rgb_only_depth_omitted",
+      "type": "context"
+    },
+    {
+      "data": {
+        "all_64_labels_visible_in_studio": true,
+        "canonical_rank_1_side": "near_operator_and_board_reaching_left_arm",
+        "canonical_rank_8_side": "far_from_operator_and_board_reaching_left_arm",
+        "historical_v04_reflect_ranks_scope": "fit_only_not_global_frame",
+        "physical_motion": false,
+        "raw_scene_grid_transform": "rotate_180",
+        "semantic_body_and_case_ids_preserved": true,
+        "source_binding_id": "canonical_board_orientation"
+      },
+      "evaluator_identity": null,
+      "id": "context:canonical-board-orientation",
+      "label": "Canonical semantic board frame over rotated raw grid",
+      "proof_class": "operator_defined_coordinate_convention_bound_to_existing_metric_scene",
+      "source": {
+        "path": "configs/scenes/chessboard_canonical_orientation_v1.json",
+        "payload_contract": {
+          "proof_class": "operator_defined_coordinate_convention_bound_to_existing_metric_scene",
+          "schema_version": "sim2claw.chessboard_canonical_orientation.v1",
+          "status": "accepted_coordinate_contract_no_execution_authority"
+        },
+        "proof_class": "operator_defined_coordinate_convention_bound_to_existing_metric_scene",
+        "sha256": "d67168f6f1163a1bc67dfe977fa00e69d27b07148b807c3f953f1874e112d129"
+      },
+      "status": "accepted_coordinate_contract_no_execution_authority",
       "type": "context"
     },
     {
@@ -3977,7 +4189,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
+        "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -4037,7 +4249,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
+        "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -4055,7 +4267,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
+        "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -4123,7 +4335,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
+        "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -4745,6 +4957,45 @@
     },
     {
       "data": {
+        "evaluated_cases": 4,
+        "exclusion_collision_camera_gateway_identity_outcomes_passed": 40,
+        "maximum_selected_vertical_rise_mm": 2.0,
+        "minimum_signed_progress_mm": 36.025,
+        "observed_progress_max_mm": 31.075921679879734,
+        "observed_progress_min_mm": 13.562589007493933,
+        "observed_vertical_rise_max_mm": 14.06376936945275,
+        "observed_vertical_rise_min_mm": 12.275856073287406,
+        "passing_outcomes": 0,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "real_to_sim_lanes": 0,
+        "sim_to_real_lanes": 0,
+        "source_binding_id": "v05_uf_temporal_receipt",
+        "unilateral_purity_outcomes_passed": 40,
+        "v06_evaluator_freeze_authorized": false,
+        "variant_path_outcomes": 40
+      },
+      "evaluator_identity": "526e5f98acb1058d15bc61220f25fdc3fe7b14f96b1172de2df99a80da2455c4",
+      "id": "verdict:v05-uf-unilateral-open-jaw-temporal-reject",
+      "label": "V05-UF unilateral open-jaw rising path terminal negative",
+      "proof_class": "cpu_fp64_action_frozen_unilateral_open_jaw_direct_target_and_diagnostic_zoh_consequence_replay",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/temporal-replay-v1/receipt.json",
+        "payload_contract": {
+          "physical_motion": false,
+          "physical_task_attempts": 0,
+          "proof_class": "cpu_fp64_action_frozen_unilateral_open_jaw_direct_target_and_diagnostic_zoh_consequence_replay",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_temporal_receipt.v1",
+          "status": "unilateral_open_jaw_temporal_replay_reject"
+        },
+        "proof_class": "cpu_fp64_action_frozen_unilateral_open_jaw_direct_target_and_diagnostic_zoh_consequence_replay",
+        "sha256": "526e5f98acb1058d15bc61220f25fdc3fe7b14f96b1172de2df99a80da2455c4"
+      },
+      "status": "terminal_dynamic_progress_and_lift_negative_no_v06_admission",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "human_physical_intervention_required": false,
         "source_binding_id": "v00"
       },
@@ -4841,7 +5092,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67",
+      "source_sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -4871,7 +5122,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67",
+      "source_sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -4901,7 +5152,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67",
+      "source_sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -5183,7 +5434,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67",
+      "source_sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -5715,15 +5966,87 @@
       "source_binding": "v05_uf_temporal_contract",
       "source_sha256": "fd31b8a0370c137e684041f6a6c31674097c14850aac1bd34abd061189420f54",
       "status": "preregistered_unilateral_open_jaw_temporal_execution_active"
+    },
+    {
+      "event_id": "V05_UF_UNILATERAL_OPEN_JAW_TEMPORAL_REJECT",
+      "node_ids_added": [
+        "verdict:v05-uf-unilateral-open-jaw-temporal-reject"
+      ],
+      "revision": 93,
+      "source_binding": "v05_uf_temporal_receipt",
+      "source_sha256": "526e5f98acb1058d15bc61220f25fdc3fe7b14f96b1172de2df99a80da2455c4",
+      "status": "terminal_dynamic_progress_and_lift_negative_no_v06_admission"
+    },
+    {
+      "event_id": "V05_UG_MANAGER_AUTHORIZATION_BOUND",
+      "node_ids_added": [
+        "checkpoint:v05-ug-manager-authorization-bound"
+      ],
+      "revision": 94,
+      "source_binding": "v05_ug_manager_authorization",
+      "source_sha256": "fb88f8672120bdaa223c1ab44c2cd04dabe4eb16561b9672a973d9869e5896bc",
+      "status": "manager_authorized_low_planar_static_design_bound"
+    },
+    {
+      "event_id": "V05_UG_LOW_PLANAR_OPEN_JAW_STATIC_FREEZE",
+      "node_ids_added": [
+        "checkpoint:v05-ug-low-planar-open-jaw-static-frozen"
+      ],
+      "revision": 95,
+      "source_binding": "v05_ug_static_contract",
+      "source_sha256": "bb04adf78b55fe16726b8bb20f18ed92795b6f9a58cad2ee7deb3f57b16a939d",
+      "status": "preregistered_low_planar_open_jaw_static_execution_active"
+    },
+    {
+      "event_id": "CANONICAL_BOARD_ORIENTATION_CONTRACT_ACCEPTED",
+      "node_ids_added": [
+        "context:canonical-board-orientation"
+      ],
+      "revision": 96,
+      "source_binding": "canonical_board_orientation",
+      "source_sha256": "d67168f6f1163a1bc67dfe977fa00e69d27b07148b807c3f953f1874e112d129",
+      "status": "accepted_coordinate_contract_no_execution_authority"
+    },
+    {
+      "event_id": "V05_UG_ORIENTATION_MIGRATION_PAUSED_AWAITING_FABLE",
+      "node_ids_added": [
+        "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable"
+      ],
+      "revision": 97,
+      "source_binding": "canonical_orientation_migration",
+      "source_sha256": "e638c538b276d78c4d9dd438a1902b23d5df52953e05a83024a3ae5c5bce2c3f",
+      "status": "paused_orientation_migration_complete_awaiting_fable"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
   "source_identities": [
     {
+      "id": "canonical_board_orientation",
+      "path": "configs/scenes/chessboard_canonical_orientation_v1.json",
+      "payload_contract": {
+        "proof_class": "operator_defined_coordinate_convention_bound_to_existing_metric_scene",
+        "schema_version": "sim2claw.chessboard_canonical_orientation.v1",
+        "status": "accepted_coordinate_contract_no_execution_authority"
+      },
+      "proof_class": "operator_defined_coordinate_convention_bound_to_existing_metric_scene",
+      "sha256": "d67168f6f1163a1bc67dfe977fa00e69d27b07148b807c3f953f1874e112d129"
+    },
+    {
+      "id": "canonical_orientation_migration",
+      "path": "configs/migrations/chessboard_orientation_legacy_to_canonical_v1.json",
+      "payload_contract": {
+        "proof_class": "metadata_and_visualization_coordinate_migration_only",
+        "schema_version": "sim2claw.chessboard_orientation_migration.v1",
+        "status": "complete_awaiting_fable_review"
+      },
+      "proof_class": "metadata_and_visualization_coordinate_migration_only",
+      "sha256": "e638c538b276d78c4d9dd438a1902b23d5df52953e05a83024a3ae5c5bce2c3f"
+    },
+    {
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
+      "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d"
     },
     {
       "id": "simulator_candidate",
@@ -6862,6 +7185,63 @@
       },
       "proof_class": "prospective_cpu_fp64_action_frozen_strict_unilateral_open_jaw_direct_target_and_diagnostic_zoh_replay",
       "sha256": "fd31b8a0370c137e684041f6a6c31674097c14850aac1bd34abd061189420f54"
+    },
+    {
+      "id": "v05_uf_temporal_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/temporal-replay-v1/receipt.json",
+      "payload_contract": {
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "proof_class": "cpu_fp64_action_frozen_unilateral_open_jaw_direct_target_and_diagnostic_zoh_consequence_replay",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_temporal_receipt.v1",
+        "status": "unilateral_open_jaw_temporal_replay_reject"
+      },
+      "proof_class": "cpu_fp64_action_frozen_unilateral_open_jaw_direct_target_and_diagnostic_zoh_consequence_replay",
+      "sha256": "526e5f98acb1058d15bc61220f25fdc3fe7b14f96b1172de2df99a80da2455c4"
+    },
+    {
+      "id": "v05_ug_manager_authorization",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization_v1.json",
+      "payload_contract": {
+        "proof_class": "paused_unexecuted_successor_draft_with_canonical_semantics_and_raw_grid_adapter",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization.v1",
+        "status": "paused_orientation_migration_complete_awaiting_fable_no_resume_authority"
+      },
+      "proof_class": "paused_unexecuted_successor_draft_with_canonical_semantics_and_raw_grid_adapter",
+      "sha256": "fb88f8672120bdaa223c1ab44c2cd04dabe4eb16561b9672a973d9869e5896bc"
+    },
+    {
+      "id": "v05_ug_paused_manager_authorization",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization_v1.json",
+      "payload_contract": {
+        "proof_class": "paused_unexecuted_successor_draft_with_canonical_semantics_and_raw_grid_adapter",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_open_jaw_successor_authorization.v1",
+        "status": "paused_orientation_migration_complete_awaiting_fable_no_resume_authority"
+      },
+      "proof_class": "paused_unexecuted_successor_draft_with_canonical_semantics_and_raw_grid_adapter",
+      "sha256": "fb88f8672120bdaa223c1ab44c2cd04dabe4eb16561b9672a973d9869e5896bc"
+    },
+    {
+      "id": "v05_ug_paused_static_contract",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.json",
+      "payload_contract": {
+        "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_open_jaw_static.v1",
+        "status": "paused_orientation_migration_complete_awaiting_fable_no_resume_authority"
+      },
+      "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter",
+      "sha256": "bb04adf78b55fe16726b8bb20f18ed92795b6f9a58cad2ee7deb3f57b16a939d"
+    },
+    {
+      "id": "v05_ug_static_contract",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.json",
+      "payload_contract": {
+        "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_open_jaw_static.v1",
+        "status": "paused_orientation_migration_complete_awaiting_fable_no_resume_authority"
+      },
+      "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter",
+      "sha256": "bb04adf78b55fe16726b8bb20f18ed92795b6f9a58cad2ee7deb3f57b16a939d"
     },
     {
       "id": "world_visual",

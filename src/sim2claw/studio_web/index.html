@@ -648,6 +648,21 @@
                     <svg class="pawn-move-arrow" id="pawn-move-arrow" viewBox="0 0 8 8" aria-hidden="true"><defs><marker id="pawn-arrow-head" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 8 4 L 0 8 z"></path></marker></defs><line id="pawn-move-line" marker-end="url(#pawn-arrow-head)"></line></svg>
                   </div>
                 </section>
+                <section class="board-orientation-contract" aria-labelledby="board-orientation-title">
+                  <header>
+                    <div>
+                      <span class="section-label">Coordinate contract · inspection only</span>
+                      <h3 id="board-orientation-title">Standard board orientation</h3>
+                    </div>
+                    <p>Canonical semantic body and task IDs are preserved; only their rotated raw simulator-grid positions use the adapter. Rank 1 is nearest the operator and board-reaching left arm; rank 8 is farthest.</p>
+                  </header>
+                  <div class="canonical-board-frame">
+                    <b class="canonical-board-cue is-far">Far side · rank 8</b>
+                    <div class="canonical-orientation-board" id="canonical-orientation-board" role="img" aria-label="Canonical chessboard with all 64 coordinates, rank 1 near the operator and rank 8 far"></div>
+                    <b class="canonical-board-cue is-near">Near side · rank 1 · operator + left arm</b>
+                  </div>
+                  <footer><span>a → h · operator left to right</span><span>1 → 8 · away from operator</span></footer>
+                </section>
                 <label class="safety-check" id="physical-safety-check" hidden>
                   <input id="physical-safety-ack" type="checkbox">
                   <span>I cleared the workcell, can reach power, and accept calibrated relative motion up to ±90° (±180° wrist roll) with torque release on bus loss or a sustained five-second stall.</span>
