@@ -264,14 +264,14 @@ remaining cards to complete.
 | Q03 | `F1_TRIGGERED` | Evaluate v4 on fit evidence and open the held-out once. | C2 grasp-phase FK approach to corrected C2 center `<=25 mm`; held-out task-relevant correspondence `<=25 mm`; no worsened known-safe geometry/contact. If either fails, follow F1 once rather than launching an unbounded fit family. | Terminal negative receipt `runs/bidirectional-pawn-push/20260727-registration-v4-heldout/evaluation.json`, SHA-256 `7bfd06be5dd397a8c25dc7a4e3cdadd08fa006271fec38d4abcac27d04c125bf`; fit `24.631505 mm` pass; single-open B7 held-out `164.353128 mm` fail with vector `[+20.370202,+162.834641,-9.049048] mm`; no new external contact; v4 rejected; F1 active; `5 passed in 0.32s`; executor `044`; reviewer `042` (`REDIRECT`, anchor `100`). No motion. |
 | Q04 | `DONE` | Re-run immutable C2 bytes under v4 as retrospective diagnostics only. | Produce side-by-side old/v4 first-divergence and contact metrics. Label post-outcome scene correction and no promotion. A useful target is reproduction of physical strike/topple-near-source behavior, but failure remains evidence. | Receipt `runs/bidirectional-pawn-push/20260727-c2-v4-retrospective/evaluation.json`, SHA-256 `36110ee04a6625a3607c657855c92d99e6feac35f38a5541610542dc719e1664`; old/v4 clearance `312.326353/75.624879 mm`; v4 selected/wrong contact `0/0`; rise `0`; off-source false; first divergence row `247`; identical raw action SHA; `5 passed in 1.46s`; executor `045`; reviewer `043` (`CONTINUE`, anchor `100`). Post-outcome diagnostic only; no promotion or motion. |
 | Q05 | `DONE` | Preregister a native float64/40 Hz adjacent-square push evaluator and the complete case family of at most ten attempts. | Evaluator owns selected-pawn source/destination geometry, upright gate, task-local exclusions, non-interaction, canonical hashes, direction, denominator, and camera adjudication. Freeze before any counted action compilation. | F1 evaluator `configs/evaluations/bidirectional_off_source_push_evaluator_v1.json`, ID `bidirectional_off_source_push_float64_40hz_v1`, SHA-256 `8450682fac61ac064198b90858f58e6753b0d701ed55f067f91d88ed04604479`; ten one-use cases (five/direction); `36.025 mm` off-source gate; `90-120 mm` stroke; exact action/mapping/scene/evaluator/setup hashes; C922 owner; exclusions and denominators frozen; C2 excluded; `4 passed in 0.05s`; executor `046`; reviewer `044` (`CONTINUE`, anchor `100`). No action compiled or motion. |
-| Q06 | `IN_PROGRESS` | Select the first REAL→SIM scene from a fresh motion-free C922 frame. Prefer an upright near-rank E/F/G-file pawn at least three files from C with an empty adjacent destination. | User-reported reset is independently camera-verified; selected pawn/destination admitted; all exclusions have at least two-square route clearance; Pi/C922/D405 RGB availability verified; no depth dependency. | Pending |
-| Q07 | `PENDING` | Compile and independently review the first hardware-first push action. Closed jaws, `>=60 mm` stroke, elbow `>=60 deg`, large-joint motion approximately `5–10 deg/s`, no slow deep holds. | CPU/fp64 preview clean; exact mappings and action hash frozen; zero clipping/rate/offset/repair/assistance; setup hash separate; one physical attempt admitted. | Pending |
-| Q08 | `PENDING` | Execute the counted REAL→SIM physical case once and adjudicate it before simulation. | All cameras enclose action; requested/mapped/sent identity passes; C922 evaluator reports physical success; excluded objects remain stationary; torque-off closeout passes. On failure, count it and advance to a distinct preregistered case if budget remains. | Pending |
-| Q09 | `PENDING` | Apply Q08 identical canonical bytes in v4 MuJoCo from the admitted task-local initial state. | No clipping/retiming/repair/state forcing; selected pawn ends inside destination and passes upright/non-interaction gates. Count pass/fail and first divergence. At least one REAL→SIM case must pass. | Pending |
-| Q10 | `PENDING` | Create a separate SIM→REAL push on a different admitted pawn/file and evaluate it in simulation before freeze. | Simulator task success and robustness gate pass before action freeze; action/mappings/scene/evaluator hashes sealed; prior physical outcomes do not tune this case. | Pending |
-| Q11 | `PENDING` | Execute the Q10 frozen SIM→REAL action physically once. | C922 reports selected-pawn destination success; exclusions remain stationary; bytes unchanged; no clamp/rate/repair/retry; torque-off and camera cleanup pass. Count pass/fail. At least one SIM→REAL case must pass. | Pending |
-| Q12 | `PENDING` | Continue distinct preregistered cases only as needed, up to the frozen maximum of ten. | Stop new cases immediately after one complete bidirectional result exists. Every failure remains in the denominator; no post-hoc family expansion. | Pending |
-| Q13 | `PENDING` | Produce the bidirectional evidence package. | Synchronized browser-playable comparisons, posters, action/mapping/evaluator receipts, case-index denominator, first-divergence summaries, Studio catalog entry, and exact claim boundary verified. Raw private recordings remain unpublished. | Pending |
+| Q06 | `TERMINAL_SAFETY_BOUNDARY` | Select the first REAL→SIM scene from a fresh motion-free C922 frame. Prefer an upright near-rank E/F/G-file pawn at least three files from C with an empty adjacent destination. | User-reported reset is independently camera-verified; selected pawn/destination admitted; all exclusions have at least two-square route clearance; Pi/C922/D405 RGB availability verified; no depth dependency. | Fresh RGB receipt `runs/bidirectional-pawn-push/20260727-q06-scene-v1/capture_receipt.json`, SHA-256 `ee6d71d98723e5133097c24c30ab8d2b16881e6554d22078aae632fe99966730`; gate receipt `scene_gate_receipt.json`, SHA-256 `3c81caaa626043d1a12c34bf9b05e11fa0e0823070b516f001e8857b5c59ec0c`. All ten frozen routes have `44.45 mm` center clearance versus required `88.9 mm`; zero admitted cases, zero compiled actions, zero motion/attempts. Human-only scene reconfiguration or a prospective safety-contract change is required. Executor `047`; reviewer `045` (`ESCALATE`, anchor `100`). This is not F3. |
+| Q07 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Compile and independently review the first hardware-first push action. Closed jaws, `>=60 mm` stroke, elbow `>=60 deg`, large-joint motion approximately `5–10 deg/s`, no slow deep holds. | CPU/fp64 preview clean; exact mappings and action hash frozen; zero clipping/rate/offset/repair/assistance; setup hash separate; one physical attempt admitted. | Q06 admitted no case; compiling an action would violate the frozen exclusion gate. |
+| Q08 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Execute the counted REAL→SIM physical case once and adjudicate it before simulation. | All cameras enclose action; requested/mapped/sent identity passes; C922 evaluator reports physical success; excluded objects remain stationary; torque-off closeout passes. On failure, count it and advance to a distinct preregistered case if budget remains. | No Q07 action exists and no counted motion began. REAL→SIM denominator remains `0/0`. |
+| Q09 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Apply Q08 identical canonical bytes in v4 MuJoCo from the admitted task-local initial state. | No clipping/retiming/repair/state forcing; selected pawn ends inside destination and passes upright/non-interaction gates. Count pass/fail and first divergence. At least one REAL→SIM case must pass. | No Q08 canonical bytes exist. No REAL→SIM transfer claim. |
+| Q10 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Create a separate SIM→REAL push on a different admitted pawn/file and evaluate it in simulation before freeze. | Simulator task success and robustness gate pass before action freeze; action/mappings/scene/evaluator hashes sealed; prior physical outcomes do not tune this case. | Q06 found no admitted case in either direction; no SIM→REAL action may be compiled. |
+| Q11 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Execute the Q10 frozen SIM→REAL action physically once. | C922 reports selected-pawn destination success; exclusions remain stationary; bytes unchanged; no clamp/rate/repair/retry; torque-off and camera cleanup pass. Count pass/fail. At least one SIM→REAL case must pass. | No Q10 action exists and no counted motion began. SIM→REAL denominator remains `0/0`. |
+| Q12 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Continue distinct preregistered cases only as needed, up to the frozen maximum of ten. | Stop new cases immediately after one complete bidirectional result exists. Every failure remains in the denominator; no post-hoc family expansion. | Every one of the ten preregistered cases was rejected before compilation by the same frozen Q06 clearance gate; expansion and post-observation weakening are forbidden. |
+| Q13 | `IN_PROGRESS` | Produce the bidirectional evidence package. | Synchronized browser-playable comparisons, posters, action/mapping/evaluator receipts, case-index denominator, first-divergence summaries, Studio catalog entry, and exact claim boundary verified. Raw private recordings remain unpublished. | Packaging the receipt-backed terminal boundary. It must say no bidirectional result exists. |
 | Q14 | `PENDING` | Final verification and publication closeout. | Focused/full relevant tests pass; workflow audit passes; Git diff is scoped; branch commit is pushed; public release/portfolio surface is updated only if already authorized and privacy-reviewed; torque and processes are clean. | Pending |
 | Q15 | `PENDING` | Fable 5 post-result review. After Q00-Q14 and the Definition of Done are locally verified, or after a genuine receipt-backed terminal boundary, return via Computer Use to the existing Claude Desktop conversation titled `Sim-to-real transfer evaluation`; do not start a replacement unless the existing conversation is genuinely unavailable. Submit a concise evidence-complete report covering the original goal, exact actions, per-direction numerator/denominator, proof class, action/mapping/scene/evaluator hashes and versions, fit and held-out registration metrics, simulator and physical outcomes, camera paths, failures and stop conditions, tests, commits/branch, and limitations. Ask Fable to audit claim support, strongest result, weakest proof link, overlooked concrete defects or missing verification, and highest-leverage application/demo and sim2real next steps. | Existing Fable thread actually receives the report; response plus date/model/thread identity is captured in a scoped advisory/reviewer artifact; verified repository evidence is distinguished from inference; secrets and unsupported claims are excluded; feedback is reconciled against receipts and frozen evaluators; recommendations and final decision are written under `Advisory feedback / next steps`. Fable remains advisory. If it identifies a concrete reproducible defect in required Q00-Q14 acceptance, Q15 stays incomplete, the affected card is reopened, the defect is independently verified, and the loop resumes. Strategic or optional suggestions become follow-on work without retroactively changing the evaluator. |
 
@@ -300,11 +300,12 @@ remaining cards to complete.
 Current state:
 
 - Q00-Q02 are verified complete; Q03 is a terminal F1-triggering negative;
-  Q04-Q05 are verified complete, and Q06 is active.
+  Q04-Q05 are verified complete; Q06 is a receipt-backed terminal safety
+  boundary; Q07-Q12 are not authorized; and Q13 is active.
 - Commit `0b3afab` adopted this queue and its goal-loop contract.
 - Existing prior receipts remain unchanged.
-- Robot motion remains unauthorized until Q06 scene admission and Q07 action
-  review both pass.
+- Robot motion remains unauthorized. Q06 admitted no case and Q07 cannot
+  begin.
 
 Completed:
 
@@ -333,6 +334,10 @@ Completed:
 - Q05 evaluator/case freeze. Native float64/40 Hz F1 evaluation, all ten
   one-use slots, direction order, identity boundaries, exclusions, safety,
   and denominators are frozen before action compilation.
+- Q06 fresh RGB scene gate. C922, D405 color, and Pi IMX708 were captured
+  without motion or depth. All ten frozen routes are `44.45 mm` from an
+  excluded reset-layout pawn versus the required `88.9 mm`, so no case was
+  admitted and no action was compiled.
 
 Verification evidence:
 
@@ -389,21 +394,37 @@ Verification evidence:
 - Q05 executor/reviewer: `docs/session-logs/046-executor-q05-off-source-evaluator-freeze.md`;
   `docs/reviewer-messages/044-q05-off-source-evaluator-freeze.md`,
   decision `CONTINUE`, anchor `100`.
+- Q06 capture receipt:
+  `runs/bidirectional-pawn-push/20260727-q06-scene-v1/capture_receipt.json`,
+  SHA-256
+  `ee6d71d98723e5133097c24c30ab8d2b16881e6554d22078aae632fe99966730`.
+- Q06 gate receipt:
+  `runs/bidirectional-pawn-push/20260727-q06-scene-v1/scene_gate_receipt.json`,
+  SHA-256
+  `3c81caaa626043d1a12c34bf9b05e11fa0e0823070b516f001e8857b5c59ec0c`.
+- Q06 executor/reviewer:
+  `docs/session-logs/047-executor-q06-fresh-rgb-scene-gate.md`;
+  `docs/reviewer-messages/045-q06-fresh-rgb-scene-gate.md`,
+  decision `ESCALATE`, anchor `100`.
 
 Remaining:
 
-- Q06-Q15. Q03 remains visibly `F1_TRIGGERED`, not passed.
+- Q13-Q15 terminal-boundary packaging and closeout. Q03 remains visibly
+  `F1_TRIGGERED`; Q07-Q12 remain visibly not authorized, not passed.
 
 Blockers:
 
-- The v4 metric-registration candidate is rejected. Q06 must establish a
-  fresh camera-owned task-local scene before any action is compiled.
+- The v4 metric-registration candidate is rejected.
+- The fresh reset scene is incompatible with the frozen task-local exclusion
+  gate: every preregistered route is one square (`44.45 mm`) from an excluded
+  pawn, below `88.9 mm`.
+- Resolving the scene conflict requires human-only scene reconfiguration or
+  prospectively changing the safety contract. Neither is authorized.
 
 Next step:
 
-- Capture a fresh motion-free C922 scene, verify Pi/C922/D405 RGB availability,
-  adjudicate R01 G2->G1 and every two-square exclusion, and either admit R01
-  or reject it before moving to the next preregistered REAL→SIM slot.
+- Package the Q06 terminal boundary without manufacturing action or task
+  evidence, then audit/push the branch and perform Q15 Fable review.
 
 Attempt ledger:
 
@@ -511,3 +532,54 @@ shasum -a 256 configs/evaluations/bidirectional_off_source_push_evaluator_v1.jso
 
 No counted action existed at evaluator freeze. Q06 is the only active card;
 physical attempts remain `0/10`.
+
+## Q06 transition record
+
+Exact commands and results:
+
+```text
+uv run --offline pytest -q \
+  tests/test_bidirectional_q06_scene_gate.py \
+  tests/test_bidirectional_off_source_evaluator.py
+.....                                                                    [100%]
+5 passed in 0.10s
+
+uv run --offline python scripts/evaluate_bidirectional_q06_scene_gate.py \
+  --output \
+  runs/bidirectional-pawn-push/20260727-q06-scene-v1/scene_gate_receipt.json
+PASS
+
+python -m json.tool \
+  configs/evaluations/bidirectional_q06_rgb_scene_gate_v1.json
+PASS
+
+shasum -a 256 \
+  runs/bidirectional-pawn-push/20260727-q06-scene-v1/scene_gate_receipt.json
+3c81caaa626043d1a12c34bf9b05e11fa0e0823070b516f001e8857b5c59ec0c
+```
+
+Camera inputs:
+
+```text
+capture receipt:
+ee6d71d98723e5133097c24c30ab8d2b16881e6554d22078aae632fe99966730
+C922 native video:
+e56831344ab2a17aba8b0483a49bdb922c4a7285297761a5f710fbc59032fba1
+D405 color native video:
+774c3960ec16b57d7bfe581656e47f5a62505657a36305b905d730b981c4b55d
+C922 scene frame:
+5803cce3e87aa5066589e8aada64b81fe37e2a821e70b47aeb32807860a22883
+D405 color scene frame:
+e95fc50183c63e34d5f25fb4bb4f18ea0d278af9364ae5197a12b9546633e049
+Pi IMX708 scene frame:
+3bfe6a4862fb980eb1afd53b4091779bd71c53bf1f3d03aa5c1d98cebd5c78ab
+```
+
+All ten cases were evaluated before any action compilation. Every route has
+`44.45 mm` center-to-route clearance from its nearest excluded pawn, below
+the frozen `88.9 mm` requirement. F1 stroke widening, changing selected
+board side, and setup prefixes cannot cure initial scene clearance. Case
+expansion, pawn manipulation, and post-observation gate weakening are
+forbidden. Q06 therefore closes as another genuine human-only safety boundary,
+not F3. Q07-Q12 are not authorized. Q13 is the only active card. Physical
+attempts remain `0/10`; no direction has an attempted or successful case.
