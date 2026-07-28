@@ -1,13 +1,14 @@
 {
   "active_pointer": {
     "counted_task_attempts": 0,
+    "cumulative_manifest_read_count": 1,
     "heldout_open_count": 0,
     "milestone_id": "V04",
-    "node_id": "checkpoint:v04-rigid-heldout-preregistered",
-    "queue_status": "AUTHORIZED_V04_SINGLE_SEALED_HELDOUT_OPEN",
-    "resume_action": "open_all_four_once_annotate_and_evaluate_zero_refit",
+    "node_id": "checkpoint:v04-rigid-heldout-recovery-authorized",
+    "queue_status": "AUTHORIZED_V04_VERSIONED_HELDOUT_PIXEL_OPEN_RECOVERY",
+    "resume_action": "execute_versioned_recovery_once_annotate_and_evaluate_zero_refit",
     "resume_authorized": true,
-    "status": "single_all_four_heldout_open_authorized"
+    "status": "versioned_single_pixel_open_authorized"
   },
   "authority": {
     "camera_open": false,
@@ -34,23 +35,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 46,
+    "edges": 48,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 1,
       "evaluated-on": 2,
       "fitted-on": 4,
-      "generated-from": 30,
+      "generated-from": 32,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 45,
+    "nodes": 47,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 23,
+      "checkpoint": 25,
       "context": 1,
       "counterexample": 1,
       "dataset": 1,
@@ -348,6 +349,16 @@
     },
     {
       "metadata": {
+        "failed_closed": true,
+        "manifest_read_count": 1,
+        "raw_image_reads": 0
+      },
+      "source": "checkpoint:v04-rigid-heldout-manifest-only-failure",
+      "target": "checkpoint:v04-rigid-heldout-preregistered",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
         "expected_members": 4,
         "heldout_opened": false,
         "single_open": true,
@@ -355,6 +366,17 @@
       },
       "source": "checkpoint:v04-rigid-heldout-preregistered",
       "target": "checkpoint:v04-rigid-fit-independent-review",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "additional_manifest_reads_authorized": 1,
+        "candidate_and_thresholds_unchanged": true,
+        "raw_image_reads_per_member": 1,
+        "versioned_recovery": true
+      },
+      "source": "checkpoint:v04-rigid-heldout-recovery-authorized",
+      "target": "checkpoint:v04-rigid-heldout-manifest-only-failure",
       "type": "generated-from"
     },
     {
@@ -505,7 +527,7 @@
     }
   ],
   "generated_at": "2026-07-28T07:52:00-05:00",
-  "graph_digest": "0a6dab8367c8f363891705d7699d47a0ac0035415746e8660009b2eb8cce8dc0",
+  "graph_digest": "19aa81ce2ceb0b7fcd64452ab5a76c5d111eedae27542eb0e8d82ceeee918d0c",
   "node_types": [
     "workcell",
     "session",
@@ -588,7 +610,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c"
+        "sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -982,7 +1004,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c"
+        "sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1033,7 +1055,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c"
+        "sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1054,7 +1076,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c"
+        "sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1083,7 +1105,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c"
+        "sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -1174,6 +1196,34 @@
     {
       "data": {
         "candidate_refit": false,
+        "cumulative_manifest_read_count": 1,
+        "failure_receipt_sha256": "54017f1facb2e1e38ab01f78c77134522f74552eabbd46d847d3cace50252ef4",
+        "heldout_pixel_open_count": 0,
+        "output_root_created": false,
+        "raw_image_read_count_total": 0,
+        "source_binding_id": "v04_rigid_heldout_open_failure",
+        "threshold_update": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v04-rigid-heldout-manifest-only-failure",
+      "label": "V04 heldout manifest-only parser failure",
+      "proof_class": "sealed_manifest_only_access_failure_binding",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_heldout_open_failure_v4.json",
+        "payload_contract": {
+          "proof_class": "sealed_manifest_only_access_failure_binding",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_heldout_open_failure_binding.v1",
+          "status": "manifest_only_access_failure_bound_before_recovery"
+        },
+        "proof_class": "sealed_manifest_only_access_failure_binding",
+        "sha256": "727c0e3c5af32d1ca7efda4d76cec880098fa0e593b932028d7647492f976ea0"
+      },
+      "status": "failed_closed_before_raw_pixel_access",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "candidate_refit": false,
         "contract_sha256": "be9d0c5366d6cbeff193e3324c7283614993dd79bc1bd960e340fef9a80ebe4e",
         "counted_task_attempts": 0,
         "expected_opaque_member_count": 4,
@@ -1200,6 +1250,39 @@
         "sha256": "be9d0c5366d6cbeff193e3324c7283614993dd79bc1bd960e340fef9a80ebe4e"
       },
       "status": "single_all_four_heldout_open_authorized",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "additional_manifest_reads_authorized": 1,
+        "candidate_refit": false,
+        "counted_task_attempts": 0,
+        "cumulative_manifest_read_count": 1,
+        "expected_members": 4,
+        "heldout_pixel_open_count": 0,
+        "raw_image_reads_per_member": 1,
+        "recovery_contract_sha256": "cb5de6f91d240c6683ad5c4f29c1439fadaf4d49b21bc77cbbedcca87ffa217e",
+        "recovery_review_sha256": "23357b14fbca8f9663864281caffbc9595a23dbb812c50799f8217dc8b2873a1",
+        "required_cumulative_manifest_read_count": 2,
+        "review_checks_passed": 14,
+        "source_binding_id": "v04_rigid_heldout_recovery_review",
+        "threshold_update": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v04-rigid-heldout-recovery-authorized",
+      "label": "V04 versioned heldout pixel-open recovery authorized",
+      "proof_class": "independent_motion_free_heldout_recovery_protocol_review",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/heldout_recovery_review_v1.json",
+        "payload_contract": {
+          "proof_class": "independent_motion_free_heldout_recovery_protocol_review",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_heldout_recovery_review_receipt.v1",
+          "status": "CONTINUE_TO_VERSIONED_SINGLE_PIXEL_OPEN"
+        },
+        "proof_class": "independent_motion_free_heldout_recovery_protocol_review",
+        "sha256": "23357b14fbca8f9663864281caffbc9595a23dbb812c50799f8217dc8b2873a1"
+      },
+      "status": "versioned_single_pixel_open_authorized",
       "type": "checkpoint"
     },
     {
@@ -1457,7 +1540,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c"
+        "sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -1517,7 +1600,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c"
+        "sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -1535,7 +1618,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c"
+        "sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -1603,7 +1686,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c"
+        "sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -1750,7 +1833,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c",
+      "source_sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -1780,7 +1863,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c",
+      "source_sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -1810,7 +1893,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c",
+      "source_sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -1954,6 +2037,26 @@
       "source_binding": "v04_rigid_heldout_contract",
       "source_sha256": "be9d0c5366d6cbeff193e3324c7283614993dd79bc1bd960e340fef9a80ebe4e",
       "status": "single_all_four_heldout_open_authorized"
+    },
+    {
+      "event_id": "V04_RIGID_HELDOUT_MANIFEST_ONLY_FAILURE",
+      "node_ids_added": [
+        "checkpoint:v04-rigid-heldout-manifest-only-failure"
+      ],
+      "revision": 26,
+      "source_binding": "v04_rigid_heldout_open_failure",
+      "source_sha256": "727c0e3c5af32d1ca7efda4d76cec880098fa0e593b932028d7647492f976ea0",
+      "status": "failed_closed_before_raw_pixel_access"
+    },
+    {
+      "event_id": "V04_RIGID_HELDOUT_RECOVERY_AUTHORIZED",
+      "node_ids_added": [
+        "checkpoint:v04-rigid-heldout-recovery-authorized"
+      ],
+      "revision": 27,
+      "source_binding": "v04_rigid_heldout_recovery_review",
+      "source_sha256": "23357b14fbca8f9663864281caffbc9595a23dbb812c50799f8217dc8b2873a1",
+      "status": "versioned_single_pixel_open_authorized"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -1962,7 +2065,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "8fca449fcaf4ba88ffd39f4497e77f4ac60d73ea9c2e20814f7d27dee25e4f8c"
+      "sha256": "afac128f2b1d254ec770bf024819e6eadb4b334018d264619202fcef20057526"
     },
     {
       "id": "simulator_candidate",
@@ -2268,6 +2371,39 @@
       },
       "proof_class": "prospective_single_open_frozen_registration_heldout_evaluation_only",
       "sha256": "be9d0c5366d6cbeff193e3324c7283614993dd79bc1bd960e340fef9a80ebe4e"
+    },
+    {
+      "id": "v04_rigid_heldout_open_failure",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_heldout_open_failure_v4.json",
+      "payload_contract": {
+        "proof_class": "sealed_manifest_only_access_failure_binding",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_heldout_open_failure_binding.v1",
+        "status": "manifest_only_access_failure_bound_before_recovery"
+      },
+      "proof_class": "sealed_manifest_only_access_failure_binding",
+      "sha256": "727c0e3c5af32d1ca7efda4d76cec880098fa0e593b932028d7647492f976ea0"
+    },
+    {
+      "id": "v04_rigid_heldout_recovery_contract",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_heldout_recovery_v4.json",
+      "payload_contract": {
+        "proof_class": "prospective_versioned_single_pixel_open_frozen_registration_heldout_recovery_only",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_heldout_recovery_evaluation.v1",
+        "status": "preregistered_after_manifest_only_failure_before_any_pixel_access"
+      },
+      "proof_class": "prospective_versioned_single_pixel_open_frozen_registration_heldout_recovery_only",
+      "sha256": "cb5de6f91d240c6683ad5c4f29c1439fadaf4d49b21bc77cbbedcca87ffa217e"
+    },
+    {
+      "id": "v04_rigid_heldout_recovery_review",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/heldout_recovery_review_v1.json",
+      "payload_contract": {
+        "proof_class": "independent_motion_free_heldout_recovery_protocol_review",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_heldout_recovery_review_receipt.v1",
+        "status": "CONTINUE_TO_VERSIONED_SINGLE_PIXEL_OPEN"
+      },
+      "proof_class": "independent_motion_free_heldout_recovery_protocol_review",
+      "sha256": "23357b14fbca8f9663864281caffbc9595a23dbb812c50799f8217dc8b2873a1"
     },
     {
       "id": "v04_start_bridge_execution",

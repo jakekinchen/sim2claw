@@ -186,6 +186,132 @@ def open_all_once(contract_path: Path) -> dict[str, Any]:
     return receipt
 
 
+def recover_open_all_once(contract_path: Path) -> dict[str, Any]:
+    """Run the versioned recovery after one recorded manifest-only failure."""
+    contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    _verify_preopen_lineage(contract)
+    failure = _bound_json(contract["prior_failed_open"])
+    if (
+        failure["status"] != "failed_closed_before_raw_image_access"
+        or failure["cumulative_manifest_read_count"] != 1
+        or failure["raw_image_read_count_total"] != 0
+        or failure["heldout_pixel_content_read"] is not False
+        or failure["candidate_sha256"] != contract["candidate"]["sha256"]
+        or failure["threshold_update"] is not False
+        or failure["candidate_refit"] is not False
+    ):
+        raise RigidRegistrationHeldoutError("prior failed-open evidence changed")
+    paths = _output_paths(contract)
+    if any(path.exists() for path in paths.values()):
+        raise RigidRegistrationHeldoutError("recovery open/output already exists")
+
+    manifest_path = _path(contract["sealed_manifest"])
+    manifest_bytes = manifest_path.read_bytes()
+    if _sha_bytes(manifest_bytes) != contract["sealed_manifest"]["sha256"]:
+        raise RigidRegistrationHeldoutError("sealed manifest changed")
+    manifest = json.loads(manifest_bytes)
+    expected = {
+        row["opaque_id"]: row for row in contract["expected_members"]
+    }
+    members = {str(row["opaque_id"]): row for row in manifest["members"]}
+    schema = contract["recovery_schema"]
+    required_keys = set(schema["sealed_member_keys"])
+    if (
+        len(members) != contract["single_open_protocol"]["required_member_count"]
+        or set(members) != set(expected)
+        or any(set(row) != required_keys for row in manifest["members"])
+    ):
+        raise RigidRegistrationHeldoutError("sealed recovery schema changed")
+
+    opened = []
+    images = []
+    sealed_root = manifest_path.parent / schema["sealed_directory"]
+    for opaque_id in expected:
+        member = members[opaque_id]
+        member_root = sealed_root / opaque_id
+        image_path = member_root / schema["image_filename"]
+        receipt_path = member_root / schema["capture_receipt_filename"]
+        image_bytes = image_path.read_bytes()
+        digest = _sha_bytes(image_bytes)
+        if (
+            digest != member["image_sha256"]
+            or len(image_bytes) != int(member["image_bytes"])
+            or _sha(receipt_path) != member["capture_receipt_sha256"]
+        ):
+            raise RigidRegistrationHeldoutError("recovered sealed member changed")
+        image = cv2.imdecode(
+            np.frombuffer(image_bytes, dtype=np.uint8), cv2.IMREAD_COLOR
+        )
+        if image is None:
+            raise RigidRegistrationHeldoutError("sealed image is undecodable")
+        display = image.copy()
+        cv2.rectangle(display, (0, 0), (display.shape[1], 34), (0, 0, 0), -1)
+        cv2.putText(
+            display,
+            opaque_id,
+            (12, 24),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7,
+            (255, 255, 255),
+            2,
+            cv2.LINE_AA,
+        )
+        images.append(display)
+        opened.append(
+            {
+                "opaque_id": opaque_id,
+                "target_id": expected[opaque_id]["target_id"],
+                "image_path": str(image_path),
+                "image_sha256": digest,
+                "image_bytes": len(image_bytes),
+                "capture_receipt_path": str(receipt_path),
+                "capture_receipt_sha256": member[
+                    "capture_receipt_sha256"
+                ],
+                "raw_image_read_count": 1,
+            }
+        )
+    if len({image.shape for image in images}) != 1:
+        raise RigidRegistrationHeldoutError("sealed image shapes differ")
+    sheet = np.vstack(
+        (np.hstack((images[0], images[1])), np.hstack((images[2], images[3])))
+    )
+    paths["contact_sheet"].parent.mkdir(parents=True, exist_ok=False)
+    if not cv2.imwrite(str(paths["contact_sheet"]), sheet):
+        raise RigidRegistrationHeldoutError("contact sheet write failed")
+    receipt = {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_heldout_recovery_open_receipt.v1",
+        "status": "all_four_heldouts_opened_once_after_manifest_only_recovery",
+        "proof_class": "versioned_recovery_sealed_registration_heldout_content_open_only",
+        "contract_path": str(contract_path.relative_to(REPO_ROOT)),
+        "contract_sha256": _sha(contract_path),
+        "prior_failure_sha256": contract["prior_failed_open"]["sha256"],
+        "sealed_manifest_sha256": _sha_bytes(manifest_bytes),
+        "manifest_read_count_this_recovery": 1,
+        "cumulative_manifest_read_count": 2,
+        "heldout_pixel_open_count": 1,
+        "members": opened,
+        "contact_sheet_path": str(paths["contact_sheet"].relative_to(REPO_ROOT)),
+        "contact_sheet_sha256": _sha(paths["contact_sheet"]),
+        "candidate_sha256": contract["candidate"]["sha256"],
+        "candidate_refit": False,
+        "threshold_update": False,
+        "authority": contract["authority"],
+        "claim_boundary": "All four frozen registration heldout pixels opened once after one recorded manifest-only failure; no evaluation, promotion, task, motion, or transfer claim yet.",
+    }
+    _write_json(paths["open_receipt"], receipt)
+    marker = {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_heldout_recovery_open_marker.v1",
+        "heldout_open_count": 1,
+        "cumulative_manifest_read_count": 2,
+        "open_receipt_sha256": _sha(paths["open_receipt"]),
+        "raw_image_read_count_per_member": 1,
+        "prior_failure_sha256": contract["prior_failed_open"]["sha256"],
+    }
+    _write_json(paths["open_marker"], marker)
+    return receipt
+
+
 def evaluate_frozen(
     contract_path: Path,
     annotation_path: Path,

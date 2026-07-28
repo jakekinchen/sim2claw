@@ -1,0 +1,134 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_heldout_recovery_evaluation.v1",
+  "evaluation_id": "bidirectional-pawn-push-v2-registration-heldout-recovery-v4",
+  "status": "preregistered_after_manifest_only_failure_before_any_pixel_access",
+  "proof_class": "prospective_versioned_single_pixel_open_frozen_registration_heldout_recovery_only",
+  "prior_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_heldout_v4.json",
+    "sha256": "be9d0c5366d6cbeff193e3324c7283614993dd79bc1bd960e340fef9a80ebe4e"
+  },
+  "prior_failed_open": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/heldout_open_failure_v1.json",
+    "sha256": "54017f1facb2e1e38ab01f78c77134522f74552eabbd46d847d3cace50252ef4"
+  },
+  "recovery_parser": {
+    "path": "src/sim2claw/bidirectional_registration_rigid_heldout.py",
+    "sha256": "aa1671f3105c681ff2e1396880c292f12e6fb8778c359bf6999fabc94007e787",
+    "entrypoint": "recover_open_all_once"
+  },
+  "acquisition_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v4.json",
+    "sha256": "605f8973553e14d488dd43a5aab51e2b6915215553033878aba6a2577d0e01da"
+  },
+  "fit_annotations": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v4.json",
+    "sha256": "2a22f21601ed8cafccdee1f2666ead7b9c194ab1af091610082597238dffe5b3"
+  },
+  "candidate": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+    "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+  },
+  "fit_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/fit_receipt.json",
+    "sha256": "eef26fd6ea349070fc7d40094b6ec09753464be467071ff3c66fed3c870848ca"
+  },
+  "independent_fit_review": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/independent_review.json",
+    "sha256": "2020d906ea27f8e4c4e3b405c6dd1d0ab6237168f9e689ebed28c81bb9633b31"
+  },
+  "candidate_manifest": {
+    "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+  },
+  "joint_samples": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/joint_samples.jsonl",
+    "sha256": "32e623dc0d8ec219cdb329b79cdd2a8647ab4f0ba597af72606cf32d8de90f9f"
+  },
+  "sealed_manifest": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/heldout_sealed_manifest.json",
+    "sha256": "0116025742193193a73c6060335ccfb36f9a7123c43bd82157eb41b58f923bca"
+  },
+  "expected_members": [
+    {
+      "opaque_id": "heldout-r4-01",
+      "target_id": "v2r4-heldout-panm16-liftm88"
+    },
+    {
+      "opaque_id": "heldout-r4-02",
+      "target_id": "v2r4-heldout-panm07-liftm86"
+    },
+    {
+      "opaque_id": "heldout-r4-03",
+      "target_id": "v2r4-heldout-panp00-liftm89"
+    },
+    {
+      "opaque_id": "heldout-r4-04",
+      "target_id": "v2r4-heldout-panp04-liftm87"
+    }
+  ],
+  "recovery_schema": {
+    "sealed_member_keys": [
+      "opaque_id",
+      "image_sha256",
+      "image_bytes",
+      "capture_receipt_sha256"
+    ],
+    "sealed_directory": "heldout-sealed",
+    "image_filename": "selected.png",
+    "capture_receipt_filename": "capture_receipt.json",
+    "derivation_source": "src/sim2claw/bidirectional_registration_v2_capture.py"
+  },
+  "single_open_protocol": {
+    "required_member_count": 4,
+    "all_members_open_together": true,
+    "prior_manifest_only_read_count": 1,
+    "additional_manifest_reads_authorized": 1,
+    "required_cumulative_manifest_read_count": 2,
+    "raw_image_reads_per_member": 1,
+    "required_heldout_pixel_open_count": 1,
+    "annotation_surface": "one derived 2x2 contact sheet only",
+    "refuse_if_marker_or_output_exists": true
+  },
+  "annotation_protocol": {
+    "passes": 2,
+    "points_per_pass": 2,
+    "point_order": [
+      "fixed_pink_endpoint",
+      "moving_pink_endpoint"
+    ],
+    "maximum_tip_disagreement_px": 6.0,
+    "maximum_midpoint_disagreement_px": 4.0
+  },
+  "frozen_gates": {
+    "maximum_per_member_reprojection_error_px": 8.0,
+    "maximum_aggregate_reprojection_rms_px": 8.0,
+    "maximum_per_member_task_plane_error_mm_exclusive": 25.0,
+    "maximum_aggregate_task_plane_rms_mm_exclusive": 25.0,
+    "all_four_members_must_be_scorable": true,
+    "all_four_members_must_pass": true
+  },
+  "frozen_candidate_policy": {
+    "candidate_refit": false,
+    "camera_parameter_update": false,
+    "rigid_parameter_update": false,
+    "threshold_update_after_open": false,
+    "z_bound_expansion": false
+  },
+  "outputs": {
+    "root": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/heldout-rigid-v4",
+    "open_marker": "open_count_1.marker.json",
+    "open_receipt": "single_open_recovery_receipt.json",
+    "contact_sheet": "heldout_contact_sheet.png",
+    "evaluation_receipt": "evaluation_receipt.json"
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "physical_motion": false,
+    "task_attempt": false,
+    "candidate_refit": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Versioned recovery from one manifest-only parser failure. Registration heldout evaluation only; no contact, pawn displacement, task, motion, promotion, or transfer claim."
+}

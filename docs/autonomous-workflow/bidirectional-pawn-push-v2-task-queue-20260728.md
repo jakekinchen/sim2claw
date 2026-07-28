@@ -1730,3 +1730,34 @@ occurred. This is a consumed manifest-only access and must not be represented
 as the successful one-pixel-open transaction. A separately committed,
 independently reviewed recovery protocol is required before any additional
 manifest or pixel access.
+
+### V04 versioned heldout pixel-open recovery independently admitted — 2026-07-28
+
+Recovery contract
+`configs/evaluations/bidirectional_pawn_push_v2_registration_heldout_recovery_v4.json`,
+SHA-256
+`cb5de6f91d240c6683ad5c4f29c1439fadaf4d49b21bc77cbbedcca87ffa217e`,
+binds failure receipt `54017f1f...`, original contract `be9d0c53...`,
+candidate `4d08518f...`, fit receipt `eef26fd6...`, fit review
+`2020d906...`, the same four opaque members, the same sealed manifest, and
+the same annotation and evaluation thresholds.
+
+The corrected parser is hash-frozen at
+`src/sim2claw/bidirectional_registration_rigid_heldout.py`, SHA-256
+`aa1671f3105c681ff2e1396880c292f12e6fb8778c359bf6999fabc94007e787`.
+It derives each sealed path from the capture source's reviewed rule:
+`manifest parent / heldout-sealed / opaque_id / selected.png` and
+`capture_receipt.json`. The recovery permits exactly one additional manifest
+read, requires cumulative manifest reads `2`, and exactly one raw-image read
+for each of all four members into one contact sheet. It preserves zero refit,
+zero parameter/threshold update, and no Z-bound expansion.
+
+Independent motion-free/content-free recovery review receipt
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/heldout_recovery_review_v1.json`,
+SHA-256
+`23357b14fbca8f9663864281caffbc9595a23dbb812c50799f8217dc8b2873a1`,
+returns `CONTINUE_TO_VERSIONED_SINGLE_PIXEL_OPEN`; all `14/14` checks pass.
+Focused heldout/fit/review tests pass `5/5`. No additional manifest read or
+raw pixel access occurred during design or review. Cumulative manifest reads
+remain `1`; heldout pixel open count remains `0`. The recovery and graph
+authorization must be committed/pushed before the single recovery execution.
