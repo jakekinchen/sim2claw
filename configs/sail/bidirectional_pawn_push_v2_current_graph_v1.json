@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T11:02:00-05:00",
+  "generated_at": "2026-07-28T12:41:30-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "6393b5000246d40733ea20831c9b19c2e8a56f94b50adbe12c865f870838e2e8",
+      "sha256": "ba09bdbe58be6e926efd4fe5b5c6cba00cebb029e29693380523aa1440d5558d",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -540,6 +540,29 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_static_jaw_successor.v1",
         "status": "preregistered_before_successor_static_enumeration_or_action_generation",
         "proof_class": "prospective_cpu_fp64_static_exact_gripper_column_successor_action_freeze"
+      }
+    },
+    "v05_tj_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/static-freeze-v1/receipt.json",
+      "sha256": "64e8c4435e033e0f9c83b88374b11206ed02b80fcdbb62765ad9834c2248566c",
+      "proof_class": "cpu_fp64_static_exact_gripper_column_successor_action_freeze_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_static_jaw_successor_receipt.v1",
+        "status": "static_action_freeze_pass",
+        "proof_class": "cpu_fp64_static_exact_gripper_column_successor_action_freeze_only",
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    "v05_tj_temporal_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_replay_jaw_successor_v1.json",
+      "sha256": "5ceb39be92954ff8d59ac53bca64b1e03968c3e2603d75c94e23ed8d43d7f768",
+      "proof_class": "prospective_cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_replay",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay.v1",
+        "status": "preregistered_after_static_action_freeze_before_dynamic_replay",
+        "proof_class": "prospective_cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_replay"
       }
     },
     "simulator_candidate": {
@@ -1502,6 +1525,47 @@
       }
     },
     {
+      "id": "checkpoint:v05-tj-static-successor-pass",
+      "type": "checkpoint",
+      "label": "V05-TJ static successor action freeze passed",
+      "status": "static_action_freeze_pass_four_actions_bound",
+      "source_binding": "v05_tj_static_receipt",
+      "data": {
+        "universe_routes": 48,
+        "grid_cells": 432,
+        "compiled_cells": 80,
+        "eligible_cases": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "all_arm_columns_byte_identical": true,
+        "only_gripper_column_changed": true,
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-tj-temporal-replay-frozen",
+      "type": "checkpoint",
+      "label": "V05-TJ action-frozen two-plant temporal replay frozen",
+      "status": "preregistered_temporal_replay_execution_active",
+      "source_binding": "v05_tj_temporal_contract",
+      "data": {
+        "action_count": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "sample_hz": 40.0,
+        "canonical_direct_target": true,
+        "diagnostic_zoh_delay_seconds": 0.11,
+        "raw_requested_sent_applied_traces_required": true,
+        "raw_requested_sent_applied_timestamps_required": true,
+        "minimum_cases_per_direction": 2,
+        "dynamic_simulation_authorized": true,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2076,6 +2140,30 @@
       }
     },
     {
+      "source": "checkpoint:v05-tj-static-successor-pass",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-tj-static-successor-frozen",
+      "metadata": {
+        "static_action_freeze_pass": true,
+        "eligible_cases": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-tj-temporal-replay-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-tj-static-successor-pass",
+      "metadata": {
+        "four_action_hashes_bound": true,
+        "dynamic_outcomes_used": false,
+        "canonical_direct_target": true,
+        "diagnostic_zoh_delay_seconds": 0.11,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -2516,14 +2604,32 @@
       "node_ids_added": [
         "checkpoint:v05-tj-static-successor-frozen"
       ]
+    },
+    {
+      "revision": 44,
+      "event_id": "V05_TJ_STATIC_SUCCESSOR_PASS",
+      "status": "static_action_freeze_pass_four_actions_bound",
+      "source_binding": "v05_tj_static_receipt",
+      "node_ids_added": [
+        "checkpoint:v05-tj-static-successor-pass"
+      ]
+    },
+    {
+      "revision": 45,
+      "event_id": "V05_TJ_TEMPORAL_REPLAY_FREEZE",
+      "status": "preregistered_temporal_replay_execution_active",
+      "source_binding": "v05_tj_temporal_contract",
+      "node_ids_added": [
+        "checkpoint:v05-tj-temporal-replay-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-tj-static-successor-frozen",
+    "node_id": "checkpoint:v05-tj-temporal-replay-frozen",
     "milestone_id": "V05-TJ",
-    "status": "preregistered_successor_static_execution_active",
-    "queue_status": "ACTIVE_V05_TJ_FROZEN_STATIC_SUCCESSOR_EXECUTION",
-    "resume_action": "execute_frozen_exact_jaw_margin_static_successor_once",
+    "status": "preregistered_temporal_replay_execution_active",
+    "queue_status": "ACTIVE_V05_TJ_FROZEN_TEMPORAL_REPLAY_EXECUTION",
+    "resume_action": "execute_frozen_four_case_two_plant_temporal_replay_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

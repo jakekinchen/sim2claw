@@ -31,12 +31,12 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V05-TJ"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v05-tj-static-successor-frozen",
+        "node_id": "checkpoint:v05-tj-temporal-replay-frozen",
         "milestone_id": "V05-TJ",
-        "status": "preregistered_successor_static_execution_active",
-        "queue_status": "ACTIVE_V05_TJ_FROZEN_STATIC_SUCCESSOR_EXECUTION",
+        "status": "preregistered_temporal_replay_execution_active",
+        "queue_status": "ACTIVE_V05_TJ_FROZEN_TEMPORAL_REPLAY_EXECUTION",
         "resume_action": (
-            "execute_frozen_exact_jaw_margin_static_successor_once"
+            "execute_frozen_four_case_two_plant_temporal_replay_once"
         ),
         "resume_authorized": True,
         "heldout_open_count": 1,
@@ -44,7 +44,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(44)
+        range(46)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -55,10 +55,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_TJ_STATIC_SUCCESSOR_FREEZE"
+        == "V05_TJ_TEMPORAL_REPLAY_FREEZE"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v05-tj-static-successor-frozen"
+        "checkpoint:v05-tj-temporal-replay-frozen"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]

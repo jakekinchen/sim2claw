@@ -1,0 +1,113 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay.v1",
+  "replay_id": "bidirectional-pawn-push-v2-temporal-replay-jaw-successor-v1",
+  "status": "preregistered_after_static_action_freeze_before_dynamic_replay",
+  "proof_class": "prospective_cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_replay",
+  "static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/static-freeze-v1/receipt.json",
+    "sha256": "64e8c4435e033e0f9c83b88374b11206ed02b80fcdbb62765ad9834c2248566c"
+  },
+  "rehearsal_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v2.json",
+    "sha256": "d57fc89a5874d630536ae6f981b78988c6da40bfb8934fee78ab2cfc02ac847f"
+  },
+  "temporal_plan": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json",
+    "sha256": "5e8058e0bc46d60879d962a1e2ee9e8161a12197dfe9aee3faab73f7b1f23e9e"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_temporal_replay.py",
+    "sha256": "b1a95281f1b1d8b8972f05216f4f1c5117ff400e6435648cffe545ff77e47c96"
+  },
+  "action_identity": {
+    "dtype": "little_endian_float64",
+    "sample_hz": 40.0,
+    "requested_sent_byte_identical": true,
+    "row_order_preserved": true,
+    "no_clipping_smoothing_retiming_offset_repair_or_rate_limit": true
+  },
+  "cases": [
+    {
+      "case_id": "brown_pawn_b1__b1_b2",
+      "direction_lane": "REAL_TO_SIM",
+      "source_square": "b1",
+      "destination_square": "b2",
+      "selected_piece_id": "brown_pawn_b1",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/static-freeze-v1/actions/00.f64le",
+      "action_sha256": "1159aa1e88d7d437af1aaf273eaff8bd41e747015bb27da87c4966b723942fd2",
+      "action_shape": [118, 6]
+    },
+    {
+      "case_id": "brown_pawn_a2__a2_a1",
+      "direction_lane": "SIM_TO_REAL",
+      "source_square": "a2",
+      "destination_square": "a1",
+      "selected_piece_id": "brown_pawn_a2",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/static-freeze-v1/actions/01.f64le",
+      "action_sha256": "05d5dbd3bd9b62c70f0deed6ae9ad25dd3eeca4fb8f12befc30ba82db94aaa8e",
+      "action_shape": [118, 6]
+    },
+    {
+      "case_id": "brown_pawn_a2__a2_a3",
+      "direction_lane": "REAL_TO_SIM",
+      "source_square": "a2",
+      "destination_square": "a3",
+      "selected_piece_id": "brown_pawn_a2",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/static-freeze-v1/actions/02.f64le",
+      "action_sha256": "f78500c72e6ea80d018232e5a8c4220d4145de277b7dcaa3011b7d7caea423d2",
+      "action_shape": [118, 6]
+    },
+    {
+      "case_id": "brown_pawn_e2__e2_e3",
+      "direction_lane": "SIM_TO_REAL",
+      "source_square": "e2",
+      "destination_square": "e3",
+      "selected_piece_id": "brown_pawn_e2",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/static-freeze-v1/actions/03.f64le",
+      "action_sha256": "06267b31afd342c977f8198778ae79ec8d260e63816e92f295705948d655be96",
+      "action_shape": [118, 6]
+    }
+  ],
+  "plant_paths": [
+    {
+      "path_id": "canonical_direct_target",
+      "kind": "direct_target_mujoco",
+      "delay_seconds": 0.0,
+      "diagnostic_only": false
+    },
+    {
+      "path_id": "diagnostic_zoh_110ms",
+      "kind": "zero_order_hold_command_delay",
+      "delay_seconds": 0.11,
+      "diagnostic_only": true,
+      "not_physical_latency_or_calibrated_plant": true
+    }
+  ],
+  "unchanged_outcome_gates": [
+    "selected contact required",
+    "signed progress at least 36.025 mm",
+    "zero excluded jaw contacts",
+    "maximum excluded displacement 1 mm",
+    "zero new nonselected jaw collision pairs",
+    "camera margin at least 20 px",
+    "all five robustness variants"
+  ],
+  "acceptance": {
+    "each_case_must_pass_both_plant_paths": true,
+    "minimum_cases_per_direction": 2,
+    "gate_may_not_be_weakened_after_outcomes": true
+  },
+  "authority": {
+    "dynamic_simulation": true,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective action-frozen simulator-only baseline and diagnostic-delay replay. The challenger is not physical latency, a calibrated plant, or promotion authority."
+}
