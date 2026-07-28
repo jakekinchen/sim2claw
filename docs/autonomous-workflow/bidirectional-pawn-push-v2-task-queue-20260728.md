@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_ACQUISITION_V3_CAPTURE_AUTHORIZED_PENDING_RECHECK`
+Status: `ACTIVE_V04_MASKED_STATIC_SCENE_CAD_AUDIT`
 
 Created: `2026-07-28`
 
@@ -1394,3 +1394,45 @@ consumed no registration transaction or task attempt.
 Physical acquisition-v3 is authorized only after this checkpoint is
 committed/pushed and the same identity, process, serial-owner, start-envelope,
 torque-off, and no-rewrite gates pass immediately before execution.
+
+### V04 acquisition-v3 terminal stop / masked-static audit trigger — 2026-07-28
+
+The single committed acquisition-v3 transaction stopped fail-closed at target
+9. Immutable receipt
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/execution_receipt.json`,
+SHA-256
+`6fe2373d4f776c48c8255cc26234ef2301fba3190af9d3dead8204dc7eb8fd0b`,
+has status `stopped_safely` and exact error
+`target hold did not meet the frozen two-second tracking gate`.
+
+Source egress completed exact rows `715/715`, action SHA-256
+`f3e480e6b89582d51edff3a2b0845aa637103a3dbfe31e26f6865182e25e96f2`.
+Capture/return stopped after exact prefix `852/1771`, prefix SHA-256
+`c2a21896b89322a0c4db15ec6ffe89afd3f68e8abbcb4bfdbc6c4d6bddfb8744`.
+The target-9 scoring tail first row had `2.021978 deg` maximum tracking error,
+exceeding the frozen `2.0 deg` gate by `0.021978 deg`; no threshold was
+changed and no retry is authorized. The earlier shell full-HEAD string typo
+stopped before camera/gateway/motion and consumed no budget.
+
+Eight targets closed under exact C922 identity/mode/mount with zero drops:
+four of six fit targets and all four separately sealed heldouts. The
+incomplete fit manifest SHA-256 is
+`341db2264aa3ee486c6cdc4b61330dabe8b376f3a848aea87b550c4aa0c47537`;
+the still-sealed heldout manifest SHA-256 is
+`b48d47d2606d9fbecf9df42de4188993def21592d57cdd8ed15db4b0c71a9c7e`.
+The incomplete split is ineligible for candidate fitting. Heldouts remain
+unopened and cannot be substituted for the missing fit targets.
+
+Torque-off cleanup and an independent preflight passed; no camera/gateway
+process, serial owner, configuration rewrite, or Git lock remained. The arm
+is torque-off at
+`[7.208791,-85.538462,99.472527,-20.087912,-103.340659,2.375297]`
+because the stop occurred before the frozen return. No pawn contact or task
+action occurred. REAL->SIM and SIM->REAL remain `0/0`; counted task attempts
+remain `0/10`.
+
+The one V3 registration transaction is consumed. V04 now activates only the
+bounded masked-static-scene/CAD audit from the consolidated critical path.
+That audit may use fit-only completed images and existing static/CAD evidence,
+must not read heldout inputs, and grants no fit, simulator promotion, physical
+motion, task action, or transfer authority.
