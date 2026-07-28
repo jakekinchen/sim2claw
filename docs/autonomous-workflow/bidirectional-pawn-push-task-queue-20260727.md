@@ -226,8 +226,8 @@ remaining cards to complete.
 
 | ID | Status | Task | Acceptance gate | Evidence |
 |---|---|---|---|---|
-| Q00 | `IN_PROGRESS` | Reproduce the advisory board-side diagnosis read-only. Use the immutable C2 action, current compiled task scene, and perfect-tracking FK. | Report minimum approach to simulated C2, C8, and C7; confirm or reject the approximately six-rank categorical error; identify the exact code/config source. No file mutation beyond queue/evidence docs and no motion. | Pending |
-| Q01 | `PENDING` | Freeze the zero-motion registration dataset split. Fit data may include C2 contact/topple-frame joints, C922 grid/corner tags, prior C2 dual-camera replay, and Pi link tags. Reserve at least one independent hover/episode as held-out before fitting. | Versioned manifest hashes every input and declares fit versus held-out membership. No held-out inspection after freeze until candidate family freezes. | Pending |
+| Q00 | `DONE` | Reproduce the advisory board-side diagnosis read-only. Use the immutable C2 action, current compiled task scene, and perfect-tracking FK. | Report minimum approach to simulated C2, C8, and C7; confirm or reject the approximately six-rank categorical error; identify the exact code/config source. No file mutation beyond queue/evidence docs and no motion. | `docs/run-logs/2026-07-27-bidirectional-pawn-push-q00-board-side-diagnosis.md`; reviewer `039` (`CONTINUE`, anchor `100`). Site/base minima: C2 `265.275519 mm`, C8 `80.897091 mm`, C7 `100.783880 mm`. Pad-gap/28 mm-neck minima: C2 `257.506340 mm`, C8 `64.673854 mm`, C7 `85.525518 mm`. C2-C8 separation `266.700000 mm`; categorical rank-side error confirmed, residual still `>25 mm`. No motion. |
+| Q01 | `IN_PROGRESS` | Freeze the zero-motion registration dataset split. Fit data may include C2 contact/topple-frame joints, C922 grid/corner tags, prior C2 dual-camera replay, and Pi link tags. Reserve at least one independent hover/episode as held-out before fitting. | Versioned manifest hashes every input and declares fit versus held-out membership. No held-out inspection after freeze until candidate family freezes. | Pending |
 | Q02 | `PENDING` | Implement scene-registration v4 as the smallest versioned correction: categorical side/orientation first, then bounded board XY/yaw refinement. Add joint-zero changes only if separately identifiable. | Old scene IDs and receipts remain unchanged. Candidate deterministically rebuilds and loads in CPU/fp64 MuJoCo. No action bytes change. | Pending |
 | Q03 | `PENDING` | Evaluate v4 on fit evidence and open the held-out once. | C2 grasp-phase FK approach to corrected C2 center `<=25 mm`; held-out task-relevant correspondence `<=25 mm`; no worsened known-safe geometry/contact. If either fails, follow F1 once rather than launching an unbounded fit family. | Pending |
 | Q04 | `PENDING` | Re-run immutable C2 bytes under v4 as retrospective diagnostics only. | Produce side-by-side old/v4 first-divergence and contact metrics. Label post-outcome scene correction and no promotion. A useful target is reproduction of physical strike/topple-near-source behavior, but failure remains evidence. | Pending |
@@ -266,9 +266,10 @@ remaining cards to complete.
 
 Current state:
 
-- Queue created; Q00 is active.
-- Existing branch and prior receipts remain unchanged.
-- No new robot motion is authorized until Q00–Q05 complete.
+- Q00 is verified complete and Q01 is active.
+- Commit `0b3afab` adopted this queue and its goal-loop contract.
+- Existing prior receipts remain unchanged.
+- No new robot motion is authorized until Q00-Q05 complete.
 
 Completed:
 
@@ -277,24 +278,40 @@ Completed:
   infrastructure.
 - Read-only servo health and faster elbow qualification.
 - Immutable D1 and C2 terminal task attempts.
+- Q00 deterministic action-frozen board-side diagnosis. The categorical
+  rank-side defect is confirmed, but the advisory mixed site/base and
+  pad-gap/neck metrics; the remaining corrected-side residual exceeds
+  `25 mm`.
 
-Evidence:
+Verification evidence:
 
-- See “Starting evidence.”
+- Q00 run log:
+  `docs/run-logs/2026-07-27-bidirectional-pawn-push-q00-board-side-diagnosis.md`.
+- Q00 executor log:
+  `docs/session-logs/041-executor-q00-board-side-diagnosis.md`.
+- Q00 reviewer:
+  `docs/reviewer-messages/039-q00-board-side-diagnosis.md`,
+  decision `CONTINUE`, evidence anchor `100`.
+- Immutable action raw SHA-256:
+  `0add8f1357c65bee011755e6e4a124d0e339cbc0dce9fd3a92b78399380a37da`.
+- Candidate manifest SHA-256:
+  `f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170`.
+- Independent direct-transform formula check: `PASS` at `1e-9 mm`.
 
 Remaining:
 
-- Q00-Q14.
+- Q01-Q14.
 
 Blockers:
 
-- Advisory side-flip diagnosis is not yet independently reproduced by the new
-  implementation agent.
+- No Q01 blocker yet. Held-out membership must be frozen and then remain
+  unopened until the Q02 candidate family is frozen.
 
 Next step:
 
-- Execute Q00 read-only and update this queue with exact reproduced metrics,
-  source locations, and reviewer decision.
+- Inventory admissible zero-motion registration inputs, choose and hash a
+  fit/held-out split without inspecting held-out outcomes, write the versioned
+  manifest, and obtain the Q01 reviewer decision.
 
 Attempt ledger:
 
