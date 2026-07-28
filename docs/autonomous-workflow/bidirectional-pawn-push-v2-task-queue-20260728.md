@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_VERSIONED_REHEARSAL_V4_PATH_CORRECTION`
+Status: `ACTIVE_V05_FROZEN_REHEARSAL_V4_SINGLE_EXECUTION`
 
 Created: `2026-07-28`
 
@@ -1982,3 +1982,22 @@ changes nothing else. Absolute and relative CLI tests must reach a final
 receipt, exercise full postprocessing, and prove every referenced retained
 file resolves after temporary compatibility cleanup before v4 is committed,
 pushed, and run once.
+
+### V05 rehearsal-v4 prospective path freeze — 2026-07-28
+
+The path-only v4 contract is frozen at
+`configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v4.json`,
+SHA-256
+`e1ea033b42d3b9fc9dedd8cfc4d432cc34a98df3b284f56d0d009044a7fb404e`.
+It binds the entire unchanged v3 pipeline by SHA-256. The v4 finalizer
+SHA-256 is
+`a4df2c1fdbb3aadb94ae9d2f717a6a5717cff0907e55a45c3dc08d95ea8108a1`.
+Its only change is to resolve and repository-contain the public contract and
+output paths before repo-relative binding and receipt writing.
+
+Two end-to-end real-MuJoCo CLI tests pass: one uses absolute public paths and
+one uses repository-relative public paths. Both exercise the full v3
+postprocessing chain, emit a final v4 receipt with all explicit arm/jaw
+checks, bind a retained contract whose SHA resolves after temporary cleanup,
+and leave no compatibility file. V4 may execute the exact frozen 72-cell grid
+once. No physical authority is granted.

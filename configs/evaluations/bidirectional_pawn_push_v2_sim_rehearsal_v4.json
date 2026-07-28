@@ -1,0 +1,38 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal.v4",
+  "rehearsal_id": "bidirectional-pawn-push-v2-sim-rehearsal-v4",
+  "status": "preregistered_path_resolution_correction_before_v4_execution",
+  "proof_class": "prospective_cpu_fp64_sim_only_rehearsal_v4_path_safe_finalization",
+  "frozen_v3_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v3.json",
+    "sha256": "493184be895022226dcf03a611a14a535f268282b10db2b7702d33f9f074d014"
+  },
+  "v3_execution_failure": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v3_finalization_failure.json",
+    "sha256": "8adb33da4967fc752fc6d867832db1653f99b775e7673aa062a92df446d664f8"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_sim_rehearsal_v4.py",
+    "sha256": "a4df2c1fdbb3aadb94ae9d2f717a6a5717cff0907e55a45c3dc08d95ea8108a1"
+  },
+  "v3_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_sim_rehearsal_v3.py",
+    "sha256": "997ae5dddf193a7a8f84a4aee97dcf503f59e4b7599042a858707603cd6a1e82"
+  },
+  "only_change": {
+    "public_contract_path_resolved_before_repo_relative_binding": true,
+    "public_output_path_resolved_before_write": true,
+    "grid_or_action_changed": false,
+    "scene_or_registration_changed": false,
+    "gate_or_dynamic_rule_changed": false
+  },
+  "authority": {
+    "evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective simulation-only path-resolution correction over the exact frozen rehearsal-v3 pipeline; no physical or transfer authority."
+}
