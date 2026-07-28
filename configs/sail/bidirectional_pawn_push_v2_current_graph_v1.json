@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T15:28:47-05:00",
+  "generated_at": "2026-07-28T15:31:59-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "dc9a9edfc3be1648041a8a2c72827f03953a158628f711cdca85ada750845975",
+      "sha256": "252ed540cbe9bbc84b6acbe08c191357efa071feb9c92282127d66ad026e03b2",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -887,6 +887,29 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_center_contact_static.v3",
         "status": "preregistered_neighbor_corridor_before_model_loading_static_enumeration_or_action_generation",
         "proof_class": "prospective_cpu_fp64_static_low_center_neighbor_corridor_action_freeze"
+      }
+    },
+    "v05_ub_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ub-neighbor-corridor-v1/static-freeze-v1/receipt.json",
+      "sha256": "ed2a7aef30069330fcff83b9359b006f5999cbf4fe7478239c6394654bf02a2d",
+      "proof_class": "cpu_fp64_static_slow_elevated_long_stroke_multistart_approach_collision_camera_gateway_action_freeze_only_v2",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_center_contact_static_receipt.v3",
+        "status": "low_center_contact_static_freeze_pass",
+        "proof_class": "cpu_fp64_static_slow_elevated_long_stroke_multistart_approach_collision_camera_gateway_action_freeze_only_v2",
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    "v05_ub_temporal_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_replay_neighbor_corridor_v1.json",
+      "sha256": "3e9c43fe971ba31e4a9073468c1689f9c856d375b7eea8aa3b88d92e474f52c3",
+      "proof_class": "prospective_cpu_fp64_action_frozen_setup_direct_target_and_diagnostic_zoh_replay",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay.v1",
+        "status": "preregistered_after_neighbor_corridor_static_action_freeze_before_dynamic_replay",
+        "proof_class": "prospective_cpu_fp64_action_frozen_setup_direct_target_and_diagnostic_zoh_replay"
       }
     },
     "simulator_candidate": {
@@ -2581,6 +2604,45 @@
       }
     },
     {
+      "id": "checkpoint:v05-ub-neighbor-corridor-static-pass",
+      "type": "checkpoint",
+      "label": "V05-UB four-family neighbor-corridor action freeze passed",
+      "status": "static_action_freeze_pass_no_dynamic_outcome",
+      "source_binding": "v05_ub_static_receipt",
+      "data": {
+        "evaluated_cells": 324,
+        "quarantine_leak": false,
+        "statically_eligible_families": 4,
+        "selected_families": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "exact_action_count": 4,
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-ub-temporal-replay-frozen",
+      "type": "checkpoint",
+      "label": "V05-UB exact neighbor-corridor temporal replay frozen",
+      "status": "preregistered_temporal_replay_execution_active",
+      "source_binding": "v05_ub_temporal_contract",
+      "data": {
+        "exact_action_count": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "canonical_direct_target": true,
+        "diagnostic_zoh_delay_seconds": 0.11,
+        "requested_sent_byte_identity_required": true,
+        "minimum_signed_progress_mm": 36.025,
+        "dynamic_replay_authorized": true,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -3552,6 +3614,31 @@
       }
     },
     {
+      "source": "checkpoint:v05-ub-neighbor-corridor-static-pass",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-ub-neighbor-corridor-static-frozen",
+      "metadata": {
+        "evaluated_cells": 324,
+        "selected_families": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-ub-temporal-replay-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-ub-neighbor-corridor-static-pass",
+      "metadata": {
+        "four_exact_action_hashes_bound": true,
+        "dynamic_outcomes_used": false,
+        "canonical_direct_target": true,
+        "diagnostic_zoh_delay_seconds": 0.11,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -4280,14 +4367,32 @@
       "node_ids_added": [
         "checkpoint:v05-ub-neighbor-corridor-static-frozen"
       ]
+    },
+    {
+      "revision": 76,
+      "event_id": "V05_UB_NEIGHBOR_CORRIDOR_STATIC_PASS",
+      "status": "static_action_freeze_pass_no_dynamic_outcome",
+      "source_binding": "v05_ub_static_receipt",
+      "node_ids_added": [
+        "checkpoint:v05-ub-neighbor-corridor-static-pass"
+      ]
+    },
+    {
+      "revision": 77,
+      "event_id": "V05_UB_TEMPORAL_REPLAY_FREEZE",
+      "status": "preregistered_temporal_replay_execution_active",
+      "source_binding": "v05_ub_temporal_contract",
+      "node_ids_added": [
+        "checkpoint:v05-ub-temporal-replay-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-ub-neighbor-corridor-static-frozen",
+    "node_id": "checkpoint:v05-ub-temporal-replay-frozen",
     "milestone_id": "V05-UB",
-    "status": "preregistered_neighbor_corridor_static_execution_active",
-    "queue_status": "ACTIVE_V05_UB_NEIGHBOR_CORRIDOR_STATIC_FROZEN",
-    "resume_action": "execute_one_bounded_324_cell_neighbor_corridor_static_enumeration",
+    "status": "preregistered_temporal_replay_execution_active",
+    "queue_status": "ACTIVE_V05_UB_TEMPORAL_REPLAY_FROZEN",
+    "resume_action": "execute_one_action_frozen_neighbor_corridor_temporal_replay",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

@@ -31,12 +31,12 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V05-UB"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v05-ub-neighbor-corridor-static-frozen",
+        "node_id": "checkpoint:v05-ub-temporal-replay-frozen",
         "milestone_id": "V05-UB",
-        "status": "preregistered_neighbor_corridor_static_execution_active",
-        "queue_status": "ACTIVE_V05_UB_NEIGHBOR_CORRIDOR_STATIC_FROZEN",
+        "status": "preregistered_temporal_replay_execution_active",
+        "queue_status": "ACTIVE_V05_UB_TEMPORAL_REPLAY_FROZEN",
         "resume_action": (
-            "execute_one_bounded_324_cell_neighbor_corridor_static_enumeration"
+            "execute_one_action_frozen_neighbor_corridor_temporal_replay"
         ),
         "resume_authorized": True,
         "heldout_open_count": 1,
@@ -44,7 +44,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(76)
+        range(78)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -55,10 +55,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_UB_NEIGHBOR_CORRIDOR_STATIC_FREEZE"
+        == "V05_UB_TEMPORAL_REPLAY_FREEZE"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v05-ub-neighbor-corridor-static-frozen"
+        "checkpoint:v05-ub-temporal-replay-frozen"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]

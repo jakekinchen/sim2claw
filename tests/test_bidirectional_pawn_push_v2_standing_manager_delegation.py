@@ -90,6 +90,14 @@ NEIGHBOR_CORRIDOR_STATIC_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_neighbor_corridor_static_v1.json"
 )
+NEIGHBOR_CORRIDOR_STATIC_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-ub-neighbor-corridor-v1/static-freeze-v1/receipt.json"
+)
+NEIGHBOR_CORRIDOR_TEMPORAL_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_temporal_replay_neighbor_corridor_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -440,6 +448,55 @@ def test_neighbor_corridor_successor_changes_only_stroke_after_ua_reject() -> No
     assert contract["static_gates"] == predecessor["static_gates"]
     assert contract["authority"]["static_simulation"] is True
     assert contract["authority"]["dynamic_replay"] is False
+    assert contract["authority"]["physical_motion"] is False
+
+
+def test_neighbor_corridor_static_pass_and_temporal_freeze_bind_actions() -> None:
+    receipt = json.loads(
+        NEIGHBOR_CORRIDOR_STATIC_RECEIPT.read_text(encoding="utf-8")
+    )
+    assert _sha(NEIGHBOR_CORRIDOR_STATIC_RECEIPT) == (
+        "ed2a7aef30069330fcff83b9359b006f5999cbf4fe7478239c6394654bf02a2d"
+    )
+    assert receipt["status"] == "low_center_contact_static_freeze_pass"
+    assert receipt["grid_result_count"] == 324
+    assert receipt["statically_eligible_family_count"] == 4
+    assert receipt["selected_family_count"] == 4
+    assert receipt["lane_counts"] == {
+        "REAL_TO_SIM": 2,
+        "SIM_TO_REAL": 2,
+    }
+    assert receipt["dynamic_replay_executed"] is False
+    assert receipt["physical_motion"] is False
+
+    contract = json.loads(
+        NEIGHBOR_CORRIDOR_TEMPORAL_CONTRACT.read_text(encoding="utf-8")
+    )
+    for key in (
+        "standing_delegation",
+        "manager_authorization",
+        "static_contract",
+        "static_receipt",
+        "rehearsal_contract",
+        "temporal_plan",
+        "implementation",
+    ):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert [row["direction_lane"] for row in contract["cases"]] == [
+        "REAL_TO_SIM",
+        "SIM_TO_REAL",
+        "REAL_TO_SIM",
+        "SIM_TO_REAL",
+    ]
+    assert [row["case_id"] for row in contract["cases"]] == [
+        row["case_id"] for row in receipt["eligible_cases"]
+    ]
+    for case in contract["cases"]:
+        assert _sha(ROOT / case["action_path"]) == case["action_sha256"]
+    assert contract["acceptance"]["minimum_cases_per_direction"] == 2
+    assert contract["authority"]["dynamic_simulation"] is True
+    assert contract["authority"]["v06_evaluator_freeze"] is False
     assert contract["authority"]["physical_motion"] is False
 
 
