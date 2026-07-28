@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T14:35:12-05:00",
+  "generated_at": "2026-07-28T14:37:48-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "7f4ad76a7507ace48dcf8128f1877613571e8e63a3932bd7d6a8c62fbfe477a9",
+      "sha256": "abf11512c749c36c41d5bb91f26c1df2cb39a5150cccc59968f4bc84dc6d1a0b",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -726,6 +726,16 @@
         "proof_class": "cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
         "physical_motion": false,
         "physical_task_attempts": 0
+      }
+    },
+    "v05_ty_manager_authorization": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_progress_exclusion_successor_authorization_v1.json",
+      "sha256": "ffe06a1d274a5c9fc2f8605fcaf1dfa96b0b68d31bd11d18e18170c39469635f",
+      "proof_class": "prospective_manager_authorized_static_only_slow_elevated_long_stroke_successor",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_progress_exclusion_successor_authorization.v1",
+        "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
+        "proof_class": "prospective_manager_authorized_static_only_slow_elevated_long_stroke_successor"
       }
     },
     "simulator_candidate": {
@@ -2094,6 +2104,34 @@
       }
     },
     {
+      "id": "checkpoint:v05-ty-manager-authorization-bound",
+      "type": "checkpoint",
+      "label": "V05-TY delegated progress/exclusion successor authorized",
+      "status": "manager_authorized_static_design_active",
+      "source_binding": "v05_ty_manager_authorization",
+      "data": {
+        "cumulative_quarantined_case_count": 8,
+        "fresh_families_only": true,
+        "new_static_design_dimensions": [
+          "slower_setup",
+          "higher_precontact_clearance",
+          "larger_lateral_clearance",
+          "longer_in_bounds_stroke"
+        ],
+        "physical_pawn_layout_changed": false,
+        "manual_intervention_required": false,
+        "minimum_signed_progress_mm": 36.025,
+        "minimum_distinct_families_per_direction": 2,
+        "static_design_authorized": true,
+        "model_loading_authorized": false,
+        "static_simulation_authorized": false,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2879,6 +2917,18 @@
       }
     },
     {
+      "source": "checkpoint:v05-ty-manager-authorization-bound",
+      "type": "generated-from",
+      "target": "verdict:v05-tx-temporal-replay-reject",
+      "metadata": {
+        "manager_authorized_under_standing_delegation": true,
+        "prior_verdict_immutable": true,
+        "cumulative_quarantined_case_count": 8,
+        "static_design_only": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -3472,15 +3522,24 @@
       "node_ids_added": [
         "verdict:v05-tx-temporal-replay-reject"
       ]
+    },
+    {
+      "revision": 61,
+      "event_id": "V05_TY_MANAGER_AUTHORIZATION_BOUND",
+      "status": "manager_authorized_static_design_active",
+      "source_binding": "v05_ty_manager_authorization",
+      "node_ids_added": [
+        "checkpoint:v05-ty-manager-authorization-bound"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:v05-tx-temporal-replay-reject",
-    "milestone_id": "V05-TX",
-    "status": "terminal_direction_gate_negative_no_physical_admission",
-    "queue_status": "STOPPED_V05_TX_TEMPORAL_REPLAY_TERMINAL_NEGATIVE",
-    "resume_action": "authorize_smallest_fresh_case_progress_and_exclusion_successor",
-    "resume_authorized": false,
+    "node_id": "checkpoint:v05-ty-manager-authorization-bound",
+    "milestone_id": "V05-TY",
+    "status": "manager_authorized_static_design_active",
+    "queue_status": "ACTIVE_V05_TY_MANAGER_AUTHORIZATION_BOUND_STATIC_DESIGN",
+    "resume_action": "freeze_finite_slow_elevated_long_stroke_fresh_family_grid",
+    "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0

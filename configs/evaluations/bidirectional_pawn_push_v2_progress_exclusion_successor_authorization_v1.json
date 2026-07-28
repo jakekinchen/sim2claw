@@ -1,0 +1,109 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_progress_exclusion_successor_authorization.v1",
+  "authorization_id": "bidirectional-pawn-push-v2-progress-exclusion-successor-20260728",
+  "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
+  "proof_class": "prospective_manager_authorized_static_only_slow_elevated_long_stroke_successor",
+  "authorized_at": "2026-07-28",
+  "authorizer": "Codex Manager",
+  "standing_delegation": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json",
+    "sha256": "8e59b7385ca14083d6ddd571ecc13fbec2f884cba41b3583ccfb317737e81ed5"
+  },
+  "immutable_predecessors": {
+    "v05_tx_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_multistart_approach_static_v1.json",
+      "sha256": "abef58960f678569d1ecbe4270910cff873cf0ba0b5aa8776a36ff9b8c58c8fa"
+    },
+    "v05_tx_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tx-multistart-approach-v1/static-freeze-v1/receipt.json",
+      "sha256": "60554324e566c3b53513cb207f8eb7890a35afc6c18be945be50c0a1f31c7d13"
+    },
+    "v05_tx_temporal_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_replay_multistart_approach_v1.json",
+      "sha256": "d64e0625e05d3517d0c3c813f79065103f8c04d9e3fc6eaa7a24fc4701a2358f"
+    },
+    "v05_tx_temporal_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tx-multistart-approach-v1/temporal-replay-v1/receipt.json",
+      "sha256": "50548090c8628aa0d85cd8a72696215a8a8fcbdb2f89dc9b230f9c3883bde37c"
+    }
+  },
+  "mechanism_evidence": {
+    "action_identity_and_gateway_failures": 0,
+    "passing_cases_both_paths": 0,
+    "h7_excluded_displacement_gate_passed": true,
+    "h7_progress_robustness_gate_failed": true,
+    "maximum_observed_excluded_displacement_mm": 10.489683015664413,
+    "maximum_observed_progress_mm": 165.44963718667393,
+    "minimum_progress_gate_mm": 36.025,
+    "permitted_use": "authorize a new prospective mechanism-specific action family only; predecessor cases and outcomes are quarantined"
+  },
+  "quarantine": {
+    "case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8"
+    ],
+    "exact_count": 8,
+    "permitted_use": "read only diagnostics and exact exclusion before future cell generation"
+  },
+  "authorized_static_design": {
+    "dimensions": [
+      "slower deterministic gateway-admissible setup",
+      "higher modeled precontact clearance",
+      "larger modeled lateral approach clearance",
+      "longer in-bounds stroke",
+      "fresh nonquarantined family allocation"
+    ],
+    "reuse_physically_demonstrated_setup_branches": true,
+    "physical_pawn_layout_changed": false,
+    "manual_intervention_required": false,
+    "setup_in_action_identity": true,
+    "endpoint_geometry_inside_v05_tk_bounds": true,
+    "finite_maximum_cell_budget_required": true,
+    "static_selection_only": true,
+    "no_post_outcome_expansion": true
+  },
+  "frozen_invariants": {
+    "closed_jaw_rad": -0.1727003294848389,
+    "action_dtype": "little_endian_float64",
+    "sample_hz": 40.0,
+    "deterministic_compilation": true,
+    "minimum_signed_progress_mm": 36.025,
+    "minimum_distinct_families_per_direction": 2,
+    "canonical_direct_target_path": true,
+    "diagnostic_zoh_delay_seconds": 0.11,
+    "unchanged_collision_contact_exclusion_camera_gateway_and_identity_gates": true,
+    "no_clipping_smoothing_posthoc_retiming_offset_repair_or_assistance": true
+  },
+  "forbidden": [
+    "reuse of any of the eight quarantined cases",
+    "physical pawn layout change",
+    "manual intervention",
+    "teleporting setup",
+    "dynamic replay before four static families freeze",
+    "gate weakening",
+    "paid compute",
+    "physical work before V06 and all safety gates"
+  ],
+  "authority": {
+    "static_design": true,
+    "model_loading": false,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Manager authorization under standing delegation for one finite static-only slower, higher-clearance, longer-stroke successor over fresh families. No model loading, simulation, V06, hardware, or transfer authority yet."
+}

@@ -31,6 +31,11 @@ TEMPORAL_RECEIPT = ROOT / (
     "runs/bidirectional-pawn-push-v2/"
     "20260728-v05-tx-multistart-approach-v1/temporal-replay-v1/receipt.json"
 )
+PROGRESS_SUCCESSOR_AUTHORIZATION = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_progress_exclusion_"
+    "successor_authorization_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -173,6 +178,30 @@ def test_multistart_approach_static_receipt_admits_four_families_only() -> None:
     assert receipt["dynamic_replay_executed"] is False
     assert receipt["physical_motion"] is False
     assert receipt["physical_task_attempts"] == 0
+
+
+def test_progress_exclusion_successor_authorization_quarantines_all_outcomes() -> None:
+    authorization = json.loads(
+        PROGRESS_SUCCESSOR_AUTHORIZATION.read_text(encoding="utf-8")
+    )
+    assert _sha(
+        ROOT / authorization["standing_delegation"]["path"]
+    ) == authorization["standing_delegation"]["sha256"]
+    for binding in authorization["immutable_predecessors"].values():
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert authorization["quarantine"]["exact_count"] == 8
+    assert authorization["quarantine"]["case_ids"][-4:] == [
+        "tan_pawn_h7__h7_h8",
+        "tan_pawn_h7__h7_h6",
+        "brown_pawn_e2__e2_d2",
+        "tan_pawn_f7__f7_f8",
+    ]
+    assert authorization["authority"]["static_design"] is True
+    assert not any(
+        value
+        for key, value in authorization["authority"].items()
+        if key != "static_design"
+    )
 
 
 def test_multistart_temporal_contract_binds_exact_actions_before_replay() -> None:
