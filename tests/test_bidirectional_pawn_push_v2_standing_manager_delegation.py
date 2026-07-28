@@ -10,6 +10,11 @@ DELEGATION = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_standing_manager_delegation_v1.json"
 )
+SUCCESSOR_AUTHORIZATION = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_multistart_approach_"
+    "successor_authorization_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -51,3 +56,31 @@ def test_standing_delegation_preserves_campaign_and_nondelegable_gates() -> None
         "gate_weakening",
     ):
         assert authority[key] is False
+
+
+def test_manager_authorization_is_static_design_only_and_source_bound() -> None:
+    authorization = json.loads(
+        SUCCESSOR_AUTHORIZATION.read_text(encoding="utf-8")
+    )
+    for binding in (
+        authorization["standing_delegation"],
+        *authorization["immutable_predecessors"].values(),
+    ):
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert authorization["quarantine"]["case_ids"] == [
+        "brown_pawn_b1__b1_b2",
+        "brown_pawn_a2__a2_a1",
+        "brown_pawn_a2__a2_a3",
+        "brown_pawn_e2__e2_e3",
+    ]
+    design = authorization["authorized_static_design"]
+    assert design["physical_pawn_layout_changed"] is False
+    assert design["manual_intervention_required"] is False
+    assert design["setup_posture_must_be_part_of_action_identity"] is True
+    assert design["static_selection_only"] is True
+    assert authorization["authority"]["static_design"] is True
+    assert not any(
+        value
+        for key, value in authorization["authority"].items()
+        if key != "static_design"
+    )

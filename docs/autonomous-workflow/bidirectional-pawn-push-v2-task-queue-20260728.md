@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_TX_STANDING_DELEGATION_BOUND_SUCCESSOR_DESIGN`
+Status: `ACTIVE_V05_TX_MANAGER_AUTHORIZATION_BOUND_STATIC_DESIGN`
 
 Created: `2026-07-28`
 
@@ -192,7 +192,7 @@ denominators before any counted action is compiled.
 | V05-TJ | `DONE_TERMINAL_NEGATIVE` | Prospectively generate the owner-authorized jaw-margin successor family by changing only the gripper column to exact float64 `-0.1727003294848389 rad`, then repeat frozen static and temporal gates. | New action hashes bind before dynamics; at least two distinct cases per direction pass unchanged direct-target and `0.11 s` ZOH paths; every other V05-T identity, geometry, evaluator, exclusion, camera, collision, and gateway rule remains unchanged. | Static receipt `64e8c443...` PASS selected four exact actions, two per direction, with every arm column byte-identical. Frozen temporal receipt `41338d08...` REJECT: REAL_TO_SIM `0/2`, SIM_TO_REAL `1/2` passed both paths versus required `2/2` each. Only `brown_pawn_e2__e2_e3` passed all five variants on both paths. All identity/gateway checks passed; failures are consequence/progress robustness. V06 and physical execution remain closed. |
 | V05-TK | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a bounded static-only action-geometry successor over contact offset, contact height, stroke, and nonquarantined source→destination families in the unchanged reset layout. | Exactly four outcome-informed V05-TJ cases are quarantined; deterministic family selection and lane assignment use only IK, collision, camera, calibrated bounds, and gateway margins; exact new action hashes freeze before dynamics; at least two distinct families per direction must later pass both unchanged plant paths and all unchanged gates. | V2 receipt `c333180a...` exhausts all `1188` cells with no quarantine leak: only `2` of required `4` families statically eligible, yielding REAL_TO_SIM `1/2` and SIM_TO_REAL `1/2`. `1037` compile rejects, `148` static rejects, `3` eligible cells across two e2 lateral families. Dynamic replay, V06, and physical execution remain closed. |
 | V05-TW | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a finite wrist-orientation and single-waypoint pre-contact path-shape successor while preserving the V05-TK geometry grid and all gates. | Exact four-case quarantine remains; wrist/path values derive only from articulated joint/jaw/pawn/square/collision geometry; deterministic static selector freezes four distinct safe families, assigned `2/2`, before any dynamic replay. | Receipt `8d32d113...` exhausts all `3564` cells with no quarantine leak: `3111` fixed-wrist IK rejects, `443` static rejects, `10` eligible cells but still only the same `2` e2 lateral families. Lane counts are `1/2` each, so the frozen family gate rejects and dynamic/V06/physical execution remain closed. |
-| V05-TX | `IN_PROGRESS` | Under standing delegation, prospectively authorize and freeze an alternate robot start-posture, deterministic multi-start IK-branch, and minimal approach-azimuth/lateral-clearance family with unchanged pawn layout and no manual intervention. | Finite grid derives only from gateway-admissible robot states, modeled/calibrated joint and start envelopes, jaw/arm collision geometry, and obstacle clearances; setup posture is robot-reachable and part of action identity; at least four distinct nonquarantined static-safe families freeze, alternating `2/2`, before dynamics. | Standing delegation `8e59b738...` is bound before successor design. Static design only; model loading, static/dynamic execution, V06, counted actions, and physical authority remain false. |
+| V05-TX | `IN_PROGRESS` | Under standing delegation, prospectively authorize and freeze an alternate robot start-posture, deterministic multi-start IK-branch, and minimal approach-azimuth/lateral-clearance family with unchanged pawn layout and no manual intervention. | Finite grid derives only from gateway-admissible robot states, modeled/calibrated joint and start envelopes, jaw/arm collision geometry, and obstacle clearances; setup posture is robot-reachable and part of action identity; at least four distinct nonquarantined static-safe families freeze, alternating `2/2`, before dynamics. | Standing delegation `8e59b738...`; manager authorization `e5df5cf6...`, bound before grid derivation/model loading. Static design only; model loading, static/dynamic execution, V06, counted actions, and physical authority remain false. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2397,6 +2397,29 @@ rejects and `443` collision rejects dominated by `c2`. At this checkpoint,
 only static design is active. Model loading, simulation, V06, counted actions,
 camera, gateway/serial, physical motion, promotion, and transfer claims remain
 false.
+
+### V05-TX delegated manager authorization — 2026-07-28
+
+The Codex Manager used the bound standing delegation to authorize the next
+mechanism-specific successor before grid derivation or model loading.
+Authorization
+`configs/evaluations/bidirectional_pawn_push_v2_multistart_approach_successor_authorization_v1.json`,
+SHA-256
+`e5df5cf6d19df61e795f9a9bb612d3992f91cdf7af81eac8b4a9a339e7d9de85`,
+binds the immutable V05-TW negative, the gateway-admissible V4 registration
+route and pose family, and its completed physical no-contact receipt.
+
+The authorized dimensions are physically demonstrated alternate setup
+postures, deterministic multi-start IK seeds/branches, and minimal
+approach-azimuth or lateral-clearance waypoints. The physical pawn layout and
+endpoint geometry bounds remain unchanged, no manual intervention is
+required, and the setup must start at the calibrated source envelope, be
+included in the frozen action identity, and pass the same static collision
+and gateway audits. The exact four-case quarantine remains.
+
+At this checkpoint, only static design is authorized. Model loading, static
+simulation, dynamic replay, V06, counted actions, camera, gateway/serial,
+physical motion, promotion, and transfer claims remain false.
 
 ### V05-T prospective static enumerator freeze — 2026-07-28
 

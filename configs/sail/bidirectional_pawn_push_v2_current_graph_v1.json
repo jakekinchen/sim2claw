@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T14:07:00-05:00",
+  "generated_at": "2026-07-28T14:10:47-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "feeed51151106bb16cf5c55c5cc21651920831c812b8a283562e4bf459115bb1",
+      "sha256": "f1587094599a4634b0308e83491a4d39b2b2c5542f2c491e960f5edcdd1fc8ba",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -671,6 +671,16 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_standing_manager_delegation.v1",
         "status": "owner_standing_delegation_bound_before_future_successor_design",
         "proof_class": "owner_standing_campaign_authority_contract_only"
+      }
+    },
+    "v05_tx_manager_authorization": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_multistart_approach_successor_authorization_v1.json",
+      "sha256": "e5df5cf6d19df61e795f9a9bb612d3992f91cdf7af81eac8b4a9a339e7d9de85",
+      "proof_class": "prospective_manager_authorized_static_only_alternate_start_multistart_approach_successor",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_multistart_approach_successor_authorization.v1",
+        "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
+        "proof_class": "prospective_manager_authorized_static_only_alternate_start_multistart_approach_successor"
       }
     },
     "simulator_candidate": {
@@ -1913,6 +1923,34 @@
       }
     },
     {
+      "id": "checkpoint:v05-tx-manager-authorization-bound",
+      "type": "checkpoint",
+      "label": "V05-TX delegated alternate-start multi-IK approach successor authorized",
+      "status": "manager_authorized_static_design_active",
+      "source_binding": "v05_tx_manager_authorization",
+      "data": {
+        "quarantined_case_count": 4,
+        "quarantine_exact": true,
+        "new_static_design_dimensions": [
+          "gateway_admissible_alternate_setup_posture",
+          "deterministic_multistart_ik_branch",
+          "minimal_approach_azimuth_or_lateral_clearance_waypoint"
+        ],
+        "physical_pawn_layout_changed": false,
+        "manual_intervention_required": false,
+        "setup_in_action_identity_required": true,
+        "minimum_signed_progress_mm": 36.025,
+        "minimum_distinct_families_per_direction": 2,
+        "static_design_authorized": true,
+        "model_loading_authorized": false,
+        "static_simulation_authorized": false,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2633,6 +2671,18 @@
       }
     },
     {
+      "source": "checkpoint:v05-tx-manager-authorization-bound",
+      "type": "generated-from",
+      "target": "checkpoint:standing-manager-delegation-bound",
+      "metadata": {
+        "manager_authorized_under_standing_delegation": true,
+        "prior_verdicts_immutable": true,
+        "quarantined_case_count": 4,
+        "static_design_only": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -3181,14 +3231,23 @@
       "node_ids_added": [
         "checkpoint:standing-manager-delegation-bound"
       ]
+    },
+    {
+      "revision": 56,
+      "event_id": "V05_TX_MANAGER_AUTHORIZATION_BOUND",
+      "status": "manager_authorized_static_design_active",
+      "source_binding": "v05_tx_manager_authorization",
+      "node_ids_added": [
+        "checkpoint:v05-tx-manager-authorization-bound"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:standing-manager-delegation-bound",
+    "node_id": "checkpoint:v05-tx-manager-authorization-bound",
     "milestone_id": "V05-TX",
-    "status": "standing_manager_authority_active_successor_design_only",
-    "queue_status": "ACTIVE_V05_TX_STANDING_DELEGATION_BOUND_SUCCESSOR_DESIGN",
-    "resume_action": "derive_and_freeze_finite_alternate_start_multistart_approach_grid",
+    "status": "manager_authorized_static_design_active",
+    "queue_status": "ACTIVE_V05_TX_MANAGER_AUTHORIZATION_BOUND_STATIC_DESIGN",
+    "resume_action": "freeze_finite_alternate_start_multistart_approach_grid",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
