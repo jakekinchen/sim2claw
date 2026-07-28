@@ -2175,6 +2175,44 @@ Focused freeze verification passes `10/10`. Static authority is true for one
 bounded CPU/fp64 run. Dynamic, camera, gateway, serial, physical motion,
 physical task, paid compute, promotion, and transfer authority remain false.
 
+### Milestone B static terminal negative — 2026-07-28
+
+The one frozen 108-cell execution produced
+`runs/bidirectional-pawn-push-v2/20260728-post-fable-low-planar-v2/static-freeze-v1/receipt.json`,
+SHA-256 `7777c4439cc4d2616b191626aeed4474429dbb81e492f9d72fb958ed133547cd`,
+with status `post_fable_static_terminal_negative`.
+
+Only `brown_pawn_d1__d1_c1` admitted an action: two of its 18 cells passed,
+one compiled cell failed arm-joint margin, and 15 cells exceeded the unchanged
+multi-start IK residual gate. Every one of the other five families failed all
+18 cells at the same IK gate. The frozen result is therefore one statically
+admissible REAL_TO_SIM-labeled family and zero SIM_TO_REAL families, below the
+required `2+2`.
+
+No substitute family was admitted. The receipt field
+`priority_family_substitution_observed:true` is retained byte-for-byte but is
+a v2 reporting misnomer: its implementation records any shortfall from the
+full six-family list. The actual selected-not-in-priority set is empty; five
+priority families are missing. This clarification is bound in
+`configs/decisions/bidirectional_pawn_push_v2_post_fable_static_closeout_v2.json`.
+
+The static prerequisite failed, so temporal replay did not execute and is now
+prohibited. V05-UH/V05-UI successors before the application deadline are also
+prohibited. The strongest surviving statement is one canonical-frame
+statically admissible REAL_TO_SIM-labeled action family, with no dynamic
+consequence or transfer evidence. Camera, gateway, serial, physical motion,
+physical attempts, paid compute, promotion, and transfer authority are false.
+
+Running the single surviving action dynamically would require a new explicit
+owner proof-design decision; it is not authorized by this loop. The decision
+would have to create a separately versioned unilateral simulation-diagnostic
+lane for exact case `brown_pawn_d1__d1_c1` and action SHA-256
+`2397c8e9...`, acknowledge that there is no SIM_TO_REAL comparator, and freeze
+one execution through both direct-target and `0.11 s` ZOH paths, five variants,
+the unchanged `36.025 mm` progress and `<=2 mm` lift gates, and every
+unilateral/collision/camera/gateway/identity check. It would remain
+non-transfer, non-promotion, and non-physical evidence.
+
 ### V05-UD static terminal negative and V05-UE ramped-funnel freeze — 2026-07-28
 
 The one V05-UD static execution produced

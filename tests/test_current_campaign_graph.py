@@ -29,18 +29,21 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     )
 
     assert rebuilt == tracked
-    assert tracked["active_pointer"]["milestone_id"] == "ORIENTATION-MIGRATION"
+    assert tracked["active_pointer"]["milestone_id"] == (
+        "POST-FABLE-MILESTONE-B-CLOSEOUT"
+    )
     assert tracked["active_pointer"] == {
         "node_id": (
-            "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable"
+            "verdict:post-fable-low-planar-static-v2-terminal-negative"
         ),
-        "milestone_id": "ORIENTATION-MIGRATION",
-        "status": "paused_orientation_migration_complete_awaiting_fable",
+        "milestone_id": "POST-FABLE-MILESTONE-B-CLOSEOUT",
+        "status": "terminal_static_negative_no_temporal_or_successor",
         "queue_status": (
-            "PAUSED_ORIENTATION_MIGRATION_COMPLETE_AWAITING_FABLE"
+            "COMPLETE_TERMINAL_STATIC_NEGATIVE_NO_TRANSFER_AUTHORITY"
         ),
         "resume_action": (
-            "report_migration_to_existing_fable_thread_and_request_feedback"
+            "prepare_application_claim_from_existing_evidence_without_"
+            "bidirectional_transfer_claim"
         ),
         "resume_authorized": False,
         "heldout_open_count": 1,
@@ -48,7 +51,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(98)
+        range(101)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -59,22 +62,22 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_UG_ORIENTATION_MIGRATION_PAUSED_AWAITING_FABLE"
+        == "POST_FABLE_LOW_PLANAR_STATIC_V2_TERMINAL_NEGATIVE"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable"
+        "verdict:post-fable-low-planar-static-v2-terminal-negative"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is False
-    paused = next(
+    closeout = next(
         row
         for row in tracked["nodes"]
         if row["id"]
-        == "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable"
+        == "verdict:post-fable-low-planar-static-v2-terminal-negative"
     )
     assert not any(
         value
-        for key, value in paused["data"].items()
+        for key, value in closeout["data"].items()
         if key.endswith("_authorized") or key == "physical_motion"
     )
     assert {row["type"] for row in tracked["nodes"]} == set(

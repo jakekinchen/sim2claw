@@ -24,6 +24,24 @@ PAUSED = (
     / "evaluations"
     / "bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.json"
 )
+CLOSEOUT = (
+    ROOT
+    / "configs"
+    / "decisions"
+    / "bidirectional_pawn_push_v2_post_fable_static_closeout_v2.json"
+)
+GRAPH_CONFIG = (
+    ROOT
+    / "configs"
+    / "sail"
+    / "bidirectional_pawn_push_v2_current_graph_v1.json"
+)
+GRAPH = (
+    ROOT
+    / "docs"
+    / "autonomous-workflow"
+    / "bidirectional-pawn-push-v2-current-graph.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -103,3 +121,23 @@ def test_ranking_is_static_only_and_optional_hedge_is_prospectively_zero() -> No
         "transfer_claim",
     ):
         assert authorization["authority"][key] is False
+
+
+def test_terminal_closeout_and_both_graph_pointers_fail_closed() -> None:
+    closeout = json.loads(CLOSEOUT.read_text(encoding="utf-8"))
+    receipt = closeout["static_receipt"]
+    assert _sha(ROOT / receipt["path"]) == receipt["sha256"]
+    assert closeout["status"] == "terminal_static_negative_no_temporal_or_successor"
+    assert closeout["result"]["lane_counts"] == {
+        "REAL_TO_SIM": 1,
+        "SIM_TO_REAL": 0,
+    }
+    assert closeout["result"]["dynamic_replay_executed"] is False
+    assert closeout["receipt_field_clarification"]["actual_substitution_observed"] is False
+    assert not any(closeout["authority"].values())
+    for graph_path in (GRAPH_CONFIG, GRAPH):
+        pointer = json.loads(graph_path.read_text(encoding="utf-8"))[
+            "active_pointer"
+        ]
+        assert pointer["status"] == "terminal_static_negative_no_temporal_or_successor"
+        assert pointer["resume_authorized"] is False

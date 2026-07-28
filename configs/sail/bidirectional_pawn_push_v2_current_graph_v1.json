@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T18:06:32-05:00",
+  "generated_at": "2026-07-28T18:09:33-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "e3055a6a594d9224a011e33cae9d7f693594f07aa755e78c9a544a331f57ef92",
+      "sha256": "a4e39f0be5c9be74668d3265474953377b9a052c03dda1304191379863db991b",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -1167,6 +1167,29 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_post_fable_static.v2",
         "status": "frozen_before_model_loading",
         "proof_class": "prospective_current_task_low_planar_static_ranking_and_action_freeze_only"
+      }
+    },
+    "post_fable_low_planar_static_receipt_v2": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-post-fable-low-planar-v2/static-freeze-v1/receipt.json",
+      "sha256": "7777c4439cc4d2616b191626aeed4474429dbb81e492f9d72fb958ed133547cd",
+      "proof_class": "cpu_fp64_current_task_low_planar_static_ranking_and_action_freeze_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_planar_post_fable_static_receipt.v2",
+        "status": "post_fable_static_terminal_negative",
+        "proof_class": "cpu_fp64_current_task_low_planar_static_ranking_and_action_freeze_only",
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    "post_fable_static_closeout_v2": {
+      "path": "configs/decisions/bidirectional_pawn_push_v2_post_fable_static_closeout_v2.json",
+      "sha256": "473ebfec2fddcb7119a749aab3ebf3d0278226805062e4c48bdd2fc4de631d50",
+      "proof_class": "cpu_fp64_current_task_static_terminal_negative",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_post_fable_static_closeout.v2",
+        "status": "terminal_static_negative_no_temporal_or_successor",
+        "proof_class": "cpu_fp64_current_task_static_terminal_negative"
       }
     },
     "v05_ug_paused_manager_authorization": {
@@ -3440,14 +3463,47 @@
       }
     },
     {
+      "id": "verdict:post-fable-low-planar-static-v2-terminal-negative",
+      "type": "evaluator_verdict",
+      "label": "Post-Fable low-planar static v2 terminal negative",
+      "status": "terminal_static_negative_no_temporal_or_successor",
+      "source_binding": "post_fable_static_closeout_v2",
+      "evaluator_identity": "60bfc48317b6fda9b4e91cbcb41f83c5d9eaf055d9ac98ed4e7b24a3bcc00dcb",
+      "data": {
+        "static_receipt_source_binding": "post_fable_low_planar_static_receipt_v2",
+        "evaluated_family_count": 6,
+        "grid_result_count": 108,
+        "statically_eligible_family_count": 1,
+        "selected_case_ids": [
+          "brown_pawn_d1__d1_c1"
+        ],
+        "lane_counts": {
+          "REAL_TO_SIM": 1,
+          "SIM_TO_REAL": 0
+        },
+        "minimum_required_per_direction": 2,
+        "dominant_failure": "multi_start_ik_residual_exceeded_gate",
+        "substitution_observed": false,
+        "dynamic_replay_executed": false,
+        "v05_uh_or_v05_ui_successor_authorized": false,
+        "camera_authorized": false,
+        "gateway_authorized": false,
+        "serial_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "transfer_claim": false,
+        "next_action": "prepare_application_claim_from_existing_evidence_without_bidirectional_transfer_claim"
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
-      "status": "not_compiled_no_case_admitted",
+      "status": "one_static_action_no_dynamic_or_transfer_admission",
       "source_binding": "queue",
       "data": {
-        "real_to_sim": "0/0",
-        "sim_to_real": "0/0"
+        "real_to_sim": "1_static_0_dynamic",
+        "sim_to_real": "0_static_0_dynamic"
       }
     },
     {
@@ -4758,6 +4814,28 @@
       }
     },
     {
+      "source": "verdict:post-fable-low-planar-static-v2-terminal-negative",
+      "type": "generated-from",
+      "target": "checkpoint:post-fable-low-planar-static-v2-frozen",
+      "metadata": {
+        "static_receipt_bound": true,
+        "dynamic_prerequisite_passed": false,
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "verdict:post-fable-low-planar-static-v2-terminal-negative",
+      "type": "invalidates",
+      "target": "policy:bidirectional-action",
+      "metadata": {
+        "scope": "bidirectional_dynamic_and_transfer_admission",
+        "one_static_real_to_sim_labeled_action_preserved": true,
+        "bidirectional_transfer_claim": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -5702,15 +5780,24 @@
       "node_ids_added": [
         "checkpoint:post-fable-low-planar-static-v2-frozen"
       ]
+    },
+    {
+      "revision": 100,
+      "event_id": "POST_FABLE_LOW_PLANAR_STATIC_V2_TERMINAL_NEGATIVE",
+      "status": "terminal_static_negative_no_temporal_or_successor",
+      "source_binding": "post_fable_static_closeout_v2",
+      "node_ids_added": [
+        "verdict:post-fable-low-planar-static-v2-terminal-negative"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:post-fable-low-planar-static-v2-frozen",
-    "milestone_id": "POST-FABLE-MILESTONE-B-STATIC",
-    "status": "prospective_six_family_108_cell_static_execution_authorized",
-    "queue_status": "MILESTONE_B_STATIC_FROZEN_READY_TO_RUN",
-    "resume_action": "run_one_bounded_cpu_fp64_static_execution",
-    "resume_authorized": true,
+    "node_id": "verdict:post-fable-low-planar-static-v2-terminal-negative",
+    "milestone_id": "POST-FABLE-MILESTONE-B-CLOSEOUT",
+    "status": "terminal_static_negative_no_temporal_or_successor",
+    "queue_status": "COMPLETE_TERMINAL_STATIC_NEGATIVE_NO_TRANSFER_AUTHORITY",
+    "resume_action": "prepare_application_claim_from_existing_evidence_without_bidirectional_transfer_claim",
+    "resume_authorized": false,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0

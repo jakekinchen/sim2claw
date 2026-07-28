@@ -1,0 +1,138 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_post_fable_static_closeout.v2",
+  "decision_id": "bidirectional-pawn-push-v2-post-fable-static-closeout-20260728-v2",
+  "status": "terminal_static_negative_no_temporal_or_successor",
+  "proof_class": "cpu_fp64_current_task_static_terminal_negative",
+  "static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_low_planar_post_fable_static_v2.json",
+    "sha256": "60bfc48317b6fda9b4e91cbcb41f83c5d9eaf055d9ac98ed4e7b24a3bcc00dcb"
+  },
+  "static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-post-fable-low-planar-v2/static-freeze-v1/receipt.json",
+    "sha256": "7777c4439cc4d2616b191626aeed4474429dbb81e492f9d72fb958ed133547cd",
+    "status": "post_fable_static_terminal_negative"
+  },
+  "frozen_screen": {
+    "family_count": 6,
+    "cells_per_family": 18,
+    "total_cells": 108,
+    "new_temporal_outcomes_used_for_selection": false,
+    "substitution_allowed": false,
+    "closed_jaw_anti_wedge_hedge_count": 0
+  },
+  "result": {
+    "compiled_or_static_result_by_family": {
+      "brown_pawn_d1__d1_c1": {
+        "compile_reject_cells": 15,
+        "static_reject_cells": 1,
+        "static_eligible_cells": 2
+      },
+      "tan_pawn_b7__b7_b8": {
+        "compile_reject_cells": 18,
+        "static_reject_cells": 0,
+        "static_eligible_cells": 0
+      },
+      "tan_pawn_b7__b7_a7": {
+        "compile_reject_cells": 18,
+        "static_reject_cells": 0,
+        "static_eligible_cells": 0
+      },
+      "tan_pawn_c8__c8_b8": {
+        "compile_reject_cells": 18,
+        "static_reject_cells": 0,
+        "static_eligible_cells": 0
+      },
+      "tan_pawn_c8__c8_c7": {
+        "compile_reject_cells": 18,
+        "static_reject_cells": 0,
+        "static_eligible_cells": 0
+      },
+      "tan_pawn_a8__a8_b8": {
+        "compile_reject_cells": 18,
+        "static_reject_cells": 0,
+        "static_eligible_cells": 0
+      }
+    },
+    "dominant_failure": "V05-TX multi-start IK residual exceeded gate",
+    "statically_eligible_family_count": 1,
+    "selected_case_ids": [
+      "brown_pawn_d1__d1_c1"
+    ],
+    "lane_counts": {
+      "REAL_TO_SIM": 1,
+      "SIM_TO_REAL": 0
+    },
+    "minimum_required_per_direction": 2,
+    "dynamic_replay_executed": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "receipt_field_clarification": {
+    "field": "priority_family_substitution_observed",
+    "receipt_value": true,
+    "meaning_in_v2_receipt_implementation": "selected list differs from the complete six-family priority list",
+    "actual_selected_not_in_priority": [],
+    "actual_missing_priority_families": [
+      "tan_pawn_b7__b7_b8",
+      "tan_pawn_b7__b7_a7",
+      "tan_pawn_c8__c8_b8",
+      "tan_pawn_c8__c8_c7",
+      "tan_pawn_a8__a8_b8"
+    ],
+    "actual_substitution_observed": false,
+    "disposition": "retained receipt byte-for-byte; clarified as priority-family shortfall"
+  },
+  "stop_decision": {
+    "dynamic_replay": "prohibited_because_static_2_plus_2_prerequisite_failed",
+    "v05_uh_or_v05_ui_successor_before_application_deadline": "prohibited",
+    "camera_or_physical_work": "prohibited",
+    "strongest_surviving_claim": "one canonical-frame statically admissible REAL_TO_SIM-labeled action family with no dynamic consequence or transfer evidence",
+    "bidirectional_transfer_claim": false
+  },
+  "owner_decision_required_for_single_action_dynamic_diagnostic": {
+    "current_authority": "prohibited_by_failed_static_2_plus_2_prerequisite",
+    "required_new_decision": "explicit owner authorization for a new versioned unilateral simulation-diagnostic proof lane",
+    "scope_change": "accept one REAL_TO_SIM-labeled statically admissible action as a diagnostic sample with no SIM_TO_REAL comparator",
+    "must_not_be_claimed_as": [
+      "bidirectional transfer",
+      "directional transfer success rate",
+      "simulator promotion",
+      "physical task evidence"
+    ],
+    "preregister_before_replay": {
+      "exact_case_id": "brown_pawn_d1__d1_c1",
+      "exact_action_sha256": "2397c8e9b9c226caecf346c3d8dfb47039cf4d93d8eb88f6281cf4c2390402cd",
+      "one_execution": true,
+      "direct_target_baseline": true,
+      "diagnostic_zoh_delay_seconds": 0.11,
+      "five_robustness_variants": true,
+      "minimum_signed_progress_mm": 36.025,
+      "maximum_selected_vertical_rise_mm": 2.0,
+      "all_unilateral_contact_collision_camera_gateway_and_identity_gates": true
+    },
+    "authority_if_explicitly_granted": {
+      "dynamic_simulation": true,
+      "camera": false,
+      "gateway": false,
+      "serial": false,
+      "physical_motion": false,
+      "physical_task_attempt": false,
+      "promotion": false,
+      "transfer_claim": false
+    }
+  },
+  "authority": {
+    "model_loading": false,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "paid_compute": false,
+    "promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Receipt-backed current-task static terminal negative. One action family is statically admissible only; no dynamic task outcome, directional transfer, bidirectional transfer, camera or physical attempt, promotion, or transfer claim."
+}

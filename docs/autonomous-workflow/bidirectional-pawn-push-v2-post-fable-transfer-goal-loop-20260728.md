@@ -78,8 +78,12 @@ Stop conditions:
 - A implementation/tests: complete; graph/workflow audit pending.
 - A commit/push: complete at `f154ac1`.
 - B prospective freeze: complete; exact six families and 108 cells.
-- B static: active for one bounded CPU/fp64 execution.
-- B temporal/final: blocked until static `2+2`.
+- B static: terminal negative; one REAL_TO_SIM-labeled family and zero
+  SIM_TO_REAL families, below `2+2`.
+- B temporal/final: closed without execution by the frozen static stop
+  condition. V05-UH/V05-UI successors are prohibited before the deadline.
+
+Final state: `COMPLETE_TERMINAL_STATIC_NEGATIVE_NO_TRANSFER_AUTHORITY`.
 
 Unrelated user-owned files remain out of scope, including
 `tools/build_fiducial_sheet.py`.
