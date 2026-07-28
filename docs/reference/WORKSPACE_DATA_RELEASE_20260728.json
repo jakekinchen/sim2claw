@@ -7,6 +7,7 @@
   "source_branch": "codex/geometric-microtransfer-20260727",
   "source_commit": "3649574499d3716287666c1628e8739a06904223",
   "snapshot_date": "2026-07-28",
+  "snapshot_closed_at": "2026-07-28T07:29:01-05:00",
   "archive_format": "tar.zst",
   "archive_sha256_covers_complete_payload": true,
   "compressed_asset_bytes": 10838457910,
