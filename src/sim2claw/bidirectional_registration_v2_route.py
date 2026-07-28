@@ -16,7 +16,7 @@ import cv2
 import mujoco
 import numpy as np
 
-from .grasp import _pinch_offset, _pinch_point
+from .grasp import _jaw_tip_point, _pinch_offset, _pinch_point
 from .learning_factory_artifacts import sha256_file
 from .paths import REPO_ROOT
 from .recorded_replay import _compile_model
@@ -28,9 +28,10 @@ from .wrist_view_reposition import (
 
 
 ROUTE_SCHEMA = "sim2claw.bidirectional_pawn_push_v2_registration_route.v1"
-ACQUISITION_SCHEMA = (
-    "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v1"
-)
+ACQUISITION_SCHEMAS = {
+    "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v1",
+    "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v2",
+}
 RECEIPT_SCHEMA = (
     "sim2claw.bidirectional_pawn_push_v2_registration_route_preview.v1"
 )
@@ -88,7 +89,7 @@ def load_route(
     acquisition_path = _bound(route["acquisition_contract"])
     acquisition = _json(acquisition_path)
     _require(
-        acquisition.get("schema_version") == ACQUISITION_SCHEMA,
+        acquisition.get("schema_version") in ACQUISITION_SCHEMAS,
         "acquisition schema changed",
     )
     motion = route.get("motion_contract") or {}
@@ -159,10 +160,23 @@ def compile_exact_route(
         route["source_egress"]["target_degrees_percent"],
         dtype=np.float64,
     )
-    egress_rows: list[np.ndarray] = []
+    egress_rows: list[np.ndarray] = [start.copy()]
+    current_egress = start
+    for waypoint in route["source_egress"].get(
+        "waypoints_degrees_percent", []
+    ):
+        target = np.asarray(waypoint, dtype=np.float64)
+        _append_segment(
+            egress_rows,
+            current_egress,
+            target,
+            sample_hz=sample_hz,
+            maximum_slew=maximum_slew,
+        )
+        current_egress = target
     _append_segment(
         egress_rows,
-        start,
+        current_egress,
         safe,
         sample_hz=sample_hz,
         maximum_slew=maximum_slew,
@@ -183,6 +197,16 @@ def compile_exact_route(
     main_rows: list[np.ndarray] = [safe.copy()]
     capture_slices: list[dict[str, Any]] = []
     current = safe
+    for waypoint in route.get("pre_capture_waypoints_degrees_percent", []):
+        target = np.asarray(waypoint, dtype=np.float64)
+        _append_segment(
+            main_rows,
+            current,
+            target,
+            sample_hz=sample_hz,
+            maximum_slew=maximum_slew,
+        )
+        current = target
     for target_id in route["capture_order"]:
         target = targets[target_id]
         _append_segment(
@@ -201,6 +225,16 @@ def compile_exact_route(
                 "end_index_exclusive": hold_start + hold_samples,
                 "sample_count": hold_samples,
             }
+        )
+        current = target
+    for waypoint in route.get("post_capture_waypoints_degrees_percent", []):
+        target = np.asarray(waypoint, dtype=np.float64)
+        _append_segment(
+            main_rows,
+            current,
+            target,
+            sample_hz=sample_hz,
+            maximum_slew=maximum_slew,
         )
         current = target
     if route["return"]["return_to_source_egress_target_first"]:
@@ -265,11 +299,15 @@ def _geom_inventory(
             mujoco.mjtObj.mjOBJ_BODY,
             int(model.geom_bodyid[geom_id]),
         )
-        if body_name in jaw_bodies:
+        collision_enabled = bool(
+            int(model.geom_contype[geom_id]) != 0
+            or int(model.geom_conaffinity[geom_id]) != 0
+        )
+        if body_name in jaw_bodies and collision_enabled:
             jaw.append(geom_id)
-        elif body_name == "chess_board":
+        elif body_name == "chess_board" and collision_enabled:
             board.append(geom_id)
-        elif body_name and "pawn_" in body_name:
+        elif body_name and "pawn_" in body_name and collision_enabled:
             pawns.append(geom_id)
     _require(jaw and board and pawns, "collision geometry inventory is incomplete")
     return jaw, board, pawns
@@ -301,6 +339,9 @@ def _minimum_distance(
 def _distance_audit(
     actions: np.ndarray,
     candidate: Mapping[str, Any],
+    *,
+    board_gate_m: float = 0.2,
+    pawn_gate_m: float = 0.2,
 ) -> dict[str, Any]:
     model, _ = _compile_model(dict(candidate), base_directory=None)
     data = mujoco.MjData(model)
@@ -316,8 +357,18 @@ def _distance_audit(
     model_actions = _physical_to_model_position(actions, candidate)
     jaw, board, pawns = _geom_inventory(model)
     rows = {
-        "board": {"distance_m": 0.2, "pair": None, "row_index": None},
-        "pawns": {"distance_m": 0.2, "pair": None, "row_index": None},
+        "board": {
+            "distance_m": board_gate_m,
+            "pair": None,
+            "row_index": None,
+            "lower_bound_only": True,
+        },
+        "pawns": {
+            "distance_m": pawn_gate_m,
+            "pair": None,
+            "row_index": None,
+            "lower_bound_only": True,
+        },
     }
     for row_index, model_position in enumerate(model_actions):
         _set_pose(model, data, addresses, model_position)
@@ -345,14 +396,62 @@ def _distance_audit(
                         else None
                     ),
                     "row_index": row_index,
+                    "lower_bound_only": False,
                 }
     return rows
+
+
+def _distal_jaw_points(
+    physical: np.ndarray,
+    candidate: Mapping[str, Any],
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    model, _ = _compile_model(dict(candidate), base_directory=None)
+    data = mujoco.MjData(model)
+    joint_ids = [
+        mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
+        for name in candidate["bindings"]["joint_names"]
+    ]
+    addresses = np.asarray(
+        [model.jnt_qposadr[item] for item in joint_ids], dtype=np.int32
+    )
+    model_positions = _physical_to_model_position(physical, candidate)
+    moving_tips = [
+        mujoco.mj_name2id(
+            model,
+            mujoco.mjtObj.mjOBJ_GEOM,
+            f"left_moving_jaw_sph_tip{index}",
+        )
+        for index in (1, 2, 3)
+    ]
+    _require(
+        all(item >= 0 for item in moving_tips),
+        "compiled scene lacks moving distal jaw tips",
+    )
+    fixed_result = []
+    moving_result = []
+    for row in model_positions:
+        _set_pose(model, data, addresses, row)
+        fixed = _jaw_tip_point(model, data, "left")
+        moving = np.mean(data.geom_xpos[moving_tips], axis=0)
+        fixed_result.append(fixed.copy())
+        moving_result.append(moving.copy())
+    fixed_points = np.asarray(fixed_result)
+    moving_points = np.asarray(moving_result)
+    return fixed_points, moving_points, (fixed_points + moving_points) / 2.0
 
 
 def _pinch_points(
     physical: np.ndarray,
     candidate: Mapping[str, Any],
 ) -> np.ndarray:
+    return _distal_jaw_points(physical, candidate)[2]
+
+
+def _legacy_pinch_points(
+    physical: np.ndarray,
+    candidate: Mapping[str, Any],
+) -> np.ndarray:
+    """Retain the already-committed acquisition-v1 proxy semantics."""
     model, _ = _compile_model(dict(candidate), base_directory=None)
     data = mujoco.MjData(model)
     joint_ids = [
@@ -429,7 +528,14 @@ def _visibility_audit(
         [compiled["targets"][target_id] for target_id in ordered],
         dtype=np.float64,
     )
-    points = _pinch_points(target_vectors, candidate)
+    endpoint_expectations = proxy.get("reference_endpoint_expected_bodies")
+    if endpoint_expectations:
+        fixed_points, moving_points, points = _distal_jaw_points(
+            target_vectors, candidate
+        )
+    else:
+        fixed_points = moving_points = None
+        points = _legacy_pinch_points(target_vectors, candidate)
     pixels, _ = cv2.projectPoints(
         points, rvec, tvec, camera_matrix, distortion
     )
@@ -462,51 +568,82 @@ def _visibility_audit(
     allowed_bodies = set(proxy["reference_visible_bodies"])
     maximum_surface_offset = float(proxy["maximum_reference_surface_offset_m"])
     line_of_sight = []
-    for target_id, model_position, point in zip(
+    for row_index, (target_id, model_position, point) in enumerate(zip(
         ordered, model_positions, points, strict=True
-    ):
+    )):
         _set_pose(model, data, addresses, model_position)
-        vector = point - camera_world
-        target_distance = float(np.linalg.norm(vector))
-        direction = vector / target_distance
-        geom_id = np.asarray([-1], dtype=np.int32)
-        hit_distance = float(
-            mujoco.mj_ray(
-                model,
-                data,
-                camera_world,
-                direction,
-                None,
-                True,
-                -1,
-                geom_id,
-            )
-        )
-        hit_body = (
-            mujoco.mj_id2name(
-                model,
-                mujoco.mjtObj.mjOBJ_BODY,
-                int(model.geom_bodyid[geom_id[0]]),
-            )
-            if geom_id[0] >= 0
-            else None
-        )
-        surface_offset = target_distance - hit_distance
-        passed = bool(
-            geom_id[0] >= 0
-            and hit_body in allowed_bodies
-            and 0.0 <= surface_offset <= maximum_surface_offset
-        )
-        line_of_sight.append(
-            {
-                "target_id": target_id,
-                "target_distance_m": target_distance,
-                "first_hit_distance_m": hit_distance,
-                "first_hit_body": hit_body,
-                "reference_surface_offset_m": surface_offset,
-                "passed": passed,
+        if endpoint_expectations:
+            reference_points = {
+                "fixed_tip": fixed_points[row_index],
+                "moving_tip": moving_points[row_index],
             }
-        )
+        else:
+            reference_points = {"legacy_midpoint": point}
+        endpoint_rows = []
+        for reference_name, reference_point in reference_points.items():
+            vector = reference_point - camera_world
+            target_distance = float(np.linalg.norm(vector))
+            direction = vector / target_distance
+            geom_id = np.asarray([-1], dtype=np.int32)
+            hit_distance = float(
+                mujoco.mj_ray(
+                    model,
+                    data,
+                    camera_world,
+                    direction,
+                    None,
+                    True,
+                    -1,
+                    geom_id,
+                )
+            )
+            hit_body = (
+                mujoco.mj_id2name(
+                    model,
+                    mujoco.mjtObj.mjOBJ_BODY,
+                    int(model.geom_bodyid[geom_id[0]]),
+                )
+                if geom_id[0] >= 0
+                else None
+            )
+            surface_offset = target_distance - hit_distance
+            expected_body = (
+                endpoint_expectations[reference_name]
+                if endpoint_expectations
+                else None
+            )
+            passed = bool(
+                geom_id[0] >= 0
+                and (
+                    hit_body == expected_body
+                    if expected_body is not None
+                    else hit_body in allowed_bodies
+                )
+                and 0.0 <= surface_offset <= maximum_surface_offset
+            )
+            endpoint_rows.append(
+                {
+                    "reference_name": reference_name,
+                    "expected_first_hit_body": expected_body,
+                    "target_distance_m": target_distance,
+                    "first_hit_distance_m": hit_distance,
+                    "first_hit_body": hit_body,
+                    "reference_surface_offset_m": surface_offset,
+                    "passed": passed,
+                }
+            )
+        if endpoint_expectations:
+            line_of_sight.append(
+                {
+                    "target_id": target_id,
+                    "endpoints": endpoint_rows,
+                    "passed": all(item["passed"] for item in endpoint_rows),
+                }
+            )
+        else:
+            line_of_sight.append(
+                {"target_id": target_id, **endpoint_rows[0]}
+            )
 
     cv2.polylines(
         frame,
@@ -592,8 +729,6 @@ def evaluate_route(
     all_actions = np.concatenate(
         [compiled["egress"], compiled["main"][1:]], axis=0
     ).astype("<f8", copy=False)
-    distance = _distance_audit(all_actions, candidate)
-
     v00_path = _bound(acquisition["sources"]["v00_design_receipt"])
     v00 = _json(v00_path)
     preflight = v00["hardware_preflight"]
@@ -655,6 +790,16 @@ def evaluate_route(
         )
     )
     gates_spec = route["static_gates"]
+    distance = _distance_audit(
+        all_actions,
+        candidate,
+        board_gate_m=float(
+            gates_spec["minimum_jaw_to_board_clearance_m"]
+        ),
+        pawn_gate_m=float(
+            gates_spec["minimum_jaw_to_any_pawn_clearance_m"]
+        ),
+    )
     gates = {
         "source_egress_preview": bool(
             egress_preview["no_new_or_worsened_kinematic_contact"]
