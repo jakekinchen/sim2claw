@@ -4,6 +4,27 @@ Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
 
 ## Latest prospective D1→D2 gate
 
+The owner-authorized continuation has now completed the next motion-free
+exact-task gate. A fresh configuration-free follower read reproduced
+`[-6.681319, -92.395604, 101.670330, -50.417582, -104.131868, 1.662708]`
+with torque off, all joints inside calibrated limits, and no live repo-owned
+camera or gateway process.
+
+That in-range read does not overturn recovery v2's terminal result. The
+recovery receipt records `recovery_passed:false`,
+`recovery_tracking_qualified:false`, and `slice_b_allowed:false`. The
+demonstrated task template also crosses the same unqualified inward-elbow
+corridor: camera-pose setup v1 stopped at an observed `82.769231 deg` while
+requesting `79.120879 deg`, recovery v2 stopped at `97.186813 deg` while
+requesting `93.934066 deg`, and the successful observation requires
+`68.703297 deg` by pre-grasp and reaches `44.527473 deg` at minimum.
+
+No canonical task action bytes were created or frozen. No task motion, pawn
+contact, REAL→SIM physics replay, or SIM→REAL execution occurred. Current
+contact-free residuals (`11.195 mm` stationary, `19.997 mm` route maximum)
+still do not admit an alternate contact action. Accepted proof class:
+`prospective_task_preflight_terminal_safety_blocker_no_action_or_task_or_transfer_authority`.
+
 The owner-authorized second, separately frozen elbow-sag recovery campaign
 also stopped safely at the gateway's one-second elbow no-progress boundary.
 It replaced recovery v1's unreachable `90.614424 deg` request with the
