@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_TX_STATIC_PASS_TEMPORAL_FREEZE_NEXT`
+Status: `ACTIVE_V05_TX_PROSPECTIVE_TEMPORAL_REPLAY_FROZEN`
 
 Created: `2026-07-28`
 
@@ -192,7 +192,7 @@ denominators before any counted action is compiled.
 | V05-TJ | `DONE_TERMINAL_NEGATIVE` | Prospectively generate the owner-authorized jaw-margin successor family by changing only the gripper column to exact float64 `-0.1727003294848389 rad`, then repeat frozen static and temporal gates. | New action hashes bind before dynamics; at least two distinct cases per direction pass unchanged direct-target and `0.11 s` ZOH paths; every other V05-T identity, geometry, evaluator, exclusion, camera, collision, and gateway rule remains unchanged. | Static receipt `64e8c443...` PASS selected four exact actions, two per direction, with every arm column byte-identical. Frozen temporal receipt `41338d08...` REJECT: REAL_TO_SIM `0/2`, SIM_TO_REAL `1/2` passed both paths versus required `2/2` each. Only `brown_pawn_e2__e2_e3` passed all five variants on both paths. All identity/gateway checks passed; failures are consequence/progress robustness. V06 and physical execution remain closed. |
 | V05-TK | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a bounded static-only action-geometry successor over contact offset, contact height, stroke, and nonquarantined source→destination families in the unchanged reset layout. | Exactly four outcome-informed V05-TJ cases are quarantined; deterministic family selection and lane assignment use only IK, collision, camera, calibrated bounds, and gateway margins; exact new action hashes freeze before dynamics; at least two distinct families per direction must later pass both unchanged plant paths and all unchanged gates. | V2 receipt `c333180a...` exhausts all `1188` cells with no quarantine leak: only `2` of required `4` families statically eligible, yielding REAL_TO_SIM `1/2` and SIM_TO_REAL `1/2`. `1037` compile rejects, `148` static rejects, `3` eligible cells across two e2 lateral families. Dynamic replay, V06, and physical execution remain closed. |
 | V05-TW | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a finite wrist-orientation and single-waypoint pre-contact path-shape successor while preserving the V05-TK geometry grid and all gates. | Exact four-case quarantine remains; wrist/path values derive only from articulated joint/jaw/pawn/square/collision geometry; deterministic static selector freezes four distinct safe families, assigned `2/2`, before any dynamic replay. | Receipt `8d32d113...` exhausts all `3564` cells with no quarantine leak: `3111` fixed-wrist IK rejects, `443` static rejects, `10` eligible cells but still only the same `2` e2 lateral families. Lane counts are `1/2` each, so the frozen family gate rejects and dynamic/V06/physical execution remain closed. |
-| V05-TX | `IN_PROGRESS` | Under standing delegation, prospectively authorize and freeze an alternate robot start-posture, deterministic multi-start IK-branch, and minimal approach-azimuth/lateral-clearance family with unchanged pawn layout and no manual intervention. | Finite grid derives only from gateway-admissible robot states, modeled/calibrated joint and start envelopes, jaw/arm collision geometry, and obstacle clearances; setup posture is robot-reachable and part of action identity; at least four distinct nonquarantined static-safe families freeze, alternating `2/2`, before dynamics. | Static receipt `60554324...` PASS: all `396` cells evaluated, `5` eligible families, four exact setup+action tensors frozen and assigned `2/2`; `316` IK rejects, `56` collision rejects, `24` eligible cells. No quarantine leak/dynamics/physical work. Temporal contract must bind exact hashes next. |
+| V05-TX | `IN_PROGRESS` | Under standing delegation, prospectively authorize and freeze an alternate robot start-posture, deterministic multi-start IK-branch, and minimal approach-azimuth/lateral-clearance family with unchanged pawn layout and no manual intervention. | Finite grid derives only from gateway-admissible robot states, modeled/calibrated joint and start envelopes, jaw/arm collision geometry, and obstacle clearances; setup posture is robot-reachable and part of action identity; at least four distinct nonquarantined static-safe families freeze, alternating `2/2`, before dynamics. | Static receipt `60554324...` PASS and temporal contract `d64e0625...` bind four exact tracked setup+action tensors, two per direction, before consequence replay. One bounded direct-target + `0.11 s` ZOH execution is active; V06/counted/physical authority remain false. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2501,6 +2501,34 @@ identity checks. Static lane assignment is REAL_TO_SIM `2/2` and SIM_TO_REAL
 `2/2`. This opens only the prospective temporal-freeze step. Dynamic replay,
 V06, counted actions, camera, gateway/serial, physical motion, promotion, and
 transfer claims remain false until separately frozen and passed.
+
+### V05-TX prospective temporal replay freeze — 2026-07-28
+
+Temporal contract
+`configs/evaluations/bidirectional_pawn_push_v2_temporal_replay_multistart_approach_v1.json`,
+SHA-256
+`d64e0625e05d3517d0c3c813f79065103f8c04d9e3fc6eaa7a24fc4701a2358f`,
+and immutable implementation
+`src/sim2claw/bidirectional_pawn_push_v2_temporal_replay.py`, SHA-256
+`b1a95281f1b1d8b8972f05216f4f1c5117ff400e6435648cffe545ff77e47c96`,
+are frozen after the four exact static setup+action tensors and before any
+dynamic outcome.
+
+Every complete tensor, including source-envelope row, deterministic setup,
+branch connection, approach, descent, and push, is replayed unchanged through
+both canonical direct-target CPU/fp64 MuJoCo and diagnostic-only `0.11 s` ZOH.
+Requested, sent, and applied arrays, timestamps, applied-source indices, and
+hashes remain separate. Requested and sent bytes must be identical; the ZOH
+path changes only which frozen requested row is applied at each unchanged
+`40 Hz` timestamp and is not treated as measured physical latency.
+
+All five robustness variants and the unchanged selected-contact,
+`>=36.025 mm` signed-progress, exclusion-contact, excluded-displacement,
+nonselected-jaw-collision, camera-margin, gateway bound/rate, and no-transform
+gates remain. Every case must pass both paths and at least two cases in each
+direction must pass. One bounded temporal execution is authorized. V06,
+counted actions, camera, gateway/serial, physical motion, promotion, and
+transfer claims remain false.
 
 ### V05-T prospective static enumerator freeze — 2026-07-28
 

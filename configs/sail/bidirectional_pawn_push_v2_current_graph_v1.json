@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T14:18:59-05:00",
+  "generated_at": "2026-07-28T14:21:24-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "f26403817ff2ed0f698de2f7d6e0c11ad98341b9f4102e9dce796e0b233e5df5",
+      "sha256": "5b5d5b05bf891e5b9920ddb9087e0c2fedf2eaff502070d42c91b51ef2144579",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -704,6 +704,16 @@
         "dynamic_replay_executed": false,
         "physical_motion": false,
         "physical_task_attempts": 0
+      }
+    },
+    "v05_tx_temporal_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_replay_multistart_approach_v1.json",
+      "sha256": "d64e0625e05d3517d0c3c813f79065103f8c04d9e3fc6eaa7a24fc4701a2358f",
+      "proof_class": "prospective_cpu_fp64_action_frozen_setup_direct_target_and_diagnostic_zoh_replay",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay.v1",
+        "status": "preregistered_after_multistart_static_action_freeze_before_dynamic_replay",
+        "proof_class": "prospective_cpu_fp64_action_frozen_setup_direct_target_and_diagnostic_zoh_replay"
       }
     },
     "simulator_candidate": {
@@ -2024,6 +2034,29 @@
       }
     },
     {
+      "id": "checkpoint:v05-tx-temporal-replay-frozen",
+      "type": "checkpoint",
+      "label": "V05-TX exact setup plus direct-target and ZOH temporal replay frozen",
+      "status": "preregistered_temporal_replay_execution_active",
+      "source_binding": "v05_tx_temporal_contract",
+      "data": {
+        "exact_action_count": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "setup_rows_in_action_identity": true,
+        "canonical_direct_target": true,
+        "diagnostic_zoh_delay_seconds": 0.11,
+        "requested_sent_byte_identity_required": true,
+        "separate_requested_sent_applied_traces": true,
+        "minimum_signed_progress_mm": 36.025,
+        "dynamic_outcomes_used_for_freeze": false,
+        "dynamic_replay_authorized": true,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2783,6 +2816,19 @@
       }
     },
     {
+      "source": "checkpoint:v05-tx-temporal-replay-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-tx-multistart-approach-static-pass",
+      "metadata": {
+        "four_exact_action_hashes_bound": true,
+        "setup_rows_in_action_identity": true,
+        "dynamic_outcomes_used": false,
+        "canonical_direct_target": true,
+        "diagnostic_zoh_delay_seconds": 0.11,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -3358,14 +3404,23 @@
       "node_ids_added": [
         "checkpoint:v05-tx-multistart-approach-static-pass"
       ]
+    },
+    {
+      "revision": 59,
+      "event_id": "V05_TX_TEMPORAL_REPLAY_FREEZE",
+      "status": "preregistered_temporal_replay_execution_active",
+      "source_binding": "v05_tx_temporal_contract",
+      "node_ids_added": [
+        "checkpoint:v05-tx-temporal-replay-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-tx-multistart-approach-static-pass",
+    "node_id": "checkpoint:v05-tx-temporal-replay-frozen",
     "milestone_id": "V05-TX",
-    "status": "static_action_freeze_pass_temporal_freeze_next",
-    "queue_status": "ACTIVE_V05_TX_STATIC_PASS_TEMPORAL_FREEZE_NEXT",
-    "resume_action": "freeze_exact_four_action_direct_target_and_zoh_temporal_contract",
+    "status": "preregistered_temporal_replay_execution_active",
+    "queue_status": "ACTIVE_V05_TX_PROSPECTIVE_TEMPORAL_REPLAY_FROZEN",
+    "resume_action": "execute_one_bounded_four_case_direct_target_and_zoh_replay",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

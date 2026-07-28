@@ -31,12 +31,12 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V05-TX"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v05-tx-multistart-approach-static-pass",
+        "node_id": "checkpoint:v05-tx-temporal-replay-frozen",
         "milestone_id": "V05-TX",
-        "status": "static_action_freeze_pass_temporal_freeze_next",
-        "queue_status": "ACTIVE_V05_TX_STATIC_PASS_TEMPORAL_FREEZE_NEXT",
+        "status": "preregistered_temporal_replay_execution_active",
+        "queue_status": "ACTIVE_V05_TX_PROSPECTIVE_TEMPORAL_REPLAY_FROZEN",
         "resume_action": (
-            "freeze_exact_four_action_direct_target_and_zoh_temporal_contract"
+            "execute_one_bounded_four_case_direct_target_and_zoh_replay"
         ),
         "resume_authorized": True,
         "heldout_open_count": 1,
@@ -44,7 +44,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(59)
+        range(60)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -55,10 +55,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_TX_MULTISTART_APPROACH_STATIC_PASS"
+        == "V05_TX_TEMPORAL_REPLAY_FREEZE"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v05-tx-multistart-approach-static-pass"
+        "checkpoint:v05-tx-temporal-replay-frozen"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]

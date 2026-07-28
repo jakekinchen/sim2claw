@@ -23,6 +23,10 @@ STATIC_RECEIPT = ROOT / (
     "runs/bidirectional-pawn-push-v2/"
     "20260728-v05-tx-multistart-approach-v1/static-freeze-v1/receipt.json"
 )
+TEMPORAL_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_temporal_replay_multistart_approach_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -165,3 +169,45 @@ def test_multistart_approach_static_receipt_admits_four_families_only() -> None:
     assert receipt["dynamic_replay_executed"] is False
     assert receipt["physical_motion"] is False
     assert receipt["physical_task_attempts"] == 0
+
+
+def test_multistart_temporal_contract_binds_exact_actions_before_replay() -> None:
+    contract = json.loads(TEMPORAL_CONTRACT.read_text(encoding="utf-8"))
+    for key in (
+        "standing_delegation",
+        "manager_authorization",
+        "static_contract",
+        "static_receipt",
+        "rehearsal_contract",
+        "temporal_plan",
+        "implementation",
+    ):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert [row["direction_lane"] for row in contract["cases"]] == [
+        "REAL_TO_SIM",
+        "SIM_TO_REAL",
+        "REAL_TO_SIM",
+        "SIM_TO_REAL",
+    ]
+    for case in contract["cases"]:
+        assert _sha(ROOT / case["action_path"]) == case["action_sha256"]
+    assert contract["plant_paths"] == [
+        {
+            "path_id": "canonical_direct_target",
+            "kind": "direct_target_mujoco",
+            "delay_seconds": 0.0,
+            "diagnostic_only": False,
+        },
+        {
+            "path_id": "diagnostic_zoh_110ms",
+            "kind": "zero_order_hold_command_delay",
+            "delay_seconds": 0.11,
+            "diagnostic_only": True,
+            "not_physical_latency_or_calibrated_plant": True,
+        },
+    ]
+    assert contract["acceptance"]["minimum_cases_per_direction"] == 2
+    assert contract["authority"]["dynamic_simulation"] is True
+    assert contract["authority"]["v06_evaluator_freeze"] is False
+    assert contract["authority"]["physical_motion"] is False
