@@ -31,17 +31,17 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V04"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v04-start-bridge-packet",
+        "node_id": "checkpoint:v04-start-bridge-review-continue",
         "milestone_id": "V04",
-        "status": "frozen_pending_commit_and_live_review",
-        "queue_status": "ACTIVE_V04_START_BRIDGE_PACKET_FROZEN_PENDING_COMMIT_REVIEW",
-        "resume_action": "commit_packet_then_emit_fresh_motion_free_review",
+        "status": "passed_pending_immediate_execution_recheck",
+        "queue_status": "ACTIVE_V04_START_BRIDGE_REVIEW_CONTINUE_PENDING_EXECUTION_RECHECK",
+        "resume_action": "commit_push_recheck_and_execute_once",
         "resume_authorized": True,
         "heldout_open_count": 0,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(13)
+        range(14)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -52,10 +52,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V04_START_BRIDGE_PACKET_FREEZE"
+        == "V04_START_BRIDGE_LIVE_REVIEW_CONTINUE"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v04-start-bridge-packet"
+        "checkpoint:v04-start-bridge-review-continue"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]

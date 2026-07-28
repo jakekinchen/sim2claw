@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_START_BRIDGE_PACKET_FROZEN_PENDING_COMMIT_REVIEW`
+Status: `ACTIVE_V04_START_BRIDGE_REVIEW_CONTINUE_PENDING_EXECUTION_RECHECK`
 
 Created: `2026-07-28`
 
@@ -239,9 +239,12 @@ Current state:
   or correction. Torque-off cleanup passed. The owner has now explicitly
   resumed V04 on the sole-writer branch
   `codex/bidirectional-transfer-goal-loop-20260728`. Packet v3 now freezes the
-  time-only start bridge with the unchanged arrays. Camera, gateway, and
-  physical motion remain unauthorized until packet v3 is committed,
-  hash-bound, independently reviewed, and returns `CONTINUE`.
+  time-only start bridge with the unchanged arrays. Commit `df5c71d` binds
+  packet v3, and fresh deterministic review SHA-256
+  `b3ccca0e06549caeb13b6e520e003fd29fde00ae2e9ebab1246744444b69df94`
+  returned `CONTINUE`, evidence anchor `100`, with all `13/13` gates true.
+  Physical execution remains pending an immediate committed-state, process,
+  identity, C922, torque-off, and output-path recheck.
 - Counted actions do not exist.
 
 Completed:
@@ -531,9 +534,9 @@ Blockers:
 
 Next action:
 
-- Commit the tested packet-v3 bridge slice, then emit a fresh deterministic
-  motion-free review from the committed packet. Do not open a camera or
-  gateway until that review returns `CONTINUE`.
+- Commit and push this review-binding transition, perform the immediate
+  pre-motion recheck, announce the exact authority packet, then execute the
+  single no-contact acquisition-v2 transaction once through packet v3.
 
 Attempt ledger:
 
@@ -1223,3 +1226,29 @@ bridge emits zero commands, requested/mapped/sent identity is preserved, and
 the forced-stop path closes torque. No live camera or gateway opened and no
 physical motion occurred. The packet must be committed before a fresh
 deterministic live review; physical execution remains unauthorized.
+
+### V04 start-bridge live review CONTINUE — 2026-07-28
+
+Packet implementation commit
+`df5c71d6f29a7ead470ee18d7a7bda8f96d97eac` binds packet SHA-256
+`82aa900dbce4eb7c5bb370b8a31300794e108dcc4c71993fc12bb2af423a5cb8`.
+The committed packet then produced fresh motion-free review
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/pre-motion-review-v2.json`,
+SHA-256
+`b3ccca0e06549caeb13b6e520e003fd29fde00ae2e9ebab1246744444b69df94`.
+
+The deterministic reviewer returned `CONTINUE`, evidence anchor `100`, with
+all `13/13` gates true. Fresh follower start was
+`[-8.351648,-106.285714,99.208791,-94.109890,-125.318681,2.612827] deg`,
+only `0.118765 deg` from the frozen anchor. The review binds the unchanged
+`716 + 2596` arrays, ten capture slices, C922 source/mount, `0.05 s`
+zero-command bridge, exact-byte requirements, no-contact limits, and
+unconditional torque-off.
+
+The pre- and post-review hardware checks passed with torque false,
+`device_configuration_rewritten:false`, no Git lock, no serial owner, and no
+repo-owned C922/gateway process. The review opened no camera or gateway,
+commanded no motion, opened no held-out, and consumed no registration
+transaction or task attempt. Physical execution is authorized only after this
+transition is committed/pushed and the same live gates are rechecked
+immediately.
