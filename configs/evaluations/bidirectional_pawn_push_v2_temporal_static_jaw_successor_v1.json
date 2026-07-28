@@ -1,0 +1,88 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_static_jaw_successor.v1",
+  "enumeration_id": "bidirectional-pawn-push-v2-temporal-static-jaw-successor-v1",
+  "status": "preregistered_before_successor_static_enumeration_or_action_generation",
+  "proof_class": "prospective_cpu_fp64_static_exact_gripper_column_successor_action_freeze",
+  "authorization": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_jaw_successor_authorization_v1.json",
+    "sha256": "0697cc3b1a3c38a8dd6e0a423cd9560ad8fc045c999fb35620fc307c0da38427"
+  },
+  "predecessor_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_static_v1.json",
+    "sha256": "0f47cd5ee1f11d18b42f200a9f35c1f8b36ffd5f114f4eda95ec9be3c1f40810"
+  },
+  "predecessor_static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-t-temporal-v1/static-freeze-v1/receipt.json",
+    "sha256": "3a8593cf4d97e776760ff9dfbac2f4e688696226521ab01c73e7a07dab306b3f"
+  },
+  "temporal_plan": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json",
+    "sha256": "5e8058e0bc46d60879d962a1e2ee9e8161a12197dfe9aee3faab73f7b1f23e9e"
+  },
+  "rehearsal_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v2.json",
+    "sha256": "d57fc89a5874d630536ae6f981b78988c6da40bfb8934fee78ab2cfc02ac847f"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_temporal_static_jaw_successor.py",
+    "sha256": "59e9813901ba84792193f36dd7944af3082e934814b21b8a3a0798f823252c05"
+  },
+  "base_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_temporal_static.py",
+    "sha256": "5584bf831f12580851e3a397d318f9fba8d865cdf6464b6b25174d4511a8d687"
+  },
+  "enumeration": {
+    "source": "same modeled reset-layout pawn body names and board squares as predecessor",
+    "neighbor_rule": "all on-board orthogonal adjacent squares empty in reset layout",
+    "ordering": "source rank then file, destination rank then file",
+    "excluded_squares": [
+      "c2"
+    ],
+    "maximum_candidates": 64,
+    "lane_partition": "alternate statically eligible cases beginning REAL_TO_SIM",
+    "v05_dynamic_outcomes_available_to_selection": false
+  },
+  "successor_identity": {
+    "predecessor_closed_jaw_rad": -0.174533,
+    "successor_closed_jaw_rad": -0.1727003294848389,
+    "generate_predecessor_arm_tensor_first": true,
+    "replace_only_gripper_column_after_arm_generation": true,
+    "arm_columns_must_be_byte_identical": true,
+    "row_count_order_timing_encoding_unchanged": true
+  },
+  "grid_and_selection": {
+    "grid_source": "frozen rehearsal-v2 contract",
+    "all_nine_cells_statically_audited": true,
+    "one_action_per_eligible_case": true,
+    "selection_order": [
+      "shortest statically eligible stroke",
+      "contact height nearest 0.024 m",
+      "largest arm-joint limit margin"
+    ],
+    "dynamic_outcome_used": false
+  },
+  "static_gates": [
+    "IK residual",
+    "arm-joint margin",
+    "exact authorized successor jaw target",
+    "new robot collision excluding selected jaw-pawn contact",
+    "source and intended terminal camera margin",
+    "calibrated physical command bounds",
+    "reviewed gateway per-joint rate bounds at 40 Hz",
+    "requested/sent byte identity"
+  ],
+  "authority": {
+    "static_simulation": true,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective simulator-only exact gripper-column successor action freeze. It cannot establish a dynamic task outcome, physical packet, or transfer."
+}

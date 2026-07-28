@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T10:48:00-05:00",
+  "generated_at": "2026-07-28T11:02:00-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "111ef431c67d1f4677c8bbe7368d152b193cd28f662f0ad13306b744f457337f",
+      "sha256": "6393b5000246d40733ea20831c9b19c2e8a56f94b50adbe12c865f870838e2e8",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -530,6 +530,16 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_jaw_successor_authorization.v1",
         "status": "owner_authorized_before_successor_action_generation",
         "proof_class": "prospective_owner_authorized_single_column_action_identity_successor"
+      }
+    },
+    "v05_tj_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_static_jaw_successor_v1.json",
+      "sha256": "898a6480a6fe9f58b80ff4de0b86d70950e52762b643ccf779fe62aca51f667b",
+      "proof_class": "prospective_cpu_fp64_static_exact_gripper_column_successor_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_static_jaw_successor.v1",
+        "status": "preregistered_before_successor_static_enumeration_or_action_generation",
+        "proof_class": "prospective_cpu_fp64_static_exact_gripper_column_successor_action_freeze"
       }
     },
     "simulator_candidate": {
@@ -1476,6 +1486,22 @@
       }
     },
     {
+      "id": "checkpoint:v05-tj-static-successor-frozen",
+      "type": "checkpoint",
+      "label": "V05-TJ exact one-column static successor frozen",
+      "status": "preregistered_successor_static_execution_active",
+      "source_binding": "v05_tj_static_contract",
+      "data": {
+        "route_count": 48,
+        "grid_cells_per_route": 9,
+        "successor_jaw_rad": -0.1727003294848389,
+        "arm_columns_must_match_predecessor": true,
+        "dynamic_replay_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2039,6 +2065,17 @@
       }
     },
     {
+      "source": "checkpoint:v05-tj-static-successor-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-tj-owner-authorization-bound",
+      "metadata": {
+        "prospective_before_successor_generation": true,
+        "only_gripper_column_changes": true,
+        "dynamic_replay_authorized": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -2470,14 +2507,23 @@
       "node_ids_added": [
         "checkpoint:v05-tj-owner-authorization-bound"
       ]
+    },
+    {
+      "revision": 43,
+      "event_id": "V05_TJ_STATIC_SUCCESSOR_FREEZE",
+      "status": "preregistered_successor_static_execution_active",
+      "source_binding": "v05_tj_static_contract",
+      "node_ids_added": [
+        "checkpoint:v05-tj-static-successor-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-tj-owner-authorization-bound",
+    "node_id": "checkpoint:v05-tj-static-successor-frozen",
     "milestone_id": "V05-TJ",
-    "status": "owner_authorized_static_successor_design_active",
-    "queue_status": "ACTIVE_V05_TJ_OWNER_AUTHORIZATION_BOUND",
-    "resume_action": "freeze_exact_jaw_margin_successor_static_packet",
+    "status": "preregistered_successor_static_execution_active",
+    "queue_status": "ACTIVE_V05_TJ_FROZEN_STATIC_SUCCESSOR_EXECUTION",
+    "resume_action": "execute_frozen_exact_jaw_margin_static_successor_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
