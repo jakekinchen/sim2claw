@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_UE_RAMPED_FUNNEL_STATIC_FROZEN`
+Status: `BLOCKED_NON_GRASP_FUNNEL_FAMILY_EXHAUSTED`
 
 Created: `2026-07-28`
 
@@ -199,7 +199,7 @@ denominators before any counted action is compiled.
 | V05-UB | `DONE_TERMINAL_NEGATIVE` | Prospectively stop the low-center push at the immediate empty-neighbor center using a `60 mm` tool stroke. | `60−16≈44 mm` center travel is one square and `1.6655×` the unchanged progress gate; exact twelve-case quarantine, low-center contact, setup, clearance, identity, selection, and gates remain unchanged; four static-safe fresh families alternate `2/2`. | Static receipt `ed2a7aef...` PASS selected four actions `2/2`. Temporal receipt `9c3ea9b6...` REJECT: `0/2` each direction; every identity/gateway check passed, all cases failed progress robustness, and three variant/path results also failed excluded-object gates. No V06/physical admission. |
 | V05-UC | `DONE_TERMINAL_NEGATIVE` | Replace the exhausted single-straight-push family with a fixed-wrist, deterministic guide-to-center initial-contact mechanism. | Exact sixteen-case quarantine; three geometry-derived wrist rolls × two `±3 mm` guide sides × three demonstrated setup branches over 32 fresh families; full setup/exact jaw/40 Hz bytes; selected pawn never grasped; no feedback; four static-safe actions alternate `2/2`. | Receipt `127434f6...` REJECT: all `576` cells evaluated, `510` fixed-wrist IK rejects and every one of the `66` compiled cells collision-rejected. Zero families/lanes; no dynamics or physical admission. |
 | V05-UD | `DONE_TERMINAL_NEGATIVE` | Preserve the orientation seeds and guide-to-center mechanism while releasing the fixed-wrist overconstraint after the exact demonstrated setup seed. | Exact sixteen-case quarantine; three demonstrated setup branches × three exact wrist seeds × two `±3 mm` guide sides over 32 fresh families; fixed prior static-safe `22 mm` offset/`24 mm` height and `75 mm` stroke; full setup/exact jaw/40 Hz bytes; no grasp/feedback; four static-safe actions alternate `2/2`. | Receipt `2196435c...` REJECT: `510` positional IK rejects and all `66` compiled cells collision-rejected across four reachable fresh families. Zero lanes/dynamics/physical admission. |
-| V05-UE | `IN_PROGRESS` | Preserve the reachable four-family funnel while replacing its level push with a deterministic ramped-fingertip path that clears adjacent pawns. | Exact sixteen-case quarantine and unchanged 576-cell seed/guide grid; `10 mm` level engagement, `6 mm` rise over the next `15 mm`, then lifted continuation to the unchanged `75 mm` planar endpoint; no scalar sweep, grasp, feedback, or gate change; four static-safe actions alternate `2/2`. | Manager authorization `a38ea998...`; contract `0b67546d...`; wrapper `c22663fe...`. One static execution active; dynamic/V06/counted/physical false. |
+| V05-UE | `DONE_TERMINAL_PARTIAL_STATIC` | Preserve the reachable four-family funnel while replacing its level push with a deterministic ramped-fingertip path that clears adjacent pawns. | Exact sixteen-case quarantine and unchanged 576-cell seed/guide grid; `10 mm` level engagement, `6 mm` rise over the next `15 mm`, then lifted continuation to the unchanged `75 mm` planar endpoint; no scalar sweep, grasp, feedback, or gate change; four static-safe actions alternate `2/2`. | Receipt `35442bc9...`: one fresh family (`tan_pawn_h7__h7_g7`) passes static gates in 10 cells, but the other 56 compiled cells collide and 510 fail IK. Lane `1/0`, below unchanged `2/2`; dynamics/V06/physical remain closed. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2124,6 +2124,32 @@ pawn-base radius, and `6 mm` is two existing `3 mm` robustness quanta. The
 finite grid remains exactly `32 × 3 × 3 × 2 = 576` cells. One static
 execution is active; dynamic, V06, counted, camera, gateway/serial, physical,
 promotion, and transfer authority remains false.
+
+### V05-UE partial static result and bounded non-grasp stop — 2026-07-28
+
+The one V05-UE execution produced
+`runs/bidirectional-pawn-push-v2/20260728-v05-ue-ramped-funnel-v1/static-freeze-v1/receipt.json`,
+SHA-256
+`35442bc9afd5bb28f87f1ed4dab70d3b8b9eca4bf82b26e89a27a6b5c38a9b68`.
+The ramped path improved the static result from zero to one fresh eligible
+family: `tan_pawn_h7__h7_g7` passed in `10` cells, and its selected action is
+SHA-256
+`c0f1894a21f67e64dd1a3455c03cef367539ea6d870031e4526826c12b832d05`.
+However, `510` cells still failed positional IK and `56` compiled cells still
+collided. The brown b1/d1 families remain blocked by a2/c2/e2 contacts. The
+result is lane `1/0`, below the unchanged `2/2` family gate, so no dynamic
+replay, V06, counted attempt, or physical motion is admitted.
+
+UC, UD, and UE are three prospectively frozen attempts at the authorized
+non-grasp orientation/funneling family. They repeat the same reset-layout
+reach/collision boundary, although UE provides one partial static win.
+Continuing by changing another ramp scalar would violate the no-scalar-sweep
+rule. The smallest materially distinct remaining action family is an
+open-loop cage/grasp-and-place successor, which is outside the explicit
+no-grasp scope of UC–UE and therefore requires a new manager/owner direction.
+Weakening the `2/2` gate, reusing quarantined cases, changing the physical
+layout, or running hardware is not an admissible workaround. Physical task
+attempts remain `0/10`.
 
 ### V05-TK owner-authorized action-geometry successor — 2026-07-28
 

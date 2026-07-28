@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T16:15:26-05:00",
+  "generated_at": "2026-07-28T16:18:46-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "c513dcdaa6bd6c7ea0c0a16190c85de054460226975c8dceb2c8b8e68fe2e9e8",
+      "sha256": "b8c735deed7f12d22db60ca9eb8c2da62a4e5f3ab9da0205c87e73dc7d46b7e9",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -1008,6 +1008,19 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_ramped_funnel_static.v1",
         "status": "preregistered_before_ramped_funnel_model_loading_or_static_enumeration",
         "proof_class": "prospective_cpu_fp64_static_ramped_fingertip_open_loop_guiding_contact_action_freeze"
+      }
+    },
+    "v05_ue_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ue-ramped-funnel-v1/static-freeze-v1/receipt.json",
+      "sha256": "35442bc9afd5bb28f87f1ed4dab70d3b8b9eca4bf82b26e89a27a6b5c38a9b68",
+      "proof_class": "cpu_fp64_static_ramped_fingertip_open_loop_guiding_contact_collision_camera_gateway_action_freeze_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_ramped_funnel_static_receipt.v1",
+        "status": "orientation_funnel_static_freeze_reject",
+        "proof_class": "cpu_fp64_static_ramped_fingertip_open_loop_guiding_contact_collision_camera_gateway_action_freeze_only",
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
       }
     },
     "simulator_candidate": {
@@ -2940,6 +2953,30 @@
       }
     },
     {
+      "id": "verdict:v05-ue-ramped-funnel-static-partial",
+      "type": "evaluator_verdict",
+      "label": "V05-UE ramped-fingertip partial static result",
+      "status": "terminal_partial_static_family_gate_negative_no_dynamic_admission",
+      "source_binding": "v05_ue_static_receipt",
+      "evaluator_identity": "35442bc9afd5bb28f87f1ed4dab70d3b8b9eca4bf82b26e89a27a6b5c38a9b68",
+      "data": {
+        "evaluated_cells": 576,
+        "positional_ik_rejects": 510,
+        "static_collision_rejects": 56,
+        "static_eligible_cells": 10,
+        "statically_eligible_families": 1,
+        "eligible_case_id": "tan_pawn_h7__h7_g7",
+        "real_to_sim_lanes": 1,
+        "sim_to_real_lanes": 0,
+        "minimum_cases_per_direction": 2,
+        "non_grasp_funnel_attempt_count": 3,
+        "dynamic_replay_executed": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -4057,6 +4094,23 @@
       }
     },
     {
+      "source": "verdict:v05-ue-ramped-funnel-static-partial",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-ue-ramped-funnel-static-frozen",
+      "metadata": {
+        "evaluated_cells": 576,
+        "positional_ik_rejects": 510,
+        "static_collision_rejects": 56,
+        "static_eligible_cells": 10,
+        "statically_eligible_families": 1,
+        "real_to_sim_lanes": 1,
+        "sim_to_real_lanes": 0,
+        "minimum_cases_per_direction": 2,
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -4884,15 +4938,24 @@
       "node_ids_added": [
         "checkpoint:v05-ue-ramped-funnel-static-frozen"
       ]
+    },
+    {
+      "revision": 87,
+      "event_id": "V05_UE_RAMPED_FUNNEL_STATIC_PARTIAL",
+      "status": "terminal_partial_static_family_gate_negative_no_dynamic_admission",
+      "source_binding": "v05_ue_static_receipt",
+      "node_ids_added": [
+        "verdict:v05-ue-ramped-funnel-static-partial"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-ue-ramped-funnel-static-frozen",
+    "node_id": "verdict:v05-ue-ramped-funnel-static-partial",
     "milestone_id": "V05-UE",
-    "status": "preregistered_ramped_funnel_static_execution_active",
-    "queue_status": "ACTIVE_V05_UE_RAMPED_FUNNEL_STATIC_FROZEN",
-    "resume_action": "execute_one_bounded_576_cell_ramped_funnel_static_enumeration",
-    "resume_authorized": true,
+    "status": "blocked_non_grasp_funnel_family_exhausted",
+    "queue_status": "BLOCKED_NON_GRASP_FUNNEL_FAMILY_EXHAUSTED",
+    "resume_action": "request_scope_for_distinct_cage_or_grasp_action_family",
+    "resume_authorized": false,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0

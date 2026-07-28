@@ -137,6 +137,10 @@ RAMPED_FUNNEL_STATIC_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_ramped_funnel_static_v1.json"
 )
+RAMPED_FUNNEL_STATIC_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-ue-ramped-funnel-v1/static-freeze-v1/receipt.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -732,6 +736,34 @@ def test_seeded_funnel_reject_and_ramped_successor_freeze() -> None:
     assert contract["authority"]["static_simulation"] is True
     assert contract["authority"]["dynamic_replay"] is False
     assert contract["authority"]["physical_motion"] is False
+
+
+def test_ramped_funnel_partial_result_stays_below_dynamic_gate() -> None:
+    receipt = json.loads(
+        RAMPED_FUNNEL_STATIC_RECEIPT.read_text(encoding="utf-8")
+    )
+    assert _sha(RAMPED_FUNNEL_STATIC_RECEIPT) == (
+        "35442bc9afd5bb28f87f1ed4dab70d3b8b9eca4bf82b26e89a27a6b5c38a9b68"
+    )
+    assert receipt["status"] == "orientation_funnel_static_freeze_reject"
+    assert receipt["grid_result_count"] == 576
+    assert sum(
+        row["status"] == "compile_reject" for row in receipt["grid_results"]
+    ) == 510
+    assert sum(
+        row["status"] == "static_reject" for row in receipt["grid_results"]
+    ) == 56
+    assert sum(
+        row["status"] == "static_eligible"
+        for row in receipt["grid_results"]
+    ) == 10
+    assert receipt["statically_eligible_family_count"] == 1
+    assert receipt["lane_counts"] == {"REAL_TO_SIM": 1, "SIM_TO_REAL": 0}
+    assert [row["case_id"] for row in receipt["eligible_cases"]] == [
+        "tan_pawn_h7__h7_g7"
+    ]
+    assert receipt["dynamic_replay_executed"] is False
+    assert receipt["physical_motion"] is False
 
 
 def test_multistart_approach_static_contract_is_finite_and_fail_closed() -> None:

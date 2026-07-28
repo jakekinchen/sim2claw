@@ -31,20 +31,20 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V05-UE"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v05-ue-ramped-funnel-static-frozen",
+        "node_id": "verdict:v05-ue-ramped-funnel-static-partial",
         "milestone_id": "V05-UE",
-        "status": "preregistered_ramped_funnel_static_execution_active",
-        "queue_status": "ACTIVE_V05_UE_RAMPED_FUNNEL_STATIC_FROZEN",
+        "status": "blocked_non_grasp_funnel_family_exhausted",
+        "queue_status": "BLOCKED_NON_GRASP_FUNNEL_FAMILY_EXHAUSTED",
         "resume_action": (
-            "execute_one_bounded_576_cell_ramped_funnel_static_enumeration"
+            "request_scope_for_distinct_cage_or_grasp_action_family"
         ),
-        "resume_authorized": True,
+        "resume_authorized": False,
         "heldout_open_count": 1,
         "cumulative_manifest_read_count": 2,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(87)
+        range(88)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -55,10 +55,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_UE_RAMPED_FUNNEL_STATIC_FREEZE"
+        == "V05_UE_RAMPED_FUNNEL_STATIC_PARTIAL"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v05-ue-ramped-funnel-static-frozen"
+        "verdict:v05-ue-ramped-funnel-static-partial"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]
