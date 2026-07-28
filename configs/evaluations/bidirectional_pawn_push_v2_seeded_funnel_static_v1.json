@@ -1,0 +1,108 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_seeded_funnel_static.v1",
+  "enumeration_id": "bidirectional-pawn-push-v2-seeded-funnel-static-v1",
+  "status": "preregistered_before_seeded_funnel_model_loading_or_static_enumeration",
+  "proof_class": "prospective_cpu_fp64_static_seeded_orientation_open_loop_ik_guiding_contact_action_freeze",
+  "authorization": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_seeded_funnel_successor_authorization_v1.json",
+    "sha256": "70e056b45bc6aef5af7d2a03aa48d9dcd1db811a2d4453befec4eda275e30eb0"
+  },
+  "base_static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_orientation_funnel_static_v1.json",
+    "sha256": "3bbcbb7748d5e5032accdd1afa80f65700f8e36c7e1a951ec1494591924d0513"
+  },
+  "v05_uc_static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uc-orientation-funnel-v1/static-freeze-v1/receipt.json",
+    "sha256": "127434f66157b4d090e4f971eae44e12e5ba6083c3a1ae6196ae9b2c85d6e6ff"
+  },
+  "base_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_orientation_funnel_static_v1.py",
+    "sha256": "b3b98ba3489737a105d7fc3a3a9b30d2ba7287aee1ec0b3ef370e46b204e6d61"
+  },
+  "multistart_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_multistart_approach_static.py",
+    "sha256": "191a60be161a2bb4c6b842785cfc91e7dc5ac46c2daeb28d12b197af92165ff7"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_seeded_funnel_static_v1.py",
+    "sha256": "8943d6be84e0fa6d080bb7d96404a2b389b0b758c9816f24485cce86ad0fbdf8"
+  },
+  "frozen_overrides": {
+    "quarantine_case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8",
+      "tan_pawn_g8__g8_g7",
+      "tan_pawn_g8__g8_h8",
+      "tan_pawn_f7__f7_f6",
+      "brown_pawn_e2__e2_f2",
+      "brown_pawn_a2__a2_b2",
+      "tan_pawn_g8__g8_f8",
+      "tan_pawn_f7__f7_e7",
+      "tan_pawn_f7__f7_g7"
+    ],
+    "wrist_seed_rule": "three exact geometry-derived wrist rolls constrain each demonstrated setup branch, then ordinary deterministic open-loop IK may evolve wrist roll after that seed",
+    "endpoint_geometry": {
+      "contact_offset_m": 0.022,
+      "contact_height_m": 0.024,
+      "stroke_m": 0.075,
+      "precontact_clearance_height_above_pawn_base_m": 0.075,
+      "static_only_subset_rule": "22 mm offset is the V05-TW/TZ static-safe value; 24 mm is the lower V05-TZ static-safe height; 75 mm remains the frozen geometry-derived non-scalar stroke. No value is swept."
+    },
+    "path_shape": "source arm plus exact jaw; deterministic setup to an exact wrist seed; unconstrained deterministic open-loop IK to guide-side overhead; vertical descent; 3 mm initial-contact sweep to centerline; one 75 mm push",
+    "postquarantine_family_count": 32,
+    "setup_branch_count": 3,
+    "wrist_seed_count": 3,
+    "guide_side_count": 2,
+    "cells_per_family": 18,
+    "maximum_total_cells": 576,
+    "finite_and_nonexpandable_after_freeze": true
+  },
+  "unchanged_gates": {
+    "minimum_distinct_families_per_direction": 2,
+    "selected_family_count": 4,
+    "maximum_ik_residual_m": 0.003,
+    "minimum_arm_joint_limit_margin_rad": 0.03490658503988659,
+    "exact_setup_wrist_seed_tolerance_rad": 1e-12,
+    "jaw_target_tolerance_rad": 1e-12,
+    "selected_static_jaw_contact_required": true,
+    "new_disallowed_robot_collision_count": 0,
+    "camera_margin_required": true,
+    "calibrated_gateway_bounds_required": true,
+    "reviewed_gateway_rates_required": true,
+    "requested_sent_identity_required": true
+  },
+  "forbidden": {
+    "dynamic_outcome_selection": true,
+    "quarantined_case_reuse": true,
+    "scalar_geometry_sweep": true,
+    "grasp": true,
+    "feedback_or_adaptation": true,
+    "clipping_smoothing_retiming_offset_or_assistance": true,
+    "randomization_or_posterior": true,
+    "manual_intervention": true,
+    "physical_motion": true,
+    "paid_compute": true
+  },
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "action_freeze_if_static_gate_passes": true,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective CPU/fp64 static-only seeded-orientation open-loop IK guide-to-center action search over exactly 576 cells. No dynamic consequence, calibrated plant, physical packet, promotion, or transfer authority."
+}

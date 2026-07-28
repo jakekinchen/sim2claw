@@ -1,0 +1,119 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_seeded_funnel_successor_authorization.v1",
+  "authorization_id": "bidirectional-pawn-push-v2-seeded-funnel-successor-20260728",
+  "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
+  "proof_class": "prospective_manager_authorized_static_only_seeded_orientation_funnel_successor",
+  "authorized_at": "2026-07-28",
+  "authorizer": "Codex Manager",
+  "standing_delegation": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json",
+    "sha256": "8e59b7385ca14083d6ddd571ecc13fbec2f884cba41b3583ccfb317737e81ed5"
+  },
+  "immutable_predecessors": {
+    "v05_uc_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_orientation_funnel_static_v1.json",
+      "sha256": "3bbcbb7748d5e5032accdd1afa80f65700f8e36c7e1a951ec1494591924d0513"
+    },
+    "v05_uc_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uc-orientation-funnel-v1/static-freeze-v1/receipt.json",
+      "sha256": "127434f66157b4d090e4f971eae44e12e5ba6083c3a1ae6196ae9b2c85d6e6ff"
+    },
+    "v05_tw_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_wrist_path_static_v1.json",
+      "sha256": "b5730808a3b7afca8ea911b4c81f6b7cbafbbf8a3e38be3aad8b91636af200ad"
+    },
+    "v05_tw_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tw-wrist-path-v1/static-freeze-v1/receipt.json",
+      "sha256": "8d32d1138dc0d250cf75599e1b855aa586dbf27bcfa425d5e90e9d737d0411e6"
+    }
+  },
+  "mechanism_evidence": {
+    "v05_uc_grid_cells": 576,
+    "v05_uc_fixed_wrist_ik_rejects": 510,
+    "v05_uc_compiled_cells": 66,
+    "v05_uc_compiled_cell_collision_rejects": 66,
+    "inference": "Holding wrist roll fixed throughout every Cartesian waypoint overconstrained reachability. The smallest successor keeps each exact demonstrated wrist seed and the deterministic guide-to-center contact sweep, but allows ordinary open-loop IK evolution after the seed.",
+    "static_geometry_source": "V05-TW independently selected 22 mm behind-center and 30 mm-high contact for both of its statically safe families. V05-TZ independently admitted four families at 22 mm and 24 mm. The successor fixes the lower 24 mm value without a scalar sweep.",
+    "permitted_use": "Authorize one finite fresh-case static family with exact setup wrist seeds, unconstrained deterministic IK after the seed, a plus-or-minus 3 mm guide-to-center initial-contact sweep, and one 75 mm open-loop push."
+  },
+  "quarantine": {
+    "case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8",
+      "tan_pawn_g8__g8_g7",
+      "tan_pawn_g8__g8_h8",
+      "tan_pawn_f7__f7_f6",
+      "brown_pawn_e2__e2_f2",
+      "brown_pawn_a2__a2_b2",
+      "tan_pawn_g8__g8_f8",
+      "tan_pawn_f7__f7_e7",
+      "tan_pawn_f7__f7_g7"
+    ],
+    "exact_count": 16,
+    "permitted_use": "read-only diagnostics and exact exclusion before cell generation"
+  },
+  "authorized_static_design": {
+    "wrist_seed_targets_rad": [
+      -1.9562840850723129,
+      -1.8036347566770476,
+      -1.6509854282817824
+    ],
+    "wrist_constraint_scope": "exact demonstrated setup-branch seed; deterministic open-loop IK may evolve wrist roll after the seed",
+    "guide_lateral_offsets_m": [
+      -0.003,
+      0.003
+    ],
+    "path_shape": "full source-to-demonstrated-branch setup; seeded open-loop IK to guide-side overhead; vertical guide-side descent; 3 mm guide-to-center initial-contact sweep; one straight open-loop push",
+    "contact_offset_m": 0.022,
+    "contact_height_m": 0.024,
+    "stroke_m": 0.075,
+    "selected_pawn_grasped": false,
+    "closed_loop_or_feedback": false,
+    "same_three_demonstrated_setup_branches": true,
+    "same_setup_speed": true,
+    "same_precontact_clearance": true,
+    "same_exact_jaw": true,
+    "same_40hz_timing": true,
+    "same_selection_and_gates": true,
+    "same_physical_layout": true,
+    "postquarantine_family_count": 32,
+    "cells_per_family": 18,
+    "finite_maximum_cells": 576,
+    "static_selection_only": true,
+    "no_post_outcome_expansion": true
+  },
+  "forbidden": [
+    "reuse of any quarantined case",
+    "another scalar stroke height or offset sweep",
+    "grasping the selected pawn",
+    "closed-loop correction or perception adaptation",
+    "force or current feedback",
+    "physical pawn layout change",
+    "manual intervention",
+    "gate weakening",
+    "paid compute",
+    "physical work before V06 and all safety gates"
+  ],
+  "authority": {
+    "static_design": true,
+    "model_loading": false,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Manager authorization under standing delegation for one finite open-loop seeded-orientation guiding-contact successor. No model loading, simulation, V06, hardware, or transfer authority yet."
+}
