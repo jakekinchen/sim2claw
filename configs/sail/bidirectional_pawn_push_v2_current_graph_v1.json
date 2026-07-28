@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T14:52:08-05:00",
+  "generated_at": "2026-07-28T14:55:46-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "cde05378c03a68d5fe60ed8de63994c1fb825fcea6d1669a79d6fb240229fab9",
+      "sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -799,6 +799,29 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static.v2",
         "status": "preregistered_bounded_stroke_before_model_loading_static_enumeration_or_action_generation",
         "proof_class": "prospective_cpu_fp64_static_slow_elevated_bounded_stroke_action_freeze"
+      }
+    },
+    "v05_tz_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tz-bounded-stroke-v1/static-freeze-v1/receipt.json",
+      "sha256": "35c3bea2db1098c424ce25c7663e25fde3df973a4ca3fd33a8f855a34df2cd12",
+      "proof_class": "cpu_fp64_static_slow_elevated_long_stroke_multistart_approach_collision_camera_gateway_action_freeze_only_v2",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static_receipt.v2",
+        "status": "slow_elevated_static_freeze_pass",
+        "proof_class": "cpu_fp64_static_slow_elevated_long_stroke_multistart_approach_collision_camera_gateway_action_freeze_only_v2",
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    "v05_tz_temporal_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_replay_bounded_stroke_v1.json",
+      "sha256": "4698e51006914ba6ac3370dc9888e4b55665ab41d1ff924abef6824aa381addf",
+      "proof_class": "prospective_cpu_fp64_action_frozen_setup_direct_target_and_diagnostic_zoh_replay",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay.v1",
+        "status": "preregistered_after_bounded_stroke_static_action_freeze_before_dynamic_replay",
+        "proof_class": "prospective_cpu_fp64_action_frozen_setup_direct_target_and_diagnostic_zoh_replay"
       }
     },
     "simulator_candidate": {
@@ -2325,6 +2348,50 @@
       }
     },
     {
+      "id": "checkpoint:v05-tz-bounded-stroke-static-pass",
+      "type": "checkpoint",
+      "label": "V05-TZ bounded-stroke four-family action freeze passed",
+      "status": "static_action_freeze_pass_no_dynamic_outcome",
+      "source_binding": "v05_tz_static_receipt",
+      "data": {
+        "evaluated_cells": 360,
+        "quarantine_leak": false,
+        "statically_eligible_families": 4,
+        "selected_families": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "exact_action_count": 4,
+        "setup_rows_in_action_identity": true,
+        "dynamic_replay_executed": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-tz-temporal-replay-frozen",
+      "type": "checkpoint",
+      "label": "V05-TZ exact bounded-stroke direct-target and ZOH replay frozen",
+      "status": "preregistered_temporal_replay_execution_active",
+      "source_binding": "v05_tz_temporal_contract",
+      "data": {
+        "exact_action_count": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "setup_rows_in_action_identity": true,
+        "canonical_direct_target": true,
+        "diagnostic_zoh_delay_seconds": 0.11,
+        "requested_sent_byte_identity_required": true,
+        "separate_requested_sent_applied_traces": true,
+        "minimum_signed_progress_mm": 36.025,
+        "dynamic_outcomes_used_for_freeze": false,
+        "dynamic_replay_authorized": true,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -3196,6 +3263,32 @@
       }
     },
     {
+      "source": "checkpoint:v05-tz-bounded-stroke-static-pass",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-tz-bounded-stroke-static-frozen",
+      "metadata": {
+        "evaluated_cells": 360,
+        "selected_families": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-tz-temporal-replay-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-tz-bounded-stroke-static-pass",
+      "metadata": {
+        "four_exact_action_hashes_bound": true,
+        "setup_rows_in_action_identity": true,
+        "dynamic_outcomes_used": false,
+        "canonical_direct_target": true,
+        "diagnostic_zoh_delay_seconds": 0.11,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -3852,14 +3945,32 @@
       "node_ids_added": [
         "checkpoint:v05-tz-bounded-stroke-static-frozen"
       ]
+    },
+    {
+      "revision": 68,
+      "event_id": "V05_TZ_BOUNDED_STROKE_STATIC_PASS",
+      "status": "static_action_freeze_pass_no_dynamic_outcome",
+      "source_binding": "v05_tz_static_receipt",
+      "node_ids_added": [
+        "checkpoint:v05-tz-bounded-stroke-static-pass"
+      ]
+    },
+    {
+      "revision": 69,
+      "event_id": "V05_TZ_TEMPORAL_REPLAY_FREEZE",
+      "status": "preregistered_temporal_replay_execution_active",
+      "source_binding": "v05_tz_temporal_contract",
+      "node_ids_added": [
+        "checkpoint:v05-tz-temporal-replay-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-tz-bounded-stroke-static-frozen",
+    "node_id": "checkpoint:v05-tz-temporal-replay-frozen",
     "milestone_id": "V05-TZ",
-    "status": "preregistered_bounded_stroke_static_execution_active",
-    "queue_status": "ACTIVE_V05_TZ_BOUNDED_STROKE_STATIC_FROZEN",
-    "resume_action": "execute_one_bounded_360_cell_bounded_stroke_static_enumeration",
+    "status": "preregistered_temporal_replay_execution_active",
+    "queue_status": "ACTIVE_V05_TZ_TEMPORAL_REPLAY_FROZEN",
+    "resume_action": "execute_one_action_frozen_direct_and_zoh_temporal_replay",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

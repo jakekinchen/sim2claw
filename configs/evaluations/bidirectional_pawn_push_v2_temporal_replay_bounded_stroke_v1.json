@@ -1,0 +1,147 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay.v1",
+  "replay_id": "bidirectional-pawn-push-v2-temporal-replay-bounded-stroke-v1",
+  "status": "preregistered_after_bounded_stroke_static_action_freeze_before_dynamic_replay",
+  "proof_class": "prospective_cpu_fp64_action_frozen_setup_direct_target_and_diagnostic_zoh_replay",
+  "standing_delegation": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json",
+    "sha256": "8e59b7385ca14083d6ddd571ecc13fbec2f884cba41b3583ccfb317737e81ed5"
+  },
+  "manager_authorization": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_bounded_stroke_successor_authorization_v1.json",
+    "sha256": "7e26fc3817ac593638e09d5ae5d89e85896b4f850ae213cb81472213ab862a08"
+  },
+  "static_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_bounded_stroke_static_v1.json",
+    "sha256": "4247d175bcaa3e7bcf0c3049eec2907dd343f4c9d9b1400764702c90f33ef097"
+  },
+  "static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tz-bounded-stroke-v1/static-freeze-v1/receipt.json",
+    "sha256": "35c3bea2db1098c424ce25c7663e25fde3df973a4ca3fd33a8f855a34df2cd12"
+  },
+  "rehearsal_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v2.json",
+    "sha256": "d57fc89a5874d630536ae6f981b78988c6da40bfb8934fee78ab2cfc02ac847f"
+  },
+  "temporal_plan": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json",
+    "sha256": "5e8058e0bc46d60879d962a1e2ee9e8161a12197dfe9aee3faab73f7b1f23e9e"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_temporal_replay.py",
+    "sha256": "b1a95281f1b1d8b8972f05216f4f1c5117ff400e6435648cffe545ff77e47c96"
+  },
+  "action_identity": {
+    "dtype": "little_endian_float64",
+    "sample_hz": 40,
+    "setup_rows_included": true,
+    "source_arm_plus_exact_jaw_first_row": true,
+    "requested_sent_byte_identical": true,
+    "row_order_preserved": true,
+    "no_clipping_smoothing_retiming_offset_repair_or_rate_limit": true
+  },
+  "cases": [
+    {
+      "case_id": "tan_pawn_g8__g8_g7",
+      "direction_lane": "REAL_TO_SIM",
+      "source_square": "g8",
+      "destination_square": "g7",
+      "selected_piece_id": "tan_pawn_g8",
+      "setup_branch_id": "v4_fit_panm20_liftm90",
+      "approach_lateral_offset_m": 0.05,
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-v05-tz-bounded-stroke-v1/static-freeze-v1/actions/00.f64le",
+      "action_sha256": "460774fd9cea1e17a11b706b4545047a4bca4fdbdc9b13cae7d6d1bb0c21d75b",
+      "action_shape": [
+        4196,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_g8__g8_h8",
+      "direction_lane": "SIM_TO_REAL",
+      "source_square": "g8",
+      "destination_square": "h8",
+      "selected_piece_id": "tan_pawn_g8",
+      "setup_branch_id": "v4_fit_panm20_liftm90",
+      "approach_lateral_offset_m": -0.05,
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-v05-tz-bounded-stroke-v1/static-freeze-v1/actions/01.f64le",
+      "action_sha256": "200437f4db9c7fef8f3ae440963dfa5786cee8d52fc115bc9605a46005f4d935",
+      "action_shape": [
+        3752,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_f6",
+      "direction_lane": "REAL_TO_SIM",
+      "source_square": "f7",
+      "destination_square": "f6",
+      "selected_piece_id": "tan_pawn_f7",
+      "setup_branch_id": "v4_fit_panm20_liftm90",
+      "approach_lateral_offset_m": 0.05,
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-v05-tz-bounded-stroke-v1/static-freeze-v1/actions/02.f64le",
+      "action_sha256": "ed3931384dbfe75108c573b252ddc5c7003a2e435fba0f4da4ce32d261e65037",
+      "action_shape": [
+        3896,
+        6
+      ]
+    },
+    {
+      "case_id": "brown_pawn_e2__e2_f2",
+      "direction_lane": "SIM_TO_REAL",
+      "source_square": "e2",
+      "destination_square": "f2",
+      "selected_piece_id": "brown_pawn_e2",
+      "setup_branch_id": "v4_fit_panm11_liftm87",
+      "approach_lateral_offset_m": 0,
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-v05-tz-bounded-stroke-v1/static-freeze-v1/actions/03.f64le",
+      "action_sha256": "b15c63d15ba22e1108b9abc8fe6945afee333061dc845d990ca5f61cf5ac0af5",
+      "action_shape": [
+        4206,
+        6
+      ]
+    }
+  ],
+  "plant_paths": [
+    {
+      "path_id": "canonical_direct_target",
+      "kind": "direct_target_mujoco",
+      "delay_seconds": 0,
+      "diagnostic_only": false
+    },
+    {
+      "path_id": "diagnostic_zoh_110ms",
+      "kind": "zero_order_hold_command_delay",
+      "delay_seconds": 0.11,
+      "diagnostic_only": true,
+      "not_physical_latency_or_calibrated_plant": true
+    }
+  ],
+  "unchanged_outcome_gates": [
+    "selected contact required",
+    "signed progress at least 36.025 mm",
+    "zero excluded jaw contacts",
+    "maximum excluded displacement 1 mm",
+    "zero new nonselected jaw collision pairs",
+    "camera margin at least 20 px",
+    "all five robustness variants"
+  ],
+  "acceptance": {
+    "each_case_must_pass_both_plant_paths": true,
+    "minimum_cases_per_direction": 2,
+    "gate_may_not_be_weakened_after_outcomes": true
+  },
+  "authority": {
+    "dynamic_simulation": true,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective action-frozen simulator-only replay of the four V05-TZ 90 mm bounded-stroke actions, including setup, through unchanged direct-target and diagnostic 0.11 s ZOH paths. The challenger is not physical latency, a calibrated plant, V06, physical motion, or promotion authority."
+}
