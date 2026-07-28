@@ -26,6 +26,10 @@ REPLAY_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_temporal_replay_jaw_successor_v1.json"
 )
+REPLAY_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/receipt.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -129,3 +133,27 @@ def test_temporal_replay_binds_actions_and_exact_zoh_semantics() -> None:
         for key, value in contract["authority"].items()
         if key != "dynamic_simulation"
     )
+
+
+def test_temporal_replay_terminal_negative_is_bound_without_physical_authority() -> None:
+    receipt = json.loads(REPLAY_RECEIPT.read_text(encoding="utf-8"))
+    assert _sha(REPLAY_RECEIPT) == (
+        "41338d0846b84a73390eb4654ac55b11cf778a695097bad5c4aeb7e4c3f60f75"
+    )
+    assert receipt["status"] == "temporal_replay_reject"
+    assert receipt["lane_counts"] == {
+        "REAL_TO_SIM": 0,
+        "SIM_TO_REAL": 1,
+    }
+    assert receipt["passing_case_ids"] == ["brown_pawn_e2__e2_e3"]
+    assert receipt["direction_checks"] == {
+        "REAL_TO_SIM": False,
+        "SIM_TO_REAL": False,
+    }
+    for result in receipt["results"]:
+        for plant_path in result["plant_paths"]:
+            assert all(plant_path["identity_checks"].values())
+    assert receipt["physical_motion"] is False
+    assert receipt["physical_task_attempts"] == 0
+    assert receipt["authority"]["physical_motion"] is False
+    assert receipt["authority"]["v06_evaluator_freeze"] is False

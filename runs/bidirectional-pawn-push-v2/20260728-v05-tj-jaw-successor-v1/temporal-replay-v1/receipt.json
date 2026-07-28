@@ -1,0 +1,2147 @@
+{
+  "authority": {
+    "camera": false,
+    "counted_action_compilation": false,
+    "dynamic_simulation": true,
+    "gateway": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "v06_evaluator_freeze": false
+  },
+  "candidate_refit": false,
+  "claim_boundary": "Simulation-only direct-target baseline and diagnostic 0.11 second ZOH challenger over pre-frozen byte-identical actions. No calibrated plant, physical task, promotion, or transfer claim.",
+  "contract_path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_replay_jaw_successor_v1.json",
+  "contract_sha256": "5ceb39be92954ff8d59ac53bca64b1e03968c3e2603d75c94e23ed8d43d7f768",
+  "direction_checks": {
+    "REAL_TO_SIM": false,
+    "SIM_TO_REAL": false
+  },
+  "lane_counts": {
+    "REAL_TO_SIM": 0,
+    "SIM_TO_REAL": 1
+  },
+  "minimum_cases_per_direction": 2,
+  "passing_case_ids": [
+    "brown_pawn_e2__e2_e3"
+  ],
+  "physical_motion": false,
+  "physical_task_attempts": 0,
+  "proof_class": "cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+  "results": [
+    {
+      "action_sha256": "1159aa1e88d7d437af1aaf273eaff8bd41e747015bb27da87c4966b723942fd2",
+      "case_id": "brown_pawn_b1__b1_b2",
+      "destination_square": "b2",
+      "direction_lane": "REAL_TO_SIM",
+      "passed_both_paths": false,
+      "plant_paths": [
+        {
+          "delay_seconds": 0.0,
+          "diagnostic_only": false,
+          "gateway": {
+            "all_rates_within_reviewed_gateway_limits": true,
+            "all_rows_inside_calibrated_limits": true,
+            "calibrated_physical_lower": [
+              -120.26373626373626,
+              -106.63736263736264,
+              -102.10989010989012,
+              -107.47252747252747,
+              -180.0,
+              0.0
+            ],
+            "calibrated_physical_upper": [
+              120.26373626373626,
+              106.63736263736264,
+              102.10989010989012,
+              107.47252747252747,
+              180.0,
+              100.0
+            ],
+            "maximum_absolute_rate_per_second": [
+              0.7259452938986044,
+              20.656511382341023,
+              26.165420266983688,
+              9.487293104296413,
+              0.2071071836246574,
+              0.0
+            ],
+            "physical_action_raw_float64le_sha256": "93c90c8e4b0a2bf7906a23bdb7982925d4a10982f8eb15059495398f04a48592",
+            "physical_transform_review_status": "provisional_range_audit_blocked",
+            "requested_sent_byte_identical": true,
+            "reviewed_gateway_rate_limit_per_second": [
+              60.0,
+              60.0,
+              60.0,
+              60.0,
+              90.0,
+              100.0
+            ],
+            "would_require_gateway_transform": false
+          },
+          "identity_checks": {
+            "gateway_bounds": true,
+            "gateway_rates": true,
+            "no_gateway_transform": true,
+            "requested_hash_matches_freeze": true,
+            "requested_sent_byte_identical": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "direct_target_mujoco",
+          "passed": false,
+          "path_id": "canonical_direct_target",
+          "robustness": [
+            {
+              "camera_margin_px": 123.08545528084233,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 49355,
+              "selected_final_xyz_m": [
+                -0.19043290614081845,
+                0.47420282360440486,
+                0.8145368008166807
+              ],
+              "selected_initial_xyz_m": [
+                -0.240702971,
+                0.379703216,
+                0.800883941
+              ],
+              "signed_progress_mm": 105.66981251871232,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 124.32413801712016,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 42641,
+              "selected_final_xyz_m": [
+                -0.18955760028869836,
+                0.4761591768021838,
+                0.8154684921537653
+              ],
+              "selected_initial_xyz_m": [
+                -0.2397342621577249,
+                0.38254251224711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 104.8040067890906,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 121.85205540986813,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 62154,
+              "selected_final_xyz_m": [
+                -0.19284677279562518,
+                0.4715319695024952,
+                0.8099688917002835
+              ],
+              "selected_initial_xyz_m": [
+                -0.24167167984227508,
+                0.3768639197528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 105.36258585180033,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 123.26246537133656,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 0.0008129825846503022,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 21330,
+              "selected_final_xyz_m": [
+                -0.25693073619098455,
+                0.41127965096046554,
+                0.8146023101251297
+              ],
+              "selected_initial_xyz_m": [
+                -0.24354226724711792,
+                0.38067192484227513,
+                0.800883941
+              ],
+              "signed_progress_mm": 24.64495788324751,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 122.90828698742318,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 66533,
+              "selected_final_xyz_m": [
+                -0.19224318144946997,
+                0.4713036758795398,
+                0.8163853244982134
+              ],
+              "selected_initial_xyz_m": [
+                -0.23786367475288206,
+                0.3787345071577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 102.34142286754806,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/canonical_direct_target/applied.f64le",
+              "sha256": "1159aa1e88d7d437af1aaf273eaff8bd41e747015bb27da87c4966b723942fd2",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/canonical_direct_target/applied_source_indices.i64le",
+              "sha256": "c79a8014bfd7bc5eb2b7973b0ec2a49aaebb516cdbcbd7dbf21edadb02e3a4b5",
+              "shape": [
+                118
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/canonical_direct_target/applied_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/canonical_direct_target/requested.f64le",
+              "sha256": "1159aa1e88d7d437af1aaf273eaff8bd41e747015bb27da87c4966b723942fd2",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/canonical_direct_target/requested_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/canonical_direct_target/sent.f64le",
+              "sha256": "1159aa1e88d7d437af1aaf273eaff8bd41e747015bb27da87c4966b723942fd2",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/canonical_direct_target/sent_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            }
+          }
+        },
+        {
+          "delay_seconds": 0.11,
+          "diagnostic_only": true,
+          "gateway": {
+            "all_rates_within_reviewed_gateway_limits": true,
+            "all_rows_inside_calibrated_limits": true,
+            "calibrated_physical_lower": [
+              -120.26373626373626,
+              -106.63736263736264,
+              -102.10989010989012,
+              -107.47252747252747,
+              -180.0,
+              0.0
+            ],
+            "calibrated_physical_upper": [
+              120.26373626373626,
+              106.63736263736264,
+              102.10989010989012,
+              107.47252747252747,
+              180.0,
+              100.0
+            ],
+            "maximum_absolute_rate_per_second": [
+              0.7259452938986044,
+              20.656511382341023,
+              26.165420266983688,
+              9.487293104296413,
+              0.2071071836246574,
+              0.0
+            ],
+            "physical_action_raw_float64le_sha256": "207b998f71b4fbf835591bd31d2138d3ec97c9f9ff8dbaf4e1824ed5c845b4c9",
+            "physical_transform_review_status": "provisional_range_audit_blocked",
+            "requested_sent_byte_identical": true,
+            "reviewed_gateway_rate_limit_per_second": [
+              60.0,
+              60.0,
+              60.0,
+              60.0,
+              90.0,
+              100.0
+            ],
+            "would_require_gateway_transform": false
+          },
+          "identity_checks": {
+            "gateway_bounds": true,
+            "gateway_rates": true,
+            "no_gateway_transform": true,
+            "requested_hash_matches_freeze": true,
+            "requested_sent_byte_identical": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "zero_order_hold_command_delay",
+          "passed": false,
+          "path_id": "diagnostic_zoh_110ms",
+          "robustness": [
+            {
+              "camera_margin_px": 123.08545528084233,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 55035,
+              "selected_final_xyz_m": [
+                -0.19285340570846102,
+                0.4701278487910722,
+                0.8150590150826735
+              ],
+              "selected_initial_xyz_m": [
+                -0.240702971,
+                0.379703216,
+                0.800883941
+              ],
+              "signed_progress_mm": 101.03153917588104,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 124.32413801712016,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743320717989e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 43827,
+              "selected_final_xyz_m": [
+                -0.19153303423446513,
+                0.4700427549522338,
+                0.8136389651508
+              ],
+              "selected_initial_xyz_m": [
+                -0.2397342621577249,
+                0.38254251224711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 98.37735547744133,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 121.85205540986813,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 63783,
+              "selected_final_xyz_m": [
+                -0.19339850083437102,
+                0.4666573262679851,
+                0.8102191256574902
+              ],
+              "selected_initial_xyz_m": [
+                -0.24167167984227508,
+                0.3768639197528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 100.57091249465115,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 123.26246537133656,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 0.0003676856757944256,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 21078,
+              "selected_final_xyz_m": [
+                -0.2525577986876662,
+                0.4092386056094311,
+                0.8146030238621238
+              ],
+              "selected_initial_xyz_m": [
+                -0.24354226724711792,
+                0.38067192484227513,
+                0.800883941
+              ],
+              "signed_progress_mm": 24.125281490177944,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 122.90828698742318,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 66909,
+              "selected_final_xyz_m": [
+                -0.19341880561290334,
+                0.4675674720041137,
+                0.815967945153804
+              ],
+              "selected_initial_xyz_m": [
+                -0.23786367475288206,
+                0.3787345071577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 98.42574714612304,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/diagnostic_zoh_110ms/applied.f64le",
+              "sha256": "07ed059c5bdb4d0a56fc12e0431360845379d9bf6765b99c11b057b5f59c82e2",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/diagnostic_zoh_110ms/applied_source_indices.i64le",
+              "sha256": "9efb73d3ea1f334100e5a7677e75dd72a6c496d60f30b7ed0bf57b0083c4803a",
+              "shape": [
+                118
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/diagnostic_zoh_110ms/applied_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/diagnostic_zoh_110ms/requested.f64le",
+              "sha256": "1159aa1e88d7d437af1aaf273eaff8bd41e747015bb27da87c4966b723942fd2",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/diagnostic_zoh_110ms/requested_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/diagnostic_zoh_110ms/sent.f64le",
+              "sha256": "1159aa1e88d7d437af1aaf273eaff8bd41e747015bb27da87c4966b723942fd2",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_b1__b1_b2/diagnostic_zoh_110ms/sent_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            }
+          }
+        }
+      ],
+      "selected_piece_id": "brown_pawn_b1",
+      "source_square": "b1"
+    },
+    {
+      "action_sha256": "05d5dbd3bd9b62c70f0deed6ae9ad25dd3eeca4fb8f12befc30ba82db94aaa8e",
+      "case_id": "brown_pawn_a2__a2_a1",
+      "destination_square": "a1",
+      "direction_lane": "SIM_TO_REAL",
+      "passed_both_paths": false,
+      "plant_paths": [
+        {
+          "delay_seconds": 0.0,
+          "diagnostic_only": false,
+          "gateway": {
+            "all_rates_within_reviewed_gateway_limits": true,
+            "all_rows_inside_calibrated_limits": true,
+            "calibrated_physical_lower": [
+              -120.26373626373626,
+              -106.63736263736264,
+              -102.10989010989012,
+              -107.47252747252747,
+              -180.0,
+              0.0
+            ],
+            "calibrated_physical_upper": [
+              120.26373626373626,
+              106.63736263736264,
+              102.10989010989012,
+              107.47252747252747,
+              180.0,
+              100.0
+            ],
+            "maximum_absolute_rate_per_second": [
+              0.1613322100752157,
+              26.643936201538736,
+              44.08448653685639,
+              8.07067545132341,
+              0.1540412779485223,
+              0.0
+            ],
+            "physical_action_raw_float64le_sha256": "c73dcfa1dba5f3fecdf223afa725cc839aa1ccef92f3c399c914a4263bb538c1",
+            "physical_transform_review_status": "provisional_range_audit_blocked",
+            "requested_sent_byte_identical": true,
+            "reviewed_gateway_rate_limit_per_second": [
+              60.0,
+              60.0,
+              60.0,
+              60.0,
+              90.0,
+              100.0
+            ],
+            "would_require_gateway_transform": false
+          },
+          "identity_checks": {
+            "gateway_bounds": true,
+            "gateway_rates": true,
+            "no_gateway_transform": true,
+            "requested_hash_matches_freeze": true,
+            "requested_sent_byte_identical": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "direct_target_mujoco",
+          "passed": false,
+          "path_id": "canonical_direct_target",
+          "robustness": [
+            {
+              "camera_margin_px": 126.94851126790968,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 13392,
+              "selected_final_xyz_m": [
+                -0.2628866133118158,
+                0.4020314886863699,
+                0.814602945030548
+              ],
+              "selected_initial_xyz_m": [
+                -0.268418841,
+                0.436125158,
+                0.800883941
+              ],
+              "signed_progress_mm": 30.480969817882286,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 126.7965429997892,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 14098,
+              "selected_final_xyz_m": [
+                -0.2652823132108302,
+                0.40212967738059896,
+                0.8146029024296373
+              ],
+              "selected_initial_xyz_m": [
+                -0.26938754984227514,
+                0.4332858617528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 28.16161944607524,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 124.63569675747529,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 12853,
+              "selected_final_xyz_m": [
+                -0.25855612799374195,
+                0.3957224577623178,
+                0.8146000576843114
+              ],
+              "selected_initial_xyz_m": [
+                -0.2674501321577249,
+                0.43896445424711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 38.05371262009945,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 129.48313129593376,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 11303,
+              "selected_final_xyz_m": [
+                -0.2572966030907818,
+                0.40691719969214557,
+                0.8145940646772492
+              ],
+              "selected_initial_xyz_m": [
+                -0.2655795447528821,
+                0.4351564491577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 24.051945400307083,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 127.72863811773769,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 13907,
+              "selected_final_xyz_m": [
+                -0.2679376384545807,
+                0.40484085656625735,
+                0.8146032390909441
+              ],
+              "selected_initial_xyz_m": [
+                -0.27125813724711795,
+                0.43709386684227514,
+                0.800883941
+              ],
+              "signed_progress_mm": 29.45308483128635,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/canonical_direct_target/applied.f64le",
+              "sha256": "05d5dbd3bd9b62c70f0deed6ae9ad25dd3eeca4fb8f12befc30ba82db94aaa8e",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/canonical_direct_target/applied_source_indices.i64le",
+              "sha256": "c79a8014bfd7bc5eb2b7973b0ec2a49aaebb516cdbcbd7dbf21edadb02e3a4b5",
+              "shape": [
+                118
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/canonical_direct_target/applied_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/canonical_direct_target/requested.f64le",
+              "sha256": "05d5dbd3bd9b62c70f0deed6ae9ad25dd3eeca4fb8f12befc30ba82db94aaa8e",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/canonical_direct_target/requested_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/canonical_direct_target/sent.f64le",
+              "sha256": "05d5dbd3bd9b62c70f0deed6ae9ad25dd3eeca4fb8f12befc30ba82db94aaa8e",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/canonical_direct_target/sent_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            }
+          }
+        },
+        {
+          "delay_seconds": 0.11,
+          "diagnostic_only": true,
+          "gateway": {
+            "all_rates_within_reviewed_gateway_limits": true,
+            "all_rows_inside_calibrated_limits": true,
+            "calibrated_physical_lower": [
+              -120.26373626373626,
+              -106.63736263736264,
+              -102.10989010989012,
+              -107.47252747252747,
+              -180.0,
+              0.0
+            ],
+            "calibrated_physical_upper": [
+              120.26373626373626,
+              106.63736263736264,
+              102.10989010989012,
+              107.47252747252747,
+              180.0,
+              100.0
+            ],
+            "maximum_absolute_rate_per_second": [
+              0.1613322100752157,
+              26.643936201538168,
+              44.08448653685639,
+              8.07067545132341,
+              0.1540412779485223,
+              0.0
+            ],
+            "physical_action_raw_float64le_sha256": "241705de18ed1e10cd56dfd3ca3d661a7657912fed6125844ee82e7f59539902",
+            "physical_transform_review_status": "provisional_range_audit_blocked",
+            "requested_sent_byte_identical": true,
+            "reviewed_gateway_rate_limit_per_second": [
+              60.0,
+              60.0,
+              60.0,
+              60.0,
+              90.0,
+              100.0
+            ],
+            "would_require_gateway_transform": false
+          },
+          "identity_checks": {
+            "gateway_bounds": true,
+            "gateway_rates": true,
+            "no_gateway_transform": true,
+            "requested_hash_matches_freeze": true,
+            "requested_sent_byte_identical": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "zero_order_hold_command_delay",
+          "passed": false,
+          "path_id": "diagnostic_zoh_110ms",
+          "robustness": [
+            {
+              "camera_margin_px": 127.03671268977045,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 13471,
+              "selected_final_xyz_m": [
+                -0.26286486161605055,
+                0.4022265536598418,
+                0.8145883888397291
+              ],
+              "selected_initial_xyz_m": [
+                -0.268418841,
+                0.436125158,
+                0.800883941
+              ],
+              "signed_progress_mm": 30.289330382167247,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 127.45052176542363,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 14119,
+              "selected_final_xyz_m": [
+                -0.2657411666999318,
+                0.40372682033377816,
+                0.8145450333667956
+              ],
+              "selected_initial_xyz_m": [
+                -0.26938754984227514,
+                0.4332858617528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 26.79819725911823,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 128.56129767676126,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 12796,
+              "selected_final_xyz_m": [
+                -0.26182492836285554,
+                0.40562873133040134,
+                0.8146004556944996
+              ],
+              "selected_initial_xyz_m": [
+                -0.2674501321577249,
+                0.43896445424711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 29.733602772235855,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 129.25060135900426,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 11269,
+              "selected_final_xyz_m": [
+                -0.25729930770293974,
+                0.4063843595910451,
+                0.814612442538997
+              ],
+              "selected_initial_xyz_m": [
+                -0.2655795447528821,
+                0.4351564491577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 24.55711569400072,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 128.34569617382078,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 13979,
+              "selected_final_xyz_m": [
+                -0.2697913905180811,
+                0.406612225215365,
+                0.8145395626831167
+              ],
+              "selected_initial_xyz_m": [
+                -0.27125813724711795,
+                0.43709386684227514,
+                0.800883941
+              ],
+              "signed_progress_mm": 28.3751867171613,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/diagnostic_zoh_110ms/applied.f64le",
+              "sha256": "12498e792151e3fca8dadd57cf8a5164843ecc8e430cc8902b00d0045d6b2278",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/diagnostic_zoh_110ms/applied_source_indices.i64le",
+              "sha256": "9efb73d3ea1f334100e5a7677e75dd72a6c496d60f30b7ed0bf57b0083c4803a",
+              "shape": [
+                118
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/diagnostic_zoh_110ms/applied_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/diagnostic_zoh_110ms/requested.f64le",
+              "sha256": "05d5dbd3bd9b62c70f0deed6ae9ad25dd3eeca4fb8f12befc30ba82db94aaa8e",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/diagnostic_zoh_110ms/requested_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/diagnostic_zoh_110ms/sent.f64le",
+              "sha256": "05d5dbd3bd9b62c70f0deed6ae9ad25dd3eeca4fb8f12befc30ba82db94aaa8e",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a1/diagnostic_zoh_110ms/sent_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            }
+          }
+        }
+      ],
+      "selected_piece_id": "brown_pawn_a2",
+      "source_square": "a2"
+    },
+    {
+      "action_sha256": "f78500c72e6ea80d018232e5a8c4220d4145de277b7dcaa3011b7d7caea423d2",
+      "case_id": "brown_pawn_a2__a2_a3",
+      "destination_square": "a3",
+      "direction_lane": "REAL_TO_SIM",
+      "passed_both_paths": false,
+      "plant_paths": [
+        {
+          "delay_seconds": 0.0,
+          "diagnostic_only": false,
+          "gateway": {
+            "all_rates_within_reviewed_gateway_limits": true,
+            "all_rows_inside_calibrated_limits": true,
+            "calibrated_physical_lower": [
+              -120.26373626373626,
+              -106.63736263736264,
+              -102.10989010989012,
+              -107.47252747252747,
+              -180.0,
+              0.0
+            ],
+            "calibrated_physical_upper": [
+              120.26373626373626,
+              106.63736263736264,
+              102.10989010989012,
+              107.47252747252747,
+              180.0,
+              100.0
+            ],
+            "maximum_absolute_rate_per_second": [
+              0.2256055109432964,
+              10.471059909374674,
+              13.835501484001522,
+              5.591307069936851,
+              0.1209548239569358,
+              0.0
+            ],
+            "physical_action_raw_float64le_sha256": "b8c5a3a958c2d257f94722724c742779ec7a1e0d2dcd63ee15506c6204d17d1e",
+            "physical_transform_review_status": "provisional_range_audit_blocked",
+            "requested_sent_byte_identical": true,
+            "reviewed_gateway_rate_limit_per_second": [
+              60.0,
+              60.0,
+              60.0,
+              60.0,
+              90.0,
+              100.0
+            ],
+            "would_require_gateway_transform": false
+          },
+          "identity_checks": {
+            "gateway_bounds": true,
+            "gateway_rates": true,
+            "no_gateway_transform": true,
+            "requested_hash_matches_freeze": true,
+            "requested_sent_byte_identical": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "direct_target_mujoco",
+          "passed": false,
+          "path_id": "canonical_direct_target",
+          "robustness": [
+            {
+              "camera_margin_px": 144.56111504007626,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 17502,
+              "selected_final_xyz_m": [
+                -0.28959263338780783,
+                0.4939209258001912,
+                0.8146044611232918
+              ],
+              "selected_initial_xyz_m": [
+                -0.268418841,
+                0.436125158,
+                0.800883941
+              ],
+              "signed_progress_mm": 47.86268890127203,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 145.87886360958848,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743322815041e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 26240,
+              "selected_final_xyz_m": [
+                -0.251722789023688,
+                0.4707706065551852,
+                0.8146014017167459
+              ],
+              "selected_initial_xyz_m": [
+                -0.2674501321577249,
+                0.43896445424711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 35.18076841433108,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 143.24913059965226,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 24919,
+              "selected_final_xyz_m": [
+                -0.30064934356690554,
+                0.4787465198252482,
+                0.8145961604587847
+              ],
+              "selected_initial_xyz_m": [
+                -0.26938754984227514,
+                0.4332858617528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 32.93089994998373,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 144.73283559668488,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743320717989e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 18787,
+              "selected_final_xyz_m": [
+                -0.25953136430333085,
+                0.49874454053937783,
+                0.8143274918683255
+              ],
+              "selected_initial_xyz_m": [
+                -0.27125813724711795,
+                0.43709386684227514,
+                0.800883941
+              ],
+              "signed_progress_mm": 62.13478503415848,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 144.38923706371006,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 19020,
+              "selected_final_xyz_m": [
+                -0.27428563461112615,
+                0.4614026896691991,
+                0.8145703203385858
+              ],
+              "selected_initial_xyz_m": [
+                -0.2655795447528821,
+                0.4351564491577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 22.029061985953675,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/canonical_direct_target/applied.f64le",
+              "sha256": "f78500c72e6ea80d018232e5a8c4220d4145de277b7dcaa3011b7d7caea423d2",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/canonical_direct_target/applied_source_indices.i64le",
+              "sha256": "c79a8014bfd7bc5eb2b7973b0ec2a49aaebb516cdbcbd7dbf21edadb02e3a4b5",
+              "shape": [
+                118
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/canonical_direct_target/applied_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/canonical_direct_target/requested.f64le",
+              "sha256": "f78500c72e6ea80d018232e5a8c4220d4145de277b7dcaa3011b7d7caea423d2",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/canonical_direct_target/requested_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/canonical_direct_target/sent.f64le",
+              "sha256": "f78500c72e6ea80d018232e5a8c4220d4145de277b7dcaa3011b7d7caea423d2",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/canonical_direct_target/sent_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            }
+          }
+        },
+        {
+          "delay_seconds": 0.11,
+          "diagnostic_only": true,
+          "gateway": {
+            "all_rates_within_reviewed_gateway_limits": true,
+            "all_rows_inside_calibrated_limits": true,
+            "calibrated_physical_lower": [
+              -120.26373626373626,
+              -106.63736263736264,
+              -102.10989010989012,
+              -107.47252747252747,
+              -180.0,
+              0.0
+            ],
+            "calibrated_physical_upper": [
+              120.26373626373626,
+              106.63736263736264,
+              102.10989010989012,
+              107.47252747252747,
+              180.0,
+              100.0
+            ],
+            "maximum_absolute_rate_per_second": [
+              0.2256055109432964,
+              10.471059909374674,
+              13.835501484001522,
+              5.591307069936851,
+              0.1209548239569358,
+              0.0
+            ],
+            "physical_action_raw_float64le_sha256": "640475d966fcfa1098ed43bde186cd31f554bc7cf71e540c6cfe5123b57b1b83",
+            "physical_transform_review_status": "provisional_range_audit_blocked",
+            "requested_sent_byte_identical": true,
+            "reviewed_gateway_rate_limit_per_second": [
+              60.0,
+              60.0,
+              60.0,
+              60.0,
+              90.0,
+              100.0
+            ],
+            "would_require_gateway_transform": false
+          },
+          "identity_checks": {
+            "gateway_bounds": true,
+            "gateway_rates": true,
+            "no_gateway_transform": true,
+            "requested_hash_matches_freeze": true,
+            "requested_sent_byte_identical": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "zero_order_hold_command_delay",
+          "passed": false,
+          "path_id": "diagnostic_zoh_110ms",
+          "robustness": [
+            {
+              "camera_margin_px": 144.56111504007626,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 18567,
+              "selected_final_xyz_m": [
+                -0.28913179318565774,
+                0.48460840329639804,
+                0.8146003389992118
+              ],
+              "selected_initial_xyz_m": [
+                -0.268418841,
+                0.436125158,
+                0.800883941
+              ],
+              "signed_progress_mm": 39.19782549543114,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 145.87886360958848,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 26991,
+              "selected_final_xyz_m": [
+                -0.25391757671405685,
+                0.4680406199641984,
+                0.8145463495226972
+              ],
+              "selected_initial_xyz_m": [
+                -0.2674501321577249,
+                0.43896445424711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 31.88831810598172,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 143.24913059965226,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743320717989e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 25397,
+              "selected_final_xyz_m": [
+                -0.2948843295403537,
+                0.4827320580408852,
+                0.8145988125948154
+              ],
+              "selected_initial_xyz_m": [
+                -0.26938754984227514,
+                0.4332858617528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 38.56448120390509,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 144.73283559668488,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 18975,
+              "selected_final_xyz_m": [
+                -0.2837828101380314,
+                0.4870497505277424,
+                0.8145955291603334
+              ],
+              "selected_initial_xyz_m": [
+                -0.27125813724711795,
+                0.43709386684227514,
+                0.800883941
+              ],
+              "signed_progress_mm": 43.23559723119216,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 144.38923706371006,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": false,
+              "selected_contact_steps": 21012,
+              "selected_final_xyz_m": [
+                -0.2796667361642435,
+                0.47263748755607204,
+                0.8145810941339587
+              ],
+              "selected_initial_xyz_m": [
+                -0.2655795447528821,
+                0.4351564491577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 30.92446159316762,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/diagnostic_zoh_110ms/applied.f64le",
+              "sha256": "7fd398b0f3604aeae67925e8f42b9f2480657cb40dc5e7835bdb5e66159fade3",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/diagnostic_zoh_110ms/applied_source_indices.i64le",
+              "sha256": "9efb73d3ea1f334100e5a7677e75dd72a6c496d60f30b7ed0bf57b0083c4803a",
+              "shape": [
+                118
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/diagnostic_zoh_110ms/applied_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/diagnostic_zoh_110ms/requested.f64le",
+              "sha256": "f78500c72e6ea80d018232e5a8c4220d4145de277b7dcaa3011b7d7caea423d2",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/diagnostic_zoh_110ms/requested_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/diagnostic_zoh_110ms/sent.f64le",
+              "sha256": "f78500c72e6ea80d018232e5a8c4220d4145de277b7dcaa3011b7d7caea423d2",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_a2__a2_a3/diagnostic_zoh_110ms/sent_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            }
+          }
+        }
+      ],
+      "selected_piece_id": "brown_pawn_a2",
+      "source_square": "a2"
+    },
+    {
+      "action_sha256": "06267b31afd342c977f8198778ae79ec8d260e63816e92f295705948d655be96",
+      "case_id": "brown_pawn_e2__e2_e3",
+      "destination_square": "e3",
+      "direction_lane": "SIM_TO_REAL",
+      "passed_both_paths": true,
+      "plant_paths": [
+        {
+          "delay_seconds": 0.0,
+          "diagnostic_only": false,
+          "gateway": {
+            "all_rates_within_reviewed_gateway_limits": true,
+            "all_rows_inside_calibrated_limits": true,
+            "calibrated_physical_lower": [
+              -120.26373626373626,
+              -106.63736263736264,
+              -102.10989010989012,
+              -107.47252747252747,
+              -180.0,
+              0.0
+            ],
+            "calibrated_physical_upper": [
+              120.26373626373626,
+              106.63736263736264,
+              102.10989010989012,
+              107.47252747252747,
+              180.0,
+              100.0
+            ],
+            "maximum_absolute_rate_per_second": [
+              3.2948390738167177,
+              15.195067709763634,
+              19.747425553494082,
+              6.532683187480046,
+              0.13838518721627224,
+              0.0
+            ],
+            "physical_action_raw_float64le_sha256": "78e58c9349fb6069f232e6e13d3e7ec970e2461bb98648c0b2282511567b930b",
+            "physical_transform_review_status": "provisional_range_audit_blocked",
+            "requested_sent_byte_identical": true,
+            "reviewed_gateway_rate_limit_per_second": [
+              60.0,
+              60.0,
+              60.0,
+              60.0,
+              90.0,
+              100.0
+            ],
+            "would_require_gateway_transform": false
+          },
+          "identity_checks": {
+            "gateway_bounds": true,
+            "gateway_rates": true,
+            "no_gateway_transform": true,
+            "requested_hash_matches_freeze": true,
+            "requested_sent_byte_identical": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "direct_target_mujoco",
+          "passed": true,
+          "path_id": "canonical_direct_target",
+          "robustness": [
+            {
+              "camera_margin_px": 134.09495938798838,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 72885,
+              "selected_final_xyz_m": [
+                -0.06595375545446336,
+                0.47592307303796744,
+                0.8120754554571596
+              ],
+              "selected_initial_xyz_m": [
+                -0.100143217,
+                0.378713014,
+                0.800883941
+              ],
+              "signed_progress_mm": 103.04259650680015,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 135.42593618153657,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 55973,
+              "selected_final_xyz_m": [
+                -0.06654470784845538,
+                0.47680731097295587,
+                0.8114559580991828
+              ],
+              "selected_initial_xyz_m": [
+                -0.0991745081577249,
+                0.38155231024711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 100.68864738711625,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 132.76996671853593,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 110568,
+              "selected_final_xyz_m": [
+                -0.06453816834909312,
+                0.46969965964149407,
+                0.8097442575388943
+              ],
+              "selected_initial_xyz_m": [
+                -0.10111192584227512,
+                0.3758737177528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 100.60965565517094,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 134.27639715121578,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 62532,
+              "selected_final_xyz_m": [
+                -0.066697606217775,
+                0.4781159078833032,
+                0.8126136716867888
+              ],
+              "selected_initial_xyz_m": [
+                -0.10298251324711795,
+                0.37968172284227514,
+                0.800883941
+              ],
+              "signed_progress_mm": 104.87777415185288,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 133.91335065249626,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 82824,
+              "selected_final_xyz_m": [
+                -0.06551912277166494,
+                0.4720537134838957,
+                0.8101057313805177
+              ],
+              "selected_initial_xyz_m": [
+                -0.09730392075288206,
+                0.3777443051577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 99.5208546609144,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/canonical_direct_target/applied.f64le",
+              "sha256": "06267b31afd342c977f8198778ae79ec8d260e63816e92f295705948d655be96",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/canonical_direct_target/applied_source_indices.i64le",
+              "sha256": "c79a8014bfd7bc5eb2b7973b0ec2a49aaebb516cdbcbd7dbf21edadb02e3a4b5",
+              "shape": [
+                118
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/canonical_direct_target/applied_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/canonical_direct_target/requested.f64le",
+              "sha256": "06267b31afd342c977f8198778ae79ec8d260e63816e92f295705948d655be96",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/canonical_direct_target/requested_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/canonical_direct_target/sent.f64le",
+              "sha256": "06267b31afd342c977f8198778ae79ec8d260e63816e92f295705948d655be96",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/canonical_direct_target/sent_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            }
+          }
+        },
+        {
+          "delay_seconds": 0.11,
+          "diagnostic_only": true,
+          "gateway": {
+            "all_rates_within_reviewed_gateway_limits": true,
+            "all_rows_inside_calibrated_limits": true,
+            "calibrated_physical_lower": [
+              -120.26373626373626,
+              -106.63736263736264,
+              -102.10989010989012,
+              -107.47252747252747,
+              -180.0,
+              0.0
+            ],
+            "calibrated_physical_upper": [
+              120.26373626373626,
+              106.63736263736264,
+              102.10989010989012,
+              107.47252747252747,
+              180.0,
+              100.0
+            ],
+            "maximum_absolute_rate_per_second": [
+              3.2948390738167177,
+              15.195067709763634,
+              19.747425553494082,
+              6.532683187480046,
+              0.13838518721627224,
+              0.0
+            ],
+            "physical_action_raw_float64le_sha256": "904032aee266ce5c75b0e3fa070a9fc04dbb514a4fcf30d7aaaab72cdb2cb4c2",
+            "physical_transform_review_status": "provisional_range_audit_blocked",
+            "requested_sent_byte_identical": true,
+            "reviewed_gateway_rate_limit_per_second": [
+              60.0,
+              60.0,
+              60.0,
+              60.0,
+              90.0,
+              100.0
+            ],
+            "would_require_gateway_transform": false
+          },
+          "identity_checks": {
+            "gateway_bounds": true,
+            "gateway_rates": true,
+            "no_gateway_transform": true,
+            "requested_hash_matches_freeze": true,
+            "requested_sent_byte_identical": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "zero_order_hold_command_delay",
+          "passed": true,
+          "path_id": "diagnostic_zoh_110ms",
+          "robustness": [
+            {
+              "camera_margin_px": 134.09495938798838,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 73328,
+              "selected_final_xyz_m": [
+                -0.06677191308368124,
+                0.4717902360635134,
+                0.8116706002685723
+              ],
+              "selected_initial_xyz_m": [
+                -0.100143217,
+                0.378713014,
+                0.800883941
+              ],
+              "signed_progress_mm": 98.8669614930282,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 135.42593618153657,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 56244,
+              "selected_final_xyz_m": [
+                -0.06736004744007561,
+                0.4734210232524806,
+                0.8113562757415299
+              ],
+              "selected_initial_xyz_m": [
+                -0.0991745081577249,
+                0.38155231024711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 97.22048049102742,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 132.76996671853593,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 111417,
+              "selected_final_xyz_m": [
+                -0.06555581958699955,
+                0.46583578804576353,
+                0.8095148900147519
+              ],
+              "selected_initial_xyz_m": [
+                -0.10111192584227512,
+                0.3758737177528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 96.62416103063244,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 134.27639715121578,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 64080,
+              "selected_final_xyz_m": [
+                -0.06756784807479492,
+                0.4743410986485269,
+                0.8124611910893651
+              ],
+              "selected_initial_xyz_m": [
+                -0.10298251324711795,
+                0.37968172284227514,
+                0.800883941
+              ],
+              "signed_progress_mm": 101.02416992661968,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 133.91335065249626,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "fully_off_source": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 5.949743318620938e-06,
+              "new_nonselected_jaw_collision_pairs": [],
+              "passed": true,
+              "selected_contact_steps": 83866,
+              "selected_final_xyz_m": [
+                -0.06648129804808992,
+                0.4689641047621784,
+                0.8103017179763103
+              ],
+              "selected_initial_xyz_m": [
+                -0.09730392075288206,
+                0.3777443051577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 96.28606061200573,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/diagnostic_zoh_110ms/applied.f64le",
+              "sha256": "d84ea40f27e32bbe2b3dec3243873246bd8cdca890ae3ba2a799f3e7aae3dbda",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/diagnostic_zoh_110ms/applied_source_indices.i64le",
+              "sha256": "9efb73d3ea1f334100e5a7677e75dd72a6c496d60f30b7ed0bf57b0083c4803a",
+              "shape": [
+                118
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/diagnostic_zoh_110ms/applied_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/diagnostic_zoh_110ms/requested.f64le",
+              "sha256": "06267b31afd342c977f8198778ae79ec8d260e63816e92f295705948d655be96",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/diagnostic_zoh_110ms/requested_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/diagnostic_zoh_110ms/sent.f64le",
+              "sha256": "06267b31afd342c977f8198778ae79ec8d260e63816e92f295705948d655be96",
+              "shape": [
+                118,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/diagnostic_zoh_110ms/sent_timestamps.f64le",
+              "sha256": "80fe470baaad5bf9aa945971d50e04b8564cfc54c828bb192e19ea636bd82e9f",
+              "shape": [
+                118
+              ]
+            }
+          }
+        }
+      ],
+      "selected_piece_id": "brown_pawn_e2",
+      "source_square": "e2"
+    }
+  ],
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay_receipt.v1",
+  "static_receipt_sha256": "64e8c4435e033e0f9c83b88374b11206ed02b80fcdbb62765ad9834c2248566c",
+  "status": "temporal_replay_reject",
+  "task_outcomes_used_for_action_selection": false
+}

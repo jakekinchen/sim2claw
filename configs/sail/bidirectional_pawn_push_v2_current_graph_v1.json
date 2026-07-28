@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T12:41:30-05:00",
+  "generated_at": "2026-07-28T12:50:09-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "ba09bdbe58be6e926efd4fe5b5c6cba00cebb029e29693380523aa1440d5558d",
+      "sha256": "0764db062bf227eb5c18ee097182fb03c06f3df139da9f9db131cf2c77c0b15c",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -563,6 +563,18 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay.v1",
         "status": "preregistered_after_static_action_freeze_before_dynamic_replay",
         "proof_class": "prospective_cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_replay"
+      }
+    },
+    "v05_tj_temporal_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/receipt.json",
+      "sha256": "41338d0846b84a73390eb4654ac55b11cf778a695097bad5c4aeb7e4c3f60f75",
+      "proof_class": "cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay_receipt.v1",
+        "status": "temporal_replay_reject",
+        "proof_class": "cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+        "physical_motion": false,
+        "physical_task_attempts": 0
       }
     },
     "simulator_candidate": {
@@ -1566,6 +1578,28 @@
       }
     },
     {
+      "id": "verdict:v05-tj-temporal-replay-reject",
+      "type": "evaluator_verdict",
+      "label": "V05-TJ action-frozen temporal robustness terminal negative",
+      "status": "terminal_direction_gate_negative_no_physical_admission",
+      "source_binding": "v05_tj_temporal_receipt",
+      "evaluator_identity": "41338d0846b84a73390eb4654ac55b11cf778a695097bad5c4aeb7e4c3f60f75",
+      "data": {
+        "passing_case_ids": [
+          "brown_pawn_e2__e2_e3"
+        ],
+        "real_to_sim_lanes": 0,
+        "sim_to_real_lanes": 1,
+        "minimum_cases_per_direction": 2,
+        "all_action_identity_checks_passed": true,
+        "all_gateway_checks_passed": true,
+        "failed_gate": "unchanged_signed_progress_robustness",
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2164,6 +2198,19 @@
       }
     },
     {
+      "source": "verdict:v05-tj-temporal-replay-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-tj-temporal-replay-frozen",
+      "metadata": {
+        "real_to_sim_lanes": 0,
+        "sim_to_real_lanes": 1,
+        "minimum_cases_per_direction": 2,
+        "gate_weakened": false,
+        "v06_authorized": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -2622,15 +2669,24 @@
       "node_ids_added": [
         "checkpoint:v05-tj-temporal-replay-frozen"
       ]
+    },
+    {
+      "revision": 46,
+      "event_id": "V05_TJ_TEMPORAL_REPLAY_REJECT",
+      "status": "terminal_direction_gate_negative_no_physical_admission",
+      "source_binding": "v05_tj_temporal_receipt",
+      "node_ids_added": [
+        "verdict:v05-tj-temporal-replay-reject"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-tj-temporal-replay-frozen",
+    "node_id": "verdict:v05-tj-temporal-replay-reject",
     "milestone_id": "V05-TJ",
-    "status": "preregistered_temporal_replay_execution_active",
-    "queue_status": "ACTIVE_V05_TJ_FROZEN_TEMPORAL_REPLAY_EXECUTION",
-    "resume_action": "execute_frozen_four_case_two_plant_temporal_replay_once",
-    "resume_authorized": true,
+    "status": "terminal_direction_gate_negative_no_physical_admission",
+    "queue_status": "STOPPED_V05_TJ_TEMPORAL_REPLAY_TERMINAL_NEGATIVE",
+    "resume_action": "stop_without_gate_weakening_or_physical_execution",
+    "resume_authorized": false,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0

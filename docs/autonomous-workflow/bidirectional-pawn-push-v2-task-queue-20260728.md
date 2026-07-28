@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_TJ_FROZEN_TEMPORAL_REPLAY_EXECUTION`
+Status: `STOPPED_V05_TJ_TEMPORAL_REPLAY_TERMINAL_NEGATIVE`
 
 Created: `2026-07-28`
 
@@ -188,7 +188,7 @@ denominators before any counted action is compiled.
 | V04 | `DONE` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Frozen candidate `4d08518f...`; heldout PASS receipt `5eaf763b...`; all four scorable/pass; heldout RMS `4.684083 px` and `4.741723 mm`; zero refit. Registration only. |
 | V05 | `DONE_TERMINAL_NEGATIVE` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Final admissible rehearsal-v4 receipt `cb722beb...` rejects: REAL_TO_SIM `2` feasible, SIM_TO_REAL `1`, versus unchanged `2` per-direction gate. No case admitted. |
 | V05-T | `DONE_TERMINAL_NEGATIVE` | Challenge every prospectively broadened static/IK-eligible action with canonical direct-target MuJoCo and diagnostic-only `0.11 s` ZOH command delay; prove exact 40 Hz action bytes and gateway slew/rate compatibility. | At least two distinct cases per direction pass both plant paths with unchanged contact/progress/exclusion/collision/camera gates; requested/sent/applied traces and timestamps bind; gateway accepts bytes without transform. | Static receipt `3a8593cf...` rejects before dynamics: `48` routes, `432` cells, `352` IK compile rejects, `80` static rejects, `0` eligible actions. Unchanged jaw bytes inverse-map below the frozen physical lower bound; no clamp or byte change allowed. |
-| V05-TJ | `IN_PROGRESS` | Prospectively generate the owner-authorized jaw-margin successor family by changing only the gripper column to exact float64 `-0.1727003294848389 rad`, then repeat frozen static and temporal gates. | New action hashes bind before dynamics; at least two distinct cases per direction pass unchanged direct-target and `0.11 s` ZOH paths; every other V05-T identity, geometry, evaluator, exclusion, camera, collision, and gateway rule remains unchanged. | Static receipt `64e8c443...` PASS: `48` routes, `432` cells, `80` compiled, `4` eligible actions, exactly `2` per direction; every arm column is byte-identical to its predecessor and only the jaw column changed. Temporal contract `5ceb39be...` and implementation `b1a95281...` bind the four action hashes and both plant paths before dynamics. One temporal execution is now active. Physical authority false. |
+| V05-TJ | `DONE_TERMINAL_NEGATIVE` | Prospectively generate the owner-authorized jaw-margin successor family by changing only the gripper column to exact float64 `-0.1727003294848389 rad`, then repeat frozen static and temporal gates. | New action hashes bind before dynamics; at least two distinct cases per direction pass unchanged direct-target and `0.11 s` ZOH paths; every other V05-T identity, geometry, evaluator, exclusion, camera, collision, and gateway rule remains unchanged. | Static receipt `64e8c443...` PASS selected four exact actions, two per direction, with every arm column byte-identical. Frozen temporal receipt `41338d08...` REJECT: REAL_TO_SIM `0/2`, SIM_TO_REAL `1/2` passed both paths versus required `2/2` each. Only `brown_pawn_e2__e2_e3` passed all five variants on both paths. All identity/gateway checks passed; failures are consequence/progress robustness. V06 and physical execution remain closed. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2241,3 +2241,56 @@ remain unchanged. The gate remains at least two distinct cases per direction
 passing both paths. One bounded temporal execution is now authorized.
 Evaluator freeze, counted action compilation, cameras, gateway/serial,
 physical motion, simulator promotion, and transfer claims remain false.
+
+### V05-TJ temporal replay terminal negative — 2026-07-28
+
+The one frozen execution produced
+`runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/receipt.json`,
+SHA-256
+`41338d0846b84a73390eb4654ac55b11cf778a695097bad5c4aeb7e4c3f60f75`,
+with status `temporal_replay_reject`. The action-frozen direct-target and
+diagnostic `0.11 s` ZOH paths were both evaluated for all four selected cases
+and all five unchanged robustness variants.
+
+Every path passed requested/sent byte identity, frozen action-hash identity,
+strictly monotonic timestamps, gateway bounds, gateway rates, and
+no-transform checks. Every variant retained selected contact, zero excluded
+contact, excluded displacement below `1 mm`, no new nonselected jaw collision,
+and camera margin above `20 px`. The terminal failures are therefore
+consequence/progress robustness against the unchanged `36.025 mm` signed
+progress gate:
+
+- REAL_TO_SIM `brown_pawn_b1__b1_b2` failed the `+3 mm` lateral variant on
+  both paths at `24.645 mm` direct and `24.125 mm` delayed progress.
+- SIM_TO_REAL `brown_pawn_a2__a2_a1` failed both paths; direct nominal progress
+  was `30.481 mm` and delayed nominal progress was `30.289 mm`.
+- REAL_TO_SIM `brown_pawn_a2__a2_a3` failed multiple variants; direct
+  `+3 mm` longitudinal progress was `35.181 mm` and delayed was `31.888 mm`.
+- SIM_TO_REAL `brown_pawn_e2__e2_e3` alone passed all variants on both paths;
+  its minimum progress was `96.286 mm`.
+
+The final admitted lane counts are REAL_TO_SIM `0/2` and SIM_TO_REAL `1/2`,
+below the frozen minimum of two in each direction. No gate, action, mapping,
+timing, bound, tolerance, or plant interpretation is weakened. V05-TJ closes
+as a new receipt-backed terminal negative. V06 evaluator freeze, counted
+action compilation, cameras, gateway/serial, physical motion, simulator
+promotion, and transfer claims remain unauthorized. Physical task attempts
+remain `0/10`.
+
+Terminal-closeout verification passed `20/20` campaign-specific rehearsal,
+temporal, static, successor, and graph tests. A repository-wide test attempt
+was not completed: at approximately `17%`, the pre-existing live-C922
+successor evaluator segfaulted natively at
+`tools/evaluate_current_c922_pose_p2_successor.py:321`. This is recorded as an
+incomplete full-suite check, not a pass and not evidence against the frozen
+V05-TJ result. `scripts/audit_autonomous_workflow.sh` reported
+`workflow audit clean`.
+
+A fresh read-only `physical-gateway-preflight` passed with
+`physical_follower_torque_enabled:false`,
+`start_alignment_motion_commanded:false`, and
+`device_configuration_rewritten:false`. Only the user-facing read-only Studio
+servers remain; no replay/simulator worker, camera, gateway, or serial-client
+process remains, and both USB serial devices are unowned. `brev ls` reports no
+instances. The unrelated untracked
+`tools/build_fiducial_sheet.py` remains untouched.
