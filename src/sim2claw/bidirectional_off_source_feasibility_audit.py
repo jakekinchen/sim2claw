@@ -82,18 +82,22 @@ def evaluate() -> dict[str, Any]:
     if not math.isclose(global_upper_bound, analytic_upper_bound, abs_tol=1e-12):
         raise OffSourceFeasibilityAuditError("unexpected sparse-layout bound")
 
-    model, data = build_registered_scene()
+    model, data = build_registered_scene(historical_fit_only=True)
     mujoco.mj_forward(model, data)
     base_id = mujoco.mj_name2id(
         model, mujoco.mjtObj.mjOBJ_BODY, "left_base"
     )
     base_xyz = np.asarray(data.xpos[base_id], dtype=np.float64)
-    candidate = load_candidate()
+    candidate = load_candidate(historical_fit_only=True)
     far_side_base_distances = []
     for case in evaluator["case_family"]:
         if case["case_id"] not in {"S03_B7_B8", "S04_D7_D8", "S05_F7_F8"}:
             continue
-        center = physical_square_center(case["source_square"], candidate)
+        center = physical_square_center(
+            case["source_square"],
+            candidate,
+            historical_fit_only=True,
+        )
         far_side_base_distances.append(
             {
                 "case_id": case["case_id"],

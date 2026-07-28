@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T17:28:02-05:00",
+  "generated_at": "2026-07-28T17:52:46-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "2d83d64c1563707d96bee93ac8fd87aaea0187651222ca303116ed7e5546913d",
+      "sha256": "4a92859cd761ba4e99670e2d923485bce6ef705051ddaf892a0a797f1174c961",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -1127,6 +1127,26 @@
         "schema_version": "sim2claw.chessboard_orientation_migration.v1",
         "status": "complete_awaiting_fable_review",
         "proof_class": "metadata_and_visualization_coordinate_migration_only"
+      }
+    },
+    "current_task_scene_labels": {
+      "path": "configs/scenes/bidirectional_pawn_push_v2_current_task_scene_labels_v1.json",
+      "sha256": "187b91a51fe3a51adda64c7dd682025e2143edaae16ad3fdd1c1a9d9c43550ed",
+      "proof_class": "deterministic_scene_label_contract_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_current_task_scene_labels.v1",
+        "status": "frozen_current_task_scene_and_label_contract",
+        "proof_class": "deterministic_scene_label_contract_only"
+      }
+    },
+    "post_fable_scene_contract_decision": {
+      "path": "configs/decisions/bidirectional_pawn_push_v2_post_fable_scene_contract_decision_v1.json",
+      "sha256": "36ace12fa97892a3265153e5616d0bbbdeaabeb2a926cce0044fb000ea7d4a53",
+      "proof_class": "manager_bound_external_advisory_decision_and_structure_only_implementation",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_post_fable_scene_contract_decision.v1",
+        "status": "milestone_a_wiring_implemented_pending_commit_no_execution_authority",
+        "proof_class": "manager_bound_external_advisory_decision_and_structure_only_implementation"
       }
     },
     "v05_ug_paused_manager_authorization": {
@@ -3336,6 +3356,36 @@
       }
     },
     {
+      "id": "checkpoint:post-fable-current-task-scene-label-wiring",
+      "type": "checkpoint",
+      "label": "Post-Fable current-task scene and label wiring",
+      "status": "milestone_a_contract_wiring_complete_audit_pending_commit",
+      "source_binding": "post_fable_scene_contract_decision",
+      "data": {
+        "scene_label_source_binding": "current_task_scene_labels",
+        "semantic_frame": "standard_robot_near_rank1_v1",
+        "semantic_body_and_task_ids_preserved": true,
+        "raw_grid_transform": "rotate_180",
+        "raw_grid_transform_application_count": 1,
+        "canonical_target_adapter_application_count": 1,
+        "compiled_body_xy_tolerance_m": 1e-09,
+        "v04_reflect_ranks_scope": "explicit_fit_only_opt_in",
+        "structure_only_focused_tests_passed": 15,
+        "model_loaded": false,
+        "enumeration_executed": false,
+        "simulation_executed": false,
+        "dynamic_replay_executed": false,
+        "camera_authorized": false,
+        "gateway_authorized": false,
+        "serial_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "paid_compute_authorized": false,
+        "resume_authorized": false,
+        "next_action": "audit_commit_and_push_milestone_a_before_milestone_b_freeze"
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -4609,6 +4659,28 @@
       }
     },
     {
+      "source": "checkpoint:post-fable-current-task-scene-label-wiring",
+      "type": "generated-from",
+      "target": "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable",
+      "metadata": {
+        "fable_feedback_bound": true,
+        "frozen_v05_ug_preserved": true,
+        "resume_authorized": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:post-fable-current-task-scene-label-wiring",
+      "type": "generated-from",
+      "target": "context:canonical-board-orientation",
+      "metadata": {
+        "production_adapter_wired": true,
+        "missing_or_double_remap_fails_closed": true,
+        "model_loading_authorized": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -5535,14 +5607,23 @@
       "node_ids_added": [
         "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable"
       ]
+    },
+    {
+      "revision": 98,
+      "event_id": "POST_FABLE_CURRENT_TASK_SCENE_LABEL_WIRING",
+      "status": "milestone_a_contract_wiring_complete_audit_pending_commit",
+      "source_binding": "post_fable_scene_contract_decision",
+      "node_ids_added": [
+        "checkpoint:post-fable-current-task-scene-label-wiring"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-ug-paused-orientation-migration-awaiting-fable",
-    "milestone_id": "ORIENTATION-MIGRATION",
-    "status": "paused_orientation_migration_complete_awaiting_fable",
-    "queue_status": "PAUSED_ORIENTATION_MIGRATION_COMPLETE_AWAITING_FABLE",
-    "resume_action": "report_migration_to_existing_fable_thread_and_request_feedback",
+    "node_id": "checkpoint:post-fable-current-task-scene-label-wiring",
+    "milestone_id": "POST-FABLE-MILESTONE-A",
+    "status": "milestone_a_contract_wiring_complete_audit_pending_commit",
+    "queue_status": "MILESTONE_A_AUDIT_PENDING_COMMIT",
+    "resume_action": "audit_commit_and_push_milestone_a_then_freeze_new_milestone_b_contract",
     "resume_authorized": false,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
@@ -5557,6 +5638,7 @@
     "raw_scene_grid_frame": "frozen_scene_raw_grid_robot_near_rank8_v1",
     "canonical_to_raw_grid_transform": "rotate_180",
     "semantic_body_and_case_ids_preserved": true,
+    "current_task_scene_label_contract_sha256": "187b91a51fe3a51adda64c7dd682025e2143edaae16ad3fdd1c1a9d9c43550ed",
     "simulator_candidate_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
     "world_visual_registration_sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4",
     "fit_only_masked_static_cad_receipt_sha256": "8e2bb5af0646e77dee2106e50e25fce84298b59d78e93798f05bf306c5c4c880",

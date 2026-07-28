@@ -1,0 +1,47 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_current_task_scene_labels.v1",
+  "status": "frozen_current_task_scene_and_label_contract",
+  "proof_class": "deterministic_scene_label_contract_only",
+  "semantic_frame": {
+    "id": "standard_robot_near_rank1_v1",
+    "body_ids": "canonical square suffixes remain unchanged",
+    "task_square_labels": "canonical",
+    "near_side": "rank_1_operator_and_left_arm",
+    "far_side": "rank_8"
+  },
+  "raw_grid_placement": {
+    "transform": "rotate_180",
+    "apply_exactly_once": true,
+    "scope": "current-task sparse reset-layout body placement only"
+  },
+  "target_resolution": {
+    "resolver": "sim2claw.board_orientation.canonical_square_center",
+    "apply_exactly_once": true,
+    "scope": "prospective current-task source destination and direction geometry"
+  },
+  "structural_invariant": {
+    "formula": "initial_modeled_body_xy(selected_semantic_body) == canonical_square_center(source_square).xy",
+    "xy_tolerance_m": 1e-09,
+    "coverage": "every pawn body in the compiled reset layout and therefore every enumerated candidate source",
+    "missing_or_double_remap": "fail_closed_before_action_compilation"
+  },
+  "historical_separation": {
+    "v04_reflect_ranks": "fit_only_quarantined",
+    "historical_api_defaults": "identity",
+    "historical_receipts_actions_and_hashes": "unchanged"
+  },
+  "authority": {
+    "model_enumeration": false,
+    "simulation": false,
+    "dynamic_replay": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "paid_compute": false,
+    "promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective deterministic scene and semantic-label wiring only. This contract grants no execution, hardware, simulator-promotion, or transfer authority."
+}

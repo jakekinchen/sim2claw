@@ -2089,6 +2089,54 @@ because opening the gateway is outside this milestone. `brev ls` reports no
 instances. The sole unrelated untracked
 `tools/build_fiducial_sheet.py` remains untouched.
 
+### Post-Fable current-task scene/label decision — 2026-07-28
+
+Fable 5 accepted the canonical orientation migration at commit `f7f0060` but
+identified an operational mismatch: the current scene still compiled sparse
+pawns on the legacy identity grid while V05 static paths resolved task targets
+with raw `board_square_center`. That mixed mode could place a canonical
+semantic body and its destination geometry 180 degrees apart. Fable also
+required the historical V04 `reflect_ranks` fit to remain explicitly
+quarantined.
+
+The manager-bound advisory decision is
+`configs/decisions/bidirectional_pawn_push_v2_post_fable_scene_contract_decision_v1.json`.
+Milestone A introduces one current-task contract at
+`configs/scenes/bidirectional_pawn_push_v2_current_task_scene_labels_v1.json`.
+Semantic body/task IDs stay canonical, sparse scene placement uses
+`rotate_180` exactly once, and task centers use
+`canonical_square_center` exactly once. New versioned adapters target only the
+exact V05 temporal-static path and the terminal orientation-funnel
+implementation reached by V05-UG. They request the transform explicitly and
+fail before action compilation unless every compiled reset-layout body is
+within `1e-9 m` XY of its canonical source center. The frozen V05-T,
+orientation-funnel, and paused V05-UG implementation bytes remain unchanged;
+generic and historical compilation defaults remain identity.
+
+V04 `reflect_ranks` calls now require explicit
+`historical_fit_only=True`. Historical artifacts and receipts were not
+rewritten. Structure-only focused verification passes `15/15`; it covers all
+16 sparse-layout pawn bodies, missing/double-remap rejection, exact production
+adopters, and the V04 guard without loading a model or running simulation.
+
+Status is `MILESTONE_A_AUDIT_PENDING_COMMIT`. Resume remains false until the
+graph compiles, workflow audit passes, and Milestone A is committed and pushed
+separately. No enumeration, model load, simulation, dynamic replay, camera,
+gateway, serial, physical motion, paid compute, promotion, or transfer claim
+is authorized.
+
+Milestone B is recorded but blocked. It must use a new versioned prospective
+contract rather than edit or execute frozen V05-UG. It preserves the exact
+20-case quarantine, `36.025 mm` progress gate, `<=2 mm` lift, two families per
+direction, direct-target plus diagnostic `0.11 s` ZOH paths, and physical
+authority false. It will rank approximately six low-planar families using
+only pre-dynamic static margins, with `18 mm` height, `16 mm` offset, `90 mm`
+stroke, zero rise, and at most one prospectively frozen flat closed-jaw
+anti-wedge hedge. Static must admit `2+2` before dynamics. A temporal shortfall
+is terminal and prohibits V05-UH/V05-UI before the deadline; a `2+2` pass
+stops before camera/physical work at the `<=25 mm` task-plane registration
+gate with at most one recapture.
+
 ### V05-UD static terminal negative and V05-UE ramped-funnel freeze — 2026-07-28
 
 The one V05-UD static execution produced

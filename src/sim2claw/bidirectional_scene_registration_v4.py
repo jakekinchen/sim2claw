@@ -43,6 +43,14 @@ class BidirectionalSceneRegistrationError(RuntimeError):
     pass
 
 
+def _require_historical_fit_only(historical_fit_only: bool) -> None:
+    if historical_fit_only is not True:
+        raise BidirectionalSceneRegistrationError(
+            "V04 reflect_ranks is quarantined fit-only history; "
+            "pass historical_fit_only=True explicitly"
+        )
+
+
 def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -51,7 +59,12 @@ def _load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_bytes())
 
 
-def load_candidate(path: Path = CANDIDATE_PATH) -> dict[str, Any]:
+def load_candidate(
+    path: Path = CANDIDATE_PATH,
+    *,
+    historical_fit_only: bool = False,
+) -> dict[str, Any]:
+    _require_historical_fit_only(historical_fit_only)
     candidate = _load_json(path)
     if (
         candidate.get("schema_version")
@@ -66,7 +79,9 @@ def physical_square_center(
     candidate: dict[str, Any],
     *,
     contact_height_m: float = 0.0,
+    historical_fit_only: bool = False,
 ) -> np.ndarray:
+    _require_historical_fit_only(historical_fit_only)
     mapped = transform_board_square(square, candidate["board_d4_transform"])
     center = board_square_center(
         mapped,
@@ -82,9 +97,12 @@ def physical_square_center(
 
 def build_registered_scene(
     candidate: dict[str, Any] | None = None,
+    *,
+    historical_fit_only: bool = False,
 ) -> tuple[mujoco.MjModel, mujoco.MjData]:
+    _require_historical_fit_only(historical_fit_only)
     if candidate is None:
-        candidate = load_candidate()
+        candidate = load_candidate(historical_fit_only=True)
     spec = build_scene_spec(
         piece_layout=CURRENT_TASK_PIECE_LAYOUT,
         piece_square_transform=candidate["board_d4_transform"],
@@ -99,9 +117,10 @@ def build_registered_scene(
     return model, mujoco.MjData(model)
 
 
-def reproduce_fit() -> dict[str, Any]:
+def reproduce_fit(*, historical_fit_only: bool = False) -> dict[str, Any]:
     """Recompute the Q02 candidate from fit inputs without opening held-out data."""
 
+    _require_historical_fit_only(historical_fit_only)
     dataset = _load_json(DATASET_PATH)
     inputs = {entry["id"]: entry for entry in dataset["inputs"]}
     fit_ids = {

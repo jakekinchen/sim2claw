@@ -70,14 +70,18 @@ def evaluate() -> dict[str, Any]:
     observed = np.asarray(
         diagnostic["apex"]["actual_pinch_xyz_m"], dtype=np.float64
     )
-    candidate = load_candidate()
+    candidate = load_candidate(historical_fit_only=True)
 
     counterfactuals = []
     raw_center_proximities = []
     for rank in range(1, 9):
         for file_name in "abcdefgh":
             square = f"{file_name}{rank}"
-            center = physical_square_center(square, candidate)
+            center = physical_square_center(
+                square,
+                candidate,
+                historical_fit_only=True,
+            )
             expected = center + offset
             delta_mm = (observed - expected) * 1000.0
             counterfactuals.append(
@@ -113,7 +117,7 @@ def evaluate() -> dict[str, Any]:
     ):
         raise RegistrationLabelAuditError("correction widened held-out authority")
 
-    fit = reproduce_fit()
+    fit = reproduce_fit(historical_fit_only=True)
     return {
         "schema_version": "sim2claw.bidirectional_pawn_push_registration_label_audit_receipt.v2",
         "evaluation_id": contract["evaluation_id"],

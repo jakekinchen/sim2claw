@@ -1221,15 +1221,21 @@ def _compile_model(
     config: Mapping[str, Any],
     *,
     base_directory: Path | None,
+    current_scene_piece_square_transform: str = "identity",
 ) -> tuple[mujoco.MjModel, bool]:
     model_config = config["model"]
     kind = model_config.get("kind")
     if kind == "current_chess_scene":
         model = build_scene_spec(
-            piece_layout=CURRENT_TASK_PIECE_LAYOUT
+            piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+            piece_square_transform=current_scene_piece_square_transform,
         ).compile()
         current_scene = True
     elif kind == "xml_path":
+        if current_scene_piece_square_transform != "identity":
+            raise ReplayContractError(
+                "current-scene square transform cannot modify an XML model"
+            )
         xml_path = Path(model_config["path"])
         if not xml_path.is_absolute():
             if base_directory is None:
@@ -1240,6 +1246,10 @@ def _compile_model(
         model = mujoco.MjModel.from_xml_path(str(xml_path))
         current_scene = False
     elif kind == "xml_string":
+        if current_scene_piece_square_transform != "identity":
+            raise ReplayContractError(
+                "current-scene square transform cannot modify an XML model"
+            )
         model = mujoco.MjModel.from_xml_string(str(model_config["xml"]))
         current_scene = False
     else:

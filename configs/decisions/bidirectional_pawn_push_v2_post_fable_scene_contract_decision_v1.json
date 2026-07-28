@@ -1,0 +1,95 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_post_fable_scene_contract_decision.v1",
+  "decision_id": "bidirectional-pawn-push-v2-post-fable-scene-contract-20260728",
+  "status": "milestone_a_wiring_implemented_pending_commit_no_execution_authority",
+  "proof_class": "manager_bound_external_advisory_decision_and_structure_only_implementation",
+  "advisory_source": {
+    "model": "Fable 5",
+    "mode": "read_only_review_of_commit_f7f0060",
+    "authority": "advisory_only",
+    "accepted": [
+      "canonical rank 1 near operator and left arm",
+      "canonical rank 8 far",
+      "semantic body and task IDs remain canonical",
+      "raw scene-grid placement uses rotate_180"
+    ],
+    "operational_gaps_found": [
+      "board_orientation had zero production adopters",
+      "V05 temporal static used raw board_square_center targets",
+      "current scene compilation defaulted to identity placement",
+      "mixed identity placement and canonical labels produced a 180 degree mismatch",
+      "V04 reflect_ranks needed explicit fit-only quarantine"
+    ]
+  },
+  "milestone_a_decision": {
+    "scene_label_contract": "configs/scenes/bidirectional_pawn_push_v2_current_task_scene_labels_v1.json",
+    "semantic_frame": "standard_robot_near_rank1_v1",
+    "raw_grid_placement_transform": "rotate_180",
+    "target_resolver": "sim2claw.board_orientation.canonical_square_center",
+    "required_structural_invariant": "initial modeled selected body xy equals canonical source-square center within 1e-9 m",
+    "production_adopters": [
+      "src/sim2claw/bidirectional_pawn_push_v2_current_task_static_v1.py::enumerate_temporal_and_freeze",
+      "src/sim2claw/bidirectional_pawn_push_v2_current_task_static_v1.py::enumerate_low_planar_and_freeze"
+    ],
+    "frozen_implementation_bytes_preserved": [
+      "src/sim2claw/bidirectional_pawn_push_v2_temporal_static.py",
+      "src/sim2claw/bidirectional_pawn_push_v2_orientation_funnel_static_v1.py",
+      "src/sim2claw/bidirectional_pawn_push_v2_low_planar_open_jaw_static_v1.py"
+    ],
+    "historical_v04_policy": "reflect_ranks requires explicit historical_fit_only true",
+    "resume_authorized": false
+  },
+  "milestone_b_decision": {
+    "contract_rule": "create a new versioned prospective contract that supersedes but never edits or reuses the frozen paused V05-UG contract",
+    "preserve": {
+      "quarantine_case_count": 20,
+      "signed_progress_gate_mm": 36.025,
+      "maximum_lift_mm": 2.0,
+      "minimum_families_per_direction": 2,
+      "temporal_paths": [
+        "direct_target_baseline",
+        "0.11_s_zoh_diagnostic"
+      ],
+      "physical_authority": false
+    },
+    "low_planar_geometry": {
+      "contact_height_mm": 18.0,
+      "contact_offset_mm": 16.0,
+      "stroke_mm": 90.0,
+      "vertical_rise_mm": 0.0
+    },
+    "prospective_family_selection": {
+      "initial_approximate_count": 6,
+      "allowed_inputs": [
+        "static reachability",
+        "IK margin",
+        "collision margin",
+        "camera margin",
+        "gateway margin"
+      ],
+      "dynamic_outcomes_available_to_ranking": false,
+      "rank_criterion_frozen_before_dynamics": true,
+      "maximum_flat_closed_jaw_side_or_back_anti_wedge_hedges": 1
+    },
+    "stop_conditions": {
+      "static": "run dynamics only if static admits at least two families in each direction",
+      "temporal_negative": "if either direction has fewer than two passing families, close terminal negative and prohibit UH or UI successors before the application deadline",
+      "temporal_pass": "if both directions have at least two, stop before camera or physical work and require task-plane registration at or below 25 mm with at most one recapture"
+    }
+  },
+  "authority": {
+    "model_loading": false,
+    "enumeration": false,
+    "simulation": false,
+    "dynamic_replay": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "paid_compute": false,
+    "promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Fable-informed manager decision and Milestone A structure-only wiring. No model, simulator, camera, gateway, serial, hardware, paid-compute, promotion, or transfer authority."
+}

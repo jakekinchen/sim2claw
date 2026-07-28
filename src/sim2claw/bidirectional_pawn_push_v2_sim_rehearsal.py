@@ -49,9 +49,17 @@ def _quat_multiply(first: np.ndarray, second: np.ndarray) -> np.ndarray:
 
 
 def _registered_model(
-    wrapper: Mapping[str, Any], rigid: Mapping[str, Any], timestep: float
+    wrapper: Mapping[str, Any],
+    rigid: Mapping[str, Any],
+    timestep: float,
+    *,
+    piece_square_transform: str = "identity",
 ) -> tuple[mujoco.MjModel, list[int], list[int], set[int]]:
-    model, _ = _compile_model(wrapper["candidate_config"], base_directory=None)
+    model, _ = _compile_model(
+        wrapper["candidate_config"],
+        base_directory=None,
+        current_scene_piece_square_transform=piece_square_transform,
+    )
     base_id = mujoco.mj_name2id(
         model, mujoco.mjtObj.mjOBJ_BODY, "left_base"
     )

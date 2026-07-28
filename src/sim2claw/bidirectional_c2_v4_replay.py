@@ -80,7 +80,10 @@ def evaluate() -> dict[str, Any]:
     mapped = _physical_to_model_position(action, mapping)
     old = _json(OLD_RECEIPT_PATH)
 
-    model, _ = build_registered_scene(load_candidate())
+    model, _ = build_registered_scene(
+        load_candidate(historical_fit_only=True),
+        historical_fit_only=True,
+    )
     parameters = _apply_mapping_runtime(model, mapping)
     data = mujoco.MjData(model)
     initialize_robot_poses(model, data)

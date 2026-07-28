@@ -51,7 +51,7 @@ def _resolve_input(dataset: dict[str, Any], input_id: str) -> Path:
 
 def _external_contact_pairs(action: np.ndarray, mapping: dict[str, Any]) -> list[dict[str, Any]]:
     mapped = _physical_to_model_position(action, mapping)
-    model, data = build_registered_scene()
+    model, data = build_registered_scene(historical_fit_only=True)
     joint_ids = [
         mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
         for name in mapping["bindings"]["joint_names"]
@@ -99,7 +99,7 @@ def evaluate() -> dict[str, Any]:
         raise BidirectionalRegistrationEvaluationError("candidate hash changed")
     if sha256_file(DATASET_PATH) != contract["dataset_sha256"]:
         raise BidirectionalRegistrationEvaluationError("dataset hash changed")
-    candidate = load_candidate()
+    candidate = load_candidate(historical_fit_only=True)
     dataset = _json(DATASET_PATH)
 
     packet_path = _resolve_input(dataset, "heldout_b7_packet")
@@ -118,7 +118,9 @@ def evaluate() -> dict[str, Any]:
         derivation["hover_pinch_target_world_m"], dtype=np.float64
     ) - np.asarray(derivation["piece_center_world_m"], dtype=np.float64)
     expected = physical_square_center(
-        "b7", candidate
+        "b7",
+        candidate,
+        historical_fit_only=True,
     ) + task_relative_offset
     observed = np.asarray(
         diagnostic["apex"]["actual_pinch_xyz_m"], dtype=np.float64
@@ -137,7 +139,7 @@ def evaluate() -> dict[str, Any]:
     mapping = _json(mapping_path)["candidate_config"]
     contacts = _external_contact_pairs(action, mapping)
 
-    fit = reproduce_fit()
+    fit = reproduce_fit(historical_fit_only=True)
     gates = contract["gates"]
     fit_passed = fit["fit_residual_mm"] <= gates["maximum_fit_residual_mm"]
     held_out_passed = (
