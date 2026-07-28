@@ -1,0 +1,130 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture.v1",
+  "capture_id": "bidirectional_pawn_push_v2_registration_capture_20260728_v3",
+  "status": "frozen_before_registration_motion",
+  "proof_class": "prospective_camera_enclosed_no_contact_registration_motion_only",
+  "acquisition_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v2.json",
+    "sha256": "b308ef3d24e37893e13c6b28c00f338374ee2a21d84a464c9ccec073bd0b5483"
+  },
+  "route_contract": {
+    "path": "configs/hardware/bidirectional_pawn_push_v2_registration_route_v2.json",
+    "sha256": "40460c83750f8ea35670498758a5ad5b0e52a31351c957106f37154df6546756"
+  },
+  "static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/static-preview-v1/evaluation.json",
+    "sha256": "37b73f61d8a1c2124989d42bac16b8fd532ee0f15c385798ac5feed2a6b597e5",
+    "required_reviewer_decision": "CONTINUE",
+    "required_evidence_anchor": 100
+  },
+  "exact_setup_arrays": {
+    "source_egress": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/static-preview-v1/source_egress.npy",
+      "npy_sha256": "b2e141f99aa2deedd381d3d666c76c280d5aa5e900d0bcd00a4b49ef6a2453e7",
+      "action_sha256": "a2536181add1aaf901aac5b94929a5a7117974e571354a68abd94b3a361d4bab",
+      "shape": [716, 6],
+      "dtype": "little_endian_float64"
+    },
+    "capture_and_return": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/static-preview-v1/capture_and_return.npy",
+      "npy_sha256": "27a06d80dae807cf27a8c11dc33194b73c8e5e11825009c9cef0dd97e20c56a1",
+      "action_sha256": "06d531afba308c3582cb67972c735bf963c6cae35df365325e36139ba8eac1c2",
+      "shape": [2596, 6],
+      "dtype": "little_endian_float64"
+    },
+    "excluded_from_policy_task_and_transfer_evidence": true
+  },
+  "live_rebase_setup_bridge": {
+    "bridge_id": "v04_acquisition_v2_time_only_pre_row_bridge_v1",
+    "pattern": "time_only_pre_row_bridge",
+    "duration_seconds": 0.05,
+    "command_count": 0,
+    "first_frozen_row_elapsed_seconds": 0.05,
+    "maximum_live_rebase_delta_degrees": 1.0,
+    "maximum_post_hold_to_first_row_delta_degrees": 3.0,
+    "sends_no_command": true,
+    "changes_frozen_arrays": false,
+    "excluded_from_policy_task_and_transfer_evidence": true
+  },
+  "camera_transaction": {
+    "owner": "fixed_c922",
+    "capture_contract": {
+      "path": "configs/evaluations/c922_terminal_hold_still_capture_v1.json",
+      "sha256": "e2daa9dcc6329c41cac561b6494a11017b9d42f8e57784bb0d254d4345222a17"
+    },
+    "capture_source": {
+      "path": "tools/macos/C922TerminalHoldStillCapture.swift",
+      "sha256": "3a39e4425141e795909291709067ca4f71e73e94906e52fb84d2b20dd470b95d"
+    },
+    "fixed_mount_token": "current-workcell-fixed-mount-20260728-v2-registration",
+    "camera_session_prefix": "bidirectional-pawn-push-v2-registration-recapture-20260728-v3",
+    "one_sequential_owner_session_per_target": true,
+    "return_session_after_last_target": true,
+    "maximum_simultaneous_c922_owners": 1,
+    "camera_ready_before_gateway_open": true,
+    "camera_ready_before_every_motion_segment": true,
+    "recorder_must_remain_running_during_motion": true,
+    "dropped_callback_count_maximum": 0,
+    "selected_frame_rule": "nearest retained callback to midpoint of final 2.0 seconds of the frozen 2.5 second target hold",
+    "selected_frame_minimum_count_per_target": 1,
+    "supporting_pi_rgb_required": false,
+    "d405_color_required": false,
+    "d405_depth_used": false
+  },
+  "tracking_and_safety": {
+    "reviewed_gateway": "sim2claw.teleop_recording._physical_excitation_gateway",
+    "control_source": "frozen_precompiled_follower_actions",
+    "sample_hz": 20,
+    "maximum_commanded_body_slew_degrees_per_second": 3.0,
+    "fresh_start_maximum_absolute_delta_degrees": 1.0,
+    "exact_requested_mapped_sent_bytes_required": true,
+    "rate_limiting_clamping_assistance_intervention_forbidden": true,
+    "stop_on_tracking_error_stall_or_camera_exit": true,
+    "hold_scoring_tail_samples": 40,
+    "hold_scoring_seconds": 2.0,
+    "joint_hold_tracking_maximum_degrees": 2.0,
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "torque_off_every_exit": true,
+    "fresh_torque_off_preflight_after_close_required": true,
+    "eeprom_change_forbidden": true,
+    "servo_id_change_forbidden": true,
+    "ram_gain_change_forbidden": true,
+    "torque_limit_change_forbidden": true,
+    "unreviewed_controller_change_forbidden": true
+  },
+  "sealing": {
+    "fit_images_and_receipts_directory": "fit",
+    "heldout_images_and_receipts_directory": "heldout-sealed",
+    "fit_manifest_lists_fit_members_only": true,
+    "heldout_manifest_lists_opaque_ids_hashes_and_byte_counts_only": true,
+    "heldout_target_mapping_sealed_in_execution_receipt": true,
+    "all_native_callback_ledgers_and_selected_frames_hashed": true,
+    "annotation_occurs_after_capture_and_before_candidate_fit": true,
+    "fit_process_must_not_read_heldout_directory_or_execution_receipt": true
+  },
+  "pre_motion_review": {
+    "fresh_preflight_required": true,
+    "all_static_gates_required": true,
+    "exact_arrays_must_match_static_receipt": true,
+    "reviewer_kind": "deterministic_registration_capture_pre_motion_reviewer",
+    "required_decision": "CONTINUE"
+  },
+  "authority": {
+    "owner_authorized_agent_controlled_rgb_observation": true,
+    "owner_authorized_reviewed_no_contact_registration_motion": true,
+    "registration_motion_requires_pre_motion_reviewer_continue": true,
+    "counted_task_action": false,
+    "pawn_contact": false,
+    "policy_evidence": false,
+    "task_success": false,
+    "transfer": false,
+    "training": false
+  },
+  "attempt_accounting": {
+    "authoritative_registration_transactions_maximum": 1,
+    "counted_physical_attempts_consumed": 0,
+    "task_attempt_denominator_change": 0
+  }
+}

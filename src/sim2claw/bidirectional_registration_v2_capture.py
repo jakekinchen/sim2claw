@@ -177,6 +177,39 @@ def _validate_static_receipt(
     return path, receipt
 
 
+def _validated_start_bridge(
+    packet: Mapping[str, Any],
+    safety: Mapping[str, Any],
+) -> dict[str, Any]:
+    bridge = packet.get("live_rebase_setup_bridge")
+    if bridge is None:
+        return {
+            "bridge_id": "legacy_no_bridge",
+            "pattern": "none",
+            "duration_seconds": 0.0,
+            "command_count": 0,
+            "excluded_from_policy_task_and_transfer_evidence": True,
+        }
+    interval = 1.0 / float(safety["sample_hz"])
+    _require(
+        bridge.get("bridge_id")
+        == "v04_acquisition_v2_time_only_pre_row_bridge_v1"
+        and bridge.get("pattern") == "time_only_pre_row_bridge"
+        and float(bridge.get("duration_seconds", -1.0)) == interval
+        and int(bridge.get("command_count", -1)) == 0
+        and bridge.get("first_frozen_row_elapsed_seconds") == interval
+        and bridge.get("maximum_live_rebase_delta_degrees")
+        == safety["fresh_start_maximum_absolute_delta_degrees"]
+        and bridge.get("maximum_post_hold_to_first_row_delta_degrees")
+        == 3.0
+        and bridge.get("sends_no_command") is True
+        and bridge.get("changes_frozen_arrays") is False
+        and bridge.get("excluded_from_policy_task_and_transfer_evidence") is True,
+        "live rebase setup bridge changed or widened",
+    )
+    return dict(bridge)
+
+
 def _default_preflight() -> dict[str, Any]:
     from .teleop_recording import physical_excitation_follower_preflight
 
@@ -256,6 +289,7 @@ def review_capture_plan(
         "C922 capture contract changed",
     )
     safety = packet["tracking_and_safety"]
+    start_bridge = _validated_start_bridge(packet, safety)
     _require(
         compiled["sample_hz"] == safety["sample_hz"]
         and np.all(egress >= lower)
@@ -298,6 +332,7 @@ def review_capture_plan(
             },
         },
         "capture_slices": compiled["capture_slices"],
+        "live_rebase_setup_bridge": start_bridge,
         "camera_contract_path": str(camera_contract_path),
         "camera_contract_sha256": sha256_file(camera_contract_path),
         "camera_source_path": str(camera_source_path),
@@ -313,6 +348,7 @@ def review_capture_plan(
             "capture_slice_count_matches_frozen_split": True,
             "camera_contract_and_source_bound": True,
             "camera_before_motion_contract": True,
+            "live_rebase_setup_bridge_bound": True,
             "torque_off_every_exit_contract": True,
             "no_task_or_pawn_contact_authority": True,
         },
@@ -558,6 +594,7 @@ def execute_registration_capture(
     camera_contract = _json(camera_contract_path)
     camera_spec = packet["camera_transaction"]
     safety = packet["tracking_and_safety"]
+    start_bridge = _validated_start_bridge(packet, safety)
     sample_hz = int(safety["sample_hz"])
     interval = 1.0 / sample_hz
     target_split = {
@@ -599,6 +636,12 @@ def execute_registration_capture(
     started_wall = clock_fn()
     motion_epoch: float | None = None
     next_deadline: float | None = None
+    start_bridge_receipt: dict[str, Any] = {
+        **start_bridge,
+        "actual_duration_seconds": 0.0,
+        "actual_command_count": 0,
+        "post_hold_to_first_row_maximum_delta_degrees": None,
+    }
 
     def start_camera(label: str) -> None:
         nonlocal active_recorder, active_started, active_camera_root, active_token
@@ -735,7 +778,36 @@ def execute_registration_capture(
             and opened.get("physical_follower_torque_enabled") is True,
             "gateway start or configuration changed after camera readiness",
         )
+        post_hold_start = np.asarray(
+            opened.get("follower_registration_degrees")
+            or opened["follower_start_degrees"],
+            dtype=np.float64,
+        )
+        post_hold_to_first = float(
+            np.max(np.abs(_joint_delta(post_hold_start, egress[0])))
+        )
+        _require(
+            post_hold_to_first
+            <= float(
+                start_bridge.get(
+                    "maximum_post_hold_to_first_row_delta_degrees",
+                    0.0,
+                )
+            )
+            if start_bridge["pattern"] == "time_only_pre_row_bridge"
+            else post_hold_to_first <= 1e-12,
+            "post-hold start exceeds the frozen time-only bridge envelope",
+        )
         motion_epoch = clock_fn()
+        bridge_started = motion_epoch
+        sleep_fn(float(start_bridge["duration_seconds"]))
+        bridge_finished = clock_fn()
+        start_bridge_receipt = {
+            **start_bridge,
+            "actual_duration_seconds": bridge_finished - bridge_started,
+            "actual_command_count": 0,
+            "post_hold_to_first_row_maximum_delta_degrees": post_hold_to_first,
+        }
         for row_index, target in enumerate(egress):
             send_row("source_egress", row_index, target)
             executed_egress.append(target.copy())
@@ -899,6 +971,7 @@ def execute_registration_capture(
         "fresh_preflight_start_degrees": start.tolist(),
         "gateway_opened": gateway_opened,
         "physical_motion_commanded": physical_motion_commanded,
+        "live_rebase_setup_bridge": start_bridge_receipt,
         "source_egress": {
             "planned_action_sha256": action_sha256(egress),
             "executed_action_sha256": (

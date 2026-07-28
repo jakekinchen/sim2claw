@@ -26,6 +26,11 @@ RECOVERY_PACKET = (
     / "configs/hardware/"
     "bidirectional_pawn_push_v2_registration_capture_v2.json"
 )
+START_BRIDGE_PACKET = (
+    ROOT
+    / "configs/hardware/"
+    "bidirectional_pawn_push_v2_registration_capture_v3.json"
+)
 START = [
     -11.164835164835164,
     -71.38461538461539,
@@ -177,15 +182,23 @@ class _Recorder:
 
 
 class _Gateway:
-    def __init__(self, *, fail_after: int | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        fail_after: int | None = None,
+        start: list[float] | None = None,
+    ) -> None:
         self.closed = False
         self.samples = 0
         self.fail_after = fail_after
+        self.start = list(start or START)
+        self.elapsed_samples: list[float] = []
 
     def open(self, *, enable_motion: bool, paired_pose_confirmed: bool) -> dict:
         assert enable_motion and paired_pose_confirmed
         return {
-            "follower_start_degrees": START,
+            "follower_start_degrees": self.start,
+            "follower_registration_degrees": self.start,
             "physical_follower_torque_enabled": True,
             "device_configuration_rewritten": False,
         }
@@ -193,7 +206,7 @@ class _Gateway:
     def sample(
         self, elapsed_seconds: float, *, exact_requested_degrees: np.ndarray
     ) -> dict:
-        del elapsed_seconds
+        self.elapsed_samples.append(elapsed_seconds)
         if self.fail_after is not None and self.samples >= self.fail_after:
             raise RuntimeError("synthetic tracking stop")
         self.samples += 1
@@ -252,6 +265,84 @@ def test_recovery_review_binds_ten_new_targets_and_exact_arrays(
     assert result["physical_motion_commanded"] is False
     assert result["camera_opened"] is False
     assert result["gateway_constructed"] is False
+
+
+def test_start_bridge_review_binds_time_only_bridge_and_unchanged_arrays(
+    tmp_path: Path,
+) -> None:
+    result = review_capture_plan(
+        packet_path=START_BRIDGE_PACKET,
+        review_path=tmp_path / "review-v3.json",
+        preflight_fn=_recovery_preflight,
+    )
+    bridge = result["live_rebase_setup_bridge"]
+    assert bridge == {
+        "bridge_id": "v04_acquisition_v2_time_only_pre_row_bridge_v1",
+        "pattern": "time_only_pre_row_bridge",
+        "duration_seconds": 0.05,
+        "command_count": 0,
+        "first_frozen_row_elapsed_seconds": 0.05,
+        "maximum_live_rebase_delta_degrees": 1.0,
+        "maximum_post_hold_to_first_row_delta_degrees": 3.0,
+        "sends_no_command": True,
+        "changes_frozen_arrays": False,
+        "excluded_from_policy_task_and_transfer_evidence": True,
+    }
+    assert result["exact_setup_arrays"]["source_egress"]["action_sha256"] == (
+        "a2536181add1aaf901aac5b94929a5a7117974e571354a68abd94b3a361d4bab"
+    )
+    assert (
+        result["exact_setup_arrays"]["capture_and_return"]["action_sha256"]
+        == "06d531afba308c3582cb67972c735bf963c6cae35df365325e36139ba8eac1c2"
+    )
+    assert result["physical_motion_commanded"] is False
+    assert result["camera_opened"] is False
+    assert result["gateway_constructed"] is False
+
+
+def test_start_bridge_delays_first_exact_row_without_sending_a_prefix_command(
+    tmp_path: Path,
+) -> None:
+    clock = _Clock()
+    review = tmp_path / "review-v3.json"
+    review_capture_plan(
+        packet_path=START_BRIDGE_PACKET,
+        review_path=review,
+        preflight_fn=_recovery_preflight,
+    )
+    gateway = _Gateway(
+        start=[value + 0.1 for value in RECOVERY_START],
+        fail_after=1,
+    )
+
+    def recorder_factory(path: Path, **kwargs: object) -> _Recorder:
+        return _Recorder(path, clock=clock, **kwargs)
+
+    output = tmp_path / "capture-v3"
+    with pytest.raises(RegistrationCaptureV2Error):
+        execute_registration_capture(
+            packet_path=START_BRIDGE_PACKET,
+            review_path=review,
+            output_root=output,
+            operator_acknowledged=True,
+            preflight_fn=_recovery_preflight,
+            gateway_factory=lambda _: gateway,
+            recorder_factory=recorder_factory,
+            clock_fn=clock,
+            sleep_fn=clock.sleep,
+        )
+    receipt = json.loads((output / "execution_receipt.json").read_text())
+    bridge = receipt["live_rebase_setup_bridge"]
+    assert gateway.samples == 1
+    assert gateway.elapsed_samples[0] == pytest.approx(0.05)
+    assert bridge["actual_duration_seconds"] == pytest.approx(0.05)
+    assert bridge["actual_command_count"] == 0
+    assert bridge["post_hold_to_first_row_maximum_delta_degrees"] == pytest.approx(
+        0.1
+    )
+    assert receipt["source_egress"]["executed_sample_count"] == 1
+    assert receipt["capture_and_return"]["executed_sample_count"] == 0
+    assert receipt["torque_off_confirmed"]
 
 
 def test_execute_captures_eight_targets_and_closes_torque(

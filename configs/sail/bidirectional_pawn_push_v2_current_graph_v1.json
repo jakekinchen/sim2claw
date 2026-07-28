@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "10d301cc964fc5d5fa886274214c15a68dad5d9eed0bc64cf55916bf46d5160e",
+      "sha256": "20110426223c818fdd9667a3c2a7a9546952233970648d30a34a359ed656dfbc",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -164,6 +164,16 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture_execution.v1",
         "status": "stopped_safely",
         "proof_class": "physical_rgb_no_contact_registration_observation_only"
+      }
+    },
+    "v04_start_bridge_packet": {
+      "path": "configs/hardware/bidirectional_pawn_push_v2_registration_capture_v3.json",
+      "sha256": "82aa900dbce4eb7c5bb370b8a31300794e108dcc4c71993fc12bb2af423a5cb8",
+      "proof_class": "prospective_no_contact_registration_start_bridge_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture.v1",
+        "status": "frozen_before_registration_motion",
+        "proof_class": "prospective_camera_enclosed_no_contact_registration_motion_only"
       }
     },
     "simulator_candidate": {
@@ -512,6 +522,27 @@
       }
     },
     {
+      "id": "checkpoint:v04-start-bridge-packet",
+      "type": "checkpoint",
+      "label": "V04 time-only start-bridge packet frozen",
+      "status": "frozen_pending_commit_and_live_review",
+      "source_binding": "v04_start_bridge_packet",
+      "data": {
+        "packet_sha256": "82aa900dbce4eb7c5bb370b8a31300794e108dcc4c71993fc12bb2af423a5cb8",
+        "bridge_seconds": 0.05,
+        "bridge_command_count": 0,
+        "maximum_post_hold_to_first_row_delta_degrees": 3.0,
+        "source_egress_action_sha256": "a2536181add1aaf901aac5b94929a5a7117974e571354a68abd94b3a361d4bab",
+        "capture_return_action_sha256": "06d531afba308c3582cb67972c735bf963c6cae35df365325e36139ba8eac1c2",
+        "camera_opened": false,
+        "gateway_constructed": false,
+        "physical_motion": false,
+        "torque_enabled": false,
+        "heldout_open_count": 0,
+        "counted_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -720,6 +751,16 @@
       }
     },
     {
+      "source": "checkpoint:v04-start-bridge-packet",
+      "type": "generated-from",
+      "target": "checkpoint:v04-owner-resume-start-bridge",
+      "metadata": {
+        "packet_frozen": true,
+        "live_review_pending": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -870,14 +911,23 @@
       "node_ids_added": [
         "checkpoint:v04-owner-resume-start-bridge"
       ]
+    },
+    {
+      "revision": 12,
+      "event_id": "V04_START_BRIDGE_PACKET_FREEZE",
+      "status": "frozen_pending_commit_and_live_review",
+      "source_binding": "v04_start_bridge_packet",
+      "node_ids_added": [
+        "checkpoint:v04-start-bridge-packet"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v04-owner-resume-start-bridge",
+    "node_id": "checkpoint:v04-start-bridge-packet",
     "milestone_id": "V04",
-    "status": "active_start_bridge_design_no_motion_authority",
-    "queue_status": "ACTIVE_V04_OWNER_RESUMED_START_BRIDGE_DESIGN",
-    "resume_action": "freeze_commit_and_review_versioned_start_bridge",
+    "status": "frozen_pending_commit_and_live_review",
+    "queue_status": "ACTIVE_V04_START_BRIDGE_PACKET_FROZEN_PENDING_COMMIT_REVIEW",
+    "resume_action": "commit_packet_then_emit_fresh_motion_free_review",
     "resume_authorized": true,
     "heldout_open_count": 0,
     "counted_task_attempts": 0
