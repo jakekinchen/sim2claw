@@ -1,0 +1,111 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_registration_dataset.v1",
+  "dataset_id": "bidirectional_pawn_push_registration_dataset_v1",
+  "frozen_at": "2026-07-27",
+  "proof_class": "zero_motion_registration_split",
+  "authority": {
+    "physical_motion": false,
+    "training": false,
+    "promotion": false
+  },
+  "split_rules": {
+    "fit_may_be_opened": true,
+    "held_out_content_inspected_during_q01": false,
+    "held_out_sealed_until": "scene_registration_v4_candidate_family_frozen",
+    "held_out_open_count_allowed_after_candidate_freeze": 1,
+    "maximum_fit_residual_mm": 25.0,
+    "maximum_held_out_residual_mm": 25.0
+  },
+  "candidate_family_constraints_for_q02": {
+    "categorical_family": "eight square-board D4 orientations",
+    "continuous_parameters": [
+      "board_center_x_m",
+      "board_center_y_m",
+      "board_yaw_degrees"
+    ],
+    "board_center_delta_bound_m": 0.08,
+    "board_yaw_delta_bound_degrees": 15.0,
+    "joint_zero_changes_allowed_only_if_separately_identifiable": true,
+    "action_mutation_allowed": false
+  },
+  "inputs": [
+    {
+      "id": "fit_c2_counted_action",
+      "split": "fit",
+      "path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/compiled/counted_task_action.npy",
+      "sha256": "0af43f1709e8e7294c21e0876992dfbc21e6902165d4c24a50af9ed4ced47196",
+      "use": "immutable canonical joint command tensor"
+    },
+    {
+      "id": "fit_c2_joint_samples",
+      "split": "fit",
+      "path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/stage-1/joint_samples.jsonl",
+      "sha256": "9c8b9c146c67c2cc339506690a28df0e7fb63f5ffa81f4372fd58411182bfa97",
+      "use": "measured joint states around the physical contact/topple interval"
+    },
+    {
+      "id": "fit_c2_c922_native",
+      "split": "fit",
+      "path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/stage-1/final_hold_camera/native_dual_camera/overhead_c922.native.mov",
+      "sha256": "7c9addc19fc37d9ff5a024fdec6a7e643151acc6874d64f5bfa56b016f58f903",
+      "use": "camera-owned physical contact and board-relative observation"
+    },
+    {
+      "id": "fit_c2_outcome_receipt",
+      "split": "fit",
+      "path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/physical_outcome_adjudication_receipt.json",
+      "sha256": "8e963ac252df7908ec616833bbe7a0bbd595aeca03207415dc787a1064828bce",
+      "use": "frozen contact/topple interpretation and frame binding"
+    },
+    {
+      "id": "fit_c2_task_dense",
+      "split": "fit",
+      "path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/stage-1/visual_review/exact/task_dense.png",
+      "sha256": "642fd01f6d673dcd4f04f8059b52fd5b16896a414838d4e7862d1a73857d3263",
+      "use": "reviewed dense task interval visualization"
+    },
+    {
+      "id": "fit_current_scene_prior",
+      "split": "fit",
+      "path": "configs/polycam/8873B66C-774C-48B1-B51D-338645867009.json",
+      "sha256": "0dbe0c95fe50f84a8ff8e60f9727f7123c15c921ace55a0460b49ffa4c34dc05",
+      "use": "current board dimensions and provisional center/yaw prior"
+    },
+    {
+      "id": "fit_current_mapping_prior",
+      "split": "fit",
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "use": "current provisional physical-to-model joint mapping"
+    },
+    {
+      "id": "heldout_b7_packet",
+      "split": "held_out",
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/packet.json",
+      "sha256": "dc43fb02c751a466dd3a68f93e076ca6e12bc35568e6bf372c6412ff203008cb",
+      "use": "independent task-square hover contract; content sealed during Q01"
+    },
+    {
+      "id": "heldout_b7_joint_samples",
+      "split": "held_out",
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/stage-1/joint_samples.jsonl",
+      "sha256": "e413566242ee6e41a8938ace1069d2027ceaebad56e29876bada592dbd77a855",
+      "use": "independent measured hover episode; content sealed during Q01"
+    },
+    {
+      "id": "heldout_b7_c922_native",
+      "split": "held_out",
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/stage-1/final_hold_camera/native_dual_camera/overhead_c922.native.mov",
+      "sha256": "6564ff1fadfaf069d8166277bef8a9391f01183cbc6a49fd7b032897b2c8665f",
+      "use": "independent C922 board-relative observation; content sealed during Q01"
+    },
+    {
+      "id": "heldout_b7_transfer_diagnostic",
+      "split": "held_out",
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/evaluation/transfer-diagnostic.json",
+      "sha256": "0c992c1cd9ddf95db5302e6ada02da1c8f547048247f304153d70808d34542d3",
+      "use": "independent task-relevant correspondence outcome; content sealed during Q01"
+    }
+  ],
+  "claim_boundary": "The manifest freezes membership and file identity only. It does not validate registration, open the held-out outcome, authorize motion, or prove physical or bidirectional task success."
+}

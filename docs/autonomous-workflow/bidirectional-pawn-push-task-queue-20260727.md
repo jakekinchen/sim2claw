@@ -236,8 +236,8 @@ remaining cards to complete.
 | ID | Status | Task | Acceptance gate | Evidence |
 |---|---|---|---|---|
 | Q00 | `DONE` | Reproduce the advisory board-side diagnosis read-only. Use the immutable C2 action, current compiled task scene, and perfect-tracking FK. | Report minimum approach to simulated C2, C8, and C7; confirm or reject the approximately six-rank categorical error; identify the exact code/config source. No file mutation beyond queue/evidence docs and no motion. | `docs/run-logs/2026-07-27-bidirectional-pawn-push-q00-board-side-diagnosis.md`; reviewer `039` (`CONTINUE`, anchor `100`). Site/base minima: C2 `265.275519 mm`, C8 `80.897091 mm`, C7 `100.783880 mm`. Pad-gap/28 mm-neck minima: C2 `257.506340 mm`, C8 `64.673854 mm`, C7 `85.525518 mm`. C2-C8 separation `266.700000 mm`; categorical rank-side error confirmed, residual still `>25 mm`. No motion. |
-| Q01 | `IN_PROGRESS` | Freeze the zero-motion registration dataset split. Fit data may include C2 contact/topple-frame joints, C922 grid/corner tags, prior C2 dual-camera replay, and Pi link tags. Reserve at least one independent hover/episode as held-out before fitting. | Versioned manifest hashes every input and declares fit versus held-out membership. No held-out inspection after freeze until candidate family freezes. | Pending |
-| Q02 | `PENDING` | Implement scene-registration v4 as the smallest versioned correction: categorical side/orientation first, then bounded board XY/yaw refinement. Add joint-zero changes only if separately identifiable. | Old scene IDs and receipts remain unchanged. Candidate deterministically rebuilds and loads in CPU/fp64 MuJoCo. No action bytes change. | Pending |
+| Q01 | `DONE` | Freeze the zero-motion registration dataset split. Fit data may include C2 contact/topple-frame joints, C922 grid/corner tags, prior C2 dual-camera replay, and Pi link tags. Reserve at least one independent hover/episode as held-out before fitting. | Versioned manifest hashes every input and declares fit versus held-out membership. No held-out inspection after freeze until candidate family freezes. | Manifest `configs/evaluations/bidirectional_pawn_push_registration_dataset_v1.json`, SHA-256 `da203fae0e84ceb722631676858762e1ee3d5962be95c4555afb44f97bf51fdf`; seven fit inputs plus four opaque held-out inputs from independent B7 high-hover episode; all eleven hashes resolve; `2 passed in 0.04s`; executor `042`; reviewer `040` (`CONTINUE`, anchor `100`). No held-out semantic inspection and no motion. |
+| Q02 | `IN_PROGRESS` | Implement scene-registration v4 as the smallest versioned correction: categorical side/orientation first, then bounded board XY/yaw refinement. Add joint-zero changes only if separately identifiable. | Old scene IDs and receipts remain unchanged. Candidate deterministically rebuilds and loads in CPU/fp64 MuJoCo. No action bytes change. | Pending |
 | Q03 | `PENDING` | Evaluate v4 on fit evidence and open the held-out once. | C2 grasp-phase FK approach to corrected C2 center `<=25 mm`; held-out task-relevant correspondence `<=25 mm`; no worsened known-safe geometry/contact. If either fails, follow F1 once rather than launching an unbounded fit family. | Pending |
 | Q04 | `PENDING` | Re-run immutable C2 bytes under v4 as retrospective diagnostics only. | Produce side-by-side old/v4 first-divergence and contact metrics. Label post-outcome scene correction and no promotion. A useful target is reproduction of physical strike/topple-near-source behavior, but failure remains evidence. | Pending |
 | Q05 | `PENDING` | Preregister a native float64/40 Hz adjacent-square push evaluator and the complete case family of at most ten attempts. | Evaluator owns selected-pawn source/destination geometry, upright gate, task-local exclusions, non-interaction, canonical hashes, direction, denominator, and camera adjudication. Freeze before any counted action compilation. | Pending |
@@ -276,7 +276,7 @@ remaining cards to complete.
 
 Current state:
 
-- Q00 is verified complete and Q01 is active.
+- Q00-Q01 are verified complete and Q02 is active.
 - Commit `0b3afab` adopted this queue and its goal-loop contract.
 - Existing prior receipts remain unchanged.
 - No new robot motion is authorized until Q00-Q05 complete.
@@ -292,6 +292,10 @@ Completed:
   rank-side defect is confirmed, but the advisory mixed site/base and
   pad-gap/neck metrics; the remaining corrected-side residual exceeds
   `25 mm`.
+- Q01 zero-motion split freeze. Seven fit inputs bind the immutable C2
+  contact/topple case and current scene/mapping priors. Four held-out inputs
+  bind an independent completed B7 high-hover episode and remain semantically
+  unopened through Q01.
 
 Verification evidence:
 
@@ -307,21 +311,32 @@ Verification evidence:
 - Candidate manifest SHA-256:
   `f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170`.
 - Independent direct-transform formula check: `PASS` at `1e-9 mm`.
+- Q01 manifest:
+  `configs/evaluations/bidirectional_pawn_push_registration_dataset_v1.json`,
+  SHA-256
+  `da203fae0e84ceb722631676858762e1ee3d5962be95c4555afb44f97bf51fdf`.
+- Q01 validation:
+  `uv run --offline pytest -q tests/test_bidirectional_pawn_push_registration_dataset.py`
+  -> `2 passed in 0.04s`; all eleven input hashes resolved.
+- Q01 executor/reviewer: `docs/session-logs/042-executor-q01-registration-split-freeze.md`;
+  `docs/reviewer-messages/040-q01-registration-split-freeze.md`,
+  decision `CONTINUE`, anchor `100`.
 
 Remaining:
 
-- Q01-Q15.
+- Q02-Q15.
 
 Blockers:
 
-- No Q01 blocker yet. Held-out membership must be frozen and then remain
-  unopened until the Q02 candidate family is frozen.
+- No Q02 blocker yet. The held-out content remains sealed until the bounded
+  Q02 candidate is serialized and hash-bound.
 
 Next step:
 
-- Inventory admissible zero-motion registration inputs, choose and hash a
-  fit/held-out split without inspecting held-out outcomes, write the versioned
-  manifest, and obtain the Q01 reviewer decision.
+- Fit only the preregistered D4-plus-bounded-XY/yaw family on the Q01 fit
+  inputs, serialize the v4 candidate, prove deterministic CPU/fp64 rebuild and
+  unchanged canonical C2 action bytes, then freeze its hash before opening the
+  B7 held-out episode.
 
 Attempt ledger:
 
@@ -334,3 +349,23 @@ Advisory feedback / next steps:
 - Pending Q15. Do not contact Fable before Q00-Q14 and the Definition of Done
   are locally verified, or before a genuine receipt-backed terminal boundary
   has been fully packaged and locally audited.
+
+## Q01 transition record
+
+Exact commands and results:
+
+```text
+uv run --offline pytest -q tests/test_bidirectional_pawn_push_registration_dataset.py
+..                                                                       [100%]
+2 passed in 0.04s
+
+python -m json.tool configs/evaluations/bidirectional_pawn_push_registration_dataset_v1.json
+PASS
+
+shasum -a 256 configs/evaluations/bidirectional_pawn_push_registration_dataset_v1.json
+da203fae0e84ceb722631676858762e1ee3d5962be95c4555afb44f97bf51fdf
+```
+
+The Q01 hash verifier read every declared file only as opaque bytes. It did
+not parse, view, or interpret any held-out JSON, image, video, or episode
+result. Q02 is the only active card. Physical attempts remain `0/10`.
