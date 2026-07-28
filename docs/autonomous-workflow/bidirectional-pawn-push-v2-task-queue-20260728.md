@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_V4_MOTION_FREE_LIVE_REVIEW`
+Status: `AWAITING_ACKNOWLEDGEMENT_V04_V4_REGISTRATION_MOTION`
 
 Created: `2026-07-28`
 
@@ -1564,3 +1564,36 @@ gateway and commanded no motion. The only active action is a fresh
 motion-free live review of device identity, current start, exact arrays,
 true-time binding, process/serial ownership, configuration integrity, and
 torque-off state.
+
+### V04 acquisition-v4 live review CONTINUE — 2026-07-28
+
+Fresh motion-free review
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/pre-motion-review-v4.json`,
+SHA-256
+`d207712ebd545729acd6961b588f8934a799f01a384069e9486113355e62797b`,
+returned deterministic
+`deterministic_registration_capture_pre_motion_reviewer` decision
+`CONTINUE`, evidence anchor `100`. All `14/14` review gates pass, including
+the new authoritative true-time hold binding.
+
+The fresh follower pose exactly equals the frozen torque-off anchor:
+`[7.208791,-85.538462,99.472527,-20.087912,-103.340659,2.375297]`.
+Follower port is `/dev/cu.usbmodem5B3D0406411`, calibration SHA-256 is
+`192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4`,
+torque is false, and `device_configuration_rewritten` is false.
+
+A separate observer-only AVFoundation enumeration found exactly one
+`C922 Pro Stream Webcam`, unique ID `0x8310000046d085c`, model
+`UVC Camera VendorID_1133 ProductID_2140`. Bound format/range `16/0` remains
+`640x480`, `420v`, `30.00003000003 fps`. No C922 owner, registration gateway
+process, serial owner, or Git index lock remained after review.
+
+This review opened no camera stream or gateway and commanded no motion. The
+next operation is the single V4 no-contact registration transaction:
+`123` exact egress rows followed by `1274` exact capture/return rows, ten
+fresh sequential C922 target sessions, and a return to the reviewed anchor.
+Maximum slew is `3 deg/s`; pawn/board/table contact and task action remain
+forbidden. The runtime must fail closed on identity, camera, tracking,
+true-time, stall, contact, or exact-byte mismatch and torque off on every
+exit. Physical execution remains paused for explicit acknowledgement of this
+committed/pushed pre-motion notice.
