@@ -31,21 +31,20 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V05-T"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v05-t-temporal-plan-bound",
+        "node_id": "checkpoint:v05-t-simulator-implementation-active",
         "milestone_id": "V05-T",
-        "status": "plan_bound_implementation_and_execution_paused",
-        "queue_status": "PAUSED_AFTER_V05_REJECT_V05_T_PLAN_BOUND",
+        "status": "active_simulator_only_no_physical_authority",
+        "queue_status": "ACTIVE_V05_T_IMPLEMENTATION",
         "resume_action": (
-            "implement_broader_static_enumeration_then_freeze_"
-            "baseline_and_challenger"
+            "implement_and_freeze_static_enumeration_before_dynamic_replay"
         ),
-        "resume_authorized": False,
+        "resume_authorized": True,
         "heldout_open_count": 1,
         "cumulative_manifest_read_count": 2,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(39)
+        range(40)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -56,10 +55,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_T_TEMPORAL_PLAN_BOUND"
+        == "V05_T_SIMULATOR_IMPLEMENTATION_RESUME"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v05-t-temporal-plan-bound"
+        "checkpoint:v05-t-simulator-implementation-active"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]

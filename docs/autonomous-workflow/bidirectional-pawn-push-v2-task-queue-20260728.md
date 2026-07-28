@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `PAUSED_AFTER_V05_REJECT_V05_T_PLAN_BOUND`
+Status: `ACTIVE_V05_T_IMPLEMENTATION`
 
 Created: `2026-07-28`
 
@@ -187,7 +187,7 @@ denominators before any counted action is compiled.
 | V03 | `DONE` | Capture the prospective fit and held-out registration observations through the reviewed gateway. | Cameras precede motion; only approved slow no-contact paths run; requested/mapped/sent and tracking receipts close; every planned target is captured; torque false on exit; input hashes freeze; no pawn contact. | Execution receipt `runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/execution_receipt.json`, SHA-256 `a1692a5b87d88b7b2c37151159660546d9104c9b3973de85f0801de0d9e793a3`, status `completed_no_contact_registration_capture`, proof class `physical_rgb_no_contact_registration_observation_only`. All exact `92 + 1541` requested/mapped/sent rows are byte-identical to the reviewed arrays; all eight scored holds pass; nine C922 sessions have zero drops; fit and sealed-heldout manifests hash to `933f121a60b741d5a555b865caccf8fedce1ea0b6accd0e007cd42f77eafa8a5` and `6fd932ddf33c2e5aae87680e141eb1a41f05feb19196eac2fd2343ad3f5a18d6`; final preflight proves torque false. No pawn contact or task attempt. |
 | V04 | `DONE` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Frozen candidate `4d08518f...`; heldout PASS receipt `5eaf763b...`; all four scorable/pass; heldout RMS `4.684083 px` and `4.741723 mm`; zero refit. Registration only. |
 | V05 | `DONE_TERMINAL_NEGATIVE` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Final admissible rehearsal-v4 receipt `cb722beb...` rejects: REAL_TO_SIM `2` feasible, SIM_TO_REAL `1`, versus unchanged `2` per-direction gate. No case admitted. |
-| V05-T | `IN_PROGRESS_PLAN_BOUND_EXECUTION_PAUSED` | Challenge every prospectively broadened static/IK-eligible action with canonical direct-target MuJoCo and diagnostic-only `0.11 s` ZOH command delay; prove exact 40 Hz action bytes and gateway slew/rate compatibility. | At least two distinct cases per direction pass both plant paths with unchanged contact/progress/exclusion/collision/camera gates; requested/sent/applied traces and timestamps bind; gateway accepts bytes without transform. | Plan `configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json`; V06, counted compilation, and physical packets paused. |
+| V05-T | `IN_PROGRESS` | Challenge every prospectively broadened static/IK-eligible action with canonical direct-target MuJoCo and diagnostic-only `0.11 s` ZOH command delay; prove exact 40 Hz action bytes and gateway slew/rate compatibility. | At least two distinct cases per direction pass both plant paths with unchanged contact/progress/exclusion/collision/camera gates; requested/sent/applied traces and timestamps bind; gateway accepts bytes without transform. | Plan `configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json`; implementation resumed simulator-only. V06, counted compilation, cameras, gateway, serial, and physical packets remain paused. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2058,3 +2058,19 @@ consequences under both plant paths. Filters, rewards, jitter, deadband,
 joint play, posterior sampling, a second simulator, ACT changes, and
 randomization are excluded. The plan is bound; implementation and execution
 pause here for owner/controller handoff.
+
+### V05-T simulator-only resume — 2026-07-28
+
+Owner continuation resumes only implementation/execution of the already-bound
+V05-T milestone. The authoritative state is
+`ACTIVE_V05_T_IMPLEMENTATION`. V06 evaluator freeze, counted-action
+compilation, cameras, gateway/serial access, physical task packets, and
+physical motion remain unauthorized.
+
+Pre-resume process inspection found no active simulator job, repo-owned camera
+process, gateway process, or serial client. Both USB serial devices were
+unowned. The active Studio processes are explicitly `--read-only`. Latest
+observable hardware receipts close with torque false; torque was not re-read
+because opening the gateway is outside this milestone. `brev ls` reports no
+instances. The sole unrelated untracked
+`tools/build_fiducial_sheet.py` remains untouched.
