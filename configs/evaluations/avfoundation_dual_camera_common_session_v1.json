@@ -17,11 +17,11 @@
       "exact_localized_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
       "exact_unique_id": "0x20000080860b5b",
       "exact_model_id": "UVC Camera VendorID_32902 ProductID_2907",
-      "format_index": 6,
+      "format_index": 0,
       "frame_rate_range_index": 4,
       "width": 424,
       "height": 240,
-      "media_subtype_fourcc": "yuvs",
+      "media_subtype_fourcc": "2vuy",
       "supported_fps": 5.0,
       "frame_duration_seconds": 0.2
     },
