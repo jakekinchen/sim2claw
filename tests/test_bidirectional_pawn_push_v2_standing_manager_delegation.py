@@ -77,6 +77,19 @@ LOW_CENTER_STATIC_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_low_center_contact_static_v3.json"
 )
+LOW_CENTER_STATIC_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-ua-low-center-v3/static-freeze-v1/receipt.json"
+)
+NEIGHBOR_CORRIDOR_AUTHORIZATION = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_neighbor_corridor_"
+    "successor_authorization_v1.json"
+)
+NEIGHBOR_CORRIDOR_STATIC_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_neighbor_corridor_static_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -370,6 +383,59 @@ def test_low_center_successor_quarantines_twelve_and_changes_contact_only() -> N
         predecessor["parameter_grid"]["approach_lateral_offsets_m"]
     )
     assert contract["action_identity"] == predecessor["action_identity"]
+    assert contract["selection"] == predecessor["selection"]
+    assert contract["static_gates"] == predecessor["static_gates"]
+    assert contract["authority"]["static_simulation"] is True
+    assert contract["authority"]["dynamic_replay"] is False
+    assert contract["authority"]["physical_motion"] is False
+
+
+def test_neighbor_corridor_successor_changes_only_stroke_after_ua_reject() -> None:
+    receipt = json.loads(
+        LOW_CENTER_STATIC_RECEIPT.read_text(encoding="utf-8")
+    )
+    assert _sha(LOW_CENTER_STATIC_RECEIPT) == (
+        "171d634b577c4487ba8a8de1ee9ab14b21d6dc6c9633edd88ed8e00d3feb1f8a"
+    )
+    assert receipt["status"] == "low_center_contact_static_freeze_reject"
+    assert receipt["grid_result_count"] == 324
+    assert receipt["statically_eligible_family_count"] == 0
+    assert receipt["dynamic_replay_executed"] is False
+    assert receipt["physical_motion"] is False
+
+    authorization = json.loads(
+        NEIGHBOR_CORRIDOR_AUTHORIZATION.read_text(encoding="utf-8")
+    )
+    for binding in authorization["immutable_predecessors"].values():
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert authorization["quarantine"]["exact_count"] == 12
+    assert authorization["authorized_static_design"]["sole_change"] == (
+        "stroke_m_from_0.09_to_0.06"
+    )
+    assert authorization["authority"]["model_loading"] is False
+    assert authorization["authority"]["physical_motion"] is False
+
+    predecessor = json.loads(
+        LOW_CENTER_STATIC_CONTRACT.read_text(encoding="utf-8")
+    )
+    contract = json.loads(
+        NEIGHBOR_CORRIDOR_STATIC_CONTRACT.read_text(encoding="utf-8")
+    )
+    for key in ("authorization", "v1_binding_failure", "implementation"):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert contract["endpoint_geometry"]["stroke_m"] == 0.06
+    for key in (
+        "contact_offset_m",
+        "contact_height_m",
+        "precontact_clearance_height_above_pawn_base_m",
+    ):
+        assert contract["endpoint_geometry"][key] == (
+            predecessor["endpoint_geometry"][key]
+        )
+    assert contract["parameter_grid"] == predecessor["parameter_grid"]
+    assert contract["action_identity"] == predecessor["action_identity"]
+    assert contract["quarantine"] == predecessor["quarantine"]
     assert contract["selection"] == predecessor["selection"]
     assert contract["static_gates"] == predecessor["static_gates"]
     assert contract["authority"]["static_simulation"] is True

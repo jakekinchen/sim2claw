@@ -1,0 +1,90 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_neighbor_corridor_successor_authorization.v1",
+  "authorization_id": "bidirectional-pawn-push-v2-neighbor-corridor-successor-20260728",
+  "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
+  "proof_class": "prospective_manager_authorized_static_only_neighbor_corridor_successor",
+  "authorized_at": "2026-07-28",
+  "authorizer": "Codex Manager",
+  "standing_delegation": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json",
+    "sha256": "8e59b7385ca14083d6ddd571ecc13fbec2f884cba41b3583ccfb317737e81ed5"
+  },
+  "immutable_predecessors": {
+    "v05_ua_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_center_contact_static_v3.json",
+      "sha256": "59852614450dab2bb1a120137ac7d2d3f4ea5c1724cc710ed74344ea0ad2e6cf"
+    },
+    "v05_ua_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ua-low-center-v3/static-freeze-v1/receipt.json",
+      "sha256": "171d634b577c4487ba8a8de1ee9ab14b21d6dc6c9633edd88ed8e00d3feb1f8a"
+    }
+  },
+  "static_mechanism_evidence": {
+    "evaluated_cells": 324,
+    "ik_compile_rejects": 279,
+    "static_collision_rejects": 45,
+    "statically_eligible_families": 0,
+    "dynamic_outcomes_observed": false,
+    "mechanism": "After exact twelve-case quarantine, every otherwise compiled 90 mm low-center route contacted another occupied pawn beyond the immediate empty orthogonal neighbor.",
+    "permitted_use": "Authorize one prospective 60 mm low-center immediate-neighbor-corridor stroke while preserving every other frozen value and gate."
+  },
+  "quarantine": {
+    "case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8",
+      "tan_pawn_g8__g8_g7",
+      "tan_pawn_g8__g8_h8",
+      "tan_pawn_f7__f7_f6",
+      "brown_pawn_e2__e2_f2"
+    ],
+    "exact_count": 12,
+    "permitted_use": "exact exclusion before future cell generation"
+  },
+  "authorized_static_design": {
+    "sole_change": "stroke_m_from_0.09_to_0.06",
+    "stroke_m": 0.06,
+    "stroke_to_progress_gate_ratio": 1.6655,
+    "stroke_provenance": "The 60 mm tool stroke begins 16 mm behind the pawn center and ends approximately 44 mm ahead, at the immediate orthogonal-neighbor center rather than the next occupied square.",
+    "same_low_center_contact": true,
+    "same_fresh_family_universe": true,
+    "same_setup_branches": true,
+    "same_setup_speed": true,
+    "same_precontact_clearance": true,
+    "same_lateral_offsets": true,
+    "same_selection_and_gates": true,
+    "finite_maximum_cells": 324,
+    "static_selection_only": true,
+    "no_post_outcome_expansion": true
+  },
+  "forbidden": [
+    "reuse of any of the twelve quarantined cases",
+    "physical pawn layout change",
+    "manual intervention",
+    "gate weakening",
+    "dynamic replay before four static families freeze",
+    "paid compute",
+    "physical work before V06 and all safety gates"
+  ],
+  "authority": {
+    "static_design": true,
+    "model_loading": false,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Manager authorization under standing delegation for one finite static-only immediate-neighbor-corridor stroke successor. No model loading, simulation, V06, hardware, or transfer authority yet."
+}

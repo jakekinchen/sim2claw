@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T15:25:45-05:00",
+  "generated_at": "2026-07-28T15:28:47-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e",
+      "sha256": "dc9a9edfc3be1648041a8a2c72827f03953a158628f711cdca85ada750845975",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -854,6 +854,39 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_center_contact_static.v3",
         "status": "preregistered_low_center_contact_before_model_loading_static_enumeration_or_action_generation",
         "proof_class": "prospective_cpu_fp64_static_low_center_contact_action_freeze_v3"
+      }
+    },
+    "v05_ua_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ua-low-center-v3/static-freeze-v1/receipt.json",
+      "sha256": "171d634b577c4487ba8a8de1ee9ab14b21d6dc6c9633edd88ed8e00d3feb1f8a",
+      "proof_class": "cpu_fp64_static_slow_elevated_long_stroke_multistart_approach_collision_camera_gateway_action_freeze_only_v2",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_center_contact_static_receipt.v3",
+        "status": "low_center_contact_static_freeze_reject",
+        "proof_class": "cpu_fp64_static_slow_elevated_long_stroke_multistart_approach_collision_camera_gateway_action_freeze_only_v2",
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    "v05_ub_manager_authorization": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_neighbor_corridor_successor_authorization_v1.json",
+      "sha256": "30429e3bf322a6465d76a6ccdde92ae54b012b67ba3c957dbf31914948564279",
+      "proof_class": "prospective_manager_authorized_static_only_neighbor_corridor_successor",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_neighbor_corridor_successor_authorization.v1",
+        "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
+        "proof_class": "prospective_manager_authorized_static_only_neighbor_corridor_successor"
+      }
+    },
+    "v05_ub_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_neighbor_corridor_static_v1.json",
+      "sha256": "4b3cd6e0626b39449d46b6732de2f4fa035b379a7b8fbdf0dc8721183b1a40f0",
+      "proof_class": "prospective_cpu_fp64_static_low_center_neighbor_corridor_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_center_contact_static.v3",
+        "status": "preregistered_neighbor_corridor_before_model_loading_static_enumeration_or_action_generation",
+        "proof_class": "prospective_cpu_fp64_static_low_center_neighbor_corridor_action_freeze"
       }
     },
     "simulator_candidate": {
@@ -2491,6 +2524,63 @@
       }
     },
     {
+      "id": "verdict:v05-ua-low-center-static-reject",
+      "type": "evaluator_verdict",
+      "label": "V05-UA low-center contact static terminal negative",
+      "status": "terminal_static_family_gate_negative_no_dynamic_admission",
+      "source_binding": "v05_ua_static_receipt",
+      "evaluator_identity": "171d634b577c4487ba8a8de1ee9ab14b21d6dc6c9633edd88ed8e00d3feb1f8a",
+      "data": {
+        "evaluated_cells": 324,
+        "ik_compile_rejects": 279,
+        "collision_rejects": 45,
+        "statically_eligible_families": 0,
+        "quarantine_leak": false,
+        "dynamic_replay_executed": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-ub-manager-authorization-bound",
+      "type": "checkpoint",
+      "label": "V05-UB delegated immediate-neighbor corridor authorized",
+      "status": "manager_authorized_static_design_bound",
+      "source_binding": "v05_ub_manager_authorization",
+      "data": {
+        "sole_change": "stroke_m_from_0.09_to_0.06",
+        "stroke_to_progress_gate_ratio": 1.6655,
+        "cumulative_quarantined_case_count": 12,
+        "static_design_authorized": true,
+        "model_loading_authorized": false,
+        "static_simulation_authorized": false,
+        "dynamic_replay_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-ub-neighbor-corridor-static-frozen",
+      "type": "checkpoint",
+      "label": "V05-UB low-center 60 mm neighbor-corridor grid frozen",
+      "status": "preregistered_neighbor_corridor_static_execution_active",
+      "source_binding": "v05_ub_static_contract",
+      "data": {
+        "stroke_mm": 60.0,
+        "modeled_center_travel_mm": 44.0,
+        "postquarantine_family_count": 36,
+        "maximum_total_cells": 324,
+        "only_stroke_changed_from_v05_ua": true,
+        "model_loading_authorized": true,
+        "static_simulation_authorized": true,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -3426,6 +3516,42 @@
       }
     },
     {
+      "source": "verdict:v05-ua-low-center-static-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-ua-low-center-static-frozen",
+      "metadata": {
+        "evaluated_cells": 324,
+        "statically_eligible_families": 0,
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-ub-manager-authorization-bound",
+      "type": "generated-from",
+      "target": "verdict:v05-ua-low-center-static-reject",
+      "metadata": {
+        "manager_authorized_under_standing_delegation": true,
+        "prior_verdict_immutable": true,
+        "sole_change": "stroke_m_from_0.09_to_0.06",
+        "static_design_only": true,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-ub-neighbor-corridor-static-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-ub-manager-authorization-bound",
+      "metadata": {
+        "preregistered_before_model_loading_or_enumeration": true,
+        "maximum_total_cells": 324,
+        "grid_changed_except_stroke": false,
+        "gate_changed": false,
+        "static_simulation_only": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -4127,14 +4253,41 @@
       "node_ids_added": [
         "checkpoint:v05-ua-low-center-static-frozen"
       ]
+    },
+    {
+      "revision": 73,
+      "event_id": "V05_UA_LOW_CENTER_STATIC_REJECT",
+      "status": "terminal_static_family_gate_negative_no_dynamic_admission",
+      "source_binding": "v05_ua_static_receipt",
+      "node_ids_added": [
+        "verdict:v05-ua-low-center-static-reject"
+      ]
+    },
+    {
+      "revision": 74,
+      "event_id": "V05_UB_MANAGER_AUTHORIZATION_BOUND",
+      "status": "manager_authorized_static_design_bound",
+      "source_binding": "v05_ub_manager_authorization",
+      "node_ids_added": [
+        "checkpoint:v05-ub-manager-authorization-bound"
+      ]
+    },
+    {
+      "revision": 75,
+      "event_id": "V05_UB_NEIGHBOR_CORRIDOR_STATIC_FREEZE",
+      "status": "preregistered_neighbor_corridor_static_execution_active",
+      "source_binding": "v05_ub_static_contract",
+      "node_ids_added": [
+        "checkpoint:v05-ub-neighbor-corridor-static-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-ua-low-center-static-frozen",
-    "milestone_id": "V05-UA",
-    "status": "preregistered_low_center_static_execution_active",
-    "queue_status": "ACTIVE_V05_UA_LOW_CENTER_STATIC_FROZEN",
-    "resume_action": "execute_one_bounded_324_cell_low_center_static_enumeration",
+    "node_id": "checkpoint:v05-ub-neighbor-corridor-static-frozen",
+    "milestone_id": "V05-UB",
+    "status": "preregistered_neighbor_corridor_static_execution_active",
+    "queue_status": "ACTIVE_V05_UB_NEIGHBOR_CORRIDOR_STATIC_FROZEN",
+    "resume_action": "execute_one_bounded_324_cell_neighbor_corridor_static_enumeration",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
