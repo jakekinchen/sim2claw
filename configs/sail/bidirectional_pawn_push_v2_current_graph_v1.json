@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "2af40b0d4112b3e14fe989a61ed3feed6eb36ce18ab4230cc566fa63be2b5919",
+      "sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -403,6 +403,16 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_heldout_evaluation_receipt.v1",
         "status": "registration_heldout_pass",
         "proof_class": "sealed_registration_heldout_evaluation_only"
+      }
+    },
+    "v05_sim_rehearsal_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v1.json",
+      "sha256": "8dd9d5f05bfc075a0116d6fd6fd478b67334702b141561675f775af1939059f3",
+      "proof_class": "prospective_cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal.v1",
+        "status": "preregistered_before_any_v05_nominal_task_outcome",
+        "proof_class": "prospective_cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal"
       }
     },
     "simulator_candidate": {
@@ -1129,6 +1139,24 @@
       }
     },
     {
+      "id": "checkpoint:v05-sim-rehearsal-frozen",
+      "type": "checkpoint",
+      "label": "V05 straight closed-jaw sim rehearsal frozen",
+      "status": "preregistered_bounded_grid_execution_active",
+      "source_binding": "v05_sim_rehearsal_contract",
+      "data": {
+        "contract_sha256": "8dd9d5f05bfc075a0116d6fd6fd478b67334702b141561675f775af1939059f3",
+        "implementation_sha256": "9be8be092653ea923a6e987e52f3cc4bd7697ef93d38d891681b379f1953e8c9",
+        "case_count": 8,
+        "recommendable_case_count": 7,
+        "stroke_count": 3,
+        "contact_height_count": 3,
+        "robustness_variant_count": 5,
+        "physical_task_outcomes_used": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -1554,6 +1582,16 @@
       }
     },
     {
+      "source": "checkpoint:v05-sim-rehearsal-frozen",
+      "type": "generated-from",
+      "target": "verdict:v04-rigid-heldout-pass",
+      "metadata": {
+        "bounded_grid": true,
+        "physical_task_outcomes_used": false,
+        "counted_action_hashes": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -1868,14 +1906,23 @@
       "node_ids_added": [
         "verdict:v04-rigid-heldout-pass"
       ]
+    },
+    {
+      "revision": 30,
+      "event_id": "V05_SIM_REHEARSAL_FREEZE",
+      "status": "preregistered_bounded_grid_execution_active",
+      "source_binding": "v05_sim_rehearsal_contract",
+      "node_ids_added": [
+        "checkpoint:v05-sim-rehearsal-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:v04-rigid-heldout-pass",
+    "node_id": "checkpoint:v05-sim-rehearsal-frozen",
     "milestone_id": "V05",
-    "status": "registration_heldout_pass_v05_sim_rehearsal_active",
-    "queue_status": "ACTIVE_V05_SIM_ONLY_STRAIGHT_CLOSED_JAW_PUSH_REHEARSAL",
-    "resume_action": "rehearse_rank3_ward_case_families_before_evaluator_freeze",
+    "status": "preregistered_bounded_grid_execution_active",
+    "queue_status": "ACTIVE_V05_FROZEN_SIM_REHEARSAL_EXECUTION",
+    "resume_action": "execute_frozen_bounded_sim_grid_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
