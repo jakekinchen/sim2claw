@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_VERSIONED_REHEARSAL_V3_ORCHESTRATION_CORRECTION`
+Status: `ACTIVE_V05_FROZEN_REHEARSAL_V3_SINGLE_EXECUTION`
 
 Created: `2026-07-28`
 
@@ -1933,3 +1933,28 @@ It must preserve all 72 cells, action values, scene, registration, simulator,
 dynamic rules, authority, and the v1/v2 negative history. A bounded
 end-to-end orchestration test must reach receipt generation, and v3 must be
 committed and pushed before its one execution.
+
+### V05 rehearsal-v3 prospective orchestration freeze — 2026-07-28
+
+The v3 contract is frozen at
+`configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v3.json`,
+SHA-256
+`493184be895022226dcf03a611a14a535f268282b10db2b7702d33f9f074d014`.
+It binds the entire unchanged v2 contract by SHA-256 rather than restating
+its grid. The v3 adapter SHA-256 is
+`997ae5dddf193a7a8f84a4aee97dcf503f59e4b7599042a858707603cd6a1e82`;
+it also binds the unchanged v2 and v1 evaluator hashes.
+
+V3 adds the legacy `minimum_joint_limit_margin_rad` key only inside a
+temporary internal compatibility contract, with its value copied exactly
+from the public `minimum_arm_joint_limit_margin_rad` gate. The temporary file
+is deleted after evaluation. The emitted v3 receipt binds the public v3
+contract and explicitly reports arm margin, jaw target, simulator jaw bounds,
+hardware-mapped jaw bounds, and unchanged dynamic checks.
+
+An end-to-end CLI test ran the real MuJoCo orchestration on a bounded one-case,
+one-cell, nominal-only fixture and reached a v3 receipt. The receipt contained
+all six explicit static checks, one grid result, zero physical motion, zero
+physical attempts, and no retained compatibility file. V3 focused tests pass
+`2/2`. The exact bound v2 72-cell grid may now execute once. No physical
+authority is granted.

@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T08:49:00-05:00",
+  "generated_at": "2026-07-28T09:01:00-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "381ebbb4cc849591d55e26e7caaebedf13dfe82fc6a85713ff6cc928a17df42c",
+      "sha256": "c3e751290fd3f9b62e1ae71822aebeedeadc9f99ab9b7404baef51f50c774339",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -445,6 +445,16 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal_execution_failure.v1",
         "status": "failed_closed_before_grid_receipt",
         "proof_class": "cpu_fp64_sim_only_rehearsal_orchestration_failure"
+      }
+    },
+    "v05_sim_rehearsal_v3_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v3.json",
+      "sha256": "493184be895022226dcf03a611a14a535f268282b10db2b7702d33f9f074d014",
+      "proof_class": "prospective_cpu_fp64_sim_only_rehearsal_v3_orchestration_compatibility",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal.v3",
+        "status": "preregistered_orchestration_compatibility_correction_before_v3_execution",
+        "proof_class": "prospective_cpu_fp64_sim_only_rehearsal_v3_orchestration_compatibility"
       }
     },
     "simulator_candidate": {
@@ -1239,6 +1249,22 @@
       }
     },
     {
+      "id": "checkpoint:v05-sim-rehearsal-v3-frozen",
+      "type": "checkpoint",
+      "label": "V05 rehearsal-v3 orchestration correction frozen",
+      "status": "preregistered_identical_grid_single_execution_active",
+      "source_binding": "v05_sim_rehearsal_v3_contract",
+      "data": {
+        "contract_sha256": "493184be895022226dcf03a611a14a535f268282b10db2b7702d33f9f074d014",
+        "implementation_sha256": "997ae5dddf193a7a8f84a4aee97dcf503f59e4b7599042a858707603cd6a1e82",
+        "frozen_v2_contract_sha256": "d57fc89a5874d630536ae6f981b78988c6da40bfb8934fee78ab2cfc02ac847f",
+        "bounded_cli_receipt_test_passed": true,
+        "grid_or_action_changed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -1706,6 +1732,17 @@
       }
     },
     {
+      "source": "checkpoint:v05-sim-rehearsal-v3-frozen",
+      "type": "generated-from",
+      "target": "counterexample:v05-sim-rehearsal-v2-key-error",
+      "metadata": {
+        "versioned_orchestration_correction": true,
+        "identical_v2_grid_by_hash": true,
+        "bounded_cli_receipt_test_passed": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -2056,14 +2093,23 @@
       "node_ids_added": [
         "counterexample:v05-sim-rehearsal-v2-key-error"
       ]
+    },
+    {
+      "revision": 34,
+      "event_id": "V05_SIM_REHEARSAL_V3_FREEZE",
+      "status": "preregistered_identical_grid_single_execution_active",
+      "source_binding": "v05_sim_rehearsal_v3_contract",
+      "node_ids_added": [
+        "checkpoint:v05-sim-rehearsal-v3-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "counterexample:v05-sim-rehearsal-v2-key-error",
+    "node_id": "checkpoint:v05-sim-rehearsal-v3-frozen",
     "milestone_id": "V05",
-    "status": "failed_closed_versioned_v3_orchestration_correction_active",
-    "queue_status": "ACTIVE_V05_VERSIONED_REHEARSAL_V3_ORCHESTRATION_CORRECTION",
-    "resume_action": "freeze_v3_orchestration_compatibility_correction",
+    "status": "preregistered_identical_grid_single_execution_active",
+    "queue_status": "ACTIVE_V05_FROZEN_REHEARSAL_V3_SINGLE_EXECUTION",
+    "resume_action": "execute_frozen_rehearsal_v3_identical_grid_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

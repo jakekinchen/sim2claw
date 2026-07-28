@@ -1,0 +1,45 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal.v3",
+  "rehearsal_id": "bidirectional-pawn-push-v2-sim-rehearsal-v3",
+  "status": "preregistered_orchestration_compatibility_correction_before_v3_execution",
+  "proof_class": "prospective_cpu_fp64_sim_only_rehearsal_v3_orchestration_compatibility",
+  "frozen_v2_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v2.json",
+    "sha256": "d57fc89a5874d630536ae6f981b78988c6da40bfb8934fee78ab2cfc02ac847f"
+  },
+  "v2_execution_failure": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v2_execution_failure.json",
+    "sha256": "8059636e6071c4b9f21f64be529b1499d5d54c1d11963316c83c123ce3cd9723"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_sim_rehearsal_v3.py",
+    "sha256": "997ae5dddf193a7a8f84a4aee97dcf503f59e4b7599042a858707603cd6a1e82"
+  },
+  "v2_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_sim_rehearsal_v2.py",
+    "sha256": "69ce7fe8d16dd3371bf4ce03c7c14d509da92f5e1ca31aa9dd91d6682810de7c"
+  },
+  "base_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_sim_rehearsal.py",
+    "sha256": "9be8be092653ea923a6e987e52f3cc4bd7697ef93d38d891681b379f1953e8c9"
+  },
+  "only_change": {
+    "legacy_internal_key": "minimum_joint_limit_margin_rad",
+    "value_source": "gates.minimum_arm_joint_limit_margin_rad",
+    "temporary_internal_contract_only": true,
+    "temporary_contract_retained": false,
+    "public_gate_semantics_changed": false,
+    "grid_or_action_changed": false,
+    "scene_or_registration_changed": false,
+    "dynamic_rule_changed": false
+  },
+  "authority": {
+    "evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective simulation-only orchestration compatibility correction over the exact frozen rehearsal-v2 contract; no physical or transfer authority."
+}
