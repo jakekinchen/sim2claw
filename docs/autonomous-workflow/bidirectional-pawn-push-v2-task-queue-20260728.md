@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_CAPTURE_COMPLETE_FIT_ONLY`
+Status: `ACTIVE_V04_ACQUISITION_V3_DESIGN`
 
 Created: `2026-07-28`
 
@@ -246,8 +246,10 @@ Current state:
   Execution-v2 completed the one reviewed no-contact acquisition-v2
   transaction. All `716 + 2596` exact rows executed byte-identically, all ten
   targets were captured with zero C922 drops, and torque-off cleanup passed.
-  Fit-only annotation and candidate freeze are active; the four heldouts remain
-  sealed and forbidden.
+  Fit-only scorability audit rejected acquisition-v2 before annotation or
+  fitting: only one of six fit images exposes both required pink endpoints.
+  The four heldouts remain sealed and forbidden. The single allowed
+  acquisition-v3 design is active.
 - Counted actions do not exist.
 
 Completed:
@@ -537,9 +539,9 @@ Blockers:
 
 Next action:
 
-- Annotate only the six fit images using the frozen feature protocol, fit and
-  independently review the bounded rigid robot-to-board candidate, then commit
-  its family/hash and decision before authorizing a one-time heldout open.
+- Freeze acquisition-v3 with empirical physical D405-housing occlusion gates,
+  endpoint-visible roll geometry, greater height/off-plane diversity, a new
+  fit/heldout split, and a CPU/fp64 static reviewer before any second capture.
 
 Attempt ledger:
 
@@ -1291,3 +1293,30 @@ task attempts remain `0/10`. V04 remains the only `IN_PROGRESS` card and now
 authorizes fit-image annotation only. The fit process must not read the
 execution receipt's heldout target mapping, sealed heldout directory, or
 heldout manifest contents before candidate freeze.
+
+### V04 acquisition-v2 fit scorability rejection / acquisition-v3 trigger — 2026-07-28
+
+Fit-only visual audit
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/fit-scorability-v2/audit.json`,
+SHA-256
+`6f9ecbf70c0a2e3f605352ceff6264ba04ce2e2f0733e93786aa9f781d87ba2d`,
+binds all six fit-image hashes and no heldout inputs. Only
+`v2r2-fit-panm20-wfm10` exposes both distal pink endpoint regions. The two
+other `-10 deg` wrist-flex views expose only one endpoint; all three
+`-26 deg` views expose none. The physical D405 wrist-camera housing occludes
+the missing feature.
+
+The acquisition-v2 MuJoCo visibility gate modeled jaw rays but not the
+physical D405 housing, so its `11/11` static pass did not establish empirical
+feature scorability. The audit therefore stopped before two-pass endpoint
+annotation, board extraction, candidate fitting, or parameter selection.
+There are no fit residuals, bound-saturation results, or identifiability
+metrics to promote. Candidate creation is false and heldout open count remains
+`0`.
+
+This is the first and only acquisition-v2 registration-family failure for the
+consolidated fallback. It activates exactly one acquisition-v3 family. V3 must
+use fit-only empirical visibility observations, must explicitly model or
+exclude D405-housing occlusion, must add height/off-plane diversity, and must
+freeze a new split before capture. Acquisition-v2 heldouts remain permanently
+sealed and cannot be reused.
