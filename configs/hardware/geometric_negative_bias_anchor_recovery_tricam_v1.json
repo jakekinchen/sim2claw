@@ -1,0 +1,55 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_negative_bias_anchor_recovery_tricam_20260727_v1",
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_15s_v1.json",
+    "contract_sha256": "457f2c142671851ddd60a3f1be5487125605957e38c1b2730ab683e08488393f"
+  },
+  "setup_recovery_command_anchor_snap_limit_degrees": 3.0,
+  "reviewed_anchor_degrees": [
+    -8.703296703296703,
+    -108.83516483516483,
+    102.9010989010989,
+    -84.17582417582418,
+    -126.37362637362638,
+    1.66270783847981
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -7.94094992495437,
+        -97.21529705572559,
+        85.00211937284479,
+        -83.20295106137854,
+        -126.59680526435972,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "calibration_capture_with_setup_recovery",
+    "capture_scope": "tricam_recovery_after_torque_off_gravity_sag",
+    "target_selection": "The stage-3 torque-off arm sagged 2.1978 degrees below the calibrated shoulder-lift minimum before stage 4. Start C922, D405, and Pi recording before the gateway issues the bounded clamp-to-range setup command, then slew to the exact negative-bias heldout anchor and close torque off.",
+    "runtime_capture_order_source_path": "src/sim2claw/wrist_view_reposition.py",
+    "runtime_capture_order_source_sha256": "44dd54b4fbdf36c8713a236a53cee7bbd55ce8e2fdf40093a0578408b79f29e5",
+    "source_stage_3_execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-dual-configuration-wrist-triangle-tricam-v1/stage-3/execution_receipt.json",
+    "source_stage_3_execution_receipt_sha256": "90d00e5976de015e901f4a531742172c89a5a61d1300a932fcbd4c87201b1838",
+    "failed_stage_4_attempt_commanded_motion": false,
+    "fresh_torque_off_anchor_read": true,
+    "setup_recovery_snap_limit_degrees": 3.0,
+    "observed_shoulder_lift_below_minimum_degrees": 2.19780219780219,
+    "pawn_contact_forbidden": true,
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

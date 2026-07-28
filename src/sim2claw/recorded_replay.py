@@ -15,7 +15,7 @@ import math
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Callable, Iterable, Mapping, Sequence
 
 import mujoco
 import numpy as np
@@ -35,6 +35,10 @@ SYNCHRONIZED_ROW_SCHEMA = "sim2claw.synchronized_replay_row.v1"
 CONFIG_SCHEMA = "sim2claw.recorded_action_sysid_config.v1"
 PHYSICAL_SAMPLE_SCHEMA = "sim2claw.physical_teleoperation_sample.v1"
 PHYSICAL_JOINT_TRANSFORM_SCHEMA = "sim2claw.physical_joint_transform.v1"
+PHYSICAL_SOURCE_PROOF_CLASSES = {
+    "physical_teleoperation_source_unqualified",
+    "physical_precompiled_follower_excitation_source_unqualified",
+}
 
 PROOF_CLASS_CATEGORIES = {
     "fixture",
@@ -156,12 +160,59 @@ class RecordedEpisode:
         }
 
 
+@dataclass(frozen=True)
+class UnapprovedPhysicalTransformDiagnostic:
+    """Narrow authority for one zero-fit, non-promotional replay.
+
+    The tolerance applies only to observed physical joint positions.  Initial
+    simulator state and every recorded control remain subject to the candidate
+    model's exact joint and actuator limits.
+    """
+
+    schema_version: str
+    proof_class: str
+    action_sha256: str
+    transform_sha256: str
+    candidate_config_sha256: str
+    source_provenance_sha256: str
+    evaluation_contract_sha256: str
+    measured_joint_tolerance: tuple[float, ...]
+    parameter_fitting_performed: bool = False
+    promotion_eligible: bool = False
+
+
+@dataclass(frozen=True)
+class ActuatorPlayDiagnostic:
+    """Typed non-promotional stateful actuator-target diagnostic.
+
+    The recorded command remains the simulator input and retains its exact
+    action identity.  ``radius_joint_units`` affects only an explicit internal
+    actuator target state and is never written back into the source action.
+    """
+
+    schema_version: str
+    joint_name: str
+    radius_joint_units: float
+    baseline_config_sha256: str
+    action_sha256: str
+    fit_source_sha256s: tuple[str, ...]
+    overlay_sha256: str
+    evaluation_contract_sha256: str
+    parameter_fitting_performed: bool = True
+    promotion_eligible: bool = False
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def float64_tensor_sha256(values: np.ndarray) -> str:
+    canonical = np.asarray(values, dtype="<f8", order="C")
+    return hashlib.sha256(canonical.tobytes(order="C")).hexdigest()
 
 
 def _atomic_json(path: Path, payload: Mapping[str, Any]) -> None:
@@ -182,6 +233,16 @@ def canonical_json_sha256(payload: Mapping[str, Any]) -> str:
         ensure_ascii=True,
     ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _runtime_config_canonical_sha256(config: Mapping[str, Any]) -> str:
+    return canonical_json_sha256(
+        {
+            key: value
+            for key, value in config.items()
+            if not str(key).startswith("_")
+        }
+    )
 
 
 def _is_sha256(value: Any) -> bool:
@@ -422,6 +483,7 @@ def validate_sysid_config(config: Mapping[str, Any]) -> None:
         "linear",
     }:
         raise ReplayContractError("command interpolation must be explicit")
+    _validated_calibrated_body_ranges(config)
     stages = config.get("parameter_stages")
     if not isinstance(stages, list) or [stage.get("name") for stage in stages] != [
         "geometry",
@@ -487,6 +549,63 @@ def validate_sysid_config(config: Mapping[str, Any]) -> None:
     if not math.isfinite(holdout_fraction) or not 0.0 < holdout_fraction < 1.0:
         raise ReplayContractError("split holdout_fraction must be between zero and one")
     _validated_physical_transform(config)
+
+
+def _validated_calibrated_body_ranges(
+    config: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    model_config = config.get("model")
+    if not isinstance(model_config, Mapping):
+        raise ReplayContractError("model config is required")
+    candidate = model_config.get("calibrated_body_ranges")
+    if candidate is None:
+        return None
+    if not isinstance(candidate, Mapping) or set(candidate) != {
+        "source_calibration_sha256",
+        "unit",
+        "joint_names",
+        "minimum",
+        "maximum",
+    }:
+        raise ReplayContractError(
+            "calibrated body ranges must use the reviewed compact schema"
+        )
+    source_sha256 = str(candidate.get("source_calibration_sha256") or "")
+    if not _is_sha256(source_sha256):
+        raise ReplayContractError(
+            "calibrated body ranges require a source calibration SHA-256"
+        )
+    bindings = config.get("bindings")
+    bound_names = (
+        list(bindings.get("joint_names") or [])[:5]
+        if isinstance(bindings, Mapping)
+        else []
+    )
+    names = candidate.get("joint_names")
+    if names != bound_names or len(bound_names) != 5:
+        raise ReplayContractError(
+            "calibrated body range names must match the five bound body joints"
+        )
+    lower = np.asarray(candidate.get("minimum"), dtype=np.float64)
+    upper = np.asarray(candidate.get("maximum"), dtype=np.float64)
+    if (
+        candidate.get("unit") != "degree"
+        or lower.shape != (5,)
+        or upper.shape != (5,)
+        or not np.all(np.isfinite(lower))
+        or not np.all(np.isfinite(upper))
+        or np.any(lower >= upper)
+    ):
+        raise ReplayContractError(
+            "calibrated body ranges require five finite increasing degree bounds"
+        )
+    return {
+        "source_calibration_sha256": source_sha256,
+        "unit": "degree",
+        "joint_names": list(names),
+        "minimum": lower.tolist(),
+        "maximum": upper.tolist(),
+    }
 
 
 def _finite_vector(value: Any, *, size: int, field: str) -> np.ndarray:
@@ -1106,11 +1225,11 @@ def _compile_model(
     model_config = config["model"]
     kind = model_config.get("kind")
     if kind == "current_chess_scene":
-        return (
-            build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT).compile(),
-            True,
-        )
-    if kind == "xml_path":
+        model = build_scene_spec(
+            piece_layout=CURRENT_TASK_PIECE_LAYOUT
+        ).compile()
+        current_scene = True
+    elif kind == "xml_path":
         xml_path = Path(model_config["path"])
         if not xml_path.is_absolute():
             if base_directory is None:
@@ -1118,10 +1237,40 @@ def _compile_model(
             xml_path = base_directory / xml_path
         if not xml_path.is_file():
             raise ReplayContractError(f"MuJoCo model does not exist: {xml_path}")
-        return mujoco.MjModel.from_xml_path(str(xml_path)), False
-    if kind == "xml_string":
-        return mujoco.MjModel.from_xml_string(str(model_config["xml"])), False
-    raise ReplayContractError(f"unsupported MuJoCo model kind: {kind}")
+        model = mujoco.MjModel.from_xml_path(str(xml_path))
+        current_scene = False
+    elif kind == "xml_string":
+        model = mujoco.MjModel.from_xml_string(str(model_config["xml"]))
+        current_scene = False
+    else:
+        raise ReplayContractError(f"unsupported MuJoCo model kind: {kind}")
+    calibrated_ranges = _validated_calibrated_body_ranges(config)
+    if calibrated_ranges is not None:
+        lower = np.deg2rad(
+            np.asarray(calibrated_ranges["minimum"], dtype=np.float64)
+        )
+        upper = np.deg2rad(
+            np.asarray(calibrated_ranges["maximum"], dtype=np.float64)
+        )
+        for index, name in enumerate(calibrated_ranges["joint_names"]):
+            joint_id = mujoco.mj_name2id(
+                model, mujoco.mjtObj.mjOBJ_JOINT, name
+            )
+            actuator_id = mujoco.mj_name2id(
+                model, mujoco.mjtObj.mjOBJ_ACTUATOR, name
+            )
+            if joint_id < 0 or actuator_id < 0:
+                raise ReplayContractError(
+                    f"calibrated body range target is missing: {name}"
+                )
+            model.jnt_limited[joint_id] = 1
+            model.jnt_range[joint_id] = [lower[index], upper[index]]
+            model.actuator_ctrllimited[actuator_id] = 1
+            model.actuator_ctrlrange[actuator_id] = [
+                lower[index],
+                upper[index],
+            ]
+    return model, current_scene
 
 
 def _parameter_descriptors(config: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]:
@@ -1159,6 +1308,85 @@ def validate_parameter_values(
             raise ReplayContractError(f"parameter {name} is outside its bounds")
         result[name] = value
     return result
+
+
+def _play_target(
+    previous: np.ndarray,
+    exact_command: np.ndarray,
+    *,
+    joint_index: int,
+    radius: float,
+) -> np.ndarray:
+    """Advance one play-operator state without mutating the exact command."""
+
+    previous_array = np.asarray(previous, dtype=np.float64)
+    command_array = np.asarray(exact_command, dtype=np.float64)
+    if (
+        previous_array.ndim != 1
+        or command_array.shape != previous_array.shape
+        or not np.all(np.isfinite(previous_array))
+        or not np.all(np.isfinite(command_array))
+        or not isinstance(joint_index, int)
+        or not 0 <= joint_index < previous_array.size
+        or not math.isfinite(radius)
+        or radius < 0.0
+    ):
+        raise ReplayContractError("actuator play target inputs are invalid")
+    target = command_array.copy()
+    target[joint_index] = max(
+        float(command_array[joint_index]) - radius,
+        min(
+            float(command_array[joint_index]) + radius,
+            float(previous_array[joint_index]),
+        ),
+    )
+    return target
+
+
+def _validated_actuator_play(
+    diagnostic: ActuatorPlayDiagnostic | None,
+    episode: RecordedEpisode,
+    config: Mapping[str, Any],
+) -> int | None:
+    if diagnostic is None:
+        return None
+    try:
+        joint_index = episode.joint_names.index(diagnostic.joint_name)
+    except ValueError as error:
+        raise ReplayContractError(
+            "actuator play diagnostic joint binding is missing"
+        ) from error
+    radius = float(diagnostic.radius_joint_units)
+    if (
+        diagnostic.schema_version
+        != "sim2claw.actuator_play_diagnostic.v1"
+        or not math.isfinite(radius)
+        or not 0.0 <= radius <= 1.0
+    ):
+        raise ReplayContractError("actuator play diagnostic radius is invalid")
+    if (
+        diagnostic.baseline_config_sha256
+        != _runtime_config_canonical_sha256(config)
+    ):
+        raise ReplayContractError(
+            "actuator play diagnostic baseline config changed"
+        )
+    if diagnostic.action_sha256 != float64_tensor_sha256(episode.commands):
+        raise ReplayContractError(
+            "actuator play diagnostic action identity changed"
+        )
+    if (
+        not diagnostic.fit_source_sha256s
+        or not all(_is_sha256(value) for value in diagnostic.fit_source_sha256s)
+        or not _is_sha256(diagnostic.overlay_sha256)
+        or not _is_sha256(diagnostic.evaluation_contract_sha256)
+        or diagnostic.parameter_fitting_performed is not True
+        or diagnostic.promotion_eligible is not False
+    ):
+        raise ReplayContractError(
+            "actuator play diagnostic provenance or authority is invalid"
+        )
+    return joint_index
 
 
 def _body_subtree_ids(model: mujoco.MjModel, names: Iterable[str]) -> set[int]:
@@ -1518,15 +1746,58 @@ def _require_episode_joint_limits(
     model: mujoco.MjModel,
     ids: Mapping[str, Any],
     episode: RecordedEpisode,
+    *,
+    diagnostic: UnapprovedPhysicalTransformDiagnostic | None = None,
 ) -> dict[str, Any]:
     diagnostics = episode_joint_limit_diagnostics(model, ids, episode)
-    if not diagnostics["all_within_limits"]:
-        raise ReplayRangeError(
-            "episode initial state, measured trajectory, or exact recorded commands "
-            "exceed simulator joint/control limits; replay refuses silent assignment or clipping",
-            diagnostics,
+    if diagnostics["all_within_limits"]:
+        return diagnostics
+    if diagnostic is not None:
+        tolerance = np.asarray(
+            diagnostic.measured_joint_tolerance, dtype=np.float64
         )
-    return diagnostics
+        measured = diagnostics["measured_trajectory"]
+        within_observation_tolerance = bool(
+            tolerance.shape == (len(episode.joint_names),)
+            and np.all(np.isfinite(tolerance))
+            and np.all(tolerance >= 0.0)
+            and diagnostics["recorded_commands"][
+                "violating_joint_value_count"
+            ]
+            == 0
+            and all(
+                float(
+                    diagnostics["initial_measured_state"]["per_joint"][name][
+                        "maximum_exceedance"
+                    ]
+                )
+                <= float(tolerance[index]) + 1e-12
+                for index, name in enumerate(episode.joint_names)
+            )
+            and all(
+                float(measured["per_joint"][name]["maximum_exceedance"])
+                <= float(tolerance[index]) + 1e-12
+                for index, name in enumerate(episode.joint_names)
+            )
+        )
+        if within_observation_tolerance:
+            diagnostics["diagnostic_observed_state_tolerance"] = {
+                "applied_to": (
+                    "initial_physical_observation_and_measured_trajectory"
+                ),
+                "tolerance": tolerance.tolist(),
+                "initial_state_tolerance": True,
+                "recorded_command_tolerance": False,
+                "model_or_control_range_modified": False,
+            }
+            diagnostics["diagnostic_replay_admitted"] = True
+            diagnostics["exact_replay_eligible"] = False
+            return diagnostics
+    raise ReplayRangeError(
+        "episode initial state, measured trajectory, or exact recorded commands "
+        "exceed simulator joint/control limits; replay refuses silent assignment or clipping",
+        diagnostics,
+    )
 
 
 def inspect_episode_joint_limits(
@@ -1674,11 +1945,21 @@ def simulate_and_align(
     *,
     parameter_values: Mapping[str, float] | None = None,
     model_base_directory: Path | None = None,
+    native_step_observer: Callable[[mujoco.MjModel, mujoco.MjData, int], None]
+    | None = None,
+    unapproved_transform_diagnostic: (
+        UnapprovedPhysicalTransformDiagnostic | None
+    ) = None,
+    actuator_diagnostic: ActuatorPlayDiagnostic | None = None,
 ) -> dict[str, Any]:
     """Replay an episode and align native simulation values to measured times."""
 
     validate_sysid_config(config)
+    replay_input_action_sha256 = float64_tensor_sha256(episode.commands)
     parameters = validate_parameter_values(config, parameter_values or {})
+    actuator_play_joint_index = _validated_actuator_play(
+        actuator_diagnostic, episode, config
+    )
     model, current_scene = _compile_model(
         config,
         base_directory=model_base_directory,
@@ -1695,14 +1976,61 @@ def simulate_and_align(
         object_body_name=object_body_name,
     )
     ids = _binding_ids(model, episode, config)
-    joint_limit_diagnostics = _require_episode_joint_limits(model, ids, episode)
-    if episode.joint_transform is not None and not bool(
-        episode.joint_transform.get("calibration_approved")
-    ):
+    unapproved_physical_transform = bool(
+        episode.joint_transform is not None
+        and not bool(episode.joint_transform.get("calibration_approved"))
+    )
+    if unapproved_physical_transform:
+        diagnostic = unapproved_transform_diagnostic
+        expected_action_sha256 = float64_tensor_sha256(episode.commands)
+        if (
+            diagnostic is None
+            or diagnostic.schema_version
+            != "sim2claw.unapproved_physical_transform_diagnostic.v1"
+            or diagnostic.proof_class
+            != "physical_canary_action_frozen_diagnostic"
+            or episode.proof_class != diagnostic.proof_class
+            or diagnostic.action_sha256 != expected_action_sha256
+            or episode.joint_transform is None
+            or diagnostic.transform_sha256
+            != episode.joint_transform.get("sha256")
+            or diagnostic.candidate_config_sha256
+            != canonical_json_sha256(config)
+            or diagnostic.source_provenance_sha256
+            != canonical_json_sha256(episode.source_provenance)
+            or episode.source_provenance.get("candidate_config_sha256")
+            != diagnostic.candidate_config_sha256
+            or episode.source_provenance.get("evaluation_contract_sha256")
+            != diagnostic.evaluation_contract_sha256
+            or episode.joint_transform.get("zero_fit_diagnostic_only")
+            is not True
+            or diagnostic.parameter_fitting_performed is not False
+            or diagnostic.promotion_eligible is not False
+            or (
+                actuator_diagnostic is not None
+                and diagnostic.evaluation_contract_sha256
+                != actuator_diagnostic.evaluation_contract_sha256
+            )
+        ):
+            raise ReplayContractError(
+                "physical joint transform is not calibration-approved; only "
+                "the typed action-frozen canary diagnostic may replay it"
+            )
+        if parameter_values is not None:
+            raise ReplayContractError(
+                "an unapproved physical transform may only enter a zero-fit diagnostic replay"
+            )
+    elif unapproved_transform_diagnostic is not None:
         raise ReplayContractError(
-            "physical joint transform is not calibration-approved; exact replay and fitting "
-            "remain blocked even when individual rows are range-feasible"
+            "unapproved-transform diagnostic authority was supplied to an "
+            "approved or transform-free episode"
         )
+    joint_limit_diagnostics = _require_episode_joint_limits(
+        model,
+        ids,
+        episode,
+        diagnostic=unapproved_transform_diagnostic,
+    )
     data = mujoco.MjData(model)
     if current_scene:
         initialize_robot_poses(model, data)
@@ -1748,14 +2076,30 @@ def simulate_and_align(
     initial_applied = _require_exact_control(
         model, ids["actuator_ids"], initial_command
     )
-    data.ctrl[ids["actuator_ids"]] = initial_applied
+    effective_target = initial_applied.copy()
+    if actuator_play_joint_index is not None:
+        effective_target = _play_target(
+            episode.initial_joint_position,
+            initial_applied,
+            joint_index=actuator_play_joint_index,
+            radius=float(actuator_diagnostic.radius_joint_units),
+        )
+    _require_exact_control(model, ids["actuator_ids"], effective_target)
+    data.ctrl[ids["actuator_ids"]] = effective_target
     mujoco.mj_forward(model, data)
+    if native_step_observer is not None:
+        native_step_observer(model, data, 0)
     native_times: list[float] = [float(data.time)]
     native_rows: list[dict[str, Any]] = [
         _simulation_observables(model, data, ids)
     ]
     native_requested_controls: list[np.ndarray] = [initial_command.copy()]
     native_applied_controls: list[np.ndarray] = [initial_applied.copy()]
+    native_effective_targets: list[np.ndarray] | None = (
+        [effective_target.copy()]
+        if actuator_diagnostic is not None
+        else None
+    )
     maximum_steps = int(math.ceil(episode.duration_seconds / model.opt.timestep)) + 2
     for _ in range(maximum_steps):
         if data.time + np.finfo(np.float64).eps >= episode.duration_seconds:
@@ -1767,12 +2111,26 @@ def simulate_and_align(
             interpolation=interpolation,
         )
         applied = _require_exact_control(model, ids["actuator_ids"], command)
-        data.ctrl[ids["actuator_ids"]] = applied
+        if actuator_play_joint_index is not None:
+            effective_target = _play_target(
+                effective_target,
+                applied,
+                joint_index=actuator_play_joint_index,
+                radius=float(actuator_diagnostic.radius_joint_units),
+            )
+        else:
+            effective_target = applied
+        _require_exact_control(model, ids["actuator_ids"], effective_target)
+        data.ctrl[ids["actuator_ids"]] = effective_target
         mujoco.mj_step(model, data)
+        if native_step_observer is not None:
+            native_step_observer(model, data, len(native_times))
         native_times.append(float(data.time))
         native_rows.append(_simulation_observables(model, data, ids))
         native_requested_controls.append(command.copy())
         native_applied_controls.append(applied.copy())
+        if native_effective_targets is not None:
+            native_effective_targets.append(effective_target.copy())
     if native_times[-1] + 1e-12 < episode.duration_seconds:
         raise ReplayContractError("bounded replay did not reach the final timestamp")
     native_time_array = np.asarray(native_times, dtype=np.float64)
@@ -1804,12 +2162,22 @@ def simulate_and_align(
         episode.timestamps,
     )
     applied_controls = applied_controls.astype(np.float64)
+    effective_targets: np.ndarray | None = None
+    if native_effective_targets is not None:
+        effective_targets = _align_discrete(
+            native_time_array,
+            native_effective_targets,
+            episode.timestamps,
+        ).astype(np.float64)
     synchronized_rows = _synchronized_rows(
         episode,
         simulated,
         requested_controls=requested_controls,
         applied_controls=applied_controls,
+        effective_actuator_targets=effective_targets,
     )
+    if float64_tensor_sha256(episode.commands) != replay_input_action_sha256:
+        raise ReplayContractError("recorded action tensor mutated during replay")
     return {
         "episode": episode,
         "parameters": parameters,
@@ -1825,6 +2193,7 @@ def simulate_and_align(
         "simulated": simulated,
         "control_diagnostics": {
             "exact_command_replay": True,
+            "replay_input_action_sha256": replay_input_action_sha256,
             "requested_equals_applied": True,
             "clipping_performed": False,
             "clipped_row_count": 0,
@@ -1834,6 +2203,76 @@ def simulate_and_align(
                 name: 0 for name in episode.joint_names
             },
             "joint_limit_validation": joint_limit_diagnostics,
+            "physical_transform_calibration_approved": not (
+                unapproved_physical_transform
+            ),
+            "unapproved_physical_transform_diagnostic": (
+                unapproved_physical_transform
+            ),
+            "unapproved_transform_diagnostic_contract": (
+                {
+                    "schema_version": (
+                        unapproved_transform_diagnostic.schema_version
+                    ),
+                    "proof_class": unapproved_transform_diagnostic.proof_class,
+                    "action_sha256": (
+                        unapproved_transform_diagnostic.action_sha256
+                    ),
+                    "transform_sha256": (
+                        unapproved_transform_diagnostic.transform_sha256
+                    ),
+                    "candidate_config_sha256": (
+                        unapproved_transform_diagnostic.candidate_config_sha256
+                    ),
+                    "source_provenance_sha256": (
+                        unapproved_transform_diagnostic.source_provenance_sha256
+                    ),
+                    "evaluation_contract_sha256": (
+                        unapproved_transform_diagnostic.evaluation_contract_sha256
+                    ),
+                    "promotion_eligible": False,
+                }
+                if unapproved_transform_diagnostic is not None
+                else None
+            ),
+            "actuator_model_transform_performed": (
+                actuator_diagnostic is not None
+            ),
+            "actuator_diagnostic_contract": (
+                {
+                    "schema_version": actuator_diagnostic.schema_version,
+                    "joint_name": actuator_diagnostic.joint_name,
+                    "radius_joint_units": (
+                        actuator_diagnostic.radius_joint_units
+                    ),
+                    "baseline_config_sha256": (
+                        actuator_diagnostic.baseline_config_sha256
+                    ),
+                    "action_sha256": actuator_diagnostic.action_sha256,
+                    "fit_source_sha256s": list(
+                        actuator_diagnostic.fit_source_sha256s
+                    ),
+                    "overlay_sha256": actuator_diagnostic.overlay_sha256,
+                    "evaluation_contract_sha256": (
+                        actuator_diagnostic.evaluation_contract_sha256
+                    ),
+                    "parameter_fitting_performed": True,
+                    "promotion_eligible": False,
+                }
+                if actuator_diagnostic is not None
+                else None
+            ),
+            "actuator_effective_target_sha256": (
+                float64_tensor_sha256(effective_targets)
+                if effective_targets is not None
+                else None
+            ),
+            "maximum_applied_effective_target_delta": (
+                float(np.max(np.abs(applied_controls - effective_targets)))
+                if effective_targets is not None
+                else 0.0
+            ),
+            "parameter_fitting_performed": actuator_diagnostic is not None,
         },
         "synchronized_rows": synchronized_rows,
     }
@@ -1845,6 +2284,7 @@ def _synchronized_rows(
     *,
     requested_controls: np.ndarray,
     applied_controls: np.ndarray,
+    effective_actuator_targets: np.ndarray | None = None,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     available = episode.available_observables()
@@ -1880,8 +2320,7 @@ def _synchronized_rows(
                     binding_reason = f"replay model has no configured {observable} output"
                     reason = f"{reason}; {binding_reason}" if reason else binding_reason
                 availability[observable] = {"available": False, "reason": reason}
-        rows.append(
-            {
+        row = {
                 "schema_version": SYNCHRONIZED_ROW_SCHEMA,
                 "episode_id": episode.episode_id,
                 "sample_index": index,
@@ -1900,7 +2339,11 @@ def _synchronized_rows(
                 "sim_minus_measured": errors,
                 "observable_availability": availability,
             }
-        )
+        if effective_actuator_targets is not None:
+            row["effective_actuator_target_joint_position"] = (
+                effective_actuator_targets[index].astype(float).tolist()
+            )
+        rows.append(row)
     return rows
 
 
@@ -2219,3 +2662,275 @@ def replay_recorded_episode(
         model_base_directory=config_path.resolve().parent,
     )
     return write_replay_receipt(replay, config, output_directory)
+
+
+def replay_exact_eligible_physical_recording(
+    recording_directory: Path,
+    exact_replay_manifest_path: Path,
+    *,
+    config_path: Path,
+    output_directory: Path,
+) -> dict[str, Any]:
+    """Replay only P4-admitted canonical gateway-sent actions, without fitting."""
+
+    from .replay_eligibility import (
+        action_sha256,
+        audit_exact_replay_manifest,
+    )
+    from .source_episode import RECEIPT_SCHEMA as RECORDING_RECEIPT_SCHEMA
+
+    recording_directory = recording_directory.resolve()
+    receipt_path = recording_directory / "recording_receipt.json"
+    samples_path = recording_directory / "samples.jsonl"
+    try:
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        manifest = json.loads(exact_replay_manifest_path.read_text(encoding="utf-8"))
+        sample_lines = samples_path.read_text(encoding="utf-8").splitlines()
+        samples = [json.loads(line) for line in sample_lines if line.strip()]
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ReplayContractError(f"physical exact-replay input is unreadable: {error}") from error
+    if not isinstance(receipt, Mapping) or not isinstance(manifest, Mapping):
+        raise ReplayContractError("recording receipt and exact-replay manifest must be objects")
+    if receipt.get("schema_version") != RECORDING_RECEIPT_SCHEMA:
+        raise ReplayContractError("recording receipt is not current finalized-recorder v1")
+    lineage = receipt.get("lineage")
+    backend = receipt.get("backend")
+    if (
+        receipt.get("mode") != "physical_follower"
+        or receipt.get("source_sample_schema") != PHYSICAL_SAMPLE_SCHEMA
+        or receipt.get("proof_class") not in PHYSICAL_SOURCE_PROOF_CLASSES
+        or receipt.get("assistance_frames") != 0
+        or receipt.get("intervention_frames") != 0
+        or not isinstance(lineage, Mapping)
+        or lineage.get("collection_kind") != "original_source_episode"
+        or lineage.get("corrective_suffix_parent_state_sha256") is not None
+        or not isinstance(backend, Mapping)
+        or backend.get("schema_version") != "sim2claw.so101_physical_gateway.v2"
+    ):
+        raise ReplayContractError("recording receipt is not an unmodified direct-gateway trace")
+
+    eligibility = audit_exact_replay_manifest(exact_replay_manifest_path)
+    if not eligibility["exact_replay_eligible"]:
+        codes = [reason["code"] for reason in eligibility["rejection_reasons"]]
+        raise ReplayContractError(f"exact-replay manifest is ineligible: {codes}")
+    episode_id = str(manifest.get("episode_id") or "")
+    if episode_id != receipt.get("recording_id"):
+        raise ReplayContractError("manifest and recording receipt episode identity differ")
+    if manifest.get("proof_class") != receipt.get("proof_class"):
+        raise ReplayContractError("manifest and recording receipt proof classes differ")
+    provenance = manifest.get("conversion_provenance")
+    if not isinstance(provenance, Mapping):
+        raise ReplayContractError("exact-replay conversion provenance is required")
+    receipt_sha256 = sha256_file(receipt_path)
+    samples_sha256 = sha256_file(samples_path)
+    if (
+        provenance.get("recording_receipt_path") != "recording_receipt.json"
+        or provenance.get("samples_path") != "samples.jsonl"
+        or provenance.get("recording_receipt_sha256") != receipt_sha256
+        or provenance.get("samples_sha256") != samples_sha256
+        or receipt.get("samples_sha256") != samples_sha256
+        or receipt.get("sample_count") != len(samples)
+    ):
+        raise ReplayContractError("current recording receipt/sample hashes do not match manifest")
+    semantics = manifest.get("action_semantics")
+    if (
+        not isinstance(semantics, Mapping)
+        or semantics.get("applied_field_compatibility_meaning")
+        != "gateway_sent_command"
+        or semantics.get("actuator_applied_or_acknowledged") is not False
+    ):
+        raise ReplayContractError("manifest must bind gateway-sent, non-acknowledged actions")
+    if manifest.get("joint_order") != list(ROBOT_JOINTS) or manifest.get("units") != {
+        "joint_position": "radian",
+        "joint_velocity": "radian_per_second",
+        "action": "radian",
+    }:
+        raise ReplayContractError("manifest joint order/units are not canonical SO-101")
+
+    timestamps = np.asarray(manifest.get("timestamps_seconds"), dtype=np.float64)
+    requested_commands = np.asarray(manifest.get("requested_actions"), dtype=np.float64)
+    commands = np.asarray(manifest.get("applied_actions"), dtype=np.float64)
+    initial = manifest.get("initial_state")
+    if not isinstance(initial, Mapping):
+        raise ReplayContractError("manifest measured initial state is required")
+    initial_position = _finite_vector(
+        initial.get("joint_position"), size=len(ROBOT_JOINTS), field="initial position"
+    )
+    initial_velocity = _finite_vector(
+        initial.get("joint_velocity"), size=len(ROBOT_JOINTS), field="initial velocity"
+    )
+    expected_action_sha256 = str(manifest.get("applied_action_sha256") or "")
+    if action_sha256(commands) != expected_action_sha256:
+        raise ReplayContractError("manifest gateway-sent action tensor hash drifted")
+    expected_shape = (len(samples), len(ROBOT_JOINTS))
+    if (
+        len(samples) != len(timestamps)
+        or requested_commands.shape != expected_shape
+        or commands.shape != expected_shape
+    ):
+        raise ReplayContractError("manifest timestamps/actions do not align with source samples")
+
+    measured: list[dict[str, Any]] = []
+    source_timestamps: list[float] = []
+    for index, sample in enumerate(samples):
+        if (
+            not isinstance(sample, Mapping)
+            or sample.get("schema_version") != PHYSICAL_SAMPLE_SCHEMA
+            or sample.get("episode_id") != episode_id
+            or sample.get("sample_index") != index
+        ):
+            raise ReplayContractError(f"physical sample {index} identity/schema drifted")
+        if (
+            bool(sample.get("assistance"))
+            or bool(sample.get("intervention"))
+            or bool(sample.get("rate_limited"))
+            or bool(sample.get("safety_clamped"))
+        ):
+            raise ReplayContractError(f"physical sample {index} records action modification")
+        source_timestamps.append(float(sample.get("timestamp_monotonic_seconds")))
+        requested = np.deg2rad(
+            _finite_vector(
+                sample.get("follower_requested_degrees"),
+                size=len(ROBOT_JOINTS),
+                field=f"sample {index} requested command",
+            )
+        )
+        sent = np.deg2rad(
+            _finite_vector(
+                sample.get("follower_command_degrees"),
+                size=len(ROBOT_JOINTS),
+                field=f"sample {index} gateway-sent command",
+            )
+        )
+        if not np.array_equal(requested, requested_commands[index]) or not np.array_equal(
+            sent, commands[index]
+        ):
+            raise ReplayContractError(f"sample {index} requested/gateway-sent action drifted")
+        measured_position = np.deg2rad(
+            _finite_vector(
+                sample.get("follower_actual_position_degrees"),
+                size=len(ROBOT_JOINTS),
+                field=f"sample {index} measured joint position",
+            )
+        )
+        measured.append({"joint_position": measured_position.tolist()})
+        if index == 0:
+            measured_velocity = np.deg2rad(
+                _finite_vector(
+                    sample.get("follower_actual_velocity_degrees_s"),
+                    size=len(ROBOT_JOINTS),
+                    field="sample 0 measured joint velocity",
+                )
+            )
+            if not np.array_equal(measured_position, initial_position) or not np.array_equal(
+                measured_velocity, initial_velocity
+            ):
+                raise ReplayContractError(
+                    "manifest initial position/velocity differ from source sample 0"
+                )
+    if not np.array_equal(np.asarray(source_timestamps, dtype=np.float64), timestamps):
+        raise ReplayContractError(
+            "manifest timestamps differ from source; replay never repairs them"
+        )
+
+    config = load_sysid_config(config_path)
+    if config["replay"]["command_interpolation"] != "zero_order_hold":
+        raise ReplayContractError("eligible physical replay requires zero-order hold")
+    normalized_timestamps, original_timestamps = _validate_timestamps(
+        timestamps,
+        maximum_gap_seconds=float(config["replay"]["maximum_gap_seconds"]),
+        maximum_duration_seconds=float(config["replay"]["maximum_duration_seconds"]),
+    )
+    joint_names = tuple(f"left_{name}" for name in ROBOT_JOINTS)
+    episode = RecordedEpisode(
+        episode_id=episode_id,
+        proof_class=str(manifest["proof_class"]),
+        proof_class_category="physical_read_only",
+        column=None,
+        joint_names=joint_names,
+        initial_joint_position=initial_position,
+        initial_joint_position_units=("radian",) * len(ROBOT_JOINTS),
+        initial_joint_velocity=initial_velocity,
+        initial_joint_velocity_units=("radian_per_second",) * len(ROBOT_JOINTS),
+        timestamps=normalized_timestamps,
+        original_timestamps=original_timestamps,
+        commands=commands.copy(),
+        measured=tuple(measured),
+        initial_object_state={
+            "status": "unavailable",
+            "reason": "no hash-bound metric object pose in the physical source",
+        },
+        unavailable_observables={
+            "end_effector_position": "no measured metric end-effector trajectory",
+            "end_effector_orientation": "no measured end-effector orientation",
+            "gripper_position": "covered only as a joint trajectory component",
+            "pawn_position": "no measured metric pawn trajectory",
+            "pawn_orientation": "no measured metric pawn orientation",
+            "contact_active": "no calibrated contact observable",
+            "contact_force": "no calibrated contact/load observable",
+        },
+        source_path=samples_path,
+        source_sha256=samples_sha256,
+        source_schema_version=PHYSICAL_SAMPLE_SCHEMA,
+        source_provenance={
+            "chain_complete": True,
+            "episode_id": episode_id,
+            "recording_receipt": {
+                "path": "recording_receipt.json",
+                "sha256": receipt_sha256,
+            },
+            "samples": {"path": "samples.jsonl", "sha256": samples_sha256},
+            "exact_replay_manifest": {
+                "sha256": eligibility["manifest_sha256"],
+                "action_sha256": expected_action_sha256,
+            },
+        },
+        joint_transform=None,
+    )
+    replay = simulate_and_align(
+        episode,
+        config,
+        parameter_values={},
+        model_base_directory=config_path.resolve().parent,
+    )
+    consumed_sha256 = str(
+        replay["control_diagnostics"].get("replay_input_action_sha256") or ""
+    )
+    if (
+        consumed_sha256 != expected_action_sha256
+        or action_sha256(replay["episode"].commands) != expected_action_sha256
+    ):
+        raise ReplayContractError("replay-side gateway-sent action tensor mutated")
+    if replay["parameters"] != nominal_parameter_values(config):
+        raise ReplayContractError("eligible physical replay cannot mutate parameters")
+    replay["control_diagnostics"].update(
+        {
+            "input_gateway_sent_action_sha256": expected_action_sha256,
+            "replay_consumed_action_sha256": consumed_sha256,
+            "input_equals_replay_consumed": True,
+            "action_semantics": "gateway_sent_command_not_actuator_ack",
+        }
+    )
+    result = write_replay_receipt(replay, config, output_directory)
+    result["evaluator_admission"] = False
+    result["physical_authority"] = False
+    result["exact_replay_binding"] = {
+        "manifest_sha256": eligibility["manifest_sha256"],
+        "input_gateway_sent_action_sha256": expected_action_sha256,
+        "replay_consumed_action_sha256": consumed_sha256,
+        "byte_identical": True,
+    }
+    result["blockers"] = {
+        "metric_geometry": "unavailable",
+        "timing_identification": "unavailable",
+        "actuator_application_or_ack": "unavailable",
+        "contact_and_load": "unavailable",
+        "task_consequence": "unavailable",
+    }
+    result.pop("receipt_path", None)
+    result.pop("receipt_sha256", None)
+    final_receipt_path = output_directory.resolve() / "replay_receipt.json"
+    _atomic_json(final_receipt_path, result)
+    result["receipt_path"] = final_receipt_path.name
+    result["receipt_sha256"] = sha256_file(final_receipt_path)
+    return result

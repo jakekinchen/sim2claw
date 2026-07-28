@@ -170,6 +170,31 @@ def build_parser() -> argparse.ArgumentParser:
             "disabled by default and incompatible with --read-only"
         ),
     )
+    real_to_sim = subparsers.add_parser(
+        "real-to-sim-transfer",
+        help=(
+            "publish one observed-joint REAL-to-SIM comparison in the existing "
+            "Studio episode library"
+        ),
+    )
+    real_to_sim.add_argument("--recording-directory", type=Path, required=True)
+    real_to_sim.add_argument("--source-square", required=True)
+    real_to_sim.add_argument("--destination-square", required=True)
+    real_to_sim.add_argument("--grasp-index", type=int, required=True)
+    real_to_sim.add_argument("--release-index", type=int, required=True)
+    real_to_sim.add_argument(
+        "--camera-evaluation",
+        type=Path,
+        default=REPO_ROOT
+        / "runs/c922-board-base-registration/"
+        "20260726-current-c922-pose-p2-successor-v1/evaluation.json",
+    )
+    real_to_sim.add_argument(
+        "--scene-registration",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/evaluations/img5349_3dgs_board_registration_v1.json",
+    )
 
     project_pack = subparsers.add_parser(
         "project-pack", help="create a hash-bound project evidence bundle"
@@ -208,6 +233,22 @@ def build_parser() -> argparse.ArgumentParser:
         "pipeline-status", help="show the latest bounded NemoClaw stage result"
     )
     pipeline_status.add_argument("--project", type=Path, required=True)
+
+    inspect_robots_offline = subparsers.add_parser(
+        "inspect-robots-offline",
+        help="run the optional Inspect Robots deterministic offline replay slice",
+    )
+    inspect_robots_offline.add_argument(
+        "--fixture",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/integrations/inspect_robots_offline_fixture.json",
+    )
+    inspect_robots_offline.add_argument(
+        "--output-dir",
+        type=Path,
+        default=REPO_ROOT / "runs/inspect_robots_offline",
+    )
 
     factory_inspect = subparsers.add_parser(
         "factory-inspect",
@@ -532,6 +573,273 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         help="bounded candidate override in name=value form; repeat as needed",
     )
+    replay_eligibility = subparsers.add_parser(
+        "replay-eligibility-audit",
+        help="audit one manifest for exact-replay eligibility without replaying it",
+    )
+    replay_eligibility.add_argument("--manifest", type=Path, required=True)
+    replay_eligibility.add_argument("--output", type=Path, required=True)
+    physical_replay_eligibility = subparsers.add_parser(
+        "physical-recording-replay-eligibility",
+        help="materialize and audit exact-replay identity from a finalized recording",
+    )
+    physical_replay_eligibility.add_argument(
+        "--recording", type=Path, required=True
+    )
+    physical_replay_eligibility.add_argument(
+        "--manifest-output", type=Path, required=True
+    )
+    physical_replay_eligibility.add_argument(
+        "--report-output", type=Path, required=True
+    )
+    eligible_physical_replay = subparsers.add_parser(
+        "replay-eligible-physical-recording",
+        help="replay P4-eligible physical actions offline with exact tensor identity",
+    )
+    eligible_physical_replay.add_argument("--recording", type=Path, required=True)
+    eligible_physical_replay.add_argument("--manifest", type=Path, required=True)
+    eligible_physical_replay.add_argument(
+        "--config", type=Path, default=DEFAULT_SYSID_CONFIG
+    )
+    eligible_physical_replay.add_argument("--output", type=Path, required=True)
+    hold_record = subparsers.add_parser("zero-displacement-hold-record")
+    hold_record.add_argument(
+        "--packet",
+        type=Path,
+        default=REPO_ROOT / "configs/hardware/p6_zero_displacement_hold_packet.json",
+    )
+    hold_record.add_argument("--yes", action="store_true")
+    physical_excitation = subparsers.add_parser(
+        "physical-excitation",
+        help="compile, reposition, or execute one follower-only excitation packet",
+    )
+    physical_excitation.add_argument(
+        "--phase", choices=("compile", "reposition", "execute"), required=True
+    )
+    physical_excitation.add_argument("--packet", type=Path, required=True)
+    physical_excitation.add_argument("--output", type=Path)
+    physical_excitation.add_argument("--yes", action="store_true")
+    physical_excitation.add_argument("--dry-run", action="store_true")
+    physical_canary = subparsers.add_parser(
+        "physical-canary",
+        help="normalize, compile, or execute one frozen simulation canary on the follower",
+    )
+    physical_canary.add_argument(
+        "--phase", choices=("normalize", "compile", "execute"), required=True
+    )
+    physical_canary.add_argument("--packet", type=Path, required=True)
+    physical_canary.add_argument("--bundle", type=Path)
+    physical_canary.add_argument("--contact-receipt", type=Path)
+    physical_canary.add_argument("--normalization-receipt", type=Path)
+    physical_canary.add_argument(
+        "--pan-direction",
+        choices=("positive-first", "negative-first"),
+        default="positive-first",
+        help="choose the frozen shoulder-pan sweep order during compilation",
+    )
+    physical_canary.add_argument(
+        "--pan-play-diagnostic-receipt",
+        type=Path,
+        help=(
+            "freeze a separate fitted pan-play prediction during compilation"
+        ),
+    )
+    physical_canary.add_argument(
+        "--pi-video-contract",
+        type=Path,
+        help="add the bounded Pi IMX708 motion sidecar during execution",
+    )
+    physical_canary.add_argument("--output", type=Path)
+    physical_canary.add_argument("--yes", action="store_true")
+    physical_canary_replay = subparsers.add_parser(
+        "replay-physical-canary",
+        help=(
+            "verify and replay one exact mixed-unit physical canary in "
+            "simulation without fitting"
+        ),
+    )
+    physical_canary_replay.add_argument(
+        "--packet", type=Path, required=True
+    )
+    physical_canary_replay.add_argument(
+        "--execution-receipt", type=Path, required=True
+    )
+    physical_canary_replay.add_argument(
+        "--output", type=Path, required=True
+    )
+    pan_play = subparsers.add_parser(
+        "fit-physical-canary-pan-play",
+        help=(
+            "fit one preregistered shoulder-pan actuator play radius and "
+            "score its retrospective validation without physical execution"
+        ),
+    )
+    pan_play.add_argument("--contract", type=Path, required=True)
+    pan_play.add_argument("--output", type=Path, required=True)
+    geometric_physical = subparsers.add_parser(
+        "geometric-physical",
+        help=(
+            "compile, independently review, or execute one evaluator-admitted "
+            "geometric pawn episode"
+        ),
+    )
+    geometric_physical.add_argument(
+        "--phase", choices=("compile", "review", "execute"), required=True
+    )
+    geometric_physical.add_argument("--packet", type=Path, required=True)
+    geometric_physical.add_argument("--episode", type=Path)
+    geometric_physical.add_argument("--admission", type=Path)
+    geometric_physical.add_argument("--candidate-manifest", type=Path)
+    geometric_physical.add_argument("--review", type=Path)
+    geometric_physical.add_argument("--output", type=Path)
+    geometric_physical.add_argument("--reviewer")
+    geometric_physical.add_argument("--decision-id")
+    geometric_physical.add_argument("--yes", action="store_true")
+    wrist_view_reposition = subparsers.add_parser(
+        "wrist-view-reposition",
+        help="compile, review, or execute one guarded follower-only D405 view stage",
+    )
+    wrist_view_reposition.add_argument(
+        "--phase", choices=("compile", "review", "execute"), required=True
+    )
+    wrist_view_reposition.add_argument("--packet", type=Path, required=True)
+    wrist_view_reposition.add_argument("--candidate-manifest", type=Path)
+    wrist_view_reposition.add_argument("--route", type=Path)
+    wrist_view_reposition.add_argument("--review", type=Path)
+    wrist_view_reposition.add_argument("--output", type=Path)
+    wrist_view_reposition.add_argument("--stage", type=int)
+    wrist_view_reposition.add_argument("--prior-receipt", type=Path)
+    wrist_view_reposition.add_argument("--reviewer")
+    wrist_view_reposition.add_argument("--decision-id")
+    wrist_view_reposition.add_argument("--yes", action="store_true")
+    live_anchored_reposition = subparsers.add_parser(
+        "live-anchored-camera-reposition",
+        help="preview and execute one setup-only route from a settled torque-on anchor",
+    )
+    live_anchored_reposition.add_argument("--route", type=Path, required=True)
+    live_anchored_reposition.add_argument(
+        "--candidate-manifest", type=Path, required=True
+    )
+    live_anchored_reposition.add_argument("--output", type=Path, required=True)
+    live_anchored_reposition.add_argument("--yes", action="store_true")
+    c922_acquisition = subparsers.add_parser(
+        "c922-calibration-acquisition-preflight",
+        help="dry-run the frozen 18-view C922 calibration acquisition plan",
+    )
+    c922_acquisition.add_argument(
+        "--plan",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/acquisition/c922_exact_mode_calibration.json",
+    )
+    c922_acquisition.add_argument("--output", type=Path, required=True)
+    c922_capture = subparsers.add_parser(
+        "c922-calibration-acquire",
+        help="acquire the frozen operator-guided 18-view C922 corpus",
+    )
+    c922_capture.add_argument("--plan", type=Path, default=REPO_ROOT / "configs/acquisition/c922_exact_mode_calibration.json")
+    c922_capture.add_argument("--output", type=Path, required=True)
+    c922_capture.add_argument("--dry-run", action="store_true")
+    metrology_transaction = subparsers.add_parser(
+        "metrology-transaction-preflight",
+        help="readiness-only P8/P13 metrology transaction; never opens cameras",
+    )
+    metrology_transaction.add_argument(
+        "--transaction",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/acquisition/current_100mm_p8_p13_metrology_transaction_v1.json",
+    )
+    metrology_transaction.add_argument("--output", type=Path, required=True)
+    d405_apriltag = subparsers.add_parser(
+        "d405-apriltag-observe",
+        help="detect tag36h11 id 0 offline in an existing D405 RGB image or video",
+    )
+    d405_apriltag.add_argument("--source", type=Path, required=True)
+    d405_apriltag.add_argument(
+        "--contract",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/acquisition/d405_wrist_apriltag_observation_v1.json",
+    )
+    d405_apriltag.add_argument("--capture-report", type=Path)
+    d405_apriltag.add_argument("--selected-frame-output", type=Path)
+    d405_apriltag.add_argument("--output", type=Path, required=True)
+    img5431_multitag = subparsers.add_parser(
+        "observe-img5431-multitags",
+        help=(
+            "materialize hash-bound frame-local AprilTag pixels from "
+            "IMG_5431 without assigning tracks or poses"
+        ),
+    )
+    img5431_multitag.add_argument("--source", type=Path, required=True)
+    img5431_multitag.add_argument(
+        "--contract",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/acquisition/img5431_multitag_observation_v1.json",
+    )
+    img5431_multitag.add_argument("--output", type=Path, required=True)
+    static_tricam = subparsers.add_parser(
+        "static-tricam-capture",
+        help="capture one rigid C922, D405 RGB-D, and Pi still bundle",
+    )
+    static_tricam.add_argument(
+        "--contract",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/acquisition/current_static_tricam_capture_v1.json",
+    )
+    static_tricam.add_argument("--output", type=Path, required=True)
+    static_tricam.add_argument("--camera-session-token", required=True)
+    static_tricam.add_argument("--fixed-mount-token", required=True)
+    static_tricam.add_argument(
+        "--yes",
+        action="store_true",
+        help="acknowledge that the scene and arm will remain rigid",
+    )
+    d405_rgbd_readiness = subparsers.add_parser(
+        "d405-rgbd-readiness",
+        help="inventory D405/librealsense metric-depth access without streaming",
+    )
+    d405_rgbd_readiness.add_argument("--output", type=Path, required=True)
+    d405_rgbd_readiness.add_argument(
+        "--enumeration-file",
+        type=Path,
+        help="ingest the stdout from an operator-run privileged calibration inventory",
+    )
+    workcell_registration = subparsers.add_parser(
+        "workcell-registration",
+        help="write or evaluate the stationary board-to-workcell survey",
+    )
+    workcell_registration.add_argument(
+        "--phase", choices=("worksheet", "evaluate"), required=True
+    )
+    workcell_registration.add_argument("--output", type=Path, required=True)
+    workcell_registration.add_argument("--survey", type=Path)
+    workcell_registration.add_argument("--manifest", type=Path)
+    workcell_input = subparsers.add_parser(
+        "workcell-registration-input",
+        help="capture, annotate, or finalize stationary P13 inputs",
+    )
+    workcell_input.add_argument(
+        "--phase", choices=("capture", "bundle", "finalize"), required=True
+    )
+    workcell_input.add_argument("--output", type=Path, required=True)
+    workcell_input.add_argument("--capture-receipt", type=Path)
+    workcell_input.add_argument("--annotator-a", type=Path)
+    workcell_input.add_argument("--annotator-b", type=Path)
+    workcell_input.add_argument("--board-measurement", type=Path)
+    workcell_input.add_argument("--survey", type=Path)
+    workcell_input.add_argument("--intrinsics", type=Path)
+    workcell_input.add_argument("--distortion", type=Path)
+    workcell_input.add_argument("--focus-setting")
+    workcell_input.add_argument("--dry-run", action="store_true")
+    workcell_input.add_argument("--ack-board-camera-fixed", action="store_true")
+    workcell_input.add_argument("--ack-board-cleared", action="store_true")
+    workcell_input.add_argument("--ack-markers-visible", action="store_true")
+    workcell_input.add_argument("--ack-focus-locked", action="store_true")
+    workcell_input.add_argument("--ack-no-camera-owner", action="store_true")
 
     sysid_capability = subparsers.add_parser(
         "sysid-capability",
@@ -589,6 +897,65 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("auto", "official", "local"),
         default="auto",
     )
+    timing_fit = subparsers.add_parser(
+        "sysid-fit-physical-timing",
+        help="fit timing/control only from P4-eligible current physical recordings",
+    )
+    timing_fit.add_argument("--cohort", type=Path, required=True)
+    timing_fit.add_argument("--config", type=Path, default=DEFAULT_SYSID_CONFIG)
+    timing_fit.add_argument("--output", type=Path, required=True)
+    timing_fit.add_argument(
+        "--backend",
+        choices=("auto", "official", "local"),
+        default="auto",
+    )
+    timing_admission = subparsers.add_parser(
+        "sysid-admit-physical-timing",
+        help="independently replay one frozen P9 candidate with CPU/fp32 metrics",
+    )
+    timing_admission.add_argument("--fit", type=Path, required=True)
+    timing_admission.add_argument("--cohort", type=Path, required=True)
+    timing_admission.add_argument("--config", type=Path, default=DEFAULT_SYSID_CONFIG)
+    timing_admission.add_argument("--output", type=Path, required=True)
+    timing_admission.add_argument("--synthetic-fixture", action="store_true")
+    twin_candidate = subparsers.add_parser(
+        "twin-candidate-canary",
+        help="compose one admitted geometry/timing candidate and exact canary",
+    )
+    twin_candidate.add_argument("--p9-admission", type=Path, required=True)
+    twin_candidate.add_argument("--p13-transform", type=Path)
+    twin_candidate.add_argument("--p13-board-fit", type=Path)
+    twin_candidate.add_argument("--baseline", type=Path, default=DEFAULT_SYSID_CONFIG)
+    twin_candidate.add_argument("--canary-input", type=Path)
+    twin_candidate.add_argument(
+        "--p10-cohort",
+        type=Path,
+        help="completed P10 cohort for the simulation-only stationary anchor",
+    )
+    twin_candidate.add_argument("--output", type=Path, required=True)
+    twin_candidate.add_argument("--synthetic-fixture", action="store_true")
+    twin_candidate.add_argument("--simulation-only", action="store_true")
+    canary_contact = subparsers.add_parser(
+        "canary-contact-preflight",
+        help="audit one frozen P15 canary at every native MuJoCo step",
+    )
+    canary_contact.add_argument("--candidate", type=Path, required=True)
+    canary_contact.add_argument("--canary", type=Path, required=True)
+    canary_contact.add_argument("--baseline", type=Path, default=DEFAULT_SYSID_CONFIG)
+    canary_contact.add_argument("--p8-intrinsics", type=Path)
+    canary_contact.add_argument("--p8-distortion", type=Path)
+    canary_contact.add_argument("--p9-admission", type=Path, required=True)
+    canary_contact.add_argument("--p13-transform", type=Path)
+    canary_contact.add_argument("--p13-board-fit", type=Path)
+    canary_contact.add_argument(
+        "--policy",
+        type=Path,
+        default=REPO_ROOT
+        / "configs/evaluations/zero_contact_canary_policy_v1.json",
+    )
+    canary_contact.add_argument("--output", type=Path, required=True)
+    canary_contact.add_argument("--synthetic-fixture", action="store_true")
+    canary_contact.add_argument("--simulation-only", action="store_true")
 
     actuator_external = subparsers.add_parser(
         "actuator-external-validate",
@@ -609,6 +976,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     source_expert.add_argument("--output", type=Path, required=True)
     source_expert.add_argument("--render-size", type=int, default=224)
+    source_expert.add_argument("--expert-profile", type=Path, default=None)
 
     source_adapt = subparsers.add_parser(
         "source-adapt",
@@ -962,6 +1330,20 @@ def main(argv: Sequence[str] | None = None) -> int:
             enable_physical_demo=args.enable_physical_demo,
         )
         return 0
+    if args.command == "real-to-sim-transfer":
+        from .real_to_sim_transfer import publish_real_to_sim_comparison
+
+        report = publish_real_to_sim_comparison(
+            args.recording_directory,
+            visual_source_square=args.source_square,
+            visual_destination_square=args.destination_square,
+            grasp_index=args.grasp_index,
+            release_index=args.release_index,
+            camera_evaluation_path=args.camera_evaluation,
+            scene_registration_path=args.scene_registration,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     if args.command == "project-pack":
         from .project_bundle import pack_project
 
@@ -1111,6 +1493,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .teleop_recording import physical_gateway_preflight
 
         print(json.dumps(physical_gateway_preflight(), indent=2, sort_keys=True))
+        return 0
+    if args.command == "inspect-robots-offline":
+        try:
+            from .inspect_robots_adapter import (
+                InspectRobotsIntegrationError,
+                run_offline_slice,
+            )
+        except ImportError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        try:
+            report = run_offline_slice(
+                fixture_path=args.fixture,
+                output_dir=args.output_dir,
+            )
+        except InspectRobotsIntegrationError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
         return 0
     if args.command == "physical-measurement-baseline":
         from .current_workcell_measurement import capture_torque_off_baseline
@@ -1508,6 +1909,629 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
+    if args.command == "replay-eligibility-audit":
+        from .replay_eligibility import audit_and_write_exact_replay_manifest
+
+        report = audit_and_write_exact_replay_manifest(
+            args.manifest,
+            args.output,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["exact_replay_eligible"] else 1
+    if args.command == "physical-recording-replay-eligibility":
+        from .replay_eligibility import (
+            materialize_physical_recording_exact_replay,
+        )
+
+        try:
+            report = materialize_physical_recording_exact_replay(
+                args.recording,
+                args.manifest_output,
+                args.report_output,
+            )
+        except ValueError as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["exact_replay_eligible"] else 1
+    if args.command == "replay-eligible-physical-recording":
+        from .recorded_replay import (
+            ReplayContractError,
+            replay_exact_eligible_physical_recording,
+        )
+
+        try:
+            receipt = replay_exact_eligible_physical_recording(
+                args.recording,
+                args.manifest,
+                config_path=args.config,
+                output_directory=args.output,
+            )
+        except (ReplayContractError, ValueError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(receipt, indent=2, sort_keys=True))
+        return 0
+    if args.command == "zero-displacement-hold-record":
+        from .physical_gateway import PhysicalGatewayError
+        from .teleop_recording import (
+            RecorderError,
+            run_zero_displacement_hold_packet,
+        )
+
+        try:
+            receipt = run_zero_displacement_hold_packet(
+                args.packet,
+                operator_acknowledged=args.yes,
+            )
+        except (OSError, ValueError, RecorderError, PhysicalGatewayError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(receipt, indent=2, sort_keys=True))
+        return 0
+    if args.command == "physical-excitation":
+        from .physical_gateway import PhysicalGatewayError
+        from .teleop_recording import (
+            RecorderError,
+            compile_physical_excitation_packet,
+            execute_physical_excitation_packet,
+            reposition_physical_follower,
+        )
+
+        try:
+            if args.phase == "compile":
+                if args.output is not None or args.dry_run:
+                    raise RecorderError(
+                        "--output and --dry-run are only valid during reposition."
+                    )
+                result = compile_physical_excitation_packet(args.packet)
+            elif args.phase == "reposition":
+                if args.yes and args.dry_run:
+                    raise RecorderError("Choose either --yes or --dry-run.")
+                if not args.dry_run and args.output is None:
+                    raise RecorderError(
+                        "--output is required for a live reposition."
+                    )
+                result = reposition_physical_follower(
+                    args.packet,
+                    output_path=args.output,
+                    dry_run=args.dry_run,
+                    operator_acknowledged=args.yes,
+                )
+            else:
+                if args.dry_run:
+                    raise RecorderError("--dry-run is only valid during reposition.")
+                if args.output is None:
+                    raise RecorderError("--output is required during execution.")
+                result = execute_physical_excitation_packet(
+                    args.packet,
+                    args.output,
+                    operator_acknowledged=args.yes,
+                )
+        except (OSError, ValueError, RecorderError, PhysicalGatewayError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "physical-canary":
+        from .physical_canary import (
+            PhysicalCanaryError,
+            compile_physical_canary_normalization,
+            compile_physical_canary_packet,
+            execute_physical_canary_normalization,
+            execute_physical_canary_packet,
+        )
+
+        try:
+            if args.phase == "normalize":
+                if args.pi_video_contract is not None:
+                    raise PhysicalCanaryError(
+                        "--pi-video-contract is only valid during execution"
+                    )
+                if (
+                    args.pan_direction != "positive-first"
+                    or args.pan_play_diagnostic_receipt is not None
+                ):
+                    raise PhysicalCanaryError(
+                        "pan prediction inputs are only valid during compilation"
+                    )
+                if args.yes:
+                    if args.output is None:
+                        raise PhysicalCanaryError(
+                            "--output is required for live normalization"
+                        )
+                    if (
+                        args.bundle is not None
+                        or args.contact_receipt is not None
+                        or args.normalization_receipt is not None
+                    ):
+                        raise PhysicalCanaryError(
+                            "bundle/receipt inputs are only valid during canary compilation"
+                        )
+                    result = execute_physical_canary_normalization(
+                        args.packet, args.output, operator_acknowledged=True
+                    )
+                else:
+                    if args.output is not None:
+                        raise PhysicalCanaryError(
+                            "--output is only valid for live normalization"
+                        )
+                    result = compile_physical_canary_normalization(args.packet)
+            elif args.phase == "compile":
+                if (
+                    args.yes
+                    or args.output is not None
+                    or args.pi_video_contract is not None
+                ):
+                    raise PhysicalCanaryError(
+                        "--yes/--output are only valid during execution or live normalization"
+                    )
+                if not all(
+                    value is not None
+                    for value in (
+                        args.bundle,
+                        args.contact_receipt,
+                        args.normalization_receipt,
+                    )
+                ):
+                    raise PhysicalCanaryError(
+                        "--bundle, --contact-receipt, and --normalization-receipt are required"
+                    )
+                result = compile_physical_canary_packet(
+                    args.bundle,
+                    args.packet,
+                    contact_receipt_path=args.contact_receipt,
+                    normalization_receipt_path=args.normalization_receipt,
+                    pan_direction=(
+                        -1
+                        if args.pan_direction == "negative-first"
+                        else 1
+                    ),
+                    pan_play_diagnostic_receipt_path=(
+                        args.pan_play_diagnostic_receipt
+                    ),
+                )
+            else:
+                if (
+                    args.pan_direction != "positive-first"
+                    or args.pan_play_diagnostic_receipt is not None
+                ):
+                    raise PhysicalCanaryError(
+                        "pan prediction inputs are only valid during compilation"
+                    )
+                if not args.yes or args.output is None:
+                    raise PhysicalCanaryError(
+                        "--yes and --output are required for physical canary execution"
+                    )
+                capture_factory = None
+                if args.pi_video_contract is not None:
+                    from .pi_motion_video import MotionTricamRecorder
+
+                    capture_factory = lambda path: MotionTricamRecorder(
+                        path,
+                        pi_contract_path=args.pi_video_contract,
+                    )
+                result = execute_physical_canary_packet(
+                    args.packet,
+                    args.output,
+                    operator_acknowledged=True,
+                    capture_factory=capture_factory,
+                )
+        except (OSError, ValueError, PhysicalCanaryError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "replay-physical-canary":
+        from .physical_canary_replay import (
+            PhysicalCanaryReplayError,
+            replay_physical_canary_execution,
+        )
+
+        try:
+            result = replay_physical_canary_execution(
+                args.packet,
+                args.execution_receipt,
+                args.output,
+            )
+        except (
+            OSError,
+            ValueError,
+            PhysicalCanaryReplayError,
+        ) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0 if result["diagnostic_bounds_satisfied"] else 1
+    if args.command == "fit-physical-canary-pan-play":
+        from .physical_canary_replay import (
+            PhysicalCanaryReplayError,
+            fit_physical_canary_pan_play_diagnostic,
+        )
+
+        try:
+            result = fit_physical_canary_pan_play_diagnostic(
+                args.contract,
+                args.output,
+            )
+        except (
+            OSError,
+            ValueError,
+            PhysicalCanaryReplayError,
+        ) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return (
+            0
+            if result["status"]
+            == "retrospective_validation_passed_no_promotion"
+            else 1
+        )
+    if args.command == "geometric-physical":
+        from .geometric_physical_gateway import (
+            GeometricPhysicalGatewayError,
+            compile_geometric_physical_packet,
+            execute_geometric_physical_packet,
+            review_geometric_physical_packet,
+        )
+
+        try:
+            if args.phase == "compile":
+                if (
+                    args.episode is None
+                    or args.admission is None
+                    or args.candidate_manifest is None
+                    or args.review is not None
+                    or args.output is not None
+                    or args.reviewer is not None
+                    or args.decision_id is not None
+                    or args.yes
+                ):
+                    raise GeometricPhysicalGatewayError(
+                        "compile requires --episode, --admission, and "
+                        "--candidate-manifest only"
+                    )
+                result = compile_geometric_physical_packet(
+                    args.episode,
+                    args.admission,
+                    args.candidate_manifest,
+                    args.packet,
+                )
+            elif args.phase == "review":
+                if (
+                    args.output is None
+                    or not args.reviewer
+                    or not args.decision_id
+                    or args.episode is not None
+                    or args.admission is not None
+                    or args.candidate_manifest is not None
+                    or args.review is not None
+                    or args.yes
+                ):
+                    raise GeometricPhysicalGatewayError(
+                        "review requires --output, --reviewer, and --decision-id only"
+                    )
+                result = review_geometric_physical_packet(
+                    args.packet,
+                    args.output,
+                    reviewer=args.reviewer,
+                    decision_id=args.decision_id,
+                )
+            else:
+                if (
+                    args.review is None
+                    or args.output is None
+                    or not args.yes
+                    or args.episode is not None
+                    or args.admission is not None
+                    or args.candidate_manifest is not None
+                    or args.reviewer is not None
+                    or args.decision_id is not None
+                ):
+                    raise GeometricPhysicalGatewayError(
+                        "execute requires --review, --output, and --yes only"
+                    )
+                result = execute_geometric_physical_packet(
+                    args.packet,
+                    args.review,
+                    args.output,
+                    operator_acknowledged=True,
+                )
+        except (
+            OSError,
+            TypeError,
+            ValueError,
+            GeometricPhysicalGatewayError,
+        ) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "wrist-view-reposition":
+        from .wrist_view_reposition import (
+            WristViewRepositionError,
+            compile_wrist_view_reposition_packet,
+            execute_wrist_view_reposition_stage,
+            review_wrist_view_reposition_packet,
+        )
+
+        try:
+            if args.phase == "compile":
+                if (
+                    args.candidate_manifest is None
+                    or args.route is None
+                    or args.output is not None
+                    or args.review is not None
+                    or args.stage is not None
+                    or args.prior_receipt is not None
+                    or args.reviewer is not None
+                    or args.decision_id is not None
+                    or args.yes
+                ):
+                    raise WristViewRepositionError(
+                        "compile requires only --packet, --candidate-manifest, and --route"
+                    )
+                result = compile_wrist_view_reposition_packet(
+                    args.packet,
+                    candidate_manifest_path=args.candidate_manifest,
+                    route_path=args.route,
+                )
+            elif args.phase == "review":
+                if (
+                    args.output is None
+                    or not args.reviewer
+                    or not args.decision_id
+                    or args.candidate_manifest is not None
+                    or args.route is not None
+                    or args.review is not None
+                    or args.stage is not None
+                    or args.prior_receipt is not None
+                    or args.yes
+                ):
+                    raise WristViewRepositionError(
+                        "review requires --packet, --output, --reviewer, and --decision-id"
+                    )
+                result = review_wrist_view_reposition_packet(
+                    args.packet,
+                    args.output,
+                    reviewer=args.reviewer,
+                    decision_id=args.decision_id,
+                )
+            else:
+                if (
+                    not args.yes
+                    or args.review is None
+                    or args.output is None
+                    or args.stage is None
+                    or args.candidate_manifest is not None
+                    or args.route is not None
+                    or args.reviewer is not None
+                    or args.decision_id is not None
+                ):
+                    raise WristViewRepositionError(
+                        "execute requires --packet, --review, --output, --stage, and --yes"
+                    )
+                result = execute_wrist_view_reposition_stage(
+                    args.packet,
+                    args.review,
+                    args.output,
+                    stage_index=args.stage,
+                    prior_receipt_path=args.prior_receipt,
+                    operator_acknowledged=True,
+                )
+        except (OSError, ValueError, WristViewRepositionError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "live-anchored-camera-reposition":
+        from .live_anchored_camera_reposition import (
+            LiveAnchoredCameraRepositionError,
+            execute_live_anchored_camera_reposition,
+        )
+
+        try:
+            result = execute_live_anchored_camera_reposition(
+                route_path=args.route,
+                candidate_manifest_path=args.candidate_manifest,
+                output_root=args.output,
+                operator_acknowledged=args.yes,
+            )
+        except (OSError, ValueError, LiveAnchoredCameraRepositionError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "c922-calibration-acquisition-preflight":
+        from .c922_calibration_acquisition import preflight_and_write
+
+        report = preflight_and_write(args.plan, args.output)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["capture_ready"] else 1
+    if args.command == "c922-calibration-acquire":
+        from .c922_calibration_acquisition import acquire_corpus
+        from .c922_exact_mode_calibration import C922CalibrationError
+        from .overhead_video import OverheadVideoError
+
+        try:
+            report = acquire_corpus(args.plan, args.output, dry_run=args.dry_run)
+        except (OSError, ValueError, C922CalibrationError, OverheadVideoError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "metrology-transaction-preflight":
+        from .metrology_transaction import (
+            MetrologyTransactionError,
+            preflight_and_write,
+        )
+
+        try:
+            report = preflight_and_write(args.transaction, args.output)
+        except (OSError, ValueError, MetrologyTransactionError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["status"] == "ready_for_live_capture_sequence" else 1
+    if args.command == "d405-apriltag-observe":
+        from .d405_apriltag_observation import (
+            D405AprilTagObservationError,
+            observe_d405_apriltag,
+        )
+
+        try:
+            report = observe_d405_apriltag(
+                source_path=args.source,
+                output_path=args.output,
+                contract_path=args.contract,
+                capture_report_path=args.capture_report,
+                selected_frame_output=args.selected_frame_output,
+            )
+        except (OSError, ValueError, D405AprilTagObservationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["status"] == "target_observed" else 1
+    if args.command == "observe-img5431-multitags":
+        from .img5431_multitag_observation import (
+            Img5431ObservationError,
+            observe_img5431_multitags,
+        )
+
+        try:
+            report = observe_img5431_multitags(
+                source_path=args.source,
+                output_path=args.output,
+                contract_path=args.contract,
+            )
+        except (OSError, ValueError, Img5431ObservationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["summary"]["all_required_ids_observed"] else 1
+    if args.command == "static-tricam-capture":
+        from .static_tricam_capture import (
+            StaticTricamCaptureError,
+            capture_static_tricam_bundle,
+        )
+
+        try:
+            report = capture_static_tricam_bundle(
+                output_root=args.output,
+                operator_acknowledged=args.yes,
+                camera_session_token=args.camera_session_token,
+                fixed_mount_token=args.fixed_mount_token,
+                contract_path=args.contract,
+            )
+        except (OSError, ValueError, StaticTricamCaptureError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "d405-rgbd-readiness":
+        from .d405_rgbd_readiness import (
+            D405RGBDReadinessError,
+            inventory_d405_rgbd_readiness,
+        )
+
+        try:
+            report = inventory_d405_rgbd_readiness(
+                output_path=args.output,
+                enumeration_file=args.enumeration_file,
+            )
+        except (OSError, ValueError, D405RGBDReadinessError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return (
+            0
+            if report["status"] == "metric_depth_calibration_enumerated"
+            else 1
+        )
+    if args.command == "workcell-registration":
+        from .workcell_registration import (
+            WorkcellRegistrationError,
+            evaluate_stationary_registration,
+            write_survey_worksheet,
+        )
+
+        try:
+            if args.phase == "worksheet":
+                if args.survey is not None or args.manifest is not None:
+                    raise WorkcellRegistrationError(
+                        "Worksheet phase accepts only --output."
+                    )
+                report = write_survey_worksheet(args.output)
+            else:
+                if args.survey is None or args.manifest is None:
+                    raise WorkcellRegistrationError(
+                        "Evaluate phase requires --survey and --manifest."
+                    )
+                report = evaluate_stationary_registration(
+                    survey_path=args.survey,
+                    manifest_path=args.manifest,
+                    output_directory=args.output,
+                )
+        except (OSError, ValueError, WorkcellRegistrationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "workcell-registration-input":
+        from .workcell_registration import WorkcellRegistrationError
+        from .workcell_registration_acquisition import (
+            capture_stationary_bundle,
+            finalize_metric_registration_input,
+            write_annotation_bundle,
+        )
+
+        try:
+            if args.phase == "capture":
+                report = capture_stationary_bundle(
+                    args.output,
+                    acknowledgements={
+                        "board_and_camera_fixed": args.ack_board_camera_fixed,
+                        "board_cleared": args.ack_board_cleared,
+                        "a1_h1_a8_markers_visible": args.ack_markers_visible,
+                        "focus_locked": args.ack_focus_locked,
+                        "no_competing_camera_owner": args.ack_no_camera_owner,
+                    },
+                    focus_setting=args.focus_setting,
+                    dry_run=args.dry_run,
+                )
+            elif args.phase == "bundle":
+                if args.capture_receipt is None:
+                    raise WorkcellRegistrationError(
+                        "Bundle phase requires --capture-receipt."
+                    )
+                report = write_annotation_bundle(
+                    args.capture_receipt, args.output
+                )
+            else:
+                required = {
+                    "capture_receipt_path": args.capture_receipt,
+                    "annotator_a_path": args.annotator_a,
+                    "annotator_b_path": args.annotator_b,
+                    "board_measurement_path": args.board_measurement,
+                    "survey_path": args.survey,
+                    "intrinsics_path": args.intrinsics,
+                    "distortion_path": args.distortion,
+                }
+                if any(value is None for value in required.values()):
+                    raise WorkcellRegistrationError(
+                        "Finalize phase requires capture, two annotations, board "
+                        "measurement, survey, intrinsics, and distortion."
+                    )
+                report = finalize_metric_registration_input(
+                    **required,
+                    output_path=args.output,
+                )
+        except (OSError, ValueError, WorkcellRegistrationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     if args.command == "sysid-capability":
         from .system_identification import (
             mujoco_sysid_capability,
@@ -1574,6 +2598,92 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["calibration_success"] else 1
+    if args.command == "sysid-fit-physical-timing":
+        from .recorded_replay import ReplayContractError
+        from .system_identification import (
+            SystemIdentificationError,
+            run_physical_timing_actuation_cohort,
+        )
+
+        try:
+            report = run_physical_timing_actuation_cohort(
+                args.cohort,
+                config_path=args.config,
+                output_directory=args.output,
+                backend=args.backend,
+            )
+        except (OSError, ValueError, ReplayContractError, SystemIdentificationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["status"] == "diagnostic_fit_complete" else 1
+    if args.command == "sysid-admit-physical-timing":
+        from .recorded_replay import ReplayContractError
+        from .system_identification import SystemIdentificationError
+        from .timing_admission import admit_physical_timing_actuation_fit
+
+        try:
+            report = admit_physical_timing_actuation_fit(
+                args.fit,
+                args.cohort,
+                config_path=args.config,
+                output_path=args.output,
+                synthetic_fixture_mode=args.synthetic_fixture,
+            )
+        except (OSError, ValueError, ReplayContractError, SystemIdentificationError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "twin-candidate-canary":
+        from .twin_candidate import (
+            TwinCandidateError,
+            compose_twin_candidate_and_canary,
+        )
+
+        try:
+            report = compose_twin_candidate_and_canary(
+                p9_admission_path=args.p9_admission,
+                p13_transform_path=args.p13_transform,
+                p13_board_fit_path=args.p13_board_fit,
+                baseline_config_path=args.baseline,
+                canary_input_path=args.canary_input,
+                output_directory=args.output,
+                synthetic_fixture_mode=args.synthetic_fixture,
+                simulation_only=args.simulation_only,
+                p10_cohort_path=args.p10_cohort,
+            )
+        except (OSError, ValueError, TwinCandidateError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.command == "canary-contact-preflight":
+        from .canary_contact_preflight import (
+            CanaryContactError,
+            evaluate_canary_contact_preflight,
+        )
+
+        try:
+            report = evaluate_canary_contact_preflight(
+                candidate_path=args.candidate,
+                canary_path=args.canary,
+                baseline_path=args.baseline,
+                p8_intrinsics_path=args.p8_intrinsics,
+                p8_distortion_path=args.p8_distortion,
+                p9_admission_path=args.p9_admission,
+                p13_transform_path=args.p13_transform,
+                p13_board_fit_path=args.p13_board_fit,
+                policy_path=args.policy,
+                output_path=args.output,
+                synthetic_fixture_mode=args.synthetic_fixture,
+                simulation_only=args.simulation_only,
+            )
+        except (OSError, ValueError, CanaryContactError) as error:
+            print(json.dumps({"error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["native_contact_audit"]["passed"] else 1
     if args.command == "actuator-external-validate":
         from .actuator_external_validation import (
             ActuatorExternalValidationError,
@@ -1598,7 +2708,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .pawn_source_expert import collect_pawn_source_expert_candidate
 
         report = collect_pawn_source_expert_candidate(
-            args.output, render_size=args.render_size
+            args.output,
+            render_size=args.render_size,
+            expert_profile_path=args.expert_profile,
         )
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0

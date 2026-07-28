@@ -1,0 +1,87 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_pose_j_roll_heldout_roundtrip_tricam_20260727_v1",
+  "samples_per_stage": 901,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_35s_v1.json",
+    "contract_sha256": "744a0c63c1d7282265299397c4a9bf3083bb3c35899878aa5480f3362feeef23"
+  },
+  "reviewed_anchor_degrees": [
+    -8.351648351648352,
+    -106.28571428571429,
+    99.12087912087912,
+    -94.10989010989012,
+    -126.37362637362638,
+    1.66270783847981
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -5.0,
+        -80.0,
+        92.0,
+        -90.0,
+        -60.0,
+        1.66270783847981
+      ],
+      [
+        -5.0,
+        -80.0,
+        92.0,
+        -90.0,
+        -60.0,
+        1.66270783847981
+      ],
+      [
+        -8.351648351648352,
+        -106.28571428571429,
+        99.12087912087912,
+        -94.10989010989012,
+        -126.37362637362638,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "geometric_derivation": {
+    "frame": "current_candidate_model_world",
+    "target_pinch_world_m": [
+      -0.045144768,
+      0.80017307,
+      1.096608851
+    ],
+    "wrist_roll_delta_from_anchor_degrees": 66.37362637362638,
+    "stationary_hold_seconds": 7.5,
+    "jaw_command_held_closed": true,
+    "prior_physical_route_path": "configs/hardware/pi_new_scene_tags_pose_j_identity_validation_v1.json",
+    "prior_physical_route_sha256": "8c7a36deb4a9ace9425b536883e6153e08ffa47f828f92c0a7a2fd8b7030b6e4",
+    "prior_physical_packet_path": "runs/pi-link-tag-calibration/20260726-new-scene-tags-pose-j-identity-validation-v1/packet.json",
+    "prior_physical_packet_sha256": "7e84e2f46f8a6a79a1101b10060d45f4ff888503e7e003df0adb9cb6acb29f0b",
+    "prior_physical_execution_receipt_path": "runs/pi-link-tag-calibration/20260726-new-scene-tags-pose-j-identity-validation-v1/stage-1/execution_receipt.json",
+    "prior_physical_execution_receipt_sha256": "3d377ff0dd1c86301c636778df427bb5081609b8fef26c52304d1a37363cb962",
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+  },
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "prospective_current_camera_roll_separated_pose_j_hold_roundtrip",
+    "target_selection": "Pose J was already executed successfully on this follower and workcell as an exact calibration route. The fresh route uses the current torque-off anchor, holds J for 7.5 seconds, records C922, D405, and Pi throughout, then returns to the same anchor. Its 66.374 degree wrist-roll separation closes the current visual identifiability gap without approaching a pawn. The target pinch is at z=1.0966 m; target surface clearance is 173.482 mm to the nearest pawn and 140.284 mm to the board. A separate reviewer must confirm the complete interpolated path before admission.",
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "return_to_stable_anchor_before_torque_off": true,
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "wrist_roll_visual_identifiability_heldout": true,
+      "pawn_contact": false,
+      "pawn_task_success": false,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false
+    }
+  }
+}

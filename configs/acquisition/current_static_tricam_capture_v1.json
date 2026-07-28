@@ -1,0 +1,117 @@
+{
+  "schema_version": "sim2claw.static_tricam_capture_contract.v1",
+  "contract_id": "current_static_tricam_capture_20260726_v1",
+  "status": "preregistered_before_capture",
+  "proof_class": "physical_static_tricam_capture_only",
+  "ownership": {
+    "c922_owner": "NativeC922StillRecorder",
+    "d405_owner": "rs-record",
+    "pi_owner": "ssh_rpicam-still",
+    "forbid_avfoundation_d405": true,
+    "forbid_native_dual_camera_recorder": true,
+    "maximum_simultaneous_owner_per_device": 1
+  },
+  "camera": {
+    "role": "c922",
+    "localized_name": "C922 Pro Stream Webcam",
+    "unique_id": "0x8310000046d085c",
+    "model_id": "UVC Camera VendorID_1133 ProductID_2140",
+    "format_index": 16,
+    "frame_rate_range_index": 0,
+    "width": 640,
+    "height": 480,
+    "media_subtype_fourcc": "420v",
+    "supported_fps": 30.00003000003,
+    "frame_duration_seconds": 0.03333330000003333
+  },
+  "selection": {
+    "maximum_ring_frames": 360
+  },
+  "d405": {
+    "expected_device": {
+      "name": "RealSense D405",
+      "sdk_serial_number": "130322273474",
+      "asic_serial_number": "133323070214",
+      "firmware_update_id": "133323070214",
+      "usb_product_id_hex": "0B5B",
+      "physical_port": "0-2-1"
+    },
+    "database_name": "d405-static-tricam.db3",
+    "depth": {
+      "topic": "/device_0/sensor_0/Depth_0/image/data",
+      "encoding": "Z16",
+      "width": 848,
+      "height": 480,
+      "fps": 30
+    },
+    "color": {
+      "topic": "/device_0/sensor_0/Color_0/image/data",
+      "encoding": "RGB8",
+      "width": 848,
+      "height": 480,
+      "fps": 30
+    },
+    "depth_units_m_per_z16_unit": 0.0001
+  },
+  "pi": {
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "shot_count": 3,
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true,
+    "autofocus_mode": "manual",
+    "lens_position_reciprocal_m": 4.0,
+    "remote_output": "stdout"
+  },
+  "timing": {
+    "capture_duration_seconds_maximum": 12.0,
+    "readiness_timeout_seconds": 5.0,
+    "minimum_common_interior_seconds": 2.0,
+    "maximum_c922_interval_seconds": 0.05,
+    "maximum_rgb_depth_pair_delta_ms": 2.0
+  },
+  "minimum_frames": {
+    "c922_inside_common_window": 60,
+    "d405_depth": 60,
+    "d405_color": 60
+  },
+  "rigidity": {
+    "scene_and_arm_must_remain_rigid": true,
+    "operator_acknowledgement_required": true,
+    "component_must_not_construct_robot_gateway": true,
+    "component_robot_motion_commands_maximum": 0,
+    "external_reviewed_gateway_hold_permitted": true,
+    "external_hold_must_be_torque_on_and_receipt_bound": true
+  },
+  "operation_budget": {
+    "attempts_maximum": 1,
+    "retries_maximum": 0,
+    "c922_capture_sessions_maximum": 1,
+    "d405_rs_record_processes_maximum": 1,
+    "pi_ssh_processes_maximum": 3,
+    "component_robot_gateway_constructions_maximum": 0,
+    "component_robot_motion_commands_maximum": 0
+  },
+  "authority": {
+    "physical_static_camera_capture": true,
+    "metric_depth_capture": true,
+    "camera_transform": false,
+    "camera_intrinsics": false,
+    "board_registration": false,
+    "simulator_parameter_promotion": false,
+    "robot_gateway": false,
+    "robot_motion": false,
+    "policy": false,
+    "task_success": false,
+    "physical_task": false
+  },
+  "claim_limits": {
+    "capture_transport_and_lineage_only": true,
+    "scene_rigidity_independently_measured": false,
+    "camera_transform_fitted": false,
+    "metric_workcell_registration": false,
+    "simulator_fidelity_changed": false
+  }
+}

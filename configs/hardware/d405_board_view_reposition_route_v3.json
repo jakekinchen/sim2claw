@@ -1,0 +1,43 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "d405_board_view_elbow_observed_90_hold_20260725_v3",
+  "capture_during_motion": false,
+  "setup_maximum_slew_degrees_s": 1.5,
+  "setup_elbow_tracking_error_limit_degrees": 20.0,
+  "setup_observed_elbow_target_degrees": 90.0,
+  "setup_target_hold_seconds": 2.0,
+  "stationary_capture_seconds": 0.0,
+  "reviewed_anchor_degrees": [
+    10.461538461538462,
+    -56.527472527472526,
+    102.72527472527473,
+    0.21978021978021978,
+    -75.12087912087912,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [
+      10.461538461538462,
+      -56.527472527472526,
+      70.0,
+      0.21978021978021978,
+      -75.12087912087912,
+      3.0878859857482186
+    ]
+  ],
+  "review_basis": {
+    "simulation_runtime": "cpu_mujoco_mj_forward",
+    "physical_scope": "camera_setup_only",
+    "source_pose": "fresh torque-off follower read after the completed elbow-only v2 path",
+    "motion_scope": "elbow flex only",
+    "excluded_motion": [
+      "shoulder lift",
+      "shoulder pan",
+      "wrist flex",
+      "wrist roll",
+      "gripper"
+    ],
+    "observed_stop_basis": "The v2 path reached observed elbow 88.66 degrees but then stalled before 82 degrees. Stop at 90 degrees, before the observed stall region, and hold that exact last command for two seconds.",
+    "capture_plan": "A separate bounded librealsense recorder may observe the motion and two-second hold. The route itself opens no camera."
+  }
+}

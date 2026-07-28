@@ -1,0 +1,60 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "d405_pose_plane_diverse_target_6_20260725_v1",
+  "capture_during_motion": false,
+  "setup_maximum_slew_degrees_s": 1.5,
+  "setup_elbow_tracking_error_limit_degrees": 6.0,
+  "setup_target_hold_seconds": 2.0,
+  "stationary_capture_seconds": 0.0,
+  "reviewed_anchor_degrees": [
+    1.7582417582417582,
+    -48.0,
+    100.17582417582418,
+    -25.274725274725274,
+    -50.417582417582416,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [
+      -13.6264,
+      -65.0549,
+      81.4945,
+      -24.978,
+      -100.033,
+      3.0879
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "camera_calibration_setup_only",
+    "source_pose": "fresh torque-off follower read after diverse target 3 synchronized capture",
+    "target_source": "configs/calibration/d405_pose_plane_targets_from_anchor_v1.json target 6",
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "candidate_digest": "2da7425cbf0fd10e27822a415890ca180dde7a4f1b042bf3ed49030bcad018af"
+    },
+    "simulation_runtime": "cpu_mujoco_mj_forward",
+    "simulation_result": {
+      "terminal_byte_behavior": "movement_actions_final_row_repeated_for_exact_terminal_hold",
+      "maximum_joint_excursion_degrees": 49.615417582417585,
+      "movement_duration_seconds": 33.1,
+      "movement_sample_count": 1325,
+      "terminal_hold_duration_seconds": 2.0,
+      "terminal_hold_sample_count": 80,
+      "exact_preview_last_timestamp_seconds": 35.1,
+      "exact_preview_sample_count": 1405,
+      "exact_preview_action_sha256": "7a6c321aa77ed5cf03f9d90e0f7f81f11543c41dc1a6388f586fc7842d312619",
+      "baseline_minimum_distance_m": -0.016775702686098015,
+      "external_contact_pairs": [],
+      "final_contact_pairs": [],
+      "no_new_or_worsened_kinematic_contact": true
+    },
+    "capture_plan": "The bounded pose-plane orchestrator starts a recorder whose explicit duration covers the full route before motion and admits only depth frames inside the terminal hold.",
+    "evidence_limits": {
+      "camera_to_robot_extrinsic_fitted": false,
+      "sim_gap_evidence": false,
+      "policy_evidence": false,
+      "task_authority": false
+    }
+  }
+}

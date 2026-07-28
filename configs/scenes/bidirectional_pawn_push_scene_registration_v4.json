@@ -1,0 +1,46 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_scene_registration.v4",
+  "registration_id": "bidirectional_pawn_push_scene_registration_v4",
+  "status": "candidate_frozen_before_heldout_open",
+  "proof_class": "zero_motion_fit_only_scene_registration_candidate",
+  "dataset_manifest_path": "configs/evaluations/bidirectional_pawn_push_registration_dataset_v1.json",
+  "dataset_manifest_sha256": "da203fae0e84ceb722631676858762e1ee3d5962be95c4555afb44f97bf51fdf",
+  "source_scene_id": "operator_updated_chess_workcell_v3",
+  "source_scene_config_sha256": "0dbe0c95fe50f84a8ff8e60f9727f7123c15c921ace55a0460b49ffa4c34dc05",
+  "source_mapping_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+  "candidate_family": {
+    "categorical": "eight square-board D4 orientations",
+    "continuous": "bounded board center XY and yaw",
+    "selection": "minimum 3D C2 head-center residual within per-axis table-frame center bounds; then minimum translation norm, D4 declaration order, and earliest grasp row",
+    "grasp_rows_inclusive": [
+      150,
+      300
+    ],
+    "board_center_delta_bound_m": 0.08,
+    "board_yaw_delta_bound_degrees": 15.0
+  },
+  "board_d4_transform": "reflect_ranks",
+  "mapped_fit_square": "c7",
+  "board_center_delta_table_xy_m": [
+    0.03681671893371323,
+    0.06607855419702145
+  ],
+  "board_center_in_table_frame_xy_m": [
+    0.07681671893371322,
+    0.0010785541970214502
+  ],
+  "board_yaw_relative_to_table_degrees": 1.55,
+  "joint_zero_offsets_changed": false,
+  "fit_grasp_row": 242,
+  "fit_contact_height_m": 0.051,
+  "fit_residual_mm": 24.63150540351977,
+  "canonical_action_npy_sha256": "0af43f1709e8e7294c21e0876992dfbc21e6902165d4c24a50af9ed4ced47196",
+  "canonical_action_raw_float64le_sha256": "0add8f1357c65bee011755e6e4a124d0e339cbc0dce9fd3a92b78399380a37da",
+  "authority": {
+    "physical_motion": false,
+    "training": false,
+    "promotion": false,
+    "heldout_opened": false
+  },
+  "claim_boundary": "Fit-only zero-motion candidate. The 51 mm target is the modeled pawn head center appropriate to the observed strike/topple, not the 28 mm neck observable used in Q00. Held-out admission and physical transfer remain unproven."
+}

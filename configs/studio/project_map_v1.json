@@ -55,16 +55,16 @@
       "id": "replay",
       "order": 4,
       "title": "Replay",
-      "purpose": "Compare recorded reality, the same-camera visual twin, and receipt-bound action-frozen physics on one timeline.",
+      "purpose": "Compare recorded reality and a receipt-bound simulator twin on one timeline while distinguishing byte-identical actions from converted source-command diagnostics.",
       "human_views": [
         {"label": "Replay", "route": "replay"},
         {"label": "Library", "route": "library"}
       ],
       "agent": {
-        "access": "read_only_evidence",
+        "access": "loopback_explicit_simulator_generation",
         "reads": ["GET /api/catalog", "GET /api/twin-fidelity?episode_id={id}"],
-        "commands": [],
-        "boundary": "Missing physics remains missing; visual similarity never substitutes for a simulator or task consequence."
+        "commands": ["POST /api/studio/simulator-replay"],
+        "boundary": "An explicit loopback request may generate a local source-command MuJoCo diagnostic. It cannot create byte-identical action evidence, evaluator admission, task consequence, or physical authority."
       }
     },
     {

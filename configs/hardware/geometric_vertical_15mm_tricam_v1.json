@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_vertical_15mm_tricam_20260727_v1",
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_15s_v1.json"
+  },
+  "reviewed_anchor_degrees": [
+    -8.351648351648352,
+    -106.54945054945055,
+    99.38461538461539,
+    -98.32967032967034,
+    -126.37362637362638,
+    1.66270783847981
+  ],
+  "stage_targets_degrees": [
+    [
+      -8.367669657116279,
+      -103.70750350941225,
+      92.98912812503666,
+      -94.18824534451295,
+      -126.46267083854107,
+      1.66270783847981
+    ]
+  ],
+  "geometric_derivation": {
+    "frame": "current_candidate_model_world",
+    "pinch_point_anchor_m": [
+      -0.02724192313766359,
+      0.8801912998057315,
+      1.0864701271134498
+    ],
+    "cartesian_offset_m": [
+      0.0,
+      0.0,
+      0.015
+    ],
+    "ik_residual_m": 0.0006269412271800514,
+    "solver": "sim2claw.grasp._solve_reach",
+    "solver_module_sha256": "c4c0d4382c8319e0dec25d0e1d740fd92fdd7fdd6e8717e99a4aaa6c37e2e313",
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+    "preview_action_sha256": "c489633917fcce98f95124d8dc14290635926fa0248d0a237174c183b766bfd2",
+    "maximum_ik_residual_m": 0.0015
+  },
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "prospective_no_contact_geometric_actuator_validation",
+    "target_selection": "A 15 mm vertical move from the fresh torque-off anchor, selected before physical execution because it excites all three pitch joints, remains contact-clean, and preserves the gripper.",
+    "tricam_readiness_summary_path": "runs/geometric-microtransfer/20260727-motion-tricam-readiness-v2/readiness_summary.json",
+    "tricam_readiness_summary_sha256": "f1f173148d4a8341e4071e632d88b232a63053db594717d9b47bf75f1e10d95f",
+    "actuator_evaluation_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/actuator-response-evaluation.json",
+    "actuator_evaluation_sha256": "d566682923e966de5710253bc71a59a5075b38b5fb69204c39437b57ec0838ff",
+    "pawn_contact_forbidden": true,
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "camera_exposure_synchronization": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

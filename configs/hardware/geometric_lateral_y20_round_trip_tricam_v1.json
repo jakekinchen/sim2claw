@@ -1,0 +1,88 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_lateral_y20_round_trip_tricam_20260727_v1",
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_15s_v1.json",
+    "contract_sha256": "457f2c142671851ddd60a3f1be5487125605957e38c1b2730ab683e08488393f"
+  },
+  "reviewed_anchor_degrees": [
+    -8.351648351648352,
+    -106.46153846153847,
+    99.56043956043956,
+    -95.16483516483517,
+    -126.37362637362638,
+    1.66270783847981
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -10.571345062556746,
+        -102.48526541019338,
+        97.53316514110578,
+        -90.58656337598211,
+        -126.4915917083207,
+        1.66270783847981
+      ],
+      [
+        -8.351648351648352,
+        -106.46153846153847,
+        99.56043956043956,
+        -95.16483516483517,
+        -126.37362637362638,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "geometric_derivation": {
+    "frame": "current_candidate_model_world",
+    "pinch_point_anchor_m": [
+      -0.03863320155720096,
+      0.8158306924572565,
+      1.0842364349443603
+    ],
+    "cartesian_waypoint_offsets_m": [
+      [
+        0.0,
+        -0.02,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "waypoint_ik_residuals_m": [
+      0.00006117125572698649,
+      0.0
+    ],
+    "solver": "sim2claw.grasp._solve_reach",
+    "solver_module_sha256": "c4c0d4382c8319e0dec25d0e1d740fd92fdd7fdd6e8717e99a4aaa6c37e2e313",
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+    "maximum_ik_residual_m": 0.0015
+  },
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "prospective_no_contact_geometric_joint_play_validation",
+    "target_selection": "One continuous fixed-Z negative-20-mm world-Y out-and-back from the torque-off round-trip close pose. It is Jacobian-distinct from the opened vertical route and excites both directions on lift, elbow, and wrist flex.",
+    "minimum_absolute_pitch_excursion_degrees": 2.0,
+    "tricam_readiness_summary_path": "runs/geometric-microtransfer/20260727-motion-tricam-readiness-v2/readiness_summary.json",
+    "tricam_readiness_summary_sha256": "f1f173148d4a8341e4071e632d88b232a63053db594717d9b47bf75f1e10d95f",
+    "joint_play_fit_receipt_path": "runs/geometric-microtransfer/20260727-geometric-joint-play-fit-v1/fit-receipt.json",
+    "joint_play_fit_receipt_sha256": "f03e1e071c7374f3b7036d11d206954f051f7f4f74abe4088f765694b1a0068a",
+    "pawn_contact_forbidden": true,
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": "sim2claw.physical_canary_roundtrip_bounds.v1",
+  "contract_id": "physical_canary_roundtrip_bounds_20260727_v1",
+  "status": "preregistered_before_fresh_current_pose_canary",
+  "proof_class": "replay_diagnostic_only",
+  "thresholds": {
+    "body_joint_rmse_degrees_maximum": 1.0,
+    "gripper_rmse_percent_maximum": 1.0,
+    "body_joint_maximum_absolute_error_degrees_maximum": 2.0,
+    "gripper_maximum_absolute_error_percent_maximum": 2.0,
+    "measured_pan_excursion_degrees_minimum": 0.5,
+    "simulated_pan_excursion_degrees_minimum": 1.5,
+    "pan_excursion_disagreement_degrees_maximum": 1.0
+  },
+  "terminal_return_tolerance_source": "physical_canary_gateway_contract",
+  "fresh_evidence_requires_packet_hash_binding": true,
+  "historical_unbound_use": "retrospective_diagnostic_only",
+  "authority": {
+    "diagnostic_bounds": true,
+    "transform_promotion": false,
+    "evaluator_admission": false,
+    "metric_camera_registration": false,
+    "physical_task_success": false,
+    "policy": false
+  }
+}

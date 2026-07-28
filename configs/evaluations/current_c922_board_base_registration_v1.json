@@ -1,0 +1,191 @@
+{
+  "schema_version": "sim2claw.current_c922_board_base_registration.v1",
+  "contract_id": "current_c922_board_base_registration_20260726_v1",
+  "status": "deterministic_extraction_and_retrospective_split_frozen",
+  "proof_class": "physical_static_c922_board_conditioned_exact_CAD_diagnostic",
+  "image_size_px": [640, 480],
+  "split": {
+    "fit_poses": ["J", "S", "K", "L"],
+    "retrospective_validation_poses": ["M"],
+    "future_heldout_required_for_promotion": true,
+    "future_heldout_poses": []
+  },
+  "sources": {
+    "exact_CAD_scene": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "stage_d": {
+      "path": "runs/pawn-bg-action-frozen-gap-v1/train_fit.json",
+      "sha256": "67700a15a26c5f67da788638745fecdf29acde5b29549b947af36455bfa5aa66"
+    },
+    "board_frame_initialization_only": {
+      "path": "configs/evaluations/img5349_3dgs_board_registration_v1.json"
+    },
+    "observations": {
+      "J": {
+        "directory": "runs/pi-link-tag-calibration/20260726-new-scene-tags-pose-j-identity-validation-v1/stage-1",
+        "execution_receipt": "execution_receipt.json",
+        "execution_receipt_sha256": "3d377ff0dd1c86301c636778df427bb5081609b8fef26c52304d1a37363cb962",
+        "joint_samples": "joint_samples.jsonl",
+        "joint_samples_sha256": "14f8b4314249e5ee1340512346934a98a1e7a5796df91f16f90ac992db54a4dc",
+        "callback_ledger": "final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+        "callback_ledger_sha256": "a5a783be449844592fcd4200eea230e8f19c3f3e084c3882dea469eba86ee8b0",
+        "native_report": "final_hold_camera/native_dual_camera/native_camera_report.json",
+        "native_report_sha256": "f58a527b9adc594314cee364dd1573d410bbce211e60a4bc640d25db1171128f",
+        "native_video": "final_hold_camera/native_dual_camera/overhead_c922.native.mov",
+        "native_video_sha256": "5cad575e764e42c58667ae2c3e16fcbfc918b2f7f78afc3a877779586b405ea1",
+        "native_frame_count": 377,
+        "selected_native_frame_index_zero_based": 307,
+        "selected_callback_source_sequence": 337,
+        "selected_source_pts_seconds": 790112.6571333334,
+        "selected_writer_relative_seconds": 10.2329333334,
+        "selected_joint_sample_index_zero_based": 401,
+        "joint_time_delta_ms": 9.264458,
+        "decoded_frame_png_sha256": "d67d128eb86c620f923ad189e129f925a04d5cbe83f3bd505eb9488655d1f902",
+        "joint_position_degrees": [-4.747252747252747, -82.28571428571429, 94.9010989010989, -90.76923076923077, -60.527472527472526, 2.494061757719715]
+      },
+      "S": {
+        "directory": "runs/pi-link-tag-calibration/20260726-pose-j-to-episode-start-recovery-v1/stage-1",
+        "execution_receipt": "execution_receipt.json",
+        "execution_receipt_sha256": "cfdef59c7701a638fd73419e64b372b66a9ebd2fd83376ab0860619cf24a45c3",
+        "joint_samples": "joint_samples.jsonl",
+        "joint_samples_sha256": "ba4ba69b94b9487a418ffc5a06dc12d86ff1614bbb182d3d2c0fb589ea202707",
+        "callback_ledger": "final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+        "callback_ledger_sha256": "7f0b74d8e12d25323c2ebb37e971c110d49aed1782ef682d752e7c71c4da1b28",
+        "native_report": "final_hold_camera/native_dual_camera/native_camera_report.json",
+        "native_report_sha256": "5e9dd8f73f187c06ec074ef2ef0c2088f6d24a3ad7d0bf3a674cf7c28dd0044d",
+        "native_video": "final_hold_camera/native_dual_camera/overhead_c922.native.mov",
+        "native_video_sha256": "ff3a90b6080fc9e29fcf78687c629e87cc0d25588d02a3bfde24b8b773e3a879",
+        "native_frame_count": 374,
+        "selected_native_frame_index_zero_based": 305,
+        "selected_callback_source_sequence": 336,
+        "selected_source_pts_seconds": 790716.4532,
+        "selected_writer_relative_seconds": 10.16596666665,
+        "selected_joint_sample_index_zero_based": 400,
+        "joint_time_delta_ms": -10.207042,
+        "decoded_frame_png_sha256": "e9cc8c7d8c27f21d39e2b0175ae812ca8e5e24b52211b1f57e52119433207a62",
+        "joint_position_degrees": [-1.4945054945054945, -107.16483516483517, 100.43956043956044, -100.17582417582418, -119.07692307692308, 2.494061757719715]
+      },
+      "K": {
+        "directory": "runs/pi-link-tag-calibration/20260726-current-camera-pose-k-identity-validation-v1/stage-1",
+        "execution_receipt": "execution_receipt.json",
+        "execution_receipt_sha256": "e96970ee5268f653ed4f9a90d3a42014c91f8d2b03bf238737e89e732ee28695",
+        "joint_samples": "joint_samples.jsonl",
+        "joint_samples_sha256": "b8f5a48a348621c9f6bfa88d942ae43c50a375a321eee92f280231b8cd4c3069",
+        "callback_ledger": "final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+        "callback_ledger_sha256": "29b2ae3c1b68c7dc30321278b54675ac96dccf4b460666dfc3ff422b8e5c028f",
+        "native_report": "final_hold_camera/native_dual_camera/native_camera_report.json",
+        "native_report_sha256": "02b482a348b6b3a16a4f477f8c9bff48538a10e23b740b293f66f5bd1824c04e",
+        "native_video": "final_hold_camera/native_dual_camera/overhead_c922.native.mov",
+        "native_video_sha256": "6857644c7d8f621079ad58d6c4e9554d8269e05beb42f6117ef4a78420ffad5d",
+        "native_frame_count": 377,
+        "selected_native_frame_index_zero_based": 306,
+        "selected_callback_source_sequence": 336,
+        "selected_source_pts_seconds": 791091.7744666666,
+        "selected_writer_relative_seconds": 10.19993333332,
+        "selected_joint_sample_index_zero_based": 400,
+        "joint_time_delta_ms": -4.427958,
+        "decoded_frame_png_sha256": "0061fd04fc26d7fe4cfcb3972520d9740f5e743cbb247d2d1699acd224544010",
+        "joint_position_degrees": [24.0, -73.93406593406593, 84.79120879120879, -78.46153846153847, -48.57142857142857, 2.494061757719715]
+      },
+      "L": {
+        "directory": "runs/pi-link-tag-calibration/20260726-current-camera-pose-l-heldout-v1/stage-1",
+        "execution_receipt": "execution_receipt.json",
+        "execution_receipt_sha256": "0c6897d0ca8702706dd0bf90592d3e61e9c70b985d466521c3a5e1ccf506a2f3",
+        "joint_samples": "joint_samples.jsonl",
+        "joint_samples_sha256": "46ca7ff08e614b4c70316f49aa2ceae20f3b4d2541b9e6efd551edbdf77b0017",
+        "callback_ledger": "final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+        "callback_ledger_sha256": "aece902d98cd4334d1ad36fd177847e281c7a6df4a6499e9d57deeb7d47af53a",
+        "native_report": "final_hold_camera/native_dual_camera/native_camera_report.json",
+        "native_report_sha256": "3f605477e8b9c42792395b0fdf15b917a480907c80866387955037b64c9006a9",
+        "native_video": "final_hold_camera/native_dual_camera/overhead_c922.native.mov",
+        "native_video_sha256": "484d09edf84d830ba9b51791db061fcd4215c1439e18bde6e9deca49deaedeaa",
+        "native_frame_count": 369,
+        "selected_native_frame_index_zero_based": 305,
+        "selected_callback_source_sequence": 335,
+        "selected_source_pts_seconds": 791243.1988333333,
+        "selected_writer_relative_seconds": 10.16693333338,
+        "selected_joint_sample_index_zero_based": 400,
+        "joint_time_delta_ms": -3.465167,
+        "decoded_frame_png_sha256": "b260bf0078694b6ba96a6bc05dd1e74311cd2acec9a529be82667b94fb06ba4d",
+        "joint_position_degrees": [-24.615384615384617, -77.01098901098901, 95.07692307692308, -90.50549450549451, -60.527472527472526, 2.494061757719715]
+      },
+      "M": {
+        "directory": "runs/pi-link-tag-calibration/20260726-current-camera-pose-m-fresh-validation-v1/stage-1/execution_receipt.json",
+        "execution_receipt": "execution_receipt.json",
+        "execution_receipt_sha256": "194016f331ad8b9ec0e74a939e9807686a0c7fc06343efdc5a2f97070ed21a30",
+        "joint_samples": "joint_samples.jsonl",
+        "joint_samples_sha256": "dd100b5d08c0948e319ccd823c2ccb4c942e9c7d76ad764f2a043a6e0b921283",
+        "callback_ledger": "final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+        "callback_ledger_sha256": "3588a545d99dd049715c9d0e6876e634ed3ca45ecf10dfcc3b656239941589d3",
+        "native_report": "final_hold_camera/native_dual_camera/native_camera_report.json",
+        "native_report_sha256": "ba50e5996d8380eeeb6f6aba8cf4dd0eb03b98bbffdc6a0fa925e05f28abf576",
+        "native_video": "final_hold_camera/native_dual_camera/overhead_c922.native.mov",
+        "native_video_sha256": "b23dfa6a6a0d5b1638cbb8fcd50c199173db90c6eff65af68957fb88d6a6c3ff",
+        "native_frame_count": 372,
+        "selected_native_frame_index_zero_based": 306,
+        "selected_callback_source_sequence": 337,
+        "selected_source_pts_seconds": 792586.1313,
+        "selected_writer_relative_seconds": 10.19996666664,
+        "selected_joint_sample_index_zero_based": 400,
+        "joint_time_delta_ms": -12.682959,
+        "decoded_frame_png_sha256": "611aecb6607299115d0ab9501064283a3231a5bfe6851100c4f4b967f06cf141",
+        "joint_position_degrees": [11.252747252747254, -69.89010989010988, 88.3076923076923, -84.52747252747253, -50.59340659340659, 2.494061757719715]
+      }
+    }
+  },
+  "extraction": {
+    "target_joint_rows": "final completed_capture_hold_samples block",
+    "target_host_time": "integer median host_continuous_ns of target joint rows",
+    "frame_selection": "minimum absolute host-time delta among role=c922 and appended_to_writer=true callbacks",
+    "movie_index": "zero-based ordinal within the appended c922 callback sequence",
+    "joint_selection": "minimum absolute host-time delta to the selected callback",
+    "forbidden_inputs": ["c922_final.png", "pi_current.jpg", "operator_selected_png"]
+  },
+  "board": {
+    "square_side_design_prior_mm": 44.45,
+    "square_side_is_measured": false,
+    "sensitivity_square_side_mm": [43.45, 44.45, 45.45],
+    "playing_lattice_line_count_per_axis": 9,
+    "initial_image_playing_corners_px": [[45.0, 120.0], [370.0, 154.0], [397.0, 329.0], [62.0, 309.0]],
+    "direct_support_preflight": {
+      "strong_row_lines": 7,
+      "strong_column_lines": 5,
+      "method": "multi_pose_Hough_clusters_with_arm_and_pawn_occlusion",
+      "full_OpenCV_7x7_corner_detection": "failed_all_poses"
+    }
+  },
+  "fixed_hypotheses": {
+    "identity_joint_zero_offsets_degrees": [0.0, 0.0, 0.0, 0.0, 0.0],
+    "stage_d_joint_zero_offsets_degrees": [-0.000005075171669022712, 18.701248448127163, -0.05582548395304593, -0.023728784209850664, 0.0]
+  },
+  "fit_method": {
+    "camera": "one_shared_centered_square_pixel_zero_distortion_pinhole_conditioned_on_one_board_homography",
+    "base": "one_shared_rigid_base_to_board_delta_fit_on_J_S_K_L_then_frozen",
+    "CAD": "exact_full_SO101_group2_visual_meshes",
+    "comparison": "identity_vs_Stage_D_with_identical_camera_base_edge_extraction_and_no_candidate_specific_nuisance_fit",
+    "forbidden": ["per_pose_camera_refit", "per_pose_base_refit", "candidate_specific_mask", "candidate_specific_camera_or_base_refit", "distortion_inference_from_one_plane"]
+  },
+  "gates": {
+    "minimum_directly_supported_lattice_lines_per_axis": 7,
+    "maximum_joint_to_frame_delta_ms": 20.0,
+    "maximum_board_coordinate_rmse_px": 2.0,
+    "maximum_camera_jacobian_condition_number": 1000.0,
+    "camera_fit_bounds_must_be_inactive": true,
+    "maximum_base_multistart_translation_spread_mm": 5.0,
+    "maximum_base_multistart_rotation_spread_degrees": 1.0,
+    "base_fit_bounds_must_be_inactive": true,
+    "retrospective_validation_identity_p90_max_px": 8.0,
+    "retrospective_validation_winner_margin_min_px": 2.0,
+    "future_heldout_required": true
+  },
+  "authority": {
+    "conditional_diagnostic": true,
+    "P13_promotion": false,
+    "metric_camera_or_workcell": false,
+    "physical_motion": false,
+    "policy": false,
+    "task_success": false
+  }
+}

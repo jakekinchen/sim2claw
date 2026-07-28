@@ -1,0 +1,67 @@
+{
+  "schema_version": "sim2claw.frame_extraction_lineage_contract.v1",
+  "contract_id": "current_100mm_c922_frame_lineage_v1",
+  "status": "preregistered",
+  "baseline_commit": "083b5f138e2055d1d22dc1fce7a4afd92a621f7b",
+  "source": {
+    "capture_receipt_path": "runs/current-100mm-measurement-20260723/episode-c2-c1-dual-003/capture_receipt.json",
+    "capture_receipt_sha256": "3fafb113a7b89e0b80640b9c7b4cc2016db16ecafcb9f46cba79a79a1330499f",
+    "video_path": "runs/current-100mm-measurement-20260723/episode-c2-c1-dual-003/overhead_c922.mp4",
+    "video_sha256": "1643520f5e53ff4694df2cd3ffe102b9f947eb9742678a3e0f2d2f74ba0ececc",
+    "existing_frame_path": "runs/current-100mm-measurement-20260723/episode-c2-c1-dual-003/overhead_start.png",
+    "existing_frame_sha256": "2543230b795c8a61ab6f7ddb1e9c672588ea88958cddbbb84397d689034b5dfc",
+    "existing_frame_rgb24_sha256": "7046a08b731c736471c73abba80bbcc366b650569bee5bbf6d4db97366cecaa8",
+    "camera_id": "logitech-overhead",
+    "camera_name": "C922 Pro Stream Webcam",
+    "image_size_px": [640, 480],
+    "capture_orientation_filter": "hflip,vflip"
+  },
+  "decoder": {
+    "ffmpeg_path": "/opt/homebrew/bin/ffmpeg",
+    "ffmpeg_sha256": "0a96da2735695308d964e25fa6f4a0db2e9d24031390360f4c5ff96a4f8938e5",
+    "ffmpeg_version": "8.0.1",
+    "ffprobe_path": "/opt/homebrew/bin/ffprobe",
+    "ffprobe_sha256": "68447e67105534f3f43b95c94983ed56fbdd7125e5724cc56499ad538c2b86a7",
+    "frame_index_zero_based": 29,
+    "frame_pts_seconds": 1.0,
+    "geometric_filter_during_extraction": null,
+    "orientation_application": "capture_filter_already_encoded_in_source_video"
+  },
+  "expected_stream": {
+    "codec_name": "h264",
+    "width": 640,
+    "height": 480,
+    "pixel_format": "yuv420p",
+    "average_frame_rate": "1049/35",
+    "time_base": "1/15360",
+    "start_time_seconds": 0.0,
+    "duration_seconds": 35.0,
+    "frame_count": 1049
+  },
+  "budgets": {
+    "metadata_probes_maximum": 1,
+    "frame_derivations_maximum": 1,
+    "retries_maximum": 0,
+    "camera_sessions_maximum": 0,
+    "new_camera_frames_maximum": 0,
+    "robot_motions_maximum": 0,
+    "simulator_replays_maximum": 0,
+    "provider_calls_maximum": 0
+  },
+  "decision": {
+    "pass_verdict": "frame_extraction_lineage_verified",
+    "fail_verdict": "frame_extraction_lineage_mismatch",
+    "alternate_frame_search_allowed": false,
+    "metric_registration_readiness_v1_changes": false
+  },
+  "authority": {
+    "proof_class": "deterministic_physical_video_frame_lineage",
+    "metric_calibration_claimed": false,
+    "geometry_scale_domain_change_authorized": false,
+    "simulator_calibration_authorized": false,
+    "training_authorized": false,
+    "promotion_authorized": false,
+    "physical_motion_authorized": false,
+    "task_success_claimed": false
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "d405_board_view_current_shoulder_elbow_only_20260725_v2",
+  "capture_during_motion": false,
+  "setup_maximum_slew_degrees_s": 1.5,
+  "setup_elbow_tracking_error_limit_degrees": 20.0,
+  "setup_observed_elbow_target_degrees": 82.0,
+  "setup_target_hold_seconds": 0.0,
+  "stationary_capture_seconds": 0.0,
+  "reviewed_anchor_degrees": [
+    10.373626373626374,
+    -57.05494505494506,
+    103.95604395604396,
+    -2.241758241758242,
+    -75.12087912087912,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [
+      10.373626373626374,
+      -57.05494505494506,
+      70.0,
+      -2.241758241758242,
+      -75.12087912087912,
+      3.0878859857482186
+    ]
+  ],
+  "review_basis": {
+    "simulation_runtime": "cpu_mujoco_mj_forward",
+    "physical_scope": "camera_setup_only",
+    "source_pose": "fresh torque-off follower read after the shoulder no-progress stop",
+    "motion_scope": "elbow flex only toward the previously useful v24 observed pose",
+    "excluded_motion": [
+      "shoulder lift",
+      "shoulder pan",
+      "wrist flex",
+      "wrist roll",
+      "gripper"
+    ],
+    "observed_stop_basis": "The prior v24 camera route produced the useful board view near observed elbow 80.8 degrees. Preview the complete safe path toward 70 degrees but stop as soon as measured elbow reaches 82 degrees or lower.",
+    "capture_plan": "After torque-off close, acquire a separate stationary native librealsense RGBD recording; this route itself records no camera data."
+  }
+}

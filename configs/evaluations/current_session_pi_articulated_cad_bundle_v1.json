@@ -1,0 +1,173 @@
+{
+  "schema_version": "sim2claw.current_session_pi_articulated_cad_bundle_contract.v1",
+  "contract_id": "current_session_anchor_high_pose_j_fit_mid_heldout_20260727_v1",
+  "status": "source_bindings_frozen_before_fit",
+  "proof_class": "physical_static_current_session_full_CAD_and_fiducial_diagnostic",
+  "split": {
+    "fit_poses": [
+      "anchor",
+      "high",
+      "pose_j"
+    ],
+    "heldout_pose": "mid",
+    "heldout_accessed_before_freeze": true,
+    "heldout_limitation": "The mid-hover image was already inspected before this candidate family was frozen, so its score is retrospective and cannot promote simulator parameters."
+  },
+  "sources": {
+    "intrinsics": {
+      "path": "runs/pi-link-tag-calibration/20260726-current-camera-intrinsics-v1/receipt.json",
+      "sha256": "38e851c5f356a3bea106229e53ff05eed2d839150fc192d23c243b3088bfa29b"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "camera_seed": {
+      "path": "runs/pi-link-tag-calibration/20260726-current-three-link-v2/candidate.json",
+      "sha256": "ddc7ab843af5f17b2c53e71a363aafce0d2b3355c9346f14bafce0cfdf433aca",
+      "use": "shared world-to-Pi camera initialization only; tag mounts and joint offsets are refit from the frozen current-session images"
+    },
+    "poses": {
+      "anchor": {
+        "image_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-1/pi_imx708_torque_on_hold.jpg",
+        "image_sha256": "c704e5560a12fa0297be5a7b242d05965153b8c091887239b9fd408ea56336bc",
+        "receipt_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-1/execution_receipt.json",
+        "receipt_sha256": "34bae544980185770d78d0cc0cfb5803a9c663287f9f223fb8cffc9545cc1684",
+        "joint_degrees": [
+          -8.351648351648352,
+          -106.46153846153847,
+          99.12087912087912,
+          -100.17582417582418,
+          -126.37362637362638,
+          1.66270783847981
+        ],
+        "joint_source": "receipt_final_actual_degrees"
+      },
+      "high": {
+        "image_path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/evaluation/current_session_frames/pi_true_apex_frame249.png",
+        "image_sha256": "0733f972bd1fdf5d66c889a3e24e87b6bba4f48f4fd1061747cc3b729b88add6",
+        "receipt_path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/evaluation/transfer-diagnostic.json",
+        "receipt_sha256": "0c992c1cd9ddf95db5302e6ada02da1c8f547048247f304153d70808d34542d3",
+        "frame_index": 249,
+        "pi_pts_seconds": 8.296221,
+        "joint_sample_index": 240,
+        "frame_to_joint_delta_seconds": -0.002198,
+        "joint_degrees": [
+          7.2967032967032965,
+          -49.494505494505496,
+          87.95604395604396,
+          -53.75824175824176,
+          -123.91208791208791,
+          1.66270783847981
+        ],
+        "joint_source": "transfer_diagnostic_apex_actual_degrees"
+      },
+      "pose_j": {
+        "image_path": "runs/geometric-hover/20260727-pose-j-prior-corridor-hold-tricam-v1/evaluation/stationary_frames/pi_pose_j.png",
+        "image_sha256": "5448ea63ea70c4ddb1577fa512c96067f6b312a5186ec78544a1ac31927995c6",
+        "receipt_path": "runs/geometric-hover/20260727-pose-j-prior-corridor-hold-tricam-v1/stage-1/execution_receipt.json",
+        "receipt_sha256": "6c8f16b149608402ae899e9086e3b225865d7c9bf0310e5b37405a3ef0cc75a4",
+        "frame_index": 574,
+        "pi_pts_seconds": 19.124809,
+        "joint_sample_index": 725,
+        "frame_to_joint_delta_seconds": -0.009116,
+        "joint_degrees": [
+          -4.747252747252747,
+          -82.63736263736264,
+          94.54945054945055,
+          -90.68131868131869,
+          -60.7032967032967,
+          1.66270783847981
+        ],
+        "joint_source": "execution_joint_sample_725_actual_degrees"
+      },
+      "mid": {
+        "image_path": "runs/geometric-hover/20260727-b7-mid-hover-hold-roundtrip-tricam-v3/evaluation/stationary_frames/pi_mid_hover.png",
+        "image_sha256": "437698aef24f34e9838af4ee89f391aa44f3be132d7b445bd08780e1a1727152",
+        "receipt_path": "runs/geometric-hover/20260727-b7-mid-hover-hold-roundtrip-tricam-v3/evaluation/transfer-diagnostic.json",
+        "receipt_sha256": "cb8ccb5c156143706c49e8608215f7352ac1b967f7e5be7dcb5b42fb21a4d60a",
+        "frame_index": 369,
+        "pi_pts_seconds": 12.294458,
+        "joint_sample_index": 451,
+        "frame_to_joint_delta_seconds": 0.002586,
+        "joint_degrees": [
+          7.824175824175824,
+          -35.34065934065934,
+          92.35164835164835,
+          -56.48351648351648,
+          -130.32967032967034,
+          1.66270783847981
+        ],
+        "joint_source": "stationary_joint_sample_451_actual_degrees"
+      }
+    }
+  },
+  "frozen_model": {
+    "image_size_px": [
+      1536,
+      864
+    ],
+    "focal_px": 651.6297979827092,
+    "principal_point_px": [
+      768.0,
+      432.0
+    ],
+    "distortion_coefficients": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tag_family": "tag36h11",
+    "tag_black_edge_m": 0.02,
+    "tag_body_map": {
+      "0": "left_upper_arm",
+      "1": "left_lower_arm",
+      "2": "left_wrist",
+      "3": "left_shoulder",
+      "6": "left_base"
+    },
+    "full_visual_tree_required": true,
+    "wrist_roll_joint_zero_fitted": true
+  },
+  "fit_method": {
+    "stage_1": "shared_camera_and_rigid_tag_mount_seed_with_joint_offsets_frozen_zero",
+    "stage_2": "shared_camera_and_five_joint_zero_offsets_against_exact_full_CAD_edges_plus_tag_corners_with_mounts_frozen",
+    "stage_3": "rigid_tag_mount_refit_with_camera_and_joint_offsets_frozen",
+    "canny_thresholds": [
+      60,
+      140
+    ],
+    "edge_distance_clip_px": 30.0,
+    "camera_rotation_delta_bound_radians": 0.2,
+    "camera_translation_delta_bound_m": 0.15,
+    "joint_zero_bound_degrees": 5.0,
+    "forbidden": [
+      "per_pose_camera_refit",
+      "per_pose_joint_refit",
+      "heldout_parameter_refit",
+      "focal_refit",
+      "distortion_refit",
+      "mesh_deformation",
+      "action_assistance"
+    ]
+  },
+  "gates": {
+    "fit_tag_corner_rmse_max_px": 8.0,
+    "heldout_tag_corner_rmse_max_px": 12.0,
+    "heldout_tag_corner_max_px": 24.0,
+    "heldout_CAD_edge_median_max_px": 12.0,
+    "heldout_CAD_edge_p80_max_px": 24.0,
+    "joint_offset_no_bound_saturation_margin_degrees": 0.1,
+    "stage_2_jacobian_full_rank_required": true
+  },
+  "authority": {
+    "diagnostic_only": true,
+    "simulator_parameter_promotion": false,
+    "physical_robot_control": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}

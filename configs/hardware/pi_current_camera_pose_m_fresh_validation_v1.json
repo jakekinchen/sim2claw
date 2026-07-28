@@ -1,0 +1,47 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_current_camera_pose_m_fresh_validation_20260726_v1",
+  "capture_during_motion": true,
+  "setup_recovery_command_anchor_snap_limit_degrees": 5.0,
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "reviewed_anchor_degrees": [
+    -1.7582417582417582,
+    -106.81318681318682,
+    100.43956043956044,
+    -100.17582417582418,
+    -119.07692307692308,
+    2.494061757719715
+  ],
+  "stage_targets_degrees": [
+    [
+      12.0,
+      -68.0,
+      85.0,
+      -84.0,
+      -50.0,
+      2.494061757719715
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "calibration_capture_with_setup_recovery",
+    "capture_scope": "first_fresh_validation_after_freezing_the_current_J_S_K_L_CAD_keyed_identity_vs_stage_d_evaluator",
+    "source_pose": "Fresh torque-off follower read after the completed pose-L return.",
+    "command_anchor_rule": "The reviewed calibration-capture gateway may snap the fresh torque-off shoulder-lift reading by at most 5 degrees to the calibrated command envelope before the frozen interpolation; the snap is excluded from sim-gap evidence.",
+    "target_selection": "A preregistered CAD-visible and tag-visible configuration that changes shoulder pan, lift, elbow, wrist flex, and wrist roll from every J/S/K/L fit pose.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "fresh_CAD_keyed_joint_mapping_validation": true,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

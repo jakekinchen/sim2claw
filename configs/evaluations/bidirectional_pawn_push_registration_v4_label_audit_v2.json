@@ -1,0 +1,93 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_registration_label_audit.v2",
+  "evaluation_id": "bidirectional_pawn_push_registration_v4_label_audit_20260727_v2",
+  "status": "frozen_post_q15_defect_correction",
+  "original_evaluation": {
+    "contract_path": "configs/evaluations/bidirectional_pawn_push_registration_v4_validation_v1.json",
+    "receipt_path": "runs/bidirectional-pawn-push/20260727-registration-v4-heldout/evaluation.json",
+    "receipt_sha256": "7bfd06be5dd397a8c25dc7a4e3cdadd08fa006271fec38d4abcac27d04c125bf",
+    "reported_physical_square": "b7",
+    "reported_residual_mm": 164.35312826210378,
+    "disposition": "preserved_but_invalid_as_a_camera_owned_heldout_score"
+  },
+  "sealed_sources": [
+    {
+      "role": "dataset_manifest",
+      "path": "configs/evaluations/bidirectional_pawn_push_registration_dataset_v1.json",
+      "sha256": "da203fae0e84ceb722631676858762e1ee3d5962be95c4555afb44f97bf51fdf"
+    },
+    {
+      "role": "heldout_packet",
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/packet.json",
+      "sha256": "dc43fb02c751a466dd3a68f93e076ca6e12bc35568e6bf372c6412ff203008cb"
+    },
+    {
+      "role": "execution_receipt",
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/stage-1/execution_receipt.json",
+      "sha256": "9217d87fd061b5b204d43517fea45f38275dfe0acb370d9f1cfca9986927f257"
+    },
+    {
+      "role": "c922_native_video",
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/stage-1/final_hold_camera/native_dual_camera/overhead_c922.native.mov",
+      "sha256": "6564ff1fadfaf069d8166277bef8a9391f01183cbc6a49fd7b032897b2c8665f"
+    },
+    {
+      "role": "pi_browser_video",
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/stage-1/final_hold_camera/pi_motion/pi_imx708.browser.mp4",
+      "sha256": "baab287342a7938cf0cbbcbf59003c864bada9144b2c6840f268abfba0c68664"
+    },
+    {
+      "role": "d405_native_video",
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/stage-1/final_hold_camera/native_dual_camera/wrist_d405.native.mov",
+      "sha256": "9e8c04401931ab1c59a201d2b4227e8926cfb9b43430f343d47c863f4d0256c9"
+    },
+    {
+      "role": "transfer_diagnostic",
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/evaluation/transfer-diagnostic.json",
+      "sha256": "0c992c1cd9ddf95db5302e6ada02da1c8f547048247f304153d70808d34542d3"
+    }
+  ],
+  "unchanged_gates": {
+    "maximum_fit_residual_mm": 25.0,
+    "maximum_held_out_residual_mm": 25.0,
+    "held_out_open_count": 1
+  },
+  "camera_adjudication": {
+    "decision": "exact_physical_square_unadjudicable",
+    "c922": {
+      "apex_video_time_seconds": 10.38,
+      "review_window_seconds": [10.0, 11.0],
+      "finding": "The board is visible, but the high-hover pinch-to-pawn association is self-occluded by the arm and wrist. Planar image position cannot be assigned to a square without a metric camera model because the pinch is approximately 180 mm above the pawn plane."
+    },
+    "pi_imx708": {
+      "apex_frame_index": 249,
+      "derived_frame_path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/evaluation/current_session_frames/pi_true_apex_frame249.png",
+      "derived_frame_sha256": "0733f972bd1fdf5d66c889a3e24e87b6bba4f48f4fd1061747cc3b729b88add6",
+      "finding": "The arm is visible, but the gripper apex is outside the right image boundary and only part of the board is visible."
+    },
+    "d405_color": {
+      "finding": "The wrist camera points away from the board at the apex and cannot supply a square identity."
+    },
+    "metric_camera_extrinsics_available": false,
+    "camera_owned_physical_square": null,
+    "forbidden_substitution": "Do not choose the nearest square under v4 FK or the provisional scene transform; that would use the model being validated to create its own held-out label."
+  },
+  "correction": {
+    "new_data_opened": false,
+    "new_robot_motion": false,
+    "held_out_open_count_after_correction": 1,
+    "corrected_residual_mm": null,
+    "registration_admitted": false,
+    "registration_rejected_by_heldout": false,
+    "f1_trigger_supported": false,
+    "disposition": "heldout_unscorable_label_authority_failure"
+  },
+  "authority": {
+    "physical_motion": false,
+    "training": false,
+    "promotion": false,
+    "metric_registration": false,
+    "task_success": false
+  },
+  "claim_boundary": "The original 164.353128 mm calculation is reproducible only after treating the old route name B7 as a physical label. The sealed cameras cannot adjudicate an exact physical source square, so no corrected held-out residual, metric admission, metric rejection, or F1 trigger is supported. This correction proves no physical, simulator, or transfer success."
+}

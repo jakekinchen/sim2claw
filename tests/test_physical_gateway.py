@@ -17,6 +17,7 @@ from sim2claw.physical_gateway import (
     GatewayIdentity,
     PhysicalGatewayError,
     SO101PhysicalGateway,
+    _live_setup_command_anchor,
     bounded_relative_target,
     inspect_physical_gateway,
     synchronize_physical_gateway,
@@ -208,6 +209,49 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertEqual(command[0], tracking_limits[0])
         self.assertEqual(command[1], -tracking_limits[1])
 
+    def test_setup_elbow_tracking_override_changes_only_elbow(self) -> None:
+        requested = np.asarray([0, 0, 7, 0, 0, 0], dtype=np.float64)
+        previous_command = requested.copy()
+        actual = np.zeros(6, dtype=np.float64)
+        lower = np.asarray([-106] * 5 + [0], dtype=np.float64)
+        upper = np.asarray([106] * 5 + [100], dtype=np.float64)
+
+        command, _, tracking_limits = slew_limited_target(
+            requested,
+            previous_command,
+            actual,
+            0.05,
+            lower_limits=lower,
+            upper_limits=upper,
+            elbow_tracking_error_limit_degrees=7.0,
+        )
+
+        self.assertEqual(
+            tracking_limits.tolist(),
+            [6.0, 8.0, 7.0, 6.0, 8.0, 12.0],
+        )
+        self.assertEqual(command[2], 7.0)
+
+    def test_live_setup_anchor_snap_is_elbow_only_and_bounded(self) -> None:
+        lower = np.asarray([-100.0] * 6)
+        upper = np.asarray([100.0] * 6)
+        observed = np.zeros(6)
+        observed[2] = 102.9
+
+        command, snap = _live_setup_command_anchor(observed, lower, upper)
+
+        self.assertEqual(command[2], 100.0)
+        self.assertAlmostEqual(snap[2], -2.9)
+        np.testing.assert_array_equal(snap[[0, 1, 3, 4, 5]], np.zeros(5))
+
+        observed[2] = 103.1
+        with self.assertRaisesRegex(PhysicalGatewayError, "3 degree elbow-only"):
+            _live_setup_command_anchor(observed, lower, upper)
+        observed[:] = 0.0
+        observed[1] = 100.1
+        with self.assertRaisesRegex(PhysicalGatewayError, "elbow-only"):
+            _live_setup_command_anchor(observed, lower, upper)
+
     def test_open_sample_and_close_own_follower_torque(self) -> None:
         gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)
         opened = gateway.open(enable_motion=True, paired_pose_confirmed=True)
@@ -247,6 +291,107 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertEqual(self.follower.configure_calls, 0)
         self.assertTrue(self.follower.bus.torque)
         gateway.close()
+        self.assertFalse(self.follower.bus.torque)
+
+    def test_live_anchor_accepts_bounded_settle_and_rebases_exact_setup(self) -> None:
+        self.leader.values[:] = self.follower.values
+        sleeps = 0
+
+        def settle(_seconds: float) -> None:
+            nonlocal sleeps
+            sleeps += 1
+            if sleeps == 1:
+                self.follower.values[2] -= 10.0
+                self.leader.values[:] = self.follower.values
+
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            configure_devices=False,
+            sleep=settle,
+        )
+        try:
+            opened = gateway.open_live_anchored_setup()
+            self.assertEqual(opened["control_mode"], "live_anchored_setup_only")
+            self.assertEqual(opened["settle_excursion_degrees"][2], -10.0)
+            self.assertEqual(
+                opened["settled_torque_on_anchor_degrees"][2],
+                -7.0,
+            )
+            self.assertTrue(opened["passive_settle_observed"])
+            np.testing.assert_array_equal(
+                gateway.zero_displacement_arm_target,
+                self.follower.values,
+            )
+            self.assertTrue(self.follower.bus.torque)
+        finally:
+            gateway.close()
+        self.assertFalse(self.follower.bus.torque)
+
+    def test_twenty_degree_elbow_envelope_is_live_setup_only(self) -> None:
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            configure_devices=False,
+        )
+        try:
+            gateway.open(enable_motion=True, paired_pose_confirmed=True)
+            with self.assertRaisesRegex(
+                PhysicalGatewayError,
+                "restricted to exact live-anchored setup-only samples",
+            ):
+                gateway.sample(
+                    0.1,
+                    exact_requested_degrees=self.follower.values.copy(),
+                    setup_elbow_tracking_error_limit_degrees=20.0,
+                )
+        finally:
+            gateway.close()
+
+        self.leader = FakeLeader(np.zeros(6, dtype=np.float64))
+        self.follower = FakeFollower(
+            np.asarray([5, 4, 3, 2, 1, 5], dtype=np.float64)
+        )
+        self.leader.values[:] = self.follower.values
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            configure_devices=False,
+            sleep=lambda seconds: None,
+        )
+        try:
+            gateway.open_live_anchored_setup()
+            sample = gateway.sample(
+                0.1,
+                exact_requested_degrees=self.follower.values.copy(),
+                setup_elbow_tracking_error_limit_degrees=20.0,
+            )
+            self.assertEqual(sample["tracking_error_limits"][2], 20.0)
+            self.assertTrue(sample["precompiled_exact_action"])
+        finally:
+            gateway.close()
+
+    def test_live_anchor_rejects_unstable_settle(self) -> None:
+        self.leader.values[:] = self.follower.values
+
+        def keep_moving(_seconds: float) -> None:
+            self.follower.values[2] -= 2.0
+            self.leader.values[:] = self.follower.values
+
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            configure_devices=False,
+            sleep=keep_moving,
+        )
+        try:
+            with self.assertRaisesRegex(
+                PhysicalGatewayError,
+                "did not settle to a stable live torque-on anchor",
+            ):
+                gateway.open_live_anchored_setup()
+        finally:
+            gateway.close()
         self.assertFalse(self.follower.bus.torque)
 
     def test_read_only_sample_reports_pose_without_commanding_motion(self) -> None:
@@ -445,6 +590,60 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertEqual(self.follower.configure_calls, 0)
         self.assertFalse(self.follower.bus.torque)
 
+    def test_zero_displacement_hold_sends_fresh_follower_target_exactly(self) -> None:
+        self.follower.values[:] = self.leader.values
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            sleep=lambda _seconds: None,
+        )
+        gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        fresh_target = gateway.zero_displacement_arm_target.copy()
+        sample = gateway.sample(0.05, zero_displacement_hold=True)
+        np.testing.assert_array_equal(
+            sample["follower_requested_degrees"], fresh_target
+        )
+        np.testing.assert_array_equal(
+            sample["follower_command_degrees"], fresh_target
+        )
+        self.assertTrue(sample["zero_displacement_hold"])
+        self.assertFalse(sample["rate_limited"])
+        self.assertFalse(sample["safety_clamped"])
+        original_send = self.follower.send_action
+
+        def mismatched_send(action: dict[str, float]) -> dict[str, float]:
+            sent = original_send(action)
+            sent[f"{ROBOT_JOINTS[0]}.pos"] += 0.01
+            return sent
+
+        self.follower.send_action = mismatched_send
+        with self.assertRaisesRegex(PhysicalGatewayError, "exact hold target"):
+            gateway.sample(0.05, zero_displacement_hold=True)
+        gateway.close()
+
+    def test_precompiled_target_is_sent_byte_identically(self) -> None:
+        self.follower.values[:] = self.leader.values
+        gateway = SO101PhysicalGateway(
+            self.identity,
+            device_factory=self.factory,
+            sleep=lambda _seconds: None,
+        )
+        gateway.open(enable_motion=True, paired_pose_confirmed=True)
+        target = gateway.zero_displacement_arm_target.copy()
+        target[0] += 0.5
+
+        sample = gateway.sample(0.05, exact_requested_degrees=target)
+
+        np.testing.assert_array_equal(
+            sample["follower_requested_degrees"], target
+        )
+        np.testing.assert_array_equal(sample["follower_command_degrees"], target)
+        self.assertTrue(sample["precompiled_exact_action"])
+        self.assertFalse(sample["rate_limited"])
+        self.assertFalse(sample["safety_clamped"])
+        gateway.close()
+        self.assertFalse(self.follower.bus.torque)
+
     def test_large_starting_mismatch_blocks_registration_before_torque(self) -> None:
         self.follower.values[1] = 90.0
         gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)
@@ -498,6 +697,8 @@ class PhysicalGatewayTest(unittest.TestCase):
         self.assertLessEqual(report["maximum_sync_residual_degrees"], 3.0)
         self.assertFalse(report["physical_follower_torque_enabled"])
         self.assertFalse(self.follower.bus.torque)
+        self.assertEqual(self.leader.configure_calls, 0)
+        self.assertEqual(self.follower.configure_calls, 0)
 
     def test_replay_origin_rebase_preserves_episode_relative_excursion(self) -> None:
         gateway = SO101PhysicalGateway(self.identity, device_factory=self.factory)

@@ -10,6 +10,7 @@ import numpy as np
 import mujoco
 
 from sim2claw.recorded_replay import (
+    ActuatorPlayDiagnostic,
     EPISODE_SCHEMA,
     REPLAY_RECEIPT_SCHEMA,
     ReplayContractError,
@@ -17,7 +18,10 @@ from sim2claw.recorded_replay import (
     _align_continuous,
     _apply_parameters,
     _compile_model,
+    _play_target,
     calculate_metrics,
+    canonical_json_sha256,
+    float64_tensor_sha256,
     load_recorded_episode,
     load_sysid_config,
     replay_recorded_episode,
@@ -63,6 +67,115 @@ class RecordedReplayTest(unittest.TestCase):
             [0.0, 0.03, 0.07, 0.11, 0.16],
             atol=1e-12,
         )
+
+    def _play_diagnostic(self, radius: float) -> ActuatorPlayDiagnostic:
+        baseline = {
+            key: value
+            for key, value in self.config.items()
+            if not key.startswith("_")
+        }
+        return ActuatorPlayDiagnostic(
+            schema_version="sim2claw.actuator_play_diagnostic.v1",
+            joint_name="slider",
+            radius_joint_units=radius,
+            baseline_config_sha256=canonical_json_sha256(baseline),
+            action_sha256=float64_tensor_sha256(self.episode.commands),
+            fit_source_sha256s=("a" * 64,),
+            overlay_sha256="b" * 64,
+            evaluation_contract_sha256="c" * 64,
+        )
+
+    def test_play_target_is_stateful_and_zero_radius_is_identity(self) -> None:
+        previous = np.asarray([0.0, 2.0], dtype=np.float64)
+        command = np.asarray([1.0, 3.0], dtype=np.float64)
+        np.testing.assert_array_equal(
+            _play_target(previous, command, joint_index=0, radius=0.0),
+            command,
+        )
+        first = _play_target(
+            previous, command, joint_index=0, radius=0.2
+        )
+        np.testing.assert_allclose(first, [0.8, 3.0])
+        reversed_target = _play_target(
+            first,
+            np.asarray([-0.5, 4.0], dtype=np.float64),
+            joint_index=0,
+            radius=0.2,
+        )
+        np.testing.assert_allclose(reversed_target, [-0.3, 4.0])
+
+    def test_actuator_play_is_internal_and_preserves_exact_action_identity(
+        self,
+    ) -> None:
+        baseline = simulate_and_align(
+            self.episode,
+            self.config,
+            model_base_directory=FIXTURE_ROOT,
+        )
+        zero = simulate_and_align(
+            self.episode,
+            self.config,
+            model_base_directory=FIXTURE_ROOT,
+            actuator_diagnostic=self._play_diagnostic(0.0),
+        )
+        played = simulate_and_align(
+            self.episode,
+            self.config,
+            model_base_directory=FIXTURE_ROOT,
+            actuator_diagnostic=self._play_diagnostic(0.1),
+        )
+        np.testing.assert_array_equal(
+            zero["simulated"]["joint_position"],
+            baseline["simulated"]["joint_position"],
+        )
+        self.assertFalse(
+            np.array_equal(
+                played["simulated"]["joint_position"],
+                baseline["simulated"]["joint_position"],
+            )
+        )
+        for replay in (zero, played):
+            control = replay["control_diagnostics"]
+            self.assertTrue(control["exact_command_replay"])
+            self.assertTrue(control["requested_equals_applied"])
+            self.assertFalse(control["clipping_performed"])
+            self.assertEqual(
+                control["replay_input_action_sha256"],
+                float64_tensor_sha256(self.episode.commands),
+            )
+            self.assertTrue(control["actuator_model_transform_performed"])
+            for row in replay["synchronized_rows"]:
+                self.assertEqual(
+                    row["requested_control_joint_position"],
+                    row["applied_control_joint_position"],
+                )
+                self.assertIn(
+                    "effective_actuator_target_joint_position", row
+                )
+
+    def test_actuator_play_binding_fails_closed(self) -> None:
+        invalid = self._play_diagnostic(0.1)
+        for mutation, message in (
+            ({"joint_name": "missing"}, "joint binding"),
+            ({"radius_joint_units": -0.1}, "radius"),
+            ({"baseline_config_sha256": "d" * 64}, "config"),
+            ({"action_sha256": "e" * 64}, "action"),
+        ):
+            diagnostic = ActuatorPlayDiagnostic(
+                **{
+                    **invalid.__dict__,
+                    **mutation,
+                }
+            )
+            with self.subTest(message=message), self.assertRaisesRegex(
+                ReplayContractError, message
+            ):
+                simulate_and_align(
+                    self.episode,
+                    self.config,
+                    model_base_directory=FIXTURE_ROOT,
+                    actuator_diagnostic=diagnostic,
+                )
 
     def test_timestamp_mismatch_is_rejected_without_repair(self) -> None:
         payload = json.loads(EPISODE_PATH.read_text(encoding="utf-8"))

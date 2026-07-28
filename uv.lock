@@ -820,6 +820,18 @@ wheels = [
 ]
 
 [[package]]
+name = "inspect-robots"
+version = "0.22.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/27/1e/038411e539d33e753e315e65ff4575a909925178bb6b895c5c3992294be6/inspect_robots-0.22.0.tar.gz", hash = "sha256:f6563e46ff7eaf497a1f4b96697de36a673c4b0a449df53e6be35abbde9be332", size = 268974, upload-time = "2026-07-24T20:12:25.082Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/07/4b/51eb9dcb3f64fbc8e2a42bc66a22b93d2169b87cf582a22811a73fc9fa8e/inspect_robots-0.22.0-py3-none-any.whl", hash = "sha256:7ca3ca0ae18144b1b8b4fb98231ce13ea6bf5b6bbb3af951fa1f5be7959b7d17", size = 113784, upload-time = "2026-07-24T20:12:23.503Z" },
+]
+
+[[package]]
 name = "inspect-swe"
 version = "0.2.66"
 source = { registry = "https://pypi.org/simple" }
@@ -1965,6 +1977,11 @@ dependencies = [
     { name = "torch" },
 ]
 
+[package.optional-dependencies]
+inspect-robots = [
+    { name = "inspect-robots" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "pytest" },
@@ -1978,6 +1995,7 @@ inspect = [
 
 [package.metadata]
 requires-dist = [
+    { name = "inspect-robots", marker = "extra == 'inspect-robots'", specifier = "==0.22.0" },
     { name = "jsonschema", specifier = "==4.26.0" },
     { name = "lerobot", extras = ["feetech"], specifier = "==0.6.0" },
     { name = "mujoco", extras = ["sysid"], specifier = "==3.10.0" },
@@ -1988,6 +2006,7 @@ requires-dist = [
     { name = "scipy", specifier = "==1.18.0" },
     { name = "torch", specifier = "==2.11.0" },
 ]
+provides-extras = ["inspect-robots"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8" }]

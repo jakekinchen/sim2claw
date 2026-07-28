@@ -1,0 +1,114 @@
+{
+  "schema_version": "sim2claw.avfoundation_format_inventory_contract.v2",
+  "contract_id": "current-100mm-c922-avfoundation-format-inventory-20260724-v2",
+  "status": "preregistered_before_implementation",
+  "baseline_commit": "4e1807f0c32185846d69e0a0cc706abb0920d3da",
+  "purpose": "Observe the exact C922 native AVFoundation format surface with a Codable primitive-only payload and a pre-launch attempt manifest, then apply the evaluator-owned 640x480 fractional-rate rule.",
+  "supersedes": "configs/evaluations/avfoundation_format_inventory_v1.json",
+  "v1_terminal_evidence": {
+    "execution_commit": "c868038cdd4ee0d56d524155f2678f743b7bcfc8",
+    "binary_sha256": "aa432262d039b3c275831966685292fd11a6047a21647eeb0451f6710e2c09da",
+    "stderr_sha256": "e8404380ca2940ce707c90df1daa87a0e8f23d0394e820654b7cef22bc473c25",
+    "evaluation_sha256": "c4677bb56893ac1c45494503c33143f9b021a3fe3afc2720d62c3497efa507e4",
+    "receipt_sha256": "eb95e1eb8e20cb3c0753a8e385c735cc003416d282a44a4f1a2aa1e52b2533f4",
+    "verdict": "prerequisite_abstention",
+    "failure_signature": "Invalid type in JSON write (__SwiftValue)",
+    "observation_attempts_used": 1,
+    "reusable": false
+  },
+  "device": {
+    "media_type": "video",
+    "exact_localized_name": "C922 Pro Stream Webcam",
+    "exact_match_count_required": 1
+  },
+  "serialization": {
+    "encoder": "Foundation.JSONEncoder",
+    "payload_contract": "Swift Codable structs only",
+    "allowed_leaf_types": [
+      "String",
+      "Int",
+      "Double",
+      "Bool",
+      "null"
+    ],
+    "dictionary_any_values_allowed": false,
+    "swift_value_bridge_allowed": false,
+    "attempt_manifest_written_before_observer_launch": true,
+    "observer_failure_must_materialize_manifest": true
+  },
+  "inventory_fields": [
+    "device_localized_name",
+    "device_unique_id",
+    "device_model_id",
+    "format_index",
+    "width",
+    "height",
+    "media_subtype_fourcc",
+    "is_video_binned_nullable_on_macos",
+    "video_field_of_view_degrees",
+    "video_max_zoom_factor_nullable_on_macos",
+    "supported_color_space_raw_values_as_int",
+    "frame_rate_ranges_min_max_fps_as_double",
+    "frame_rate_ranges_min_max_duration_seconds_as_double"
+  ],
+  "selection_rule": {
+    "target_width": 640,
+    "target_height": 480,
+    "target_fps": 30.0,
+    "exact_dimensions_required": true,
+    "maximum_fractional_fps_deviation": 0.05,
+    "nearest_supported_fps": "clamp_target_to_each_closed_min_max_range",
+    "media_subtype_preference": [
+      "420v",
+      "2vuy",
+      "yuvs",
+      "BGRA"
+    ],
+    "rank_order": [
+      "fps_deviation_ascending",
+      "media_subtype_preference_index_ascending",
+      "media_subtype_fourcc_ascending",
+      "format_index_ascending",
+      "frame_rate_range_index_ascending"
+    ],
+    "verdicts": [
+      "supported_exact_or_fractional_rate_candidate",
+      "no_supported_exact_dimension_rate_candidate",
+      "prerequisite_abstention"
+    ],
+    "selection_does_not_authorize_stream_execution": true
+  },
+  "operation_budget": {
+    "inventory_observations_maximum": 1,
+    "capture_sessions_maximum": 0,
+    "source_samples_maximum": 0,
+    "d405_lifecycle_operations_maximum": 0,
+    "robot_motion_trials_maximum": 0,
+    "provider_calls_maximum": 0
+  },
+  "runtime_identity": {
+    "platform": "macos",
+    "swift_version_prefix": "Apple Swift version 6.3",
+    "inventory_source_path": "tools/macos/AVFoundationFormatInventoryV2.swift",
+    "evaluator_path": "src/sim2claw/avfoundation_format_inventory_v2.py",
+    "compiler_path": "/usr/bin/swiftc",
+    "source_evaluator_and_binary_sha256_frozen_at_observation_commit": true
+  },
+  "authority": {
+    "device_and_format_enumeration": true,
+    "capture_session_start": false,
+    "camera_frame_capture": false,
+    "d405_lifecycle": false,
+    "robot_gateway": false,
+    "robot_motion": false,
+    "metric_depth": false,
+    "cross_camera_exposure_synchronization": false,
+    "simulator_replay": false,
+    "simulator_parameter_promotion": false,
+    "training": false,
+    "provider_calls": false,
+    "paid_compute": false,
+    "task_score_change": false,
+    "physical_task_authority": false
+  }
+}

@@ -2,6 +2,344 @@
 
 Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
 
+## Latest prospective D1→D2 gate
+
+The owner-authorized continuation has now completed the next motion-free
+exact-task gate. A fresh configuration-free follower read reproduced
+`[-6.681319, -92.395604, 101.670330, -50.417582, -104.131868, 1.662708]`
+with torque off, all joints inside calibrated limits, and no live repo-owned
+camera or gateway process.
+
+That in-range read does not overturn recovery v2's terminal result. The
+recovery receipt records `recovery_passed:false`,
+`recovery_tracking_qualified:false`, and `slice_b_allowed:false`. The
+demonstrated task template also crosses the same unqualified inward-elbow
+corridor: camera-pose setup v1 stopped at an observed `82.769231 deg` while
+requesting `79.120879 deg`, recovery v2 stopped at `97.186813 deg` while
+requesting `93.934066 deg`, and the successful observation requires
+`68.703297 deg` by pre-grasp and reaches `44.527473 deg` at minimum.
+
+No canonical task action bytes were created or frozen. No task motion, pawn
+contact, REAL→SIM physics replay, or SIM→REAL execution occurred. Current
+contact-free residuals (`11.195 mm` stationary, `19.997 mm` route maximum)
+still do not admit an alternate contact action. Accepted proof class:
+`prospective_task_preflight_terminal_safety_blocker_no_action_or_task_or_transfer_authority`.
+
+The owner-authorized second, separately frozen elbow-sag recovery campaign
+also stopped safely at the gateway's one-second elbow no-progress boundary.
+It replaced recovery v1's unreachable `90.614424 deg` request with the
+`93.934066 deg` value v1 physically reached, then began moving the other
+joints toward a previously stable geometry. After `263 / 481` persisted
+frozen rows, elbow remained at `97.186813 deg`, a `3.252747 deg` residual,
+for `0.975 s`; the next planned row was rejected before persistence.
+
+Every persisted row retained requested/mapped/sent identity with no clamp or
+rate limit. C922, native D405 RGB, and Pi enclosed the interval; C922/D405
+reported zero Apple drops and writer backpressure, and visual review found no
+pawn, board, or table contact. Torque-off and camera cleanup are verified.
+
+The resulting torque-off elbow is now inside the calibrated gateway envelope
+at `101.670330 deg`, with only `0.439560 deg` upper-limit margin. This is an
+available unclipped anchor, but the recovery did not qualify exact tracking
+because it stopped on an elbow stall. Recovery v2 is terminal, the task gate
+remains closed, no D1→D2 action was frozen or attempted, REAL→SIM physics was
+not run, and SIM→REAL remains forbidden. Accepted proof class:
+`physical_recovery_terminal_safe_stop_in_range_anchor_elbow_stall_no_task_or_transfer_authority`.
+
+## Latest contact-free geometric transfer evidence
+
+The current-session roll-separated Pose-J corridor has now also transferred
+physically. Its frozen `1161 x 6` float64 route first closed the measured
+connector residual, traversed the prior physically clean Pose-J corridor,
+held Pose J for `7.25 s`, and geometrically reversed to the prior anchor. The
+gateway completed `1161 / 1161` motion rows plus `80 / 80` hold rows with no
+error and closed torque off. C922 recorded `975` frames, D405 `162`, and Pi
+IMX708 `1040`; all three action intervals were enclosed and reported zero
+drops. The final maximum joint residual was `0.879 deg`. This adds a
+roll-separated full-arm view and a third successful contact-free geometric
+transfer; it is still not pawn contact or task success.
+
+That new view enabled three bounded full-CAD/static-tag fits over exact
+anchor/high/Pose-J joint/image bindings, with the already-inspected mid-hover
+image kept outside each optimizer. The offset-only v1 family failed six of
+seven gates and saturated three `5 deg` bounds. The historical tag-body v2
+family improved its training tag fit to `3.995 px` but failed the mid moving
+link tags. The affine joint-scale v3 family is locally full rank (`16 / 16`)
+and fits the three source poses at `5.180 px` combined tag-corner RMSE, but it
+still fails the mid pose at `56.099 px` tag RMSE and `98.970 px` maximum;
+its CAD edge p80 is `25.157 px`, and pan scale, elbow zero, and wrist-roll zero
+hit their bounds. None of these parameters is promoted. The fixed
+base/shoulder mid residual is only about `6.92 px`, while moving-link tags are
+about `41.73`, `90.27`, and `51.49 px`, localizing the remaining static-fit
+failure to the physical-degree-to-articulated-joint mapping rather than a
+single global camera shift.
+
+The independently accepted four-stage one-joint image-Jacobian sweep has now
+also completed physically. Every stage executed its exact `1161 x 6` float64
+action plus `80` capture-hold rows, returned to the same anchor, and closed
+torque off. Each action was enclosed by simultaneous C922, D405, and Pi
+IMX708 recordings: the four stages contain `977/983/983/982` C922 frames,
+`163/163/164/163` D405 frames, and `1040` Pi frames each, with no executor
+error. The opposite lift/elbow directions remained excluded because the exact
+CPU MuJoCo screen exceeded the frozen folded-arm contact envelope.
+
+Under the pre-sweep projection comparator, shoulder pan passes with
+`3.388 deg` direction error and a `0.743` observed/simulated magnitude ratio;
+shoulder lift passes with `4.257 deg` and `1.003`. Elbow flex fails only its
+direction gate at `22.129 deg` despite a `1.202` magnitude ratio and `0.828`
+observed R-squared. The weak tag-2 response under wrist flex is not a valid
+wrist failure: tag 2 moves strongly under lift and elbow but only weakly and
+non-gatingly under wrist, identifying it as upstream of the wrist-flex joint.
+
+A frozen lower-arm assignment for tag 2 was therefore tested as v4. It
+improves the shoulder-lift comparator to `0.287 deg` direction error and a
+`0.832` magnitude ratio, and makes tag 2 invariant to simulated wrist flex as
+the physical hierarchy predicts. It still fails the already-inspected mid
+pose at `57.787 px` tag RMSE and `109.227 px` maximum, saturates wrist-roll
+zero at the `25 deg` bound, and worsens the global pan comparator, so none of
+its fitted parameters is promoted. This is useful model-selection evidence:
+the prior tag-to-wrist assumption is rejected, but a global camera/joint-zero
+refit still cannot explain the distal CAD.
+
+The independently evaluated D405 recording supplies the missing wrist signal.
+Adjacent-frame background motion passes its physical signal gate for all four
+joints; wrist flex has `80` matched motion pairs, `0.519` combined R-squared,
+and a measured partial-affine derivative of
+`[-3.819 px, -1.768 px, -0.00357 rad, +0.01224 log-scale]` per degree.
+The D405-to-wrist extrinsic and scene geometry are not yet fitted, so this is
+diagnostic contact-free evidence rather than simulator-parameter promotion,
+pawn contact, or task success.
+
+The next frozen no-fit Pi differential-CAD gate has also run over the same
+sweep and rejected `0 / 4` joints. Lift has nearly exact motion magnitude
+(`0.991` observed/simulated) but `32.255 deg` direction error; elbow has
+`0.681` magnitude ratio and `28.867 deg` direction error. Wrist has strong
+physical and simulated linear signal (`0.724` and `0.997` R-squared) and only
+`0.532 deg` direction error, but the aggregate projected-CAD magnitude is
+`2.30x` physical (`0.435` observed/simulated) and `58.0%` of pre-rejection
+features agree with static consensus. Pan is not interpretable under the
+aggregate-body median because its simulated signal is non-linear/cancelling.
+
+No joint scale is promoted from that result. Narrow wrist-body probes retain
+roughly correct motion direction but yield body-dependent magnitude ratios
+from about `0.15` to `0.37`, and the true MuJoCo visibility render exposes the
+cause: the v4 camera/joint candidate does not place the complete visible robot
+silhouette accurately enough for its projected hull bands to be metrology.
+The next no-motion evaluator must use z-buffered robot segmentation and
+physical extreme-pose difference masks, not generic non-occluded hull edges.
+
+Two exact geometric B7 hover round trips have now transferred from the current
+candidate simulation to the physical follower. The first high hover completed
+`481 / 481` motion rows plus `80 / 80` hold rows. The second approached the
+same pawn to a frozen `120 mm` hover, stayed there for `7.5 s`, returned to its
+fresh anchor, and completed `901 / 901` motion rows plus `80 / 80` hold rows.
+Neither trace used clipping, IK repair, offsets, corrective suffixes,
+assistance, rate limiting, or a gateway safety clamp. Both closed with torque
+off and with the C922, D405, and Pi IMX708 intervals enclosing the action.
+
+The second transfer is the more task-relevant measurement. At its stationary
+hover, the physical-vs-commanded candidate-FK residual is `11.195 mm` RMS and
+`11.285 mm` maximum; the mean error is
+`[+4.531, +2.877, -9.820] mm`. The largest complete-route residual is
+`19.997 mm` on retreat. The terminal anchor hold is `0.996 mm` RMS and
+`1.046 mm` maximum. This is accepted contact-free physical transfer evidence,
+not pawn contact or task success.
+
+The stationary Pi view uniquely decodes current tags `0, 1, 2, 3`. The
+prospective one-joint motion signals support the hierarchy
+`6 -> left_base`, `0/3 -> left_shoulder`, `1 -> left_upper_arm`, and
+`2 -> left_lower_arm`: tag 1 moves strongly under shoulder lift but not elbow
+flex, while tag 2 moves under lift and elbow but is upstream of wrist flex.
+The previous camera-only refresh is prospectively rejected on the mid-hover
+pose:
+combined tag-corner RMSE is about `50.81 px`, dominated by tag 1 at
+`77.99 px`. A simultaneous camera/tag/joint-zero fit is structurally rank
+deficient (`26 / 29`), so the next calibration must anchor one session camera
+to fixed-base CAD/tag 6, fit articulated CAD/joint alignment before nuisance
+tag mounts, and reserve a roll-separated safe pose as heldout.
+
+Two fresh heldouts for the direction-conditioned joint-play model passed on
+2026-07-27. The first preregistered oblique route moved the follower by at most
+`6.6214 deg`, returned to its torque-off anchor, and used the exact same
+`361 x 6` float64 action bytes in preview and physical execution. C922
+(`373` frames), D405 (`62` frames), and Pi IMX708 (`440` frames) recordings
+all enclosed the complete action. The executor completed `441 / 441` motion
+and hold samples without clamp, rate limit, stall, assistance, intervention,
+or action repair, then closed with follower torque off.
+
+The frozen evaluator improved joint RMS from `0.6543 deg` to `0.2936 deg`
+(`55.12%`) and end-effector RMS from `5.4303 mm` to `2.1260 mm` (`60.85%`)
+against the parent stateful model. The receipt verdict is
+`reverse_joint_play_passed_fresh_geometric_heldout`. This is accepted
+contact-free physical actuator/kinematic transfer evidence. It is not pawn
+contact, task success, global simulator-parameter promotion, or full
+six-domain Twin fidelity, so the headline score remains `0 / 6`.
+
+The second heldout repeated the same contact-clean geometric envelope twice,
+with four frozen wrist load-sign crossings. It again completed `441 / 441`
+exact rows with torque off and all three camera intervals enclosed. The
+selected model improved joint RMS from `0.7323 deg` to `0.3258 deg` (`55.51%`)
+and end-effector RMS from `5.7681 mm` to `2.2808 mm` (`60.46%`). Its residual
+remains dominated by wrist flex (`0.6295 deg` RMS), so the repeated pass
+supports the seven-width model while localizing the next bounded mechanism.
+
+The subsequent `0.015 N m` wrist load-sign hysteresis refinement was frozen
+before a third, raised-anchor tricam heldout and was rejected. The new packet
+completed three separately torque-off-closed stages—clearance/setup, a
+four-crossing heldout, and exact-anchor return—with `441 / 441` rows and
+C922, D405, and Pi action enclosure in every stage. On the heldout, hysteresis
+worsened wrist RMS from `0.6338 deg` to `0.7425 deg`, overall joint RMS from
+`0.3685 deg` to `0.4071 deg`, and end-effector RMS from `2.8024 mm` to
+`2.8654 mm`. The parameter is not promoted. The surviving no-hysteresis
+direction-conditioned model remains bounded on this harder route.
+
+The physical follower returned torque off at
+`[-8.8791, -106.2857, 99.2088, -94.3736, -126.3736, 1.6627]` degrees.
+Pi tags 1 and 2 returned within `0.494 px` and `1.150 px` respectively;
+the negative evaluator result is therefore not a physical non-return.
+
+The next zero-continuous-parameter wrist hypothesis fixed the asymmetric wrist
+play corridor to its positive branch instead of switching on simulated
+`qfrc_bias`. A retrospective three-trace screen favored that branch, but the
+first opposite-bias route exposed a real torque-off gravity-sag failure before
+its second triangle. The arm was recovered under a separately reviewed,
+all-three-camera route. That recovery now starts C922, D405, and Pi before any
+bounded setup clamp and packet-binds an `81`-state joint-progress
+hyperrectangle plus the full path back to the stable anchor.
+
+A replacement heldout kept the already stable positive-bias shoulder/lift/
+elbow configuration and changed only wrist flex by exactly `+10 deg`, flipping
+simulated wrist bias from `+0.019895 N m` to `-0.022116 N m`. Its normalized
+`361 x 6` triangle action was byte-identical to the positive trace
+(`32834e50...de40`). On positive bias, the fixed branch and dynamic parent were
+exactly equal. On negative bias, the fixed branch improved wrist RMS from
+`0.752302 deg` to `0.258030 deg` (`65.70%`), joint RMS from `0.338919 deg`
+to `0.122422 deg` (`63.88%`), and end-effector RMS from `2.199393 mm` to
+`0.715679 mm` (`67.46%`).
+
+The frozen aggregate evaluator still rejected: it required strict improvement
+rather than equality on both signs, and the positive/negative wrist return
+errors were `0.906939 deg` and `0.797049 deg`, both above the `0.75 deg`
+gate. No parameter is promoted. The result nevertheless supports fixed
+positive branching as the simplest next simulator mechanism and localizes the
+remaining actuator error to sub-degree wrist return/compliance. The final
+tricam return reached the stable anchor within `0.087912 deg` lift and
+`0.175824 deg` wrist, with follower torque off.
+
+The active queue is now:
+
+1. retain the fixed-positive wrist branch and the measured `~11 mm` stationary
+   B7 transfer residual as supported, non-promoted physical baselines;
+2. retain the completed all-three-camera one-joint sweep as diagnostic fit
+   evidence; pan and lift pass the original local comparator, elbow direction
+   remains wrong, and tag 2 is now identified as lower-arm rather than wrist;
+3. replace the rejected non-occluded CAD hull bands with MuJoCo z-buffered
+   per-body segmentation; compare physical and simulated anchor/extreme
+   difference masks for all four already-recorded stages with zero new motion;
+4. use that visibility-correct differential gate to decide whether the
+   remaining error belongs to camera/base pose, elbow/wrist joint mapping, or
+   distal geometry; only then fit the D405-to-wrist/3DGS extrinsic if the
+   external visible-CAD signal remains ambiguous;
+5. freeze only the smallest supported correction family before one new,
+   prospectively held-out composite pose; the already-inspected mid image can
+   diagnose but cannot promote it;
+6. require simultaneous C922, D405, and Pi action-enclosing recordings, tag
+   gates, and full-CAD gates on that untouched heldout, with torque off on
+   close;
+7. admit pawn contact only after the composite heldout passes; do not inherit
+   contact or task authority from any successful hover or calibration sweep.
+
+## Ordered sim-to-real transfer queue
+
+The active dependency order is:
+
+1. exact action and replay identity;
+2. metric geometry and frame registration;
+3. synchronized timing and actuation;
+4. calibrated contact and load observability;
+5. one frozen composite held-out evaluation;
+6. one deterministic geometric physical canary;
+7. ACT only after the canary is evaluator-admitted;
+8. a VLA or LLM challenger only after the ACT baseline is independently
+   admitted.
+
+Current entry conditions remain fail closed: Twin fidelity is `0 / 6`, strict
+task score is `0 / 11`, and exact-replay eligibility is `0 / 18`. The native
+dual-camera recorder plus Pi capture is now verified to enclose bounded
+geometric motion, but it does not provide cross-camera exposure
+synchronization or metric D405 depth in that mode. Inspect Robots is an
+optional synthetic replay harness and grants neither evaluator admission nor
+physical authority.
+
+The current wide Pi view now has a provisional shared-camera three-link result:
+zero-distortion intrinsics validate at `1.021 px` mean RMSE, and the corrected
+tag-to-body map passed one fresh all-three-tag follower pose at `5.756 px`
+corner RMSE and `9.282 px` maximum without per-frame alignment. The full
+SO-101 visual tree, including `left_base`, is rendered in the same frame. This
+is static camera/kinematic evidence only; the fixed base has no independent
+silhouette gate, and none of the six evaluator-owned Twin fidelity domains is
+promoted by this result.
+
+The owner-supplied IMG_5349 Gaussian splat is now automatically registered to
+that same complete MuJoCo scene instead of opening at an arbitrary relative
+pose. A board-plane/lattice fit used only the coherent early SfM camera
+component; an exact two-base SO-101 CAD comparison selected the otherwise
+ambiguous board symmetry. Four held-out early-component frames score
+`3.759 px` weighted corner RMS over `166` corners. Studio applies the resulting
+Sim(3) to all `334,537` splats and shows the complete `45`-body reviewed scene
+overlay by default. Camera segments `40-49` and `59-77` are explicitly
+quarantined after global projection inconsistency, and the earlier broad
+all-segment claim is retracted. This is a concrete visual/geometry diagnostic,
+not metric, collision, contact, dynamics, task, or physical-control authority;
+Twin fidelity therefore remains `0 / 6`.
+
+The registered calibration overlay now also applies a visual-only palette
+correction proven by the existing 3DGS and today's H/I/D C922 captures: all
+`64 / 64` shared checker colors were inverted, and all `16 / 16` shared pawn
+display colors were on the wrong physical side. The correction changes no
+body ID, pose, physics, shared scene, or frozen evaluator render. Historical
+AprilTags cannot bridge the old splat to the newly mounted link tags: old ID 0
+triangulates cleanly at `2.961 px` RMS but is a board-adjacent datum, ID 1 has
+one view, and IDs 2/3 are absent, leaving zero legitimate cross-capture link
+correspondences.
+
+A complete-CAD retrospective fit identifies the arm visible in IMG_5349 as
+the simulator right arm and reduces held-out half-resolution contour median
+error from `37.39 px` to `25.38 px`. Distal CAD-to-splat medians improve to
+approximately `10-21 mm`, but the shoulder worsens, two joints saturate their
+MuJoCo limits, and no independent left-arm silhouette exists. The candidate
+is retained only as a historic-pose hypothesis. The active autonomous lane
+therefore uses today's H/I/D C922 silhouettes, Pi tags, exact joint receipts,
+and full CAD to seek a current-scene multiview signal without new motion.
+
+Future finalized physical recorder outputs can now be converted directly into
+the existing exact-replay v1 audit. Its legacy `applied` field is explicitly a
+gateway-sent command, not actuator acknowledgement. This operationalizes the
+gate but does not reclassify the existing 18 episodes or open physical,
+evaluator, timing-identification, or task authority.
+
+An eligible future output can also enter the existing MuJoCo zero-order-hold
+replay with its canonical gateway-sent float64 action tensor byte-identical.
+This creates replay-class joint residual diagnostics only: it fits no
+parameters and leaves geometry, timing, actuation, contact, and task
+consequence blocked.
+
+Until the relevant earlier gate opens, defer broad SAIL work, paid GR00T,
+large ACT data generation, isolated-host camera infrastructure, new evaluator
+families, and additional simulator-only contact sweeps. None is a substitute
+for missing action identity, physical measurement, or held-out consequence.
+
+The new versioned P8/P13 metrology transaction is now the single read-only
+control layer for the next geometry/scale attempt. It binds the existing C922
+acquisition/evaluator and stationary workcell-registration acquisition/evaluator
+to the same exact C922 mode, observable constant focus, current workspace and
+board pose identities, printed-grid and direct playing-side measurement
+requirements, fixed-board/no-motion boundary, 18-view `12 / 3 / 3` split,
+eight-point/two-annotator plan, and existing `1.5 mm / 1.5 mm / 2 px`
+residual gates. Its readiness command does not open cameras, capture frames,
+construct a gateway, or claim metric authority; the current result remains
+blocked on human physical inputs.
+
 ## Active evaluator-owned Twin fidelity closure
 
 “Perfect” is now an explicit six-domain evaluator verdict, not a visual
@@ -73,15 +411,219 @@ evaluator-frozen mapping from the C922's actually enumerated AVFoundation
 formats to a supported exact source-probe request; a later campaign would
 require new authority because this 12-attempt family is exhausted.
 
+That prerequisite is now a separate software-only transaction. Its v1
+contract freezes one exact-name native C922 format inventory, zero capture
+sessions or frames, no D405 lifecycle, and an evaluator-owned 640×480
+fractional-rate rule with a maximum `0.05 fps` deviation from 30. The observer
+will enumerate only; it cannot select, score, start a stream, or authorize a
+new campaign. The standalone Swift observer and independent Python evaluator
+were committed before the single observation. That observation exhausted its
+one-attempt budget but crashed during JSON serialization on a non-primitive
+Swift bridge value before writing raw inventory. A separately committed
+fail-closed sealer recorded `prerequisite_abstention`, zero usable inventory,
+and no candidate. No second v1 observation is permitted.
+
+A separately versioned v2 prerequisite was frozen before implementation. Its
+exact implementation was committed at `995e8bb` without device access. The
+sole read-only observation then completed under exact head `79fdbe8`: the
+native C922 surface contains 33 formats and 209 frame-rate ranges. The frozen
+evaluator found 14 exact-640×480 candidates, admitted two within `0.05 fps` of
+30, and selected subtype `420v` at `30.00003000003 fps` (deviation
+`0.00003000003 fps`) by the preregistered tie-break. The observation budget is
+exhausted at `1 / 1`; capture sessions, frames, D405 lifecycle operations,
+robot motions, simulator replays, and provider calls remain zero.
+
+This closes only the supported-format prerequisite. It does not prove callback
+delivery, container timing, physical exposure continuity, cross-camera
+synchronization, metric depth, simulator calibration, or task success. A
+future callback-source measurement must be separately preregistered against
+this exact candidate and cannot reuse the exhausted v1 source-localization
+family.
+
+That separately preregistered callback-delivery v1 observation is now terminal
+degraded. One exact-implementation C922-only session produced `243` native
+output callbacks and zero Apple drop callbacks, but every delivered sample was
+`1920×1080 420v` rather than the applied `640×480 420v` candidate. Mean PTS
+interval was `0.04200826446267907 s`; maximum was
+`0.08303333341609687 s`, above the frozen `0.049999950000049996 s` gate.
+The evaluator failed `exact_dimensions` and `bounded_pts_interval`. The result
+isolates the next prerequisite to post-input-association AVFoundation format
+configuration and post-configuration/start verification; v1 is exhausted and
+cannot be retried. It does not reclassify D405/container, exposure,
+cross-camera, simulator, or task evidence.
+
+Callback-delivery v2 is also terminal degraded and exhausted. Its sole
+post-input-association session preserved the frozen `640×480 420v` format and
+`0.03333330000003333 s` frame duration through configuration commit, while the
+session preset remained `AVCaptureSessionPresetHigh`. On `startRunning()`,
+AVFoundation changed the active device format to `1920×1080 420v` with a
+`0.0416666006945489 s` frame duration. The observer stopped fail closed after
+one delivered sample. The evaluator failed `exact_format_after_start`,
+`minimum_output_callbacks`, `exact_dimensions`, `strictly_increasing_pts`, and
+`bounded_pts_interval`. This localizes the next prerequisite to a separately
+preregistered post-commit format/preset binding mechanism before session
+start; v2 cannot be retried. It remains source-callback evidence only.
+
+Callback-delivery v3 resolved that start-time format override. Keeping the
+associated device configuration lock through commit and initial start
+preserved exact `640×480 420v` format and `0.03333330000003333 s` frame
+duration at every lifecycle stage, and all `305` output samples retained the
+same format with zero Apple drop callbacks. Mean PTS interval improved to
+`0.034180811403769586 s`; median was about `0.033 s`. The frozen strict result
+is nevertheless `callback_delivery_degraded`: the first of `304` intervals was
+`0.0659999999916181 s`, above the `0.049999950000049996 s` maximum, while the
+remaining `303 / 303` intervals stayed within the gate. V3 is exhausted and
+cannot be retried. The format-negotiation prerequisite is closed; a separately
+preregistered warm-up-bounded measurement window is now required before
+source cadence can be verified.
+
+Callback-delivery v4 now verifies that production-style pre-roll window. It
+reused the exact reviewed v3 lock-through-start observer for one eleven-second
+session and retained all `334` exact `640×480 420v` samples with zero Apple
+drop callbacks. The frozen first source-PTS second remained visible as `27`
+warm-up samples, including a `0.06700000003911555 s` startup gap. The scored
+window contained `307` samples and `306` intervals across
+`10.199999999953434 s`; its mean interval was
+`0.033333333333181156 s` and maximum `0.03400000010151416 s`, below the
+unchanged `0.049999950000049996 s` gate. The independent evaluator returned
+`steady_callback_delivery_verified` with no failed gates. This closes the C922
+source-format and steady-cadence prerequisite; it does not prove exposure
+continuity, cross-camera synchronization, D405 reliability, or calibration.
+
+The separately preregistered production lifecycle test is also complete and
+must remain a terminal negative. The recorder now opens the D405 before the
+C922 and finalizes the C922 before the D405, so the D405 lifecycle boundaries
+sit outside the C922 container window. The sole ten-second stationary session
+used one D405 session and one C922 session with zero retries, replacements,
+robot motions, simulator replays, or provider calls. This C922 container had
+`314` frames and zero inferred gaps. D405 completed with source progress
+and `63` frames, but its container contained one `0.600 s` interval from PTS
+`11.6` to `12.2`, equal to two inferred missing intervals. That gap
+diagnostically brackets the reported common-window/C922-stop boundary; the
+clocks are not exposure-synchronized. The frozen evaluator therefore returned
+`reject_stationary_nested_dual_camera_lifecycle`. No threshold changed and no
+retry is permitted.
+
+The zero-session D405 format prerequisite is now terminal and supported. Its
+sole exact-device inventory contained 12 native formats and 56 rate ranges.
+The independent evaluator found two eligible exact 424×240 @ 5-fps candidates
+and selected format 0/range 4, native subtype `2vuy`, under the frozen
+0.01-fps/subtype/tie-break rule. Budget use was one inventory, zero capture
+sessions, zero frames, and zero camera lifecycle operations, robot motions,
+simulator replays, or provider calls. This is design input only; it does not
+prove that a native two-input common session works.
+
+That native common-session gate is now terminal degraded and exhausted. The
+sole preregistered stationary metadata-only `AVCaptureSession` admitted both
+exact devices and outputs. It delivered `338` C922 callbacks and `61` D405
+callbacks with zero drops; after the visible one-second source-PTS warm-up,
+the scored counts were `315` and `60`, maximum intervals were `0.034033 s`
+and `0.200000 s`, and the common host window was `10.447306 s`. All callback,
+cadence, and common-window gates passed. Both devices, however, reported reset
+format indices after the session stopped, so the frozen evaluator returned
+`common_session_callback_delivery_degraded` on exactly
+`after_stop:c922_format_index` and `after_stop:d405_format_index`. No
+threshold changed and no retry, container, robot motion, simulator replay, or
+provider call occurred. A tracked guard now refuses before device delegation.
+This proves bounded active-session callback health only; it is not a production
+writer, exposure synchronization, motion reliability, metric depth,
+calibration, simulator, or task result. Per the preregistered decision rule,
+the next camera architecture is a separately preregistered isolated host.
+
+Production recorder integration now treats that frozen result more narrowly
+without changing it. The two failed post-stop indices are AVFoundation format
+object-identity lookups: the raw after-stop states retained the exact dimensions,
+subtypes, frame durations, device identities, and stream bindings, and no
+captured callback or finalized writer depends on the lookup. The physical
+Studio recorder at implementation `5515e5d` therefore uses one native common
+session and gates admission on exact active-session identity, first-frame
+delivery after the existing visible one-source-PTS-second warm-up, explicit
+input/output binding, per-stream writer completion, zero Apple drops, and zero
+writer backpressure. It retains separate source containers, callback/host
+timestamp lineage, hashes, frame counts, and browser derivatives.
+
+The first bounded stationary production-path capture opened no robot gateway
+and made no robot command. It delivered `323` C922 plus `56` D405 callbacks
+with zero Apple drops or writer backpressure and completed both native writers,
+but exposed the D405's initial source-PTS `0` sentinel as a writer-timeline
+defect. The committed repair retains that sentinel and all warm-up callbacks in
+the ledger while excluding the first source-PTS second from both writers.
+
+One post-repair stationary camera-only production recording now closes the
+recorder verification step. The exact common session observed `377` C922 and
+`67` D405 callbacks, excluded `22` and `7` warm-up callbacks, and finalized
+`355 / 355` C922 plus `60 / 60` D405 source/browser frames. Both written
+timelines were strictly increasing with zero inferred missing intervals, zero
+large gaps, zero Apple drops, and zero writer backpressure. The D405 sentinel
+remained visible in provenance but was not written; source durations were
+`11.833333 s` and `12.000000 s`. An offline receipt projection was accepted by
+the existing Studio catalog as two hash-verified feeds. No robot gateway,
+motion, retry, metric depth, exposure synchronization, calibration, task
+success, or physical authority was involved.
+
+The evaluator-owned exact-mode C922 calibration implementation is consolidated
+at `1eabc49`. Its already-consumed offline evaluation remains honestly
+`calibration_dataset_not_ready`: zero declared or accepted frames, zero model
+fits, and no calibration receipt. The nominal `20 mm` square and
+`200 × 140 mm` grid values are not metric authority. Calibration cannot begin
+until a human supplies a physically measured printed target, one observable
+constant focus setting, and 18 distinct exact-mode views frozen into `12 / 3 /
+3` fit/validation/held-out splits with the preregistered position, scale, tilt,
+and orientation diversity.
+
+The successor P8/P13 transaction is implemented at
+`configs/acquisition/current_100mm_p8_p13_metrology_transaction_v1.json` with
+the readiness command `sim2claw metrology-transaction-preflight`. It is an
+operational sequencing manifest only: no camera session, new frame, robot
+motion, fit, evaluator admission, or physical authority has been used. Its
+first live action is the readiness command itself; human-only work remains to
+print/mount and physically measure the target, lock and record focus, hold the
+board and camera stationary, capture the frozen views, survey A1/H1/A8, and
+complete the two independent annotations.
+
+The isolated-host inventory is now terminal and exhausted. The sole strict
+metadata connection reached `silicon.local` on macOS `26.3.1` with no stderr
+and no retry. It found zero C922 camera/USB matches and zero D405 camera/USB
+matches, so the frozen evaluator returned
+`isolated_overhead_host_requires_c922_attachment` on exactly the two target
+C922 match-count gates. Budget use was one inventory and one connection, with
+zero camera sessions, frames, remote files, robot motions, simulator replays,
+or provider calls. A tracked guard refuses any second inventory before process
+delegation. The proposed architecture remains to keep the D405 and robot path
+on `kelly-claude` and move only the fixed overhead C922 USB attachment to
+Silicon. Until that physical attachment occurs, no remote capture transport,
+source delivery, cross-host clock, synchronization, calibration, simulator,
+or task claim is available.
+
+The independent metric-registration readiness gate is also terminal. It
+verified the existing current-workcell C922 C2→C1 capture receipt, video, frame,
+camera identity, resolution, orientation, and closed authority, then returned
+`measurement_prerequisites_missing`. Available RGB pixels did not substitute
+for a deterministic frame-extraction receipt, direct board measurement,
+exact-mode intrinsics/distortion, eight independently annotated distributed
+board points with held-out scoring, metric object keypoints, or camera
+extrinsics. The result contains ten missing prerequisites, zero invalid source
+inputs, and one of one offline evaluations used; camera sessions, new frames,
+robot motions, simulator replays, provider calls, and training rows are zero.
+A tracked guard closes v1. Geometry/scale remains `missing`; any acquisition
+or fit requires a new preregistered transaction.
+
+One of those ten missing inputs now has a separately verified successor
+artifact. The C922 frame-lineage gate rederived video frame index `29` at PTS
+`1.000000 s` through the tracked, hash-bound decoder wrapper. Its PNG bytes and
+decoded RGB24 bytes both match `overhead_start.png` exactly. Budget use was one
+probe, one derivation, and zero retries or hardware/simulator operations. This
+receipt may remove the extraction-lineage item in a new metric-readiness
+version; it does not rewrite the terminal v1 packet or change geometry/scale.
+
 The v2 closure evaluator remains `0 / 6`: geometry/scale and
 contact/compliance are missing; kinematics, action/timing, and actuator/load
 path are partial; task/EE consequence is failed. It reports the exact remaining
 measurements and does not convert partial progress into a percentage or a
-simulator/task claim. The next scientific step requires new, separately
-preregistered measurement work: first enumerate and freeze a supported C922
-AVFoundation callback format; physically repair and strain-relieve the D405
-path; then qualify a lifecycle-safe simultaneous capture design; and only
-afterward add metric registration, calibrated force/current/load
+simulator/task claim. The next scientific step requires a separately
+preregistered physically isolated camera host, plus physical repair and strain
+relief of the D405 path before any motion qualification. Only afterward add
+metric registration, calibrated force/current/load
 observability, device/actuator timing, reset/loaded trials, and strict held-out
 physical consequence. Another simulator family, silent retry, or post-hoc
 camera threshold change is not an acceptable substitute.
@@ -92,6 +634,14 @@ dual-camera, controlled-return, and evaluator gates pass. The authorization
 does not reopen the rejected shoulder simulator candidate, training, promotion,
 provider, paid-compute, or public-release authority. The frozen four-packet
 HIL and eleven-file S2 evidence sets remain immutable.
+
+The Replay-integrated Twin surface also passed a narrow rendering repair after
+independent review found that two concurrent Three.js viewers could share one
+canvas and emit WebGL program-location errors. Viewer creation and scene loads
+are now single-flight/serialized at committed implementation `3195280b`; the
+original missing → paired → paired sequence has zero WebGL errors in Chromium
+and WebKit. This is product reliability evidence only and does not change any
+fidelity-domain, simulator, task, or physical verdict.
 
 ## Completed four-hour HIL identifiability loop
 
@@ -164,8 +714,25 @@ missing physics replay may be introduced.
 
 The implementation candidate is recorded in
 [`docs/run-logs/2026-07-24-studio-project-map-agent-access.md`](docs/run-logs/2026-07-24-studio-project-map-agent-access.md).
-Exact-head receipts and independent review own final verification; no push is
-authorized by this checkpoint.
+The Replay surface now removes the retired pixel-filter “visual twin” and
+admits only receipt-bound MuJoCo traces. Seven physical sources retain
+byte-identical action-frozen simulator pairings; one additional physical source
+has a separately labelled source-command diagnostic whose unit conversion and
+model-bound clipping explicitly prevent an exact-action claim. Fourteen
+physical sources remain simulator-unavailable. Invalid source, receipt,
+response-trace, or state-trace hashes fail closed.
+
+Studio exposes one Reality / Twin / Compare switch, one synchronized timeline,
+and contextual Twin fidelity/evidence drawers. The source badge is
+informational rather than a duplicate route. A loopback-only explicit command
+may generate a diagnostic replay for an existing recording, but read-only
+Studio exposes no write control and no generated replay can self-admit
+mechanism, consequence, task, training, promotion, or physical authority.
+
+The official SAIL observatory and publication package have been regenerated
+from the committed compiler and remain physical-authority false. Exact-head
+short tiers, one full repository suite, and independent review still own final
+verification; no push is authorized by this checkpoint.
 
 ## Completed overnight dual-camera simulator calibration
 
@@ -929,6 +1496,11 @@ substituted for the B--G benchmark.
   initial velocity and units, exact unclipped controls, immutable episode
   splits, object-state provenance, observable residuals, and sensitivity. The
   canonical report admits 0/18 episodes, so no project parameter was fit.
+- PASS (OFFLINE SEAM ONLY): the existing timing/control stage can now consume
+  a cohort of current-schema P4/P5-eligible recordings, reject holds and weak
+  excitation, freeze whole-episode train/validation/held-out groups, select
+  without held-out access, and prove every replay consumed the unchanged
+  gateway-sent action tensor. No current physical cohort is eligible or fit.
 - PASS: the exact 12-semantic B--G language surface, deterministic prompt
   provenance, group-before-prompt split rule, and evidence-count accounting are
   frozen. Current coverage is zero admitted source groups and zero training

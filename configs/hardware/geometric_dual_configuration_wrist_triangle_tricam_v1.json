@@ -1,0 +1,138 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_dual_configuration_wrist_triangle_tricam_20260727_v1",
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_15s_v1.json",
+    "contract_sha256": "457f2c142671851ddd60a3f1be5487125605957e38c1b2730ab683e08488393f"
+  },
+  "reviewed_anchor_degrees": [
+    -8.87912087912088,
+    -106.28571428571429,
+    99.20879120879121,
+    -94.37362637362638,
+    -126.37362637362638,
+    1.66270783847981
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -8.378658234855758,
+        -102.4398546188144,
+        90.61442428182887,
+        -89.23230909335841,
+        -126.49127735606807,
+        1.66270783847981
+      ],
+      [
+        -10.033202307635719,
+        -105.95897966485484,
+        94.34063127683152,
+        -93.20295106137854,
+        -126.47784355201212,
+        1.66270783847981
+      ]
+    ],
+    [
+      [
+        -10.033202307635719,
+        -105.95897966485484,
+        94.34063127683152,
+        -87.20295106137854,
+        -126.47784355201212,
+        1.66270783847981
+      ],
+      [
+        -10.033202307635719,
+        -105.95897966485484,
+        94.34063127683152,
+        -99.20295106137854,
+        -126.47784355201212,
+        1.66270783847981
+      ],
+      [
+        -10.033202307635719,
+        -105.95897966485484,
+        94.34063127683152,
+        -93.20295106137854,
+        -126.47784355201212,
+        1.66270783847981
+      ]
+    ],
+    [
+      [
+        -7.94094992495437,
+        -97.21529705572559,
+        85.00211937284479,
+        -83.20295106137854,
+        -126.59680526435972,
+        1.66270783847981
+      ]
+    ],
+    [
+      [
+        -7.94094992495437,
+        -97.21529705572559,
+        85.00211937284479,
+        -77.20295106137854,
+        -126.59680526435972,
+        1.66270783847981
+      ],
+      [
+        -7.94094992495437,
+        -97.21529705572559,
+        85.00211937284479,
+        -89.20295106137854,
+        -126.59680526435972,
+        1.66270783847981
+      ],
+      [
+        -7.94094992495437,
+        -97.21529705572559,
+        85.00211937284479,
+        -83.20295106137854,
+        -126.59680526435972,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "geometric_derivation": {
+    "frame": "current_candidate_model_world",
+    "configuration_positive_wrist_bias_nm": 0.019895419058364838,
+    "configuration_negative_wrist_bias_nm": -0.01968752770619564,
+    "triangle_relative_wrist_flex_degrees": [
+      6.0,
+      -6.0,
+      0.0
+    ],
+    "triangle_body_joint_deltas_other_than_wrist_flex_degrees": 0.0,
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+  },
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "prospective_no_contact_fixed_wrist_branch_falsifier",
+    "target_selection": "Stage 1 moves through the previously previewed 20-mm clearance pose to the positive-bias raised configuration. Stage 2 applies the frozen +6/-6/0-degree pure wrist-flex triangle. Stage 3 moves to a negative-bias raised configuration whose wrist anchor is exactly 10 degrees above the positive-bias wrist anchor. Stage 4 applies the exact byte-identical normalized relative wrist triangle. All other triangle joints stay constant. A separately frozen cleanup packet is required afterward.",
+    "positive_configuration_triangle_stage_index": 2,
+    "negative_configuration_triangle_stage_index": 4,
+    "source_anchor_execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-raised-opposite-four-crossing-tricam-v1/stage-3/execution_receipt.json",
+    "source_anchor_execution_receipt_sha256": "4671f4545970596c2cde3a13e3212d6dfb3f05c9c3e76ab256a1818c981b0be2",
+    "tricam_readiness_summary_path": "runs/geometric-microtransfer/20260727-motion-tricam-readiness-v2/readiness_summary.json",
+    "tricam_readiness_summary_sha256": "f1f173148d4a8341e4071e632d88b232a63053db594717d9b47bf75f1e10d95f",
+    "fixed_branch_retrospective_receipt_path": "runs/geometric-microtransfer/20260727-geometric-joint-play-fixed-branch-retrospective-v1/evaluation-receipt.json",
+    "fixed_branch_retrospective_receipt_sha256": "05e7f3b2257c69f9bb36e140fe0e281bc2f47dfa32ee56ef58a1aef4e64be395",
+    "fixed_branch_retrospective_receipt_digest": "98c77b3a583ecbe0d2861eb300b4003f62866a52b7b06d5b2dab2fef793b667f",
+    "pawn_contact_forbidden": true,
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

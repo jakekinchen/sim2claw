@@ -1,0 +1,40 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_link_pose_calibration_pose_f_20260726_v1",
+  "capture_during_motion": true,
+  "setup_recovery_command_anchor_snap_limit_degrees": 10.0,
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "reviewed_anchor_degrees": [
+    -0.7032967032967034,
+    -116.13186813186813,
+    105.01098901098901,
+    -95.86813186813187,
+    -99.56043956043956,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [20.0, -80.0, 90.0, -95.0, -20.0, 3.0878859857482186]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "follower_only_static_pi_link_pose_calibration_training",
+    "source_pose": "Fresh torque-off follower read after admitted pose E.",
+    "command_anchor_rule": "Apply the reviewed 9.494505 degree shoulder-lift clip and 2.901099 degree elbow clip before torque enable.",
+    "target_selection": "Add positive-pan and reversed wrist-roll diversity with a bounded 79.56 degree maximum excursion. Pose D remains excluded from fitting.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "fit_training_admission": true,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

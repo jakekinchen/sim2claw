@@ -1,0 +1,39 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "d405_board_view_observed_elbow_termination_20260725_v9",
+  "capture_during_motion": false,
+  "setup_maximum_slew_degrees_s": 1.5,
+  "setup_elbow_tracking_error_limit_degrees": 20.0,
+  "setup_observed_elbow_target_degrees": 82.0,
+  "setup_target_hold_seconds": 2.0,
+  "stationary_capture_seconds": 4.0,
+  "reviewed_anchor_degrees": [
+    10.637362637362637,
+    -64.7032967032967,
+    102.10989010989012,
+    3.120879120879121,
+    -82.41758241758242,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [
+      10.0,
+      -64.520994,
+      70.0,
+      -8.0,
+      -74.5,
+      3.0878859857482186
+    ]
+  ],
+  "review_basis": {
+    "simulation_runtime": "cpu_mujoco_mj_forward",
+    "samples_per_stage": 858,
+    "external_contact_pairs": [],
+    "maximum_joint_excursion_degrees_by_stage": [
+      32.109890109890116
+    ],
+    "wrist_roll_motion": false,
+    "gripper_motion": false,
+    "target_visibility_basis": "The v24 command targeted elbow 70 degrees and produced the useful observed full-board view near actual elbow 80.8 degrees. Preview the complete safe command path to 70 degrees, but terminate setup motion as soon as the measured elbow reaches 82 degrees or lower, then repeat that last exact command for hold and capture. The route-bound 20 degree setup-only ceiling does not change the 6 degree replay or evidence limit."
+  }
+}

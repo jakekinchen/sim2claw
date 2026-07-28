@@ -1,0 +1,121 @@
+{
+  "schema_version": "sim2claw.avfoundation_dual_camera_common_session_contract.v1",
+  "contract_id": "current-100mm-avfoundation-dual-camera-common-session-20260724-v1",
+  "status": "preregistered_before_implementation",
+  "baseline_commit": "049c5da55a203780ad20a2ef9711480125702286",
+  "purpose": "Determine whether the exact D405 and C922 inputs and outputs can coexist in one native AVCaptureSession and deliver bounded stationary callbacks without any independent cross-camera lifecycle transition.",
+  "sealed_inputs": {
+    "d405_inventory_receipt_sha256": "fb4e76d990b44bd5633fa3ec955c1480c044430bd8e32427b9386269f4553ed3",
+    "d405_inventory_receipt_digest": "674d5825732ad72f0ea2513519307098f3c7dc27e7a26926fe5fcceadeee22b8",
+    "c922_callback_v4_receipt_sha256": "7354ce1d33847c15fd4dfcddf0eba35a435788d8fd144bf6b2d842e11c0f1740",
+    "c922_callback_v4_receipt_digest": "0933f548774b10e6fea4be3320b632931588824e04a6b6d1f00418d006bcb6c8",
+    "nested_lifecycle_verdict": "reject_stationary_nested_dual_camera_lifecycle",
+    "nested_lifecycle_retry_authorized": false
+  },
+  "devices": {
+    "d405": {
+      "exact_localized_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+      "exact_unique_id": "0x20000080860b5b",
+      "exact_model_id": "UVC Camera VendorID_32902 ProductID_2907",
+      "format_index": 0,
+      "frame_rate_range_index": 4,
+      "width": 424,
+      "height": 240,
+      "media_subtype_fourcc": "2vuy",
+      "supported_fps": 5.0,
+      "frame_duration_seconds": 0.2
+    },
+    "c922": {
+      "exact_localized_name": "C922 Pro Stream Webcam",
+      "exact_unique_id": "0x8310000046d085c",
+      "exact_model_id": "UVC Camera VendorID_1133 ProductID_2140",
+      "format_index": 16,
+      "frame_rate_range_index": 0,
+      "width": 640,
+      "height": 480,
+      "media_subtype_fourcc": "420v",
+      "supported_fps": 30.00003000003,
+      "frame_duration_seconds": 0.03333330000003333
+    }
+  },
+  "mechanism": {
+    "session_type": "AVCaptureSession",
+    "session_count": 1,
+    "session_preset": "AVCaptureSessionPresetHigh",
+    "inputs": 2,
+    "video_data_outputs": 2,
+    "device_configuration_locks_held_through_commit_start_and_post_start_verification": true,
+    "independent_device_open_close_during_measurement": false,
+    "observer_writes_callback_metadata_only": true,
+    "video_container_encoding": false
+  },
+  "windowing": {
+    "full_session_seconds": 11.0,
+    "visible_source_pts_warmup_seconds_per_stream": 1.0,
+    "measurement_seconds_requested": 10.0,
+    "maximum_callbacks_total": 760
+  },
+  "evaluator": {
+    "trusts_observer_verdict": false,
+    "require_exact_device_identity": true,
+    "require_both_inputs_and_outputs_admitted": true,
+    "require_exact_format_after_start": true,
+    "require_numeric_strictly_increasing_pts_entire_session": true,
+    "require_zero_drop_callbacks_entire_session": true,
+    "minimum_c922_measurement_callbacks": 285,
+    "minimum_d405_measurement_callbacks": 48,
+    "minimum_common_host_window_seconds": 9.5,
+    "maximum_c922_measurement_pts_interval_seconds": 0.049999950000049996,
+    "maximum_d405_measurement_pts_interval_seconds": 0.3,
+    "verdicts": [
+      "common_session_callback_delivery_verified",
+      "common_session_callback_delivery_degraded",
+      "prerequisite_abstention"
+    ],
+    "observer_self_scoring": false
+  },
+  "operation_budget": {
+    "observation_attempts_maximum": 1,
+    "common_capture_sessions_maximum": 1,
+    "independent_camera_sessions_maximum": 0,
+    "capture_duration_seconds_maximum": 11.0,
+    "source_callbacks_maximum": 760,
+    "replacement_attempts_maximum": 0,
+    "retries_maximum": 0,
+    "robot_motion_trials_maximum": 0,
+    "simulator_replays_maximum": 0,
+    "provider_calls_maximum": 0
+  },
+  "runtime_identity": {
+    "platform": "macos",
+    "swift_version_prefix": "Apple Swift version 6.3",
+    "observer_source_path": "tools/macos/AVFoundationDualCameraCommonSessionV1.swift",
+    "evaluator_path": "src/sim2claw/avfoundation_dual_camera_common_session_v1.py",
+    "compiler_path": "/usr/bin/swiftc",
+    "source_evaluator_and_binary_sha256_frozen_at_observation_commit": true
+  },
+  "authority": {
+    "stationary_dual_camera_callback_session": true,
+    "video_container_recording": false,
+    "robot_gateway": false,
+    "robot_motion": false,
+    "metric_depth": false,
+    "cross_camera_exposure_synchronization": false,
+    "simulator_replay": false,
+    "simulator_parameter_promotion": false,
+    "training": false,
+    "provider_calls": false,
+    "paid_compute": false,
+    "task_score_change": false,
+    "physical_task_authority": false
+  },
+  "claim_limits": {
+    "stationary_source_callback_health_only": true,
+    "production_container_timing": false,
+    "motion_capture_reliability": false,
+    "camera_exposure_synchronization": false,
+    "metric_depth": false,
+    "simulator_calibration": false,
+    "task_success": false
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "schema_version": "sim2claw.p8_p13_metrology_transaction.v1",
+  "transaction_id": "current_100mm_p8_p13_metrology_20260725_v1",
+  "status": "preregistered_readiness_only_no_camera_or_robot_authority",
+  "baseline_commit": "952d2db",
+  "bindings": {
+    "c922_acquisition_plan": {
+      "path": "configs/acquisition/c922_exact_mode_calibration.json",
+      "schema_version": "sim2claw.c922_exact_mode_calibration_acquisition_plan.v1"
+    },
+    "c922_calibration_contract": {
+      "path": "configs/evaluations/c922_exact_mode_calibration_v1.json",
+      "sha256": "d586d262929063c924895f56142dfe88196c521cb039d2392dc4ba53259b087c"
+    },
+    "p13_readiness_contract": {
+      "path": "configs/evaluations/current_100mm_metric_registration_readiness_v1.json",
+      "sha256": "dc8cbd7ee4363943512522774f2fb8e882f7bf88a192768ffdd9d210fd3c4910"
+    }
+  },
+  "identity": {
+    "camera": {
+      "camera_id": "logitech-overhead",
+      "localized_name": "C922 Pro Stream Webcam",
+      "model_id": "UVC Camera VendorID_1133 ProductID_2140",
+      "unique_id": "0x8310000046d085c",
+      "image_size_px": [640, 480],
+      "media_subtype": "420v",
+      "format_index": 16,
+      "frame_rate_range_index": 0,
+      "frame_rate_fps": 30.00003000003,
+      "orientation_filter": "hflip,vflip"
+    },
+    "workspace_pose_id": "workspace_board_fiducial_robotward_100mm_20260718_v3",
+    "board_pose_id": "board_robotward_100mm_20260718_v3",
+    "transform_direction": "board_to_workcell",
+    "transform_convention": "workcell_from_board @ inverse(camera_from_board)"
+  },
+  "operator_inputs": {
+    "printed_grid_measurement_receipt": null,
+    "direct_board_measurement_receipt": null,
+    "stationary_capture_receipt": null,
+    "physical_survey": null,
+    "annotator_a": null,
+    "annotator_b": null,
+    "p8_inputs_manifest": null,
+    "p13_inputs_manifest": null
+  },
+  "physical_inputs": {
+    "printed_grid_measurement": {
+      "schema_version": "sim2claw.printed_grid_measurement_receipt.v1",
+      "measurement_basis": "physical_post_print_measurement",
+      "required_fields": [
+        "measurement_id",
+        "instrument",
+        "instrument_resolution_mm",
+        "measurement_uncertainty_mm",
+        "measurement_points_description",
+        "measured_by",
+        "measured_at",
+        "square_pitch_x_mm",
+        "square_pitch_y_mm",
+        "total_width_x_mm",
+        "total_height_y_mm",
+        "target_asset_sha256"
+      ],
+      "nominal_values_substituted": false
+    },
+    "c922_capture": {
+      "exact_mode_must_match_identity": true,
+      "focus_mode": "manual_locked",
+      "focus_setting_must_be_observable_and_constant": true,
+      "frame_count": 18,
+      "split_counts": {"fit": 12, "validation": 3, "held_out": 3},
+      "duplicate_frame_bytes_allowed": false,
+      "coverage_delegated_to": "src/sim2claw/c922_calibration_acquisition.py",
+      "camera_sessions_required": 18,
+      "robot_motion_used": 0
+    },
+    "stationary_capture": {
+      "schema_version": "sim2claw.stationary_workcell_registration_capture.v1",
+      "fixed_board_required": true,
+      "operator_acknowledgements": [
+        "board_and_camera_fixed",
+        "board_cleared",
+        "a1_h1_a8_markers_visible",
+        "focus_locked",
+        "no_competing_camera_owner"
+      ],
+      "robot_gateway_constructed": false,
+      "robot_motion_used": 0
+    },
+    "direct_board_playing_side": {
+      "schema_version": "sim2claw.direct_board_measurement_receipt.v1",
+      "required_fields": [
+        "playing_side_m",
+        "standard_uncertainty_m",
+        "measurement_tool_id",
+        "operator",
+        "measured_at"
+      ],
+      "measurement_method": "direct_physical_measurement",
+      "nominal_value_substituted": false,
+      "synthetic": false
+    },
+    "physical_survey": {
+      "schema_version": "sim2claw.board_to_workcell_survey_input.v1",
+      "required_markers": ["physical_a1_marker", "physical_h1_marker", "physical_a8_marker"],
+      "required_measurement_fields": [
+        "tool_id",
+        "operator",
+        "measured_at",
+        "translation_uncertainty_95_m",
+        "rotation_uncertainty_95_degrees"
+      ],
+      "independent_review_required": true,
+      "workspace_identity_must_match": true
+    },
+    "independent_annotations": {
+      "schema_version": "sim2claw.workcell_registration_annotation.v1",
+      "annotator_count": 2,
+      "points_per_annotator": 8,
+      "point_plan_owner": "src/sim2claw/workcell_registration_acquisition.py",
+      "same_selected_frame_required": true
+    }
+  },
+  "evaluation": {
+    "p8_evaluator": "src/sim2claw/c922_exact_mode_calibration.py",
+    "p13_evaluator": "src/sim2claw/workcell_registration.py",
+    "maximum_leave_one_out_board_rms_m": 0.0015,
+    "maximum_annotator_disagreement_m": 0.0015,
+    "maximum_reprojection_rms_px": 2.0,
+    "p8_fit_selection_must_not_open_held_out": true,
+    "p13_physical_authority": false,
+    "promotion_authority": false
+  },
+  "sequence": [
+    {
+      "step_id": "readiness",
+      "owner": "evaluator",
+      "command": "sim2claw metrology-transaction-preflight --transaction configs/acquisition/current_100mm_p8_p13_metrology_transaction_v1.json --output runs/current-100mm-p8-p13-metrology-v1/readiness.json",
+      "camera_opened": false,
+      "robot_motion_used": 0
+    },
+    {
+      "step_id": "p8_plan_preflight",
+      "owner": "evaluator",
+      "command": "sim2claw c922-calibration-acquisition-preflight --plan configs/acquisition/c922_exact_mode_calibration.json --output runs/current-100mm-p8-p13-metrology-v1/p8-plan-preflight.json",
+      "camera_opened": false,
+      "robot_motion_used": 0
+    },
+    {
+      "step_id": "p8_capture",
+      "owner": "operator_and_existing_acquirer",
+      "command": "sim2claw c922-calibration-acquire --plan configs/acquisition/c922_exact_mode_calibration.json --output runs/current-100mm-p8-p13-metrology-v1/p8-corpus",
+      "camera_opened": true,
+      "robot_motion_used": 0
+    },
+    {
+      "step_id": "p8_evaluate",
+      "owner": "existing_evaluator",
+      "command": "uv run python src/sim2claw/c922_exact_mode_calibration.py --contract configs/evaluations/c922_exact_mode_calibration_v1.json --inputs runs/current-100mm-p8-p13-metrology-v1/p8-inputs.json --output-root runs/current-100mm-p8-p13-metrology-v1/p8-evaluation",
+      "camera_opened": false,
+      "robot_motion_used": 0
+    },
+    {
+      "step_id": "p13_stationary_capture",
+      "owner": "operator_and_existing_acquirer",
+      "command": "sim2claw workcell-registration-input --phase capture --output runs/current-100mm-p8-p13-metrology-v1/p13-capture --focus-setting <same-observable-focus-setting> --ack-board-camera-fixed --ack-board-cleared --ack-markers-visible --ack-focus-locked --ack-no-camera-owner",
+      "camera_opened": true,
+      "robot_motion_used": 0
+    },
+    {
+      "step_id": "p13_annotation_bundle",
+      "owner": "existing_acquirer",
+      "command": "sim2claw workcell-registration-input --phase bundle --capture-receipt runs/current-100mm-p8-p13-metrology-v1/p13-capture/capture_receipt.json --output runs/current-100mm-p8-p13-metrology-v1/p13-annotations",
+      "camera_opened": false,
+      "robot_motion_used": 0
+    },
+    {
+      "step_id": "p13_finalize",
+      "owner": "operator_and_existing_acquirer",
+      "command": "sim2claw workcell-registration-input --phase finalize --output runs/current-100mm-p8-p13-metrology-v1/p13-inputs.json --capture-receipt runs/current-100mm-p8-p13-metrology-v1/p13-capture/capture_receipt.json --annotator-a runs/current-100mm-p8-p13-metrology-v1/p13-annotations/annotator_a.json --annotator-b runs/current-100mm-p8-p13-metrology-v1/p13-annotations/annotator_b.json --board-measurement <direct-board-measurement-receipt> --survey <accepted-a1-h1-a8-survey> --intrinsics runs/current-100mm-p8-p13-metrology-v1/p8-evaluation/camera_intrinsics_receipt.json --distortion runs/current-100mm-p8-p13-metrology-v1/p8-evaluation/lens_distortion_receipt.json",
+      "camera_opened": false,
+      "robot_motion_used": 0
+    },
+    {
+      "step_id": "p13_evaluate",
+      "owner": "existing_evaluator",
+      "command": "sim2claw workcell-registration --phase evaluate --survey <accepted-a1-h1-a8-survey> --manifest runs/current-100mm-p8-p13-metrology-v1/p13-inputs.json --output runs/current-100mm-p8-p13-metrology-v1/p13-evaluation",
+      "camera_opened": false,
+      "robot_motion_used": 0
+    }
+  ],
+  "authority": {
+    "readiness_camera_opened": false,
+    "readiness_camera_sessions_used": 0,
+    "readiness_new_frames_captured": 0,
+    "robot_motion_used": 0,
+    "simulator_replays_used": 0,
+    "provider_calls": 0,
+    "training_rows": 0,
+    "metric_fit_authorized": false,
+    "evaluator_admission": false,
+    "physical_authority": false,
+    "task_success_verified": false
+  }
+}

@@ -81,6 +81,51 @@ class SceneContractTest(unittest.TestCase):
                 mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, camera), 0
             )
 
+    def test_shoulder_servo_collision_uses_tightened_box(self) -> None:
+        model = build_scene_spec().compile()
+        for prefix in ("left_", "right_"):
+            shoulder = mujoco.mj_name2id(
+                model,
+                mujoco.mjtObj.mjOBJ_BODY,
+                f"{prefix}shoulder",
+            )
+            shoulder_servo_boxes = [
+                geom_id
+                for geom_id in range(model.ngeom)
+                if int(model.geom_bodyid[geom_id]) == shoulder
+                and int(model.geom_type[geom_id])
+                == int(mujoco.mjtGeom.mjGEOM_BOX)
+                and (
+                    int(model.geom_contype[geom_id]) != 0
+                    or int(model.geom_conaffinity[geom_id]) != 0
+                )
+                and all(
+                    abs(float(actual) - expected) <= 1e-12
+                    for actual, expected in zip(
+                        model.geom_size[geom_id],
+                        (0.0124, 0.015, 0.01),
+                        strict=True,
+                    )
+                )
+            ]
+            self.assertEqual(len(shoulder_servo_boxes), 1)
+            self.assertFalse(
+                any(
+                    int(model.geom_bodyid[geom_id]) == shoulder
+                    and int(model.geom_type[geom_id])
+                    == int(mujoco.mjtGeom.mjGEOM_BOX)
+                    and all(
+                        abs(float(actual) - expected) <= 1e-12
+                        for actual, expected in zip(
+                            model.geom_size[geom_id],
+                            (0.023, 0.015, 0.01),
+                            strict=True,
+                        )
+                    )
+                    for geom_id in range(model.ngeom)
+                )
+            )
+
     def test_board_fits_measured_table(self) -> None:
         geometry = scene_geometry(load_capture_config())
         self.assertLess(geometry.board_side, geometry.table_length)

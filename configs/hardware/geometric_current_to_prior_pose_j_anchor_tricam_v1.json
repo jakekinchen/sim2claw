@@ -1,0 +1,61 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_current_to_prior_pose_j_anchor_tricam_20260727_v1",
+  "samples_per_stage": 361,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_15s_v1.json",
+    "contract_sha256": "457f2c142671851ddd60a3f1be5487125605957e38c1b2730ab683e08488393f"
+  },
+  "reviewed_anchor_degrees": [
+    -8.351648351648352,
+    -106.28571428571429,
+    99.12087912087912,
+    -94.10989010989012,
+    -126.37362637362638,
+    1.66270783847981
+  ],
+  "stage_targets_degrees": [
+    [
+      -0.17582417582417584,
+      -106.28571428571429,
+      99.73626373626374,
+      -100.43956043956044,
+      -119.6923076923077,
+      1.66270783847981
+    ]
+  ],
+  "geometric_derivation": {
+    "purpose": "align_to_the_exact_previously_physical_clean_pose_j_route_anchor",
+    "maximum_joint_excursion_degrees": 8.175824175824177,
+    "prior_pose_j_route_path": "configs/hardware/pi_new_scene_tags_pose_j_identity_validation_v1.json",
+    "prior_pose_j_route_sha256": "8c7a36deb4a9ace9425b536883e6153e08ffa47f828f92c0a7a2fd8b7030b6e4",
+    "prior_pose_j_packet_path": "runs/pi-link-tag-calibration/20260726-new-scene-tags-pose-j-identity-validation-v1/packet.json",
+    "prior_pose_j_packet_sha256": "7e84e2f46f8a6a79a1101b10060d45f4ff888503e7e003df0adb9cb6acb29f0b",
+    "prior_pose_j_execution_receipt_path": "runs/pi-link-tag-calibration/20260726-new-scene-tags-pose-j-identity-validation-v1/stage-1/execution_receipt.json",
+    "prior_pose_j_execution_receipt_sha256": "3d377ff0dd1c86301c636778df427bb5081609b8fef26c52304d1a37363cb962",
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+  },
+  "review_basis": {
+    "physical_scope": "calibration_alignment_only",
+    "capture_scope": "prospective_contact_free_tricam_alignment_to_prior_pose_j_anchor",
+    "target_selection": "A slow nine-second alignment from the current proven B7 hover-return anchor to the exact prior Pose-J route anchor, changing no joint by more than 8.176 degrees. This isolates the only new corridor before replaying the previously successful Pose-J calibration motion.",
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "pose_j_corridor_replay": false,
+      "pawn_contact": false,
+      "pawn_task_success": false,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false
+    }
+  }
+}

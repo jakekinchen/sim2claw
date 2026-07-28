@@ -1,0 +1,27 @@
+{
+  "schema_version": "sim2claw.isolated_overhead_host_inventory_exhaustion.v1",
+  "contract_id": "current-100mm-isolated-overhead-host-inventory-20260724-v1",
+  "status": "terminal_inventory_budget_exhausted_attachment_required",
+  "contract_sha256": "10f4d01df62fc1f59b8efd46b61f4d19116966f17a18296c0e3ad5bb41623a7a",
+  "execution_commit": "7810c659faa268d68e09d6ce8d9fe246db29708e",
+  "remote_inventory_observations_used": 1,
+  "remote_inventory_observations_maximum": 1,
+  "ssh_connection_attempts_used": 1,
+  "ssh_connection_attempts_maximum": 1,
+  "capture_sessions_used": 0,
+  "camera_frames_used": 0,
+  "remote_files_written": 0,
+  "retries_used": 0,
+  "retry_authorized": false,
+  "verdict": "isolated_overhead_host_requires_c922_attachment",
+  "failed_gates": [
+    "target_c922_camera_match_count",
+    "target_c922_usb_match_count"
+  ],
+  "prelaunch_sha256": "5feff32164c565a64c920ff04c8e5db26ef4adb0b66f52aff0396ca7e1f58ffb",
+  "attempt_sha256": "ebd916b89e79484e668b272fbd6876ebabd53b0d4d3688c23668e27492ce0a29",
+  "raw_observation_sha256": "f3cf7ed87308bc4d9d489d9604980ac365a7a251a716417c9858adba8ac53a48",
+  "evaluation_sha256": "fdcd13599306560a4b47a5a29424cbee607bfabb7b9720a9348fad26fe37e588",
+  "receipt_sha256": "109532c8e6547d679dcd3ffa451c7f717f0a13d7605ee9c73efdcd49932b51e7",
+  "receipt_digest": "44ad7049ab30177539805f1a1462cdfe7b77a3456f3311b6bf83560d20dd8d56"
+}

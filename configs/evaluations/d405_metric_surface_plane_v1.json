@@ -1,0 +1,30 @@
+{
+  "schema_version": "sim2claw.d405_metric_surface_plane_contract.v1",
+  "proof_class": "physical_stationary_metric_surface_plane_observation_only",
+  "required_capture_receipt_schema": "sim2claw.d405_stationary_rgbd_capture_receipt.v1",
+  "required_capture_proof_class": "physical_stationary_rgbd_capture_only",
+  "minimum_depth_frame_count": 2,
+  "minimum_valid_pixel_fraction": 0.75,
+  "depth_range_m": [0.04, 0.5],
+  "sample_stride_px": 3,
+  "ransac_seed": 1729,
+  "ransac_iterations": 500,
+  "ransac_inlier_threshold_m": 0.0008,
+  "final_inlier_threshold_m": 0.001,
+  "minimum_plane_inlier_fraction_of_valid": 0.55,
+  "maximum_plane_rms_residual_m": 0.0005,
+  "maximum_plane_p95_absolute_residual_m": 0.0008,
+  "maximum_cross_frame_normal_angle_degrees": 0.5,
+  "maximum_cross_frame_plane_offset_drift_m": 0.001,
+  "camera_origin_plane_distance_range_m": [0.05, 0.2],
+  "required_rgb_grid_classification": "partial_grid_visibility_not_outer_quadrilateral",
+  "authority": {
+    "full_grid_registration": false,
+    "board_origin": false,
+    "camera_to_robot_extrinsic": false,
+    "robot_motion": false,
+    "task_success": false,
+    "policy_evaluation": false,
+    "physical_task": false
+  }
+}

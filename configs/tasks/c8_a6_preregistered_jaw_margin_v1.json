@@ -1,0 +1,28 @@
+{
+  "schema_version": "sim2claw.pawn_source_expert_profile.v1",
+  "profile_id": "c8_a6_preregistered_jaw_margin_v1",
+  "purpose": "Simulation-only preregistered C8-to-A6 jaw-limit-margin follow-up to the centered-grasp candidate.",
+  "selection_boundary": {
+    "action_frozen_after_selection": true,
+    "board_x_mm": 0.5,
+    "board_y_mm": 0.5,
+    "board_yaw_deg": 0.1,
+    "joint_zero_deg": 0.1,
+    "assistance_frames": 0
+  },
+  "profile": {
+    "pawn_neck_height_m": 0.0385,
+    "grasp_offset_xyz_m": [
+      -0.004,
+      -0.002,
+      0.0015
+    ],
+    "closed_jaw_joint_target_rad": -0.1727003294848389,
+    "lift_clearance_m": 0.09,
+    "release_clearance_m": 0.003,
+    "partial_release_joint_target_rad": 0.8,
+    "vertical_extract_m": 0.08
+  },
+  "proof_class": "simulation_geometric_expert_profile_only",
+  "physical_authority": false
+}

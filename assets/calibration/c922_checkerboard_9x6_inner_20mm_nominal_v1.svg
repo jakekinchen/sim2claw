@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="216mm"
+     height="279mm"
+     viewBox="0 0 216 279">
+  <title>Sim2Claw C922 checkerboard target v1</title>
+  <desc>
+    Ten by seven 20 mm nominal squares, yielding nine by six inner corners.
+    Print at 100 percent with no fit-to-page scaling. Nominal dimensions are
+    design values only; measure the printed 200 mm by 140 mm grid before any
+    metric use.
+  </desc>
+  <rect x="0" y="0" width="216" height="279" fill="#ffffff"/>
+  <defs>
+    <pattern id="checker" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="20" height="20" fill="#000000"/>
+      <rect x="20" y="20" width="20" height="20" fill="#000000"/>
+    </pattern>
+  </defs>
+  <text x="8" y="12" font-family="monospace" font-size="4" fill="#000000">
+    SIM2CLAW C922 CALIBRATION TARGET V1
+  </text>
+  <text x="8" y="18" font-family="monospace" font-size="3.2" fill="#000000">
+    9 x 6 INNER CORNERS / 20 MM NOMINAL SQUARES / PRINT 100 PERCENT
+  </text>
+  <text x="8" y="23" font-family="monospace" font-size="3.2" fill="#000000">
+    NOMINAL IS NOT A PHYSICAL MEASUREMENT — MEASURE GRID X AND Y AFTER PRINTING
+  </text>
+  <circle cx="11" cy="33" r="3" fill="#e0584d"/>
+  <text x="17" y="34.2" font-family="monospace" font-size="3.2" fill="#000000">
+    ORIENTATION WITNESS: RED MARKER ABOVE TOP-LEFT BLACK SQUARE
+  </text>
+  <rect x="8" y="40" width="200" height="140" fill="url(#checker)"/>
+  <rect x="8" y="40" width="200" height="140" fill="none" stroke="#000000" stroke-width="0.3"/>
+  <line x1="8" y1="188" x2="208" y2="188" stroke="#000000" stroke-width="0.3"/>
+  <line x1="8" y1="184" x2="8" y2="192" stroke="#000000" stroke-width="0.3"/>
+  <line x1="208" y1="184" x2="208" y2="192" stroke="#000000" stroke-width="0.3"/>
+  <text x="83" y="196" font-family="monospace" font-size="3.5" fill="#000000">
+    GRID X: 200 MM NOMINAL
+  </text>
+  <line x1="212" y1="40" x2="212" y2="180" stroke="#000000" stroke-width="0.3"/>
+  <line x1="208" y1="40" x2="216" y2="40" stroke="#000000" stroke-width="0.3"/>
+  <line x1="208" y1="180" x2="216" y2="180" stroke="#000000" stroke-width="0.3"/>
+  <text x="214" y="132" font-family="monospace" font-size="3.5" fill="#000000"
+        transform="rotate(-90 214 132)">
+    GRID Y: 140 MM NOMINAL
+  </text>
+  <text x="8" y="214" font-family="monospace" font-size="3.4" fill="#000000">
+    PRINTED GRID X MM: ____________________   TOOL ID: ____________________
+  </text>
+  <text x="8" y="223" font-family="monospace" font-size="3.4" fill="#000000">
+    PRINTED GRID Y MM: ____________________   UNCERTAINTY MM: _____________
+  </text>
+  <text x="8" y="232" font-family="monospace" font-size="3.4" fill="#000000">
+    MEASURED BY: __________________________   DATE/TIME: __________________
+  </text>
+  <text x="8" y="245" font-family="monospace" font-size="3.2" fill="#000000">
+    CAMERA FIT MAY USE GRID RATIOS WITHOUT METRIC AUTHORITY.
+  </text>
+  <text x="8" y="251" font-family="monospace" font-size="3.2" fill="#000000">
+    CAMERA-TO-WORKCELL OR METRIC SCALE REQUIRES THE COMPLETED MEASUREMENT WITNESS.
+  </text>
+</svg>

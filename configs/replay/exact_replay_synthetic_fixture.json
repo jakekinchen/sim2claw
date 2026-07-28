@@ -1,0 +1,69 @@
+{
+  "schema_version": "sim2claw.exact_replay_eligibility_manifest.v1",
+  "episode_id": "synthetic_exact_replay_fixture",
+  "proof_class": "synthetic_contract_fixture",
+  "evaluator_admission": false,
+  "physical_authority": false,
+  "joint_order": [
+    "shoulder_pan",
+    "shoulder_lift",
+    "elbow_flex",
+    "wrist_flex",
+    "wrist_roll",
+    "gripper"
+  ],
+  "units": {
+    "joint_position": "radian",
+    "joint_velocity": "radian_per_second",
+    "action": "radian"
+  },
+  "joint_transform": {
+    "source_joint_order": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "target_joint_order": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "sign": [1, 1, 1, 1, 1, 1],
+    "scale": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+    "zero_offset": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  },
+  "initial_state": {
+    "joint_position": [0.0, -0.35, 0.55, 0.25, 0.0, 0.4],
+    "joint_velocity": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    "joint_position_source": "measured",
+    "joint_velocity_source": "measured",
+    "measurement_id": "synthetic_encoder_snapshot_000"
+  },
+  "timestamps_seconds": [0.0, 0.05, 0.1],
+  "action_dtype": "float64",
+  "requested_actions": [
+    [0.0, -0.35, 0.55, 0.25, 0.0, 0.4],
+    [0.02, -0.34, 0.54, 0.24, 0.01, 0.39],
+    [0.04, -0.32, 0.52, 0.22, 0.02, 0.37]
+  ],
+  "applied_actions": [
+    [0.0, -0.35, 0.55, 0.25, 0.0, 0.4],
+    [0.02, -0.34, 0.54, 0.24, 0.01, 0.39],
+    [0.04, -0.32, 0.52, 0.22, 0.02, 0.37]
+  ],
+  "requested_action_sha256": "da733050a56b5e0530b8e1072a9b656aec1515762f3a40a29690a9d569fb7617",
+  "applied_action_sha256": "da733050a56b5e0530b8e1072a9b656aec1515762f3a40a29690a9d569fb7617",
+  "modifications": {
+    "clipping": false,
+    "inverse_kinematics": false,
+    "joint_offset": false,
+    "corrective_suffix": false,
+    "assistance": false
+  }
+}

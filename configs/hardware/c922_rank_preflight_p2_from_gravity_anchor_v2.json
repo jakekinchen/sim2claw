@@ -1,0 +1,58 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c922_rank_preflight_gravity_anchor_to_observed_p2_diagnostic_20260725_v2",
+  "capture_during_motion": false,
+  "setup_maximum_slew_degrees_s": 1.5,
+  "setup_elbow_tracking_error_limit_degrees": 15.0,
+  "setup_observed_elbow_target_degrees": 62.81318681318681,
+  "setup_observed_elbow_crossing_direction": "decreasing",
+  "setup_target_hold_seconds": 2.0,
+  "stationary_capture_seconds": 0.0,
+  "reviewed_anchor_degrees": [
+    5.714285714285714,
+    -73.14285714285714,
+    93.75824175824175,
+    71.34065934065934,
+    -74.85714285714286,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [
+      39.2967032967033,
+      -65.14285714285714,
+      55.0,
+      64.83516483516483,
+      -74.32967032967034,
+      3.0878859857482186
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "future_c922_calibration_setup_only_diagnostic_visibility",
+    "target_source": "The non-elbow joints retain frozen P2. After P1 shutdown the torque-off elbow returned above frozen P2, so this v2 route approaches the 62.81318681318681 degree observed elbow target from the decreasing direction. The elbow command extends only to 55 degrees to allow measured tracking lag to cross the observed target near the end of the jointly previewed route.",
+    "rejected_prior_receipt": "runs/c922-ordered-face/20260725-live/p2-terminal-hold-still-v1/receipt.json",
+    "rejected_prior_reason": "The increasing-direction route stopped at sample zero because the live gravity-return anchor elbow was already above the observed P2 threshold.",
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "candidate_digest": "2da7425cbf0fd10e27822a415890ca180dde7a4f1b042bf3ed49030bcad018af"
+    },
+    "simulation_runtime": "cpu_mujoco_mj_forward_at_live_execution",
+    "capture_plan": "The synchronized C922 recorder must be ready before this route. Only a terminal-hold callback PNG may be admitted as diagnostic visibility evidence.",
+    "evidence_limits": {
+      "exact_frozen_p2_reached": false,
+      "camera_to_robot_extrinsic_fitted": false,
+      "full_three_face_rank_eligible": false,
+      "sim_gap_evidence": false,
+      "policy_evidence": false,
+      "task_authority": false
+    },
+    "authority": {
+      "capture": false,
+      "motion": false,
+      "fit": false,
+      "policy": false,
+      "task_success": false,
+      "physical_transfer": false
+    }
+  }
+}

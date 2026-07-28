@@ -556,10 +556,14 @@ class LiveWorkspaceService:
             "recorder": {
                 "status": recorder_state.get("status"),
                 "mode": recorder_state.get("mode"),
-                "owns_c922": recorder_state.get("overhead_video", {}).get("status")
-                == "recording",
-                "owns_d405": recorder_state.get("wrist_video", {}).get("status")
-                == "recording",
+                "owns_c922": (
+                    (recorder_state.get("overhead_video") or {}).get("status")
+                    == "recording"
+                ),
+                "owns_d405": (
+                    (recorder_state.get("wrist_video") or {}).get("status")
+                    == "recording"
+                ),
             },
             "authority": {
                 "inspection_only": True,

@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c922_m_waypoint_to_contact_free_start_20260726_v1",
+  "capture_during_motion": false,
+  "setup_recovery_command_anchor_snap_limit_degrees": 5.0,
+  "reviewed_anchor_degrees": [
+    12.043956043956044,
+    -67.25274725274726,
+    103.25274725274726,
+    -82.94505494505495,
+    -50.32967032967033,
+    2.375296912114014
+  ],
+  "stage_targets_degrees": [
+    [
+      0.2666666666666675,
+      -105.26300366300367,
+      99.83858363858364,
+      -99.81636141636142,
+      -119.07692307692308,
+      2.494061757719715
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "complete_the_return_from_the_stable_M_like_waypoint_to_the_contact_free_near_start_boundary",
+    "source_pose": "Fresh torque-off follower read after the independently compiled M-like recovery waypoint.",
+    "command_anchor_rule": "The reviewed setup-only gateway may snap the fresh torque-off elbow reading by at most 5 degrees to the calibrated command envelope before the frozen interpolation.",
+    "target_selection": "The final target is the last contact-free interpolation sample before the current exact CAD model introduces its known lower-arm versus shoulder duplicate-geometry self-overlap at the repeated source-episode start; it differs from that start by at most 0.847 degrees.",
+    "prior_recovery_receipt": {
+      "path": "runs/c922-board-base-registration/20260726-recovery-sag-to-m-v1/stage-1/execution_receipt.json",
+      "sha256": "ec094346c531cf85beeeee98537765444d5268fd0df2a72d40f2ce8677a76249"
+    },
+    "evidence_limits": {
+      "physical_calibration_observation": false,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

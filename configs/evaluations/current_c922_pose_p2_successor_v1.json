@@ -1,0 +1,80 @@
+{
+  "schema_version": "sim2claw.current_c922_pose_p2_successor.v1",
+  "contract_id": "current_c922_pose_p2_successor_20260726_v1",
+  "status": "receipt_binding_and_successor_split_frozen",
+  "proof_class": "physical_static_C922_board_conditioned_exact_CAD_diagnostic",
+  "sources": {
+    "predecessor_contract": {
+      "path": "configs/evaluations/current_c922_board_base_registration_v1.json",
+      "sha256": "21225fcb7b916e5b82af2696f2bee93ea76486db8d976b1ac5918915fa66954a"
+    },
+    "pose_P2_acquisition_contract": {
+      "path": "configs/evaluations/current_c922_pose_p2_fit_acquisition_v1.json",
+      "sha256": "7db9a3d605a739ab5f24ecddb0b79c42201f4f54207c696d7b2fd79aa1de1115"
+    },
+    "pose_P2": {
+      "directory": "runs/c922-board-base-registration/20260726-pose-p2-fit-acquisition-v1/stage-1",
+      "execution_receipt": "execution_receipt.json",
+      "execution_receipt_sha256": "e59ca19049de7a1ad161e4d675e2b850f640ba9ca22d874291fc167941bb0d30",
+      "joint_samples": "joint_samples.jsonl",
+      "joint_samples_sha256": "d6471d53910416bd133651ebb81affb02cae92a08edfceb38d5e89d584063d6a",
+      "callback_ledger": "final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+      "callback_ledger_sha256": "776c198cca6aa549aab572983b8bac46d1769a3833009c7eb1f7b2a97fec94bf",
+      "native_report": "final_hold_camera/native_dual_camera/native_camera_report.json",
+      "native_report_sha256": "280c1ed38f975409666cf4f4ab1cd7814289565849d62e4398213374aa988b73",
+      "native_video": "final_hold_camera/native_dual_camera/overhead_c922.native.mov",
+      "native_video_sha256": "9cf1f8c152393ea40a7b8f98c2d6d14956993b2d3cf2b655adea5bc0072f6e0b",
+      "native_frame_count": 337,
+      "selected_native_frame_index_zero_based": 306,
+      "selected_callback_source_sequence": 337,
+      "selected_source_pts_seconds": 795410.8039333334,
+      "selected_joint_sample_index_zero_based": 401,
+      "joint_time_delta_ms": 6.51625,
+      "decoded_frame_png_sha256": "8c3e807b7fa663b3107e284eb8116ae59d349b7245976ec45d9ddf3090c3a01a",
+      "joint_position_degrees": [
+        75.51648351648352,
+        9.846153846153847,
+        41.010989010989015,
+        -29.846153846153847,
+        -60.527472527472526,
+        2.494061757719715
+      ]
+    }
+  },
+  "split": {
+    "fit_poses": ["J", "S", "K", "L", "P2"],
+    "retrospective_diagnostic_only": ["M"],
+    "future_heldout_poses": [],
+    "pose_P2_is_fit_not_heldout": true
+  },
+  "fit_method": {
+    "camera": "same_one_shared_centered_square_pixel_zero_distortion_pinhole_conditioned_on_predecessor_board_seed",
+    "base": "one_shared_static_base_delta_fit_on_J_S_K_L_P2_then_frozen",
+    "CAD": "exact_full_SO101_group2_visual_meshes",
+    "hypotheses": "identity_and_Stage_D_with_identical_camera_base_edges_masks_and_no_hypothesis_specific_nuisance_refit",
+    "P2_line_extraction": "same_Canny_Hough_union_then_unique_seed_lattice_line_matching_as_predecessor"
+  },
+  "gates": {
+    "maximum_joint_to_frame_delta_ms": 20.0,
+    "minimum_directly_supported_lattice_lines_per_axis": 7,
+    "maximum_board_coordinate_rmse_px": 2.0,
+    "maximum_camera_jacobian_condition_number": 1000.0,
+    "camera_fit_bounds_must_be_inactive": true,
+    "maximum_base_multistart_translation_spread_mm": 5.0,
+    "maximum_base_multistart_rotation_spread_degrees": 1.0,
+    "base_fit_bounds_must_be_inactive": true,
+    "retrospective_validation_winner_p90_max_px": 8.0,
+    "retrospective_validation_winner_margin_min_px": 2.0,
+    "independent_metric_anchor_required": true,
+    "nonplanar_intrinsic_or_distortion_evidence_required": true,
+    "future_heldout_required": true
+  },
+  "authority": {
+    "conditional_diagnostic": true,
+    "P13_promotion": false,
+    "metric_camera_or_workcell": false,
+    "physical_motion": false,
+    "policy": false,
+    "task_success": false
+  }
+}

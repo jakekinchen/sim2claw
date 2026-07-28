@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.geometric_joint_deadband_holdout.v1",
+  "evaluation_id": "geometric_joint_deadband_holdout_20260727_v1",
+  "status": "prospective_heldout_evaluation_of_previously_frozen_fit",
+  "proof_class": "action_frozen_no_contact_physical_actuator_heldout",
+  "sources": {
+    "fit_contract": {
+      "path": "configs/evaluations/geometric_joint_deadband_fit_v1.json",
+      "sha256": "49c82ef737b2ff622d0ff5618a748c4a51561a25f16cc78fb66b67c07546a590"
+    },
+    "fit_receipt": {
+      "path": "runs/geometric-microtransfer/20260727-geometric-joint-deadband-fit-v1/fit-receipt.json",
+      "sha256": "35524be7f88fe3f7c8a768eea9bc344e6c0f1aad9cf46024f9669129f6db5331",
+      "receipt_digest": "d0b3783105eaea2cf334dd625078d2443228bc5ac74b130da813b889d8700b65"
+    },
+    "packet": {
+      "path": "runs/geometric-microtransfer/20260727-geometric-vertical-round-trip-tricam-v1/packet.json",
+      "sha256": "75bef39e3303da06e2a3bd2a1e57db2c3a43d928966b7574314429f9bf2ea727"
+    },
+    "heldout_stage": {
+      "stage_index": 1,
+      "samples_path": "runs/geometric-microtransfer/20260727-geometric-vertical-round-trip-tricam-v1/stage-1/joint_samples.jsonl",
+      "samples_sha256": "eee56ab9c73231bc7b71096ad34b23409de4c1d9f35793e60ceac5eb20ba37f0",
+      "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-vertical-round-trip-tricam-v1/stage-1/execution_receipt.json",
+      "execution_receipt_sha256": "aa8e4fda2788c0231baff51cc47af4c5cf62f745b7fcfc3286184746ac6951b6"
+    }
+  },
+  "expected_fit": {
+    "selected_variant": "lift_1p5_elbow_2_wrist_1",
+    "selected_deadband_degrees": {
+      "shoulder_lift": 1.5,
+      "elbow_flex": 2.0,
+      "wrist_flex": 1.0
+    },
+    "parameters_promoted": false
+  },
+  "baseline_deadband_degrees": {
+    "shoulder_lift": 2.0,
+    "elbow_flex": 2.0
+  },
+  "gates": {
+    "selected_joint_rms_must_improve_over_baseline": true,
+    "selected_end_effector_rms_must_improve_over_baseline": true,
+    "maximum_return_error_degrees": {
+      "shoulder_lift": 1.0,
+      "elbow_flex": 1.0,
+      "wrist_flex": 1.0
+    },
+    "all_three_camera_intervals_must_enclose_action": true
+  },
+  "action_invariance": {
+    "same_packet_bytes_in_sim_and_physical": true,
+    "no_action_correction": true,
+    "no_assistance": true,
+    "no_intervention": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_calibration": false,
+    "simulator_parameter_promotion": false,
+    "action_correction": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}

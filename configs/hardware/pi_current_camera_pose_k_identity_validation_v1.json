@@ -1,0 +1,47 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_current_camera_pose_k_identity_validation_20260726_v1",
+  "capture_during_motion": true,
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "setup_recovery_command_anchor_snap_limit_degrees": 3.0,
+  "reviewed_anchor_degrees": [
+    -1.5824175824175823,
+    -107.16483516483517,
+    100.43956043956044,
+    -100.17582417582418,
+    -119.07692307692308,
+    2.494061757719715
+  ],
+  "stage_targets_degrees": [
+    [
+      25.0,
+      -72.0,
+      82.0,
+      -78.0,
+      -48.0,
+      2.494061757719715
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "third_fixed_current_pi_camera_pose_for_joint_mapping_identifiability",
+    "source_pose": "Fresh torque-off follower read at the repeated episode-start configuration after pose J recovery.",
+    "command_anchor_rule": "The reviewed setup-only gateway may snap the fresh torque-off reading by at most 3 degrees to the calibrated command envelope before the frozen interpolation.",
+    "target_selection": "A bounded multi-joint pose distinct from J and the episode start, with every excursion below 90 degrees and a frozen no-new-contact MuJoCo preview.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "joint_mapping_validation_candidate": true,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

@@ -1,0 +1,886 @@
+{
+  "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
+  "campaign_id": "bidirectional_pawn_push_v2",
+  "generated_at": "2026-07-28T07:52:00-05:00",
+  "node_types": [
+    "workcell",
+    "session",
+    "context",
+    "evidence",
+    "residual_channel",
+    "simulator_version",
+    "mechanism",
+    "parameter_posterior",
+    "intervention",
+    "candidate",
+    "evaluator_verdict",
+    "twin_worthiness_certificate",
+    "dataset",
+    "checkpoint",
+    "policy",
+    "counterexample"
+  ],
+  "edge_types": [
+    "observed-by",
+    "generated-from",
+    "applied-to",
+    "affected-by",
+    "fitted-on",
+    "evaluated-on",
+    "invalidates",
+    "compensates-for",
+    "predicts",
+    "admitted-to",
+    "counterexample-to"
+  ],
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "source_bindings": {
+    "queue": {
+      "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
+      "sha256": "3447e5a0d421b34d19c77d68fa198568e645c9107e8d415ea06c203199baa682",
+      "proof_class": "campaign_control_state"
+    },
+    "v00": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v00-read-only-design/v00_read_only_design_receipt.json",
+      "sha256": "2c818ed0b70458ca0cd2d2758ec2c4a74790dcc6bc0733bc82dafca157908ebf",
+      "proof_class": "live_hardware_camera_inventory_and_cpu_fp64_static_design_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_v00_read_only_design_receipt.v1",
+        "status": "completed_read_only_prefreeze_design",
+        "proof_class": "live_hardware_camera_inventory_and_cpu_fp64_static_design_only"
+      }
+    },
+    "v01": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v1.json",
+      "sha256": "f345d9ff55ed38b8509dac061af7d0ce7aeaefb59cb78f92ba4460b5dbe82024",
+      "proof_class": "prospective_rgb_registration_acquisition_contract_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v1",
+        "status": "preregistered_before_authoritative_capture_or_motion",
+        "proof_class": "prospective_rgb_registration_acquisition_contract_only"
+      }
+    },
+    "v02": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v02-static-route-v2/evaluation.json",
+      "sha256": "53c6b4dec93cae8f41e9bc24a106fcc0883d3c11d97c887aec3c630491bdbcf6",
+      "proof_class": "cpu_fp64_static_registration_route_preview_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_route_preview.v1",
+        "status": "completed_cpu_fp64_static_route_and_visibility_preview",
+        "proof_class": "cpu_fp64_static_registration_route_preview_only"
+      }
+    },
+    "v03": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/execution_receipt.json",
+      "sha256": "a1692a5b87d88b7b2c37151159660546d9104c9b3973de85f0801de0d9e793a3",
+      "proof_class": "physical_rgb_no_contact_registration_observation_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture_execution.v1",
+        "status": "completed_no_contact_registration_capture",
+        "proof_class": "physical_rgb_no_contact_registration_observation_only"
+      }
+    },
+    "v04_fit": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1/fit_receipt.json",
+      "sha256": "9b6378fc32a3f22fc6c9c6379a86df2a96562b3c0207f07488494d68c13adedb",
+      "proof_class": "fit_split_registration_diagnostic_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_fit_receipt.v1",
+        "status": "rejected_before_heldout",
+        "proof_class": "fit_split_registration_diagnostic_only"
+      }
+    },
+    "v04_candidate": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1/candidate.json",
+      "sha256": "ea9caa941517956ca6115d71137ead7456d72548ee4fcb8acbcd8ee1e4f92dab",
+      "proof_class": "fit_split_registration_diagnostic_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_candidate.v1",
+        "heldout_open_count": 0
+      }
+    },
+    "v04_recap_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v2.json",
+      "sha256": "b308ef3d24e37893e13c6b28c00f338374ee2a21d84a464c9ccec073bd0b5483",
+      "proof_class": "prospective_rgb_registration_recovery_contract_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v2",
+        "status": "preregistered_before_replacement_capture_or_motion",
+        "proof_class": "prospective_rgb_registration_recovery_contract_only"
+      }
+    },
+    "v04_recap_route": {
+      "path": "configs/hardware/bidirectional_pawn_push_v2_registration_route_v2.json",
+      "sha256": "40460c83750f8ea35670498758a5ad5b0e52a31351c957106f37154df6546756",
+      "proof_class": "prospective_no_contact_registration_route_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_route.v1",
+        "status": "frozen_for_cpu_fp64_preview_no_motion_authority"
+      }
+    },
+    "v04_recap_static": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/static-preview-v1/evaluation.json",
+      "sha256": "37b73f61d8a1c2124989d42bac16b8fd532ee0f15c385798ac5feed2a6b597e5",
+      "proof_class": "cpu_fp64_static_registration_route_preview_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_route_preview.v1",
+        "status": "completed_cpu_fp64_static_route_and_visibility_preview",
+        "proof_class": "cpu_fp64_static_registration_route_preview_only"
+      }
+    },
+    "v04_recap_packet": {
+      "path": "configs/hardware/bidirectional_pawn_push_v2_registration_capture_v2.json",
+      "sha256": "f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41",
+      "proof_class": "prospective_camera_enclosed_no_contact_registration_motion_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture.v1",
+        "status": "frozen_before_registration_motion",
+        "proof_class": "prospective_camera_enclosed_no_contact_registration_motion_only"
+      }
+    },
+    "v04_recap_review": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/pre-motion-review-v1.json",
+      "sha256": "7dc3e08ff3d0cbea2bdb6ed640aaa5792abea2b0d826967c04a3bae195c00868",
+      "proof_class": "motion_free_registration_capture_review_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture_review.v1",
+        "status": "completed_before_registration_motion",
+        "proof_class": "motion_free_registration_capture_review_only"
+      }
+    },
+    "v04_recap_execution_stop": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/execution-v1/execution_receipt.json",
+      "sha256": "d17d901f5a18ac7e7fccc4b1c3d45538f290e06d62736c040530648f07197e04",
+      "proof_class": "physical_rgb_no_contact_registration_observation_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture_execution.v1",
+        "status": "stopped_safely",
+        "proof_class": "physical_rgb_no_contact_registration_observation_only"
+      }
+    },
+    "simulator_candidate": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "proof_class": "simulation_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.geometry_timing_twin_candidate.v1",
+        "status": "simulation_only_partial",
+        "proof_class": "simulation_only"
+      }
+    },
+    "world_visual": {
+      "path": "configs/evaluations/img5349_3dgs_board_registration_v1.json",
+      "sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4",
+      "proof_class": "board_conditioned_monocular_3dgs_to_sim_visual_registration",
+      "payload_contract": {
+        "schema_version": "sim2claw.img5349_3dgs_board_registration.v1",
+        "status": "accepted_visual_registration_diagnostic",
+        "proof_class": "board_conditioned_monocular_3dgs_to_sim_visual_registration"
+      }
+    }
+  },
+  "nodes": [
+    {
+      "id": "workcell:current-so101-chessboard",
+      "type": "workcell",
+      "label": "Current SO-101 chessboard workspace",
+      "status": "hardware_present_torque_off",
+      "source_binding": "v00",
+      "data": {
+        "human_physical_intervention_required": false
+      }
+    },
+    {
+      "id": "session:bidirectional-pawn-push-v2",
+      "type": "session",
+      "label": "Bidirectional pawn-push v2",
+      "status": "paused_v04_execution_stopped_before_first_row",
+      "source_binding": "queue",
+      "data": {
+        "counted_attempts": 0,
+        "maximum_counted_attempts": 10
+      }
+    },
+    {
+      "id": "context:c922-rgb-no-depth",
+      "type": "context",
+      "label": "Fixed C922 RGB task context",
+      "status": "rgb_only_depth_omitted",
+      "source_binding": "v01",
+      "data": {
+        "task_camera": "C922",
+        "wrist_depth_required": false
+      }
+    },
+    {
+      "id": "evidence:v00-read-only-design",
+      "type": "evidence",
+      "label": "V00 live inventory and static design",
+      "status": "verified",
+      "source_binding": "v00"
+    },
+    {
+      "id": "evidence:v02-static-route",
+      "type": "evidence",
+      "label": "V02 CPU/fp64 route and visibility preview",
+      "status": "verified_no_motion",
+      "source_binding": "v02"
+    },
+    {
+      "id": "evidence:v03-rgb-capture",
+      "type": "evidence",
+      "label": "V03 physical RGB no-contact capture",
+      "status": "verified_no_task_attempt",
+      "source_binding": "v03"
+    },
+    {
+      "id": "evidence:img5349-world-visual",
+      "type": "evidence",
+      "label": "Registered complete IMG_5349 3DGS",
+      "status": "accepted_visual_diagnostic",
+      "source_binding": "world_visual",
+      "data": {
+        "splat_count": 334537,
+        "complete_simulation_geometry_used": true
+      }
+    },
+    {
+      "id": "residual:world-visual-board-reprojection",
+      "type": "residual_channel",
+      "label": "3DGS-to-MuJoCo board reprojection residual",
+      "status": "available_visual_only",
+      "source_binding": "world_visual",
+      "data": {
+        "heldout_weighted_rms_px": 3.7585512868032063,
+        "heldout_corner_count": 166,
+        "global_metric_geometry_delta_available": false
+      }
+    },
+    {
+      "id": "residual:v04-hover-reprojection",
+      "type": "residual_channel",
+      "label": "V04 camera-to-model jaw reprojection residual",
+      "status": "available_fit_only_rejected",
+      "source_binding": "v04_fit",
+      "data": {
+        "rms_px": 11.281006894463737,
+        "max_px": 15.767003735403094,
+        "rms_gate_px": 6.0,
+        "max_gate_px": 10.0,
+        "heldout_open_count": 0
+      }
+    },
+    {
+      "id": "simulator:retained-geometry-timing-candidate",
+      "type": "simulator_version",
+      "label": "Retained geometry/timing simulator candidate",
+      "status": "simulation_only_partial_not_promoted",
+      "source_binding": "simulator_candidate"
+    },
+    {
+      "id": "mechanism:world-visual-registration",
+      "type": "mechanism",
+      "label": "Board-conditioned visual world registration",
+      "status": "visual_diagnostic_not_physical_cause",
+      "source_binding": "world_visual"
+    },
+    {
+      "id": "mechanism:camera-model-registration",
+      "type": "mechanism",
+      "label": "Camera-to-model registration family",
+      "status": "current_leading_gap_rejected_family",
+      "source_binding": "v04_fit"
+    },
+    {
+      "id": "mechanism:actuator-timing-contact",
+      "type": "mechanism",
+      "label": "Actuator, timing, and contact alternatives",
+      "status": "deferred_no_directional_task_observation",
+      "source_binding": "queue",
+      "data": {
+        "physical_cause_identified": false
+      }
+    },
+    {
+      "id": "posterior:v04-structure",
+      "type": "parameter_posterior",
+      "label": "V04 structure context",
+      "status": "not_updated_underidentified",
+      "source_binding": "queue",
+      "data": {
+        "probabilities_assigned": false,
+        "reason": "no directional task outcome and rejected registration family"
+      }
+    },
+    {
+      "id": "intervention:v04-versioned-recapture",
+      "type": "intervention",
+      "label": "Prospectively versioned registration recapture",
+      "status": "authorized_prospective_design_only",
+      "source_binding": "v01",
+      "data": {
+        "camera_open": false,
+        "gateway_constructed": false,
+        "robot_motion": false
+      }
+    },
+    {
+      "id": "candidate:v04-dlt-v1",
+      "type": "candidate",
+      "label": "Normalized projective camera DLT v1",
+      "status": "rejected_before_heldout",
+      "source_binding": "v04_candidate",
+      "evaluator_identity": "163d789f12e1b0098422247f871938792d96b7b716d78d1d1c56080ce1171058",
+      "data": {
+        "heldout_open_count": 0,
+        "promoted": false
+      }
+    },
+    {
+      "id": "verdict:v04-fit-reject",
+      "type": "evaluator_verdict",
+      "label": "V04 fit-only rejection",
+      "status": "rejected_before_heldout",
+      "source_binding": "v04_fit",
+      "evaluator_identity": "163d789f12e1b0098422247f871938792d96b7b716d78d1d1c56080ce1171058",
+      "data": {
+        "negative": true,
+        "task_attempt": false
+      }
+    },
+    {
+      "id": "certificate:bidirectional-transfer",
+      "type": "twin_worthiness_certificate",
+      "label": "Bidirectional transfer certificate",
+      "status": "unissued_closed",
+      "source_binding": "queue",
+      "data": {
+        "training_admitted": false,
+        "transfer_claim_admitted": false
+      }
+    },
+    {
+      "id": "dataset:v03-fit-heldout",
+      "type": "dataset",
+      "label": "V03 prospectively split RGB registration dataset",
+      "status": "fit_open_heldout_sealed",
+      "source_binding": "v03",
+      "data": {
+        "training_admitted": false,
+        "heldout_open_count": 0
+      }
+    },
+    {
+      "id": "checkpoint:v04-owner-integration-barrier",
+      "type": "checkpoint",
+      "label": "V04 owner integration barrier",
+      "status": "active_paused",
+      "source_binding": "queue",
+      "data": {
+        "checkpoint_commit": "3649574",
+        "motion_authorized": false
+      }
+    },
+    {
+      "id": "checkpoint:v04-owner-resume",
+      "type": "checkpoint",
+      "label": "V04 owner resume",
+      "status": "active_versioned_recapture_design",
+      "source_binding": "queue",
+      "data": {
+        "checkpoint_commit": "084a9e3",
+        "resume_authorized": true,
+        "camera_open_authorized": false,
+        "gateway_construction_authorized": false,
+        "physical_motion_authorized": false
+      }
+    },
+    {
+      "id": "checkpoint:v04-recapture-static-gate",
+      "type": "checkpoint",
+      "label": "V04 replacement recapture static gate",
+      "status": "passed_pending_commit_and_live_preflight",
+      "source_binding": "v04_recap_static",
+      "data": {
+        "acquisition_contract_sha256": "b308ef3d24e37893e13c6b28c00f338374ee2a21d84a464c9ccec073bd0b5483",
+        "route_sha256": "40460c83750f8ea35670498758a5ad5b0e52a31351c957106f37154df6546756",
+        "source_egress_action_sha256": "a2536181add1aaf901aac5b94929a5a7117974e571354a68abd94b3a361d4bab",
+        "capture_return_action_sha256": "06d531afba308c3582cb67972c735bf963c6cae35df365325e36139ba8eac1c2",
+        "static_reviewer_decision": "CONTINUE",
+        "camera_open_authorized": false,
+        "gateway_construction_authorized": false,
+        "physical_motion_authorized": false
+      }
+    },
+    {
+      "id": "checkpoint:v04-recapture-packet",
+      "type": "checkpoint",
+      "label": "V04 replacement capture packet",
+      "status": "frozen_pending_commit_and_live_review",
+      "source_binding": "v04_recap_packet",
+      "data": {
+        "packet_sha256": "f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41",
+        "capture_target_count": 10,
+        "counted_task_attempts": 0,
+        "camera_open_authorized": false,
+        "gateway_construction_authorized": false,
+        "physical_motion_authorized": false
+      }
+    },
+    {
+      "id": "checkpoint:v04-live-review-stop-1",
+      "type": "checkpoint",
+      "label": "V04 live review attempt 1 safe stop",
+      "status": "implementation_repair_pending_no_motion",
+      "source_binding": "queue",
+      "data": {
+        "maximum_live_rebase_delta_degrees": 0.118765,
+        "review_receipt_emitted": false,
+        "camera_opened": false,
+        "gateway_constructed": false,
+        "physical_motion": false,
+        "torque_enabled": false,
+        "counted_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v04-live-review-continue",
+      "type": "checkpoint",
+      "label": "V04 live review CONTINUE",
+      "status": "passed_pending_immediate_execution_recheck",
+      "source_binding": "v04_recap_review",
+      "data": {
+        "review_sha256": "7dc3e08ff3d0cbea2bdb6ed640aaa5792abea2b0d826967c04a3bae195c00868",
+        "reviewer_decision": "CONTINUE",
+        "evidence_anchor": 100,
+        "camera_opened": false,
+        "gateway_constructed": false,
+        "physical_motion": false,
+        "torque_enabled": false,
+        "heldout_open_count": 0,
+        "counted_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v04-execution-stop-1",
+      "type": "checkpoint",
+      "label": "V04 execution-v1 stopped before first row",
+      "status": "paused_no_motion_no_retry_authorized",
+      "source_binding": "v04_recap_execution_stop",
+      "data": {
+        "receipt_sha256": "d17d901f5a18ac7e7fccc4b1c3d45538f290e06d62736c040530648f07197e04",
+        "error": "Precompiled exact target would require rate limiting, clamping, or correction; the current sample was not sent.",
+        "gateway_opened": true,
+        "camera_started_before_gateway_open": true,
+        "physical_motion_commanded": false,
+        "source_egress_rows_executed": 0,
+        "capture_return_rows_executed": 0,
+        "torque_enabled": false,
+        "heldout_open_count": 0,
+        "counted_task_attempts": 0,
+        "execution_retry_authorized": false
+      }
+    },
+    {
+      "id": "policy:bidirectional-action",
+      "type": "policy",
+      "label": "Bidirectional canonical action",
+      "status": "not_compiled_no_case_admitted",
+      "source_binding": "queue",
+      "data": {
+        "real_to_sim": "0/0",
+        "sim_to_real": "0/0"
+      }
+    },
+    {
+      "id": "counterexample:v04-shared-camera-miss",
+      "type": "counterexample",
+      "label": "Shared camera model misses fit hovers",
+      "status": "retained_negative_evidence",
+      "source_binding": "v04_fit",
+      "data": {
+        "rms_px": 11.281006894463737,
+        "max_px": 15.767003735403094
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:bidirectional-pawn-push-v2",
+      "type": "observed-by",
+      "target": "workcell:current-so101-chessboard"
+    },
+    {
+      "source": "context:c922-rgb-no-depth",
+      "type": "applied-to",
+      "target": "session:bidirectional-pawn-push-v2"
+    },
+    {
+      "source": "evidence:v00-read-only-design",
+      "type": "observed-by",
+      "target": "context:c922-rgb-no-depth"
+    },
+    {
+      "source": "evidence:v02-static-route",
+      "type": "generated-from",
+      "target": "evidence:v00-read-only-design"
+    },
+    {
+      "source": "dataset:v03-fit-heldout",
+      "type": "generated-from",
+      "target": "evidence:v02-static-route"
+    },
+    {
+      "source": "evidence:v03-rgb-capture",
+      "type": "generated-from",
+      "target": "dataset:v03-fit-heldout"
+    },
+    {
+      "source": "evidence:img5349-world-visual",
+      "type": "observed-by",
+      "target": "context:c922-rgb-no-depth"
+    },
+    {
+      "source": "residual:world-visual-board-reprojection",
+      "type": "generated-from",
+      "target": "evidence:img5349-world-visual"
+    },
+    {
+      "source": "residual:v04-hover-reprojection",
+      "type": "generated-from",
+      "target": "evidence:v03-rgb-capture"
+    },
+    {
+      "source": "mechanism:world-visual-registration",
+      "type": "fitted-on",
+      "target": "residual:world-visual-board-reprojection",
+      "metadata": {
+        "visual_only": true
+      }
+    },
+    {
+      "source": "mechanism:camera-model-registration",
+      "type": "fitted-on",
+      "target": "residual:v04-hover-reprojection",
+      "metadata": {
+        "physical_cause_identified": false
+      }
+    },
+    {
+      "source": "mechanism:camera-model-registration",
+      "type": "predicts",
+      "target": "intervention:v04-versioned-recapture"
+    },
+    {
+      "source": "residual:v04-hover-reprojection",
+      "type": "affected-by",
+      "target": "intervention:v04-versioned-recapture",
+      "metadata": {
+        "prospective_only": true
+      }
+    },
+    {
+      "source": "posterior:v04-structure",
+      "type": "generated-from",
+      "target": "residual:v04-hover-reprojection"
+    },
+    {
+      "source": "candidate:v04-dlt-v1",
+      "type": "fitted-on",
+      "target": "dataset:v03-fit-heldout",
+      "metadata": {
+        "fit_split_only": true
+      }
+    },
+    {
+      "source": "candidate:v04-dlt-v1",
+      "type": "evaluated-on",
+      "target": "verdict:v04-fit-reject"
+    },
+    {
+      "source": "verdict:v04-fit-reject",
+      "type": "invalidates",
+      "target": "candidate:v04-dlt-v1"
+    },
+    {
+      "source": "counterexample:v04-shared-camera-miss",
+      "type": "counterexample-to",
+      "target": "candidate:v04-dlt-v1"
+    },
+    {
+      "source": "simulator:retained-geometry-timing-candidate",
+      "type": "generated-from",
+      "target": "context:c922-rgb-no-depth",
+      "metadata": {
+        "promotion": false
+      }
+    },
+    {
+      "source": "checkpoint:v04-owner-integration-barrier",
+      "type": "generated-from",
+      "target": "verdict:v04-fit-reject"
+    },
+    {
+      "source": "checkpoint:v04-owner-resume",
+      "type": "generated-from",
+      "target": "checkpoint:v04-owner-integration-barrier",
+      "metadata": {
+        "owner_resume": true,
+        "prospective_design_only": true
+      }
+    },
+    {
+      "source": "checkpoint:v04-recapture-static-gate",
+      "type": "generated-from",
+      "target": "checkpoint:v04-owner-resume",
+      "metadata": {
+        "prospective_contract_frozen": true,
+        "cpu_fp64_static_gates_passed": true,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v04-recapture-packet",
+      "type": "generated-from",
+      "target": "checkpoint:v04-recapture-static-gate",
+      "metadata": {
+        "packet_frozen": true,
+        "live_review_pending": true,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v04-live-review-stop-1",
+      "type": "generated-from",
+      "target": "checkpoint:v04-recapture-packet",
+      "metadata": {
+        "fail_closed": true,
+        "implementation_repair_only": true,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v04-live-review-continue",
+      "type": "generated-from",
+      "target": "checkpoint:v04-live-review-stop-1",
+      "metadata": {
+        "repair_commit": "9decefa",
+        "all_review_gates_passed": true,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v04-execution-stop-1",
+      "type": "generated-from",
+      "target": "checkpoint:v04-live-review-continue",
+      "metadata": {
+        "fail_closed_before_first_row": true,
+        "physical_motion": false,
+        "owner_merge_pause": true
+      }
+    },
+    {
+      "source": "certificate:bidirectional-transfer",
+      "type": "generated-from",
+      "target": "checkpoint:v04-owner-integration-barrier",
+      "metadata": {
+        "issued": false
+      }
+    },
+    {
+      "source": "policy:bidirectional-action",
+      "type": "applied-to",
+      "target": "certificate:bidirectional-transfer",
+      "metadata": {
+        "compiled": false,
+        "admitted": false
+      }
+    },
+    {
+      "source": "mechanism:actuator-timing-contact",
+      "type": "predicts",
+      "target": "policy:bidirectional-action",
+      "metadata": {
+        "deferred": true
+      }
+    }
+  ],
+  "revision_timeline": [
+    {
+      "revision": 0,
+      "event_id": "V00",
+      "status": "read_only_design_complete",
+      "source_binding": "v00",
+      "node_ids_added": [
+        "workcell:current-so101-chessboard",
+        "session:bidirectional-pawn-push-v2",
+        "evidence:v00-read-only-design",
+        "mechanism:actuator-timing-contact",
+        "posterior:v04-structure",
+        "certificate:bidirectional-transfer",
+        "policy:bidirectional-action"
+      ]
+    },
+    {
+      "revision": 1,
+      "event_id": "V01",
+      "status": "prospective_acquisition_frozen",
+      "source_binding": "v01",
+      "node_ids_added": [
+        "context:c922-rgb-no-depth",
+        "mechanism:camera-model-registration",
+        "intervention:v04-versioned-recapture"
+      ]
+    },
+    {
+      "revision": 2,
+      "event_id": "V02",
+      "status": "static_route_preview_passed",
+      "source_binding": "v02",
+      "node_ids_added": [
+        "evidence:v02-static-route",
+        "simulator:retained-geometry-timing-candidate"
+      ]
+    },
+    {
+      "revision": 3,
+      "event_id": "V03",
+      "status": "physical_rgb_capture_complete_no_task_attempt",
+      "source_binding": "v03",
+      "node_ids_added": [
+        "dataset:v03-fit-heldout",
+        "evidence:v03-rgb-capture"
+      ]
+    },
+    {
+      "revision": 4,
+      "event_id": "V04",
+      "status": "fit_rejected_before_heldout_owner_pause",
+      "source_binding": "v04_fit",
+      "node_ids_added": [
+        "evidence:img5349-world-visual",
+        "residual:world-visual-board-reprojection",
+        "residual:v04-hover-reprojection",
+        "mechanism:world-visual-registration",
+        "candidate:v04-dlt-v1",
+        "verdict:v04-fit-reject",
+        "checkpoint:v04-owner-integration-barrier",
+        "counterexample:v04-shared-camera-miss"
+      ]
+    },
+    {
+      "revision": 5,
+      "event_id": "V04_RESUME",
+      "status": "owner_resume_versioned_recapture_design",
+      "source_binding": "queue",
+      "node_ids_added": [
+        "checkpoint:v04-owner-resume"
+      ]
+    },
+    {
+      "revision": 6,
+      "event_id": "V04_RECAPTURE_FREEZE",
+      "status": "replacement_contract_and_static_route_passed",
+      "source_binding": "v04_recap_static",
+      "node_ids_added": [
+        "checkpoint:v04-recapture-static-gate"
+      ]
+    },
+    {
+      "revision": 7,
+      "event_id": "V04_CAPTURE_PACKET_FREEZE",
+      "status": "replacement_capture_packet_frozen",
+      "source_binding": "v04_recap_packet",
+      "node_ids_added": [
+        "checkpoint:v04-recapture-packet"
+      ]
+    },
+    {
+      "revision": 8,
+      "event_id": "V04_LIVE_REVIEW_STOP_1",
+      "status": "live_review_stopped_before_camera_for_rebase_repair",
+      "source_binding": "queue",
+      "node_ids_added": [
+        "checkpoint:v04-live-review-stop-1"
+      ]
+    },
+    {
+      "revision": 9,
+      "event_id": "V04_LIVE_REVIEW_CONTINUE",
+      "status": "live_review_passed_pending_execution_recheck",
+      "source_binding": "v04_recap_review",
+      "node_ids_added": [
+        "checkpoint:v04-live-review-continue"
+      ]
+    },
+    {
+      "revision": 10,
+      "event_id": "V04_EXECUTION_STOP_1",
+      "status": "stopped_safely_before_first_row_owner_merge_pause",
+      "source_binding": "v04_recap_execution_stop",
+      "node_ids_added": [
+        "checkpoint:v04-execution-stop-1"
+      ]
+    }
+  ],
+  "active_pointer": {
+    "node_id": "checkpoint:v04-execution-stop-1",
+    "milestone_id": "V04",
+    "status": "paused_execution_stopped_before_first_row",
+    "queue_status": "PAUSED_V04_EXECUTION_STOPPED_BEFORE_FIRST_ROW",
+    "resume_action": "owner_merge_pause_no_retry",
+    "resume_authorized": false,
+    "heldout_open_count": 0,
+    "counted_task_attempts": 0
+  },
+  "configuration_context": {
+    "workcell": "current_so101_chessboard_workspace",
+    "task_camera": "fixed_c922_rgb",
+    "wrist_depth": "omitted_not_required",
+    "piece_layout": "sparse_two_sided_pawns",
+    "simulator_candidate_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+    "world_visual_registration_sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4",
+    "policy_action_hash": null,
+    "evaluator_v2": "not_frozen",
+    "physical_torque_enabled": false
+  },
+  "delta_assessment": {
+    "world_visual": {
+      "detected": true,
+      "heldout_weighted_rms_px": 3.7585512868032063,
+      "heldout_corner_count": 166,
+      "left_base_cloud_to_cad_median_m": 0.0227,
+      "right_base_cloud_to_cad_median_m": 0.039,
+      "scope": "visual_registration_only_not_global_metric_geometry"
+    },
+    "current_camera_robot_registration": {
+      "detected": true,
+      "rms_px": 11.281006894463737,
+      "max_px": 15.767003735403094,
+      "status": "rejected_before_heldout",
+      "heldout_open_count": 0,
+      "scope": "camera_to_model_fit_residual_not_action_transfer"
+    },
+    "directional_task_action": {
+      "directional_rmse_available": false,
+      "real_to_sim": {
+        "successes": 0,
+        "attempts": 0
+      },
+      "sim_to_real": {
+        "successes": 0,
+        "attempts": 0
+      },
+      "reason": "no_directional_task_attempt_or_admitted_action_exists"
+    },
+    "conclusion": "A non-zero visual and camera-registration delta is detected; the observed mismatch is not only action data. No global metric geometry delta or directional action-transfer RMS is established."
+  }
+}

@@ -34,6 +34,22 @@ retained separately instead of being rewritten.
 - Tracked contracts, decisions, run logs, release indexes, and tests; generated
   datasets, checkpoints, recordings, caches, and runtime output stay out of Git.
 
+## Public workspace data
+
+The checksum-bound
+[2026-07-28 workspace-data release](./docs/reference/WORKSPACE_DATA_RELEASE_20260728.md)
+publishes the reusable source episodes, actions, camera footage, raw sensor
+captures, transfer/calibration runs, receipts, and selected analysis outputs as
+GitHub Release assets. Generated data remains outside Git history.
+
+List or hydrate the release from a clone:
+
+```bash
+python3 scripts/download_workspace_data.py --list
+python3 scripts/download_workspace_data.py \
+  --destination workspace-data-20260728
+```
+
 ## Quick start
 
 The verified local path is Apple Silicon macOS with
@@ -65,6 +81,78 @@ uv run sim2claw studio
 Then visit [http://127.0.0.1:4173](http://127.0.0.1:4173). The base simulator
 and Studio demo require no API key or `.env` file. FFmpeg with H.264/libx264 is
 optional for MP4 export; on macOS, install it with `brew install ffmpeg`.
+
+Run the optional Inspect Robots offline integration slice:
+
+```bash
+uv run --extra inspect-robots sim2claw inspect-robots-offline \
+  --output-dir runs/inspect_robots_offline
+```
+
+This writes an ignored upstream EvalLog from a deterministic replay fixture. It
+opens no camera, simulator, serial device, robot gateway, or motion authority;
+the result is compatibility proof, not evaluator admission or task success.
+
+Audit a manifest for exact-replay eligibility without opening MuJoCo or any
+hardware:
+
+```bash
+uv run sim2claw replay-eligibility-audit \
+  --manifest configs/replay/exact_replay_synthetic_fixture.json \
+  --output runs/exact_replay_eligibility/synthetic_fixture.json
+```
+
+The concise ignored report checks canonical joint order and units, identity
+transform, measured initial position and velocity, monotonic timestamps,
+float64 action hashes, requested/applied identity, and the absence of clipping,
+IK, offsets, suffixes, or assistance. It does not execute a replay or admit any
+physical episode; the canonical physical set remains 0/18.
+
+Materialize that same audit contract from one finalized physical recorder
+directory, without opening a camera or robot:
+
+```bash
+uv run sim2claw physical-recording-replay-eligibility \
+  --recording runs/teleop_recordings/<recording-id> \
+  --manifest-output runs/exact_replay_eligibility/<recording-id>-manifest.json \
+  --report-output runs/exact_replay_eligibility/<recording-id>-report.json
+```
+
+The v1 `applied_actions` compatibility field means the recorded
+`follower_command_degrees` converted to float64 radians: a command sent by the
+gateway, never actuator application or acknowledgement. The adapter preserves
+the finalized receipt and `samples.jsonl` hashes and rejects altered lineage,
+requested/sent divergence, rate limiting, clamping, assistance, intervention,
+nonmonotonic timestamps, or missing first-sample measured state.
+
+Replay an eligible manifest through the existing MuJoCo zero-order-hold path:
+
+```bash
+uv run sim2claw replay-eligible-physical-recording \
+  --recording runs/teleop_recordings/<recording-id> \
+  --manifest runs/exact_replay_eligibility/<recording-id>-manifest.json \
+  --output runs/recorded_replay/<recording-id>
+```
+
+The ignored replay receipt proves that the canonical float64 gateway-sent
+action hash equals the tensor consumed by replay. Only measured joint
+residuals are diagnostic; metric geometry, timing identification, actuator
+application/acknowledgement, contact/load, pawn motion, and task consequence
+remain unavailable. No parameter fitting or mutation occurs.
+
+Dry-run the fixed 12-fit / 3-validation / 3-held-out C922 calibration
+acquisition plan:
+
+```bash
+uv run sim2claw c922-calibration-acquisition-preflight \
+  --output runs/c922_calibration_acquisition/preflight.json
+```
+
+The expected blocked report opens no camera. It lists the remaining physical
+inputs: print and mount the target, measure pitch and total X/Y dimensions with
+instrument and uncertainty, lock and observe focus, obtain owner capture
+approval, and repair the D405 cable/connector/strain relief before any motion
+qualification. Nominal SVG dimensions are never accepted as measurement.
 
 ## Reproduce the demo
 

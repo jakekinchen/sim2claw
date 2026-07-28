@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.geometric_hover_transfer_diagnostic.v1",
+  "evaluation_id": "geometric_b7_high_hover_transfer_diagnostic_20260727_v1",
+  "status": "retrospective_after_trace_opened_no_parameter_selection",
+  "proof_class": "retrospective_physical_contact_free_geometric_transfer_diagnostic",
+  "stage_index": 1,
+  "sources": {
+    "packet": {
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/packet.json",
+      "sha256": "dc43fb02c751a466dd3a68f93e076ca6e12bc35568e6bf372c6412ff203008cb"
+    },
+    "execution_receipt": {
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/stage-1/execution_receipt.json",
+      "sha256": "9217d87fd061b5b204d43517fea45f38275dfe0acb370d9f1cfca9986927f257"
+    },
+    "joint_samples": {
+      "path": "runs/geometric-hover/20260727-b7-high-hover-roundtrip-tricam-v1/stage-1/joint_samples.jsonl",
+      "sha256": "e413566242ee6e41a8938ace1069d2027ceaebad56e29876bada592dbd77a855"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    }
+  },
+  "expected": {
+    "plan_sha256": "1af782d3fc5eaa3ef348dc1a9735f7f53a0126c02fb0a0191f252a12a411d306",
+    "action_sha256": "ee94cfc02f09b98cfe7bb53439e25fbab8d3de7013fca58bfe8fbec0f7036c5f",
+    "capture_hold_action_sha256": "1218c2ab24b59a04451c57ab60f647e04b541801e040430221a069d72c587778"
+  },
+  "apex_index": 240,
+  "phase_slices": [
+    {
+      "name": "outbound",
+      "start_index": 0,
+      "end_index_exclusive": 241
+    },
+    {
+      "name": "apex_window",
+      "start_index": 220,
+      "end_index_exclusive": 241
+    },
+    {
+      "name": "return",
+      "start_index": 241,
+      "end_index_exclusive": 481
+    },
+    {
+      "name": "terminal_hold",
+      "start_index": 481,
+      "end_index_exclusive": 561
+    }
+  ],
+  "gates": {
+    "maximum_cartesian_tracking_error_m": 0.02,
+    "screen_semantics": "retrospective_safety_screen_for_a_separate_no_contact_route_only"
+  },
+  "authority": {
+    "diagnostic_analysis": true,
+    "parameter_fitting": false,
+    "simulator_parameter_promotion": false,
+    "physical_motion": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}

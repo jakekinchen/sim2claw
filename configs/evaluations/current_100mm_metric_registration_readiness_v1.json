@@ -1,0 +1,58 @@
+{
+  "schema_version": "sim2claw.metric_registration_readiness_contract.v1",
+  "contract_id": "current_100mm_metric_registration_readiness_v1",
+  "status": "preregistered",
+  "baseline_commit": "17d297b2a58dcceec9c9e9449da84746978167dd",
+  "input_manifest_path": "configs/evaluations/current_100mm_metric_registration_inputs_v1.json",
+  "input_manifest_sha256": "05cb1ba4a9907dab168bf9f62abd08af7d9c388c977d079342dd7730e9bc61f7",
+  "source_requirements": {
+    "camera_id": "logitech-overhead",
+    "camera_name": "C922 Pro Stream Webcam",
+    "camera_role": "overhead_workspace",
+    "image_size_px": [640, 480],
+    "capture_orientation_filter": "hflip,vflip",
+    "proof_class": "physical_command_replay_observation_unqualified_dual_camera",
+    "require_capture_receipt_video_binding": true,
+    "require_frame_extraction_receipt": true
+  },
+  "readiness_thresholds": {
+    "minimum_spatially_distributed_correspondences": 8,
+    "minimum_independent_annotators_per_point": 2,
+    "require_all_four_board_quadrants": true,
+    "require_lens_distortion_control": true,
+    "require_held_out_or_leave_one_out_board_error": true,
+    "maximum_held_out_or_leave_one_out_board_rms_m": 0.0015,
+    "maximum_pairwise_annotator_disagreement_m": 0.0015,
+    "require_pose_uncertainty_propagation": true,
+    "require_direct_board_measurement": true,
+    "require_measurement_tool_identity": true,
+    "require_object_keypoints": true,
+    "require_overhead_camera_to_workcell_transform": true,
+    "require_wrist_camera_extrinsics_for_full_geometry_domain": true
+  },
+  "decision": {
+    "ready_verdict": "ready_for_separately_owned_metric_fit",
+    "missing_verdict": "measurement_prerequisites_missing",
+    "invalid_verdict": "invalid_or_tampered_inputs",
+    "passing_readiness_changes_twin_fidelity": false,
+    "future_fit_requires_new_transaction": true
+  },
+  "budgets": {
+    "readiness_evaluations": 1,
+    "camera_sessions": 0,
+    "frames_captured": 0,
+    "robot_motions": 0,
+    "simulator_replays": 0,
+    "provider_calls": 0,
+    "training_rows": 0
+  },
+  "authority": {
+    "proof_class": "physical_measurement_readiness_only",
+    "metric_calibration_claimed": false,
+    "geometry_scale_domain_change_authorized": false,
+    "task_success_claimed": false,
+    "training_authorized": false,
+    "promotion_authorized": false,
+    "physical_motion_authorized": false
+  }
+}

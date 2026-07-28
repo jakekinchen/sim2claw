@@ -1,0 +1,15 @@
+{
+  "schema_version": "sim2claw.dual_camera_lifecycle_exhaustion_guard.v1",
+  "status": "terminal_attempt_exhausted_no_retry",
+  "contract_id": "current-100mm-dual-camera-lifecycle-qualification-20260724-v1",
+  "contract_sha256": "5e97a27deaf6b874dee070ae1e6db3b81d68e4c8f9a9681ced9484e4b77fa363",
+  "campaign_sha256": "093dd71de8cf79db6e84fa8b1cb1a444552cd7ffc4c849b21b2f98afbd01a8f3",
+  "event_sha256": "f873b8698cb7a0ac71b548daedb9cde7a6f146e6c2d0b0662dc16b99550b3995",
+  "evaluation_sha256": "bfad64080564a446f6c93b1e7c1b17fc1256a3a6b265aff11e6d72a95ba78f8b",
+  "receipt_sha256": "d066fa146f4a19042686b932c7d0397f1aa2e7bfe2e163bc43b6b0353b5e17f0",
+  "receipt_digest": "4e37b6b1783bc3382bf461928520e3fc0622ce0cd10c3299b39e283737b6df23",
+  "attempts_used": 1,
+  "attempts_maximum": 1,
+  "retries_used": 0,
+  "retry_authorized": false
+}

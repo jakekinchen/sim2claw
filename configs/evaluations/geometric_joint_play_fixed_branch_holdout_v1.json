@@ -1,0 +1,114 @@
+{
+  "schema_version": "sim2claw.geometric_joint_play_fixed_branch_holdout.v1",
+  "evaluation_id": "geometric_joint_play_fixed_branch_holdout_20260727_v1",
+  "status": "prospective_two_configuration_evaluator_frozen_heldout_unopened",
+  "proof_class": "fresh_action_frozen_no_contact_tricam_fixed_wrist_branch_heldout",
+  "sources": {
+    "implementation": {
+      "path": "src/sim2claw/geometric_joint_play_fixed_branch.py",
+      "sha256": "87c6d79afaaf18cb31ebb7ec15623c37b7a1216054bd86ce528d6137c8fc9e98"
+    },
+    "retrospective_contract": {
+      "path": "configs/evaluations/geometric_joint_play_fixed_branch_retrospective_v1.json",
+      "sha256": "9d40c9ac3d1aad7b0defb06896c8c30667445b71d5b2f7fffceb181e17fffafd"
+    },
+    "retrospective_receipt": {
+      "path": "runs/geometric-microtransfer/20260727-geometric-joint-play-fixed-branch-retrospective-v1/evaluation-receipt.json",
+      "sha256": "05e7f3b2257c69f9bb36e140fe0e281bc2f47dfa32ee56ef58a1aef4e64be395",
+      "receipt_digest": "98c77b3a583ecbe0d2861eb300b4003f62866a52b7b06d5b2dab2fef793b667f"
+    },
+    "packet": {
+      "path": "runs/geometric-microtransfer/20260727-geometric-dual-configuration-wrist-triangle-tricam-v1/packet.json",
+      "sha256": "bf730f4d5da4b260c6ff96803301f0c3dd192c9c4ddc955652afe0ff767beda6",
+      "plan_sha256": "021507562609d60750ff8a7a78f67354ded0df89fa8f11518a13197c8db3a0e5",
+      "normalized_triangle_delta_encoding": "little_endian_float64_c_order_after_subtracting_each_stage_row_zero",
+      "normalized_triangle_delta_sha256": "32834e5010a5c35304bbf4e69d6692cce2acc643b40fa467b4c0ff46477cde40"
+    },
+    "heldout_stages": [
+      {
+        "configuration": "positive_wrist_bias",
+        "stage_index": 2,
+        "expected_action_sha256": "fd82e214c6bc41f64a30b3492dea573c64f8460e23e2c0d8adc17725c5db7b5f",
+        "expected_capture_hold_action_sha256": "56bedcd4370e538f6d50b9e9bab829adf9854f7c8f1f38b72b3b4bf2f1f4a42c",
+        "expected_sample_count": 441,
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-dual-configuration-wrist-triangle-tricam-v1/stage-2/execution_receipt.json",
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-dual-configuration-wrist-triangle-tricam-v1/stage-2/joint_samples.jsonl"
+      },
+      {
+        "configuration": "negative_wrist_bias",
+        "stage_index": 4,
+        "expected_action_sha256": "45dee084828461b0a47f39ffe25d99ab4508b7935efe8ddc08c490248953366c",
+        "expected_capture_hold_action_sha256": "5f92997160bf127576ff8247ab82b3346305f1e07150c04c8a16863fb0ae0a22",
+        "expected_sample_count": 441,
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-dual-configuration-wrist-triangle-tricam-v1/stage-4/execution_receipt.json",
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-dual-configuration-wrist-triangle-tricam-v1/stage-4/joint_samples.jsonl"
+      }
+    ]
+  },
+  "expected_model": {
+    "selected_candidate_id": "fixed_positive_wrist_branch",
+    "selected_fixed_load_sign": {
+      "wrist_flex": 1
+    },
+    "application_delay_seconds": 0.11,
+    "load_sign_zero_threshold_nm": 0.001,
+    "selected_expanded_half_width_degrees": {
+      "shoulder_pan": {
+        "with_load": 0.4,
+        "against_load": 0.4
+      },
+      "shoulder_lift": {
+        "with_load": 2.125,
+        "against_load": 0.0
+      },
+      "elbow_flex": {
+        "with_load": 2.125,
+        "against_load": 0.125
+      },
+      "wrist_flex": {
+        "with_load": 1.0,
+        "against_load": 0.25
+      }
+    },
+    "parameters_promoted": false
+  },
+  "gates": {
+    "maximum_return_error_degrees": {
+      "shoulder_pan": 0.75,
+      "shoulder_lift": 0.75,
+      "elbow_flex": 1.0,
+      "wrist_flex": 0.75
+    },
+    "fixed_branch_wrist_rms_must_improve_on_both_configurations": true,
+    "fixed_branch_overall_joint_rms_must_improve_on_both_configurations": true,
+    "fixed_branch_end_effector_rms_must_improve_on_both_configurations": true,
+    "all_three_camera_intervals_must_enclose_both_actions": true,
+    "follower_torque_must_be_off_at_both_closes": true
+  },
+  "action_invariance": {
+    "source_actions_byte_identical_across_variants": true,
+    "triangle_relative_wrist_pattern_identical_across_configurations": true,
+    "triangle_other_joint_deltas_are_zero": true,
+    "no_action_correction": true,
+    "no_ik_correction": true,
+    "no_offset": true,
+    "no_clipping": true,
+    "no_assistance": true
+  },
+  "proof_boundary": {
+    "both_heldouts_opened_when_contract_frozen": false,
+    "selection_may_run_after_heldout": false,
+    "evaluator_may_refit": false,
+    "passing_result_may_admit_pawn_contact": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_calibration": false,
+    "simulator_parameter_promotion": false,
+    "physical_joint_transform_promotion": false,
+    "action_correction": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}

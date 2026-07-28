@@ -1,0 +1,46 @@
+{
+  "schema_version": "sim2claw.current_session_pi_articulated_cad_bundle_refit_contract.v1",
+  "parent_contract": {
+    "path": "configs/evaluations/current_session_pi_articulated_cad_bundle_v1.json",
+    "sha256": "4b0d89ae2ce73538c43961081d0db1e5bc25169b5ecf2ba20fbc5792579ed24c"
+  },
+  "changes": {
+    "contract_id": "current_session_anchor_high_pose_j_fit_mid_heldout_20260727_v4",
+    "status": "refit_family_frozen_after_prospective_single_joint_tag_hierarchy_observation",
+    "proof_class": "physical_static_current_session_full_CAD_and_fiducial_refit_diagnostic",
+    "sources": {
+      "v2_negative_result": {
+        "path": "runs/pi-link-tag-calibration/20260727-current-session-articulated-cad-bundle-v2/receipt.json",
+        "sha256": "a6c14a319f1cd57c77f69d04b2fe732fdcd5aa9c0f0d1e249b77454c81520f9d",
+        "result": "historical tag 2 to wrist assignment failed the moving-link heldout"
+      },
+      "prospective_single_joint_diagnostic": {
+        "path": "runs/geometric-hover/20260727-pose-j-single-joint-image-jacobian-sweep-tricam-v1/evaluation/single-joint-image-jacobian-v1.json",
+        "sha256": "c7d5082eb7c66ff494eb639848c85e419ba58de041bc652ab5d77457cd9532d6",
+        "use": "tag 2 moves with shoulder lift and elbow flex but has only weak non-gating motion under wrist flex, identifying it as upstream of the wrist-flex joint"
+      }
+    },
+    "frozen_model": {
+      "tag_body_map": {
+        "0": "left_shoulder",
+        "1": "left_upper_arm",
+        "2": "left_lower_arm",
+        "3": "left_shoulder",
+        "6": "left_base"
+      }
+    },
+    "fit_method": {
+      "camera_rotation_delta_bound_radians": 0.35,
+      "camera_translation_delta_bound_m": 0.25,
+      "joint_zero_bound_degrees": 25.0,
+      "refit_changes_from_v1": [
+        "retain the prospective motion-supported tag 0, tag 1, tag 3, and tag 6 hierarchy",
+        "move tag 2 from the wrist body to the lower-arm body identified by the one-joint physical sweep",
+        "retain balanced CAD edge samples and the wider diagnostic joint-zero family from v2"
+      ]
+    },
+    "gates": {
+      "joint_offset_no_bound_saturation_margin_degrees": 0.5
+    }
+  }
+}

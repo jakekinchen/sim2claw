@@ -1,0 +1,124 @@
+{
+  "schema_version": "sim2claw.geometric_joint_play_reverse_fit.v1",
+  "fit_id": "geometric_joint_play_reverse_fit_20260727_v1",
+  "status": "bounded_refit_after_two_opened_roundtrip_failures",
+  "proof_class": "five_stage_action_frozen_no_contact_stateful_actuator_fit",
+  "sources": {
+    "parent_fit_contract": {
+      "path": "configs/evaluations/geometric_joint_play_fit_v1.json",
+      "sha256": "991f927c449f5758ee9d5e56f9967963b515faba484fe974de61ea1f3c266628"
+    },
+    "parent_fit_receipt": {
+      "path": "runs/geometric-microtransfer/20260727-geometric-joint-play-fit-v1/fit-receipt.json",
+      "sha256": "f03e1e071c7374f3b7036d11d206954f051f7f4f74abe4088f765694b1a0068a",
+      "receipt_digest": "449640852c51ac12616ccd67e5a6a58bd65fcaf3b539e9fdaf6e00f82c6efa86"
+    },
+    "independent_pan_play_receipt": {
+      "path": "runs/anchored-transfer-canary/pan-play-diagnostic-v1/receipt.json",
+      "sha256": "44de0c369deef18fe9850462e5fa8720b52a36e9b543e1c4994e0beff93499e2",
+      "contract_path": "configs/evaluations/shoulder_pan_play_diagnostic_v1.json",
+      "contract_sha256": "dce0860da0df7f8173edb0c11f0bc82a0fa6b50418066e8272102f8915b20db6"
+    },
+    "stages": [
+      {
+        "fit_stage_index": 1,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/packet.json",
+          "sha256": "b98101e4903618eae8f3bfe7824d675cf8ba7295d05873c218d076b2d55d8ba1"
+        },
+        "stage_index": 1,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-1/joint_samples.jsonl",
+        "samples_sha256": "19b121b755bc9bb963b37b4600dccc8c0614997fede15c73680f890aceb1a526",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-1/execution_receipt.json",
+        "execution_receipt_sha256": "34bae544980185770d78d0cc0cfb5803a9c663287f9f223fb8cffc9545cc1684"
+      },
+      {
+        "fit_stage_index": 2,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/packet.json",
+          "sha256": "b98101e4903618eae8f3bfe7824d675cf8ba7295d05873c218d076b2d55d8ba1"
+        },
+        "stage_index": 2,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-2/joint_samples.jsonl",
+        "samples_sha256": "f34aa7d2f27c919450f267d82e8a35d20e5eab1678aa8742b04af576e06ee3ba",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-2/execution_receipt.json",
+        "execution_receipt_sha256": "bfde83bf3f5ff677ef01528282520e1ed6d1ba81768522081c16567d57bc05d5"
+      },
+      {
+        "fit_stage_index": 3,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-vertical-15mm-tricam-v1/packet.json",
+          "sha256": "eb958ed663ae44f734d5857fcc16d077fbb6f891215c2c747e5f3cdc0fbe411b"
+        },
+        "stage_index": 1,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-vertical-15mm-tricam-v1/stage-1/joint_samples.jsonl",
+        "samples_sha256": "b5a1d61e2a3e7a63e2f7c39a2ce9f7d62d2c35bd127573cfff9a2ab0c4c43b33",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-vertical-15mm-tricam-v1/stage-1/execution_receipt.json",
+        "execution_receipt_sha256": "ed9123b6282a850821eb921861230002d0a4243dfdd83b99714a7a346904cba4"
+      },
+      {
+        "fit_stage_index": 4,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-vertical-round-trip-tricam-v1/packet.json",
+          "sha256": "75bef39e3303da06e2a3bd2a1e57db2c3a43d928966b7574314429f9bf2ea727"
+        },
+        "stage_index": 1,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-vertical-round-trip-tricam-v1/stage-1/joint_samples.jsonl",
+        "samples_sha256": "eee56ab9c73231bc7b71096ad34b23409de4c1d9f35793e60ceac5eb20ba37f0",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-vertical-round-trip-tricam-v1/stage-1/execution_receipt.json",
+        "execution_receipt_sha256": "aa8e4fda2788c0231baff51cc47af4c5cf62f745b7fcfc3286184746ac6951b6"
+      },
+      {
+        "fit_stage_index": 5,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/packet.json",
+          "sha256": "dad56193a2805d4cc222f98aed6b15834b9ef3c10dde318044ce3490828cfa3b"
+        },
+        "stage_index": 1,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/stage-1/joint_samples.jsonl",
+        "samples_sha256": "76f6ef6c1c998bd8c94959ccf7ea6968725d6648000fb6022f42c4bbe358f179",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/stage-1/execution_receipt.json",
+        "execution_receipt_sha256": "da6498bf5fe47de6170d12aa967872fdf33ad5df89a90e6973f693e17a8422c4"
+      }
+    ]
+  },
+  "retained_half_width_degrees": {
+    "shoulder_pan_shared": 0.4,
+    "shoulder_lift_with_load": 2.125,
+    "elbow_flex_against_load": 0.125,
+    "elbow_flex_with_load": 2.125,
+    "wrist_flex_with_load": 1.0
+  },
+  "candidate_grid_half_width_degrees": {
+    "shoulder_lift_against_load": [0.0, 0.125, 0.25, 0.5],
+    "wrist_flex_against_load": [0.0, 0.25, 0.5, 0.75]
+  },
+  "fit_objective": {
+    "kind": "equal_stage_equal_selected_joint_huber",
+    "delta_degrees": 0.25,
+    "selected_joints": [
+      "shoulder_lift",
+      "wrist_flex"
+    ],
+    "end_effector_metrics_used_for_selection": false
+  },
+  "selection_rule": {
+    "eligibility": "improve the frozen Huber objective over the retained parent plus independently selected 0.4-degree pan play",
+    "rank": "lowest frozen Huber fit objective, then stable candidate identity",
+    "reason": "Only the two newly observed reverse branches are allowed to vary; pan is fixed from a separate canary split."
+  },
+  "proof_boundary": {
+    "vertical_roundtrip_is_fit_not_validation": true,
+    "lateral_roundtrip_is_fit_not_validation": true,
+    "fresh_heldout_required": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_calibration": false,
+    "simulator_parameter_promotion": false,
+    "action_correction": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}

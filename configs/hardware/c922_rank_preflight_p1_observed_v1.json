@@ -1,0 +1,55 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c922_rank_preflight_live_anchor_to_observed_p1_diagnostic_20260725_v1",
+  "capture_during_motion": false,
+  "setup_maximum_slew_degrees_s": 1.5,
+  "setup_elbow_tracking_error_limit_degrees": 15.0,
+  "setup_observed_elbow_target_degrees": 35.120879120879124,
+  "setup_target_hold_seconds": 2.0,
+  "stationary_capture_seconds": 0.0,
+  "reviewed_anchor_degrees": [
+    -19.076923076923077,
+    -66.63736263736264,
+    90.85714285714286,
+    77.14285714285714,
+    -75.03296703296704,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [
+      9.406593406593407,
+      -64.61538461538461,
+      20.0,
+      71.34065934065934,
+      -74.41758241758242,
+      3.0878859857482186
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "future_c922_calibration_setup_only_diagnostic_visibility",
+    "target_source": "The non-elbow joints retain frozen P1. The elbow command extends below P1 only so the existing observed-pose stop can terminate when the physical elbow crosses the frozen 35.120879120879124 degree P1 value.",
+    "prior_pose_receipt": "runs/c922-ordered-face/20260725-live/p0-observed/execution_receipt.json",
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "candidate_digest": "2da7425cbf0fd10e27822a415890ca180dde7a4f1b042bf3ed49030bcad018af"
+    },
+    "simulation_runtime": "cpu_mujoco_mj_forward_at_live_execution",
+    "capture_plan": "A separate bounded C922 recorder observes this diagnostic setup route. The image may establish visibility, but it is not yet a fit or promoted calibration receipt.",
+    "evidence_limits": {
+      "exact_frozen_p1_reached": false,
+      "camera_to_robot_extrinsic_fitted": false,
+      "sim_gap_evidence": false,
+      "policy_evidence": false,
+      "task_authority": false
+    },
+    "authority": {
+      "capture": false,
+      "motion": false,
+      "fit": false,
+      "policy": false,
+      "task_success": false,
+      "physical_transfer": false
+    }
+  }
+}

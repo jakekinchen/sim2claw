@@ -1,0 +1,72 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "prospective_d1_d2_camera_pose_setup_tricam_20260727_v1",
+  "samples_per_stage": 1161,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_35s_v1.json",
+    "contract_sha256": "744a0c63c1d7282265299397c4a9bf3083bb3c35899878aa5480f3362feeef23"
+  },
+  "reviewed_anchor_degrees": [
+    -0.7912087912087912,
+    -105.75824175824175,
+    99.2967032967033,
+    -100.0,
+    -119.07692307692308,
+    1.66270783847981
+  ],
+  "stage_targets_degrees": [
+    [
+      -10.54945054945055,
+      -78.50549450549451,
+      68.7032967032967,
+      -10.241758241758241,
+      -90.94505494505495,
+      1.66270783847981
+    ]
+  ],
+  "setup_derivation": {
+    "source_recording": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53",
+    "source_samples_path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/samples.jsonl",
+    "source_samples_sha256": "ad606b9b917d985a4e866399a0c2d44adb12f3b48d310aa11452de9e03e73302",
+    "target_sample_index": 99,
+    "target_wrist_video_time_seconds": 13.451837542001158,
+    "target_observation_kind": "follower_actual_position_degrees",
+    "source_wrist_video_path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/wrist_d405.browser.mp4",
+    "source_wrist_video_sha256": "2d0cf208465d984afc9a601da305e8ce1d94ddba124d05674ec18d5df1be830c",
+    "review_frame_path": "runs/prospective-real-to-sim/20260727-d1-d2-camera-pose-setup-v1/analysis/d405_t13.5.png",
+    "review_frame_sha256": "1a9b551c9a8448be8c2f53a55db59bf6e3c1e6e82bff3687758a794a17fb3b49",
+    "source_sample_rate_limited": false,
+    "source_sample_safety_clamped": false,
+    "source_sample_stalled": false,
+    "source_sample_gripper_contact_hold": false,
+    "maximum_joint_excursion_degrees": 89.75824175824175,
+    "maximum_frozen_slew_degrees_s": 3.095111784766957
+  },
+  "review_basis": {
+    "physical_scope": "camera_pose_setup_only",
+    "capture_scope": "prospective_contact_free_tricam_setup_to_prior_d1_d2_board_view",
+    "target_selection": "The terminal target is the exact observed six-joint state at sample 99 of the prior physically successful D1-to-D2 recording. Its hash-bound D405 frame shows the gripper and board before pawn contact; the source row was not rate-limited, clamped, stalled, or in gripper contact hold.",
+    "route_selection": "One conservative 29.025-second float64 linear interpolation from the fresh torque-off anchor to the evidence-backed target, followed by the gateway's frozen two-second terminal camera hold.",
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "manual_mount_adjustment": false,
+    "ik_repair": false,
+    "action_assistance": false,
+    "corrective_suffix": false,
+    "evidence_limits": {
+      "physical_camera_setup_only": true,
+      "prospective_task_action": false,
+      "pawn_contact": false,
+      "pawn_task_success": false,
+      "camera_exposure_synchronization": false,
+      "metric_depth": false,
+      "depth_channel_available": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false
+    }
+  }
+}

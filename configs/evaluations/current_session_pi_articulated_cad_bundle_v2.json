@@ -1,0 +1,46 @@
+{
+  "schema_version": "sim2claw.current_session_pi_articulated_cad_bundle_refit_contract.v1",
+  "parent_contract": {
+    "path": "configs/evaluations/current_session_pi_articulated_cad_bundle_v1.json",
+    "sha256": "4b0d89ae2ce73538c43961081d0db1e5bc25169b5ecf2ba20fbc5792579ed24c"
+  },
+  "changes": {
+    "contract_id": "current_session_anchor_high_pose_j_fit_mid_heldout_20260727_v2",
+    "status": "refit_family_frozen_after_v1_wrong_body_map_and_offset_bound_negative",
+    "proof_class": "physical_static_current_session_full_CAD_and_fiducial_refit_diagnostic",
+    "sources": {
+      "v1_negative_result": {
+        "path": "runs/pi-link-tag-calibration/20260727-current-session-articulated-cad-bundle-v1/receipt.json",
+        "sha256": "0d8d389744901a9f9e8dbe5c89e07c0ab4266c533edac462cbf19c4f21adaff5",
+        "result": "failed six of seven gates; three offsets saturated at the five-degree bound"
+      },
+      "tag_body_map_prior": {
+        "path": "configs/evaluations/current_pi_cad_keyed_joint_mapping_v1.json",
+        "sha256": "38edbdbcb4f2cc74cfa7a12a35fca1a0b7e6b1b2da552d11b8fb02fc8a931747",
+        "use": "restores the previously frozen physical tag attachment convention for tags 0, 1, 2, and 3; tag 6 is the new fixed-base reference"
+      }
+    },
+    "frozen_model": {
+      "tag_body_map": {
+        "0": "left_shoulder",
+        "1": "left_upper_arm",
+        "2": "left_wrist",
+        "3": "left_shoulder",
+        "6": "left_base"
+      }
+    },
+    "fit_method": {
+      "camera_rotation_delta_bound_radians": 0.35,
+      "camera_translation_delta_bound_m": 0.25,
+      "joint_zero_bound_degrees": 25.0,
+      "refit_changes_from_v1": [
+        "restore prior frozen tag-to-body convention",
+        "widen the joint-zero diagnostic family only after v1 saturated at three five-degree bounds",
+        "balance CAD edge samples so full-mesh vertex density cannot swamp fiducial residuals"
+      ]
+    },
+    "gates": {
+      "joint_offset_no_bound_saturation_margin_degrees": 0.5
+    }
+  }
+}

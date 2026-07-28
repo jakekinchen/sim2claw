@@ -19,6 +19,7 @@ from .scene import ROBOT_JOINTS
 
 
 GATEWAY_SCHEMA = "sim2claw.so101_physical_gateway.v2"
+SO101_FOLLOWER_ID = "so101_follower"
 BODY_EXCURSION_LIMIT_DEG = 90.0
 WRIST_ROLL_EXCURSION_LIMIT_DEG = 180.0
 GRIPPER_EXCURSION_LIMIT = 100.0
@@ -48,6 +49,9 @@ MAX_CONSECUTIVE_STALL_SAMPLES = 100
 BODY_REGISTRATION_OFFSET_LIMIT_DEG = 12.0
 GRIPPER_REGISTRATION_OFFSET_LIMIT = 10.0
 SYNC_BODY_DELTA_LIMIT_DEG = 20.0
+SETUP_OBSERVED_POSE_ELBOW_TRACKING_ERROR_LIMIT_DEG = (
+    SYNC_BODY_DELTA_LIMIT_DEG
+)
 SYNC_GRIPPER_DELTA_LIMIT = 20.0
 SYNC_DURATION_SECONDS = 2.5
 SYNC_COMMAND_HZ = 40.0
@@ -56,6 +60,16 @@ SYNC_LEADER_MOTION_TOLERANCE_DEG = 3.0
 HOLD_SETTLE_SECONDS = 0.1
 POST_HOLD_BODY_TOLERANCE_DEG = 3.0
 POST_HOLD_GRIPPER_TOLERANCE = 5.0
+LIVE_ANCHOR_SETTLE_SAMPLES = 4
+LIVE_ANCHOR_SETTLE_INTERVAL_SECONDS = 0.1
+LIVE_ANCHOR_MAX_BODY_EXCURSION_DEG = 15.0
+SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG = (
+    LIVE_ANCHOR_MAX_BODY_EXCURSION_DEG
+)
+LIVE_ANCHOR_MAX_GRIPPER_EXCURSION = 10.0
+LIVE_ANCHOR_FINAL_BODY_DRIFT_DEG = 1.5
+LIVE_ANCHOR_FINAL_GRIPPER_DRIFT = 3.0
+LIVE_SETUP_ELBOW_ANCHOR_SNAP_LIMIT_DEG = 3.0
 
 
 class PhysicalGatewayError(RuntimeError):
@@ -66,11 +80,34 @@ class PhysicalGatewayError(RuntimeError):
         self.details = details
 
 
+def _live_setup_command_anchor(
+    observed: np.ndarray,
+    lower: np.ndarray,
+    upper: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    command = np.clip(observed, lower, upper)
+    snap = command - observed
+    disallowed = np.abs(snap) > 0.0
+    disallowed[2] = False
+    if np.any(disallowed) or abs(float(snap[2])) > LIVE_SETUP_ELBOW_ANCHOR_SNAP_LIMIT_DEG:
+        raise PhysicalGatewayError(
+            "Live setup anchor exceeds calibrated limits outside the bounded "
+            "3 degree elbow-only analytical snap."
+        )
+    return command, snap
+
+
 def action_vector(action: dict[str, float]) -> np.ndarray:
     return np.asarray(
         [float(action[f"{joint}.pos"]) for joint in ROBOT_JOINTS],
         dtype=np.float64,
     )
+
+
+def _same_float64_bytes(left: np.ndarray, right: np.ndarray) -> bool:
+    return np.asarray(left, dtype="<f8").tobytes() == np.asarray(
+        right, dtype="<f8"
+    ).tobytes()
 
 
 def shortest_delta_degrees(current: float, start: float) -> float:
@@ -131,6 +168,7 @@ def slew_limited_target(
     *,
     lower_limits: np.ndarray,
     upper_limits: np.ndarray,
+    elbow_tracking_error_limit_degrees: float = BODY_TRACKING_ERROR_LIMIT_DEG,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Advance toward the full target without building an unsafe error backlog.
 
@@ -166,7 +204,7 @@ def slew_limited_target(
         [
             BODY_TRACKING_ERROR_LIMIT_DEG,
             SHOULDER_LIFT_TRACKING_ERROR_LIMIT_DEG,
-            BODY_TRACKING_ERROR_LIMIT_DEG,
+            elbow_tracking_error_limit_degrees,
             BODY_TRACKING_ERROR_LIMIT_DEG,
             WRIST_ROLL_TRACKING_ERROR_LIMIT_DEG,
             GRIPPER_TRACKING_ERROR_LIMIT,
@@ -282,7 +320,7 @@ def _lerobot_devices(identity: GatewayIdentity) -> tuple[Any, Any]:
     follower = SO101Follower(
         SO101FollowerConfig(
             port=identity.follower_port,
-            id="so101_follower",
+            id=SO101_FOLLOWER_ID,
             use_degrees=True,
             # The gateway owns rate and tracking-error bounds. LeRobot's
             # present-position clamp can permanently strand a loaded joint.
@@ -305,6 +343,7 @@ class SO101PhysicalGateway:
         clock: Callable[[], float] = time.monotonic,
         configure_devices: bool = True,
         current_telemetry_hz: float = CURRENT_TELEMETRY_HZ,
+        require_initial_follower_torque_off: bool = False,
     ):
         if identity.leader_port == identity.follower_port:
             raise PhysicalGatewayError("Leader and follower must use distinct buses.")
@@ -313,6 +352,9 @@ class SO101PhysicalGateway:
         self.sleep = sleep
         self.clock = clock
         self.configure_devices = configure_devices
+        self.require_initial_follower_torque_off = (
+            require_initial_follower_torque_off
+        )
         if current_telemetry_hz < 0.0:
             raise PhysicalGatewayError("Current telemetry rate cannot be negative.")
         self.current_telemetry_hz = float(current_telemetry_hz)
@@ -338,6 +380,8 @@ class SO101PhysicalGateway:
         self.bus_read_retries_total = 0
         self.torque_enabled = False
         self.connected = False
+        self.zero_displacement_arm_target: np.ndarray | None = None
+        self.live_anchored_setup_only = False
 
     def _calibrated_position_limits(self) -> tuple[np.ndarray, np.ndarray]:
         calibration = getattr(self.follower, "calibration", None)
@@ -367,6 +411,16 @@ class SO101PhysicalGateway:
             self.leader.bus.connect()
             self.leader.bus.disable_torque(num_retry=BUS_READ_RETRIES)
             self.follower.bus.connect()
+            if self.require_initial_follower_torque_off:
+                torque = self.follower.bus.sync_read(
+                    "Torque_Enable",
+                    normalize=False,
+                    num_retry=BUS_READ_RETRIES,
+                )
+                if any(int(value) != 0 for value in torque.values()):
+                    raise PhysicalGatewayError(
+                        "Follower torque must already be off before excitation preflight."
+                    )
             self.follower.bus.disable_torque(num_retry=BUS_READ_RETRIES)
             self.connected = True
             if not self.leader.is_calibrated:
@@ -402,6 +456,7 @@ class SO101PhysicalGateway:
         *,
         enable_motion: bool,
         paired_pose_confirmed: bool = False,
+        setup_command_anchor_degrees: np.ndarray | None = None,
     ) -> dict[str, Any]:
         self._connect_torque_off()
         # Startup pose reads are motion-critical too.  Route them through the
@@ -441,12 +496,34 @@ class SO101PhysicalGateway:
                         follower=follower,
                     ),
                 )
-            # Set the goal to the follower's current position before torque is
-            # enabled. This intentionally commands no leader-to-follower sweep.
-            self.follower.send_action(_position_dict(follower))
+            hold_target = follower.copy()
+            if setup_command_anchor_degrees is not None:
+                hold_target = np.asarray(
+                    setup_command_anchor_degrees, dtype=np.float64
+                )
+                if (
+                    hold_target.shape != (6,)
+                    or not np.all(np.isfinite(hold_target))
+                    or np.any(hold_target < self.lower_limits)
+                    or np.any(hold_target > self.upper_limits)
+                ):
+                    raise PhysicalGatewayError(
+                        "Reviewed setup command anchor is invalid or out of range."
+                    )
+            # Normal execution holds the observed follower pose. Explicit
+            # setup-recovery execution instead uses its separately reviewed,
+            # in-range clipped anchor before torque enable.
+            self.zero_displacement_arm_target = hold_target.copy()
+            self.follower.send_action(_position_dict(hold_target))
             self.follower.bus.enable_torque(num_retry=BUS_READ_RETRIES)
             self.torque_enabled = True
-            self.sleep(HOLD_SETTLE_SECONDS)
+            if setup_command_anchor_degrees is not None:
+                self.follower.send_action(_position_dict(hold_target))
+            self.sleep(
+                0.35
+                if setup_command_anchor_degrees is not None
+                else HOLD_SETTLE_SECONDS
+            )
             actual = self._motion_read(
                 "post-hold follower position", self.follower.get_observation
             )
@@ -465,7 +542,7 @@ class SO101PhysicalGateway:
                         follower=actual,
                     ),
                 )
-            hold_residual = follower - actual
+            hold_residual = hold_target - actual
             hold_residual[4] = shortest_delta_degrees(
                 float(follower[4]),
                 float(actual[4]),
@@ -485,7 +562,7 @@ class SO101PhysicalGateway:
                         "post_hold_follower_drift",
                         leader=registered_leader,
                         follower=actual,
-                        follower_hold_start_degrees=follower.tolist(),
+                        follower_hold_start_degrees=hold_target.tolist(),
                         follower_hold_residual_degrees=hold_residual.tolist(),
                     ),
                 )
@@ -547,6 +624,159 @@ class SO101PhysicalGateway:
             "device_configuration_rewritten": self.configure_devices,
             **registration,
             **registration_state,
+        }
+
+    def open_live_anchored_setup(self) -> dict[str, Any]:
+        """Arm once and rebase setup motion to the settled torque-on pose.
+
+        This is deliberately distinct from paired-pose or exact-replay
+        registration.  It accepts a bounded gravity-induced settle, follows
+        that settle with zero-displacement goals, and exposes the final live
+        pose as the only admissible start for a subsequently previewed
+        setup-only trajectory.
+        """
+
+        self._connect_torque_off()
+        initial = self._motion_read(
+            "live-anchor torque-off follower position",
+            self.follower.get_observation,
+        )
+        initial_command_anchor, initial_anchor_snap = _live_setup_command_anchor(
+            initial,
+            self.lower_limits,
+            self.upper_limits,
+        )
+        torque = self._read_optional("Torque_Enable")
+        if torque is not None and any(float(value) != 0.0 for value in torque.values()):
+            raise PhysicalGatewayError(
+                "Follower torque was not off before live-anchor setup."
+            )
+
+        self.follower.send_action(_position_dict(initial_command_anchor))
+        self.follower.bus.enable_torque(num_retry=BUS_READ_RETRIES)
+        self.torque_enabled = True
+        settled_samples: list[np.ndarray] = []
+        current_samples: list[dict[str, float] | None] = []
+        for index in range(LIVE_ANCHOR_SETTLE_SAMPLES):
+            self.sleep(LIVE_ANCHOR_SETTLE_INTERVAL_SECONDS)
+            actual = self._motion_read(
+                f"live-anchor settle position {index + 1}",
+                self.follower.get_observation,
+            )
+            excursion = actual - initial
+            excursion[4] = shortest_delta_degrees(
+                float(actual[4]),
+                float(initial[4]),
+            )
+            if (
+                float(np.max(np.abs(excursion[:5])))
+                > LIVE_ANCHOR_MAX_BODY_EXCURSION_DEG
+                or abs(float(excursion[5])) > LIVE_ANCHOR_MAX_GRIPPER_EXCURSION
+            ):
+                raise PhysicalGatewayError(
+                    "Follower exceeded the bounded passive live-anchor settle.",
+                    details=_pose_diagnostics(
+                        "live_anchor_settle_excursion",
+                        follower=actual,
+                        torque_off_start_degrees=initial.tolist(),
+                        settle_excursion_degrees=excursion.tolist(),
+                    ),
+                )
+            # Follow only the observed settle. No route target exists yet.
+            self.follower.send_action(_position_dict(actual))
+            settled_samples.append(actual)
+            current_samples.append(self._read_optional("Present_Current"))
+
+        settled = settled_samples[-1]
+        final_drift = settled - settled_samples[-2]
+        final_drift[4] = shortest_delta_degrees(
+            float(settled[4]),
+            float(settled_samples[-2][4]),
+        )
+        if (
+            float(np.max(np.abs(final_drift[:5])))
+            > LIVE_ANCHOR_FINAL_BODY_DRIFT_DEG
+            or abs(float(final_drift[5])) > LIVE_ANCHOR_FINAL_GRIPPER_DRIFT
+        ):
+            raise PhysicalGatewayError(
+                "Follower did not settle to a stable live torque-on anchor.",
+                details=_pose_diagnostics(
+                    "live_anchor_unstable",
+                    follower=settled,
+                    final_settle_drift_degrees=final_drift.tolist(),
+                    settle_samples_degrees=[
+                        sample.tolist() for sample in settled_samples
+                    ],
+                ),
+            )
+
+        settled_command_anchor, settled_anchor_snap = _live_setup_command_anchor(
+            settled,
+            self.lower_limits,
+            self.upper_limits,
+        )
+        self.zero_displacement_arm_target = settled_command_anchor.copy()
+        self.leader_start = settled.copy()
+        self.follower_start = settled.copy()
+        self.previous_actual = settled.copy()
+        self.previous_command = settled_command_anchor.copy()
+        self.previous_elapsed_seconds = 0.0
+        self.previous_time = self.clock()
+        self.stall_anchor_actual = settled.copy()
+        self.stall_started_at[:] = np.nan
+        self.stall_command_direction[:] = 0.0
+        self.consecutive_stall_samples[:] = 0
+        self.live_anchored_setup_only = True
+        settle_excursion = settled - initial
+        settle_excursion[4] = shortest_delta_degrees(
+            float(settled[4]),
+            float(initial[4]),
+        )
+        return {
+            "schema_version": GATEWAY_SCHEMA,
+            "control_mode": "live_anchored_setup_only",
+            "follower_port": self.identity.follower_port,
+            "follower_calibration_sha256": (
+                self.identity.follower_calibration_sha256
+            ),
+            "follower_calibrated_minimum": self.lower_limits.tolist(),
+            "follower_calibrated_maximum": self.upper_limits.tolist(),
+            "torque_off_start_degrees": initial.tolist(),
+            "settle_samples_degrees": [
+                sample.tolist() for sample in settled_samples
+            ],
+            "settled_torque_on_anchor_degrees": settled.tolist(),
+            "setup_command_anchor_degrees": settled_command_anchor.tolist(),
+            "setup_anchor_snap_delta_degrees": settled_anchor_snap.tolist(),
+            "setup_anchor_snap_limit_degrees": (
+                LIVE_SETUP_ELBOW_ANCHOR_SNAP_LIMIT_DEG
+            ),
+            "torque_off_setup_command_anchor_degrees": (
+                initial_command_anchor.tolist()
+            ),
+            "torque_off_anchor_snap_delta_degrees": (
+                initial_anchor_snap.tolist()
+            ),
+            "settle_excursion_degrees": settle_excursion.tolist(),
+            "final_settle_drift_degrees": final_drift.tolist(),
+            "available_motor_current_raw": current_samples,
+            "settle_sample_count": LIVE_ANCHOR_SETTLE_SAMPLES,
+            "settle_interval_seconds": LIVE_ANCHOR_SETTLE_INTERVAL_SECONDS,
+            "maximum_body_settle_excursion_degrees": (
+                LIVE_ANCHOR_MAX_BODY_EXCURSION_DEG
+            ),
+            "maximum_gripper_settle_excursion": (
+                LIVE_ANCHOR_MAX_GRIPPER_EXCURSION
+            ),
+            "route_target_known_during_settle": False,
+            "physical_motion_commanded_during_settle": False,
+            "passive_settle_observed": bool(
+                np.max(np.abs(settle_excursion[:5])) > 0.25
+                or abs(float(settle_excursion[5])) > 0.5
+            ),
+            "physical_follower_torque_enabled": True,
+            "setup_only": True,
+            "evaluator_admission": False,
         }
 
     def _read_optional(self, register: str) -> dict[str, float] | None:
@@ -729,7 +959,18 @@ class SO101PhysicalGateway:
         assert last_error is not None
         raise last_error
 
-    def sample(self, elapsed_seconds: float) -> dict[str, Any]:
+    def sample(
+        self,
+        elapsed_seconds: float,
+        *,
+        zero_displacement_hold: bool = False,
+        exact_requested_degrees: np.ndarray | None = None,
+        setup_elbow_tracking_error_limit_degrees: float | None = None,
+    ) -> dict[str, Any]:
+        if zero_displacement_hold and exact_requested_degrees is not None:
+            raise PhysicalGatewayError(
+                "Choose either the runtime hold target or one precompiled target."
+            )
         if (
             not self.connected
             or not self.torque_enabled
@@ -743,13 +984,79 @@ class SO101PhysicalGateway:
         retries_before = self.bus_read_retries_total
         leader = self._motion_read("leader position", self.leader.get_action)
         leader_read_completed_monotonic = self.clock()
-        requested, relative_delta = bounded_relative_target(
-            leader,
-            self.leader_start,
-            self.follower_start,
-            lower_limits=self.lower_limits,
-            upper_limits=self.upper_limits,
+        exact_precompiled = exact_requested_degrees is not None
+        if setup_elbow_tracking_error_limit_degrees is not None:
+            if (
+                not self.live_anchored_setup_only
+                or not exact_precompiled
+                or setup_elbow_tracking_error_limit_degrees
+                not in {
+                    7.0,
+                    BODY_REGISTRATION_OFFSET_LIMIT_DEG,
+                    SETUP_ONLY_ELBOW_TRACKING_ERROR_LIMIT_DEG,
+                    SETUP_OBSERVED_POSE_ELBOW_TRACKING_ERROR_LIMIT_DEG,
+                }
+            ):
+                raise PhysicalGatewayError(
+                    "The 7, 12, 15, or 20 degree elbow tracking envelope is restricted to "
+                    "exact live-anchored setup-only samples."
+                )
+        elbow_tracking_limit = (
+            setup_elbow_tracking_error_limit_degrees
+            if setup_elbow_tracking_error_limit_degrees is not None
+            else BODY_TRACKING_ERROR_LIMIT_DEG
         )
+        if zero_displacement_hold or exact_precompiled:
+            if self.zero_displacement_arm_target is None:
+                raise PhysicalGatewayError(
+                    "Exact physical execution lacks a fresh pre-arm follower anchor."
+                )
+            registration = paired_pose_registration_report(
+                leader,
+                self.previous_actual,
+            )
+            if not registration["paired_pose_registration_ready"]:
+                raise PhysicalGatewayError(
+                    "Paired pose left the existing registration limits during "
+                    "exact physical execution."
+                )
+            if exact_precompiled:
+                requested = np.asarray(
+                    exact_requested_degrees, dtype=np.float64
+                ).copy()
+                _finite(requested, "precompiled requested target")
+                relative_delta = requested - self.zero_displacement_arm_target
+                relative_delta[4] = shortest_delta_degrees(
+                    float(requested[4]),
+                    float(self.zero_displacement_arm_target[4]),
+                )
+                limits = np.asarray(
+                    [BODY_EXCURSION_LIMIT_DEG] * 4
+                    + [WRIST_ROLL_EXCURSION_LIMIT_DEG, GRIPPER_EXCURSION_LIMIT],
+                    dtype=np.float64,
+                )
+                if np.any(np.abs(relative_delta) > limits):
+                    raise PhysicalGatewayError(
+                        "Precompiled target exceeds the reviewed excursion envelope."
+                    )
+                if not np.array_equal(
+                    np.clip(requested, self.lower_limits, self.upper_limits),
+                    requested,
+                ):
+                    raise PhysicalGatewayError(
+                        "Precompiled target exceeds calibrated follower limits."
+                    )
+            else:
+                requested = self.zero_displacement_arm_target.copy()
+                relative_delta = np.zeros(len(ROBOT_JOINTS), dtype=np.float64)
+        else:
+            requested, relative_delta = bounded_relative_target(
+                leader,
+                self.leader_start,
+                self.follower_start,
+                lower_limits=self.lower_limits,
+                upper_limits=self.upper_limits,
+            )
         control_dt = max(0.0, elapsed_seconds - self.previous_elapsed_seconds)
         command, rate_limits, tracking_limits = slew_limited_target(
             requested,
@@ -758,10 +1065,56 @@ class SO101PhysicalGateway:
             control_dt,
             lower_limits=self.lower_limits,
             upper_limits=self.upper_limits,
+            elbow_tracking_error_limit_degrees=elbow_tracking_limit,
         )
+        if exact_precompiled and not _same_float64_bytes(command, requested):
+            requested_command_delta = requested - self.previous_command
+            requested_command_delta[4] = shortest_delta_degrees(
+                float(requested[4]), float(self.previous_command[4])
+            )
+            requested_tracking_delta = requested - self.previous_actual
+            requested_tracking_delta[4] = shortest_delta_degrees(
+                float(requested[4]), float(self.previous_actual[4])
+            )
+            exact_target_is_safe = (
+                np.all(
+                    np.abs(requested_command_delta)
+                    <= rate_limits
+                    * min(control_dt, MAX_CONTROL_INTERVAL_SECONDS)
+                )
+                and np.all(np.abs(requested_tracking_delta) <= tracking_limits)
+                and np.array_equal(
+                    np.clip(requested, self.lower_limits, self.upper_limits),
+                    requested,
+                )
+            )
+            if exact_target_is_safe:
+                # Reuse the preregistered bytes after independently confirming
+                # every rate, tracking, and calibrated-position constraint.
+                command = requested.copy()
+        if (zero_displacement_hold or exact_precompiled) and not _same_float64_bytes(
+            command, requested
+        ):
+            raise PhysicalGatewayError(
+                (
+                    "Zero-displacement hold"
+                    if zero_displacement_hold
+                    else "Precompiled exact target"
+                )
+                + " would require rate limiting, clamping, or correction; "
+                "the current sample was not sent."
+            )
         command_call_started_monotonic = self.clock()
         sent = action_vector(self.follower.send_action(_position_dict(command)))
         command_call_completed_monotonic = self.clock()
+        if (zero_displacement_hold or exact_precompiled) and not _same_float64_bytes(
+            sent, requested
+        ):
+            raise PhysicalGatewayError(
+                "Gateway did not report the exact "
+                + ("hold target" if zero_displacement_hold else "precompiled target")
+                + " as sent; torque will be released."
+            )
         actual = self._motion_read("follower position", self.follower.get_observation)
         position_read_completed_monotonic = self.clock()
         _finite(sent, "follower command")
@@ -947,6 +1300,13 @@ class SO101PhysicalGateway:
             },
             "gripper_contact_hold": gripper_contact_hold,
             "gripper_contact_deflection": float(abs(sent_actual_delta[5])),
+            "zero_displacement_hold": zero_displacement_hold,
+            "precompiled_exact_action": exact_precompiled,
+            "zero_displacement_target_source": (
+                "fresh_torque_off_follower_read_immediately_before_arming"
+                if zero_displacement_hold
+                else None
+            ),
         }
 
     def synchronize_to_leader(self) -> dict[str, Any]:
@@ -1251,6 +1611,8 @@ class SO101PhysicalGateway:
                 errors.append(error)
         self.torque_enabled = False
         self.connected = False
+        self.zero_displacement_arm_target = None
+        self.live_anchored_setup_only = False
         if errors:
             raise PhysicalGatewayError(
                 "Gateway shutdown reported: "
@@ -1286,6 +1648,7 @@ def synchronize_physical_gateway(
         identity,
         device_factory=device_factory,
         sleep=sleep,
+        configure_devices=False,
     )
     report: dict[str, Any] | None = None
     try:

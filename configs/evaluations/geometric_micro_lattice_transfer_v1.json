@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.geometric_micro_lattice_evaluator_contract.v1",
+  "contract_id": "geometric_micro_lattice_transfer_20260727_v1",
+  "status": "preregistered_before_physical_motion",
+  "proof_class": "prospective_physical_no_contact_geometric_transfer_diagnostic",
+  "route": {
+    "path": "configs/hardware/geometric_micro_lattice_7p5mm_v1.json",
+    "sha256": "6cc991b76a79f24e2ef69d14bf5b2e6d33b9d7f6a62db70b7a6ac208701a106f"
+  },
+  "sources": {
+    "simulator_candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "pi_three_link_candidate": {
+      "path": "runs/pi-link-tag-calibration/20260726-current-three-link-fresh-validation-v1/candidate.json",
+      "sha256": "115428d746867bd0ca1f25fb75f3ccaed7a928342fc980f995bcfce484ab50b5"
+    },
+    "pi_three_link_prior_heldout": {
+      "path": "runs/pi-link-tag-calibration/20260726-current-three-link-fresh-validation-v1/heldout-evaluation.json",
+      "sha256": "2c18cb50aecb22e2215e936bd7ddaaf90f9db356039f0c6e0ed5e76d4091ad93"
+    },
+    "fresh_c922_layout": {
+      "path": "runs/geometric-microtransfer/20260727-current-layout-v1/c922/frames/frame-050.png",
+      "sha256": "dc9791f51bb384842731d52e9e3c788d8c4b80f87ea4cb771bd196ee7cbbf4ac"
+    },
+    "fresh_pi_layout": {
+      "path": "runs/geometric-microtransfer/20260727-current-layout-pi-v1/pi-imx708.jpg",
+      "sha256": "f87e58e201f24aa07d0ecf08c5a3e720a5cc2d5f5b177c7a338383c0c17b2b5a"
+    }
+  },
+  "gates": {
+    "maximum_ik_residual_m": 0.0015,
+    "maximum_stage_joint_excursion_degrees": 3.5,
+    "maximum_slew_degrees_s": 10.0,
+    "maximum_hold_target_residual_degrees": [3.0, 3.0, 5.0, 3.0, 3.0, 5.0],
+    "minimum_unique_robot_tags_per_hold": 2,
+    "required_tag_ids_over_complete_route": [0, 1, 2],
+    "absolute_tag_corner_rmse_max_px_per_hold": 8.0,
+    "absolute_tag_corner_max_px_per_hold": 15.0,
+    "anchor_relative_tag_corner_displacement_rmse_max_px": 5.0,
+    "anchor_relative_tag_corner_displacement_max_px": 10.0,
+    "observed_fk_cartesian_target_error_max_m": 0.003,
+    "return_to_anchor_joint_residual_max_degrees": [3.0, 3.0, 5.0, 3.0, 3.0, 5.0],
+    "return_to_anchor_fk_residual_max_m": 0.003,
+    "new_simulator_contact_pairs_maximum": 0,
+    "gateway_rate_limited_samples_maximum": 0,
+    "gateway_safety_clamped_samples_maximum": 0,
+    "gateway_stall_events_maximum": 0
+  },
+  "selection": {
+    "primary_metric": "anchor_relative_tag_corner_displacement_rmse_px",
+    "all_gates_required": true,
+    "fit_on_this_route_forbidden": true,
+    "failed_gate_may_select_one_mechanism_specific_followup": true
+  },
+  "authority": {
+    "physical_no_contact_diagnostic": true,
+    "camera_or_tag_fit": false,
+    "joint_transform_promotion": false,
+    "workcell_registration_promotion": false,
+    "simulator_parameter_promotion": false,
+    "pawn_contact": false,
+    "policy": false,
+    "task_success": false,
+    "physical_task": false
+  }
+}

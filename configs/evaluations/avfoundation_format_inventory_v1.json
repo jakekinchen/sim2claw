@@ -1,0 +1,96 @@
+{
+  "schema_version": "sim2claw.avfoundation_format_inventory_contract.v1",
+  "contract_id": "current-100mm-c922-avfoundation-format-inventory-20260724-v1",
+  "status": "preregistered_before_implementation",
+  "baseline_commit": "2e8b33da36a73a002d248c353eeb7095bbb9fd7f",
+  "purpose": "Enumerate the exact C922 AVFoundation format/rate surface without starting a capture session, then evaluate whether the original 640x480@30 source-probe request has a preregistered fractional-rate-compatible candidate.",
+  "source_failure": {
+    "campaign_sha256": "7c8b6ad359cf0db3260937f3836b1be7bc9c09005f32c727f53568a702f7b7dd",
+    "evaluation_sha256": "d0d65fbe43779a2eb0dcbd53c87ec05f089b3811c4642831650612d57eccee3c",
+    "receipt_sha256": "ac636601a8f178aaca06f58d597dfd1fa17e52de21d139ec1721f964eb063a7e",
+    "verdict": "prerequisite_abstention",
+    "failure_signature": "AVFoundationSourceProbe: requested_format_unavailable",
+    "attempts_exhausted": 12,
+    "reusable_as_measurement": false
+  },
+  "device": {
+    "media_type": "video",
+    "exact_localized_name": "C922 Pro Stream Webcam",
+    "exact_match_count_required": 1
+  },
+  "inventory_fields": [
+    "device_localized_name",
+    "device_unique_id",
+    "device_model_id",
+    "format_index",
+    "width",
+    "height",
+    "media_subtype_fourcc",
+    "is_video_binned",
+    "video_field_of_view_degrees",
+    "video_max_zoom_factor",
+    "supported_color_space_raw_values",
+    "frame_rate_ranges_min_max_fps",
+    "frame_rate_ranges_min_max_duration_seconds"
+  ],
+  "selection_rule": {
+    "target_width": 640,
+    "target_height": 480,
+    "target_fps": 30.0,
+    "exact_dimensions_required": true,
+    "maximum_fractional_fps_deviation": 0.05,
+    "nearest_supported_fps": "clamp_target_to_each_closed_min_max_range",
+    "media_subtype_preference": [
+      "420v",
+      "2vuy",
+      "yuvs",
+      "BGRA"
+    ],
+    "rank_order": [
+      "fps_deviation_ascending",
+      "media_subtype_preference_index_ascending",
+      "media_subtype_fourcc_ascending",
+      "format_index_ascending",
+      "frame_rate_range_index_ascending"
+    ],
+    "verdicts": [
+      "supported_exact_or_fractional_rate_candidate",
+      "no_supported_exact_dimension_rate_candidate",
+      "prerequisite_abstention"
+    ],
+    "selection_does_not_authorize_stream_execution": true
+  },
+  "operation_budget": {
+    "inventory_observations_maximum": 1,
+    "capture_sessions_maximum": 0,
+    "source_samples_maximum": 0,
+    "d405_lifecycle_operations_maximum": 0,
+    "robot_motion_trials_maximum": 0,
+    "provider_calls_maximum": 0
+  },
+  "runtime_identity": {
+    "platform": "macos",
+    "swift_version_prefix": "Apple Swift version 6.3",
+    "inventory_source_path": "tools/macos/AVFoundationFormatInventory.swift",
+    "evaluator_path": "src/sim2claw/avfoundation_format_inventory.py",
+    "compiler_path": "/usr/bin/swiftc",
+    "source_evaluator_and_binary_sha256_frozen_at_observation_commit": true
+  },
+  "authority": {
+    "device_and_format_enumeration": true,
+    "capture_session_start": false,
+    "camera_frame_capture": false,
+    "d405_lifecycle": false,
+    "robot_gateway": false,
+    "robot_motion": false,
+    "metric_depth": false,
+    "cross_camera_exposure_synchronization": false,
+    "simulator_replay": false,
+    "simulator_parameter_promotion": false,
+    "training": false,
+    "provider_calls": false,
+    "paid_compute": false,
+    "task_score_change": false,
+    "physical_task_authority": false
+  }
+}

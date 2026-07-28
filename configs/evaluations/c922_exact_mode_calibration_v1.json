@@ -1,0 +1,108 @@
+{
+  "schema_version": "sim2claw.c922_exact_mode_calibration_contract.v1",
+  "contract_id": "current_100mm_c922_exact_mode_calibration_v1",
+  "status": "preregistered",
+  "baseline_commit": "d8046ca70270664c8be3e4747090a62d6f7b0180",
+  "camera": {
+    "camera_id": "logitech-overhead",
+    "localized_name": "C922 Pro Stream Webcam",
+    "model_id": "UVC Camera VendorID_1133 ProductID_2140",
+    "unique_id": "0x8310000046d085c",
+    "image_size_px": [640, 480],
+    "media_subtype": "420v",
+    "format_index": 16,
+    "frame_rate_range_index": 0,
+    "frame_rate_fps": 30.00003000003,
+    "orientation_filter": "hflip,vflip",
+    "focus_setting_must_be_constant_across_dataset": true
+  },
+  "target": {
+    "asset_path": "assets/calibration/c922_checkerboard_9x6_inner_20mm_nominal_v1.svg",
+    "asset_sha256": "8841927738e7ee31af5fb7373121863cf518808479599e315657b69d1ceb9285",
+    "inner_corners": [9, 6],
+    "square_size_nominal_mm": 20.0,
+    "grid_size_nominal_mm": [200.0, 140.0],
+    "nominal_dimensions_are_metric_authority": false,
+    "post_print_measurement_required_for_metric_extrinsics": true
+  },
+  "dataset": {
+    "minimum_accepted_frames": 18,
+    "maximum_declared_frames": 60,
+    "required_split_counts": {
+      "fit": 12,
+      "validation": 3,
+      "held_out": 3
+    },
+    "splits_frozen_before_fit": true,
+    "duplicate_frame_bytes_allowed": false,
+    "caller_supplied_corners_allowed": false,
+    "minimum_detected_corners_per_frame": 54,
+    "required_centroid_bins": [
+      "north_west",
+      "north_east",
+      "center",
+      "south_west",
+      "south_east"
+    ],
+    "minimum_scale_bins": 3,
+    "scale_bin_board_hull_fraction": [0.12, 0.3],
+    "minimum_tilted_views": 4,
+    "tilted_view_minimum_edge_log_ratio": 0.12,
+    "minimum_near_frontal_views": 3,
+    "near_frontal_maximum_edge_log_ratio": 0.06,
+    "minimum_orientation_bins": 3,
+    "orientation_bin_degrees": [-12.0, 12.0]
+  },
+  "models": {
+    "candidates": [
+      "opencv_pinhole_zero_distortion",
+      "opencv_pinhole_k1_k2_p1_p2_k3"
+    ],
+    "selection_split": "validation",
+    "minimum_validation_rms_improvement_px_for_distortion_model": 0.05,
+    "held_out_visible_during_selection": false
+  },
+  "acceptance": {
+    "maximum_fit_rms_px": 0.75,
+    "maximum_validation_rms_px": 0.75,
+    "maximum_held_out_rms_px": 0.75,
+    "maximum_held_out_point_error_px": 2.0,
+    "minimum_focal_length_px": 200.0,
+    "maximum_focal_length_px": 2000.0,
+    "minimum_focal_aspect_ratio": 0.8,
+    "maximum_focal_aspect_ratio": 1.2,
+    "principal_point_x_fraction_bounds": [0.25, 0.75],
+    "principal_point_y_fraction_bounds": [0.25, 0.75]
+  },
+  "outputs": {
+    "evaluation_schema": "sim2claw.c922_exact_mode_calibration_evaluation.v1",
+    "receipt_schema": "sim2claw.c922_exact_mode_calibration_receipt.v1",
+    "intrinsics_schema": "sim2claw.camera_intrinsics_receipt.v1",
+    "distortion_schema": "sim2claw.lens_distortion_receipt.v1",
+    "pass_verdict": "exact_mode_intrinsics_and_distortion_verified",
+    "not_ready_verdict": "calibration_dataset_not_ready",
+    "failed_verdict": "calibration_evaluator_reject"
+  },
+  "budgets": {
+    "dataset_evaluations_maximum": 1,
+    "model_fits_maximum": 2,
+    "camera_sessions_maximum": 0,
+    "new_camera_frames_maximum": 0,
+    "robot_motions_maximum": 0,
+    "simulator_replays_maximum": 0,
+    "provider_calls_maximum": 0,
+    "training_rows_maximum": 0
+  },
+  "authority": {
+    "proof_class": "camera_calibration_evaluator_infrastructure",
+    "current_physical_calibration_claimed": false,
+    "metric_scale_claimed": false,
+    "camera_to_workcell_extrinsics_claimed": false,
+    "geometry_scale_domain_change_authorized": false,
+    "simulator_parameter_promotion_authorized": false,
+    "task_score_change_authorized": false,
+    "training_authorized": false,
+    "physical_capture_authorized_by_this_contract": false,
+    "robot_motion_authorized_by_this_contract": false
+  }
+}

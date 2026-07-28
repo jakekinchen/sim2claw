@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.current_c922_pose_p_fit_completion.v1",
+  "contract_id": "current_c922_pose_p_fit_completion_20260726_v1",
+  "status": "frozen_before_completion_capture",
+  "proof_class": "physical_static_C922_calibration_fit_observation_only",
+  "original_acquisition_contract": {
+    "path": "configs/evaluations/current_c922_pose_p_fit_acquisition_v1.json",
+    "sha256": "a902012f3a5635f794cad5d5a3a84de06ff40a627b95a09c9aec745de56d47e5",
+    "target_joint_position_degrees": [
+      89.0,
+      -16.5,
+      60.0,
+      -20.0,
+      -60.0,
+      2.494061757719715
+    ],
+    "target_changed": false
+  },
+  "failed_predecessor": {
+    "packet_sha256": "78bb55d16a9b0e2073642012606ce0c5ea8d1fadb802f87314a31b6a77d58913",
+    "review_sha256": "a8d53919e8094cf3097113e15934483bf6902835899a61464e12b53fed4598be",
+    "receipt_sha256": "67f8dd2166c8ea7c320f2e598049a4171f7038f97d46a901c3b3ce7cf9e455b7",
+    "completed_motion_samples": 348,
+    "completed_capture_hold_samples": 0,
+    "status": "stopped_safely",
+    "usable_as_pose_P_fit_observation": false
+  },
+  "completion_route": {
+    "path": "configs/hardware/c922_current_board_pose_p_fit_completion_v1.json",
+    "sha256": "c8d9cdf4fe7fde545252712b223ceb52b75d2f293ee60a7b48a36a9cb78129de",
+    "maximum_absolute_stage_excursion_degrees": 12.92307692307692
+  },
+  "receipt_binding_and_usability_checks": "identical_to_current_c922_pose_p_fit_acquisition_20260726_v1",
+  "authority": {
+    "physical_calibration_motion": true,
+    "simulator_parameter_promotion": false,
+    "metric_camera_or_workcell": false,
+    "policy": false,
+    "task": false
+  }
+}

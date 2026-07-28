@@ -1,0 +1,103 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_micro_lattice_7p5mm_20260727_v1",
+  "capture_during_motion": true,
+  "capture_mode": "c922_plus_pi_hold",
+  "c922_capture": {
+    "contract_path": "configs/acquisition/current_static_tricam_capture_v1.json",
+    "camera_session_prefix": "geometric-micro-lattice-20260727",
+    "fixed_mount_token": "current-workcell-fixed-mount-20260727-v1"
+  },
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "reviewed_anchor_degrees": [
+    -8.351648351648352,
+    -106.46153846153847,
+    98.41758241758242,
+    -100.17582417582418,
+    -126.37362637362638,
+    1.66270783847981
+  ],
+  "stage_targets_degrees": [
+    [
+      -8.2771088965654,
+      -105.58452292411265,
+      99.24027111337044,
+      -99.38208558810283,
+      -126.42061312295101,
+      1.66270783847981
+    ],
+    [
+      -8.52956017132011,
+      -104.10347594795364,
+      95.9192662523017,
+      -97.2196090235437,
+      -126.49719805959386,
+      1.66270783847981
+    ],
+    [
+      -8.354179791538119,
+      -105.18488988490004,
+      95.55636177471837,
+      -98.30656021439492,
+      -126.4139105063591,
+      1.66270783847981
+    ],
+    [
+      -8.351648351648352,
+      -106.46153846153847,
+      98.41758241758242,
+      -100.17582417582418,
+      -126.37362637362638,
+      1.66270783847981
+    ]
+  ],
+  "geometric_derivation": {
+    "frame": "current_candidate_model_world",
+    "pinch_point_anchor_m": [
+      -0.02591026441651266,
+      0.8877151538324135,
+      1.0865151575399814
+    ],
+    "cartesian_offsets_m": [
+      [0.0, -0.0075, 0.0],
+      [0.0, -0.0075, 0.0075],
+      [0.0, 0.0, 0.0075],
+      [0.0, 0.0, 0.0]
+    ],
+    "ik_residual_m": [
+      0.001332201789869999,
+      0.0012989671536637055,
+      0.0010092573332469278,
+      0.0
+    ],
+    "solver": "sim2claw.grasp._solve_reach",
+    "solver_module_sha256": "c4c0d4382c8319e0dec25d0e1d740fd92fdd7fdd6e8717e99a4aaa6c37e2e313",
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+    "maximum_ik_residual_m": 0.0015
+  },
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "prospective_no_contact_geometric_transfer_diagnostic",
+    "target_selection": "A closed 7.5 mm Cartesian rectangle chosen from the fresh torque-off anchor. It moves away from the shoulder-lift lower limit, preserves the gripper command, and keeps every stage joint excursion below 3.5 degrees.",
+    "empty_gripper_observed_in_fresh_c922_frame": true,
+    "pawn_contact_forbidden": true,
+    "evaluator_contract": "configs/evaluations/geometric_micro_lattice_transfer_v1.json",
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

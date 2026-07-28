@@ -1,0 +1,17 @@
+{
+  "schema_version": "sim2claw.d405_pose_plane_capture_contract.v1",
+  "proof_class": "physical_calibration_setup_pose_plane_observations_only",
+  "maximum_record_start_bound_width_seconds": 0.5,
+  "maximum_record_end_bound_width_seconds": 1.0,
+  "minimum_terminal_hold_seconds": 0.25,
+  "minimum_hold_depth_frames": 2,
+  "maximum_terminal_joint_range_degrees": 0.5,
+  "authority": {
+    "camera_to_robot_extrinsic": false,
+    "board_origin": false,
+    "robot_motion_replay": false,
+    "policy_evaluation": false,
+    "task_success": false,
+    "physical_task": false
+  }
+}

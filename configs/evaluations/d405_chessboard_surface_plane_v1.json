@@ -1,0 +1,27 @@
+{
+  "schema_version": "sim2claw.d405_chessboard_surface_plane_contract.v1",
+  "proof_class": "physical_calibration_setup_chessboard_surface_plane_observations_only",
+  "surface_semantics": "visible_chessboard_surface_plane_with_piece_occlusion_not_board_origin",
+  "depth_range_m": [0.04, 0.5],
+  "sample_stride_px": 3,
+  "ransac_seed": 1729,
+  "ransac_iterations": 500,
+  "ransac_inlier_threshold_m": 0.0008,
+  "final_inlier_threshold_m": 0.001,
+  "minimum_valid_depth_pixel_count": 20000,
+  "minimum_absolute_plane_inlier_count": 12000,
+  "maximum_plane_rms_residual_m": 0.0006,
+  "maximum_plane_p95_absolute_residual_m": 0.001,
+  "camera_origin_plane_distance_range_m": [0.05, 0.35],
+  "maximum_cross_frame_normal_angle_degrees": 0.75,
+  "maximum_cross_frame_plane_offset_drift_m": 0.0015,
+  "minimum_accepted_frame_count": 3,
+  "authority": {
+    "camera_to_robot_extrinsic": false,
+    "board_origin": false,
+    "robot_motion_replay": false,
+    "policy_evaluation": false,
+    "task_success": false,
+    "physical_task": false
+  }
+}

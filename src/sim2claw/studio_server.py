@@ -7,6 +7,7 @@ import hashlib
 import json
 import mimetypes
 import re
+import threading
 import webbrowser
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -21,6 +22,7 @@ from .learning_factory import LearningFactoryError
 from .learning_factory_studio import DEFAULT_FACTORY_PROJECT, build_factory_navigation
 from .orchestrator_frames import LocalOverheadSnapshotAdapter
 from .physical_gateway import PhysicalGatewayError
+from .physical_sim_replay import replay_physical_recording
 from .studio_catalog import build_catalog, open_media_token
 from .studio_live import LiveWorkspaceError, LiveWorkspaceService, MJPEG_BOUNDARY
 from .studio_project_map import StudioProjectMapError, build_project_map
@@ -54,6 +56,27 @@ DEFAULT_SCENE_SYNTHESIS_CONFIG = (
     REPO_ROOT / "configs" / "scenes" / "robo_scanner_llm_workcell_v1.json"
 )
 SUPERVISED_REPLAY_RECORDING_ID = "20260719T032315Z-d3c3cf0b"
+
+
+def physical_recording_directory(repo_root: Path, recording_id: str) -> Path:
+    """Resolve one recorded physical episode for an explicit simulator replay."""
+
+    requested = str(recording_id or "").strip()
+    if not requested or "/" in requested or "\\" in requested or ".." in requested:
+        raise ValueError("a recording id is required")
+    root = (repo_root / "datasets" / "manipulation_source_recordings").resolve()
+    for receipt_path in root.glob("*/recording_receipt.json"):
+        try:
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if (
+            str(receipt.get("recording_id") or "") == requested
+            and receipt.get("mode") == "physical_follower"
+            and receipt_path.parent.is_relative_to(root)
+        ):
+            return receipt_path.parent
+    raise ValueError("selected physical recording was not found")
 
 
 def latest_supervised_replay(repo_root: Path) -> dict[str, Any] | None:
@@ -189,6 +212,7 @@ class StudioServer(ThreadingHTTPServer):
         self.live_workspace: LiveWorkspaceService | None = None
         self.task_orchestrator: TaskOrchestratorService | None = None
         self.demo_loop_controller: DemoLoopController | None = None
+        self.simulator_replay_lock = threading.Lock()
         if not read_only:
             self.recorder = TeleopRecordingManager(repo_root=self.repo_root)
             self.live_workspace = LiveWorkspaceService(self.recorder)
@@ -676,6 +700,21 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                 else:
                     raise LiveWorkspaceError("Unknown live workspace session action.")
                 self._send_json({"ok": True, "live": result})
+                return
+            if path == "/api/studio/simulator-replay":
+                recording_directory = physical_recording_directory(
+                    self.server.repo_root,
+                    str(payload.get("recording_id") or ""),
+                )
+                if not self.server.simulator_replay_lock.acquire(blocking=False):
+                    raise RecorderConflict(
+                        "A source-command simulator replay is already running."
+                    )
+                try:
+                    replay = replay_physical_recording(recording_directory)
+                finally:
+                    self.server.simulator_replay_lock.release()
+                self._send_json({"ok": True, "replay": replay})
                 return
             if path in {
                 "/api/recorder/gateway-preflight",

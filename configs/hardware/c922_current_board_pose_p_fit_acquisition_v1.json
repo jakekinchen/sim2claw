@@ -1,0 +1,37 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c922_current_board_pose_p_fit_acquisition_20260726_v1",
+  "capture_during_motion": true,
+  "reviewed_anchor_degrees": [
+    0.0,
+    -106.10989010989012,
+    100.17582417582418,
+    -100.17582417582418,
+    -119.07692307692308,
+    2.494061757719715
+  ],
+  "stage_targets_degrees": [
+    [
+      89.0,
+      -16.5,
+      60.0,
+      -20.0,
+      -60.0,
+      2.494061757719715
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "new_fit_observation_for_a_successor_C922_board_base_and_exact_full_CAD_registration",
+    "source_pose": "Fresh torque-off follower read at the repeated source-episode start immediately before route freeze.",
+    "target_selection": "The frozen simulation-only search evaluated 375 one-stage candidates. Pose P is inside calibrated joint limits, has 89.61 degrees maximum stage excursion, zero MuJoCo robot contacts, 100 percent sampled moving-CAD visibility, 6.843 percent board overlap, and a projected CAD bounding box of [353.2, 253.9, 600.3, 428.0] pixels under the bounded conditional camera.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "successor_fit_observation": true,
+      "future_heldout_validation": false,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

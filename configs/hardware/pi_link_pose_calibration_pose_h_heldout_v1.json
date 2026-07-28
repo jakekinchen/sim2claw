@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_link_pose_calibration_pose_h_heldout_20260726_v1",
+  "capture_during_motion": true,
+  "setup_recovery_command_anchor_snap_limit_degrees": 10.0,
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "reviewed_anchor_degrees": [
+    -4.747252747252747,
+    -111.2967032967033,
+    104.92307692307692,
+    -95.78021978021978,
+    -50.505494505494504,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [10.0, -60.0, 90.0, -95.0, -30.0, 3.0878859857482186]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "follower_only_static_pi_proximal_tag_second_heldout",
+    "source_pose": "Fresh torque-off follower read after admitted pose J.",
+    "command_anchor_rule": "Clip the 4.659341 degree shoulder-lift underrun and 2.813187 degree elbow overrun into calibrated limits before torque enable.",
+    "target_selection": "Pose H and its heldout role were frozen in Brief 043 before pose G was attempted. Its image remains unopened by the detector until the training-side candidate family is frozen.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "fit_training_admission": false,
+      "held_out_evaluation": true,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

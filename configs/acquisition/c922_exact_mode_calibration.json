@@ -1,0 +1,84 @@
+{
+  "schema_version": "sim2claw.c922_exact_mode_calibration_acquisition_plan.v1",
+  "plan_id": "current_100mm_c922_exact_mode_calibration_acquisition",
+  "contract_id": "current_100mm_c922_exact_mode_calibration_v1",
+  "contract_sha256": "d586d262929063c924895f56142dfe88196c521cb039d2392dc4ba53259b087c",
+  "camera": {
+    "camera_id": "logitech-overhead",
+    "localized_name": "C922 Pro Stream Webcam",
+    "model_id": "UVC Camera VendorID_1133 ProductID_2140",
+    "unique_id": "0x8310000046d085c",
+    "image_size_px": [640, 480],
+    "media_subtype": "420v",
+    "format_index": 16,
+    "frame_rate_range_index": 0,
+    "frame_rate_fps": 30.00003000003,
+    "orientation_filter": "hflip,vflip"
+  },
+  "target": {
+    "asset_path": "assets/calibration/c922_checkerboard_9x6_inner_20mm_nominal_v1.svg",
+    "asset_sha256": "8841927738e7ee31af5fb7373121863cf518808479599e315657b69d1ceb9285",
+    "printed_and_mounted_flat": false,
+    "measurement_receipt_path": null,
+    "measurement_receipt_sha256": null
+  },
+  "focus": {
+    "mode": "manual_locked",
+    "setting": null,
+    "observation_method": null
+  },
+  "owner_capture_approved": true,
+  "owner_capture_authorization": {
+    "schema_version": "sim2claw.c922_stationary_capture_authorization.v1",
+    "authorization_id": "current_100mm_p8_stationary_capture_owner_20260725_v1",
+    "source": "direct_owner_instruction_in_current_codex_task",
+    "recorded_on": "2026-07-25",
+    "metrology_transaction": {
+      "path": "configs/acquisition/current_100mm_p8_p13_metrology_transaction_v1.json",
+      "transaction_id": "current_100mm_p8_p13_metrology_20260725_v1",
+      "sha256": "a0e0c0167ddbfb6b80c152a25d82857d58025cb03a88a85557e3e9c4cbd245ab"
+    },
+    "plan_id": "current_100mm_c922_exact_mode_calibration_acquisition",
+    "contract_sha256": "d586d262929063c924895f56142dfe88196c521cb039d2392dc4ba53259b087c",
+    "camera_unique_id": "0x8310000046d085c",
+    "stationary_exact_mode_camera_capture_authorized": true,
+    "new_camera_data_collection_authorized": true,
+    "frame_count": 18,
+    "robot_motion_authorized": false,
+    "target_measurement_focus_and_mounting_gates_waived": false,
+    "metric_fit_authorized": false,
+    "evaluator_admission": false,
+    "physical_authority": false,
+    "task_success_verified": false
+  },
+  "frame_slots": [
+    {"frame_id": "c922-cal-00", "split": "fit", "centroid_goal": "north_west", "scale_goal": "small", "pose_goal": "tilted", "orientation_goal": "negative"},
+    {"frame_id": "c922-cal-01", "split": "fit", "centroid_goal": "north_east", "scale_goal": "medium", "pose_goal": "tilted", "orientation_goal": "center"},
+    {"frame_id": "c922-cal-02", "split": "fit", "centroid_goal": "center", "scale_goal": "large", "pose_goal": "tilted", "orientation_goal": "positive"},
+    {"frame_id": "c922-cal-03", "split": "fit", "centroid_goal": "south_west", "scale_goal": "small", "pose_goal": "tilted", "orientation_goal": "center"},
+    {"frame_id": "c922-cal-04", "split": "fit", "centroid_goal": "south_east", "scale_goal": "medium", "pose_goal": "near_frontal", "orientation_goal": "positive"},
+    {"frame_id": "c922-cal-05", "split": "fit", "centroid_goal": "north_west", "scale_goal": "large", "pose_goal": "near_frontal", "orientation_goal": "negative"},
+    {"frame_id": "c922-cal-06", "split": "fit", "centroid_goal": "north_east", "scale_goal": "small", "pose_goal": "near_frontal", "orientation_goal": "center"},
+    {"frame_id": "c922-cal-07", "split": "fit", "centroid_goal": "center", "scale_goal": "medium", "pose_goal": "free", "orientation_goal": "positive"},
+    {"frame_id": "c922-cal-08", "split": "fit", "centroid_goal": "south_west", "scale_goal": "large", "pose_goal": "free", "orientation_goal": "negative"},
+    {"frame_id": "c922-cal-09", "split": "fit", "centroid_goal": "south_east", "scale_goal": "small", "pose_goal": "free", "orientation_goal": "center"},
+    {"frame_id": "c922-cal-10", "split": "fit", "centroid_goal": "north_west", "scale_goal": "medium", "pose_goal": "free", "orientation_goal": "positive"},
+    {"frame_id": "c922-cal-11", "split": "fit", "centroid_goal": "center", "scale_goal": "large", "pose_goal": "free", "orientation_goal": "negative"},
+    {"frame_id": "c922-cal-12", "split": "validation", "centroid_goal": "north_east", "scale_goal": "small", "pose_goal": "free", "orientation_goal": "center"},
+    {"frame_id": "c922-cal-13", "split": "validation", "centroid_goal": "south_west", "scale_goal": "medium", "pose_goal": "free", "orientation_goal": "positive"},
+    {"frame_id": "c922-cal-14", "split": "validation", "centroid_goal": "south_east", "scale_goal": "large", "pose_goal": "free", "orientation_goal": "negative"},
+    {"frame_id": "c922-cal-15", "split": "held_out", "centroid_goal": "north_west", "scale_goal": "large", "pose_goal": "free", "orientation_goal": "positive"},
+    {"frame_id": "c922-cal-16", "split": "held_out", "centroid_goal": "center", "scale_goal": "small", "pose_goal": "free", "orientation_goal": "negative"},
+    {"frame_id": "c922-cal-17", "split": "held_out", "centroid_goal": "south_east", "scale_goal": "medium", "pose_goal": "free", "orientation_goal": "center"}
+  ],
+  "motion_qualification": {
+    "d405_cable_connector_strain_relief_repaired": false,
+    "required_for_stationary_c922_corpus": false,
+    "required_before_robot_motion": true
+  },
+  "authority": {
+    "camera_capture_authorized": false,
+    "robot_motion_authorized": false,
+    "physical_authority": false
+  }
+}

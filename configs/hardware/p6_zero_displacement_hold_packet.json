@@ -1,0 +1,45 @@
+{
+  "kind": "sim2claw.zero_displacement_hold_packet.v1",
+  "packet_id": "P6-ZERO-DISPLACEMENT-HOLD-01",
+  "single_use": true,
+  "physical_packet_execution_admitted": false,
+  "independent_review": {
+    "reviewer": null,
+    "reviewed_at": null,
+    "decision_id": null
+  },
+  "duration_seconds": 1.0,
+  "hardware_identity": {
+    "gateway_schema": "sim2claw.so101_physical_gateway.v2",
+    "leader_port": "/dev/cu.usbmodem5B3D0448141",
+    "follower_port": "/dev/cu.usbmodem5B3D0406411",
+    "leader_calibration_sha256": "732c6e862436dbbaf06c6afcd7ae81dc8341f09ca8d812170f48b371091a8339",
+    "follower_calibration_sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4"
+  },
+  "constraints": {
+    "runtime_target": "fresh_torque_off_follower_read_immediately_before_arming",
+    "requested_equals_gateway_sent": true,
+    "zero_displacement_only": true,
+    "allow_gripper_closure": false,
+    "allow_ik_offsets_clipping_suffix_or_assistance": false,
+    "allow_device_configuration_rewrite": false,
+    "paired_pose_body_limit_degrees": 12.0
+  },
+  "recording": {
+    "label": "p6-zero-displacement-hold-01",
+    "square": "a1"
+  },
+  "review_checklist": [
+    "Physically align leader and follower within the existing 12 degree paired-pose body limit while torque remains off.",
+    "Confirm workspace clear and owner bounded-motion authority are still true.",
+    "Confirm both device paths and calibration hashes match this packet.",
+    "Fill reviewer, reviewed_at, and decision_id, then flip only this packet's admission boolean.",
+    "Run exactly once; the runner rereads the follower pose and uses it as the only target."
+  ],
+  "commands_after_review": {
+    "record": "uv run sim2claw zero-displacement-hold-record --packet configs/hardware/p6_zero_displacement_hold_packet.json --yes",
+    "audit": "uv run sim2claw physical-recording-replay-eligibility --recording <recording-dir> --manifest-output outputs/p6/exact_replay_manifest.json --report-output outputs/p6/exact_replay_report.json",
+    "replay": "uv run sim2claw replay-eligible-physical-recording --recording <recording-dir> --manifest outputs/p6/exact_replay_manifest.json --output outputs/p6/replay"
+  },
+  "expected_hash_equality": "record receipt gateway-sent radians SHA256 = P4 applied-action SHA256 = P5 consumed-action SHA256"
+}

@@ -1,0 +1,3012 @@
+"""Guarded staged follower reposition for a D405 AprilTag view.
+
+The compiler freezes three direct physical-space interpolations from one fresh
+torque-off follower read.  Every stage is previewed in the current MuJoCo
+scene, executed separately through the reviewed follower-only gateway, and
+closed with torque off before the next stage can be considered.
+"""
+
+from __future__ import annotations
+
+import base64
+import hashlib
+import itertools
+import json
+import subprocess
+import time
+from pathlib import Path
+from typing import Any, Callable, Mapping, Protocol
+
+import mujoco
+import numpy as np
+
+from .physical_canary import (
+    EXCITATION_CONTROL_SOURCE,
+    GATEWAY_SCHEMA,
+    _default_gateway,
+    _default_preflight,
+    _gateway_identity,
+    _physical_to_model_position,
+)
+from .recorded_replay import _compile_model
+from .replay_eligibility import ACTION_HASH_ENCODING, action_sha256
+from .scene import ROBOT_JOINTS
+
+
+WRIST_VIEW_PACKET_SCHEMA = "sim2claw.wrist_view_reposition_packet.v2"
+WRIST_VIEW_REVIEW_SCHEMA = "sim2claw.wrist_view_reposition_review.v2"
+WRIST_VIEW_EXECUTION_SCHEMA = "sim2claw.wrist_view_reposition_execution.v2"
+WRIST_VIEW_ROUTE_SCHEMA = "sim2claw.wrist_view_reposition_route.v1"
+FRAME_JOINT_ALIGNMENT_SCHEMA = "sim2claw.wrist_view_frame_joint_alignment.v1"
+C922_MOTION_CAPTURE_SCHEMA = "sim2claw.c922_motion_capture_receipt.v1"
+CAPTURE_MODE_DUAL = "native_dual_camera"
+CAPTURE_MODE_C922_PI = "c922_plus_pi_hold"
+CAPTURE_MODE_TRICAM = "native_motion_tricam"
+SAMPLE_HZ = 40
+SAMPLES_PER_STAGE = 361
+MIN_SAMPLES_PER_STAGE = 41
+MAX_SAMPLES_PER_STAGE = 1441
+CAPTURE_HOLD_SECONDS = 2.0
+CAPTURE_HOLD_SAMPLES = int(SAMPLE_HZ * CAPTURE_HOLD_SECONDS)
+MIN_CAPTURE_HOLD_SECONDS = 0.25
+MAX_CAPTURE_HOLD_SECONDS = CAPTURE_HOLD_SECONDS
+CAMERA_POST_ROLL_SECONDS = 0.25
+TRICAM_START_TO_ACTION_BUDGET_SECONDS = 3.0
+MAX_STAGE_EXCURSION_DEGREES = 90.0
+MAX_SLEW_DEGREES_S = 10.0
+GATEWAY_MAX_SLEW_DEGREES_S = np.asarray(
+    [60.0, 60.0, 60.0, 60.0, 90.0, 100.0], dtype=np.float64
+)
+COMPILE_ANCHOR_TOLERANCE_DEGREES = np.asarray(
+    [0.5, 0.5, 0.5, 0.5, 0.5, 0.1], dtype=np.float64
+)
+COMPILE_COMMAND_ANCHOR_CLIP_TOLERANCE_DEGREES = np.asarray(
+    [0.5, 0.5, 3.0, 0.5, 0.5, 0.1], dtype=np.float64
+)
+SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES = 10.0
+STAGE_ANCHOR_TOLERANCE_DEGREES = np.asarray(
+    [3.0, 3.0, 3.0, 3.0, 3.0, 0.5], dtype=np.float64
+)
+HOLD_ENTRY_TOLERANCE_DEGREES = np.asarray(
+    [3.0, 4.0, 6.0, 3.0, 3.0, 5.0], dtype=np.float64
+)
+FINAL_TOLERANCE_DEGREES = np.asarray(
+    [3.0, 3.0, 5.0, 3.0, 3.0, 5.0], dtype=np.float64
+)
+BASELINE_SELF_CONTACT_PAIRS = {
+    tuple(sorted(("left_shoulder", "left_lower_arm"))),
+    tuple(sorted(("left_shoulder", "left_wrist"))),
+}
+KNOWN_SAFE_CONTACT_ENVELOPE_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "configs/evaluations/wrist_view_known_safe_self_contact_envelope_v1.json"
+)
+
+
+class CameraCapture(Protocol):
+    def start(self) -> dict[str, Any]: ...
+
+    def finish(
+        self,
+        *,
+        action_started_monotonic: float | None,
+        action_stopped_monotonic: float | None,
+        post_roll_seconds: float,
+    ) -> dict[str, Any]: ...
+
+
+def _default_capture(path: Path) -> CameraCapture:
+    from .native_dual_camera import NativeDualCameraRecorder
+
+    return NativeDualCameraRecorder(path)
+
+
+class _C922MotionCapture:
+    """Adapt the exact-mode C922 source owner to a staged motion capture."""
+
+    def __init__(
+        self,
+        output_root: Path,
+        *,
+        specification: Mapping[str, Any],
+        route_id: str,
+        stage_index: int,
+    ) -> None:
+        from .c922_terminal_hold_capture import NativeC922StillRecorder
+        from .static_tricam_capture import load_contract
+
+        contract_path = Path(str(specification["contract_path"]))
+        if not contract_path.is_absolute():
+            contract_path = Path(__file__).resolve().parents[2] / contract_path
+        contract_path = contract_path.resolve()
+        contract = load_contract(contract_path)
+        session_prefix = str(specification["camera_session_prefix"])
+        fixed_mount_token = str(specification["fixed_mount_token"])
+        self.contract_path = contract_path
+        self.recorder = NativeC922StillRecorder(
+            output_root,
+            contract=contract,
+            camera_session_token=f"{session_prefix}-{route_id}-stage-{stage_index:02d}",
+            fixed_mount_token=fixed_mount_token,
+        )
+
+    def start(self) -> dict[str, Any]:
+        return {
+            **self.recorder.start(),
+            "capture_mode": CAPTURE_MODE_C922_PI,
+            "contract_path": str(self.contract_path),
+            "contract_sha256": _sha256(self.contract_path),
+        }
+
+    def ensure_running(self) -> None:
+        process = self.recorder.process
+        _require(
+            process is not None and process.poll() is None,
+            "C922 source owner exited before capture teardown",
+        )
+
+    def finish(
+        self,
+        *,
+        action_started_monotonic: float | None,
+        action_stopped_monotonic: float | None,
+        post_roll_seconds: float,
+    ) -> dict[str, Any]:
+        del action_started_monotonic, action_stopped_monotonic, post_roll_seconds
+        report = self.recorder.finish()
+        return {
+            "schema_version": C922_MOTION_CAPTURE_SCHEMA,
+            "status": "completed",
+            "capture_mode": CAPTURE_MODE_C922_PI,
+            "contract_path": str(self.contract_path),
+            "contract_sha256": _sha256(self.contract_path),
+            "final_path": report["final_path"],
+            "final_sha256": report["final_sha256"],
+            "ledger_path": report["ledger_path"],
+            "ledger_sha256": report["ledger_sha256"],
+            "retained_frame_count": report["retainedFrameCount"],
+            "dropped_callback_count": report["droppedCallbackCount"],
+        }
+
+
+def _capture_pi_hold_still(
+    specification: Mapping[str, Any],
+    output_path: Path,
+) -> dict[str, Any]:
+    """Capture one fixed-observer Pi still while follower torque remains on."""
+
+    _require(
+        specification.get("schema_version")
+        == "sim2claw.pi_hold_still_capture.v1",
+        "Pi hold-still capture contract changed",
+    )
+    host = str(specification.get("ssh_host") or "")
+    width = int(specification.get("width") or 0)
+    height = int(specification.get("height") or 0)
+    _require(
+        host
+        and all(character.isalnum() or character in "@._-" for character in host)
+        and (width, height) == (1536, 864)
+        and specification.get("horizontal_flip") is True
+        and specification.get("vertical_flip") is True,
+        "Pi hold-still capture identity or exact mode changed",
+    )
+    _require(not output_path.exists(), f"refusing to overwrite Pi still: {output_path}")
+    remote_path = "/tmp/sim2claw_pi_imx708_torque_on_hold.jpg"
+    command = [
+        "rpicam-still",
+        "--nopreview",
+        "--immediate",
+        "--width",
+        str(width),
+        "--height",
+        str(height),
+        "--hflip",
+        "--vflip",
+        "--output",
+        remote_path,
+    ]
+    try:
+        subprocess.run(
+            ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5", host, *command],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=15.0,
+        )
+        subprocess.run(
+            ["scp", "-q", f"{host}:{remote_path}", str(output_path)],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=15.0,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        raise WristViewRepositionError(
+            f"Pi torque-on hold still capture failed: {error}"
+        ) from error
+    _require(
+        output_path.is_file() and output_path.stat().st_size > 0,
+        "Pi torque-on hold still is missing or empty",
+    )
+    return {
+        "schema_version": "sim2claw.pi_hold_still_capture_receipt.v1",
+        "status": "captured_while_follower_torque_on",
+        "camera": "imx708_wide",
+        "ssh_host": host,
+        "width": width,
+        "height": height,
+        "horizontal_flip": True,
+        "vertical_flip": True,
+        "path": str(output_path),
+        "sha256": _sha256(output_path),
+        "bytes": output_path.stat().st_size,
+        "metric_intrinsics": False,
+        "camera_to_robot_extrinsics": False,
+    }
+
+
+class WristViewRepositionError(RuntimeError):
+    """A staged reposition contract or safety check failed closed."""
+
+
+def _require(condition: bool, message: str) -> None:
+    if not condition:
+        raise WristViewRepositionError(message)
+
+
+def _canonical(value: Mapping[str, Any]) -> str:
+    return hashlib.sha256(
+        json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _read_json(path: Path, label: str) -> dict[str, Any]:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise WristViewRepositionError(f"could not load {label}: {error}") from error
+    _require(isinstance(value, dict), f"{label} must be an object")
+    return value
+
+
+def _write_once(path: Path, value: Mapping[str, Any]) -> None:
+    _require(not path.exists(), f"refusing to overwrite existing output: {path}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    temporary.replace(path)
+
+
+def _identity_and_limits(
+    preflight: Mapping[str, Any],
+) -> tuple[dict[str, Any], np.ndarray, np.ndarray, np.ndarray]:
+    _require(
+        preflight.get("passed") is True
+        and preflight.get("schema_version") == GATEWAY_SCHEMA
+        and preflight.get("control_source") == EXCITATION_CONTROL_SOURCE
+        and preflight.get("real_leader_opened") is False
+        and preflight.get("physical_follower_torque_enabled") is False
+        and preflight.get("device_configuration_rewritten") is False,
+        "fresh follower-only torque-off preflight did not pass",
+    )
+    port = str(preflight.get("follower_port") or "")
+    calibration = str(preflight.get("follower_calibration_sha256") or "")
+    _require(port and len(calibration) == 64, "follower hardware identity is incomplete")
+    values = [
+        np.asarray(preflight.get(field), dtype=np.float64)
+        for field in (
+            "follower_start_degrees",
+            "follower_calibrated_minimum",
+            "follower_calibrated_maximum",
+        )
+    ]
+    _require(
+        all(value.shape == (6,) and np.all(np.isfinite(value)) for value in values),
+        "follower preflight vectors must be finite six-vectors",
+    )
+    current, lower, upper = values
+    _require(np.all(lower < upper), "follower calibrated limits are unordered")
+    return (
+        {
+            "gateway_schema": GATEWAY_SCHEMA,
+            "follower_port": port,
+            "follower_calibration_sha256": calibration,
+        },
+        current,
+        lower,
+        upper,
+    )
+
+
+def _joint_delta(current: np.ndarray, expected: np.ndarray) -> np.ndarray:
+    delta = current - expected
+    delta[4] = (float(current[4]) - float(expected[4]) + 180.0) % 360.0 - 180.0
+    return delta
+
+
+def _validated_gateway_actual(
+    sample: Mapping[str, Any],
+    target: np.ndarray,
+    *,
+    phase: str,
+) -> np.ndarray:
+    requested = np.asarray(
+        sample.get("follower_requested_degrees"), dtype="<f8"
+    )
+    sent = np.asarray(sample.get("follower_command_degrees"), dtype="<f8")
+    actual = np.asarray(
+        sample.get("follower_actual_position_degrees"), dtype=np.float64
+    )
+    limits = np.asarray(sample.get("tracking_error_limits"), dtype=np.float64)
+    stalled_joints = sample.get("stalled_joints")
+    _require(
+        requested.shape == (6,)
+        and sent.shape == (6,)
+        and actual.shape == (6,)
+        and limits.shape == (6,)
+        and np.all(np.isfinite(requested))
+        and np.all(np.isfinite(sent))
+        and np.all(np.isfinite(actual))
+        and np.all(np.isfinite(limits))
+        and np.all(limits > 0.0),
+        f"gateway returned malformed or non-finite {phase} telemetry",
+    )
+    _require(
+        requested.tobytes() == target.tobytes()
+        and sent.tobytes() == target.tobytes()
+        and not bool(sample.get("rate_limited"))
+        and not bool(sample.get("safety_clamped"))
+        and not bool(sample.get("stalled"))
+        and isinstance(stalled_joints, list)
+        and not stalled_joints
+        and not bool(sample.get("assistance"))
+        and not bool(sample.get("intervention"))
+        and np.all(np.abs(_joint_delta(actual, target)) <= limits),
+        f"gateway modified or could not safely track a frozen {phase} action",
+    )
+    return actual
+
+
+def _load_route(
+    route_path: Path,
+) -> tuple[dict[str, Any], np.ndarray, list[np.ndarray]]:
+    route = _read_json(route_path.resolve(), "wrist-view route")
+    _require(
+        route.get("schema_version") == WRIST_VIEW_ROUTE_SCHEMA
+        and isinstance(route.get("route_id"), str)
+        and bool(route["route_id"]),
+        "wrist-view route identity changed",
+    )
+    anchor = np.asarray(route.get("reviewed_anchor_degrees"), dtype=np.float64)
+    waypoint_value = route.get("stage_waypoints_degrees")
+    if waypoint_value is None:
+        targets = np.asarray(route.get("stage_targets_degrees"), dtype=np.float64)
+        waypoint_stages = [target[None, :] for target in targets]
+    else:
+        _require(
+            isinstance(waypoint_value, list) and 1 <= len(waypoint_value) <= 4,
+            "wrist-view route must contain one to four waypoint stages",
+        )
+        waypoint_stages = [
+            np.asarray(stage, dtype=np.float64) for stage in waypoint_value
+        ]
+    _require(
+        anchor.shape == (6,)
+        and np.all(np.isfinite(anchor))
+        and 1 <= len(waypoint_stages) <= 4
+        and all(
+            stage.ndim == 2
+            and stage.shape[1] == 6
+            and 1 <= stage.shape[0] <= 4
+            and np.all(np.isfinite(stage))
+            for stage in waypoint_stages
+        ),
+        "wrist-view route must contain one anchor and one to four stages "
+        "of one to four six-joint waypoints",
+    )
+    capture_mode = str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+    _require(
+        capture_mode
+        in {CAPTURE_MODE_DUAL, CAPTURE_MODE_C922_PI, CAPTURE_MODE_TRICAM},
+        "unsupported wrist-view capture mode",
+    )
+    if capture_mode == CAPTURE_MODE_C922_PI:
+        capture = route.get("c922_capture")
+        _require(
+            route.get("capture_during_motion") is True
+            and isinstance(capture, Mapping)
+            and bool(str(capture.get("contract_path") or ""))
+            and bool(str(capture.get("camera_session_prefix") or ""))
+            and bool(str(capture.get("fixed_mount_token") or "")),
+            "C922-plus-Pi mode requires a bound motion-capture specification",
+        )
+    if capture_mode == CAPTURE_MODE_TRICAM:
+        capture = route.get("pi_motion_video")
+        contract_path = Path(str((capture or {}).get("contract_path") or ""))
+        if not contract_path.is_absolute():
+            contract_path = Path(__file__).resolve().parents[2] / contract_path
+        contract_sha256 = str((capture or {}).get("contract_sha256") or "")
+        _require(
+            route.get("capture_during_motion") is True
+            and isinstance(capture, Mapping)
+            and bool(str(capture.get("contract_path") or "")),
+            "motion-tricam mode requires a Pi video contract",
+        )
+        _require(
+            contract_path.is_file()
+            and len(contract_sha256) == 64
+            and _sha256(contract_path.resolve()) == contract_sha256,
+            "motion-tricam mode requires a content-hash-bound Pi video contract",
+        )
+    return route, anchor, waypoint_stages
+
+
+def _load_bound_frozen_stage_action(
+    route: Mapping[str, Any],
+) -> tuple[np.ndarray, dict[str, Any]] | None:
+    descriptor = route.get("frozen_stage_action")
+    if descriptor is None:
+        return None
+    _require(
+        isinstance(descriptor, Mapping)
+        and descriptor.get("schema_version")
+        == "sim2claw.bound_frozen_stage_action.v1"
+        and descriptor.get("dtype") == "float64_little_endian",
+        "bound frozen stage-action descriptor changed",
+    )
+    action_path = Path(str(descriptor.get("path") or ""))
+    receipt_path = Path(str(descriptor.get("derivation_receipt_path") or ""))
+    repository_root = Path(__file__).resolve().parents[2]
+    if not action_path.is_absolute():
+        action_path = repository_root / action_path
+    if not receipt_path.is_absolute():
+        receipt_path = repository_root / receipt_path
+    action_path = action_path.resolve()
+    receipt_path = receipt_path.resolve()
+    _require(
+        action_path.is_file()
+        and receipt_path.is_file()
+        and _sha256(action_path) == descriptor.get("npy_sha256")
+        and _sha256(receipt_path) == descriptor.get("derivation_receipt_sha256"),
+        "bound frozen stage action or derivation receipt drifted",
+    )
+    try:
+        actions = np.asarray(
+            np.load(action_path, allow_pickle=False),
+            dtype="<f8",
+            order="C",
+        )
+        expected_shape = tuple(int(value) for value in descriptor["shape"])
+    except (KeyError, OSError, TypeError, ValueError) as error:
+        raise WristViewRepositionError(
+            f"bound frozen stage action is malformed: {error}"
+        ) from error
+    raw = actions.tobytes(order="C")
+    counted_start = int(descriptor.get("counted_task_start_index", -1))
+    _require(
+        actions.ndim == 2
+        and actions.shape == expected_shape
+        and actions.shape[1] == len(ROBOT_JOINTS)
+        and np.all(np.isfinite(actions))
+        and hashlib.sha256(raw).hexdigest()
+        == descriptor.get("raw_c_order_sha256")
+        and 1 <= counted_start < len(actions),
+        "bound frozen stage-action bytes, shape, or task boundary changed",
+    )
+    counted = np.ascontiguousarray(actions[counted_start:], dtype="<f8")
+    setup = np.ascontiguousarray(actions[:counted_start], dtype="<f8")
+    receipt = _read_json(receipt_path, "frozen stage-action derivation receipt")
+    counted_digest = action_sha256(counted)
+    setup_digest = action_sha256(setup)
+    _require(
+        receipt.get("schema_version")
+        == "sim2claw.prospective_demonstration_derived_action.v1"
+        and receipt.get("status") == "frozen_before_physical_execution"
+        and receipt.get("canonical_task_action_sha256") == counted_digest
+        == descriptor.get("counted_task_action_sha256")
+        and descriptor.get("setup_prefix_action_sha256") == setup_digest
+        and ((receipt.get("boundary") or {}).get(
+            "counted_task_start_index_in_full_action"
+        ))
+        == counted_start,
+        "bound stage-action derivation or counted task hash changed",
+    )
+    return actions, {
+        "schema_version": descriptor["schema_version"],
+        "path": str(action_path),
+        "npy_sha256": descriptor["npy_sha256"],
+        "raw_c_order_sha256": descriptor["raw_c_order_sha256"],
+        "shape": list(actions.shape),
+        "derivation_receipt_path": str(receipt_path),
+        "derivation_receipt_sha256": descriptor["derivation_receipt_sha256"],
+        "counted_task_start_index": counted_start,
+        "counted_task_action_sha256": counted_digest,
+        "setup_prefix_action_sha256": setup_digest,
+        "setup_prefix_excluded_from_task_and_transfer_claims": True,
+    }
+
+
+def _recovery_source_contact_admission(
+    route: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    specification = route.get("recovery_source_contact_admission")
+    if specification is None:
+        return None
+    _require(
+        isinstance(specification, Mapping)
+        and specification.get("schema_version")
+        == "sim2claw.recovery_source_contact_admission.v1"
+        and specification.get("enabled") is True
+        and specification.get("source_state_only") is True
+        and specification.get("source_joint") == "elbow_flex"
+        and specification.get("inward_direction") == "decreasing"
+        and specification.get("require_source_robot_self_contact_only") is True
+        and specification.get("require_contact_pairs_subset_of_source") is True
+        and specification.get("require_penetration_never_worse_than_source")
+        is True
+        and specification.get("require_final_contact_clear") is True
+        and specification.get("exclude_from_task_and_transfer_claims") is True
+        and (route.get("review_basis") or {}).get("physical_scope")
+        == "setup_recovery_only",
+        "recovery source-contact admission semantics changed",
+    )
+    review_path = Path(str(specification.get("visual_source_review_path") or ""))
+    if not review_path.is_absolute():
+        review_path = Path(__file__).resolve().parents[2] / review_path
+    review_path = review_path.resolve()
+    review_sha256 = str(specification.get("visual_source_review_sha256") or "")
+    _require(
+        review_path.is_file()
+        and len(review_sha256) == 64
+        and _sha256(review_path) == review_sha256,
+        "recovery source-contact visual evidence changed",
+    )
+    review = _read_json(review_path, "recovery source-contact visual review")
+    frames = review.get("review_frames") or {}
+    pi_frame = frames.get("pi_imx708_rgb") or {}
+    transport = review.get("transport_checks") or {}
+    authority = review.get("authority") or {}
+    _require(
+        review.get("schema_version")
+        == "sim2claw.degraded_rgb_tricam_visual_scene_review.v1"
+        and review.get("status")
+        == "degraded_rgb_lanes_admitted_for_task_action_review"
+        and review.get("proof_class")
+        == "physical_motion_free_degraded_rgb_tricam_readiness_only"
+        and pi_frame.get("contact_free_high_arm_visible") is True
+        and transport.get("exact_c922_identity") is True
+        and transport.get("exact_d405_identity") is True
+        and transport.get("c922_apple_drops") == 0
+        and transport.get("d405_apple_drops") == 0
+        and authority.get("robot_gateway_opened") is False
+        and authority.get("robot_motion") is False,
+        "recovery source-contact visual evidence does not admit the live "
+        "contact-free high arm",
+    )
+    return {
+        **dict(specification),
+        "visual_source_review_path": str(review_path),
+        "visual_source_review_sha256": review_sha256,
+        "visual_source_contact_free_high_arm": True,
+        "physical_scope": "setup_recovery_only",
+        "model_contact_authority": "source_bound_clearance_only",
+    }
+
+
+def _preview_bound_route(
+    preview_fn: Callable[[list[np.ndarray], Path], dict[str, Any]],
+    stages: list[np.ndarray],
+    candidate_manifest_path: Path,
+    recovery_admission: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    if recovery_admission is None:
+        return preview_fn(stages, candidate_manifest_path)
+    _require(
+        preview_fn is preview_wrist_view_actions,
+        "recovery source-contact admission requires the production CPU/fp64 "
+        "preview",
+    )
+    return preview_wrist_view_actions(
+        stages,
+        candidate_manifest_path,
+        recovery_source_contact_admission=True,
+    )
+
+
+def _freeze_waypoint_stage(
+    start: np.ndarray,
+    waypoints: np.ndarray,
+    *,
+    samples_per_stage: int = SAMPLES_PER_STAGE,
+) -> np.ndarray:
+    """Freeze one to four equal-duration linear segments into exact rows."""
+
+    segment_count = int(waypoints.shape[0])
+    _require(
+        MIN_SAMPLES_PER_STAGE <= samples_per_stage <= MAX_SAMPLES_PER_STAGE
+        and (samples_per_stage - 1) % segment_count == 0,
+        "waypoint count does not divide the fixed stage interval",
+    )
+    intervals = (samples_per_stage - 1) // segment_count
+    rows: list[np.ndarray] = []
+    previous = start.astype("<f8")
+    for waypoint_index, waypoint in enumerate(waypoints):
+        segment = np.linspace(
+            previous,
+            waypoint.astype("<f8"),
+            intervals + 1,
+            dtype=np.float64,
+        ).astype("<f8", copy=False)
+        rows.append(segment if waypoint_index == 0 else segment[1:])
+        previous = waypoint.astype("<f8")
+    actions = np.concatenate(rows, axis=0).astype("<f8", copy=False)
+    _require(
+        actions.shape == (samples_per_stage, 6),
+        "frozen waypoint stage has the wrong shape",
+    )
+    return actions
+
+
+def _is_in_range_elbow_recovery_egress(
+    actions: np.ndarray,
+    anchor: np.ndarray,
+) -> bool:
+    """Admit elbow-only clearance followed by a fixed-elbow setup retreat."""
+
+    values = np.asarray(actions, dtype="<f8")
+    source = np.asarray(anchor, dtype="<f8")
+    other = np.asarray([0, 1, 3, 4, 5], dtype=np.int64)
+    if (
+        values.ndim != 2
+        or values.shape[1] != 6
+        or source.shape != (6,)
+        or not np.array_equal(values[0], source)
+        or not np.all(np.diff(values[:, 2]) <= 1e-12)
+    ):
+        return False
+    other_changed = np.any(
+        values[:, other] != source[None, other],
+        axis=1,
+    )
+    changed_indices = np.flatnonzero(other_changed)
+    if not len(changed_indices):
+        return bool(values[-1, 2] < source[2])
+    first_other_change = int(changed_indices[0])
+    return bool(
+        first_other_change > 0
+        and values[first_other_change, 2] < source[2]
+        and np.all(
+            values[first_other_change:, 2]
+            == values[first_other_change, 2]
+        )
+    )
+
+
+def _setup_recovery_preview_actions(
+    raw_anchor: np.ndarray,
+    command_anchor: np.ndarray,
+) -> np.ndarray:
+    """Enumerate the bounded setup snap joint-progress hyperrectangle."""
+
+    raw = np.asarray(raw_anchor, dtype="<f8")
+    command = np.asarray(command_anchor, dtype="<f8")
+    _require(
+        raw.shape == (6,)
+        and command.shape == (6,)
+        and np.all(np.isfinite(raw))
+        and np.all(np.isfinite(command)),
+        "setup recovery preview anchors are invalid",
+    )
+    changed = np.flatnonzero(raw != command)
+    if len(changed) == 0:
+        return raw[None, :].copy()
+    _require(
+        len(changed) <= 3,
+        "setup recovery preview supports at most three independently moving joints",
+    )
+    fractions = np.linspace(0.0, 1.0, 9, dtype=np.float64)
+    rows: list[np.ndarray] = []
+    delta = command - raw
+    for progress in itertools.product(fractions, repeat=len(changed)):
+        row = raw.copy()
+        row[changed] = raw[changed] + delta[changed] * np.asarray(progress)
+        rows.append(row)
+    return np.ascontiguousarray(np.asarray(rows, dtype="<f8"))
+
+
+def _contact_pair(model: mujoco.MjModel, contact: Any) -> tuple[str, str]:
+    body_ids = [
+        int(model.geom_bodyid[int(contact.geom1)]),
+        int(model.geom_bodyid[int(contact.geom2)]),
+    ]
+    names = [
+        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, body_id)
+        or f"body#{body_id}"
+        for body_id in body_ids
+    ]
+    return tuple(sorted((names[0], names[1])))
+
+
+def _known_safe_contact_envelopes(
+    candidate_manifest_path: Path,
+) -> tuple[dict[tuple[str, str], float], dict[str, Any] | None]:
+    """Load a receipt-bound envelope only for its exact candidate scene."""
+
+    specification = _read_json(
+        KNOWN_SAFE_CONTACT_ENVELOPE_PATH,
+        "known-safe self-contact envelope",
+    )
+    binding = specification.get("candidate_manifest") or {}
+    bound_path = Path(str(binding.get("path") or ""))
+    if not bound_path.is_absolute():
+        bound_path = Path(__file__).resolve().parents[2] / bound_path
+    bound_path = bound_path.resolve()
+    expected_manifest_sha256 = str(binding.get("sha256") or "")
+    if (
+        candidate_manifest_path != bound_path
+        or _sha256(candidate_manifest_path) != expected_manifest_sha256
+    ):
+        return {}, None
+
+    _require(
+        specification.get("schema_version")
+        == "sim2claw.wrist_view_known_safe_self_contact_envelope.v1"
+        and specification.get("status") == "frozen_prior_physical_safe_envelope",
+        "known-safe self-contact envelope identity changed",
+    )
+    physical_evidence = specification.get("physical_evidence") or {}
+    evidence_public: dict[str, Any] = {}
+    for label in ("packet", "execution_receipt"):
+        evidence_binding = physical_evidence.get(label) or {}
+        evidence_path = Path(str(evidence_binding.get("path") or ""))
+        if not evidence_path.is_absolute():
+            evidence_path = Path(__file__).resolve().parents[2] / evidence_path
+        evidence_path = evidence_path.resolve()
+        expected_sha256 = str(evidence_binding.get("sha256") or "")
+        _require(
+            evidence_path.is_file()
+            and len(expected_sha256) == 64
+            and _sha256(evidence_path) == expected_sha256,
+            f"known-safe self-contact {label} evidence changed",
+        )
+        evidence_public[label] = {
+            "path": str(evidence_path),
+            "sha256": expected_sha256,
+        }
+    receipt = _read_json(
+        Path(evidence_public["execution_receipt"]["path"]),
+        "known-safe self-contact execution receipt",
+    )
+    _require(
+        receipt.get("status")
+        == physical_evidence.get("execution_status")
+        == "completed_wrist_view_reposition_stage"
+        and receipt.get("physical_follower_torque_enabled")
+        is physical_evidence.get("physical_follower_torque_enabled_at_close")
+        is False
+        and receipt.get("packet_sha256")
+        == evidence_public["packet"]["sha256"],
+        "known-safe self-contact physical evidence is not a completed torque-off run",
+    )
+
+    envelopes: dict[tuple[str, str], float] = {}
+    allowed_pairs = specification.get("allowed_pairs")
+    _require(
+        isinstance(allowed_pairs, list) and allowed_pairs,
+        "known-safe self-contact envelope has no allowed pairs",
+    )
+    public_pairs: list[dict[str, Any]] = []
+    for row in allowed_pairs:
+        bodies = row.get("bodies") if isinstance(row, Mapping) else None
+        maximum = (
+            float(row.get("maximum_penetration_m"))
+            if isinstance(row, Mapping)
+            else float("nan")
+        )
+        pair = (
+            tuple(sorted(str(body) for body in bodies))
+            if isinstance(bodies, list)
+            else ()
+        )
+        _require(
+            len(pair) == 2
+            and pair in BASELINE_SELF_CONTACT_PAIRS
+            and np.isfinite(maximum)
+            and 0.0 < maximum <= 0.0001
+            and pair not in envelopes,
+            "known-safe self-contact pair or penetration bound changed",
+        )
+        envelopes[pair] = maximum
+        public_pairs.append(
+            {
+                "bodies": list(pair),
+                "maximum_penetration_m": maximum,
+                "observed_prior_maximum_penetration_m": float(
+                    row["observed_prior_maximum_penetration_m"]
+                ),
+                "numerical_tolerance_m": float(
+                    row["numerical_tolerance_m"]
+                ),
+            }
+        )
+    return envelopes, {
+        "path": str(KNOWN_SAFE_CONTACT_ENVELOPE_PATH),
+        "sha256": _sha256(KNOWN_SAFE_CONTACT_ENVELOPE_PATH),
+        "envelope_id": specification.get("envelope_id"),
+        "candidate_manifest_sha256": expected_manifest_sha256,
+        "allowed_pairs": public_pairs,
+        "physical_evidence": evidence_public,
+    }
+
+
+def _validate_contact_pair_minimums(
+    row_pair_minimums: Mapping[tuple[str, str], float],
+    initial_pair_minimums: Mapping[tuple[str, str], float],
+    known_safe_envelopes: Mapping[tuple[str, str], float],
+    *,
+    recovery_source_contact_admission: bool = False,
+) -> None:
+    if recovery_source_contact_admission:
+        _require(
+            set(row_pair_minimums).issubset(initial_pair_minimums),
+            "recovery trajectory creates a contact pair absent from its "
+            "source-only admission",
+        )
+        for pair, minimum in row_pair_minimums.items():
+            _require(
+                minimum >= initial_pair_minimums[pair] - 1e-9,
+                "recovery trajectory worsens source-only model penetration",
+            )
+        return
+    effective_allowed_pairs = set(initial_pair_minimums) | set(
+        known_safe_envelopes
+    )
+    _require(
+        set(row_pair_minimums).issubset(effective_allowed_pairs),
+        "staged reposition creates a new model contact pair",
+    )
+    for pair, minimum in row_pair_minimums.items():
+        if pair in known_safe_envelopes:
+            _require(
+                minimum >= -known_safe_envelopes[pair],
+                "staged reposition exceeds a frozen known-safe "
+                "self-contact penetration envelope",
+            )
+        else:
+            _require(
+                minimum >= initial_pair_minimums[pair] - 1e-9,
+                "staged reposition worsens baseline model penetration",
+            )
+
+
+def preview_wrist_view_actions(
+    stages: list[np.ndarray],
+    candidate_manifest_path: Path,
+    *,
+    recovery_source_contact_admission: bool = False,
+) -> dict[str, Any]:
+    """Preview exact staged float64 actions without dynamics or action repair."""
+
+    candidate_manifest_path = candidate_manifest_path.resolve()
+    manifest = _read_json(candidate_manifest_path, "candidate manifest")
+    candidate_config = manifest.get("candidate_config")
+    _require(
+        isinstance(candidate_config, Mapping),
+        "candidate manifest lacks its compiled config",
+    )
+    _require(
+        (candidate_config.get("model") or {}).get("kind") == "current_chess_scene",
+        "wrist-view preview requires the current chess scene",
+    )
+    model, _ = _compile_model(dict(candidate_config), base_directory=None)
+    data = mujoco.MjData(model)
+    joint_names = list((candidate_config.get("bindings") or {}).get("joint_names") or [])
+    transform_joints = (
+        ((candidate_config.get("physical_adapter") or {}).get("joint_transform") or {})
+        .get("joints")
+    )
+    _require(
+        len(joint_names) == len(ROBOT_JOINTS)
+        and isinstance(transform_joints, list)
+        and [joint.get("source_joint") for joint in transform_joints]
+        == list(ROBOT_JOINTS)
+        and [joint.get("simulator_joint") for joint in transform_joints]
+        == joint_names,
+        "candidate physical/simulator joint order changed",
+    )
+    joint_ids = [
+        mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
+        for name in joint_names
+    ]
+    _require(all(joint_id >= 0 for joint_id in joint_ids), "candidate joint is missing")
+    known_safe_envelopes, envelope_receipt = _known_safe_contact_envelopes(
+        candidate_manifest_path
+    )
+
+    model_stages = [
+        _physical_to_model_position(actions, candidate_config) for actions in stages
+    ]
+    initial_pairs: set[tuple[str, str]] | None = None
+    initial_pair_minimums: dict[tuple[str, str], float] = {}
+    initial_minimum: float | None = None
+    final_pairs: set[tuple[str, str]] = set()
+    global_minimum: float | None = None
+    global_pair_minimums: dict[tuple[str, str], float] = {}
+    stage_reports: list[dict[str, Any]] = []
+    for stage_index, (physical_actions, model_actions) in enumerate(
+        zip(stages, model_stages, strict=True), start=1
+    ):
+        stage_pairs: set[tuple[str, str]] = set()
+        stage_pair_minimums: dict[tuple[str, str], float] = {}
+        stage_minimum: float | None = None
+        for row_index, row in enumerate(model_actions):
+            for joint_index, joint_id in enumerate(joint_ids):
+                data.qpos[int(model.jnt_qposadr[joint_id])] = float(row[joint_index])
+            data.qvel[:] = 0.0
+            mujoco.mj_forward(model, data)
+            row_pairs: set[tuple[str, str]] = set()
+            row_distances: list[float] = []
+            row_pair_minimums: dict[tuple[str, str], float] = {}
+            for contact_index in range(data.ncon):
+                contact = data.contact[contact_index]
+                pair = _contact_pair(model, contact)
+                distance = float(contact.dist)
+                row_pairs.add(pair)
+                row_distances.append(distance)
+                row_pair_minimums[pair] = min(
+                    distance, row_pair_minimums.get(pair, distance)
+                )
+            if stage_index == 1 and row_index == 0:
+                initial_pairs = row_pairs
+                initial_pair_minimums = dict(row_pair_minimums)
+                initial_minimum = min(row_distances) if row_distances else None
+            _require(initial_pairs is not None, "preview initial contact was not observed")
+            _validate_contact_pair_minimums(
+                row_pair_minimums,
+                initial_pair_minimums,
+                known_safe_envelopes,
+                recovery_source_contact_admission=(
+                    recovery_source_contact_admission
+                ),
+            )
+            stage_pairs.update(row_pairs)
+            for pair, minimum in row_pair_minimums.items():
+                stage_pair_minimums[pair] = min(
+                    minimum, stage_pair_minimums.get(pair, minimum)
+                )
+                global_pair_minimums[pair] = min(
+                    minimum, global_pair_minimums.get(pair, minimum)
+                )
+            if row_distances:
+                row_minimum = min(row_distances)
+                stage_minimum = (
+                    row_minimum
+                    if stage_minimum is None
+                    else min(stage_minimum, row_minimum)
+                )
+                global_minimum = (
+                    row_minimum
+                    if global_minimum is None
+                    else min(global_minimum, row_minimum)
+                )
+            final_pairs = row_pairs
+        stage_reports.append(
+            {
+                "stage_index": stage_index,
+                "exact_physical_action_sha256": action_sha256(physical_actions),
+                "sample_count": int(physical_actions.shape[0]),
+                "observed_contact_pairs": [list(pair) for pair in sorted(stage_pairs)],
+                "minimum_distance_m": stage_minimum,
+                "contact_pair_minimum_distances_m": [
+                    {"bodies": list(pair), "minimum_distance_m": minimum}
+                    for pair, minimum in sorted(stage_pair_minimums.items())
+                ],
+                "known_safe_envelope_pairs_observed": [
+                    list(pair)
+                    for pair in sorted(stage_pairs & set(known_safe_envelopes))
+                ],
+                "external_contact_pairs": [],
+                "no_new_or_worsened_kinematic_contact": True,
+            }
+        )
+    if recovery_source_contact_admission:
+        _require(
+            all(
+                first.startswith("left_") and second.startswith("left_")
+                for first, second in (initial_pairs or set())
+            ),
+            "recovery source-only admission contains an external model contact",
+        )
+        _require(
+            not final_pairs,
+            "recovery trajectory does not clear every source-only model contact",
+        )
+    else:
+        _require(
+            final_pairs.issubset(BASELINE_SELF_CONTACT_PAIRS),
+            "staged reposition does not clear its pre-existing external model contact",
+        )
+    initial_unexpected_pairs = (initial_pairs or set()) - BASELINE_SELF_CONTACT_PAIRS
+    return {
+        "runtime": "cpu_mujoco_mj_forward",
+        "candidate_manifest_path": str(candidate_manifest_path),
+        "candidate_manifest_sha256": _sha256(candidate_manifest_path),
+        "candidate_digest": manifest.get("candidate_digest"),
+        "baseline_contact_pairs": [list(pair) for pair in sorted(initial_pairs or set())],
+        "initial_preexisting_contact_pairs": [
+            list(pair) for pair in sorted(initial_unexpected_pairs)
+        ],
+        "final_contact_pairs": [list(pair) for pair in sorted(final_pairs)],
+        "baseline_minimum_distance_m": initial_minimum,
+        "minimum_distance_m": global_minimum,
+        "contact_pair_minimum_distances_m": [
+            {"bodies": list(pair), "minimum_distance_m": minimum}
+            for pair, minimum in sorted(global_pair_minimums.items())
+        ],
+        "known_safe_contact_envelope": envelope_receipt,
+        "contact_pairs_unchanged_or_removed_only": True,
+        "external_contact_pairs": [],
+        "no_new_or_worsened_kinematic_contact": True,
+        "recovery_source_contact_admission": {
+            "enabled": recovery_source_contact_admission,
+            "source_pairs_robot_self_contact_only": (
+                recovery_source_contact_admission
+            ),
+            "contact_pairs_subset_of_source": (
+                recovery_source_contact_admission
+            ),
+            "penetration_never_worse_than_source": (
+                recovery_source_contact_admission
+            ),
+            "final_contact_pairs_cleared": (
+                recovery_source_contact_admission and not final_pairs
+            ),
+        },
+        "stages": stage_reports,
+    }
+
+
+def _decode_stage(stage: Mapping[str, Any]) -> tuple[np.ndarray, np.ndarray, bytes]:
+    payload = stage.get("frozen_action_payload") or {}
+    _require(payload.get("encoding") == ACTION_HASH_ENCODING, "stage encoding changed")
+    try:
+        raw = base64.b64decode(str(payload["base64"]), validate=True)
+        actions = np.frombuffer(raw, dtype="<f8").reshape(tuple(payload["shape"]))
+        timestamps = np.asarray(stage["timestamps_seconds"], dtype="<f8")
+    except (KeyError, TypeError, ValueError) as error:
+        raise WristViewRepositionError("stage payload is malformed") from error
+    sample_count = int(stage.get("sample_count", SAMPLES_PER_STAGE))
+    _require(
+        MIN_SAMPLES_PER_STAGE <= sample_count <= MAX_SAMPLES_PER_STAGE
+        and actions.shape == (sample_count, 6)
+        and timestamps.shape == (sample_count,)
+        and np.all(np.isfinite(actions))
+        and np.all(np.isfinite(timestamps)),
+        "stage arrays changed shape or contain non-finite values",
+    )
+    _require(
+        action_sha256(actions) == stage.get("action_sha256")
+        == payload.get("sha256")
+        == payload.get("simulation_consumer_sha256")
+        and hashlib.sha256(raw).hexdigest() == stage.get("action_bytes_sha256"),
+        "stage exact action bytes drifted",
+    )
+    return actions, timestamps, raw
+
+
+def _decode_capture_hold(
+    stage: Mapping[str, Any],
+    *,
+    expected_samples: int = CAPTURE_HOLD_SAMPLES,
+) -> tuple[np.ndarray, np.ndarray, bytes]:
+    payload = stage.get("frozen_capture_hold_payload") or {}
+    _require(payload.get("encoding") == ACTION_HASH_ENCODING, "hold encoding changed")
+    try:
+        raw = base64.b64decode(str(payload["base64"]), validate=True)
+        actions = np.frombuffer(raw, dtype="<f8").reshape(tuple(payload["shape"]))
+        timestamps = np.asarray(stage["capture_hold_timestamps_seconds"], dtype="<f8")
+    except (KeyError, TypeError, ValueError) as error:
+        raise WristViewRepositionError("capture-hold payload is malformed") from error
+    _require(
+        actions.shape == (expected_samples, 6)
+        and timestamps.shape == (expected_samples,)
+        and np.all(np.isfinite(actions))
+        and np.all(np.isfinite(timestamps)),
+        "capture-hold arrays changed shape or contain non-finite values",
+    )
+    _require(
+        action_sha256(actions) == stage.get("capture_hold_action_sha256")
+        == payload.get("sha256")
+        == payload.get("simulation_consumer_sha256")
+        and hashlib.sha256(raw).hexdigest()
+        == stage.get("capture_hold_action_bytes_sha256"),
+        "capture-hold exact action bytes drifted",
+    )
+    target = np.asarray(stage["target_degrees"], dtype="<f8")
+    _require(
+        np.all(actions == target[None, :]),
+        "capture-hold payload is not an exact final-target hold",
+    )
+    return actions, timestamps, raw
+
+
+def _validate_packet(packet_path: Path) -> dict[str, Any]:
+    packet = _read_json(packet_path.resolve(), "wrist-view packet")
+    _require(
+        packet.get("schema_version") == WRIST_VIEW_PACKET_SCHEMA
+        and packet.get("plan_sha256")
+        == _canonical({key: value for key, value in packet.items() if key != "plan_sha256"}),
+        "wrist-view packet digest changed",
+    )
+    route = packet.get("route") or {}
+    _require(
+        isinstance(route.get("path"), str)
+        and len(str(route.get("sha256") or "")) == 64
+        and _sha256(Path(route["path"]).resolve()) == route["sha256"],
+        "reviewed wrist-view route drifted",
+    )
+    bound_route = _read_json(Path(route["path"]).resolve(), "wrist-view route")
+    bound_frozen_stage = _load_bound_frozen_stage_action(bound_route)
+    recovery_admission = _recovery_source_contact_admission(bound_route)
+    _require(
+        packet.get("recovery_source_contact_admission") == recovery_admission,
+        "packet recovery source-contact admission changed",
+    )
+    capture_mode = str(packet.get("capture_mode") or "")
+    _require(
+        capture_mode
+        in {CAPTURE_MODE_DUAL, CAPTURE_MODE_C922_PI, CAPTURE_MODE_TRICAM}
+        and capture_mode
+        == str(bound_route.get("capture_mode") or CAPTURE_MODE_DUAL),
+        "packet/route capture mode changed",
+    )
+    execution_contract = packet.get("execution_contract") or {}
+    _require(
+        execution_contract.get("motion_camera_owner")
+        == (
+            (
+                "NativeC922StillRecorder"
+                if capture_mode == CAPTURE_MODE_C922_PI
+                else (
+                    "MotionTricamRecorder"
+                    if capture_mode == CAPTURE_MODE_TRICAM
+                    else "NativeDualCameraRecorder"
+                )
+            )
+        )
+        and execution_contract.get("d405_required")
+        is (capture_mode in {CAPTURE_MODE_DUAL, CAPTURE_MODE_TRICAM}),
+        "packet camera ownership changed",
+    )
+    assistance = packet.get("action_assistance") or {}
+    _require(
+        assistance
+        == {
+            "inverse_kinematics": False,
+            "clipping": False,
+            "offsets": False,
+            "suffix_or_corrective_action": False,
+        },
+        "wrist-view action assistance changed",
+    )
+    stages = packet.get("stages")
+    _require(
+        isinstance(stages, list) and 1 <= len(stages) <= 4,
+        "packet must contain one to four stages",
+    )
+    samples_per_stage = int(packet.get("samples_per_stage", SAMPLES_PER_STAGE))
+    _require(
+        MIN_SAMPLES_PER_STAGE <= samples_per_stage <= MAX_SAMPLES_PER_STAGE,
+        "packet stage sample count is outside the reviewed bound",
+    )
+    maximum_slew_by_joint = np.asarray(
+        packet.get(
+            "maximum_slew_degrees_s_by_joint",
+            [MAX_SLEW_DEGREES_S] * len(ROBOT_JOINTS),
+        ),
+        dtype=np.float64,
+    )
+    _require(
+        maximum_slew_by_joint.shape == (len(ROBOT_JOINTS),)
+        and np.all(maximum_slew_by_joint > 0.0)
+        and np.all(
+            maximum_slew_by_joint
+            <= GATEWAY_MAX_SLEW_DEGREES_S + 1e-12
+        ),
+        "packet per-joint slew bounds exceed the exact gateway",
+    )
+    alignment_role = str(
+        packet.get("frame_joint_alignment_camera_role") or ""
+    )
+    _require(
+        alignment_role in {"c922", "d405"}
+        and alignment_role
+        == str(
+            bound_route.get("frame_joint_alignment_camera_role")
+            or (
+                "d405"
+                if capture_mode != CAPTURE_MODE_C922_PI
+                else "c922"
+            )
+        )
+        and not (
+            alignment_role == "d405"
+            and capture_mode == CAPTURE_MODE_C922_PI
+        ),
+        "packet frame/joint alignment role changed",
+    )
+    capture_hold_samples = int(
+        packet.get("capture_hold_samples", CAPTURE_HOLD_SAMPLES)
+    )
+    capture_hold_seconds = float(
+        packet.get("capture_hold_seconds", CAPTURE_HOLD_SECONDS)
+    )
+    _require(
+        MIN_CAPTURE_HOLD_SECONDS
+        <= capture_hold_seconds
+        <= MAX_CAPTURE_HOLD_SECONDS
+        and capture_hold_samples == int(round(capture_hold_seconds * SAMPLE_HZ))
+        and abs(capture_hold_seconds - capture_hold_samples / SAMPLE_HZ) <= 1e-12,
+        "packet capture hold is outside the reviewed duration bound",
+    )
+    expected_previous = np.asarray(
+        packet["compile_anchor_degrees"], dtype=np.float64
+    )
+    command_previous = np.asarray(
+        packet["command_anchor_degrees"], dtype=np.float64
+    )
+    _require(
+        expected_previous.shape == (6,)
+        and command_previous.shape == (6,)
+        and np.all(np.isfinite(expected_previous))
+        and np.all(np.isfinite(command_previous)),
+        "packet anchors are malformed",
+    )
+    setup_enabled = (
+        (packet.get("setup_recovery_command_anchor") or {}).get("enabled")
+        is True
+    )
+    setup_preview = packet.get("setup_recovery_simulation_preview")
+    if setup_enabled:
+        setup_actions = _setup_recovery_preview_actions(
+            expected_previous, command_previous
+        )
+        setup_stage_preview = (setup_preview or {}).get("stage") or {}
+        _require(
+            isinstance(setup_preview, Mapping)
+            and setup_preview.get("no_new_or_worsened_kinematic_contact")
+            is True
+            and not setup_preview.get("external_contact_pairs")
+            and setup_preview.get("joint_progress_semantics")
+            == "nine_point_cartesian_hyperrectangle_per_changed_joint"
+            and setup_preview.get("changed_joint_count")
+            == int(np.count_nonzero(expected_previous != command_previous))
+            and setup_preview.get("sample_count") == len(setup_actions)
+            and setup_preview.get("route_stage_count_in_combined_preview")
+            == len(stages)
+            and setup_preview.get("kinematic_action_sha256")
+            == action_sha256(setup_actions)
+            == setup_stage_preview.get("exact_physical_action_sha256")
+            and setup_stage_preview.get(
+                "no_new_or_worsened_kinematic_contact"
+            )
+            is True
+            and not setup_stage_preview.get("external_contact_pairs"),
+            "setup recovery simulation preview is not admitted",
+        )
+        if recovery_admission is not None:
+            source_preview = setup_preview.get(
+                "recovery_source_contact_admission"
+            ) or {}
+            _require(
+                source_preview.get("enabled") is True
+                and source_preview.get(
+                    "source_pairs_robot_self_contact_only"
+                )
+                is True
+                and source_preview.get("contact_pairs_subset_of_source") is True
+                and source_preview.get(
+                    "penetration_never_worse_than_source"
+                )
+                is True
+                and source_preview.get("final_contact_pairs_cleared") is True,
+                "setup recovery source-contact preview changed",
+            )
+    else:
+        _require(
+            setup_preview is None,
+            "non-recovery packet unexpectedly contains a setup preview",
+        )
+    for stage_index, stage in enumerate(stages, start=1):
+        _require(stage.get("stage_index") == stage_index, "stage order changed")
+        actions, timestamps, _ = _decode_stage(stage)
+        hold_actions, hold_timestamps, _ = _decode_capture_hold(
+            stage,
+            expected_samples=capture_hold_samples,
+        )
+        target = np.asarray(stage["target_degrees"], dtype=np.float64)
+        expected_anchor = np.asarray(
+            stage.get("expected_anchor_degrees"), dtype=np.float64
+        )
+        command_anchor = np.asarray(
+            stage.get("command_anchor_degrees"), dtype=np.float64
+        )
+        _require(
+            expected_anchor.shape == (6,)
+            and np.all(np.isfinite(expected_anchor))
+            and expected_anchor.astype("<f8").tobytes()
+            == expected_previous.astype("<f8").tobytes(),
+            "stage expected anchor drifted",
+        )
+        _require(
+            command_anchor.shape == (6,)
+            and np.all(np.isfinite(command_anchor))
+            and command_anchor.astype("<f8").tobytes()
+            == command_previous.astype("<f8").tobytes()
+            and actions[0].tobytes()
+            == command_anchor.astype("<f8").tobytes()
+            and actions[-1].tobytes() == target.astype("<f8").tobytes(),
+            "stage command anchor or endpoints drifted",
+        )
+        waypoint_values = np.asarray(
+            stage.get("waypoints_degrees", [target.tolist()]),
+            dtype=np.float64,
+        )
+        _require(
+            waypoint_values.ndim == 2
+            and waypoint_values.shape[1] == 6
+            and 1 <= waypoint_values.shape[0] <= 4
+            and np.all(np.isfinite(waypoint_values))
+            and waypoint_values[-1].astype("<f8").tobytes()
+            == target.astype("<f8").tobytes()
+            and float(stage.get("maximum_joint_excursion_degrees"))
+            == float(np.max(np.abs(actions - expected_anchor[None, :]))),
+            "stage waypoint or maximum excursion drifted",
+        )
+        _require(
+            int(stage.get("sample_count", SAMPLES_PER_STAGE))
+            == samples_per_stage
+            and len(actions) == samples_per_stage
+            and np.array_equal(
+                timestamps,
+                (np.arange(samples_per_stage, dtype="<f8") + 1.0) / SAMPLE_HZ,
+            )
+            and np.all(
+                np.max(
+                    np.abs(
+                        np.diff(actions, axis=0)
+                        / np.diff(timestamps)[:, None]
+                    ),
+                    axis=0,
+                )
+                <= maximum_slew_by_joint + 1e-9
+            ),
+            "stage timestamps changed",
+        )
+        _require(
+            np.array_equal(
+                hold_timestamps,
+                (np.arange(capture_hold_samples, dtype="<f8") + 1.0)
+                / SAMPLE_HZ,
+            )
+            and np.all(hold_actions == target[None, :]),
+            "capture-hold timing or target changed",
+        )
+        _require(
+            stage.get("capture_hold_reuses_previewed_target") is True,
+            "capture hold is not bound to the previewed target",
+        )
+        _require(
+            float(np.max(np.abs(target - expected_anchor)))
+            <= MAX_STAGE_EXCURSION_DEGREES + 1e-9,
+            "stage excursion exceeds 90 degrees",
+        )
+        preview = stage.get("simulation_preview") or {}
+        _require(
+            preview.get("exact_physical_action_sha256") == stage["action_sha256"]
+            and preview.get("no_new_or_worsened_kinematic_contact") is True
+            and not preview.get("external_contact_pairs"),
+            "stage simulation preview is not admitted",
+        )
+        evidence_boundary = stage.get("evidence_action_boundary")
+        if bound_frozen_stage is not None:
+            _require(
+                isinstance(evidence_boundary, Mapping),
+                "bound frozen task stage lacks its evidence boundary",
+            )
+            counted_start = int(
+                evidence_boundary.get("counted_task_start_index", -1)
+            )
+            counted_payload = evidence_boundary.get("counted_task_payload") or {}
+            try:
+                counted_raw = base64.b64decode(
+                    str(counted_payload["base64"]), validate=True
+                )
+                counted_actions = np.frombuffer(
+                    counted_raw, dtype="<f8"
+                ).reshape(tuple(counted_payload["shape"]))
+            except (KeyError, TypeError, ValueError) as error:
+                raise WristViewRepositionError(
+                    "counted task payload is malformed"
+                ) from error
+            setup_actions = np.ascontiguousarray(
+                actions[:counted_start], dtype="<f8"
+            )
+            expected_counted = np.ascontiguousarray(
+                actions[counted_start:], dtype="<f8"
+            )
+            prefix_preview = evidence_boundary.get(
+                "setup_prefix_simulation_preview"
+            ) or {}
+            prefix_contact = (
+                prefix_preview.get("recovery_source_contact_admission")
+                or {}
+            )
+            prefix_preview_admitted = (
+                prefix_preview.get(
+                    "no_new_or_worsened_kinematic_contact"
+                )
+                is True
+                and not prefix_preview.get("external_contact_pairs")
+                and (
+                    (
+                        recovery_admission is not None
+                        and prefix_contact.get(
+                            "final_contact_pairs_cleared"
+                        )
+                        is True
+                    )
+                    or (
+                        recovery_admission is None
+                        and prefix_contact.get("enabled") is False
+                    )
+                )
+            )
+            _require(
+                evidence_boundary.get("path")
+                == bound_frozen_stage[1]["path"]
+                and evidence_boundary.get("npy_sha256")
+                == bound_frozen_stage[1]["npy_sha256"]
+                and evidence_boundary.get("derivation_receipt_sha256")
+                == bound_frozen_stage[1]["derivation_receipt_sha256"]
+                and counted_start
+                == bound_frozen_stage[1]["counted_task_start_index"]
+                and counted_actions.tobytes()
+                == expected_counted.tobytes()
+                and action_sha256(counted_actions)
+                == counted_payload.get("sha256")
+                == counted_payload.get("simulation_consumer_sha256")
+                == evidence_boundary.get("counted_task_action_sha256")
+                and action_sha256(setup_actions)
+                == evidence_boundary.get("setup_prefix_action_sha256")
+                and evidence_boundary.get(
+                    "setup_prefix_excluded_from_task_and_transfer_claims"
+                )
+                is True
+                and prefix_preview_admitted,
+                "stage evidence boundary, setup prefix, or counted task "
+                "bytes changed",
+            )
+        else:
+            _require(
+                evidence_boundary is None,
+                "ordinary reposition stage unexpectedly claims a task boundary",
+            )
+        if recovery_admission is not None:
+            recovery_actions = (
+                actions[
+                    : int(evidence_boundary["counted_task_start_index"]) + 1
+                ]
+                if isinstance(evidence_boundary, Mapping)
+                else actions
+            )
+            _require(
+                np.all(np.diff(recovery_actions[:, 2]) <= 1e-12),
+                "recovery setup prefix elbow route is not monotonically inward",
+            )
+        expected_previous = target
+        command_previous = target
+    if recovery_admission is not None:
+        source_preview = (
+            packet.get("simulation_preview") or {}
+        ).get("recovery_source_contact_admission") or {}
+        _require(
+            source_preview.get("enabled") is True
+            and source_preview.get("contact_pairs_subset_of_source") is True
+            and source_preview.get("penetration_never_worse_than_source") is True
+            and source_preview.get("final_contact_pairs_cleared") is True,
+            "packet recovery source-contact preview changed",
+        )
+    return packet
+
+
+def compile_wrist_view_reposition_packet(
+    packet_path: Path,
+    *,
+    candidate_manifest_path: Path,
+    route_path: Path,
+    preflight_fn: Callable[[], dict[str, Any]] | None = None,
+    preview_fn: Callable[[list[np.ndarray], Path], dict[str, Any]] = (
+        preview_wrist_view_actions
+    ),
+) -> dict[str, Any]:
+    """Freeze reviewed one- or multi-segment stages from a fresh anchor."""
+
+    preflight = (preflight_fn or _default_preflight)()
+    identity, anchor, lower, upper = _identity_and_limits(preflight)
+    route, reviewed_anchor, waypoint_stages = _load_route(route_path)
+    bound_frozen_stage = _load_bound_frozen_stage_action(route)
+    recovery_admission = _recovery_source_contact_admission(route)
+    samples_per_stage = int(route.get("samples_per_stage", SAMPLES_PER_STAGE))
+    _require(
+        MIN_SAMPLES_PER_STAGE <= samples_per_stage <= MAX_SAMPLES_PER_STAGE,
+        "reviewed route stage sample count is outside the bounded range",
+    )
+    maximum_slew_by_joint = np.asarray(
+        route.get(
+            "maximum_slew_degrees_s_by_joint",
+            [MAX_SLEW_DEGREES_S] * len(ROBOT_JOINTS),
+        ),
+        dtype=np.float64,
+    )
+    _require(
+        maximum_slew_by_joint.shape == (len(ROBOT_JOINTS),)
+        and np.all(np.isfinite(maximum_slew_by_joint))
+        and np.all(maximum_slew_by_joint > 0.0)
+        and np.all(
+            maximum_slew_by_joint
+            <= GATEWAY_MAX_SLEW_DEGREES_S + 1e-12
+        )
+        and (
+            bound_frozen_stage is not None
+            or np.all(maximum_slew_by_joint <= MAX_SLEW_DEGREES_S)
+        ),
+        "reviewed per-joint slew bound exceeds the exact gateway or is "
+        "not restricted to a bound frozen task action",
+    )
+    capture_hold_seconds = float(
+        route.get("capture_hold_seconds", CAPTURE_HOLD_SECONDS)
+    )
+    capture_hold_samples = int(round(capture_hold_seconds * SAMPLE_HZ))
+    _require(
+        MIN_CAPTURE_HOLD_SECONDS
+        <= capture_hold_seconds
+        <= MAX_CAPTURE_HOLD_SECONDS
+        and abs(capture_hold_seconds - capture_hold_samples / SAMPLE_HZ) <= 1e-12,
+        "reviewed route capture hold is outside the bounded range or not "
+        "aligned to the fixed sample rate",
+    )
+    if str(route.get("capture_mode") or CAPTURE_MODE_DUAL) == CAPTURE_MODE_TRICAM:
+        specification = route["pi_motion_video"]
+        contract_path = Path(str(specification["contract_path"]))
+        if not contract_path.is_absolute():
+            contract_path = Path(__file__).resolve().parents[2] / contract_path
+        contract = _read_json(
+            contract_path.resolve(),
+            "bound Pi motion-video contract",
+        )
+        required_duration = (
+            samples_per_stage / SAMPLE_HZ
+            + capture_hold_seconds
+            + CAMERA_POST_ROLL_SECONDS
+            + TRICAM_START_TO_ACTION_BUDGET_SECONDS
+        )
+        _require(
+            float(contract.get("duration_seconds", 0.0)) >= required_duration,
+            "bound Pi motion-video duration cannot enclose the full stage, "
+            "hold, post-roll, and camera-to-action budget",
+        )
+    targets = np.asarray(
+        [waypoints[-1] for waypoints in waypoint_stages], dtype=np.float64
+    )
+    recovery_snap_limit = route.get(
+        "setup_recovery_command_anchor_snap_limit_degrees"
+    )
+    setup_recovery = recovery_snap_limit is not None
+    if setup_recovery:
+        recovery_scope = route.get("review_basis", {}).get("physical_scope")
+        _require(
+            recovery_scope
+            in {
+                "setup_recovery_only",
+                "calibration_capture_with_setup_recovery",
+            }
+            and 0.0 < float(recovery_snap_limit)
+            <= SETUP_RECOVERY_COMMAND_ANCHOR_SNAP_LIMIT_DEGREES,
+            "setup recovery anchor snap must be explicitly scoped to setup "
+            "or calibration capture and at most 10 degrees",
+        )
+    _require(
+        np.all(
+            np.abs(_joint_delta(anchor, reviewed_anchor))
+            <= COMPILE_ANCHOR_TOLERANCE_DEGREES
+        ),
+        "fresh follower pose no longer matches the reviewed live torque-off pose",
+    )
+    _require(
+        all(
+            np.all(waypoints >= lower[None, :])
+            and np.all(waypoints <= upper[None, :])
+            for waypoints in waypoint_stages
+        ),
+        "reviewed wrist-view waypoint exceeds fresh calibrated limits",
+    )
+    command_anchor = np.clip(anchor, lower, upper).astype("<f8")
+    command_anchor_tolerance = (
+        np.asarray(
+            [
+                float(recovery_snap_limit),
+                float(recovery_snap_limit),
+                float(recovery_snap_limit),
+                float(recovery_snap_limit),
+                float(recovery_snap_limit),
+                COMPILE_COMMAND_ANCHOR_CLIP_TOLERANCE_DEGREES[5],
+            ],
+            dtype=np.float64,
+        )
+        if setup_recovery
+        else COMPILE_COMMAND_ANCHOR_CLIP_TOLERANCE_DEGREES
+    )
+    _require(
+        np.all(
+            np.abs(_joint_delta(command_anchor, anchor))
+            <= command_anchor_tolerance
+        ),
+        "fresh torque-off pose is too far outside calibrated limits",
+    )
+    timestamps = (
+        np.arange(samples_per_stage, dtype="<f8") + 1.0
+    ) / SAMPLE_HZ
+    hold_timestamps = (
+        np.arange(capture_hold_samples, dtype="<f8") + 1.0
+    ) / SAMPLE_HZ
+    action_stages: list[np.ndarray] = []
+    previous = command_anchor
+    for stage_position, waypoints in enumerate(waypoint_stages):
+        delta = waypoints - previous[None, :]
+        _require(
+            float(np.max(np.abs(delta))) <= MAX_STAGE_EXCURSION_DEGREES + 1e-9,
+            "reviewed wrist-view stage exceeds 90 degrees",
+        )
+        actions = (
+            np.ascontiguousarray(bound_frozen_stage[0], dtype="<f8")
+            if bound_frozen_stage is not None and stage_position == 0
+            else _freeze_waypoint_stage(
+                previous,
+                waypoints,
+                samples_per_stage=samples_per_stage,
+            )
+        )
+        _require(
+            bound_frozen_stage is None
+            or (
+                len(waypoint_stages) == 1
+                and actions.shape == (samples_per_stage, len(ROBOT_JOINTS))
+                and actions[0].tobytes()
+                == previous.astype("<f8").tobytes()
+                and actions[-1].tobytes()
+                == waypoints[-1].astype("<f8").tobytes()
+            ),
+            "bound frozen task action does not match the reviewed stage "
+            "count, anchor, target, or sample count",
+        )
+        rates = np.abs(np.diff(actions, axis=0) / np.diff(timestamps)[:, None])
+        _require(
+            np.all(np.max(rates, axis=0) <= maximum_slew_by_joint + 1e-9),
+            "reviewed wrist-view stage exceeds its frozen per-joint slew "
+            "bounds",
+        )
+        _require(
+            np.all(actions >= lower[None, :]) and np.all(actions <= upper[None, :]),
+            "frozen wrist-view action exceeds calibrated limits",
+        )
+        action_stages.append(actions)
+        previous = waypoints[-1].astype("<f8")
+    if recovery_admission is not None:
+        outside = (anchor < lower) | (anchor > upper)
+        route_actions = np.concatenate(action_stages, axis=0)
+        counted_task_start = (
+            int(bound_frozen_stage[1]["counted_task_start_index"])
+            if bound_frozen_stage is not None
+            else None
+        )
+        recovery_actions = (
+            route_actions[: counted_task_start + 1]
+            if counted_task_start is not None
+            else route_actions
+        )
+        out_of_range_setup_egress = (
+            setup_recovery
+            and np.array_equal(
+                outside,
+                np.asarray([False, False, True, False, False, False]),
+            )
+            and anchor[2] > upper[2]
+            and command_anchor[2] == upper[2]
+            and np.array_equal(
+                command_anchor[[0, 1, 3, 4, 5]],
+                anchor[[0, 1, 3, 4, 5]],
+            )
+            and command_anchor[2] < anchor[2]
+        )
+        in_range_elbow_recovery_egress = (
+            not setup_recovery
+            and not np.any(outside)
+            and np.array_equal(command_anchor, anchor)
+            and _is_in_range_elbow_recovery_egress(
+                recovery_actions,
+                anchor,
+            )
+        )
+        _require(
+            (out_of_range_setup_egress or in_range_elbow_recovery_egress)
+            and np.all(np.diff(recovery_actions[:, 2]) <= 1e-12),
+            "recovery source-contact admission requires either one high "
+            "out-of-range elbow source with an inward setup clamp or one "
+            "in-range elbow-clearance preload followed by a fixed-elbow "
+            "setup retreat, plus a monotonically inward setup/recovery "
+            "prefix",
+        )
+    setup_recovery_preview: dict[str, Any] | None = None
+    if setup_recovery:
+        setup_preview_actions = _setup_recovery_preview_actions(
+            anchor, command_anchor
+        )
+        setup_preview = _preview_bound_route(
+            preview_fn,
+            [setup_preview_actions, *action_stages],
+            candidate_manifest_path,
+            recovery_admission,
+        )
+        setup_preview_stages = setup_preview.get("stages")
+        _require(
+            setup_preview.get("no_new_or_worsened_kinematic_contact") is True
+            and not setup_preview.get("external_contact_pairs")
+            and isinstance(setup_preview_stages, list)
+            and len(setup_preview_stages) >= 1
+            and setup_preview_stages[0].get("exact_physical_action_sha256")
+            == action_sha256(setup_preview_actions),
+            "simulation preview rejected the bounded setup recovery",
+        )
+        setup_recovery_preview = {
+            **{
+                key: value
+                for key, value in setup_preview.items()
+                if key != "stages"
+            },
+            "stage": setup_preview_stages[0],
+            "joint_progress_semantics": (
+                "nine_point_cartesian_hyperrectangle_per_changed_joint"
+            ),
+            "changed_joint_count": int(
+                np.count_nonzero(anchor != command_anchor)
+            ),
+            "sample_count": int(len(setup_preview_actions)),
+            "route_stage_count_in_combined_preview": len(action_stages),
+            "kinematic_action_sha256": action_sha256(
+                setup_preview_actions
+            ),
+        }
+    preview = _preview_bound_route(
+        preview_fn,
+        action_stages,
+        candidate_manifest_path,
+        recovery_admission,
+    )
+    _require(
+        preview.get("no_new_or_worsened_kinematic_contact") is True
+        and not preview.get("external_contact_pairs"),
+        "simulation preview rejected the staged reposition",
+    )
+    setup_prefix_preview: dict[str, Any] | None = None
+    if bound_frozen_stage is not None:
+        counted_task_start = int(
+            bound_frozen_stage[1]["counted_task_start_index"]
+        )
+        setup_prefix_preview = preview_wrist_view_actions(
+            [action_stages[0][: counted_task_start + 1]],
+            candidate_manifest_path,
+            recovery_source_contact_admission=(
+                recovery_admission is not None
+            ),
+        )
+        setup_prefix_contact = (
+            setup_prefix_preview.get("recovery_source_contact_admission")
+            or {}
+        )
+        _require(
+            setup_prefix_preview.get(
+                "no_new_or_worsened_kinematic_contact"
+            )
+            is True
+            and not setup_prefix_preview.get("external_contact_pairs")
+            and (
+                (
+                    recovery_admission is not None
+                    and setup_prefix_contact.get(
+                        "final_contact_pairs_cleared"
+                    )
+                    is True
+                )
+                or (
+                    recovery_admission is None
+                    and setup_prefix_contact.get("enabled") is False
+                )
+            ),
+            "simulation preview did not safely reach the counted task "
+            "boundary",
+        )
+    preview_stages = preview.get("stages")
+    _require(
+        isinstance(preview_stages, list) and len(preview_stages) == len(action_stages),
+        "simulation preview stage count changed",
+    )
+    stages: list[dict[str, Any]] = []
+    previous = anchor.astype("<f8")
+    action_previous = command_anchor
+    for stage_index, (waypoints, target, actions, stage_preview) in enumerate(
+        zip(
+            waypoint_stages,
+            targets,
+            action_stages,
+            preview_stages,
+            strict=True,
+        ),
+        start=1,
+    ):
+        raw = actions.tobytes(order="C")
+        digest = action_sha256(actions)
+        hold_actions = np.repeat(
+            target.astype("<f8")[None, :], capture_hold_samples, axis=0
+        )
+        hold_raw = hold_actions.tobytes(order="C")
+        hold_digest = action_sha256(hold_actions)
+        evidence_boundary: dict[str, Any] | None = None
+        if bound_frozen_stage is not None:
+            counted_task_start = int(
+                bound_frozen_stage[1]["counted_task_start_index"]
+            )
+            counted_task_actions = np.ascontiguousarray(
+                actions[counted_task_start:], dtype="<f8"
+            )
+            counted_task_raw = counted_task_actions.tobytes(order="C")
+            setup_prefix_actions = np.ascontiguousarray(
+                actions[:counted_task_start], dtype="<f8"
+            )
+            evidence_boundary = {
+                **bound_frozen_stage[1],
+                "counted_task_payload": {
+                    "encoding": ACTION_HASH_ENCODING,
+                    "shape": list(counted_task_actions.shape),
+                    "base64": base64.b64encode(counted_task_raw).decode("ascii"),
+                    "sha256": action_sha256(counted_task_actions),
+                    "simulation_consumer_sha256": action_sha256(
+                        counted_task_actions
+                    ),
+                    "hardware_consumer_consumes_identical_suffix_bytes": True,
+                    "units": ["degree"] * 5 + ["percent"],
+                },
+                "setup_prefix_sample_count": counted_task_start,
+                "setup_prefix_action_sha256": action_sha256(
+                    setup_prefix_actions
+                ),
+                "setup_prefix_simulation_preview": setup_prefix_preview,
+            }
+        _require(
+            stage_preview.get("exact_physical_action_sha256") == digest,
+            "simulation preview did not consume the exact stage bytes",
+        )
+        stages.append(
+            {
+                "stage_index": stage_index,
+                "sample_count": samples_per_stage,
+                "expected_anchor_degrees": previous.tolist(),
+                "command_anchor_degrees": action_previous.tolist(),
+                "target_degrees": target.tolist(),
+                "waypoints_degrees": waypoints.tolist(),
+                "maximum_joint_excursion_degrees": float(
+                    np.max(np.abs(actions - previous[None, :]))
+                ),
+                "timestamps_seconds": timestamps.tolist(),
+                "frozen_action_payload": {
+                    "encoding": ACTION_HASH_ENCODING,
+                    "shape": list(actions.shape),
+                    "base64": base64.b64encode(raw).decode("ascii"),
+                    "sha256": digest,
+                    "simulation_consumer_sha256": digest,
+                    "hardware_consumer_must_use_same_bytes": True,
+                    "units": ["degree"] * 5 + ["percent"],
+                },
+                "action_sha256": digest,
+                "action_bytes_sha256": hashlib.sha256(raw).hexdigest(),
+                "capture_hold_timestamps_seconds": hold_timestamps.tolist(),
+                "frozen_capture_hold_payload": {
+                    "encoding": ACTION_HASH_ENCODING,
+                    "shape": list(hold_actions.shape),
+                    "base64": base64.b64encode(hold_raw).decode("ascii"),
+                    "sha256": hold_digest,
+                    "simulation_consumer_sha256": hold_digest,
+                    "hardware_consumer_must_use_same_bytes": True,
+                    "units": ["degree"] * 5 + ["percent"],
+                },
+                "capture_hold_action_sha256": hold_digest,
+                "capture_hold_action_bytes_sha256": hashlib.sha256(
+                    hold_raw
+                ).hexdigest(),
+                "capture_hold_seconds": capture_hold_seconds,
+                "simulation_preview": stage_preview,
+                "evidence_action_boundary": evidence_boundary,
+                "capture_hold_reuses_previewed_target": True,
+                "inspect_wrist_camera_before_next_stage": stage_index < len(targets),
+            }
+        )
+        previous = target.astype("<f8")
+        action_previous = target.astype("<f8")
+    packet = {
+        "schema_version": WRIST_VIEW_PACKET_SCHEMA,
+        "kind": (
+            "prospective_exact_real_to_sim_task_with_setup_prefix"
+            if bound_frozen_stage is not None
+            else "follower_only_staged_d405_tag_view_reposition"
+        ),
+        "single_use_per_stage": True,
+        "hardware_identity": identity,
+        "compile_anchor_source": "fresh_torque_off_follower_read",
+        "compile_anchor_degrees": anchor.tolist(),
+        "command_anchor_degrees": command_anchor.tolist(),
+        "setup_recovery_command_anchor": {
+            "enabled": setup_recovery,
+            "snap_delta_degrees": _joint_delta(
+                command_anchor, anchor
+            ).tolist(),
+            "snap_limit_degrees": command_anchor_tolerance.tolist(),
+            "setup_only": True,
+            "sim_gap_evidence": False,
+        },
+        "setup_recovery_simulation_preview": setup_recovery_preview,
+        "recovery_source_contact_admission": recovery_admission,
+        "reviewed_live_anchor_degrees": reviewed_anchor.tolist(),
+        "route": {
+            "route_id": route["route_id"],
+            "path": str(route_path.resolve()),
+            "sha256": _sha256(route_path.resolve()),
+        },
+        "calibrated_minimum_degrees": lower.tolist(),
+        "calibrated_maximum_degrees": upper.tolist(),
+        "sample_hz": SAMPLE_HZ,
+        "samples_per_stage": samples_per_stage,
+        "capture_hold_samples": capture_hold_samples,
+        "capture_hold_seconds": capture_hold_seconds,
+        "capture_during_motion": bool(route.get("capture_during_motion", False)),
+        "capture_mode": str(route.get("capture_mode") or CAPTURE_MODE_DUAL),
+        "maximum_stage_excursion_degrees": MAX_STAGE_EXCURSION_DEGREES,
+        "maximum_slew_degrees_s": MAX_SLEW_DEGREES_S,
+        "maximum_slew_degrees_s_by_joint": maximum_slew_by_joint.tolist(),
+        "stage_anchor_tolerance_degrees": STAGE_ANCHOR_TOLERANCE_DEGREES.tolist(),
+        "hold_entry_tolerance_degrees": HOLD_ENTRY_TOLERANCE_DEGREES.tolist(),
+        "final_tolerance_degrees": FINAL_TOLERANCE_DEGREES.tolist(),
+        "stages": stages,
+        "simulation_preview": {
+            key: value for key, value in preview.items() if key != "stages"
+        },
+        "frame_joint_alignment_camera_role": str(
+            route.get("frame_joint_alignment_camera_role")
+            or (
+                "d405"
+                if str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+                != CAPTURE_MODE_C922_PI
+                else "c922"
+            )
+        ),
+        "candidate_manifest": {
+            "path": str(candidate_manifest_path.resolve()),
+            "sha256": _sha256(candidate_manifest_path.resolve()),
+            "candidate_digest": preview.get("candidate_digest"),
+        },
+        "action_assistance": {
+            "inverse_kinematics": False,
+            "clipping": False,
+            "offsets": False,
+            "suffix_or_corrective_action": False,
+        },
+        "execution_contract": {
+            "one_stage_per_invocation": True,
+            "fresh_preflight_each_stage": True,
+            "prior_stage_receipt_required_after_stage_1": True,
+            "torque_off_on_every_close": True,
+            "native_dual_camera_final_hold_capture": (
+                str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+                == CAPTURE_MODE_DUAL
+            ),
+            "motion_camera_owner": (
+                (
+                    "NativeC922StillRecorder"
+                    if str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+                    == CAPTURE_MODE_C922_PI
+                    else (
+                        "MotionTricamRecorder"
+                        if str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+                        == CAPTURE_MODE_TRICAM
+                        else "NativeDualCameraRecorder"
+                    )
+                )
+            ),
+            "d405_required": (
+                str(route.get("capture_mode") or CAPTURE_MODE_DUAL)
+                in {CAPTURE_MODE_DUAL, CAPTURE_MODE_TRICAM}
+            ),
+            "camera_capture_finishes_before_gateway_close": True,
+            "frame_joint_alignment_clock": "host_continuous_monotonic_nanoseconds",
+        },
+        "physical_motion_commanded": False,
+        "physical_follower_torque_enabled": False,
+        "physical_authority": False,
+    }
+    packet["plan_sha256"] = _canonical(packet)
+    _write_once(packet_path, packet)
+    return packet
+
+
+def review_wrist_view_reposition_packet(
+    packet_path: Path,
+    output_path: Path,
+    *,
+    reviewer: str,
+    decision_id: str,
+) -> dict[str, Any]:
+    """Seal an independent review receipt without changing the packet."""
+
+    packet_path = packet_path.resolve()
+    packet = _validate_packet(packet_path)
+    reviewer = reviewer.strip()
+    decision_id = decision_id.strip()
+    _require(reviewer and decision_id, "reviewer and decision identity are required")
+    receipt = {
+        "schema_version": WRIST_VIEW_REVIEW_SCHEMA,
+        "status": "admitted_for_one_execution_per_stage",
+        "packet_path": str(packet_path),
+        "packet_sha256": _sha256(packet_path),
+        "plan_sha256": packet["plan_sha256"],
+        "reviewer": reviewer,
+        "decision_id": decision_id,
+        "frozen_float64_actions_reviewed": True,
+        "stage_excursions_reviewed": True,
+        "bounded_slew_reviewed": True,
+        "simulation_contact_preview_reviewed": True,
+        "recovery_source_contact_admission_reviewed": (
+            packet.get("recovery_source_contact_admission") is not None
+        ),
+        "fresh_anchor_and_identity_checks_reviewed": True,
+        "torque_off_close_reviewed": True,
+        "final_hold_capture_reviewed": True,
+        "clear_workcell_acknowledged": True,
+        "camera_inspection_between_stages_acknowledged": True,
+        "physical_authority": False,
+    }
+    _write_once(output_path, receipt)
+    return receipt
+
+
+def _validate_review(
+    review_path: Path, packet_path: Path, packet: Mapping[str, Any]
+) -> dict[str, Any]:
+    review = _read_json(review_path.resolve(), "wrist-view review")
+    _require(
+        review.get("schema_version") == WRIST_VIEW_REVIEW_SCHEMA
+        and review.get("status") == "admitted_for_one_execution_per_stage"
+        and review.get("packet_sha256") == _sha256(packet_path)
+        and review.get("plan_sha256") == packet.get("plan_sha256"),
+        "wrist-view review is not bound to this packet",
+    )
+    fields = (
+        "reviewer",
+        "decision_id",
+        "frozen_float64_actions_reviewed",
+        "stage_excursions_reviewed",
+        "bounded_slew_reviewed",
+        "simulation_contact_preview_reviewed",
+        "fresh_anchor_and_identity_checks_reviewed",
+        "torque_off_close_reviewed",
+        "final_hold_capture_reviewed",
+        "clear_workcell_acknowledged",
+        "camera_inspection_between_stages_acknowledged",
+    )
+    _require(all(review.get(field) for field in fields), "review receipt is incomplete")
+    _require(
+        review.get("recovery_source_contact_admission_reviewed")
+        is (packet.get("recovery_source_contact_admission") is not None),
+        "review recovery source-contact decision changed",
+    )
+    return review
+
+
+def _capture_artifacts(
+    capture_root: Path, camera_finished: Mapping[str, Any]
+) -> list[dict[str, Any]]:
+    if camera_finished.get("schema_version") == C922_MOTION_CAPTURE_SCHEMA:
+        rows = [
+            (
+                "c922_final_report",
+                str(camera_finished.get("final_path") or ""),
+                str(camera_finished.get("final_sha256") or ""),
+            ),
+            (
+                "c922_callback_ledger",
+                str(camera_finished.get("ledger_path") or ""),
+                str(camera_finished.get("ledger_sha256") or ""),
+            ),
+        ]
+        artifacts = []
+        for kind, raw_path, expected_sha256 in rows:
+            path = Path(raw_path)
+            if not path.is_absolute():
+                path = capture_root / path
+            _require(
+                len(expected_sha256) == 64
+                and path.is_file()
+                and _sha256(path) == expected_sha256,
+                f"{kind} artifact hash changed",
+            )
+            artifacts.append(
+                {
+                    "kind": kind,
+                    "path": str(path),
+                    "sha256": expected_sha256,
+                    "bytes": path.stat().st_size,
+                }
+            )
+        return artifacts
+
+    common = camera_finished.get("common_session") or {}
+    rows: list[tuple[str, str, str]] = [
+        (
+            "native_report",
+            str(common.get("report_path") or ""),
+            str(common.get("report_sha256") or ""),
+        ),
+        (
+            "callback_ledger",
+            str(common.get("callback_timestamp_path") or ""),
+            str(common.get("callback_timestamp_sha256") or ""),
+        ),
+    ]
+    for role in ("overhead", "wrist"):
+        stream = camera_finished.get(role) or {}
+        rows.extend(
+            [
+                (
+                    f"{role}_source_video",
+                    str(stream.get("video_path") or ""),
+                    str(stream.get("video_sha256") or ""),
+                ),
+                (
+                    f"{role}_browser_video",
+                    str(stream.get("browser_video_path") or ""),
+                    str(stream.get("browser_video_sha256") or ""),
+                ),
+            ]
+        )
+    pi = camera_finished.get("pi")
+    if pi is not None:
+        _require(
+            isinstance(pi, Mapping)
+            and pi.get("schema_version")
+            == "sim2claw.pi_motion_video_capture.v1"
+            and pi.get("status") == "completed"
+            and pi.get("action_interval_enclosed") is True,
+            "Pi motion-video receipt is incomplete",
+        )
+        for role in ("overhead", "wrist"):
+            _require(
+                (camera_finished.get(role) or {}).get(
+                    "action_interval_enclosed_by_callback_frames"
+                )
+                is True,
+                f"{role} video does not enclose the full motion interval",
+            )
+        rows.extend(
+            [
+                (
+                    "pi_source_video",
+                    str(pi.get("raw_video_path") or ""),
+                    str(pi.get("raw_video_sha256") or ""),
+                ),
+                (
+                    "pi_browser_video",
+                    str(pi.get("browser_video_path") or ""),
+                    str(pi.get("browser_video_sha256") or ""),
+                ),
+                (
+                    "pi_pts_ledger",
+                    str(pi.get("pts_path") or ""),
+                    str(pi.get("pts_sha256") or ""),
+                ),
+            ]
+        )
+    artifacts: list[dict[str, Any]] = []
+    for kind, relative, expected_sha256 in rows:
+        path = Path(relative)
+        if not path.is_absolute():
+            path = capture_root / path
+        _require(relative and len(expected_sha256) == 64, f"{kind} receipt is incomplete")
+        _require(
+            path.is_file() and _sha256(path) == expected_sha256,
+            f"{kind} artifact hash changed",
+        )
+        artifacts.append(
+            {
+                "kind": kind,
+                "path": str(path),
+                "sha256": expected_sha256,
+                "bytes": path.stat().st_size,
+            }
+        )
+    return artifacts
+
+
+def _align_c922_frames_to_hold_samples(
+    capture_root: Path,
+    camera_finished: Mapping[str, Any],
+    hold_samples: list[dict[str, Any]],
+    output_path: Path,
+) -> dict[str, Any]:
+    _require(len(hold_samples) >= 2, "capture hold is incomplete")
+    ledger_path = Path(str(camera_finished.get("ledger_path") or ""))
+    if not ledger_path.is_absolute():
+        ledger_path = capture_root / ledger_path
+    _require(ledger_path.is_file(), "C922 callback ledger is missing")
+    first_ns = int(hold_samples[0]["host_continuous_ns"])
+    last_ns = int(hold_samples[-1]["host_continuous_ns"])
+    frames = []
+    for line in ledger_path.read_text(encoding="utf-8").splitlines():
+        event = json.loads(line)
+        host_ns = event.get("hostContinuousNS")
+        if (
+            event.get("schemaVersion")
+            == "sim2claw.c922_terminal_hold_frame_event.v1"
+            and isinstance(host_ns, int)
+            and first_ns <= host_ns <= last_ns
+        ):
+            frames.append(event)
+    _require(len(frames) >= 2, "fewer than two C922 frames overlap the torque-on hold")
+    rows: list[dict[str, Any]] = []
+    maximum_delta_ns = 0
+    for frame in frames:
+        host_ns = int(frame["hostContinuousNS"])
+        nearest = min(
+            hold_samples,
+            key=lambda sample: abs(int(sample["host_continuous_ns"]) - host_ns),
+        )
+        delta_ns = abs(int(nearest["host_continuous_ns"]) - host_ns)
+        maximum_delta_ns = max(maximum_delta_ns, delta_ns)
+        png_path = Path(str(frame.get("pngPath") or ""))
+        if not png_path.is_absolute():
+            png_path = capture_root / png_path
+        expected_sha256 = str(frame.get("pngSHA256") or "")
+        _require(
+            len(expected_sha256) == 64
+            and png_path.is_file()
+            and _sha256(png_path) == expected_sha256,
+            "C922 aligned frame hash changed",
+        )
+        rows.append(
+            {
+                "schema_version": FRAME_JOINT_ALIGNMENT_SCHEMA,
+                "camera_role": "c922",
+                "frame_sequence": frame.get("sequence"),
+                "frame_host_continuous_ns": host_ns,
+                "frame_path": str(png_path),
+                "frame_sha256": expected_sha256,
+                "nearest_joint_sample_index": nearest["sample_index"],
+                "joint_sample_host_continuous_ns": nearest["host_continuous_ns"],
+                "absolute_time_delta_ns": delta_ns,
+                "requested_physical_units": nearest["requested_physical_units"],
+                "actual_physical_units": nearest["actual_physical_units"],
+                "source_action_sha256": nearest["source_action_sha256"],
+            }
+        )
+    _require(
+        maximum_delta_ns <= 100_000_000,
+        "C922 frame-to-joint nearest-neighbor delta exceeds 100 ms",
+    )
+    _require(not output_path.exists(), f"refusing to overwrite alignment: {output_path}")
+    with output_path.open("x", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, sort_keys=True) + "\n")
+    return {
+        "schema_version": FRAME_JOINT_ALIGNMENT_SCHEMA,
+        "status": "host_clock_nearest_joint_sample_alignment",
+        "camera_role": "c922",
+        "aligned_frame_count": len(rows),
+        "hold_joint_sample_count": len(hold_samples),
+        "maximum_absolute_time_delta_ns": maximum_delta_ns,
+        "maximum_allowed_time_delta_ns": 100_000_000,
+        "path": str(output_path),
+        "sha256": _sha256(output_path),
+        "timestamp_semantics": {
+            "clock": "host_continuous_monotonic_nanoseconds",
+            "nearest_neighbor_only": True,
+            "camera_exposure_synchronized": False,
+        },
+    }
+
+
+def _align_d405_frames_to_hold_samples(
+    capture_root: Path,
+    camera_finished: Mapping[str, Any],
+    hold_samples: list[dict[str, Any]],
+    output_path: Path,
+) -> dict[str, Any]:
+    _require(len(hold_samples) >= 2, "capture hold is incomplete")
+    common = camera_finished.get("common_session") or {}
+    ledger_path = capture_root / str(common.get("callback_timestamp_path") or "")
+    _require(ledger_path.is_file(), "native callback ledger is missing")
+    first_ns = int(hold_samples[0]["host_continuous_ns"])
+    last_ns = int(hold_samples[-1]["host_continuous_ns"])
+    frames: list[dict[str, Any]] = []
+    for line in ledger_path.read_text(encoding="utf-8").splitlines():
+        event = json.loads(line)
+        host_ns = event.get("host_continuous_ns")
+        if (
+            event.get("role") == "d405"
+            and event.get("kind") == "output"
+            and event.get("appended_to_writer") is True
+            and isinstance(host_ns, int)
+            and first_ns <= host_ns <= last_ns
+        ):
+            frames.append(event)
+    _require(len(frames) >= 2, "fewer than two D405 frames overlap the torque-on hold")
+    rows: list[dict[str, Any]] = []
+    maximum_delta_ns = 0
+    for frame in frames:
+        host_ns = int(frame["host_continuous_ns"])
+        nearest = min(
+            hold_samples,
+            key=lambda sample: abs(int(sample["host_continuous_ns"]) - host_ns),
+        )
+        delta_ns = abs(int(nearest["host_continuous_ns"]) - host_ns)
+        maximum_delta_ns = max(maximum_delta_ns, delta_ns)
+        rows.append(
+            {
+                "schema_version": FRAME_JOINT_ALIGNMENT_SCHEMA,
+                "camera_role": "d405",
+                "frame_sequence": frame.get("sequence"),
+                "frame_pts_seconds": frame.get("pts_seconds"),
+                "frame_host_continuous_ns": host_ns,
+                "nearest_joint_sample_index": nearest["sample_index"],
+                "joint_sample_host_continuous_ns": nearest["host_continuous_ns"],
+                "absolute_time_delta_ns": delta_ns,
+                "requested_physical_units": nearest["requested_physical_units"],
+                "actual_physical_units": nearest["actual_physical_units"],
+                "source_action_sha256": nearest["source_action_sha256"],
+            }
+        )
+    _require(
+        maximum_delta_ns <= 100_000_000,
+        "D405 frame-to-joint nearest-neighbor delta exceeds 100 ms",
+    )
+    _require(not output_path.exists(), f"refusing to overwrite alignment: {output_path}")
+    with output_path.open("x", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, sort_keys=True) + "\n")
+    return {
+        "schema_version": FRAME_JOINT_ALIGNMENT_SCHEMA,
+        "status": "host_clock_nearest_joint_sample_alignment",
+        "camera_role": "d405",
+        "aligned_frame_count": len(rows),
+        "hold_joint_sample_count": len(hold_samples),
+        "maximum_absolute_time_delta_ns": maximum_delta_ns,
+        "maximum_allowed_time_delta_ns": 100_000_000,
+        "path": str(output_path),
+        "sha256": _sha256(output_path),
+        "timestamp_semantics": {
+            "clock": "host_continuous_monotonic_nanoseconds",
+            "nearest_neighbor_only": True,
+            "camera_exposure_synchronized": False,
+        },
+    }
+
+
+def execute_wrist_view_reposition_stage(
+    packet_path: Path,
+    review_path: Path,
+    output_directory: Path,
+    *,
+    stage_index: int,
+    prior_receipt_path: Path | None = None,
+    operator_acknowledged: bool = False,
+    preflight_fn: Callable[[], dict[str, Any]] | None = None,
+    gateway_factory: Callable[[Any], Any] | None = None,
+    capture_factory: Callable[[Path], CameraCapture] | None = None,
+    clock_fn: Callable[[], float] = time.monotonic,
+    sleep_fn: Callable[[float], None] = time.sleep,
+) -> dict[str, Any]:
+    """Execute exactly one reviewed stage, then close the follower torque-off."""
+
+    packet_path = packet_path.resolve()
+    packet = _validate_packet(packet_path)
+    _validate_review(review_path, packet_path, packet)
+    _require(operator_acknowledged, "fresh operator acknowledgement is required")
+    _require(
+        1 <= stage_index <= len(packet["stages"]),
+        "stage index is outside this route",
+    )
+    if stage_index == 1:
+        _require(prior_receipt_path is None, "stage 1 does not accept a prior receipt")
+    else:
+        _require(prior_receipt_path is not None, "later stages require the prior receipt")
+        prior = _read_json(prior_receipt_path.resolve(), "prior execution receipt")
+        _require(
+            prior.get("schema_version") == WRIST_VIEW_EXECUTION_SCHEMA
+            and prior.get("status") == "completed_wrist_view_reposition_stage"
+            and prior.get("packet_sha256") == _sha256(packet_path)
+            and prior.get("stage_index") == stage_index - 1
+            and prior.get("physical_follower_torque_enabled") is False,
+            "prior execution receipt does not admit this stage",
+        )
+
+    manifest = packet["candidate_manifest"]
+    manifest_path = Path(manifest["path"]).resolve()
+    _require(
+        _sha256(manifest_path) == manifest["sha256"],
+        "candidate manifest drifted after packet compilation",
+    )
+    route = packet["route"]
+    bound_route_path = Path(route["path"]).resolve()
+    _require(
+        _sha256(bound_route_path) == route["sha256"],
+        "reviewed wrist-view route drifted after packet compilation",
+    )
+    bound_route = _read_json(bound_route_path, "wrist-view route")
+    capture_mode = str(packet.get("capture_mode") or CAPTURE_MODE_DUAL)
+    _require(
+        capture_mode
+        == str(bound_route.get("capture_mode") or CAPTURE_MODE_DUAL),
+        "packet/route capture mode drifted",
+    )
+    stage = packet["stages"][stage_index - 1]
+    actions, timestamps, _ = _decode_stage(stage)
+    evidence_boundary = stage.get("evidence_action_boundary")
+    counted_task_start = (
+        int(evidence_boundary["counted_task_start_index"])
+        if isinstance(evidence_boundary, Mapping)
+        else None
+    )
+    counted_task_action_sha256 = (
+        str(evidence_boundary["counted_task_action_sha256"])
+        if isinstance(evidence_boundary, Mapping)
+        else None
+    )
+    hold_actions, hold_timestamps, _ = _decode_capture_hold(
+        stage,
+        expected_samples=int(packet["capture_hold_samples"]),
+    )
+    # Re-run the route prefix, not the selected stage in isolation.  Contact
+    # admission is relative to the route's frozen initial pose; a later return
+    # stage may legitimately restore a baseline pair that is absent at that
+    # stage's local start.
+    preview_actions = [
+        np.asarray(_decode_stage(item)[0], dtype="<f8")
+        for item in packet["stages"][:stage_index]
+    ]
+    recovery_admission = packet.get("recovery_source_contact_admission")
+    fresh_preview = (
+        preview_wrist_view_actions(
+            preview_actions,
+            manifest_path,
+            recovery_source_contact_admission=True,
+        )
+        if recovery_admission is not None
+        else preview_wrist_view_actions(preview_actions, manifest_path)
+    )
+    _require(
+        fresh_preview.get("no_new_or_worsened_kinematic_contact") is True
+        and not fresh_preview.get("external_contact_pairs"),
+        "fresh simulation preview rejected the stage",
+    )
+
+    preflight = (preflight_fn or _default_preflight)()
+    identity, current, lower, upper = _identity_and_limits(preflight)
+    _require(identity == packet["hardware_identity"], "follower identity drifted")
+    expected_anchor = np.asarray(stage["expected_anchor_degrees"], dtype=np.float64)
+    anchor_tolerance = np.asarray(
+        packet["stage_anchor_tolerance_degrees"], dtype=np.float64
+    )
+    _require(
+        np.all(np.abs(_joint_delta(current, expected_anchor)) <= anchor_tolerance),
+        "fresh follower pose does not match this stage anchor",
+    )
+    if recovery_admission is not None:
+        outside = (current < lower) | (current > upper)
+        command_anchor = np.asarray(
+            stage["command_anchor_degrees"], dtype=np.float64
+        )
+        setup_enabled = (
+            packet["setup_recovery_command_anchor"]["enabled"] is True
+        )
+        out_of_range_setup_egress = (
+            setup_enabled
+            and np.array_equal(
+                outside,
+                np.asarray([False, False, True, False, False, False]),
+            )
+            and current[2] > upper[2]
+            and command_anchor[2] == upper[2]
+            and command_anchor[2] < current[2]
+        )
+        recovery_actions = actions[
+            : counted_task_start + 1
+            if counted_task_start is not None
+            else len(actions)
+        ]
+        in_range_elbow_recovery_egress = (
+            not setup_enabled
+            and not np.any(outside)
+            and np.array_equal(
+                command_anchor,
+                np.asarray(packet["command_anchor_degrees"], dtype=np.float64),
+            )
+            and _is_in_range_elbow_recovery_egress(
+                recovery_actions,
+                command_anchor,
+            )
+        )
+        _require(
+            out_of_range_setup_egress or in_range_elbow_recovery_egress,
+            "fresh recovery source is neither the reviewed high out-of-range "
+            "setup egress nor the reviewed in-range elbow-clearance preload "
+            "and fixed-elbow setup retreat",
+        )
+    fresh_setup_recovery_preview: dict[str, Any] | None = None
+    if packet["setup_recovery_command_anchor"]["enabled"] is True:
+        setup_preview_actions = _setup_recovery_preview_actions(
+            current,
+            np.asarray(stage["command_anchor_degrees"], dtype=np.float64),
+        )
+        fresh_setup_recovery_preview = (
+            preview_wrist_view_actions(
+                [setup_preview_actions, *preview_actions],
+                manifest_path,
+                recovery_source_contact_admission=True,
+            )
+            if recovery_admission is not None
+            else preview_wrist_view_actions(
+                [setup_preview_actions, *preview_actions],
+                manifest_path,
+            )
+        )
+        _require(
+            fresh_setup_recovery_preview.get(
+                "no_new_or_worsened_kinematic_contact"
+            )
+            is True
+            and not fresh_setup_recovery_preview.get(
+                "external_contact_pairs"
+            ),
+            "fresh simulation preview rejected the bounded setup recovery",
+        )
+        fresh_setup_recovery_preview = {
+            **fresh_setup_recovery_preview,
+            "joint_progress_semantics": (
+                "nine_point_cartesian_hyperrectangle_per_changed_joint"
+            ),
+            "changed_joint_count": int(
+                np.count_nonzero(
+                    current
+                    != np.asarray(
+                        stage["command_anchor_degrees"],
+                        dtype=np.float64,
+                    )
+                )
+            ),
+            "sample_count": int(len(setup_preview_actions)),
+            "route_stage_count_in_combined_preview": len(preview_actions),
+            "kinematic_action_sha256": action_sha256(
+                setup_preview_actions
+            ),
+        }
+    _require(
+        np.all(actions >= lower[None, :])
+        and np.all(actions <= upper[None, :])
+        and np.all(hold_actions >= lower[None, :])
+        and np.all(hold_actions <= upper[None, :]),
+        "frozen actions exceed fresh calibrated limits",
+    )
+
+    output_directory = output_directory.resolve()
+    receipt_path = output_directory / "execution_receipt.json"
+    samples_path = output_directory / "joint_samples.jsonl"
+    alignment_path = output_directory / (
+        "c922_frame_joint_alignment.jsonl"
+        if capture_mode == CAPTURE_MODE_C922_PI
+        else "d405_frame_joint_alignment.jsonl"
+    )
+    _require(
+        not receipt_path.exists()
+        and not samples_path.exists()
+        and not alignment_path.exists(),
+        "refusing to overwrite wrist-view execution output",
+    )
+    output_directory.mkdir(parents=True, exist_ok=True)
+    samples_path.open("x").close()
+    gateway = (
+        gateway_factory or _default_gateway
+    )(_gateway_identity(identity) if gateway_factory is None else identity)
+    completed_motion = 0
+    completed_hold = 0
+    counted_task_boundary_actual: list[float] | None = None
+    actual = current.copy()
+    started = clock_fn()
+    capture_root = output_directory / "final_hold_camera"
+    capture: CameraCapture | None = None
+    camera_started: dict[str, Any] | None = None
+    camera_finished: dict[str, Any] | None = None
+    motion_started: float | None = None
+    hold_started: float | None = None
+    hold_stopped: float | None = None
+    hold_sample_records: list[dict[str, Any]] = []
+    pi_hold_still: dict[str, Any] | None = None
+    gateway_open_attempted = False
+    gateway_open_completed = False
+    gateway_open_setup_motion_commanded = False
+    gateway_open_setup_command_anchor: np.ndarray | None = None
+    camera_started_before_gateway_open_setup_motion = False
+    error: Exception | None = None
+
+    def make_capture() -> CameraCapture:
+        if capture_factory is not None:
+            return capture_factory(capture_root)
+        if capture_mode == CAPTURE_MODE_C922_PI:
+            specification = bound_route.get("c922_capture")
+            _require(
+                isinstance(specification, Mapping),
+                "bound route lacks its C922 motion-capture specification",
+            )
+            return _C922MotionCapture(
+                capture_root,
+                specification=specification,
+                route_id=str(bound_route["route_id"]),
+                stage_index=stage_index,
+            )
+        if capture_mode == CAPTURE_MODE_TRICAM:
+            from .pi_motion_video import MotionTricamRecorder
+
+            specification = bound_route.get("pi_motion_video")
+            _require(
+                isinstance(specification, Mapping),
+                "bound route lacks its Pi motion-video specification",
+            )
+            contract_path = Path(str(specification.get("contract_path") or ""))
+            if not contract_path.is_absolute():
+                contract_path = (
+                    Path(__file__).resolve().parents[2] / contract_path
+                )
+            contract_path = contract_path.resolve()
+            _require(
+                contract_path.is_file()
+                and len(str(specification.get("contract_sha256") or "")) == 64
+                and _sha256(contract_path)
+                == str(specification["contract_sha256"]),
+                "bound Pi motion-video contract changed after review",
+            )
+            return MotionTricamRecorder(
+                capture_root,
+                pi_contract_path=contract_path,
+            )
+        return _default_capture(capture_root)
+
+    try:
+        open_arguments: dict[str, Any] = {
+            "enable_motion": True,
+            "paired_pose_confirmed": True,
+        }
+        setup_recovery_enabled = (
+            packet["setup_recovery_command_anchor"]["enabled"] is True
+        )
+        if setup_recovery_enabled:
+            gateway_open_setup_command_anchor = np.asarray(
+                stage["command_anchor_degrees"], dtype=np.float64
+            )
+            open_arguments["setup_command_anchor_degrees"] = np.asarray(
+                gateway_open_setup_command_anchor, dtype=np.float64
+            )
+            if packet.get("capture_during_motion") is True:
+                capture = make_capture()
+                camera_started = capture.start()
+                motion_started = clock_fn()
+                camera_started_before_gateway_open_setup_motion = True
+            # The gateway may send this command and move before open() either
+            # returns or raises. Mark it conservatively before crossing that
+            # boundary so a zero-sample failure cannot claim no motion.
+            gateway_open_setup_motion_commanded = True
+        gateway_open_attempted = True
+        opened = gateway.open(**open_arguments)
+        gateway_open_completed = True
+        opened_start = np.asarray(opened["follower_start_degrees"], dtype=np.float64)
+        _require(
+            np.all(
+                np.abs(_joint_delta(opened_start, expected_anchor))
+                <= anchor_tolerance
+            ),
+            "follower anchor drifted before the stage hold",
+        )
+        if packet.get("capture_during_motion") is True and capture is None:
+            capture = make_capture()
+            camera_started = capture.start()
+        if motion_started is None:
+            motion_started = clock_fn()
+        with samples_path.open("a", encoding="utf-8") as handle:
+            for sample_index, (timestamp, target) in enumerate(
+                zip(timestamps, actions, strict=True)
+            ):
+                delay = motion_started + float(timestamp) - clock_fn()
+                if delay > 0.0:
+                    sleep_fn(delay)
+                ensure_running = (
+                    getattr(capture, "ensure_running", None)
+                    if capture is not None
+                    else None
+                )
+                if callable(ensure_running):
+                    ensure_running()
+                sample = gateway.sample(
+                    float(timestamp), exact_requested_degrees=target
+                )
+                actual = _validated_gateway_actual(
+                    sample,
+                    target,
+                    phase="motion",
+                )
+                counted_phase = (
+                    counted_task_start is not None
+                    and sample_index >= counted_task_start
+                )
+                if (
+                    counted_task_start is not None
+                    and sample_index == counted_task_start
+                ):
+                    counted_task_boundary_actual = actual.tolist()
+                handle.write(
+                    json.dumps(
+                        {
+                            "sample_index": sample_index,
+                            "phase": (
+                                "counted_task_action"
+                                if counted_phase
+                                else (
+                                    "setup_recovery_prefix"
+                                    if counted_task_start is not None
+                                    else "motion"
+                                )
+                            ),
+                            "counted_task_sample_index": (
+                                sample_index - counted_task_start
+                                if counted_phase
+                                and counted_task_start is not None
+                                else None
+                            ),
+                            "host_continuous_ns": int(round(clock_fn() * 1e9)),
+                            "timestamp_seconds": float(timestamp),
+                            "source_action_sha256": (
+                                counted_task_action_sha256
+                                if counted_phase
+                                else stage["action_sha256"]
+                            ),
+                            "full_transaction_action_sha256": stage[
+                                "action_sha256"
+                            ],
+                            "requested_physical_units": target.tolist(),
+                            **sample,
+                        },
+                        sort_keys=True,
+                    )
+                    + "\n"
+                )
+                completed_motion += 1
+        target = np.asarray(stage["target_degrees"], dtype=np.float64)
+        residual = _joint_delta(actual, target)
+        _require(
+            np.all(
+                np.abs(residual)
+                <= np.asarray(
+                    packet["hold_entry_tolerance_degrees"], dtype=np.float64
+                )
+            ),
+            "follower did not reach the staged target",
+        )
+        if capture is None:
+            capture = make_capture()
+            camera_started = capture.start()
+        hold_started = clock_fn()
+        with samples_path.open("a", encoding="utf-8") as handle:
+            for hold_index, (timestamp, target) in enumerate(
+                zip(hold_timestamps, hold_actions, strict=True)
+            ):
+                delay = hold_started + float(timestamp) - clock_fn()
+                if delay > 0.0:
+                    sleep_fn(delay)
+                ensure_running = getattr(capture, "ensure_running", None)
+                if callable(ensure_running):
+                    ensure_running()
+                sample = gateway.sample(
+                    float(timestamps[-1] + timestamp),
+                    exact_requested_degrees=target,
+                )
+                actual = _validated_gateway_actual(
+                    sample,
+                    target,
+                    phase="hold",
+                )
+                host_ns = int(round(clock_fn() * 1e9))
+                record = {
+                    "sample_index": completed_motion + hold_index,
+                    "phase": "capture_hold",
+                    "host_continuous_ns": host_ns,
+                    "timestamp_seconds": float(timestamps[-1] + timestamp),
+                    "capture_hold_timestamp_seconds": float(timestamp),
+                    "source_action_sha256": stage["capture_hold_action_sha256"],
+                    "requested_physical_units": target.tolist(),
+                    "actual_physical_units": actual.tolist(),
+                    **sample,
+                }
+                hold_sample_records.append(record)
+                handle.write(json.dumps(record, sort_keys=True) + "\n")
+                completed_hold += 1
+        hold_stopped = clock_fn()
+        residual = _joint_delta(
+            actual, np.asarray(stage["target_degrees"], dtype=np.float64)
+        )
+        _require(
+            np.all(
+                np.abs(residual)
+                <= np.asarray(packet["final_tolerance_degrees"], dtype=np.float64)
+            ),
+            "follower left the staged target during camera hold",
+        )
+        pi_hold_specification = bound_route.get("pi_hold_still")
+        if pi_hold_specification is not None:
+            _require(
+                isinstance(pi_hold_specification, Mapping),
+                "Pi hold-still specification must be an object",
+            )
+            pi_hold_still = _capture_pi_hold_still(
+                pi_hold_specification,
+                output_directory / "pi_imx708_torque_on_hold.jpg",
+            )
+        camera_finished = capture.finish(
+            action_started_monotonic=motion_started,
+            action_stopped_monotonic=hold_stopped,
+            post_roll_seconds=(
+                0.0
+                if capture_mode == CAPTURE_MODE_C922_PI
+                else CAMERA_POST_ROLL_SECONDS
+            ),
+        )
+    except Exception as caught:
+        error = caught
+    finally:
+        if capture is not None and camera_started is not None and camera_finished is None:
+            try:
+                camera_finished = capture.finish(
+                    action_started_monotonic=motion_started,
+                    action_stopped_monotonic=hold_stopped or clock_fn(),
+                    post_roll_seconds=(
+                        0.0
+                        if capture_mode == CAPTURE_MODE_C922_PI
+                        else CAMERA_POST_ROLL_SECONDS
+                    ),
+                )
+            except Exception as caught:
+                error = error or caught
+        try:
+            gateway.close()
+        except Exception as caught:
+            error = error or caught
+
+    capture_artifacts: list[dict[str, Any]] | None = None
+    frame_joint_alignment: dict[str, Any] | None = None
+    if error is None:
+        try:
+            _require(camera_finished is not None, "final hold camera did not finish")
+            capture_artifacts = _capture_artifacts(capture_root, camera_finished)
+            if packet["frame_joint_alignment_camera_role"] == "c922":
+                frame_joint_alignment = _align_c922_frames_to_hold_samples(
+                    capture_root,
+                    camera_finished,
+                    hold_sample_records,
+                    alignment_path,
+                )
+            else:
+                frame_joint_alignment = _align_d405_frames_to_hold_samples(
+                    capture_root,
+                    camera_finished,
+                    hold_sample_records,
+                    alignment_path,
+                )
+        except Exception as caught:
+            error = caught
+
+    residual = _joint_delta(
+        actual, np.asarray(stage["target_degrees"], dtype=np.float64)
+    )
+    receipt = {
+        "schema_version": WRIST_VIEW_EXECUTION_SCHEMA,
+        "status": (
+            "completed_wrist_view_reposition_stage"
+            if error is None
+            else "stopped_safely"
+        ),
+        "packet_sha256": _sha256(packet_path),
+        "review_sha256": _sha256(review_path.resolve()),
+        "stage_index": stage_index,
+        "action_sha256": stage["action_sha256"],
+        "evidence_action_boundary": evidence_boundary,
+        "counted_task_action_sha256": counted_task_action_sha256,
+        "counted_task_boundary_actual_degrees": (
+            counted_task_boundary_actual
+        ),
+        "capture_hold_action_sha256": stage["capture_hold_action_sha256"],
+        "completed_samples": completed_motion + completed_hold,
+        "completed_motion_samples": completed_motion,
+        "completed_capture_hold_samples": completed_hold,
+        "joint_samples_path": str(samples_path),
+        "joint_samples_sha256": _sha256(samples_path),
+        "camera_started": camera_started,
+        "camera_finished": camera_finished,
+        "capture_mode": capture_mode,
+        "pi_hold_still": pi_hold_still,
+        "capture_artifacts": capture_artifacts,
+        "frame_joint_alignment": frame_joint_alignment,
+        "fresh_preflight_anchor_degrees": current.tolist(),
+        "fresh_simulation_preview": fresh_preview,
+        "fresh_setup_recovery_simulation_preview": (
+            fresh_setup_recovery_preview
+        ),
+        "recovery_source_contact_admission": recovery_admission,
+        "expected_anchor_degrees": expected_anchor.tolist(),
+        "target_degrees": stage["target_degrees"],
+        "final_actual_degrees": actual.tolist(),
+        "final_residual_degrees": residual.tolist(),
+        "error": str(error) if error is not None else None,
+        "gateway_open_attempted": gateway_open_attempted,
+        "gateway_open_completed": gateway_open_completed,
+        "gateway_open_setup_command_anchor_degrees": (
+            gateway_open_setup_command_anchor.tolist()
+            if gateway_open_setup_command_anchor is not None
+            else None
+        ),
+        "gateway_open_setup_motion_commanded": (
+            gateway_open_setup_motion_commanded
+        ),
+        "camera_started_before_gateway_open_setup_motion": (
+            camera_started_before_gateway_open_setup_motion
+        ),
+        "physical_motion_commanded": (
+            gateway_open_setup_motion_commanded
+            or (completed_motion + completed_hold) > 0
+        ),
+        "physical_follower_torque_enabled": False,
+        "physical_authority": False,
+        "camera_opened": camera_started is not None,
+        "camera_capture_completed_before_torque_off": camera_finished is not None,
+        "inspect_wrist_camera_before_next_stage": stage_index < len(packet["stages"]),
+        "stop_before_further_robot_command": True,
+        "wall_duration_seconds": max(0.0, clock_fn() - started),
+    }
+    _write_once(receipt_path, receipt)
+    if error is not None:
+        raise WristViewRepositionError(
+            f"wrist-view stage stopped safely with torque off: {error}"
+        ) from error
+    return receipt

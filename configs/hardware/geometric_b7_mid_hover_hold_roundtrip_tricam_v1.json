@@ -1,0 +1,93 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_b7_mid_hover_hold_roundtrip_tricam_20260727_v1",
+  "samples_per_stage": 901,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_35s_v1.json",
+    "contract_sha256": "744a0c63c1d7282265299397c4a9bf3083bb3c35899878aa5480f3362feeef23"
+  },
+  "reviewed_anchor_degrees": [
+    -8.527472527472527,
+    -106.28571428571429,
+    99.12087912087912,
+    -94.28571428571429,
+    -125.84615384615384,
+    1.66270783847981
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        8.520663153047899,
+        -35.27285414741358,
+        89.88493435578748,
+        -56.43391572550387,
+        -130.74379552172837,
+        1.66270783847981
+      ],
+      [
+        8.520663153047899,
+        -35.27285414741358,
+        89.88493435578748,
+        -56.43391572550387,
+        -130.74379552172837,
+        1.66270783847981
+      ],
+      [
+        -8.527472527472527,
+        -106.28571428571429,
+        99.12087912087912,
+        -94.28571428571429,
+        -125.84615384615384,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "geometric_derivation": {
+    "frame": "current_candidate_model_world",
+    "selected_piece": "tan_pawn_b7",
+    "piece_center_world_m": [
+      -0.154584755,
+      0.632116652,
+      0.800883941
+    ],
+    "hover_pinch_target_world_m": [
+      -0.13010107354856928,
+      0.6813665184220002,
+      0.920883941
+    ],
+    "hover_height_above_piece_center_m": 0.12,
+    "radial_standoff_toward_robot_base_m": 0.055,
+    "ik_seed": "numpy_default_rng_2026072713_1026_uniform_calibrated_seeds_plus_anchor_and_prior_hover",
+    "ik_solver": "scipy_optimize_least_squares_position_only_with_current_candidate_joint_bounds_then_direct_path_contact_filter",
+    "ik_selection": "residual_below_1_5mm_then_direct_anchor_interpolation_contact_free_then_minimize_maximum_body_excursion_plus_one_tenth_wrist_roll_excursion",
+    "ik_residual_m": 2.1753185780505088e-11,
+    "maximum_body_joint_excursion_degrees": 71.01286013830071,
+    "maximum_frozen_slew_degrees_s": 9.468381351773428,
+    "stationary_hover_seconds": 7.5,
+    "jaw_command_held_closed": true,
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+  },
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "prospective_contact_free_current_anchor_b7_120mm_hover_hold_roundtrip",
+    "target_selection": "The exact current candidate places the closed-jaw pinch point 120 mm above B7, pauses there for 7.5 seconds for multi-camera visual registration, then returns to stable anchor A. The chosen inverse-kinematics branch was the lowest-excursion solution among 18 direct-path contact-free branches from 1,026 deterministic starts. Independent exact-row geom-distance audit measured an 80.922 mm nominal minimum jaw-to-B7 distance and a 66.980 mm nominal minimum to the closest other pawn, C8. Subtracting the prior 12.601 mm apex-window tracking maximum leaves 68.321 mm B7 and 54.379 mm all-pawn target-region margins. The prior larger 19.752 mm transient occurred on the retreat, which moves away from the pawn.",
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "return_to_stable_anchor_before_torque_off": true,
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "pawn_contact": false,
+      "pawn_task_success": false,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false
+    }
+  }
+}

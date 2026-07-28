@@ -1,0 +1,88 @@
+{
+  "schema_version": "sim2claw.inspect_robots_offline_fixture.v1",
+  "fixture_id": "so101_two_camera_joint_replay_20260724",
+  "task_id": "chess_pick_place_source_episode_v4",
+  "source_task_contract": "configs/tasks/chess_pick_place_source_episode_v4.json",
+  "instruction": "Replay three deterministic SO-101 joint targets while retaining both camera references.",
+  "proof_class": "synthetic_deterministic_replay_compatibility",
+  "evaluator_admission": false,
+  "physical_authority": false,
+  "gateway_schema": "sim2claw.so101_physical_gateway.v2",
+  "joint_order": [
+    "shoulder_pan",
+    "shoulder_lift",
+    "elbow_flex",
+    "wrist_flex",
+    "wrist_roll",
+    "gripper"
+  ],
+  "control_hz": 20.0,
+  "cameras": [
+    {
+      "name": "top",
+      "role": "overhead_workspace",
+      "height": 480,
+      "width": 640,
+      "channels": 3
+    },
+    {
+      "name": "wrist",
+      "role": "wrist_gripper_upward",
+      "height": 240,
+      "width": 424,
+      "channels": 3
+    }
+  ],
+  "observations": [
+    {
+      "time_s": 0.0,
+      "joint_position_rad": [0.0, -0.35, 0.55, 0.25, 0.0, 0.4],
+      "joint_velocity_rad_s": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      "camera_refs": {
+        "top": "fixture://c922/frame-000",
+        "wrist": "fixture://d405/frame-000"
+      }
+    },
+    {
+      "time_s": 0.05,
+      "joint_position_rad": [0.02, -0.34, 0.54, 0.24, 0.01, 0.39],
+      "joint_velocity_rad_s": [0.4, 0.2, -0.2, -0.2, 0.2, -0.2],
+      "camera_refs": {
+        "top": "fixture://c922/frame-001",
+        "wrist": "fixture://d405/frame-001"
+      }
+    },
+    {
+      "time_s": 0.1,
+      "joint_position_rad": [0.04, -0.32, 0.52, 0.22, 0.02, 0.37],
+      "joint_velocity_rad_s": [0.4, 0.4, -0.4, -0.4, 0.2, -0.4],
+      "camera_refs": {
+        "top": "fixture://c922/frame-002",
+        "wrist": "fixture://d405/frame-002"
+      }
+    },
+    {
+      "time_s": 0.15,
+      "joint_position_rad": [0.05, -0.3, 0.5, 0.2, 0.03, 0.35],
+      "joint_velocity_rad_s": [0.2, 0.4, -0.4, -0.4, 0.2, -0.4],
+      "camera_refs": {
+        "top": "fixture://c922/frame-003",
+        "wrist": "fixture://d405/frame-003"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "requested_action_rad": [0.02, -0.34, 0.54, 0.24, 0.01, 0.39],
+      "applied_action_rad": [0.02, -0.34, 0.54, 0.24, 0.01, 0.39]
+    },
+    {
+      "requested_action_rad": [0.04, -0.32, 0.52, 0.22, 0.02, 0.37],
+      "applied_action_rad": [0.04, -0.32, 0.52, 0.22, 0.02, 0.37]
+    },
+    {
+      "requested_action_rad": [0.05, -0.3, 0.5, 0.2, 0.03, 0.35],
+      "applied_action_rad": [0.05, -0.3, 0.5, 0.2, 0.03, 0.35]
+    }
+  ]
+}

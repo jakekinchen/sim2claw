@@ -2,14 +2,17 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import numpy as np
+import pytest
 
 from sim2claw.hil_identifiability import (
     EVALUATION_SCHEMA,
     RAW_RECEIPT_SCHEMA,
     action_tensor_sha256,
     evaluate_hil_packet,
+    execute_hil_packet,
     load_hil_contract,
     materialize_packet_actions,
 )
@@ -29,6 +32,118 @@ CONTRACT_V2 = (
     / "current_100mm_hil_multilevel_v2.json"
 )
 START = np.asarray([-4.0, -106.0, 100.0, -10.0, -95.0, 2.0])
+
+
+def _hil_preflight_fixture() -> dict[str, Any]:
+    contract = load_hil_contract(CONTRACT)
+    hardware = contract["hardware_identity"]
+    return {
+        "leader_port": hardware["leader_port"],
+        "follower_port": hardware["follower_port"],
+        "leader_calibration_sha256": hardware["leader_calibration_sha256"],
+        "follower_calibration_sha256": hardware[
+            "follower_calibration_sha256"
+        ],
+        "physical_follower_torque_enabled": False,
+        "follower_start_degrees": START.tolist(),
+        "follower_calibrated_minimum": [-180.0] * 6,
+        "follower_calibrated_maximum": [180.0] * 6,
+    }
+
+
+def _camera_inventory_fixture() -> dict[str, Any]:
+    contract = load_hil_contract(CONTRACT)
+    camera = contract["camera_identity"]
+    return {
+        "cameras": [
+            {"name": camera["wrist_name"]},
+            {"name": camera["overhead_name"]},
+        ]
+    }
+
+
+def test_execute_hil_packet_nests_c922_inside_d405_and_reverses_stop_order(
+    tmp_path: Path,
+) -> None:
+    events: list[str] = []
+
+    class Recorder:
+        def __init__(self, path: Path, role: str):
+            self.path = path
+            self.role = role
+
+        def start(self) -> dict[str, Any]:
+            events.append(f"{self.role}_start")
+            self.path.write_bytes(self.role.encode())
+            self.path.with_suffix(".ffmpeg.log").write_text("", encoding="utf-8")
+            return {"status": "recording"}
+
+        def ensure_running(self) -> None:
+            return
+
+        def finish(self, **_kwargs: Any) -> dict[str, Any]:
+            events.append(f"{self.role}_finish")
+            return {"status": "completed"}
+
+    def fail_replay(*_args: Any, **_kwargs: Any) -> dict[str, Any]:
+        raise RuntimeError("fixture stop after camera start")
+
+    with pytest.raises(RuntimeError, match="fixture stop after camera start"):
+        execute_hil_packet(
+            CONTRACT,
+            "HIL-GRIPPER-05",
+            tmp_path,
+            operator_acknowledged=True,
+            gateway_preflight=_hil_preflight_fixture,
+            camera_inventory=_camera_inventory_fixture,
+            replay_runner=fail_replay,
+            overhead_factory=lambda path: Recorder(path, "c922"),
+            wrist_factory=lambda path: Recorder(path, "d405"),
+        )
+
+    assert events == ["d405_start", "c922_start", "c922_finish", "d405_finish"]
+
+
+def test_execute_hil_packet_finalizes_d405_when_c922_start_fails(
+    tmp_path: Path,
+) -> None:
+    events: list[str] = []
+
+    class WristRecorder:
+        def __init__(self, path: Path):
+            self.path = path
+
+        def start(self) -> dict[str, Any]:
+            events.append("d405_start")
+            self.path.write_bytes(b"d405")
+            return {"status": "recording"}
+
+        def finish(self, **_kwargs: Any) -> dict[str, Any]:
+            events.append("d405_finish")
+            return {"status": "completed"}
+
+    class FailingOverhead:
+        def __init__(self, _path: Path):
+            pass
+
+        def start(self) -> dict[str, Any]:
+            events.append("c922_start")
+            raise RuntimeError("fixture C922 start failure")
+
+    with pytest.raises(RuntimeError, match="fixture C922 start failure"):
+        execute_hil_packet(
+            CONTRACT,
+            "HIL-GRIPPER-05",
+            tmp_path,
+            operator_acknowledged=True,
+            gateway_preflight=_hil_preflight_fixture,
+            camera_inventory=_camera_inventory_fixture,
+            replay_runner=lambda *_args, **_kwargs: {},
+            overhead_factory=FailingOverhead,
+            wrist_factory=WristRecorder,
+        )
+
+    assert events == ["d405_start", "c922_start", "d405_finish"]
 
 
 def test_all_four_packets_are_deterministic_and_return_byte_exactly() -> None:

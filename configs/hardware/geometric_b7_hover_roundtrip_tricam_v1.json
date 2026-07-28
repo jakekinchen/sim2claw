@@ -1,0 +1,83 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_b7_hover_roundtrip_tricam_20260727_v1",
+  "samples_per_stage": 481,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_25s_v1.json",
+    "contract_sha256": "317a428884de0b55066dfee0e67b84853af5bb88f6f0da05e53d341fdd702930"
+  },
+  "reviewed_anchor_degrees": [
+    -8.87912087912088,
+    -106.28571428571429,
+    99.20879120879121,
+    -94.37362637362638,
+    -126.37362637362638,
+    1.66270783847981
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        8.497964262609084,
+        -47.95730930414939,
+        84.53458462860519,
+        -53.21218695548041,
+        -123.2471175930134,
+        1.66270783847981
+      ],
+      [
+        -8.87912087912088,
+        -106.28571428571429,
+        99.20879120879121,
+        -94.37362637362638,
+        -126.37362637362638,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "geometric_derivation": {
+    "frame": "current_candidate_model_world",
+    "selected_piece": "tan_pawn_b7",
+    "piece_center_world_m": [
+      -0.154584755,
+      0.632116652,
+      0.800883941
+    ],
+    "hover_pinch_target_world_m": [
+      -0.13010107354856928,
+      0.6813665184220002,
+      0.9808839410000001
+    ],
+    "hover_height_above_piece_center_m": 0.18,
+    "radial_standoff_toward_robot_base_m": 0.055,
+    "ik_seed_generator": "numpy_default_rng_20260962_256_uniform_calibrated_seeds_plus_anchor",
+    "ik_selection": "residual_below_2mm_then_minimize_maximum_of_body_excursion_and_one_third_wrist_roll_distance_to_minus65deg",
+    "ik_residual_m": 0.0001357278541362332,
+    "maximum_body_joint_excursion_degrees": 58.32840498156491,
+    "maximum_frozen_slew_degrees_s": 9.72140083026082,
+    "jaw_command_held_closed": true,
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+  },
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "prospective_contact_free_current_anchor_b7_hover_roundtrip",
+    "target_selection": "B7 is the nearest current sparse-layout pawn with a 180 mm high, 55 mm radial closed-jaw hover branch that returns continuously to stable anchor A, keeps every joint excursion below 59 degrees, and fits inside the preregistered 15 second Pi capture.",
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "return_to_stable_anchor_before_torque_off": true,
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "pawn_contact": false,
+      "pawn_task_success": false,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false
+    }
+  }
+}

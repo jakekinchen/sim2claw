@@ -1,0 +1,128 @@
+{
+  "schema_version": "sim2claw.geometric_joint_play_fit.v1",
+  "fit_id": "geometric_joint_play_fit_20260727_v1",
+  "status": "retrospective_bounded_fit_with_opened_roundtrip_diagnostic_excluded",
+  "proof_class": "three_stage_action_frozen_no_contact_stateful_actuator_fit",
+  "sources": {
+    "selection_receipt": {
+      "path": "outputs/pawn_bg_servo_load_bias_v1/servo_load_bias_receipt.json",
+      "sha256": "1ea4a84a509e320bece0f4797c1e2ae6a824ce72946528b95b7af04a561d4357",
+      "receipt_digest": "192b236c781bbf5d88f3ac76d01000e15ccef39e9a4122c467ac995e94f74e51"
+    },
+    "mechanism_contract": {
+      "path": "configs/sysid/pawn_bg_servo_load_bias_v1.json",
+      "sha256": "a5d4851de580a070bc677c9475d90af54215e1c0081c7578a8340f8df30ec423"
+    },
+    "stages": [
+      {
+        "fit_stage_index": 1,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/packet.json",
+          "sha256": "b98101e4903618eae8f3bfe7824d675cf8ba7295d05873c218d076b2d55d8ba1"
+        },
+        "stage_index": 1,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-1/joint_samples.jsonl",
+        "samples_sha256": "19b121b755bc9bb963b37b4600dccc8c0614997fede15c73680f890aceb1a526",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-1/execution_receipt.json",
+        "execution_receipt_sha256": "34bae544980185770d78d0cc0cfb5803a9c663287f9f223fb8cffc9545cc1684"
+      },
+      {
+        "fit_stage_index": 2,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/packet.json",
+          "sha256": "b98101e4903618eae8f3bfe7824d675cf8ba7295d05873c218d076b2d55d8ba1"
+        },
+        "stage_index": 2,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-2/joint_samples.jsonl",
+        "samples_sha256": "f34aa7d2f27c919450f267d82e8a35d20e5eab1678aa8742b04af576e06ee3ba",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-micro-lattice-v1/stage-2/execution_receipt.json",
+        "execution_receipt_sha256": "bfde83bf3f5ff677ef01528282520e1ed6d1ba81768522081c16567d57bc05d5"
+      },
+      {
+        "fit_stage_index": 3,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-vertical-15mm-tricam-v1/packet.json",
+          "sha256": "eb958ed663ae44f734d5857fcc16d077fbb6f891215c2c747e5f3cdc0fbe411b"
+        },
+        "stage_index": 1,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-vertical-15mm-tricam-v1/stage-1/joint_samples.jsonl",
+        "samples_sha256": "b5a1d61e2a3e7a63e2f7c39a2ce9f7d62d2c35bd127573cfff9a2ab0c4c43b33",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-vertical-15mm-tricam-v1/stage-1/execution_receipt.json",
+        "execution_receipt_sha256": "ed9123b6282a850821eb921861230002d0a4243dfdd83b99714a7a346904cba4"
+      }
+    ],
+    "excluded_opened_diagnostic": {
+      "prior_evaluation_receipt": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-vertical-round-trip-tricam-v1/heldout-validation.json",
+        "sha256": "fa4f0b331d1b0ee6878829eb6fccc38e16b45450a6ef894da01401a8ccf4fb4b"
+      },
+      "packet": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-vertical-round-trip-tricam-v1/packet.json",
+        "sha256": "75bef39e3303da06e2a3bd2a1e57db2c3a43d928966b7574314429f9bf2ea727"
+      },
+      "stage": {
+        "stage_index": 1,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-vertical-round-trip-tricam-v1/stage-1/joint_samples.jsonl",
+        "samples_sha256": "eee56ab9c73231bc7b71096ad34b23409de4c1d9f35793e60ceac5eb20ba37f0",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-vertical-round-trip-tricam-v1/stage-1/execution_receipt.json",
+        "execution_receipt_sha256": "aa8e4fda2788c0231baff51cc47af4c5cf62f745b7fcfc3286184746ac6951b6"
+      },
+      "may_select_parameters": false,
+      "reason": "The round-trip result motivated the stateful mechanism family after it was opened; it cannot select or validate parameters."
+    }
+  },
+  "baselines": {
+    "prior_memoryless_deadband": {
+      "shoulder_lift": 2.0,
+      "elbow_flex": 2.0
+    },
+    "selected_memoryless_deadband": {
+      "shoulder_lift": 1.5,
+      "elbow_flex": 2.0,
+      "wrist_flex": 1.0
+    }
+  },
+  "candidate_grid_half_width_degrees": {
+    "shoulder_lift_shared": [2.0, 2.125, 2.25],
+    "elbow_flex_against_load": [0.0, 0.125, 0.25],
+    "elbow_flex_with_load": [2.0, 2.125, 2.25],
+    "wrist_flex_shared": [0.875, 1.0, 1.125]
+  },
+  "mechanism": {
+    "operator": "load_sign_conditioned_stateful_play",
+    "load_sign_source": "mujoco_qfrc_bias_sign",
+    "load_sign_zero_threshold_nm": 0.001,
+    "zero_sign_behavior": "retain_last_nonzero_sign",
+    "tied_branches": [
+      "shoulder_lift",
+      "wrist_flex"
+    ],
+    "untied_branches": [
+      "elbow_flex"
+    ]
+  },
+  "fit_objective": {
+    "kind": "equal_stage_equal_pitch_joint_huber",
+    "delta_degrees": 0.25,
+    "selected_joints": [
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex"
+    ],
+    "end_effector_metrics_used_for_selection": false
+  },
+  "selection_rule": {
+    "eligibility": "improve the frozen Huber fit objective over the selected memoryless deadband",
+    "rank": "lowest frozen Huber fit objective, then stable candidate identity",
+    "reason": "Equal-stage, equal-joint robust fitting avoids wrong-joint Cartesian compensation; end-effector RMS remains diagnostic until prospective validation."
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_calibration": false,
+    "simulator_parameter_promotion": false,
+    "action_correction": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}

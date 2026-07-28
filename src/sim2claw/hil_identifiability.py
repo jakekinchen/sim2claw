@@ -655,8 +655,10 @@ def execute_hil_packet(
     replay_error: PhysicalTraceReplayError | None = None
     identity = _identity_from_report(gateway_report)
     try:
-        overhead_start = overhead.start()
+        # Nest the C922 lifetime inside the D405 lifetime so D405 open/close
+        # transitions cannot interrupt the C922 container window.
         wrist_start = wrist.start()
+        overhead_start = overhead.start()
 
         def progress(_row: dict[str, Any]) -> None:
             overhead.ensure_running()

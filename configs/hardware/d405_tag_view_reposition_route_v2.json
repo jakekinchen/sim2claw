@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "d405_tag_view_from_post_stage1_sag_20260725_v2",
+  "reviewed_anchor_degrees": [
+    -19.692307692307693,
+    -52.043956043956044,
+    97.8021978021978,
+    -15.252747252747254,
+    -74.5934065934066,
+    2.9691211401425175
+  ],
+  "stage_targets_degrees": [
+    [
+      -20.383827,
+      -64.520994,
+      31.204886,
+      74.747,
+      -74.5934065934066,
+      2.9691211401425175
+    ],
+    [
+      -20.383827,
+      -64.520994,
+      31.204886,
+      90.0,
+      -74.5934065934066,
+      2.9691211401425175
+    ]
+  ],
+  "review_basis": {
+    "simulation_runtime": "cpu_mujoco_mj_forward",
+    "samples_per_stage": 361,
+    "external_contact_pairs": [],
+    "maximum_joint_excursion_degrees_by_stage": [
+      89.99974725274726,
+      15.253
+    ],
+    "wrist_roll_motion": false,
+    "gripper_motion": false
+  }
+}

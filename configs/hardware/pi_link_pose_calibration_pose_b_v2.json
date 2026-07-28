@@ -1,0 +1,39 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_link_pose_calibration_pose_b_20260726_v2",
+  "capture_during_motion": true,
+  "setup_recovery_command_anchor_snap_limit_degrees": 3.0,
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "reviewed_anchor_degrees": [
+    3.1648351648351647,
+    -107.16483516483517,
+    103.16483516483517,
+    -94.9010989010989,
+    -60.61538461538461,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [-12.0, -65.0, 70.0, -95.0, -80.0, 3.0878859857482186]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "follower_only_static_pi_link_pose_calibration",
+    "source_pose": "Fresh torque-off follower read after the v1 zero-displacement hold safely reduced the gravity sag without sending a route sample.",
+    "command_anchor_rule": "Clip the 0.527473 degree shoulder-lift underrun and 1.054945 degree elbow overrun to calibrated limits under the existing 3 degree setup-only recovery bound.",
+    "target_selection": "The unchanged pose B target changes pan, lift, elbow, and wrist roll while retaining wrist flex at -95 degrees.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

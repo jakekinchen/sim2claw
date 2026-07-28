@@ -1,0 +1,89 @@
+{
+  "schema_version": "sim2claw.geometric_joint_play_holdout.v1",
+  "evaluation_id": "geometric_joint_play_holdout_20260727_v1",
+  "status": "prospective_evaluator_frozen_heldout_unopened",
+  "proof_class": "action_frozen_no_contact_physical_stateful_actuator_heldout",
+  "sources": {
+    "fit_contract": {
+      "path": "configs/evaluations/geometric_joint_play_fit_v1.json",
+      "sha256": "991f927c449f5758ee9d5e56f9967963b515faba484fe974de61ea1f3c266628"
+    },
+    "fit_receipt": {
+      "path": "runs/geometric-microtransfer/20260727-geometric-joint-play-fit-v1/fit-receipt.json",
+      "sha256": "f03e1e071c7374f3b7036d11d206954f051f7f4f74abe4088f765694b1a0068a",
+      "receipt_digest": "449640852c51ac12616ccd67e5a6a58bd65fcaf3b539e9fdaf6e00f82c6efa86"
+    },
+    "packet": {
+      "path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/packet.json",
+      "sha256": "dad56193a2805d4cc222f98aed6b15834b9ef3c10dde318044ce3490828cfa3b"
+    },
+    "heldout_stage": {
+      "stage_index": 1,
+      "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/stage-1/execution_receipt.json",
+      "samples_path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/stage-1/joint_samples.jsonl",
+      "expected_action_sha256": "efa9d231a68e5cafac1d4e518000166b786dc333679588f791b2c8154f694367",
+      "expected_capture_hold_action_sha256": "cd58d528037093cb8c97c8d020fed79a81554baa60780c79f0690780c598e460",
+      "expected_sample_count": 441
+    }
+  },
+  "expected_fit": {
+    "selected_half_width_degrees": {
+      "shoulder_lift_shared": 2.125,
+      "elbow_flex_against_load": 0.125,
+      "elbow_flex_with_load": 2.125,
+      "wrist_flex_shared": 1.0
+    },
+    "selected_expanded_half_width_degrees": {
+      "shoulder_lift": {
+        "with_load": 2.125,
+        "against_load": 2.125
+      },
+      "elbow_flex": {
+        "with_load": 2.125,
+        "against_load": 0.125
+      },
+      "wrist_flex": {
+        "with_load": 1.0,
+        "against_load": 1.0
+      }
+    },
+    "parameters_promoted": false
+  },
+  "baseline_memoryless_deadband_degrees": {
+    "shoulder_lift": 1.5,
+    "elbow_flex": 2.0,
+    "wrist_flex": 1.0
+  },
+  "gates": {
+    "selected_joint_rms_must_improve_over_baseline": true,
+    "selected_end_effector_rms_must_improve_over_baseline": true,
+    "maximum_return_error_degrees": {
+      "shoulder_lift": 1.0,
+      "elbow_flex": 1.0,
+      "wrist_flex": 1.0
+    },
+    "all_three_camera_intervals_must_enclose_action": true,
+    "follower_torque_must_be_off_at_close": true
+  },
+  "action_invariance": {
+    "same_packet_bytes_in_sim_and_physical": true,
+    "no_action_correction": true,
+    "no_assistance": true,
+    "no_intervention": true
+  },
+  "proof_boundary": {
+    "heldout_opened_when_contract_frozen": false,
+    "fit_may_run_after_heldout": false,
+    "evaluator_may_refit": false,
+    "passing_result_may_admit_pawn_contact": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_calibration": false,
+    "simulator_parameter_promotion": false,
+    "action_correction": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}

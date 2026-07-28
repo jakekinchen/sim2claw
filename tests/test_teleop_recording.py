@@ -10,6 +10,10 @@ from unittest.mock import patch
 
 import numpy as np
 
+from sim2claw.overhead_video import OverheadVideoError
+from sim2claw.physical_gateway import PhysicalGatewayError
+from sim2claw.physical_sim_replay import replay_physical_recording
+from sim2claw.scene import CURRENT_TASK_LAYOUT_ID
 from sim2claw.source_episode import (
     CONTRACT_PATH_V4,
     EPISODE_SCHEMA,
@@ -20,13 +24,13 @@ from sim2claw.source_episode import (
 )
 from sim2claw.teleop_recording import (
     PHYSICAL_SAMPLE_SCHEMA,
+    PhysicalFollowerBackend,
     RecorderError,
     TeleopRecordingManager,
+    ZeroDisplacementHoldBackend,
     discover_so101_devices,
+    run_zero_displacement_hold_packet,
 )
-from sim2claw.physical_gateway import PhysicalGatewayError
-from sim2claw.physical_sim_replay import replay_physical_recording
-from sim2claw.scene import CURRENT_TASK_LAYOUT_ID
 
 
 class FakeBackend:
@@ -248,6 +252,96 @@ class FakeWristVideoRecorder(FakeVideoRecorder):
             "browser_video_path": "wrist_d405.browser.mp4",
             "ffmpeg_log_path": "wrist_d405.ffmpeg.log",
             "metric_depth": False,
+        }
+
+
+class FakeDualVideoRecorder:
+    def __init__(self, draft: Path, events: list[str] | None = None):
+        self.draft = draft
+        self.events = events if events is not None else []
+        self.started_monotonic: float | None = None
+        self.finished = False
+
+    def start(self) -> dict[str, Any]:
+        self.events.append("common_start")
+        self.started_monotonic = time.monotonic()
+        native = self.draft / "native_dual_camera"
+        native.mkdir()
+        (native / "overhead_c922.native.mov").write_bytes(b"native-c922")
+        (native / "wrist_d405.native.mov").write_bytes(b"native-d405")
+        (self.draft / "overhead_c922.mp4").write_bytes(b"browser-c922")
+        (self.draft / "wrist_d405.browser.mp4").write_bytes(b"browser-d405")
+        (native / "camera_callback_timestamps.jsonl").write_text(
+            '{"role":"c922"}\n{"role":"d405"}\n',
+            encoding="utf-8",
+        )
+        return {
+            "schema_version": "sim2claw.native_dual_camera_capture.v1",
+            "status": "recording",
+            "capture_mechanism": "one_native_avcapture_session",
+            "session_count": 1,
+            "independent_camera_sessions": 0,
+            "overhead": {
+                "schema_version": "sim2claw.overhead_diagnostic_video.v1",
+                "status": "recording",
+                "camera_name": "C922 Pro Stream Webcam",
+                "video_path": "native_dual_camera/overhead_c922.native.mov",
+                "browser_video_path": "overhead_c922.mp4",
+            },
+            "wrist": {
+                "schema_version": "sim2claw.wrist_diagnostic_video.v1",
+                "status": "recording",
+                "camera_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+                "video_path": "native_dual_camera/wrist_d405.native.mov",
+                "browser_video_path": "wrist_d405.browser.mp4",
+                "metric_depth": False,
+            },
+        }
+
+    def ensure_running(self) -> None:
+        return
+
+    def finish(self, **_kwargs: Any) -> dict[str, Any]:
+        self.events.append("common_finish")
+        self.finished = True
+        common = {
+            "schema_version": "sim2claw.native_dual_camera_capture.v1",
+            "capture_mechanism": "one_native_avcapture_session",
+            "session_count": 1,
+            "independent_camera_sessions": 0,
+            "callback_timestamp_path": (
+                "native_dual_camera/camera_callback_timestamps.jsonl"
+            ),
+        }
+        base = {
+            "status": "completed",
+            "capture_mechanism": "one_native_avcapture_session",
+            "callback_frame_count": 10,
+            "container_frame_count": 10,
+            "browser_frame_count": 10,
+            "apple_drop_callback_count": 0,
+            "writer_backpressure_count": 0,
+            "callback_timestamp_path": common["callback_timestamp_path"],
+            "diagnostic_only": True,
+            "is_training_data": False,
+        }
+        return {
+            "overhead": {
+                **base,
+                "schema_version": "sim2claw.overhead_diagnostic_video.v1",
+                "camera_name": "C922 Pro Stream Webcam",
+                "video_path": "native_dual_camera/overhead_c922.native.mov",
+                "browser_video_path": "overhead_c922.mp4",
+            },
+            "wrist": {
+                **base,
+                "schema_version": "sim2claw.wrist_diagnostic_video.v1",
+                "camera_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+                "video_path": "native_dual_camera/wrist_d405.native.mov",
+                "browser_video_path": "wrist_d405.browser.mp4",
+                "metric_depth": False,
+            },
+            "common_session": common,
         }
 
 
@@ -519,6 +613,192 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertEqual(replay["sample_count"], len(rows))
         self.assertFalse(replay["task_success_verified"])
 
+    def test_physical_dual_camera_lifecycle_is_nested_d405_then_c922(
+        self,
+    ) -> None:
+        events: list[str] = []
+
+        class OrderedOverhead(FakeVideoRecorder):
+            def start(self) -> dict[str, Any]:
+                events.append("c922_start")
+                return super().start()
+
+            def finish(self, **kwargs: Any) -> dict[str, Any]:
+                events.append("c922_finish")
+                return super().finish(**kwargs)
+
+        class OrderedWrist(FakeWristVideoRecorder):
+            def start(self) -> dict[str, Any]:
+                events.append("d405_start")
+                return super().start()
+
+            def finish(self, **kwargs: Any) -> dict[str, Any]:
+                events.append("d405_finish")
+                return super().finish(**kwargs)
+
+        self.manager.shutdown()
+        self.manager = TeleopRecordingManager(
+            repo_root=self.repo_root,
+            backend_factory=lambda request, preflight: FakePhysicalBackend(
+                request, preflight
+            ),
+            video_recorder_factory=lambda draft: OrderedOverhead(draft),
+            wrist_video_recorder_factory=lambda draft: OrderedWrist(draft),
+            dev_root=self.dev_root,
+            calibration_root=self.calibration_root,
+        )
+        self.manager.start(
+            {
+                "mode": "physical_follower",
+                "source_square": "a1",
+                "target_square": "h2",
+                "sample_hz": 20,
+                "physical_safety_acknowledged": True,
+                "server_owned_prestart_sequence": True,
+            }
+        )
+        self.manager.stop()
+
+        self.assertEqual(
+            events,
+            ["d405_start", "c922_start", "c922_finish", "d405_finish"],
+        )
+        self.manager.discard()
+
+    def test_physical_production_path_uses_one_native_common_session(self) -> None:
+        events: list[str] = []
+        common_recorders: list[FakeDualVideoRecorder] = []
+
+        def dual_factory(draft: Path) -> FakeDualVideoRecorder:
+            recorder = FakeDualVideoRecorder(draft, events)
+            common_recorders.append(recorder)
+            return recorder
+
+        self.manager.shutdown()
+        self.manager = TeleopRecordingManager(
+            repo_root=self.repo_root,
+            backend_factory=lambda request, preflight: FakePhysicalBackend(
+                request, preflight
+            ),
+            video_recorder_factory=lambda draft: FakeVideoRecorder(draft),
+            wrist_video_recorder_factory=lambda draft: FakeWristVideoRecorder(
+                draft
+            ),
+            dual_video_recorder_factory=dual_factory,
+            dev_root=self.dev_root,
+            calibration_root=self.calibration_root,
+        )
+        self.manager.start(
+            {
+                "mode": "physical_follower",
+                "source_square": "a1",
+                "target_square": "h2",
+                "sample_hz": 20,
+                "physical_safety_acknowledged": True,
+                "server_owned_prestart_sequence": True,
+            }
+        )
+        deadline = time.monotonic() + 2
+        while self.manager.snapshot()["sample_count"] < 2 and time.monotonic() < deadline:
+            time.sleep(0.02)
+        stopped = self.manager.stop()
+        self.assertEqual(stopped["status"], "awaiting_label")
+        self.assertEqual(events, ["common_start", "common_finish"])
+        self.assertTrue(common_recorders[0].finished)
+        saved = self.manager.finalize(
+            {
+                "label": "Native dual camera fixture",
+                "skill": "full_episode",
+                "outcome": "unreviewed",
+            }
+        )
+        destination = self.repo_root / saved["saved_path"]
+        receipt = json.loads((destination / "recording_receipt.json").read_text())
+        rows = [
+            json.loads(line)
+            for line in (destination / "samples.jsonl").read_text().splitlines()
+        ]
+        self.assertEqual(
+            rows[0]["visual_observation"]["streams"],
+            {
+                "overhead_workspace": (
+                    "native_dual_camera/overhead_c922.native.mov"
+                ),
+                "wrist_gripper_upward": (
+                    "native_dual_camera/wrist_d405.native.mov"
+                ),
+            },
+        )
+        self.assertEqual(
+            receipt["native_common_camera_session"]["session_count"], 1
+        )
+        self.assertEqual(receipt["overhead_video"]["callback_frame_count"], 10)
+        self.assertEqual(receipt["wrist_video"]["callback_frame_count"], 10)
+        self.assertTrue(
+            (destination / "native_dual_camera/overhead_c922.native.mov").is_file()
+        )
+        self.assertTrue(
+            (destination / "native_dual_camera/wrist_d405.native.mov").is_file()
+        )
+        self.assertTrue((destination / "overhead_c922.mp4").is_file())
+        self.assertTrue((destination / "wrist_d405.browser.mp4").is_file())
+
+    def test_wrist_is_finalized_when_c922_start_fails(self) -> None:
+        events: list[str] = []
+        wrists: list[FakeWristVideoRecorder] = []
+
+        class FailingOverhead(FakeVideoRecorder):
+            def start(self) -> dict[str, Any]:
+                events.append("c922_start")
+                raise OverheadVideoError("fixture C922 open failure")
+
+            def finish(self, **kwargs: Any) -> dict[str, Any]:
+                events.append("c922_finish")
+                raise OverheadVideoError("fixture C922 never started")
+
+        class OrderedWrist(FakeWristVideoRecorder):
+            def start(self) -> dict[str, Any]:
+                events.append("d405_start")
+                return super().start()
+
+            def finish(self, **kwargs: Any) -> dict[str, Any]:
+                events.append("d405_finish")
+                return super().finish(**kwargs)
+
+        def wrist_factory(draft: Path) -> OrderedWrist:
+            recorder = OrderedWrist(draft)
+            wrists.append(recorder)
+            return recorder
+
+        self.manager.shutdown()
+        self.manager = TeleopRecordingManager(
+            repo_root=self.repo_root,
+            backend_factory=lambda request, preflight: FakePhysicalBackend(
+                request, preflight
+            ),
+            video_recorder_factory=lambda draft: FailingOverhead(draft),
+            wrist_video_recorder_factory=wrist_factory,
+            dev_root=self.dev_root,
+            calibration_root=self.calibration_root,
+        )
+        with self.assertRaisesRegex(RecorderError, "fixture C922 open failure"):
+            self.manager.start(
+                {
+                    "mode": "physical_follower",
+                    "source_square": "a1",
+                    "target_square": "h2",
+                    "sample_hz": 20,
+                    "physical_safety_acknowledged": True,
+                    "server_owned_prestart_sequence": True,
+                }
+            )
+
+        self.assertEqual(
+            events,
+            ["d405_start", "c922_start", "c922_finish", "d405_finish"],
+        )
+        self.assertTrue(wrists[0].finished)
+
     def test_physical_mode_is_ready_but_requires_operator_acknowledgement(self) -> None:
         preflight = self.manager.preflight()
         self.assertTrue(preflight["modes"]["physical_follower"]["device_ready"])
@@ -609,6 +889,15 @@ class TeleopRecordingTest(unittest.TestCase):
         self.assertEqual(state["physical_gateway_sync"], report)
         self.assertFalse(state["physical_gateway_sync"]["physical_follower_torque_enabled"])
 
+    def test_physical_recording_backends_do_not_reconfigure_devices(self) -> None:
+        preflight = self.manager.preflight()
+        with patch("sim2claw.teleop_recording.SO101PhysicalGateway") as gateway:
+            PhysicalFollowerBackend({}, preflight)
+            ZeroDisplacementHoldBackend({}, preflight)
+        self.assertEqual(gateway.call_count, 2)
+        for call in gateway.call_args_list:
+            self.assertIs(call.kwargs["configure_devices"], False)
+
     def test_physical_mode_requires_server_owned_prestart_sequence(self) -> None:
         with self.assertRaisesRegex(RecorderError, "Server-owned"):
             self.manager.start(
@@ -694,6 +983,20 @@ class TeleopRecordingTest(unittest.TestCase):
                     "target_square": "b5",
                 }
             )
+
+    def test_unadmitted_hold_packet_opens_no_hardware_or_recorder(self) -> None:
+        touched: list[str] = []
+        packet = Path(__file__).parents[1] / (
+            "configs/hardware/p6_zero_displacement_hold_packet.json"
+        )
+        with self.assertRaisesRegex(RecorderError, "not independently reviewed"):
+            run_zero_displacement_hold_packet(
+                packet,
+                operator_acknowledged=True,
+                preflight_fn=lambda: touched.append("gateway"),
+                manager_factory=lambda **_kwargs: touched.append("recorder"),
+            )
+        self.assertEqual(touched, [])
 
 
 if __name__ == "__main__":

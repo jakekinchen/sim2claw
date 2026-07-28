@@ -103,14 +103,13 @@
                 <p id="stage-subtitle">The newest replayable evidence will appear here.</p>
               </div>
               <div class="stage-actions">
-                <a class="grasp-gallery-shortcut" href="#/tasks/physical_pawn_episode_library_v1">Real ↔ twin episodes</a>
+                <a class="grasp-gallery-shortcut" href="#/tasks/physical_pawn_episode_library_v1">Episode library</a>
                 <a class="grasp-gallery-shortcut" href="#/tasks/pawn_bg_ranked_grasp_v3">Top 7 grasp replays</a>
                 <div class="recording-feed-switch" id="recording-feed-switch" hidden aria-label="Recorded camera feed"></div>
                 <div class="replay-mode-switch" id="replay-mode-switch" hidden aria-label="Replay view">
-                  <button type="button" data-replay-mode="compare" aria-pressed="true">Compare</button>
                   <button type="button" data-replay-mode="recorded" aria-pressed="false">Reality</button>
-                  <button type="button" data-replay-mode="visual" aria-pressed="false">Visual twin</button>
-                  <button type="button" data-replay-mode="three" aria-pressed="false">Physics</button>
+                  <button type="button" data-replay-mode="visual" aria-pressed="false">Twin</button>
+                  <button type="button" data-replay-mode="compare" aria-pressed="true">Compare</button>
                 </div>
                 <span class="stage-verdict" id="stage-verdict">Waiting</span>
                 <button class="twin-fidelity-trigger" id="twin-fidelity-trigger" type="button" aria-controls="twin-fidelity-drawer" aria-expanded="false" disabled>
@@ -122,27 +121,20 @@
             </header>
 
             <div class="comparison-lane-strip" id="comparison-lane-strip" hidden aria-label="Episode comparison evidence lanes">
-              <span data-comparison-lane="real"><i>01</i><b>Recorded reality</b><small>Source pixels</small></span>
-              <span data-comparison-lane="visual"><i>02</i><b>Visual twin</b><small>Same-camera · no physics</small></span>
-              <span data-comparison-lane="physics"><i>03</i><b>Physics replay</b><small id="physics-lane-state">Action-frozen MuJoCo</small></span>
+              <span data-comparison-lane="real"><i>01</i><b>Reality</b><small>Recorded source pixels</small></span>
+              <span data-comparison-lane="visual"><i>02</i><b>Twin</b><small>Camera-matched simulator view</small></span>
+              <span data-comparison-lane="physics"><i>03</i><b>Twin proof</b><small id="physics-lane-state">Receipt-bound MuJoCo</small></span>
               <em>One normalized playhead</em>
             </div>
 
             <div class="episode-stage" id="episode-stage" tabindex="0" aria-label="Episode replay viewer">
               <video id="replay-video" playsinline muted preload="metadata"></video>
               <img id="replay-frame" alt="Current simulation episode frame">
-              <canvas class="visual-twin-canvas" id="visual-twin-canvas" aria-label="Same-camera image-space visual twin"></canvas>
+              <canvas class="visual-twin-canvas" id="visual-twin-canvas" aria-hidden="true"></canvas>
               <div class="visual-twin-seam" id="visual-twin-seam" aria-hidden="true"><i></i></div>
-              <div class="visual-twin-toolbar" id="visual-twin-toolbar" hidden>
-                <div role="group" aria-label="Reality and visual twin reveal">
-                  <button type="button" data-visual-mode="real" aria-pressed="false">Reality</button>
-                  <button type="button" data-visual-mode="split" aria-pressed="true">Wipe</button>
-                  <button type="button" data-visual-mode="twin" aria-label="Visual twin" aria-pressed="false">Twin</button>
-                </div>
-                <label><span>Reveal</span><input id="visual-twin-reveal" type="range" min="8" max="92" value="50" aria-label="Visual twin reveal position"></label>
-              </div>
+              <div class="visual-twin-toolbar" id="visual-twin-toolbar" hidden aria-hidden="true"><input id="visual-twin-reveal" type="range" min="8" max="92" value="50" aria-hidden="true"></div>
               <div class="comparison-pane-label comparison-pane-label-real" id="comparison-real-label" hidden>
-                <i>01</i><span>Reality / visual twin</span>
+                <i>01</i><span>Recorded reality</span>
               </div>
               <div class="three-replay" id="three-replay" aria-label="Interactive MuJoCo episode inspection">
                 <canvas id="three-canvas"></canvas>
@@ -151,19 +143,20 @@
               </div>
               <div class="physics-unavailable" id="physics-unavailable" hidden>
                 <i>03</i>
-                <b>Physics replay unavailable</b>
-                <p>No receipt-bound MuJoCo trace exists for this recording. Studio will not invent one.</p>
+                <b>Simulator twin unavailable</b>
+                <p>No receipt-bound source-command MuJoCo trace exists for this recording. Studio will not invent one.</p>
+                <button id="generate-physics-replay" type="button">Generate source-command replay</button>
               </div>
               <div class="comparison-pane-label comparison-pane-label-physics" id="comparison-physics-label" hidden>
-                <i>03</i><span>Action-frozen physics</span>
+                <i>03</i><span>Simulator twin</span>
               </div>
               <div class="empty-stage" id="empty-stage">
                 <svg class="stage-portrait" id="stage-portrait" viewBox="0 0 640 360" aria-hidden="true"></svg>
                 <p>No replay selected</p>
               </div>
-              <button class="camera-label" type="button" data-route="robots" aria-label="Open robot and workcell view">
+              <div class="camera-label" aria-live="polite">
                 <span id="camera-source-label">SOURCE</span><b id="camera-name">WORKCELL / RECORDED</b>
-              </button>
+              </div>
               <div class="stage-timecode" id="stage-timecode">00:00.000</div>
               <div class="stage-progress" id="stage-progress" aria-hidden="true"></div>
               <div class="scan-head" id="scan-head" aria-hidden="true"></div>
@@ -348,22 +341,27 @@
         <section class="view-panel calibration-view" data-view-panel="calibration" aria-labelledby="calibration-heading">
           <header class="view-heading calibration-heading">
             <div>
-              <span class="section-label">Robo Scanner + LLM scene inputs</span>
-              <h1 id="calibration-heading">Scene input artifacts</h1>
-              <p>Inspect the video, 3D Gaussian Splat, and JSON scene proposal. Reviewed MuJoCo geometry is optional; visual inputs do not define scale, collision, task coordinates, or robot motion.</p>
+              <span class="section-label">World-space registration light table</span>
+              <h1 id="calibration-heading">3DGS × MuJoCo comparison</h1>
+              <p>Orbit the full captured workspace and reviewed simulator in one camera. Fade either layer to inspect alignment; quantified visual residuals remain separate from action and transfer evidence.</p>
             </div>
             <span class="neutral-tag calibration-boundary"><span class="lock-icon" aria-hidden="true"></span> visual layer only</span>
           </header>
 
           <div class="calibration-layout">
-            <section class="calibration-stage" aria-label="Interactive Gaussian splat scene input view">
+            <section class="calibration-stage" aria-label="Interactive registered 3D Gaussian splat and MuJoCo world-space comparison">
+              <div class="calibration-stage-key" aria-hidden="true">
+                <span class="splat-key">3DGS capture</span>
+                <span class="scene-key">MuJoCo scene</span>
+                <span class="registered-key">shared board frame</span>
+              </div>
               <canvas id="calibration-canvas"></canvas>
               <div class="calibration-stage-toolbar">
                 <span id="calibration-status">Waiting for the verified splat…</span>
                 <div>
                   <button id="calibration-scene-toggle" type="button" aria-pressed="false">Show reviewed geometry</button>
-                  <button id="calibration-fit" type="button">Fit splat</button>
-                  <button id="calibration-reset" type="button">Reset transform</button>
+                  <button id="calibration-fit" type="button">Fit world</button>
+                  <button id="calibration-reset" type="button">Reset view</button>
                 </div>
               </div>
             </section>
@@ -375,12 +373,58 @@
                 <p id="calibration-subtitle">Loading Robo Scanner release metadata…</p>
               </div>
 
+              <section class="calibration-layer-mixer" aria-labelledby="calibration-layer-mixer-heading">
+                <header>
+                  <div>
+                    <span class="section-label">Registration shutter</span>
+                    <h3 id="calibration-layer-mixer-heading">Layer opacity</h3>
+                  </div>
+                  <b id="calibration-layer-mode">Overlay</b>
+                </header>
+                <label class="splat-layer-control">
+                  <span><i aria-hidden="true"></i>3DGS capture <output id="calibration-splat-opacity-output" for="calibration-splat-opacity">68%</output></span>
+                  <input id="calibration-splat-opacity" type="range" min="0" max="100" step="1" value="68" aria-label="3D Gaussian splat opacity">
+                </label>
+                <label class="scene-layer-control">
+                  <span><i aria-hidden="true"></i>MuJoCo geometry <output id="calibration-scene-opacity-output" for="calibration-scene-opacity">56%</output></span>
+                  <input id="calibration-scene-opacity" type="range" min="0" max="100" step="1" value="56" aria-label="MuJoCo scene opacity">
+                </label>
+                <div class="calibration-layer-presets" role="group" aria-label="Layer visibility presets">
+                  <button type="button" data-calibration-preset="splat">3DGS only</button>
+                  <button type="button" data-calibration-preset="overlay" class="active">Overlay</button>
+                  <button type="button" data-calibration-preset="scene">MuJoCo only</button>
+                </div>
+              </section>
+
               <dl class="calibration-facts">
                 <div><dt>Splats</dt><dd id="calibration-splats">—</dd></div>
                 <div><dt>Source</dt><dd id="calibration-source">—</dd></div>
                 <div><dt>Renderer</dt><dd id="calibration-renderer">—</dd></div>
-                <div><dt>Scale</dt><dd>Relative visual</dd></div>
+                <div><dt>Scale</dt><dd id="calibration-scale">Relative visual</dd></div>
               </dl>
+
+              <section class="calibration-delta-ledger" id="calibration-delta-ledger" aria-labelledby="calibration-delta-heading">
+                <header>
+                  <div>
+                    <span class="section-label">Evidence-separated readout</span>
+                    <h3 id="calibration-delta-heading">Where a delta is detected</h3>
+                  </div>
+                  <b id="calibration-delta-verdict">Loading</b>
+                </header>
+                <article class="delta-row visual-delta">
+                  <div><span>World visual</span><b id="calibration-world-delta">—</b></div>
+                  <p id="calibration-world-delta-note">Waiting for the registered board and splat evidence.</p>
+                </article>
+                <article class="delta-row registration-delta">
+                  <div><span>Camera ↔ model</span><b id="calibration-registration-delta">—</b></div>
+                  <p id="calibration-registration-delta-note">Waiting for the current V04 campaign graph.</p>
+                </article>
+                <article class="delta-row action-delta">
+                  <div><span>Directional task/action</span><b id="calibration-action-delta">—</b></div>
+                  <p id="calibration-action-delta-note">Directional transfer evidence has not loaded.</p>
+                </article>
+                <small>Pixel residuals are not millimetres. The overlay can expose a visual mismatch, but it cannot establish collision, contact, dynamics, or task consequence.</small>
+              </section>
 
               <section class="scene-synthesis-card" aria-labelledby="scene-synthesis-heading">
                 <header>

@@ -1,0 +1,78 @@
+{
+  "schema_version": "sim2claw.current_pi_tag3_hand_eye_base_anchor_spec.v1",
+  "spec_id": "current_pi_tag3_hand_eye_base_anchor_20260726_v1",
+  "proof_class": "physical_static_fit_only_tag3_hand_eye_exact_base_CAD_anchor_attempt",
+  "status": "frozen_J_S_K_L_only_before_tag3_hand_eye_gauge_fit",
+  "mapping_contract": {
+    "path": "configs/evaluations/current_pi_cad_keyed_joint_mapping_v1.json",
+    "sha256": "38edbdbcb4f2cc74cfa7a12a35fca1a0b7e6b1b2da552d11b8fb02fc8a931747"
+  },
+  "base_anchor_spec": {
+    "path": "configs/evaluations/current_pi_fixed_base_cad_anchor_v1.json",
+    "sha256": "0d9df69a09e0d05d230f8ab2eb57b8d6b6b82cadb2114caf1e1cea0b11fd128f"
+  },
+  "fit_poses": [
+    "J",
+    "S",
+    "K",
+    "L"
+  ],
+  "hand_eye_algorithm": {
+    "algorithm_id": "tag3_single_axis_hand_eye_then_exact_base_gauge_v1",
+    "tag_id": 3,
+    "rigid_body": "left_shoulder",
+    "excited_joint": "left_shoulder_pan",
+    "tag_black_edge_m": 0.02,
+    "tag_fit": {
+      "loss": "linear",
+      "maximum_function_evaluations": 5000,
+      "relative_null_singular_value_max": 1e-06,
+      "expected_identifiable_rank": 10,
+      "expected_gauge_nullity": 2,
+      "maximum_corner_rmse_px": 3.0,
+      "maximum_corner_error_px": 6.0
+    },
+    "exact_gauge_invariance_checks": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.8,
+        0.1
+      ],
+      [
+        -0.8,
+        -0.1
+      ]
+    ],
+    "maximum_gauge_invariance_corner_delta_px": 1e-06,
+    "gauge_search": {
+      "rotation_about_axis_bounds_radians": [
+        -3.141592653589793,
+        3.141592653589793
+      ],
+      "translation_along_axis_bounds_m": [
+        -0.8,
+        0.4
+      ],
+      "rotation_grid_count": 73,
+      "translation_grid_count": 49,
+      "multistart_count": 5,
+      "minimum_seed_rotation_separation_radians": 0.45,
+      "minimum_seed_translation_separation_m": 0.08,
+      "loss": "soft_l1",
+      "f_scale_px": 3.0,
+      "maximum_function_evaluations": 2500
+    }
+  },
+  "hand_eye_algorithm_sha256": "2adc4c6c1a74bccabcbdb4b6fa6a9093e8ae353da26d2a57b3063a139d838c62",
+  "authority": {
+    "may_emit_camera_candidate_only_if_all_inherited_base_and_hand_eye_gates_pass": true,
+    "joint_mapping_promotion": false,
+    "simulator_parameter_promotion": false,
+    "hardware_motion": false,
+    "physical_task": false,
+    "policy": false
+  }
+}

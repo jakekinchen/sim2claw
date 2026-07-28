@@ -1,0 +1,52 @@
+{
+  "schema_version": "sim2claw.c922_terminal_hold_still_capture_contract.v1",
+  "contract_id": "c922_rank_preflight_p1_terminal_hold_still_20260725_v1",
+  "status": "preregistered_before_capture_or_motion",
+  "route": {
+    "path": "configs/hardware/c922_rank_preflight_p1_observed_v1.json",
+    "sha256": "41b170ce6759b0d95d8e69b90c1d058eb028359fe7680aeac0a6b2185e81a1a5",
+    "route_id": "c922_rank_preflight_live_anchor_to_observed_p1_diagnostic_20260725_v1",
+    "pose_id": "P1_v6_reached_observed_stop_diagnostic",
+    "frozen_candidate_pose_reached": false
+  },
+  "camera": {
+    "role": "c922",
+    "localized_name": "C922 Pro Stream Webcam",
+    "unique_id": "0x8310000046d085c",
+    "model_id": "UVC Camera VendorID_1133 ProductID_2140",
+    "format_index": 16,
+    "frame_rate_range_index": 0,
+    "width": 640,
+    "height": 480,
+    "media_subtype_fourcc": "420v",
+    "supported_fps": 30.00003000003,
+    "frame_duration_seconds": 0.03333330000003333,
+    "require_nonempty_camera_session_token": true,
+    "require_nonempty_fixed_mount_token": true
+  },
+  "selection": {
+    "clock": "host_continuous_monotonic_nanoseconds",
+    "frame_rule": "callback_timestamp_inside_terminal_hold_nearest_hold_midpoint",
+    "minimum_terminal_hold_seconds": 1.9,
+    "maximum_ring_frames": 180
+  },
+  "requirements": {
+    "capture_ready_before_route_executor": true,
+    "planned_full_path_cpu_previewed": true,
+    "executed_safe_prefix_and_exact_hold_match_planned_bytes": true,
+    "route_completed": true,
+    "shutdown_torque_off_confirmed": true,
+    "physical_follower_torque_enabled_false": true,
+    "png_hash_bound_to_callback_event": true,
+    "full_three_face_rank_eligible": false
+  },
+  "authority": {
+    "annotation": false,
+    "fit": false,
+    "extrinsic": false,
+    "joint_offset": false,
+    "policy": false,
+    "task_success": false,
+    "physical_transfer": false
+  }
+}

@@ -1,5 +1,108 @@
 # Orchestration Ledger
 
+## Active bounded transaction — follower-only timing twin
+
+- Repo and branch: `/Users/kelly/Developer/sim2claw` on `main`; physical
+  canary implementation integrated at `71348fe` with the exact-byte
+  post-normalization correction pending in the current bounded commit.
+- Owner objective: control only the SO-101 follower, without leader alignment
+  or teleoperation, until a tangible digital-twin result is obtained.
+- Physical proof: packet `P10-fa486d61dbdc303e` has five finalized
+  follower-only recordings. Every P4 report is exact-replay eligible and binds
+  identical requested/applied action bytes. Cohort SHA-256:
+  `ffdcdfaa2da83f3a19e70d000de4627ccdc257b2e5d87ae0b02109d3bcaa6460`.
+- Safety state: all capture and canary motion was bounded by the reviewed
+  follower gateway; the real leader was not opened. Fresh post-canary
+  preflight confirms the follower is torque-off with zero reported current.
+- Completed proof: the immutable receipts now derive one unanimous
+  robot/workspace identity without rewriting evidence. An explicit
+  calibration-hash-bound range candidate enabled exact replay without clipping
+  or action mutation. The P9 fit selected latency `0.0825811954 s`, actuator
+  gain scale `0.5`, and damping scale `0.5`.
+- Evaluator result: independent CPU/fp32 admission passed with held-out loss
+  `0.0004306247283 → 0.0004136104253` (`3.951074%` relative improvement).
+  Admission receipt SHA-256:
+  `baf0c12f5402750b358624bd5726f0491d26aae05f6e42c680428bba925b0f1a`.
+- Simulation canary: the P13-unapplied bottleneck was removed only for the
+  partial simulation path. Canonical output freezes action SHA-256
+  `52a856a54d8edc9dc53ed44e83f8bfc5f6c670b79fec30dfc1eb56d4f6c08095`
+  from the P9-admitted config and hash-bound P10 stationary anchor. Focused
+  verification passed `21/21`.
+- Contact diagnosis: the absolute-zero policy rejected the folded recorded
+  pose, but a direct kinematic audit found the same 12 internal
+  shoulder/lower-arm and shoulder/wrist contacts at every command, no external
+  table/board/pawn/clamp/floor/other-arm contact, no new contact pair, and no
+  penetration worse than the `-0.0092899963 m` starting baseline. The dynamic
+  `77.556 N` result remains retained as a simulator-model mismatch diagnostic.
+- Physical canary result: completed at
+  `runs/physical_excitation/20260725-follower-only-v1/physical-canary-v1/execution-v4`.
+  The fresh post-normalization payload contains 37 physical-unit float64
+  commands, action SHA-256
+  `129441d03791570782dc8771f13e0b6125dbd5e01369645bd0fd641ee4c22a20`.
+  MuJoCo `mj_forward` consumed that exact payload and found no external,
+  new, or worsened kinematic contact. Hardware requested/sent vectors were
+  byte-identical at all 37 samples with no gateway clamp or rate limit.
+  Measured pan excursion was `0.615385°`; the arm returned within the frozen
+  `0.5°` tolerance and torque was released.
+- Camera evidence: one native common AVFoundation session completed both
+  exact active streams after rebinding the currently enumerated D405 USB
+  identity/mode (`424x240 yuvs @ 5 fps`). C922 recorded 82 frames and D405 14,
+  with zero Apple drops, writer backpressure, inferred missing intervals, or
+  non-monotonic PTS. These are diagnostic videos, not exposure synchronization,
+  metric depth, or task proof.
+- Worker state: background task `019f97b8-3ab8-7402-bbfc-e391b88b6814`
+  is complete; its implementation was integrated and corrected in canonical.
+- Next proof target: use this executor as the hardware-control canary baseline,
+  then close metric P13 camera/workcell alignment and task-consequence
+  observability before promoting any geometric, ACT, VLA, or LLM policy.
+
+## Active bounded transaction — Studio simulator-twin reconciliation
+
+- Owner objective: preserve evaluator/learning machinery while making Replay
+  the single contextual place to compare recorded reality with an honest
+  simulator twin and inspect the remaining sim-to-real gaps.
+- Implementation: committed at
+  `cfc502140999e9e35bcd2d5dbeefbfb3c04a6aa8`; the retired pixel-filter visual
+  mimic is no longer active. Reality / Twin / Compare share one timeline.
+- Live catalog: 101 episodes, 22 physical sources, eight receipt-bound
+  simulator pairings, seven byte-identical action pairings, one explicitly
+  converted source-command diagnostic, 14 simulator-unavailable sources, and
+  zero image-derived visual twins.
+- Fail-closed boundary: source samples, replay receipt, response trace, state
+  trace, recording identity, and declared proof class must all verify. A local
+  diagnostic is never relabelled as exact-action, mechanism, consequence,
+  task, training, promotion, or physical evidence.
+- Product boundary: the loopback interactive Studio may explicitly request the
+  existing diagnostic replay runner under a single-flight lock; read-only
+  Studio has no write control. No simulator replay was executed by this
+  reconciliation.
+- Independent review correction: exact commit `6fc3a9f` failed the console
+  gate. Selecting two paired episodes could construct two Three.js viewers on
+  one canvas; the orphan renderer emitted 197 WebKit WebGL program-location
+  errors and continued after switching to Reality. The original zero-error
+  observation did not exercise this second-selection path.
+- Rendering repair: commit `3195280b001e58aad6b43a4d60314daabe6e19f4`
+  single-flights viewer construction, removes the redundant paired-episode
+  load, serializes scene mutation, and discards stale requests. The original
+  missing → paired → paired sequence now has zero WebGL errors in Chromium and
+  WebKit. Focused coverage passes `49 + 2 subtests`.
+- Evaluator binding: Studio receipt `5cde59a...` and publication receipt
+  `c3cb2e2...` were regenerated from the repaired committed compiler. The
+  Studio manifest and publication package remain byte-identical. Exact-head
+  short tiers, one replacement full suite, and fresh independent review remain.
+- Verification correction: the first exact-head full suite completed with
+  `1162 passed / 3 skipped / 328 subtests / 1 failed`. The sole failure was an
+  older test that treated every non-retained recording as simulator-unavailable
+  and therefore rejected the new, separately labelled source-command
+  diagnostic. The test now preserves the original seven exact-action pairings
+  and eleven retained missing pairings while checking the diagnostic lane
+  separately; affected coverage passes `29 + 2 subtests`. The failed receipt is
+  excluded and a replacement exact-head full suite is pending.
+- Frozen evidence: S2 remains `11/11` byte-identical files and
+  `1 event / 4 replays / 0 measurement trials`; HIL artifacts are unchanged.
+- Authority: provider, paid compute, simulator campaign, physical capture,
+  gateway, robot motion, training, promotion, push, and VideoSim remain closed.
+
 ## Active bounded transaction — four-hour HIL identifiability
 
 - Owner objective: work for at least four hours, perform and record at least
@@ -98,11 +201,11 @@
   percentage.
 - Implementation verification: new focused/project-map, Studio, SAIL observatory,
   Twin fidelity, orchestrator, and Learning Factory coverage passes `103`
-  tests plus `24` subtests. Desktop visual inspection, close-focus return,
-  overflow, and console-error checks pass; the sole console warning is the
-  pre-existing Three.js Clock deprecation. Exact-head receipts, commit
-  identity, and independent review own final verification; this durable
-  checkpoint does not self-certify them.
+  tests plus `24` subtests. The initial desktop visual, close-focus, and
+  overflow checks passed, but their console check missed the paired-episode
+  viewer race later proven by exact-head independent review. Commit `3195280b`
+  repairs that race; exact-head receipts, a fresh full suite, and independent
+  rereview own final verification.
 - Frozen evidence: every proof check is bracketed by the unchanged S2
   `11/11` file hashes and `1 event / 4 replays / 0 measurement trials`.
 - Authority: no simulator/adapter replay, provider call, paid compute,
@@ -991,3 +1094,280 @@ goal. External provider campaigns and spending remain separately gated.
   negative or change Twin fidelity/task authority. A future attempt requires
   frozen supported-format enumeration and new campaign authority; exact-head
   closeout verification is pending.
+- 2026-07-24T12:39:30-05:00 — After the abstention chain was verified and
+  pushed as `87534c5..2e8b33d`, opened a separate read-only C922 native-format
+  inventory transaction. Contract `avfoundation_format_inventory_v1.json`
+  freezes one exact-name device/format enumeration, zero capture sessions,
+  frames, D405 lifecycle operations, robot motions, or provider calls. The
+  evaluator—not the observer—owns exact 640×480 dimensions, nearest supported
+  rate, `0.05 fps` maximum deviation from 30, subtype/tie-break ranking, and
+  verdict. The exhausted 12-attempt campaign cannot be reused. No inventory
+  has executed; implementation and observation identities must each be
+  committed first.
+- 2026-07-24T12:46:46-05:00 — Completed the pre-observation C922 format
+  inventory implementation after preregistration `8a29d3f`. The standalone
+  Swift observer records every native format/range and explicit zero
+  capture-session/sample state; its source contains no session, input, output,
+  sample-buffer, active-format, or stream-start APIs. The separate Python
+  evaluator owns validation, frozen fractional-rate ranking, identity/budget
+  checks, deterministic receipt materialization, and abstention. Swift
+  typecheck, 15 direct adversarial tests, and 96 combined camera/HIL/Studio
+  tests pass. No device enumeration or camera stream occurred. Source
+  `289c3fc2...` and evaluator `3ec4e50a...` await the implementation commit
+  before the one observation.
+- 2026-07-24T12:51:16-05:00 — C922 format inventory v1 reached a terminal
+  prerequisite abstention. Implementation commit `c868038` preceded the sole
+  observation. The exact binary `aa432262...` enumerated far enough to reach
+  JSON writing but terminated on `Invalid type in JSON write (__SwiftValue)`;
+  stderr is `e8404380...`. No raw inventory or manifest was written, so no
+  device/format/rate or candidate claim is admitted. Separate sealer commit
+  `9b3a5bf` preserved the executed source/evaluator hashes and emitted
+  evaluation `c4677bb5...` plus receipt `eb95e1eb...` / `0157d4b1...`.
+  Accounting is one observation, zero usable inventories, capture sessions,
+  samples, D405 operations, motions, and providers. V1 cannot be retried. A
+  v2 primitive-only observer requires a new versioned preregistration.
+- 2026-07-24T12:53:53-05:00 — Opened AVFoundation format inventory v2 after
+  sealing v1. V2 is a separate transaction, not a v1 retry. Contract
+  `avfoundation_format_inventory_v2.json` preserves exact device identity,
+  640×480 target, 30 fps target, 0.05 fps deviation, subtype/tie-break order,
+  one observation, and zero capture/D405/motion/provider authority. It changes
+  only the failure-prone serialization infrastructure: new paths, concrete
+  `Codable` structs, `JSONEncoder`, explicit primitive conversions, and a
+  content-addressed attempt manifest written before observer launch. No v2
+  implementation or device enumeration has occurred.
+- 2026-07-24T13:08:51-05:00 — Froze the AVFoundation format inventory v2
+  implementation at `995e8bb` before device access. The source uses only
+  concrete `Codable` fields and `JSONEncoder`; macOS-unavailable format
+  metadata is encoded as typed null and excluded from the frozen candidate
+  rule. The runner persists the exact runtime/budget/authority identity before
+  launch and finalizes it after any observer return. Swift typecheck, 15 direct
+  adversarial tests, and 138 combined inventory/camera/HIL/Studio tests pass.
+  Inventory use remains `0 / 1`; capture sessions, samples, D405 lifecycle
+  operations, motion, simulator replays, and provider calls remain zero.
+- 2026-07-24T13:12:03-05:00 — Consumed the sole AVFoundation format inventory
+  v2 observation once at clean exact head `79fdbe8`. The primitive observer
+  returned zero with raw inventory `3754a62f...`; the frozen evaluator observed
+  33 formats, 209 rate ranges, 14 exact-640×480 candidates, and 2 eligible
+  candidates. It selected format 16 / range 0, `420v`, 640×480 at
+  `30.00003000003 fps` with `0.00003000003 fps` deviation. Evaluation
+  `3c59915c...` and receipt `14c8f821...` / `9c42f8a5...` preserve one
+  observation and zero capture sessions, frames, D405 operations, motion,
+  simulator replays, or providers. This closes the format prerequisite only;
+  callback delivery and timing remain unmeasured and require new authority.
+- 2026-07-24T16:02:00-05:00 — Opened the separately versioned C922 callback
+  delivery transaction from reviewed Studio baseline `7ad9757`. The contract
+  binds the sealed format-inventory v2 candidate exactly: format 16 / range 0,
+  `640×480`, `420v`, `30.00003000003 fps`. It freezes one ten-second C922-only
+  session, no retry, typed raw callbacks, and evaluator-owned delivery gates.
+  D405 lifecycle, robot motion, simulator replay, provider, training,
+  promotion, task-score, and physical-task authority remain closed. No
+  observer implementation exists and no camera session has started.
+- 2026-07-24T16:18:00-05:00 — C922 callback delivery v1 reached terminal
+  degraded under exact implementation `f00f4f1`. Its sole ten-second session
+  applied the frozen 640×480 `420v` format but delivered 243 callbacks at
+  1920×1080 `420v`, with zero drop callbacks and a maximum 83.033 ms PTS
+  interval. The evaluator failed exact dimensions and the frozen 50.000 ms
+  cadence gate. This identifies session negotiation/configuration order as the
+  next prerequisite; v1 is exhausted with no retry. D405, robot, simulator,
+  provider, training, promotion, and task authority stayed closed.
+- 2026-07-24T16:30:00-05:00 — Opened callback delivery v2 after independent
+  PASS closure of v1. V2 freezes one changed mechanism only: add the exact C922
+  input/output before setting format 16/range 0, then record active format
+  after association, commit, and start. All v1 output/cadence gates remain
+  unchanged. One new session maximum; no retry, D405, robot, simulator,
+  provider, training, promotion, or task authority.
+- 2026-07-24T16:35:00-05:00 — Callback delivery v2 reached terminal degraded
+  under exact implementation `c8d2f50`. The sole session preserved the frozen
+  640×480 `420v` format through commit while the preset stayed
+  `AVCaptureSessionPresetHigh`; session start changed the active format to
+  1920×1080 at about 24 Hz. The observer stopped after one sample and the
+  evaluator rejected start-stage identity and delivery gates. V2 is exhausted
+  with no retry. D405, robot, simulator, provider, training, promotion, and
+  task authority stayed closed.
+- 2026-07-24T16:42:00-05:00 — Opened callback delivery v3 after independent
+  PASS closure of v2. V3 freezes one changed mechanism: retain the associated
+  C922 device configuration lock through commit, initial start, and immediate
+  post-start verification, then unlock before the callback window. Candidate,
+  thresholds, one-session/no-retry budget, and closed authority are unchanged.
+- 2026-07-24T16:51:00-05:00 — Callback delivery v3 reached terminal degraded
+  on cadence only under exact implementation `a779dc5`. The lock-through-start
+  mechanism preserved 640×480 `420v` through start and across all 305 samples,
+  with zero drop callbacks. Exactly one of 304 PTS intervals—the first—was
+  66.0 ms above the frozen 50.0 ms gate; all remaining 303 passed. V3 is
+  exhausted. Format negotiation is repaired, but steady-state source cadence
+  still requires a separately preregistered warm-up-bounded measurement.
+- 2026-07-24T16:58:00-05:00 — Opened callback delivery v4 without retrying v3.
+  V4 reuses the exact v3 lock-through-start observer and freezes one source-PTS
+  second as reported pre-roll before an unchanged ten-second scored window.
+  Full-session format, PTS validity/order, and zero-drop gates remain active.
+  One eleven-second session maximum; no retry or widened authority.
+- 2026-07-24T17:02:00-05:00 — Callback delivery v4 verified steady source
+  delivery under exact evaluator `d49f2ef`. The sole session retained 334 exact
+  640×480 `420v` samples and zero drop callbacks. The one-second warm-up kept
+  its 67 ms startup gap visible; the scored 10.2-second window had 307 samples,
+  306 intervals, and a 34.0 ms maximum below the unchanged 50.0 ms gate.
+  C922 source format/cadence is verified; synchronization, D405, calibration,
+  simulator, and task proof remain open/closed as previously declared.
+- 2026-07-24T17:18:00-05:00 — Independent review passed the exact C922 v4
+  chain at `e62e337`. Opened one bounded dual-camera lifecycle transaction
+  after reconciling the sealed D405 result: D405 transport passed 6/6
+  stationary trials, while C922 gaps aligned with D405 open and close inside
+  its container window. The new frozen design nests C922 inside the D405
+  lifetime—D405 starts first, C922 starts second, C922 stops first, D405 stops
+  second—and permits one ten-second stationary session with no retry,
+  replacement, robot, simulator, provider, training, promotion, or task
+  authority. No implementation or camera session has occurred.
+- 2026-07-24T17:26:00-05:00 — The nested lifecycle transaction reached its
+  one-attempt terminal result. Preregistration `75bcbd6` preceded exact
+  implementation `e3affd4`; 48 focused camera/teleop/HIL tests passed before
+  device access. The sole stationary session used one D405 and one C922
+  capture, zero retries/replacements/motions/simulator/provider calls. C922
+  passed with 314 frames and zero inferred gaps. D405 completed and progressed
+  but contained one 600 ms container interval (PTS 11.6 to 12.2), two inferred
+  intervals, so the independent verdict is
+  `reject_stationary_nested_dual_camera_lifecycle`. This is a terminal
+  negative, not a Twin-fidelity or synchronization pass; no retry or threshold
+  change is authorized.
+- 2026-07-24T17:34:00-05:00 — Read-only review confirmed the raw/evaluation
+  result but found two control-plane proof defects: `execute_hil_packet` order
+  lacked an invoking test, and the low-level one-shot runner could be pointed
+  at a fresh output root. Added two direct HIL lifecycle/cleanup tests plus a
+  separate canonical control-plane wrapper and tracked exhausted-family guard.
+  The observed runner/evaluator remains byte-identical at `89cfd1ca...`; the
+  control module is `2be07184...`; the guard is `8b753d24...` and blocks
+  delegation before any device access.
+  Focused verification is 61 passed, and a no-camera re-evaluation reproduced
+  evaluation `bfad6408...` and receipt `d066fa14...` byte-identically.
+- 2026-07-24T17:40:28-05:00 — Independent exact-commit review passed the
+  sealed nested-lifecycle chain at `3fafda3`; the terminal verdict remains
+  `reject_stationary_nested_dual_camera_lifecycle` with no retry. Opened one
+  zero-session D405 AVFoundation inventory prerequisite before implementation:
+  one exact-device enumeration, exact 424×240 near-5-fps selection under a
+  frozen 0.01-fps rule, and zero sessions, frames, camera lifecycle operations,
+  robot motions, simulator replays, or provider calls. Any candidate is native
+  common-session design input only and grants no capture or Twin authority.
+- 2026-07-24T17:50:00-05:00 — The sole D405 zero-session inventory completed
+  at exact implementation `2e3a94f`: one exact device, 12 formats, 56 ranges,
+  and two eligible exact 424×240 @ 5-fps candidates. The frozen evaluator
+  selected native `2vuy` format 0/range 4. Budget use is 1/1 inventories and
+  zero capture sessions, frames, lifecycle operations, robot motions,
+  simulator replays, or provider calls. This removes the guessed-format
+  blocker only; native two-input session admission/delivery is a separate gate.
+- 2026-07-24T17:55:00-05:00 — Post-terminal D405 inventory audit passed the
+  evidence and found stale goal binding plus output-presence-only exhaustion.
+  Rebound the terminal goal SHA to `988ec01f...` and added tracked guard
+  `b8194ddc...` plus separate control `78027bd5...`, which refuses before any
+  runner/device delegation. The execution-bound evaluator remains unchanged.
+- 2026-07-24T17:56:45-05:00 — Opened the next concrete lifecycle-isolation
+  gate before implementation: one metadata-only native `AVCaptureSession`
+  with exact D405/C922 formats, two inputs/two outputs, both format locks held
+  through start verification, and frozen callback/interval gates after visible
+  warm-up. One stationary session maximum, no retry/container/robot/simulator/
+  provider authority. Admission failure routes to an isolated camera host.
+- 2026-07-24T18:27:57-05:00 — The sole native common session is terminal
+  degraded and exhausted. Exact observation `86d8005` admitted both inputs and
+  outputs and produced 338 C922 plus 61 D405 callbacks with zero drops. All
+  scored count, cadence, and 10.447306-second common-host-window gates passed.
+  The frozen evaluator rejected only the two post-stop format-index gates,
+  yielding evaluation `76cca950...`, receipt file `a33ada65...`, and receipt
+  digest `910f3347...`. No retry or threshold change is allowed. A tracked
+  exhaustion guard and separate no-delegation control seal the family; the
+  next bounded architecture is an isolated camera host. Frozen S2/HIL evidence
+  and all robot/simulator/provider/training/promotion authority remain
+  unchanged.
+- 2026-07-24T18:39:37-05:00 — Independent exact-commit review passed the
+  common-session closeout at `40e59f0`. Opened the next bounded architecture
+  gate before implementation or remote access: one zero-session inventory of
+  `kelly@silicon.local` for the fixed C922 overhead role, while the
+  motion-coupled D405 remains on `kelly-claude`. One strict SSH connection may
+  read host/macOS/camera/USB metadata only; remote repo access, file writes,
+  sessions, frames, retries, robot motion, simulator replay, providers,
+  training, promotion, and task authority remain closed. Exactly one C922
+  `1133:2140` and zero D405 `32902:2907` matches are required before a separate
+  remote capture-transport transaction.
+- 2026-07-24T18:58:18-05:00 — The sole zero-session Silicon inventory reached
+  `silicon.local` on macOS `26.3.1` and is terminal attachment-required.
+  Exact reviewed runner `1ceb83a8...` observed zero C922 camera/USB matches and
+  zero D405 camera/USB matches. The evaluator returned
+  `isolated_overhead_host_requires_c922_attachment`; raw is `f3cf7ed8...`,
+  evaluation `fdcd1359...`, receipt file `109532c8...`, and receipt digest
+  `44ad7049...`. Budget is one inventory/connection, zero retries, sessions,
+  frames, remote writes, motions, simulator replays, or providers. A tracked
+  guard closes this family. The physical next prerequisite is moving only the
+  fixed C922 USB attachment to Silicon; offline Twin-fidelity work may proceed
+  independently.
+- 2026-07-24T19:16:00-05:00 — Independent review passed the isolated-host
+  closeout at exact `17d297b` with `38/38` focused tests and unchanged frozen
+  evidence. Opened one hardware-free metric-registration readiness transaction
+  against the hash-bound current-workcell C922 C2→C1 recording. The frozen
+  manifest distinguishes available RGB pixels from missing direct board
+  measurement, deterministic frame-extraction lineage, exact-mode
+  intrinsics/distortion, independent distributed correspondences, object
+  keypoints, and camera/workcell extrinsics. One readiness evaluation maximum;
+  zero capture, motion, simulator, provider, training, promotion, or
+  Twin-domain authority.
+- 2026-07-24T19:31:00-05:00 — Metric-registration readiness v1 reached its
+  sole terminal result after exact-byte review. The initial review blocked
+  execution on five fail-open proof defects; commits `95ff7f4` and `4bdba09`
+  closed them, and final rereview passed `22/22` focused tests plus direct
+  counterexamples. One offline evaluation verified the C922 receipt/video/frame
+  lineage and returned `measurement_prerequisites_missing` with ten missing
+  gates and zero invalid source inputs. Evaluation is `5900ff12...`; receipt
+  file is `12b1624d...` / digest `18bcbb02...`. A tracked guard exhausts v1.
+  No capture, motion, simulator, provider, training, promotion, or
+  Twin-domain change occurred.
+- 2026-07-24T20:18:00-05:00 — Opened the software-only exact-mode C922
+  calibration evaluator transaction at clean `d8046ca`. A read-only audit
+  rejected the 46-image `IMG_5349` SfM and retained one-view C922 visual fits
+  as camera-calibration evidence. The new contract freezes exact device/mode,
+  an 18-view `12/3/3` split, evaluator-detected corners, diversity and
+  held-out gates, two model fits, and a nominal-only printable target before
+  implementation. It authorizes zero camera sessions, frames, motions,
+  simulator replays, provider calls, training rows, or Twin/task changes.
+- 2026-07-24T19:44:00-05:00 — Opened one hardware-free C922 frame-lineage
+  transaction after a read-only audit found `overhead_start.png`
+  byte-identical to video frame index 29 at PTS `1.000000 s`. The formal gate
+  freezes the source and FFmpeg/FFprobe identities before implementation,
+  allows one metadata probe and one frame derivation with no retry or adjacent
+  search, and cannot open cameras, move the robot, run the simulator, or
+  change metric/Twin authority.
+- 2026-07-24T19:55:00-05:00 — The sole reviewed frame-lineage derivation
+  passed at exact implementation `cc30304`: index 29 / PTS `1.000000 s`
+  reproduced the existing PNG and decoded RGB24 bytes exactly. Evaluation is
+  `4788a827...`; receipt file is `3b44795c...` / digest `15d90882...`.
+  Budget is one probe, one decode, zero retries, and zero camera/robot/
+  simulator/provider operations. A tracked guard exhausts v1. This closes one
+  future readiness prerequisite without changing the terminal metric v1 result
+  or the `0/6` Twin verdict.
+- 2026-07-24T20:02:00-05:00 — Exact closeout head `968566f` passed the
+  focused lineage/control, metric-readiness/control, and project-state-pin
+  bracket `48/48` in `0.94 s`; frozen S2 remained `11/11` at one event, four
+  replays, and zero trials. This records the verification omitted from the
+  initial closeout prose; no implementation, generated evidence, or authority
+  changed.
+- 2026-07-24T20:27:18-05:00 — Integrated the physical Studio recorder with
+  one native dual-input `AVCaptureSession` at `5515e5d`. The single stationary
+  camera-only check wrote 323 C922 and 56 D405 callbacks with zero Apple drops
+  or writer backpressure and completed both native writers; it issued no robot
+  command. The check exposed the known D405 PTS-zero sentinel as a writer
+  timeline defect before its browser derivative. The committed repair retains
+  startup callbacks in the ledger and excludes the visible one-source-PTS-
+  second warm-up from both writers. Offline post-warm-up processing produced
+  53/53 D405 source/browser frames over 10.6 seconds. No second camera session
+  was opened; one post-repair camera-only verification remains. The frozen
+  common-session degraded verdict, Twin `0/6`, task `0/11`, and all motion,
+  metric-depth, synchronization, calibration, training, and promotion limits
+  remain unchanged.
+- 2026-07-24T20:41:03-05:00 — Consolidated evaluator commit `e32553e` onto
+  the recorder branch as `1eabc49`; its focused tests passed 13/13. The prior
+  empty-manifest result remains `calibration_dataset_not_ready` with zero
+  frames, zero fits, and no receipt. Canonical-only exhaustion/control files
+  were inspected read-only and not copied because they add no material
+  capability. One post-repair stationary camera-only production recording
+  then passed with no retry or robot gateway: 377/67 observed C922/D405
+  callbacks, 355/60 written source frames, matching browser counts, completed
+  writers, zero drops/backpressure, zero source gaps, and ~12-second
+  timelines. The D405 PTS-zero sentinel remains provenance-only. Studio read
+  a two-feed hash-bound receipt projection. Recorder stationary capability is
+  closed; Twin remains 0/6 and task score 0/11. Geometry waits on a physically
+  measured printed grid, fixed focus, and 18 diverse exact-mode views.

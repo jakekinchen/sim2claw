@@ -1,0 +1,106 @@
+{
+  "schema_version": "sim2claw.geometric_joint_play_fixed_branch_retrospective.v1",
+  "evaluation_id": "geometric_joint_play_fixed_branch_retrospective_20260727_v1",
+  "status": "retrospective_selection_on_three_opened_contact_free_traces",
+  "proof_class": "three_trace_action_frozen_no_contact_fixed_wrist_branch_diagnostic",
+  "sources": {
+    "implementation": {
+      "path": "src/sim2claw/geometric_joint_play_fixed_branch.py",
+      "sha256": "87c6d79afaaf18cb31ebb7ec15623c37b7a1216054bd86ce528d6137c8fc9e98"
+    },
+    "frozen_parameters": {
+      "path": "configs/evaluations/geometric_joint_play_hysteresis_fit_v1.json",
+      "sha256": "c5b2f962af998c5a9cb1716d5cd23679fd1cd28d1b2a3980a8cd7db45923d85a"
+    },
+    "stages": [
+      {
+        "trace_index": 1,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-oblique-xm5-ym15-z15-round-trip-tricam-v1/packet.json",
+          "sha256": "753aec0e371a6f9c9eb60f45023011be51b355e5e21f42dd0bb37de901bcc7f3"
+        },
+        "stage_index": 1,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-oblique-xm5-ym15-z15-round-trip-tricam-v1/stage-1/joint_samples.jsonl",
+        "samples_sha256": "1060ec44371c2f641890e718497776d4ac5bb17e563248469a8bc710b29edbe9",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-oblique-xm5-ym15-z15-round-trip-tricam-v1/stage-1/execution_receipt.json",
+        "execution_receipt_sha256": "4818f9d06d12a614c8158111208fc22136ebf5f9bdf9eecd27430a9137aa545e"
+      },
+      {
+        "trace_index": 2,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/packet.json",
+          "sha256": "0d1135fbbc1eb724ac7b48ea461f7618064883d98936e3c2c9754fb8f305912e"
+        },
+        "stage_index": 1,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/joint_samples.jsonl",
+        "samples_sha256": "571d782502d54ea643d95bdc9b3eab0b82daf2b472e4a77dd1a5e4fcd7db3dc0",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/execution_receipt.json",
+        "execution_receipt_sha256": "2532d0bfbc38febfe88d6355950d0b7eea66eba9e574493b0a0b18372818f35a"
+      },
+      {
+        "trace_index": 3,
+        "packet": {
+          "path": "runs/geometric-microtransfer/20260727-geometric-raised-opposite-four-crossing-tricam-v1/packet.json",
+          "sha256": "70f20befd09034240a51c14c71118bc6ff6f4f22437f07c7933244d9f3f2b119"
+        },
+        "stage_index": 2,
+        "samples_path": "runs/geometric-microtransfer/20260727-geometric-raised-opposite-four-crossing-tricam-v1/stage-2/joint_samples.jsonl",
+        "samples_sha256": "317603f7ae96912d42c90813e7d5331e17787632ce2698d72e9eeaa2adb6a023",
+        "execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-raised-opposite-four-crossing-tricam-v1/stage-2/execution_receipt.json",
+        "execution_receipt_sha256": "6dce2b530663786975a6c3d187cf1846c21a90751e8331dd77900c21c456e840"
+      }
+    ]
+  },
+  "frozen_parent": {
+    "application_delay_seconds": 0.11,
+    "load_sign_zero_threshold_nm": 0.001,
+    "selected_expanded_half_width_degrees": {
+      "shoulder_pan": {
+        "with_load": 0.4,
+        "against_load": 0.4
+      },
+      "shoulder_lift": {
+        "with_load": 2.125,
+        "against_load": 0.0
+      },
+      "elbow_flex": {
+        "with_load": 2.125,
+        "against_load": 0.125
+      },
+      "wrist_flex": {
+        "with_load": 1.0,
+        "against_load": 0.25
+      }
+    }
+  },
+  "candidates": {
+    "dynamic_load_sign_parent": null,
+    "fixed_positive_wrist_branch": {
+      "wrist_flex": 1
+    },
+    "fixed_negative_wrist_branch": {
+      "wrist_flex": -1
+    }
+  },
+  "selection_rule": {
+    "required": "candidate improves wrist RMS, overall joint RMS, and end-effector RMS over the dynamic parent on every trace",
+    "tie_break": "lowest equal-trace mean overall joint RMS",
+    "continuous_parameter_fitting": false
+  },
+  "proof_boundary": {
+    "all_three_traces_opened_before_selection": true,
+    "selection_is_retrospective": true,
+    "fresh_opposite_load_configuration_falsifier_required": true,
+    "passing_retrospective_result_may_not_promote_parameters": true,
+    "passing_retrospective_result_may_not_admit_pawn_contact": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_calibration": false,
+    "simulator_parameter_promotion": false,
+    "action_correction": false,
+    "pawn_contact": false,
+    "task_success": false,
+    "policy": false
+  }
+}

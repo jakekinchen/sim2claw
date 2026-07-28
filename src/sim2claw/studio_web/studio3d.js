@@ -58,6 +58,11 @@ class ThreeReplayViewer {
     this.renderHeight = 0;
     this.active = true;
     this.animationFrame = null;
+    this.loadedInspectionKey = null;
+    this.loadingInspectionKey = null;
+    this.loadingInspectionPromise = null;
+    this.loadQueue = Promise.resolve();
+    this.loadRequestId = 0;
 
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2();
@@ -79,44 +84,102 @@ class ThreeReplayViewer {
   }
 
   async load(inspection) {
-    this.pause();
-    this.currentTime = 0;
-    this.setStatus("Loading MuJoCo scene…");
-    const [sceneResponse, traceResponse] = await Promise.all([
-      fetch(inspection.scene_url, { cache: "no-store" }),
-      fetch(inspection.trace_url, { cache: "no-store" }),
-    ]);
-    if (!sceneResponse.ok || !traceResponse.ok) {
-      throw new Error("The scene manifest or episode trace could not be loaded.");
-    }
-    const [manifest, trace] = await Promise.all([
-      sceneResponse.json(),
-      traceResponse.json(),
-    ]);
-    if (manifest.schema_version !== "sim2claw.mujoco_scene_manifest.v1") {
-      throw new Error("Unsupported MuJoCo scene manifest.");
-    }
-    if (trace.schema_version !== "sim2claw.mujoco_body_state_trace.v1") {
-      throw new Error("Unsupported MuJoCo episode trace.");
+    const inspectionKey = `${inspection.scene_url}\u0000${inspection.trace_url}`;
+    if (this.loadedInspectionKey === inspectionKey && this.trace) {
+      if (
+        this.loadingInspectionPromise
+        && this.loadingInspectionKey !== inspectionKey
+      ) {
+        // Returning to the rendered episode is still a newer request. Cancel
+        // any different queued/in-flight load before it can replace this scene.
+        this.loadRequestId += 1;
+        this.setStatus(
+          `${this.trace.frame_count} MuJoCo states · ${Number(this.trace.fps).toFixed(0)} Hz · drag to orbit`,
+        );
+      }
+      return;
     }
     if (
-      trace.scene?.manifest_revision_sha256 &&
-      trace.scene.manifest_revision_sha256 !== manifest.revision_sha256
+      this.loadingInspectionKey === inspectionKey
+      && this.loadingInspectionPromise
     ) {
-      throw new Error("Episode trace and scene manifest revisions do not match.");
+      return this.loadingInspectionPromise;
     }
 
-    this.clearScene();
-    this.manifest = manifest;
-    this.trace = trace;
-    await this.buildScene();
-    this.bodyTraceIndices = trace.body_names.map((name) => this.bodyGroups.get(name) || null);
-    this.buildContactMarkers();
-    this.resetCamera();
-    this.applyTime(0);
-    this.setStatus(
-      `${trace.frame_count} MuJoCo states · ${Number(trace.fps).toFixed(0)} Hz · drag to orbit`,
-    );
+    const requestId = ++this.loadRequestId;
+    const execute = async () => {
+      if (requestId !== this.loadRequestId) return;
+      this.pause();
+      this.currentTime = 0;
+      this.setStatus("Loading MuJoCo scene…");
+      const [sceneResponse, traceResponse] = await Promise.all([
+        fetch(inspection.scene_url, { cache: "no-store" }),
+        fetch(inspection.trace_url, { cache: "no-store" }),
+      ]);
+      if (!sceneResponse.ok || !traceResponse.ok) {
+        throw new Error("The scene manifest or episode trace could not be loaded.");
+      }
+      const [manifest, trace] = await Promise.all([
+        sceneResponse.json(),
+        traceResponse.json(),
+      ]);
+      if (manifest.schema_version !== "sim2claw.mujoco_scene_manifest.v1") {
+        throw new Error("Unsupported MuJoCo scene manifest.");
+      }
+      if (trace.schema_version !== "sim2claw.mujoco_body_state_trace.v1") {
+        throw new Error("Unsupported MuJoCo episode trace.");
+      }
+      if (
+        trace.scene?.manifest_revision_sha256 &&
+        trace.scene.manifest_revision_sha256 !== manifest.revision_sha256
+      ) {
+        throw new Error("Episode trace and scene manifest revisions do not match.");
+      }
+      if (requestId !== this.loadRequestId) return;
+
+      // Build into a detached group. Only the still-current request may swap
+      // it into the viewer, so a stale fetch/build cannot partially mutate the
+      // episode that remains selected.
+      const nextSceneRoot = new THREE.Group();
+      const { bodyGroups: nextBodyGroups } = await buildSceneManifestLayer({
+        root: nextSceneRoot,
+        manifest,
+      });
+      if (requestId !== this.loadRequestId) {
+        disposeSceneLayer(nextSceneRoot);
+        return;
+      }
+
+      this.clearScene();
+      this.scene.remove(this.sceneRoot);
+      this.sceneRoot = nextSceneRoot;
+      this.scene.add(this.sceneRoot);
+      this.manifest = manifest;
+      this.trace = trace;
+      this.bodyGroups = nextBodyGroups;
+      this.bodyTraceIndices = trace.body_names.map((name) => this.bodyGroups.get(name) || null);
+      this.buildContactMarkers();
+      this.resetCamera();
+      this.applyTime(0);
+      this.loadedInspectionKey = inspectionKey;
+      this.setStatus(
+        `${trace.frame_count} MuJoCo states · ${Number(trace.fps).toFixed(0)} Hz · drag to orbit`,
+      );
+    };
+    const loadPromise = this.loadQueue
+      .catch(() => undefined)
+      .then(execute);
+    this.loadQueue = loadPromise;
+    this.loadingInspectionKey = inspectionKey;
+    this.loadingInspectionPromise = loadPromise;
+    try {
+      await loadPromise;
+    } finally {
+      if (this.loadingInspectionPromise === loadPromise) {
+        this.loadingInspectionKey = null;
+        this.loadingInspectionPromise = null;
+      }
+    }
   }
 
   async loadLive({ scene_url: sceneUrl, manifest_revision_sha256: expectedRevision }) {

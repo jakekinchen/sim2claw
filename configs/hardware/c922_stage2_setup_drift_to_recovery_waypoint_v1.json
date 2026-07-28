@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "c922_stage2_setup_drift_to_recovery_waypoint_20260726_v1",
+  "capture_during_motion": false,
+  "reviewed_anchor_degrees": [
+    77.62637362637362,
+    42.637362637362635,
+    26.76923076923077,
+    -61.31868131868132,
+    -60.175824175824175,
+    2.375296912114014
+  ],
+  "stage_targets_degrees": [
+    [
+      40.0,
+      -40.0,
+      60.0,
+      -60.0,
+      -80.0,
+      2.494061757719715
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "recover_from_the_unintended_multi_stage_setup_hold_drift_through_one_contact_free_waypoint",
+    "source_pose": "Fresh torque-off follower read after the failed stage-2 setup hold moved the follower despite sending zero frozen stage payload samples.",
+    "target_selection": "A single-stage waypoint keeps every excursion below 90 degrees and prepares a second independently compiled single-stage return to the contact-free near-start boundary.",
+    "failed_stage_2_receipt": {
+      "path": "runs/c922-board-base-registration/20260726-pose-p2-start-recovery-v1/stage-2/execution_receipt.json",
+      "sha256": "51b634f786588fdce4bb88871b1e7a0de9245450b86aa399b28fb9ab30ba8efa",
+      "completed_motion_samples": 0,
+      "fresh_preflight_disproves_no_motion_interpretation": true
+    },
+    "evidence_limits": {
+      "physical_calibration_observation": false,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

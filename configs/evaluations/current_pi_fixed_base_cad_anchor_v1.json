@@ -1,0 +1,159 @@
+{
+  "schema_version": "sim2claw.current_pi_fixed_base_cad_anchor_spec.v1",
+  "spec_id": "current_pi_fixed_base_cad_anchor_20260726_v1",
+  "proof_class": "physical_static_fit_only_fixed_base_CAD_anchor_attempt",
+  "status": "frozen_J_S_K_L_only_before_automatic_fit",
+  "mapping_contract": {
+    "path": "configs/evaluations/current_pi_cad_keyed_joint_mapping_v1.json",
+    "sha256": "38edbdbcb4f2cc74cfa7a12a35fca1a0b7e6b1b2da552d11b8fb02fc8a931747"
+  },
+  "fit_poses": [
+    "J",
+    "S",
+    "K",
+    "L"
+  ],
+  "admissible_roi": {
+    "x_min": 450,
+    "y_min": 560,
+    "x_max_exclusive": 920,
+    "y_max_exclusive": 864
+  },
+  "admissible_roi_sha256": "5d930b97e352a4657ced170a1cb57fb027d7f790e448884a7b8af7cdcf4dcc58",
+  "algorithm": {
+    "algorithm_id": "three_of_four_static_consensus_exact_left_base_hull_v1",
+    "canny_thresholds": [
+      60,
+      140
+    ],
+    "consensus_dilation_radius_px": 2,
+    "consensus_minimum_pose_count": 3,
+    "distance_transform_clip_px": 30.0,
+    "hull_samples_per_edge": 12,
+    "maximum_edge_sample_count": 4096,
+    "tag_camera_seed": {
+      "loss": "soft_l1",
+      "f_scale_px": 2.0,
+      "maximum_function_evaluations": 4000
+    },
+    "camera_fit": {
+      "rotation_bound_about_seed_radians": 0.2,
+      "translation_bound_about_seed_m": 0.12,
+      "loss": "soft_l1",
+      "f_scale_px": 3.0,
+      "maximum_function_evaluations": 2500,
+      "deterministic_start_deltas": [
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.08,
+          -0.04,
+          0.03,
+          0.05,
+          0.0,
+          0.04
+        ],
+        [
+          -0.08,
+          0.04,
+          -0.03,
+          -0.05,
+          0.0,
+          -0.04
+        ],
+        [
+          0.0,
+          0.08,
+          -0.08,
+          0.04,
+          -0.04,
+          0.0
+        ],
+        [
+          0.0,
+          -0.08,
+          0.08,
+          -0.04,
+          0.04,
+          0.0
+        ]
+      ]
+    },
+    "background_rejection": {
+      "shift_control_offsets_px": [
+        [
+          -80,
+          0
+        ],
+        [
+          -40,
+          0
+        ],
+        [
+          40,
+          0
+        ],
+        [
+          80,
+          0
+        ],
+        [
+          0,
+          -80
+        ],
+        [
+          0,
+          -40
+        ],
+        [
+          0,
+          40
+        ],
+        [
+          0,
+          80
+        ]
+      ],
+      "minimum_median_distance_advantage_px": 1.5,
+      "minimum_within_4_px_fraction_advantage": 0.1
+    },
+    "promotion_gates": {
+      "maximum_median_distance_px": 2.0,
+      "maximum_p90_distance_px": 5.0,
+      "minimum_within_4_px_fraction": 0.75,
+      "maximum_local_jacobian_condition_number": 1000.0,
+      "minimum_local_jacobian_rank": 6,
+      "maximum_competitive_solution_rotation_delta_degrees": 1.0,
+      "maximum_competitive_solution_translation_delta_m": 0.005,
+      "competitive_rmse_slack_px": 3.0,
+      "competitive_within_4_fraction_slack": 0.1,
+      "minimum_parameter_bound_clearance_fraction": 0.01
+    },
+    "future_target_search": {
+      "convex_pair_alphas": [
+        0.25,
+        0.5,
+        0.75
+      ],
+      "minimum_distance_from_fit_pose_degrees": 2.0,
+      "minimum_distance_between_selected_targets_degrees": 20.0,
+      "minimum_joint_mapping_separation_px": 10.0
+    }
+  },
+  "algorithm_sha256": "a8a21fac730bdec2605f6e639ab45c583ed26a1aaf38a88e565b22a4aa4fc384",
+  "authority": {
+    "may_emit_camera_candidate_only_if_all_base_gates_pass": true,
+    "may_report_provisional_future_targets": true,
+    "joint_mapping_promotion": false,
+    "simulator_parameter_promotion": false,
+    "hardware_motion": false,
+    "physical_task": false,
+    "policy": false
+  }
+}

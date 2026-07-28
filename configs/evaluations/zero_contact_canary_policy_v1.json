@@ -1,0 +1,46 @@
+{
+  "schema_version": "sim2claw.zero_contact_forbidden_policy.v1",
+  "policy_id": "current_chess_scene_left_so101_zero_contact_v1",
+  "model_kind": "current_chess_scene",
+  "commanded_body_root": "left_base",
+  "forbidden_static_body_roots": [
+    "measured_table",
+    "chess_board",
+    "left_edge_clamp",
+    "right_edge_clamp"
+  ],
+  "forbidden_static_geom_names": [
+    "floor"
+  ],
+  "forbidden_object_body_roots": [
+    "brown_pawn_a2",
+    "brown_pawn_b1",
+    "brown_pawn_c2",
+    "brown_pawn_d1",
+    "brown_pawn_e2",
+    "brown_pawn_f1",
+    "brown_pawn_g2",
+    "brown_pawn_h1",
+    "tan_pawn_a8",
+    "tan_pawn_b7",
+    "tan_pawn_c8",
+    "tan_pawn_d7",
+    "tan_pawn_e8",
+    "tan_pawn_f7",
+    "tan_pawn_g8",
+    "tan_pawn_h7"
+  ],
+  "forbidden_other_arm_body_roots": [
+    "right_base"
+  ],
+  "excluded_internal_body_pairs": [
+    ["left_base", "left_shoulder"],
+    ["left_shoulder", "left_upper_arm"],
+    ["left_upper_arm", "left_lower_arm"],
+    ["left_lower_arm", "left_wrist"],
+    ["left_wrist", "left_gripper"],
+    ["left_gripper", "left_camera_mount"],
+    ["left_gripper", "left_moving_jaw_so101_v1"]
+  ],
+  "internal_exclusion_rationale": "Only same-rigid-body and explicit direct parent-child structural pairs are excluded; MuJoCo filters these attached-link pairs by model topology."
+}

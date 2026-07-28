@@ -1,0 +1,98 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "prospective_c2_c1_exact_real_to_sim_20260727_v1",
+  "samples_per_stage": 1061,
+  "capture_hold_seconds": 0.25,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "frame_joint_alignment_camera_role": "c922",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_35s_v1.json",
+    "contract_sha256": "744a0c63c1d7282265299397c4a9bf3083bb3c35899878aa5480f3362feeef23"
+  },
+  "reviewed_anchor_degrees": [
+    -2.7252747252747254,
+    -24.175824175824175,
+    66.5934065934066,
+    -11.032967032967033,
+    -82.5934065934066,
+    6.88836104513064
+  ],
+  "stage_targets_degrees": [
+    [
+      -11.246471588134474,
+      -68.71592720752201,
+      94.21040631036094,
+      -18.0093475177527,
+      -100.27628759296182,
+      2.052914814712764
+    ]
+  ],
+  "maximum_slew_degrees_s_by_joint": [
+    60.0,
+    60.0,
+    60.0,
+    60.0,
+    90.0,
+    100.0
+  ],
+  "frozen_stage_action": {
+    "schema_version": "sim2claw.bound_frozen_stage_action.v1",
+    "path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/compiled/full_action.npy",
+    "npy_sha256": "7401700e43f8884bb054618ec95a6d7718989c109d3a82a856258d6d6b7c9f99",
+    "raw_c_order_sha256": "ecf950ea9252c3e6c1b7e4b5df333dfcb75eb2b5bff43ee5d4d1a7b6154828ed",
+    "dtype": "float64_little_endian",
+    "shape": [
+      1061,
+      6
+    ],
+    "derivation_receipt_path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/compiled/derivation_receipt.json",
+    "derivation_receipt_sha256": "8384f040e6802c33bccbf0bddc3021a42b8e543d6b2c7312e409dd16ab59dd7c",
+    "counted_task_start_index": 360,
+    "counted_task_action_sha256": "0add8f1357c65bee011755e6e4a124d0e339cbc0dce9fd3a92b78399380a37da",
+    "setup_prefix_action_sha256": "510b096dc5eac17e0435ba281fa023b6d0b7884fb6816d115cb3ca344563c22e"
+  },
+  "task_derivation": {
+    "task": "C2_to_C1_pawn_pick_lift_carry_release",
+    "fresh_counted_task_anchor_degrees": [
+      2.7252747252747254,
+      -106.63736263736264,
+      98.5934065934066,
+      -100.35164835164835,
+      -110.63736263736264,
+      1.0688836104513064
+    ],
+    "setup_prefix_sample_count": 360,
+    "counted_task_sample_count": 701,
+    "source_provenance_start_index": 0,
+    "source_provenance_end_index": 350,
+    "source_observed_state_path_only": true,
+    "source_end_is_post_release_high_clear_frame": true,
+    "fixed_sample_hz": 40,
+    "float64": true,
+    "piecewise_linear_resampling": true,
+    "smoothing": false,
+    "ik": false,
+    "clipping": false,
+    "offsets": false,
+    "runtime_repair": false,
+    "corrective_suffix": false
+  },
+  "review_basis": {
+    "physical_scope": "setup_only",
+    "counted_task_scope": "prospective_exact_real_to_sim_c2_to_c1",
+    "scene_authority": "fresh_C922_canonical_C2_occupied_C1_empty_with_Pi_external_context",
+    "d405_role": "action_enclosing_supporting_rgb_only",
+    "metric_depth": false,
+    "alternate_geometry_reason": "The immutable D1-to-D2 v4 case stopped on a sustained elbow plateau at 57.538 degrees. This distinct C2-to-C1 source stays from 66.418 to 99.121 degrees.",
+    "setup_and_task_share_one_torque_on_transaction": true,
+    "setup_bytes_excluded_from_task_action_hash": true,
+    "counted_task_bytes_frozen_before_physical_execution": true,
+    "physical_task_attempt_limit": 1,
+    "real_before_simulation_task_evidence": true,
+    "same_canonical_task_bytes_required_in_simulator": true,
+    "pawn_contact_allowed_only_during_counted_task": true,
+    "guaranteed_torque_off_close": true,
+    "phase_2_forbidden_until_real_and_physics_task_success": true
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "schema_version": "sim2claw.avfoundation_d405_format_inventory_contract.v1",
+  "contract_id": "current-100mm-d405-avfoundation-format-inventory-20260724-v1",
+  "status": "preregistered_before_implementation",
+  "baseline_commit": "3fafda3b7429f6c727afaacade86346791e72b52",
+  "purpose": "Observe the exact D405 native AVFoundation format surface without creating a capture session, then determine whether a frozen 424x240 near-5-fps candidate exists for a future native common-session design.",
+  "sealed_predecessor": {
+    "contract": "configs/evaluations/dual_camera_lifecycle_qualification_v1.json",
+    "contract_sha256": "5e97a27deaf6b874dee070ae1e6db3b81d68e4c8f9a9681ced9484e4b77fa363",
+    "verdict": "reject_stationary_nested_dual_camera_lifecycle",
+    "attempts_used": 1,
+    "attempts_maximum": 1,
+    "retry_authorized": false,
+    "runner_evaluator_sha256": "89cfd1caf941a1808c220515efa92ffdd3899e24c0d70f264e9fb04f533f0e3c"
+  },
+  "device": {
+    "media_type": "video",
+    "exact_localized_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+    "exact_unique_id": "0x20000080860b5b",
+    "exact_model_id": "UVC Camera VendorID_32902 ProductID_2907",
+    "exact_match_count_required": 1
+  },
+  "observer": {
+    "source_path": "tools/macos/AVFoundationFormatInventoryV2.swift",
+    "role": "device_and_format_enumeration_only",
+    "capture_session_created": false,
+    "capture_session_started": false,
+    "source_samples": 0,
+    "serialization": "Swift Codable structs through Foundation.JSONEncoder"
+  },
+  "selection_rule": {
+    "target_width": 424,
+    "target_height": 240,
+    "target_fps": 5.0,
+    "exact_dimensions_required": true,
+    "maximum_fractional_fps_deviation": 0.01,
+    "nearest_supported_fps": "clamp_target_to_each_closed_min_max_range",
+    "media_subtype_preference": [
+      "2vuy",
+      "yuvs",
+      "420v",
+      "BGRA"
+    ],
+    "rank_order": [
+      "fps_deviation_ascending",
+      "media_subtype_preference_index_ascending",
+      "media_subtype_fourcc_ascending",
+      "format_index_ascending",
+      "frame_rate_range_index_ascending"
+    ],
+    "verdicts": [
+      "supported_d405_common_session_candidate",
+      "no_supported_d405_common_session_candidate",
+      "prerequisite_abstention"
+    ],
+    "selection_does_not_authorize_stream_execution": true
+  },
+  "operation_budget": {
+    "inventory_observations_maximum": 1,
+    "capture_sessions_maximum": 0,
+    "source_samples_maximum": 0,
+    "c922_lifecycle_operations_maximum": 0,
+    "d405_lifecycle_operations_maximum": 0,
+    "robot_motion_trials_maximum": 0,
+    "simulator_replays_maximum": 0,
+    "provider_calls_maximum": 0
+  },
+  "runtime_identity": {
+    "platform": "macos",
+    "swift_version_prefix": "Apple Swift version 6.3",
+    "observer_source_path": "tools/macos/AVFoundationFormatInventoryV2.swift",
+    "evaluator_path": "src/sim2claw/avfoundation_d405_format_inventory_v1.py",
+    "compiler_path": "/usr/bin/swiftc",
+    "source_evaluator_and_binary_sha256_frozen_at_observation_commit": true
+  },
+  "evaluator": {
+    "owns_device_identity_verification": true,
+    "owns_thresholds_and_selection": true,
+    "trusts_observer_verdict": false,
+    "verifies_zero_session_and_sample_accounting": true,
+    "verifies_content_hashes": true,
+    "byte_identical_materialization_required": true
+  },
+  "authority": {
+    "device_and_format_enumeration": true,
+    "capture_session_start": false,
+    "camera_frame_capture": false,
+    "c922_lifecycle": false,
+    "d405_lifecycle": false,
+    "robot_gateway": false,
+    "robot_motion": false,
+    "metric_depth": false,
+    "cross_camera_exposure_synchronization": false,
+    "simulator_replay": false,
+    "simulator_parameter_promotion": false,
+    "training": false,
+    "provider_calls": false,
+    "paid_compute": false,
+    "task_score_change": false,
+    "physical_task_authority": false
+  },
+  "claim_limits": {
+    "format_inventory_only": true,
+    "native_common_session_supported": false,
+    "source_callback_delivery": false,
+    "container_timing": false,
+    "motion_capture_reliability": false,
+    "metric_depth": false,
+    "camera_exposure_timestamps": false,
+    "cross_camera_synchronization": false,
+    "simulator_calibration": false,
+    "task_success": false
+  }
+}

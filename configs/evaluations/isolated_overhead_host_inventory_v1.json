@@ -1,0 +1,126 @@
+{
+  "schema_version": "sim2claw.isolated_overhead_host_inventory_contract.v1",
+  "contract_id": "current-100mm-isolated-overhead-host-inventory-20260724-v1",
+  "status": "preregistered_before_implementation_or_remote_observation",
+  "baseline_commit": "40e59f000d0588fc36780694c57046d0d157f2e7",
+  "purpose": "Determine, without opening a camera session, whether silicon.local can own the exact C922 overhead camera as the physically separate host in a future lifecycle-isolated dual-camera architecture.",
+  "sealed_predecessor": {
+    "contract": "configs/evaluations/avfoundation_dual_camera_common_session_v1.json",
+    "contract_sha256": "c2ad7c333e06affae037998318976931da638c5eec2806e769f9c2971f817af1",
+    "verdict": "common_session_callback_delivery_degraded",
+    "observation_attempts_used": 1,
+    "common_capture_sessions_used": 1,
+    "retry_authorized": false,
+    "receipt_sha256": "a33ada6551f297a5c1f95838716c1411b412d8fc4575a7c924f3b27889a4b53b",
+    "receipt_digest": "910f334722dbd56ccbc45bc610711e3c9c87b7c19936f1abe515a3e5cb9c2a4e"
+  },
+  "architecture": {
+    "overhead_camera_owner": "silicon.local",
+    "robot_and_wrist_camera_owner": "kelly-claude",
+    "overhead_role": "fixed_overhead_c922",
+    "wrist_role": "motion_coupled_d405",
+    "separate_physical_hosts_required": true,
+    "browser_direct_camera_access": false,
+    "future_transport": "server_owned_content_addressed_artifact_and_timing_metadata",
+    "future_clock_alignment_must_be_separately_preregistered": true,
+    "inventory_does_not_authorize_transport_or_capture": true
+  },
+  "remote_endpoint": {
+    "ssh_host": "silicon.local",
+    "ssh_user": "kelly",
+    "port": 22,
+    "batch_mode": true,
+    "strict_host_key_checking": true,
+    "connect_timeout_seconds": 5,
+    "connection_attempts_maximum": 1,
+    "remote_shell_mutation_allowed": false,
+    "remote_repo_access_required": false
+  },
+  "observer": {
+    "role": "remote_host_and_usb_camera_metadata_only",
+    "allowed_programs": [
+      "/bin/hostname",
+      "/usr/bin/sw_vers",
+      "/usr/sbin/system_profiler"
+    ],
+    "system_profiler_data_types": [
+      "SPCameraDataType",
+      "SPUSBDataType"
+    ],
+    "system_profiler_output": "json",
+    "capture_session_created": false,
+    "capture_session_started": false,
+    "camera_frames": 0,
+    "remote_files_written": 0
+  },
+  "target_device": {
+    "role": "fixed_overhead_c922",
+    "exact_localized_name": "C922 Pro Stream Webcam",
+    "usb_vendor_id": 1133,
+    "usb_product_id": 2140,
+    "model_id": "UVC Camera VendorID_1133 ProductID_2140",
+    "required_match_count": 1
+  },
+  "excluded_device": {
+    "role": "motion_coupled_d405",
+    "usb_vendor_id": 32902,
+    "usb_product_id": 2907,
+    "required_match_count": 0,
+    "reason": "The D405 must remain on the robot-side host for this architecture."
+  },
+  "evaluator": {
+    "owns_remote_host_identity_and_platform_checks": true,
+    "owns_target_and_excluded_device_matching": true,
+    "trusts_remote_verdict": false,
+    "verifies_zero_session_frame_and_remote_write_accounting": true,
+    "verifies_content_hashes": true,
+    "byte_identical_materialization_required": true,
+    "verdicts": [
+      "isolated_overhead_host_ready",
+      "isolated_overhead_host_requires_c922_attachment",
+      "prerequisite_abstention"
+    ]
+  },
+  "operation_budget": {
+    "remote_inventory_observations_maximum": 1,
+    "ssh_connection_attempts_maximum": 1,
+    "capture_sessions_maximum": 0,
+    "camera_frames_maximum": 0,
+    "remote_files_written_maximum": 0,
+    "robot_motion_trials_maximum": 0,
+    "simulator_replays_maximum": 0,
+    "provider_calls_maximum": 0
+  },
+  "authority": {
+    "remote_host_metadata_read": true,
+    "remote_camera_metadata_read": true,
+    "remote_file_write": false,
+    "camera_session_start": false,
+    "camera_frame_capture": false,
+    "robot_gateway": false,
+    "robot_motion": false,
+    "metric_depth": false,
+    "clock_synchronization": false,
+    "cross_camera_exposure_synchronization": false,
+    "simulator_replay": false,
+    "simulator_parameter_promotion": false,
+    "training": false,
+    "provider_calls": false,
+    "paid_compute": false,
+    "task_score_change": false,
+    "physical_task_authority": false
+  },
+  "claim_limits": {
+    "host_and_device_inventory_only": true,
+    "isolated_capture_transport_verified": false,
+    "source_callback_delivery": false,
+    "container_timing": false,
+    "motion_capture_reliability": false,
+    "metric_depth": false,
+    "camera_exposure_timestamps": false,
+    "cross_host_clock_alignment": false,
+    "cross_camera_synchronization": false,
+    "simulator_calibration": false,
+    "task_success": false
+  }
+}

@@ -28,14 +28,31 @@ export function primitiveGeometry(geom) {
   return null;
 }
 
-function sceneMaterial(geom, mode) {
-  const [red, green, blue, alpha] = geom.rgba;
-  if (mode === "calibration_overlay") {
-    const color = new THREE.Color(red, green, blue).lerp(new THREE.Color(0x57d39b), 0.42);
+function calibrationVisualRgba(geom, bodyName, mode) {
+  if (mode !== "registered_calibration_overlay") return geom.rgba;
+  if (geom.name?.startsWith("square_")) {
+    const parts = geom.name.split("_");
+    const parity = Number(parts[1]) + Number(parts[2]);
+    if (Number.isInteger(parity)) {
+      return parity % 2 === 0
+        ? [0.27, 0.105, 0.025, 1.0]
+        : [0.83, 0.63, 0.36, 1.0];
+    }
+  }
+  if (bodyName?.startsWith("brown_pawn_")) return [0.78, 0.62, 0.40, 1.0];
+  if (bodyName?.startsWith("tan_pawn_")) return [0.42, 0.24, 0.13, 1.0];
+  return geom.rgba;
+}
+
+function sceneMaterial(geom, mode, bodyName) {
+  const [red, green, blue, alpha] = calibrationVisualRgba(geom, bodyName, mode);
+  if (mode === "calibration_overlay" || mode === "registered_calibration_overlay") {
+    const tint = mode === "registered_calibration_overlay" ? 0.24 : 0.42;
+    const color = new THREE.Color(red, green, blue).lerp(new THREE.Color(0x57d39b), tint);
     return new THREE.MeshBasicMaterial({
       color,
       transparent: true,
-      opacity: Math.min(0.46, Math.max(0.18, alpha * 0.42)),
+      opacity: Math.min(0.46, Math.max(0.18, alpha * (mode === "registered_calibration_overlay" ? 0.36 : 0.42))),
       depthWrite: false,
       side: THREE.DoubleSide,
     });
@@ -91,13 +108,13 @@ export async function buildSceneManifestLayer({ root, manifest, mode = "replay" 
     if (geom.type === "mesh") geometry = (await getMeshGeometry(meshes.get(geom.mesh_id))).clone();
     else geometry = primitiveGeometry(geom);
     if (!geometry) continue;
-    const object = new THREE.Mesh(geometry, sceneMaterial(geom, mode));
+    const bodyName = manifest.bodies[geom.body_id]?.name;
+    const object = new THREE.Mesh(geometry, sceneMaterial(geom, mode, bodyName));
     object.name = geom.name;
     object.position.fromArray(geom.position);
     object.quaternion.copy(WXYZ(geom.quaternion_wxyz));
     object.userData.bodyName = manifest.bodies[geom.body_id]?.name;
     object.userData.geomName = geom.name;
-    const bodyName = manifest.bodies[geom.body_id]?.name;
     if (bodyName) bodyGroups.get(bodyName)?.add(object);
   }
   return { bodyGroups };

@@ -1,0 +1,932 @@
+from __future__ import annotations
+
+import builtins
+import hashlib
+import json
+import sys
+import types
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+import pytest
+
+import sim2claw.teleop_recording as recording
+from sim2claw.physical_gateway import (
+    GATEWAY_SCHEMA,
+    GatewayIdentity,
+    PhysicalGatewayError,
+    SO101PhysicalGateway,
+)
+from sim2claw.replay_eligibility import (
+    PHYSICAL_SAMPLE_SCHEMA,
+    materialize_physical_recording_exact_replay,
+)
+from sim2claw.scene import ROBOT_JOINTS
+from sim2claw.teleop_recording import (
+    EXCITATION_CONTROL_SOURCE,
+    PrecompiledExcitationBackend,
+    RecorderError,
+    _float64_sha256,
+    compile_physical_excitation_packet,
+    execute_physical_excitation_packet,
+    physical_excitation_follower_preflight,
+    reposition_physical_follower,
+)
+
+
+def _preflight(anchor: list[float] | None = None) -> dict[str, Any]:
+    return {
+        "schema_version": GATEWAY_SCHEMA,
+        "passed": True,
+        "control_source": EXCITATION_CONTROL_SOURCE,
+        "real_leader_opened": False,
+        "physical_follower_torque_enabled": False,
+        "device_configuration_rewritten": False,
+        "follower_port": "/dev/follower",
+        "follower_calibration_sha256": "2" * 64,
+        "follower_start_degrees": anchor or [0.0, 0.0, 0.0, 0.0, 0.0, 50.0],
+        "follower_calibrated_minimum": [-90.0] * 5 + [0.0],
+        "follower_calibrated_maximum": [90.0] * 5 + [100.0],
+    }
+
+
+def _compile(tmp_path: Path) -> tuple[Path, dict[str, Any]]:
+    packet_path = tmp_path / "packet.json"
+    packet = compile_physical_excitation_packet(
+        packet_path, preflight_fn=_preflight
+    )
+    return packet_path, packet
+
+
+def _admit(packet_path: Path) -> dict[str, Any]:
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    packet["physical_packet_execution_admitted"] = True
+    packet["independent_review"] = {
+        "reviewer": "independent-reviewer",
+        "reviewed_at": "2026-07-25T00:00:00Z",
+        "decision_id": "P10-fixture-admission",
+        "bounded_excitation_reviewed": True,
+        "collision_contact_free_workspace_confirmed": True,
+    }
+    packet_path.write_text(json.dumps(packet), encoding="utf-8")
+    return packet
+
+
+def _admit_reposition(packet_path: Path) -> dict[str, Any]:
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    packet["physical_packet_execution_admitted"] = True
+    packet["independent_review"] = {
+        "reviewer": "independent-reviewer",
+        "reviewed_at": "2026-07-25T00:00:00Z",
+        "decision_id": "P18-fixture-admission",
+        "bounded_reposition_reviewed": True,
+        "collision_contact_free_workspace_confirmed": True,
+    }
+    packet_path.write_text(json.dumps(packet), encoding="utf-8")
+    return packet
+
+
+def _repo_with_authority(tmp_path: Path) -> Path:
+    state = tmp_path / "docs/autonomous-workflow/project_state.json"
+    state.parent.mkdir(parents=True)
+    state.write_text(
+        json.dumps(
+            {
+                "twin_fidelity_closure_transaction": {
+                    "authority": {
+                        "owner_authorized_bounded_robot_motion": True,
+                        "owner_workspace_clear_assertion": True,
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    return tmp_path
+
+
+def test_follower_only_preflight_binds_no_real_leader(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    inventory = {
+        "devices": {
+            "leader": {"connected": True, "port": "/dev/must-not-open"},
+            "follower": {"connected": True, "port": "/dev/follower"},
+        },
+        "calibrations": {
+            "leader": {"present": True, "sha256": "1" * 64},
+            "follower": {"present": True, "sha256": "2" * 64},
+        },
+        "runtime": {"lerobot_version": "0.6.0"},
+    }
+    monkeypatch.setattr(recording, "recorder_preflight", lambda **_: inventory)
+    identities = []
+
+    class Gateway:
+        def open(self, *, enable_motion: bool) -> dict[str, Any]:
+            assert enable_motion is False
+            return {
+                "schema_version": GATEWAY_SCHEMA,
+                "follower_start_degrees": [0.0] * 6,
+                "follower_calibrated_minimum": [-90.0] * 5 + [0.0],
+                "follower_calibrated_maximum": [90.0] * 5 + [100.0],
+                "physical_follower_torque_enabled": False,
+                "device_configuration_rewritten": False,
+            }
+
+        def close(self) -> None:
+            return None
+
+    def gateway_factory(identity):
+        identities.append(identity)
+        return Gateway()
+
+    report = physical_excitation_follower_preflight(
+        gateway_factory=gateway_factory
+    )
+
+    assert report["follower_port"] == "/dev/follower"
+    assert report["real_leader_opened"] is False
+    assert "leader_port" not in report
+    assert identities[0].follower_port == "/dev/follower"
+    assert identities[0].leader_port.startswith("in-process://")
+
+
+def test_excitation_device_factory_never_imports_or_opens_real_leader(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    imports: list[str] = []
+    original_import = builtins.__import__
+
+    class Config:
+        def __init__(self, **values: Any):
+            self.values = values
+
+    class Follower:
+        def __init__(self, config: Config):
+            self.config = config
+            self.opened = False
+
+        def get_observation(self) -> dict[str, float]:
+            return {f"{joint}.pos": 0.0 for joint in ROBOT_JOINTS}
+
+    module = types.ModuleType("lerobot.robots.so_follower")
+    module.SO101Follower = Follower
+    module.SO101FollowerConfig = Config
+    monkeypatch.setitem(sys.modules, "lerobot.robots.so_follower", module)
+
+    def tracked_import(name: str, *args: Any, **kwargs: Any):
+        imports.append(name)
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", tracked_import)
+    source, follower = recording._physical_excitation_devices(
+        GatewayIdentity("in-process", "/dev/follower", "1" * 64, "2" * 64)
+    )
+
+    assert source.follower is follower
+    assert follower.opened is False
+    assert not any("so_leader" in name for name in imports)
+
+
+class _FollowerBus:
+    def __init__(
+        self, *, torque: bool = False, operating_mode: int = 0, busy: bool = False
+    ):
+        self.is_connected = False
+        self.torque = torque
+        self.operating_mode = operating_mode
+        self.busy = busy
+
+    def connect(self) -> None:
+        if self.busy:
+            raise OSError("follower holder conflict")
+        self.is_connected = True
+
+    def disable_torque(self, *, num_retry: int = 0) -> None:
+        del num_retry
+        self.torque = False
+
+    def disconnect(self, _disable_torque: bool = True) -> None:
+        self.torque = False
+        self.is_connected = False
+
+    def sync_read(
+        self, register: str, *, normalize: bool = True, num_retry: int = 0
+    ) -> dict[str, int]:
+        del normalize, num_retry
+        value = self.torque if register == "Torque_Enable" else self.operating_mode
+        return {joint: int(value) for joint in ROBOT_JOINTS}
+
+
+class _Follower:
+    def __init__(self, bus: _FollowerBus):
+        self.bus = bus
+        self.is_calibrated = True
+        self.calibration = None
+
+    def get_observation(self) -> dict[str, float]:
+        return {f"{joint}.pos": 0.0 for joint in ROBOT_JOINTS}
+
+
+class _EchoSource:
+    def __init__(self, follower: _Follower):
+        self.bus = _FollowerBus()
+        self.follower = follower
+        self.is_calibrated = True
+
+    def get_action(self) -> dict[str, float]:
+        return self.follower.get_observation()
+
+
+@pytest.mark.parametrize(
+    ("bus", "message"),
+    [
+        (_FollowerBus(torque=True), "torque must already be off"),
+        (_FollowerBus(operating_mode=1), "position mode"),
+        (_FollowerBus(busy=True), "holder conflict"),
+    ],
+)
+def test_follower_only_gateway_preflight_fails_closed(
+    bus: _FollowerBus, message: str
+) -> None:
+    follower = _Follower(bus)
+    gateway = SO101PhysicalGateway(
+        GatewayIdentity("in-process", "/dev/follower", "1" * 64, "2" * 64),
+        device_factory=lambda _identity: (_EchoSource(follower), follower),
+        configure_devices=False,
+        require_initial_follower_torque_off=True,
+    )
+
+    with pytest.raises((OSError, PhysicalGatewayError), match=message):
+        gateway.open(enable_motion=False)
+
+    assert bus.is_connected is False
+    assert bus.torque is False
+
+
+def test_compile_is_deterministic_bounded_exciting_and_read_only(
+    tmp_path: Path,
+) -> None:
+    calls: list[dict[str, Any]] = []
+
+    def read_only() -> dict[str, Any]:
+        report = _preflight()
+        calls.append(report)
+        return report
+
+    first_path = tmp_path / "first.json"
+    second_path = tmp_path / "second.json"
+    first = compile_physical_excitation_packet(first_path, preflight_fn=read_only)
+    second = compile_physical_excitation_packet(second_path, preflight_fn=read_only)
+
+    assert first == second
+    assert first_path.read_bytes() == second_path.read_bytes()
+    assert len(calls) == 2
+    assert all(call["physical_follower_torque_enabled"] is False for call in calls)
+    plan = first["plan"]
+    assert plan["control_source"] == EXCITATION_CONTROL_SOURCE
+    assert plan["hardware_identity"] == {
+        "gateway_schema": GATEWAY_SCHEMA,
+        "follower_port": "/dev/follower",
+        "follower_calibration_sha256": "2" * 64,
+        "real_leader_identity_bound": False,
+    }
+    assert len(plan["episodes"]) == 5
+    covered = set()
+    expected_family = [
+        (ROBOT_JOINTS[0], "positive_first"),
+        (ROBOT_JOINTS[1], "positive_first"),
+        (ROBOT_JOINTS[3], "positive_first"),
+        (ROBOT_JOINTS[0], "negative_first"),
+        (ROBOT_JOINTS[1], "negative_first"),
+    ]
+    for episode, expected in zip(plan["episodes"], expected_family, strict=True):
+        assert (episode["body_joint"], episode["direction"]) == expected
+        actions = np.asarray(episode["actions_degrees"], dtype=np.float64)
+        timestamps = np.asarray(episode["timestamps_seconds"], dtype=np.float64)
+        assert episode["gateway_action_degrees_sha256"] == _float64_sha256(
+            actions
+        )
+        assert episode["canonical_action_radians_sha256"] == _float64_sha256(
+            np.deg2rad(actions)
+        )
+        assert np.array_equal(
+            timestamps,
+            (np.arange(25, dtype=np.float64) + 1.0) / plan["sample_hz"],
+        )
+        assert episode["timestamp_sha256"] == _float64_sha256(timestamps)
+        assert timestamps[0] == pytest.approx(0.05)
+        assert timestamps[-1] == pytest.approx(1.25)
+        assert np.unique(actions, axis=0).shape[0] > 3
+        assert np.all(actions[:, 5] == plan["anchor_degrees"][5])
+        ranges = np.ptp(actions[:, :5], axis=0)
+        covered.add(int(np.argmax(ranges)))
+        assert np.max(ranges) >= 5.0
+        slew = np.abs(np.diff(actions, axis=0) / np.diff(timestamps)[:, None])
+        assert np.max(slew) <= 10.0 + 1e-12
+    assert covered == {0, 1, 3}
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"physical_follower_torque_enabled": True},
+        {"device_configuration_rewritten": True},
+        {"control_source": "real_leader"},
+        {"real_leader_opened": True},
+    ],
+)
+def test_compile_rejects_non_follower_only_preflight(
+    tmp_path: Path, change: dict[str, Any]
+) -> None:
+    report = {**_preflight(), **change}
+    with pytest.raises(RecorderError, match="preflight did not pass"):
+        compile_physical_excitation_packet(
+            tmp_path / "packet.json", preflight_fn=lambda: report
+        )
+
+
+def test_compile_rejects_unsafe_anchor_margin(tmp_path: Path) -> None:
+    report = _preflight()
+    report["follower_start_degrees"][0] = 89.0
+    with pytest.raises(RecorderError, match="lacks ±3 degree"):
+        compile_physical_excitation_packet(
+            tmp_path / "packet.json", preflight_fn=lambda: report
+        )
+
+
+def test_compile_ignores_elbow_margin_when_elbow_is_not_in_family(
+    tmp_path: Path,
+) -> None:
+    report = _preflight()
+    report["follower_start_degrees"][2] = 100.5
+    report["follower_calibrated_maximum"][2] = 102.0
+    packet = compile_physical_excitation_packet(
+        tmp_path / "packet.json", preflight_fn=lambda: report
+    )
+    assert packet["plan"]["episodes"][2]["body_joint"] == ROBOT_JOINTS[3]
+    assert {episode["body_joint"] for episode in packet["plan"]["episodes"]} == {
+        ROBOT_JOINTS[0],
+        ROBOT_JOINTS[1],
+        ROBOT_JOINTS[3],
+    }
+
+
+def test_reposition_dry_run_derives_coupled_inward_move_and_refuses_overwrite(
+    tmp_path: Path,
+) -> None:
+    packet_path = tmp_path / "reposition.json"
+    calls: list[str] = []
+
+    report = reposition_physical_follower(
+        packet_path,
+        dry_run=True,
+        preflight_fn=lambda: (_preflight(), calls.append("preflight"))[0],
+    )
+
+    anchor = np.asarray(report["plan"]["anchor_degrees"], dtype=np.float64)
+    target = np.asarray(report["plan"]["target_degrees"], dtype=np.float64)
+    actions = np.asarray(report["plan"]["actions_degrees"], dtype=np.float64)
+    assert report["plan"]["relative_target_delta_degrees"][1:3] == [3.0, -3.0]
+    assert report["plan"]["required_calibrated_margin_degrees"] == pytest.approx(
+        3.25
+    )
+    assert target[1] + target[2] == pytest.approx(anchor[1] + anchor[2])
+    assert np.array_equal(target[[0, 3, 4, 5]], anchor[[0, 3, 4, 5]])
+    assert np.array_equal(actions[0], anchor)
+    assert np.array_equal(actions[-1], target)
+    assert np.max(np.abs(np.diff(actions, axis=0))) <= 5.0 / 20.0 + 1e-12
+    assert calls == ["preflight"]
+    assert report["physical_packet_execution_admitted"] is False
+    assert packet_path.is_file()
+    with pytest.raises(RecorderError, match="overwrite"):
+        reposition_physical_follower(
+            packet_path, dry_run=True, preflight_fn=_preflight
+        )
+
+
+def test_reposition_live_uses_zero_hold_and_exact_follower_actions(
+    tmp_path: Path,
+) -> None:
+    packet_path = tmp_path / "reposition.json"
+    _ = reposition_physical_follower(
+        packet_path, dry_run=True, preflight_fn=_preflight
+    )
+    packet = _admit_reposition(packet_path)
+    calls: list[tuple[bool, bool]] = []
+
+    class Gateway:
+        def __init__(self) -> None:
+            self.closed = False
+            self.targets: list[np.ndarray] = []
+            self.sample_times: list[float] = []
+
+        def open(self, *, enable_motion: bool, paired_pose_confirmed: bool):
+            calls.append((enable_motion, paired_pose_confirmed))
+            return {
+                "follower_start_degrees": packet["plan"]["anchor_degrees"],
+            }
+
+        def sample(self, elapsed_seconds: float, *, exact_requested_degrees):
+            target = np.asarray(exact_requested_degrees, dtype=np.float64)
+            self.targets.append(target.copy())
+            self.sample_times.append(float(elapsed_seconds))
+            return {
+                "follower_requested_degrees": target.tolist(),
+                "follower_command_degrees": target.tolist(),
+                "follower_actual_position_degrees": target.tolist(),
+                "rate_limited": False,
+                "safety_clamped": False,
+            }
+
+        def close(self) -> None:
+            self.closed = True
+
+    gateway = Gateway()
+    now = [0.0]
+    report = reposition_physical_follower(
+        packet_path,
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        gateway_factory=lambda _identity: gateway,
+        clock_fn=lambda: now[0],
+        sleep_fn=lambda seconds: now.__setitem__(0, now[0] + seconds),
+    )
+
+    assert calls == [(True, True)]
+    assert gateway.closed is True
+    assert report["status"] == "completed_follower_reposition"
+    assert report["physical_follower_torque_enabled"] is False
+    assert report["physical_motion_commanded"] is True
+    assert gateway.sample_times == report["plan"]["timestamps_seconds"]
+    assert _float64_sha256(np.stack(gateway.targets)) == report["plan"][
+        "action_sha256"
+    ]
+
+
+@pytest.mark.parametrize(
+    ("actual_mode", "message"),
+    [("margin", "final pose lacks"), ("zero", "directional progress")],
+)
+def test_reposition_rejects_unsafe_final_pose(
+    tmp_path: Path, actual_mode: str, message: str
+) -> None:
+    packet_path = tmp_path / "reposition.json"
+    output_path = tmp_path / "result.json"
+
+    def tight_preflight() -> dict[str, Any]:
+        report = _preflight()
+        report["follower_calibrated_minimum"][2] = -6.25
+        return report
+
+    reposition_physical_follower(
+        packet_path, dry_run=True, preflight_fn=tight_preflight
+    )
+    packet = _admit_reposition(packet_path)
+
+    class Gateway:
+        def __init__(self) -> None:
+            self.closed = False
+
+        def open(self, *, enable_motion: bool, paired_pose_confirmed: bool):
+            return {"follower_start_degrees": packet["plan"]["anchor_degrees"]}
+
+        def sample(self, elapsed_seconds: float, *, exact_requested_degrees):
+            del elapsed_seconds
+            target = np.asarray(exact_requested_degrees, dtype=np.float64)
+            actual = target.copy()
+            if actual_mode == "margin":
+                actual[2] -= 0.4
+            else:
+                actual[:] = np.asarray(packet["plan"]["anchor_degrees"])
+            return {
+                "follower_requested_degrees": target.tolist(),
+                "follower_command_degrees": target.tolist(),
+                "follower_actual_position_degrees": actual.tolist(),
+                "rate_limited": False,
+                "safety_clamped": False,
+            }
+
+        def close(self) -> None:
+            self.closed = True
+
+    gateway = Gateway()
+    with pytest.raises(RecorderError, match=message):
+        reposition_physical_follower(
+            packet_path,
+            output_path=output_path,
+            operator_acknowledged=True,
+            preflight_fn=tight_preflight,
+            gateway_factory=lambda _identity: gateway,
+            clock_fn=lambda: 0.0,
+            sleep_fn=lambda _seconds: None,
+        )
+    assert gateway.closed is True
+    assert not output_path.exists()
+
+
+def test_reposition_binds_fresh_anchor_and_requires_resulting_margin(
+    tmp_path: Path,
+) -> None:
+    packet_path = tmp_path / "reposition.json"
+    reposition_physical_follower(
+        packet_path, dry_run=True, preflight_fn=_preflight
+    )
+    _admit_reposition(packet_path)
+    drifted = _preflight(anchor=[0.0, 4.0, 0.0, 0.0, 0.0, 50.0])
+    with pytest.raises(RecorderError, match="packet anchor"):
+        reposition_physical_follower(
+            packet_path,
+            operator_acknowledged=True,
+            preflight_fn=lambda: drifted,
+            gateway_factory=lambda _: pytest.fail("gateway opened before anchor check"),
+        )
+
+    marginal_packet_path = tmp_path / "marginal-packet.json"
+    marginal = _preflight(anchor=[0.0, 0.0, -86.0, 0.0, 0.0, 50.0])
+
+    with pytest.raises(RecorderError, match="required ±3 degree margin"):
+        reposition_physical_follower(
+            marginal_packet_path, dry_run=True, preflight_fn=lambda: marginal
+        )
+
+
+def test_pending_admission_rejects_before_hardware_open(tmp_path: Path) -> None:
+    packet_path, _ = _compile(tmp_path)
+    touched: list[str] = []
+
+    with pytest.raises(RecorderError, match="pending independent admission"):
+        execute_physical_excitation_packet(
+            packet_path,
+            tmp_path / "output",
+            repo_root=tmp_path,
+            operator_acknowledged=True,
+            preflight_fn=lambda: touched.append("preflight"),
+            manager_factory=lambda **kwargs: touched.append("manager"),
+        )
+    assert touched == []
+
+
+@pytest.mark.parametrize("failure", ["identity", "authority"])
+def test_execute_rejects_drift_before_manager(
+    tmp_path: Path, failure: str
+) -> None:
+    packet_path, _ = _compile(tmp_path)
+    _admit(packet_path)
+    repo = _repo_with_authority(tmp_path / "repo")
+    report = _preflight()
+    if failure == "identity":
+        report["follower_calibration_sha256"] = "3" * 64
+        match = "hardware identity mismatch"
+    else:
+        state = repo / "docs/autonomous-workflow/project_state.json"
+        payload = json.loads(state.read_text())
+        payload["twin_fidelity_closure_transaction"]["authority"][
+            "owner_workspace_clear_assertion"
+        ] = False
+        state.write_text(json.dumps(payload))
+        match = "authority is closed"
+    touched: list[str] = []
+
+    with pytest.raises(RecorderError, match=match):
+        execute_physical_excitation_packet(
+            packet_path,
+            tmp_path / "output",
+            repo_root=repo,
+            operator_acknowledged=True,
+            preflight_fn=lambda: report,
+            manager_factory=lambda **_: touched.append("manager"),
+        )
+
+    assert touched == []
+
+
+class _FakeGateway:
+    def __init__(self, anchor: list[float], *, mismatch: bool = False):
+        self.anchor = np.asarray(anchor, dtype=np.float64)
+        self.mismatch = mismatch
+        self.closed = False
+        self.targets: list[np.ndarray] = []
+
+    def open(
+        self, *, enable_motion: bool, paired_pose_confirmed: bool
+    ) -> dict[str, Any]:
+        current = self.anchor.copy()
+        if self.mismatch:
+            current[0] += 4.0
+        return {
+            "follower_registration_degrees": current.tolist(),
+            "physical_follower_torque_enabled": True,
+        }
+
+    def sample(
+        self, elapsed_seconds: float, *, exact_requested_degrees: np.ndarray
+    ) -> dict[str, Any]:
+        target = exact_requested_degrees.copy()
+        self.targets.append(target)
+        return {
+            "elapsed_seconds": elapsed_seconds,
+            "follower_requested_degrees": target.tolist(),
+            "follower_command_degrees": target.tolist(),
+            "follower_actual_position_degrees": target.tolist(),
+            "follower_actual_velocity_degrees_s": [0.0] * 6,
+            "rate_limited": False,
+            "safety_clamped": False,
+        }
+
+    def close(self) -> None:
+        self.closed = True
+
+
+def test_pose_anchor_mismatch_releases_torque(tmp_path: Path) -> None:
+    _, packet = _compile(tmp_path)
+    gateway = _FakeGateway(packet["plan"]["anchor_degrees"], mismatch=True)
+    backend = PrecompiledExcitationBackend(
+        {},
+        {},
+        plan=packet["plan"],
+        episode=packet["plan"]["episodes"][0],
+        gateway_factory=lambda _identity: gateway,
+    )
+
+    with pytest.raises(RecorderError, match="compiled anchor"):
+        backend.open()
+    assert gateway.closed is True
+
+
+def test_backend_consumes_every_precompiled_action_byte_identically(
+    tmp_path: Path,
+) -> None:
+    _, packet = _compile(tmp_path)
+    episode = packet["plan"]["episodes"][0]
+    gateway = _FakeGateway(packet["plan"]["anchor_degrees"])
+    backend = PrecompiledExcitationBackend(
+        {},
+        {},
+        plan=packet["plan"],
+        episode=episode,
+        gateway_factory=lambda _identity: gateway,
+    )
+    backend.open()
+    while not backend.recording_complete:
+        backend.sample(999.0)
+
+    consumed = np.stack(gateway.targets)
+    assert _float64_sha256(consumed) == episode[
+        "gateway_action_degrees_sha256"
+    ]
+
+
+class _FakeManager:
+    saved_count = 0
+
+    def __init__(self, *, repo_root: Path, backend_factory: Any):
+        self.repo_root = repo_root
+        self.status = "idle"
+
+    def start(self, request: dict[str, Any]) -> None:
+        self.status = "awaiting_label"
+
+    def snapshot(self) -> dict[str, Any]:
+        return {"status": self.status}
+
+    def finalize(self, labels: dict[str, Any]) -> dict[str, Any]:
+        type(self).saved_count += 1
+        relative = Path("datasets/manipulation_source_recordings") / (
+            f"fixture-{type(self).saved_count}"
+        )
+        (self.repo_root / relative).mkdir(parents=True)
+        self.status = "saved"
+        return {"saved_path": relative.as_posix()}
+
+
+def _execution_fakes(packet: dict[str, Any], *, fail_at: int | None = None):
+    calls = 0
+
+    def materialize(
+        recording: Path, manifest: Path, report: Path
+    ) -> dict[str, Any]:
+        nonlocal calls
+        calls += 1
+        if fail_at == calls:
+            raise RecorderError("fixture P4 failure")
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text("{}", encoding="utf-8")
+        report.write_text("{}", encoding="utf-8")
+        return {
+            "exact_replay_eligible": True,
+            "applied_action_sha256": packet["plan"]["episodes"][calls - 1][
+                "canonical_action_radians_sha256"
+            ],
+        }
+
+    return materialize
+
+
+def _write_finalized_excitation_episode(
+    repo: Path, output: Path, packet: dict[str, Any], episode_index: int
+) -> Path:
+    episode = packet["plan"]["episodes"][episode_index - 1]
+    recording_id = f"resume-recording-{episode_index}"
+    recording = repo / "datasets/manipulation_source_recordings" / recording_id
+    recording.mkdir(parents=True)
+    actions = np.asarray(episode["actions_degrees"], dtype=np.float64)
+    rows = [
+        {
+            "schema_version": PHYSICAL_SAMPLE_SCHEMA,
+            "episode_id": recording_id,
+            "sample_index": index,
+            "timestamp_monotonic_seconds": 10.0 + (index * 0.05),
+            "follower_requested_degrees": action.tolist(),
+            "follower_command_degrees": action.tolist(),
+            "follower_actual_position_degrees": packet["plan"][
+                "anchor_degrees"
+            ],
+            "follower_actual_velocity_degrees_s": [0.0] * 6,
+            "assistance": 0,
+            "intervention": 0,
+            "rate_limited": False,
+            "safety_clamped": False,
+        }
+        for index, action in enumerate(actions)
+    ]
+    samples_raw = b"".join(
+        (json.dumps(row, sort_keys=True) + "\n").encode("utf-8") for row in rows
+    )
+    (recording / "samples.jsonl").write_bytes(samples_raw)
+    proof_class = "physical_precompiled_follower_excitation_source_unqualified"
+    receipt = {
+        "schema_version": "sim2claw.manipulation_source_recording_receipt.v1",
+        "source_sample_schema": PHYSICAL_SAMPLE_SCHEMA,
+        "recording_id": recording_id,
+        "label": f"{packet['packet_id'].lower()}-{episode['episode_id']}",
+        "mode": "physical_follower",
+        "proof_class": proof_class,
+        "source_identity": {
+            "kind": "frozen_precompiled_follower_actions",
+            "proof_class": proof_class,
+        },
+        "action_owner": "independently_reviewed_precompiled_excitation_packet",
+        "physical_motion_recorded": True,
+        "backend": {"schema_version": "sim2claw.so101_physical_gateway.v2"},
+        "sample_count": 25,
+        "samples_path": "samples.jsonl",
+        "samples_sha256": hashlib.sha256(samples_raw).hexdigest(),
+        "assistance_frames": 0,
+        "intervention_frames": 0,
+        "lineage": {
+            "collection_kind": "original_source_episode",
+            "corrective_suffix_parent_state_sha256": None,
+        },
+    }
+    (recording / "recording_receipt.json").write_text(
+        json.dumps(receipt), encoding="utf-8"
+    )
+    episode_root = output / "p4" / episode["episode_id"]
+    materialize_physical_recording_exact_replay(
+        recording,
+        episode_root / "exact_replay_manifest.json",
+        episode_root / "exact_replay_report.json",
+    )
+    return recording
+
+
+def test_five_outputs_emit_p9_cohort_only_after_p4(tmp_path: Path) -> None:
+    packet_path, _ = _compile(tmp_path)
+    packet = _admit(packet_path)
+    repo = _repo_with_authority(tmp_path / "repo")
+    _FakeManager.saved_count = 0
+
+    result = execute_physical_excitation_packet(
+        packet_path,
+        tmp_path / "output",
+        repo_root=repo,
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        manager_factory=_FakeManager,
+        materialize_fn=_execution_fakes(packet),
+    )
+
+    assert result["status"] == "five_recordings_finalized_and_p4_eligible"
+    cohort = json.loads((tmp_path / "output/p9_cohort.json").read_text())
+    assert len(cohort["episodes"]) == 5
+    assert len(result["completed"]) == 5
+
+
+def test_execution_resumes_four_finalized_episodes_and_runs_only_missing_one(
+    tmp_path: Path,
+) -> None:
+    packet_path, _ = _compile(tmp_path)
+    packet = _admit(packet_path)
+    repo = _repo_with_authority(tmp_path / "repo")
+    output = tmp_path / "output"
+    existing = [
+        _write_finalized_excitation_episode(repo, output, packet, index)
+        for index in range(1, 5)
+    ]
+    p4_bytes = {
+        (
+            output
+            / "p4"
+            / packet["plan"]["episodes"][index - 1]["episode_id"]
+            / filename
+        ): (
+            output
+            / "p4"
+            / packet["plan"]["episodes"][index - 1]["episode_id"]
+            / filename
+        ).read_bytes()
+        for index in range(1, 5)
+        for filename in ("exact_replay_manifest.json", "exact_replay_report.json")
+    }
+    manager_starts: list[str] = []
+    materialize_calls: list[Path] = []
+
+    class MissingManager(_FakeManager):
+        def start(self, request: dict[str, Any]) -> None:
+            manager_starts.append(request["source_identity_kind"])
+            super().start(request)
+
+    def materialize(
+        recording: Path, manifest: Path, report: Path
+    ) -> dict[str, Any]:
+        materialize_calls.append(recording)
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text("{}", encoding="utf-8")
+        report.write_text("{}", encoding="utf-8")
+        return {
+            "exact_replay_eligible": True,
+            "applied_action_sha256": packet["plan"]["episodes"][4][
+                "canonical_action_radians_sha256"
+            ],
+        }
+
+    _FakeManager.saved_count = 0
+    result = execute_physical_excitation_packet(
+        packet_path,
+        output,
+        repo_root=repo,
+        operator_acknowledged=True,
+        preflight_fn=_preflight,
+        manager_factory=MissingManager,
+        materialize_fn=materialize,
+    )
+
+    assert len(existing) == 4
+    assert manager_starts == [EXCITATION_CONTROL_SOURCE]
+    assert len(materialize_calls) == 1
+    assert len(result["completed"]) == 5
+    assert len(json.loads((output / "p9_cohort.json").read_text())["episodes"]) == 5
+    for path, contents in p4_bytes.items():
+        assert path.read_bytes() == contents
+
+
+def test_execution_resume_rejects_source_hash_drift_before_new_motion(
+    tmp_path: Path,
+) -> None:
+    packet_path, _ = _compile(tmp_path)
+    packet = _admit(packet_path)
+    repo = _repo_with_authority(tmp_path / "repo")
+    output = tmp_path / "output"
+    recording = _write_finalized_excitation_episode(repo, output, packet, 1)
+    with (recording / "samples.jsonl").open("ab") as handle:
+        handle.write(b"drift\n")
+    touched: list[str] = []
+
+    with pytest.raises(RecorderError, match="samples hash changed"):
+        execute_physical_excitation_packet(
+            packet_path,
+            output,
+            repo_root=repo,
+            operator_acknowledged=True,
+            preflight_fn=_preflight,
+            manager_factory=lambda **_: touched.append("manager"),
+            materialize_fn=lambda *args: touched.append("materialize"),
+        )
+    assert touched == []
+
+
+def test_partial_run_fails_closed_without_cohort(tmp_path: Path) -> None:
+    packet_path, _ = _compile(tmp_path)
+    packet = _admit(packet_path)
+    repo = _repo_with_authority(tmp_path / "repo")
+    _FakeManager.saved_count = 0
+
+    with pytest.raises(RecorderError, match="fixture P4 failure"):
+        execute_physical_excitation_packet(
+            packet_path,
+            tmp_path / "output",
+            repo_root=repo,
+            operator_acknowledged=True,
+            preflight_fn=_preflight,
+            manager_factory=_FakeManager,
+            materialize_fn=_execution_fakes(packet, fail_at=3),
+        )
+
+    assert not (tmp_path / "output/p9_cohort.json").exists()
+    report = json.loads((tmp_path / "output/execution_report.json").read_text())
+    assert report["status"] == "partial_failed_closed"
+    assert len(report["completed"]) == 2
+    assert report["cohort_emitted"] is False

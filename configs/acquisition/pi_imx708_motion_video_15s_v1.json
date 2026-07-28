@@ -1,0 +1,32 @@
+{
+  "schema_version": "sim2claw.pi_motion_video_contract.v1",
+  "contract_id": "pi_imx708_motion_video_15s_20260727_v1",
+  "status": "preregistered_before_capture",
+  "proof_class": "physical_motion_camera_observation_only",
+  "ssh_host": "vexy@192.168.1.117",
+  "camera": "imx708_wide",
+  "width": 1536,
+  "height": 864,
+  "framerate": 30,
+  "duration_seconds": 15,
+  "minimum_frames": 300,
+  "horizontal_flip": true,
+  "vertical_flip": true,
+  "autofocus_mode": "manual",
+  "lens_position_reciprocal_m": 4.0,
+  "codec": "mjpeg",
+  "jpeg_quality": 70,
+  "startup_timeout_seconds": 5.0,
+  "source_stall_timeout_seconds": 3.0,
+  "shutdown_grace_seconds": 5.0,
+  "authority": {
+    "camera_observation": true,
+    "camera_exposure_synchronization": false,
+    "camera_intrinsics": false,
+    "camera_extrinsics": false,
+    "robot_gateway": false,
+    "robot_motion": false,
+    "policy": false,
+    "task_success": false
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_link_tag_follower_pan_identity_probe_20260726_v1",
+  "capture_during_motion": false,
+  "setup_maximum_slew_degrees_s": 1.0,
+  "setup_elbow_tracking_error_limit_degrees": 6.0,
+  "setup_target_hold_seconds": 2.0,
+  "stationary_capture_seconds": 0.0,
+  "reviewed_anchor_degrees": [
+    -1.054945054945055,
+    -106.9010989010989,
+    100.35164835164835,
+    -90.24175824175825,
+    -71.42857142857143,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [
+      4.0,
+      -106.0,
+      100.0,
+      -95.0,
+      -71.42857142857143,
+      3.0878859857482186
+    ]
+  ],
+  "review_basis": {
+    "physical_scope": "follower_only_pi_link_tag_identity_probe",
+    "target_source": "Fresh torque-off follower preflight on 2026-07-26. Shoulder pan receives a 5.055 degree identity excitation. Wrist flex moves 4.758 degrees toward -95 only because the CPU contact preview proved that direction clears the reset pose's pre-existing left_upper_arm/left_wrist proxy contact; the final contact set contains only the accepted left_lower_arm/left_shoulder baseline pair.",
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "candidate_digest": "2da7425cbf0fd10e27822a415890ca180dde7a4f1b042bf3ed49030bcad018af"
+    },
+    "simulation_runtime": "cpu_mujoco_mj_forward_at_live_execution",
+    "capture_plan": "Compare settled IMX708 tag36h11 corners before and after the exact route. Shoulder-pan motion moves every follower tag, while the small wrist-flex clearance move adds a distal-only signature. A tag is follower-associated only if its displacement exceeds stationary repeatability while an unchanged tag is classified as non-follower or unobservable.",
+    "evidence_limits": {
+      "tag_to_link_mapping_only": true,
+      "camera_intrinsics_fitted": false,
+      "joint_offsets_fitted": false,
+      "sim_gap_evidence": false,
+      "policy_evidence": false,
+      "task_authority": false
+    },
+    "authority": {
+      "capture": true,
+      "motion": true,
+      "fit": false,
+      "policy": false,
+      "task_success": false,
+      "physical_transfer": false
+    }
+  }
+}

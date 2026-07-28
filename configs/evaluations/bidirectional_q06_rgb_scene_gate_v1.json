@@ -1,0 +1,48 @@
+{
+  "schema_version": "sim2claw.bidirectional_q06_rgb_scene_gate.v1",
+  "evaluation_id": "bidirectional_q06_rgb_scene_gate_20260727_v1",
+  "status": "frozen_camera_observation_and_preregistered_geometry_gate",
+  "capture_receipt": {
+    "path": "runs/bidirectional-pawn-push/20260727-q06-scene-v1/capture_receipt.json",
+    "sha256": "ee6d71d98723e5133097c24c30ab8d2b16881e6554d22078aae632fe99966730"
+  },
+  "camera_frames": {
+    "c922": {
+      "path": "runs/bidirectional-pawn-push/20260727-q06-scene-v1/c922_scene.png",
+      "sha256": "5803cce3e87aa5066589e8aada64b81fe37e2a821e70b47aeb32807860a22883",
+      "role": "physical scene and outcome owner"
+    },
+    "d405_color": {
+      "path": "runs/bidirectional-pawn-push/20260727-q06-scene-v1/d405_scene.png",
+      "sha256": "e95fc50183c63e34d5f25fb4bb4f18ea0d278af9364ae5197a12b9546633e049",
+      "role": "supporting RGB only"
+    },
+    "pi_imx708": {
+      "path": "runs/bidirectional-pawn-push/20260727-q06-scene-v1/pi_imx708.jpg",
+      "sha256": "3bfe6a4862fb980eb1afd53b4091779bd71c53bf1f3d03aa5c1d98cebd5c78ab",
+      "role": "external arm context"
+    }
+  },
+  "manual_c922_observation": {
+    "expected_sparse_layout_visible": true,
+    "all_expected_pawns_apparently_upright": true,
+    "all_preregistered_destination_squares_apparently_empty": true,
+    "c2_not_selected": true,
+    "extra_object_in_any_preregistered_route": false,
+    "claim_boundary": "RGB visual adjudication only; no metric camera transform or depth."
+  },
+  "geometry_source": {
+    "layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
+    "board_square_side_mm": 44.45,
+    "pawn_base_radius_mm": 13.8,
+    "minimum_route_clearance_mm": 88.9,
+    "method": "minimum board-plane center distance from each selected source-to-destination segment to every other reset-layout pawn center"
+  },
+  "authority": {
+    "camera_capture": true,
+    "robot_gateway": false,
+    "robot_motion": false,
+    "metric_depth": false,
+    "task_success": false
+  }
+}

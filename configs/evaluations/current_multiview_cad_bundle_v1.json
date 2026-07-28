@@ -1,0 +1,79 @@
+{
+  "schema_version": "sim2claw.current_multiview_cad_bundle_contract.v1",
+  "contract_id": "current_scene_H_I_fit_D_retrospective_holdout_v1",
+  "status": "source_bindings_frozen_for_bounded_rerun",
+  "proof_class": "physical_static_multiview_cad_and_fiducial_diagnostic",
+  "split": {
+    "fit_poses": ["H", "I"],
+    "heldout_pose": "D",
+    "heldout_is_fresh": false,
+    "heldout_limitation": "Pose D was previously consumed by a rejected four-tag refit and is retained only as the designated retrospective score view."
+  },
+  "sources": {
+    "frozen_three_tag_candidate": {
+      "path": "runs/pi-link-tag-calibration/20260726-current-three-link-fresh-validation-v1/candidate.json",
+      "sha256": "115428d746867bd0ca1f25fb75f3ccaed7a928342fc980f995bcfce484ab50b5"
+    },
+    "frozen_three_tag_heldout_evaluation": {
+      "path": "runs/pi-link-tag-calibration/20260726-current-three-link-fresh-validation-v1/heldout-evaluation.json",
+      "sha256": "2c18cb50aecb22e2215e936bd7ddaaf90f9db356039f0c6e0ed5e76d4091ad93"
+    },
+    "scene_board_registration": {
+      "path": "configs/evaluations/img5349_3dgs_board_registration_v1.json",
+      "sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4"
+    },
+    "compiled_scene_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "poses": {
+      "H": {
+        "execution_receipt_sha256": "e341f8d10cada1fbaf8bacaf67a8303488d6b67955a2490710de4cb132dc209e",
+        "pi_imx708_sha256": "2ea77ccb5630e73b2a4090a8456da7cc840acb6e0fc6a7cbc1d4375f59942a00",
+        "c922_1920x1080_sha256": "5101bb896d580fd8a292ba659d2141a06b65ad46634e58732d74c7ab22d2e07b"
+      },
+      "I": {
+        "execution_receipt_sha256": "bc54953689060cef1c7b3a819d4cf8e2bd26ee2a1088502ef3dd87f9a9cd00de",
+        "pi_imx708_sha256": "ff5e2959a253228f8ade42fd314f48278dc57a866e9424442fd08eb5f056c9fe",
+        "c922_1920x1080_sha256": "8a83135d7da877252913180c5fa49390abdf681da860341076658dd56888845d"
+      },
+      "D": {
+        "execution_receipt_sha256": "94e51796b88e26e1c808fbbcb262c75b1f57918886aa55a1a67822f48ff86d7f",
+        "pi_imx708_sha256": "949e8d191d72953e4b0ed4ee8a60ffff124b86e4ffd9ae7452f326d5da269699",
+        "c922_1920x1080_sha256": "e846c270faf76322f0de9a0ef65cbbd8eb7eebc6ad36008d6ddbba24bac522f1"
+      }
+    }
+  },
+  "c922_camera_assumptions": {
+    "image_size_px": [1920, 1080],
+    "principal_point_px": [960.0, 540.0],
+    "square_pixels": true,
+    "distortion": [0.0, 0.0, 0.0, 0.0, 0.0],
+    "focal_bounds_px": [600.0, 4000.0],
+    "metric_intrinsics_claimed": false,
+    "metric_extrinsics_claimed": false
+  },
+  "family_probe": {
+    "families": ["c922_extrinsic", "follower_base_pose", "tag_mount", "joint_zero"],
+    "pi_camera_is_frozen": true,
+    "pi_camera_delta_is_nuisance_control_only": true,
+    "tag_mount_rotation_bound_degrees": 15.0,
+    "tag_mount_translation_bound_m": 0.02,
+    "base_rotation_bound_degrees": 5.0,
+    "base_translation_bound_m": 0.03,
+    "joint_zero_bound_degrees": 5.0
+  },
+  "budgets": {
+    "new_camera_frames": 0,
+    "robot_motions": 0,
+    "simulator_replays": 0,
+    "provider_calls": 0,
+    "training_rows": 0
+  },
+  "authority": {
+    "diagnostic_only": true,
+    "simulator_parameter_promotion": false,
+    "policy_or_task_evidence": false,
+    "physical_robot_control": false
+  }
+}

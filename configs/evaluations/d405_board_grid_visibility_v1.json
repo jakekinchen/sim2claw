@@ -1,0 +1,30 @@
+{
+  "schema_version": "sim2claw.d405_board_grid_visibility_contract.v1",
+  "proof_class": "physical_read_only_nonmetric_diagnostic",
+  "expected_grid_line_count_per_axis": 9,
+  "minimum_direct_segments_per_line": 2,
+  "minimum_adjacent_settled_frames": 2,
+  "maximum_boundary_drift_diagonal_fraction": 0.02,
+  "maximum_tls_rms_diagonal_fraction": 0.01,
+  "cluster_tolerance_diagonal_fraction": 0.018,
+  "gaussian_kernel_px": 5,
+  "canny_low": 30,
+  "canny_high": 90,
+  "hough_rho_px": 1.0,
+  "hough_theta_degrees": 0.25,
+  "hough_threshold": 20,
+  "hough_min_line_length_diagonal_fraction": 0.07,
+  "hough_max_line_gap_diagonal_fraction": 0.035,
+  "row_family_angle_degrees": [
+    -20.0,
+    20.0
+  ],
+  "column_family_minimum_absolute_angle_degrees": 60.0,
+  "authority": {
+    "metric_scale": false,
+    "camera_pose": false,
+    "robot_pose": false,
+    "evaluator_promotion": false,
+    "physical_task": false
+  }
+}

@@ -226,6 +226,22 @@ class StudioLiveTest(unittest.TestCase):
         finally:
             service.shutdown()
 
+    def test_recorder_camera_ownership_accepts_absent_video_state(self) -> None:
+        recorder = FakeRecorder()
+        recorder.state["overhead_video"] = None
+        recorder.state["wrist_video"] = None
+        service = LiveWorkspaceService(
+            recorder,
+            camera_discovery=_camera_inventory,
+            gateway_factory=FakeGateway,
+        )
+        try:
+            snapshot = service.snapshot()
+            self.assertFalse(snapshot["recorder"]["owns_c922"])
+            self.assertFalse(snapshot["recorder"]["owns_d405"])
+        finally:
+            service.shutdown()
+
     def test_orchestrator_snapshot_uses_the_primary_overhead_inventory_role(self) -> None:
         commands: list[list[str]] = []
 

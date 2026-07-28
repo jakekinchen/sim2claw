@@ -1,0 +1,91 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "geometric_oblique_xm5_ym15_z15_round_trip_tricam_20260727_v1",
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_15s_v1.json",
+    "contract_sha256": "457f2c142671851ddd60a3f1be5487125605957e38c1b2730ab683e08488393f"
+  },
+  "reviewed_anchor_degrees": [
+    -8.8791208791,
+    -106.4615384615,
+    99.3846153846,
+    -94.9010989011,
+    -126.3736263736,
+    1.6627078385
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -4.70351783841696,
+        -101.15777355808677,
+        93.34901983427041,
+        -88.27968142904469,
+        -126.35420985838502,
+        1.6627078385
+      ],
+      [
+        -8.8791208791,
+        -106.4615384615,
+        99.3846153846,
+        -94.9010989011,
+        -126.3736263736,
+        1.6627078385
+      ]
+    ]
+  ],
+  "geometric_derivation": {
+    "frame": "current_candidate_model_world",
+    "pinch_point_anchor_m": [
+      -0.028775129779164126,
+      0.8707239687086612,
+      1.0887327905923638
+    ],
+    "cartesian_waypoint_offsets_m": [
+      [
+        -0.005,
+        -0.015,
+        0.015
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "waypoint_ik_residuals_m": [
+      0.00019988539094152762,
+      0.0
+    ],
+    "solver": "sim2claw.grasp._solve_reach",
+    "solver_module_sha256": "c4c0d4382c8319e0dec25d0e1d740fd92fdd7fdd6e8717e99a4aaa6c37e2e313",
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+    "maximum_ik_residual_m": 0.0015
+  },
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "prospective_no_contact_reverse_joint_play_validation",
+    "target_selection": "One continuous negative-5-mm world-X, negative-15-mm world-Y, positive-15-mm world-Z out-and-back from the latest torque-off close pose. It avoids the current X-axis singularity while producing independent pan, lift, elbow, and wrist-flex reversals.",
+    "minimum_absolute_pan_excursion_degrees": 4.0,
+    "minimum_absolute_pitch_excursion_degrees": 5.0,
+    "source_anchor_execution_receipt_path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/stage-1/execution_receipt.json",
+    "source_anchor_execution_receipt_sha256": "da6498bf5fe47de6170d12aa967872fdf33ad5df89a90e6973f693e17a8422c4",
+    "tricam_readiness_summary_path": "runs/geometric-microtransfer/20260727-motion-tricam-readiness-v2/readiness_summary.json",
+    "tricam_readiness_summary_sha256": "f1f173148d4a8341e4071e632d88b232a63053db594717d9b47bf75f1e10d95f",
+    "reverse_joint_play_fit_receipt_path": "runs/geometric-microtransfer/20260727-geometric-joint-play-reverse-fit-v1/fit-receipt.json",
+    "reverse_joint_play_fit_receipt_sha256": "e688824554486896f79e0517b0ef660e752dda3a3acd5358b82c5727bad04cc5",
+    "pawn_contact_forbidden": true,
+    "evidence_limits": {
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

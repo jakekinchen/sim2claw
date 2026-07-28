@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "pi_link_pose_calibration_pose_d_heldout_20260726_v1",
+  "capture_during_motion": true,
+  "setup_recovery_command_anchor_snap_limit_degrees": 10.0,
+  "pi_hold_still": {
+    "schema_version": "sim2claw.pi_hold_still_capture.v1",
+    "ssh_host": "vexy@192.168.1.117",
+    "camera": "imx708_wide",
+    "width": 1536,
+    "height": 864,
+    "horizontal_flip": true,
+    "vertical_flip": true
+  },
+  "reviewed_anchor_degrees": [
+    14.065934065934066,
+    -115.95604395604396,
+    74.85714285714286,
+    -96.13186813186813,
+    -40.747252747252745,
+    3.0878859857482186
+  ],
+  "stage_targets_degrees": [
+    [-20.0, -70.0, 85.0, -95.0, -20.0, 3.0878859857482186]
+  ],
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "follower_only_static_pi_link_pose_calibration_held_out",
+    "source_pose": "Fresh torque-off follower read after admitted pose C.",
+    "command_anchor_rule": "Apply the reviewed 9.318681 degree shoulder-lift clip before torque enable.",
+    "target_selection": "Freeze a fourth pose with held-out pan, shoulder, elbow, and wrist-roll combination. It is excluded from parameter fitting and opened once for evaluation.",
+    "evidence_limits": {
+      "physical_calibration_observation": true,
+      "fit_training_admission": false,
+      "held_out_evaluation": true,
+      "simulator_parameter_promotion": false,
+      "policy_evidence": false,
+      "task_evidence": false
+    }
+  }
+}

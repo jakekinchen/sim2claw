@@ -1,0 +1,325 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v1",
+  "contract_id": "bidirectional_pawn_push_v2_registration_acquisition_20260728_v1",
+  "status": "preregistered_before_authoritative_capture_or_motion",
+  "proof_class": "prospective_rgb_registration_acquisition_contract_only",
+  "mission_scope": "camera_owned_task_relevant_board_and_closed_jaw_registration",
+  "sources": {
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "use": "base CPU/fp64 kinematic and scene geometry only; no promotion authority"
+    },
+    "c922_capture_contract": {
+      "path": "configs/evaluations/c922_terminal_hold_still_capture_v1.json",
+      "sha256": "e2daa9dcc6329c41cac561b6494a11017b9d42f8e57784bb0d254d4345222a17"
+    },
+    "c922_capture_source": {
+      "path": "tools/macos/C922TerminalHoldStillCapture.swift",
+      "sha256": "3a39e4425141e795909291709067ca4f71e73e94906e52fb84d2b20dd470b95d"
+    },
+    "prior_scene_registration_diagnostic": {
+      "path": "configs/scenes/bidirectional_pawn_push_scene_registration_v4.json",
+      "sha256": "c7c2b19d7bdf64e85c20f515b4d7fa859b2fd33948fa1a36438265571a752b7b",
+      "use": "starting hypothesis only; prior heldout remains unadjudicable"
+    },
+    "v00_design_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v00-read-only-design/v00_read_only_design_receipt.json",
+      "sha256": "2c818ed0b70458ca0cd2d2758ec2c4a74790dcc6bc0733bc82dafca157908ebf"
+    }
+  },
+  "camera_ownership": {
+    "task_and_board_owner": "fixed_c922",
+    "c922": {
+      "localized_name": "C922 Pro Stream Webcam",
+      "unique_id": "0x8310000046d085c",
+      "model_id": "UVC Camera VendorID_1133 ProductID_2140",
+      "width": 640,
+      "height": 480,
+      "media_subtype_fourcc": "420v",
+      "supported_fps": 30.00003000003,
+      "mount_must_remain_fixed": true,
+      "focus_or_mount_change_result": "reject_dataset"
+    },
+    "supporting_rgb": [
+      "pi_imx708"
+    ],
+    "d405_color_optional": true,
+    "d405_depth_used": false,
+    "metric_depth_required": false,
+    "maximum_simultaneous_owner_per_device": 1
+  },
+  "board_model": {
+    "playing_lattice_lines_per_axis": 9,
+    "playing_corner_order": [
+      "a8_outer",
+      "h8_outer",
+      "h1_outer",
+      "a1_outer"
+    ],
+    "square_pitch_design_prior_mm": 44.45,
+    "playing_side_design_prior_mm": 355.6,
+    "metric_scale_semantics": "nominal physical chessboard design pitch; disclose as a design prior rather than independent metrology",
+    "required_visible_features": {
+      "all_four_playing_corners": true,
+      "minimum_direct_grid_lines_each_axis": 7,
+      "minimum_unoccluded_grid_intersections": 12,
+      "both_axes_required": true
+    },
+    "extraction": {
+      "primary": "seeded grayscale line clustering and 9x9 projective lattice fit",
+      "secondary": "agent visual corner audit without changing extracted pixels",
+      "seed_source": "V00 inventory frame only",
+      "seed_is_measurement": false,
+      "per_hover_camera_refit_forbidden": true
+    }
+  },
+  "gripper_reference": {
+    "physical_feature": "midpoint of the distal fixed-jaw and moving-jaw tip endpoints with the jaws closed",
+    "model_feature": "midpoint of the corresponding left fixed-jaw and moving-jaw distal tip geometry centers",
+    "jaw_command_percent": 2.494061757719715,
+    "annotation_protocol": {
+      "agent_only": true,
+      "human_physical_intervention": false,
+      "blinded_to_target_id_model_projection_and_fit_result": true,
+      "two_independent_passes_required": true,
+      "each_pass_records_both_tip_pixels": true,
+      "midpoint_is_arithmetic_mean_of_tip_pixels": true,
+      "annotation_pixels_frozen_before_split_unseal": true,
+      "manual_postfit_adjustment_forbidden": true
+    }
+  },
+  "physical_start": {
+    "fresh_preflight_required_again_before_compile": true,
+    "v00_observed_degrees": [
+      -11.164835164835164,
+      -71.38461538461539,
+      99.47252747252747,
+      -25.714285714285715,
+      -102.81318681318682,
+      2.494061757719715
+    ],
+    "maximum_rebase_delta_degrees": 1.0,
+    "source_contact_admission": {
+      "source_state_only": true,
+      "allowed_modeled_pairs": [
+        [
+          "left_lower_arm",
+          "left_shoulder"
+        ],
+        [
+          "left_shoulder",
+          "left_wrist"
+        ]
+      ],
+      "new_pair_forbidden": true,
+      "penetration_worsening_forbidden": true,
+      "egress_must_end_contact_free": true,
+      "external_contact_forbidden": true
+    }
+  },
+  "hover_common": {
+    "joint_order": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "units": [
+      "degree",
+      "degree",
+      "degree",
+      "degree",
+      "degree",
+      "percent"
+    ],
+    "shoulder_lift": -85.0,
+    "elbow_flex": 99.47252747252747,
+    "wrist_flex": -20.0,
+    "wrist_roll": -102.81318681318682,
+    "gripper": 2.494061757719715,
+    "closed_jaw": true,
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true
+  },
+  "split": {
+    "frozen_before_capture": true,
+    "fit_targets": [
+      {
+        "target_id": "v2-fit-pan-m21",
+        "physical_degrees_percent": [
+          -21.0,
+          -85.0,
+          99.47252747252747,
+          -20.0,
+          -102.81318681318682,
+          2.494061757719715
+        ]
+      },
+      {
+        "target_id": "v2-fit-pan-m11",
+        "physical_degrees_percent": [
+          -11.0,
+          -85.0,
+          99.47252747252747,
+          -20.0,
+          -102.81318681318682,
+          2.494061757719715
+        ]
+      },
+      {
+        "target_id": "v2-fit-pan-m01",
+        "physical_degrees_percent": [
+          -1.0,
+          -85.0,
+          99.47252747252747,
+          -20.0,
+          -102.81318681318682,
+          2.494061757719715
+        ]
+      },
+      {
+        "target_id": "v2-fit-pan-p09",
+        "physical_degrees_percent": [
+          9.0,
+          -85.0,
+          99.47252747252747,
+          -20.0,
+          -102.81318681318682,
+          2.494061757719715
+        ]
+      }
+    ],
+    "heldout_targets": [
+      {
+        "target_id": "v2-heldout-pan-m16",
+        "physical_degrees_percent": [
+          -16.0,
+          -85.0,
+          99.47252747252747,
+          -20.0,
+          -102.81318681318682,
+          2.494061757719715
+        ]
+      },
+      {
+        "target_id": "v2-heldout-pan-m06",
+        "physical_degrees_percent": [
+          -6.0,
+          -85.0,
+          99.47252747252747,
+          -20.0,
+          -102.81318681318682,
+          2.494061757719715
+        ]
+      },
+      {
+        "target_id": "v2-heldout-pan-p04",
+        "physical_degrees_percent": [
+          4.0,
+          -85.0,
+          99.47252747252747,
+          -20.0,
+          -102.81318681318682,
+          2.494061757719715
+        ]
+      },
+      {
+        "target_id": "v2-heldout-height-m06",
+        "physical_degrees_percent": [
+          -6.0,
+          -90.0,
+          99.47252747252747,
+          -20.0,
+          -102.81318681318682,
+          2.494061757719715
+        ]
+      }
+    ],
+    "v1_b7_heldout_reuse_forbidden": true,
+    "capture_order_may_interleave_for_route_safety": true,
+    "fit_and_heldout_storage_must_remain_separate": true
+  },
+  "sealing": {
+    "capture_receipt_hashes_every_native_frame_and_joint_hold": true,
+    "fit_manifest_lists_fit_members_only": true,
+    "heldout_manifest_lists_opaque_ids_hashes_and_byte_counts_only": true,
+    "heldout_images_and_annotations_forbidden_to_fit_process": true,
+    "candidate_family_and_candidate_payload_hash_required_before_open": true,
+    "heldout_open_count_maximum": 1,
+    "all_heldout_members_open_together": true,
+    "postopen_refit_forbidden": true,
+    "postopen_threshold_change_forbidden": true
+  },
+  "candidate_family": {
+    "family_id": "normalized_projective_camera_dlt_zero_distortion_v1",
+    "model": "one shared 3x4 projective camera matrix up to scale",
+    "normalization": "Hartley isotropic normalization independently for 3D world and 2D pixels",
+    "solver": "float64 SVD smallest right singular vector",
+    "fit_correspondences": "four board playing corners plus four fit hover jaw-midpoints",
+    "board_and_robot_share_one_projection": true,
+    "lens_distortion_parameters": 0,
+    "per_pose_nuisance_parameters": 0,
+    "joint_zero_fit_parameters": 0,
+    "board_pose_fit_parameters": 0,
+    "candidate_selection_after_heldout_forbidden": true
+  },
+  "gates": {
+    "minimum_fit_correspondences": 8,
+    "maximum_annotation_tip_disagreement_px": 6.0,
+    "maximum_annotation_midpoint_disagreement_px": 4.0,
+    "maximum_board_lattice_fit_rms_px": 2.5,
+    "maximum_board_lattice_fit_max_px": 5.0,
+    "maximum_fit_hover_reprojection_rms_px": 6.0,
+    "maximum_fit_hover_reprojection_max_px": 10.0,
+    "maximum_dlt_design_condition_number": 1000000.0,
+    "maximum_heldout_reprojection_error_px": 8.0,
+    "maximum_heldout_task_plane_error_mm_exclusive": 25.0,
+    "all_heldout_targets_must_be_scorable": true,
+    "all_heldout_targets_must_pass": true,
+    "camera_identity_and_mount_token_must_match": true,
+    "joint_hold_tracking_maximum_degrees": 2.0,
+    "minimum_stationary_hold_seconds": 2.0
+  },
+  "acquisition_safety": {
+    "v02_cpu_fp64_route_and_visibility_review_required": true,
+    "v02_reviewer_decision_required": "CONTINUE",
+    "reviewed_gateway_only": true,
+    "cameras_before_motion": true,
+    "maximum_commanded_body_slew_degrees_per_second": 3.0,
+    "elbow_must_not_go_below_degrees": 96.0,
+    "stop_on_tracking_contact_or_stall": true,
+    "torque_off_every_exit": true,
+    "return_to_previously_demonstrated_torque_off_anchor_required": true,
+    "robot_motion_authorized_by_this_contract": false
+  },
+  "recapture_fallback": {
+    "trigger": "any capture member unscorable or dataset fails camera identity visibility annotation or transport gates before counted action compilation",
+    "action": "close torque and cameras, preserve the failed dataset, create a new versioned acquisition contract with a newly split fit and heldout family, rerun V01-V04",
+    "counted_physical_attempt_consumed": false,
+    "threshold_weakening_forbidden": true,
+    "same_heldout_reuse_forbidden": true,
+    "terminal_result": false
+  },
+  "operation_budget": {
+    "authoritative_registration_transactions_maximum": 1,
+    "fit_target_count": 4,
+    "heldout_target_count": 4,
+    "counted_task_actions_maximum": 0,
+    "pawn_contacts_maximum": 0
+  },
+  "authority": {
+    "registration_acquisition_preregistration": true,
+    "physical_camera_observation": false,
+    "physical_motion": false,
+    "scene_registration": false,
+    "action_compilation": false,
+    "physical_attempt": false,
+    "task_success": false,
+    "transfer": false,
+    "training": false
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "schema_version": "sim2claw.img5349_articulated_cad_fit.v1",
+  "status": "retained_right_pose_hypothesis_not_promoted",
+  "proof_class": "retrospective_visual_pose_diagnostic",
+  "source": {
+    "ply_path": "artifacts/private/releases/img5349-3dgs-20260719/IMG_5349-primary-real-splat.ply",
+    "ply_sha256": "f8f3bfe0a0f1fa13d54e47602dbf43f8e0448178c0e85f0f22a5f2115530443b",
+    "board_registration_path": "configs/evaluations/img5349_3dgs_board_registration_v1.json",
+    "board_registration_sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4"
+  },
+  "target": {
+    "scene_id": "operator_updated_chess_workcell_v3",
+    "piece_layout": "sparse_two_sided_pawns",
+    "board_sim3_frozen": true,
+    "robot_base_pose_frozen": true,
+    "complete_reviewed_visual_meshes": true
+  },
+  "surface_selection": {
+    "roi_min_mujoco_m": [-0.72, 0.78, 0.815],
+    "roi_max_mujoco_m": [-0.20, 1.42, 1.36],
+    "minimum_opacity": 0.08,
+    "maximum_rgb_range": 0.32,
+    "minimum_rgb_mean": 0.30,
+    "maximum_vertices_per_geom": 350,
+    "expected_selected_splat_count": 5337
+  },
+  "right_arm_candidate": {
+    "joint_names": [
+      "right_shoulder_pan",
+      "right_shoulder_lift",
+      "right_elbow_flex",
+      "right_wrist_flex",
+      "right_wrist_roll",
+      "right_gripper"
+    ],
+    "baseline_joint_radians": [
+      0.5300692,
+      -1.4669525,
+      0.023239,
+      1.4378308,
+      1.8062804,
+      0.35
+    ],
+    "candidate_joint_radians": [
+      1.15057341,
+      -1.7453293,
+      -0.47287395,
+      1.658063,
+      2.72614917,
+      1.3390183
+    ],
+    "evaluated_body_names": [
+      "right_base",
+      "right_shoulder",
+      "right_upper_arm",
+      "right_lower_arm",
+      "right_wrist",
+      "right_gripper",
+      "right_camera_mount",
+      "right_moving_jaw_so101_v1"
+    ],
+    "optimizer": {
+      "kind": "bounded_differential_evolution_then_l_bfgs_b",
+      "seed": 260726,
+      "objective": "equal-link neutral-cloud median plus 0.35 times p75",
+      "parameters_frozen_after_cloud_fit": true,
+      "images_used_by_objective": false
+    }
+  },
+  "visibility": {
+    "frame_000001_projected_base_centers_px": {
+      "right": [1055.6687429801214, 2617.2276909752622],
+      "left": [48.8413275330372, 1940.0085178276818]
+    },
+    "visible_white_so101_target_side": "right",
+    "left_arm_independent_so101_silhouette": false,
+    "left_arm_verdict": "rejected_absent_independent_silhouette"
+  },
+  "heldout_silhouette": {
+    "frames": [1, 2, 3],
+    "images_used_by_cloud_objective": false,
+    "method": "half_resolution_grayscale_canny_directed_complete_link_contour_to_edge_distance",
+    "bodies": [
+      "right_shoulder",
+      "right_upper_arm",
+      "right_lower_arm",
+      "right_wrist",
+      "right_gripper"
+    ],
+    "baseline_distance_px_half_resolution": {
+      "median": 37.39379883,
+      "p75": 70.30078125,
+      "p90": 102.37632751
+    },
+    "candidate_distance_px_half_resolution": {
+      "median": 25.37829590,
+      "p75": 60.13485718,
+      "p90": 92.37796021
+    },
+    "median_improvement_fraction": 0.3213219232,
+    "limitations": [
+      "source images trained the 3DGS even though they were not used by the joint objective",
+      "directed contours do not model scene occlusion",
+      "frames outside the coherent early camera segment were not pooled"
+    ]
+  },
+  "verdict": {
+    "right_arm": "retained_pose_hypothesis_not_promoted",
+    "left_arm": "rejected_absent_independent_silhouette",
+    "reasons_not_promoted": [
+      "right shoulder neutral-cloud median worsens despite held-out contour improvement",
+      "shoulder_lift and wrist_flex terminate at their MuJoCo joint limits",
+      "the source 3DGS contains globally inconsistent camera segments and ghost geometry",
+      "no evaluator-owned measured joint or link landmarks validate the recovered angles"
+    ]
+  },
+  "authority": {
+    "metric_geometry": false,
+    "joint_calibration": false,
+    "collision_geometry": false,
+    "contact": false,
+    "actuator_or_load_path": false,
+    "task_consequence": false,
+    "physical_robot_control": false
+  }
+}
