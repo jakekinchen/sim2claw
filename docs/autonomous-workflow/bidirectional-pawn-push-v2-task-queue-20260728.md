@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_LIVE_REVIEW_CONTINUE`
+Status: `PAUSED_V04_EXECUTION_STOPPED_BEFORE_FIRST_ROW`
 
 Created: `2026-07-28`
 
@@ -158,7 +158,7 @@ denominators before any counted action is compiled.
 | V01 | `DONE` | Preregister a new camera-owned registration acquisition, board-plane metric model, fit/held-out split, and sealed-input rules. | Versioned contract declares visible board features, camera model inputs, gripper reference, fit targets, held-out targets, pixel/reprojection sanity gate, `<25 mm` metric gate, hashes, and recapture fallback before capture. | Contract `configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v1.json`, SHA-256 `f345d9ff55ed38b8509dac061af7d0ce7aeaefb59cb78f92ba4460b5dbe82024`. Four fit targets and four held-out targets are disjoint and prospectively frozen; v1 B7 reuse forbidden; C922 owns board/task; D405 depth omitted; normalized zero-distortion `3x4` DLT family and pixel/annotation/`<25 mm` gates fixed; held-out single-open and versioned recapture fallback fixed. Validation attempt 1 failed only on a mistyped C922-contract digest before freeze; corrected to the live digest. Attempt 2: `3 passed in 0.04s`. No capture or motion. |
 | V02 | `DONE` | Prove hover poses and visibility using CPU/fp64 simulation and static camera projections/images. | Every proposed target passes joint limits, self/table/board/pawn clearance, no-contact height, slow-path preview, C922 field of view, simultaneous gripper/board visibility, and guaranteed return/torque-off logic. Reviewer decision `CONTINUE`. No motion. | Route `configs/hardware/bidirectional_pawn_push_v2_registration_route_v1.json`, SHA-256 `b7464a34a6abe744d778323a7a017f5ab8f40d6f6556b7691f5944e1bbd52d8e`. Final receipt `runs/bidirectional-pawn-push-v2/20260728-v02-static-route-v2/evaluation.json`, SHA-256 `53c6b4dec93cae8f41e9bc24a106fcc0883d3c11d97c887aec3c630491bdbcf6`; deterministic reviewer `CONTINUE`, evidence anchor `100`, all `11/11` gates true. Fresh torque-off start matched the frozen rebase exactly. Source egress: `92` float64 rows, `4.55 s`, hash `9a3ccff7ba26e94f2cce2963480e33a2999b07efa16777edc73530a8fa28e142`. Capture/return: `1541` float64 rows, `77.0 s`, hash `6d05f2471ec0ca8f83beadbc9bbfcc4b6d8ae4c679198414fad600bf29a1dbdf`. Maximum slew `2.999531 deg/s`; minimum jaw clearance `66.282 mm` to any pawn and `93.975 mm` to board; C922 proxy minimum image margin `206.268 px`. All eight camera rays first hit the intended moving jaw `5.865-7.045 mm` before the registered midpoint, within the frozen `15 mm` surface-offset gate. No motion occurred; no camera opened, gateway was constructed, or attempt was counted. |
 | V03 | `DONE` | Capture the prospective fit and held-out registration observations through the reviewed gateway. | Cameras precede motion; only approved slow no-contact paths run; requested/mapped/sent and tracking receipts close; every planned target is captured; torque false on exit; input hashes freeze; no pawn contact. | Execution receipt `runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/execution_receipt.json`, SHA-256 `a1692a5b87d88b7b2c37151159660546d9104c9b3973de85f0801de0d9e793a3`, status `completed_no_contact_registration_capture`, proof class `physical_rgb_no_contact_registration_observation_only`. All exact `92 + 1541` requested/mapped/sent rows are byte-identical to the reviewed arrays; all eight scored holds pass; nine C922 sessions have zero drops; fit and sealed-heldout manifests hash to `933f121a60b741d5a555b865caccf8fedce1ea0b6accd0e007cd42f77eafa8a5` and `6fd932ddf33c2e5aae87680e141eb1a41f05feb19196eac2fd2343ad3f5a18d6`; final preflight proves torque false. No pawn contact or task attempt. |
-| V04 | `IN_PROGRESS` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Acquisition-v1 fit attempt 1 remains rejected before held-out: receipt `runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1/fit_receipt.json`, SHA-256 `9b6378fc32a3f22fc6c9c6379a86df2a96562b3c0207f07488494d68c13adedb`. Held-out open count remains `0`. Replacement acquisition v2 is prospectively frozen at `configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v2.json`, SHA-256 `b308ef3d24e37893e13c6b28c00f338374ee2a21d84a464c9ccec073bd0b5483`; route v2 SHA-256 `40460c83750f8ea35670498758a5ad5b0e52a31351c957106f37154df6546756`. Static receipt `runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/static-preview-v1/evaluation.json`, SHA-256 `37b73f61d8a1c2124989d42bac16b8fd532ee0f15c385798ac5feed2a6b597e5`, has deterministic reviewer `CONTINUE` and all `11/11` gates true. Capture packet v2 SHA-256 `f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41` binds the exact arrays, C922 identity/mount, one-use transaction, no-contact authority, stop rules, and torque-off cleanup. No camera, gateway, motion, pawn contact, held-out open, or task attempt occurred. |
+| V04 | `IN_PROGRESS` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Acquisition-v1 fit attempt 1 remains rejected before held-out: receipt `runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1/fit_receipt.json`, SHA-256 `9b6378fc32a3f22fc6c9c6379a86df2a96562b3c0207f07488494d68c13adedb`. Held-out open count remains `0`. Replacement acquisition v2 is prospectively frozen at `configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v2.json`, SHA-256 `b308ef3d24e37893e13c6b28c00f338374ee2a21d84a464c9ccec073bd0b5483`; route v2 SHA-256 `40460c83750f8ea35670498758a5ad5b0e52a31351c957106f37154df6546756`. Static receipt `runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/static-preview-v1/evaluation.json`, SHA-256 `37b73f61d8a1c2124989d42bac16b8fd532ee0f15c385798ac5feed2a6b597e5`, has deterministic reviewer `CONTINUE` and all `11/11` gates true. Capture packet v2 SHA-256 `f8ae7922fc8df145ec30af625ae587f36f98135c92b8b4cd1fa9e431b87b6d41` binds the exact arrays, C922 identity/mount, one-use transaction, no-contact authority, stop rules, and torque-off cleanup. Execution-v1 stopped safely before row zero was sent: receipt SHA-256 `d17d901f5a18ac7e7fccc4b1c3d45538f290e06d62736c040530648f07197e04`, `0/716 + 0/2596` rows, `physical_motion_commanded:false`, torque false. No pawn contact, held-out open, or task attempt occurred. |
 | V05 | `PENDING` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Pending. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
@@ -204,12 +204,13 @@ Current state:
   and exact no-contact route are frozen; the CPU/fp64 static reviewer returned
   `CONTINUE`. Commit `f205bcbb097813a0c9050624e3895c9f2065aecb`
   binds and publishes those exact inputs. Capture packet v2 is now frozen but
-  camera open, gateway construction, and robot motion are admitted only for
-  its one reviewed no-contact transaction: commit `9decefa` binds the rebase
-  repair and fresh deterministic review SHA-256
+  commit `9decefa` binds the rebase repair and fresh deterministic review
+  SHA-256
   `7dc3e08ff3d0cbea2bdb6ed640aaa5792abea2b0d826967c04a3bae195c00868`
-  returned `CONTINUE`. A final immediate identity/process/torque recheck is
-  still mandatory.
+  returned `CONTINUE`. Execution-v1 then stopped before sending its first row
+  because the exact target would require forbidden rate limiting, clamping,
+  or correction. Torque-off cleanup passed. The owner has paused V04; no
+  retry, new milestone, camera, gateway, or motion is authorized.
 - Counted actions do not exist.
 
 Completed:
@@ -468,6 +469,16 @@ Verification evidence:
   Fresh follower start remained within `0.118765 deg` of the frozen anchor,
   torque was false, and the exact array/action hashes matched. The review
   opened no camera or gateway and issued no motion.
+- Execution-v1 receipt SHA-256:
+  `d17d901f5a18ac7e7fccc4b1c3d45538f290e06d62736c040530648f07197e04`.
+  Status is `stopped_safely`; exact error is `Precompiled exact target would
+  require rate limiting, clamping, or correction; the current sample was not
+  sent.` The camera started before gateway open, the gateway opened, but
+  `physical_motion_commanded:false`, source egress executed `0/716` rows,
+  capture/return executed `0/2596` rows, no command was sent, camera drops
+  were zero, final preflight passed with
+  `physical_follower_torque_enabled:false` and
+  `device_configuration_rewritten:false`.
 
 Remaining:
 
@@ -485,11 +496,9 @@ Blockers:
 
 Next action:
 
-- Commit the passed live-review transition in the queue and graph, then
-  immediately recheck HEAD/origin, Git lock, C922/gateway/process ownership,
-  packet/review/action hashes, and torque false. If unchanged, execute the one
-  reviewed no-contact replacement registration transaction. Do not open
-  acquisition-v1 held-out.
+- Stop after recording, testing, committing, and pushing this no-motion
+  execution result. Do not retry execution or start another milestone while
+  the owner coordinates PR #16.
 
 Attempt ledger:
 
@@ -1073,3 +1082,42 @@ compact campaign context and does not widen its global authority flags; the
 source-bound packet/review pair is the reviewed transaction authority.
 Held-out open count remains `0`, counted attempts remain `0/10`, and V04
 remains the sole active card.
+
+### V04 execution-v1 stopped safely before first row — 2026-07-28
+
+The execution command began before the owner's merge-pause message arrived.
+Its immediate recheck found local/remote HEAD
+`17c055d274f421bb011bcddb93810e209ed5b6b2`, no Git lock, no existing
+execution directory, no C922 recorder/capture process, no follower-device
+owner, and torque false. Packet, review, source-egress NPY, and
+capture/return NPY hashes matched their frozen values.
+
+The C922 recorder started before gateway open. The gateway then rejected the
+very first frozen source-egress row before sending it:
+
+```text
+Precompiled exact target would require rate limiting, clamping, or correction;
+the current sample was not sent.
+```
+
+Immutable receipt:
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/execution-v1/execution_receipt.json`,
+SHA-256
+`d17d901f5a18ac7e7fccc4b1c3d45538f290e06d62736c040530648f07197e04`.
+Its exact outcome is:
+
+- status `stopped_safely`;
+- gateway opened, camera preceded it, zero camera drops;
+- `physical_motion_commanded:false`;
+- source egress `0/716` rows, executed action hash `null`;
+- capture/return `0/2596` rows, executed action hash `null`;
+- no command sent, no pawn or board contact;
+- final preflight passed, no configuration rewrite, torque false;
+- held-out open count `0`;
+- registration transaction produced no observations; and
+- counted task attempts remain `0/10`.
+
+This is a no-motion setup rejection, not a physical task attempt, registration
+success, or transfer result. The owner ordered an immediate merge pause after
+recording it. V04 remains the sole `IN_PROGRESS` card, no new milestone is
+started, and no execution retry is authorized.
