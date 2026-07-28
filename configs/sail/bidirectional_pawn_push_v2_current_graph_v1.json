@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T09:01:00-05:00",
+  "generated_at": "2026-07-28T09:12:00-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "c3e751290fd3f9b62e1ae71822aebeedeadc9f99ab9b7404baef51f50c774339",
+      "sha256": "24d757a676d36586e7ee5d0b4029d3406113ae6cdf20d18664f353a9acc09192",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -455,6 +455,16 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal.v3",
         "status": "preregistered_orchestration_compatibility_correction_before_v3_execution",
         "proof_class": "prospective_cpu_fp64_sim_only_rehearsal_v3_orchestration_compatibility"
+      }
+    },
+    "v05_sim_rehearsal_v3_failure": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v3_finalization_failure.json",
+      "sha256": "8adb33da4967fc752fc6d867832db1653f99b775e7673aa062a92df446d664f8",
+      "proof_class": "cpu_fp64_sim_only_rehearsal_receipt_finalization_failure",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal_finalization_failure.v1",
+        "status": "failed_closed_after_grid_before_public_receipt_binding",
+        "proof_class": "cpu_fp64_sim_only_rehearsal_receipt_finalization_failure"
       }
     },
     "simulator_candidate": {
@@ -1265,6 +1275,20 @@
       }
     },
     {
+      "id": "counterexample:v05-sim-rehearsal-v3-path-finalization",
+      "type": "counterexample",
+      "label": "V05 rehearsal-v3 relative-path finalization failure",
+      "status": "failed_closed_versioned_v4_path_correction_active",
+      "source_binding": "v05_sim_rehearsal_v3_failure",
+      "data": {
+        "all_72_cells_simulated": true,
+        "public_v3_receipt_written": false,
+        "case_admitted": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -1743,6 +1767,16 @@
       }
     },
     {
+      "source": "counterexample:v05-sim-rehearsal-v3-path-finalization",
+      "type": "counterexample-to",
+      "target": "checkpoint:v05-sim-rehearsal-v3-frozen",
+      "metadata": {
+        "failed_after_grid_before_public_receipt": true,
+        "rejected_compatibility_receipt_only": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -2102,14 +2136,23 @@
       "node_ids_added": [
         "checkpoint:v05-sim-rehearsal-v3-frozen"
       ]
+    },
+    {
+      "revision": 35,
+      "event_id": "V05_SIM_REHEARSAL_V3_FINALIZATION_FAILURE",
+      "status": "failed_closed_versioned_v4_path_correction_active",
+      "source_binding": "v05_sim_rehearsal_v3_failure",
+      "node_ids_added": [
+        "counterexample:v05-sim-rehearsal-v3-path-finalization"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-sim-rehearsal-v3-frozen",
+    "node_id": "counterexample:v05-sim-rehearsal-v3-path-finalization",
     "milestone_id": "V05",
-    "status": "preregistered_identical_grid_single_execution_active",
-    "queue_status": "ACTIVE_V05_FROZEN_REHEARSAL_V3_SINGLE_EXECUTION",
-    "resume_action": "execute_frozen_rehearsal_v3_identical_grid_once",
+    "status": "failed_closed_versioned_v4_path_correction_active",
+    "queue_status": "ACTIVE_V05_VERSIONED_REHEARSAL_V4_PATH_CORRECTION",
+    "resume_action": "freeze_v4_public_path_resolution_correction",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

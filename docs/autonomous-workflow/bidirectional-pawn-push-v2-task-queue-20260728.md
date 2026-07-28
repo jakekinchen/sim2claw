@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_FROZEN_REHEARSAL_V3_SINGLE_EXECUTION`
+Status: `ACTIVE_V05_VERSIONED_REHEARSAL_V4_PATH_CORRECTION`
 
 Created: `2026-07-28`
 
@@ -1958,3 +1958,27 @@ all six explicit static checks, one grid result, zero physical motion, zero
 physical attempts, and no retained compatibility file. V3 focused tests pass
 `2/2`. The exact bound v2 72-cell grid may now execute once. No physical
 authority is granted.
+
+### V05 rehearsal-v3 finalization failure — 2026-07-28
+
+V3 simulated all 72 cells, then failed closed before writing a public v3
+receipt because its CLI received a repository-relative contract path and the
+finalizer called `relative_to(REPO_ROOT)` without resolving it. The immutable
+failure binding is
+`configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v3_finalization_failure.json`.
+
+The intermediate compatibility receipt SHA-256 is
+`21b5dd4d0caf0cd51337f1dd8f480724a469c969b31650d7ee97a61cfef11653`.
+It is a rejected diagnostic only because it has v2 schema and binds a deleted
+temporary contract. It is not an admissible outcome or v3 receipt. Diagnostic
+results were two recommendable REAL_TO_SIM families (`A2_A3`, `B1_B2`) and
+one SIM_TO_REAL family (`E2_E3`), so the unchanged two-per-direction gate
+would still reject.
+
+No case is admitted, and no physical motion or task attempt occurred. V3 will
+not be mutated or rerun. The only authorized next action is a prospective v4
+that resolves public contract/output paths before repo-relative binding and
+changes nothing else. Absolute and relative CLI tests must reach a final
+receipt, exercise full postprocessing, and prove every referenced retained
+file resolves after temporary compatibility cleanup before v4 is committed,
+pushed, and run once.

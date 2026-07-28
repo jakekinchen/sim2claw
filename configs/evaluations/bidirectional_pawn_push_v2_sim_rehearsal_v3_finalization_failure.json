@@ -1,0 +1,50 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal_finalization_failure.v1",
+  "status": "failed_closed_after_grid_before_public_receipt_binding",
+  "proof_class": "cpu_fp64_sim_only_rehearsal_receipt_finalization_failure",
+  "failed_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v3.json",
+    "sha256": "493184be895022226dcf03a611a14a535f268282b10db2b7702d33f9f074d014"
+  },
+  "failed_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_sim_rehearsal_v3.py",
+    "sha256": "997ae5dddf193a7a8f84a4aee97dcf503f59e4b7599042a858707603cd6a1e82"
+  },
+  "rejected_compatibility_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-sim-rehearsal-v3/receipt.json",
+    "sha256": "21b5dd4d0caf0cd51337f1dd8f480724a469c969b31650d7ee97a61cfef11653",
+    "admissible": false,
+    "reason": "receipt binds a deleted temporary compatibility contract and has v2 schema"
+  },
+  "failure": {
+    "exception_type": "ValueError",
+    "location": "src/sim2claw/bidirectional_pawn_push_v2_sim_rehearsal_v3.py:88",
+    "cause": "relative public CLI contract path was passed to Path.relative_to without first resolving against repository root",
+    "all_72_cells_simulated": true,
+    "public_v3_receipt_written": false,
+    "case_admitted": false
+  },
+  "rejected_diagnostic_only": {
+    "passing_case_ids": [
+      "R2S_A2_A3",
+      "R2S_B1_B2",
+      "S2R_E2_E3",
+      "DIAGNOSTIC_C2_C3"
+    ],
+    "direction_gate": {
+      "REAL_TO_SIM": true,
+      "SIM_TO_REAL": false
+    },
+    "eligible_feasible_case_count": {
+      "REAL_TO_SIM": 2,
+      "SIM_TO_REAL": 1
+    }
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "next_action": "prospectively version a path-resolution-only v4; do not mutate or rerun v3"
+}
