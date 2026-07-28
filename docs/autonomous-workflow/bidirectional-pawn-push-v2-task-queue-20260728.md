@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_V4_TRUE_TIME_PACKET_FREEZE`
+Status: `ACTIVE_V04_V4_MOTION_FREE_LIVE_REVIEW`
 
 Created: `2026-07-28`
 
@@ -1540,3 +1540,27 @@ Focused route and true-time capture tests pass `15/15`. No camera, gateway,
 or physical motion was used. The only active action is to bind the exact
 arrays and true-time contract into a new packet, then run a fresh motion-free
 live review before any possible V4 execution.
+
+### V04 acquisition-v4 exact packet freeze — 2026-07-28
+
+Packet
+`configs/hardware/bidirectional_pawn_push_v2_registration_capture_v5.json`,
+SHA-256
+`5ba5bc38f7b72d670da6dce3b7b193f31a4750bc2c63b25428284be46e075db5`,
+binds the fresh acquisition contract, static `CONTINUE` receipt,
+non-promoting diagnostic lineage, exact C922 identity/mode/mount, one-use
+registration transaction, and exact `2229c16f...` / `80d558d3...` arrays.
+
+The packet makes monotonic host time authoritative: each camera transition
+resets the scheduler deadline, the first `0.5 s` is unscored, the scored
+window must remain inside the unchanged `2 deg` gate for at least `2.0 s`,
+and the hold fails closed after at most `71` rows or `3.6 s`. Exact requested,
+mapped, and sent bytes remain required. Pawn, board, and table contact,
+controller changes, task action, policy evidence, and transfer claims remain
+forbidden. Every exit requires torque-off and a fresh torque-off postflight.
+
+Focused capture tests pass `10/10`. Packet construction opened no camera or
+gateway and commanded no motion. The only active action is a fresh
+motion-free live review of device identity, current start, exact arrays,
+true-time binding, process/serial ownership, configuration integrity, and
+torque-off state.

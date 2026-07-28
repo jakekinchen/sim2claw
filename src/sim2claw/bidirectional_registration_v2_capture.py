@@ -193,7 +193,10 @@ def _validated_start_bridge(
     interval = 1.0 / float(safety["sample_hz"])
     _require(
         bridge.get("bridge_id")
-        == "v04_acquisition_v2_time_only_pre_row_bridge_v1"
+        in {
+            "v04_acquisition_v2_time_only_pre_row_bridge_v1",
+            "v04_acquisition_v4_true_time_pre_row_bridge_v1",
+        }
         and bridge.get("pattern") == "time_only_pre_row_bridge"
         and float(bridge.get("duration_seconds", -1.0)) == interval
         and int(bridge.get("command_count", -1)) == 0

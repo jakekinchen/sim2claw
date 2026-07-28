@@ -37,6 +37,11 @@ EMPIRICAL_V3_PACKET = (
     / "configs/hardware/"
     "bidirectional_pawn_push_v2_registration_capture_v4.json"
 )
+TRUE_TIME_V4_PACKET = (
+    ROOT
+    / "configs/hardware/"
+    "bidirectional_pawn_push_v2_registration_capture_v5.json"
+)
 START = [
     -11.164835164835164,
     -71.38461538461539,
@@ -59,6 +64,14 @@ EMPIRICAL_V3_START = [
     99.20879120879121,
     -93.84615384615384,
     -125.14285714285714,
+    2.375296912114014,
+]
+TRUE_TIME_V4_START = [
+    7.208791208791209,
+    -85.53846153846153,
+    99.47252747252747,
+    -20.087912087912088,
+    -103.34065934065934,
     2.375296912114014,
 ]
 
@@ -106,6 +119,12 @@ def _empirical_v3_preflight() -> dict[str, object]:
     result["follower_start_degrees"] = [
         value + 0.1 for value in EMPIRICAL_V3_START
     ]
+    return result
+
+
+def _true_time_v4_preflight() -> dict[str, object]:
+    result = _preflight()
+    result["follower_start_degrees"] = TRUE_TIME_V4_START
     return result
 
 
@@ -387,6 +406,44 @@ def test_empirical_v3_review_binds_exact_new_arrays_without_authority(
     assert result["exact_setup_arrays"]["source_egress"]["shape"] == [715, 6]
     assert result["exact_setup_arrays"]["capture_and_return"]["shape"] == [
         1771,
+        6,
+    ]
+    assert result["physical_motion_commanded"] is False
+    assert result["camera_opened"] is False
+    assert result["gateway_constructed"] is False
+
+
+def test_true_time_v4_review_binds_fresh_split_exact_arrays_and_time_gate(
+    tmp_path: Path,
+) -> None:
+    result = review_capture_plan(
+        packet_path=TRUE_TIME_V4_PACKET,
+        review_path=tmp_path / "review-v5.json",
+        preflight_fn=_true_time_v4_preflight,
+    )
+
+    assert result["reviewer"]["decision"] == "CONTINUE"
+    assert all(result["gates"].values())
+    assert result["gates"]["true_time_hold_gate_bound"]
+    assert len(result["capture_slices"]) == 10
+    assert all(row["sample_count"] == 71 for row in result["capture_slices"])
+    assert result["exact_setup_arrays"]["source_egress"] == {
+        "path": str(
+            ROOT
+            / "runs/bidirectional-pawn-push-v2/"
+            "20260728-v04-registration-recapture-v4/static-review-v4/"
+            "source_egress.npy"
+        ),
+        "npy_sha256": (
+            "2ab8457d153781d5f550cc353c2d0a00533b50aa636f28a9c66fab3b9981e170"
+        ),
+        "action_sha256": (
+            "2229c16f28aa09bde94b021ff5f9cbde44087d26da4b844cca7b521bd347d424"
+        ),
+        "shape": [123, 6],
+    }
+    assert result["exact_setup_arrays"]["capture_and_return"]["shape"] == [
+        1274,
         6,
     ]
     assert result["physical_motion_commanded"] is False
