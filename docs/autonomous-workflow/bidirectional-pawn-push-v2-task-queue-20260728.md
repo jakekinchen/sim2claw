@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_VERSIONED_JAW_GATE_REHEARSAL_CORRECTION`
+Status: `ACTIVE_V05_FROZEN_REHEARSAL_V2_SINGLE_EXECUTION`
 
 Created: `2026-07-28`
 
@@ -1880,3 +1880,36 @@ five arm joints, while requiring the jaw to equal the declared closed
 lower-stop target within an explicit tolerance and remain within the
 simulator/hardware bounds. The correction must be committed and pushed before
 one rerun. Physical authority remains false.
+
+### V05 rehearsal-v2 prospective correction freeze — 2026-07-28
+
+The versioned contract is frozen at
+`configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v2.json`,
+SHA-256
+`d57fc89a5874d630536ae6f981b78988c6da40bfb8934fee78ab2cfc02ac847f`.
+Its evaluator is
+`src/sim2claw/bidirectional_pawn_push_v2_sim_rehearsal_v2.py`, SHA-256
+`69ce7fe8d16dd3371bf4ce03c7c14d509da92f5e1ca31aa9dd91d6682810de7c`;
+the unchanged v1 base evaluator remains bound at
+`9be8be092653ea923a6e987e52f3cc4bd7697ef93d38d891681b379f1953e8c9`.
+Focused equivalence and binding tests pass `4/4`.
+
+The contract mechanically proves equality to rehearsal-v1 for all eight
+cases, nine height/stroke cells per case, five robustness variants, action
+synthesis target and timing, MuJoCo scene and numeric mode, accepted
+registration, contact/progress/exclusion/collision/camera rules, selection
+rule, and false authority. The unchanged `2 deg` margin now applies only to
+the five arm joints. The jaw has three explicit checks:
+
+- every action row equals the unchanged `-0.174533 rad` closed target within
+  `1e-12 rad`;
+- the target lies within the compiled MuJoCo jaw bounds with only `5e-6 rad`
+  source-rounding tolerance; and
+- the target lies within the candidate manifest's frozen physical
+  `0..100 percent` jaw mapping with the same `5e-6 rad` tolerance.
+
+The tolerance covers the frozen transform's three-microradian serialized
+offset difference (`-0.174530` mapped physical lower stop versus
+`-0.174533` MuJoCo lower stop); it does not change any action value, bound,
+grid cell, or task gate. Rehearsal-v2 may now execute this identical 72-cell
+grid exactly once. No physical authority is granted.

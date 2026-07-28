@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T08:31:00-05:00",
+  "generated_at": "2026-07-28T08:42:00-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5",
+      "sha256": "1fa1f290102daf55010339896e124bff937fcc985d2d0100a734704a2a7df457",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -425,6 +425,16 @@
         "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal",
         "physical_motion": false,
         "physical_task_attempts": 0
+      }
+    },
+    "v05_sim_rehearsal_v2_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v2.json",
+      "sha256": "d57fc89a5874d630536ae6f981b78988c6da40bfb8934fee78ab2cfc02ac847f",
+      "proof_class": "prospective_cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal_arm_margin_jaw_stop_v2",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal.v2",
+        "status": "preregistered_versioned_joint_margin_correction_before_v2_execution",
+        "proof_class": "prospective_cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal_arm_margin_jaw_stop_v2"
       }
     },
     "simulator_candidate": {
@@ -1186,6 +1196,25 @@
       }
     },
     {
+      "id": "checkpoint:v05-sim-rehearsal-v2-frozen",
+      "type": "checkpoint",
+      "label": "V05 rehearsal-v2 arm-margin and jaw-stop correction frozen",
+      "status": "preregistered_identical_grid_single_execution_active",
+      "source_binding": "v05_sim_rehearsal_v2_contract",
+      "data": {
+        "contract_sha256": "d57fc89a5874d630536ae6f981b78988c6da40bfb8934fee78ab2cfc02ac847f",
+        "implementation_sha256": "69ce7fe8d16dd3371bf4ce03c7c14d509da92f5e1ca31aa9dd91d6682810de7c",
+        "base_implementation_sha256": "9be8be092653ea923a6e987e52f3cc4bd7697ef93d38d891681b379f1953e8c9",
+        "identical_grid": true,
+        "arm_margin_rad": 0.03490658503988659,
+        "closed_jaw_target_rad": -0.174533,
+        "closed_jaw_target_tolerance_rad": 1e-12,
+        "jaw_bounds_roundoff_tolerance_rad": 0.000005,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -1632,6 +1661,17 @@
       }
     },
     {
+      "source": "checkpoint:v05-sim-rehearsal-v2-frozen",
+      "type": "generated-from",
+      "target": "verdict:v05-sim-rehearsal-v1-reject",
+      "metadata": {
+        "versioned_correction": true,
+        "identical_grid": true,
+        "only_arm_margin_jaw_stop_semantics_changed": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -1964,14 +2004,23 @@
       "node_ids_added": [
         "verdict:v05-sim-rehearsal-v1-reject"
       ]
+    },
+    {
+      "revision": 32,
+      "event_id": "V05_SIM_REHEARSAL_V2_FREEZE",
+      "status": "preregistered_identical_grid_single_execution_active",
+      "source_binding": "v05_sim_rehearsal_v2_contract",
+      "node_ids_added": [
+        "checkpoint:v05-sim-rehearsal-v2-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:v05-sim-rehearsal-v1-reject",
+    "node_id": "checkpoint:v05-sim-rehearsal-v2-frozen",
     "milestone_id": "V05",
-    "status": "immutable_terminal_negative_versioned_gate_correction_active",
-    "queue_status": "ACTIVE_V05_VERSIONED_JAW_GATE_REHEARSAL_CORRECTION",
-    "resume_action": "freeze_versioned_arm_margin_and_closed_jaw_tolerance_contract",
+    "status": "preregistered_identical_grid_single_execution_active",
+    "queue_status": "ACTIVE_V05_FROZEN_REHEARSAL_V2_SINGLE_EXECUTION",
+    "resume_action": "execute_frozen_rehearsal_v2_identical_grid_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

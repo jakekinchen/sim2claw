@@ -31,18 +31,18 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V05"
     assert tracked["active_pointer"] == {
-        "node_id": "verdict:v05-sim-rehearsal-v1-reject",
+        "node_id": "checkpoint:v05-sim-rehearsal-v2-frozen",
         "milestone_id": "V05",
-        "status": "immutable_terminal_negative_versioned_gate_correction_active",
-        "queue_status": "ACTIVE_V05_VERSIONED_JAW_GATE_REHEARSAL_CORRECTION",
-        "resume_action": "freeze_versioned_arm_margin_and_closed_jaw_tolerance_contract",
+        "status": "preregistered_identical_grid_single_execution_active",
+        "queue_status": "ACTIVE_V05_FROZEN_REHEARSAL_V2_SINGLE_EXECUTION",
+        "resume_action": "execute_frozen_rehearsal_v2_identical_grid_once",
         "resume_authorized": True,
         "heldout_open_count": 1,
         "cumulative_manifest_read_count": 2,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(32)
+        range(33)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -53,10 +53,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_SIM_REHEARSAL_V1_REJECT"
+        == "V05_SIM_REHEARSAL_V2_FREEZE"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "verdict:v05-sim-rehearsal-v1-reject"
+        "checkpoint:v05-sim-rehearsal-v2-frozen"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]
