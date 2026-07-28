@@ -15,6 +15,10 @@ SUCCESSOR_AUTHORIZATION = ROOT / (
     "bidirectional_pawn_push_v2_multistart_approach_"
     "successor_authorization_v1.json"
 )
+STATIC_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_multistart_approach_static_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -84,3 +88,55 @@ def test_manager_authorization_is_static_design_only_and_source_bound() -> None:
         for key, value in authorization["authority"].items()
         if key != "static_design"
     )
+
+
+def test_multistart_approach_static_contract_is_finite_and_fail_closed() -> None:
+    contract = json.loads(STATIC_CONTRACT.read_text(encoding="utf-8"))
+    for key in (
+        "authorization",
+        "standing_delegation",
+        "predecessor_static_receipt",
+        "gateway_admissible_route",
+        "gateway_admissible_pose_family",
+        "physical_no_contact_route_receipt",
+        "rehearsal_contract",
+        "temporal_plan",
+        "geometry_source",
+        "scene_implementation",
+        "articulated_robot_model",
+        "candidate_manifest",
+        "registration_candidate",
+        "implementation",
+    ):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    grid = contract["parameter_grid"]
+    assert len(grid["setup_branches"]) == 3
+    assert grid["approach_lateral_offsets_m"] == [-0.035, 0.0, 0.035]
+    assert grid["cells_per_family"] == 9
+    assert grid["maximum_total_cells"] == 44 * 9
+    assert grid["finite_and_nonexpandable_after_freeze"] is True
+    assert contract["endpoint_geometry"] == {
+        "contact_offset_m": 0.022,
+        "contact_height_m": 0.03,
+        "stroke_m": 0.09,
+        "precontact_clearance_height_above_pawn_base_m": 0.06,
+        "inside_v05_tk_bounds": True,
+        "static_only_subset_rule": (
+            "largest offset and height plus shortest stroke were the uniquely "
+            "selected geometry of both V05-TW statically safe family winners; "
+            "this uses no dynamic consequence and minimizes the new successor "
+            "to the alternate-start, IK-branch, and approach mechanism"
+        ),
+    }
+    assert contract["start_envelope"]["teleport_forbidden"] is True
+    assert contract["selection"]["selected_family_count"] == 4
+    assert (
+        contract["selection"]["minimum_distinct_families_per_direction"]
+        == 2
+    )
+    assert contract["selection"]["dynamic_outcome_used"] is False
+    assert contract["authority"]["model_loading"] is True
+    assert contract["authority"]["static_simulation"] is True
+    assert contract["authority"]["dynamic_replay"] is False
+    assert contract["authority"]["physical_motion"] is False

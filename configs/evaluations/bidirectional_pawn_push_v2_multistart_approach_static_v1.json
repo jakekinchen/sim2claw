@@ -1,0 +1,264 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_multistart_approach_static.v1",
+  "enumeration_id": "bidirectional-pawn-push-v2-multistart-approach-static-v1",
+  "status": "preregistered_before_model_loading_static_enumeration_or_action_generation",
+  "proof_class": "prospective_cpu_fp64_static_alternate_start_multistart_ik_approach_action_freeze",
+  "authorization": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_multistart_approach_successor_authorization_v1.json",
+    "sha256": "e5df5cf6d19df61e795f9a9bb612d3992f91cdf7af81eac8b4a9a339e7d9de85"
+  },
+  "standing_delegation": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json",
+    "sha256": "8e59b7385ca14083d6ddd571ecc13fbec2f884cba41b3583ccfb317737e81ed5"
+  },
+  "predecessor_static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tw-wrist-path-v1/static-freeze-v1/receipt.json",
+    "sha256": "8d32d1138dc0d250cf75599e1b855aa586dbf27bcfa425d5e90e9d737d0411e6"
+  },
+  "gateway_admissible_route": {
+    "path": "configs/hardware/bidirectional_pawn_push_v2_registration_route_v4.json",
+    "sha256": "a18e263a380f091ae98c84c77d7da5e0bfe4a4210dada7ce7d5012113c1b4d0b"
+  },
+  "gateway_admissible_pose_family": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v4.json",
+    "sha256": "605f8973553e14d488dd43a5aab51e2b6915215553033878aba6a2577d0e01da"
+  },
+  "physical_no_contact_route_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/execution_receipt.json",
+    "sha256": "7fee16d78479c467b9084e49bfc8520fdae5aef04d00dc72bcd3be9f49515d44"
+  },
+  "rehearsal_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v2.json",
+    "sha256": "d57fc89a5874d630536ae6f981b78988c6da40bfb8934fee78ab2cfc02ac847f"
+  },
+  "temporal_plan": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json",
+    "sha256": "5e8058e0bc46d60879d962a1e2ee9e8161a12197dfe9aee3faab73f7b1f23e9e"
+  },
+  "geometry_source": {
+    "path": "configs/polycam/8873B66C-774C-48B1-B51D-338645867009.json",
+    "sha256": "0dbe0c95fe50f84a8ff8e60f9727f7123c15c921ace55a0460b49ffa4c34dc05"
+  },
+  "scene_implementation": {
+    "path": "src/sim2claw/scene.py",
+    "sha256": "4b7dd7b251c87580505a40164117cc0999f36960244a5c66c2065165afcf3e46"
+  },
+  "articulated_robot_model": {
+    "path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+    "sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+  },
+  "candidate_manifest": {
+    "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+  },
+  "registration_candidate": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+    "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_multistart_approach_static.py",
+    "sha256": "191a60be161a2bb4c6b842785cfc91e7dc5ac46c2daeb28d12b197af92165ff7"
+  },
+  "quarantine": {
+    "case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3"
+    ],
+    "exact_count": 4,
+    "only_permitted_effect": "exclude before static cell generation",
+    "dynamic_values_read_by_implementation": false
+  },
+  "family_grid": {
+    "layout_id": "two_sided_sparse_pawns_rows_1_2_7_8_v1",
+    "layout_semantics": "unchanged current physical sparse reset layout",
+    "family_semantics": "one distinct selected pawn source-to-empty-orthogonal-destination route",
+    "ordering": "source rank then file, destination rank then file",
+    "excluded_source_squares": [
+      "c2"
+    ],
+    "expected_prequarantine_family_count": 48,
+    "expected_postquarantine_family_count": 44,
+    "transformed_layouts": false,
+    "human_repositioning_required": false
+  },
+  "parameter_grid": {
+    "setup_branches": [
+      {
+        "branch_id": "v4_fit_panm11_liftm87",
+        "physical_degrees_percent": [
+          -11.0,
+          -87.0,
+          99.47252747252747,
+          -20.0,
+          -102.81318681318682,
+          0.09530228845650651
+        ],
+        "demonstrated_arm_source": "v2r4-fit-panm11-liftm87",
+        "demonstrated_no_contact": true
+      },
+      {
+        "branch_id": "v4_fit_panm20_liftm90",
+        "physical_degrees_percent": [
+          -20.0,
+          -90.0,
+          99.47252747252747,
+          -20.0,
+          -102.81318681318682,
+          0.09530228845650651
+        ],
+        "demonstrated_arm_source": "v2r4-fit-panm20-liftm90",
+        "demonstrated_no_contact": true
+      },
+      {
+        "branch_id": "v4_fit_panp07_liftm90",
+        "physical_degrees_percent": [
+          7.0,
+          -90.0,
+          99.47252747252747,
+          -20.0,
+          -102.81318681318682,
+          0.09530228845650651
+        ],
+        "demonstrated_arm_source": "v2r4-fit-panp07-liftm90",
+        "demonstrated_no_contact": true
+      }
+    ],
+    "approach_lateral_offsets_m": [
+      -0.035,
+      0.0,
+      0.035
+    ],
+    "setup_branch_count": 3,
+    "approach_azimuth_count": 3,
+    "cells_per_family": 9,
+    "maximum_total_cells": 396,
+    "finite_and_nonexpandable_after_freeze": true
+  },
+  "endpoint_geometry": {
+    "contact_offset_m": 0.022,
+    "contact_height_m": 0.03,
+    "stroke_m": 0.09,
+    "precontact_clearance_height_above_pawn_base_m": 0.06,
+    "inside_v05_tk_bounds": true,
+    "static_only_subset_rule": "largest offset and height plus shortest stroke were the uniquely selected geometry of both V05-TW statically safe family winners; this uses no dynamic consequence and minimizes the new successor to the alternate-start, IK-branch, and approach mechanism"
+  },
+  "geometry_derivation": {
+    "detailed_pawn_max_body_radius_m": 0.0138,
+    "fixed_jaw_collision_half_width_m": 0.015,
+    "existing_grid_quantum_m": 0.003,
+    "lateral_clearance_unrounded_m": 0.0348,
+    "lateral_clearance_m": 0.035,
+    "lateral_clearance_rule": "13.8 mm pawn body radius plus 15 mm fixed-jaw collision half-width plus two 3 mm grid quanta, conservatively rounded upward from 34.8 mm to 35 mm",
+    "approach_azimuth_semantics": "at 60 mm above pawn base, approach the overhead contact point from minus lateral, direct, or plus lateral relative to the push direction; endpoint geometry is unchanged",
+    "setup_branch_rule": "three disjoint arm postures physically completed without contact in the accepted V4 registration route, spanning the demonstrated pan and lift interval and converted only through the already-bound provisional joint transform",
+    "dynamic_consequence_used": false
+  },
+  "start_envelope": {
+    "source_anchor_degrees_percent": [
+      7.208791208791209,
+      -85.53846153846153,
+      99.47252747252747,
+      -20.087912087912088,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "maximum_source_body_delta_degrees": 1e-09,
+    "maximum_source_gripper_delta_percent": 10.0,
+    "exact_jaw_first_row_gripper_delta_percent": 2.2799946236575073,
+    "setup_starts_at_source_arm_and_exact_jaw": true,
+    "setup_is_included_in_action_bytes": true,
+    "teleport_forbidden": true
+  },
+  "action_identity": {
+    "source_physical_degrees_percent": [
+      7.208791208791209,
+      -85.53846153846153,
+      99.47252747252747,
+      -20.087912087912088,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "closed_jaw_rad": -0.1727003294848389,
+    "sample_hz": 40.0,
+    "setup_joint_speed_physical_units_s": 3.0,
+    "cartesian_speed_m_s": 0.03,
+    "maximum_cartesian_waypoint_spacing_m": 0.01,
+    "path_shape": "source arm plus exact jaw, deterministic joint-space setup to demonstrated branch, deterministic joint-space connection to solved lateral clearance, lateral overhead approach, vertical descent, and one straight push",
+    "dtype": "little_endian_float64",
+    "requested_sent_byte_identical": true,
+    "no_clipping_smoothing_posthoc_retiming_offset_repair_assistance_or_rate_limit": true
+  },
+  "static_gates": {
+    "maximum_ik_residual_m": 0.003,
+    "minimum_arm_joint_limit_margin_rad": 0.03490658503988659,
+    "jaw_target_tolerance_rad": 1e-12,
+    "source_start_envelope_required": true,
+    "selected_static_jaw_contact_required": true,
+    "new_disallowed_robot_collision_count": 0,
+    "calibrated_gateway_bounds_required": true,
+    "reviewed_gateway_rates_required": true,
+    "requested_sent_identity_required": true
+  },
+  "camera_gate": {
+    "image_size_px": [
+      640,
+      480
+    ],
+    "minimum_margin_px": 20.0,
+    "source_and_intended_terminal_required": true
+  },
+  "selection": {
+    "one_winner_per_statically_eligible_family": true,
+    "cell_order": [
+      "largest minimum arm-joint margin",
+      "largest fractional gateway bound margin",
+      "largest fractional gateway rate margin",
+      "largest camera margin",
+      "smallest IK residual",
+      "setup branch grid index",
+      "approach azimuth grid index",
+      "case id"
+    ],
+    "family_order": "same frozen static-only safety order as cell selection",
+    "selected_family_count": 4,
+    "direction_assignment": "alternate selected families REAL_TO_SIM then SIM_TO_REAL",
+    "minimum_distinct_families_per_direction": 2,
+    "fewer_than_four_eligible_families": "terminal static reject without dynamic replay",
+    "grid_expansion_after_result": false,
+    "dynamic_outcome_used": false
+  },
+  "unchanged_dynamic_future_gate": {
+    "canonical_direct_target": true,
+    "diagnostic_zoh_delay_seconds": 0.11,
+    "all_five_robustness_variants_required": true,
+    "minimum_signed_progress_mm": 36.025,
+    "selected_contact_required": true,
+    "excluded_contact_count": 0,
+    "maximum_excluded_displacement_mm": 1.0,
+    "new_nonselected_jaw_collision_count": 0,
+    "minimum_camera_margin_px": 20.0,
+    "separate_requested_sent_applied_traces_and_timestamps": true
+  },
+  "simulation": {
+    "engine": "MuJoCo",
+    "numeric_mode": "CPU/fp64",
+    "timestep_s": 0.001
+  },
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective CPU/fp64 static-only alternate-start, multi-IK, and approach-path grid with setup included in action identity and deterministic four-family action freeze. No dynamic consequence, calibrated plant, physical packet, promotion, or transfer authority."
+}

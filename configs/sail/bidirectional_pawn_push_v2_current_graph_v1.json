@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T14:10:47-05:00",
+  "generated_at": "2026-07-28T14:16:34-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "f1587094599a4634b0308e83491a4d39b2b2c5542f2c491e960f5edcdd1fc8ba",
+      "sha256": "1a9617b60403e87755fd7fab874515d66bb23587043acd7d91538d7e0e469961",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -681,6 +681,16 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_multistart_approach_successor_authorization.v1",
         "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
         "proof_class": "prospective_manager_authorized_static_only_alternate_start_multistart_approach_successor"
+      }
+    },
+    "v05_tx_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_multistart_approach_static_v1.json",
+      "sha256": "abef58960f678569d1ecbe4270910cff873cf0ba0b5aa8776a36ff9b8c58c8fa",
+      "proof_class": "prospective_cpu_fp64_static_alternate_start_multistart_ik_approach_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_multistart_approach_static.v1",
+        "status": "preregistered_before_model_loading_static_enumeration_or_action_generation",
+        "proof_class": "prospective_cpu_fp64_static_alternate_start_multistart_ik_approach_action_freeze"
       }
     },
     "simulator_candidate": {
@@ -1951,6 +1961,32 @@
       }
     },
     {
+      "id": "checkpoint:v05-tx-multistart-approach-static-frozen",
+      "type": "checkpoint",
+      "label": "V05-TX alternate-start multi-IK approach static grid frozen",
+      "status": "preregistered_multistart_approach_static_execution_active",
+      "source_binding": "v05_tx_static_contract",
+      "data": {
+        "prequarantine_family_count": 48,
+        "quarantined_family_count": 4,
+        "postquarantine_family_count": 44,
+        "setup_branch_count": 3,
+        "approach_azimuth_count": 3,
+        "maximum_static_cells": 396,
+        "setup_in_action_identity": true,
+        "teleport_or_manual_reset": false,
+        "selected_family_count_if_pass": 4,
+        "minimum_distinct_families_per_direction": 2,
+        "dynamic_outcomes_used": false,
+        "model_loading_authorized": true,
+        "static_simulation_authorized": true,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2683,6 +2719,19 @@
       }
     },
     {
+      "source": "checkpoint:v05-tx-multistart-approach-static-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-tx-manager-authorization-bound",
+      "metadata": {
+        "prospective_before_model_loading_or_static_enumeration": true,
+        "quarantined_case_count": 4,
+        "maximum_static_cells": 396,
+        "setup_in_action_identity": true,
+        "dynamic_outcomes_used": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -3240,14 +3289,23 @@
       "node_ids_added": [
         "checkpoint:v05-tx-manager-authorization-bound"
       ]
+    },
+    {
+      "revision": 57,
+      "event_id": "V05_TX_MULTISTART_APPROACH_STATIC_FREEZE",
+      "status": "preregistered_multistart_approach_static_execution_active",
+      "source_binding": "v05_tx_static_contract",
+      "node_ids_added": [
+        "checkpoint:v05-tx-multistart-approach-static-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-tx-manager-authorization-bound",
+    "node_id": "checkpoint:v05-tx-multistart-approach-static-frozen",
     "milestone_id": "V05-TX",
-    "status": "manager_authorized_static_design_active",
-    "queue_status": "ACTIVE_V05_TX_MANAGER_AUTHORIZATION_BOUND_STATIC_DESIGN",
-    "resume_action": "freeze_finite_alternate_start_multistart_approach_grid",
+    "status": "preregistered_multistart_approach_static_execution_active",
+    "queue_status": "ACTIVE_V05_TX_PROSPECTIVE_STATIC_GRID_FROZEN",
+    "resume_action": "execute_one_bounded_396_cell_static_enumeration",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
