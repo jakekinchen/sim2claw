@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T13:40:52-05:00",
+  "generated_at": "2026-07-28T13:42:29-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "825f00c1fe70793450575fbe8a6edc48b247e5002b59a2a3e5b3a56d557ba4bc",
+      "sha256": "04db12167a21d0e1e02828b995ca3ea34a76d6df2b9306569236f6337e7ec3e8",
       "proof_class": "campaign_control_state"
     },
     "v00": {

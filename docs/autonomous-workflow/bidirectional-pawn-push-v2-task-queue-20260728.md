@@ -2349,6 +2349,15 @@ expansion, dynamic replay, V06 evaluator freeze, counted action compilation,
 camera, gateway/serial, physical motion, simulator promotion, or transfer
 claim is authorized. Physical task attempts remain `0/10`.
 
+Terminal-closeout verification passes `19/19` campaign static, temporal,
+successor, and graph tests, and the autonomous-workflow audit is clean. A
+fresh read-only physical-gateway preflight passes with follower torque false,
+no start-alignment motion, and no device-configuration rewrite. Both USB
+serial devices are unowned; no wrist/path, replay, camera, gateway, or serial
+worker remains. `brev ls` reports no instances. Only the user-facing
+read-only Studio servers remain. The unrelated untracked
+`tools/build_fiducial_sheet.py` remains untouched.
+
 ### V05-T prospective static enumerator freeze — 2026-07-28
 
 Static enumerator contract
