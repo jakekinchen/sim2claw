@@ -23,6 +23,11 @@ RECOVERY_ROUTE = (
     / "configs/hardware/"
     "bidirectional_pawn_push_v2_registration_route_v2.json"
 )
+EMPIRICAL_RECOVERY_ROUTE = (
+    ROOT
+    / "configs/hardware/"
+    "bidirectional_pawn_push_v2_registration_route_v3.json"
+)
 
 
 def test_v2_route_compiles_disjoint_capture_holds_and_no_authority() -> None:
@@ -118,3 +123,35 @@ def test_v2_recovery_route_cpu_preview_passes_without_motion(
             "fixed_tip": "left_gripper",
             "moving_tip": "left_moving_jaw_so101_v1",
         }
+
+
+def test_v3_route_binds_empirical_occlusion_family_and_height_diversity(
+    tmp_path: Path,
+) -> None:
+    route, acquisition, _ = load_route(EMPIRICAL_RECOVERY_ROUTE)
+    compiled = compile_exact_route(route, acquisition)
+    assert len(compiled["capture_slices"]) == 10
+    assert len(
+        {
+            row["physical_degrees_percent"][1]
+            for split in ("fit_targets", "heldout_targets")
+            for row in acquisition["split"][split]
+        }
+    ) == 4
+    assert not any(route["motion_contract"].values())
+
+    result = evaluate_route(
+        route_path=EMPIRICAL_RECOVERY_ROUTE,
+        output_root=tmp_path / "v04-recovery-v3",
+    )
+    assert result["reviewer"]["decision"] == "CONTINUE"
+    assert all(result["gates"].values())
+    assert result["empirical_visibility"]["all_passed"]
+    assert result["empirical_visibility"]["positive_scorable_fit_image_count"] == 4
+    assert result["target_geometry"][
+        "smallest_model_midpoint_singular_value_mm"
+    ] >= 5.0
+    assert result["physical_motion_commanded"] is False
+    assert result["camera_opened"] is False
+    assert result["gateway_constructed"] is False
+    assert result["counted_physical_attempts"] == 0

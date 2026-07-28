@@ -31,6 +31,7 @@ ROUTE_SCHEMA = "sim2claw.bidirectional_pawn_push_v2_registration_route.v1"
 ACQUISITION_SCHEMAS = {
     "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v1",
     "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v2",
+    "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v3",
 }
 RECEIPT_SCHEMA = (
     "sim2claw.bidirectional_pawn_push_v2_registration_route_preview.v1"
@@ -700,6 +701,166 @@ def _visibility_audit(
     }
 
 
+def _empirical_visibility_audit(
+    route: Mapping[str, Any],
+    acquisition: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    """Check the v3 pose family against fit-only physical occlusion evidence.
+
+    This gate deliberately does not model the D405 housing. It constrains the
+    new poses to the wrist orientation and pan interval that produced four
+    independently annotatable fit images, while binding the fit-only v2 audit
+    that demonstrated why the jaw-only ray proxy is insufficient.
+    """
+    spec = route.get("empirical_endpoint_visibility_family")
+    if not spec:
+        return None
+
+    positive_annotations_path = _bound(spec["positive_fit_annotations"])
+    positive_annotations = _json(positive_annotations_path)
+    positive_acquisition_path = _bound(spec["positive_acquisition_contract"])
+    positive_acquisition = _json(positive_acquisition_path)
+    negative_audit_path = _bound(spec["negative_fit_scorability_audit"])
+    negative_audit = _json(negative_audit_path)
+
+    positive_rows = {
+        item["target_id"]: np.asarray(
+            item["physical_degrees_percent"], dtype=np.float64
+        )
+        for item in positive_acquisition["split"]["fit_targets"]
+    }
+    annotated_ids = {
+        item["target_id"]
+        for item in positive_annotations["jaw_endpoint_annotations"]["targets"]
+    }
+    positive_count = len(annotated_ids)
+    positive_poses = np.asarray(
+        [positive_rows[target_id] for target_id in sorted(annotated_ids)],
+        dtype=np.float64,
+    )
+    target_poses = np.asarray(
+        [
+            item["physical_degrees_percent"]
+            for split_name in ("fit_targets", "heldout_targets")
+            for item in acquisition["split"][split_name]
+        ],
+        dtype=np.float64,
+    )
+
+    wrist_flex_index = 3
+    wrist_roll_index = 4
+    lift_index = 1
+    pan_index = 0
+    flex_tolerance = float(spec["maximum_wrist_flex_delta_degrees"])
+    roll_tolerance = float(spec["maximum_wrist_roll_delta_degrees"])
+    maximum_lift_expansion = float(
+        spec["maximum_prospective_lift_expansion_degrees"]
+    )
+    positive_lift = float(np.median(positive_poses[:, lift_index]))
+    lift_levels = sorted(set(target_poses[:, lift_index].tolist()))
+    pan_min = float(np.min(positive_poses[:, pan_index]))
+    pan_max = float(np.max(positive_poses[:, pan_index]))
+    positive_flex = float(np.median(positive_poses[:, wrist_flex_index]))
+    positive_roll = float(np.median(positive_poses[:, wrist_roll_index]))
+
+    checks = {
+        "positive_fit_only_annotations_bound": bool(
+            positive_annotations["heldout_authority"]["heldout_images_read"]
+            is False
+            and int(
+                positive_annotations["heldout_authority"][
+                    "heldout_open_count"
+                ]
+            )
+            == 0
+            and positive_count
+            >= int(spec["minimum_positive_scorable_fit_images"])
+            and annotated_ids.issubset(positive_rows)
+        ),
+        "negative_fit_only_occlusion_bound": bool(
+            int(negative_audit["heldout_open_count"]) == 0
+            and negative_audit["candidate_fit_started"] is False
+            and "D405" in str(negative_audit["failure_mechanism"])
+        ),
+        "pan_inside_empirically_visible_fit_interval": bool(
+            np.all(target_poses[:, pan_index] >= pan_min)
+            and np.all(target_poses[:, pan_index] <= pan_max)
+        ),
+        "wrist_flex_inside_empirical_family": bool(
+            np.max(
+                np.abs(target_poses[:, wrist_flex_index] - positive_flex)
+            )
+            <= flex_tolerance
+        ),
+        "wrist_roll_inside_empirical_family": bool(
+            np.max(
+                np.abs(target_poses[:, wrist_roll_index] - positive_roll)
+            )
+            <= roll_tolerance
+        ),
+        "prospective_lift_expansion_bounded": bool(
+            np.max(np.abs(target_poses[:, lift_index] - positive_lift))
+            <= maximum_lift_expansion
+        ),
+        "height_levels_diverse": bool(
+            len(lift_levels) >= int(spec["minimum_lift_level_count"])
+            and lift_levels[-1] - lift_levels[0]
+            >= float(spec["minimum_lift_level_separation_degrees"])
+        ),
+    }
+    return {
+        "authority": "empirical_fit_only_occlusion_constraint_not_visibility_proof",
+        "positive_fit_annotations_path": str(positive_annotations_path),
+        "positive_fit_annotations_sha256": sha256_file(
+            positive_annotations_path
+        ),
+        "positive_acquisition_contract_path": str(
+            positive_acquisition_path
+        ),
+        "positive_acquisition_contract_sha256": sha256_file(
+            positive_acquisition_path
+        ),
+        "negative_fit_scorability_audit_path": str(negative_audit_path),
+        "negative_fit_scorability_audit_sha256": sha256_file(
+            negative_audit_path
+        ),
+        "positive_scorable_fit_image_count": positive_count,
+        "empirical_pan_interval_degrees": [pan_min, pan_max],
+        "empirical_wrist_flex_degrees": positive_flex,
+        "empirical_wrist_roll_degrees": positive_roll,
+        "prospective_lift_baseline_degrees": positive_lift,
+        "prospective_lift_levels_degrees": lift_levels,
+        "checks": checks,
+        "all_passed": all(checks.values()),
+    }
+
+
+def _target_geometry_audit(
+    acquisition: Mapping[str, Any],
+    candidate: Mapping[str, Any],
+) -> dict[str, Any]:
+    target_poses = np.asarray(
+        [
+            item["physical_degrees_percent"]
+            for split_name in ("fit_targets", "heldout_targets")
+            for item in acquisition["split"][split_name]
+        ],
+        dtype=np.float64,
+    )
+    points = _pinch_points(target_poses, candidate)
+    singular_values_mm = (
+        np.linalg.svd(points - np.mean(points, axis=0), compute_uv=False)
+        * 1000.0
+    )
+    return {
+        "target_count": int(len(points)),
+        "model_midpoint_singular_values_mm": singular_values_mm.tolist(),
+        "smallest_model_midpoint_singular_value_mm": float(
+            singular_values_mm[-1]
+        ),
+    }
+
+
 def evaluate_route(
     *,
     route_path: Path = DEFAULT_ROUTE,
@@ -767,6 +928,8 @@ def evaluate_route(
         candidate,
         overlay_path=overlay_path,
     )
+    empirical_visibility = _empirical_visibility_audit(route, acquisition)
+    target_geometry = _target_geometry_audit(acquisition, candidate)
 
     egress_path = output_root / "source_egress.npy"
     main_path = output_root / "capture_and_return.npy"
@@ -821,14 +984,30 @@ def evaluate_route(
             visibility["minimum_predicted_reference_image_margin_px"]
         )
         >= float(gates_spec["minimum_predicted_reference_image_margin_px"]),
-        "capture_reference_line_of_sight": bool(
-            visibility["reference_line_of_sight"]["all_passed"]
-        ),
         "capture_target_count": len(compiled["capture_slices"])
         >= int(gates_spec["minimum_capture_target_count"]),
         "final_anchor": final_anchor_ok,
         "no_motion_authority": not any(route["motion_contract"].values()),
     }
+    if empirical_visibility is not None:
+        # Acquisition-v2 established that the jaw-only MuJoCo ray is not a
+        # faithful physical visibility model for the wrist-camera assembly.
+        # Preserve it in the receipt as a diagnostic, but let the bound
+        # fit-only physical evidence own the v3 endpoint-visibility gate.
+        gates["empirical_endpoint_visibility_family"] = bool(
+            empirical_visibility["all_passed"]
+        )
+        gates["target_model_xyz_diversity"] = float(
+            target_geometry["smallest_model_midpoint_singular_value_mm"]
+        ) >= float(
+            gates_spec[
+                "minimum_target_model_xyz_smallest_singular_value_mm"
+            ]
+        )
+    else:
+        gates["capture_reference_line_of_sight"] = bool(
+            visibility["reference_line_of_sight"]["all_passed"]
+        )
     reviewer_decision = "CONTINUE" if all(gates.values()) else "REDIRECT"
     receipt = {
         "schema_version": RECEIPT_SCHEMA,
@@ -883,6 +1062,8 @@ def evaluate_route(
         },
         "external_clearance": distance,
         "visibility": visibility,
+        "empirical_visibility": empirical_visibility,
+        "target_geometry": target_geometry,
         "final_anchor_prior_receipt_path": str(anchor_receipt_path),
         "final_anchor_prior_receipt_sha256": sha256_file(anchor_receipt_path),
         "gates": gates,
