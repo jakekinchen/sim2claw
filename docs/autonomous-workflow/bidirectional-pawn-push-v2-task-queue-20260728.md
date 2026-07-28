@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_ACQUISITION_V3_DESIGN`
+Status: `ACTIVE_V04_ACQUISITION_V3_CAPTURE_AUTHORIZED_PENDING_RECHECK`
 
 Created: `2026-07-28`
 
@@ -250,6 +250,12 @@ Current state:
   fitting: only one of six fit images exposes both required pink endpoints.
   The four heldouts remain sealed and forbidden. The single allowed
   acquisition-v3 design is active.
+- Acquisition-v3 is now prospectively frozen. Its six fit and four separately
+  sealed held-out targets keep wrist flex at `-20 deg`, wrist roll at
+  `-102.813187 deg`, pan inside the prior fit-visible `[-21,+9] deg` interval,
+  and add lift levels `-85/-87/-89/-90 deg`. Static and live motion-free
+  reviewers returned `CONTINUE`; exact no-contact capture is authorized only
+  after the same immediate live safety checks pass again.
 - Counted actions do not exist.
 
 Completed:
@@ -1320,3 +1326,71 @@ use fit-only empirical visibility observations, must explicitly model or
 exclude D405-housing occlusion, must add height/off-plane diversity, and must
 freeze a new split before capture. Acquisition-v2 heldouts remain permanently
 sealed and cannot be reused.
+
+### V04 acquisition-v3 static design and packet freeze — 2026-07-28
+
+Acquisition contract
+`configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v3.json`,
+SHA-256
+`26f470db40ac666b26b26b4b0bcf3096fbb1a2e4ff9f47173f4f30e2e5fcdbfe`,
+and route
+`configs/hardware/bidirectional_pawn_push_v2_registration_route_v3.json`,
+SHA-256
+`779bddd3feeac475d380a564e3be48a728334a885e30b85c975c45ae5ab4b780`,
+freeze six fit and four separately sealed held-out targets. All targets keep
+the empirically positive v1 fit-only wrist family (`-20 deg` wrist flex,
+`-102.813187 deg` wrist roll, pan within `[-21,+9] deg`) and introduce
+prospective lift levels `-85/-87/-89/-90 deg`.
+
+The empirical gate binds four v1 fit-only scorable images and the
+acquisition-v2 fit-only D405-housing rejection while keeping both generations
+of heldouts unopened. The contradicted jaw-only MuJoCo ray remains in the
+receipt as a failed non-authoritative diagnostic; it does not replace the
+physical fit-only visibility evidence.
+
+Static receipt
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/static-review-v3/evaluation.json`,
+SHA-256
+`46efba3a137e9af3e69da5ea4ab0782675c5b004aba72f79fa3d3f806d808d78`,
+returned deterministic reviewer `CONTINUE`, evidence anchor `100`, with all
+authoritative gates true. The modeled midpoint singular values are
+`[113.349,20.483,7.639] mm`; the minimum exceeds the frozen `5 mm` gate.
+Predicted image margin is `82.198 px`; board and pawn clearance screens are
+at least `80 mm` and `50 mm`; joint limits, final anchor, `3 deg/s` slew, and
+no-new/no-external-contact previews pass.
+
+Committed packet
+`configs/hardware/bidirectional_pawn_push_v2_registration_capture_v4.json`,
+SHA-256
+`14d95c677e5cbfb574c9a4130d921c1e63e6c2c8d5d5e96e91240f13972b9145`,
+binds exact source-egress action SHA-256
+`f3e480e6b89582d51edff3a2b0845aa637103a3dbfe31e26f6865182e25e96f2`
+(`715x6`) and capture/return SHA-256
+`a006babcd3928bfe3bc6bab37d9bf0c6b9c53930e1f0a1ed2bc8cdd287d218b4`
+(`1771x6`). Commits `3fe4feb` and `c9f1ed4` freeze and publish this design.
+Focused capture/route tests pass `12/12`. No camera, gateway, or motion was
+used; heldout open count and counted task attempts remain zero.
+
+### V04 acquisition-v3 live review CONTINUE — 2026-07-28
+
+The committed packet produced fresh motion-free review
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/pre-motion-review-v3.json`,
+SHA-256
+`924652d13e4f7ef7e96c01e6b3a0b16756c209c9acbeeb4d6e3b5f5217fa30f7`.
+The deterministic reviewer returned `CONTINUE`, evidence anchor `100`, with
+all `13/13` capture gates true. Fresh start was
+`[-8.351648,-106.197802,99.208791,-93.846154,-125.142857,2.375297]`,
+exactly the frozen anchor.
+
+Independent AVFoundation enumeration found exactly one
+`C922 Pro Stream Webcam`, unique ID `0x8310000046d085c`, model
+`UVC Camera VendorID_1133 ProductID_2140`, and the bound
+`640x480 420v 30.00003 fps` format/range. Pre- and post-review follower
+checks passed with torque false and `device_configuration_rewritten:false`.
+No serial owner, repo camera/gateway process, or Git lock remained. The review
+opened no camera or gateway, commanded no motion, opened no heldout, and
+consumed no registration transaction or task attempt.
+
+Physical acquisition-v3 is authorized only after this checkpoint is
+committed/pushed and the same identity, process, serial-owner, start-envelope,
+torque-off, and no-rewrite gates pass immediately before execution.
