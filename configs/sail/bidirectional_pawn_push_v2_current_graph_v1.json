@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T07:52:00-05:00",
+  "generated_at": "2026-07-28T08:31:00-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3",
+      "sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -413,6 +413,18 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal.v1",
         "status": "preregistered_before_any_v05_nominal_task_outcome",
         "proof_class": "prospective_cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal"
+      }
+    },
+    "v05_sim_rehearsal_v1_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-sim-rehearsal-v1/receipt.json",
+      "sha256": "d43961040e2aabac115ff2355a48ff75a7db07a990ccd2a335465c250300836c",
+      "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal_receipt.v1",
+        "status": "sim_rehearsal_reject",
+        "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal",
+        "physical_motion": false,
+        "physical_task_attempts": 0
       }
     },
     "simulator_candidate": {
@@ -1157,6 +1169,23 @@
       }
     },
     {
+      "id": "verdict:v05-sim-rehearsal-v1-reject",
+      "type": "evaluator_verdict",
+      "label": "V05 rehearsal-v1 immutable terminal negative",
+      "status": "sim_rehearsal_reject_versioned_gate_correction_active",
+      "source_binding": "v05_sim_rehearsal_v1_receipt",
+      "evaluator_identity": "d43961040e2aabac115ff2355a48ff75a7db07a990ccd2a335465c250300836c",
+      "data": {
+        "passing_case_count": 0,
+        "admitted_case_count": 0,
+        "jaw_inclusive_margin_defect": true,
+        "versioned_correction_only": true,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "transfer_claim": false
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -1592,6 +1621,17 @@
       }
     },
     {
+      "source": "verdict:v05-sim-rehearsal-v1-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-sim-rehearsal-frozen",
+      "metadata": {
+        "terminal_for_v1": true,
+        "passing_case_count": 0,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -1915,14 +1955,23 @@
       "node_ids_added": [
         "checkpoint:v05-sim-rehearsal-frozen"
       ]
+    },
+    {
+      "revision": 31,
+      "event_id": "V05_SIM_REHEARSAL_V1_REJECT",
+      "status": "immutable_terminal_negative_versioned_gate_correction_active",
+      "source_binding": "v05_sim_rehearsal_v1_receipt",
+      "node_ids_added": [
+        "verdict:v05-sim-rehearsal-v1-reject"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-sim-rehearsal-frozen",
+    "node_id": "verdict:v05-sim-rehearsal-v1-reject",
     "milestone_id": "V05",
-    "status": "preregistered_bounded_grid_execution_active",
-    "queue_status": "ACTIVE_V05_FROZEN_SIM_REHEARSAL_EXECUTION",
-    "resume_action": "execute_frozen_bounded_sim_grid_once",
+    "status": "immutable_terminal_negative_versioned_gate_correction_active",
+    "queue_status": "ACTIVE_V05_VERSIONED_JAW_GATE_REHEARSAL_CORRECTION",
+    "resume_action": "freeze_versioned_arm_margin_and_closed_jaw_tolerance_contract",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

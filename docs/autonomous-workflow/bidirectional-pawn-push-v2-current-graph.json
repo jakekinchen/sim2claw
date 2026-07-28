@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "V05",
-    "node_id": "checkpoint:v05-sim-rehearsal-frozen",
-    "queue_status": "ACTIVE_V05_FROZEN_SIM_REHEARSAL_EXECUTION",
-    "resume_action": "execute_frozen_bounded_sim_grid_once",
+    "node_id": "verdict:v05-sim-rehearsal-v1-reject",
+    "queue_status": "ACTIVE_V05_VERSIONED_JAW_GATE_REHEARSAL_CORRECTION",
+    "resume_action": "freeze_versioned_arm_margin_and_closed_jaw_tolerance_contract",
     "resume_authorized": true,
-    "status": "preregistered_bounded_grid_execution_active"
+    "status": "immutable_terminal_negative_versioned_gate_correction_active"
   },
   "authority": {
     "camera_open": false,
@@ -35,12 +35,12 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 52,
+    "edges": 53,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 1,
-      "evaluated-on": 3,
+      "evaluated-on": 4,
       "fitted-on": 4,
       "generated-from": 35,
       "invalidates": 1,
@@ -48,14 +48,14 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 50,
+    "nodes": 51,
     "nodes_by_type": {
       "candidate": 2,
       "checkpoint": 27,
       "context": 1,
       "counterexample": 1,
       "dataset": 1,
-      "evaluator_verdict": 2,
+      "evaluator_verdict": 3,
       "evidence": 4,
       "intervention": 1,
       "mechanism": 3,
@@ -567,10 +567,21 @@
       "source": "verdict:v04-rigid-heldout-pass",
       "target": "checkpoint:v04-rigid-heldout-open-complete",
       "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "passing_case_count": 0,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "terminal_for_v1": true
+      },
+      "source": "verdict:v05-sim-rehearsal-v1-reject",
+      "target": "checkpoint:v05-sim-rehearsal-frozen",
+      "type": "evaluated-on"
     }
   ],
-  "generated_at": "2026-07-28T07:52:00-05:00",
-  "graph_digest": "9b409fe9141985109ef002280f727ac1a533d92c7e913be1c43e8bc81d795f4b",
+  "generated_at": "2026-07-28T08:31:00-05:00",
+  "graph_digest": "3dbb2bd9e2ec0cc269c4522b582dcbb59fb77d90381b248d0c374390ea06b815",
   "node_types": [
     "workcell",
     "session",
@@ -653,7 +664,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3"
+        "sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1047,7 +1058,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3"
+        "sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1098,7 +1109,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3"
+        "sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1119,7 +1130,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3"
+        "sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1148,7 +1159,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3"
+        "sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -1643,7 +1654,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3"
+        "sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -1703,7 +1714,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3"
+        "sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -1721,7 +1732,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3"
+        "sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -1789,7 +1800,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3"
+        "sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -1868,6 +1879,36 @@
         "sha256": "5eaf763b7f5beec9be8c38c61693ad0e5cd868cab7984853b54e417a690311f0"
       },
       "status": "registration_heldout_pass_not_task_transfer",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
+        "admitted_case_count": 0,
+        "jaw_inclusive_margin_defect": true,
+        "passing_case_count": 0,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "v05_sim_rehearsal_v1_receipt",
+        "transfer_claim": false,
+        "versioned_correction_only": true
+      },
+      "evaluator_identity": "d43961040e2aabac115ff2355a48ff75a7db07a990ccd2a335465c250300836c",
+      "id": "verdict:v05-sim-rehearsal-v1-reject",
+      "label": "V05 rehearsal-v1 immutable terminal negative",
+      "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260728-v05-sim-rehearsal-v1/receipt.json",
+        "payload_contract": {
+          "physical_motion": false,
+          "physical_task_attempts": 0,
+          "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal_receipt.v1",
+          "status": "sim_rehearsal_reject"
+        },
+        "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal",
+        "sha256": "d43961040e2aabac115ff2355a48ff75a7db07a990ccd2a335465c250300836c"
+      },
+      "status": "sim_rehearsal_reject_versioned_gate_correction_active",
       "type": "evaluator_verdict"
     },
     {
@@ -1968,7 +2009,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3",
+      "source_sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -1998,7 +2039,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3",
+      "source_sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -2028,7 +2069,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3",
+      "source_sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -2222,6 +2263,16 @@
       "source_binding": "v05_sim_rehearsal_contract",
       "source_sha256": "8dd9d5f05bfc075a0116d6fd6fd478b67334702b141561675f775af1939059f3",
       "status": "preregistered_bounded_grid_execution_active"
+    },
+    {
+      "event_id": "V05_SIM_REHEARSAL_V1_REJECT",
+      "node_ids_added": [
+        "verdict:v05-sim-rehearsal-v1-reject"
+      ],
+      "revision": 31,
+      "source_binding": "v05_sim_rehearsal_v1_receipt",
+      "source_sha256": "d43961040e2aabac115ff2355a48ff75a7db07a990ccd2a335465c250300836c",
+      "status": "immutable_terminal_negative_versioned_gate_correction_active"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -2230,7 +2281,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "320d3332d921b6b55ca01e71f521dbf8ef0a00a619f031f9287058b3bb24b5e3"
+      "sha256": "8b6c592bb6525f697c6be77b31e173672e7220566637ff8e2de373260971ecb5"
     },
     {
       "id": "simulator_candidate",
@@ -2646,6 +2697,19 @@
       },
       "proof_class": "prospective_cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal",
       "sha256": "8dd9d5f05bfc075a0116d6fd6fd478b67334702b141561675f775af1939059f3"
+    },
+    {
+      "id": "v05_sim_rehearsal_v1_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-sim-rehearsal-v1/receipt.json",
+      "payload_contract": {
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal_receipt.v1",
+        "status": "sim_rehearsal_reject"
+      },
+      "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal",
+      "sha256": "d43961040e2aabac115ff2355a48ff75a7db07a990ccd2a335465c250300836c"
     },
     {
       "id": "world_visual",

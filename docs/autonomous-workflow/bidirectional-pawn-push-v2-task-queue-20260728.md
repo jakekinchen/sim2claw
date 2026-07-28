@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_SIM_ONLY_STRAIGHT_CLOSED_JAW_PUSH_REHEARSAL`
+Status: `ACTIVE_V05_VERSIONED_JAW_GATE_REHEARSAL_CORRECTION`
 
 Created: `2026-07-28`
 
@@ -186,7 +186,7 @@ denominators before any counted action is compiled.
 | V02 | `DONE` | Prove hover poses and visibility using CPU/fp64 simulation and static camera projections/images. | Every proposed target passes joint limits, self/table/board/pawn clearance, no-contact height, slow-path preview, C922 field of view, simultaneous gripper/board visibility, and guaranteed return/torque-off logic. Reviewer decision `CONTINUE`. No motion. | Route `configs/hardware/bidirectional_pawn_push_v2_registration_route_v1.json`, SHA-256 `b7464a34a6abe744d778323a7a017f5ab8f40d6f6556b7691f5944e1bbd52d8e`. Final receipt `runs/bidirectional-pawn-push-v2/20260728-v02-static-route-v2/evaluation.json`, SHA-256 `53c6b4dec93cae8f41e9bc24a106fcc0883d3c11d97c887aec3c630491bdbcf6`; deterministic reviewer `CONTINUE`, evidence anchor `100`, all `11/11` gates true. Fresh torque-off start matched the frozen rebase exactly. Source egress: `92` float64 rows, `4.55 s`, hash `9a3ccff7ba26e94f2cce2963480e33a2999b07efa16777edc73530a8fa28e142`. Capture/return: `1541` float64 rows, `77.0 s`, hash `6d05f2471ec0ca8f83beadbc9bbfcc4b6d8ae4c679198414fad600bf29a1dbdf`. Maximum slew `2.999531 deg/s`; minimum jaw clearance `66.282 mm` to any pawn and `93.975 mm` to board; C922 proxy minimum image margin `206.268 px`. All eight camera rays first hit the intended moving jaw `5.865-7.045 mm` before the registered midpoint, within the frozen `15 mm` surface-offset gate. No motion occurred; no camera opened, gateway was constructed, or attempt was counted. |
 | V03 | `DONE` | Capture the prospective fit and held-out registration observations through the reviewed gateway. | Cameras precede motion; only approved slow no-contact paths run; requested/mapped/sent and tracking receipts close; every planned target is captured; torque false on exit; input hashes freeze; no pawn contact. | Execution receipt `runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/execution_receipt.json`, SHA-256 `a1692a5b87d88b7b2c37151159660546d9104c9b3973de85f0801de0d9e793a3`, status `completed_no_contact_registration_capture`, proof class `physical_rgb_no_contact_registration_observation_only`. All exact `92 + 1541` requested/mapped/sent rows are byte-identical to the reviewed arrays; all eight scored holds pass; nine C922 sessions have zero drops; fit and sealed-heldout manifests hash to `933f121a60b741d5a555b865caccf8fedce1ea0b6accd0e007cd42f77eafa8a5` and `6fd932ddf33c2e5aae87680e141eb1a41f05feb19196eac2fd2343ad3f5a18d6`; final preflight proves torque false. No pawn contact or task attempt. |
 | V04 | `DONE` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Frozen candidate `4d08518f...`; heldout PASS receipt `5eaf763b...`; all four scorable/pass; heldout RMS `4.684083 px` and `4.741723 mm`; zero refit. Registration only. |
-| V05 | `IN_PROGRESS` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Prospective sim-rehearsal contract `8dd9d5f0...` frozen; execution pending. |
+| V05 | `IN_PROGRESS` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Rehearsal-v1 receipt `d4396104...` is an immutable terminal negative with no admitted case. A separately versioned correction may change only the defective jaw/joint-margin semantics before one new frozen run. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -1814,3 +1814,69 @@ rank-3-ward primitives, jaw/stroke/contact geometry, pawn fully off source,
 exclusions, reach/collision/camera margins, and robustness without consuming
 or using any physical task outcome. The evaluator and physical task packet
 remain unfrozen until this rehearsal identifies one exact case family.
+
+### V05 rehearsal-v1 immutable terminal negative — 2026-07-28
+
+The frozen bounded grid was executed exactly once. Its authoritative receipt
+is
+`runs/bidirectional-pawn-push-v2/20260728-v05-sim-rehearsal-v1/receipt.json`,
+SHA-256
+`d43961040e2aabac115ff2355a48ff75a7db07a990ccd2a335465c250300836c`.
+It reports `sim_rehearsal_reject`, no passing/admitted case, no candidate
+refit, no task outcome used for design, no physical motion, and zero physical
+task attempts. This verdict is terminal for rehearsal-v1 and will not be
+reinterpreted after observing its results.
+
+Every compiled cell reported `minimum_joint_limit_margin_rad = 0` because the
+declared closed-jaw target `-0.174533 rad` is the modeled gripper lower stop,
+while the v1 implementation applied the contract's `2 deg` joint-margin gate
+to all six joints. This is a preregistration evaluator-design defect: the
+intended exact lower-stop jaw and the generic margin gate cannot both pass.
+It is not evidence of task transfer or physical success.
+
+The complete 8-case by 3-height by 3-stroke outcome matrix is below. Each
+cell is `CR` for compile rejection at the frozen IK gate, or `D<n>` where
+`n` of the five frozen robustness replays passed all dynamic contact,
+progress, exclusion, collision, and camera checks. Every `D<n>` cell still
+failed the v1 static jaw-inclusive margin gate, so none is admitted.
+
+| Case | 18 mm: 90/105/120 mm | 24 mm: 90/105/120 mm | 30 mm: 90/105/120 mm |
+|---|---|---|---|
+| `R2S_G2_G3` | `CR / CR / CR` | `CR / CR / CR` | `CR / CR / CR` |
+| `R2S_A2_A3` | `D4 / D4 / D5` | `D4 / D5 / D5` | `D5 / D5 / D5` |
+| `R2S_D1_D2` | `CR / CR / CR` | `CR / CR / CR` | `D0 / D0 / D0` |
+| `R2S_B1_B2` | `D5 / D5 / D5` | `D2 / D2 / D2` | `D0 / D0 / D0` |
+| `S2R_E2_E3` | `D5 / D5 / D5` | `D5 / D5 / D5` | `D5 / D5 / D5` |
+| `S2R_H1_H2` | `CR / CR / CR` | `CR / CR / CR` | `CR / CR / CR` |
+| `S2R_F1_F2` | `CR / CR / CR` | `CR / CR / CR` | `CR / CR / CR` |
+| `DIAGNOSTIC_C2_C3` | `D5 / D5 / D5` | `D1 / D2 / D3` | `D2 / D3 / D3` |
+
+The receipt contains every per-variant measurement and check. The strongest
+recommendable dynamic-only families were:
+
+- `R2S_A2_A3`: five-of-five robustness at `120/18`, `105/24`,
+  `120/24`, and all three `30 mm` cells; worst signed progress among those
+  cells was `36.575142 mm`.
+- `R2S_B1_B2`: five-of-five robustness at all three `18 mm` cells; worst
+  signed progress was `79.467306 mm`.
+- `S2R_E2_E3`: five-of-five robustness at all nine cells; worst signed
+  progress was `39.399419 mm`.
+- excluded diagnostic `C2_C3`: five-of-five only at all three `18 mm` cells
+  and remains ineligible for recommendation.
+
+The genuine non-jaw failures remain negative evidence: `G2`, `H1`, and `F1`
+compile-rejected all nine cells at the unchanged IK gate; `D1` compile-rejected
+six and dynamically rejected three with excluded contacts/displacement and
+insufficient progress. Across compiled robustness replays, `58` failed the
+off-source progress gate and `15` each failed excluded-contact and
+excluded-displacement gates. Camera, selected-contact, and new-collision
+checks had zero failures.
+
+The only authorized next action is a separately versioned prospective
+contract/evaluator. It must preserve the exact cases, grid, scene,
+registration, collision, task, exclusion, camera, and robustness rules. Its
+sole semantic correction is: apply the unchanged `2 deg` limit margin to the
+five arm joints, while requiring the jaw to equal the declared closed
+lower-stop target within an explicit tolerance and remain within the
+simulator/hardware bounds. The correction must be committed and pushed before
+one rerun. Physical authority remains false.
