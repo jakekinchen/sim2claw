@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V04_LIVE_REVIEW_REPAIR`
+Status: `ACTIVE_V04_LIVE_REVIEW_CONTINUE`
 
 Created: `2026-07-28`
 
@@ -204,9 +204,12 @@ Current state:
   and exact no-contact route are frozen; the CPU/fp64 static reviewer returned
   `CONTINUE`. Commit `f205bcbb097813a0c9050624e3895c9f2065aecb`
   binds and publishes those exact inputs. Capture packet v2 is now frozen but
-  camera open, gateway construction, and robot motion remain unauthorized
-  until the live-review rebase repair is committed and a fresh deterministic
-  live identity/torque/process review returns `CONTINUE`.
+  camera open, gateway construction, and robot motion are admitted only for
+  its one reviewed no-contact transaction: commit `9decefa` binds the rebase
+  repair and fresh deterministic review SHA-256
+  `7dc3e08ff3d0cbea2bdb6ed640aaa5792abea2b0d826967c04a3bae195c00868`
+  returned `CONTINUE`. A final immediate identity/process/torque recheck is
+  still mandatory.
 - Counted actions do not exist.
 
 Completed:
@@ -459,6 +462,12 @@ Verification evidence:
   into frozen array row zero and then rejected its own byte comparison. The
   repair keeps the committed arrays immutable and checks live-start proximity
   as a separate fail-closed gate.
+- Live pre-motion review attempt 2 passed all `12/12` gates with deterministic
+  reviewer `CONTINUE`, evidence anchor `100`; receipt SHA-256
+  `7dc3e08ff3d0cbea2bdb6ed640aaa5792abea2b0d826967c04a3bae195c00868`.
+  Fresh follower start remained within `0.118765 deg` of the frozen anchor,
+  torque was false, and the exact array/action hashes matched. The review
+  opened no camera or gateway and issued no motion.
 
 Remaining:
 
@@ -476,10 +485,11 @@ Blockers:
 
 Next action:
 
-- Commit the live-review rebase repair, tests, queue, and graph. Then rerun the
-  fresh live preflight/reviewer and, only if every
-  frozen identity/safety gate still passes, execute the one no-contact
-  replacement registration transaction. Do not open acquisition-v1 held-out.
+- Commit the passed live-review transition in the queue and graph, then
+  immediately recheck HEAD/origin, Git lock, C922/gateway/process ownership,
+  packet/review/action hashes, and torque false. If unchanged, execute the one
+  reviewed no-contact replacement registration transaction. Do not open
+  acquisition-v1 held-out.
 
 Attempt ledger:
 
@@ -1040,3 +1050,26 @@ OPENCV_OPENCL_RUNTIME=disabled uv run --offline pytest -q \
 The failed review opened no camera or gateway, issued no motion, and consumed
 no registration transaction or task attempt. Torque remained false, held-out
 open count remained `0`, and counted attempts remained `0/10`.
+
+### V04 live review attempt 2 CONTINUE — 2026-07-28
+
+Repair commit `9decefa39758ec190c6a26b4b37b89c08764bb63`
+was pushed and matched origin. The next live check again found no Git lock,
+C922 recorder/capture process, follower-device owner, or repo-owned gateway
+process. The deterministic reviewer emitted
+`runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v2/pre-motion-review-v1.json`,
+SHA-256
+`7dc3e08ff3d0cbea2bdb6ed640aaa5792abea2b0d826967c04a3bae195c00868`.
+All `12/12` gates pass; reviewer decision is `CONTINUE`, evidence anchor
+`100`. The fresh torque-off follower start is
+`[-8.351648,-106.285714,99.208791,-94.109890,-125.318681,2.612827]`.
+The exact source-egress and capture/return hashes remain
+`a2536181add1aaf901aac5b94929a5a7117974e571354a68abd94b3a361d4bab`
+and
+`06d531afba308c3582cb67972c735bf963c6cae35df365325e36139ba8eac1c2`.
+
+The review opened no camera or gateway and issued no motion. The graph remains
+compact campaign context and does not widen its global authority flags; the
+source-bound packet/review pair is the reviewed transaction authority.
+Held-out open count remains `0`, counted attempts remain `0/10`, and V04
+remains the sole active card.
