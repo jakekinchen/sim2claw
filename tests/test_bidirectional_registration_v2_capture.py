@@ -31,6 +31,11 @@ START_BRIDGE_PACKET = (
     / "configs/hardware/"
     "bidirectional_pawn_push_v2_registration_capture_v3.json"
 )
+EMPIRICAL_V3_PACKET = (
+    ROOT
+    / "configs/hardware/"
+    "bidirectional_pawn_push_v2_registration_capture_v4.json"
+)
 START = [
     -11.164835164835164,
     -71.38461538461539,
@@ -46,6 +51,14 @@ RECOVERY_START = [
     -94.02197802197803,
     -125.31868131868131,
     2.494061757719715,
+]
+EMPIRICAL_V3_START = [
+    -8.351648351648352,
+    -106.1978021978022,
+    99.20879120879121,
+    -93.84615384615384,
+    -125.14285714285714,
+    2.375296912114014,
 ]
 
 
@@ -83,6 +96,14 @@ def _recovery_preflight() -> dict[str, object]:
     result = _preflight()
     result["follower_start_degrees"] = [
         value + 0.1 for value in RECOVERY_START
+    ]
+    return result
+
+
+def _empirical_v3_preflight() -> dict[str, object]:
+    result = _preflight()
+    result["follower_start_degrees"] = [
+        value + 0.1 for value in EMPIRICAL_V3_START
     ]
     return result
 
@@ -295,6 +316,27 @@ def test_start_bridge_review_binds_time_only_bridge_and_unchanged_arrays(
         result["exact_setup_arrays"]["capture_and_return"]["action_sha256"]
         == "06d531afba308c3582cb67972c735bf963c6cae35df365325e36139ba8eac1c2"
     )
+    assert result["physical_motion_commanded"] is False
+    assert result["camera_opened"] is False
+    assert result["gateway_constructed"] is False
+
+
+def test_empirical_v3_review_binds_exact_new_arrays_without_authority(
+    tmp_path: Path,
+) -> None:
+    result = review_capture_plan(
+        packet_path=EMPIRICAL_V3_PACKET,
+        review_path=tmp_path / "review-v4.json",
+        preflight_fn=_empirical_v3_preflight,
+    )
+    assert result["reviewer"]["decision"] == "CONTINUE"
+    assert all(result["gates"].values())
+    assert len(result["capture_slices"]) == 10
+    assert result["exact_setup_arrays"]["source_egress"]["shape"] == [715, 6]
+    assert result["exact_setup_arrays"]["capture_and_return"]["shape"] == [
+        1771,
+        6,
+    ]
     assert result["physical_motion_commanded"] is False
     assert result["camera_opened"] is False
     assert result["gateway_constructed"] is False

@@ -1,0 +1,131 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture.v1",
+  "capture_id": "bidirectional_pawn_push_v2_registration_capture_20260728_v4",
+  "status": "frozen_before_registration_motion",
+  "proof_class": "prospective_camera_enclosed_no_contact_registration_motion_only",
+  "acquisition_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v3.json",
+    "sha256": "26f470db40ac666b26b26b4b0bcf3096fbb1a2e4ff9f47173f4f30e2e5fcdbfe"
+  },
+  "route_contract": {
+    "path": "configs/hardware/bidirectional_pawn_push_v2_registration_route_v3.json",
+    "sha256": "779bddd3feeac475d380a564e3be48a728334a885e30b85c975c45ae5ab4b780"
+  },
+  "static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/static-review-v3/evaluation.json",
+    "sha256": "46efba3a137e9af3e69da5ea4ab0782675c5b004aba72f79fa3d3f806d808d78",
+    "required_reviewer_decision": "CONTINUE",
+    "required_evidence_anchor": 100
+  },
+  "exact_setup_arrays": {
+    "source_egress": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/static-review-v3/source_egress.npy",
+      "npy_sha256": "6fc5cb58790668cb2bca6d6d065bef86470a1bf759722bd2f9ad66c11500c47b",
+      "action_sha256": "f3e480e6b89582d51edff3a2b0845aa637103a3dbfe31e26f6865182e25e96f2",
+      "shape": [715, 6],
+      "dtype": "little_endian_float64"
+    },
+    "capture_and_return": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/static-review-v3/capture_and_return.npy",
+      "npy_sha256": "9b9f7ec7677c951ea1e696d021c4fbe15d29c0be46e8ceefb473c6338435f07b",
+      "action_sha256": "a006babcd3928bfe3bc6bab37d9bf0c6b9c53930e1f0a1ed2bc8cdd287d218b4",
+      "shape": [1771, 6],
+      "dtype": "little_endian_float64"
+    },
+    "excluded_from_policy_task_and_transfer_evidence": true
+  },
+  "live_rebase_setup_bridge": {
+    "bridge_id": "v04_acquisition_v2_time_only_pre_row_bridge_v1",
+    "pattern": "time_only_pre_row_bridge",
+    "duration_seconds": 0.05,
+    "command_count": 0,
+    "first_frozen_row_elapsed_seconds": 0.05,
+    "maximum_live_rebase_delta_degrees": 1.0,
+    "maximum_post_hold_to_first_row_delta_degrees": 3.0,
+    "sends_no_command": true,
+    "changes_frozen_arrays": false,
+    "excluded_from_policy_task_and_transfer_evidence": true
+  },
+  "camera_transaction": {
+    "owner": "fixed_c922",
+    "capture_contract": {
+      "path": "configs/evaluations/c922_terminal_hold_still_capture_v1.json",
+      "sha256": "e2daa9dcc6329c41cac561b6494a11017b9d42f8e57784bb0d254d4345222a17"
+    },
+    "capture_source": {
+      "path": "tools/macos/C922TerminalHoldStillCapture.swift",
+      "sha256": "3a39e4425141e795909291709067ca4f71e73e94906e52fb84d2b20dd470b95d"
+    },
+    "fixed_mount_token": "current-workcell-fixed-mount-20260728-v2-registration",
+    "camera_session_prefix": "bidirectional-pawn-push-v2-registration-recapture-20260728-v4",
+    "one_sequential_owner_session_per_target": true,
+    "return_session_after_last_target": true,
+    "maximum_simultaneous_c922_owners": 1,
+    "camera_ready_before_gateway_open": true,
+    "camera_ready_before_every_motion_segment": true,
+    "recorder_must_remain_running_during_motion": true,
+    "dropped_callback_count_maximum": 0,
+    "selected_frame_rule": "nearest retained callback to midpoint of final 2.0 seconds of the frozen 2.5 second target hold",
+    "selected_frame_minimum_count_per_target": 1,
+    "supporting_pi_rgb_required": false,
+    "d405_color_required": false,
+    "d405_depth_used": false
+  },
+  "tracking_and_safety": {
+    "reviewed_gateway": "sim2claw.teleop_recording._physical_excitation_gateway",
+    "control_source": "frozen_precompiled_follower_actions",
+    "sample_hz": 20,
+    "maximum_commanded_body_slew_degrees_per_second": 3.0,
+    "fresh_start_maximum_absolute_delta_degrees": 1.0,
+    "exact_requested_mapped_sent_bytes_required": true,
+    "rate_limiting_clamping_assistance_intervention_forbidden": true,
+    "stop_on_tracking_error_stall_or_camera_exit": true,
+    "hold_scoring_tail_samples": 40,
+    "hold_scoring_seconds": 2.0,
+    "joint_hold_tracking_maximum_degrees": 2.0,
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "torque_off_every_exit": true,
+    "fresh_torque_off_preflight_after_close_required": true,
+    "eeprom_change_forbidden": true,
+    "servo_id_change_forbidden": true,
+    "ram_gain_change_forbidden": true,
+    "torque_limit_change_forbidden": true,
+    "unreviewed_controller_change_forbidden": true
+  },
+  "sealing": {
+    "fit_images_and_receipts_directory": "fit",
+    "heldout_images_and_receipts_directory": "heldout-sealed",
+    "fit_manifest_lists_fit_members_only": true,
+    "heldout_manifest_lists_opaque_ids_hashes_and_byte_counts_only": true,
+    "heldout_target_mapping_sealed_in_execution_receipt": true,
+    "all_native_callback_ledgers_and_selected_frames_hashed": true,
+    "annotation_occurs_after_capture_and_before_candidate_fit": true,
+    "fit_process_must_not_read_heldout_directory_or_execution_receipt": true
+  },
+  "pre_motion_review": {
+    "fresh_preflight_required": true,
+    "all_static_gates_required": true,
+    "exact_arrays_must_match_static_receipt": true,
+    "empirical_visibility_gate_required": true,
+    "reviewer_kind": "deterministic_registration_capture_pre_motion_reviewer",
+    "required_decision": "CONTINUE"
+  },
+  "authority": {
+    "owner_authorized_agent_controlled_rgb_observation": true,
+    "owner_authorized_reviewed_no_contact_registration_motion": true,
+    "registration_motion_requires_pre_motion_reviewer_continue": true,
+    "counted_task_action": false,
+    "pawn_contact": false,
+    "policy_evidence": false,
+    "task_success": false,
+    "transfer": false,
+    "training": false
+  },
+  "attempt_accounting": {
+    "authoritative_registration_transactions_maximum": 1,
+    "counted_physical_attempts_consumed": 0,
+    "task_attempt_denominator_change": 0
+  }
+}
