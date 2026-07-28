@@ -1,0 +1,103 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "prospective_d1_d2_elbow_sag_recovery_tricam_20260727_v2",
+  "samples_per_stage": 481,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_25s_v1.json",
+    "contract_sha256": "317a428884de0b55066dfee0e67b84853af5bb88f6f0da05e53d341fdd702930"
+  },
+  "setup_recovery_command_anchor_snap_limit_degrees": 3.0,
+  "reviewed_anchor_degrees": [
+    -6.769230769230769,
+    -91.16483516483517,
+    103.95604395604396,
+    -46.1978021978022,
+    -102.81318681318682,
+    1.66270783847981
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        -6.769230769230769,
+        -91.16483516483517,
+        93.93406593406593,
+        -46.1978021978022,
+        -102.81318681318682,
+        1.66270783847981
+      ],
+      [
+        -0.7912087912087912,
+        -105.75824175824175,
+        93.93406593406593,
+        -100.0,
+        -119.07692307692308,
+        1.66270783847981
+      ]
+    ]
+  ],
+  "recovery_derivation": {
+    "fresh_anchor_source": "configuration_free_follower_only_torque_off_preflight",
+    "fresh_anchor_observed_at": "2026-07-27",
+    "live_elbow_anchor_degrees": 103.95604395604396,
+    "calibrated_elbow_upper_degrees": 102.10989010989012,
+    "setup_clamp_elbow_delta_degrees": -1.8461538461538396,
+    "setup_clamp_direction": "monotonically_inward",
+    "destination_anchor_source": "previously_observed_contact_free_torque_off_camera_pose_v1_other_joint_geometry",
+    "destination_packet_path": "runs/prospective-real-to-sim/20260727-d1-d2-camera-pose-setup-v1/packet.json",
+    "destination_packet_sha256": "5b44df20f3f503d9d25de896dd4515e4c76f419e3aedb1d3f9f9f2e16fcf8553",
+    "destination_prior_torque_off_elbow_degrees": 99.2967032967033,
+    "destination_commanded_elbow_degrees": 93.93406593406593,
+    "destination_commanded_elbow_source": "last_physically_reached_plateau_in_terminal_recovery_v1",
+    "failed_predecessor_campaign": "20260727-d1-d2-elbow-sag-recovery-v1",
+    "failed_predecessor_terminal_action_sha256": "f604504b396c98f8e79365ca8026b13710a26ba67ad35766fbc04a34b205e043",
+    "failed_predecessor_mechanism": "elbow held at a 90.614424-degree request for 0.975 seconds after observed motion plateaued at 93.934066 degrees",
+    "mechanism_specific_change": "replace the unreachable 90.614424-degree request with the physically reached 93.934066-degree elbow plateau, then immediately move the other joints into the previously stable torque-off geometry",
+    "elbow_route_monotonic_nonincreasing": true,
+    "maximum_frozen_slew_degrees_s": 8.967032967032968
+  },
+  "recovery_source_contact_admission": {
+    "schema_version": "sim2claw.recovery_source_contact_admission.v1",
+    "enabled": true,
+    "source_state_only": true,
+    "source_joint": "elbow_flex",
+    "inward_direction": "decreasing",
+    "require_source_robot_self_contact_only": true,
+    "require_contact_pairs_subset_of_source": true,
+    "require_penetration_never_worse_than_source": true,
+    "require_final_contact_clear": true,
+    "exclude_from_task_and_transfer_claims": true,
+    "visual_source_review_path": "runs/prospective-real-to-sim/20260727-d1-d2-wrist-dominant-setup-v2/visual_scene_review.json",
+    "visual_source_review_sha256": "85bd06d98fa615bb9130f450738414035f89f973c4d07aad9085d2a097695ec6"
+  },
+  "review_basis": {
+    "physical_scope": "setup_recovery_only",
+    "capture_scope": "preview_bound_tricam_mechanism_specific_recovery_to_stable_geometry",
+    "target_selection": "Start C922, native D405 RGB, and Pi before the bounded elbow-only setup clamp. Move elbow monotonically inward only to the 93.934066-degree value physically reached in recovery v1, then immediately hold that reachable request while moving the other five joints to the camera-pose v1 geometry that was previously observed torque-off with elbow 99.296703 degrees. This separate campaign removes the predecessor's unreachable 90.614424-degree request and one-second no-progress mechanism.",
+    "runtime_setup_preview_source_path": "src/sim2claw/wrist_view_reposition.py",
+    "runtime_setup_preview_source_sha256": "736c137a7e5fba0d617d721b99f2d95d240bef402142fbf836897344cdd3591f",
+    "separate_from_prior_campaigns": true,
+    "prior_action_bytes_reused": false,
+    "recovery_bytes_excluded_from_task_action_hash": true,
+    "fresh_torque_off_anchor_read": true,
+    "setup_recovery_snap_limit_degrees": 3.0,
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "one_physical_attempt": true,
+    "evidence_limits": {
+      "physical_recovery_only": true,
+      "setup_recovery_motion_is_sim_gap_evidence": false,
+      "task_action": false,
+      "task_success": false,
+      "transfer": false,
+      "camera_exposure_synchronization": false,
+      "absolute_pi_camera_registration": false,
+      "metric_depth": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false
+    }
+  }
+}

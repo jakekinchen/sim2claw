@@ -4,19 +4,26 @@ Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
 
 ## Latest prospective D1→D2 gate
 
-The single reviewed elbow-sag recovery campaign stopped safely after `399 /
-721` frozen motion rows. The last persisted row showed elbow requested at
-`90.614424 deg`, observed at `93.934066 deg`, and at `0.975 s` of
-no-progress; the next planned row hit the gateway's one-second stall-warning
-boundary. C922, native D405 RGB, and Pi enclosed the motion with zero reported
-C922/D405 drops, no pawn/board/table contact was observed, and torque-off plus
-camera cleanup were verified.
+The owner-authorized second, separately frozen elbow-sag recovery campaign
+also stopped safely at the gateway's one-second elbow no-progress boundary.
+It replaced recovery v1's unreachable `90.614424 deg` request with the
+`93.934066 deg` value v1 physically reached, then began moving the other
+joints toward a previously stable geometry. After `263 / 481` persisted
+frozen rows, elbow remained at `97.186813 deg`, a `3.252747 deg` residual,
+for `0.975 s`; the next planned row was rejected before persistence.
 
-The fresh torque-off elbow settled to `103.956044 deg`, still `1.846154 deg`
-above the calibrated exact-gateway maximum. Recovery Slice A is therefore a
-terminal safe stop. No D1→D2 task action was frozen or attempted, REAL→SIM
-physics was not run, and SIM→REAL remains forbidden. Accepted proof class:
-`physical_recovery_terminal_safe_stop_elbow_stall_no_task_or_transfer_authority`.
+Every persisted row retained requested/mapped/sent identity with no clamp or
+rate limit. C922, native D405 RGB, and Pi enclosed the interval; C922/D405
+reported zero Apple drops and writer backpressure, and visual review found no
+pawn, board, or table contact. Torque-off and camera cleanup are verified.
+
+The resulting torque-off elbow is now inside the calibrated gateway envelope
+at `101.670330 deg`, with only `0.439560 deg` upper-limit margin. This is an
+available unclipped anchor, but the recovery did not qualify exact tracking
+because it stopped on an elbow stall. Recovery v2 is terminal, the task gate
+remains closed, no D1→D2 action was frozen or attempted, REAL→SIM physics was
+not run, and SIM→REAL remains forbidden. Accepted proof class:
+`physical_recovery_terminal_safe_stop_in_range_anchor_elbow_stall_no_task_or_transfer_authority`.
 
 ## Latest contact-free geometric transfer evidence
 
