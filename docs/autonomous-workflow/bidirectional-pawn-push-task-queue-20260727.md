@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push Transfer Task Queue
 
-Status: `ACTIVE`
+Status: `TERMINAL_NO_TRANSFER_OWNER_AUTHORITY_BOUNDARY`
 
 Created: `2026-07-27`
 
@@ -280,7 +280,7 @@ remaining cards to complete.
 | Q12 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Continue distinct preregistered cases only as needed, up to the frozen maximum of ten. | Stop new cases immediately after one complete bidirectional result exists. Every failure remains in the denominator; no post-hoc family expansion. | Every one of the ten preregistered cases was rejected before compilation by the same frozen Q06 clearance gate; expansion and post-observation weakening are forbidden. |
 | Q13 | `DONE_CORRECTED_TERMINAL_PACKAGE` | Produce the bidirectional evidence package. | Synchronized browser-playable comparisons, posters, action/mapping/evaluator receipts, case-index denominator, first-divergence summaries, Studio catalog entry, and exact claim boundary verified. Raw private recordings remain unpublished. | Corrected receipt SHA-256 `5ad9376a4be007bef22bbf93f08e5d54576e87db40b4fa08a78b716c91727e44`; viewer SHA-256 `6f13722a9be419e44d40de5526bdf1a042ae6bee0838bffc88fff05919911fbe`; contract SHA-256 `86c64da69ffce7ee9729d9f757daef9d500e9e45b57a2d3496e570f1c5c8dbc8`. Viewer/Studio expose unscorable held-out, contract infeasibility, `0/0` per direction, empty action hashes, and no task/transfer/safety-event authority. `24 passed, 2 subtests passed in 7.87s`; executor `053`; raw recordings unpublished. |
 | Q14 | `DONE_CORRECTED_AND_PUSHED` | Final verification and publication closeout. | Focused/full relevant tests pass; workflow audit passes; Git diff is scoped; branch commit is pushed; public release/portfolio surface is updated only if already authorized and privacy-reviewed; torque and processes are clean. | `45 passed, 2 subtests passed in 8.40s`; workflow audit clean; fresh preflight passed with no rewrite/alignment motion and follower torque false; existing torque receipt SHA-256 `ca50d9dae4aa9a7dd672edee625dfe51ff2e4ad65cb76e7a28e39f3f06457d09` reproduced; zero repo-owned camera/gateway processes; `brev ls` reports no instances; unrelated files preserved; public release skipped as unauthorized. Corrected closeout through commit `68a7de3` pushed to `origin/codex/geometric-microtransfer-20260727`. Executor `054`. |
-| Q15 | `IN_PROGRESS_FINAL_RECONCILIATION` | Fable 5 post-result review. After Q00-Q14 and the Definition of Done are locally verified, or after a genuine receipt-backed terminal boundary, return via Computer Use to the existing Claude Desktop conversation titled `Sim-to-real transfer evaluation`; do not start a replacement unless the existing conversation is genuinely unavailable. Submit a concise evidence-complete report covering the original goal, exact actions, per-direction numerator/denominator, proof class, action/mapping/scene/evaluator hashes and versions, fit and held-out registration metrics, simulator and physical outcomes, camera paths, failures and stop conditions, tests, commits/branch, and limitations. Ask Fable to audit claim support, strongest result, weakest proof link, overlooked concrete defects or missing verification, and highest-leverage application/demo and sim2real next steps. | Return to the same existing thread with the Q03/Q05/Q06/Q13 corrections and ask whether the concrete defect is closed. Preserve model/thread/date and final reconciliation in a scoped repository artifact. |
+| Q15 | `DONE_ACCEPTED` | Fable 5 post-result review. After Q00-Q14 and the Definition of Done are locally verified, or after a genuine receipt-backed terminal boundary, return via Computer Use to the existing Claude Desktop conversation titled `Sim-to-real transfer evaluation`; do not start a replacement unless the existing conversation is genuinely unavailable. Submit a concise evidence-complete report covering the original goal, exact actions, per-direction numerator/denominator, proof class, action/mapping/scene/evaluator hashes and versions, fit and held-out registration metrics, simulator and physical outcomes, camera paths, failures and stop conditions, tests, commits/branch, and limitations. Ask Fable to audit claim support, strongest result, weakest proof link, overlooked concrete defects or missing verification, and highest-leverage application/demo and sim2real next steps. | Same existing thread/model/date used. Fable independently verified hashes, re-extracted the C922 apex, inspected Pi, accepted Q03 as honestly unadjudicable, accepted the Q05/Q06/Q13 infeasibility correction and denominators, found no remaining required defect, and returned `ACCEPT`. Artifact `docs/reviewer-messages/048-q15-fable-final-reconciliation.md`. |
 
 ## Fallback queue
 
@@ -306,9 +306,9 @@ remaining cards to complete.
 
 Current state:
 
-- Q00-Q14 are dispositioned and corrected through pushed commit `68a7de3`.
-  Q07-Q12 remain explicitly unauthorized. Q15 final reconciliation is the
-  only active card.
+- Q00-Q15 are dispositioned. Q07-Q12 remain explicitly unauthorized because
+  no case/action was admitted. Fable returned `ACCEPT` after independently
+  verifying the correction chain. No queue card is active.
 - Commit `0b3afab` adopted this queue and its goal-loop contract.
 - Existing prior receipts remain unchanged.
 - Robot motion remains unauthorized. Q06 admitted no case and Q07 cannot
@@ -448,8 +448,8 @@ Verification evidence:
 
 Remaining:
 
-- Q15 final reconciliation. Q07-Q12 remain visibly not authorized, not
-  passed.
+- No in-scope card remains. Q07-Q12 remain visibly not authorized, not
+  passed. A successor campaign is outside this queue.
 
 Blockers:
 
@@ -466,8 +466,8 @@ Blockers:
 
 Next step:
 
-- Return to the same Fable 5 thread, report the corrections, and close or
-  reopen any independently verified remaining criterion defect.
+- None within this queue. Any new held-out episode or feasible successor
+  evaluator requires separate owner authorization.
 
 Attempt ledger:
 
@@ -491,6 +491,10 @@ Advisory feedback / next steps:
   independently reproducible preregistration-feasibility omission. Fable's
   suggestions for a successor center-ward evaluator are optional and require
   separate owner authorization; they do not modify the frozen v1 evaluator.
+- Final reconciliation returned `ACCEPT`. Fable verified the corrected
+  artifacts and found no remaining required-criterion defect. Reviewer
+  artifact:
+  `docs/reviewer-messages/048-q15-fable-final-reconciliation.md`.
 
 ## Q01 transition record
 
@@ -866,3 +870,64 @@ The fresh preflight reproduced the existing torque-off receipt SHA-256
 No repo-owned camera/gateway process remained. The unrelated untracked files
 remain unstaged; no Brev or paid compute was used. Q15 is the only active
 card.
+
+## Q15 final reconciliation
+
+Computer Use returned to the existing Claude Desktop conversation
+`Sim-to-real transfer evaluation`; model selector and response identity both
+reported Claude Fable 5 (`claude-fable-5`). No replacement thread was
+created. The correction report covered Q03/Q05/Q06/Q13 hashes, exact
+denominators, absent action hashes, tests, torque/process/Brev state, pushed
+commits, and limitations.
+
+Fable independently read the pushed repository, verified the new hashes,
+re-extracted the sealed C922 apex, inspected the Pi apex, ran a sample of the
+new tests (`6 passed`), and confirmed origin at `ee7ef46`. Its final decision:
+
+```text
+ACCEPT
+Q03 is honestly closed as unadjudicable rather than circularly rescored.
+The corrected proof class, denominators, and v4-indeterminate status follow.
+No remaining required-criterion defect must reopen a card.
+```
+
+Identity: Claude Fable 5 (`claude-fable-5`), same
+`Sim-to-real transfer evaluation` conversation, 2026-07-27, read-only.
+Artifact:
+`docs/reviewer-messages/048-q15-fable-final-reconciliation.md`.
+
+## Final queue self-audit
+
+- Active cards: `0`.
+- Unjustified `PENDING` cards: `0`.
+- Q00-Q06 and Q13-Q15: evidence-backed dispositions.
+- Q07-Q12: explicitly not authorized because Q06 admitted no case and no
+  action existed; none is marked passed.
+- Definition-of-Done item 1: unmet. V4 fit passes at `24.631505 mm`; held-out
+  metric status is unscorable/indeterminate.
+- Definition-of-Done item 2: a native float64/40 Hz ten-case evaluator was
+  frozen, but its F1 premise is unsupported and its clearance contract is
+  structurally infeasible for the reset layout.
+- Definition-of-Done items 3-4: unmet. REAL→SIM `0/0`; SIM→REAL `0/0`.
+- Definition-of-Done item 5: no counted attempt began; there are no action,
+  mapping, execution, or outcome receipts to fabricate.
+- Definition-of-Done item 6: corrected local viewer/package and Studio
+  blocked entry expose exact zeros, empty action hashes, and limitations.
+- Definition-of-Done item 7: torque false; zero repo-owned camera/gateway
+  processes; unrelated files preserved; corrected commits pushed through
+  `ee7ef46`; public release skipped as unauthorized.
+- Artifacts/hashes: Q03 correction, Q05 feasibility, Q06 gate, Q13 package,
+  viewer, evaluator, candidate, and torque receipt resolve.
+- Tests: `45 passed, 2 subtests passed`; workflow audit clean.
+- Brev: no instances; no paid compute used.
+- Final proof class:
+  `terminal_preregistered_contract_infeasibility_without_physical_attempt`.
+- Final attempt ledger: REAL→SIM `0/0`; SIM→REAL `0/0`; total `0/10`.
+- Counted action hashes: none.
+- Physical/simulator/bidirectional task success: none.
+
+The target bidirectional claim was not achieved and the queue is not marked
+successful. Continuing would require a new camera-adjudicable held-out
+episode and a prospectively feasible successor evaluator. Both are outside
+the frozen queue and require new owner authorization; no user physical
+intervention is requested.
