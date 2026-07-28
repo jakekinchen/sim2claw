@@ -1,0 +1,150 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_plant_challenger.v1",
+  "milestone_id": "V05-T",
+  "status": "preregistered_plan_only_implementation_and_execution_paused",
+  "proof_class": "prospective_cpu_fp64_sim_only_temporal_plant_challenger_plan",
+  "source_bindings": {
+    "v05_rehearsal_v4_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-sim-rehearsal-v4/receipt.json",
+      "sha256": "cb722bebdfa7134958bab103214112ede29525416c8d999f6fbcbd321ed8ceee"
+    },
+    "timing_ablation_diagnostic": {
+      "path": "outputs/pawn_bg_timing_ablation_v1/timing_ablation_receipt.json",
+      "sha256": "ef50f7c09379f7aa8449cc74cdbb1738251e059835a79f9547fa7874bf4437d9",
+      "admitted_semantics": "0.11 second action-frozen simulator diagnostic only",
+      "not_admitted_as": [
+        "physical latency",
+        "causal application latency",
+        "calibrated plant",
+        "posterior",
+        "simulator composite promotion"
+      ]
+    },
+    "hil_identifiability_log": {
+      "path": "docs/run-logs/2026-07-24-four-hour-hil-identifiability.md",
+      "sha256": "dcdb03622a7daa23819d4b13c0c1aae24200230a272b31e96628356f37ffbb6f",
+      "admitted_semantics": "0.15 to 0.20 second sample-quantized command-to-position alignments",
+      "not_admitted_as": [
+        "causal application latency",
+        "physical plant posterior"
+      ]
+    }
+  },
+  "v05_terminal_negative": {
+    "status": "sim_rehearsal_reject",
+    "minimum_recommendable_cases_per_direction": 2,
+    "eligible_feasible_case_count": {
+      "REAL_TO_SIM": 2,
+      "SIM_TO_REAL": 1
+    },
+    "gate_weakened": false,
+    "case_admitted": false
+  },
+  "broader_case_enumeration": {
+    "required_before_temporal_replay": true,
+    "source": "reset-layout scene only; no task outcome or V05 dynamic result may select candidates",
+    "bounded_rule": "enumerate every modeled reset-layout pawn and each on-board orthogonal adjacent destination whose reset-layout destination is empty; sort by source square then destination square; evaluate all with the unchanged static registration, IK, arm-margin, jaw-stop, camera, and collision gates",
+    "maximum_candidates": 64,
+    "lane_partition_rule": "after static eligibility and before any dynamic replay, assign lexicographically sorted distinct cases alternately to REAL_TO_SIM and SIM_TO_REAL, preserving at least two per lane when the static family permits",
+    "diagnostic_c2_remains_excluded": true,
+    "outcome_cherry_picking": false,
+    "physical_attempt_budget_consumed": false
+  },
+  "action_identity": {
+    "dtype": "float64",
+    "endianness": "little",
+    "sample_rate_hz": 40.0,
+    "tensor_compiled_once_per_candidate": true,
+    "baseline_and_challenger_byte_identical": true,
+    "preserve_rows_order_and_hash": true,
+    "forbidden": [
+      "clipping",
+      "smoothing",
+      "retiming",
+      "offset",
+      "rate limiting",
+      "IK repair",
+      "corrective suffix",
+      "assistance"
+    ]
+  },
+  "plant_paths": {
+    "canonical_baseline": {
+      "kind": "direct_target_mujoco",
+      "promotion_authority": false
+    },
+    "diagnostic_challenger": {
+      "kind": "zero_order_hold_command_delay",
+      "delay_seconds": 0.11,
+      "semantics_source": "timing_ablation_diagnostic",
+      "calibrated_plant": false,
+      "posterior": false,
+      "promotion_authority": false
+    }
+  },
+  "trace_contract": {
+    "separate_traces": [
+      "requested",
+      "sent",
+      "applied"
+    ],
+    "each_row_fields": [
+      "row_index",
+      "timestamp_seconds",
+      "float64_values",
+      "raw_row_sha256"
+    ],
+    "requested_sent_identity_required": true,
+    "applied_trace_may_only_differ_by_declared_zoh_schedule": true
+  },
+  "gateway_compatibility_gate": {
+    "fail_closed_before_any_physical_packet": true,
+    "bind_reviewed_gateway_and_joint_rate_envelope_before_evaluation": true,
+    "verify_per_joint_delta_and_slew_at_40_hz": true,
+    "gateway_must_accept_exact_tensor_without_transform": true,
+    "on_failure": "reject candidate; do not clip, smooth, retime, offset, or rate-limit"
+  },
+  "per_path_outcomes": [
+    "selected_contact_steps",
+    "signed_progress_mm",
+    "excluded_contact_steps",
+    "maximum_excluded_displacement_mm",
+    "new_nonselected_jaw_collision_pairs",
+    "camera_margin_px"
+  ],
+  "acceptance": {
+    "each_candidate_must_pass_baseline_and_challenger": true,
+    "minimum_feasible_recommendable_cases_per_direction": 2,
+    "camera_and_exclusion_consequence_must_remain_stable": true,
+    "no_physical_packet_until_gate_passes": true
+  },
+  "excluded_scope": [
+    "filters",
+    "reward changes",
+    "jitter",
+    "deadband",
+    "joint play",
+    "posterior sampling",
+    "second simulator",
+    "ACT rewrite",
+    "domain randomization"
+  ],
+  "deferred": {
+    "act_n_obs_steps_1_current_state_gap": true,
+    "reason": "later architecture question outside immediate transfer proof"
+  },
+  "pause_barrier": {
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "physical_task_packet": false,
+    "physical_motion": false
+  },
+  "authority": {
+    "training": false,
+    "simulator_promotion": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective temporal-plant and action-rate realism plan only. The 0.11 second challenger is diagnostic, not a calibrated physical plant or promotion candidate."
+}

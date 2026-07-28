@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_FROZEN_REHEARSAL_V4_SINGLE_EXECUTION`
+Status: `PAUSED_AFTER_V05_REJECT_V05_T_PLAN_BOUND`
 
 Created: `2026-07-28`
 
@@ -186,7 +186,8 @@ denominators before any counted action is compiled.
 | V02 | `DONE` | Prove hover poses and visibility using CPU/fp64 simulation and static camera projections/images. | Every proposed target passes joint limits, self/table/board/pawn clearance, no-contact height, slow-path preview, C922 field of view, simultaneous gripper/board visibility, and guaranteed return/torque-off logic. Reviewer decision `CONTINUE`. No motion. | Route `configs/hardware/bidirectional_pawn_push_v2_registration_route_v1.json`, SHA-256 `b7464a34a6abe744d778323a7a017f5ab8f40d6f6556b7691f5944e1bbd52d8e`. Final receipt `runs/bidirectional-pawn-push-v2/20260728-v02-static-route-v2/evaluation.json`, SHA-256 `53c6b4dec93cae8f41e9bc24a106fcc0883d3c11d97c887aec3c630491bdbcf6`; deterministic reviewer `CONTINUE`, evidence anchor `100`, all `11/11` gates true. Fresh torque-off start matched the frozen rebase exactly. Source egress: `92` float64 rows, `4.55 s`, hash `9a3ccff7ba26e94f2cce2963480e33a2999b07efa16777edc73530a8fa28e142`. Capture/return: `1541` float64 rows, `77.0 s`, hash `6d05f2471ec0ca8f83beadbc9bbfcc4b6d8ae4c679198414fad600bf29a1dbdf`. Maximum slew `2.999531 deg/s`; minimum jaw clearance `66.282 mm` to any pawn and `93.975 mm` to board; C922 proxy minimum image margin `206.268 px`. All eight camera rays first hit the intended moving jaw `5.865-7.045 mm` before the registered midpoint, within the frozen `15 mm` surface-offset gate. No motion occurred; no camera opened, gateway was constructed, or attempt was counted. |
 | V03 | `DONE` | Capture the prospective fit and held-out registration observations through the reviewed gateway. | Cameras precede motion; only approved slow no-contact paths run; requested/mapped/sent and tracking receipts close; every planned target is captured; torque false on exit; input hashes freeze; no pawn contact. | Execution receipt `runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/execution_receipt.json`, SHA-256 `a1692a5b87d88b7b2c37151159660546d9104c9b3973de85f0801de0d9e793a3`, status `completed_no_contact_registration_capture`, proof class `physical_rgb_no_contact_registration_observation_only`. All exact `92 + 1541` requested/mapped/sent rows are byte-identical to the reviewed arrays; all eight scored holds pass; nine C922 sessions have zero drops; fit and sealed-heldout manifests hash to `933f121a60b741d5a555b865caccf8fedce1ea0b6accd0e007cd42f77eafa8a5` and `6fd932ddf33c2e5aae87680e141eb1a41f05feb19196eac2fd2343ad3f5a18d6`; final preflight proves torque false. No pawn contact or task attempt. |
 | V04 | `DONE` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Frozen candidate `4d08518f...`; heldout PASS receipt `5eaf763b...`; all four scorable/pass; heldout RMS `4.684083 px` and `4.741723 mm`; zero refit. Registration only. |
-| V05 | `IN_PROGRESS` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Rehearsal-v1 receipt `d4396104...` is an immutable terminal negative with no admitted case. A separately versioned correction may change only the defective jaw/joint-margin semantics before one new frozen run. |
+| V05 | `DONE_TERMINAL_NEGATIVE` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Final admissible rehearsal-v4 receipt `cb722beb...` rejects: REAL_TO_SIM `2` feasible, SIM_TO_REAL `1`, versus unchanged `2` per-direction gate. No case admitted. |
+| V05-T | `IN_PROGRESS_PLAN_BOUND_EXECUTION_PAUSED` | Challenge every prospectively broadened static/IK-eligible action with canonical direct-target MuJoCo and diagnostic-only `0.11 s` ZOH command delay; prove exact 40 Hz action bytes and gateway slew/rate compatibility. | At least two distinct cases per direction pass both plant paths with unchanged contact/progress/exclusion/collision/camera gates; requested/sent/applied traces and timestamps bind; gateway accepts bytes without transform. | Plan `configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json`; V06, counted compilation, and physical packets paused. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2001,3 +2002,59 @@ postprocessing chain, emit a final v4 receipt with all explicit arm/jaw
 checks, bind a retained contract whose SHA resolves after temporary cleanup,
 and leave no compatibility file. V4 may execute the exact frozen 72-cell grid
 once. No physical authority is granted.
+
+### V05 final rehearsal-v4 terminal negative and V05-T pause — 2026-07-28
+
+The single v4 execution produced an admissible public receipt at
+`runs/bidirectional-pawn-push-v2/20260728-v05-sim-rehearsal-v4/receipt.json`,
+SHA-256
+`cb722bebdfa7134958bab103214112ede29525416c8d999f6fbcbd321ed8ceee`.
+The receipt binds the retained v4 contract, has no temporary dependency,
+reports no physical motion or attempt, and returns `sim_rehearsal_reject`.
+
+Feasible recommendable families are:
+
+- REAL_TO_SIM `A2_A3`: six passing cells; recommended `90 mm` stroke at
+  `30 mm` height; maximum IK residual `1.272616 mm`, arm margin
+  `0.857777 rad`, worst robustness progress `39.808592 mm`, zero excluded
+  contacts, `0.000006 mm` maximum excluded displacement, no new collision,
+  and `143.249 px` minimum camera margin.
+- REAL_TO_SIM `B1_B2`: three passing cells; recommended `90/18 mm`; maximum
+  IK residual `1.314202 mm`, arm margin `0.364043 rad`, worst progress
+  `79.467306 mm`, zero excluded contacts, `0.000006 mm` maximum excluded
+  displacement, no new collision, and `121.852 px` camera margin.
+- SIM_TO_REAL `E2_E3`: nine passing cells; recommended `90/24 mm`; maximum
+  IK residual `0.510433 mm`, arm margin `0.498845 rad`, worst progress
+  `99.576184 mm`, zero excluded contacts, `0.000006 mm` maximum excluded
+  displacement, no new collision, and `132.770 px` camera margin.
+
+Excluded diagnostic `C2_C3` also has three passing cells but remains
+ineligible. `G2`, `H1`, and `F1` remain IK rejects; `D1` remains infeasible.
+All compiled cells pass the explicit arm margin and jaw target/simulator/
+hardware-bound checks; the minimum arm margin across compiled cells is
+`0.083990 rad`, above the unchanged `0.034907 rad` gate.
+
+The final direction count is REAL_TO_SIM `2` and SIM_TO_REAL `1`. Therefore
+the unchanged minimum-two-per-direction gate fails. V05 closes as a terminal
+simulation-rehearsal negative with no admitted case. The gate is not weakened,
+and V06 evaluator freeze, counted-action compilation, and every physical task
+packet remain paused.
+
+V05-T is prospectively bound in
+`configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json`.
+It freezes a bounded, outcome-independent reset-layout enumeration rule before
+any new dynamic replay. Each candidate action is compiled once as native
+little-endian float64 at `40 Hz`; baseline and challenger preserve identical
+rows, order, and bytes. The canonical path remains direct-target MuJoCo. The
+only challenger is a diagnostic `0.11 s` ZOH command delay, justified solely
+by the action-frozen timing ablation and explicitly not by the HIL
+`0.15-0.20 s` sample alignments.
+
+Requested, sent, and applied traces must be separate and timestamped.
+Gateway rate/slew compatibility fails closed before any physical packet and
+may not clip, smooth, retime, offset, or rate-limit an action. Every candidate
+must preserve contact, progress, exclusions, collisions, and camera
+consequences under both plant paths. Filters, rewards, jitter, deadband,
+joint play, posterior sampling, a second simulator, ACT changes, and
+randomization are excluded. The plan is bound; implementation and execution
+pause here for owner/controller handoff.

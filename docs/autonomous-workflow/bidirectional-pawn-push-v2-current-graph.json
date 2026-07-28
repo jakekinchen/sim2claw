@@ -3,12 +3,12 @@
     "counted_task_attempts": 0,
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
-    "milestone_id": "V05",
-    "node_id": "checkpoint:v05-sim-rehearsal-v4-frozen",
-    "queue_status": "ACTIVE_V05_FROZEN_REHEARSAL_V4_SINGLE_EXECUTION",
-    "resume_action": "execute_frozen_rehearsal_v4_identical_grid_once",
-    "resume_authorized": true,
-    "status": "preregistered_identical_grid_single_execution_active"
+    "milestone_id": "V05-T",
+    "node_id": "checkpoint:v05-t-temporal-plan-bound",
+    "queue_status": "PAUSED_AFTER_V05_REJECT_V05_T_PLAN_BOUND",
+    "resume_action": "implement_broader_static_enumeration_then_freeze_baseline_and_challenger",
+    "resume_authorized": false,
+    "status": "plan_bound_implementation_and_execution_paused"
   },
   "authority": {
     "camera_open": false,
@@ -35,27 +35,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 58,
+    "edges": 60,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 3,
-      "evaluated-on": 4,
+      "evaluated-on": 5,
       "fitted-on": 4,
-      "generated-from": 38,
+      "generated-from": 39,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 56,
+    "nodes": 58,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 30,
+      "checkpoint": 31,
       "context": 1,
       "counterexample": 3,
       "dataset": 1,
-      "evaluator_verdict": 3,
+      "evaluator_verdict": 4,
       "evidence": 4,
       "intervention": 1,
       "mechanism": 3,
@@ -455,6 +455,17 @@
       "type": "generated-from"
     },
     {
+      "metadata": {
+        "baseline_and_challenger_required": true,
+        "broader_static_enumeration_before_dynamic_replay": true,
+        "physical_motion": false,
+        "v06_paused": true
+      },
+      "source": "checkpoint:v05-t-temporal-plan-bound",
+      "target": "verdict:v05-sim-rehearsal-v4-reject",
+      "type": "generated-from"
+    },
+    {
       "metadata": {},
       "source": "context:c922-rgb-no-depth",
       "target": "session:bidirectional-pawn-push-v2",
@@ -631,10 +642,21 @@
       "source": "verdict:v05-sim-rehearsal-v1-reject",
       "target": "checkpoint:v05-sim-rehearsal-frozen",
       "type": "evaluated-on"
+    },
+    {
+      "metadata": {
+        "case_admitted": false,
+        "direction_gate_failed": true,
+        "gate_weakened": false,
+        "physical_motion": false
+      },
+      "source": "verdict:v05-sim-rehearsal-v4-reject",
+      "target": "checkpoint:v05-sim-rehearsal-v4-frozen",
+      "type": "evaluated-on"
     }
   ],
-  "generated_at": "2026-07-28T09:21:00-05:00",
-  "graph_digest": "a2b97575632f39dd0911026333c8b2628e025a747c46fdee38d42fca978b604f",
+  "generated_at": "2026-07-28T09:39:00-05:00",
+  "graph_digest": "4c0cd12fe9810273ffd9a26a4edb3f67079ac497da86a94ebc10b8bbbcfa27d8",
   "node_types": [
     "workcell",
     "session",
@@ -717,7 +739,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b"
+        "sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1111,7 +1133,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b"
+        "sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1162,7 +1184,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b"
+        "sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1183,7 +1205,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b"
+        "sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1212,7 +1234,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b"
+        "sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -1605,6 +1627,35 @@
     },
     {
       "data": {
+        "action_bytes_frozen_per_candidate": true,
+        "broader_static_enumeration_required": true,
+        "canonical_plant": "direct_target_mujoco",
+        "challenger": "diagnostic_0.11_second_zoh_delay",
+        "minimum_cases_per_direction": 2,
+        "physical_motion": false,
+        "physical_packet_paused": true,
+        "source_binding_id": "v05_t_temporal_plan",
+        "v06_paused": true
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-t-temporal-plan-bound",
+      "label": "V05-T temporal-plant challenger and action-rate plan bound",
+      "proof_class": "prospective_cpu_fp64_sim_only_temporal_plant_challenger_plan",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_sim_only_temporal_plant_challenger_plan",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_plant_challenger.v1",
+          "status": "preregistered_plan_only_implementation_and_execution_paused"
+        },
+        "proof_class": "prospective_cpu_fp64_sim_only_temporal_plant_challenger_plan",
+        "sha256": "5e8058e0bc46d60879d962a1e2ee9e8161a12197dfe9aee3faab73f7b1f23e9e"
+      },
+      "status": "plan_bound_implementation_and_execution_paused",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "source_binding_id": "v01",
         "task_camera": "C922",
         "wrist_depth_required": false
@@ -1846,7 +1897,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b"
+        "sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -1906,7 +1957,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b"
+        "sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -1924,7 +1975,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b"
+        "sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -1992,7 +2043,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b"
+        "sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -2105,6 +2156,36 @@
     },
     {
       "data": {
+        "case_admitted": false,
+        "gate_weakened": false,
+        "minimum_per_direction": 2,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "real_to_sim_feasible_cases": 2,
+        "sim_to_real_feasible_cases": 1,
+        "source_binding_id": "v05_sim_rehearsal_v4_receipt"
+      },
+      "evaluator_identity": "cb722bebdfa7134958bab103214112ede29525416c8d999f6fbcbd321ed8ceee",
+      "id": "verdict:v05-sim-rehearsal-v4-reject",
+      "label": "V05 rehearsal-v4 terminal direction-gate negative",
+      "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal_path_safe_finalization_v4",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260728-v05-sim-rehearsal-v4/receipt.json",
+        "payload_contract": {
+          "physical_motion": false,
+          "physical_task_attempts": 0,
+          "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal_path_safe_finalization_v4",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal_receipt.v4",
+          "status": "sim_rehearsal_reject"
+        },
+        "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal_path_safe_finalization_v4",
+        "sha256": "cb722bebdfa7134958bab103214112ede29525416c8d999f6fbcbd321ed8ceee"
+      },
+      "status": "sim_rehearsal_reject_no_case_admitted",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "human_physical_intervention_required": false,
         "source_binding_id": "v00"
       },
@@ -2201,7 +2282,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b",
+      "source_sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -2231,7 +2312,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b",
+      "source_sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -2261,7 +2342,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b",
+      "source_sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -2515,6 +2596,26 @@
       "source_binding": "v05_sim_rehearsal_v4_contract",
       "source_sha256": "e1ea033b42d3b9fc9dedd8cfc4d432cc34a98df3b284f56d0d009044a7fb404e",
       "status": "preregistered_identical_grid_single_execution_active"
+    },
+    {
+      "event_id": "V05_SIM_REHEARSAL_V4_REJECT",
+      "node_ids_added": [
+        "verdict:v05-sim-rehearsal-v4-reject"
+      ],
+      "revision": 37,
+      "source_binding": "v05_sim_rehearsal_v4_receipt",
+      "source_sha256": "cb722bebdfa7134958bab103214112ede29525416c8d999f6fbcbd321ed8ceee",
+      "status": "terminal_direction_gate_negative_no_case_admitted"
+    },
+    {
+      "event_id": "V05_T_TEMPORAL_PLAN_BOUND",
+      "node_ids_added": [
+        "checkpoint:v05-t-temporal-plan-bound"
+      ],
+      "revision": 38,
+      "source_binding": "v05_t_temporal_plan",
+      "source_sha256": "5e8058e0bc46d60879d962a1e2ee9e8161a12197dfe9aee3faab73f7b1f23e9e",
+      "status": "plan_bound_implementation_and_execution_paused"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -2523,7 +2624,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "224844b7a1944479a61c1159e8ff838431a92918bb16ab835c0131df71201f4b"
+      "sha256": "72b88ad24ff8a236c8d62e70d02baa5335c2482f965de1a9b98860997383bfc9"
     },
     {
       "id": "simulator_candidate",
@@ -3007,6 +3108,30 @@
       },
       "proof_class": "prospective_cpu_fp64_sim_only_rehearsal_v4_path_safe_finalization",
       "sha256": "e1ea033b42d3b9fc9dedd8cfc4d432cc34a98df3b284f56d0d009044a7fb404e"
+    },
+    {
+      "id": "v05_sim_rehearsal_v4_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-sim-rehearsal-v4/receipt.json",
+      "payload_contract": {
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal_path_safe_finalization_v4",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal_receipt.v4",
+        "status": "sim_rehearsal_reject"
+      },
+      "proof_class": "cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal_path_safe_finalization_v4",
+      "sha256": "cb722bebdfa7134958bab103214112ede29525416c8d999f6fbcbd321ed8ceee"
+    },
+    {
+      "id": "v05_t_temporal_plan",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_sim_only_temporal_plant_challenger_plan",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_plant_challenger.v1",
+        "status": "preregistered_plan_only_implementation_and_execution_paused"
+      },
+      "proof_class": "prospective_cpu_fp64_sim_only_temporal_plant_challenger_plan",
+      "sha256": "5e8058e0bc46d60879d962a1e2ee9e8161a12197dfe9aee3faab73f7b1f23e9e"
     },
     {
       "id": "world_visual",
