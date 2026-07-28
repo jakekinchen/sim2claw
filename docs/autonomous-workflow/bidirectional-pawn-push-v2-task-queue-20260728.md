@@ -726,3 +726,50 @@ The five-path scoped V04 implementation checkpoint was committed as
 `origin/codex/geometric-microtransfer-20260727`. This queue-only successor
 records that completed handoff; the six unrelated untracked paths remain
 unstaged and untouched.
+
+### Owner integration barrier result — 2026-07-28
+
+The separately authorized integration keeps V04 paused and adds two
+read-only, non-motion surfaces before resume:
+
+1. A deterministic current-campaign adapter compiles V00 through V04 into the
+   shared SAIL belief-graph vocabulary. It binds the live queue, V00/V02/V03
+   receipts, immutable V04 rejected-fit receipt/candidate, retained
+   simulator-candidate manifest, and registered IMG_5349 visual reference.
+   The graph retains a five-revision timeline, source hashes, explicit
+   configuration context, and an active pointer back to this paused V04
+   checkpoint. Tracked output:
+   `docs/autonomous-workflow/bidirectional-pawn-push-v2-current-graph.json`.
+   Config:
+   `configs/sail/bidirectional_pawn_push_v2_current_graph_v1.json`.
+2. The existing Studio `#/calibration` route becomes the responsive
+   world-space light table. It renders the complete registered
+   `334,537`-splat workspace and complete reviewed MuJoCo scene in the same
+   orbit camera, exposes independent 3DGS and MuJoCo opacity rails plus
+   isolate/overlay presets, and reads its delta ledger from the validated
+   graph.
+
+The integration deliberately separates three claims:
+
+- **World visual:** a non-zero visual delta is present. The retained
+  board-conditioned 3DGS registration has `3.758551 px` held-out corner RMS
+  across `166` corners. Its `22.7/39.0 mm` base-cloud-to-CAD medians are
+  orientation diagnostics only, not measured robot pose or global metric
+  geometry error.
+- **Current camera-to-model registration:** V04 has a separate non-zero
+  `11.281007 px` RMS / `15.767004 px` maximum jaw-projection residual and is
+  rejected before held-out. This is not transferred-action evidence.
+- **Directional task/action:** REAL->SIM remains `0/0`, SIM->REAL remains
+  `0/0`, and direction-specific RMS is unavailable. The UI must not infer it.
+
+This means the currently observed mismatch is **not only action data**:
+visual world registration and camera-to-model registration each expose
+non-zero image-space residuals. It remains invalid to turn either pixel
+residual into a global 3D metric, collision, contact, actuator, task, or
+bidirectional-transfer claim.
+
+No camera, gateway, held-out input, or robot motion is authorized by this
+integration. After its graph digest and browser verification are reported,
+the sole V04 writer may resume only through a new explicit thread prompt that
+preserves the graph as its active context and continues the prospectively
+versioned recapture fallback.

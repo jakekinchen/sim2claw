@@ -1,0 +1,614 @@
+{
+  "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
+  "campaign_id": "bidirectional_pawn_push_v2",
+  "generated_at": "2026-07-28T07:52:00-05:00",
+  "node_types": [
+    "workcell",
+    "session",
+    "context",
+    "evidence",
+    "residual_channel",
+    "simulator_version",
+    "mechanism",
+    "parameter_posterior",
+    "intervention",
+    "candidate",
+    "evaluator_verdict",
+    "twin_worthiness_certificate",
+    "dataset",
+    "checkpoint",
+    "policy",
+    "counterexample"
+  ],
+  "edge_types": [
+    "observed-by",
+    "generated-from",
+    "applied-to",
+    "affected-by",
+    "fitted-on",
+    "evaluated-on",
+    "invalidates",
+    "compensates-for",
+    "predicts",
+    "admitted-to",
+    "counterexample-to"
+  ],
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "source_bindings": {
+    "queue": {
+      "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
+      "sha256": "bbbb2cc64a7779984a18bd912d7ffc1aa539c28f5ebe2aaa5d3d0380dac475b4",
+      "proof_class": "campaign_control_state"
+    },
+    "v00": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v00-read-only-design/v00_read_only_design_receipt.json",
+      "sha256": "2c818ed0b70458ca0cd2d2758ec2c4a74790dcc6bc0733bc82dafca157908ebf",
+      "proof_class": "live_hardware_camera_inventory_and_cpu_fp64_static_design_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_v00_read_only_design_receipt.v1",
+        "status": "completed_read_only_prefreeze_design",
+        "proof_class": "live_hardware_camera_inventory_and_cpu_fp64_static_design_only"
+      }
+    },
+    "v01": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v1.json",
+      "sha256": "f345d9ff55ed38b8509dac061af7d0ce7aeaefb59cb78f92ba4460b5dbe82024",
+      "proof_class": "prospective_rgb_registration_acquisition_contract_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_acquisition.v1",
+        "status": "preregistered_before_authoritative_capture_or_motion",
+        "proof_class": "prospective_rgb_registration_acquisition_contract_only"
+      }
+    },
+    "v02": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v02-static-route-v2/evaluation.json",
+      "sha256": "53c6b4dec93cae8f41e9bc24a106fcc0883d3c11d97c887aec3c630491bdbcf6",
+      "proof_class": "cpu_fp64_static_registration_route_preview_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_route_preview.v1",
+        "status": "completed_cpu_fp64_static_route_and_visibility_preview",
+        "proof_class": "cpu_fp64_static_registration_route_preview_only"
+      }
+    },
+    "v03": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/execution_receipt.json",
+      "sha256": "a1692a5b87d88b7b2c37151159660546d9104c9b3973de85f0801de0d9e793a3",
+      "proof_class": "physical_rgb_no_contact_registration_observation_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_capture_execution.v1",
+        "status": "completed_no_contact_registration_capture",
+        "proof_class": "physical_rgb_no_contact_registration_observation_only"
+      }
+    },
+    "v04_fit": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1/fit_receipt.json",
+      "sha256": "9b6378fc32a3f22fc6c9c6379a86df2a96562b3c0207f07488494d68c13adedb",
+      "proof_class": "fit_split_registration_diagnostic_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_fit_receipt.v1",
+        "status": "rejected_before_heldout",
+        "proof_class": "fit_split_registration_diagnostic_only"
+      }
+    },
+    "v04_candidate": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-fit-v1/candidate.json",
+      "sha256": "ea9caa941517956ca6115d71137ead7456d72548ee4fcb8acbcd8ee1e4f92dab",
+      "proof_class": "fit_split_registration_diagnostic_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_registration_candidate.v1",
+        "heldout_open_count": 0
+      }
+    },
+    "simulator_candidate": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "proof_class": "simulation_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.geometry_timing_twin_candidate.v1",
+        "status": "simulation_only_partial",
+        "proof_class": "simulation_only"
+      }
+    },
+    "world_visual": {
+      "path": "configs/evaluations/img5349_3dgs_board_registration_v1.json",
+      "sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4",
+      "proof_class": "board_conditioned_monocular_3dgs_to_sim_visual_registration",
+      "payload_contract": {
+        "schema_version": "sim2claw.img5349_3dgs_board_registration.v1",
+        "status": "accepted_visual_registration_diagnostic",
+        "proof_class": "board_conditioned_monocular_3dgs_to_sim_visual_registration"
+      }
+    }
+  },
+  "nodes": [
+    {
+      "id": "workcell:current-so101-chessboard",
+      "type": "workcell",
+      "label": "Current SO-101 chessboard workspace",
+      "status": "hardware_present_torque_off",
+      "source_binding": "v00",
+      "data": {
+        "human_physical_intervention_required": false
+      }
+    },
+    {
+      "id": "session:bidirectional-pawn-push-v2",
+      "type": "session",
+      "label": "Bidirectional pawn-push v2",
+      "status": "paused_v04",
+      "source_binding": "queue",
+      "data": {
+        "counted_attempts": 0,
+        "maximum_counted_attempts": 10
+      }
+    },
+    {
+      "id": "context:c922-rgb-no-depth",
+      "type": "context",
+      "label": "Fixed C922 RGB task context",
+      "status": "rgb_only_depth_omitted",
+      "source_binding": "v01",
+      "data": {
+        "task_camera": "C922",
+        "wrist_depth_required": false
+      }
+    },
+    {
+      "id": "evidence:v00-read-only-design",
+      "type": "evidence",
+      "label": "V00 live inventory and static design",
+      "status": "verified",
+      "source_binding": "v00"
+    },
+    {
+      "id": "evidence:v02-static-route",
+      "type": "evidence",
+      "label": "V02 CPU/fp64 route and visibility preview",
+      "status": "verified_no_motion",
+      "source_binding": "v02"
+    },
+    {
+      "id": "evidence:v03-rgb-capture",
+      "type": "evidence",
+      "label": "V03 physical RGB no-contact capture",
+      "status": "verified_no_task_attempt",
+      "source_binding": "v03"
+    },
+    {
+      "id": "evidence:img5349-world-visual",
+      "type": "evidence",
+      "label": "Registered complete IMG_5349 3DGS",
+      "status": "accepted_visual_diagnostic",
+      "source_binding": "world_visual",
+      "data": {
+        "splat_count": 334537,
+        "complete_simulation_geometry_used": true
+      }
+    },
+    {
+      "id": "residual:world-visual-board-reprojection",
+      "type": "residual_channel",
+      "label": "3DGS-to-MuJoCo board reprojection residual",
+      "status": "available_visual_only",
+      "source_binding": "world_visual",
+      "data": {
+        "heldout_weighted_rms_px": 3.7585512868032063,
+        "heldout_corner_count": 166,
+        "global_metric_geometry_delta_available": false
+      }
+    },
+    {
+      "id": "residual:v04-hover-reprojection",
+      "type": "residual_channel",
+      "label": "V04 camera-to-model jaw reprojection residual",
+      "status": "available_fit_only_rejected",
+      "source_binding": "v04_fit",
+      "data": {
+        "rms_px": 11.281006894463737,
+        "max_px": 15.767003735403094,
+        "rms_gate_px": 6.0,
+        "max_gate_px": 10.0,
+        "heldout_open_count": 0
+      }
+    },
+    {
+      "id": "simulator:retained-geometry-timing-candidate",
+      "type": "simulator_version",
+      "label": "Retained geometry/timing simulator candidate",
+      "status": "simulation_only_partial_not_promoted",
+      "source_binding": "simulator_candidate"
+    },
+    {
+      "id": "mechanism:world-visual-registration",
+      "type": "mechanism",
+      "label": "Board-conditioned visual world registration",
+      "status": "visual_diagnostic_not_physical_cause",
+      "source_binding": "world_visual"
+    },
+    {
+      "id": "mechanism:camera-model-registration",
+      "type": "mechanism",
+      "label": "Camera-to-model registration family",
+      "status": "current_leading_gap_rejected_family",
+      "source_binding": "v04_fit"
+    },
+    {
+      "id": "mechanism:actuator-timing-contact",
+      "type": "mechanism",
+      "label": "Actuator, timing, and contact alternatives",
+      "status": "deferred_no_directional_task_observation",
+      "source_binding": "queue",
+      "data": {
+        "physical_cause_identified": false
+      }
+    },
+    {
+      "id": "posterior:v04-structure",
+      "type": "parameter_posterior",
+      "label": "V04 structure context",
+      "status": "not_updated_underidentified",
+      "source_binding": "queue",
+      "data": {
+        "probabilities_assigned": false,
+        "reason": "no directional task outcome and rejected registration family"
+      }
+    },
+    {
+      "id": "intervention:v04-versioned-recapture",
+      "type": "intervention",
+      "label": "Prospectively versioned registration recapture",
+      "status": "pending_not_authorized_while_paused",
+      "source_binding": "v01",
+      "data": {
+        "camera_open": false,
+        "gateway_constructed": false,
+        "robot_motion": false
+      }
+    },
+    {
+      "id": "candidate:v04-dlt-v1",
+      "type": "candidate",
+      "label": "Normalized projective camera DLT v1",
+      "status": "rejected_before_heldout",
+      "source_binding": "v04_candidate",
+      "evaluator_identity": "163d789f12e1b0098422247f871938792d96b7b716d78d1d1c56080ce1171058",
+      "data": {
+        "heldout_open_count": 0,
+        "promoted": false
+      }
+    },
+    {
+      "id": "verdict:v04-fit-reject",
+      "type": "evaluator_verdict",
+      "label": "V04 fit-only rejection",
+      "status": "rejected_before_heldout",
+      "source_binding": "v04_fit",
+      "evaluator_identity": "163d789f12e1b0098422247f871938792d96b7b716d78d1d1c56080ce1171058",
+      "data": {
+        "negative": true,
+        "task_attempt": false
+      }
+    },
+    {
+      "id": "certificate:bidirectional-transfer",
+      "type": "twin_worthiness_certificate",
+      "label": "Bidirectional transfer certificate",
+      "status": "unissued_closed",
+      "source_binding": "queue",
+      "data": {
+        "training_admitted": false,
+        "transfer_claim_admitted": false
+      }
+    },
+    {
+      "id": "dataset:v03-fit-heldout",
+      "type": "dataset",
+      "label": "V03 prospectively split RGB registration dataset",
+      "status": "fit_open_heldout_sealed",
+      "source_binding": "v03",
+      "data": {
+        "training_admitted": false,
+        "heldout_open_count": 0
+      }
+    },
+    {
+      "id": "checkpoint:v04-owner-integration-barrier",
+      "type": "checkpoint",
+      "label": "V04 owner integration barrier",
+      "status": "active_paused",
+      "source_binding": "queue",
+      "data": {
+        "checkpoint_commit": "3649574",
+        "motion_authorized": false
+      }
+    },
+    {
+      "id": "policy:bidirectional-action",
+      "type": "policy",
+      "label": "Bidirectional canonical action",
+      "status": "not_compiled_no_case_admitted",
+      "source_binding": "queue",
+      "data": {
+        "real_to_sim": "0/0",
+        "sim_to_real": "0/0"
+      }
+    },
+    {
+      "id": "counterexample:v04-shared-camera-miss",
+      "type": "counterexample",
+      "label": "Shared camera model misses fit hovers",
+      "status": "retained_negative_evidence",
+      "source_binding": "v04_fit",
+      "data": {
+        "rms_px": 11.281006894463737,
+        "max_px": 15.767003735403094
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:bidirectional-pawn-push-v2",
+      "type": "observed-by",
+      "target": "workcell:current-so101-chessboard"
+    },
+    {
+      "source": "context:c922-rgb-no-depth",
+      "type": "applied-to",
+      "target": "session:bidirectional-pawn-push-v2"
+    },
+    {
+      "source": "evidence:v00-read-only-design",
+      "type": "observed-by",
+      "target": "context:c922-rgb-no-depth"
+    },
+    {
+      "source": "evidence:v02-static-route",
+      "type": "generated-from",
+      "target": "evidence:v00-read-only-design"
+    },
+    {
+      "source": "dataset:v03-fit-heldout",
+      "type": "generated-from",
+      "target": "evidence:v02-static-route"
+    },
+    {
+      "source": "evidence:v03-rgb-capture",
+      "type": "generated-from",
+      "target": "dataset:v03-fit-heldout"
+    },
+    {
+      "source": "evidence:img5349-world-visual",
+      "type": "observed-by",
+      "target": "context:c922-rgb-no-depth"
+    },
+    {
+      "source": "residual:world-visual-board-reprojection",
+      "type": "generated-from",
+      "target": "evidence:img5349-world-visual"
+    },
+    {
+      "source": "residual:v04-hover-reprojection",
+      "type": "generated-from",
+      "target": "evidence:v03-rgb-capture"
+    },
+    {
+      "source": "mechanism:world-visual-registration",
+      "type": "fitted-on",
+      "target": "residual:world-visual-board-reprojection",
+      "metadata": {
+        "visual_only": true
+      }
+    },
+    {
+      "source": "mechanism:camera-model-registration",
+      "type": "fitted-on",
+      "target": "residual:v04-hover-reprojection",
+      "metadata": {
+        "physical_cause_identified": false
+      }
+    },
+    {
+      "source": "mechanism:camera-model-registration",
+      "type": "predicts",
+      "target": "intervention:v04-versioned-recapture"
+    },
+    {
+      "source": "residual:v04-hover-reprojection",
+      "type": "affected-by",
+      "target": "intervention:v04-versioned-recapture",
+      "metadata": {
+        "prospective_only": true
+      }
+    },
+    {
+      "source": "posterior:v04-structure",
+      "type": "generated-from",
+      "target": "residual:v04-hover-reprojection"
+    },
+    {
+      "source": "candidate:v04-dlt-v1",
+      "type": "fitted-on",
+      "target": "dataset:v03-fit-heldout",
+      "metadata": {
+        "fit_split_only": true
+      }
+    },
+    {
+      "source": "candidate:v04-dlt-v1",
+      "type": "evaluated-on",
+      "target": "verdict:v04-fit-reject"
+    },
+    {
+      "source": "verdict:v04-fit-reject",
+      "type": "invalidates",
+      "target": "candidate:v04-dlt-v1"
+    },
+    {
+      "source": "counterexample:v04-shared-camera-miss",
+      "type": "counterexample-to",
+      "target": "candidate:v04-dlt-v1"
+    },
+    {
+      "source": "simulator:retained-geometry-timing-candidate",
+      "type": "generated-from",
+      "target": "context:c922-rgb-no-depth",
+      "metadata": {
+        "promotion": false
+      }
+    },
+    {
+      "source": "checkpoint:v04-owner-integration-barrier",
+      "type": "generated-from",
+      "target": "verdict:v04-fit-reject"
+    },
+    {
+      "source": "certificate:bidirectional-transfer",
+      "type": "generated-from",
+      "target": "checkpoint:v04-owner-integration-barrier",
+      "metadata": {
+        "issued": false
+      }
+    },
+    {
+      "source": "policy:bidirectional-action",
+      "type": "applied-to",
+      "target": "certificate:bidirectional-transfer",
+      "metadata": {
+        "compiled": false,
+        "admitted": false
+      }
+    },
+    {
+      "source": "mechanism:actuator-timing-contact",
+      "type": "predicts",
+      "target": "policy:bidirectional-action",
+      "metadata": {
+        "deferred": true
+      }
+    }
+  ],
+  "revision_timeline": [
+    {
+      "revision": 0,
+      "event_id": "V00",
+      "status": "read_only_design_complete",
+      "source_binding": "v00",
+      "node_ids_added": [
+        "workcell:current-so101-chessboard",
+        "session:bidirectional-pawn-push-v2",
+        "evidence:v00-read-only-design",
+        "mechanism:actuator-timing-contact",
+        "posterior:v04-structure",
+        "certificate:bidirectional-transfer",
+        "policy:bidirectional-action"
+      ]
+    },
+    {
+      "revision": 1,
+      "event_id": "V01",
+      "status": "prospective_acquisition_frozen",
+      "source_binding": "v01",
+      "node_ids_added": [
+        "context:c922-rgb-no-depth",
+        "mechanism:camera-model-registration",
+        "intervention:v04-versioned-recapture"
+      ]
+    },
+    {
+      "revision": 2,
+      "event_id": "V02",
+      "status": "static_route_preview_passed",
+      "source_binding": "v02",
+      "node_ids_added": [
+        "evidence:v02-static-route",
+        "simulator:retained-geometry-timing-candidate"
+      ]
+    },
+    {
+      "revision": 3,
+      "event_id": "V03",
+      "status": "physical_rgb_capture_complete_no_task_attempt",
+      "source_binding": "v03",
+      "node_ids_added": [
+        "dataset:v03-fit-heldout",
+        "evidence:v03-rgb-capture"
+      ]
+    },
+    {
+      "revision": 4,
+      "event_id": "V04",
+      "status": "fit_rejected_before_heldout_owner_pause",
+      "source_binding": "v04_fit",
+      "node_ids_added": [
+        "evidence:img5349-world-visual",
+        "residual:world-visual-board-reprojection",
+        "residual:v04-hover-reprojection",
+        "mechanism:world-visual-registration",
+        "candidate:v04-dlt-v1",
+        "verdict:v04-fit-reject",
+        "checkpoint:v04-owner-integration-barrier",
+        "counterexample:v04-shared-camera-miss"
+      ]
+    }
+  ],
+  "active_pointer": {
+    "node_id": "checkpoint:v04-owner-integration-barrier",
+    "milestone_id": "V04",
+    "status": "paused_owner_integration_barrier",
+    "queue_status": "PAUSED_V04_OWNER_INTEGRATION_BARRIER",
+    "resume_action": "prospectively_versioned_registration_recapture",
+    "resume_authorized": false,
+    "heldout_open_count": 0,
+    "counted_task_attempts": 0
+  },
+  "configuration_context": {
+    "workcell": "current_so101_chessboard_workspace",
+    "task_camera": "fixed_c922_rgb",
+    "wrist_depth": "omitted_not_required",
+    "piece_layout": "sparse_two_sided_pawns",
+    "simulator_candidate_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+    "world_visual_registration_sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4",
+    "policy_action_hash": null,
+    "evaluator_v2": "not_frozen",
+    "physical_torque_enabled": false
+  },
+  "delta_assessment": {
+    "world_visual": {
+      "detected": true,
+      "heldout_weighted_rms_px": 3.7585512868032063,
+      "heldout_corner_count": 166,
+      "left_base_cloud_to_cad_median_m": 0.0227,
+      "right_base_cloud_to_cad_median_m": 0.039,
+      "scope": "visual_registration_only_not_global_metric_geometry"
+    },
+    "current_camera_robot_registration": {
+      "detected": true,
+      "rms_px": 11.281006894463737,
+      "max_px": 15.767003735403094,
+      "status": "rejected_before_heldout",
+      "heldout_open_count": 0,
+      "scope": "camera_to_model_fit_residual_not_action_transfer"
+    },
+    "directional_task_action": {
+      "directional_rmse_available": false,
+      "real_to_sim": {
+        "successes": 0,
+        "attempts": 0
+      },
+      "sim_to_real": {
+        "successes": 0,
+        "attempts": 0
+      },
+      "reason": "no_directional_task_attempt_or_admitted_action_exists"
+    },
+    "conclusion": "A non-zero visual and camera-registration delta is detected; the observed mismatch is not only action data. No global metric geometry delta or directional action-transfer RMS is established."
+  }
+}

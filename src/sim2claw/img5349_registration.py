@@ -171,6 +171,20 @@ def validated_studio_registration(
 
     target_center_mujoco = np.mean(targets, axis=0)
     target_center_three = MUJOCO_TO_THREE @ target_center_mujoco
+    d4_selection = fit.get("d4_selection", {})
+    left_base_median = float(d4_selection.get("left_base_median_m"))
+    right_base_median = float(d4_selection.get("right_base_median_m"))
+    if (
+        d4_selection.get("method")
+        != "enumerate_board_symmetries_then_rank_both_static_so101_base_cloud_to_exact_cad"
+        or d4_selection.get("interpretation")
+        != "orientation_disambiguation_only_not_measured_robot_pose"
+        or not all(
+            math.isfinite(value) and value >= 0.0
+            for value in (left_base_median, right_base_median)
+        )
+    ):
+        raise ValueError("registration orientation diagnostic drifted")
     return {
         "schema_version": SCHEMA,
         "status": contract["status"],
@@ -186,6 +200,11 @@ def validated_studio_registration(
         "d4_mapping": [
             f"source[{index}]->{name}" for index, name in enumerate(target_names)
         ],
+        "orientation_diagnostic": {
+            "left_base_cloud_to_cad_median_m": left_base_median,
+            "right_base_cloud_to_cad_median_m": right_base_median,
+            "interpretation": d4_selection["interpretation"],
+        },
         "automatic_overlay": True,
         "visual_overlay_palette": {
             "status": palette["status"],

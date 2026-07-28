@@ -45,6 +45,11 @@ def test_tracked_registration_is_proper_and_reproduces_heldout_summary() -> None
         "source[2]->a1",
         "source[3]->a8",
     ]
+    assert result["orientation_diagnostic"] == {
+        "left_base_cloud_to_cad_median_m": 0.0227,
+        "right_base_cloud_to_cad_median_m": 0.039,
+        "interpretation": "orientation_disambiguation_only_not_measured_robot_pose",
+    }
     assert result["authority"]["metric_scale"] is False
     assert result["authority"]["physical_robot_control"] is False
     assert (

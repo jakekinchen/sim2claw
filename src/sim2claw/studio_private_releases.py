@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .img5349_registration import load_validated_studio_registration
+from .sail.belief_graph import BeliefGraphError, validate_graph
 
 
 IPHONE_3DGS_MANIFEST = Path(
@@ -27,6 +28,9 @@ PHYSICAL_REPLAY_RELEASE_ROOT = Path(
 STUDIO_INTEGRATION_RECEIPT = "studio-integration-receipt.json"
 PRIVATE_MEDIA_SUFFIXES = frozenset({".png", ".jpg", ".jpeg", ".webp", ".mp4", ".webm", ".ply"})
 STUDIO_BROWSER_DERIVATIVE_KIND = "studio_browser_derivative"
+CURRENT_CAMPAIGN_GRAPH = Path(
+    "docs/autonomous-workflow/bidirectional-pawn-push-v2-current-graph.json"
+)
 DERIVATIVE_RECEIPT_FIELDS = (
     "name",
     "source_name",
@@ -43,6 +47,24 @@ def _read_json(path: Path) -> dict[str, Any]:
     except (FileNotFoundError, json.JSONDecodeError, OSError):
         return {}
     return value if isinstance(value, dict) else {}
+
+
+def _validated_current_campaign_delta(repo_root: Path) -> dict[str, Any] | None:
+    try:
+        graph = validate_graph(_read_json(repo_root / CURRENT_CAMPAIGN_GRAPH))
+    except (BeliefGraphError, KeyError, TypeError, ValueError):
+        return None
+    if graph.get("campaign_id") != "bidirectional_pawn_push_v2":
+        return None
+    delta = graph.get("delta_assessment")
+    pointer = graph.get("active_pointer")
+    if not isinstance(delta, dict) or not isinstance(pointer, dict):
+        return None
+    return {
+        "graph_digest": graph["graph_digest"],
+        "active_pointer": pointer,
+        "delta_assessment": delta,
+    }
 
 
 @lru_cache(maxsize=128)
@@ -194,6 +216,7 @@ def build_calibration_assets(
         if ready
         else None
     )
+    campaign_delta = _validated_current_campaign_delta(repo_root)
     return [
         {
             "id": "robo_scanner_img5349_3dgs",
@@ -240,6 +263,7 @@ def build_calibration_assets(
                 "scale_authority": "relative_visual_only",
             },
             "registration": registration,
+            "current_campaign_graph": campaign_delta,
             "studio_view": manifest.get("studio_view", {}),
             "authority": authority,
             "proof_notice": (

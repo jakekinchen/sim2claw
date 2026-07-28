@@ -1654,14 +1654,19 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('id="calibration-canvas"', html)
             self.assertIn('id="recording-feed-switch"', html)
             self.assertIn('src="/studio3dgs.js"', html)
-            self.assertIn("Robo Scanner + LLM scene inputs", html)
+            self.assertIn("World-space registration light table", html)
             self.assertIn(
-                '<h1 id="calibration-heading">Scene input artifacts</h1>', html
+                '<h1 id="calibration-heading">3DGS × MuJoCo comparison</h1>', html
             )
             self.assertIn('id="calibration-scene-toggle"', html)
             self.assertIn(
                 'aria-pressed="false">Show reviewed geometry</button>', html
             )
+            self.assertIn('id="calibration-splat-opacity"', html)
+            self.assertIn('id="calibration-scene-opacity"', html)
+            self.assertIn('data-calibration-preset="overlay"', html)
+            self.assertIn('id="calibration-delta-ledger"', html)
+            self.assertIn("Directional task/action", html)
             self.assertNotIn('id="calibration-frame-toggle"', html)
             self.assertNotIn('class="calibration-ruler', html)
             self.assertNotIn('class="calibration-crosshair', html)
@@ -1828,6 +1833,8 @@ class StudioCatalogTest(unittest.TestCase):
             self.assertIn('"registered_calibration_overlay"', calibration_javascript)
             self.assertIn("automatic board/CAD overlay", calibration_javascript)
             self.assertIn('"Show reviewed geometry"', calibration_javascript)
+            self.assertIn("setLayerOpacities", calibration_javascript)
+            self.assertIn("populateDeltaAssessment", calibration_javascript)
 
             with urlopen(f"{base}/scene_adapter.js", timeout=3) as response:
                 scene_adapter_javascript = response.read().decode("utf-8")

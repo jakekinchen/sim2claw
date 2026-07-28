@@ -20,6 +20,9 @@ class CalibrationViewer {
     this.sceneManifest = null;
     this.sceneOverlayMode = "calibration_overlay";
     this.loadGeneration = 0;
+    this.splatOpacity = 0.68;
+    this.sceneOpacity = 0.56;
+    this.lastVisibleSceneOpacity = 0.56;
 
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
@@ -77,13 +80,90 @@ class CalibrationViewer {
     });
     element("#calibration-fit")?.addEventListener("click", () => this.fit());
     element("#calibration-reset")?.addEventListener("click", () => this.reset());
-    element("#calibration-scene-toggle")?.addEventListener("click", (event) => {
-      this.setSceneOverlayVisible(!this.sceneOverlay.visible);
+    element("#calibration-scene-toggle")?.addEventListener("click", () => {
+      this.setSceneOverlayVisible(this.sceneOpacity <= 0.001);
     });
+    element("#calibration-splat-opacity")?.addEventListener("input", (event) => {
+      this.setLayerOpacities(Number(event.currentTarget.value) / 100, this.sceneOpacity);
+    });
+    element("#calibration-scene-opacity")?.addEventListener("input", (event) => {
+      this.setLayerOpacities(this.splatOpacity, Number(event.currentTarget.value) / 100);
+    });
+    document.querySelectorAll("[data-calibration-preset]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const preset = button.dataset.calibrationPreset;
+        if (preset === "splat") this.setLayerOpacities(1, 0);
+        else if (preset === "scene") this.setLayerOpacities(0, 1);
+        else this.setLayerOpacities(0.68, 0.56);
+      });
+    });
+    this.applyLayerOpacities();
   }
 
   setSceneOverlayVisible(visible) {
-    this.sceneOverlay.visible = Boolean(visible);
+    if (visible) {
+      this.setLayerOpacities(
+        this.splatOpacity,
+        Math.max(this.lastVisibleSceneOpacity, 0.56),
+      );
+    } else {
+      if (this.sceneOpacity > 0.001) this.lastVisibleSceneOpacity = this.sceneOpacity;
+      this.setLayerOpacities(this.splatOpacity, 0);
+    }
+  }
+
+  setLayerOpacities(splatOpacity, sceneOpacity) {
+    this.splatOpacity = Math.min(1, Math.max(0, Number(splatOpacity) || 0));
+    this.sceneOpacity = Math.min(1, Math.max(0, Number(sceneOpacity) || 0));
+    if (this.sceneOpacity > 0.001) this.lastVisibleSceneOpacity = this.sceneOpacity;
+    this.applyLayerOpacities();
+  }
+
+  applyLayerOpacities() {
+    if (this.mesh) this.mesh.opacity = this.splatOpacity;
+    this.sceneOverlay.visible = this.sceneOpacity > 0.001;
+    this.sceneOverlay.traverse((object) => {
+      if (!object.material) return;
+      const materials = Array.isArray(object.material)
+        ? object.material
+        : [object.material];
+      materials.forEach((material) => {
+        material.opacity = this.sceneOpacity;
+        material.transparent = this.sceneOpacity < 0.999;
+        material.depthWrite = false;
+        material.needsUpdate = true;
+      });
+    });
+
+    const splatInput = element("#calibration-splat-opacity");
+    const sceneInput = element("#calibration-scene-opacity");
+    const splatPercent = Math.round(this.splatOpacity * 100);
+    const scenePercent = Math.round(this.sceneOpacity * 100);
+    if (splatInput) splatInput.value = String(splatPercent);
+    if (sceneInput) sceneInput.value = String(scenePercent);
+    const splatOutput = element("#calibration-splat-opacity-output");
+    const sceneOutput = element("#calibration-scene-opacity-output");
+    if (splatOutput) splatOutput.textContent = `${splatPercent}%`;
+    if (sceneOutput) sceneOutput.textContent = `${scenePercent}%`;
+
+    const mode = this.splatOpacity > 0.001 && this.sceneOpacity > 0.001
+      ? "Overlay"
+      : this.splatOpacity > 0.001
+      ? "3DGS only"
+      : this.sceneOpacity > 0.001
+      ? "MuJoCo only"
+      : "Layers closed";
+    const modeNode = element("#calibration-layer-mode");
+    if (modeNode) modeNode.textContent = mode;
+    document.querySelectorAll("[data-calibration-preset]").forEach((button) => {
+      button.classList.toggle(
+        "active",
+        button.dataset.calibrationPreset === (
+          mode === "Overlay" ? "overlay" : mode === "3DGS only" ? "splat" : mode === "MuJoCo only" ? "scene" : ""
+        ),
+      );
+    });
+
     const button = element("#calibration-scene-toggle");
     button?.setAttribute("aria-pressed", String(this.sceneOverlay.visible));
     if (button) {
@@ -169,6 +249,7 @@ class CalibrationViewer {
       mode: this.sceneOverlayMode,
     });
     this.sceneManifestRevision = revision;
+    this.applyLayerOpacities();
   }
 
   transformValue(name) {
@@ -267,6 +348,7 @@ class CalibrationViewer {
       asset?.registration ? "Board fit · visual only" : "Relative visual",
     );
     write("#calibration-proof-notice p", asset?.proof_notice || "Visual alignment only; no physical or collision authority.");
+    this.populateDeltaAssessment(asset);
 
     const preview = element("#calibration-preview");
     if (preview) {
@@ -282,6 +364,77 @@ class CalibrationViewer {
         orbit.removeAttribute("src");
       }
     }
+  }
+
+  populateDeltaAssessment(asset) {
+    const write = (selector, value) => {
+      const node = element(selector);
+      if (node) node.textContent = value == null ? "—" : String(value);
+    };
+    const registration = asset?.registration;
+    const orientation = registration?.orientation_diagnostic;
+    const campaign = asset?.current_campaign_graph?.delta_assessment;
+    const world = campaign?.world_visual;
+    const cameraModel = campaign?.current_camera_robot_registration;
+    const action = campaign?.directional_task_action;
+
+    if (registration) {
+      const heldout = Number(registration.heldout_weighted_rms_px);
+      const leftMm = Number(orientation?.left_base_cloud_to_cad_median_m) * 1000;
+      const rightMm = Number(orientation?.right_base_cloud_to_cad_median_m) * 1000;
+      write("#calibration-world-delta", `${heldout.toFixed(2)} px RMS`);
+      write(
+        "#calibration-world-delta-note",
+        `Non-zero held-out board reprojection residual across ${registration.heldout_corner_count} corners. Base-cloud/CAD medians are ${leftMm.toFixed(1)} / ${rightMm.toFixed(1)} mm for orientation selection only—not a measured robot pose or global metric geometry score.`,
+      );
+    } else {
+      write("#calibration-world-delta", "Unavailable");
+      write(
+        "#calibration-world-delta-note",
+        "The complete splat can still be inspected, but no validated shared board frame is loaded.",
+      );
+    }
+
+    if (cameraModel?.detected) {
+      write(
+        "#calibration-registration-delta",
+        `${Number(cameraModel.rms_px).toFixed(2)} px RMS`,
+      );
+      write(
+        "#calibration-registration-delta-note",
+        `Current V04 jaw projection reaches ${Number(cameraModel.max_px).toFixed(2)} px max and was rejected before held-out (${cameraModel.heldout_open_count} opens). This is a camera-to-model registration residual, not a transferred-action outcome.`,
+      );
+    } else {
+      write("#calibration-registration-delta", "Not loaded");
+      write(
+        "#calibration-registration-delta-note",
+        "No source-bound current campaign residual is available in Studio.",
+      );
+    }
+
+    if (action) {
+      write(
+        "#calibration-action-delta",
+        `${action.real_to_sim.successes}/${action.real_to_sim.attempts} · ${action.sim_to_real.successes}/${action.sim_to_real.attempts}`,
+      );
+      write(
+        "#calibration-action-delta-note",
+        action.directional_rmse_available
+          ? "Direction-specific action residuals are available."
+          : "No directional task attempt exists yet, so REAL→SIM versus SIM→REAL RMS cannot be estimated without inventing evidence.",
+      );
+    } else {
+      write("#calibration-action-delta", "Unavailable");
+      write(
+        "#calibration-action-delta-note",
+        "Directional task/action evidence is not present in the validated graph.",
+      );
+    }
+
+    write(
+      "#calibration-delta-verdict",
+      registration && (world?.detected ?? true) ? "Not action-only" : "No world verdict",
+    );
   }
 
   async load(asset) {
@@ -374,6 +527,7 @@ class CalibrationViewer {
         this.camera.fov = 43;
       }
       this.mesh = mesh;
+      this.applyLayerOpacities();
       this.fit();
       this.setStatus(
         registered

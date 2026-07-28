@@ -341,22 +341,27 @@
         <section class="view-panel calibration-view" data-view-panel="calibration" aria-labelledby="calibration-heading">
           <header class="view-heading calibration-heading">
             <div>
-              <span class="section-label">Robo Scanner + LLM scene inputs</span>
-              <h1 id="calibration-heading">Scene input artifacts</h1>
-              <p>Inspect the video, 3D Gaussian Splat, and JSON scene proposal. Reviewed MuJoCo geometry is optional; visual inputs do not define scale, collision, task coordinates, or robot motion.</p>
+              <span class="section-label">World-space registration light table</span>
+              <h1 id="calibration-heading">3DGS × MuJoCo comparison</h1>
+              <p>Orbit the full captured workspace and reviewed simulator in one camera. Fade either layer to inspect alignment; quantified visual residuals remain separate from action and transfer evidence.</p>
             </div>
             <span class="neutral-tag calibration-boundary"><span class="lock-icon" aria-hidden="true"></span> visual layer only</span>
           </header>
 
           <div class="calibration-layout">
-            <section class="calibration-stage" aria-label="Interactive Gaussian splat scene input view">
+            <section class="calibration-stage" aria-label="Interactive registered 3D Gaussian splat and MuJoCo world-space comparison">
+              <div class="calibration-stage-key" aria-hidden="true">
+                <span class="splat-key">3DGS capture</span>
+                <span class="scene-key">MuJoCo scene</span>
+                <span class="registered-key">shared board frame</span>
+              </div>
               <canvas id="calibration-canvas"></canvas>
               <div class="calibration-stage-toolbar">
                 <span id="calibration-status">Waiting for the verified splat…</span>
                 <div>
                   <button id="calibration-scene-toggle" type="button" aria-pressed="false">Show reviewed geometry</button>
-                  <button id="calibration-fit" type="button">Fit splat</button>
-                  <button id="calibration-reset" type="button">Reset transform</button>
+                  <button id="calibration-fit" type="button">Fit world</button>
+                  <button id="calibration-reset" type="button">Reset view</button>
                 </div>
               </div>
             </section>
@@ -368,12 +373,58 @@
                 <p id="calibration-subtitle">Loading Robo Scanner release metadata…</p>
               </div>
 
+              <section class="calibration-layer-mixer" aria-labelledby="calibration-layer-mixer-heading">
+                <header>
+                  <div>
+                    <span class="section-label">Registration shutter</span>
+                    <h3 id="calibration-layer-mixer-heading">Layer opacity</h3>
+                  </div>
+                  <b id="calibration-layer-mode">Overlay</b>
+                </header>
+                <label class="splat-layer-control">
+                  <span><i aria-hidden="true"></i>3DGS capture <output id="calibration-splat-opacity-output" for="calibration-splat-opacity">68%</output></span>
+                  <input id="calibration-splat-opacity" type="range" min="0" max="100" step="1" value="68" aria-label="3D Gaussian splat opacity">
+                </label>
+                <label class="scene-layer-control">
+                  <span><i aria-hidden="true"></i>MuJoCo geometry <output id="calibration-scene-opacity-output" for="calibration-scene-opacity">56%</output></span>
+                  <input id="calibration-scene-opacity" type="range" min="0" max="100" step="1" value="56" aria-label="MuJoCo scene opacity">
+                </label>
+                <div class="calibration-layer-presets" role="group" aria-label="Layer visibility presets">
+                  <button type="button" data-calibration-preset="splat">3DGS only</button>
+                  <button type="button" data-calibration-preset="overlay" class="active">Overlay</button>
+                  <button type="button" data-calibration-preset="scene">MuJoCo only</button>
+                </div>
+              </section>
+
               <dl class="calibration-facts">
                 <div><dt>Splats</dt><dd id="calibration-splats">—</dd></div>
                 <div><dt>Source</dt><dd id="calibration-source">—</dd></div>
                 <div><dt>Renderer</dt><dd id="calibration-renderer">—</dd></div>
                 <div><dt>Scale</dt><dd id="calibration-scale">Relative visual</dd></div>
               </dl>
+
+              <section class="calibration-delta-ledger" id="calibration-delta-ledger" aria-labelledby="calibration-delta-heading">
+                <header>
+                  <div>
+                    <span class="section-label">Evidence-separated readout</span>
+                    <h3 id="calibration-delta-heading">Where a delta is detected</h3>
+                  </div>
+                  <b id="calibration-delta-verdict">Loading</b>
+                </header>
+                <article class="delta-row visual-delta">
+                  <div><span>World visual</span><b id="calibration-world-delta">—</b></div>
+                  <p id="calibration-world-delta-note">Waiting for the registered board and splat evidence.</p>
+                </article>
+                <article class="delta-row registration-delta">
+                  <div><span>Camera ↔ model</span><b id="calibration-registration-delta">—</b></div>
+                  <p id="calibration-registration-delta-note">Waiting for the current V04 campaign graph.</p>
+                </article>
+                <article class="delta-row action-delta">
+                  <div><span>Directional task/action</span><b id="calibration-action-delta">—</b></div>
+                  <p id="calibration-action-delta-note">Directional transfer evidence has not loaded.</p>
+                </article>
+                <small>Pixel residuals are not millimetres. The overlay can expose a visual mismatch, but it cannot establish collision, contact, dynamics, or task consequence.</small>
+              </section>
 
               <section class="scene-synthesis-card" aria-labelledby="scene-synthesis-heading">
                 <header>
