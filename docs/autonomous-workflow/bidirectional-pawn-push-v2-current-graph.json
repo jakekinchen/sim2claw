@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "V05-T",
-    "node_id": "checkpoint:v05-t-static-enumerator-frozen",
-    "queue_status": "ACTIVE_V05_T_FROZEN_STATIC_ENUMERATION_EXECUTION",
-    "resume_action": "execute_frozen_static_enumeration_once",
-    "resume_authorized": true,
-    "status": "preregistered_static_enumeration_execution_active"
+    "node_id": "verdict:v05-t-static-action-freeze-reject",
+    "queue_status": "PAUSED_OWNER_DECISION_ACTION_BYTES_INCOMPATIBLE",
+    "resume_action": "owner_decides_whether_to_change_action_bytes_bounds_mapping_or_contract",
+    "resume_authorized": false,
+    "status": "terminal_negative_owner_decision_required"
   },
   "authority": {
     "camera_open": false,
@@ -35,12 +35,12 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 62,
+    "edges": 63,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 3,
-      "evaluated-on": 5,
+      "evaluated-on": 6,
       "fitted-on": 4,
       "generated-from": 41,
       "invalidates": 1,
@@ -48,14 +48,14 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 60,
+    "nodes": 61,
     "nodes_by_type": {
       "candidate": 2,
       "checkpoint": 33,
       "context": 1,
       "counterexample": 3,
       "dataset": 1,
-      "evaluator_verdict": 4,
+      "evaluator_verdict": 5,
       "evidence": 4,
       "intervention": 1,
       "mechanism": 3,
@@ -673,10 +673,21 @@
       "source": "verdict:v05-sim-rehearsal-v4-reject",
       "target": "checkpoint:v05-sim-rehearsal-v4-frozen",
       "type": "evaluated-on"
+    },
+    {
+      "metadata": {
+        "action_or_mapping_change_authorized": false,
+        "dynamic_replay_executed": false,
+        "jaw_inverse_map_below_physical_lower_bound": true,
+        "physical_motion": false
+      },
+      "source": "verdict:v05-t-static-action-freeze-reject",
+      "target": "checkpoint:v05-t-static-enumerator-frozen",
+      "type": "evaluated-on"
     }
   ],
-  "generated_at": "2026-07-28T10:20:00-05:00",
-  "graph_digest": "6a823a34e127f9102c6214effb8f4fbcfb16e931cedea4aea547f389e1d0483a",
+  "generated_at": "2026-07-28T10:28:00-05:00",
+  "graph_digest": "898aa09a365b8c2e22ac535b75c04cbb37589d1fbe180272634ba5b328b13431",
   "node_types": [
     "workcell",
     "session",
@@ -759,7 +770,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f"
+        "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1153,7 +1164,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f"
+        "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1204,7 +1215,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f"
+        "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1225,7 +1236,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f"
+        "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1254,7 +1265,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f"
+        "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -1663,7 +1674,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f"
+        "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -1968,7 +1979,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f"
+        "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -2028,7 +2039,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f"
+        "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -2046,7 +2057,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f"
+        "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -2114,7 +2125,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f"
+        "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -2257,6 +2268,43 @@
     },
     {
       "data": {
+        "collision_failures": 50,
+        "compiled_static_rejects": 80,
+        "dynamic_replay_executed": false,
+        "eligible_actions": 0,
+        "gateway_bound_failures": 80,
+        "gateway_rate_failures": 3,
+        "grid_cells": 432,
+        "ik_compile_rejects": 352,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "real_to_sim_lanes": 0,
+        "sim_to_real_lanes": 0,
+        "source_binding_id": "v05_t_static_receipt",
+        "universe_routes": 48
+      },
+      "evaluator_identity": "3a8593cf4d97e776760ff9dfbac2f4e688696226521ab01c73e7a07dab306b3f",
+      "id": "verdict:v05-t-static-action-freeze-reject",
+      "label": "V05-T static action-byte compatibility terminal negative",
+      "proof_class": "cpu_fp64_static_layout_ik_collision_camera_gateway_action_freeze_only",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260728-v05-t-temporal-v1/static-freeze-v1/receipt.json",
+        "payload_contract": {
+          "dynamic_replay_executed": false,
+          "physical_motion": false,
+          "physical_task_attempts": 0,
+          "proof_class": "cpu_fp64_static_layout_ik_collision_camera_gateway_action_freeze_only",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_static_receipt.v1",
+          "status": "static_action_freeze_reject"
+        },
+        "proof_class": "cpu_fp64_static_layout_ik_collision_camera_gateway_action_freeze_only",
+        "sha256": "3a8593cf4d97e776760ff9dfbac2f4e688696226521ab01c73e7a07dab306b3f"
+      },
+      "status": "terminal_negative_owner_decision_required",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "human_physical_intervention_required": false,
         "source_binding_id": "v00"
       },
@@ -2353,7 +2401,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f",
+      "source_sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -2383,7 +2431,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f",
+      "source_sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -2413,7 +2461,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f",
+      "source_sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -2695,7 +2743,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f",
+      "source_sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -2707,6 +2755,16 @@
       "source_binding": "v05_t_static_contract",
       "source_sha256": "0f47cd5ee1f11d18b42f200a9f35c1f8b36ffd5f114f4eda95ec9be3c1f40810",
       "status": "preregistered_static_enumeration_execution_active"
+    },
+    {
+      "event_id": "V05_T_STATIC_ACTION_FREEZE_REJECT",
+      "node_ids_added": [
+        "verdict:v05-t-static-action-freeze-reject"
+      ],
+      "revision": 41,
+      "source_binding": "v05_t_static_receipt",
+      "source_sha256": "3a8593cf4d97e776760ff9dfbac2f4e688696226521ab01c73e7a07dab306b3f",
+      "status": "paused_owner_decision_action_bytes_incompatible"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -2715,7 +2773,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f"
+      "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a"
     },
     {
       "id": "simulator_candidate",
@@ -3223,6 +3281,20 @@
       },
       "proof_class": "prospective_cpu_fp64_static_layout_ik_collision_camera_gateway_action_freeze",
       "sha256": "0f47cd5ee1f11d18b42f200a9f35c1f8b36ffd5f114f4eda95ec9be3c1f40810"
+    },
+    {
+      "id": "v05_t_static_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-t-temporal-v1/static-freeze-v1/receipt.json",
+      "payload_contract": {
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "proof_class": "cpu_fp64_static_layout_ik_collision_camera_gateway_action_freeze_only",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_static_receipt.v1",
+        "status": "static_action_freeze_reject"
+      },
+      "proof_class": "cpu_fp64_static_layout_ik_collision_camera_gateway_action_freeze_only",
+      "sha256": "3a8593cf4d97e776760ff9dfbac2f4e688696226521ab01c73e7a07dab306b3f"
     },
     {
       "id": "v05_t_temporal_plan",

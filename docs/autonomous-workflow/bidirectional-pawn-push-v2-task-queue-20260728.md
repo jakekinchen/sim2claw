@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_T_FROZEN_STATIC_ENUMERATION_EXECUTION`
+Status: `PAUSED_OWNER_DECISION_ACTION_BYTES_INCOMPATIBLE`
 
 Created: `2026-07-28`
 
@@ -187,7 +187,7 @@ denominators before any counted action is compiled.
 | V03 | `DONE` | Capture the prospective fit and held-out registration observations through the reviewed gateway. | Cameras precede motion; only approved slow no-contact paths run; requested/mapped/sent and tracking receipts close; every planned target is captured; torque false on exit; input hashes freeze; no pawn contact. | Execution receipt `runs/bidirectional-pawn-push-v2/20260728-v03-registration-capture-v1/execution/execution_receipt.json`, SHA-256 `a1692a5b87d88b7b2c37151159660546d9104c9b3973de85f0801de0d9e793a3`, status `completed_no_contact_registration_capture`, proof class `physical_rgb_no_contact_registration_observation_only`. All exact `92 + 1541` requested/mapped/sent rows are byte-identical to the reviewed arrays; all eight scored holds pass; nine C922 sessions have zero drops; fit and sealed-heldout manifests hash to `933f121a60b741d5a555b865caccf8fedce1ea0b6accd0e007cd42f77eafa8a5` and `6fd932ddf33c2e5aae87680e141eb1a41f05feb19196eac2fd2343ad3f5a18d6`; final preflight proves torque false. No pawn contact or task attempt. |
 | V04 | `DONE` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Frozen candidate `4d08518f...`; heldout PASS receipt `5eaf763b...`; all four scorable/pass; heldout RMS `4.684083 px` and `4.741723 mm`; zero refit. Registration only. |
 | V05 | `DONE_TERMINAL_NEGATIVE` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Final admissible rehearsal-v4 receipt `cb722beb...` rejects: REAL_TO_SIM `2` feasible, SIM_TO_REAL `1`, versus unchanged `2` per-direction gate. No case admitted. |
-| V05-T | `IN_PROGRESS` | Challenge every prospectively broadened static/IK-eligible action with canonical direct-target MuJoCo and diagnostic-only `0.11 s` ZOH command delay; prove exact 40 Hz action bytes and gateway slew/rate compatibility. | At least two distinct cases per direction pass both plant paths with unchanged contact/progress/exclusion/collision/camera gates; requested/sent/applied traces and timestamps bind; gateway accepts bytes without transform. | Plan `configs/evaluations/bidirectional_pawn_push_v2_temporal_plant_challenger_v1.json`; implementation resumed simulator-only. V06, counted compilation, cameras, gateway, serial, and physical packets remain paused. |
+| V05-T | `DONE_TERMINAL_NEGATIVE` | Challenge every prospectively broadened static/IK-eligible action with canonical direct-target MuJoCo and diagnostic-only `0.11 s` ZOH command delay; prove exact 40 Hz action bytes and gateway slew/rate compatibility. | At least two distinct cases per direction pass both plant paths with unchanged contact/progress/exclusion/collision/camera gates; requested/sent/applied traces and timestamps bind; gateway accepts bytes without transform. | Static receipt `3a8593cf...` rejects before dynamics: `48` routes, `432` cells, `352` IK compile rejects, `80` static rejects, `0` eligible actions. Unchanged jaw bytes inverse-map below the frozen physical lower bound; no clamp or byte change allowed. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2103,3 +2103,37 @@ many of the broader tan-side and lateral routes survive IK and new-robot-
 collision checks; no dynamic task consequence has been observed. The frozen
 static enumeration may now execute once. Dynamic replay remains unauthorized
 until its concrete action manifest is separately bound and pushed.
+
+### V05-T static action-freeze terminal negative — 2026-07-28
+
+The one frozen static execution produced
+`runs/bidirectional-pawn-push-v2/20260728-v05-t-temporal-v1/static-freeze-v1/receipt.json`,
+SHA-256
+`3a8593cf4d97e776760ff9dfbac2f4e688696226521ab01c73e7a07dab306b3f`,
+with status `static_action_freeze_reject`. It evaluated all `48` routes and
+all `432` frozen cells. `352` cells rejected during IK compilation; the
+remaining `80` compiled cells all rejected static admission. No action file,
+case, or proof lane was admitted.
+
+The universal blocker is the exact gateway-bound check. The unchanged jaw
+target `-0.174533 rad` inverse-maps through the frozen candidate transform
+(`scale 0.0191986`, `offset -0.174530`) to approximately
+`-0.000156 percent`, below the frozen physical `0 percent` lower bound.
+Accepting it would require either clamping the physical command or changing
+the canonical V05 action bytes. Both are explicitly forbidden by V05-T.
+Therefore this is a substantive action/gateway incompatibility, not a
+threshold defect to repair after observing the result.
+
+Among the `80` compiled cells, `50` also fail the prospective new-collision
+gate and `3` fail the exact reviewed gateway-rate gate. The full per-cell
+compile/static diagnostics remain in the immutable receipt. No dynamic
+baseline or `0.11 s` challenger replay executed. Requested/sent/applied task
+traces were not created because there is no statically admissible action
+tensor.
+
+V05-T closes as a terminal negative with lane counts REAL_TO_SIM `0` and
+SIM_TO_REAL `0`, below the unchanged `2` per-direction gate. The gate, jaw
+bytes, bounds, mapping, and V05-T contract are not weakened or changed. V06,
+counted-action compilation, cameras, gateway/serial access, physical packets,
+and physical motion remain paused pending an explicit owner design decision.
+Physical task attempts remain `0/10`.

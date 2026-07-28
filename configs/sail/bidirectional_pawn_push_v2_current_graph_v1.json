@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T10:20:00-05:00",
+  "generated_at": "2026-07-28T10:28:00-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "20bef00c4998ca543a88c062f61bf6871cf0533bbfcba48c7ecdf40f219de95f",
+      "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -507,6 +507,19 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_static.v1",
         "status": "preregistered_before_static_enumeration_or_action_compilation",
         "proof_class": "prospective_cpu_fp64_static_layout_ik_collision_camera_gateway_action_freeze"
+      }
+    },
+    "v05_t_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-t-temporal-v1/static-freeze-v1/receipt.json",
+      "sha256": "3a8593cf4d97e776760ff9dfbac2f4e688696226521ab01c73e7a07dab306b3f",
+      "proof_class": "cpu_fp64_static_layout_ik_collision_camera_gateway_action_freeze_only",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_static_receipt.v1",
+        "status": "static_action_freeze_reject",
+        "proof_class": "cpu_fp64_static_layout_ik_collision_camera_gateway_action_freeze_only",
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
       }
     },
     "simulator_candidate": {
@@ -1413,6 +1426,29 @@
       }
     },
     {
+      "id": "verdict:v05-t-static-action-freeze-reject",
+      "type": "evaluator_verdict",
+      "label": "V05-T static action-byte compatibility terminal negative",
+      "status": "terminal_negative_owner_decision_required",
+      "source_binding": "v05_t_static_receipt",
+      "evaluator_identity": "3a8593cf4d97e776760ff9dfbac2f4e688696226521ab01c73e7a07dab306b3f",
+      "data": {
+        "universe_routes": 48,
+        "grid_cells": 432,
+        "ik_compile_rejects": 352,
+        "compiled_static_rejects": 80,
+        "gateway_bound_failures": 80,
+        "collision_failures": 50,
+        "gateway_rate_failures": 3,
+        "eligible_actions": 0,
+        "real_to_sim_lanes": 0,
+        "sim_to_real_lanes": 0,
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -1954,6 +1990,17 @@
       }
     },
     {
+      "source": "verdict:v05-t-static-action-freeze-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-t-static-enumerator-frozen",
+      "metadata": {
+        "jaw_inverse_map_below_physical_lower_bound": true,
+        "action_or_mapping_change_authorized": false,
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -2367,15 +2414,24 @@
       "node_ids_added": [
         "checkpoint:v05-t-static-enumerator-frozen"
       ]
+    },
+    {
+      "revision": 41,
+      "event_id": "V05_T_STATIC_ACTION_FREEZE_REJECT",
+      "status": "paused_owner_decision_action_bytes_incompatible",
+      "source_binding": "v05_t_static_receipt",
+      "node_ids_added": [
+        "verdict:v05-t-static-action-freeze-reject"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-t-static-enumerator-frozen",
+    "node_id": "verdict:v05-t-static-action-freeze-reject",
     "milestone_id": "V05-T",
-    "status": "preregistered_static_enumeration_execution_active",
-    "queue_status": "ACTIVE_V05_T_FROZEN_STATIC_ENUMERATION_EXECUTION",
-    "resume_action": "execute_frozen_static_enumeration_once",
-    "resume_authorized": true,
+    "status": "terminal_negative_owner_decision_required",
+    "queue_status": "PAUSED_OWNER_DECISION_ACTION_BYTES_INCOMPATIBLE",
+    "resume_action": "owner_decides_whether_to_change_action_bytes_bounds_mapping_or_contract",
+    "resume_authorized": false,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0

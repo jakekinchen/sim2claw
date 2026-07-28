@@ -14,6 +14,10 @@ CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_temporal_static_v1.json"
 )
+RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-t-temporal-v1/static-freeze-v1/receipt.json"
+)
 SQUARES = (
     "a2",
     "b1",
@@ -71,3 +75,41 @@ def test_reset_layout_neighbor_universe_is_complete_bounded_and_deterministic() 
     }
     occupied = set(SQUARES)
     assert all(row["destination_square"] not in occupied for row in first)
+
+
+def test_static_receipt_is_terminal_before_dynamic_replay() -> None:
+    receipt = json.loads(RECEIPT.read_text(encoding="utf-8"))
+    assert _sha(RECEIPT) == (
+        "3a8593cf4d97e776760ff9dfbac2f4e688696226521ab01c73e7a07dab306b3f"
+    )
+    assert receipt["status"] == "static_action_freeze_reject"
+    assert receipt["universe_count"] == 48
+    assert receipt["grid_result_count"] == 432
+    assert sum(
+        row["status"] == "compile_reject"
+        for row in receipt["grid_results"]
+    ) == 352
+    assert sum(
+        row["status"] == "static_reject"
+        for row in receipt["grid_results"]
+    ) == 80
+    assert sum(
+        bool(row.get("checks", {}).get("gateway_limits") is False)
+        for row in receipt["grid_results"]
+    ) == 80
+    assert sum(
+        bool(row.get("checks", {}).get("collision") is False)
+        for row in receipt["grid_results"]
+    ) == 50
+    assert sum(
+        bool(row.get("checks", {}).get("gateway_rates") is False)
+        for row in receipt["grid_results"]
+    ) == 3
+    assert receipt["eligible_case_count"] == 0
+    assert receipt["lane_counts"] == {
+        "REAL_TO_SIM": 0,
+        "SIM_TO_REAL": 0,
+    }
+    assert receipt["dynamic_replay_executed"] is False
+    assert receipt["physical_motion"] is False
+    assert receipt["physical_task_attempts"] == 0
