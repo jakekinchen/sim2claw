@@ -31,11 +31,18 @@ The target claim is:
 The task is a closed-jaw adjacent-square pawn **push**, not general chess
 pick-and-place. Do not broaden the final claim.
 
-### Active F1 claim reduction
+### Historical F1 claim reduction invalidated by Q15
 
-Q03 triggered the preregistered F1 fallback. The metric registration
-held-out gate failed, so the target claim above is no longer available.
-For all subsequent cards, the maximum possible claim is:
+Q03 originally appeared to trigger the preregistered F1 fallback. Q15 found
+that the held-out evaluator had treated an old-simulator route name as a
+camera-owned physical square. The sealed cameras cannot adjudicate an exact
+replacement square, so the original `164.353128 mm` score is preserved but
+invalid as a held-out decision. V4 is neither metric-admitted nor
+metric-rejected by that held-out. The F1 trigger is unsupported.
+
+Q05's off-source evaluator remains immutable as a historical preregistered
+contract, but no action was compiled and it grants no task authority. Its
+maximum intended claim was:
 
 > Under a preregistered evaluator, at least one prospectively frozen
 > hardware-first action and one separate simulator-first action each
@@ -44,9 +51,9 @@ For all subsequent cards, the maximum possible claim is:
 > identical canonical action bytes within each case. Every counted failure
 > remains in the denominator.
 
-Destination-square occupancy is no longer required or claimed. This is a
-bidirectional off-source displacement primitive, not adjacent-square
-placement and not the original registration-qualified target.
+This would have been a bidirectional off-source displacement primitive, not
+adjacent-square placement and not the original registration-qualified target.
+No such result exists.
 
 ## Source-of-truth order
 
@@ -131,11 +138,11 @@ The queue is complete only when all of the following are true:
 
 If bidirectional success is not achieved, do not mark the queue complete.
 
-F1 is now active. For termination auditing, Definition-of-Done item 1 is
-replaced by preservation of the failed v4 candidate and its single-open
-held-out receipt; items 3 and 4 use the off-source consequence gate above.
-This is exactly the preregistered fallback and does not convert the failed
-`<=25 mm` registration gate into a pass.
+For termination auditing, Definition-of-Done item 1 is not met: v4 fit passes
+at `24.631505 mm`, but the single-open held-out is unscorable because an exact
+camera-owned physical square is unavailable. The original receipt and the
+post-Q15 correction are both preserved. Items 3 and 4 are also not met; no
+case was admitted and no action was compiled.
 
 ## Inviolate rules
 
@@ -261,9 +268,9 @@ remaining cards to complete.
 | Q00 | `DONE` | Reproduce the advisory board-side diagnosis read-only. Use the immutable C2 action, current compiled task scene, and perfect-tracking FK. | Report minimum approach to simulated C2, C8, and C7; confirm or reject the approximately six-rank categorical error; identify the exact code/config source. No file mutation beyond queue/evidence docs and no motion. | `docs/run-logs/2026-07-27-bidirectional-pawn-push-q00-board-side-diagnosis.md`; reviewer `039` (`CONTINUE`, anchor `100`). Site/base minima: C2 `265.275519 mm`, C8 `80.897091 mm`, C7 `100.783880 mm`. Pad-gap/28 mm-neck minima: C2 `257.506340 mm`, C8 `64.673854 mm`, C7 `85.525518 mm`. C2-C8 separation `266.700000 mm`; categorical rank-side error confirmed, residual still `>25 mm`. No motion. |
 | Q01 | `DONE` | Freeze the zero-motion registration dataset split. Fit data may include C2 contact/topple-frame joints, C922 grid/corner tags, prior C2 dual-camera replay, and Pi link tags. Reserve at least one independent hover/episode as held-out before fitting. | Versioned manifest hashes every input and declares fit versus held-out membership. No held-out inspection after freeze until candidate family freezes. | Manifest `configs/evaluations/bidirectional_pawn_push_registration_dataset_v1.json`, SHA-256 `da203fae0e84ceb722631676858762e1ee3d5962be95c4555afb44f97bf51fdf`; seven fit inputs plus four opaque held-out inputs from independent B7 high-hover episode; all eleven hashes resolve; `2 passed in 0.04s`; executor `042`; reviewer `040` (`CONTINUE`, anchor `100`). No held-out semantic inspection and no motion. |
 | Q02 | `DONE` | Implement scene-registration v4 as the smallest versioned correction: categorical side/orientation first, then bounded board XY/yaw refinement. Add joint-zero changes only if separately identifiable. | Old scene IDs and receipts remain unchanged. Candidate deterministically rebuilds and loads in CPU/fp64 MuJoCo. No action bytes change. | Candidate `configs/scenes/bidirectional_pawn_push_scene_registration_v4.json`, SHA-256 `c7c2b19d7bdf64e85c20f515b4d7fa859b2fd33948fa1a36438265571a752b7b`; `reflect_ranks`; table-frame center shift `[+36.817,+66.079] mm`; yaw and joint zeros unchanged; C2 modeled-head-center fit residual `24.631505 mm` at row `242`; canonical hashes unchanged; CPU/fp64 scene load passes; `15 passed in 0.37s`; executor `043`; reviewer `041` (`CONTINUE`, anchor `100`). Held-out still sealed; no motion. |
-| Q03 | `IN_PROGRESS_REOPENED_Q15_DEFECT` | Evaluate v4 on fit evidence and open the held-out once. | C2 grasp-phase FK approach to corrected C2 center `<=25 mm`; held-out task-relevant correspondence `<=25 mm`; no worsened known-safe geometry/contact. If either fails, follow F1 once rather than launching an unbounded fit family. | Q15 identified a concrete label-provenance defect: the already-opened B7 route provenance was scored as physical square B7 without camera adjudication. Re-score the same sealed footage against a camera-owned physical square, preserve the original receipt, threshold, and single-open budget, and report both scorings. No new data or motion. |
+| Q03 | `DONE_CORRECTED_UNSCORABLE` | Evaluate v4 on fit evidence and open the held-out once. | C2 grasp-phase FK approach to corrected C2 center `<=25 mm`; held-out task-relevant correspondence `<=25 mm`; no worsened known-safe geometry/contact. If either fails, follow F1 once rather than launching an unbounded fit family. | Correction receipt `runs/bidirectional-pawn-push/20260727-registration-v4-heldout-label-audit-v2/evaluation.json`, SHA-256 `efaf436bdba9e52df781973abaabf0a2b346261daddbb8e9fe259a1cd61efd02`; contract SHA-256 `33877ed6e295a79347b1cf430306a2e442ed2b7bc5d755c6df45114522af9091`. The original receipt/hash is preserved, but its B7 label is not camera-owned. C922 self-occludes the high-hover association, Pi places the gripper outside frame, D405 points away, and camera extrinsics are unavailable. Corrected square/residual: unavailable; held-out open count remains `1`; v4 neither metric-admitted nor metric-rejected; F1 trigger unsupported. `7 passed in 0.46s`; executor `050`. No new data or motion. |
 | Q04 | `DONE` | Re-run immutable C2 bytes under v4 as retrospective diagnostics only. | Produce side-by-side old/v4 first-divergence and contact metrics. Label post-outcome scene correction and no promotion. A useful target is reproduction of physical strike/topple-near-source behavior, but failure remains evidence. | Receipt `runs/bidirectional-pawn-push/20260727-c2-v4-retrospective/evaluation.json`, SHA-256 `36110ee04a6625a3607c657855c92d99e6feac35f38a5541610542dc719e1664`; old/v4 clearance `312.326353/75.624879 mm`; v4 selected/wrong contact `0/0`; rise `0`; off-source false; first divergence row `247`; identical raw action SHA; `5 passed in 1.46s`; executor `045`; reviewer `043` (`CONTINUE`, anchor `100`). Post-outcome diagnostic only; no promotion or motion. |
-| Q05 | `DONE` | Preregister a native float64/40 Hz adjacent-square push evaluator and the complete case family of at most ten attempts. | Evaluator owns selected-pawn source/destination geometry, upright gate, task-local exclusions, non-interaction, canonical hashes, direction, denominator, and camera adjudication. Freeze before any counted action compilation. | F1 evaluator `configs/evaluations/bidirectional_off_source_push_evaluator_v1.json`, ID `bidirectional_off_source_push_float64_40hz_v1`, SHA-256 `8450682fac61ac064198b90858f58e6753b0d701ed55f067f91d88ed04604479`; ten one-use cases (five/direction); `36.025 mm` off-source gate; `90-120 mm` stroke; exact action/mapping/scene/evaluator/setup hashes; C922 owner; exclusions and denominators frozen; C2 excluded; `4 passed in 0.05s`; executor `046`; reviewer `044` (`CONTINUE`, anchor `100`). No action compiled or motion. |
+| Q05 | `IN_PROGRESS_REOPENED_Q15_FEASIBILITY` | Preregister a native float64/40 Hz adjacent-square push evaluator and the complete case family of at most ten attempts. | Evaluator owns selected-pawn source/destination geometry, upright gate, task-local exclusions, non-interaction, canonical hashes, direction, denominator, and camera adjudication. Freeze before any counted action compilation. | The immutable evaluator remains at SHA-256 `8450682fac61ac064198b90858f58e6753b0d701ed55f067f91d88ed04604479`. Q15 found that its `88.9 mm` exclusion requirement was structurally infeasible on the frozen sparse lattice before Q06: any route includes its source, whose nearest other reset-layout pawn is at most `sqrt(2) * 44.45 mm = 62.861793 mm`. Reproduce and receipt the feasibility defect without changing the evaluator. |
 | Q06 | `TERMINAL_SAFETY_BOUNDARY` | Select the first REAL→SIM scene from a fresh motion-free C922 frame. Prefer an upright near-rank E/F/G-file pawn at least three files from C with an empty adjacent destination. | User-reported reset is independently camera-verified; selected pawn/destination admitted; all exclusions have at least two-square route clearance; Pi/C922/D405 RGB availability verified; no depth dependency. | Fresh RGB receipt `runs/bidirectional-pawn-push/20260727-q06-scene-v1/capture_receipt.json`, SHA-256 `ee6d71d98723e5133097c24c30ab8d2b16881e6554d22078aae632fe99966730`; gate receipt `scene_gate_receipt.json`, SHA-256 `3c81caaa626043d1a12c34bf9b05e11fa0e0823070b516f001e8857b5c59ec0c`. All ten frozen routes have `44.45 mm` center clearance versus required `88.9 mm`; zero admitted cases, zero compiled actions, zero motion/attempts. Human-only scene reconfiguration or a prospective safety-contract change is required. Executor `047`; reviewer `045` (`ESCALATE`, anchor `100`). This is not F3. |
 | Q07 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Compile and independently review the first hardware-first push action. Closed jaws, `>=60 mm` stroke, elbow `>=60 deg`, large-joint motion approximately `5–10 deg/s`, no slow deep holds. | CPU/fp64 preview clean; exact mappings and action hash frozen; zero clipping/rate/offset/repair/assistance; setup hash separate; one physical attempt admitted. | Q06 admitted no case; compiling an action would violate the frozen exclusion gate. |
 | Q08 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Execute the counted REAL→SIM physical case once and adjudicate it before simulation. | All cameras enclose action; requested/mapped/sent identity passes; C922 evaluator reports physical success; excluded objects remain stationary; torque-off closeout passes. On failure, count it and advance to a distinct preregistered case if budget remains. | No Q07 action exists and no counted motion began. REAL→SIM denominator remains `0/0`. |
@@ -299,11 +306,11 @@ remaining cards to complete.
 
 Current state:
 
-- Q00-Q02 are verified complete; Q03 is a terminal F1-triggering negative;
-  Q04-Q05 are verified complete; Q06 is a receipt-backed terminal safety
-  boundary; Q07-Q12 are not authorized; Q13 terminal packaging is complete;
-  Q14 is verified/pushed; Q15 received advisory feedback and remains
-  incomplete because it reopened Q03; Q03 is the only active card.
+- Q00-Q04 are verified complete, including Q03's post-Q15 correction from an
+  invalid provenance-labeled rejection to an unscorable held-out. Q05 is
+  reopened for the Q15 feasibility defect and is the only active card. Q06 is
+  a receipt-backed zero-attempt contract rejection; Q07-Q12 are not
+  authorized; Q13-Q15 require downstream reconciliation.
 - Commit `0b3afab` adopted this queue and its goal-loop contract.
 - Existing prior receipts remain unchanged.
 - Robot motion remains unauthorized. Q06 admitted no case and Q07 cannot
@@ -327,9 +334,11 @@ Completed:
 - Q02 fit-only scene-registration v4. The bounded winner is rank reflection
   plus `[+36.817,+66.079] mm` table-frame board-center shift; yaw and joint
   zeros remain unchanged. Fit residual is `24.631505 mm`.
-- Q03 single-open held-out validation. B7 residual is `164.353128 mm`, so v4
-  is rejected for metric registration and F1 is active. The prospective claim
-  is reduced to complete off-source displacement in both directions.
+- Q03 single-open held-out correction. The original B7-provenance residual
+  remains `164.353128 mm`, but B7 was not camera-adjudicated. The sealed
+  cameras cannot supply an exact replacement square, so corrected residual is
+  unavailable, v4 is neither metric-admitted nor metric-rejected by the
+  held-out, and F1 is unsupported.
 - Q04 immutable C2 v4 retrospective. Clearance improves to `75.624879 mm`
   from `312.326353 mm`, but contact, rise, and off-source displacement remain
   zero; no promotion.
@@ -385,6 +394,12 @@ Verification evidence:
 - Q03 executor/reviewer: `docs/session-logs/044-executor-q03-registration-heldout.md`;
   `docs/reviewer-messages/042-q03-registration-heldout.md`,
   decision `REDIRECT`, anchor `100`.
+- Q03 post-Q15 correction:
+  `runs/bidirectional-pawn-push/20260727-registration-v4-heldout-label-audit-v2/evaluation.json`,
+  SHA-256
+  `efaf436bdba9e52df781973abaabf0a2b346261daddbb8e9fe259a1cd61efd02`;
+  `docs/session-logs/050-executor-q03-heldout-label-authority-correction.md`;
+  `7 passed in 0.46s`.
 - Q04 receipt:
   `runs/bidirectional-pawn-push/20260727-c2-v4-retrospective/evaluation.json`,
   SHA-256
@@ -426,13 +441,16 @@ Verification evidence:
 
 Remaining:
 
-- Reopened Q03 scoring correction, downstream claim propagation, Q14
-  re-verification/push, and Q15 reconciliation. Q07-Q12 remain visibly not
-  authorized, not passed.
+- Reopened Q05 feasibility correction, Q06/Q13 proof-class correction,
+  downstream claim propagation, Q14 re-verification/push, and Q15
+  reconciliation. Q07-Q12 remain visibly not authorized, not passed.
 
 Blockers:
 
-- The v4 metric-registration candidate is rejected.
+- V4 has a passing `24.631505 mm` fit result but no valid held-out decision;
+  metric admission and rejection are both unsupported.
+- The single-open registration held-out has no camera-owned physical-square
+  label and cannot be rescored without new evidence, which is forbidden.
 - The fresh reset scene is incompatible with the frozen task-local exclusion
   gate: every preregistered route is one square (`44.45 mm`) from an excluded
   pawn, below `88.9 mm`.
@@ -441,9 +459,8 @@ Blockers:
 
 Next step:
 
-- Camera-adjudicate the already-opened hover's physical square from sealed
-  footage, re-score Q03 without changing its threshold or opening new data,
-  preserve the original receipt, and propagate the result.
+- Reproduce the Q05 structural infeasibility without mutating the frozen
+  evaluator, then propagate the corrected proof class.
 
 Attempt ledger:
 
@@ -463,9 +480,10 @@ Advisory feedback / next steps:
   reproduction, and frozen Q06 infeasibility. It identified one required
   defect: the B7 hover's run-path/old-sim label was treated as a
   camera-adjudicated physical square in Q03.
-- Q03 is reopened. Fable's suggestions for a successor center-ward evaluator
-  are optional and require separate owner authorization; they do not modify
-  the frozen v1 evaluator.
+- Q03 is corrected and closed as unscorable. Q05 is reopened for the
+  independently reproducible preregistration-feasibility omission. Fable's
+  suggestions for a successor center-ward evaluator are optional and require
+  separate owner authorization; they do not modify the frozen v1 evaluator.
 
 ## Q01 transition record
 
@@ -522,6 +540,42 @@ shasum -a 256 runs/bidirectional-pawn-push/20260727-registration-v4-heldout/eval
 
 The single-open B7 result failed at `164.353128 mm`. V4 was not tuned after
 opening. F1 claim wording was activated before any action compilation. Q04 is
+the only active card; physical attempts remain `0/10`.
+
+### Q03 post-Q15 correction
+
+Q15 exposed that `B7` in the original evaluator came from the old-simulator
+route name rather than a camera-owned physical-square label. The original
+receipt remains immutable, but it no longer supports metric rejection or F1.
+
+```text
+uv run --offline pytest -q \
+  tests/test_bidirectional_registration_v4_label_audit.py \
+  tests/test_bidirectional_registration_v4_evaluator.py \
+  tests/test_bidirectional_scene_registration_v4.py
+.......                                                                  [100%]
+7 passed in 0.46s
+
+uv run --offline python \
+  scripts/evaluate_bidirectional_registration_v4_label_audit.py \
+  --output \
+  runs/bidirectional-pawn-push/20260727-registration-v4-heldout-label-audit-v2/evaluation.json
+PASS
+
+shasum -a 256 \
+  configs/evaluations/bidirectional_pawn_push_registration_v4_label_audit_v2.json \
+  runs/bidirectional-pawn-push/20260727-registration-v4-heldout-label-audit-v2/evaluation.json
+33877ed6e295a79347b1cf430306a2e442ed2b7bc5d755c6df45114522af9091
+efaf436bdba9e52df781973abaabf0a2b346261daddbb8e9fe259a1cd61efd02
+```
+
+The sealed C922, Pi, and D405 views were exhausted. They cannot assign the
+high-hover apex to an exact square: C922 is self-occluded and lacks metric
+extrinsics, Pi places the gripper outside frame, and D405 points away. The
+corrected held-out square/residual/pass are therefore unavailable. Selecting
+A3 from the `22.337386 mm` v4-FK counterfactual or A2 from the `19.719086 mm`
+raw-center counterfactual would be circular and is expressly non-authoritative.
+The held-out open count remains `1`; no new data or motion occurred. Q05 is
 the only active card; physical attempts remain `0/10`.
 
 ## Q04 transition record
