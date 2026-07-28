@@ -150,6 +150,20 @@ UNILATERAL_OPEN_JAW_STATIC_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.json"
 )
+UNILATERAL_OPEN_JAW_STATIC_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-uf-unilateral-open-jaw-v1/static-freeze-v1/receipt.json"
+)
+UNILATERAL_OPEN_JAW_TEMPORAL_AUTHORIZATION = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_unilateral_open_jaw_"
+    "temporal_authorization_v1.json"
+)
+UNILATERAL_OPEN_JAW_TEMPORAL_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_temporal_replay_"
+    "unilateral_open_jaw_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -822,6 +836,87 @@ def test_unilateral_open_jaw_successor_is_finite_and_non_grasping() -> None:
     assert all(value == 0 for value in contract["new_static_gates"].values() if isinstance(value, int) and not isinstance(value, bool))
     assert contract["authority"]["static_simulation"] is True
     assert contract["authority"]["dynamic_replay"] is False
+    assert contract["authority"]["physical_motion"] is False
+
+
+def test_unilateral_open_jaw_static_pass_and_temporal_freeze() -> None:
+    receipt = json.loads(
+        UNILATERAL_OPEN_JAW_STATIC_RECEIPT.read_text(encoding="utf-8")
+    )
+    assert _sha(UNILATERAL_OPEN_JAW_STATIC_RECEIPT) == (
+        "6235d6ab7b531c2119df6c70ec30e3e9a5dea2b1a445d9553fb196d5e3fa972e"
+    )
+    assert receipt["status"] == "unilateral_open_jaw_static_freeze_pass"
+    assert receipt["grid_result_count"] == 576
+    assert receipt["statically_eligible_family_count"] == 8
+    assert receipt["selected_family_count"] == 4
+    assert receipt["lane_counts"] == {"REAL_TO_SIM": 2, "SIM_TO_REAL": 2}
+    assert receipt["bilateral_contact_allowed"] is False
+    assert receipt["grasp_or_enclosure_allowed"] is False
+    assert receipt["robot_board_contact_allowed"] is False
+    assert receipt["selected_pawn_lift_allowed"] is False
+    assert receipt["dynamic_replay_executed"] is False
+    assert receipt["physical_motion"] is False
+
+    authorization = json.loads(
+        UNILATERAL_OPEN_JAW_TEMPORAL_AUTHORIZATION.read_text(
+            encoding="utf-8"
+        )
+    )
+    for binding in (
+        authorization["standing_delegation"],
+        *authorization["immutable_predecessors"].values(),
+    ):
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert authorization["frozen_execution"] == {
+        "canonical_direct_target": True,
+        "diagnostic_zoh_delay_seconds": 0.11,
+        "robustness_variant_count": 5,
+        "minimum_signed_progress_mm": 36.025,
+        "minimum_cases_per_direction": 2,
+        "maximum_selected_vertical_rise_mm": 2.0,
+        "one_bounded_execution": True,
+    }
+    assert authorization["authority"]["dynamic_simulation"] is True
+    assert authorization["authority"]["physical_motion"] is False
+
+    contract = json.loads(
+        UNILATERAL_OPEN_JAW_TEMPORAL_CONTRACT.read_text(encoding="utf-8")
+    )
+    for key in (
+        "standing_delegation",
+        "manager_authorization",
+        "static_contract",
+        "static_receipt",
+        "rehearsal_contract",
+        "temporal_plan",
+        "base_implementation",
+        "implementation",
+    ):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert contract["strict_extension"] == "unilateral_open_jaw_v1"
+    assert len(contract["cases"]) == 4
+    assert {
+        case["direction_lane"] for case in contract["cases"]
+    } == {"REAL_TO_SIM", "SIM_TO_REAL"}
+    assert all(
+        case["constant_open_jaw_start_row"] == 138
+        for case in contract["cases"]
+    )
+    assert {
+        case["expected_unilateral_contact_side"]
+        for case in contract["cases"]
+    } == {"fixed_jaw", "moving_jaw"}
+    assert contract["strict_dynamic_gates"] == {
+        "expected_unilateral_contact_required": True,
+        "opposite_jaw_selected_contact_count": 0,
+        "bilateral_selected_contact_count": 0,
+        "selected_pawn_enclosure_or_grasp_count": 0,
+        "robot_board_contact_count": 0,
+        "maximum_selected_vertical_rise_mm": 2.0,
+    }
+    assert contract["authority"]["dynamic_simulation"] is True
     assert contract["authority"]["physical_motion"] is False
 
 

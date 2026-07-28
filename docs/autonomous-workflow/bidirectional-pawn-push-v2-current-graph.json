@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "V05-UF",
-    "node_id": "checkpoint:v05-uf-unilateral-open-jaw-static-frozen",
-    "queue_status": "ACTIVE_V05_UF_UNILATERAL_OPEN_JAW_STATIC_FROZEN",
-    "resume_action": "execute_one_bounded_576_cell_unilateral_open_jaw_static_enumeration",
+    "node_id": "checkpoint:v05-uf-unilateral-open-jaw-temporal-frozen",
+    "queue_status": "ACTIVE_V05_UF_UNILATERAL_OPEN_JAW_TEMPORAL_FROZEN",
+    "resume_action": "execute_one_strict_unilateral_open_jaw_direct_and_zoh_temporal_replay",
     "resume_authorized": true,
-    "status": "preregistered_unilateral_open_jaw_static_execution_active"
+    "status": "preregistered_unilateral_open_jaw_temporal_execution_active"
   },
   "authority": {
     "camera_open": false,
@@ -35,27 +35,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 111,
+    "edges": 114,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 3,
-      "evaluated-on": 23,
+      "evaluated-on": 24,
       "fitted-on": 4,
-      "generated-from": 72,
+      "generated-from": 74,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 109,
+    "nodes": 112,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 68,
+      "checkpoint": 70,
       "context": 1,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 16,
+      "evaluator_verdict": 17,
       "evidence": 5,
       "intervention": 1,
       "mechanism": 3,
@@ -913,6 +913,18 @@
     },
     {
       "metadata": {
+        "exact_action_hashes_frozen": true,
+        "one_temporal_execution_authorized": true,
+        "physical_motion": false,
+        "standing_manager_delegation": true,
+        "static_predecessor_passed": true
+      },
+      "source": "checkpoint:v05-uf-temporal-authorization-bound",
+      "target": "verdict:v05-uf-unilateral-open-jaw-static-pass",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
         "cumulative_quarantined_case_count": 16,
         "fresh_families_only": true,
         "maximum_total_cells": 576,
@@ -923,6 +935,19 @@
       },
       "source": "checkpoint:v05-uf-unilateral-open-jaw-static-frozen",
       "target": "checkpoint:v05-uf-manager-authorization-bound",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "canonical_direct_target": true,
+        "diagnostic_zoh_delay_seconds": 0.11,
+        "maximum_selected_vertical_rise_mm": 2.0,
+        "physical_motion": false,
+        "preregistered_before_dynamic_replay": true,
+        "strict_unilateral_contact_gates": true
+      },
+      "source": "checkpoint:v05-uf-unilateral-open-jaw-temporal-frozen",
+      "target": "checkpoint:v05-uf-temporal-authorization-bound",
       "type": "generated-from"
     },
     {
@@ -1293,10 +1318,24 @@
       "source": "verdict:v05-ue-ramped-funnel-static-partial",
       "target": "checkpoint:v05-ue-ramped-funnel-static-frozen",
       "type": "evaluated-on"
+    },
+    {
+      "metadata": {
+        "dynamic_replay_executed": false,
+        "evaluated_cells": 576,
+        "physical_motion": false,
+        "real_to_sim_lanes": 2,
+        "selected_families": 4,
+        "sim_to_real_lanes": 2,
+        "statically_eligible_families": 8
+      },
+      "source": "verdict:v05-uf-unilateral-open-jaw-static-pass",
+      "target": "checkpoint:v05-uf-unilateral-open-jaw-static-frozen",
+      "type": "evaluated-on"
     }
   ],
   "generated_at": "2026-07-28T16:27:57-05:00",
-  "graph_digest": "e41dffb4cd13d39c333138f4b53424be9c06935f86fa82e20aa2a2340933cb76",
+  "graph_digest": "8542a3748bd95ed745496a12bcb3b3e836e1551d863db18ce45731a4b567ca6f",
   "node_types": [
     "workcell",
     "session",
@@ -1379,7 +1418,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
+        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1811,7 +1850,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
+        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1862,7 +1901,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
+        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1883,7 +1922,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
+        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1912,7 +1951,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
+        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -2321,7 +2360,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
+        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -3533,6 +3572,39 @@
     },
     {
       "data": {
+        "canonical_direct_target": true,
+        "diagnostic_zoh_delay_seconds": 0.11,
+        "exact_action_count": 4,
+        "maximum_selected_vertical_rise_mm": 2.0,
+        "minimum_cases_per_direction": 2,
+        "minimum_signed_progress_mm": 36.025,
+        "one_temporal_execution_authorized": true,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "robustness_variant_count": 5,
+        "source_binding_id": "v05_uf_temporal_authorization",
+        "static_predecessor_passed": true,
+        "v06_evaluator_freeze_authorized": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-uf-temporal-authorization-bound",
+      "label": "V05-UF strict temporal replay authorized",
+      "proof_class": "prospective_manager_authorized_strict_unilateral_open_jaw_temporal_replay",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_temporal_authorization_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_manager_authorized_strict_unilateral_open_jaw_temporal_replay",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_temporal_authorization.v1",
+          "status": "manager_authorized_after_static_pass_before_dynamic_replay"
+        },
+        "proof_class": "prospective_manager_authorized_strict_unilateral_open_jaw_temporal_replay",
+        "sha256": "7825faa436b07c0628abdb541ab5a71323c8545aec03c6a36f3acdd2eb30d784"
+      },
+      "status": "manager_authorized_strict_temporal_replay_bound",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "cells_per_family": 18,
         "cumulative_quarantined_case_count": 16,
         "dynamic_replay_authorized": false,
@@ -3567,6 +3639,42 @@
         "sha256": "44db6475d24038f1bee12ce4a7128461310431007c2f5d2ae22fac31050ec3ea"
       },
       "status": "preregistered_unilateral_open_jaw_static_execution_active",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "dynamic_simulation_authorized": true,
+        "exact_action_count": 4,
+        "maximum_selected_vertical_rise_mm": 2.0,
+        "no_bilateral_contact_gate": true,
+        "no_board_contact_gate": true,
+        "no_grasp_or_enclosure_gate": true,
+        "no_opposite_jaw_contact_gate": true,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "plant_path_count": 2,
+        "real_to_sim_cases": 2,
+        "robustness_variant_count": 5,
+        "sim_to_real_cases": 2,
+        "source_binding_id": "v05_uf_temporal_contract",
+        "v06_evaluator_freeze_authorized": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-uf-unilateral-open-jaw-temporal-frozen",
+      "label": "V05-UF strict unilateral open-jaw temporal replay frozen",
+      "proof_class": "prospective_cpu_fp64_action_frozen_strict_unilateral_open_jaw_direct_target_and_diagnostic_zoh_replay",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_replay_unilateral_open_jaw_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_action_frozen_strict_unilateral_open_jaw_direct_target_and_diagnostic_zoh_replay",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay.v1",
+          "status": "preregistered_after_unilateral_open_jaw_static_pass_and_action_freeze_before_dynamic_replay",
+          "strict_extension": "unilateral_open_jaw_v1"
+        },
+        "proof_class": "prospective_cpu_fp64_action_frozen_strict_unilateral_open_jaw_direct_target_and_diagnostic_zoh_replay",
+        "sha256": "fd31b8a0370c137e684041f6a6c31674097c14850aac1bd34abd061189420f54"
+      },
+      "status": "preregistered_unilateral_open_jaw_temporal_execution_active",
       "type": "checkpoint"
     },
     {
@@ -3869,7 +3977,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
+        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -3929,7 +4037,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
+        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -3947,7 +4055,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
+        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -4015,7 +4123,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
+        "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -4599,6 +4707,44 @@
     },
     {
       "data": {
+        "bilateral_contact_allowed": false,
+        "constant_open_jaw_start_row": 138,
+        "dynamic_replay_executed": false,
+        "evaluated_cells": 576,
+        "exact_open_jaw_target_rad": 1.2,
+        "grasp_or_enclosure_allowed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "real_to_sim_lanes": 2,
+        "robot_board_contact_allowed": false,
+        "selected_families": 4,
+        "selected_pawn_lift_allowed": false,
+        "sim_to_real_lanes": 2,
+        "source_binding_id": "v05_uf_static_receipt",
+        "statically_eligible_families": 8
+      },
+      "evaluator_identity": "6235d6ab7b531c2119df6c70ec30e3e9a5dea2b1a445d9553fb196d5e3fa972e",
+      "id": "verdict:v05-uf-unilateral-open-jaw-static-pass",
+      "label": "V05-UF unilateral open-jaw static family gate passes",
+      "proof_class": "cpu_fp64_static_unilateral_open_jaw_pawn_push_collision_camera_gateway_action_freeze_only",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/static-freeze-v1/receipt.json",
+        "payload_contract": {
+          "dynamic_replay_executed": false,
+          "physical_motion": false,
+          "physical_task_attempts": 0,
+          "proof_class": "cpu_fp64_static_unilateral_open_jaw_pawn_push_collision_camera_gateway_action_freeze_only",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_static_receipt.v1",
+          "status": "unilateral_open_jaw_static_freeze_pass"
+        },
+        "proof_class": "cpu_fp64_static_unilateral_open_jaw_pawn_push_collision_camera_gateway_action_freeze_only",
+        "sha256": "6235d6ab7b531c2119df6c70ec30e3e9a5dea2b1a445d9553fb196d5e3fa972e"
+      },
+      "status": "static_action_freeze_pass_two_families_per_direction",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "human_physical_intervention_required": false,
         "source_binding_id": "v00"
       },
@@ -4695,7 +4841,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50",
+      "source_sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -4725,7 +4871,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50",
+      "source_sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -4755,7 +4901,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50",
+      "source_sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -5037,7 +5183,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50",
+      "source_sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -5539,6 +5685,36 @@
       "source_binding": "v05_uf_static_contract",
       "source_sha256": "44db6475d24038f1bee12ce4a7128461310431007c2f5d2ae22fac31050ec3ea",
       "status": "preregistered_unilateral_open_jaw_static_execution_active"
+    },
+    {
+      "event_id": "V05_UF_UNILATERAL_OPEN_JAW_STATIC_PASS",
+      "node_ids_added": [
+        "verdict:v05-uf-unilateral-open-jaw-static-pass"
+      ],
+      "revision": 90,
+      "source_binding": "v05_uf_static_receipt",
+      "source_sha256": "6235d6ab7b531c2119df6c70ec30e3e9a5dea2b1a445d9553fb196d5e3fa972e",
+      "status": "static_action_freeze_pass_two_families_per_direction"
+    },
+    {
+      "event_id": "V05_UF_TEMPORAL_AUTHORIZATION_BOUND",
+      "node_ids_added": [
+        "checkpoint:v05-uf-temporal-authorization-bound"
+      ],
+      "revision": 91,
+      "source_binding": "v05_uf_temporal_authorization",
+      "source_sha256": "7825faa436b07c0628abdb541ab5a71323c8545aec03c6a36f3acdd2eb30d784",
+      "status": "manager_authorized_strict_temporal_replay_bound"
+    },
+    {
+      "event_id": "V05_UF_UNILATERAL_OPEN_JAW_TEMPORAL_FREEZE",
+      "node_ids_added": [
+        "checkpoint:v05-uf-unilateral-open-jaw-temporal-frozen"
+      ],
+      "revision": 92,
+      "source_binding": "v05_uf_temporal_contract",
+      "source_sha256": "fd31b8a0370c137e684041f6a6c31674097c14850aac1bd34abd061189420f54",
+      "status": "preregistered_unilateral_open_jaw_temporal_execution_active"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -5547,7 +5723,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "2bdaba0cd5452b3fa2a5451083a8ccfb634682b6cffd2c1d7b71d3143a144f50"
+      "sha256": "5c8c55248614e9f8360be9b7237e05f0cabcd8fbdb7fc6384c73f5f1f8775c67"
     },
     {
       "id": "simulator_candidate",
@@ -6649,6 +6825,43 @@
       },
       "proof_class": "prospective_cpu_fp64_static_unilateral_open_jaw_pawn_push_action_freeze",
       "sha256": "44db6475d24038f1bee12ce4a7128461310431007c2f5d2ae22fac31050ec3ea"
+    },
+    {
+      "id": "v05_uf_static_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/static-freeze-v1/receipt.json",
+      "payload_contract": {
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "proof_class": "cpu_fp64_static_unilateral_open_jaw_pawn_push_collision_camera_gateway_action_freeze_only",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_static_receipt.v1",
+        "status": "unilateral_open_jaw_static_freeze_pass"
+      },
+      "proof_class": "cpu_fp64_static_unilateral_open_jaw_pawn_push_collision_camera_gateway_action_freeze_only",
+      "sha256": "6235d6ab7b531c2119df6c70ec30e3e9a5dea2b1a445d9553fb196d5e3fa972e"
+    },
+    {
+      "id": "v05_uf_temporal_authorization",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_temporal_authorization_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_manager_authorized_strict_unilateral_open_jaw_temporal_replay",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_temporal_authorization.v1",
+        "status": "manager_authorized_after_static_pass_before_dynamic_replay"
+      },
+      "proof_class": "prospective_manager_authorized_strict_unilateral_open_jaw_temporal_replay",
+      "sha256": "7825faa436b07c0628abdb541ab5a71323c8545aec03c6a36f3acdd2eb30d784"
+    },
+    {
+      "id": "v05_uf_temporal_contract",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_replay_unilateral_open_jaw_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_action_frozen_strict_unilateral_open_jaw_direct_target_and_diagnostic_zoh_replay",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay.v1",
+        "status": "preregistered_after_unilateral_open_jaw_static_pass_and_action_freeze_before_dynamic_replay",
+        "strict_extension": "unilateral_open_jaw_v1"
+      },
+      "proof_class": "prospective_cpu_fp64_action_frozen_strict_unilateral_open_jaw_direct_target_and_diagnostic_zoh_replay",
+      "sha256": "fd31b8a0370c137e684041f6a6c31674097c14850aac1bd34abd061189420f54"
     },
     {
       "id": "world_visual",

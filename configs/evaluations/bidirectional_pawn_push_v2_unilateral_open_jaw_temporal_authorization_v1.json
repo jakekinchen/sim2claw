@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_unilateral_open_jaw_temporal_authorization.v1",
+  "authorization_id": "bidirectional-pawn-push-v2-unilateral-open-jaw-temporal-20260728",
+  "status": "manager_authorized_after_static_pass_before_dynamic_replay",
+  "proof_class": "prospective_manager_authorized_strict_unilateral_open_jaw_temporal_replay",
+  "authorized_at": "2026-07-28",
+  "authorizer": "Codex Manager",
+  "standing_delegation": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json",
+    "sha256": "8e59b7385ca14083d6ddd571ecc13fbec2f884cba41b3583ccfb317737e81ed5"
+  },
+  "manager_direction": "The static unilateral open-jaw gate passed. Freeze its exact four action hashes and run direct-target plus diagnostic 0.11 second ZOH exactly once, preserving every prior gate and adding strict rejection of opposite-jaw contact, bilateral contact, enclosure or grasp, selected-pawn lift, and robot-board contact.",
+  "immutable_predecessors": {
+    "static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_unilateral_open_jaw_static_v1.json",
+      "sha256": "44db6475d24038f1bee12ce4a7128461310431007c2f5d2ae22fac31050ec3ea"
+    },
+    "static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-uf-unilateral-open-jaw-v1/static-freeze-v1/receipt.json",
+      "sha256": "6235d6ab7b531c2119df6c70ec30e3e9a5dea2b1a445d9553fb196d5e3fa972e",
+      "verdict": "unilateral_open_jaw_static_freeze_pass",
+      "eligible_family_count": 8,
+      "selected_family_count": 4,
+      "lane_counts": {
+        "REAL_TO_SIM": 2,
+        "SIM_TO_REAL": 2
+      }
+    }
+  },
+  "frozen_execution": {
+    "canonical_direct_target": true,
+    "diagnostic_zoh_delay_seconds": 0.11,
+    "robustness_variant_count": 5,
+    "minimum_signed_progress_mm": 36.025,
+    "minimum_cases_per_direction": 2,
+    "maximum_selected_vertical_rise_mm": 2.0,
+    "one_bounded_execution": true
+  },
+  "required_invariants": [
+    "requested and sent actions remain byte-identical",
+    "all four static action hashes and row orders remain exact",
+    "jaw opens monotonically in the source-pose preamble",
+    "jaw remains exactly 1.2 radians throughout setup and push",
+    "expected unilateral jaw side contacts the selected pawn",
+    "opposite jaw never contacts the selected pawn",
+    "bilateral selected-pawn contact never occurs",
+    "selected pawn is never enclosed or grasped",
+    "selected pawn vertical rise never exceeds 2.0 mm",
+    "robot never contacts the chess board",
+    "all prior collision, exclusion, camera, gateway, progress, and identity gates remain unchanged"
+  ],
+  "authority": {
+    "dynamic_simulation": true,
+    "one_temporal_replay": true,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Manager authorization for one strict action-frozen CPU/fp64 temporal replay after the V05-UF static pass. It grants no V06, counted-action, camera, gateway, serial, physical, promotion, or transfer authority."
+}

@@ -31,12 +31,15 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "V05-UF"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v05-uf-unilateral-open-jaw-static-frozen",
+        "node_id": "checkpoint:v05-uf-unilateral-open-jaw-temporal-frozen",
         "milestone_id": "V05-UF",
-        "status": "preregistered_unilateral_open_jaw_static_execution_active",
-        "queue_status": "ACTIVE_V05_UF_UNILATERAL_OPEN_JAW_STATIC_FROZEN",
+        "status": "preregistered_unilateral_open_jaw_temporal_execution_active",
+        "queue_status": (
+            "ACTIVE_V05_UF_UNILATERAL_OPEN_JAW_TEMPORAL_FROZEN"
+        ),
         "resume_action": (
-            "execute_one_bounded_576_cell_unilateral_open_jaw_static_enumeration"
+            "execute_one_strict_unilateral_open_jaw_direct_and_zoh_"
+            "temporal_replay"
         ),
         "resume_authorized": True,
         "heldout_open_count": 1,
@@ -44,7 +47,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(90)
+        range(93)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -55,10 +58,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_UF_UNILATERAL_OPEN_JAW_STATIC_FREEZE"
+        == "V05_UF_UNILATERAL_OPEN_JAW_TEMPORAL_FREEZE"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v05-uf-unilateral-open-jaw-static-frozen"
+        "checkpoint:v05-uf-unilateral-open-jaw-temporal-frozen"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]
