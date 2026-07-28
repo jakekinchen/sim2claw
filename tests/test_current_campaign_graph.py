@@ -29,23 +29,20 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     )
 
     assert rebuilt == tracked
-    assert tracked["active_pointer"]["milestone_id"] == "V05-T"
+    assert tracked["active_pointer"]["milestone_id"] == "V05-TJ"
     assert tracked["active_pointer"] == {
-        "node_id": "verdict:v05-t-static-action-freeze-reject",
-        "milestone_id": "V05-T",
-        "status": "terminal_negative_owner_decision_required",
-        "queue_status": "PAUSED_OWNER_DECISION_ACTION_BYTES_INCOMPATIBLE",
-        "resume_action": (
-            "owner_decides_whether_to_change_action_bytes_bounds_"
-            "mapping_or_contract"
-        ),
-        "resume_authorized": False,
+        "node_id": "checkpoint:v05-tj-owner-authorization-bound",
+        "milestone_id": "V05-TJ",
+        "status": "owner_authorized_static_successor_design_active",
+        "queue_status": "ACTIVE_V05_TJ_OWNER_AUTHORIZATION_BOUND",
+        "resume_action": "freeze_exact_jaw_margin_successor_static_packet",
+        "resume_authorized": True,
         "heldout_open_count": 1,
         "cumulative_manifest_read_count": 2,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(42)
+        range(43)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -56,10 +53,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_T_STATIC_ACTION_FREEZE_REJECT"
+        == "V05_TJ_OWNER_AUTHORIZATION_BOUND"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "verdict:v05-t-static-action-freeze-reject"
+        "checkpoint:v05-tj-owner-authorization-bound"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]

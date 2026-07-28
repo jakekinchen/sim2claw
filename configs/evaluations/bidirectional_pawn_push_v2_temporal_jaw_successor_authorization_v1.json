@@ -1,0 +1,87 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_jaw_successor_authorization.v1",
+  "authorization_id": "v05-t-jaw-margin-successor-20260728",
+  "status": "owner_authorized_before_successor_action_generation",
+  "proof_class": "prospective_owner_authorized_single_column_action_identity_successor",
+  "owner_authorization_date": "2026-07-28",
+  "immutable_predecessors": {
+    "v05_rehearsal_v4_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-sim-rehearsal-v4/receipt.json",
+      "sha256": "cb722bebdfa7134958bab103214112ede29525416c8d999f6fbcbd321ed8ceee",
+      "verdict": "sim_rehearsal_reject"
+    },
+    "v05_t_static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-t-temporal-v1/static-freeze-v1/receipt.json",
+      "sha256": "3a8593cf4d97e776760ff9dfbac2f4e688696226521ab01c73e7a07dab306b3f",
+      "verdict": "static_action_freeze_reject"
+    }
+  },
+  "jaw_target_provenance": {
+    "profile": {
+      "path": "configs/tasks/c8_a6_preregistered_jaw_margin_v1.json",
+      "sha256": "cf09adc340a356a93bf18877ebe8402cc2a4dcfabe991138227cfb2ce7e7a37a"
+    },
+    "run_log": {
+      "path": "docs/run-logs/2026-07-26-c8-a6-preregistered-jaw-margin.md",
+      "sha256": "a0d07fb2c62823da81ac5672ab7b6e65c448f631f42475a5cdd44b88d57a1ba8"
+    },
+    "proof_boundary": "source of exact jaw-margin scalar only; C8-to-A6 task/action is not transplanted"
+  },
+  "successor_action_identity": {
+    "predecessor_closed_jaw_rad": -0.174533,
+    "successor_closed_jaw_rad": -0.1727003294848389,
+    "exact_float64_required": true,
+    "only_changed_column": "gripper",
+    "unchanged": [
+      "route enumeration",
+      "row count",
+      "row order",
+      "five arm command columns",
+      "40 Hz timing",
+      "little-endian float64 encoding",
+      "reset layout",
+      "registration",
+      "direct-target baseline",
+      "0.11 second ZOH challenger",
+      "evaluator rules",
+      "exclusions",
+      "all non-jaw gates"
+    ],
+    "forbidden": [
+      "C8-to-A6 action transplant",
+      "clamp",
+      "bound change",
+      "mapping change",
+      "tolerance change",
+      "smoothing",
+      "retiming",
+      "filtering",
+      "randomization",
+      "posterior population",
+      "ACT rewrite",
+      "second simulator"
+    ]
+  },
+  "execution_order": [
+    "freeze versioned static successor contract and implementation",
+    "run static enumeration/admission once",
+    "if statically admitted, bind concrete action hashes before dynamics",
+    "run direct-target and diagnostic 0.11 second ZOH paths",
+    "require two distinct feasible cases per direction",
+    "only then resume V06 under existing gates"
+  ],
+  "authority": {
+    "static_simulation": true,
+    "dynamic_simulation_before_action_hash_freeze": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Owner authorization for one prospective gripper-column successor only. It grants no dynamic, V06, counted, camera, gateway, serial, or physical authority."
+}

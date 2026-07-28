@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T10:28:00-05:00",
+  "generated_at": "2026-07-28T10:48:00-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "085db3bec730d9ca5a31722c6ba2c03cc9218ca5903863f040f3bd32cbd5b52a",
+      "sha256": "111ef431c67d1f4677c8bbe7368d152b193cd28f662f0ad13306b744f457337f",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -520,6 +520,16 @@
         "dynamic_replay_executed": false,
         "physical_motion": false,
         "physical_task_attempts": 0
+      }
+    },
+    "v05_tj_authorization": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_temporal_jaw_successor_authorization_v1.json",
+      "sha256": "0697cc3b1a3c38a8dd6e0a423cd9560ad8fc045c999fb35620fc307c0da38427",
+      "proof_class": "prospective_owner_authorized_single_column_action_identity_successor",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_jaw_successor_authorization.v1",
+        "status": "owner_authorized_before_successor_action_generation",
+        "proof_class": "prospective_owner_authorized_single_column_action_identity_successor"
       }
     },
     "simulator_candidate": {
@@ -1449,6 +1459,23 @@
       }
     },
     {
+      "id": "checkpoint:v05-tj-owner-authorization-bound",
+      "type": "checkpoint",
+      "label": "V05-TJ exact jaw-margin successor authorized",
+      "status": "owner_authorized_static_successor_design_active",
+      "source_binding": "v05_tj_authorization",
+      "data": {
+        "predecessor_jaw_rad": -0.174533,
+        "successor_jaw_rad": -0.1727003294848389,
+        "only_gripper_column_changes": true,
+        "predecessor_verdicts_immutable": true,
+        "static_simulation_authorized": true,
+        "dynamic_simulation_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2001,6 +2028,17 @@
       }
     },
     {
+      "source": "checkpoint:v05-tj-owner-authorization-bound",
+      "type": "generated-from",
+      "target": "verdict:v05-t-static-action-freeze-reject",
+      "metadata": {
+        "owner_authorized_new_action_identity": true,
+        "only_gripper_column_changes": true,
+        "predecessor_verdict_unchanged": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -2423,15 +2461,24 @@
       "node_ids_added": [
         "verdict:v05-t-static-action-freeze-reject"
       ]
+    },
+    {
+      "revision": 42,
+      "event_id": "V05_TJ_OWNER_AUTHORIZATION_BOUND",
+      "status": "owner_authorized_static_successor_design_active",
+      "source_binding": "v05_tj_authorization",
+      "node_ids_added": [
+        "checkpoint:v05-tj-owner-authorization-bound"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:v05-t-static-action-freeze-reject",
-    "milestone_id": "V05-T",
-    "status": "terminal_negative_owner_decision_required",
-    "queue_status": "PAUSED_OWNER_DECISION_ACTION_BYTES_INCOMPATIBLE",
-    "resume_action": "owner_decides_whether_to_change_action_bytes_bounds_mapping_or_contract",
-    "resume_authorized": false,
+    "node_id": "checkpoint:v05-tj-owner-authorization-bound",
+    "milestone_id": "V05-TJ",
+    "status": "owner_authorized_static_successor_design_active",
+    "queue_status": "ACTIVE_V05_TJ_OWNER_AUTHORIZATION_BOUND",
+    "resume_action": "freeze_exact_jaw_margin_successor_static_packet",
+    "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0
