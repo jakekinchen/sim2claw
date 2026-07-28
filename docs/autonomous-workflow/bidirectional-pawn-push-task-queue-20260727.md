@@ -176,7 +176,7 @@ evidence-driven queue action unless a stop rule below is met.
 
 ## Goal loop contract
 
-Run a continuous verification-driven goal loop over Q00-Q14. Producing code,
+Run a continuous verification-driven goal loop over Q00-Q15. Producing code,
 a document, media, or another artifact never ends the task by itself.
 
 Each iteration must:
@@ -207,16 +207,25 @@ numerator/denominator per direction.
 Before finalizing, run and record a queue self-audit proving:
 
 - no unjustified `PENDING` or `IN_PROGRESS` cards remain;
-- every Q00-Q14 acceptance row has evidence or an explicitly authorized
+- every Q00-Q15 acceptance row has evidence or an explicitly authorized
   terminal-stop disposition;
 - every Definition-of-Done condition is independently verified;
+- Q15 was performed only after Q00-Q14 and the Definition of Done were
+  locally verified, or after a genuine receipt-backed terminal boundary;
+- the existing Claude Desktop Fable 5 thread was used unless its
+  unavailability was evidenced;
+- Fable's response, date, model/thread identity, evidence reconciliation, and
+  final next-step decision are captured in a scoped repository artifact;
+- every concrete required-criterion defect raised by Fable was independently
+  verified and either closed through a reopened queue card or left Q15
+  incomplete;
 - follower torque and repo-owned camera/gateway process cleanup are verified;
 - required tests pass;
 - artifacts exist and every declared hash resolves;
 - scoped commits are pushed; and
 - claims match the exact attempt denominator and proof class.
 
-Continue autonomously until Q00-Q14 and every Definition-of-Done condition are
+Continue autonomously until Q00-Q15 and every Definition-of-Done condition are
 verified complete. The only alternative termination is a queue-authorized,
 receipt-backed genuine F3/mechanical/safety/human-authority boundary after all
 safe in-scope alternatives are exhausted. A blocker never silently converts
@@ -241,6 +250,7 @@ remaining cards to complete.
 | Q12 | `PENDING` | Continue distinct preregistered cases only as needed, up to the frozen maximum of ten. | Stop new cases immediately after one complete bidirectional result exists. Every failure remains in the denominator; no post-hoc family expansion. | Pending |
 | Q13 | `PENDING` | Produce the bidirectional evidence package. | Synchronized browser-playable comparisons, posters, action/mapping/evaluator receipts, case-index denominator, first-divergence summaries, Studio catalog entry, and exact claim boundary verified. Raw private recordings remain unpublished. | Pending |
 | Q14 | `PENDING` | Final verification and publication closeout. | Focused/full relevant tests pass; workflow audit passes; Git diff is scoped; branch commit is pushed; public release/portfolio surface is updated only if already authorized and privacy-reviewed; torque and processes are clean. | Pending |
+| Q15 | `PENDING` | Fable 5 post-result review. After Q00-Q14 and the Definition of Done are locally verified, or after a genuine receipt-backed terminal boundary, return via Computer Use to the existing Claude Desktop conversation titled `Sim-to-real transfer evaluation`; do not start a replacement unless the existing conversation is genuinely unavailable. Submit a concise evidence-complete report covering the original goal, exact actions, per-direction numerator/denominator, proof class, action/mapping/scene/evaluator hashes and versions, fit and held-out registration metrics, simulator and physical outcomes, camera paths, failures and stop conditions, tests, commits/branch, and limitations. Ask Fable to audit claim support, strongest result, weakest proof link, overlooked concrete defects or missing verification, and highest-leverage application/demo and sim2real next steps. | Existing Fable thread actually receives the report; response plus date/model/thread identity is captured in a scoped advisory/reviewer artifact; verified repository evidence is distinguished from inference; secrets and unsupported claims are excluded; feedback is reconciled against receipts and frozen evaluators; recommendations and final decision are written under `Advisory feedback / next steps`. Fable remains advisory. If it identifies a concrete reproducible defect in required Q00-Q14 acceptance, Q15 stays incomplete, the affected card is reopened, the defect is independently verified, and the loop resumes. Strategic or optional suggestions become follow-on work without retroactively changing the evaluator. |
 
 ## Fallback queue
 
@@ -300,7 +310,7 @@ Verification evidence:
 
 Remaining:
 
-- Q01-Q14.
+- Q01-Q15.
 
 Blockers:
 
@@ -318,3 +328,9 @@ Attempt ledger:
 - REAL→SIM counted pushes: `0/0`.
 - SIM→REAL counted pushes: `0/0`.
 - Total counted physical attempts: `0/10`.
+
+Advisory feedback / next steps:
+
+- Pending Q15. Do not contact Fable before Q00-Q14 and the Definition of Done
+  are locally verified, or before a genuine receipt-backed terminal boundary
+  has been fully packaged and locally audited.
