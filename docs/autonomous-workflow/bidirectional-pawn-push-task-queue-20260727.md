@@ -270,8 +270,8 @@ remaining cards to complete.
 | Q02 | `DONE` | Implement scene-registration v4 as the smallest versioned correction: categorical side/orientation first, then bounded board XY/yaw refinement. Add joint-zero changes only if separately identifiable. | Old scene IDs and receipts remain unchanged. Candidate deterministically rebuilds and loads in CPU/fp64 MuJoCo. No action bytes change. | Candidate `configs/scenes/bidirectional_pawn_push_scene_registration_v4.json`, SHA-256 `c7c2b19d7bdf64e85c20f515b4d7fa859b2fd33948fa1a36438265571a752b7b`; `reflect_ranks`; table-frame center shift `[+36.817,+66.079] mm`; yaw and joint zeros unchanged; C2 modeled-head-center fit residual `24.631505 mm` at row `242`; canonical hashes unchanged; CPU/fp64 scene load passes; `15 passed in 0.37s`; executor `043`; reviewer `041` (`CONTINUE`, anchor `100`). Held-out still sealed; no motion. |
 | Q03 | `DONE_CORRECTED_UNSCORABLE` | Evaluate v4 on fit evidence and open the held-out once. | C2 grasp-phase FK approach to corrected C2 center `<=25 mm`; held-out task-relevant correspondence `<=25 mm`; no worsened known-safe geometry/contact. If either fails, follow F1 once rather than launching an unbounded fit family. | Correction receipt `runs/bidirectional-pawn-push/20260727-registration-v4-heldout-label-audit-v2/evaluation.json`, SHA-256 `efaf436bdba9e52df781973abaabf0a2b346261daddbb8e9fe259a1cd61efd02`; contract SHA-256 `33877ed6e295a79347b1cf430306a2e442ed2b7bc5d755c6df45114522af9091`. The original receipt/hash is preserved, but its B7 label is not camera-owned. C922 self-occludes the high-hover association, Pi places the gripper outside frame, D405 points away, and camera extrinsics are unavailable. Corrected square/residual: unavailable; held-out open count remains `1`; v4 neither metric-admitted nor metric-rejected; F1 trigger unsupported. `7 passed in 0.46s`; executor `050`. No new data or motion. |
 | Q04 | `DONE` | Re-run immutable C2 bytes under v4 as retrospective diagnostics only. | Produce side-by-side old/v4 first-divergence and contact metrics. Label post-outcome scene correction and no promotion. A useful target is reproduction of physical strike/topple-near-source behavior, but failure remains evidence. | Receipt `runs/bidirectional-pawn-push/20260727-c2-v4-retrospective/evaluation.json`, SHA-256 `36110ee04a6625a3607c657855c92d99e6feac35f38a5541610542dc719e1664`; old/v4 clearance `312.326353/75.624879 mm`; v4 selected/wrong contact `0/0`; rise `0`; off-source false; first divergence row `247`; identical raw action SHA; `5 passed in 1.46s`; executor `045`; reviewer `043` (`CONTINUE`, anchor `100`). Post-outcome diagnostic only; no promotion or motion. |
-| Q05 | `IN_PROGRESS_REOPENED_Q15_FEASIBILITY` | Preregister a native float64/40 Hz adjacent-square push evaluator and the complete case family of at most ten attempts. | Evaluator owns selected-pawn source/destination geometry, upright gate, task-local exclusions, non-interaction, canonical hashes, direction, denominator, and camera adjudication. Freeze before any counted action compilation. | The immutable evaluator remains at SHA-256 `8450682fac61ac064198b90858f58e6753b0d701ed55f067f91d88ed04604479`. Q15 found that its `88.9 mm` exclusion requirement was structurally infeasible on the frozen sparse lattice before Q06: any route includes its source, whose nearest other reset-layout pawn is at most `sqrt(2) * 44.45 mm = 62.861793 mm`. Reproduce and receipt the feasibility defect without changing the evaluator. |
-| Q06 | `TERMINAL_SAFETY_BOUNDARY` | Select the first REAL→SIM scene from a fresh motion-free C922 frame. Prefer an upright near-rank E/F/G-file pawn at least three files from C with an empty adjacent destination. | User-reported reset is independently camera-verified; selected pawn/destination admitted; all exclusions have at least two-square route clearance; Pi/C922/D405 RGB availability verified; no depth dependency. | Fresh RGB receipt `runs/bidirectional-pawn-push/20260727-q06-scene-v1/capture_receipt.json`, SHA-256 `ee6d71d98723e5133097c24c30ab8d2b16881e6554d22078aae632fe99966730`; gate receipt `scene_gate_receipt.json`, SHA-256 `3c81caaa626043d1a12c34bf9b05e11fa0e0823070b516f001e8857b5c59ec0c`. All ten frozen routes have `44.45 mm` center clearance versus required `88.9 mm`; zero admitted cases, zero compiled actions, zero motion/attempts. Human-only scene reconfiguration or a prospective safety-contract change is required. Executor `047`; reviewer `045` (`ESCALATE`, anchor `100`). This is not F3. |
+| Q05 | `DONE_WITH_POSTFREEZE_FEASIBILITY_DEFECT` | Preregister a native float64/40 Hz adjacent-square push evaluator and the complete case family of at most ten attempts. | Evaluator owns selected-pawn source/destination geometry, upright gate, task-local exclusions, non-interaction, canonical hashes, direction, denominator, and camera adjudication. Freeze before any counted action compilation. | Immutable evaluator remains SHA-256 `8450682fac61ac064198b90858f58e6753b0d701ed55f067f91d88ed04604479`. Postfreeze receipt `runs/bidirectional-pawn-push/20260727-q05-feasibility-audit-v1/evaluation.json`, SHA-256 `0dbe2cbdb078b219c172e20ffd08c7be96e01f68abbca84355c4d04afa3bd591`: frozen `88.9 mm` clearance is structurally infeasible because every route contains a source whose nearest reset-layout exclusion is `sqrt(2) * 44.45 = 62.861793 mm`. This omission was detectable before Q06. `6 passed in 0.20s`; executor `051`. No action compiled or motion. |
+| Q06 | `IN_PROGRESS_REOPENED_PROOF_CLASS` | Select the first REAL→SIM scene from a fresh motion-free C922 frame. Prefer an upright near-rank E/F/G-file pawn at least three files from C with an empty adjacent destination. | User-reported reset is independently camera-verified; selected pawn/destination admitted; all exclusions have at least two-square route clearance; Pi/C922/D405 RGB availability verified; no depth dependency. | Preserve the fresh RGB evidence and ten rejections, but replace the overstated safety/human-only classification with `terminal_preregistered_contract_infeasibility_without_physical_attempt`. The frozen evaluator could not admit the reset layout before camera capture; this was no safety event, mechanical failure, or counted attempt. |
 | Q07 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Compile and independently review the first hardware-first push action. Closed jaws, `>=60 mm` stroke, elbow `>=60 deg`, large-joint motion approximately `5–10 deg/s`, no slow deep holds. | CPU/fp64 preview clean; exact mappings and action hash frozen; zero clipping/rate/offset/repair/assistance; setup hash separate; one physical attempt admitted. | Q06 admitted no case; compiling an action would violate the frozen exclusion gate. |
 | Q08 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Execute the counted REAL→SIM physical case once and adjudicate it before simulation. | All cameras enclose action; requested/mapped/sent identity passes; C922 evaluator reports physical success; excluded objects remain stationary; torque-off closeout passes. On failure, count it and advance to a distinct preregistered case if budget remains. | No Q07 action exists and no counted motion began. REAL→SIM denominator remains `0/0`. |
 | Q09 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Apply Q08 identical canonical bytes in v4 MuJoCo from the admitted task-local initial state. | No clipping/retiming/repair/state forcing; selected pawn ends inside destination and passes upright/non-interaction gates. Count pass/fail and first divergence. At least one REAL→SIM case must pass. | No Q08 canonical bytes exist. No REAL→SIM transfer claim. |
@@ -306,10 +306,9 @@ remaining cards to complete.
 
 Current state:
 
-- Q00-Q04 are verified complete, including Q03's post-Q15 correction from an
-  invalid provenance-labeled rejection to an unscorable held-out. Q05 is
-  reopened for the Q15 feasibility defect and is the only active card. Q06 is
-  a receipt-backed zero-attempt contract rejection; Q07-Q12 are not
+- Q00-Q05 are verified complete, including Q03's correction to an unscorable
+  held-out and Q05's postfreeze feasibility audit. Q06 is reopened solely to
+  correct its proof class and is the only active card. Q07-Q12 are not
   authorized; Q13-Q15 require downstream reconciliation.
 - Commit `0b3afab` adopted this queue and its goal-loop contract.
 - Existing prior receipts remain unchanged.
@@ -344,7 +343,10 @@ Completed:
   zero; no promotion.
 - Q05 evaluator/case freeze. Native float64/40 Hz F1 evaluation, all ten
   one-use slots, direction order, identity boundaries, exclusions, safety,
-  and denominators are frozen before action compilation.
+  and denominators were frozen before action compilation. Postfreeze audit
+  proves the `88.9 mm` clearance was structurally infeasible against the
+  reset-layout upper bound `62.861793 mm`; the reviewer should have caught
+  this before Q06.
 - Q06 fresh RGB scene gate. C922, D405 color, and Pi IMX708 were captured
   without motion or depth. All ten frozen routes are `44.45 mm` from an
   excluded reset-layout pawn versus the required `88.9 mm`, so no case was
@@ -414,6 +416,12 @@ Verification evidence:
 - Q05 executor/reviewer: `docs/session-logs/046-executor-q05-off-source-evaluator-freeze.md`;
   `docs/reviewer-messages/044-q05-off-source-evaluator-freeze.md`,
   decision `CONTINUE`, anchor `100`.
+- Q05 feasibility correction:
+  `runs/bidirectional-pawn-push/20260727-q05-feasibility-audit-v1/evaluation.json`,
+  SHA-256
+  `0dbe2cbdb078b219c172e20ffd08c7be96e01f68abbca84355c4d04afa3bd591`;
+  `docs/session-logs/051-executor-q05-preregistered-feasibility-audit.md`;
+  `6 passed in 0.20s`.
 - Q06 capture receipt:
   `runs/bidirectional-pawn-push/20260727-q06-scene-v1/capture_receipt.json`,
   SHA-256
@@ -441,9 +449,9 @@ Verification evidence:
 
 Remaining:
 
-- Reopened Q05 feasibility correction, Q06/Q13 proof-class correction,
-  downstream claim propagation, Q14 re-verification/push, and Q15
-  reconciliation. Q07-Q12 remain visibly not authorized, not passed.
+- Q06/Q13 proof-class correction, downstream claim propagation, Q14
+  re-verification/push, and Q15 reconciliation. Q07-Q12 remain visibly not
+  authorized, not passed.
 
 Blockers:
 
@@ -459,8 +467,8 @@ Blockers:
 
 Next step:
 
-- Reproduce the Q05 structural infeasibility without mutating the frozen
-  evaluator, then propagate the corrected proof class.
+- Regenerate Q06 with the corrected contract-infeasibility proof class while
+  preserving the frozen evaluator and fresh camera evidence.
 
 Attempt ledger:
 
@@ -615,6 +623,37 @@ shasum -a 256 configs/evaluations/bidirectional_off_source_push_evaluator_v1.jso
 
 No counted action existed at evaluator freeze. Q06 is the only active card;
 physical attempts remain `0/10`.
+
+### Q05 post-Q15 feasibility correction
+
+```text
+uv run --offline pytest -q \
+  tests/test_bidirectional_off_source_feasibility_audit.py \
+  tests/test_bidirectional_off_source_evaluator.py
+......                                                                   [100%]
+6 passed in 0.20s
+
+uv run --offline python \
+  scripts/evaluate_bidirectional_off_source_feasibility.py \
+  --output \
+  runs/bidirectional-pawn-push/20260727-q05-feasibility-audit-v1/evaluation.json
+PASS
+
+shasum -a 256 \
+  runs/bidirectional-pawn-push/20260727-q05-feasibility-audit-v1/evaluation.json
+0dbe2cbdb078b219c172e20ffd08c7be96e01f68abbca84355c4d04afa3bd591
+```
+
+The frozen evaluator was not modified. Every route contains its source, and
+every occupied source has another reset-layout pawn one file and one rank
+away. The global clearance upper bound was therefore
+`sqrt(2) * 44.45 = 62.861793 mm`, below the frozen `88.9 mm` gate. This
+structural infeasibility was detectable before Q06 and should have prevented
+the evaluator from being accepted as executable. B7/D7/F7 planar source-to-
+left-base distances were also reproduced as
+`0.478092/0.485519/0.508618 m`; distance alone is not promoted to a
+reachability decision. No new data, action, gateway, motion, or attempt
+occurred. Q06 is the only active card.
 
 ## Q06 transition record
 
