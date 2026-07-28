@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V01_REGISTRATION_PREREGISTRATION`
+Status: `ACTIVE_V02_STATIC_ROUTE_VISIBILITY_PROOF`
 
 Created: `2026-07-28`
 
@@ -155,8 +155,8 @@ denominators before any counted action is compiled.
 | ID | Status | Task | Acceptance gate | Evidence |
 |---|---|---|---|---|
 | V00 | `DONE` | Read-only inventory, v1 verification, live torque/process/camera/Git state, and pre-freeze camera/feasibility design. | V1 closeout and hashes resolve; torque false; no competing writer or repo-owned camera/gateway process; all unrelated paths preserved; fixed-C922 adjudication design and candidate no-contact hover strategy documented from live evidence. No motion. | Receipt `runs/bidirectional-pawn-push-v2/20260728-v00-read-only-design/v00_read_only_design_receipt.json`, SHA-256 `2c818ed0b70458ca0cd2d2758ec2c4a74790dcc6bc0733bc82dafca157908ebf`. Fresh exact-mode C922 frame SHA-256 `00e1e84b83e28344849400c502975bdca70ad40975815c31b10c20073483cebe`; `92` callbacks, zero drops. Gateway preflight passed with torque false and no motion/config rewrite. CPU/fp64 found a fixed-elbow `13.615385 deg` source egress that monotonically clears the two source-only modeled folded-arm contacts, then a contact-free seven-pan hover family spanning `106.558 mm` in model x plus a separate elevated held-out. No physical motion. |
-| V01 | `IN_PROGRESS` | Preregister a new camera-owned registration acquisition, board-plane metric model, fit/held-out split, and sealed-input rules. | Versioned contract declares visible board features, camera model inputs, gripper reference, fit targets, held-out targets, pixel/reprojection sanity gate, `<25 mm` metric gate, hashes, and recapture fallback before capture. | In progress. |
-| V02 | `PENDING` | Prove hover poses and visibility using CPU/fp64 simulation and static camera projections/images. | Every proposed target passes joint limits, self/table/board/pawn clearance, no-contact height, slow-path preview, C922 field of view, simultaneous gripper/board visibility, and guaranteed return/torque-off logic. Reviewer decision `CONTINUE`. No motion. | Pending. |
+| V01 | `DONE` | Preregister a new camera-owned registration acquisition, board-plane metric model, fit/held-out split, and sealed-input rules. | Versioned contract declares visible board features, camera model inputs, gripper reference, fit targets, held-out targets, pixel/reprojection sanity gate, `<25 mm` metric gate, hashes, and recapture fallback before capture. | Contract `configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v1.json`, SHA-256 `f345d9ff55ed38b8509dac061af7d0ce7aeaefb59cb78f92ba4460b5dbe82024`. Four fit targets and four held-out targets are disjoint and prospectively frozen; v1 B7 reuse forbidden; C922 owns board/task; D405 depth omitted; normalized zero-distortion `3x4` DLT family and pixel/annotation/`<25 mm` gates fixed; held-out single-open and versioned recapture fallback fixed. Validation attempt 1 failed only on a mistyped C922-contract digest before freeze; corrected to the live digest. Attempt 2: `3 passed in 0.04s`. No capture or motion. |
+| V02 | `IN_PROGRESS` | Prove hover poses and visibility using CPU/fp64 simulation and static camera projections/images. | Every proposed target passes joint limits, self/table/board/pawn clearance, no-contact height, slow-path preview, C922 field of view, simultaneous gripper/board visibility, and guaranteed return/torque-off logic. Reviewer decision `CONTINUE`. No motion. | In progress. |
 | V03 | `PENDING` | Capture the prospective fit and held-out registration observations through the reviewed gateway. | Cameras precede motion; only approved slow no-contact paths run; requested/mapped/sent and tracking receipts close; every planned target is captured; torque false on exit; input hashes freeze; no pawn contact. | Pending. |
 | V04 | `PENDING` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Pending. |
 | V05 | `PENDING` | Draft v2 evaluator and maximum-ten case family, then run reset-layout feasibility audit before freeze. | Route/joint/collision/edge/corridor/camera/destination checks pass with documented margins and at least two feasible candidates per direction. Draft defects are repaired before freeze without task outcomes. | Pending. |
@@ -195,7 +195,7 @@ denominators before any counted action is compiled.
 
 Current state:
 
-- V01 is the only active card.
+- V02 is the only active card.
 - Robot motion is unauthorized through V02.
 - Counted actions do not exist.
 
@@ -206,6 +206,8 @@ Completed:
 - V00 completed read-only. The live C922, SO-101 buses, torque state,
   processes, v1 hashes, and candidate hover geometry were inventoried without
   motion.
+- V01 froze the first v2 registration acquisition contract before any
+  authoritative capture or motion.
 
 Verification evidence:
 
@@ -267,11 +269,20 @@ Verification evidence:
   midpoint under a frozen agent-only annotation protocol. V01 must freeze
   exact pixel/reprojection gates and annotator-agreement checks before any
   authoritative capture.
+- V01 contract:
+  `configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v1.json`,
+  SHA-256
+  `f345d9ff55ed38b8509dac061af7d0ce7aeaefb59cb78f92ba4460b5dbe82024`.
+  It binds four fit and four held-out hovers, C922 identity/mode, board
+  lattice requirements, blinded two-pass distal-jaw annotation, one shared
+  projective DLT family, pixel/reprojection gates, exclusive `<25 mm`
+  held-out metric gate, held-out single-open rules, safety constraints, and a
+  non-terminal versioned recapture fallback. `3 passed in 0.04s`.
 
 Remaining:
 
-- Complete V01 preregistration contract.
-- V02-V15.
+- Complete V02 exact static route, visibility, and return proof.
+- V03-V15.
 
 Blockers:
 
@@ -285,10 +296,10 @@ Blockers:
 
 Next action:
 
-- Write and test the V01 registration acquisition contract, including exact
-  split identities, projection family, gripper-reference annotation
-  protocol, sealed held-out handling, recapture fallback, and metric/pixel
-  gates.
+- Compile exact setup/hover/return arrays from a fresh read-only rebase,
+  evaluate every row in CPU/fp64 for joint limits and external clearances,
+  render/score C922 visibility proxies, and emit a deterministic V02 reviewer
+  decision. No gateway execution.
 
 Attempt ledger:
 
@@ -328,3 +339,33 @@ live elbow fixed, clears both modeled source self-contact pairs without
 worsening them, and reaches a contact-free family of pan-separated hovers.
 The inventory image is excluded from the future dataset. V01 is active;
 physical attempts remain `0/10`.
+
+### V01 complete / V02 start — 2026-07-28
+
+The acquisition contract froze four fit hovers at pan
+`[-21,-11,-1,9] deg`; three same-height held-out hovers at
+`[-16,-6,4] deg`; and one elevated held-out at pan `-6`, lift `-90 deg`.
+All other hover joints, camera identity/mode, split storage, annotation
+protocol, DLT family, gates, sealing, and fallback rules are fixed.
+
+Validation attempt 1 reported one source-binding typo:
+
+```text
+expected C922 capture contract:
+904af4c...
+live SHA-256:
+e2daa9dc...
+```
+
+This occurred before contract freeze, capture, or motion. The binding was
+corrected to the live file digest. Validation attempt 2:
+
+```text
+uv run --offline pytest -q \
+  tests/test_bidirectional_pawn_push_v2_registration_acquisition.py
+...                                                                      [100%]
+3 passed in 0.04s
+```
+
+V02 is the only active card. Robot motion and counted actions remain
+unauthorized; attempts remain `0/10`.
