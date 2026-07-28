@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_TZ_TEMPORAL_REPLAY_FROZEN`
+Status: `ACTIVE_V05_UA_LOW_CENTER_STATIC_FROZEN`
 
 Created: `2026-07-28`
 
@@ -194,7 +194,8 @@ denominators before any counted action is compiled.
 | V05-TW | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a finite wrist-orientation and single-waypoint pre-contact path-shape successor while preserving the V05-TK geometry grid and all gates. | Exact four-case quarantine remains; wrist/path values derive only from articulated joint/jaw/pawn/square/collision geometry; deterministic static selector freezes four distinct safe families, assigned `2/2`, before any dynamic replay. | Receipt `8d32d113...` exhausts all `3564` cells with no quarantine leak: `3111` fixed-wrist IK rejects, `443` static rejects, `10` eligible cells but still only the same `2` e2 lateral families. Lane counts are `1/2` each, so the frozen family gate rejects and dynamic/V06/physical execution remain closed. |
 | V05-TX | `DONE_TERMINAL_NEGATIVE` | Under standing delegation, prospectively authorize and freeze an alternate robot start-posture, deterministic multi-start IK-branch, and minimal approach-azimuth/lateral-clearance family with unchanged pawn layout and no manual intervention. | Finite grid derives only from gateway-admissible robot states, modeled/calibrated joint and start envelopes, jaw/arm collision geometry, and obstacle clearances; setup posture is robot-reachable and part of action identity; at least four distinct nonquarantined static-safe families freeze, alternating `2/2`, before dynamics. | Static PASS `60554324...`; temporal receipt `50548090...` REJECT: `0/2` each direction. Every identity/gateway check passed. h7 routes failed progress robustness with stationary exclusions; e2/f7 routes also displaced exclusions during the long dynamic setup/action. Four evaluated cases enter the immutable quarantine. No V06 or physical admission. |
 | V05-TY | `DONE_TERMINAL_NEGATIVE` | Under standing delegation, prospectively freeze a slower-setup, higher-clearance, longer-stroke successor over fresh nonquarantined families. | Exact cumulative eight-case quarantine; reused setup branches remain robot-reachable and inside action bytes; higher clearance and longer in-bounds stroke derive from modeled geometry and V05-TX consequence mechanism; four distinct static-safe fresh families alternate `2/2` before dynamics. | V1 failed closed before model loading and is bound by `df2e91cb...`. Corrected V2 receipt `aed49c5c...` evaluated all `360` cells with no quarantine leak but found only two eligible families, lane counts `1/2` each. `311` IK rejects, `46` collision rejects, and one camera reject. Dynamic/V06/counted/physical false. |
-| V05-TZ | `IN_PROGRESS` | Prospectively restore the already accepted `90 mm` bounded stroke while retaining V05-TY slower setup, higher precontact clearance, lateral clearance, exact quarantine, and every gate. | `90 mm` remains `2.49×` the `36.025 mm` progress gate and ends inside the immediate empty-neighbor corridor; the 120 mm static collisions/camera miss are removed without using dynamic outcomes; four distinct static-safe fresh families alternate `2/2`. | Static receipt `35c3bea2...` PASS: all `360` cells evaluated, four fresh families selected `2/2`, exact actions tracked. Temporal contract `4698e510...` binds unchanged direct-target plus diagnostic `0.11 s` ZOH paths before dynamics. One bounded temporal execution active; V06/counted/physical false. |
+| V05-TZ | `DONE_TERMINAL_NEGATIVE` | Prospectively restore the already accepted `90 mm` bounded stroke while retaining V05-TY slower setup, higher precontact clearance, lateral clearance, exact quarantine, and every gate. | `90 mm` remains `2.49×` the `36.025 mm` progress gate and ends inside the immediate empty-neighbor corridor; the 120 mm static collisions/camera miss are removed without using dynamic outcomes; four distinct static-safe fresh families alternate `2/2`. | Static receipt `35c3bea2...` PASS selected four exact actions `2/2`. Temporal receipt `5617090d...` REJECT: `0/2` each direction; all identity/gateway checks passed, every case failed progress robustness, and two also failed excluded displacement. No V06/physical admission. |
+| V05-UA | `IN_PROGRESS` | Prospectively lower and center contact using the pre-existing `18 mm` height and `16 mm` center offset over fresh nonquarantined cases. | Exact cumulative twelve-case quarantine; low-center values remain inside the frozen pawn ring/source-square geometry; all setup, clearance, `90 mm` stroke, identity, selection, and gates remain unchanged; four static-safe fresh families alternate `2/2`. | Manager authorization `94fd1e02...`; contract `59852614...`; v3 enumerator `875fea6b...`; `36 × 3 × 3 = 324` cells maximum. One bounded static execution active; dynamic/V06/counted/physical false. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2731,6 +2732,55 @@ separate requested/sent/applied traces and timestamps, `36.025 mm` progress,
 `2/2` per-direction acceptance threshold. One bounded dynamic replay is
 authorized. V06/counted/camera/gateway/serial/physical/promotion/transfer
 authority remains false.
+
+### V05-TZ temporal replay terminal negative — 2026-07-28
+
+The completed frozen replay produced
+`runs/bidirectional-pawn-push-v2/20260728-v05-tz-bounded-stroke-v1/temporal-replay-v1/receipt.json`,
+SHA-256
+`5617090dd0d7a1734d3a1d42df1e8048d102141a774f41b9b2375b5206c627a7`,
+with status `temporal_replay_reject`. No case passed both paths; lane counts
+are REAL_TO_SIM `0/2` and SIM_TO_REAL `0/2`.
+
+Every requested/sent byte identity, frozen action hash, timestamp, gateway
+bound/rate, and no-transform check passed. Selected contact was sustained,
+excluded contact was zero, collision/camera gates passed, but all four cases
+failed unchanged `36.025 mm` signed-progress robustness. The `g8→g7` and
+`f7→f6` cases kept maximum excluded displacement below `0.000047 mm`;
+`g8→h8` reached `2.329 mm`, and `e2→f2` reached `6.554 mm`. Across completed
+paths the observed progress ranged from `7.351 mm` to `159.509 mm`, with
+thirty-two variant/path progress failures and seven excluded-displacement
+failures. This is consequence sensitivity, not an identity or gateway fault.
+
+The four dynamically evaluated case ids join the immutable quarantine,
+bringing its exact count to twelve. V05-TZ closes as a terminal simulator
+negative; V06/counted/physical/promotion/transfer authority remains false.
+
+### V05-UA low-center contact successor freeze — 2026-07-28
+
+Manager authorization
+`configs/evaluations/bidirectional_pawn_push_v2_low_center_contact_successor_authorization_v1.json`,
+SHA-256
+`94fd1e02b779221e71bd888bf9f7f54fada85906d839035b73b6450f60bc63ca`,
+static contract
+`configs/evaluations/bidirectional_pawn_push_v2_low_center_contact_static_v3.json`,
+SHA-256
+`59852614450dab2bb1a120137ac7d2d3f4ea5c1724cc710ed74344ea0ad2e6cf`,
+and implementation
+`src/sim2claw/bidirectional_pawn_push_v2_low_center_contact_static_v3.py`,
+SHA-256
+`875fea6be6ca2d33f7f11e7a6f9aaf67bb52ce392a53899ef642146bcb2f4908`,
+are frozen before model loading.
+
+All twelve dynamically evaluated cases are excluded, leaving `36` fresh
+families. The single mechanism is a lower, more centered contact: `18 mm`
+height and `16 mm` center offset, both pre-existing V05-TK endpoints inside
+the frozen `17–31.2 mm` pawn contact band and `22.225 mm` source-square half
+width. The `90 mm` stroke, `75 mm` precontact clearance, `±50/0 mm` lateral
+approaches, three demonstrated setup branches, `1.5` setup speed, exact jaw,
+action identity, selection, and all gates remain unchanged. The finite grid
+is `36 × 3 × 3 = 324` cells. One static execution is active.
+Dynamic/V06/counted/physical authority remains false.
 
 ### V05-T prospective static enumerator freeze — 2026-07-28
 

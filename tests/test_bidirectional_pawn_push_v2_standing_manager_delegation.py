@@ -64,6 +64,19 @@ BOUNDED_STROKE_TEMPORAL_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_temporal_replay_bounded_stroke_v1.json"
 )
+BOUNDED_STROKE_TEMPORAL_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-tz-bounded-stroke-v1/temporal-replay-v1/receipt.json"
+)
+LOW_CENTER_AUTHORIZATION = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_low_center_contact_"
+    "successor_authorization_v1.json"
+)
+LOW_CENTER_STATIC_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_low_center_contact_static_v3.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -295,6 +308,72 @@ def test_bounded_stroke_static_pass_and_temporal_freeze_bind_exact_actions() -> 
     assert contract["acceptance"]["minimum_cases_per_direction"] == 2
     assert contract["authority"]["dynamic_simulation"] is True
     assert contract["authority"]["v06_evaluator_freeze"] is False
+    assert contract["authority"]["physical_motion"] is False
+
+
+def test_low_center_successor_quarantines_twelve_and_changes_contact_only() -> None:
+    receipt = json.loads(
+        BOUNDED_STROKE_TEMPORAL_RECEIPT.read_text(encoding="utf-8")
+    )
+    assert _sha(BOUNDED_STROKE_TEMPORAL_RECEIPT) == (
+        "5617090dd0d7a1734d3a1d42df1e8048d102141a774f41b9b2375b5206c627a7"
+    )
+    assert receipt["status"] == "temporal_replay_reject"
+    assert receipt["passing_case_ids"] == []
+    assert receipt["lane_counts"] == {
+        "REAL_TO_SIM": 0,
+        "SIM_TO_REAL": 0,
+    }
+    assert receipt["physical_motion"] is False
+
+    authorization = json.loads(
+        LOW_CENTER_AUTHORIZATION.read_text(encoding="utf-8")
+    )
+    for binding in authorization["immutable_predecessors"].values():
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert authorization["quarantine"]["exact_count"] == 12
+    assert authorization["quarantine"]["case_ids"][-4:] == [
+        "tan_pawn_g8__g8_g7",
+        "tan_pawn_g8__g8_h8",
+        "tan_pawn_f7__f7_f6",
+        "brown_pawn_e2__e2_f2",
+    ]
+    assert authorization["authority"]["static_design"] is True
+    assert authorization["authority"]["model_loading"] is False
+    assert authorization["authority"]["physical_motion"] is False
+
+    predecessor = json.loads(
+        BOUNDED_STROKE_STATIC_CONTRACT.read_text(encoding="utf-8")
+    )
+    contract = json.loads(
+        LOW_CENTER_STATIC_CONTRACT.read_text(encoding="utf-8")
+    )
+    for key in ("authorization", "v1_binding_failure", "implementation"):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert contract["quarantine"]["exact_count"] == 12
+    assert contract["family_grid"]["expected_postquarantine_family_count"] == 36
+    assert contract["parameter_grid"]["maximum_total_cells"] == 324
+    assert contract["endpoint_geometry"]["contact_height_m"] == 0.018
+    assert contract["endpoint_geometry"]["contact_offset_m"] == 0.016
+    for key in (
+        "stroke_m",
+        "precontact_clearance_height_above_pawn_base_m",
+    ):
+        assert contract["endpoint_geometry"][key] == (
+            predecessor["endpoint_geometry"][key]
+        )
+    assert contract["parameter_grid"]["setup_branches"] == (
+        predecessor["parameter_grid"]["setup_branches"]
+    )
+    assert contract["parameter_grid"]["approach_lateral_offsets_m"] == (
+        predecessor["parameter_grid"]["approach_lateral_offsets_m"]
+    )
+    assert contract["action_identity"] == predecessor["action_identity"]
+    assert contract["selection"] == predecessor["selection"]
+    assert contract["static_gates"] == predecessor["static_gates"]
+    assert contract["authority"]["static_simulation"] is True
+    assert contract["authority"]["dynamic_replay"] is False
     assert contract["authority"]["physical_motion"] is False
 
 

@@ -3,12 +3,12 @@
     "counted_task_attempts": 0,
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
-    "milestone_id": "V05-TZ",
-    "node_id": "checkpoint:v05-tz-temporal-replay-frozen",
-    "queue_status": "ACTIVE_V05_TZ_TEMPORAL_REPLAY_FROZEN",
-    "resume_action": "execute_one_action_frozen_direct_and_zoh_temporal_replay",
+    "milestone_id": "V05-UA",
+    "node_id": "checkpoint:v05-ua-low-center-static-frozen",
+    "queue_status": "ACTIVE_V05_UA_LOW_CENTER_STATIC_FROZEN",
+    "resume_action": "execute_one_bounded_324_cell_low_center_static_enumeration",
     "resume_authorized": true,
-    "status": "preregistered_temporal_replay_execution_active"
+    "status": "preregistered_low_center_static_execution_active"
   },
   "authority": {
     "camera_open": false,
@@ -35,27 +35,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 91,
+    "edges": 94,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 3,
-      "evaluated-on": 16,
+      "evaluated-on": 17,
       "fitted-on": 4,
-      "generated-from": 59,
+      "generated-from": 61,
       "invalidates": 1,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 89,
+    "nodes": 92,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 54,
+      "checkpoint": 56,
       "context": 1,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 10,
+      "evaluator_verdict": 11,
       "evidence": 5,
       "intervention": 1,
       "mechanism": 3,
@@ -744,6 +744,31 @@
       "type": "generated-from"
     },
     {
+      "metadata": {
+        "cumulative_quarantined_case_count": 12,
+        "fresh_families_only": true,
+        "maximum_total_cells": 324,
+        "physical_motion": false,
+        "preregistered_before_model_loading_or_enumeration": true,
+        "static_simulation_only": true
+      },
+      "source": "checkpoint:v05-ua-low-center-static-frozen",
+      "target": "checkpoint:v05-ua-manager-authorization-bound",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "cumulative_quarantined_case_count": 12,
+        "manager_authorized_under_standing_delegation": true,
+        "physical_motion": false,
+        "prior_verdict_immutable": true,
+        "static_design_only": true
+      },
+      "source": "checkpoint:v05-ua-manager-authorization-bound",
+      "target": "verdict:v05-tz-temporal-replay-reject",
+      "type": "generated-from"
+    },
+    {
       "metadata": {},
       "source": "context:c922-rgb-no-depth",
       "target": "session:bidirectional-pawn-push-v2",
@@ -1029,10 +1054,23 @@
       "source": "verdict:v05-ty-static-v2-reject",
       "target": "checkpoint:v05-ty-slow-elevated-static-v2-frozen",
       "type": "evaluated-on"
+    },
+    {
+      "metadata": {
+        "gate_weakened": false,
+        "minimum_cases_per_direction": 2,
+        "physical_motion": false,
+        "real_to_sim_lanes": 0,
+        "sim_to_real_lanes": 0,
+        "v06_authorized": false
+      },
+      "source": "verdict:v05-tz-temporal-replay-reject",
+      "target": "checkpoint:v05-tz-temporal-replay-frozen",
+      "type": "evaluated-on"
     }
   ],
-  "generated_at": "2026-07-28T14:55:46-05:00",
-  "graph_digest": "d904593227e86866b768531f168ebed84cac24d4626f3cc3520f00c8d0b54992",
+  "generated_at": "2026-07-28T15:25:45-05:00",
+  "graph_digest": "3d1a997477233366f35dd477f9b6bce9a475d9badfb85049e04192088827e62c",
   "node_types": [
     "workcell",
     "session",
@@ -1115,7 +1153,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf"
+        "sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1547,7 +1585,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf"
+        "sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1598,7 +1636,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf"
+        "sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1619,7 +1657,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf"
+        "sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1648,7 +1686,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf"
+        "sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -2057,7 +2095,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf"
+        "sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -2828,6 +2866,74 @@
     },
     {
       "data": {
+        "approach_lateral_offset_count": 3,
+        "contact_center_offset_mm": 16.0,
+        "contact_height_mm": 18.0,
+        "cumulative_quarantined_case_count": 12,
+        "dynamic_replay_authorized": false,
+        "maximum_total_cells": 324,
+        "model_loading_authorized": true,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "postquarantine_family_count": 36,
+        "prequarantine_family_count": 48,
+        "setup_branch_count": 3,
+        "source_binding_id": "v05_ua_static_contract",
+        "static_simulation_authorized": true,
+        "stroke_mm": 90.0,
+        "v06_evaluator_freeze_authorized": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-ua-low-center-static-frozen",
+      "label": "V05-UA fresh low-center contact static grid frozen",
+      "proof_class": "prospective_cpu_fp64_static_low_center_contact_action_freeze_v3",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_low_center_contact_static_v3.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_static_low_center_contact_action_freeze_v3",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_center_contact_static.v3",
+          "status": "preregistered_low_center_contact_before_model_loading_static_enumeration_or_action_generation"
+        },
+        "proof_class": "prospective_cpu_fp64_static_low_center_contact_action_freeze_v3",
+        "sha256": "59852614450dab2bb1a120137ac7d2d3f4ea5c1724cc710ed74344ea0ad2e6cf"
+      },
+      "status": "preregistered_low_center_static_execution_active",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "contact_center_offset_mm": 16.0,
+        "contact_height_mm": 18.0,
+        "cumulative_quarantined_case_count": 12,
+        "dynamic_replay_authorized": false,
+        "fresh_families_only": true,
+        "mechanism": "low_center_contact",
+        "model_loading_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "v05_ua_manager_authorization",
+        "static_design_authorized": true,
+        "static_simulation_authorized": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:v05-ua-manager-authorization-bound",
+      "label": "V05-UA delegated low-center contact successor authorized",
+      "proof_class": "prospective_manager_authorized_static_only_low_center_contact_successor",
+      "source": {
+        "path": "configs/evaluations/bidirectional_pawn_push_v2_low_center_contact_successor_authorization_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_manager_authorized_static_only_low_center_contact_successor",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_center_contact_successor_authorization.v1",
+          "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading"
+        },
+        "proof_class": "prospective_manager_authorized_static_only_low_center_contact_successor",
+        "sha256": "94fd1e02b779221e71bd888bf9f7f54fada85906d839035b73b6450f60bc63ca"
+      },
+      "status": "manager_authorized_static_design_bound",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "source_binding_id": "v01",
         "task_camera": "C922",
         "wrist_depth_required": false
@@ -3126,7 +3232,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf"
+        "sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -3186,7 +3292,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf"
+        "sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -3204,7 +3310,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf"
+        "sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -3272,7 +3378,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf"
+        "sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -3644,6 +3750,42 @@
     },
     {
       "data": {
+        "all_action_identity_checks_passed": true,
+        "all_gateway_checks_passed": true,
+        "cumulative_quarantined_case_count": 12,
+        "excluded_displacement_gate_failure_count": 7,
+        "minimum_cases_per_direction": 2,
+        "newly_quarantined_case_count": 4,
+        "passing_case_ids": [],
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "progress_gate_failure_count": 32,
+        "real_to_sim_lanes": 0,
+        "sim_to_real_lanes": 0,
+        "source_binding_id": "v05_tz_temporal_receipt",
+        "v06_evaluator_freeze_authorized": false
+      },
+      "evaluator_identity": "5617090dd0d7a1734d3a1d42df1e8048d102141a774f41b9b2375b5206c627a7",
+      "id": "verdict:v05-tz-temporal-replay-reject",
+      "label": "V05-TZ bounded-stroke temporal replay terminal negative",
+      "proof_class": "cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tz-bounded-stroke-v1/temporal-replay-v1/receipt.json",
+        "payload_contract": {
+          "physical_motion": false,
+          "physical_task_attempts": 0,
+          "proof_class": "cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay_receipt.v1",
+          "status": "temporal_replay_reject"
+        },
+        "proof_class": "cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+        "sha256": "5617090dd0d7a1734d3a1d42df1e8048d102141a774f41b9b2375b5206c627a7"
+      },
+      "status": "terminal_direction_gate_negative_no_physical_admission",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "human_physical_intervention_required": false,
         "source_binding_id": "v00"
       },
@@ -3740,7 +3882,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf",
+      "source_sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -3770,7 +3912,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf",
+      "source_sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -3800,7 +3942,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf",
+      "source_sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -4082,7 +4224,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf",
+      "source_sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -4384,6 +4526,36 @@
       "source_binding": "v05_tz_temporal_contract",
       "source_sha256": "4698e51006914ba6ac3370dc9888e4b55665ab41d1ff924abef6824aa381addf",
       "status": "preregistered_temporal_replay_execution_active"
+    },
+    {
+      "event_id": "V05_TZ_TEMPORAL_REPLAY_REJECT",
+      "node_ids_added": [
+        "verdict:v05-tz-temporal-replay-reject"
+      ],
+      "revision": 70,
+      "source_binding": "v05_tz_temporal_receipt",
+      "source_sha256": "5617090dd0d7a1734d3a1d42df1e8048d102141a774f41b9b2375b5206c627a7",
+      "status": "terminal_direction_gate_negative_no_physical_admission"
+    },
+    {
+      "event_id": "V05_UA_MANAGER_AUTHORIZATION_BOUND",
+      "node_ids_added": [
+        "checkpoint:v05-ua-manager-authorization-bound"
+      ],
+      "revision": 71,
+      "source_binding": "v05_ua_manager_authorization",
+      "source_sha256": "94fd1e02b779221e71bd888bf9f7f54fada85906d839035b73b6450f60bc63ca",
+      "status": "manager_authorized_static_design_bound"
+    },
+    {
+      "event_id": "V05_UA_LOW_CENTER_STATIC_FREEZE",
+      "node_ids_added": [
+        "checkpoint:v05-ua-low-center-static-frozen"
+      ],
+      "revision": 72,
+      "source_binding": "v05_ua_static_contract",
+      "source_sha256": "59852614450dab2bb1a120137ac7d2d3f4ea5c1724cc710ed74344ea0ad2e6cf",
+      "status": "preregistered_low_center_static_execution_active"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -4392,7 +4564,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "1deaebdbabf17baa42a23590a317907e7702e31b7022c1704500ad5011ea32bf"
+      "sha256": "2342a21c090cd5e6df8c3598188bb8d1b40659aefb95b07df802f11fa1b99d7e"
     },
     {
       "id": "simulator_candidate",
@@ -5255,6 +5427,41 @@
       },
       "proof_class": "prospective_cpu_fp64_action_frozen_setup_direct_target_and_diagnostic_zoh_replay",
       "sha256": "4698e51006914ba6ac3370dc9888e4b55665ab41d1ff924abef6824aa381addf"
+    },
+    {
+      "id": "v05_tz_temporal_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tz-bounded-stroke-v1/temporal-replay-v1/receipt.json",
+      "payload_contract": {
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "proof_class": "cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay_receipt.v1",
+        "status": "temporal_replay_reject"
+      },
+      "proof_class": "cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+      "sha256": "5617090dd0d7a1734d3a1d42df1e8048d102141a774f41b9b2375b5206c627a7"
+    },
+    {
+      "id": "v05_ua_manager_authorization",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_center_contact_successor_authorization_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_manager_authorized_static_only_low_center_contact_successor",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_center_contact_successor_authorization.v1",
+        "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading"
+      },
+      "proof_class": "prospective_manager_authorized_static_only_low_center_contact_successor",
+      "sha256": "94fd1e02b779221e71bd888bf9f7f54fada85906d839035b73b6450f60bc63ca"
+    },
+    {
+      "id": "v05_ua_static_contract",
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_low_center_contact_static_v3.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_static_low_center_contact_action_freeze_v3",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_low_center_contact_static.v3",
+        "status": "preregistered_low_center_contact_before_model_loading_static_enumeration_or_action_generation"
+      },
+      "proof_class": "prospective_cpu_fp64_static_low_center_contact_action_freeze_v3",
+      "sha256": "59852614450dab2bb1a120137ac7d2d3f4ea5c1724cc710ed74344ea0ad2e6cf"
     },
     {
       "id": "world_visual",
