@@ -48,6 +48,14 @@ SLOW_ELEVATED_STATIC_V2_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_slow_elevated_static_v2.json"
 )
+BOUNDED_STROKE_AUTHORIZATION = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_bounded_stroke_successor_authorization_v1.json"
+)
+BOUNDED_STROKE_STATIC_CONTRACT = ROOT / (
+    "configs/evaluations/"
+    "bidirectional_pawn_push_v2_bounded_stroke_static_v1.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -185,6 +193,48 @@ def test_slow_elevated_v1_failure_and_v2_loader_fix_are_source_bound() -> None:
     )
     assert contract["endpoint_geometry"]["stroke_m"] == 0.12
     assert contract["authority"]["model_loading"] is True
+    assert contract["authority"]["static_simulation"] is True
+    assert contract["authority"]["dynamic_replay"] is False
+    assert contract["authority"]["physical_motion"] is False
+
+
+def test_bounded_stroke_successor_changes_only_static_stroke() -> None:
+    authorization = json.loads(
+        BOUNDED_STROKE_AUTHORIZATION.read_text(encoding="utf-8")
+    )
+    for binding in authorization["immutable_predecessors"].values():
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert authorization["quarantine"]["exact_count"] == 8
+    assert authorization["authorized_static_design"]["sole_change"] == (
+        "stroke_m_from_0.12_to_0.09"
+    )
+    assert authorization["authority"]["model_loading"] is False
+    assert authorization["authority"]["static_simulation"] is False
+    assert authorization["authority"]["physical_motion"] is False
+
+    predecessor = json.loads(
+        SLOW_ELEVATED_STATIC_V2_CONTRACT.read_text(encoding="utf-8")
+    )
+    contract = json.loads(
+        BOUNDED_STROKE_STATIC_CONTRACT.read_text(encoding="utf-8")
+    )
+    for key in ("authorization", "v1_binding_failure", "implementation"):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert contract["endpoint_geometry"]["stroke_m"] == 0.09
+    for key in (
+        "contact_offset_m",
+        "contact_height_m",
+        "precontact_clearance_height_above_pawn_base_m",
+    ):
+        assert contract["endpoint_geometry"][key] == (
+            predecessor["endpoint_geometry"][key]
+        )
+    assert contract["parameter_grid"] == predecessor["parameter_grid"]
+    assert contract["action_identity"] == predecessor["action_identity"]
+    assert contract["quarantine"] == predecessor["quarantine"]
+    assert contract["selection"] == predecessor["selection"]
+    assert contract["static_gates"] == predecessor["static_gates"]
     assert contract["authority"]["static_simulation"] is True
     assert contract["authority"]["dynamic_replay"] is False
     assert contract["authority"]["physical_motion"] is False

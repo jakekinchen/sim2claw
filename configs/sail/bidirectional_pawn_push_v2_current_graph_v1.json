@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T14:47:44-05:00",
+  "generated_at": "2026-07-28T14:52:08-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "62c9ca1705ff84b00298f269fc90e2f90fe34b6b001be6a008d4bb960952b559",
+      "sha256": "cde05378c03a68d5fe60ed8de63994c1fb825fcea6d1669a79d6fb240229fab9",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -766,6 +766,39 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static.v2",
         "status": "preregistered_binding_loader_correction_before_model_loading_static_enumeration_or_action_generation",
         "proof_class": "prospective_cpu_fp64_static_slow_elevated_long_stroke_action_freeze_v2"
+      }
+    },
+    "v05_ty_static_v2_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ty-slow-elevated-v2/static-freeze-v1/receipt.json",
+      "sha256": "aed49c5c72c54ce8fe3a5c5b4835b1af55dff5647e4305867f17bbe88996035d",
+      "proof_class": "cpu_fp64_static_slow_elevated_long_stroke_multistart_approach_collision_camera_gateway_action_freeze_only_v2",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static_receipt.v2",
+        "status": "slow_elevated_static_freeze_reject",
+        "proof_class": "cpu_fp64_static_slow_elevated_long_stroke_multistart_approach_collision_camera_gateway_action_freeze_only_v2",
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    "v05_tz_manager_authorization": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_bounded_stroke_successor_authorization_v1.json",
+      "sha256": "7e26fc3817ac593638e09d5ae5d89e85896b4f850ae213cb81472213ab862a08",
+      "proof_class": "prospective_manager_authorized_static_only_bounded_stroke_successor",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_bounded_stroke_successor_authorization.v1",
+        "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
+        "proof_class": "prospective_manager_authorized_static_only_bounded_stroke_successor"
+      }
+    },
+    "v05_tz_static_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_bounded_stroke_static_v1.json",
+      "sha256": "4247d175bcaa3e7bcf0c3049eec2907dd343f4c9d9b1400764702c90f33ef097",
+      "proof_class": "prospective_cpu_fp64_static_slow_elevated_bounded_stroke_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_slow_elevated_static.v2",
+        "status": "preregistered_bounded_stroke_before_model_loading_static_enumeration_or_action_generation",
+        "proof_class": "prospective_cpu_fp64_static_slow_elevated_bounded_stroke_action_freeze"
       }
     },
     "simulator_candidate": {
@@ -2228,6 +2261,70 @@
       }
     },
     {
+      "id": "verdict:v05-ty-static-v2-reject",
+      "type": "evaluator_verdict",
+      "label": "V05-TY slow/elevated long-stroke static terminal negative",
+      "status": "terminal_static_family_gate_negative_no_dynamic_admission",
+      "source_binding": "v05_ty_static_v2_receipt",
+      "evaluator_identity": "aed49c5c72c54ce8fe3a5c5b4835b1af55dff5647e4305867f17bbe88996035d",
+      "data": {
+        "evaluated_cells": 360,
+        "ik_compile_rejects": 311,
+        "collision_rejects": 46,
+        "camera_rejects": 1,
+        "statically_eligible_families": 2,
+        "real_to_sim_lanes": 1,
+        "sim_to_real_lanes": 1,
+        "minimum_cases_per_direction": 2,
+        "quarantine_leak": false,
+        "dynamic_replay_executed": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-tz-manager-authorization-bound",
+      "type": "checkpoint",
+      "label": "V05-TZ delegated bounded-stroke successor authorized",
+      "status": "manager_authorized_static_design_bound",
+      "source_binding": "v05_tz_manager_authorization",
+      "data": {
+        "sole_change": "stroke_m_from_0.12_to_0.09",
+        "static_mechanism_only": true,
+        "dynamic_outcomes_observed": false,
+        "cumulative_quarantined_case_count": 8,
+        "maximum_total_cells": 360,
+        "static_design_authorized": true,
+        "model_loading_authorized": false,
+        "static_simulation_authorized": false,
+        "dynamic_replay_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:v05-tz-bounded-stroke-static-frozen",
+      "type": "checkpoint",
+      "label": "V05-TZ bounded 90 mm stroke static grid frozen",
+      "status": "preregistered_bounded_stroke_static_execution_active",
+      "source_binding": "v05_tz_static_contract",
+      "data": {
+        "stroke_mm": 90.0,
+        "stroke_to_progress_gate_ratio": 2.49,
+        "cumulative_quarantined_case_count": 8,
+        "postquarantine_family_count": 40,
+        "maximum_total_cells": 360,
+        "only_stroke_changed_from_v05_ty": true,
+        "model_loading_authorized": true,
+        "static_simulation_authorized": true,
+        "dynamic_replay_authorized": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -3062,6 +3159,43 @@
       }
     },
     {
+      "source": "verdict:v05-ty-static-v2-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-ty-slow-elevated-static-v2-frozen",
+      "metadata": {
+        "evaluated_cells": 360,
+        "statically_eligible_families": 2,
+        "minimum_cases_per_direction": 2,
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-tz-manager-authorization-bound",
+      "type": "generated-from",
+      "target": "verdict:v05-ty-static-v2-reject",
+      "metadata": {
+        "manager_authorized_under_standing_delegation": true,
+        "prior_verdict_immutable": true,
+        "static_mechanism_only": true,
+        "sole_change": "stroke_m_from_0.12_to_0.09",
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:v05-tz-bounded-stroke-static-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:v05-tz-manager-authorization-bound",
+      "metadata": {
+        "preregistered_before_model_loading_or_enumeration": true,
+        "maximum_total_cells": 360,
+        "grid_changed_except_stroke": false,
+        "gate_changed": false,
+        "static_simulation_only": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -3691,14 +3825,41 @@
       "node_ids_added": [
         "checkpoint:v05-ty-slow-elevated-static-v2-frozen"
       ]
+    },
+    {
+      "revision": 65,
+      "event_id": "V05_TY_STATIC_V2_REJECT",
+      "status": "terminal_static_family_gate_negative_no_dynamic_admission",
+      "source_binding": "v05_ty_static_v2_receipt",
+      "node_ids_added": [
+        "verdict:v05-ty-static-v2-reject"
+      ]
+    },
+    {
+      "revision": 66,
+      "event_id": "V05_TZ_MANAGER_AUTHORIZATION_BOUND",
+      "status": "manager_authorized_static_design_bound",
+      "source_binding": "v05_tz_manager_authorization",
+      "node_ids_added": [
+        "checkpoint:v05-tz-manager-authorization-bound"
+      ]
+    },
+    {
+      "revision": 67,
+      "event_id": "V05_TZ_BOUNDED_STROKE_STATIC_FREEZE",
+      "status": "preregistered_bounded_stroke_static_execution_active",
+      "source_binding": "v05_tz_static_contract",
+      "node_ids_added": [
+        "checkpoint:v05-tz-bounded-stroke-static-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-ty-slow-elevated-static-v2-frozen",
-    "milestone_id": "V05-TY",
-    "status": "preregistered_static_v2_loader_fix_execution_active",
-    "queue_status": "ACTIVE_V05_TY_STATIC_V2_LOADER_FIX_FROZEN",
-    "resume_action": "execute_one_bounded_360_cell_static_v2_enumeration",
+    "node_id": "checkpoint:v05-tz-bounded-stroke-static-frozen",
+    "milestone_id": "V05-TZ",
+    "status": "preregistered_bounded_stroke_static_execution_active",
+    "queue_status": "ACTIVE_V05_TZ_BOUNDED_STROKE_STATIC_FROZEN",
+    "resume_action": "execute_one_bounded_360_cell_bounded_stroke_static_enumeration",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

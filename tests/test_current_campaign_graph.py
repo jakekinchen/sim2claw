@@ -29,20 +29,22 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     )
 
     assert rebuilt == tracked
-    assert tracked["active_pointer"]["milestone_id"] == "V05-TY"
+    assert tracked["active_pointer"]["milestone_id"] == "V05-TZ"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:v05-ty-slow-elevated-static-v2-frozen",
-        "milestone_id": "V05-TY",
-        "status": "preregistered_static_v2_loader_fix_execution_active",
-        "queue_status": "ACTIVE_V05_TY_STATIC_V2_LOADER_FIX_FROZEN",
-        "resume_action": "execute_one_bounded_360_cell_static_v2_enumeration",
+        "node_id": "checkpoint:v05-tz-bounded-stroke-static-frozen",
+        "milestone_id": "V05-TZ",
+        "status": "preregistered_bounded_stroke_static_execution_active",
+        "queue_status": "ACTIVE_V05_TZ_BOUNDED_STROKE_STATIC_FROZEN",
+        "resume_action": (
+            "execute_one_bounded_360_cell_bounded_stroke_static_enumeration"
+        ),
         "resume_authorized": True,
         "heldout_open_count": 1,
         "cumulative_manifest_read_count": 2,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(65)
+        range(68)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -53,10 +55,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     ]
     assert (
         tracked["revision_timeline"][-1]["event_id"]
-        == "V05_TY_STATIC_V2_LOADER_FIX_FREEZE"
+        == "V05_TZ_BOUNDED_STROKE_STATIC_FREEZE"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:v05-ty-slow-elevated-static-v2-frozen"
+        "checkpoint:v05-tz-bounded-stroke-static-frozen"
     ]
     assert {row["type"] for row in tracked["nodes"]} == set(
         tracked["node_types"]

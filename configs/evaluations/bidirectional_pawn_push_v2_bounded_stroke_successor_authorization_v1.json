@@ -1,0 +1,89 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_bounded_stroke_successor_authorization.v1",
+  "authorization_id": "bidirectional-pawn-push-v2-bounded-stroke-successor-20260728",
+  "status": "manager_authorized_under_standing_delegation_before_static_design_or_model_loading",
+  "proof_class": "prospective_manager_authorized_static_only_bounded_stroke_successor",
+  "authorized_at": "2026-07-28",
+  "authorizer": "Codex Manager",
+  "standing_delegation": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_standing_manager_delegation_v1.json",
+    "sha256": "8e59b7385ca14083d6ddd571ecc13fbec2f884cba41b3583ccfb317737e81ed5"
+  },
+  "immutable_predecessors": {
+    "v05_ty_static_v2_contract": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_slow_elevated_static_v2.json",
+      "sha256": "5e3415445a9bdb25a0b2c959a891e48816a0dbe337dfef7be2d9264ce04dae41"
+    },
+    "v05_ty_static_v2_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-ty-slow-elevated-v2/static-freeze-v1/receipt.json",
+      "sha256": "aed49c5c72c54ce8fe3a5c5b4835b1af55dff5647e4305867f17bbe88996035d"
+    }
+  },
+  "static_mechanism_evidence": {
+    "evaluated_cells": 360,
+    "ik_compile_rejects": 311,
+    "static_rejects": 47,
+    "statically_eligible_families": 2,
+    "required_statically_eligible_families": 4,
+    "collision_rejects": 46,
+    "camera_rejects": 1,
+    "collision_mechanism": "The 120 mm stroke continued through a nominal empty neighbor into the next occupied file or rank for multiple otherwise compiled routes.",
+    "camera_mechanism": "The 120 mm terminal of g8-to-h8 left the unchanged camera margin.",
+    "dynamic_outcomes_observed": false,
+    "permitted_use": "Authorize one prospective static-only 90 mm bounded-stroke variant while preserving the higher precontact clearance, lateral clearance, slower setup, and all gates."
+  },
+  "quarantine": {
+    "case_ids": [
+      "brown_pawn_b1__b1_b2",
+      "brown_pawn_a2__a2_a1",
+      "brown_pawn_a2__a2_a3",
+      "brown_pawn_e2__e2_e3",
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_h7__h7_h6",
+      "brown_pawn_e2__e2_d2",
+      "tan_pawn_f7__f7_f8"
+    ],
+    "exact_count": 8,
+    "permitted_use": "exact exclusion before future cell generation"
+  },
+  "authorized_static_design": {
+    "sole_change": "stroke_m_from_0.12_to_0.09",
+    "stroke_m": 0.09,
+    "stroke_provenance": "The 90 mm stroke was already frozen and statically accepted in V05-TX, remains 2.49 times the unchanged 36.025 mm progress gate, and ends within the immediate orthogonal-neighbor corridor.",
+    "same_fresh_family_universe": true,
+    "same_setup_branches": true,
+    "same_setup_speed": true,
+    "same_precontact_clearance": true,
+    "same_lateral_offsets": true,
+    "same_contact_offset_and_height": true,
+    "same_selection_and_gates": true,
+    "finite_maximum_cells": 360,
+    "static_selection_only": true,
+    "no_post_outcome_expansion": true
+  },
+  "forbidden": [
+    "reuse of any of the eight quarantined cases",
+    "physical pawn layout change",
+    "manual intervention",
+    "gate weakening",
+    "dynamic replay before four static families freeze",
+    "paid compute",
+    "physical work before V06 and all safety gates"
+  ],
+  "authority": {
+    "static_design": true,
+    "model_loading": false,
+    "static_simulation": false,
+    "dynamic_replay": false,
+    "v06_evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Manager authorization under standing delegation for one finite static-only bounded-stroke successor. No model loading, simulation, V06, hardware, or transfer authority yet."
+}
