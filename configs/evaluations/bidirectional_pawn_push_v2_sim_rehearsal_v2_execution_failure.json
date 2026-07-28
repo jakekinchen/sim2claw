@@ -1,0 +1,30 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal_execution_failure.v1",
+  "status": "failed_closed_before_grid_receipt",
+  "proof_class": "cpu_fp64_sim_only_rehearsal_orchestration_failure",
+  "failed_contract": {
+    "path": "configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v2.json",
+    "sha256": "d57fc89a5874d630536ae6f981b78988c6da40bfb8934fee78ab2cfc02ac847f"
+  },
+  "failed_implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_sim_rehearsal_v2.py",
+    "sha256": "69ce7fe8d16dd3371bf4ce03c7c14d509da92f5e1ca31aa9dd91d6682810de7c"
+  },
+  "freeze_commit": "d020d44",
+  "failure": {
+    "exception_type": "KeyError",
+    "missing_key": "minimum_joint_limit_margin_rad",
+    "location": "src/sim2claw/bidirectional_pawn_push_v2_sim_rehearsal.py:432",
+    "cause": "the unchanged v1 orchestration accessed its legacy gate key before the v2 wrapper could recompute static checks",
+    "contract_or_grid_mutated": false,
+    "receipt_written": false,
+    "case_admitted": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "next_action": "prospectively version an evaluator compatibility correction; do not mutate or rerun frozen rehearsal-v2"
+}

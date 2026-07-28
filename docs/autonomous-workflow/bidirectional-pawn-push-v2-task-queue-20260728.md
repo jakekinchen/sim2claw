@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_FROZEN_REHEARSAL_V2_SINGLE_EXECUTION`
+Status: `ACTIVE_V05_VERSIONED_REHEARSAL_V3_ORCHESTRATION_CORRECTION`
 
 Created: `2026-07-28`
 
@@ -1913,3 +1913,23 @@ offset difference (`-0.174530` mapped physical lower stop versus
 `-0.174533` MuJoCo lower stop); it does not change any action value, bound,
 grid cell, or task gate. Rehearsal-v2 may now execute this identical 72-cell
 grid exactly once. No physical authority is granted.
+
+### V05 rehearsal-v2 pre-grid failure — 2026-07-28
+
+The single frozen v2 invocation failed closed before producing a grid receipt.
+The immutable failure binding is
+`configs/evaluations/bidirectional_pawn_push_v2_sim_rehearsal_v2_execution_failure.json`.
+The wrapper generated versioned arm-margin compile metrics, but the unchanged
+v1 orchestration accessed its legacy
+`gates.minimum_joint_limit_margin_rad` key before v2 receipt postprocessing,
+raising `KeyError` at the first compiled cell. No receipt was written, no
+case or outcome was admitted, no physical motion occurred, and no physical
+task attempt was consumed. Frozen rehearsal-v2 will not be mutated or rerun.
+
+The only authorized next action is a prospective rehearsal-v3 compatibility
+version. It may update only the orchestration/static-check key path so the
+already-frozen v2 arm-margin and explicit jaw checks reach receipt generation.
+It must preserve all 72 cells, action values, scene, registration, simulator,
+dynamic rules, authority, and the v1/v2 negative history. A bounded
+end-to-end orchestration test must reach receipt generation, and v3 must be
+committed and pushed before its one execution.
