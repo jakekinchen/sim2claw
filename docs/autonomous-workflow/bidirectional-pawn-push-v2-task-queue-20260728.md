@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_V05_TX_PROSPECTIVE_TEMPORAL_REPLAY_FROZEN`
+Status: `STOPPED_V05_TX_TEMPORAL_REPLAY_TERMINAL_NEGATIVE`
 
 Created: `2026-07-28`
 
@@ -192,7 +192,7 @@ denominators before any counted action is compiled.
 | V05-TJ | `DONE_TERMINAL_NEGATIVE` | Prospectively generate the owner-authorized jaw-margin successor family by changing only the gripper column to exact float64 `-0.1727003294848389 rad`, then repeat frozen static and temporal gates. | New action hashes bind before dynamics; at least two distinct cases per direction pass unchanged direct-target and `0.11 s` ZOH paths; every other V05-T identity, geometry, evaluator, exclusion, camera, collision, and gateway rule remains unchanged. | Static receipt `64e8c443...` PASS selected four exact actions, two per direction, with every arm column byte-identical. Frozen temporal receipt `41338d08...` REJECT: REAL_TO_SIM `0/2`, SIM_TO_REAL `1/2` passed both paths versus required `2/2` each. Only `brown_pawn_e2__e2_e3` passed all five variants on both paths. All identity/gateway checks passed; failures are consequence/progress robustness. V06 and physical execution remain closed. |
 | V05-TK | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a bounded static-only action-geometry successor over contact offset, contact height, stroke, and nonquarantined source→destination families in the unchanged reset layout. | Exactly four outcome-informed V05-TJ cases are quarantined; deterministic family selection and lane assignment use only IK, collision, camera, calibrated bounds, and gateway margins; exact new action hashes freeze before dynamics; at least two distinct families per direction must later pass both unchanged plant paths and all unchanged gates. | V2 receipt `c333180a...` exhausts all `1188` cells with no quarantine leak: only `2` of required `4` families statically eligible, yielding REAL_TO_SIM `1/2` and SIM_TO_REAL `1/2`. `1037` compile rejects, `148` static rejects, `3` eligible cells across two e2 lateral families. Dynamic replay, V06, and physical execution remain closed. |
 | V05-TW | `DONE_TERMINAL_NEGATIVE` | Prospectively freeze a finite wrist-orientation and single-waypoint pre-contact path-shape successor while preserving the V05-TK geometry grid and all gates. | Exact four-case quarantine remains; wrist/path values derive only from articulated joint/jaw/pawn/square/collision geometry; deterministic static selector freezes four distinct safe families, assigned `2/2`, before any dynamic replay. | Receipt `8d32d113...` exhausts all `3564` cells with no quarantine leak: `3111` fixed-wrist IK rejects, `443` static rejects, `10` eligible cells but still only the same `2` e2 lateral families. Lane counts are `1/2` each, so the frozen family gate rejects and dynamic/V06/physical execution remain closed. |
-| V05-TX | `IN_PROGRESS` | Under standing delegation, prospectively authorize and freeze an alternate robot start-posture, deterministic multi-start IK-branch, and minimal approach-azimuth/lateral-clearance family with unchanged pawn layout and no manual intervention. | Finite grid derives only from gateway-admissible robot states, modeled/calibrated joint and start envelopes, jaw/arm collision geometry, and obstacle clearances; setup posture is robot-reachable and part of action identity; at least four distinct nonquarantined static-safe families freeze, alternating `2/2`, before dynamics. | Static receipt `60554324...` PASS and temporal contract `d64e0625...` bind four exact tracked setup+action tensors, two per direction, before consequence replay. One bounded direct-target + `0.11 s` ZOH execution is active; V06/counted/physical authority remain false. |
+| V05-TX | `DONE_TERMINAL_NEGATIVE` | Under standing delegation, prospectively authorize and freeze an alternate robot start-posture, deterministic multi-start IK-branch, and minimal approach-azimuth/lateral-clearance family with unchanged pawn layout and no manual intervention. | Finite grid derives only from gateway-admissible robot states, modeled/calibrated joint and start envelopes, jaw/arm collision geometry, and obstacle clearances; setup posture is robot-reachable and part of action identity; at least four distinct nonquarantined static-safe families freeze, alternating `2/2`, before dynamics. | Static PASS `60554324...`; temporal receipt `50548090...` REJECT: `0/2` each direction. Every identity/gateway check passed. h7 routes failed progress robustness with stationary exclusions; e2/f7 routes also displaced exclusions during the long dynamic setup/action. Four evaluated cases enter the immutable quarantine. No V06 or physical admission. |
 | V06 | `PENDING` | Independently review and freeze evaluator v2, case list, mappings, scene, thresholds, and stop rules. | Native float64/40 Hz contract and every required hash bind before any counted action compilation; reviewer returns `CONTINUE`; attempt ledger remains `0/0` each direction. | Pending. |
 | V07 | `PENDING` | Admit a fresh C922 REAL->SIM case and compile/review its hardware-first action and separate setup. | Scene passes evaluator; CPU/fp64 safety preview clean; setup/action/mapping hashes freeze separately; action has no clipping/repair/assistance; one attempt authorized. | Pending. |
 | V08 | `PENDING` | Execute the admitted REAL->SIM physical action once and adjudicate it before simulation. | Cameras enclose motion; byte identity and tracking pass; C922 evaluator decides success/failure; exclusions stay stationary; torque-off closes. Attempt is counted. | Pending. |
@@ -2529,6 +2529,48 @@ gates remain. Every case must pass both paths and at least two cases in each
 direction must pass. One bounded temporal execution is authorized. V06,
 counted actions, camera, gateway/serial, physical motion, promotion, and
 transfer claims remain false.
+
+### V05-TX temporal replay terminal negative — 2026-07-28
+
+The one frozen temporal execution produced
+`runs/bidirectional-pawn-push-v2/20260728-v05-tx-multistart-approach-v1/temporal-replay-v1/receipt.json`,
+SHA-256
+`50548090c8628aa0d85cd8a72696215a8a8fcbdb2f89dc9b230f9c3883bde37c`,
+with status `temporal_replay_reject`. Every case completed both direct-target
+and diagnostic ZOH paths across all five variants. Every frozen action hash,
+requested/sent byte identity, timestamp, calibrated gateway bound/rate, and
+no-transform check passed.
+
+No case passed both paths. REAL_TO_SIM and SIM_TO_REAL are both `0/2`.
+Failure is confined to the unchanged consequence gates:
+
+- `tan_pawn_h7__h7_h8` kept exclusions stationary but minimum signed progress
+  was `16.858 mm` direct and `9.300 mm` delayed.
+- `tan_pawn_h7__h7_h6` kept exclusions stationary but minimum signed progress
+  was `18.424 mm` direct and `17.493 mm` delayed. Direct nominal progress was
+  `35.953 mm`, only `0.072 mm` below the unchanged `36.025 mm` gate, but its
+  lateral variants remained materially below gate.
+- `brown_pawn_e2__e2_d2` produced progress as high as `165.450 mm`, but some
+  variants displaced exclusions by as much as `10.490 mm`; other variants
+  also failed progress.
+- `tan_pawn_f7__f7_f8` produced progress as high as `154.685 mm`, but some
+  variants displaced exclusions by as much as `2.454 mm`; other variants
+  also failed progress.
+
+These four dynamically evaluated cases are now added to the immutable
+quarantine for future successors:
+
+1. `tan_pawn_h7__h7_h8`
+2. `tan_pawn_h7__h7_h6`
+3. `brown_pawn_e2__e2_d2`
+4. `tan_pawn_f7__f7_f8`
+
+The prior four-case quarantine remains unchanged and cumulative quarantine
+count becomes eight. V05-TX closes terminally without V06, counted action
+compilation, camera, gateway/serial, physical motion, promotion, or transfer
+authority. Physical task attempts remain `0/10`. Under the standing
+delegation, the next successor must prospectively address progress robustness
+and dynamic excluded displacement using fresh nonquarantined families.
 
 ### V05-T prospective static enumerator freeze — 2026-07-28
 

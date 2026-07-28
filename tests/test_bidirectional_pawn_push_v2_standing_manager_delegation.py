@@ -27,6 +27,10 @@ TEMPORAL_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_temporal_replay_multistart_approach_v1.json"
 )
+TEMPORAL_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-tx-multistart-approach-v1/temporal-replay-v1/receipt.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -211,3 +215,24 @@ def test_multistart_temporal_contract_binds_exact_actions_before_replay() -> Non
     assert contract["authority"]["dynamic_simulation"] is True
     assert contract["authority"]["v06_evaluator_freeze"] is False
     assert contract["authority"]["physical_motion"] is False
+
+
+def test_multistart_temporal_receipt_closes_without_v06_or_physical() -> None:
+    receipt = json.loads(TEMPORAL_RECEIPT.read_text(encoding="utf-8"))
+    assert _sha(TEMPORAL_RECEIPT) == (
+        "50548090c8628aa0d85cd8a72696215a8a8fcbdb2f89dc9b230f9c3883bde37c"
+    )
+    assert receipt["status"] == "temporal_replay_reject"
+    assert receipt["passing_case_ids"] == []
+    assert receipt["lane_counts"] == {
+        "REAL_TO_SIM": 0,
+        "SIM_TO_REAL": 0,
+    }
+    for case in receipt["results"]:
+        assert case["passed_both_paths"] is False
+        for path in case["plant_paths"]:
+            assert all(path["identity_checks"].values())
+    assert receipt["candidate_refit"] is False
+    assert receipt["task_outcomes_used_for_action_selection"] is False
+    assert receipt["physical_motion"] is False
+    assert receipt["physical_task_attempts"] == 0

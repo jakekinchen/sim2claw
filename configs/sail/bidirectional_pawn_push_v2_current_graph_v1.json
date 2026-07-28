@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T14:21:24-05:00",
+  "generated_at": "2026-07-28T14:35:12-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "5b5d5b05bf891e5b9920ddb9087e0c2fedf2eaff502070d42c91b51ef2144579",
+      "sha256": "7f4ad76a7507ace48dcf8128f1877613571e8e63a3932bd7d6a8c62fbfe477a9",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -714,6 +714,18 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay.v1",
         "status": "preregistered_after_multistart_static_action_freeze_before_dynamic_replay",
         "proof_class": "prospective_cpu_fp64_action_frozen_setup_direct_target_and_diagnostic_zoh_replay"
+      }
+    },
+    "v05_tx_temporal_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tx-multistart-approach-v1/temporal-replay-v1/receipt.json",
+      "sha256": "50548090c8628aa0d85cd8a72696215a8a8fcbdb2f89dc9b230f9c3883bde37c",
+      "proof_class": "cpu_fp64_action_frozen_setup_direct_target_and_diagnostic_zoh_consequence_replay",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_temporal_replay_receipt.v1",
+        "status": "temporal_replay_reject",
+        "proof_class": "cpu_fp64_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+        "physical_motion": false,
+        "physical_task_attempts": 0
       }
     },
     "simulator_candidate": {
@@ -2057,6 +2069,31 @@
       }
     },
     {
+      "id": "verdict:v05-tx-temporal-replay-reject",
+      "type": "evaluator_verdict",
+      "label": "V05-TX action-frozen setup plus temporal robustness terminal negative",
+      "status": "terminal_direction_gate_negative_no_physical_admission",
+      "source_binding": "v05_tx_temporal_receipt",
+      "evaluator_identity": "50548090c8628aa0d85cd8a72696215a8a8fcbdb2f89dc9b230f9c3883bde37c",
+      "data": {
+        "passing_case_ids": [],
+        "real_to_sim_lanes": 0,
+        "sim_to_real_lanes": 0,
+        "minimum_cases_per_direction": 2,
+        "all_action_identity_checks_passed": true,
+        "all_gateway_checks_passed": true,
+        "newly_quarantined_case_count": 4,
+        "cumulative_quarantined_case_count": 8,
+        "failed_gates": [
+          "unchanged_signed_progress_robustness",
+          "unchanged_excluded_displacement"
+        ],
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2829,6 +2866,19 @@
       }
     },
     {
+      "source": "verdict:v05-tx-temporal-replay-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-tx-temporal-replay-frozen",
+      "metadata": {
+        "real_to_sim_lanes": 0,
+        "sim_to_real_lanes": 0,
+        "minimum_cases_per_direction": 2,
+        "gate_weakened": false,
+        "v06_authorized": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -3413,15 +3463,24 @@
       "node_ids_added": [
         "checkpoint:v05-tx-temporal-replay-frozen"
       ]
+    },
+    {
+      "revision": 60,
+      "event_id": "V05_TX_TEMPORAL_REPLAY_REJECT",
+      "status": "terminal_direction_gate_negative_no_physical_admission",
+      "source_binding": "v05_tx_temporal_receipt",
+      "node_ids_added": [
+        "verdict:v05-tx-temporal-replay-reject"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-tx-temporal-replay-frozen",
+    "node_id": "verdict:v05-tx-temporal-replay-reject",
     "milestone_id": "V05-TX",
-    "status": "preregistered_temporal_replay_execution_active",
-    "queue_status": "ACTIVE_V05_TX_PROSPECTIVE_TEMPORAL_REPLAY_FROZEN",
-    "resume_action": "execute_one_bounded_four_case_direct_target_and_zoh_replay",
-    "resume_authorized": true,
+    "status": "terminal_direction_gate_negative_no_physical_admission",
+    "queue_status": "STOPPED_V05_TX_TEMPORAL_REPLAY_TERMINAL_NEGATIVE",
+    "resume_action": "authorize_smallest_fresh_case_progress_and_exclusion_successor",
+    "resume_authorized": false,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0
