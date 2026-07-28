@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "a4e39f0be5c9be74668d3265474953377b9a052c03dda1304191379863db991b",
+      "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b",
       "proof_class": "campaign_control_state"
     },
     "v00": {
