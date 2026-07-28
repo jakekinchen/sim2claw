@@ -262,8 +262,8 @@ remaining cards to complete.
 | Q01 | `DONE` | Freeze the zero-motion registration dataset split. Fit data may include C2 contact/topple-frame joints, C922 grid/corner tags, prior C2 dual-camera replay, and Pi link tags. Reserve at least one independent hover/episode as held-out before fitting. | Versioned manifest hashes every input and declares fit versus held-out membership. No held-out inspection after freeze until candidate family freezes. | Manifest `configs/evaluations/bidirectional_pawn_push_registration_dataset_v1.json`, SHA-256 `da203fae0e84ceb722631676858762e1ee3d5962be95c4555afb44f97bf51fdf`; seven fit inputs plus four opaque held-out inputs from independent B7 high-hover episode; all eleven hashes resolve; `2 passed in 0.04s`; executor `042`; reviewer `040` (`CONTINUE`, anchor `100`). No held-out semantic inspection and no motion. |
 | Q02 | `DONE` | Implement scene-registration v4 as the smallest versioned correction: categorical side/orientation first, then bounded board XY/yaw refinement. Add joint-zero changes only if separately identifiable. | Old scene IDs and receipts remain unchanged. Candidate deterministically rebuilds and loads in CPU/fp64 MuJoCo. No action bytes change. | Candidate `configs/scenes/bidirectional_pawn_push_scene_registration_v4.json`, SHA-256 `c7c2b19d7bdf64e85c20f515b4d7fa859b2fd33948fa1a36438265571a752b7b`; `reflect_ranks`; table-frame center shift `[+36.817,+66.079] mm`; yaw and joint zeros unchanged; C2 modeled-head-center fit residual `24.631505 mm` at row `242`; canonical hashes unchanged; CPU/fp64 scene load passes; `15 passed in 0.37s`; executor `043`; reviewer `041` (`CONTINUE`, anchor `100`). Held-out still sealed; no motion. |
 | Q03 | `F1_TRIGGERED` | Evaluate v4 on fit evidence and open the held-out once. | C2 grasp-phase FK approach to corrected C2 center `<=25 mm`; held-out task-relevant correspondence `<=25 mm`; no worsened known-safe geometry/contact. If either fails, follow F1 once rather than launching an unbounded fit family. | Terminal negative receipt `runs/bidirectional-pawn-push/20260727-registration-v4-heldout/evaluation.json`, SHA-256 `7bfd06be5dd397a8c25dc7a4e3cdadd08fa006271fec38d4abcac27d04c125bf`; fit `24.631505 mm` pass; single-open B7 held-out `164.353128 mm` fail with vector `[+20.370202,+162.834641,-9.049048] mm`; no new external contact; v4 rejected; F1 active; `5 passed in 0.32s`; executor `044`; reviewer `042` (`REDIRECT`, anchor `100`). No motion. |
-| Q04 | `IN_PROGRESS` | Re-run immutable C2 bytes under v4 as retrospective diagnostics only. | Produce side-by-side old/v4 first-divergence and contact metrics. Label post-outcome scene correction and no promotion. A useful target is reproduction of physical strike/topple-near-source behavior, but failure remains evidence. | Pending |
-| Q05 | `PENDING` | Preregister a native float64/40 Hz adjacent-square push evaluator and the complete case family of at most ten attempts. | Evaluator owns selected-pawn source/destination geometry, upright gate, task-local exclusions, non-interaction, canonical hashes, direction, denominator, and camera adjudication. Freeze before any counted action compilation. | Pending |
+| Q04 | `DONE` | Re-run immutable C2 bytes under v4 as retrospective diagnostics only. | Produce side-by-side old/v4 first-divergence and contact metrics. Label post-outcome scene correction and no promotion. A useful target is reproduction of physical strike/topple-near-source behavior, but failure remains evidence. | Receipt `runs/bidirectional-pawn-push/20260727-c2-v4-retrospective/evaluation.json`, SHA-256 `36110ee04a6625a3607c657855c92d99e6feac35f38a5541610542dc719e1664`; old/v4 clearance `312.326353/75.624879 mm`; v4 selected/wrong contact `0/0`; rise `0`; off-source false; first divergence row `247`; identical raw action SHA; `5 passed in 1.46s`; executor `045`; reviewer `043` (`CONTINUE`, anchor `100`). Post-outcome diagnostic only; no promotion or motion. |
+| Q05 | `IN_PROGRESS` | Preregister a native float64/40 Hz adjacent-square push evaluator and the complete case family of at most ten attempts. | Evaluator owns selected-pawn source/destination geometry, upright gate, task-local exclusions, non-interaction, canonical hashes, direction, denominator, and camera adjudication. Freeze before any counted action compilation. | Pending |
 | Q06 | `PENDING` | Select the first REAL→SIM scene from a fresh motion-free C922 frame. Prefer an upright near-rank E/F/G-file pawn at least three files from C with an empty adjacent destination. | User-reported reset is independently camera-verified; selected pawn/destination admitted; all exclusions have at least two-square route clearance; Pi/C922/D405 RGB availability verified; no depth dependency. | Pending |
 | Q07 | `PENDING` | Compile and independently review the first hardware-first push action. Closed jaws, `>=60 mm` stroke, elbow `>=60 deg`, large-joint motion approximately `5–10 deg/s`, no slow deep holds. | CPU/fp64 preview clean; exact mappings and action hash frozen; zero clipping/rate/offset/repair/assistance; setup hash separate; one physical attempt admitted. | Pending |
 | Q08 | `PENDING` | Execute the counted REAL→SIM physical case once and adjudicate it before simulation. | All cameras enclose action; requested/mapped/sent identity passes; C922 evaluator reports physical success; excluded objects remain stationary; torque-off closeout passes. On failure, count it and advance to a distinct preregistered case if budget remains. | Pending |
@@ -300,7 +300,7 @@ remaining cards to complete.
 Current state:
 
 - Q00-Q02 are verified complete; Q03 is a terminal F1-triggering negative;
-  Q04 is active.
+  Q04 is verified complete and Q05 is active.
 - Commit `0b3afab` adopted this queue and its goal-loop contract.
 - Existing prior receipts remain unchanged.
 - No new robot motion is authorized until Q00-Q05 complete.
@@ -326,6 +326,9 @@ Completed:
 - Q03 single-open held-out validation. B7 residual is `164.353128 mm`, so v4
   is rejected for metric registration and F1 is active. The prospective claim
   is reduced to complete off-source displacement in both directions.
+- Q04 immutable C2 v4 retrospective. Clearance improves to `75.624879 mm`
+  from `312.326353 mm`, but contact, rise, and off-source displacement remain
+  zero; no promotion.
 
 Verification evidence:
 
@@ -368,20 +371,28 @@ Verification evidence:
 - Q03 executor/reviewer: `docs/session-logs/044-executor-q03-registration-heldout.md`;
   `docs/reviewer-messages/042-q03-registration-heldout.md`,
   decision `REDIRECT`, anchor `100`.
+- Q04 receipt:
+  `runs/bidirectional-pawn-push/20260727-c2-v4-retrospective/evaluation.json`,
+  SHA-256
+  `36110ee04a6625a3607c657855c92d99e6feac35f38a5541610542dc719e1664`.
+- Q04 executor/reviewer: `docs/session-logs/045-executor-q04-c2-v4-retrospective.md`;
+  `docs/reviewer-messages/043-q04-c2-v4-retrospective.md`,
+  decision `CONTINUE`, anchor `100`.
 
 Remaining:
 
-- Q04-Q15. Q03 remains visibly `F1_TRIGGERED`, not passed.
+- Q05-Q15. Q03 remains visibly `F1_TRIGGERED`, not passed.
 
 Blockers:
 
-- The v4 metric-registration candidate is rejected. F1 permits only the
-  reduced off-source primitive; it does not establish a safe physical route.
+- The v4 metric-registration candidate is rejected. Q05 must freeze the F1
+  evaluator and case budget before any new action is compiled.
 
 Next step:
 
-- Re-run immutable C2 bytes under unchanged v4 as a retrospective diagnostic,
-  preserve old/v4 first-divergence and contact metrics, and make no promotion.
+- Preregister the native float64/40 Hz off-source evaluator and all at-most-ten
+  cases, including case identities, directions, exclusions, denominators,
+  camera authority, hashes required at action freeze, and stop rules.
 
 Attempt ledger:
 
@@ -451,3 +462,22 @@ shasum -a 256 runs/bidirectional-pawn-push/20260727-registration-v4-heldout/eval
 The single-open B7 result failed at `164.353128 mm`. V4 was not tuned after
 opening. F1 claim wording was activated before any action compilation. Q04 is
 the only active card; physical attempts remain `0/10`.
+
+## Q04 transition record
+
+Exact commands and results:
+
+```text
+uv run --offline pytest -q tests/test_bidirectional_c2_v4_replay.py tests/test_bidirectional_scene_registration_v4.py
+.....                                                                    [100%]
+5 passed in 1.46s
+
+uv run --offline python scripts/evaluate_bidirectional_c2_v4_replay.py --output runs/bidirectional-pawn-push/20260727-c2-v4-retrospective/evaluation.json
+PASS
+
+shasum -a 256 runs/bidirectional-pawn-push/20260727-c2-v4-retrospective/evaluation.json
+36110ee04a6625a3607c657855c92d99e6feac35f38a5541610542dc719e1664
+```
+
+V4 remains a post-outcome negative: zero contact and zero off-source
+displacement. Q05 is the only active card; physical attempts remain `0/10`.
