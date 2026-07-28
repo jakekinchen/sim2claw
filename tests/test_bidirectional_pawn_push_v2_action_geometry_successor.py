@@ -26,6 +26,10 @@ STATIC_V2_CONTRACT = ROOT / (
     "configs/evaluations/"
     "bidirectional_pawn_push_v2_action_geometry_static_v2.json"
 )
+STATIC_V2_RECEIPT = ROOT / (
+    "runs/bidirectional-pawn-push-v2/"
+    "20260728-v05-tk-action-geometry-v2/static-freeze-v1/receipt.json"
+)
 
 
 def _sha(path: Path) -> str:
@@ -141,3 +145,31 @@ def test_action_geometry_static_v2_changes_only_hash_only_binding_loader() -> No
         for key, value in contract["authority"].items()
         if key != "static_simulation"
     )
+
+
+def test_action_geometry_static_v2_terminal_negative_is_exact_and_nonphysical() -> None:
+    receipt = json.loads(STATIC_V2_RECEIPT.read_text(encoding="utf-8"))
+    assert _sha(STATIC_V2_RECEIPT) == (
+        "c333180a3c30dff2640bae4e2a45e907b56df26d46a3777c4ea68c3cfcbcc6f2"
+    )
+    assert receipt["status"] == "static_action_geometry_freeze_reject"
+    assert receipt["quarantine_leaked_into_candidates"] is False
+    assert receipt["selection_used_dynamic_outcomes"] is False
+    assert receipt["prequarantine_family_count"] == 48
+    assert receipt["postquarantine_family_count"] == 44
+    assert receipt["grid_result_count"] == 1188
+    assert receipt["statically_eligible_family_count"] == 2
+    assert receipt["selected_family_count"] == 2
+    assert receipt["lane_counts"] == {
+        "REAL_TO_SIM": 1,
+        "SIM_TO_REAL": 1,
+    }
+    assert [row["case_id"] for row in receipt["eligible_cases"]] == [
+        "brown_pawn_e2__e2_d2",
+        "brown_pawn_e2__e2_f2",
+    ]
+    for case in receipt["eligible_cases"]:
+        assert _sha(ROOT / case["action_path"]) == case["action_sha256"]
+    assert receipt["dynamic_replay_executed"] is False
+    assert receipt["physical_motion"] is False
+    assert receipt["physical_task_attempts"] == 0

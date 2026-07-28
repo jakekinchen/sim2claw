@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "V05-TK",
-    "node_id": "checkpoint:v05-tk-static-action-geometry-v2-frozen",
-    "queue_status": "ACTIVE_V05_TK_FROZEN_STATIC_ACTION_GEOMETRY_V2_EXECUTION",
-    "resume_action": "execute_frozen_static_action_geometry_v2_grid_once",
-    "resume_authorized": true,
-    "status": "preregistered_static_action_geometry_v2_execution_active"
+    "node_id": "verdict:v05-tk-static-action-geometry-reject",
+    "queue_status": "STOPPED_V05_TK_STATIC_ACTION_GEOMETRY_TERMINAL_NEGATIVE",
+    "resume_action": "stop_without_grid_expansion_dynamic_replay_or_physical_execution",
+    "resume_authorized": false,
+    "status": "terminal_static_family_count_negative_no_dynamic_admission"
   },
   "authority": {
     "camera_open": false,
@@ -35,12 +35,12 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 72,
+    "edges": 73,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 2,
       "counterexample-to": 3,
-      "evaluated-on": 9,
+      "evaluated-on": 10,
       "fitted-on": 4,
       "generated-from": 47,
       "invalidates": 1,
@@ -48,14 +48,14 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 70,
+    "nodes": 71,
     "nodes_by_type": {
       "candidate": 2,
       "checkpoint": 40,
       "context": 1,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 6,
+      "evaluator_verdict": 7,
       "evidence": 4,
       "intervention": 1,
       "mechanism": 3,
@@ -789,10 +789,23 @@
       "source": "verdict:v05-tj-temporal-replay-reject",
       "target": "checkpoint:v05-tj-temporal-replay-frozen",
       "type": "evaluated-on"
+    },
+    {
+      "metadata": {
+        "all_1188_cells_evaluated": true,
+        "dynamic_replay_executed": false,
+        "eligible_families": 2,
+        "grid_expanded": false,
+        "physical_motion": false,
+        "required_families": 4
+      },
+      "source": "verdict:v05-tk-static-action-geometry-reject",
+      "target": "checkpoint:v05-tk-static-action-geometry-v2-frozen",
+      "type": "evaluated-on"
     }
   ],
-  "generated_at": "2026-07-28T13:08:08-05:00",
-  "graph_digest": "5904f9cd3576b97c3f90fb259c4a5e74fbccd84236b028ac8f88999c509c4641",
+  "generated_at": "2026-07-28T13:12:52-05:00",
+  "graph_digest": "54f86c58eae664854f2195741507909cfe51eb80748830b5ea2ecafbadb6f8e0",
   "node_types": [
     "workcell",
     "session",
@@ -875,7 +888,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090"
+        "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -1269,7 +1282,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090"
+        "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -1320,7 +1333,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090"
+        "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -1341,7 +1354,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090"
+        "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -1370,7 +1383,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090"
+        "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -1779,7 +1792,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090"
+        "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -2340,7 +2353,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090"
+        "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -2400,7 +2413,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090"
+        "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819"
       },
       "status": "not_compiled_no_case_admitted",
       "type": "policy"
@@ -2418,7 +2431,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090"
+        "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -2486,7 +2499,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090"
+        "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -2701,6 +2714,47 @@
     },
     {
       "data": {
+        "compile_rejects": 1037,
+        "compiled_static_rejects": 148,
+        "dynamic_replay_executed": false,
+        "grid_result_count": 1188,
+        "minimum_distinct_families_per_direction": 2,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "postquarantine_family_count": 44,
+        "prequarantine_family_count": 48,
+        "quarantine_leaked": false,
+        "quarantined_family_count": 4,
+        "real_to_sim_lanes": 1,
+        "required_selected_families": 4,
+        "sim_to_real_lanes": 1,
+        "source_binding_id": "v05_tk_static_v2_receipt",
+        "statically_eligible_cells": 3,
+        "statically_eligible_families": 2,
+        "v06_evaluator_freeze_authorized": false
+      },
+      "evaluator_identity": "c333180a3c30dff2640bae4e2a45e907b56df26d46a3777c4ea68c3cfcbcc6f2",
+      "id": "verdict:v05-tk-static-action-geometry-reject",
+      "label": "V05-TK bounded static action-geometry terminal negative",
+      "proof_class": "cpu_fp64_static_action_geometry_ik_collision_camera_gateway_action_freeze_only_v2",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tk-action-geometry-v2/static-freeze-v1/receipt.json",
+        "payload_contract": {
+          "dynamic_replay_executed": false,
+          "physical_motion": false,
+          "physical_task_attempts": 0,
+          "proof_class": "cpu_fp64_static_action_geometry_ik_collision_camera_gateway_action_freeze_only_v2",
+          "schema_version": "sim2claw.bidirectional_pawn_push_v2_action_geometry_static_receipt.v2",
+          "status": "static_action_geometry_freeze_reject"
+        },
+        "proof_class": "cpu_fp64_static_action_geometry_ik_collision_camera_gateway_action_freeze_only_v2",
+        "sha256": "c333180a3c30dff2640bae4e2a45e907b56df26d46a3777c4ea68c3cfcbcc6f2"
+      },
+      "status": "terminal_static_family_count_negative_no_dynamic_admission",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "human_physical_intervention_required": false,
         "source_binding_id": "v00"
       },
@@ -2797,7 +2851,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090",
+      "source_sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -2827,7 +2881,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090",
+      "source_sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -2857,7 +2911,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090",
+      "source_sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -3139,7 +3193,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090",
+      "source_sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -3251,6 +3305,16 @@
       "source_binding": "v05_tk_static_v2_contract",
       "source_sha256": "f30a9178415d3aa3222de8378d4a5ae2aee7b875224c57f3c18026a350d9b2b1",
       "status": "preregistered_static_action_geometry_v2_execution_active"
+    },
+    {
+      "event_id": "V05_TK_STATIC_ACTION_GEOMETRY_REJECT",
+      "node_ids_added": [
+        "verdict:v05-tk-static-action-geometry-reject"
+      ],
+      "revision": 51,
+      "source_binding": "v05_tk_static_v2_receipt",
+      "source_sha256": "c333180a3c30dff2640bae4e2a45e907b56df26d46a3777c4ea68c3cfcbcc6f2",
+      "status": "terminal_static_family_count_negative_no_dynamic_admission"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -3259,7 +3323,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090"
+      "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819"
     },
     {
       "id": "simulator_candidate",
@@ -3896,6 +3960,20 @@
       },
       "proof_class": "prospective_cpu_fp64_static_action_geometry_action_freeze_v2",
       "sha256": "f30a9178415d3aa3222de8378d4a5ae2aee7b875224c57f3c18026a350d9b2b1"
+    },
+    {
+      "id": "v05_tk_static_v2_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tk-action-geometry-v2/static-freeze-v1/receipt.json",
+      "payload_contract": {
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "proof_class": "cpu_fp64_static_action_geometry_ik_collision_camera_gateway_action_freeze_only_v2",
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_action_geometry_static_receipt.v2",
+        "status": "static_action_geometry_freeze_reject"
+      },
+      "proof_class": "cpu_fp64_static_action_geometry_ik_collision_camera_gateway_action_freeze_only_v2",
+      "sha256": "c333180a3c30dff2640bae4e2a45e907b56df26d46a3777c4ea68c3cfcbcc6f2"
     },
     {
       "id": "world_visual",

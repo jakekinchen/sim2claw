@@ -1,7 +1,7 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "bidirectional_pawn_push_v2",
-  "generated_at": "2026-07-28T13:08:08-05:00",
+  "generated_at": "2026-07-28T13:12:52-05:00",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "937cdf14b70865d11c07e49a055cc451261b015279b77be9cf292b0392388090",
+      "sha256": "effa63f96171855f1056cc0d081ebbaa7a300632787724d56b9da2289f359819",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -615,6 +615,19 @@
         "schema_version": "sim2claw.bidirectional_pawn_push_v2_action_geometry_static.v2",
         "status": "preregistered_binding_loader_correction_before_static_enumeration",
         "proof_class": "prospective_cpu_fp64_static_action_geometry_action_freeze_v2"
+      }
+    },
+    "v05_tk_static_v2_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tk-action-geometry-v2/static-freeze-v1/receipt.json",
+      "sha256": "c333180a3c30dff2640bae4e2a45e907b56df26d46a3777c4ea68c3cfcbcc6f2",
+      "proof_class": "cpu_fp64_static_action_geometry_ik_collision_camera_gateway_action_freeze_only_v2",
+      "payload_contract": {
+        "schema_version": "sim2claw.bidirectional_pawn_push_v2_action_geometry_static_receipt.v2",
+        "status": "static_action_geometry_freeze_reject",
+        "proof_class": "cpu_fp64_static_action_geometry_ik_collision_camera_gateway_action_freeze_only_v2",
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
       }
     },
     "simulator_candidate": {
@@ -1723,6 +1736,33 @@
       }
     },
     {
+      "id": "verdict:v05-tk-static-action-geometry-reject",
+      "type": "evaluator_verdict",
+      "label": "V05-TK bounded static action-geometry terminal negative",
+      "status": "terminal_static_family_count_negative_no_dynamic_admission",
+      "source_binding": "v05_tk_static_v2_receipt",
+      "evaluator_identity": "c333180a3c30dff2640bae4e2a45e907b56df26d46a3777c4ea68c3cfcbcc6f2",
+      "data": {
+        "prequarantine_family_count": 48,
+        "quarantined_family_count": 4,
+        "postquarantine_family_count": 44,
+        "grid_result_count": 1188,
+        "compile_rejects": 1037,
+        "compiled_static_rejects": 148,
+        "statically_eligible_cells": 3,
+        "statically_eligible_families": 2,
+        "required_selected_families": 4,
+        "real_to_sim_lanes": 1,
+        "sim_to_real_lanes": 1,
+        "minimum_distinct_families_per_direction": 2,
+        "quarantine_leaked": false,
+        "dynamic_replay_executed": false,
+        "v06_evaluator_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -2380,6 +2420,19 @@
       }
     },
     {
+      "source": "verdict:v05-tk-static-action-geometry-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:v05-tk-static-action-geometry-v2-frozen",
+      "metadata": {
+        "all_1188_cells_evaluated": true,
+        "eligible_families": 2,
+        "required_families": 4,
+        "grid_expanded": false,
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -2883,15 +2936,24 @@
       "node_ids_added": [
         "checkpoint:v05-tk-static-action-geometry-v2-frozen"
       ]
+    },
+    {
+      "revision": 51,
+      "event_id": "V05_TK_STATIC_ACTION_GEOMETRY_REJECT",
+      "status": "terminal_static_family_count_negative_no_dynamic_admission",
+      "source_binding": "v05_tk_static_v2_receipt",
+      "node_ids_added": [
+        "verdict:v05-tk-static-action-geometry-reject"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:v05-tk-static-action-geometry-v2-frozen",
+    "node_id": "verdict:v05-tk-static-action-geometry-reject",
     "milestone_id": "V05-TK",
-    "status": "preregistered_static_action_geometry_v2_execution_active",
-    "queue_status": "ACTIVE_V05_TK_FROZEN_STATIC_ACTION_GEOMETRY_V2_EXECUTION",
-    "resume_action": "execute_frozen_static_action_geometry_v2_grid_once",
-    "resume_authorized": true,
+    "status": "terminal_static_family_count_negative_no_dynamic_admission",
+    "queue_status": "STOPPED_V05_TK_STATIC_ACTION_GEOMETRY_TERMINAL_NEGATIVE",
+    "resume_action": "stop_without_grid_expansion_dynamic_replay_or_physical_execution",
+    "resume_authorized": false,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0
