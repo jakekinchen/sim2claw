@@ -271,14 +271,14 @@ remaining cards to complete.
 | Q03 | `DONE_CORRECTED_UNSCORABLE` | Evaluate v4 on fit evidence and open the held-out once. | C2 grasp-phase FK approach to corrected C2 center `<=25 mm`; held-out task-relevant correspondence `<=25 mm`; no worsened known-safe geometry/contact. If either fails, follow F1 once rather than launching an unbounded fit family. | Correction receipt `runs/bidirectional-pawn-push/20260727-registration-v4-heldout-label-audit-v2/evaluation.json`, SHA-256 `efaf436bdba9e52df781973abaabf0a2b346261daddbb8e9fe259a1cd61efd02`; contract SHA-256 `33877ed6e295a79347b1cf430306a2e442ed2b7bc5d755c6df45114522af9091`. The original receipt/hash is preserved, but its B7 label is not camera-owned. C922 self-occludes the high-hover association, Pi places the gripper outside frame, D405 points away, and camera extrinsics are unavailable. Corrected square/residual: unavailable; held-out open count remains `1`; v4 neither metric-admitted nor metric-rejected; F1 trigger unsupported. `7 passed in 0.46s`; executor `050`. No new data or motion. |
 | Q04 | `DONE` | Re-run immutable C2 bytes under v4 as retrospective diagnostics only. | Produce side-by-side old/v4 first-divergence and contact metrics. Label post-outcome scene correction and no promotion. A useful target is reproduction of physical strike/topple-near-source behavior, but failure remains evidence. | Receipt `runs/bidirectional-pawn-push/20260727-c2-v4-retrospective/evaluation.json`, SHA-256 `36110ee04a6625a3607c657855c92d99e6feac35f38a5541610542dc719e1664`; old/v4 clearance `312.326353/75.624879 mm`; v4 selected/wrong contact `0/0`; rise `0`; off-source false; first divergence row `247`; identical raw action SHA; `5 passed in 1.46s`; executor `045`; reviewer `043` (`CONTINUE`, anchor `100`). Post-outcome diagnostic only; no promotion or motion. |
 | Q05 | `DONE_WITH_POSTFREEZE_FEASIBILITY_DEFECT` | Preregister a native float64/40 Hz adjacent-square push evaluator and the complete case family of at most ten attempts. | Evaluator owns selected-pawn source/destination geometry, upright gate, task-local exclusions, non-interaction, canonical hashes, direction, denominator, and camera adjudication. Freeze before any counted action compilation. | Immutable evaluator remains SHA-256 `8450682fac61ac064198b90858f58e6753b0d701ed55f067f91d88ed04604479`. Postfreeze receipt `runs/bidirectional-pawn-push/20260727-q05-feasibility-audit-v1/evaluation.json`, SHA-256 `0dbe2cbdb078b219c172e20ffd08c7be96e01f68abbca84355c4d04afa3bd591`: frozen `88.9 mm` clearance is structurally infeasible because every route contains a source whose nearest reset-layout exclusion is `sqrt(2) * 44.45 = 62.861793 mm`. This omission was detectable before Q06. `6 passed in 0.20s`; executor `051`. No action compiled or motion. |
-| Q06 | `IN_PROGRESS_REOPENED_PROOF_CLASS` | Select the first REAL→SIM scene from a fresh motion-free C922 frame. Prefer an upright near-rank E/F/G-file pawn at least three files from C with an empty adjacent destination. | User-reported reset is independently camera-verified; selected pawn/destination admitted; all exclusions have at least two-square route clearance; Pi/C922/D405 RGB availability verified; no depth dependency. | Preserve the fresh RGB evidence and ten rejections, but replace the overstated safety/human-only classification with `terminal_preregistered_contract_infeasibility_without_physical_attempt`. The frozen evaluator could not admit the reset layout before camera capture; this was no safety event, mechanical failure, or counted attempt. |
+| Q06 | `DONE_CONTRACT_INFEASIBILITY` | Select the first REAL→SIM scene from a fresh motion-free C922 frame. Prefer an upright near-rank E/F/G-file pawn at least three files from C with an empty adjacent destination. | User-reported reset is independently camera-verified; selected pawn/destination admitted; all exclusions have at least two-square route clearance; Pi/C922/D405 RGB availability verified; no depth dependency. | Fresh RGB receipt unchanged at SHA-256 `ee6d71d98723e5133097c24c30ab8d2b16881e6554d22078aae632fe99966730`; corrected gate receipt SHA-256 `9863ccdeadb2d5d01dd959d14bd226f997eec1b2755156f6c441a9d98e7010f1`. All ten routes remain rejected at `44.45 mm`; global reset-layout upper bound `62.861793 mm < 88.9 mm`. Proof class `terminal_preregistered_contract_infeasibility_without_physical_attempt`; zero actions/motion/attempts; not a safety event or F3. `7 passed in 0.23s`; executor `052`. |
 | Q07 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Compile and independently review the first hardware-first push action. Closed jaws, `>=60 mm` stroke, elbow `>=60 deg`, large-joint motion approximately `5–10 deg/s`, no slow deep holds. | CPU/fp64 preview clean; exact mappings and action hash frozen; zero clipping/rate/offset/repair/assistance; setup hash separate; one physical attempt admitted. | Q06 admitted no case; compiling an action would violate the frozen exclusion gate. |
 | Q08 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Execute the counted REAL→SIM physical case once and adjudicate it before simulation. | All cameras enclose action; requested/mapped/sent identity passes; C922 evaluator reports physical success; excluded objects remain stationary; torque-off closeout passes. On failure, count it and advance to a distinct preregistered case if budget remains. | No Q07 action exists and no counted motion began. REAL→SIM denominator remains `0/0`. |
 | Q09 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Apply Q08 identical canonical bytes in v4 MuJoCo from the admitted task-local initial state. | No clipping/retiming/repair/state forcing; selected pawn ends inside destination and passes upright/non-interaction gates. Count pass/fail and first divergence. At least one REAL→SIM case must pass. | No Q08 canonical bytes exist. No REAL→SIM transfer claim. |
 | Q10 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Create a separate SIM→REAL push on a different admitted pawn/file and evaluate it in simulation before freeze. | Simulator task success and robustness gate pass before action freeze; action/mappings/scene/evaluator hashes sealed; prior physical outcomes do not tune this case. | Q06 found no admitted case in either direction; no SIM→REAL action may be compiled. |
 | Q11 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Execute the Q10 frozen SIM→REAL action physically once. | C922 reports selected-pawn destination success; exclusions remain stationary; bytes unchanged; no clamp/rate/repair/retry; torque-off and camera cleanup pass. Count pass/fail. At least one SIM→REAL case must pass. | No Q10 action exists and no counted motion began. SIM→REAL denominator remains `0/0`. |
 | Q12 | `NOT_AUTHORIZED_Q06_BOUNDARY` | Continue distinct preregistered cases only as needed, up to the frozen maximum of ten. | Stop new cases immediately after one complete bidirectional result exists. Every failure remains in the denominator; no post-hoc family expansion. | Every one of the ten preregistered cases was rejected before compilation by the same frozen Q06 clearance gate; expansion and post-observation weakening are forbidden. |
-| Q13 | `DONE_TERMINAL_PACKAGE` | Produce the bidirectional evidence package. | Synchronized browser-playable comparisons, posters, action/mapping/evaluator receipts, case-index denominator, first-divergence summaries, Studio catalog entry, and exact claim boundary verified. Raw private recordings remain unpublished. | Terminal receipt `runs/bidirectional-pawn-push/20260727-terminal-evidence-v1/terminal_evidence_package.json`, SHA-256 `97e689864e0e4f3a04602c341415166b8971bee7fa77be95378807781bba8124`; local viewer `index.html`, SHA-256 `d8d31f83c880cf741dd8941a509db43770f6a3391323d42e1ea2fb0ac87d90b2`; Studio entry status `blocked`; action hashes empty; directions `0/0`, total `0/10`; raw publication false. A synchronized action comparison/first divergence is explicitly unavailable because no case/action exists. Executor `048`; reviewer `046` (`CONTINUE`, anchor `100`). |
+| Q13 | `IN_PROGRESS_REOPENED_Q15_PROPAGATION` | Produce the bidirectional evidence package. | Synchronized browser-playable comparisons, posters, action/mapping/evaluator receipts, case-index denominator, first-divergence summaries, Studio catalog entry, and exact claim boundary verified. Raw private recordings remain unpublished. | Rebuild the package against corrected Q03/Q05/Q06 receipts. Remove “v4 rejected” and “safety boundary”; expose the unscorable held-out, preregistered contract infeasibility, `0/0` per direction, empty action hashes, and no physical/simulator/transfer authority. |
 | Q14 | `DONE` | Final verification and publication closeout. | Focused/full relevant tests pass; workflow audit passes; Git diff is scoped; branch commit is pushed; public release/portfolio surface is updated only if already authorized and privacy-reviewed; torque and processes are clean. | `41 passed, 2 subtests passed`; workflow audit clean; torque-off receipt SHA-256 `ca50d9dae4aa9a7dd672edee625dfe51ff2e4ad65cb76e7a28e39f3f06457d09`; no camera/gateway processes; no Brev; unrelated files preserved; public release skipped as unauthorized. Closeout commit `f3e7394` pushed to `origin/codex/geometric-microtransfer-20260727`. Executor `049`; reviewer `047` (`CONTINUE`, anchor `100`). |
 | Q15 | `DEFECT_OPEN_Q03` | Fable 5 post-result review. After Q00-Q14 and the Definition of Done are locally verified, or after a genuine receipt-backed terminal boundary, return via Computer Use to the existing Claude Desktop conversation titled `Sim-to-real transfer evaluation`; do not start a replacement unless the existing conversation is genuinely unavailable. Submit a concise evidence-complete report covering the original goal, exact actions, per-direction numerator/denominator, proof class, action/mapping/scene/evaluator hashes and versions, fit and held-out registration metrics, simulator and physical outcomes, camera paths, failures and stop conditions, tests, commits/branch, and limitations. Ask Fable to audit claim support, strongest result, weakest proof link, overlooked concrete defects or missing verification, and highest-leverage application/demo and sim2real next steps. | Existing Fable thread received the report on 2026-07-27 using `claude-fable-5`. Fable verified the hashes/denominators and Q06 infeasibility, but identified a concrete Q03 physical-square label-provenance defect. Per this gate, Q15 remains incomplete and Q03 is reopened. |
 
@@ -306,10 +306,10 @@ remaining cards to complete.
 
 Current state:
 
-- Q00-Q05 are verified complete, including Q03's correction to an unscorable
-  held-out and Q05's postfreeze feasibility audit. Q06 is reopened solely to
-  correct its proof class and is the only active card. Q07-Q12 are not
-  authorized; Q13-Q15 require downstream reconciliation.
+- Q00-Q06 are verified complete, including Q03's correction to an unscorable
+  held-out and the Q05/Q06 contract-infeasibility correction. Q13 is reopened
+  for downstream evidence propagation and is the only active card. Q07-Q12
+  are not authorized; Q14-Q15 require reconciliation.
 - Commit `0b3afab` adopted this queue and its goal-loop contract.
 - Existing prior receipts remain unchanged.
 - Robot motion remains unauthorized. Q06 admitted no case and Q07 cannot
@@ -429,7 +429,7 @@ Verification evidence:
 - Q06 gate receipt:
   `runs/bidirectional-pawn-push/20260727-q06-scene-v1/scene_gate_receipt.json`,
   SHA-256
-  `3c81caaa626043d1a12c34bf9b05e11fa0e0823070b516f001e8857b5c59ec0c`.
+  `9863ccdeadb2d5d01dd959d14bd226f997eec1b2755156f6c441a9d98e7010f1`.
 - Q06 executor/reviewer:
   `docs/session-logs/047-executor-q06-fresh-rgb-scene-gate.md`;
   `docs/reviewer-messages/045-q06-fresh-rgb-scene-gate.md`,
@@ -449,9 +449,8 @@ Verification evidence:
 
 Remaining:
 
-- Q06/Q13 proof-class correction, downstream claim propagation, Q14
-  re-verification/push, and Q15 reconciliation. Q07-Q12 remain visibly not
-  authorized, not passed.
+- Q13 downstream package correction, Q14 re-verification/push, and Q15
+  reconciliation. Q07-Q12 remain visibly not authorized, not passed.
 
 Blockers:
 
@@ -459,16 +458,16 @@ Blockers:
   metric admission and rejection are both unsupported.
 - The single-open registration held-out has no camera-owned physical-square
   label and cannot be rescored without new evidence, which is forbidden.
-- The fresh reset scene is incompatible with the frozen task-local exclusion
-  gate: every preregistered route is one square (`44.45 mm`) from an excluded
-  pawn, below `88.9 mm`.
-- Resolving the scene conflict requires human-only scene reconfiguration or
-  prospectively changing the safety contract. Neither is authorized.
+- The frozen evaluator is structurally incompatible with the reset layout:
+  its best possible route-clearance upper bound is `62.861793 mm`, below
+  `88.9 mm`; every preregistered route is actually `44.45 mm`.
+- Replacing or weakening the already-observed evaluator requires prospective
+  owner authorization outside this frozen campaign. It is not a physical
+  safety or F3 mechanical boundary.
 
 Next step:
 
-- Regenerate Q06 with the corrected contract-infeasibility proof class while
-  preserving the frozen evaluator and fresh camera evidence.
+- Rebuild Q13 and Studio against the corrected Q03/Q05/Q06 evidence.
 
 Attempt ledger:
 
@@ -702,9 +701,37 @@ All ten cases were evaluated before any action compilation. Every route has
 the frozen `88.9 mm` requirement. F1 stroke widening, changing selected
 board side, and setup prefixes cannot cure initial scene clearance. Case
 expansion, pawn manipulation, and post-observation gate weakening are
-forbidden. Q06 therefore closes as another genuine human-only safety boundary,
-not F3. Q07-Q12 are not authorized. Q13 is the only active card. Physical
+forbidden. The initial “human-only safety boundary” label was later invalidated
+by Q15; see the correction below. Q07-Q12 are not authorized. Physical
 attempts remain `0/10`; no direction has an attempted or successful case.
+
+### Q06 post-Q15 proof-class correction
+
+```text
+uv run --offline pytest -q \
+  tests/test_bidirectional_q06_scene_gate.py \
+  tests/test_bidirectional_off_source_feasibility_audit.py \
+  tests/test_bidirectional_off_source_evaluator.py
+.......                                                                  [100%]
+7 passed in 0.23s
+
+uv run --offline python scripts/evaluate_bidirectional_q06_scene_gate.py \
+  --output \
+  runs/bidirectional-pawn-push/20260727-q06-scene-v1/scene_gate_receipt.json
+PASS
+
+shasum -a 256 \
+  runs/bidirectional-pawn-push/20260727-q06-scene-v1/scene_gate_receipt.json
+9863ccdeadb2d5d01dd959d14bd226f997eec1b2755156f6c441a9d98e7010f1
+```
+
+All camera inputs and all ten rejection metrics are unchanged. The corrected
+proof class is
+`terminal_preregistered_contract_infeasibility_without_physical_attempt`.
+The evaluator could not admit the frozen reset layout even in principle; the
+camera merely confirmed the expected layout. This was no physical safety
+event, mechanical failure, F3 event, or counted attempt. Q13 is the only
+active card.
 
 ## Q13 transition record
 

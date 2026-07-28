@@ -13,6 +13,9 @@ from .bidirectional_off_source_evaluator import (
     CONTRACT_PATH as EVALUATOR_PATH,
     load_contract,
 )
+from .bidirectional_off_source_feasibility_audit import (
+    evaluate as evaluate_feasibility,
+)
 from .paths import REPO_ROOT
 from .scene import TELEOP_PAWN_SOURCE_SQUARES, TELEOP_TAN_PAWN_SQUARES
 
@@ -113,15 +116,18 @@ def evaluate() -> dict[str, Any]:
             }
         )
     admitted = [result["case_id"] for result in results if result["admitted"]]
+    feasibility = evaluate_feasibility()
     return {
         "schema_version": "sim2claw.bidirectional_q06_rgb_scene_gate_receipt.v1",
         "evaluation_id": contract["evaluation_id"],
         "status": (
             "scene_admitted"
             if admitted
-            else "terminal_safety_boundary_no_admissible_case"
+            else "terminal_preregistered_contract_infeasibility_without_physical_attempt"
         ),
-        "proof_class": "fresh_rgb_scene_and_frozen_exclusion_geometry",
+        "proof_class": (
+            "terminal_preregistered_contract_infeasibility_without_physical_attempt"
+        ),
         "evaluator_sha256": _sha256(EVALUATOR_PATH),
         "capture_receipt_sha256": contract["capture_receipt"]["sha256"],
         "camera_frames": contract["camera_frames"],
@@ -137,15 +143,28 @@ def evaluate() -> dict[str, Any]:
         "robot_gateway_constructed": False,
         "robot_motion_commands": 0,
         "counted_physical_attempts": 0,
+        "preregistration_feasibility": {
+            "status": feasibility["status"],
+            "required_route_clearance_mm": feasibility["geometry"][
+                "required_route_clearance_mm"
+            ],
+            "global_route_clearance_upper_bound_mm": feasibility["geometry"][
+                "global_route_clearance_upper_bound_mm"
+            ],
+            "detected_before_q06_possible": feasibility[
+                "detected_before_q06_possible"
+            ],
+        },
         "terminal_boundary": {
-            "kind": "human_only_scene_reconfiguration_or_gate_change_required",
+            "kind": "frozen_evaluator_infeasible_for_reset_layout",
             "reason": (
-                "Every frozen case route is 44.45 mm from at least one "
-                "excluded reset-layout pawn, below the preregistered 88.9 mm "
-                "minimum. The agent is forbidden to move/reset pawns or "
-                "weaken the gate."
+                "The Q05 evaluator required 88.9 mm route clearance although "
+                "the frozen sparse layout has a global upper bound of "
+                "62.861793 mm. Every frozen case later measured 44.45 mm. "
+                "The contract was infeasible before the Q06 capture."
             ),
             "safe_in_scope_alternatives_exhausted": [
+                "pre-Q06 sparse-layout feasibility recomputed",
                 "all ten preregistered cases evaluated",
                 "near-side and far-side cases evaluated",
                 "F1 widened stroke does not repair source/destination exclusion clearance",
@@ -155,7 +174,8 @@ def evaluate() -> dict[str, Any]:
         },
         "claim_boundary": (
             "Fresh RGB availability and reset-layout observation are verified. "
-            "No case is admitted, no action is compiled, and no physical or "
-            "bidirectional task result exists."
+            "The frozen evaluator is structurally infeasible for that layout. "
+            "No case is admitted, no action is compiled, and no physical, "
+            "safety-event, mechanical-failure, or bidirectional task result exists."
         ),
     }
