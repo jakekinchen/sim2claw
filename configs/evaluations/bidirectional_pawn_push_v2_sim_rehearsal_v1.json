@@ -1,0 +1,178 @@
+{
+  "schema_version": "sim2claw.bidirectional_pawn_push_v2_sim_rehearsal.v1",
+  "rehearsal_id": "bidirectional-pawn-push-v2-sim-rehearsal-v1",
+  "status": "preregistered_before_any_v05_nominal_task_outcome",
+  "proof_class": "prospective_cpu_fp64_sim_only_straight_closed_jaw_push_rehearsal",
+  "registration_candidate": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+    "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+  },
+  "registration_heldout_evaluation": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/heldout-rigid-v4/evaluation_receipt.json",
+    "sha256": "5eaf763b7f5beec9be8c38c61693ad0e5cd868cab7984853b54e417a690311f0"
+  },
+  "candidate_manifest": {
+    "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+  },
+  "source_scene": {
+    "path": "configs/polycam/8873B66C-774C-48B1-B51D-338645867009.json",
+    "sha256": "0dbe0c95fe50f84a8ff8e60f9727f7123c15c921ace55a0460b49ffa4c34dc05"
+  },
+  "implementation": {
+    "path": "src/sim2claw/bidirectional_pawn_push_v2_sim_rehearsal.py",
+    "sha256": "9be8be092653ea923a6e987e52f3cc4bd7697ef93d38d891681b379f1953e8c9"
+  },
+  "cases": [
+    {
+      "case_id": "R2S_G2_G3",
+      "direction_lane": "REAL_TO_SIM",
+      "source_square": "g2",
+      "destination_direction_square": "g3",
+      "selected_piece_id": "brown_pawn_g2",
+      "eligible_for_v06_recommendation": true
+    },
+    {
+      "case_id": "R2S_A2_A3",
+      "direction_lane": "REAL_TO_SIM",
+      "source_square": "a2",
+      "destination_direction_square": "a3",
+      "selected_piece_id": "brown_pawn_a2",
+      "eligible_for_v06_recommendation": true
+    },
+    {
+      "case_id": "R2S_D1_D2",
+      "direction_lane": "REAL_TO_SIM",
+      "source_square": "d1",
+      "destination_direction_square": "d2",
+      "selected_piece_id": "brown_pawn_d1",
+      "eligible_for_v06_recommendation": true
+    },
+    {
+      "case_id": "R2S_B1_B2",
+      "direction_lane": "REAL_TO_SIM",
+      "source_square": "b1",
+      "destination_direction_square": "b2",
+      "selected_piece_id": "brown_pawn_b1",
+      "eligible_for_v06_recommendation": true
+    },
+    {
+      "case_id": "S2R_E2_E3",
+      "direction_lane": "SIM_TO_REAL",
+      "source_square": "e2",
+      "destination_direction_square": "e3",
+      "selected_piece_id": "brown_pawn_e2",
+      "eligible_for_v06_recommendation": true
+    },
+    {
+      "case_id": "S2R_H1_H2",
+      "direction_lane": "SIM_TO_REAL",
+      "source_square": "h1",
+      "destination_direction_square": "h2",
+      "selected_piece_id": "brown_pawn_h1",
+      "eligible_for_v06_recommendation": true
+    },
+    {
+      "case_id": "S2R_F1_F2",
+      "direction_lane": "SIM_TO_REAL",
+      "source_square": "f1",
+      "destination_direction_square": "f2",
+      "selected_piece_id": "brown_pawn_f1",
+      "eligible_for_v06_recommendation": true
+    },
+    {
+      "case_id": "DIAGNOSTIC_C2_C3",
+      "direction_lane": "EXCLUDED_DIAGNOSTIC",
+      "source_square": "c2",
+      "destination_direction_square": "c3",
+      "selected_piece_id": "brown_pawn_c2",
+      "eligible_for_v06_recommendation": false,
+      "reason": "c2 remains excluded from counted v2 recommendations"
+    }
+  ],
+  "grid": {
+    "closed_jaw_targets_rad": [-0.174533],
+    "stroke_lengths_m": [0.09, 0.105, 0.12],
+    "contact_heights_m": [0.018, 0.024, 0.03],
+    "action_family": "straight increasing-rank robotward Cartesian line"
+  },
+  "robustness_variants": [
+    {
+      "variant_id": "nominal",
+      "delta_m": [0.0, 0.0]
+    },
+    {
+      "variant_id": "longitudinal_plus_3mm",
+      "delta_m": [0.003, 0.0]
+    },
+    {
+      "variant_id": "longitudinal_minus_3mm",
+      "delta_m": [-0.003, 0.0]
+    },
+    {
+      "variant_id": "lateral_plus_3mm",
+      "delta_m": [0.0, 0.003]
+    },
+    {
+      "variant_id": "lateral_minus_3mm",
+      "delta_m": [0.0, -0.003]
+    }
+  ],
+  "action_synthesis": {
+    "seed_physical": [
+      6.5934065934,
+      -85.5384615385,
+      99.4725274725,
+      -20.0879120879,
+      -103.3406593407,
+      2.3752969121
+    ],
+    "closed_jaw_rad": -0.174533,
+    "contact_center_offset_m": 0.019,
+    "sample_hz": 40.0,
+    "cartesian_speed_m_s": 0.03,
+    "intermediate_cartesian_spacing_m": 0.01,
+    "setup_is_separate_from_rehearsal_action": true,
+    "rehearsal_action_hashes_cannot_be_counted_task_hashes": true
+  },
+  "simulation": {
+    "engine": "MuJoCo",
+    "numeric_mode": "CPU/fp64",
+    "timestep_s": 0.001,
+    "substeps_per_row": 25,
+    "selected_source_offsets_are_state_variants_not_action_changes": true
+  },
+  "gates": {
+    "maximum_ik_residual_m": 0.003,
+    "minimum_joint_limit_margin_rad": 0.03490658503988659,
+    "minimum_signed_progress_mm": 36.025,
+    "selected_contact_required": true,
+    "excluded_contact_count": 0,
+    "maximum_excluded_displacement_mm": 1.0,
+    "new_nonselected_jaw_collision_count": 0,
+    "all_five_robustness_variants_must_pass": true,
+    "minimum_feasible_recommendable_cases_per_direction": 2
+  },
+  "camera_gate": {
+    "camera_matrix_source": "accepted registration candidate",
+    "image_size_px": [640, 480],
+    "minimum_margin_px": 20.0,
+    "source_and_terminal_selected_pawn_must_project_in_frame": true
+  },
+  "selection_rule": {
+    "first": "all static and five robustness gates pass",
+    "second": "shortest passing stroke",
+    "third": "contact height nearest 0.024 m",
+    "fourth": "larger worst-case camera/collision/exclusion margin",
+    "physical_task_outcomes_used": false
+  },
+  "authority": {
+    "evaluator_freeze": false,
+    "counted_action_compilation": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective deterministic simulation-only feasibility grid. Rehearsal actions and outcomes cannot be promoted, counted, or treated as physical or transfer evidence."
+}
