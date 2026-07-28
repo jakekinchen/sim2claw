@@ -1,6 +1,6 @@
 # Bidirectional Pawn-Push V2 Task Queue
 
-Status: `ACTIVE_READ_ONLY_PREFREEZE`
+Status: `ACTIVE_V01_REGISTRATION_PREREGISTRATION`
 
 Created: `2026-07-28`
 
@@ -154,8 +154,8 @@ denominators before any counted action is compiled.
 
 | ID | Status | Task | Acceptance gate | Evidence |
 |---|---|---|---|---|
-| V00 | `IN_PROGRESS` | Read-only inventory, v1 verification, live torque/process/camera/Git state, and pre-freeze camera/feasibility design. | V1 closeout and hashes resolve; torque false; no competing writer or repo-owned camera/gateway process; all unrelated paths preserved; fixed-C922 adjudication design and candidate no-contact hover strategy documented from live evidence. No motion. | Pending. |
-| V01 | `PENDING` | Preregister a new camera-owned registration acquisition, board-plane metric model, fit/held-out split, and sealed-input rules. | Versioned contract declares visible board features, camera model inputs, gripper reference, fit targets, held-out targets, pixel/reprojection sanity gate, `<25 mm` metric gate, hashes, and recapture fallback before capture. | Pending. |
+| V00 | `DONE` | Read-only inventory, v1 verification, live torque/process/camera/Git state, and pre-freeze camera/feasibility design. | V1 closeout and hashes resolve; torque false; no competing writer or repo-owned camera/gateway process; all unrelated paths preserved; fixed-C922 adjudication design and candidate no-contact hover strategy documented from live evidence. No motion. | Receipt `runs/bidirectional-pawn-push-v2/20260728-v00-read-only-design/v00_read_only_design_receipt.json`, SHA-256 `2c818ed0b70458ca0cd2d2758ec2c4a74790dcc6bc0733bc82dafca157908ebf`. Fresh exact-mode C922 frame SHA-256 `00e1e84b83e28344849400c502975bdca70ad40975815c31b10c20073483cebe`; `92` callbacks, zero drops. Gateway preflight passed with torque false and no motion/config rewrite. CPU/fp64 found a fixed-elbow `13.615385 deg` source egress that monotonically clears the two source-only modeled folded-arm contacts, then a contact-free seven-pan hover family spanning `106.558 mm` in model x plus a separate elevated held-out. No physical motion. |
+| V01 | `IN_PROGRESS` | Preregister a new camera-owned registration acquisition, board-plane metric model, fit/held-out split, and sealed-input rules. | Versioned contract declares visible board features, camera model inputs, gripper reference, fit targets, held-out targets, pixel/reprojection sanity gate, `<25 mm` metric gate, hashes, and recapture fallback before capture. | In progress. |
 | V02 | `PENDING` | Prove hover poses and visibility using CPU/fp64 simulation and static camera projections/images. | Every proposed target passes joint limits, self/table/board/pawn clearance, no-contact height, slow-path preview, C922 field of view, simultaneous gripper/board visibility, and guaranteed return/torque-off logic. Reviewer decision `CONTINUE`. No motion. | Pending. |
 | V03 | `PENDING` | Capture the prospective fit and held-out registration observations through the reviewed gateway. | Cameras precede motion; only approved slow no-contact paths run; requested/mapped/sent and tracking receipts close; every planned target is captured; torque false on exit; input hashes freeze; no pawn contact. | Pending. |
 | V04 | `PENDING` | Fit and freeze a new registration candidate using fit data only, then open held-out once. | Candidate/family hash freezes before opening held-out; task-relevant held-out error `<25 mm`; frozen pixel/reprojection sanity gate passes; CPU/fp64 scene builds. If unscorable, prospectively redesign/recapture before counted actions. | Pending. |
@@ -195,7 +195,7 @@ denominators before any counted action is compiled.
 
 Current state:
 
-- V00 is the only active card.
+- V01 is the only active card.
 - Robot motion is unauthorized through V02.
 - Counted actions do not exist.
 
@@ -203,37 +203,92 @@ Completed:
 
 - Owner authorized the separate v2 successor campaign on `2026-07-28`.
 - V1 is preserved and remains non-promoting.
+- V00 completed read-only. The live C922, SO-101 buses, torque state,
+  processes, v1 hashes, and candidate hover geometry were inventoried without
+  motion.
 
 Verification evidence:
 
-- Live checkout is on `codex/geometric-microtransfer-20260727` at
-  `b694b4272dbf4aa6f39be41fbe8858b569e3198c`, synchronized with its remote at
-  the first V00 inspection.
+- Live checkout began V00 on
+  `codex/geometric-microtransfer-20260727` at
+  `b694b4272dbf4aa6f39be41fbe8858b569e3198c`, synchronized with its remote.
+  Queue adoption commit is `1bf7839`.
+- A pre-existing Claude Desktop process committed
+  `3c4f04588b7c1d2fa8c22df5d0981dd790d50e19`
+  (`Publish B7 action-identical same-camera proof`) immediately after queue
+  adoption. It changed only `src/sim2claw/contact_free_comparison.py`. The
+  commit is preserved. A five-second follow-up found stable HEAD, no Git lock,
+  no open regular repository file from that idle process, and no further
+  write; V00 did not classify it as an active competing writer. Recheck this
+  boundary before every campaign commit and every gateway transaction.
 - The six owner-named unrelated paths are untracked and preserved:
   `configs/evaluations/c922_exact_mode_calibration_v1_exhausted.json`,
   `docs/run-logs/2026-07-24-c922-exact-mode-calibration-v1-terminal-not-ready.md`,
   `output/`, `src/sim2claw/c922_exact_mode_calibration_control.py`,
   `tests/test_c922_exact_mode_calibration_control.py`, and
   `tools/build_fiducial_sheet.py`.
-- One additional pre-existing untracked path,
-  `src/sim2claw/contact_free_comparison.py`, is also preserved.
+- The additional path `src/sim2claw/contact_free_comparison.py` is no longer
+  untracked because concurrent commit `3c4f045` adopted it. V2 did not edit
+  it.
 - V1 queue status is `TERMINAL_NO_TRANSFER_OWNER_AUTHORITY_BOUNDARY`; its
   final Fable decision is `ACCEPT`.
+- V00 receipt:
+  `runs/bidirectional-pawn-push-v2/20260728-v00-read-only-design/v00_read_only_design_receipt.json`,
+  SHA-256
+  `2c818ed0b70458ca0cd2d2758ec2c4a74790dcc6bc0733bc82dafca157908ebf`.
+- Fresh C922 inventory:
+  `runs/bidirectional-pawn-push-v2/20260728-v00-c922-inventory/frames/frame-091.png`,
+  SHA-256
+  `00e1e84b83e28344849400c502975bdca70ad40975815c31b10c20073483cebe`;
+  exact `640x480`, `420v`, `30.00003000003 fps`, `92` callbacks, zero drops,
+  recorder closed. All playing-area corners and most grid lines are visible;
+  the folded arm occludes the center/lower-right, so this frame is inventory
+  only and prohibited from the v2 registration fit.
+- Fresh physical-gateway preflight: passed; follower torque false; no start
+  alignment motion; no configuration rewrite; follower start
+  `[-11.164835,-71.384615,99.472527,-25.714286,-102.813187,2.494062] deg`.
+- CPU/fp64 source-state screen: only modeled
+  shoulder/lower-arm `-3.235353 mm` and shoulder/wrist `-1.687426 mm`
+  folded-arm overlaps; no external contact. A `138`-sample, `20 Hz`,
+  `6.85 s` fixed-elbow egress to
+  `[-11,-85,99.472527,-20,-102.813187,2.494062]` never worsens or expands
+  those source pairs and ends contact-free.
+- Proposed fit pan targets are `[-21,-11,-1,9] deg`; interleaved held-out pan
+  targets are `[-16,-6,4] deg`, all with lift `-85`, elbow `99.472527`,
+  wrist-flex `-20`, wrist-roll `-102.813187`, and gripper `2.494062`.
+  Their CPU/fp64 pan sweep is contact-free and spans model pinch x
+  `[-123.200,-16.642] mm`. A separate elevated held-out at pan `-6`,
+  lift `-90` is contact-free and changes pinch z from `940.779` to
+  `956.471 mm`.
+- The registration candidate design is a normalized zero-distortion `3x4`
+  projective-camera DLT using C922 board corners/grid plus four fit hovers,
+  followed by a single-open test on the three interleaved pan targets and the
+  elevated target. The observed reference is the distal closed-jaw tip
+  midpoint under a frozen agent-only annotation protocol. V01 must freeze
+  exact pixel/reprojection gates and annotator-agreement checks before any
+  authoritative capture.
 
 Remaining:
 
-- Complete V00 live hardware/camera/process inventory and design.
-- V01-V15.
+- Complete V01 preregistration contract.
+- V02-V15.
 
 Blockers:
 
-- None established. Motion remains deliberately gated.
+- No terminal blocker is established. Motion remains deliberately gated.
+- The live source pose has modeled folded-arm self-overlap and the prior elbow
+  corridor has a physical stall history. V02 must prove a source-only egress,
+  every hover transition, and a collision-free return to a previously
+  demonstrated torque-off anchor. Preliminary CPU search found such a return
+  with elbow no lower than `96.558819 deg`; this is not yet frozen or
+  authorized.
 
 Next action:
 
-- Run read-only gateway preflight, USB/camera/process inventory, inspect
-  current C922-owned geometry and existing gateway/camera contracts, and
-  record the prospective hover/adjudication design.
+- Write and test the V01 registration acquisition contract, including exact
+  split identities, projection family, gripper-reference annotation
+  protocol, sealed held-out handling, recapture fallback, and metric/pixel
+  gates.
 
 Attempt ledger:
 
@@ -249,3 +304,27 @@ Attempt ledger:
 The v2 queue was created as a separate campaign. No v1 file or receipt was
 modified. The worktree inventory was read-only. No camera was opened and no
 gateway command was issued before this transition.
+
+### V00 complete / V01 start — 2026-07-28
+
+Exact read-only commands included:
+
+```text
+uv run --offline sim2claw physical-gateway-preflight
+system_profiler SPCameraDataType
+NativeC922StillRecorder(...); sleep 3.0; finish()
+preview_wrist_view_actions(..., recovery_source_contact_admission=True)
+preview_wrist_view_actions(... pan sweep ...)
+```
+
+The preflight returned `passed:true`,
+`physical_follower_torque_enabled:false`,
+`device_configuration_rewritten:false`, and
+`start_alignment_motion_commanded:false`. The C922 inventory recorder closed
+after `92` callbacks with zero drops. No robot motion occurred.
+
+The CPU/fp64 static design found a bounded source-only egress that holds the
+live elbow fixed, clears both modeled source self-contact pairs without
+worsening them, and reaches a contact-free family of pan-separated hovers.
+The inventory image is excluded from the future dataset. V01 is active;
+physical attempts remain `0/10`.
