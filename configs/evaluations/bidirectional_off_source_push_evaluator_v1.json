@@ -1,0 +1,248 @@
+{
+  "schema_version": "sim2claw.bidirectional_off_source_push_evaluator.v1",
+  "evaluator_id": "bidirectional_off_source_push_float64_40hz_v1",
+  "status": "frozen_before_counted_action_compilation",
+  "proof_class": "preregistered_bidirectional_off_source_push",
+  "f1_active": true,
+  "claim": "Selected pawn base center displaced completely off its admitted source square in both physical C922 evidence and MuJoCo under identical canonical action bytes within a case.",
+  "forbidden_claims": [
+    "adjacent-square placement",
+    "destination-square occupancy",
+    "upright final placement",
+    "metric registration admitted",
+    "general chess manipulation"
+  ],
+  "native_action": {
+    "dtype": "little_endian_float64",
+    "memory_order": "C",
+    "sample_hz": 40,
+    "joint_count": 6,
+    "finite_values_required": true,
+    "canonical_bytes_mutable": false,
+    "clipping": false,
+    "retiming": false,
+    "offsets": false,
+    "inverse_kinematics_repair": false,
+    "corrective_suffix": false,
+    "runtime_assistance": false
+  },
+  "geometry": {
+    "board_square_side_mm": 44.45,
+    "pawn_base_radius_mm": 13.8,
+    "complete_off_source_signed_progress_mm": 36.025,
+    "source_initial_center_margin_mm": 8.0,
+    "initial_upright_minimum_cosine": 0.9659258262890683,
+    "final_upright_required": false,
+    "commanded_push_stroke_minimum_mm": 90.0,
+    "commanded_push_stroke_maximum_mm": 120.0
+  },
+  "task_local_exclusions": {
+    "minimum_route_clearance_mm": 88.9,
+    "c922_maximum_centroid_displacement_px": 4.0,
+    "simulator_maximum_base_displacement_mm": 1.0,
+    "simulator_excluded_contact_count": 0,
+    "selected_pawn_contact_required": true
+  },
+  "camera_authority": {
+    "physical_outcome_owner": "C922 RGB",
+    "required": [
+      "C922 RGB",
+      "Pi IMX708 RGB"
+    ],
+    "supporting_optional": [
+      "D405 RGB"
+    ],
+    "metric_depth_required": false,
+    "action_interval_must_be_enclosed": true,
+    "source_and_terminal_frames_must_be_hash_bound": true
+  },
+  "identity_boundary": {
+    "canonical_action_raw_sha256_required": true,
+    "canonical_action_npy_sha256_required": true,
+    "hardware_mapping_sha256_required": true,
+    "simulator_mapping_sha256_required": true,
+    "scene_sha256_required": true,
+    "evaluator_sha256_required": true,
+    "setup_prefix_must_be_separate": true,
+    "setup_prefix_raw_sha256_required_if_present": true,
+    "requested_mapped_sent_identity_required": true
+  },
+  "direction_order": {
+    "REAL_TO_SIM": [
+      "action_and_mappings_sealed",
+      "one_physical_attempt",
+      "C922_adjudication",
+      "identical_canonical_bytes_simulation"
+    ],
+    "SIM_TO_REAL": [
+      "candidate_action_compiled",
+      "nominal_and_robustness_simulation_pass",
+      "action_and_mappings_sealed_without_modification",
+      "one_physical_attempt",
+      "C922_adjudication"
+    ]
+  },
+  "sim_first_robustness": {
+    "required_variants": [
+      {
+        "id": "nominal",
+        "source_xy_delta_mm": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "id": "lateral_plus_3mm",
+        "source_xy_delta_mm": [
+          0.0,
+          3.0
+        ]
+      },
+      {
+        "id": "lateral_minus_3mm",
+        "source_xy_delta_mm": [
+          0.0,
+          -3.0
+        ]
+      },
+      {
+        "id": "longitudinal_plus_3mm",
+        "source_xy_delta_mm": [
+          3.0,
+          0.0
+        ]
+      },
+      {
+        "id": "longitudinal_minus_3mm",
+        "source_xy_delta_mm": [
+          -3.0,
+          0.0
+        ]
+      }
+    ],
+    "all_variants_must_pass": true,
+    "action_bytes_identical_across_variants": true
+  },
+  "case_family": [
+    {
+      "case_id": "R01_G2_G1",
+      "direction": "REAL_TO_SIM",
+      "source_square": "g2",
+      "destination_direction_square": "g1",
+      "selected_piece_id": "brown_pawn_g2",
+      "physical_attempt_budget": 1
+    },
+    {
+      "case_id": "R02_E2_E1",
+      "direction": "REAL_TO_SIM",
+      "source_square": "e2",
+      "destination_direction_square": "e1",
+      "selected_piece_id": "brown_pawn_e2",
+      "physical_attempt_budget": 1
+    },
+    {
+      "case_id": "R03_H1_H2",
+      "direction": "REAL_TO_SIM",
+      "source_square": "h1",
+      "destination_direction_square": "h2",
+      "selected_piece_id": "brown_pawn_h1",
+      "physical_attempt_budget": 1
+    },
+    {
+      "case_id": "R04_D1_D2",
+      "direction": "REAL_TO_SIM",
+      "source_square": "d1",
+      "destination_direction_square": "d2",
+      "selected_piece_id": "brown_pawn_d1",
+      "physical_attempt_budget": 1
+    },
+    {
+      "case_id": "R05_B1_B2",
+      "direction": "REAL_TO_SIM",
+      "source_square": "b1",
+      "destination_direction_square": "b2",
+      "selected_piece_id": "brown_pawn_b1",
+      "physical_attempt_budget": 1
+    },
+    {
+      "case_id": "S01_F1_F2",
+      "direction": "SIM_TO_REAL",
+      "source_square": "f1",
+      "destination_direction_square": "f2",
+      "selected_piece_id": "brown_pawn_f1",
+      "physical_attempt_budget": 1
+    },
+    {
+      "case_id": "S02_A2_A1",
+      "direction": "SIM_TO_REAL",
+      "source_square": "a2",
+      "destination_direction_square": "a1",
+      "selected_piece_id": "brown_pawn_a2",
+      "physical_attempt_budget": 1
+    },
+    {
+      "case_id": "S03_B7_B8",
+      "direction": "SIM_TO_REAL",
+      "source_square": "b7",
+      "destination_direction_square": "b8",
+      "selected_piece_id": "tan_pawn_b7",
+      "physical_attempt_budget": 1
+    },
+    {
+      "case_id": "S04_D7_D8",
+      "direction": "SIM_TO_REAL",
+      "source_square": "d7",
+      "destination_direction_square": "d8",
+      "selected_piece_id": "tan_pawn_d7",
+      "physical_attempt_budget": 1
+    },
+    {
+      "case_id": "S05_F7_F8",
+      "direction": "SIM_TO_REAL",
+      "source_square": "f7",
+      "destination_direction_square": "f8",
+      "selected_piece_id": "tan_pawn_f7",
+      "physical_attempt_budget": 1
+    }
+  ],
+  "case_rules": {
+    "maximum_physical_attempts_total": 10,
+    "one_physical_attempt_per_case": true,
+    "one_physical_attempt_per_selected_pawn": true,
+    "skip_without_counting_if_q06_scene_or_q07_safety_gate_rejects_before_counted_motion": true,
+    "stop_new_cases_after_one_complete_case_per_direction": true,
+    "all_counted_failures_remain_in_direction_and_total_denominators": true,
+    "c2_is_excluded": true,
+    "no_scene_reset_or_pawn_reposition": true
+  },
+  "physical_safety": {
+    "closed_jaws": true,
+    "minimum_elbow_degrees": 60.0,
+    "large_joint_speed_minimum_degrees_s": 5.0,
+    "large_joint_speed_maximum_degrees_s": 10.0,
+    "slow_deep_holds_forbidden": true,
+    "cpu_fp64_contact_and_limit_preview_required": true,
+    "independent_action_review_required": true,
+    "stop_on_contact_stall_tracking_or_identity_failure": true,
+    "torque_off_after_every_attempt_and_every_exit": true,
+    "reviewed_gateway_only": true
+  },
+  "denominators": {
+    "REAL_TO_SIM": {
+      "successes": 0,
+      "physical_attempts": 0
+    },
+    "SIM_TO_REAL": {
+      "successes": 0,
+      "physical_attempts": 0
+    },
+    "total_physical_attempts": 0,
+    "maximum_total_physical_attempts": 10
+  },
+  "authority": {
+    "physical_motion": false,
+    "action_compilation": false,
+    "training": false,
+    "promotion": false
+  }
+}
