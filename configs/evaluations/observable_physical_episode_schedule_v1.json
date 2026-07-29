@@ -1,0 +1,166 @@
+{
+  "schema_version": "sim2claw.observable_physical_episode_schedule_contract.v1",
+  "experiment_id": "observable-physical-episode-schedule-v1",
+  "frozen_date": "2026-07-29",
+  "sources": {
+    "samples": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/samples.jsonl",
+      "sha256": "ad606b9b917d985a4e866399a0c2d44adb12f3b48d310aa11452de9e03e73302"
+    },
+    "camera_callbacks": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/native_dual_camera/camera_callback_timestamps.jsonl",
+      "sha256": "8d8f25bdf6293e3291d09f8abed04df9deaa7177aa45c711db4b298fe153e6d7"
+    },
+    "recording_receipt": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/recording_receipt.json",
+      "sha256": "74a3da30468922df00dfefd12e38ff346b2fd59fb5752458477be29360b9e0d3"
+    },
+    "c922_video": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/overhead_c922.mp4",
+      "sha256": "6c03bd268f0e227879c2c54ff4731d4ee8111d94b136b9bd6cbd81ca93e966bf"
+    },
+    "d405_video": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/wrist_d405.browser.mp4",
+      "sha256": "2d0cf208465d984afc9a601da305e8ce1d94ddba124d05674ec18d5df1be830c"
+    },
+    "c922_metadata": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/overhead_video.json",
+      "sha256": "db8221f43cb22134db24fcb209610b61885e66fefffe5d9b00670c5b4a6ffd31"
+    },
+    "d405_metadata": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/wrist_video.json",
+      "sha256": "95f4c29bf1e7eebc4ab46d46d943b3134d142f05eb742165c354533e7088a8cb"
+    },
+    "or0_closeout": {
+      "path": "configs/decisions/observable_registration_corpus_v1_closeout.json",
+      "sha256": "ee6173c282cd2cae43628cc4886080473284c9b71b0ad289ef1ff0388b5cff04"
+    },
+    "or0_receipt": {
+      "path": "outputs/observable_registration_corpus_v1/receipt.json",
+      "sha256": "e4332e483908c4ba465c99bff3a543deb50bacf6c0ae281ea12555fafa52a739"
+    },
+    "or1_closeout": {
+      "path": "configs/decisions/observable_c922_camera_world_v1_closeout.json",
+      "sha256": "42fb05f07184dcf3d0fc71de85d8c47771d932692c54096895fc5f43c4faeb36"
+    },
+    "or1_receipt": {
+      "path": "outputs/observable_c922_camera_world_v1/receipt.json",
+      "sha256": "a2fda1032ad70c026fb8e82f3849896926ee92f07a14f5ecdf8e827141324614"
+    },
+    "or2_closeout": {
+      "path": "configs/decisions/observable_robot_jaw_mapping_v1_closeout.json",
+      "sha256": "28461906ca0b3cb8e67e5e68471f434c3498ea425bb8b6f93f4512baf6cf5da1"
+    },
+    "or2_receipt": {
+      "path": "outputs/observable_robot_jaw_mapping_v1/receipt.json",
+      "sha256": "436cd9f629b780e5f8a08e9f00708659c4fa416a5362fe603bfee6f1f6484c3a"
+    }
+  },
+  "expected": {
+    "sample_count": 531,
+    "first_sample_index": 0,
+    "last_sample_index": 530,
+    "c922_frame_count": 1029,
+    "d405_frame_count": 171,
+    "c922_role": "c922",
+    "d405_role": "d405",
+    "maximum_c922_association_error_ms": 20.0,
+    "maximum_d405_association_error_ms": 110.0
+  },
+  "association": {
+    "sample_clock_field": "observability_timestamps.sample_completed_monotonic_seconds",
+    "frame_clock_field": "host_continuous_ns",
+    "frame_admission": "appended_to_writer_true_and_warmup_excluded_false",
+    "selection": "nearest_host_continuous_timestamp",
+    "tie_break": "lower_frame_index",
+    "container_frame_index": "zero_based_ordinal_among_admitted_callbacks",
+    "camera_exposure_synchronized": false,
+    "cross_camera_exposure_synchronized": false
+  },
+  "telemetry_only_windows": [
+    {
+      "window_id": "initial_and_route_start",
+      "sample_range_inclusive": [0, 100],
+      "sample_indices": [0, 20, 40, 50, 60, 80, 100]
+    },
+    {
+      "window_id": "approach_and_jaw_open",
+      "sample_range_inclusive": [110, 180],
+      "sample_indices": [110, 120, 130, 140, 150, 160, 170, 180]
+    },
+    {
+      "window_id": "open_jaw_descent",
+      "sample_range_inclusive": [190, 220],
+      "sample_indices": [190, 200, 210, 220]
+    },
+    {
+      "window_id": "jaw_close_and_load_candidate",
+      "sample_range_inclusive": [224, 260],
+      "sample_indices": [224, 228, 232, 236, 240, 243, 247, 252, 256, 260]
+    },
+    {
+      "window_id": "load_hold_and_carry_candidate",
+      "sample_range_inclusive": [270, 330],
+      "sample_indices": [270, 280, 290, 300, 310, 320, 330]
+    },
+    {
+      "window_id": "jaw_release_actuation_candidate",
+      "sample_range_inclusive": [340, 407],
+      "sample_indices": [340, 350, 360, 370, 380, 390, 400, 407]
+    },
+    {
+      "window_id": "retreat_and_terminal",
+      "sample_range_inclusive": [410, 530],
+      "sample_indices": [410, 420, 450, 500, 530]
+    }
+  ],
+  "annotation_policy": {
+    "schedule_may_change_after_visual_open": false,
+    "pass_a_order": "ascending_sample_index",
+    "pass_b_order": "even_positions_descending_then_odd_positions_descending",
+    "allowed_point_labels": [
+      "fixed_jaw_tip",
+      "moving_jaw_tip",
+      "selected_pawn_center",
+      "selected_pawn_crown",
+      "selected_pawn_base"
+    ],
+    "allowed_event_states": [
+      "definitely_separate",
+      "candidate_contact",
+      "definite_enclosure_or_contact",
+      "candidate_lift",
+      "definite_carried_motion",
+      "candidate_release",
+      "definite_supported_after_release",
+      "unknown"
+    ],
+    "maximum_jaw_tip_pass_disagreement_px": 8.0,
+    "maximum_pawn_point_pass_disagreement_px": 8.0,
+    "maximum_event_boundary_disagreement_d405_frames": 1,
+    "ambiguous_rows_abstain": true,
+    "occluded_rows_abstain": true,
+    "missing_depth_is_unknown": true
+  },
+  "proof_boundaries": {
+    "telemetry_phase_is_physical_contact": false,
+    "gripper_deflection_is_physical_contact": false,
+    "motor_current_is_physical_contact": false,
+    "wrist_rgb_has_metric_depth": false,
+    "container_pts_is_camera_exposure_time": false,
+    "cross_camera_frames_are_exposure_synchronized": false,
+    "schedule_is_task_success_evidence": false,
+    "schedule_may_fit_camera_robot_jaw_or_contact": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "training": false,
+    "paid_compute": false
+  }
+}
