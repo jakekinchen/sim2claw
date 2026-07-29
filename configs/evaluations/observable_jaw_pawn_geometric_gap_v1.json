@@ -1,0 +1,95 @@
+{
+  "schema_version": "sim2claw.observable_jaw_pawn_geometric_gap_contract.v1",
+  "experiment_id": "observable-jaw-pawn-geometric-gap-v1",
+  "frozen_date": "2026-07-29",
+  "proof_class": "kinematic_exact_applied_state_signed_jaw_pawn_gap_diagnostic",
+  "sources": {
+    "c6_contract": {
+      "path": "configs/evaluations/realized_action_outcome_mission_v1.json",
+      "sha256": "f406149f51578b7ecae646c46b35c9237693b4f172c66dbb271cee67b9728b77"
+    },
+    "or3_closeout": {
+      "path": "configs/decisions/observable_physical_episode_observations_v1_closeout.json",
+      "sha256": "4d64346dfbf671e04a6d05ac204f2381abfc650a2c7bbe2418b471b26c6469bf"
+    },
+    "or6_candidate": {
+      "path": "outputs/observable_jaw_aperture_fit_v1/candidate_manifest.json",
+      "sha256": "e8c27ef3118c3383d2d2312371a54b6c40d749880b5ab73aa9a14e0305dd17e5",
+      "candidate_config_sha256": "dd03853d957192062b6cfd9b23a6f973c516efaad87f162b29e6f8136492a693"
+    },
+    "or7_closeout": {
+      "path": "configs/decisions/observable_jaw_aperture_replay_v1_closeout.json",
+      "sha256": "a8f7d2f159e55e73c6626832479e6cf8a451f80924f15bba637fd40d7089f63e"
+    }
+  },
+  "identity": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "row_count": 531,
+    "selected_piece": "brown_pawn_d1",
+    "candidate_contact_interval_samples": [228, 232],
+    "first_definite_enclosure_sample": 232,
+    "first_definite_carried_motion_sample": 260,
+    "evaluation_interval_samples": [228, 260],
+    "report_samples": [228, 232, 260],
+    "applied_state_source": "C4_identified_applied_from_exact_gateway_sent"
+  },
+  "geometry": {
+    "jaw_body_names": [
+      "left_gripper",
+      "left_moving_jaw_so101_v1"
+    ],
+    "named_jaw_geom_prefixes": [
+      "left_fixed_jaw_",
+      "left_moving_jaw_"
+    ],
+    "fixed_tip_geoms": [
+      "left_fixed_jaw_sph_tip1",
+      "left_fixed_jaw_sph_tip2",
+      "left_fixed_jaw_sph_tip3"
+    ],
+    "moving_tip_geoms": [
+      "left_moving_jaw_sph_tip1",
+      "left_moving_jaw_sph_tip2",
+      "left_moving_jaw_sph_tip3"
+    ],
+    "distance_maximum_m": 1.0,
+    "geometric_contact_tolerance_m": 0.001,
+    "material_gap_reduction_m": 0.005,
+    "large_residual_gap_m": 0.005
+  },
+  "evaluation": {
+    "mappings": [
+      "immutable_c6_baseline",
+      "or6_gripper_zero_offset"
+    ],
+    "physics_integration_allowed": false,
+    "forward_kinematics_allowed": true,
+    "parameter_fit_allowed": false,
+    "task_outcome_read_for_parameter_selection": false,
+    "contact_material_change_allowed": false,
+    "object_change_allowed": false,
+    "camera_change_allowed": false,
+    "joint_mapping_change_allowed": false,
+    "global_transform_change_allowed": false
+  },
+  "proof_boundaries": {
+    "signed_gap_is_physical_metric_contact_ground_truth": false,
+    "jaw_center_vector_identifies_unique_joint_or_transform": false,
+    "pad_gap_approves_full_3d_geometry": false,
+    "diagnostic_approves_global_mapping": false,
+    "diagnostic_approves_contact_material_fit": false,
+    "diagnostic_proves_task_outcome": false,
+    "diagnostic_proves_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_dynamic_replay": false,
+    "training": false,
+    "paid_compute": false
+  }
+}
