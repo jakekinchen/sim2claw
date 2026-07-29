@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04F_LOWER_CONTACT_STATIC_FROZEN_PENDING_ONE_RUN`
+Status: `RP04F_LOWER_CONTACT_DYNAMIC_FROZEN_PENDING_ONE_RUN`
 
 Created: `2026-07-29`
 
@@ -49,7 +49,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP04C | `V2_ONE_PHYSICAL_EXECUTION_AUTHORIZED` | Extend execution evidence toward the smallest V5 contact-angle corridor without pawn or board contact. | V2 static receipt `accd098e...` passes: `1105` rows, reachable `-60 deg` pan, `-10.409 deg` elbow, `75.874 mm` worst-case clearance, both scenes contact-free, and all route gates. Packet commit `6ca36ab` passed four focused tests; one packet-hash-bound authorization is active until `12:29:14 CDT`. | No V1 retry. Any live start, camera, gateway, tracking, boundary, or cleanup defect stops safely; still zero task attempts. |
 | RP04D | `DONE_TERMINAL_80DEG_40MM_DYNAMIC_NEGATIVE` | Compile task geometry around the physically observed elbow floor instead of ideal V5 angles. | Static receipt `065e75e...` passed all locks; the predeclared 80-degree pair then ran `20` direct/ZOH/reset episodes with exact bytes. | `0/20` passed. Both cases made contact but failed progress and no-lift. Do not switch to 85 or 77.5 degree families after outcomes. |
 | RP04E | `DONE_TERMINAL_80DEG_66MM_DYNAMIC_NEGATIVE` | Test the evidence-directed undertravel mechanism at the same reachable lock. | Static receipt `0e3facb0...` passed with `6` eligible cells and froze one exact family per direction. Dynamic receipt `ba8bc2ed...` ran the exact direct/ZOH pair across five resets. | `0/20` passed. Progress improved into `19.70--45.28 mm`, but REAL_TO_SIM remained nonrobust and SIM_TO_REAL lifted `13.91--14.51 mm`. Close both exact tensors for hardware. |
-| RP04F | `LOWER_CONTACT_STATIC_FROZEN_PENDING_ONE_RUN` | Test the one clean unresolved geometry mechanism after the 66 mm causal negative. | GPT Pro completed a targeted review and selected contact height only: exact grid `[35,37.5,40,42.5] mm`; unchanged wrist rolls, 80-degree lock, 66 mm stroke, physics, ranking, and gates; six evaluated families quarantined; `46 x 4 x 3 = 552` cells; false dynamic/hardware authority. | Fewer than two static families closes the mechanism. If static passes, freeze exactly one family per direction and require `20/20` under the unchanged direct/ZOH temporal gate. Any dynamic failure closes RP04F without hardware. |
+| RP04F | `LOWER_CONTACT_DYNAMIC_FROZEN_PENDING_ONE_RUN` | Test the one clean unresolved geometry mechanism after the 66 mm causal negative. | GPT Pro selected contact height only. Static receipt `6b7d7fa6...` passes the exact 552-cell screen with six eligible cells and freezes `g2->g1` and `g2->f2`, one per direction. Run those exact tensors under direct target and diagnostic ZOH across five resets. | Require `20/20` with every existing gate unchanged. Any dynamic failure closes RP04F without hardware; a pass opens post-cable no-contact mapping/readiness only. |
 | RP04G | `PENDING_POST_CABLE_ROUTING_NO_CONTACT_RETEST` | Re-establish physical tracking and task-corridor evidence after the owner-reported wrist-camera cable tension change. | Treat cable routing as a new hardware configuration. Rerun a fresh torque-off anchor and the prospectively frozen contact-impossible identification envelope before using prior stall/tracking conclusions. Preserve cameras, gateway, collision/exclusion, current/temperature, return, torque-off, exact receipt, and zero task-attempt semantics. | Do not blindly retry simulator-negative pawn actions. A clean no-contact pass may update physical tracking/mapping scope; any defect stops before task motion. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
@@ -70,11 +70,9 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-Run the already frozen 552-cell lower-contact static screen exactly once.
-Only contact height changes; wrist rolls, stroke, physics, ranking, evaluator,
-and authority remain unchanged. Preserve the immutable 66 mm negative. If the
-static gate passes, freeze its two exact selected tensors before any dynamic
-replay. The post-cable-routing physical retest remains a separate no-contact
+Run the already frozen lower-contact dynamic replay exactly once. Require all
+20 direct/ZOH/reset episodes to pass without changing actions, physics, timing,
+or gates. The post-cable-routing physical retest remains a separate no-contact
 milestone and cannot rescue a simulator-negative action.
 
 ## RP00 immutable result

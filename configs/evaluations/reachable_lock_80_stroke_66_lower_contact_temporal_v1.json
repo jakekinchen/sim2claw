@@ -1,0 +1,76 @@
+{
+  "schema_version": "sim2claw.achieved_lock_task_temporal.v1",
+  "contract_id": "reachable-lock-80-stroke-66-lower-contact-temporal-20260729-v1",
+  "status": "frozen_after_exact_achieved_lock_static_pass_before_dynamic_replay",
+  "proof_class": "prospective_cpu_fp64_predeclared_reachable_80deg_66mm_lower_contact_action_direct_target_and_diagnostic_zoh_replay",
+  "base_temporal_contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+    "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+  },
+  "static_receipt": {
+    "path": "configs/decisions/reachable_lock_80_stroke_66_lower_contact_static_projection_v1.json",
+    "sha256": "50dbfd4cc42ddd95d0f7012f5b7d840fc35560dfad21f7b46947e349e37f9e70"
+  },
+  "static_closeout": {
+    "path": "configs/decisions/reachable_lock_80_stroke_66_lower_contact_static_projection_v1.json",
+    "sha256": "50dbfd4cc42ddd95d0f7012f5b7d840fc35560dfad21f7b46947e349e37f9e70"
+  },
+  "temporal_implementation": {
+    "path": "src/sim2claw/achieved_lock_task_temporal.py",
+    "sha256": "49e80b36a9dc71e07e68e0bffaf6df47e3e97a1088a74415309cd87c2fcb45f1"
+  },
+  "cases": [
+    {
+      "case_id": "brown_pawn_g2__g2_g1",
+      "direction": "REAL_TO_SIM",
+      "source_square": "g2",
+      "destination_square": "g1",
+      "selected_piece_id": "brown_pawn_g2",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-80-stroke-66-lower-contact-static-v1/actions/00.f64le",
+      "action_sha256": "20a2357f25db6b548c5b1194bf62401aa7c363ff518025b69a6298bd39cecf87",
+      "action_shape": [
+        859,
+        6
+      ]
+    },
+    {
+      "case_id": "brown_pawn_g2__g2_f2",
+      "direction": "SIM_TO_REAL",
+      "source_square": "g2",
+      "destination_square": "f2",
+      "selected_piece_id": "brown_pawn_g2",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-80-stroke-66-lower-contact-static-v1/actions/01.f64le",
+      "action_sha256": "cd86a98d379da3fb645fcd2147edc0e325c7a75940caa325d1da731491f700f8",
+      "action_shape": [
+        704,
+        6
+      ]
+    }
+  ],
+  "live_seed": {
+    "source": "rp04f_predeclared_reachable_80deg_66mm_lower_contact_static_lock",
+    "follower_position_degrees": [
+      6.5054945054945055,
+      -85.53846153846153,
+      80.0,
+      -20.087912087912088,
+      -103.34065934065934,
+      2.3752969121140137
+    ],
+    "torque_enabled": false
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-80-stroke-66-lower-contact-temporal-v1",
+  "unchanged_from_base": {
+    "requested_mapped_sent_action_identity": true,
+    "forty_hz_row_order_and_timing": true,
+    "direct_target_baseline_and_uncalibrated_0p11s_zoh_challenger": true,
+    "five_frozen_reset_variants": true,
+    "cpu_fp64_mujoco_and_substeps": true,
+    "observable_episode_v2_min_and_first_divergence": true,
+    "progress_gate_36p025mm": true,
+    "contact_exclusion_no_lift_collision_and_camera_gates": true,
+    "one_case_per_direction_both_plant_paths_required": true,
+    "dynamic_only_authority": true
+  },
+  "claim_boundary": "Prospectively frozen CPU/float64 replay of the two exact predeclared lower-contact actions. Both direct target and diagnostic uncalibrated 0.11 second ZOH, five reset deltas, exact action bytes, 40 Hz timing, ObservableEpisode.v2-min traces, first-divergence channels, and the unchanged 36.025 mm progress and 2 mm no-lift gates remain required. A pass opens no-contact mapping/readiness only; it cannot approve mapping, hardware, a physical attempt, simulator promotion, or transfer."
+}
