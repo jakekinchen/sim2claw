@@ -21,16 +21,23 @@
   },
   "campaign_id": "bidirectional_pawn_push_v2",
   "canonical_transfer_campaign": {
-    "active_milestone": "HC-R03",
+    "active_milestone": "HC-R04",
+    "blockers": [
+      "physical_model_mapping_approved",
+      "sim_to_real_start_matches_live_anchor",
+      "real_to_sim_source_start_matches_live_anchor"
+    ],
     "campaign_id": "canonical-transfer-20260728-v1",
     "contract": "configs/evaluations/canonical_transfer_readiness_v1.json",
     "gateway_or_serial_authority": false,
     "legacy_candidates_are_diagnostics_only": true,
     "live_anchor_source": "fresh_configuration_free_physical_gateway_preflight",
-    "next_action": "execute_read_only_canonical_transfer_readiness_once",
+    "next_action": "freeze_current_anchor_seeded_canonical_static_compiler",
     "physical_authority": false,
     "physical_packet_authorized": false,
-    "status": "readiness_contract_frozen_before_read_only_execution",
+    "receipt": "runs/bidirectional-pawn-push-v2/20260728-canonical-transfer-readiness-v1/receipt.json",
+    "receipt_sha256": "edc8267472c346dde7743f0f7cd8a85bb66fe512aa51f319bea999277c38cdb1",
+    "status": "readiness_rejected_fresh_static_compiler_authorized",
     "task_attempts": 0
   },
   "claim_boundary": "This graph preserves declared lineage and influence scope. Connectivity, similarity, and chronology are not causal identification, simulator promotion, training admission, policy selection, or physical-transfer evidence.",
@@ -1528,7 +1535,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "467daa2527eb2c6fba439ca0695328099b1169e26098765db31a38e7de173dec",
+  "graph_digest": "14753ded1d3a92d7f2f9268f50f251670130907df0d9ee2bb59ab6e83a224541",
   "node_types": [
     "workcell",
     "session",
@@ -1611,7 +1618,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
+        "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -2131,7 +2138,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
+        "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -2182,7 +2189,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
+        "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -2203,7 +2210,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
+        "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -2232,7 +2239,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
+        "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -2641,7 +2648,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
+        "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -4393,7 +4400,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
+        "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -4453,7 +4460,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
+        "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18"
       },
       "status": "one_static_action_no_dynamic_or_transfer_admission",
       "type": "policy"
@@ -4471,7 +4478,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
+        "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -4539,7 +4546,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
+        "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -5340,7 +5347,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54",
+      "source_sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -5370,7 +5377,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54",
+      "source_sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -5400,7 +5407,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54",
+      "source_sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -5682,7 +5689,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54",
+      "source_sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -6393,7 +6400,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
+      "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18"
     },
     {
       "id": "simulator_candidate",

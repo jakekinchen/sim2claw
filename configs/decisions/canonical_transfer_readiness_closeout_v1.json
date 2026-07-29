@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.canonical_transfer_readiness_closeout.v1",
+  "decision_id": "canonical-transfer-readiness-closeout-20260728-v1",
+  "status": "legacy_candidates_rejected_fresh_canonical_compiler_authorized",
+  "contract": {
+    "path": "configs/evaluations/canonical_transfer_readiness_v1.json",
+    "sha256": "1bd4cbb5135335d8ddfc938a89ee3fa1a307aa7497457e661e5a09d634405b03"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-transfer-readiness-v1/receipt.json",
+    "sha256": "edc8267472c346dde7743f0f7cd8a85bb66fe512aa51f319bea999277c38cdb1",
+    "status": "canonical_transfer_readiness_reject",
+    "proof_class": "read_only_live_anchor_and_frozen_candidate_readiness_audit"
+  },
+  "blockers": [
+    "physical_model_mapping_approved",
+    "sim_to_real_start_matches_live_anchor",
+    "real_to_sim_source_start_matches_live_anchor"
+  ],
+  "result": {
+    "sim_to_real_first_row_maximum_arm_delta_degrees": 163.5941184204471,
+    "sim_to_real_closest_row_maximum_delta": 134.19593402532814,
+    "real_to_sim_source_start_maximum_arm_delta_degrees": 30.769230769230774,
+    "legacy_sim_to_real_candidate_executable": false,
+    "legacy_real_to_sim_candidate_executable": false
+  },
+  "authority": {
+    "fresh_canonical_compiler": true,
+    "static_simulator_screen": true,
+    "dynamic_simulator_replay": false,
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "physical_packet": false,
+    "physical_motion": false,
+    "task_attempt": false,
+    "transfer_claim": false
+  },
+  "next_action": "freeze_and_run_current_anchor_seeded_canonical_static_action_compiler",
+  "claim_boundary": "The historical candidates are not executable from the current robot state. This is a readiness rejection, not a transfer attempt or a task failure."
+}

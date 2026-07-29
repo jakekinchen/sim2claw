@@ -3616,3 +3616,24 @@ HC-R03 is frozen before its one execution. Authority remains false for camera
 ownership, gateway, serial, physical packets, torque, contact, motion, and
 task attempts. A reject authorizes only a fresh current-anchor-seeded
 canonical action compiler.
+
+### HC-R04 canonical transfer-readiness result — 2026-07-28
+
+The exactly-once evaluator produced
+`runs/bidirectional-pawn-push-v2/20260728-canonical-transfer-readiness-v1/receipt.json`,
+SHA-256 `edc8267472c346dde7743f0f7cd8a85bb66fe512aa51f319bea999277c38cdb1`,
+with status `canonical_transfer_readiness_reject`.
+
+Nine checks passed: canonical runtime, hard cutover, accepted registration,
+fresh preflight, torque-off, retained RGB evidence, float64/40 Hz action
+identity, calibrated bounds, and gateway rates. Three checks rejected. The
+physical/model transform remains calibration-unapproved. The simulator-first
+E2 action's first row is `163.594 deg` from the live anchor on its worst arm
+joint, and even its closest row is `134.196 deg` away. The D1 physical-source
+start is `30.769 deg` away.
+
+Neither legacy action is executable and no setup bridge is authorized. No
+physical attempt was consumed. HC-R04 authorizes only a fresh
+current-anchor-seeded canonical static compiler; dynamic simulation, camera
+ownership, gateway/serial, physical packets, torque, contact, task motion,
+and transfer claims remain false.

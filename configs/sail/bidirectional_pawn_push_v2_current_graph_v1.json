@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54",
+      "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -5892,15 +5892,22 @@
   },
   "canonical_transfer_campaign": {
     "campaign_id": "canonical-transfer-20260728-v1",
-    "status": "readiness_contract_frozen_before_read_only_execution",
-    "active_milestone": "HC-R03",
+    "status": "readiness_rejected_fresh_static_compiler_authorized",
+    "active_milestone": "HC-R04",
     "contract": "configs/evaluations/canonical_transfer_readiness_v1.json",
+    "receipt": "runs/bidirectional-pawn-push-v2/20260728-canonical-transfer-readiness-v1/receipt.json",
+    "receipt_sha256": "edc8267472c346dde7743f0f7cd8a85bb66fe512aa51f319bea999277c38cdb1",
+    "blockers": [
+      "physical_model_mapping_approved",
+      "sim_to_real_start_matches_live_anchor",
+      "real_to_sim_source_start_matches_live_anchor"
+    ],
     "live_anchor_source": "fresh_configuration_free_physical_gateway_preflight",
     "legacy_candidates_are_diagnostics_only": true,
     "physical_authority": false,
     "gateway_or_serial_authority": false,
     "physical_packet_authorized": false,
     "task_attempts": 0,
-    "next_action": "execute_read_only_canonical_transfer_readiness_once"
+    "next_action": "freeze_current_anchor_seeded_canonical_static_compiler"
   }
 }
