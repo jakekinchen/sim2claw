@@ -1,0 +1,103 @@
+{
+  "schema_version": "sim2claw.realized_action_post_service_successor.v1",
+  "successor_id": "realized-action-post-service-successor-v1",
+  "status": "deferred_preconditions_only_not_an_executable_packet",
+  "purpose": "Define the fail-closed restart path for bidirectional pawn-task transfer and predictive policy ranking after the follower-elbow external service boundary is cleared.",
+  "current_ledger": {
+    "camera_endpoint_episode_real_to_sim": {
+      "successes": 1,
+      "attempts": 1
+    },
+    "realized_gateway_sent_action_trajectory_real_to_sim": {
+      "successes": 0,
+      "attempts": 1
+    },
+    "sim_to_real": {
+      "successes": 0,
+      "attempts": 0
+    },
+    "physical_pawn_task": {
+      "successes": 0,
+      "attempts": 0,
+      "maximum_attempts": 10
+    },
+    "global_physical_model_mapping_approved": false,
+    "predictive_policy_ranking": "insufficient_physical_sample"
+  },
+  "restart_preconditions_in_order": [
+    {
+      "id": "PS0",
+      "requirement": "Inspect, service, or replace the follower elbow ID-3 STS3215 actuator or gear train and document the mechanical result.",
+      "acceptance": "No unexplained inward mechanical resistance remains; the arm is torque off before and after inspection.",
+      "physical_authority": false
+    },
+    {
+      "id": "PS1",
+      "requirement": "Run a new configuration-free identity and torque-off telemetry inventory.",
+      "acceptance": "Robot identity, calibration, joint limits, cable freedom, cameras, gateway state, and emergency-stop path are reverified without motion.",
+      "physical_authority": false
+    },
+    {
+      "id": "PS2",
+      "requirement": "Prospectively freeze a bounded no-contact elbow tracking qualification.",
+      "acceptance": "The formerly stalled inward corridor completes within tracking, stall, slew, collision, exclusion, and controlled-return gates.",
+      "physical_authority": "requires_separate_owner_authorization"
+    },
+    {
+      "id": "PS3",
+      "requirement": "Acquire and approve the minimum gauge-fixed task mapping.",
+      "acceptance": "Board, floor/support plane, robot base, articulated links, jaws, and camera projections pass untouched mapping gates; global mapping approval becomes evaluator-owned.",
+      "physical_authority": "requires_separate_owner_authorization"
+    },
+    {
+      "id": "PS4",
+      "requirement": "Record new exact source episodes with contact and object observability.",
+      "acceptance": "At least two fit and one untouched validation episode bind requested, sent, measured, timestamps, metric jaw/object paths, per-sample contact state, outcome, and exact hashes.",
+      "physical_authority": "requires_separate_owner_authorization"
+    },
+    {
+      "id": "PS5",
+      "requirement": "Identify one contact/object mechanism at a time and validate it on untouched episodes.",
+      "acceptance": "No sealed-task tuning, endpoint injection, observed-mode latch, action repair, or unidentifiable posterior is admitted.",
+      "physical_authority": false
+    },
+    {
+      "id": "PS6",
+      "requirement": "Prospectively freeze bidirectional physical task packets.",
+      "acceptance": "At least two feasible action families per direction survive static geometry, collision, camera, gateway, baseline-plant, and temporal-challenger gates before any counted task attempt.",
+      "physical_authority": "requires_separate_owner_authorization"
+    },
+    {
+      "id": "PS7",
+      "requirement": "Execute separately preregistered REAL-to-SIM and distinct SIM-to-REAL attempts.",
+      "acceptance": "Exact numerators and denominators, action/evaluator/config hashes, object/contact traces, first divergence, torque-off cleanup, and untouched heldouts are recorded; no direction borrows the other's task outcome.",
+      "physical_authority": "requires_separate_owner_authorization"
+    },
+    {
+      "id": "PS8",
+      "requirement": "Run the bounded predictive policy-ranking pilot after the first bidirectional proof.",
+      "acceptance": "At least three prospectively declared controller or checkpoint identities, a frozen ID/OOD distribution, a frozen physical sampling schedule, rank metrics, outcome metrics, failure-map uncertainty, and exact attempt denominators are reported.",
+      "failure_label": "INSUFFICIENT_PHYSICAL_SAMPLE",
+      "physical_authority": "requires_separate_owner_authorization"
+    }
+  ],
+  "packet_state": {
+    "action_tensor_frozen": false,
+    "task_evaluator_frozen": false,
+    "physical_sampling_schedule_frozen": false,
+    "controller_identities_frozen": false,
+    "hardware_execution_allowed": false,
+    "reason": "Follower-elbow service, no-contact tracking qualification, and global mapping approval are unresolved."
+  },
+  "authority": {
+    "camera": false,
+    "gateway": false,
+    "hardware": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "serial": false,
+    "simulator_replay": false,
+    "training": false
+  }
+}

@@ -1,6 +1,42 @@
 # sim2claw Goal
 
-Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
+Status: `REALIZED-ACTION LOOP SAFE SCOPE COMPLETE; ACTION→OUTCOME 0/1; PHYSICAL PATH AT SERVICE BOUNDARY`
+
+## Latest realized-action outcome result
+
+The C0--C9 zero-new-physical-data loop is complete. A fitted effective joint
+plant improves untouched validation joint RMS from `2.368` to `1.055 deg`
+(`55.45%`) and provisional end-effector RMS from `16.786` to `6.965 mm`
+(`58.51%`). Its three-sample alignment is an association, not causal actuator
+latency, and global mapping remains unapproved.
+
+The exact retained physical D1→D2 gateway-sent `531 x 6` action trajectory was
+then replayed exactly once without endpoint injection, later observation,
+observed grasp/release mode, or action repair. Natural current-MuJoCo contact
+formed no selected-jaw carry. The pawn first moved by more than `1 mm` at
+sample `386`, launched at sample `388`, and settled `69.148 mm` from D2 at
+`179.992 deg` tilt. The requested third evidence rung is therefore an honest
+`0/1`, not achieved.
+
+Studio `#/proof` now synchronizes the C922 physical video, requested/sent/
+measured/C4-applied traces, residuals, first divergence, geometry channels,
+contact gap, simulator pawn path, evaluator gates, robustness paths, hashes,
+and visible missingness on desktop and phone.
+
+Current ledger:
+
+- camera endpoint episode REAL→SIM: `1/1`;
+- realized physical action trajectory → simulator task outcome: `0/1`;
+- SIM→REAL pawn task: `0/0`;
+- physical pawn-task attempts: `0/10`;
+- globally approved physical/model mapping: no;
+- predictive policy ranking: insufficient physical sample.
+
+No remaining safe retained-data card can change those denominators. The next
+path is PS0--PS8 in
+`configs/evaluations/realized_action_post_service_successor_v1.json`, starting
+with follower elbow ID-3 service and fresh no-contact requalification. It is
+not an executable packet and grants no physical authority.
 
 ## Latest camera-endpoint REAL→SIM advancement
 

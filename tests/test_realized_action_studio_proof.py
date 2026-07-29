@@ -141,7 +141,7 @@ def test_current_graph_preserves_campaign_results_and_authority() -> None:
             / "realized_action_outcome_current_graph_v1.json"
         ).read_text()
     )
-    assert graph["status"] == "active_c9_external_service_boundary"
+    assert graph["status"] == "complete_safe_scope_external_service_boundary"
     assert not any(graph["authority"].values())
     nodes = {node["id"]: node for node in graph["nodes"]}
     assert nodes["mechanism:c4-effective-plant"]["status"] == (
@@ -153,3 +153,23 @@ def test_current_graph_preserves_campaign_results_and_authority() -> None:
     assert nodes["boundary:c9-elbow-service"]["data"]["policy_ranking"] == (
         "insufficient_physical_sample"
     )
+
+
+def test_post_service_successor_is_ordered_and_not_executable() -> None:
+    successor = json.loads(
+        (
+            REPO_ROOT
+            / "configs"
+            / "evaluations"
+            / "realized_action_post_service_successor_v1.json"
+        ).read_text()
+    )
+    assert successor["status"] == (
+        "deferred_preconditions_only_not_an_executable_packet"
+    )
+    assert [
+        item["id"] for item in successor["restart_preconditions_in_order"]
+    ] == [f"PS{index}" for index in range(9)]
+    assert successor["packet_state"]["action_tensor_frozen"] is False
+    assert successor["packet_state"]["hardware_execution_allowed"] is False
+    assert not any(successor["authority"].values())

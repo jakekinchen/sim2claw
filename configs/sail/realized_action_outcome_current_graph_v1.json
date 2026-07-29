@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "realized_action_outcome_calibration_v1",
   "generated_at": "2026-07-29",
-  "status": "active_c9_external_service_boundary",
+  "status": "complete_safe_scope_external_service_boundary",
   "node_types": [
     "workcell",
     "session",
@@ -40,7 +40,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/realized-action-outcome-calibration-task-queue-20260729.md",
-      "sha256": "32404bffd626f6aa106e36c853f27952841d406ffb5e889bafbe88e4989b2502",
+      "sha256": "13c3bac48b63cb8470e0dbf308d5424cc39db141ccffa7372a2cf0c4d0b6434f",
       "proof_class": "campaign_control_state"
     },
     "c0": {
@@ -97,6 +97,11 @@
       "path": "configs/decisions/realized_action_studio_proof_v1_closeout.json",
       "sha256": "eced5de0a144e26ac759f9fa6985be404dafaaad6204ee44b235ba0f9a559d2d",
       "proof_class": "read_only_causal_evidence_projection"
+    },
+    "c9": {
+      "path": "configs/decisions/realized_action_c9_service_boundary_v1_closeout.json",
+      "sha256": "246e8c53261bfce0aca16b56334eec6beb88aa4b9de47190f7274b29d30c00f8",
+      "proof_class": "service_gated_future_transfer_design_no_physical_authority"
     }
   },
   "nodes": [
@@ -115,7 +120,7 @@
       "id": "session:realized-action-outcome-v1",
       "type": "session",
       "label": "Realized-action outcome calibration",
-      "status": "active_c9_external_service_boundary",
+      "status": "complete_safe_scope_external_service_boundary",
       "source_binding": "queue",
       "data": {
         "real_to_sim_action_outcome_successes": 0,
@@ -226,8 +231,8 @@
       "id": "boundary:c9-elbow-service",
       "type": "external_boundary",
       "label": "Follower elbow service and fresh requalification",
-      "status": "active_external_safety_boundary",
-      "source_binding": "queue",
+      "status": "deferred_external_safety_boundary",
+      "source_binding": "c9",
       "data": {
         "policy_ranking": "insufficient_physical_sample",
         "global_mapping_approved": false,

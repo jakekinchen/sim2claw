@@ -1,6 +1,6 @@
 # Realized-Action Outcome Calibration Goal Loop
 
-Status: `ACTIVE_C9`
+Status: `COMPLETE_SAFE_SCOPE_EXTERNAL_SERVICE_BOUNDARY`
 
 Created: `2026-07-29`
 
@@ -122,13 +122,13 @@ safe alternatives. Do not tune sealed inputs or repeat C6.
 ## Progress ledger
 
 ```text
-Current state: ACTIVE
-Active card: C9
-Completed: C0, C1, C2 partial reconciliation, C2-RP04N terminal negative, C3, C3A, C4, C5 terminal negative, C6 terminal negative, C7, C8
-Evidence: C8 bundle artifact 34b8dc493aa9d365a2bb25d8c90773c565f4e7dd39e294a02dc45d0b1b772436
-Remaining: C9 external service boundary and final audit
-Blockers: physical pathway closed at follower-elbow service boundary
-Next step: close C9 without physical execution, bind the graph, and finish repository verification
+Current state: COMPLETE_SAFE_SCOPE_EXTERNAL_SERVICE_BOUNDARY
+Active card: none
+Completed: C0, C1, C2 partial reconciliation, C2-RP04N terminal negative, C3, C3A, C4, C5 terminal negative, C6 terminal negative, C7, C8, C9 boundary
+Evidence: C8 bundle artifact 34b8dc493aa9d365a2bb25d8c90773c565f4e7dd39e294a02dc45d0b1b772436; C9 post-service successor contract
+Remaining safe zero-new-physical-data cards: none
+External boundary: follower elbow ID-3 service, fresh requalification, global mapping approval, and separate physical authorization
+Next step after external change: execute PS0--PS8 in order; do not resume from an old task packet
 ```
 
 ## Stop conditions

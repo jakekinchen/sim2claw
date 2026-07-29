@@ -1,0 +1,76 @@
+{
+  "schema_version": "sim2claw.realized_action_c9_service_boundary_closeout.v1",
+  "decision_id": "realized-action-c9-service-boundary-v1-closeout",
+  "result": "DEFERRED_EXTERNAL_FOLLOWER_ELBOW_SERVICE_BOUNDARY",
+  "proof_class": "service_gated_future_transfer_design_no_physical_authority",
+  "active_commit_before_close": "fe9541e",
+  "successor": {
+    "path": "configs/evaluations/realized_action_post_service_successor_v1.json",
+    "sha256": "ce49eee80e00a0d43da1bc9ecc28e628505a9edf396317095dbf30f90fa8bc32",
+    "status": "deferred_preconditions_only_not_an_executable_packet"
+  },
+  "service_boundary": {
+    "component": "follower elbow ID-3 STS3215 actuator or gear train",
+    "observed_failure": "Repeated gateway no-progress stops during the required inward-elbow corridor, including a 3.252747 degree residual at 97.186813 degrees for 0.975 seconds.",
+    "restart_requires": [
+      "documented mechanical inspection, service, or replacement",
+      "fresh configuration-free identity and torque-off telemetry inventory",
+      "prospectively frozen no-contact tracking qualification",
+      "minimum gauge-fixed global mapping approval",
+      "separately reviewed physical authorization"
+    ]
+  },
+  "ledger_at_close": {
+    "camera_endpoint_episode_real_to_sim": {
+      "successes": 1,
+      "attempts": 1
+    },
+    "realized_gateway_sent_action_trajectory_real_to_sim": {
+      "successes": 0,
+      "attempts": 1
+    },
+    "sim_to_real": {
+      "successes": 0,
+      "attempts": 0
+    },
+    "physical_pawn_task": {
+      "successes": 0,
+      "attempts": 0,
+      "maximum_attempts": 10
+    },
+    "global_physical_model_mapping_approved": false,
+    "predictive_policy_ranking": "insufficient_physical_sample"
+  },
+  "safe_in_scope_work": {
+    "c0_through_c8_terminal": true,
+    "post_service_restart_order_bound": true,
+    "current_graph_bound": true,
+    "unresolved_safe_zero_new_physical_data_work": 0
+  },
+  "validation": {
+    "campaign_relevant_tests": "61 passed, 2 subtests passed",
+    "node_syntax": "pass",
+    "python_compileall": "pass",
+    "json_parse": "pass",
+    "workflow_audit": "clean",
+    "diff_check": "pass"
+  },
+  "cleanup": {
+    "temporary_read_only_studio_port_4176_stopped": true,
+    "repo_camera_or_gateway_process_started": false,
+    "torque_opened": false,
+    "brev_used": false,
+    "existing_read_only_deployed_studio_preserved": true
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replay": false,
+    "paid_compute": false
+  },
+  "next_card": null
+}
