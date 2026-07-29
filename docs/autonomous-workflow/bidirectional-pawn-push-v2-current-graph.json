@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC02",
-    "node_id": "checkpoint:canonical-wrist-path-two-lane-static-v6-frozen",
-    "queue_status": "ACTIVE_CC02_TWO_LANE_STATIC_REPLAY",
-    "resume_action": "execute_canonical_wrist_path_two_lane_static_v6_exactly_once",
+    "node_id": "checkpoint:canonical-wrist-path-static-selector-v1-frozen",
+    "queue_status": "ACTIVE_CC02_STATIC_SELECTOR",
+    "resume_action": "execute_canonical_wrist_path_static_selector_v1_exactly_once",
     "resume_authorized": true,
-    "status": "preregistered_before_exactly_once_two_lane_static_replay"
+    "status": "preregistered_before_exactly_once_static_candidate_selection"
   },
   "authority": {
     "camera_open": false,
@@ -82,27 +82,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 163,
+    "edges": 165,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
-      "evaluated-on": 42,
+      "evaluated-on": 43,
       "fitted-on": 4,
-      "generated-from": 101,
+      "generated-from": 102,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 157,
+    "nodes": 159,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 102,
+      "checkpoint": 103,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 28,
+      "evaluator_verdict": 29,
       "evidence": 6,
       "intervention": 1,
       "mechanism": 3,
@@ -373,6 +373,16 @@
       },
       "source": "checkpoint:canonical-wrist-path-reset-temporal-v2-frozen",
       "target": "checkpoint:canonical-wrist-path-action-completion-v1-pass",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "dynamic_outcomes_used": false,
+        "physical_motion": false,
+        "static_receipts_only": true
+      },
+      "source": "checkpoint:canonical-wrist-path-static-selector-v1-frozen",
+      "target": "verdict:canonical-wrist-path-two-lane-static-v6-partial-reject",
       "type": "generated-from"
     },
     {
@@ -1688,6 +1698,16 @@
     },
     {
       "metadata": {
+        "dynamic_execution": false,
+        "physical_motion": false,
+        "statically_eligible_family_count": 2
+      },
+      "source": "verdict:canonical-wrist-path-two-lane-static-v6-partial-reject",
+      "target": "checkpoint:canonical-wrist-path-two-lane-static-v6-frozen",
+      "type": "evaluated-on"
+    },
+    {
+      "metadata": {
         "dynamic_prerequisite_passed": false,
         "dynamic_replay_executed": false,
         "physical_motion": false,
@@ -1943,7 +1963,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "fcb6be9b8710e8e97d2fcd8ee1c0afd8bf2bbb2d3f49785480d13a16a5a3b8c1",
+  "graph_digest": "269d14d24583053bf70fd3ecd50fc7a6b6afdfc96a300065db2b283545009784",
   "node_types": [
     "workcell",
     "session",
@@ -2442,6 +2462,35 @@
     },
     {
       "data": {
+        "candidate_count_per_family_maximum": 2,
+        "case_count": 4,
+        "dynamic_outcomes_used": false,
+        "dynamic_simulation_authorized": false,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "selection_metric": "minimum_absolute_first_contact_vertical_normal_component",
+        "source_binding_id": "canonical_wrist_path_static_selector_v1_contract"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:canonical-wrist-path-static-selector-v1-frozen",
+      "label": "Static-only canonical/two-lane selector frozen",
+      "proof_class": "prospective_static_only_frozen_action_candidate_selection",
+      "source": {
+        "path": "configs/evaluations/canonical_wrist_path_static_selector_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_static_only_frozen_action_candidate_selection",
+          "schema_version": "sim2claw.canonical_wrist_path_static_selector.v1",
+          "status": "frozen_after_two_lane_static_partial_before_static_only_candidate_selection"
+        },
+        "proof_class": "prospective_static_only_frozen_action_candidate_selection",
+        "sha256": "cdd2d7ced436b789d2c90fddece2d29d0c9725ec95a70e205b0227b063c53e8b"
+      },
+      "status": "preregistered_before_exactly_once_static_candidate_selection",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "dynamic_replay_authorized": false,
         "mapping_calibration_approved": false,
         "maximum_total_cells": 288,
@@ -2784,7 +2833,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "39388b935d94140633274038bd0469d664a4d5df4c76ea77e2424b99762da980"
+        "sha256": "649e646f2e270bdec3d97e5db4ced3e94f793c558b8423e56a94459175a19392"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6087,6 +6136,37 @@
     },
     {
       "data": {
+        "dynamic_replay_executed": false,
+        "eligible_case_ids": [
+          "tan_pawn_f7__f7_e7",
+          "tan_pawn_d7__d7_e7"
+        ],
+        "only_rejection_gate": "contact_normal",
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "receipt_source_binding": "canonical_wrist_path_two_lane_static_v6_receipt",
+        "source_binding_id": "canonical_wrist_path_two_lane_static_v6_closeout",
+        "statically_eligible_family_count": 2
+      },
+      "evaluator_identity": "adb0908a23f4180a80a24dc49172d9a97f9ba13c1d847b4982816dcbf15286f7",
+      "id": "verdict:canonical-wrist-path-two-lane-static-v6-partial-reject",
+      "label": "Two-lane static path admits two of four families",
+      "proof_class": "cpu_fp64_four_family_two_lane_static_partial_negative",
+      "source": {
+        "path": "configs/decisions/canonical_wrist_path_two_lane_static_v6_closeout.json",
+        "payload_contract": {
+          "proof_class": "cpu_fp64_four_family_two_lane_static_partial_negative",
+          "schema_version": "sim2claw.canonical_wrist_path_two_lane_static_closeout.v1",
+          "status": "two_of_four_two_lane_static_partial_reject"
+        },
+        "proof_class": "cpu_fp64_four_family_two_lane_static_partial_negative",
+        "sha256": "97fbe64d7b4de126e3f29e2323cb613fea13ebd3dee2ae7d30f287f77dc4552c"
+      },
+      "status": "two_of_four_two_lane_static_partial_reject",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "camera_authorized": false,
         "dominant_failure": "multi_start_ik_residual_exceeded_gate",
         "dynamic_replay_executed": false,
@@ -7842,7 +7922,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "39388b935d94140633274038bd0469d664a4d5df4c76ea77e2424b99762da980",
+      "source_sha256": "649e646f2e270bdec3d97e5db4ced3e94f793c558b8423e56a94459175a19392",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -8184,6 +8264,26 @@
       "source_binding": "canonical_wrist_path_two_lane_static_v6_contract",
       "source_sha256": "adb0908a23f4180a80a24dc49172d9a97f9ba13c1d847b4982816dcbf15286f7",
       "status": "preregistered_before_exactly_once_two_lane_static_replay"
+    },
+    {
+      "event_id": "CANONICAL_WRIST_PATH_TWO_LANE_STATIC_V6_PARTIAL_REJECT",
+      "node_ids_added": [
+        "verdict:canonical-wrist-path-two-lane-static-v6-partial-reject"
+      ],
+      "revision": 138,
+      "source_binding": "canonical_wrist_path_two_lane_static_v6_closeout",
+      "source_sha256": "97fbe64d7b4de126e3f29e2323cb613fea13ebd3dee2ae7d30f287f77dc4552c",
+      "status": "two_of_four_two_lane_static_partial_reject"
+    },
+    {
+      "event_id": "CANONICAL_WRIST_PATH_STATIC_SELECTOR_V1_FROZEN",
+      "node_ids_added": [
+        "checkpoint:canonical-wrist-path-static-selector-v1-frozen"
+      ],
+      "revision": 139,
+      "source_binding": "canonical_wrist_path_static_selector_v1_contract",
+      "source_sha256": "cdd2d7ced436b789d2c90fddece2d29d0c9725ec95a70e205b0227b063c53e8b",
+      "status": "preregistered_before_exactly_once_static_candidate_selection"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -8497,6 +8597,17 @@
       "sha256": "e2986fac6f6e2e3d4ae0cb1191ae42d6b6955fab6cc46eaee2874b4a9c79c406"
     },
     {
+      "id": "canonical_wrist_path_static_selector_v1_contract",
+      "path": "configs/evaluations/canonical_wrist_path_static_selector_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_static_only_frozen_action_candidate_selection",
+        "schema_version": "sim2claw.canonical_wrist_path_static_selector.v1",
+        "status": "frozen_after_two_lane_static_partial_before_static_only_candidate_selection"
+      },
+      "proof_class": "prospective_static_only_frozen_action_candidate_selection",
+      "sha256": "cdd2d7ced436b789d2c90fddece2d29d0c9725ec95a70e205b0227b063c53e8b"
+    },
+    {
       "id": "canonical_wrist_path_static_v1_contract",
       "path": "configs/evaluations/canonical_wrist_path_static_v1.json",
       "payload_contract": {
@@ -8718,6 +8829,17 @@
       "sha256": "cbda502b2b07f75f87695c9e2a19635b01a7197e1cf90732d9c1bbb391c792e0"
     },
     {
+      "id": "canonical_wrist_path_two_lane_static_v6_closeout",
+      "path": "configs/decisions/canonical_wrist_path_two_lane_static_v6_closeout.json",
+      "payload_contract": {
+        "proof_class": "cpu_fp64_four_family_two_lane_static_partial_negative",
+        "schema_version": "sim2claw.canonical_wrist_path_two_lane_static_closeout.v1",
+        "status": "two_of_four_two_lane_static_partial_reject"
+      },
+      "proof_class": "cpu_fp64_four_family_two_lane_static_partial_negative",
+      "sha256": "97fbe64d7b4de126e3f29e2323cb613fea13ebd3dee2ae7d30f287f77dc4552c"
+    },
+    {
       "id": "canonical_wrist_path_two_lane_static_v6_contract",
       "path": "configs/evaluations/canonical_wrist_path_two_lane_static_v6.json",
       "payload_contract": {
@@ -8729,10 +8851,21 @@
       "sha256": "adb0908a23f4180a80a24dc49172d9a97f9ba13c1d847b4982816dcbf15286f7"
     },
     {
+      "id": "canonical_wrist_path_two_lane_static_v6_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-two-lane-static-v6/receipt.json",
+      "payload_contract": {
+        "passed": false,
+        "schema_version": "sim2claw.canonical_wrist_path_two_lane_static_receipt.v1",
+        "status": "canonical_wrist_path_two_lane_static_reject"
+      },
+      "proof_class": "cpu_fp64_four_family_two_lane_static_action_freeze",
+      "sha256": "3e32303fa6ebb0f102a2562f76df43480c8880ab4400a7e80a3860c819a25940"
+    },
+    {
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "39388b935d94140633274038bd0469d664a4d5df4c76ea77e2424b99762da980"
+      "sha256": "649e646f2e270bdec3d97e5db4ced3e94f793c558b8423e56a94459175a19392"
     },
     {
       "id": "current_task_scene_labels",

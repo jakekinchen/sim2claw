@@ -4703,6 +4703,7 @@
       "label": "Two-lane static path admits two of four families",
       "status": "two_of_four_two_lane_static_partial_reject",
       "source_binding": "canonical_wrist_path_two_lane_static_v6_closeout",
+      "evaluator_identity": "adb0908a23f4180a80a24dc49172d9a97f9ba13c1d847b4982816dcbf15286f7",
       "data": {
         "receipt_source_binding": "canonical_wrist_path_two_lane_static_v6_receipt",
         "statically_eligible_family_count": 2,
