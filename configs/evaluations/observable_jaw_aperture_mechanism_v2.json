@@ -1,0 +1,64 @@
+{
+  "schema_version": "sim2claw.observable_jaw_aperture_mechanism_contract.v2",
+  "experiment_id": "observable-jaw-aperture-mechanism-v2",
+  "frozen_date": "2026-07-29",
+  "proof_class": "telemetry_and_simulator_geometry_only_aggregate_rank_jaw_aperture_identifiability_successor",
+  "sources": {
+    "v1_contract": {
+      "path": "configs/evaluations/observable_jaw_aperture_mechanism_v1.json",
+      "sha256": "24b4b3a72f5a92206b1f2f8889ccbdd663f2bfd945a6205437e367ca06c10125"
+    },
+    "v1_closeout": {
+      "path": "configs/decisions/observable_jaw_aperture_mechanism_v1_closeout.json",
+      "sha256": "1d5e47db9835afd9e984e5442fbfe94d62a1725e02b605df454cf4d8312eecf7"
+    }
+  },
+  "method_successor": {
+    "same_model_family": true,
+    "same_parameter": true,
+    "same_parameter_bounds": true,
+    "same_fit_and_validation_membership": true,
+    "same_fit_and_validation_gates_for_or6": true,
+    "same_rejected_mechanism_families": true,
+    "visual_fit_annotation_values_may_open_in_or5_v2": false,
+    "visual_validation_annotation_values_may_open_in_or5_v2": false,
+    "sensitivity_inputs": [
+      "frozen_simulator_geometry",
+      "fit_pose_joint_telemetry",
+      "immutable_or1_camera",
+      "immutable_or2_robot_board_transform"
+    ],
+    "sensitivity_depends_on_visual_annotation_values": false
+  },
+  "identifiability_gates": {
+    "minimum_fit_pose_count": 6,
+    "maximum_fit_gripper_span_physical_units": 1e-9,
+    "minimum_per_view_absolute_sensitivity_px_per_rad": 10.0,
+    "minimum_mean_absolute_sensitivity_px_per_rad": 50.0,
+    "minimum_aggregate_jacobian_singular_value_px_per_rad": 150.0,
+    "minimum_same_sign_sensitivity_fraction": 1.0,
+    "minimum_parameter_rank": 1,
+    "maximum_one_parameter_jacobian_condition_number": 1.0
+  },
+  "proof_boundaries": {
+    "v1_negative_is_overwritten": false,
+    "fit_annotations_are_opened": false,
+    "validation_annotations_are_opened": false,
+    "parameter_is_fit": false,
+    "candidate_is_promoted": false,
+    "dynamic_replay_is_run": false,
+    "global_mapping_is_approved": false,
+    "contact_or_transfer_is_proved": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_dynamic_replay": false,
+    "training": false,
+    "paid_compute": false
+  }
+}
