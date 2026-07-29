@@ -7556,7 +7556,7 @@
   ],
   "current_workcell_hard_cutover": {
     "cutover_id": "canonical_rank1_near_v1",
-    "status": "verified_complete_pending_commit_push",
+    "status": "verified_complete_commit_4706851_pushed",
     "historical_boundary_commit": "9e563f4",
     "historical_scene_sha256": "4b7dd7b251c87580505a40164117cc0999f36960244a5c66c2065165afcf3e46",
     "manifest": "configs/migrations/current_workcell_hard_cutover_v1.json",

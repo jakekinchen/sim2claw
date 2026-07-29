@@ -20,5 +20,5 @@ Closeout checks:
 6. No physical authority was granted.
 
 Final evidence: `96 passed, 18 subtests passed`; Python compilation and
-`git diff --check` passed. Commit/push identity is recorded in the queue after
-publication.
+`git diff --check` passed. Implementation commit `4706851` was pushed to the
+working branch.

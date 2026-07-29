@@ -3549,7 +3549,8 @@ The first focused cutover/scene/orientation/Studio/recording suite passed
 `68` tests and `2` subtests. Final relevant verification passed `96` tests
 and `18` subtests; Python compilation, diff checking, JSON parsing, exact
 `24/24` caller classification, and the workflow audit passed. HC-06 is
-complete pending the publication identity recorded after commit/push.
+complete in commit `4706851`, pushed to
+`origin/codex/bidirectional-transfer-goal-loop-20260728`.
 
 This cutover grants no physical, gateway, serial, evaluator, or counted-action
 authority. A fresh canonical task-plane registration with error `<=25 mm`

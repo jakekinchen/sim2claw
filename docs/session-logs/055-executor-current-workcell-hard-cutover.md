@@ -28,5 +28,5 @@ canonical module and exposes no selector to active callers.
 
 Final relevant verification passed `96` tests and `18` subtests. Python
 compilation, diff checking, JSON parsing, exact caller classification, and the
-workflow audit also passed. Commit/push identity is recorded in the queue
-after publication.
+workflow audit also passed. Implementation commit `4706851` was pushed to the
+working branch.
