@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_WRIST_COPY_FIX_DIAGNOSTIC`
+Status: `ACTIVE_CC03_WRIST_COPY_FIX_V5_DIAGNOSTIC`
 
 Created: `2026-07-28`
 
@@ -654,6 +654,15 @@ Current state:
   `7b214e47d82e0d8630b31b4350184e979528d4f8f2a37832d8f370340b883baa`.
   It cannot approve mapping even if it passes; a fresh prospective capture is
   still required.
+- The first V4 diagnostic invocation stopped before receipt creation or any
+  metric result because the copy wrapper recursively resolved itself.
+  Closeout SHA-256 is
+  `90a91c8553c288c1e9c5ba6145c7019c93171774c36aaced0c30ae9da10833eb`.
+  V5 changes only wrapper binding: it captures the original rotation callable
+  before temporary patching. V5 implementation SHA-256 is
+  `feedf3ede2c7aa723f209157254c4c904a81a778c0dae57d909e16a8ba52899b`;
+  its new-output diagnostic contract SHA-256 is
+  `dfc17f942c1e5c0432326bfdd9848f18c19f31d0330bbd21cb79f29eddba0c35`.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -695,7 +704,7 @@ This authorization:
 
 Next step:
 
-- Run the copy-safe V4 implementation on the already-opened V3 capture as a
+- Run the copy-safe V5 implementation on the already-opened V3 capture as a
   diagnostic only. If it proves the bounded fix, freeze and execute a fresh
   no-contact wrist capture before any new frame is opened. Do not touch a pawn
   or count a task attempt.

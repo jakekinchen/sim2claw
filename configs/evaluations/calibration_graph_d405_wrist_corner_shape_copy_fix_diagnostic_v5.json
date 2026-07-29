@@ -1,0 +1,82 @@
+{
+  "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_heldout.v4",
+  "status": "frozen_copy_fix_diagnostic_after_v3_capture_open",
+  "evidence_class": "corrected_evaluator_diagnostic_on_opened_v3_capture",
+  "sources": {
+    "packet": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/packet.json",
+      "sha256": "819a2cbad0b611226213763d4640b87d8da83808a2a648a7b738323d7915201e"
+    },
+    "review": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/review.json",
+      "sha256": "233fb3e7067384e1e321082e1b6edde6a1f19abb950a2dc5f096638817dc1dca"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "v3_closeout": {
+      "path": "configs/decisions/calibration_graph_d405_wrist_corner_shape_v3_evaluator_closeout.json",
+      "sha256": "59d34e6e29bd6047fbcb1939ec53d559b698bee9976ef14bf8f14590e0c1f628"
+    },
+    "v4_runner_closeout": {
+      "path": "configs/decisions/calibration_graph_d405_wrist_corner_shape_v4_runner_closeout.json",
+      "sha256": "90a91c8553c288c1e9c5ba6145c7019c93171774c36aaced0c30ae9da10833eb"
+    }
+  },
+  "implementation": {
+    "path": "tools/evaluate_calibration_graph_d405_wrist_corner_shape_heldout_v5.py",
+    "sha256": "feedf3ede2c7aa723f209157254c4c904a81a778c0dae57d909e16a8ba52899b"
+  },
+  "implementation_dependency": {
+    "path": "tools/evaluate_calibration_graph_d405_corner_shape_heldout_v2.py",
+    "sha256": "fc9fd098525eae3c65de8a63d92a7602c5178a1e0a3ee793eea857226c1c9bf0"
+  },
+  "stage": {
+    "execution_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/stage-1/execution_receipt.json",
+      "sha256": "53672fa50261887f352e2d9cc17d45ce770edbe4b4d4d70fa1eb635f3d54b507"
+    },
+    "expected_action_sha256": "7cdb934ebceadbb52327d626f2a3f2fc4c6d4e391a058c13f4348822107363ce",
+    "joint_name": "wrist_flex",
+    "joint_index": 3
+  },
+  "method": {
+    "fixed_scene_tag_id": 0,
+    "maximum_frame_to_joint_delta_ms": 30.0,
+    "active_joint_indices": [
+      3
+    ],
+    "anchor_reference_radius_degrees": 0.75,
+    "minimum_detected_frame_count": 60,
+    "minimum_reference_frame_count": 10,
+    "observed_channel": "gauge_free_normalized_rms_raw_tag_corner_displacement_from_d405_fixed_scene_tag_0",
+    "simulated_channel": "gauge_free_normalized_relative_rotation_magnitude_of_current_mujoco_left_camera_mount_with_copy_safe_trajectory_accumulation",
+    "depth_required": false,
+    "parameter_fit": false
+  },
+  "gates": {
+    "minimum_measured_joint_excursion_degrees": 2.0,
+    "minimum_observed_corner_displacement_peak_px": 5.0,
+    "minimum_simulated_rotation_peak_degrees": 2.0,
+    "normalized_shape_rmse_max": 0.25,
+    "normalized_shape_max_error_max": 0.5,
+    "minimum_normalized_shape_correlation": 0.75,
+    "maximum_active_joint_return_residual_degrees": 1.5
+  },
+  "output_path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/evaluation-v5-copy-fix-diagnostic/receipt.json",
+  "authority": {
+    "read_bound_physical_capture": true,
+    "evaluate_wrist_trajectory_shape": true,
+    "fit_parameters": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "This rerun uses an already-opened V3 capture only to validate the copy-only evaluator correction. Even if every unchanged gate passes, it remains a diagnostic and cannot approve mapping or substitute for a fresh prospective capture."
+}

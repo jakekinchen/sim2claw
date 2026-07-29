@@ -1,0 +1,40 @@
+{
+  "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_v4_runner_closeout.v1",
+  "status": "terminal_pre_output_wrapper_recursion_no_evaluation_result",
+  "proof_class": "deterministic_runner_failure_before_receipt_or_metric_result",
+  "sources": {
+    "contract": {
+      "path": "configs/evaluations/calibration_graph_d405_wrist_corner_shape_copy_fix_diagnostic_v4.json",
+      "sha256": "7b214e47d82e0d8630b31b4350184e979528d4f8f2a37832d8f370340b883baa"
+    },
+    "implementation": {
+      "path": "tools/evaluate_calibration_graph_d405_wrist_corner_shape_heldout_v4.py",
+      "sha256": "1ff1b08569560c455577541abf06d8422fda383718bc2de165af4089e88c07f1"
+    }
+  },
+  "failure": {
+    "phase": "simulated_trajectory_accumulation",
+    "exception": "RecursionError",
+    "cause": "The copy wrapper looked up shape_v2.body_rotation after replacing that symbol with itself.",
+    "output_created": false,
+    "metric_or_gate_result_created": false,
+    "physical_capture_changed": false,
+    "bounded_correction": "Capture the original body_rotation callable before installing the temporary copy wrapper."
+  },
+  "decision": {
+    "v4_contract_reusable": false,
+    "v4_result_exists": false,
+    "mapping_verdict": false,
+    "next_action": "freeze_v5_runner_with_original_callable_capture_and_new_output_path"
+  },
+  "authority": {
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "mapping_approval": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

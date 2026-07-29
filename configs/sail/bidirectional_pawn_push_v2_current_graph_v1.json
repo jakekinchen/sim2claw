@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "456923cb3eef4148d3309ce186c5073a4c125442a71a21c43b9627b51362a8a2",
+      "sha256": "11aa96abdd6a260570351945eee8980084a44286f4d5572751b8918ed5e96c9c",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -2141,6 +2141,31 @@
     "calibration_graph_d405_wrist_corner_shape_copy_fix_diagnostic_v4": {
       "path": "configs/evaluations/calibration_graph_d405_wrist_corner_shape_copy_fix_diagnostic_v4.json",
       "sha256": "7b214e47d82e0d8630b31b4350184e979528d4f8f2a37832d8f370340b883baa",
+      "proof_class": "corrected_evaluator_diagnostic_contract_on_opened_v3_capture",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_heldout.v4",
+        "status": "frozen_copy_fix_diagnostic_after_v3_capture_open",
+        "evidence_class": "corrected_evaluator_diagnostic_on_opened_v3_capture"
+      }
+    },
+    "calibration_graph_d405_wrist_corner_shape_runner_closeout_v4": {
+      "path": "configs/decisions/calibration_graph_d405_wrist_corner_shape_v4_runner_closeout.json",
+      "sha256": "90a91c8553c288c1e9c5ba6145c7019c93171774c36aaced0c30ae9da10833eb",
+      "proof_class": "deterministic_runner_failure_before_receipt_or_metric_result",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_v4_runner_closeout.v1",
+        "status": "terminal_pre_output_wrapper_recursion_no_evaluation_result",
+        "proof_class": "deterministic_runner_failure_before_receipt_or_metric_result"
+      }
+    },
+    "calibration_graph_d405_wrist_corner_shape_evaluator_v5": {
+      "path": "tools/evaluate_calibration_graph_d405_wrist_corner_shape_heldout_v5.py",
+      "sha256": "feedf3ede2c7aa723f209157254c4c904a81a778c0dae57d909e16a8ba52899b",
+      "proof_class": "copy_safe_original_callable_bound_wrist_corner_shape_evaluator"
+    },
+    "calibration_graph_d405_wrist_corner_shape_copy_fix_diagnostic_v5": {
+      "path": "configs/evaluations/calibration_graph_d405_wrist_corner_shape_copy_fix_diagnostic_v5.json",
+      "sha256": "dfc17f942c1e5c0432326bfdd9848f18c19f31d0330bbd21cb79f29eddba0c35",
       "proof_class": "corrected_evaluator_diagnostic_contract_on_opened_v3_capture",
       "payload_contract": {
         "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_heldout.v4",
@@ -5693,6 +5718,47 @@
       }
     },
     {
+      "id": "verdict:calibration-graph-d405-wrist-corner-shape-v4-runner-closeout",
+      "type": "evaluator_verdict",
+      "label": "V4 copy wrapper stopped before output",
+      "status": "terminal_pre_output_wrapper_recursion_no_evaluation_result",
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_runner_closeout_v4",
+      "evaluator_identity": "1ff1b08569560c455577541abf06d8422fda383718bc2de165af4089e88c07f1",
+      "data": {
+        "output_created": false,
+        "metric_result_created": false,
+        "mapping_verdict": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:calibration-graph-d405-wrist-corner-shape-evaluator-v5-frozen",
+      "type": "checkpoint",
+      "label": "Original-callable-bound wrist evaluator V5 frozen",
+      "status": "copy_only_wrapper_binding_fix_frozen",
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_evaluator_v5",
+      "data": {
+        "original_callable_captured_before_patch": true,
+        "action_changed": false,
+        "gate_changed": false,
+        "model_changed": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:calibration-graph-d405-wrist-corner-shape-copy-fix-diagnostic-v5-frozen",
+      "type": "checkpoint",
+      "label": "Copy-safe V5 diagnostic bound to opened V3 capture",
+      "status": "frozen_copy_fix_diagnostic_after_v3_capture_open",
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_copy_fix_diagnostic_v5",
+      "data": {
+        "opened_capture_diagnostic_only": true,
+        "mapping_approval": false,
+        "fresh_heldout_required": true,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -9230,14 +9296,41 @@
       "node_ids_added": [
         "checkpoint:calibration-graph-d405-wrist-corner-shape-copy-fix-diagnostic-v4-frozen"
       ]
+    },
+    {
+      "revision": 176,
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_V4_RUNNER_CLOSEOUT",
+      "status": "terminal_pre_output_wrapper_recursion_no_evaluation_result",
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_runner_closeout_v4",
+      "node_ids_added": [
+        "verdict:calibration-graph-d405-wrist-corner-shape-v4-runner-closeout"
+      ]
+    },
+    {
+      "revision": 177,
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_EVALUATOR_V5_FROZEN",
+      "status": "copy_only_wrapper_binding_fix_frozen",
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_evaluator_v5",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-wrist-corner-shape-evaluator-v5-frozen"
+      ]
+    },
+    {
+      "revision": 178,
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_COPY_FIX_DIAGNOSTIC_V5_FROZEN",
+      "status": "frozen_copy_fix_diagnostic_after_v3_capture_open",
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_copy_fix_diagnostic_v5",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-wrist-corner-shape-copy-fix-diagnostic-v5-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:calibration-graph-d405-wrist-corner-shape-copy-fix-diagnostic-v4-frozen",
+    "node_id": "checkpoint:calibration-graph-d405-wrist-corner-shape-copy-fix-diagnostic-v5-frozen",
     "milestone_id": "CC03",
-    "status": "copy_fix_diagnostic_frozen_on_opened_v3_capture",
-    "queue_status": "ACTIVE_CC03_WRIST_COPY_FIX_DIAGNOSTIC",
-    "resume_action": "execute_copy_safe_v4_diagnostic_once",
+    "status": "copy_fix_v5_diagnostic_frozen_on_opened_v3_capture",
+    "queue_status": "ACTIVE_CC03_WRIST_COPY_FIX_V5_DIAGNOSTIC",
+    "resume_action": "execute_copy_safe_v5_diagnostic_once",
     "resume_authorized": true,
     "heldout_open_count": 3,
     "cumulative_manifest_read_count": 3,

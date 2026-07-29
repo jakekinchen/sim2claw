@@ -255,7 +255,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
 Completed: CC00, CC00A, CC01, CC02.
-Evidence: V3 invalid-evaluator closeout 59d34e6e...; V4 copy-fix diagnostic contract 7b214e47....
+Evidence: V4 pre-output closeout 90a91c85...; V5 copy-fix diagnostic contract dfc17f94....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 2
@@ -263,7 +263,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed after wrist-only calibration; torque false.
 Remaining: CC03 through CC15.
 Blockers: physical/model mapping remains unapproved.
-Next step: run the copy-safe V4 diagnostic on opened V3 data, then freeze a fresh held-out capture; no pawn contact or task attempt.
+Next step: run the copy-safe V5 diagnostic on opened V3 data, then freeze a fresh held-out capture; no pawn contact or task attempt.
 ```
 
 ## Physical Authority Boundaries
