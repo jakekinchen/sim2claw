@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or7_exact_action_replay",
+  "status": "active_or7a_geometric_contact_gap",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "b3d939bda2dfb1f03977cbddf96ff3ff09934bf9a7d168aedc5fe9ba4b482ae3",
+      "sha256": "dc788df0e54661c816bfc065187a35b33185a9f5caa5f51de141c5f1583d4801",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -105,6 +105,11 @@
       "path": "configs/decisions/observable_jaw_aperture_fit_v1_closeout.json",
       "sha256": "f8ea72cad4cd8dda9c244dd074b1e6b6019ab62baeed5eb6572d11f791c2eba7",
       "proof_class": "static_six_fit_four_no_refit_validation_single_gripper_zero_offset_candidate"
+    },
+    "or7": {
+      "path": "configs/decisions/observable_jaw_aperture_replay_v1_closeout.json",
+      "sha256": "a8f7d2f159e55e73c6626832479e6cf8a451f80924f15bba637fd40d7089f63e",
+      "proof_class": "one_run_exact_c6_action_natural_contact_jaw_aperture_mapping_negative"
     }
   },
   "nodes": [
@@ -118,7 +123,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_or7",
+      "status": "active_or7a",
       "source_binding": "queue"
     },
     {
@@ -223,7 +228,21 @@
       "id": "intervention:or7-exact-action-replay",
       "type": "intervention",
       "label": "Exact C6 action replay with OR6 aperture mapping",
-      "status": "active_freeze_before_one_run",
+      "status": "terminal_negative_pawn_trace_identical_to_c6",
+      "source_binding": "or7",
+      "data": {
+        "selected_jaw_contact_steps": 0,
+        "first_planar_motion_sample": 386,
+        "catastrophic_jump_sample": 388,
+        "final_planar_center_error_m": 0.06914757217991721,
+        "material_advancement": false
+      }
+    },
+    {
+      "id": "intervention:or7a-geometric-contact-gap",
+      "type": "intervention",
+      "label": "Signed jaw-to-pawn geometric contact gap",
+      "status": "active_kinematic_diagnostic_no_fit",
       "source_binding": "queue"
     },
     {
@@ -354,6 +373,11 @@
       "type": "admitted-to"
     },
     {
+      "source": "intervention:or7-exact-action-replay",
+      "target": "intervention:or7a-geometric-contact-gap",
+      "type": "counterexample-to"
+    },
+    {
       "source": "mapping:or2-robot-jaw-rigid",
       "target": "residual:jaw-aperture-underprediction",
       "type": "generated-from"
@@ -369,6 +393,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR7",
-  "next_transition": "or7_freeze_and_run_one_exact_c6_action_natural_contact_replay_with_only_zero_offset_changed"
+  "active_card": "OR7A",
+  "next_transition": "or7a_measure_signed_jaw_pawn_gap_over_physical_enclosure_interval_without_dynamics_or_fit"
 }

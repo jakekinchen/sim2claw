@@ -99,12 +99,12 @@ after repository evidence and bounded alternatives have been exhausted.
 
 ```text
 Current state: ACTIVE
-Active card: OR7
-Completed: predecessor evidence; OR0 corpus; OR1 bounded camera model; OR2 rigid mapping negative; OR3 physical event episode; OR4 first contact divergence; OR5 single zero-offset aperture mechanism; OR6 fit and no-refit validation
-Evidence: OR6 artifact a9347475ae827fc650430ce8c728a59ab16bd3bd4acc5e53b5284b7ed33c8565; aperture RMS 1.848 px fit and 3.828 px validation; only zero offset changes
-Remaining: OR7-OR8
+Active card: OR7A
+Completed: predecessor evidence; OR0-OR6; OR7 exact-action aperture negative
+Evidence: OR7 artifact 600dd7973b32dd92cc4612762f44f80843572ea51457beb4a92380e554c4baeb; zero selected contact and pawn trace exactly C6 despite aperture correction
+Remaining: OR7A-OR7D; OR8
 Blockers: no current software blocker; physical motion remains service-gated
-Next step: freeze and run one exact-action natural-contact successor replay
+Next step: kinematically localize the signed jaw-pawn spatial gap over samples 228-260
 ```
 
 ## Stop conditions

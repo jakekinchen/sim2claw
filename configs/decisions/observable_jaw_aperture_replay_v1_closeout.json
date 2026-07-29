@@ -1,0 +1,86 @@
+{
+  "schema_version": "sim2claw.observable_jaw_aperture_replay_closeout.v1",
+  "decision_id": "observable-jaw-aperture-replay-v1-closeout",
+  "result": "NO_MATERIAL_CAUSAL_ADVANCEMENT_TASK_NEGATIVE",
+  "proof_class": "one_run_exact_c6_action_natural_contact_jaw_aperture_mapping_negative",
+  "freeze_commit": "da1a602",
+  "pre_outcome_repair_commit": "3147b7a",
+  "pre_outcome_repair": "whole_candidate_manifest_canonical_hash_was_compared_to_inner_candidate_config_hash; no receipt or simulation outcome was produced before repair",
+  "contract": {
+    "path": "configs/evaluations/observable_jaw_aperture_replay_v1.json",
+    "sha256": "e85a43af62c10f2a34e0b802227667b7562fab186d141fd2f6ce9287714f5e3a"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_jaw_aperture_replay.py",
+    "sha256": "15becec76fabe480648e2bf687fbb3e67d3bad9100e53cf04c966e48d8c1641e"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_jaw_aperture_replay_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "edaece18101c331a4437cad1781bd4ccf48b9b52dd566839b93f4fc0280c7ddd",
+    "artifact_sha256": "600dd7973b32dd92cc4612762f44f80843572ea51457beb4a92380e554c4baeb"
+  },
+  "generated_trace": {
+    "path": "outputs/observable_jaw_aperture_replay_v1/trace.json",
+    "git_ignored": true,
+    "sha256": "a85b02b246f07bd996312e0bbe1130fecc23e241c4f6144225d21203928d80a9",
+    "row_count": 531
+  },
+  "identity": {
+    "requested_actions": true,
+    "gateway_sent_actions": true,
+    "timestamps": true,
+    "identified_applied_plant": true,
+    "row_order": true,
+    "initialization": true,
+    "only_gripper_zero_offset_changed": true
+  },
+  "candidate": {
+    "baseline_gripper_zero_offset_rad": -0.17453,
+    "candidate_gripper_zero_offset_rad": 0.04948239306868429,
+    "candidate_config_sha256": "dd03853d957192062b6cfd9b23a6f973c516efaad87f162b29e6f8136492a693"
+  },
+  "dynamics": {
+    "selected_jaw_contact_steps": 0,
+    "first_selected_jaw_contact_sample": null,
+    "first_planar_motion_over_1mm_sample": 386,
+    "first_catastrophic_jump_sample": 388,
+    "maximum_inter_sample_planar_jump_m": 0.15222956224308964,
+    "maximum_planar_displacement_m": 1.1036297429921478,
+    "byte_identical_to_c6_pawn_trace": true
+  },
+  "outcome": {
+    "matching_task_outcome": false,
+    "final_planar_center_error_m": 0.06914757217991721,
+    "final_upright_tilt_degrees": 179.9921876808531,
+    "maximum_other_piece_displacement_m": 0.031570176377145,
+    "all_frozen_task_gates_pass": false,
+    "material_advancement": false
+  },
+  "causal_update": {
+    "aperture_projection_error_is_sufficient_explanation": false,
+    "jaw_center_or_global_wrist_spatial_mapping_remains_primary": true,
+    "contact_material_may_be_fit_before_geometric_contact": false,
+    "next_diagnostic": "signed_jaw_pawn_geometric_gap_at_physical_enclosure_interval"
+  },
+  "ledger": {
+    "realized_physical_action_trajectory_to_matching_simulator_task_outcome": {
+      "successes": 0,
+      "attempts": 2
+    },
+    "physical_task_attempts_added": 0,
+    "sim_to_real_added": 0,
+    "global_mapping_approved": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replay": true,
+    "paid_compute": false
+  },
+  "next_card": "OR7A"
+}

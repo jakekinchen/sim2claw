@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR7 EXACT-ACTION REPLAY`
+Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR7A GEOMETRIC CONTACT GAP`
 
 ## Active long-horizon alignment successor
 
@@ -29,9 +29,12 @@ single zero-offset aperture family under an aggregate rank gate: singular
 value `204.972 px/rad`, rank `1`, condition number `1.0`. OR6 fits
 `gripper_zero_offset_rad=0.0494823931`; aperture RMS improves by `91.3%` on
 six fit views and `84.1%` on four no-refit validation views while every frozen
-gate passes. OR7 is active to run one new natural-contact replay with exact C6
-actions and only that scalar changed. Physical motion remains closed at the
-follower-elbow service boundary.
+gate passes. OR7 then shows that aperture alone is not the sufficient task
+mechanism: the exact-action pawn trace remains byte-identical to C6, with zero
+selected-jaw contact and the same sample-`388` launch. OR7A is active to
+measure the signed jaw-to-pawn gap and jaw-center vector over the physical
+enclosure interval before declaring any spatial mapping correction. Physical
+motion remains closed at the follower-elbow service boundary.
 
 ## Latest realized-action outcome result
 
