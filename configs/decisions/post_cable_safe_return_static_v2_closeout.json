@@ -1,0 +1,21 @@
+{
+  "schema_version": "sim2claw.post_cable_safe_return_static_closeout.v2",
+  "decision_id": "post-cable-safe-return-static-20260729-v2-closeout",
+  "status": "pan_away_static_pass_open_one_return_packet",
+  "freeze_commit": "9673291",
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-post-cable-safe-return-static-v2/receipt.json",
+    "sha256": "f5d45d512b6fe91b86bacbecc8b0a62ac290ed5007f9f0ea954aaf4cdb04af94"
+  },
+  "result": {
+    "route_rows": 270,
+    "registered_minimum_clearance_m": 0.09560295476606319,
+    "uncorrected_minimum_clearance_m": 0.03790663439270581,
+    "uncorrected_baseline_worsening_m": 0.0002474484679590582,
+    "registered_scene_contact_free": true,
+    "uncorrected_scene_contact_free": true,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Open one camera-enclosed, hash-bound return packet using the exact 270-row physical route. Require a fresh torque-off start within three degrees of the receipt pose, exact sent targets, zero clamps, natural-anchor final residual within three degrees, both cameras complete, and postflight torque off. No task or mapping authority."
+}
