@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR7A GEOMETRIC CONTACT GAP`
+Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR7B SPATIAL MECHANISM DECLARATION`
 
 ## Active long-horizon alignment successor
 
@@ -31,10 +31,15 @@ value `204.972 px/rad`, rank `1`, condition number `1.0`. OR6 fits
 six fit views and `84.1%` on four no-refit validation views while every frozen
 gate passes. OR7 then shows that aperture alone is not the sufficient task
 mechanism: the exact-action pawn trace remains byte-identical to C6, with zero
-selected-jaw contact and the same sample-`388` launch. OR7A is active to
-measure the signed jaw-to-pawn gap and jaw-center vector over the physical
-enclosure interval before declaring any spatial mapping correction. Physical
-motion remains closed at the follower-elbow service boundary.
+selected-jaw contact and the same sample-`388` launch. OR7A localizes the
+remaining spatial error without fit or dynamics: the fixed jaw remains
+`61.694 mm` from the pawn surface at physical enclosure sample `232`, the
+candidate midpoint is displaced by `[+72.970,-24.138,-93.272] mm`, and the
+aperture correction reduces the fixed-jaw gap by exactly `0 mm`. OR7B is active
+to prospectively freeze the smallest identifiable body-joint zero-offset
+registration and a previously unopened retained validation cohort before any
+new fit or annotation. Physical motion remains closed at the follower-elbow
+service boundary.
 
 ## Latest realized-action outcome result
 

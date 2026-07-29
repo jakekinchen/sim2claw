@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or7a_geometric_contact_gap",
+  "status": "active_or7b_spatial_mechanism_declaration",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "dc788df0e54661c816bfc065187a35b33185a9f5caa5f51de141c5f1583d4801",
+      "sha256": "0e862bb899eab501e07e29bb003d0b8e62581ec6fa1099fe1ff120ec4767e9b0",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -110,6 +110,11 @@
       "path": "configs/decisions/observable_jaw_aperture_replay_v1_closeout.json",
       "sha256": "a8f7d2f159e55e73c6626832479e6cf8a451f80924f15bba637fd40d7089f63e",
       "proof_class": "one_run_exact_c6_action_natural_contact_jaw_aperture_mapping_negative"
+    },
+    "or7a": {
+      "path": "configs/decisions/observable_jaw_pawn_geometric_gap_v1_closeout.json",
+      "sha256": "a8f4f9324ad97554efc73915872fd8ba153a33e8b5afabea30bbcf439f2ee88d",
+      "proof_class": "exact_applied_state_kinematic_signed_gap_diagnostic_no_fit_no_dynamics"
     }
   },
   "nodes": [
@@ -123,7 +128,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_or7a",
+      "status": "active_or7b",
       "source_binding": "queue"
     },
     {
@@ -242,7 +247,21 @@
       "id": "intervention:or7a-geometric-contact-gap",
       "type": "intervention",
       "label": "Signed jaw-to-pawn geometric contact gap",
-      "status": "active_kinematic_diagnostic_no_fit",
+      "status": "pass_large_jaw_center_or_global_wrist_spatial_gap_remains",
+      "source_binding": "or7a",
+      "data": {
+        "minimum_fixed_jaw_gap_m": 0.05720436091167155,
+        "physical_enclosure_sample": 232,
+        "enclosure_fixed_jaw_gap_m": 0.06169393299422753,
+        "aperture_gap_reduction_m": 0.0,
+        "global_mapping_approved": false
+      }
+    },
+    {
+      "id": "mechanism:or7b-body-joint-zero-offset-registration",
+      "type": "mechanism",
+      "label": "Bounded body-joint zero-offset registration",
+      "status": "active_predeclaration_validation_unopened",
       "source_binding": "queue"
     },
     {
@@ -378,6 +397,11 @@
       "type": "counterexample-to"
     },
     {
+      "source": "intervention:or7a-geometric-contact-gap",
+      "target": "mechanism:or7b-body-joint-zero-offset-registration",
+      "type": "predicts"
+    },
+    {
       "source": "mapping:or2-robot-jaw-rigid",
       "target": "residual:jaw-aperture-underprediction",
       "type": "generated-from"
@@ -393,6 +417,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR7A",
-  "next_transition": "or7a_measure_signed_jaw_pawn_gap_over_physical_enclosure_interval_without_dynamics_or_fit"
+  "active_card": "OR7B",
+  "next_transition": "or7b_freeze_smallest_identifiable_body_joint_zero_offset_family_and_unopened_retained_validation_cohort"
 }

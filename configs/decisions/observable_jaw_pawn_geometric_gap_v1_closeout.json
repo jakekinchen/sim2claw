@@ -1,0 +1,73 @@
+{
+  "schema_version": "sim2claw.observable_jaw_pawn_geometric_gap_closeout.v1",
+  "decision_id": "observable-jaw-pawn-geometric-gap-v1-closeout",
+  "result": "LARGE_JAW_CENTER_OR_GLOBAL_WRIST_SPATIAL_GAP_REMAINS",
+  "proof_class": "exact_applied_state_kinematic_signed_gap_diagnostic_no_fit_no_dynamics",
+  "freeze_commit": "ae96acd",
+  "contract": {
+    "path": "configs/evaluations/observable_jaw_pawn_geometric_gap_v1.json",
+    "sha256": "273230a104fbe1efbd9bbebd677ee3cab0c80aad23be475eeac4c886832ca827"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_jaw_pawn_geometric_gap.py",
+    "sha256": "6d13062698dec63c027e7e7121f172a5f3ab8ae7d494fd5522b334f2a31d4d19"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_jaw_pawn_geometric_gap_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "5e258cc7fcff0b3ad9c66e2f20e2290577bb6c3f9335b9cdfe5036694522bb07",
+    "artifact_sha256": "f9d384dbde3e6a4df2c58304a7b75e2d9c4a6a77df1a2b06f8060563ca70a4c6"
+  },
+  "identity": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "row_count": 531,
+    "applied_sha256": "4b486ac78d2377f5fad70f713ab1183cfd9717996e975b87e0288eb5fc7a259c",
+    "evaluation_interval_samples": [
+      228,
+      260
+    ],
+    "parameters_fit": 0,
+    "physics_steps": 0
+  },
+  "geometric_gap": {
+    "baseline_minimum_signed_distance_m": 0.05720436091167155,
+    "candidate_minimum_signed_distance_m": 0.05720436091167155,
+    "minimum_gap_reduction_m": 0.0,
+    "minimum_distance_sample": 237,
+    "minimum_distance_jaw_geom": "left_fixed_jaw_box4",
+    "physical_definite_enclosure_sample": 232,
+    "enclosure_baseline_signed_distance_m": 0.06169393299422753,
+    "enclosure_candidate_signed_distance_m": 0.06169393299422753,
+    "enclosure_candidate_midpoint_to_pawn_vector_m": [
+      0.0729697940250531,
+      -0.024138404114928735,
+      -0.0932724880202006
+    ]
+  },
+  "causal_update": {
+    "aperture_mapping_materially_closes_spatial_gap": false,
+    "candidate_reaches_geometric_contact_tolerance": false,
+    "contact_material_fit_admissible_next": false,
+    "jaw_center_or_global_wrist_spatial_mapping_remains_primary": true,
+    "unique_joint_or_transform_identified": false,
+    "next_mechanism_family": "bounded_body_joint_zero_offset_registration"
+  },
+  "proof_boundaries": {
+    "signed_gap_is_physical_metric_contact_ground_truth": false,
+    "global_mapping_approved": false,
+    "contact_proved": false,
+    "task_outcome_proved": false,
+    "transfer_proved": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "paid_compute": false
+  },
+  "next_card": "OR7B"
+}
