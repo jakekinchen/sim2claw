@@ -1,0 +1,90 @@
+{
+  "schema_version": "sim2claw.canonical_proxy_contact_temporal.v2",
+  "contract_id": "canonical-proxy-contact-temporal-20260728-v2",
+  "status": "frozen_after_preexecution_binding_abort_before_proxy_only_replay",
+  "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+  "predecessor_contract": {
+    "path": "configs/evaluations/canonical_proxy_contact_temporal_v1.json",
+    "sha256": "5bfefa645281fb9ea5fe99cbd93082d105c1972daeb7a5b9450ec7425432fdd6"
+  },
+  "preexecution_closeout": {
+    "path": "configs/decisions/canonical_proxy_contact_temporal_v1_preexecution_closeout.json",
+    "sha256": "a6ec6ab6b5b434f083b6a13f180d25888a834d2c73828e3d63652fc2f00daa39"
+  },
+  "base_temporal_contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+    "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+  },
+  "temporal_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-temporal-v2/receipt.json",
+    "sha256": "727ecd642681a6cb4a85327ccd95e4637df60e3ebdf4e2acd49e26e8f2e526ff"
+  },
+  "temporal_closeout": {
+    "path": "configs/decisions/canonical_seeded_action_temporal_v2_closeout.json",
+    "sha256": "98e3154e65a778c5f77e52cfc84b12e6886030a0bff7a4d66ac43fb8f184bfaf"
+  },
+  "contact_witness_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-contact-witness-v1/receipt.json",
+    "sha256": "89ecb1d20b2176fb0e890b1afda128c8f9eb577cc519277b171361626c4f5bc2"
+  },
+  "model_source": {
+    "path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+    "sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+  },
+  "temporal_implementation": {
+    "path": "src/sim2claw/canonical_seeded_action_temporal.py",
+    "sha256": "a6321b32553b37492bef01ae0e4ed0d8fafae7b8f86f74246b1c4f1feee5f697"
+  },
+  "challenger_implementation": {
+    "path": "src/sim2claw/canonical_proxy_contact_temporal.py",
+    "sha256": "0e885e4e2dcdf336bfb2ed64ebcd2e475678f05234044195db13a02201d21034"
+  },
+  "mechanism_change": {
+    "mechanism_id": "jaw_collision_mesh_to_named_proxy_only_v1",
+    "disable_collision_meshes_on_bodies": [
+      "left_gripper",
+      "left_moving_jaw_so101_v1"
+    ],
+    "preserve_named_collision_primitives": true,
+    "expected_disabled_mesh_assets": [
+      "left_moving_jaw_so101_gripper_part0_v1",
+      "left_moving_jaw_so101_gripper_part1_v1",
+      "left_wrist_roll_follower_so101_gripper_part0_v1"
+    ],
+    "other_geometry_unchanged": true,
+    "mass_friction_damping_timing_and_actions_unchanged": true,
+    "calibrated_physical_geometry": false,
+    "diagnostic_challenger": true
+  },
+  "unchanged_from_baseline": {
+    "four_action_paths_and_sha256s": true,
+    "direction_labels": true,
+    "direct_target_plant": true,
+    "diagnostic_uncalibrated_0p11_second_zoh_plant": true,
+    "five_reset_variants": true,
+    "minimum_36p025_mm_progress": true,
+    "contact_exclusion_collision_no_lift_and_camera_gates": true,
+    "two_families_per_direction": true,
+    "observable_episode_channels_and_thresholds": true,
+    "calibrated_joint_ranges": true,
+    "registration": true,
+    "pawn_geometry": true,
+    "board_geometry": true,
+    "mass_friction_damping_and_actuation": true,
+    "physical_authority_false": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260728-canonical-proxy-contact-temporal-v2",
+  "authority": {
+    "dynamic_simulation": true,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospectively frozen V2 one-mechanism simulator challenger after V1 failed closed before model loading. V2 changes only compact-contract resolution to apply the already declared current temporal implementation binding. The collision mechanism, exact actions, plants, variants, thresholds, object geometry, dynamics, and physical authority remain unchanged. A pass is diagnostic and cannot calibrate physical geometry, promote a simulator, approve mapping, freeze evaluator V2, open hardware, or support transfer."
+}

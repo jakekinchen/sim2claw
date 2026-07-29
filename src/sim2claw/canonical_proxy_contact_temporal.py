@@ -58,7 +58,10 @@ class _ResolvedJson:
         if (
             isinstance(parsed, dict)
             and parsed.get("schema_version")
-            == "sim2claw.canonical_proxy_contact_temporal.v1"
+            in {
+                "sim2claw.canonical_proxy_contact_temporal.v1",
+                "sim2claw.canonical_proxy_contact_temporal.v2",
+            }
         ):
             if parsed != self._compact:
                 raise CanonicalProxyContactTemporalError(
@@ -70,6 +73,9 @@ class _ResolvedJson:
             resolved["proof_class"] = parsed["proof_class"]
             resolved["output_directory"] = parsed["output_directory"]
             resolved["claim_boundary"] = parsed["claim_boundary"]
+            resolved["inputs"]["temporal_implementation"] = parsed[
+                "temporal_implementation"
+            ]
             return resolved
         return parsed
 
@@ -103,9 +109,18 @@ def replay(
         "authority",
         "claim_boundary",
     }
+    schema_version = compact.get("schema_version")
+    if schema_version == "sim2claw.canonical_proxy_contact_temporal.v2":
+        expected_keys |= {
+            "predecessor_contract",
+            "preexecution_closeout",
+        }
     if (
-        compact.get("schema_version")
-        != "sim2claw.canonical_proxy_contact_temporal.v1"
+        schema_version
+        not in {
+            "sim2claw.canonical_proxy_contact_temporal.v1",
+            "sim2claw.canonical_proxy_contact_temporal.v2",
+        }
         or set(compact) != expected_keys
         or not all(compact["unchanged_from_baseline"].values())
         or any(
@@ -128,6 +143,9 @@ def replay(
         "challenger_implementation",
     ):
         _bound(compact[key])
+    if schema_version == "sim2claw.canonical_proxy_contact_temporal.v2":
+        for key in ("predecessor_contract", "preexecution_closeout"):
+            _bound(compact[key])
     if output_directory != (REPO_ROOT / compact["output_directory"]).resolve():
         raise CanonicalProxyContactTemporalError(
             "proxy-contact output path changed"

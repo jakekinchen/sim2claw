@@ -277,6 +277,17 @@ Current state:
   named jaw collision primitives. Exact actions, plants, reset variants,
   gates, pawn/board geometry, mass, friction, damping, timing, and actuation
   remain unchanged. This is diagnostic, not calibrated physical geometry.
+- The V1 challenger invocation failed closed at source-binding validation
+  before output-directory creation, model loading, or any dynamic row. It
+  inherited the obsolete base-V1 temporal implementation hash rather than
+  applying the already declared current implementation binding. Closeout
+  SHA-256
+  `a6ec6ab6b5b434f083b6a13f180d25888a834d2c73828e3d63652fc2f00daa39`
+  records zero outcomes and zero execution.
+- V2 changes only compact-contract resolution for that binding and is frozen
+  at `a911f2a3b1945176949eff6de775f8602b656d919f6273262faedc0fc82fa496`.
+  The collision mechanism, exact actions, plants, variants, gates, and
+  authority are unchanged from V1.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -319,7 +330,7 @@ This authorization:
 
 Next step:
 
-- Commit and push the contact-witness result plus the proxy-only collision
-  challenger freeze, then execute the immutable challenger exactly once.
+- Commit and push the V1 pre-execution closeout plus V2 proxy-only collision
+  challenger freeze, then execute the V2 immutable challenger exactly once.
   Preserve both baseline and challenger outcomes; a challenger pass does not
   itself promote geometry, approve mapping, or open hardware.

@@ -1,0 +1,32 @@
+{
+  "schema_version": "sim2claw.canonical_proxy_contact_temporal_preexecution_closeout.v1",
+  "decision_id": "canonical-proxy-contact-temporal-20260728-v1-preexecution-closeout",
+  "status": "closed_preexecution_binding_abort_no_dynamic_output",
+  "proof_class": "preexecution_contract_wiring_failure_without_simulator_or_physical_execution",
+  "contract": {
+    "path": "configs/evaluations/canonical_proxy_contact_temporal_v1.json",
+    "sha256": "5bfefa645281fb9ea5fe99cbd93082d105c1972daeb7a5b9450ec7425432fdd6"
+  },
+  "failure": {
+    "stage": "source_binding_validation_before_output_directory_creation_or_model_build",
+    "error": "compact successor inherited the old V1 temporal implementation binding instead of overriding it with the frozen current temporal implementation binding",
+    "output_directory_created": false,
+    "simulator_model_loaded": false,
+    "dynamic_rows_executed": 0,
+    "outcomes_created_or_observed": 0,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "successor_rule": "V2 may change only compact-contract resolution so the base input map uses the already declared current temporal implementation binding. Mechanism, exact actions, plant paths, reset variants, gates, geometry switch, and all authority remain unchanged.",
+  "authority": {
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

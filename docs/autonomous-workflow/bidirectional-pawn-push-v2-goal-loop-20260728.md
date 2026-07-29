@@ -126,6 +126,11 @@ Confirmed:
   It preserves the exact action/evaluator surface and changes only the enabled
   jaw collision representation from meshes-plus-primitives to named
   primitives. It remains an uncalibrated diagnostic.
+- V1 failed closed at stale inherited runner-binding validation before output
+  creation, model loading, dynamics, or outcomes. Closeout SHA-256
+  `a6ec6ab6b5b434f083b6a13f180d25888a834d2c73828e3d63652fc2f00daa39`.
+- The outcome-identical V2 wiring successor is frozen at
+  `a911f2a3b1945176949eff6de775f8602b656d919f6273262faedc0fc82fa496`.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -172,7 +177,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC02 exact-action proxy-only jaw collision challenger after preserved temporal rejection and witness.
 Completed: CC00, CC00A, CC01.
-Evidence: temporal negative 727ecd64...; contact witness 89ecb1d2...; proxy challenger freeze 5bfefa64....
+Evidence: temporal negative 727ecd64...; contact witness 89ecb1d2...; V1 binding abort a6ec6ab6...; V2 proxy freeze a911f2a3....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -180,7 +185,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
 Blockers: the frozen action set is dynamically rejected; physical/model mapping remains unapproved.
-Next step: commit/push the witness result and proxy-only freeze, then execute the exact-action direct/ZOH challenger exactly once.
+Next step: commit/push the V1 pre-execution closeout and V2 proxy-only freeze, then execute V2 exactly once.
 ```
 
 ## Physical Authority Boundaries

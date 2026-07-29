@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = Path(
-    "configs/evaluations/canonical_proxy_contact_temporal_v1.json"
+    "configs/evaluations/canonical_proxy_contact_temporal_v2.json"
 )
 
 
@@ -43,6 +43,8 @@ def test_proxy_contact_contract_is_one_mechanism_and_action_frozen() -> None:
         "model_source",
         "temporal_implementation",
         "challenger_implementation",
+        "predecessor_contract",
+        "preexecution_closeout",
     ):
         binding = contract[key]
         assert _sha(ROOT / binding["path"]) == binding["sha256"]
