@@ -1,0 +1,82 @@
+{
+  "schema_version": "sim2claw.post_cable_safe_return_packet.v1",
+  "operation_id": "rp04h-post-cable-safe-return-20260729-v2",
+  "status": "frozen_pending_tests_commit_and_time_bounded_authorization",
+  "proof_class": "prospective_physical_camera_enclosed_fresh_anchor_post_cable_safe_return",
+  "inputs": {
+    "implementation": {
+      "path": "src/sim2claw/post_cable_safe_return.py",
+      "sha256": "f5635ca04fa6672f1666a326e68d4ae5a3285b73f69ca09e13610a78189d1f1f"
+    },
+    "static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-post-cable-safe-return-static-v3/receipt.json",
+      "sha256": "83f4781f1cc020687eebc185556ea7507611486182fa1ac8cba26c716b1d7d12"
+    },
+    "preflight_closeout": {
+      "path": "configs/decisions/post_cable_safe_return_v1_preflight_closeout.json",
+      "sha256": "e8cb1d444e7d55d35d2db15e7ad601f505c55e2747d8ba97faaa1657ff7e3707"
+    },
+    "post_cable_execution_closeout": {
+      "path": "configs/decisions/full_range_no_contact_execution_v3_post_cable_closeout.json",
+      "sha256": "f3e664a6953953e828802ac24c68042ea47a4b046e1c83c9d58d7c628c9eb95d"
+    },
+    "c922_contract": {
+      "path": "configs/acquisition/current_static_tricam_capture_v1.json",
+      "sha256": "54acf4a2b4eed47036c2229c9ba4c15786584eb5e6cbc278816ac12c35c03115"
+    },
+    "pi_contract": {
+      "path": "configs/acquisition/pi_imx708_motion_video_180s_v1.json",
+      "sha256": "e84d64a2cdedfeb6d1b5d2b2aa0b70eb381a31ea5e86e1c57b2e1620180e768d"
+    }
+  },
+  "physical_route": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-post-cable-safe-return-static-v3/physical_route.f64le",
+    "sha256": "6e20315f2e13b37e3261a3ff550f04d381691670724bda5dae59a50ba528a7de",
+    "shape": [
+      278,
+      6
+    ],
+    "dtype": "little_endian_float64"
+  },
+  "hardware": {
+    "follower_port": "/dev/cu.usbmodem5B3D0406411",
+    "follower_calibration_sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4",
+    "configuration_write_allowed": false,
+    "reviewed_gateway_only": true,
+    "configuration_token": "owner-reported-wrist-camera-cable-relief-v1"
+  },
+  "execution": {
+    "sample_hz": 20.0,
+    "stage_boundary_row": 143,
+    "stage_hold_seconds": 2.0,
+    "final_hold_timeout_seconds": 15.0,
+    "maximum_start_body_delta_degrees": 3.0,
+    "maximum_start_gripper_delta": 3.0,
+    "source_actions_clipped_smoothed_retimed_or_offset": false
+  },
+  "acceptance": {
+    "maximum_final_body_residual_degrees": 3.0,
+    "maximum_final_gripper_residual": 5.0,
+    "all_requested_rows_float64_exact": true,
+    "all_sent_rows_within_degrees": 0.25,
+    "safety_clamped_samples_maximum": 0,
+    "both_cameras_complete": true,
+    "camera_contact_review_required": true,
+    "postflight_torque_off_required": true
+  },
+  "camera": {
+    "session_token": "rp04h-post-cable-safe-return-20260729-v2",
+    "fixed_mount_token": "current-workcell-c922-fixed-v1",
+    "start_before_gateway": true,
+    "enclose_through_torque_off_postflight": true,
+    "d405_required": false
+  },
+  "maximum_executions": 1,
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-post-cable-safe-return-execution-v2",
+  "physical_authority": false,
+  "physical_task_attempt": false,
+  "pawn_contact": false,
+  "mapping_approval": false,
+  "retry_without_new_preregistration": false,
+  "claim_boundary": "One prospectively frozen, camera-enclosed execution of the exact fresh-anchor 278-row pan-away return to the natural anchor. It cannot count as a task attempt, authorize pawn contact, approve mapping, or support transfer."
+}
