@@ -33,6 +33,18 @@ in that queue are exhausted.
   exist under a prospectively frozen pilot.
 - Fable is advisory and cannot override repository evidence or safety.
 
+## Progress ledger
+
+- RP00: complete PASS at receipt SHA-256
+  `e1bc7d8e1bbeeaa4b1e08f26d7e609e2714c33800d22899bd876f7298c75db7b`.
+- Active card: RP01 parking-transaction freeze.
+- Certified threshold: `93 deg`.
+- Certified parking target: `91 deg`.
+- REAL->SIM: `0/0`.
+- SIM->REAL: `0/0`.
+- Physical task attempts: `0/10`.
+- Physical authority: false.
+
 ## Stop conditions
 
 Success requires at least one REAL->SIM and one distinct SIM->REAL task

@@ -1,0 +1,47 @@
+{
+  "schema_version": "sim2claw.parking_target_certificate_closeout.v1",
+  "decision_id": "rp00-parking-target-certificate-v1-closeout",
+  "status": "pass_open_rp01_parking_transaction_freeze_only",
+  "proof_class": "cpu_fp64_static_route_level_parking_target_certificate",
+  "contract_path": "configs/evaluations/parking_target_certificate_v1.json",
+  "contract_sha256": "fb0c8ab52d6b557c143af3a655f886e529c798c941abe954f33eab8851cb3617",
+  "receipt_path": "runs/bidirectional-pawn-push-v2/20260729-parking-target-certificate-v1/receipt.json",
+  "receipt_sha256": "e1bc7d8e1bbeeaa4b1e08f26d7e609e2714c33800d22899bd876f7298c75db7b",
+  "result": {
+    "lock_angle_grid_degrees": [
+      97.0,
+      95.0,
+      93.0,
+      91.0,
+      90.0,
+      88.0
+    ],
+    "rejected_angles_degrees": [
+      97.0,
+      95.0
+    ],
+    "passing_angles_degrees": [
+      93.0,
+      91.0,
+      90.0,
+      88.0
+    ],
+    "maximum_viable_lock_angle_degrees": 93.0,
+    "recommended_parking_lock_angle_degrees": 91.0,
+    "recommended_margin_degrees": 2.0,
+    "eligible_families_per_passing_angle": 2,
+    "real_to_sim_families_per_passing_angle": 1,
+    "sim_to_real_families_per_passing_angle": 1,
+    "recommended_real_to_sim_case_id": "brown_pawn_g2__g2_f2",
+    "recommended_sim_to_real_case_id": "brown_pawn_f1__f1_f2",
+    "physical_task_attempts": 0
+  },
+  "decision": "RP00 passes. The original CC03K terminal result remains valid and immutable at 99.472527 degrees. Under the same route compiler and strict gates, the route-level threshold is 93 degrees and 91 degrees supplies the prospectively required two-degree passing margin. Open RP01 only to freeze and review a contact-impossible parking transaction. Do not open cameras, gateway, serial, torque, physical motion, task attempts, mapping approval, dynamic replay, simulator promotion, or transfer authority.",
+  "rp01_freeze_authorized": true,
+  "physical_motion_authorized": false,
+  "physical_task_authorized": false,
+  "mapping_approval_authorized": false,
+  "dynamic_replay_authorized": false,
+  "transfer_claim_authorized": false,
+  "passed": true
+}

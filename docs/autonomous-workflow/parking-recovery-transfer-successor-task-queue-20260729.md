@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `ACTIVE_RP00_STATIC_CERTIFICATE_FREEZE`
+Status: `ACTIVE_RP01_PARKING_TRANSACTION_FREEZE`
 
 Created: `2026-07-29`
 
@@ -29,8 +29,8 @@ does not rewrite that result.
 
 | ID | Status | Required outcome | Acceptance gate | Stop / redirect |
 |---|---|---|---|---|
-| RP00 | `IN_PROGRESS_FREEZE` | Prospectively freeze and run one route-level parking-target certificate across elbow locks `{97,95,93,91,90,88} deg`. | Existing CC03K family universe, compiler, collision/contact/camera/gateway gates, and false physical authority remain unchanged. At least one distinct family per direction passes at a maximum viable angle and again at a passing target at least `2 deg` lower. Code, contract, tests, and advisory predate the single run. | Zero passing angles, or no passing margin target, is a terminal simulation negative. Do not move hardware. |
-| RP01 | `PENDING` | Freeze a high-clearance, contact-impossible elbow parking transaction to the RP00 target. | CPU preview clean; at most `5 deg` requested per step; read/verify each step; abort after two consecutive steps with less than `0.3 deg` progress; `10 s` hold drift below `0.5 deg`; torque-off cleanup; no task/pawn contact reachable. | Any unsafe preview or missing fresh anchor closes physical authority. |
+| RP00 | `DONE_PASS` | Prospectively freeze and run one route-level parking-target certificate across elbow locks `{97,95,93,91,90,88} deg`. | Existing CC03K family universe, compiler, collision/contact/camera/gateway gates, and false physical authority remain unchanged. At least one distinct family per direction passes at a maximum viable angle and again at a passing target at least `2 deg` lower. Code, contract, tests, and advisory predate the single run. | Receipt `e1bc7d8e...` passes: `97/95 deg` reject, `93/91/90/88 deg` pass with `1` family per direction. Threshold `93 deg`; target `91 deg`. No motion or task attempt. |
+| RP01 | `IN_PROGRESS_FREEZE` | Freeze a high-clearance, contact-impossible elbow parking transaction to the RP00 target. | CPU preview clean; at most `5 deg` requested per step; read/verify each step; abort after two consecutive steps with less than `0.3 deg` progress; `10 s` hold drift below `0.5 deg`; torque-off cleanup; no task/pawn contact reachable. | Any unsafe preview or missing fresh anchor closes physical authority. |
 | RP02 | `PENDING` | Execute parking once under separately reopened physical authority. | Cameras enclose; reviewed gateway only; target reached; hold gate passes; exact receipt; torque off. One retry may be separately admitted only for monotonic-but-short progress. | Stall above the RP00 maximum viable angle is a terminal external hardware boundary. |
 | RP03 | `PENDING` | Freeze fresh task actions at the achieved lock. | Strict unchanged gates; fresh C922 scene admission; at least one distinct family per direction; exact bytes and evaluator freeze predate outcomes. | Zero eligible families ends the successor without a task attempt. |
 | RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
@@ -52,5 +52,26 @@ does not rewrite that result.
 
 ## Current next step
 
-Finish the RP00 implementation and contract, run focused tests and workflow
-audit, commit and push the prospective freeze, then execute RP00 exactly once.
+Freeze RP01 against a fresh torque-off read without moving the robot. The
+parking packet must preview collision-free and contact-impossible before any
+request to reopen physical authority. RP00 does not itself authorize cameras,
+gateway, serial, torque, or motion.
+
+## RP00 immutable result
+
+- Freeze commit: `9ebd45a`.
+- Contract SHA-256:
+  `fb0c8ab52d6b557c143af3a655f886e529c798c941abe954f33eab8851cb3617`.
+- Receipt SHA-256:
+  `e1bc7d8e1bbeeaa4b1e08f26d7e609e2714c33800d22899bd876f7298c75db7b`.
+- `97 deg`: reject, `0` eligible families.
+- `95 deg`: reject, `0` eligible families.
+- `93 deg`: pass, `1` family per direction.
+- `91 deg`: pass, `1` family per direction.
+- `90 deg`: pass, `1` family per direction.
+- `88 deg`: pass, `1` family per direction.
+- Maximum viable lock: `93 deg`.
+- Recommended parking target: `91 deg`, a passing `2 deg` margin.
+- Physical task ledgers remain REAL->SIM `0/0`, SIM->REAL `0/0`, task
+  attempts `0/10`.
+- Physical authority remains false.
