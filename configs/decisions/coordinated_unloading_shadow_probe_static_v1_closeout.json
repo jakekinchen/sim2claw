@@ -1,0 +1,30 @@
+{
+  "schema_version": "sim2claw.coordinated_unloading_shadow_probe_static_closeout.v1",
+  "decision_id": "coordinated-unloading-shadow-probe-static-20260729-v1-closeout",
+  "status": "accepted_static_pass_opens_one_physical_diagnostic_packet",
+  "freeze_commit": "b5becce",
+  "contract": {
+    "path": "configs/evaluations/coordinated_unloading_shadow_probe_static_v1.json",
+    "sha256": "c80d0d9614ddc00dacce03a3a2cc568a0b96dc541256596d09f55db405d8520b"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-coordinated-unloading-shadow-probe-static-v1/receipt.json",
+    "sha256": "bfe84b39a01f1e8527da7ab59a1f2339f1a8831a9ef2408d38683330ee909800"
+  },
+  "result": {
+    "case_id": "tan_pawn_f7__f7_e7",
+    "prefix_shape": [
+      491,
+      6
+    ],
+    "physical_prefix_sha256": "d0990da76953d742aa4a3688cd32feba3266f8a32206fdd2a1880e0ba8167021",
+    "registered_scene_contact_impossible": true,
+    "uncorrected_scene_contact_impossible": true,
+    "all_rows_inside_calibrated_limits": true,
+    "all_rates_within_gateway_limits": true,
+    "all_segments_within_excursion_limit": true,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Accept exactly one separately hash-bound, camera-enclosed physical coordinated-unloading diagnostic using the two frozen forward segments and their exact reverse rows. It remains a no-contact, zero-task-attempt mapping diagnostic. No hardware may open until the executor, packet, one-execution latch, and time-bounded authorization validate."
+}
