@@ -20,13 +20,17 @@
       "path": "docs/advisory/fable-rp01-preview-review-20260729.md",
       "sha256": "6a842bcba5bba30d02ee9f8b4295b937bb8dbd4022cd27ae7cbe4f8f70015e20"
     },
+    "fable_pre_motion_repair_review": {
+      "path": "docs/advisory/fable-rp02-pre-motion-review-20260729.md",
+      "sha256": "145c9934774d11ae26095d588e99f35b9a1a3559a6efb62e6d2d586b7b8266a5"
+    },
     "queue_graph_node": {
       "path": "configs/sail/parking_recovery_rp02_node_v1.json",
       "sha256": "3829c85b6a91a2751d8218c16e35979a76633929a84355a14ab8e4c8f4391466"
     },
     "executor": {
       "path": "src/sim2claw/parking_transaction_executor.py",
-      "sha256": "ccbadd96f2293775b2717cd6b2c490820e883fe0f431daccb3fe12113e380ddf"
+      "sha256": "f01c89816d72ad4212b2a26323895755300795dd296942434d9f0788592728fa"
     },
     "c922_implementation": {
       "path": "src/sim2claw/c922_terminal_hold_capture.py",
@@ -34,15 +38,15 @@
     },
     "pi_implementation": {
       "path": "src/sim2claw/pi_motion_video.py",
-      "sha256": "402b45497cc90c046add6b62b449f348a8c43e490f4d144c1393148415d4180f"
+      "sha256": "fb2a745ff8037ff28016a10411567b01e1a5daf44133bc46caf138d2a943c5f5"
     },
     "c922_contract": {
       "path": "configs/acquisition/current_static_tricam_capture_v1.json",
       "sha256": "54acf4a2b4eed47036c2229c9ba4c15786584eb5e6cbc278816ac12c35c03115"
     },
     "pi_contract": {
-      "path": "configs/acquisition/pi_imx708_motion_video_120s_v1.json",
-      "sha256": "bb8840dda84386edaf1fd92c1763dc49478fec5ec7d691e697da89a74fc6d81d"
+      "path": "configs/acquisition/pi_imx708_motion_video_180s_v1.json",
+      "sha256": "e84d64a2cdedfeb6d1b5d2b2aa0b70eb381a31ea5e86e1c57b2e1620180e768d"
     }
   },
   "expected_anchor_degrees_percent": [
@@ -83,7 +87,7 @@
     "pi_width": 1536,
     "pi_height": 864,
     "pi_fps": 30,
-    "pi_bounded_duration_seconds": 120,
+    "pi_bounded_duration_seconds": 180,
     "session_token": "rp02-elbow-parking-20260729-v1",
     "fixed_mount_token": "current-workcell-c922-fixed-v1",
     "start_before_gateway": true,
@@ -103,6 +107,9 @@
     "schema_version": "sim2claw.owner_physical_authorization.v1",
     "operation_id": "rp02-elbow-parking-20260729-v1",
     "maximum_executions": 1,
+    "packet_sha256_must_match_at_runtime": true,
+    "named_operator_present_full_transaction_required": true,
+    "power_down_supply_on_torque_cleanup_error_acknowledgement_required": true,
     "currently_bound": false
   },
   "output_directory": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-execution-v1",

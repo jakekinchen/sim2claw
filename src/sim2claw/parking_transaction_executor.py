@@ -119,6 +119,7 @@ def load_authorization(
     path: Path,
     *,
     operation_id: str,
+    packet_sha256: str,
     now: datetime | None = None,
 ) -> dict[str, Any]:
     authorization = json.loads(path.read_text(encoding="utf-8"))
@@ -127,10 +128,20 @@ def load_authorization(
         == "sim2claw.owner_physical_authorization.v1"
         and authorization.get("status") == "active"
         and authorization.get("operation_id") == operation_id
+        and authorization.get("packet_sha256") == packet_sha256
         and authorization.get("physical_parking_transaction") is True
         and authorization.get("physical_task_attempt") is False
         and authorization.get("maximum_executions") == 1,
         "RP02 owner authorization is missing or out of scope",
+    )
+    _require(
+        bool(str(authorization.get("operator_name") or "").strip())
+        and authorization.get("operator_present_full_transaction") is True
+        and authorization.get(
+            "power_down_supply_on_torque_cleanup_error"
+        )
+        is True,
+        "RP02 authorization lacks supervised torque-alarm response",
     )
     issued = datetime.fromisoformat(str(authorization["issued_at"]))
     expires = datetime.fromisoformat(str(authorization["expires_at"]))
@@ -231,6 +242,16 @@ def _registers_complete(snapshot: Mapping[str, Any]) -> bool:
             and snapshot[name].get("available") is False
         )
         for name in REGISTER_NAMES
+    )
+
+
+def _require_frozen_output_root(
+    packet: Mapping[str, Any], output_root: Path
+) -> None:
+    expected = (REPO_ROOT / str(packet["output_directory"])).resolve()
+    _require(
+        output_root.resolve() == expected,
+        "RP02 output must equal the packet-frozen one-execution path",
     )
 
 
@@ -352,14 +373,20 @@ def run_ladder(
             outcome = "stall_safe_stop"
             break
 
-    if (
-        outcome not in {"primary_success", "stall_safe_stop"}
-        and previous_read <= float(spec["marginal_success_maximum_degrees"])
-    ):
+    marginal = previous_read <= float(
+        spec["marginal_success_maximum_degrees"]
+    )
+    if outcome == "stall_safe_stop" and marginal:
+        outcome = "marginal_success_after_stall"
+    elif outcome != "primary_success" and marginal:
         outcome = "marginal_success"
 
     hold: dict[str, Any] | None = None
-    if outcome in {"primary_success", "marginal_success"}:
+    if outcome in {
+        "primary_success",
+        "marginal_success",
+        "marginal_success_after_stall",
+    }:
         hold_start = clock()
         hold_initial: float | None = None
         maximum_drift = 0.0
@@ -423,8 +450,11 @@ def execute(
     authorization_path = authorization_path.resolve()
     output_root = output_root.resolve()
     packet = load_packet(packet_path)
+    _require_frozen_output_root(packet, output_root)
     authorization = load_authorization(
-        authorization_path, operation_id=str(packet["operation_id"])
+        authorization_path,
+        operation_id=str(packet["operation_id"]),
+        packet_sha256=_sha(packet_path),
     )
     _require(not output_root.exists(), "refusing to overwrite RP02 output")
 
@@ -542,7 +572,12 @@ def execute(
         failure is None
         and not cleanup_errors
         and ladder is not None
-        and ladder["outcome"] in {"primary_success", "marginal_success"}
+        and ladder["outcome"]
+        in {
+            "primary_success",
+            "marginal_success",
+            "marginal_success_after_stall",
+        }
         and postflight is not None
         and camera_result is not None
         and camera_result.get("status") == "completed"

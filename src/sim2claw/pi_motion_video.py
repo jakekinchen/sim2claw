@@ -72,7 +72,14 @@ def load_contract(path: Path = CONTRACT_PATH) -> dict[str, Any]:
             int(contract.get("duration_seconds", 0)),
             int(contract.get("minimum_frames", 0)),
         )
-        in {(8, 60), (15, 300), (25, 600), (35, 900), (120, 3000)}
+        in {
+            (8, 60),
+            (15, 300),
+            (25, 600),
+            (35, 900),
+            (120, 3000),
+            (180, 4500),
+        }
         and contract.get("horizontal_flip") is True
         and contract.get("vertical_flip") is True
         and contract.get("autofocus_mode") == "manual"
