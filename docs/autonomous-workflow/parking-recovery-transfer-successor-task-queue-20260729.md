@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `ACTIVE_RP01_FROZEN_PENDING_SINGLE_PREVIEW`
+Status: `ACTIVE_RP02_EXECUTION_PACKET_FREEZE`
 
 Created: `2026-07-29`
 
@@ -30,8 +30,8 @@ does not rewrite that result.
 | ID | Status | Required outcome | Acceptance gate | Stop / redirect |
 |---|---|---|---|---|
 | RP00 | `DONE_PASS` | Prospectively freeze and run one route-level parking-target certificate across elbow locks `{97,95,93,91,90,88} deg`. | Existing CC03K family universe, compiler, collision/contact/camera/gateway gates, and false physical authority remain unchanged. At least one distinct family per direction passes at a maximum viable angle and again at a passing target at least `2 deg` lower. Code, contract, tests, and advisory predate the single run. | Receipt `e1bc7d8e...` passes: `97/95 deg` reject, `93/91/90/88 deg` pass with `1` family per direction. Threshold `93 deg`; target `91 deg`. No motion or task attempt. |
-| RP01 | `FROZEN_PENDING_SINGLE_PREVIEW` | Freeze a high-clearance, contact-impossible elbow parking transaction to the RP00 target. | Fresh torque-off anchor bound; no-op setup; full `[88, 99.6] deg` corridor previewed every `0.1 deg`; moving chain stays at least `120 mm` from table, board, and pawns; all robot contacts remain absent; at most `5 deg` requested per step; read/verify each step; abort after two consecutive steps with less than `0.3 deg` progress; `15 s` hold drift below `0.5 deg`; torque-off cleanup; no task/pawn contact reachable. | Any unsafe preview or missing fresh anchor closes physical authority. |
-| RP02 | `PENDING` | Execute parking once under separately reopened physical authority. | Cameras enclose; reviewed gateway only; target reached; hold gate passes; exact receipt; torque off. One retry may be separately admitted only for monotonic-but-short progress. | Stall above the RP00 maximum viable angle is a terminal external hardware boundary. |
+| RP01 | `DONE_PASS` | Freeze a high-clearance, contact-impossible elbow parking transaction to the RP00 target. | Fresh torque-off anchor bound; no-op setup; full `[88, 99.6] deg` corridor previewed every `0.1 deg`; moving chain stays at least `120 mm` from table, board, and pawns; all robot contacts remain absent; at most `5 deg` requested per step; read/verify each step; abort after two consecutive steps with less than `0.3 deg` progress; `15 s` hold drift below `0.5 deg`; torque-off cleanup; no task/pawn contact reachable. | Receipt `e9e99a4a...` passes; Fable independently returns `CONTINUE_RP02_FREEZE`. No motion or task attempt. |
+| RP02 | `IN_PROGRESS_PACKET_FREEZE` | Execute parking once under separately reopened physical authority. | Hash-pinned executor; fresh timestamped preflight; held-joint and camera/writer stops; exact C922+Pi enclosure; reviewed gateway only; target reached; hold gate passes; exact receipt; torque off and `60 s` read. No retry without new preregistration. | Final above `93 deg`, stall, camera/writer loss, held-joint drift, or cleanup failure safely stops; above `93 deg` is terminal. |
 | RP03 | `PENDING` | Freeze fresh task actions at the achieved lock. | Strict unchanged gates; fresh C922 scene admission; at least one distinct family per direction; exact bytes and evaluator freeze predate outcomes. | Zero eligible families ends the successor without a task attempt. |
 | RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
 | RP05 | `PENDING` | Complete a distinct SIM->REAL task transfer. | Simulator success and robustness predate freeze; distinct family; camera-owned physical success with identical bytes. | At most three task attempts; failures stay in the denominator. |
@@ -52,10 +52,10 @@ does not rewrite that result.
 
 ## Current next step
 
-Run the frozen RP01 motion-free CPU/fp64 preview exactly once and bind its
-immutable result. The current anchor is the setup posture, so setup action
-rows are exactly zero. No camera, gateway, serial, torque, motion, pawn
-contact, or task-attempt authority is open.
+Finish and review the RP02 executor and packet. No owner authorization
+document exists, so the executor must remain uncallable for physical motion.
+No camera, gateway, serial, torque, motion, pawn contact, or task-attempt
+authority is open.
 
 ## RP00 immutable result
 
@@ -75,6 +75,20 @@ contact, or task-attempt authority is open.
 - Physical task ledgers remain REAL->SIM `0/0`, SIM->REAL `0/0`, task
   attempts `0/10`.
 - Physical authority remains false.
+
+## RP01 immutable result
+
+- Freeze commit: `dee24a0`.
+- Contract SHA-256:
+  `ec878defa98e1c46ac6e3184c6fda1553d4bb0a7ae60dc2fc1cfd327fad9d5e4`.
+- Receipt SHA-256:
+  `e9e99a4ad774a04e5dc031a9b6060df6e32f7ceceb6e56fa40cfba61f481fc1f`.
+- `117 / 117` full-interval poses remained in calibrated range.
+- Robot contact pairs: `0`.
+- Minimum moving-chain clearance: pawns `150.831 mm`, board `202.394 mm`,
+  table `218.394 mm`.
+- Fable independently returned `CONTINUE_RP02_FREEZE`.
+- Physical motion and task-attempt ledgers remain unchanged.
 
 ## RP01 freeze
 

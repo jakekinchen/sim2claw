@@ -1,0 +1,32 @@
+{
+  "schema_version": "sim2claw.parking_transaction_preview_closeout.v1",
+  "decision_id": "rp01-parking-transaction-preview-v1-closeout",
+  "status": "pass_open_rp02_packet_freeze_only",
+  "proof_class": "cpu_fp64_motion_free_parking_corridor_preview",
+  "freeze_commit": "dee24a0",
+  "contract_path": "configs/hardware/parking_transaction_recovery_v1.json",
+  "contract_sha256": "ec878defa98e1c46ac6e3184c6fda1553d4bb0a7ae60dc2fc1cfd327fad9d5e4",
+  "receipt_path": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-preview-v1/receipt.json",
+  "receipt_sha256": "e9e99a4ad774a04e5dc031a9b6060df6e32f7ceceb6e56fa40cfba61f481fc1f",
+  "fable_review_path": "docs/advisory/fable-rp01-preview-review-20260729.md",
+  "result": {
+    "passed": true,
+    "sample_count": 117,
+    "robot_contact_pair_count": 0,
+    "minimum_pawn_clearance_m": 0.15083054084740496,
+    "minimum_board_clearance_m": 0.20239440914037002,
+    "minimum_table_clearance_m": 0.21839440914037012,
+    "minimum_pinch_above_board_m": 0.22679699884232862,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "RP01 passes and Fable independently returned CONTINUE_RP02_FREEZE. Open only the tested runtime and packet freeze. Physical authority remains false until a separately bound independent review and time-bounded owner authorization.",
+  "rp02_packet_freeze_authorized": true,
+  "camera_authorized": false,
+  "gateway_authorized": false,
+  "serial_authorized": false,
+  "torque_authorized": false,
+  "physical_motion_authorized": false,
+  "physical_task_authorized": false,
+  "passed": true
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "sim2claw.campaign_graph_node.v1",
+  "node_id": "parking-recovery-rp02-execution-packet-20260729-v1",
+  "status": "active_packet_freeze_physical_authority_false",
+  "predecessors": [
+    {
+      "node_id": "rp00-parking-target-certificate-v1-closeout",
+      "result": "pass_91_degree_target"
+    },
+    {
+      "node_id": "rp01-parking-transaction-preview-v1-closeout",
+      "result": "pass_full_interval_zero_contact"
+    }
+  ],
+  "ledger": {
+    "real_to_sim": "0/0",
+    "sim_to_real": "0/0",
+    "physical_task_attempts": "0/10",
+    "global_mapping_approved": false,
+    "policy_ranking": "INSUFFICIENT_PHYSICAL_SAMPLE"
+  },
+  "active_card": "RP02",
+  "next_gate": "tested_hash_bound_packet_then_independent_review_then_time_bounded_owner_authorization",
+  "physical_authority": false
+}

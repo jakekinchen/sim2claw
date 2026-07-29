@@ -1,0 +1,114 @@
+{
+  "schema_version": "sim2claw.parking_transaction_execution_packet.v1",
+  "operation_id": "rp02-elbow-parking-20260729-v1",
+  "status": "frozen_pending_independent_review_and_owner_authorization",
+  "proof_class": "prospective_physical_setup_recovery_not_task_evidence",
+  "inputs": {
+    "rp01_contract": {
+      "path": "configs/hardware/parking_transaction_recovery_v1.json",
+      "sha256": "ec878defa98e1c46ac6e3184c6fda1553d4bb0a7ae60dc2fc1cfd327fad9d5e4"
+    },
+    "rp01_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-preview-v1/receipt.json",
+      "sha256": "e9e99a4ad774a04e5dc031a9b6060df6e32f7ceceb6e56fa40cfba61f481fc1f"
+    },
+    "rp01_closeout": {
+      "path": "configs/decisions/parking_transaction_preview_v1_closeout.json",
+      "sha256": "e4cc99e44f1f972c4595b5df353b88c375d629bf7227ea1aab752c29ab566e9b"
+    },
+    "fable_review": {
+      "path": "docs/advisory/fable-rp01-preview-review-20260729.md",
+      "sha256": "6a842bcba5bba30d02ee9f8b4295b937bb8dbd4022cd27ae7cbe4f8f70015e20"
+    },
+    "queue_graph_node": {
+      "path": "configs/sail/parking_recovery_rp02_node_v1.json",
+      "sha256": "3829c85b6a91a2751d8218c16e35979a76633929a84355a14ab8e4c8f4391466"
+    },
+    "executor": {
+      "path": "src/sim2claw/parking_transaction_executor.py",
+      "sha256": "ccbadd96f2293775b2717cd6b2c490820e883fe0f431daccb3fe12113e380ddf"
+    },
+    "c922_implementation": {
+      "path": "src/sim2claw/c922_terminal_hold_capture.py",
+      "sha256": "9bb6dcce8cb7281bd5564b3961b6441d38fcd63e89d1d22d1f53406a5263fc19"
+    },
+    "pi_implementation": {
+      "path": "src/sim2claw/pi_motion_video.py",
+      "sha256": "402b45497cc90c046add6b62b449f348a8c43e490f4d144c1393148415d4180f"
+    },
+    "c922_contract": {
+      "path": "configs/acquisition/current_static_tricam_capture_v1.json",
+      "sha256": "54acf4a2b4eed47036c2229c9ba4c15786584eb5e6cbc278816ac12c35c03115"
+    },
+    "pi_contract": {
+      "path": "configs/acquisition/pi_imx708_motion_video_120s_v1.json",
+      "sha256": "bb8840dda84386edaf1fd92c1763dc49478fec5ec7d691e697da89a74fc6d81d"
+    }
+  },
+  "expected_anchor_degrees_percent": [
+    5.802197802197802,
+    -85.01098901098901,
+    99.47252747252747,
+    -15.164835164835164,
+    -103.34065934065934,
+    2.375296912114014
+  ],
+  "follower_port": "/dev/cu.usbmodem5B3D0406411",
+  "follower_calibration_sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4",
+  "runtime": {
+    "target_degrees": 91.0,
+    "maximum_request_step_degrees": 5.0,
+    "maximum_iterations": 12,
+    "wait_after_request_seconds": 2.0,
+    "telemetry_hz": 5.0,
+    "primary_success_maximum_degrees": 92.0,
+    "marginal_success_maximum_degrees": 93.0,
+    "stall_minimum_progress_degrees": 0.3,
+    "stall_consecutive_iterations": 2,
+    "held_joint_rebase_maximum_degrees": 0.5,
+    "elbow_rebase_maximum_degrees": 1.0,
+    "held_joint_drift_stop_degrees": 2.0,
+    "hold_seconds": 15.0,
+    "maximum_hold_drift_degrees": 0.5,
+    "post_torque_off_read_seconds": 60.0
+  },
+  "camera": {
+    "c922_localized_name": "C922 Pro Stream Webcam",
+    "c922_unique_id": "0x8310000046d085c",
+    "c922_width": 640,
+    "c922_height": 480,
+    "c922_fps": 30.00003000003,
+    "pi_camera": "imx708_wide",
+    "pi_ssh_host": "vexy@192.168.1.117",
+    "pi_width": 1536,
+    "pi_height": 864,
+    "pi_fps": 30,
+    "pi_bounded_duration_seconds": 120,
+    "session_token": "rp02-elbow-parking-20260729-v1",
+    "fixed_mount_token": "current-workcell-c922-fixed-v1",
+    "start_before_gateway": true,
+    "enclose_through_postflight": true,
+    "d405_required": false
+  },
+  "camera_stop_rule": "camera_loss_or_writer_failure_safe_stop",
+  "dual_scene_safety_note": "registered scene clears 120 mm moving-chain gate; uncorrected canonical scene independently remains contact-free",
+  "terminal_semantics": {
+    "final_at_or_below_92deg": "primary_success_open_rp03_at_exact_achieved_angle",
+    "final_above_92deg_at_or_below_93deg": "marginal_success_open_rp03_at_exact_achieved_angle",
+    "final_above_93deg": "terminal_hardware_boundary",
+    "any_failure_stays_in_setup_recovery_class": true
+  },
+  "owner_authorization": {
+    "required_at_runtime": true,
+    "schema_version": "sim2claw.owner_physical_authorization.v1",
+    "operation_id": "rp02-elbow-parking-20260729-v1",
+    "maximum_executions": 1,
+    "currently_bound": false
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-execution-v1",
+  "physical_authority": false,
+  "physical_task_attempt": false,
+  "pawn_contact": false,
+  "retry_without_new_preregistration": false,
+  "claim_boundary": "Frozen, tested RP02 setup/recovery packet only. It cannot execute without a separately supplied active time-bounded owner authorization for this exact operation. Even after authorization, it is not a pawn task attempt, transfer, global mapping approval, policy-ranking prediction, or simulator promotion."
+}

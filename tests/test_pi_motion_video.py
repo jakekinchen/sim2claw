@@ -155,6 +155,15 @@ def test_35_second_contract_is_bounded_for_hover_hold_roundtrip() -> None:
     assert loaded["minimum_frames"] == 900
 
 
+def test_120_second_contract_is_bounded_for_parking_enclosure() -> None:
+    path = CONTRACT_PATH.with_name("pi_imx708_motion_video_120s_v1.json")
+
+    loaded = load_contract(path)
+
+    assert loaded["duration_seconds"] == 120
+    assert loaded["minimum_frames"] == 3000
+
+
 def test_fake_pi_capture_hash_binds_video_pts_and_action_interval(
     tmp_path: Path,
 ) -> None:
