@@ -1,0 +1,134 @@
+{
+  "schema_version": "sim2claw.observable_jaw_aperture_fit_contract.v1",
+  "experiment_id": "observable-jaw-aperture-fit-v1",
+  "frozen_date": "2026-07-29",
+  "proof_class": "static_six_fit_four_no_refit_validation_single_gripper_zero_offset_candidate",
+  "sources": {
+    "or5_closeout": {
+      "path": "configs/decisions/observable_jaw_aperture_mechanism_v2_closeout.json",
+      "sha256": "605e4def5c1156d7b4f6aaf9b80e440b4484d65e84bd4251db83d8a5e0bf8466"
+    },
+    "mechanism_base_contract": {
+      "path": "configs/evaluations/observable_jaw_aperture_mechanism_v1.json",
+      "sha256": "24b4b3a72f5a92206b1f2f8889ccbdd663f2bfd945a6205437e367ca06c10125"
+    },
+    "or1_receipt": {
+      "path": "outputs/observable_c922_camera_world_v1/receipt.json",
+      "sha256": "a2fda1032ad70c026fb8e82f3849896926ee92f07a14f5ecdf8e827141324614"
+    },
+    "or2_receipt": {
+      "path": "outputs/observable_robot_jaw_mapping_v1/receipt.json",
+      "sha256": "436cd9f629b780e5f8a08e9f00708659c4fa416a5362fe603bfee6f1f6484c3a"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "fit_annotations": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v4.json",
+      "sha256": "2a22f21601ed8cafccdee1f2666ead7b9c194ab1af091610082597238dffe5b3"
+    },
+    "fit_manifest": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/fit_manifest.json",
+      "sha256": "71f704ee95a2c1966f23f1ff96db04d6448bb409a86b209ea54b06e25e9f1f46"
+    },
+    "fit_joint_samples": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/joint_samples.jsonl",
+      "sha256": "32e623dc0d8ec219cdb329b79cdd2a8647ab4f0ba597af72606cf32d8de90f9f"
+    },
+    "validation_annotations": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_masked_static_cad_diagnostic_v1.json",
+      "sha256": "26ff32aaf5d95ed5255d806a7f8ef859915280ee7ef5c9930c6e148508ce7ffa"
+    },
+    "validation_manifest": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit_manifest.json",
+      "sha256": "341db2264aa3ee486c6cdc4b61330dabe8b376f3a848aea87b550c4aa0c47537"
+    },
+    "validation_joint_samples": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/joint_samples.jsonl",
+      "sha256": "1a17fe3fc5d26af121c7764355ee5d6b28cfa9e1e10cf4883fac18de722463a7"
+    },
+    "sealed_c6_physical_samples_for_range_only": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/samples.jsonl",
+      "sha256": "ad606b9b917d985a4e866399a0c2d44adb12f3b48d310aa11452de9e03e73302"
+    }
+  },
+  "split": {
+    "fit_count": 6,
+    "validation_count": 4,
+    "fit_validation_overlap_allowed": false,
+    "validation_open_after_candidate_fit_only": true,
+    "validation_candidate_refit_allowed": false,
+    "sealed_c6_role": "gripper_joint_range_regression_only",
+    "sealed_c6_contact_or_outcome_may_be_read": false,
+    "quarantined_v4_heldout_used": false
+  },
+  "optimizer": {
+    "kind": "scipy_least_squares",
+    "objective": "per_pose_projected_jaw_tip_pair_separation_error_px",
+    "initial_value": -0.17453,
+    "minimum_value": -0.174533,
+    "maximum_value": 0.174533,
+    "maximum_function_evaluations": 2000,
+    "function_tolerance": 1e-13,
+    "step_tolerance": 1e-13,
+    "gradient_tolerance": 1e-13
+  },
+  "frozen_mechanisms": {
+    "fit_parameter": "gripper_zero_offset_rad",
+    "gripper_scale_rad_per_physical_unit": 0.0191986,
+    "or1_camera_change_allowed": false,
+    "or2_robot_board_transform_change_allowed": false,
+    "body_joint_mapping_change_allowed": false,
+    "jaw_mesh_or_collision_geometry_change_allowed": false,
+    "actuator_plant_change_allowed": false,
+    "contact_parameter_change_allowed": false,
+    "object_parameter_change_allowed": false,
+    "initialization_change_allowed": false,
+    "action_or_timing_change_allowed": false
+  },
+  "fit_gates": {
+    "maximum_aperture_separation_rms_px": 3.0,
+    "minimum_relative_improvement": 0.8,
+    "minimum_parameter_bound_margin_rad": 0.005,
+    "maximum_midpoint_rms_regression_px": 5.0
+  },
+  "validation_gates": {
+    "maximum_aperture_separation_rms_px": 5.0,
+    "minimum_relative_improvement": 0.7,
+    "maximum_midpoint_rms_regression_px": 5.0,
+    "candidate_refit_allowed": false
+  },
+  "joint_range_gate": {
+    "model_gripper_minimum_rad": -0.174533,
+    "model_gripper_maximum_rad": 1.7453292,
+    "fit_validation_and_c6_must_all_pass": true,
+    "c6_source_field": "follower_command_degrees"
+  },
+  "promotion": {
+    "requires_all_checks": true,
+    "candidate_scope": "task_bounded_gripper_aperture_mapping_only",
+    "global_mapping_approved": false,
+    "dynamic_replay_authorized": false
+  },
+  "proof_boundaries": {
+    "zero_offset_is_unique_physical_calibration": false,
+    "gripper_gain_is_identified": false,
+    "full_3d_jaw_pad_geometry_is_approved": false,
+    "global_mapping_is_approved": false,
+    "static_fit_proves_contact": false,
+    "static_fit_proves_task_outcome": false,
+    "static_fit_proves_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_dynamic_replay": false,
+    "training": false,
+    "paid_compute": false
+  }
+}
