@@ -1,0 +1,33 @@
+{
+  "schema_version": "sim2claw.directional_displacement_static_stroke_closeout.v2",
+  "decision_id": "directional-displacement-static-stroke-20260729-v2-closeout",
+  "status": "accepted_terminal_static_negative",
+  "freeze_commit": "42adc1e",
+  "contract": {
+    "path": "configs/evaluations/directional_displacement_static_stroke_v2.json",
+    "sha256": "b3c234388feb598509a96fc4ebe5465a0c4b3d509a0c2ceab0c8258a8ef1c150"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-achieved-lock-task-stroke-static-v2/receipt.json",
+    "sha256": "a0b9615aeb1dfe519e1f6c4d3e04a8d754b013e215811ff451127e6d0fd14102"
+  },
+  "result": {
+    "grid_result_count": 576,
+    "compile_reject_count": 486,
+    "static_reject_count": 90,
+    "statically_eligible_family_count": 0,
+    "direction_counts": {
+      "REAL_TO_SIM": 0,
+      "SIM_TO_REAL": 0
+    },
+    "dominant_static_failures": {
+      "collision": 83,
+      "contact_normal": 57,
+      "contact_height": 28,
+      "contact_witness": 28
+    },
+    "dynamic_replay_executed": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Reject the uniform 66-mm low-path stroke as a hardware candidate. Preserve the 40-mm RP03 actions and this 66-mm result as immutable endpoints. Do not weaken collision or consequence gates and do not open hardware. Any successor must change contact or pre-contact path geometry prospectively, not merely lengthen this path."
+}

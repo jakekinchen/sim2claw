@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP03B_66MM_STROKE_STATIC_FROZEN`
+Status: `RP03B_66MM_STROKE_STATIC_TERMINAL_NEGATIVE`
 
 Created: `2026-07-29`
 
@@ -38,7 +38,8 @@ does not rewrite that result.
 | RP02D | `DONE_PASS` | Repeat the successful band-entry mechanism with only the first/recurring hold reset moved from `4.0 s` to `2.0 s`. | Preserve V3 requests, `[88,93] deg`, `15 s / 0.5 deg`, current/temperature, geometry, cameras, exact gateway, cleanup, and zero task authority. | Passed at `92.439560 deg`; `15.017 s` hold, `0.175824 deg` drift, both cameras complete, torque off. |
 | RP03 | `DONE_PASS` | Freeze fresh task actions at the achieved lock. | Exact RP02D torque-on pose, unchanged bounded family universe and static gates; at least one distinct family per direction; exact bytes predate outcomes. | Passed with exactly one eligible family per direction; no dynamic or physical execution. |
 | RP03A | `DONE_IMMUTABLE_NEGATIVE` | Replay both exact achieved-lock actions under baseline and timing stress. | Preserve exact action bytes, 40 Hz row order, five reset deltas, `36.025 mm` progress, contact/exclusion/no-lift/collision/camera gates, direct target plus diagnostic `0.11 s` ZOH, and ObservableEpisode.v2-min first-divergence traces. Both cases must pass both paths. | Both directions rejected: contact occurred but progress and no-lift failed. Identity, camera, collision, and exclusions passed. |
-| RP03B | `FROZEN_PENDING_ONE_STATIC_RUN` | Compile one bounded longer-stroke successor at the exact achieved lock. | Change only stroke from `40 mm` to the previously preregistered `66 mm`; preserve the 48-family universe, 576-cell bound, ranking, wrist/contact grid, IK, collision, contact, camera, calibrated-range, gateway-rate, one-family-per-direction, and false physical authority. | A static negative closes this mechanism. A pass freezes new bytes but does not authorize dynamics or hardware. |
+| RP03B | `DONE_TERMINAL_STATIC_NEGATIVE` | Compile one bounded longer-stroke successor at the exact achieved lock. | Change only stroke from `40 mm` to the previously preregistered `66 mm`; preserve the 48-family universe, 576-cell bound, ranking, wrist/contact grid, IK, collision, contact, camera, calibrated-range, gateway-rate, one-family-per-direction, and false physical authority. | `0/576` cells were eligible; the uniform longer-stroke mechanism is closed without dynamics or hardware. |
+| RP03C | `NEXT_PROSPECTIVE_MECHANISM` | Restore planar consequence without lengthening the rejected low path. | Use the RP03A first-divergence traces to preregister one finite contact/path-shape mechanism; preserve exact achieved lock, `36.025 mm`, no-lift, direct/ZOH, collision, camera, gateway, one-family-per-direction, and false physical authority. | No arbitrary friction fitting, threshold weakening, outcome-private case tuning, or physical attempt before static and dynamic passes. |
 | RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
 | RP05 | `PENDING` | Complete a distinct SIM->REAL task transfer. | Simulator success and robustness predate freeze; distinct family; camera-owned physical success with identical bytes. | At most three task attempts; failures stay in the denominator. |
 | RP06 | `PENDING` | Approve a task-bounded mapping for the successful locked-elbow slice. | Scope and factors are preregistered; accepted wrist/pan/lift evidence plus successful first-divergence bounds support the exact task slice. | Never relabel as global mapping approval. |
@@ -58,10 +59,9 @@ does not rewrite that result.
 
 ## Current next step
 
-Run the committed RP03B 66-mm exact-achieved-lock static successor exactly
-once. It changes only the stroke mechanism identified by the immutable RP03A
-undertravel result and must still pass every static gate before a new dynamic
-contract can be considered.
+RP03B is a terminal negative. The next admissible mechanism is RP03C: one
+finite, prospectively frozen contact or pre-contact path-shape change derived
+from the RP03A first-divergence traces. Physical authority remains false.
 
 ## RP00 immutable result
 
@@ -260,6 +260,19 @@ contract can be considered.
 - This is the first causal result at the achieved lock: RP03B changes stroke
   only to the already-preregistered `66 mm` bound. No physical attempt
   occurred.
+
+## RP03B immutable 66-mm static negative
+
+- Freeze commit: `42adc1e`.
+- Receipt SHA-256:
+  `a0b9615aeb1dfe519e1f6c4d3e04a8d754b013e215811ff451127e6d0fd14102`.
+- All `576` cells were evaluated exactly once: `486` compile rejects and
+  `90` static rejects, with `0` eligible families.
+- The longer low path caused collision/contact-normal defects and widespread
+  locked-IK infeasibility. It therefore cannot be sent to dynamics or
+  hardware.
+- The result rules out uniform stroke extension; it does not weaken the
+  successful RP02D hold or RP03 exact-lock static family evidence.
 
 ## RP01 freeze
 
