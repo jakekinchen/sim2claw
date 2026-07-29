@@ -1,0 +1,123 @@
+{
+  "schema_version": "sim2claw.full_range_no_contact_execution_packet.v2",
+  "operation_id": "rp04g-post-cable-full-range-no-contact-20260729-v3",
+  "status": "frozen_pending_tests_commit_and_time_bounded_authorization",
+  "proof_class": "prospective_physical_post_cable_routing_reachable_pan_robot_only_full_range_identification",
+  "inputs": {
+    "executor_adapter": {
+      "path": "src/sim2claw/full_range_no_contact_execution_v2.py",
+      "sha256": "8c4a865790da30df9f4b6cabcb2e8ddce865f0ef81d73bc9d1db3389958a4800"
+    },
+    "executor_engine": {
+      "path": "src/sim2claw/full_range_no_contact_execution.py",
+      "sha256": "b152b4e02d5013f6c296606bf94474fab04e07f8ed7ae98160779b535a3bb4c9"
+    },
+    "static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-full-range-no-contact-identification-static-v2/receipt.json",
+      "sha256": "accd098ee7e6f77b08a9a8549b3759a45b03d323e3f8807071c640a15bb15d69"
+    },
+    "static_closeout": {
+      "path": "configs/decisions/full_range_no_contact_identification_static_v2_closeout.json",
+      "sha256": "9869b902fa94fb1c4cd26db348b9b2c2864138fd9582adef4d868246d1ae7d8a"
+    },
+    "prior_physical_closeout": {
+      "path": "configs/decisions/full_range_no_contact_execution_v2_closeout.json",
+      "sha256": "a02aead2ec17408fe6e127a6ed3d7dd4433a81e1f37de749b68a92f0288bbc6e"
+    },
+    "hardware_configuration_change": {
+      "path": "configs/decisions/wrist_camera_cable_routing_change_v1.json",
+      "sha256": "ee1df15d4e16f94bd482e1b565fdda7eeb6b48966483851d89e4f633ef122824"
+    },
+    "physical_trace_replay": {
+      "path": "src/sim2claw/physical_trace_replay.py",
+      "sha256": "bac574db2f3c739cb7b43bc1c64ecc355838056dc9ffa0ae7768d25d8a2b2aa9"
+    },
+    "camera_enclosure": {
+      "path": "src/sim2claw/parking_transaction_executor.py",
+      "sha256": "afebf6b08e0a6d904da80303860eff062a57f794a5c4d2e7a71b19753becdca5"
+    },
+    "c922_contract": {
+      "path": "configs/acquisition/current_static_tricam_capture_v1.json",
+      "sha256": "54acf4a2b4eed47036c2229c9ba4c15786584eb5e6cbc278816ac12c35c03115"
+    },
+    "pi_contract": {
+      "path": "configs/acquisition/pi_imx708_motion_video_180s_v1.json",
+      "sha256": "e84d64a2cdedfeb6d1b5d2b2aa0b70eb381a31ea5e86e1c57b2e1620180e768d"
+    }
+  },
+  "physical_route": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-full-range-no-contact-identification-static-v2/physical_route.f64le",
+    "sha256": "94381e4260cd638351e7eace26997826189e8952b2d297bcb199c0abe8cdbd92",
+    "shape": [
+      1105,
+      6
+    ],
+    "dtype": "little_endian_float64"
+  },
+  "hardware": {
+    "follower_port": "/dev/cu.usbmodem5B3D0406411",
+    "follower_calibration_sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4",
+    "configuration_write_allowed": false,
+    "reviewed_gateway_only": true,
+    "configuration_token": "owner-reported-wrist-camera-cable-relief-v1"
+  },
+  "execution": {
+    "sample_hz": 40.0,
+    "segment_boundaries": [
+      0,
+      33,
+      67,
+      500,
+      1104
+    ],
+    "expected_row_zero": [
+      6.5054945054945055,
+      -85.53846153846153,
+      99.47252747252747,
+      -20.087912087912088,
+      -103.34065934065934,
+      2.3752969121140137
+    ],
+    "maximum_start_body_delta_degrees": 3.0,
+    "maximum_start_gripper_delta": 3.0,
+    "forward_rows_exact": true,
+    "reverse_rows_exact": true,
+    "rebase_only_after_reached_boundary": true,
+    "boundary_settle_timeout_seconds": 3.0,
+    "controlled_return_on_failure": true,
+    "source_actions_clipped_smoothed_retimed_or_offset": false
+  },
+  "acceptance": {
+    "maximum_elbow_error_degrees": 6.0,
+    "sustained_error_threshold_degrees": 5.0,
+    "sustained_error_maximum_seconds": 1.0,
+    "maximum_boundary_residual_degrees": 4.5,
+    "all_forward_requested_rows_float64_exact": true,
+    "all_forward_sent_rows_within_degrees": 0.25,
+    "safety_clamped_samples_maximum": 0,
+    "both_cameras_complete": true,
+    "camera_contact_review_required": true,
+    "camera_cable_slack_review_required": true,
+    "postflight_torque_off_required": true
+  },
+  "camera": {
+    "c922_localized_name": "C922 Pro Stream Webcam",
+    "c922_unique_id": "0x8310000046d085c",
+    "pi_camera": "imx708_wide",
+    "pi_ssh_host": "vexy@192.168.1.117",
+    "pi_bounded_duration_seconds": 180,
+    "session_token": "rp04g-post-cable-full-range-no-contact-20260729-v3",
+    "fixed_mount_token": "current-workcell-c922-fixed-v1",
+    "start_before_gateway": true,
+    "enclose_through_torque_off_postflight": true,
+    "d405_required": false
+  },
+  "maximum_executions": 1,
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-full-range-no-contact-execution-v3-post-cable",
+  "physical_authority": false,
+  "physical_task_attempt": false,
+  "pawn_contact": false,
+  "mapping_approval": false,
+  "retry_without_new_preregistration": false,
+  "claim_boundary": "One prospectively frozen camera-enclosed rerun of the exact V2 static-qualified, reachable-pan, robot-only identification route after the owner-reported wrist-camera cable-routing change. The new configuration is not assumed safe or causal; both camera completeness and post-run cable-slack review are mandatory. Even a pass can only update physical tracking and task-corridor mapping evidence. It cannot count as a pawn-task attempt, reopen simulator-negative actions, approve global mapping, authorize pawn contact, or support transfer."
+}

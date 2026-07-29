@@ -1,0 +1,26 @@
+{
+  "schema_version": "sim2claw.owner_reported_hardware_configuration_change.v1",
+  "change_id": "wrist-camera-cable-routing-change-20260729-v1",
+  "reported_at": "2026-07-29T12:05:00-05:00",
+  "status": "owner_reported_new_physical_configuration_requires_no_contact_retest",
+  "affected_component": "wrist camera cable routing and mechanical tension on the robot arm",
+  "owner_report": "The prior wrist-camera cable routing likely added substantial tension and joint torque demand. The routing issue has been identified and the owner requested the prior physical identification work be retried.",
+  "evidence_effect": {
+    "prior_simulator_only_results_affected": false,
+    "prior_physical_tracking_and_stall_results_reusable_as_current": false,
+    "prior_physical_receipts_preserved": true,
+    "new_physical_configuration_requires_fresh_anchor": true
+  },
+  "retest_scope": {
+    "contact_impossible_no_contact_route_only": true,
+    "fresh_c922_and_pi_camera_enclosure": true,
+    "fresh_torque_off_preflight": true,
+    "same_exact_static_qualified_route": true,
+    "new_hash_bound_one_shot_packet_required": true,
+    "physical_task_attempt": false,
+    "pawn_contact": false,
+    "configuration_write": false,
+    "mapping_approval": false
+  },
+  "claim_boundary": "This is owner-reported configuration provenance, not proof that cable tension caused any prior failure or that the new routing is safe. Only a fresh camera-enclosed, no-contact, fail-closed execution can update current tracking evidence."
+}
