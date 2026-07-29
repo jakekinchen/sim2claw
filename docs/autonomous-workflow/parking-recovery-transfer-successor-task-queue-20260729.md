@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `ACTIVE_RP02_EXECUTION_PACKET_FREEZE`
+Status: `RP02_READY_FOR_TIME_BOUNDED_OWNER_AUTHORIZATION`
 
 Created: `2026-07-29`
 
@@ -31,7 +31,7 @@ does not rewrite that result.
 |---|---|---|---|---|
 | RP00 | `DONE_PASS` | Prospectively freeze and run one route-level parking-target certificate across elbow locks `{97,95,93,91,90,88} deg`. | Existing CC03K family universe, compiler, collision/contact/camera/gateway gates, and false physical authority remain unchanged. At least one distinct family per direction passes at a maximum viable angle and again at a passing target at least `2 deg` lower. Code, contract, tests, and advisory predate the single run. | Receipt `e1bc7d8e...` passes: `97/95 deg` reject, `93/91/90/88 deg` pass with `1` family per direction. Threshold `93 deg`; target `91 deg`. No motion or task attempt. |
 | RP01 | `DONE_PASS` | Freeze a high-clearance, contact-impossible elbow parking transaction to the RP00 target. | Fresh torque-off anchor bound; no-op setup; full `[88, 99.6] deg` corridor previewed every `0.1 deg`; moving chain stays at least `120 mm` from table, board, and pawns; all robot contacts remain absent; at most `5 deg` requested per step; read/verify each step; abort after two consecutive steps with less than `0.3 deg` progress; `15 s` hold drift below `0.5 deg`; torque-off cleanup; no task/pawn contact reachable. | Receipt `e9e99a4a...` passes; Fable independently returns `CONTINUE_RP02_FREEZE`. No motion or task attempt. |
-| RP02 | `IN_PROGRESS_PACKET_FREEZE` | Execute parking once under separately reopened physical authority. | Hash-pinned executor; fresh timestamped preflight; held-joint and camera/writer stops; exact C922+Pi enclosure; reviewed gateway only; target reached; hold gate passes; exact receipt; torque off and `60 s` read. No retry without new preregistration. | Final above `93 deg`, stall, camera/writer loss, held-joint drift, or cleanup failure safely stops; above `93 deg` is terminal. |
+| RP02 | `READY_OWNER_AUTHORIZATION` | Execute parking once under separately reopened physical authority. | Packet SHA `79382c1a...`; hash-pinned executor; fresh timestamped preflight; held-joint and camera/writer stops; exact C922+Pi enclosure; reviewed gateway only; target reached; hold gate passes; exact receipt; torque off and `60 s` read. No retry without new preregistration. | Final above `93 deg`, stall, camera/writer loss, held-joint drift, or cleanup failure safely stops; above `93 deg` is terminal. |
 | RP03 | `PENDING` | Freeze fresh task actions at the achieved lock. | Strict unchanged gates; fresh C922 scene admission; at least one distinct family per direction; exact bytes and evaluator freeze predate outcomes. | Zero eligible families ends the successor without a task attempt. |
 | RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
 | RP05 | `PENDING` | Complete a distinct SIM->REAL task transfer. | Simulator success and robustness predate freeze; distinct family; camera-owned physical success with identical bytes. | At most three task attempts; failures stay in the denominator. |
@@ -52,10 +52,10 @@ does not rewrite that result.
 
 ## Current next step
 
-Finish and review the RP02 executor and packet. No owner authorization
-document exists, so the executor must remain uncallable for physical motion.
-No camera, gateway, serial, torque, motion, pawn contact, or task-attempt
-authority is open.
+Bind a time-bounded owner authorization for the exact RP02 packet, or remain
+paused without touching cameras, gateway, serial, torque, or the robot. The
+packet is reviewed and ready; no owner authorization document currently
+exists, so the executor remains uncallable for physical motion.
 
 ## RP00 immutable result
 
@@ -89,6 +89,20 @@ authority is open.
   table `218.394 mm`.
 - Fable independently returned `CONTINUE_RP02_FREEZE`.
 - Physical motion and task-attempt ledgers remain unchanged.
+
+## RP02 reviewed packet
+
+- Repair commit: `7a33fcb`.
+- Packet SHA-256:
+  `79382c1aa0a9ec6d292300bb34dcf1c910fafb6a64f57bfa8e549c87c79abfe6`.
+- Executor SHA-256:
+  `f01c89816d72ad4212b2a26323895755300795dd296942434d9f0788592728fa`.
+- Focused tests: `20 passed`.
+- Fable verdict: `READY_FOR_TIME_BOUNDED_OWNER_AUTHORIZATION`.
+- Fable is now reserved for genuine trajectory blockers, not routine
+  milestone review.
+- Physical authority remains false until a separate authorization document
+  validates.
 
 ## RP01 freeze
 

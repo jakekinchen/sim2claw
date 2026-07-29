@@ -39,7 +39,7 @@ in that queue are exhausted.
   `e1bc7d8e1bbeeaa4b1e08f26d7e609e2714c33800d22899bd876f7298c75db7b`.
 - RP01: complete PASS at receipt SHA-256
   `e9e99a4ad774a04e5dc031a9b6060df6e32f7ceceb6e56fa40cfba61f481fc1f`.
-- Active card: RP02 tested execution-packet freeze.
+- Active card: RP02 reviewed packet awaiting time-bounded owner authorization.
 - Certified threshold: `93 deg`.
 - Certified parking target: `91 deg`.
 - REAL->SIM: `0/0`.
@@ -47,10 +47,13 @@ in that queue are exhausted.
 - Physical task attempts: `0/10`.
 - Physical authority: false.
 
-RP02 must not execute physically from this loop state. First freeze and test
-the executor and packet, return them to Fable for an independent continue
-decision, then bind a time-bounded owner authorization for exactly one
-setup/recovery execution.
+RP02 must not execute physically from this loop state. The tested packet has
+an independent `READY_FOR_TIME_BOUNDED_OWNER_AUTHORIZATION` verdict; bind a
+separate authorization for exactly one setup/recovery execution before any
+camera, gateway, serial, torque, or robot action.
+
+Fable is reserved for a genuine blocker where the correct next trajectory is
+unclear. Routine queue transitions and verification do not require Fable.
 
 ## Stop conditions
 
