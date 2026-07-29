@@ -14,7 +14,7 @@ from sim2claw.elbow_telemetry_probe import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTRACT = ROOT / "configs/evaluations/elbow_telemetry_probe_v2.json"
+CONTRACT = ROOT / "configs/evaluations/elbow_telemetry_probe_v3.json"
 
 
 def test_contract_is_bounded_and_has_no_task_or_config_authority() -> None:

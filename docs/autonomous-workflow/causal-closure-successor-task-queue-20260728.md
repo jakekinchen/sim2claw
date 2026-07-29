@@ -815,6 +815,18 @@ Current state:
   repeat, exact-target and calibrated-limit checks, native D405 enclosure,
   and six optional servo registers at `5 Hz`. It grants no pawn, task-attempt,
   gain-write, or configuration-write authority. `36` focused tests pass.
+- V2 then stopped before output creation, camera open, gateway open, or motion
+  because its executor expected a nested identity object instead of the
+  reviewed preflight's top-level identity fields. Closeout SHA-256 is
+  `ddb71eefe667525198cebf2eebe956636bb87ba9af23db32c296800a09bf371e`.
+- `CC03E` V3 changes only that preflight parser, reusing the accepted parser
+  from the live-anchored setup path. V3 is frozen before motion at contract
+  SHA-256
+  `31eb35429f37aaf82d0517d9be8e22b7bddb0afd061af2b5b528e037ec4067d9`
+  and executor SHA-256
+  `1e8e5fcb68b24a4d586f061d1941426aad65c3cbff6fd7d5508bb1c3674ab4f6`.
+  All V2 probe geometry, telemetry, camera, stop, and authority fields remain
+  unchanged. `36` focused tests pass.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task

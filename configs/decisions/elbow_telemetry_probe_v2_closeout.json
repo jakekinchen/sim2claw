@@ -1,0 +1,18 @@
+{
+  "schema_version": "sim2claw.elbow_telemetry_probe_closeout.v2",
+  "decision_id": "cc03e-elbow-telemetry-probe-v2-closeout",
+  "status": "closed_unexecuted_preflight_identity_parser_defect",
+  "proof_class": "preexecution_implementation_negative_no_physical_motion",
+  "contract_sha256": "d221e9a925b5949ab7315485f8bd5e30c08f139aba00ac097d7976f8af8723b5",
+  "failure": "ElbowTelemetryProbeError: fresh hardware identity is missing",
+  "localization": "The reviewed follower-only preflight returned a passing torque-off report with follower identity and calibrated limits at the top level. The V2 executor incorrectly expected a nested hardware_identity object.",
+  "successor_rule": "Reuse the already-reviewed preflight identity-and-limit parser used by live_anchored_camera_reposition. Preserve every V2 offset, timing, camera, telemetry, stop, and authority field.",
+  "output_directory_created": false,
+  "camera_opened": false,
+  "gateway_opened": false,
+  "physical_motion": false,
+  "physical_task_attempts": 0,
+  "pawn_contact": false,
+  "gain_write": false,
+  "configuration_write": false
+}

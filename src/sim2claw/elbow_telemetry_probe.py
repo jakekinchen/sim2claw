@@ -22,10 +22,11 @@ import numpy as np
 from .overhead_video import WristVideoRecorder
 from .physical_canary import _default_gateway, _default_preflight, _gateway_identity
 from .replay_eligibility import action_sha256
+from .live_anchored_camera_reposition import _preflight_identity_and_limits
 from .wrist_view_reposition import preview_wrist_view_actions
 
 
-CONTRACT_SCHEMA = "sim2claw.elbow_telemetry_probe_contract.v2"
+CONTRACT_SCHEMA = "sim2claw.elbow_telemetry_probe_contract.v3"
 RECEIPT_SCHEMA = "sim2claw.elbow_telemetry_probe_receipt.v1"
 SAMPLE_HZ = 20.0
 REGISTER_HZ = 5.0
@@ -283,8 +284,9 @@ def execute_probe(
     _require(candidate_manifest_path.is_file(), "candidate manifest is missing")
     _require(not output_root.exists(), "refusing to overwrite probe output")
     preflight = preflight_fn()
-    identity = preflight.get("hardware_identity")
-    _require(isinstance(identity, Mapping), "fresh hardware identity is missing")
+    identity, preflight_lower, preflight_upper = _preflight_identity_and_limits(
+        preflight
+    )
     output_root.mkdir(parents=True)
     telemetry_path = output_root / "telemetry.jsonl"
     receipt_path = output_root / "receipt.json"
@@ -357,6 +359,9 @@ def execute_probe(
                     lower = np.asarray(opened["follower_calibrated_minimum"], dtype=float)
                     upper = np.asarray(opened["follower_calibrated_maximum"], dtype=float)
                     _require(
+                        np.array_equal(lower, preflight_lower)
+                        and np.array_equal(upper, preflight_upper)
+                        and
                         np.all(actions >= lower[None, :])
                         and np.all(actions <= upper[None, :]),
                         f"{session_id} exceeds fresh calibrated limits",
