@@ -1,0 +1,116 @@
+{
+  "schema_version": "sim2claw.retrospective_c922_endpoint_to_sim.v1",
+  "experiment_id": "phase_a_d1_d2_c922_metric_endpoint_to_current_sim_v1",
+  "proof_class": "physical_c922_metric_endpoint_observation_to_current_simulator_free_settle",
+  "source": {
+    "recording_directory": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53",
+    "recording_id": "20260727T041737Z-89190e53",
+    "recording_receipt_sha256": "74a3da30468922df00dfefd12e38ff346b2fd59fb5752458477be29360b9e0d3",
+    "phase_a_receipt_sha256": "224c6b16ec672543946b77fe91403fa2d9e6849bce371812c0a096aaf032f6df",
+    "c922_video_path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/overhead_c922.mp4",
+    "c922_video_sha256": "6c03bd268f0e227879c2c54ff4731d4ee8111d94b136b9bd6cbd81ca93e966bf",
+    "frame_count": 1029,
+    "orientation_rotation_degrees": 180,
+    "source_square": "d1",
+    "destination_square": "d2",
+    "selected_piece": "brown_pawn_d1",
+    "initial_frame": {
+      "frame_index_zero_based": 15,
+      "presentation_time_seconds": 0.5,
+      "rotated_png_sha256": "e5176d2dd8771606c0f9547aa63c21f39e77fc6dad4a2d117771b615f4e1b97a"
+    },
+    "terminal_frame": {
+      "frame_index_zero_based": 990,
+      "presentation_time_seconds": 33.0,
+      "rotated_png_sha256": "e4732d6689dbb086a4bbacf2fdf400f85c95036f52252cab0ba25f5ed4a0ab85"
+    }
+  },
+  "registration": {
+    "fit_annotations": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v4.json",
+      "sha256": "2a22f21601ed8cafccdee1f2666ead7b9c194ab1af091610082597238dffe5b3"
+    },
+    "canonical_task_plane_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-task-plane-registration-v1/receipt.json",
+      "sha256": "566f12b2b939e493e86849d8526e35416ecac3d85e6331b4a71ded241c4dccf5"
+    },
+    "hard_cutover": {
+      "path": "configs/migrations/current_workcell_hard_cutover_v1.json",
+      "sha256": "37fb5b02a6f42376cd0dcadf19401f7442cc28f37b71cf297090ae27cf0b9701"
+    },
+    "current_workcell_implementation": {
+      "path": "src/sim2claw/current_workcell.py",
+      "sha256": "df6bdf6b4408b7dcaaa1670fc0575f8506e11cef3add37124cc1afa2e8b69fad"
+    },
+    "playing_corner_order": [
+      "a8_outer",
+      "h8_outer",
+      "h1_outer",
+      "a1_outer"
+    ],
+    "pixel_to_board_coordinate_convention": "x_zero_to_eight_a_to_h__y_zero_to_eight_rank1_to_rank8",
+    "candidate_refit_allowed": false,
+    "homography_refit_allowed": false
+  },
+  "annotations": {
+    "status": "frozen_before_metric_endpoint_evaluation",
+    "protocol": "two evaluator-owned visual passes over hash-bound rotated source frames; values are pawn base-footprint centers on the board plane",
+    "initial_d1_base_center_px": {
+      "pass_a": [
+        269.0,
+        282.0
+      ],
+      "pass_b": [
+        268.5,
+        282.5
+      ]
+    },
+    "terminal_d2_base_center_px": {
+      "pass_a": [
+        256.0,
+        254.0
+      ],
+      "pass_b": [
+        255.5,
+        254.5
+      ]
+    },
+    "terminal_upright": true,
+    "terminal_square": "d2",
+    "annotation_is_training_data": false
+  },
+  "evaluator": {
+    "maximum_two_pass_disagreement_px": 1.0,
+    "maximum_initial_square_center_error_m": 0.006,
+    "maximum_terminal_square_center_error_m": 0.006,
+    "maximum_simulated_final_square_center_error_m": 0.006,
+    "maximum_upright_tilt_degrees": 10.0,
+    "maximum_other_piece_displacement_m": 0.005,
+    "maximum_final_linear_speed_m_s": 0.02,
+    "maximum_final_angular_speed_rad_s": 1.0,
+    "free_settle_seconds": 1.0,
+    "episode_success_requires_both_camera_endpoints_and_simulated_terminal_settle": true
+  },
+  "replay": {
+    "terminal_xy_source": "metric_unprojection_of_frozen_C922_terminal_base_center_annotation",
+    "terminal_z_source": "current_simulator_D2_support_plane",
+    "terminal_orientation_source": "camera_reviewed_upright_with_current_simulator_board_yaw",
+    "destination_xy_forcing_allowed": false,
+    "action_or_joint_trace_used": false,
+    "contact_parameter_fit_allowed": false,
+    "timing_offset_search_allowed": false,
+    "post_spawn_free_physics_required": true
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "sim_to_real": false,
+    "pure_action_only_transfer": false,
+    "simulator_replay": true
+  },
+  "claim_boundary": "A pass is one camera-endpoint REAL-to-SIM observation transfer: a hash-bound initial C922 frame validates the accepted task-plane mapping at D1; a separately hash-bound terminal C922 frame supplies the pawn's metric XY; and the current simulator must settle that observed endpoint upright at D2 without moving exclusions. It is not action replay, trajectory or contact-dynamics reproduction, a policy success, global mapping approval, SIM-to-REAL evidence, or new physical motion."
+}

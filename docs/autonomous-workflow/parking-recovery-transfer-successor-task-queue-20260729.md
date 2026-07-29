@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04L_DONE_REAL_TO_SIM_NARROW_ADVANCEMENT_1_OF_3`
+Status: `RP04M_C922_ENDPOINT_REAL_TO_SIM_FROZEN_PENDING_ONE_RUN`
 
 Created: `2026-07-29`
 
@@ -56,6 +56,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP04J | `DONE_TERMINAL_STATIC_NEGATIVE` | Test the one untouched geometry axis selected by the reserved blocker review: displacement bearing. | Carry the exact `brown_pawn_f1__f1_f2` action unchanged; enumerate eight near-side pawns × eight `45 deg` bearings, excluding that exact carried family, × four compensated heights × three frozen wrist rolls = `756` new cells. Preserve reset layout, `80 deg` lock, `66 mm` stroke, jaw, physics, evaluator, historical quarantines, collision/camera/gateway gates, and false dynamic/physical authority. A pass requires one new family on a pawn and corridor disjoint from the carry. | Receipt `c36cebeb...` found three new static families but zero passed the frozen disjoint-corridor gate. REAL_TO_SIM remains the carried family; SIM_TO_REAL remains absent. No dynamics or hardware. The reachable-lock route is closed at elbow drivetrain service. |
 | RP04K | `DONE_TERMINAL_HYBRID_NEGATIVE` | Advance REAL->SIM without stressing the follower elbow by replaying the already camera-verified physical D1->D2 source through the smallest explicit hybrid proof. | Preserve the actual gateway-sent row order and source timestamps under the frozen Stage-D mapping. Run both mapped-command ZOH and observed-joint-state upper-bound drivers. Supply only the evaluator-reviewed grasp/hold/release interval as a discrete mode; capture its relative transform once at grasp, never force a terminal pose, then release into free physics. Score square containment, upright settling, exclusions, hashes, and pure-action limitations. | Freeze commit `5c36257`; receipt file SHA-256 `d3dfbf5c...`, canonical receipt `afaac330...`. Command+mode `0/1`; observed-state+mode `0/1`; pure action `0/0`. The observed-state driver tracked within `0.003266` simulator units and reached `9.024 mm` planar error at release, but its `30.451 mm` free drop toppled the pawn to `97.798 deg`. Preserve this as a release/support-contact negative. |
 | RP04L | `DONE_TIMING_SENSITIVE_NARROW_ADVANCEMENT` | Test the smallest observation-conditioned successor to RP04K's localized release/support failure without fitting contact parameters. | Preserve the measured physical joint rows, host timestamps, mapping, destination, evaluator, and handoff XY. Enumerate exactly release-marker offsets `[-1,0,+1]` for the source's missing actuator-application timestamp. At each handoff, supply the already camera-reviewed upright/support object mode by projecting only Z and orientation to the same episode's initial settled support pose; then return to free MuJoCo physics. | Receipt file SHA-256 `1af33c78...`, canonical receipt `f6c8f3a7...`: observed-state+upright-support-mode REAL->SIM `1/3`. Offset `-1` passes the coarse whole-base gate at `8.319 mm`, `0.0024 deg` tilt, zero XY projection, and `0.000000152 m` maximum exclusion movement; offsets `0/+1` fail at `9.024/11.470 mm`. Timing-sensitive and not composable, action-only, free-release physics, mapping approval, or physical authority. |
+| RP04M | `FROZEN_PENDING_ONE_RUN` | Convert the retained real C922 D1->D2 outcome into a metric current-simulator endpoint without mining RP04L timing or contact. | Bind rotated C922 frames `15/990`, two-pass base-center annotations, the accepted playing-corner registration, the canonical task-plane receipt, and the current workcell. The untouched initial D1 endpoint must validate the mapping within `6 mm`; the terminal D2 endpoint must independently map within `6 mm`; spawn only its observed XY at current support height/upright orientation and require `1 s` free settling, exclusions, and the unchanged `6 mm` simulator endpoint gate. | One run only after code, contract, tests, and queue are committed/pushed. Report camera endpoint states and episodes separately. A pass is camera-endpoint observation transfer only—not action, trajectory, contact dynamics, policy, global mapping, SIM->REAL, or new physical motion. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -78,13 +79,11 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 The robot is restored to the natural anchor and torque is off. RP04J closes
 the safe physical route at inspection or replacement of follower elbow ID-3;
 do not reopen hardware task motion. RP04K is an immutable free-release hybrid
-negative. RP04L achieves the owner-requested hardware-free REAL->SIM
-advancement at `1/3`, but only in the explicitly separate
-observation-conditioned support-handoff proof class. Do not mine more event
-offsets or fit contact parameters to this episode. The next stronger
-hardware-free successor requires an independently reviewed metric object
-endpoint or trajectory from the retained cameras; strict action-only transfer
-requires a new exact source after elbow service.
+negative. RP04L achieves a timing-sensitive `1/3` in its separate
+observation-conditioned proof class. RP04M is now the one active successor:
+run its frozen C922 metric-endpoint transfer exactly once after the freeze
+commit. Do not mine more event offsets or fit contact parameters. Strict
+action-only transfer still requires a new exact source after elbow service.
 
 ## RP04I freeze
 
