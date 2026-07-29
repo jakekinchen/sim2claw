@@ -63,9 +63,13 @@ def _json(binding: Mapping[str, Any]) -> dict[str, Any]:
 
 def load_packet(path: Path) -> dict[str, Any]:
     packet = json.loads(path.read_text(encoding="utf-8"))
+    schema_version = packet.get("schema_version")
     _require(
-        packet.get("schema_version")
-        == "sim2claw.parking_transaction_execution_packet.v1"
+        schema_version
+        in {
+            "sim2claw.parking_transaction_execution_packet.v1",
+            "sim2claw.parking_transaction_execution_packet.v2",
+        }
         and packet.get("status")
         == "frozen_pending_independent_review_and_owner_authorization",
         "RP02 packet identity changed",
@@ -94,6 +98,13 @@ def load_packet(path: Path) -> dict[str, Any]:
         "maximum_hold_drift_degrees": 0.5,
         "post_torque_off_read_seconds": 60.0,
     }
+    if schema_version == "sim2claw.parking_transaction_execution_packet.v2":
+        expected.update(
+            {
+                "clock_establishing_anchor_samples": 1,
+                "new_target_lead_periods": 1,
+            }
+        )
     _require(packet.get("runtime") == expected, "RP02 runtime constants changed")
     _require(
         packet.get("camera_stop_rule")
@@ -107,11 +118,38 @@ def load_packet(path: Path) -> dict[str, Any]:
     )
     for binding in packet["inputs"].values():
         _bound(binding)
-    closeout = _json(packet["inputs"]["rp01_closeout"])
-    _require(
-        closeout.get("status") == "pass_open_rp02_packet_freeze_only",
-        "RP01 did not open RP02 packet freeze",
-    )
+    if schema_version == "sim2claw.parking_transaction_execution_packet.v1":
+        closeout = _json(packet["inputs"]["rp01_closeout"])
+        _require(
+            closeout.get("status") == "pass_open_rp02_packet_freeze_only",
+            "RP01 did not open RP02 packet freeze",
+        )
+    else:
+        predecessor = _json(packet["inputs"]["predecessor_execution_receipt"])
+        _require(
+            predecessor.get("schema_version")
+            == "sim2claw.parking_transaction_execution_receipt.v1"
+            and predecessor.get("passed") is False
+            and predecessor.get("physical_task_attempts") == 0
+            and predecessor.get("pawn_contact") is False
+            and predecessor.get("failure")
+            == (
+                "PhysicalGatewayError: Precompiled exact target would require "
+                "rate limiting, clamping, or correction; the current sample "
+                "was not sent."
+            )
+            and predecessor.get("postflight", {}).get(
+                "physical_follower_torque_enabled"
+            )
+            is False,
+            "RP02 successor predecessor is not the exact fail-closed receipt",
+        )
+        closeout = _json(packet["inputs"]["predecessor_closeout"])
+        _require(
+            closeout.get("status")
+            == "fail_closed_before_motion_open_clock_compatible_successor",
+            "RP02 predecessor closeout did not open the bounded successor",
+        )
     return packet
 
 
@@ -319,7 +357,28 @@ def run_ladder(
     outcome = "iteration_budget_exhausted"
     request = anchor.copy()
 
+    clock_establishing_anchor_samples = int(
+        spec.get("clock_establishing_anchor_samples", 0)
+    )
+    new_target_lead_periods = int(spec.get("new_target_lead_periods", 0))
+    for sample_index in range(clock_establishing_anchor_samples):
+        _sample(
+            gateway=gateway,
+            camera=camera,
+            request=anchor,
+            elapsed=clock() - started,
+            anchor=anchor,
+            phase="clock_establishing_anchor",
+            iteration=0,
+            telemetry=telemetry,
+            clock=clock,
+        )
+        if sample_index + 1 < clock_establishing_anchor_samples:
+            sleep(period)
+
     for iteration in range(1, int(spec["maximum_iterations"]) + 1):
+        if new_target_lead_periods:
+            sleep(period * new_target_lead_periods)
         requested_elbow = ladder_request(
             previous_read,
             target_degrees=float(spec["target_degrees"]),

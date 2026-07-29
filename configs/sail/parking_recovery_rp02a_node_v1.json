@@ -1,0 +1,38 @@
+{
+  "schema_version": "sim2claw.campaign_graph_node.v1",
+  "node_id": "parking-recovery-rp02a-clock-compatible-successor-20260729-v1",
+  "status": "prospectively_frozen_physical_authority_false",
+  "predecessors": [
+    {
+      "node_id": "parking-recovery-rp02-execution-packet-20260729-v1",
+      "result": "fail_closed_before_motion_zero_elapsed_changed_target"
+    }
+  ],
+  "evidence": {
+    "predecessor_receipt_path": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-execution-v1/receipt.json",
+    "predecessor_receipt_sha256": "64b1d498536a68dfd20c421251ae8d7884075a86006979f8b216893cfa17acd3",
+    "predecessor_closeout_path": "configs/decisions/parking_transaction_execution_v1_closeout.json",
+    "predecessor_closeout_sha256": "e34ed6015659ca58bf3c916c315e39fbf8931ffc5ce33b74b2b5c03382808170",
+    "successor_packet_path": "configs/hardware/parking_transaction_execution_v2.json",
+    "successor_packet_sha256": "af3149ccceaf7d49b0f1765c11afbc66c7782a0d7968a9815042e90337e58a6d",
+    "focused_tests": "42 passed"
+  },
+  "single_mechanism_change": {
+    "clock_establishing_anchor_samples": 1,
+    "new_target_lead_periods": 1,
+    "lead_period_seconds": 0.2,
+    "destination_bytes_changed": false,
+    "target_changed": false,
+    "geometry_or_collision_gate_changed": false
+  },
+  "ledger": {
+    "real_to_sim": "0/0",
+    "sim_to_real": "0/0",
+    "physical_task_attempts": "0/10",
+    "global_mapping_approved": false,
+    "policy_ranking": "INSUFFICIENT_PHYSICAL_SAMPLE"
+  },
+  "active_card": "RP02A",
+  "next_gate": "new_exact_packet_hash_bound_time_bounded_owner_authorization",
+  "physical_authority": false
+}

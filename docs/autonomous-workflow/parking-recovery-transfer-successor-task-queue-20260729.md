@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP02_READY_FOR_TIME_BOUNDED_OWNER_AUTHORIZATION`
+Status: `RP02A_FROZEN_PENDING_SCOPED_OWNER_AUTHORIZATION`
 
 Created: `2026-07-29`
 
@@ -31,7 +31,8 @@ does not rewrite that result.
 |---|---|---|---|---|
 | RP00 | `DONE_PASS` | Prospectively freeze and run one route-level parking-target certificate across elbow locks `{97,95,93,91,90,88} deg`. | Existing CC03K family universe, compiler, collision/contact/camera/gateway gates, and false physical authority remain unchanged. At least one distinct family per direction passes at a maximum viable angle and again at a passing target at least `2 deg` lower. Code, contract, tests, and advisory predate the single run. | Receipt `e1bc7d8e...` passes: `97/95 deg` reject, `93/91/90/88 deg` pass with `1` family per direction. Threshold `93 deg`; target `91 deg`. No motion or task attempt. |
 | RP01 | `DONE_PASS` | Freeze a high-clearance, contact-impossible elbow parking transaction to the RP00 target. | Fresh torque-off anchor bound; no-op setup; full `[88, 99.6] deg` corridor previewed every `0.1 deg`; moving chain stays at least `120 mm` from table, board, and pawns; all robot contacts remain absent; at most `5 deg` requested per step; read/verify each step; abort after two consecutive steps with less than `0.3 deg` progress; `15 s` hold drift below `0.5 deg`; torque-off cleanup; no task/pawn contact reachable. | Receipt `e9e99a4a...` passes; Fable independently returns `CONTINUE_RP02_FREEZE`. No motion or task attempt. |
-| RP02 | `READY_OWNER_AUTHORIZATION` | Execute parking once under separately reopened physical authority. | Packet SHA `79382c1a...`; hash-pinned executor; fresh timestamped preflight; held-joint and camera/writer stops; exact C922+Pi enclosure; reviewed gateway only; target reached; hold gate passes; exact receipt; torque off and `60 s` read. No retry without new preregistration. | Final above `93 deg`, stall, camera/writer loss, held-joint drift, or cleanup failure safely stops; above `93 deg` is terminal. |
+| RP02 | `DONE_FAIL_CLOSED_BEFORE_MOTION` | Execute parking once under separately reopened physical authority. | Packet SHA `79382c1a...`; hash-pinned executor; fresh timestamped preflight; held-joint and camera/writer stops; exact C922+Pi enclosure; reviewed gateway only; target reached; hold gate passes; exact receipt; torque off and `60 s` read. No retry without new preregistration. | V1 stopped before motion because its first changed target arrived at zero command time. Cameras completed, torque is off, pawn/task ledgers remain unchanged. |
+| RP02A | `FROZEN_PENDING_SCOPED_AUTHORIZATION` | Re-run parking once with the single prospectively declared clock-compatibility repair. | Preserve every RP02 target, geometry, collision, telemetry, camera, stall, hold, cleanup, and claim gate. Add one exact anchor row at elapsed zero and one `0.2 s` lead period before every changed destination; no destination bytes, target, limits, clipping, smoothing, or offsets change. | Any rate-limit/clamp/correction, target above `93 deg`, stall, camera/writer loss, held-joint drift, or cleanup failure safely stops. No reuse of the spent V1 authorization. |
 | RP03 | `PENDING` | Freeze fresh task actions at the achieved lock. | Strict unchanged gates; fresh C922 scene admission; at least one distinct family per direction; exact bytes and evaluator freeze predate outcomes. | Zero eligible families ends the successor without a task attempt. |
 | RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
 | RP05 | `PENDING` | Complete a distinct SIM->REAL task transfer. | Simulator success and robustness predate freeze; distinct family; camera-owned physical success with identical bytes. | At most three task attempts; failures stay in the denominator. |
@@ -52,10 +53,11 @@ does not rewrite that result.
 
 ## Current next step
 
-Bind a time-bounded owner authorization for the exact RP02 packet, or remain
-paused without touching cameras, gateway, serial, torque, or the robot. The
-packet is reviewed and ready; no owner authorization document currently
-exists, so the executor remains uncallable for physical motion.
+Bind a new time-bounded owner authorization for the exact RP02A packet, then
+execute it exactly once. The V1 authorization is spent and cannot be reused.
+The only successor change is the prospectively frozen clock-compatible anchor
+and target-transition timing; this is a localized gateway-contract repair, so
+Fable is reserved rather than invoked.
 
 ## RP00 immutable result
 
@@ -103,6 +105,36 @@ exists, so the executor remains uncallable for physical motion.
   milestone review.
 - Physical authority remains false until a separate authorization document
   validates.
+
+## RP02 immutable V1 execution result
+
+- Authorization commit: `e98d53d`.
+- Packet SHA-256:
+  `79382c1aa0a9ec6d292300bb34dcf1c910fafb6a64f57bfa8e549c87c79abfe6`.
+- Receipt SHA-256:
+  `64b1d498536a68dfd20c421251ae8d7884075a86006979f8b216893cfa17acd3`.
+- The gateway established the torque-on anchor, but rejected the first
+  `5 deg` destination before sending it because it was presented at
+  effectively zero elapsed command time.
+- Sent motion rows: `0`; telemetry rows: `0`; pawn contacts: `0`; task
+  attempts: `0`.
+- Both camera receipts completed and the configuration-free postflight
+  confirmed follower torque off.
+- This is a packet/compiler timing defect, not an elbow-mechanism result.
+
+## RP02A prospective one-change repair
+
+- Packet:
+  `configs/hardware/parking_transaction_execution_v2.json`.
+- Predecessor closeout:
+  `configs/decisions/parking_transaction_execution_v1_closeout.json`.
+- Row zero is the exact live torque-on anchor.
+- Every changed destination receives one `0.2 s` lead period. With the
+  unchanged maximum destination delta of `5 deg`, this is below the reviewed
+  gateway allowance of `60 deg/s * 0.1 s = 6 deg`.
+- Focused executor and gateway suite: `42 passed`.
+- Physical authority remains false until a new packet-hash-bound,
+  time-bounded authorization validates.
 
 ## RP01 freeze
 

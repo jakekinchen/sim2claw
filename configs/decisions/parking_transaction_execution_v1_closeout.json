@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.parking_transaction_execution_closeout.v1",
+  "decision_id": "rp02-elbow-parking-execution-v1-closeout",
+  "status": "fail_closed_before_motion_open_clock_compatible_successor",
+  "proof_class": "physical_setup_recovery_not_task_evidence",
+  "packet": {
+    "path": "configs/hardware/parking_transaction_execution_v1.json",
+    "sha256": "79382c1aa0a9ec6d292300bb34dcf1c910fafb6a64f57bfa8e549c87c79abfe6"
+  },
+  "authorization": {
+    "path": "configs/authorizations/rp02_elbow_parking_20260729_v1.json",
+    "sha256": "8d10c98f3fd4f01a781df1c083bc533362c934842a442848517325c3e1088f82"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-execution-v1/receipt.json",
+    "sha256": "64b1d498536a68dfd20c421251ae8d7884075a86006979f8b216893cfa17acd3"
+  },
+  "result": {
+    "passed": false,
+    "failure": "PhysicalGatewayError: Precompiled exact target would require rate limiting, clamping, or correction; the current sample was not sent.",
+    "localization": "The first 5 degree destination was presented at effectively zero elapsed command time. The reviewed gateway rejected it before sending any motion command.",
+    "sent_motion_rows": 0,
+    "telemetry_rows": 0,
+    "physical_task_attempts": 0,
+    "pawn_contact": false,
+    "postflight_torque_enabled": false,
+    "c922_completed": true,
+    "pi_completed": true,
+    "fresh_anchor_degrees_percent": [
+      5.802197802197802,
+      -85.01098901098901,
+      99.47252747252747,
+      -15.164835164835164,
+      -103.34065934065934,
+      2.375296912114014
+    ]
+  },
+  "successor_scope": {
+    "allowed_change": "Send one exact live-anchor row at elapsed zero and wait one 5 Hz telemetry period before each changed destination so the unchanged destination bytes satisfy the gateway clock and slew contract.",
+    "preserved": [
+      "91 degree target",
+      "5 degree maximum destination step",
+      "12 iteration budget",
+      "2 second read interval",
+      "5 Hz telemetry",
+      "92/93 degree success bounds",
+      "stall and held-joint stops",
+      "15 second hold",
+      "60 second torque-off persistence read",
+      "dual camera enclosure",
+      "no pawn contact",
+      "no task attempt",
+      "one execution latch"
+    ],
+    "forbidden": [
+      "clipping",
+      "smoothing",
+      "offset repair",
+      "target change",
+      "collision gate change",
+      "task motion",
+      "reuse of the spent authorization"
+    ]
+  },
+  "physical_authority": false
+}

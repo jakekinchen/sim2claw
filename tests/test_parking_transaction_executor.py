@@ -101,7 +101,7 @@ def _packet() -> dict[str, Any]:
 
 def test_frozen_packet_requires_separate_owner_authorization() -> None:
     packet = load_packet(
-        ROOT / "configs/hardware/parking_transaction_execution_v1.json"
+        ROOT / "configs/hardware/parking_transaction_execution_v2.json"
     )
     assert packet["physical_authority"] is False
     assert packet["owner_authorization"]["currently_bound"] is False
@@ -114,7 +114,7 @@ def test_one_execution_latch_rejects_any_other_output_path(
     tmp_path: Path,
 ) -> None:
     packet = load_packet(
-        ROOT / "configs/hardware/parking_transaction_execution_v1.json"
+        ROOT / "configs/hardware/parking_transaction_execution_v2.json"
     )
     with pytest.raises(
         ParkingTransactionExecutionError, match="one-execution path"
@@ -142,6 +142,56 @@ def test_read_conditioned_ladder_reaches_primary_without_task_attempt() -> None:
     assert camera.checks > 0
     for row in report["iterations"]:
         assert row["previous_read_degrees"] - row["requested_degrees"] <= 5.0
+
+
+def test_clock_compatible_successor_primes_anchor_and_spaces_new_targets() -> None:
+    class _ExactGateway(_Gateway):
+        def __init__(self, anchor: np.ndarray) -> None:
+            super().__init__(anchor, motion_per_sample=0.5)
+            self.previous_request = anchor.copy()
+            self.previous_elapsed = 0.0
+            self.requests: list[tuple[float, np.ndarray]] = []
+
+        def sample(
+            self, elapsed: float, *, exact_requested_degrees: np.ndarray
+        ) -> dict[str, Any]:
+            allowed = 60.0 * min(
+                max(0.0, elapsed - self.previous_elapsed), 0.1
+            )
+            assert np.max(
+                np.abs(exact_requested_degrees - self.previous_request)
+            ) <= allowed + 1e-12
+            self.requests.append((elapsed, exact_requested_degrees.copy()))
+            self.previous_request = exact_requested_degrees.copy()
+            self.previous_elapsed = elapsed
+            return super().sample(
+                elapsed, exact_requested_degrees=exact_requested_degrees
+            )
+
+    anchor = np.asarray([5, -85, 99.47, -15, -103, 2], dtype=float)
+    packet = _packet()
+    packet["runtime"].update(
+        {
+            "clock_establishing_anchor_samples": 1,
+            "new_target_lead_periods": 1,
+        }
+    )
+    clock = _Clock()
+    gateway = _ExactGateway(anchor)
+    report = run_ladder(
+        gateway=gateway,
+        camera=_Camera(),
+        anchor=anchor,
+        packet=packet,
+        telemetry=io.StringIO(),
+        clock=clock,
+        sleep=clock.sleep,
+    )
+    assert report["outcome"] == "primary_success"
+    assert gateway.requests[0][0] == 0.0
+    assert np.array_equal(gateway.requests[0][1], anchor)
+    assert gateway.requests[1][0] == pytest.approx(0.2)
+    assert gateway.requests[1][1][2] == pytest.approx(94.47)
 
 
 def test_two_no_progress_intervals_stop_safely_above_93() -> None:
