@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import numpy as np
+
 from sim2claw.observable_physical_episode import (
     admitted_callback_frames,
+    bidirectional_point_tracks,
+    load_observation_contract,
     load_schedule_contract,
     nearest_frame_binding,
 )
@@ -78,3 +82,44 @@ def test_callback_admission_and_nearest_tie_break_are_deterministic() -> None:
     assert first["frame_index"] == 0
     assert second["frame_index"] == 1
     assert first["association_error_ms"] == 0.00005
+
+
+def test_live_observation_contract_freezes_two_pass_limits() -> None:
+    contract = load_observation_contract()
+    assert contract["two_pass_visual_events"]["pass_a"] == contract[
+        "two_pass_visual_events"
+    ]["pass_b"]
+    assert contract["two_pass_visual_events"][
+        "same_system_two_pass_not_independent_humans"
+    ] is True
+    assert contract["tracking"]["failed_tracks_abstain"] is True
+    assert contract["tracking"]["maximum_jaw_tip_pass_disagreement_px"] == 8.0
+    assert not any(contract["proof_boundaries"].values())
+    assert not any(contract["authority"].values())
+
+
+def test_bidirectional_point_tracks_are_exact_on_static_synthetic_frames() -> None:
+    frames = [
+        np.zeros((32, 32), dtype=np.uint8)
+        for _ in range(3)
+    ]
+    for frame in frames:
+        frame[12:18, 12:18] = 255
+    tracking = {
+        "frame_range_inclusive": [0, 2],
+        "labels": ["fixed_jaw_tip"],
+        "pass_a": {"anchor_points_xy": [[14.0, 14.0]]},
+        "pass_b": {"anchor_points_xy": [[14.0, 14.0]]},
+        "opencv_parameters": {
+            "window_size_px": [15, 15],
+            "maximum_pyramid_level": 2,
+            "maximum_iterations": 20,
+            "epsilon": 0.001,
+            "minimum_eigenvalue_threshold": 0.00001,
+        },
+        "maximum_jaw_tip_pass_disagreement_px": 1.0,
+        "maximum_pawn_crown_pass_disagreement_px": 1.0,
+    }
+    rows = bidirectional_point_tracks(frames, tracking)
+    assert list(rows) == [0, 1, 2]
+    assert all(row["fixed_jaw_tip"]["accepted"] for row in rows.values())

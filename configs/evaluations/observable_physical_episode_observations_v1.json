@@ -1,0 +1,142 @@
+{
+  "schema_version": "sim2claw.observable_physical_episode_observation_contract.v1",
+  "experiment_id": "observable-physical-episode-observations-v1",
+  "frozen_date": "2026-07-29",
+  "sources": {
+    "schedule_contract": {
+      "path": "configs/evaluations/observable_physical_episode_schedule_v2.json",
+      "sha256": "ff85692fe8e06d06d40b3c9476dbaa8c854e79960bbec5cabe6a6845ce78b234"
+    },
+    "schedule_receipt": {
+      "path": "outputs/observable_physical_episode_schedule_v2/receipt.json",
+      "sha256": "47f3f2173ef42f4692f08d7e42f4390787370b1098dd968a4e79c72b5ff6e61e"
+    },
+    "frame_manifest": {
+      "path": "outputs/observable_physical_episode_schedule_v2/frames/manifest.json",
+      "sha256": "17dad85fb58320b8c7fb156cbabce9481820e7fb0f5d104b371b4a99f95fbf19"
+    },
+    "d405_video": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/wrist_d405.browser.mp4",
+      "sha256": "2d0cf208465d984afc9a601da305e8ce1d94ddba124d05674ec18d5df1be830c"
+    },
+    "or0_receipt": {
+      "path": "outputs/observable_registration_corpus_v1/receipt.json",
+      "sha256": "e4332e483908c4ba465c99bff3a543deb50bacf6c0ae281ea12555fafa52a739"
+    },
+    "or2_closeout": {
+      "path": "configs/decisions/observable_robot_jaw_mapping_v1_closeout.json",
+      "sha256": "28461906ca0b3cb8e67e5e68471f434c3498ea425bb8b6f93f4512baf6cf5da1"
+    },
+    "endpoint_closeout": {
+      "path": "configs/decisions/retrospective_c922_endpoint_to_sim_v1_closeout.json",
+      "sha256": "b1a5529ade25992cd88cc00a3b926b3f7cb987956b41ad3d50c4a50ea0303761"
+    },
+    "endpoint_receipt": {
+      "path": "outputs/retrospective_c922_endpoint_to_sim_v1/receipt.json",
+      "sha256": "3f73fc8cd41365517a287895fc23b973e783e764dee022987cecd28e89c7a011"
+    }
+  },
+  "tracking": {
+    "stream": "d405",
+    "algorithm": "opencv_pyramidal_lucas_kanade",
+    "frame_range_inclusive": [89, 130],
+    "labels": [
+      "fixed_jaw_tip",
+      "moving_jaw_tip",
+      "selected_pawn_crown"
+    ],
+    "pass_a": {
+      "direction": "ascending",
+      "anchor_frame_index": 89,
+      "anchor_points_xy": [
+        [214.0, 181.0],
+        [276.0, 183.0],
+        [244.0, 166.0]
+      ]
+    },
+    "pass_b": {
+      "direction": "descending",
+      "anchor_frame_index": 130,
+      "anchor_points_xy": [
+        [215.0, 183.0],
+        [269.0, 187.0],
+        [243.0, 180.0]
+      ]
+    },
+    "opencv_parameters": {
+      "window_size_px": [31, 31],
+      "maximum_pyramid_level": 4,
+      "maximum_iterations": 40,
+      "epsilon": 0.001,
+      "minimum_eigenvalue_threshold": 0.00001
+    },
+    "maximum_jaw_tip_pass_disagreement_px": 8.0,
+    "maximum_pawn_crown_pass_disagreement_px": 8.0,
+    "failed_tracks_abstain": true
+  },
+  "two_pass_visual_events": {
+    "pass_a": {
+      "last_definitely_separate_sample": 224,
+      "candidate_contact_interval_samples": [228, 232],
+      "first_definite_enclosure_sample": 232,
+      "candidate_lift_interval_samples": [247, 260],
+      "definite_carried_motion_interval_samples": [260, 390],
+      "candidate_release_interval_samples": [400, 407],
+      "terminal_supported_interval_samples": [526, 527]
+    },
+    "pass_b": {
+      "last_definitely_separate_sample": 224,
+      "candidate_contact_interval_samples": [228, 232],
+      "first_definite_enclosure_sample": 232,
+      "candidate_lift_interval_samples": [247, 260],
+      "definite_carried_motion_interval_samples": [260, 390],
+      "candidate_release_interval_samples": [400, 407],
+      "terminal_supported_interval_samples": [526, 527]
+    },
+    "review_order_a": "ascending_sample_index",
+    "review_order_b": "descending_sample_index",
+    "same_system_two_pass_not_independent_humans": true,
+    "event_boundary_maximum_disagreement_d405_frames": 1,
+    "exact_contact_visible": false,
+    "metric_contact_point_visible": false
+  },
+  "observable_episode": {
+    "schema_version": "sim2claw.observable_episode.v2-min",
+    "recording_id": "20260727T041737Z-89190e53",
+    "instruction": "Pick up the brown pawn on d1 and place it upright on d2.",
+    "action_count": 531,
+    "sample_hz_nominal": 20,
+    "source_square": "d1",
+    "destination_square": "d2",
+    "selected_object": "brown_pawn"
+  },
+  "acceptance": {
+    "minimum_accepted_fixed_jaw_track_samples": 20,
+    "minimum_accepted_moving_jaw_track_samples": 20,
+    "minimum_accepted_pawn_crown_track_samples": 8,
+    "require_contact_interval_consensus": true,
+    "require_carried_motion_interval_consensus": true,
+    "require_release_interval_consensus": true,
+    "require_terminal_d2_upright_endpoint": true
+  },
+  "proof_boundaries": {
+    "two_pass_review_is_independent_human_annotation": false,
+    "visual_enclosure_is_instrumented_force_contact": false,
+    "wrist_rgb_has_metric_depth": false,
+    "pawn_crown_track_is_metric_object_pose": false,
+    "terminal_endpoint_proves_action_replay": false,
+    "physical_events_fit_simulator_parameters": false,
+    "observable_episode_proves_bidirectional_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "training": false,
+    "paid_compute": false
+  }
+}
