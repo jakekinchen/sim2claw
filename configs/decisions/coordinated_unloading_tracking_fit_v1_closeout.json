@@ -1,0 +1,30 @@
+{
+  "schema_version": "sim2claw.coordinated_unloading_tracking_fit_closeout.v1",
+  "decision_id": "coordinated-unloading-tracking-fit-20260729-v1-closeout",
+  "status": "heldout_fit_pass_task_challenger_admitted",
+  "contract": {
+    "path": "configs/evaluations/coordinated_unloading_tracking_fit_v1.json",
+    "sha256": "2725c103d6bef9a72cb30c7c47d7f6c0f53f390651ce7f8e343f520d6a5af9a1"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-coordinated-unloading-tracking-fit-v1/receipt.json",
+    "sha256": "d51d316a18e42e30e9bb6db17a8e41a6ecc79fee914753ab0b81b7073360454e"
+  },
+  "result": {
+    "source_rows": 434,
+    "train_rows": 304,
+    "heldout_rows": 130,
+    "alpha": 0.040771249854421744,
+    "bias_degrees_per_sample": 0.05965835013118282,
+    "heldout_rmse_degrees": 0.3867834579670476,
+    "heldout_maximum_absolute_error_degrees": 0.9104180309028393,
+    "heldout_relative_improvement_over_requested": 0.9074096643699618,
+    "full_observed_support_degrees": [
+      50.59340659340659,
+      100.08791208791209
+    ],
+    "task_outcomes_used": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Admit exactly one elbow-only sample-domain task challenger over the four immutable V5 action tensors and five already frozen reset variants. Preserve requested action bytes, direct targets on all non-elbow joints, 40 Hz row order, the canonical evaluator, the prior direct/ZOH 40/40 baseline, and false hardware and mapping authority. Report every applied row outside the measured physical support as extrapolative. A 20/20 challenger pass may open a separately frozen no-contact mapping-resolution extension; any task failure closes V5 without hardware."
+}

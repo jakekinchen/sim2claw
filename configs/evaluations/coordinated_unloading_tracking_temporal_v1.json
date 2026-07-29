@@ -1,0 +1,73 @@
+{
+  "schema_version": "sim2claw.coordinated_unloading_tracking_temporal.v1",
+  "contract_id": "coordinated-unloading-tracking-temporal-20260729-v1",
+  "status": "frozen_after_heldout_fit_pass_before_any_task_replay",
+  "proof_class": "cpu_fp64_immutable_v5_action_elbow_tracking_diagnostic",
+  "inputs": {
+    "v5_contract": {
+      "path": "configs/evaluations/canonical_wrist_path_selected_temporal_v5.json",
+      "sha256": "a303b12eaf959186fc0b904023552ab8a4898ac691ec933d60b4cd00ae6b09a5"
+    },
+    "v5_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-selected-temporal-v5/receipt.json",
+      "sha256": "cf21bd8cc7b408d50ffcaae039fa993173514d49c4abf6f455bb7b484af0f36a"
+    },
+    "base_temporal_contract": {
+      "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+      "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+    },
+    "tracking_fit_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-coordinated-unloading-tracking-fit-v1/receipt.json",
+      "sha256": "d51d316a18e42e30e9bb6db17a8e41a6ecc79fee914753ab0b81b7073360454e"
+    },
+    "tracking_fit_closeout": {
+      "path": "configs/decisions/coordinated_unloading_tracking_fit_v1_closeout.json",
+      "sha256": "2c39f18974defaaad4fc6281e609fafa9705d59ddeaec02f661d8d3ba595ea0d"
+    },
+    "tracking_fit_implementation": {
+      "path": "src/sim2claw/coordinated_unloading_tracking_challenger.py",
+      "sha256": "96d135d9b1ec124d5157c1bc64b2c71756fd5889b356c45cb40784ffc109f3ee"
+    },
+    "implementation": {
+      "path": "src/sim2claw/coordinated_unloading_tracking_temporal.py",
+      "sha256": "e2fdd94895b080a001a71489cd7ccafc6176d7e162b03502e24e4b5b4f313c91"
+    }
+  },
+  "plant": {
+    "kind": "elbow_only_first_order_affine_per_sample",
+    "joint_name": "elbow_flex",
+    "joint_index": 2,
+    "alpha": 0.040771249854421744,
+    "bias_degrees_per_sample": 0.05965835013118282,
+    "initial_actual_elbow_degrees": 100.08791208791209,
+    "measured_observed_support_degrees": [
+      50.59340659340659,
+      100.08791208791209
+    ],
+    "sample_hz_label": 40.0,
+    "non_elbow_path": "canonical_direct_target",
+    "requested_mapped_sent_actions": "exact_immutable_v5_float64_bytes",
+    "task_outcomes_used_for_fit": false,
+    "causal_latency_calibrated": false,
+    "extrapolation_policy": "execute_in_simulation_report_every_out_of_support_row_never_promote_hardware_or_mapping_from_extrapolation"
+  },
+  "acceptance": {
+    "expected_case_count": 4,
+    "expected_variants_per_case": 5,
+    "expected_challenger_episode_count": 20,
+    "minimum_passing_cases_per_direction": 2,
+    "all_challenger_episodes_must_pass": true,
+    "prior_v5_direct_and_zoh_40_of_40_must_remain_passed": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-coordinated-unloading-tracking-temporal-v1",
+  "authority": {
+    "dynamic_simulation": true,
+    "fit_or_refit": false,
+    "action_selection": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "mapping_approval": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "This one-shot CPU/float64 diagnostic applies the prospectively frozen elbow response to the four immutable V5 requested action tensors while every non-elbow applied target remains canonical direct-target. It runs exactly five already frozen reset variants per case and requires 20/20 task-gate passes in addition to the prior immutable 40/40 direct/ZOH pass. Applied elbow rows outside the single no-contact physical trace support are explicitly extrapolative. A pass cannot approve a global or task mapping, authorize task contact, count a physical attempt, or claim transfer; it can only admit a separately frozen no-contact mapping-resolution extension."
+}
