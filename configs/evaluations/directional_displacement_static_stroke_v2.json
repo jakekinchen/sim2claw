@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static.v1",
+  "contract_id": "directional-displacement-static-stroke-20260729-v2",
+  "status": "frozen_before_static_only_elbow_locked_enumeration",
+  "proof_class": "prospective_cpu_fp64_elbow_locked_head_height_66mm_directional_displacement_static",
+  "base_contract": {
+    "path": "configs/evaluations/directional_displacement_static_bridge_stroke_v2.json",
+    "sha256": "c07d022a23002413ef75cd7818a3a9297d135f0f4b7630f13427725031419aa2"
+  },
+  "mapping_closeout": {
+    "path": "configs/decisions/elbow_telemetry_probe_v4_closeout.json",
+    "sha256": "f9c5d8fac4c2b50eb46dcc0e566f076f216dd6925c121712b9f2675f3ea685a8"
+  },
+  "fresh_wrist_heldout_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/evaluation/receipt.json",
+    "sha256": "16b7896c45904c7563d00f8b8386cddf3892de9deec70c77c0a2c9ff087294c6"
+  },
+  "elbow_stall_closeout": {
+    "path": "configs/decisions/elbow_telemetry_probe_v4_closeout.json",
+    "sha256": "f9c5d8fac4c2b50eb46dcc0e566f076f216dd6925c121712b9f2675f3ea685a8"
+  },
+  "implementation": {
+    "path": "src/sim2claw/directional_displacement_static.py",
+    "sha256": "0f542a9bbd517f37a2a202f0f84e9bf6756512097d41691906547d442faa0706"
+  },
+  "live_seed": {
+    "source": "overridden_by_exact_rp02d_achieved_lock",
+    "follower_position_degrees": [
+      5.802197802197802,
+      -85.01098901098901,
+      92.43956043956044,
+      -12.0,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "locked_joint_name": "elbow_flex",
+    "locked_joint_index": 2,
+    "locked_value_degrees": 92.43956043956044
+  },
+  "unchanged_from_base": {
+    "four_outcome_informed_cases_remain_quarantined": true,
+    "remaining_48_family_universe": true,
+    "three_wrist_roll_targets": true,
+    "four_prospective_head_height_targets": true,
+    "jaw_target_contact_offset_and_35mm_precontact_backoff": true,
+    "maximum_576_cells": true,
+    "collision_camera_gateway_contact_band_and_contact_normal_gates": true,
+    "two_distinct_selected_families_one_per_direction": true,
+    "dynamic_outcomes_not_used_for_cell_selection": true,
+    "only_stroke_changes_from_40mm_to_66mm": true,
+    "dynamic_and_physical_authority_false": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-achieved-lock-task-stroke-static-v2",
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "dynamic_simulation": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospectively frozen static-only 66-mm stroke successor at the exact successful RP02D achieved lock. The immutable RP03A negative localizes undertravel and lift; this changes stroke only and cannot authorize dynamics, hardware, a task attempt, mapping approval, simulator promotion, or transfer."
+}

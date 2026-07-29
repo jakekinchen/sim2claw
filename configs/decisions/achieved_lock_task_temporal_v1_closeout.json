@@ -1,0 +1,30 @@
+{
+  "schema_version": "sim2claw.achieved_lock_task_temporal_closeout.v1",
+  "decision_id": "achieved-lock-task-temporal-20260729-v1-closeout",
+  "status": "accepted_immutable_dynamic_negative",
+  "contract": {
+    "path": "configs/evaluations/achieved_lock_task_temporal_v1.json",
+    "sha256": "403c64114ae56fc61f832d06d74323ca672925dfb3e3edc3ffd73c4c9e64aa81"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-achieved-lock-task-temporal-v1/receipt.json",
+    "sha256": "1588fd2bd559d5de7bd000e607f75b56c1c48e6b6624b04e2844c161cc3591bf"
+  },
+  "result": {
+    "direction_counts": {
+      "REAL_TO_SIM": 0,
+      "SIM_TO_REAL": 0
+    },
+    "all_identity_camera_collision_and_exclusion_gates_passed": true,
+    "failed_channels": [
+      "minimum_signed_progress_mm",
+      "maximum_selected_vertical_rise_mm"
+    ],
+    "direct_nominal_progress_mm": {
+      "brown_pawn_g2__g2_f2": 16.21781190247522,
+      "brown_pawn_f1__f1_f2": 5.290861008675085
+    },
+    "physical_task_attempts": 0
+  },
+  "decision": "Preserve both 40-mm actions as terminal dynamic negatives. Open one bounded 66-mm static successor using the previously preregistered CC02 stroke and the same exact achieved lock, family universe, ranking, collision, contact, camera, calibrated-range, and gateway gates. Do not weaken the 36.025-mm consequence gate or open hardware."
+}

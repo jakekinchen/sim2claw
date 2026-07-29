@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP03A_EXACT_ACHIEVED_LOCK_TEMPORAL_FROZEN`
+Status: `RP03B_66MM_STROKE_STATIC_FROZEN`
 
 Created: `2026-07-29`
 
@@ -37,7 +37,8 @@ does not rewrite that result.
 | RP02C | `FROZEN_PENDING_SCOPED_AUTHORIZATION` | Execute one no-write read-conditioned deep-request parking transaction. | Start floor `86 deg`; one prospective deepen to `82 deg`; changed requests remain at most `5 deg`; success only in `[88,93] deg` plus `15 s / 0.5 deg` hold; elbow current `>150` raw for `1 s` or temperature `>45 C` stops; exact cameras/gateway/cleanup/one-execution latch. | Any out-of-band, current, temperature, drift, camera, exact-action, or cleanup defect stops safely. Still zero task attempts. |
 | RP02D | `DONE_PASS` | Repeat the successful band-entry mechanism with only the first/recurring hold reset moved from `4.0 s` to `2.0 s`. | Preserve V3 requests, `[88,93] deg`, `15 s / 0.5 deg`, current/temperature, geometry, cameras, exact gateway, cleanup, and zero task authority. | Passed at `92.439560 deg`; `15.017 s` hold, `0.175824 deg` drift, both cameras complete, torque off. |
 | RP03 | `DONE_PASS` | Freeze fresh task actions at the achieved lock. | Exact RP02D torque-on pose, unchanged bounded family universe and static gates; at least one distinct family per direction; exact bytes predate outcomes. | Passed with exactly one eligible family per direction; no dynamic or physical execution. |
-| RP03A | `FROZEN_PENDING_ONE_DYNAMIC_RUN` | Replay both exact achieved-lock actions under baseline and timing stress. | Preserve exact action bytes, 40 Hz row order, five reset deltas, `36.025 mm` progress, contact/exclusion/no-lift/collision/camera gates, direct target plus diagnostic `0.11 s` ZOH, and ObservableEpisode.v2-min first-divergence traces. Both cases must pass both paths. | A negative remains immutable and cannot be repaired after outcomes. A pass opens task-packet design only. |
+| RP03A | `DONE_IMMUTABLE_NEGATIVE` | Replay both exact achieved-lock actions under baseline and timing stress. | Preserve exact action bytes, 40 Hz row order, five reset deltas, `36.025 mm` progress, contact/exclusion/no-lift/collision/camera gates, direct target plus diagnostic `0.11 s` ZOH, and ObservableEpisode.v2-min first-divergence traces. Both cases must pass both paths. | Both directions rejected: contact occurred but progress and no-lift failed. Identity, camera, collision, and exclusions passed. |
+| RP03B | `FROZEN_PENDING_ONE_STATIC_RUN` | Compile one bounded longer-stroke successor at the exact achieved lock. | Change only stroke from `40 mm` to the previously preregistered `66 mm`; preserve the 48-family universe, 576-cell bound, ranking, wrist/contact grid, IK, collision, contact, camera, calibrated-range, gateway-rate, one-family-per-direction, and false physical authority. | A static negative closes this mechanism. A pass freezes new bytes but does not authorize dynamics or hardware. |
 | RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
 | RP05 | `PENDING` | Complete a distinct SIM->REAL task transfer. | Simulator success and robustness predate freeze; distinct family; camera-owned physical success with identical bytes. | At most three task attempts; failures stay in the denominator. |
 | RP06 | `PENDING` | Approve a task-bounded mapping for the successful locked-elbow slice. | Scope and factors are preregistered; accepted wrist/pan/lift evidence plus successful first-divergence bounds support the exact task slice. | Never relabel as global mapping approval. |
@@ -57,9 +58,10 @@ does not rewrite that result.
 
 ## Current next step
 
-Run the committed RP03A exact-achieved-lock dynamic replay exactly once. Both
-frozen cases must pass all five reset variants under direct target and the
-diagnostic ZOH path before any physical task packet can be considered.
+Run the committed RP03B 66-mm exact-achieved-lock static successor exactly
+once. It changes only the stroke mechanism identified by the immutable RP03A
+undertravel result and must still pass every static gate before a new dynamic
+contract can be considered.
 
 ## RP00 immutable result
 
@@ -244,6 +246,20 @@ diagnostic ZOH path before any physical task packet can be considered.
 - All selected static collision, contact, calibrated-range, gateway-rate, and
   camera gates passed. Mapping remains
   `provisional_range_audit_blocked`; physical authority remains false.
+
+## RP03A immutable exact-lock dynamic negative
+
+- Receipt SHA-256:
+  `1588fd2bd559d5de7bd000e607f75b56c1c48e6b6624b04e2844c161cc3591bf`.
+- Direction counts are REAL->SIM `0`, SIM->REAL `0`.
+- All requested/mapped/sent identity, 40 Hz, camera, collision, exclusion,
+  selected-contact, and gateway-rate checks passed.
+- The 40-mm actions undertraveled: nominal direct progress was
+  `16.217812 mm` for `g2->f2` and `5.290861 mm` for `f1->f2`, below the
+  unchanged `36.025 mm` gate. Pawn vertical rise also exceeded `2 mm`.
+- This is the first causal result at the achieved lock: RP03B changes stroke
+  only to the already-preregistered `66 mm` bound. No physical attempt
+  occurred.
 
 ## RP01 freeze
 

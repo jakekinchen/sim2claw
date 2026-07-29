@@ -1,0 +1,24 @@
+{
+  "schema_version": "sim2claw.campaign_graph_node.v1",
+  "node_id": "parking-recovery-rp03a-exact-lock-temporal-20260729-v1",
+  "status": "accepted_immutable_dynamic_negative",
+  "predecessors": [
+    {
+      "node_id": "parking-recovery-rp03-exact-lock-static-20260729-v1",
+      "result": "one_static_family_per_direction"
+    }
+  ],
+  "single_mechanism_result": "40mm_actions_contact_but_undertravel_and_lift",
+  "temporal_receipt_sha256": "1588fd2bd559d5de7bd000e607f75b56c1c48e6b6624b04e2844c161cc3591bf",
+  "direction_counts": {
+    "REAL_TO_SIM": 0,
+    "SIM_TO_REAL": 0
+  },
+  "ledger": {
+    "real_to_sim": "0/0",
+    "sim_to_real": "0/0",
+    "physical_task_attempts": "0/10"
+  },
+  "active_card": "RP03B",
+  "physical_authority": false
+}
