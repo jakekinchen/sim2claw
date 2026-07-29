@@ -1,0 +1,30 @@
+{
+  "schema_version": "sim2claw.post_cable_safe_return_preflight_closeout.v1",
+  "decision_id": "post-cable-safe-return-20260729-v1-preflight-closeout",
+  "status": "stopped_before_motion_fresh_anchor_successor_required",
+  "packet": {
+    "path": "configs/hardware/post_cable_safe_return_v1.json",
+    "sha256": "3d6a5b7fe6ee757769c47dbb95c13e81de2a93777758d96e1dac80484093e84a"
+  },
+  "authorization_id": "owner-standing-rp04h-post-cable-safe-return-20260729-v1",
+  "failure": "fresh RP04H pose is outside the three-degree start envelope",
+  "motion_opened": false,
+  "camera_opened": false,
+  "physical_task_attempts": 0,
+  "fresh_configuration_free_preflight": {
+    "passed": true,
+    "follower_start_degrees": [
+      -17.054945054945055,
+      -57.142857142857146,
+      99.12087912087912,
+      -7.516483516483516,
+      -102.46153846153847,
+      1.7814726840855106
+    ],
+    "physical_follower_torque_enabled": false,
+    "device_configuration_rewritten": false,
+    "follower_port": "/dev/cu.usbmodem5B3D0406411",
+    "follower_calibration_sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4"
+  },
+  "decision": "Do not widen the start gate or reuse the consumed authorization. Freeze a fresh pan-away static route from the new torque-off pose, then bind a new packet and authorization."
+}

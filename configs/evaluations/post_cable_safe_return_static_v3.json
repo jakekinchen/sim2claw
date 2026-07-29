@@ -1,0 +1,120 @@
+{
+  "schema_version": "sim2claw.post_cable_safe_return_static.v2",
+  "contract_id": "post-cable-safe-return-fresh-anchor-20260729-v3",
+  "status": "frozen_before_static_dual_scene_pan_away_return_qualification",
+  "proof_class": "prospective_cpu_fp64_static_only_post_cable_fresh_anchor_pan_away_safe_return",
+  "inputs": {
+    "v1_preflight_closeout": {
+      "path": "configs/decisions/post_cable_safe_return_v1_preflight_closeout.json",
+      "sha256": "e8cb1d444e7d55d35d2db15e7ad601f505c55e2747d8ba97faaa1657ff7e3707"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "registered_rigid_candidate": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+      "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+    },
+    "implementation": {
+      "path": "src/sim2claw/post_cable_safe_return_v2.py",
+      "sha256": "a46e817b6da2a3c1de10f34c3fb0472a00d18a010f72716d658a41c4ef4e9d23"
+    }
+  },
+  "route": {
+    "waypoints": [
+      [
+        -17.054945054945055,
+        -57.142857142857146,
+        99.12087912087912,
+        -7.516483516483516,
+        -102.46153846153847,
+        1.7814726840855106
+      ],
+      [
+        -60.0,
+        -57.142857142857146,
+        99.12087912087912,
+        -7.516483516483516,
+        -102.46153846153847,
+        1.7814726840855106
+      ],
+      [
+        -60.0,
+        -85.53846153846153,
+        99.12087912087912,
+        -7.516483516483516,
+        -102.46153846153847,
+        1.7814726840855106
+      ],
+      [
+        6.5054945054945055,
+        -85.53846153846153,
+        99.47252747252747,
+        -20.087912087912088,
+        -103.34065934065934,
+        2.3752969121140137
+      ]
+    ],
+    "maximum_step_degrees": 0.5,
+    "sample_hz": 20.0,
+    "expected_shape": [
+      278,
+      6
+    ],
+    "stage_boundary_rows": [
+      86,
+      143,
+      277
+    ],
+    "path_shape": "from the fresh torque-off anchor, pan away to -60 degrees, lower shoulder lift to the natural-anchor value, then restore pan and wrist channels to the natural anchor"
+  },
+  "gateway": {
+    "calibrated_minimum": [
+      -120.26373626373626,
+      -106.63736263736264,
+      -102.10989010989012,
+      -107.47252747252747,
+      -180.0,
+      0.0
+    ],
+    "calibrated_maximum": [
+      120.26373626373626,
+      106.63736263736264,
+      102.10989010989012,
+      107.47252747252747,
+      180.0,
+      100.0
+    ],
+    "maximum_rates_per_second": [
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      18.0,
+      20.0
+    ]
+  },
+  "geometry": {
+    "selected_piece_id": "brown_pawn_g2",
+    "registered_minimum_clearance_m": 0.05,
+    "uncorrected_row_zero_clearance_m": 0.021968256332651172,
+    "maximum_uncorrected_worsening_m": 0.0005,
+    "registered_and_uncorrected_scenes_required": true,
+    "new_robot_or_environment_contact_forbidden": true,
+    "pawn_and_board_contact_forbidden": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-post-cable-safe-return-static-v3",
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "mapping_approval": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Static-only qualification of a 278-row pan-away route from the fresh configuration-free torque-off pose to the natural anchor. It preserves the uncorrected-scene row-zero clearance with at most 0.5 mm worsening while requiring both scenes contact-free and the registered scene above 50 mm. It cannot authorize cameras, serial access, gateway access, physical motion, pawn contact, a task attempt, mapping approval, or transfer."
+}
