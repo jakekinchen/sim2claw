@@ -1,0 +1,23 @@
+{
+  "schema_version": "sim2claw.owner_physical_authorization.v1",
+  "authorization_id": "owner-rp02d-hold-20260729-082410-cdt-v4",
+  "status": "active",
+  "source_owner_instruction": "Proceed, and don't stop until we get a successful advancement in our goal metrics.",
+  "operation_id": "rp02d-elbow-deep-request-hold-20260729-v4",
+  "packet_sha256": "006f1a5e2112ac8f81fb779622298b128e2f12093af5706a2baab999a9d50856",
+  "issued_at": "2026-07-29T08:24:10-05:00",
+  "expires_at": "2026-07-29T09:24:10-05:00",
+  "operator_name": "Kelly",
+  "operator_present_full_transaction": true,
+  "power_down_supply_on_torque_cleanup_error": true,
+  "physical_parking_transaction": true,
+  "physical_task_attempt": false,
+  "maximum_executions": 1,
+  "camera_setup_authorized": true,
+  "gateway_setup_authorized": true,
+  "serial_authorized": true,
+  "torque_authorized": true,
+  "pawn_contact_authorized": false,
+  "servo_configuration_write_authorized": false,
+  "claim_boundary": "Exactly one RP02D one-change hold-timing setup/recovery execution. No task attempt, pawn contact, configuration write, retry, mapping promotion, policy ranking, or transfer is authorized."
+}
