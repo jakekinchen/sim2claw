@@ -1,0 +1,102 @@
+{
+  "schema_version": "sim2claw.observable_jaw_aperture_replay_contract.v1",
+  "experiment_id": "observable-jaw-aperture-replay-v1",
+  "frozen_date": "2026-07-29",
+  "proof_class": "one_run_exact_c6_action_natural_contact_jaw_aperture_mapping_successor",
+  "sources": {
+    "c6_contract": {
+      "path": "configs/evaluations/realized_action_outcome_mission_v1.json",
+      "sha256": "f406149f51578b7ecae646c46b35c9237693b4f172c66dbb271cee67b9728b77"
+    },
+    "c6_receipt": {
+      "path": "outputs/realized_action_outcome_mission_v1/receipt.json",
+      "sha256": "4bcf1f1a6c389c61fb1eb1445afd20ab0be814eb1cbaee13ad2d11e0198587d4",
+      "artifact_sha256": "df3f6abab728ec6a74a468afeb531b4bec99346c693ec081786c8dd8fb8c2c38"
+    },
+    "c6_trace": {
+      "path": "outputs/realized_action_outcome_mission_v1/trace.json",
+      "sha256": "c3e885803d7382aabf051c5daf467998076b4fa1063c7020faaaef8172508d69"
+    },
+    "or6_closeout": {
+      "path": "configs/decisions/observable_jaw_aperture_fit_v1_closeout.json",
+      "sha256": "f8ea72cad4cd8dda9c244dd074b1e6b6019ab62baeed5eb6572d11f791c2eba7"
+    },
+    "or6_candidate": {
+      "path": "outputs/observable_jaw_aperture_fit_v1/candidate_manifest.json",
+      "sha256": "e8c27ef3118c3383d2d2312371a54b6c40d749880b5ab73aa9a14e0305dd17e5",
+      "canonical_sha256": "1fabcee8116fd3673d5a68da02f939538850aa208448c0445547200812209b5f"
+    }
+  },
+  "expected_identity": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "row_count": 531,
+    "joint_count": 6,
+    "requested_sha256": "5d58874c166d2df9b890177ab9f1ef0a6934e53d46242b2346bf3428e5904c79",
+    "gateway_sent_sha256": "3b034bd965d4bf1a71591cc77f033e97f1fe8eb30aa75cb314cc529b4e40e3ef",
+    "timestamps_sha256": "68e87c15992123e4415b2a3ec6d1a8e68cffd1ca642ac35002ed255544829f48",
+    "identified_applied_sha256": "4b486ac78d2377f5fad70f713ab1183cfd9717996e975b87e0288eb5fc7a259c",
+    "row_order_preserved": true
+  },
+  "candidate_change": {
+    "only_changed_parameter": "gripper_zero_offset_rad",
+    "baseline_value": -0.17453,
+    "candidate_value": 0.04948239306868429,
+    "candidate_config_sha256": "dd03853d957192062b6cfd9b23a6f973c516efaad87f162b29e6f8136492a693"
+  },
+  "replay": {
+    "one_run_only": true,
+    "reuse_c6_requested_gateway_sent_timestamps_and_identified_applied": true,
+    "reuse_c6_initialization": true,
+    "reuse_c6_evaluator": true,
+    "reuse_c6_post_action_settle": true,
+    "preserve_source_row_order": true,
+    "preserve_source_timestamps": true,
+    "natural_contact_only": true,
+    "observed_state_after_initialization_allowed": false,
+    "camera_update_after_initialization_allowed": false,
+    "observed_grasp_or_release_marker_allowed": false,
+    "latch_or_object_attachment_allowed": false,
+    "support_projection_allowed": false,
+    "terminal_endpoint_input_allowed": false,
+    "action_clipping_smoothing_offset_retiming_or_ik_allowed": false,
+    "actuator_plant_change_allowed": false,
+    "contact_parameter_change_allowed": false,
+    "object_parameter_change_allowed": false,
+    "initialization_change_allowed": false,
+    "camera_change_allowed": false
+  },
+  "comparison": {
+    "c6_first_planar_motion_over_1mm_sample": 386,
+    "c6_catastrophic_launch_sample": 388,
+    "c6_selected_jaw_contact_steps": 0,
+    "c6_final_planar_center_error_m": 0.06914757217991721,
+    "c6_final_upright_tilt_degrees": 179.9921876808531,
+    "catastrophic_inter_sample_planar_jump_threshold_m": 0.05,
+    "minimum_final_planar_error_relative_improvement": 0.1,
+    "material_advancement_requires_any": [
+      "selected_jaw_contact_gained",
+      "first_pawn_motion_later",
+      "catastrophic_jump_eliminated",
+      "final_planar_error_improved"
+    ]
+  },
+  "proof_policy": {
+    "matching_task_outcome_requires_all_c6_evaluator_gates": true,
+    "full_contact_fidelity_requires_validated_contact_material": true,
+    "contact_material_validated": false,
+    "global_mapping_approved": false,
+    "physical_motion_added": false,
+    "sim_to_real_added": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_replay": true,
+    "training": false,
+    "paid_compute": false
+  }
+}
