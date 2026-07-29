@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 4,
     "heldout_open_count": 4,
     "milestone_id": "CC15",
-    "node_id": "verdict:directional-displacement-terminal-safety-boundary-v1",
-    "queue_status": "BLOCKED_CC03K_ZERO_SAFE_DIRECTIONAL_DISPLACEMENT_FAMILIES",
-    "resume_action": "request_existing_fable_thread_final_defect_check",
-    "resume_authorized": true,
-    "status": "terminal_boundary_final_fable_defect_check_pending"
+    "node_id": "evidence:causal-closure-terminal-application-package-v1",
+    "queue_status": "COMPLETE_TERMINAL_EXTERNAL_HARDWARE_BOUNDARY_NO_TRANSFER_CLAIM",
+    "resume_action": "external_hardware_repair_and_requalification_required",
+    "resume_authorized": false,
+    "status": "complete_receipt_backed_external_hardware_boundary"
   },
   "authority": {
     "camera_open": false,
@@ -82,28 +82,28 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 181,
+    "edges": 183,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
-      "evaluated-on": 50,
+      "evaluated-on": 51,
       "fitted-on": 4,
-      "generated-from": 111,
+      "generated-from": 112,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 230,
+    "nodes": 232,
     "nodes_by_type": {
       "candidate": 2,
       "checkpoint": 140,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 59,
-      "evidence": 10,
+      "evaluator_verdict": 60,
+      "evidence": 11,
       "intervention": 1,
       "mechanism": 3,
       "parameter_posterior": 1,
@@ -1588,6 +1588,16 @@
       "type": "evaluated-on"
     },
     {
+      "metadata": {
+        "directional_denominators_explicit": true,
+        "policy_sample_limit_explicit": true,
+        "transfer_claim": false
+      },
+      "source": "evidence:causal-closure-terminal-application-package-v1",
+      "target": "verdict:fable-final-no-material-defect-v1",
+      "type": "generated-from"
+    },
+    {
       "metadata": {},
       "source": "evidence:img5349-world-visual",
       "target": "context:c922-rgb-no-depth",
@@ -1871,6 +1881,16 @@
     },
     {
       "metadata": {
+        "material_in_scope_proof_defect": false,
+        "physical_motion": false,
+        "read_only_independent_reproduction": true
+      },
+      "source": "verdict:fable-final-no-material-defect-v1",
+      "target": "verdict:directional-displacement-terminal-safety-boundary-v1",
+      "type": "evaluated-on"
+    },
+    {
+      "metadata": {
         "dynamic_prerequisite_passed": false,
         "dynamic_replay_executed": false,
         "physical_motion": false,
@@ -2126,7 +2146,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "b8b9a729fa1004c7a808221502f9eae960fc95b634f615e14fac18b670444b45",
+  "graph_digest": "fa7138951ee137173cc172adc87994a599c3b9a41e043988986913535f0bf296",
   "node_types": [
     "workcell",
     "session",
@@ -3829,7 +3849,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "829491295f853779d88457665b456a271b33966f83606f7b10e382975a50aae7"
+        "sha256": "ba1e3c54eb844e57d4d895c733b4f1440f94daa83cc037af2f1e16695e9971df"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6747,6 +6767,30 @@
     },
     {
       "data": {
+        "general_sim_to_real_claim": false,
+        "physical_task_attempts": 0,
+        "policy_screening_status": "INSUFFICIENT_PHYSICAL_SAMPLE",
+        "real_to_sim_attempts": 0,
+        "real_to_sim_successes": 0,
+        "sim_to_real_attempts": 0,
+        "sim_to_real_successes": 0,
+        "source_binding_id": "causal_closure_terminal_application_package_v1",
+        "task_transfer_claim": false
+      },
+      "evaluator_identity": null,
+      "id": "evidence:causal-closure-terminal-application-package-v1",
+      "label": "Terminal application package preserves correspondence, hardware truth, and safety refusal",
+      "proof_class": "terminal_external_hardware_boundary_application_evidence_package",
+      "source": {
+        "path": "docs/run-logs/2026-07-29-causal-closure-terminal-application-package.md",
+        "proof_class": "terminal_external_hardware_boundary_application_evidence_package",
+        "sha256": "46c83f47dfa978c30e66a224c96735028182884ed5312b95a5019e6e58f2f4ff"
+      },
+      "status": "complete_receipt_backed_external_hardware_boundary",
+      "type": "evidence"
+    },
+    {
+      "data": {
         "camera_frames": 67,
         "camera_large_gap_count": 0,
         "completed_exact_rows": 217,
@@ -8279,6 +8323,29 @@
         "sha256": "03b64d11f57038361127808ee387110a59ae50fcd9e2eef3ae937d50ac9c143a"
       },
       "status": "stopped_before_first_command_missing_anchor_sample",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
+        "bidirectional_transfer_claim": false,
+        "external_hardware_boundary": true,
+        "fresh_anchor_baseline_legitimately_empty": true,
+        "historical_artifact_pair_loophole_closed": true,
+        "material_in_scope_proof_defect": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "fable_final_campaign_defect_check_v1",
+        "strict_collision_boundary_independently_reproduced": true
+      },
+      "evaluator_identity": "f8bb0e86f61fbdb380a337d2f565d163534e37ce16acb9157e45f931750bb094",
+      "id": "verdict:fable-final-no-material-defect-v1",
+      "label": "Fable independently confirms terminal safety boundary with no material in-scope defect",
+      "proof_class": "read_only_advisory_independent_terminal_boundary_defect_check",
+      "source": {
+        "path": "docs/advisory/fable-final-campaign-defect-check-20260729.md",
+        "proof_class": "read_only_advisory_independent_terminal_boundary_defect_check",
+        "sha256": "7c586e0f9d40fb85f8eee7df88861477fb211439c7f5415c6039bb4c1293b60e"
+      },
+      "status": "complete_no_material_in_scope_proof_defect",
       "type": "evaluator_verdict"
     },
     {
@@ -10038,7 +10105,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "829491295f853779d88457665b456a271b33966f83606f7b10e382975a50aae7",
+      "source_sha256": "ba1e3c54eb844e57d4d895c733b4f1440f94daa83cc037af2f1e16695e9971df",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -11110,6 +11177,26 @@
       "source_binding": "directional_displacement_static_closeout_v1",
       "source_sha256": "ca107505f7a1b43da1c5776cf9c8c627bf4b9dac87809ed967548b258afce034",
       "status": "terminal_zero_safe_directional_displacement_families"
+    },
+    {
+      "event_id": "FABLE_FINAL_NO_MATERIAL_DEFECT_V1",
+      "node_ids_added": [
+        "verdict:fable-final-no-material-defect-v1"
+      ],
+      "revision": 211,
+      "source_binding": "fable_final_campaign_defect_check_v1",
+      "source_sha256": "7c586e0f9d40fb85f8eee7df88861477fb211439c7f5415c6039bb4c1293b60e",
+      "status": "complete_no_material_in_scope_proof_defect"
+    },
+    {
+      "event_id": "CAUSAL_CLOSURE_TERMINAL_APPLICATION_PACKAGE_V1",
+      "node_ids_added": [
+        "evidence:causal-closure-terminal-application-package-v1"
+      ],
+      "revision": 212,
+      "source_binding": "causal_closure_terminal_application_package_v1",
+      "source_sha256": "46c83f47dfa978c30e66a224c96735028182884ed5312b95a5019e6e58f2f4ff",
+      "status": "complete_receipt_backed_external_hardware_boundary"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -12397,7 +12484,13 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "829491295f853779d88457665b456a271b33966f83606f7b10e382975a50aae7"
+      "sha256": "ba1e3c54eb844e57d4d895c733b4f1440f94daa83cc037af2f1e16695e9971df"
+    },
+    {
+      "id": "causal_closure_terminal_application_package_v1",
+      "path": "docs/run-logs/2026-07-29-causal-closure-terminal-application-package.md",
+      "proof_class": "terminal_external_hardware_boundary_application_evidence_package",
+      "sha256": "46c83f47dfa978c30e66a224c96735028182884ed5312b95a5019e6e58f2f4ff"
     },
     {
       "id": "current_task_scene_labels",
@@ -12597,6 +12690,12 @@
       "path": "docs/advisory/fable-elbow-boundary-and-endgame-review-20260729.md",
       "proof_class": "read_only_advisory_independent_pose_sweep_and_recommendation_disposition",
       "sha256": "96b5f641e624c70fac4d352819976d9fd8df3c138a0237f32491caa09cd50024"
+    },
+    {
+      "id": "fable_final_campaign_defect_check_v1",
+      "path": "docs/advisory/fable-final-campaign-defect-check-20260729.md",
+      "proof_class": "read_only_advisory_independent_terminal_boundary_defect_check",
+      "sha256": "7c586e0f9d40fb85f8eee7df88861477fb211439c7f5415c6039bb4c1293b60e"
     },
     {
       "id": "observable_episode_v2_min_closeout",

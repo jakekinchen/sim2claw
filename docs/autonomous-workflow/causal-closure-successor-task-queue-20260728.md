@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `BLOCKED_CC03K_ZERO_SAFE_DIRECTIONAL_DISPLACEMENT_FAMILIES`
+Status: `COMPLETE_TERMINAL_EXTERNAL_HARDWARE_BOUNDARY_NO_TRANSFER_CLAIM`
 
 Created: `2026-07-28`
 
@@ -199,9 +199,9 @@ Requirements:
 | CC10 | `REQUIRED_AFTER_TRANSFER` | Pilot `PolicyScreeningPredictive` with at least three declared controller/checkpoint variants, using deliberately differentiated scripted policies if trained checkpoints are not already admissible. | Frozen ID/OOD case distribution; rank correlation, outcome agreement, spatial failure overlap, boundary agreement, uncertainty intervals, and worst misranking; paired physical evidence is sufficient for the exact declared slice, or the result is explicitly `INSUFFICIENT_PHYSICAL_SAMPLE` rather than predictive. | This certificate grants decision utility only, never general twin fidelity or physical-transfer authority. Do not delay the first bidirectional proof for training. |
 | CC11 | `REQUIRED_AFTER_SCREENING` | Implement `TaskWorldBundle.v1` from the successful slice. | One bundle binds workcell/transform graph, clocks, sensors, appearance/physics assets, observed channels, parameter posterior, source interactions, splits, evaluator, variations, policy-screening result, and certificates; compiles deterministically to MuJoCo, Studio, replay, sysid, and evaluation. | Do not build a broad editor or marketplace first. |
 | CC12 | `REQUIRED_AFTER_SCREENING` | Connect measured posterior and policy failure map to targeted variation generation. | Variations sample only measured calibration/contact uncertainty, observed reset variation, and near-boundary/disagreement states; new checkpoints are screened against the frozen certificate. | No broad uniform randomization or held-out search. |
-| CC13 | `PENDING` | Present the completed CC01--CC12 evidence package to the existing project Fable thread for an adversarial review. | Fable receives exact claims/limitations, directional numerators and denominators, action/evaluator/config hashes, object/contact/first-divergence traces, simulator changes plus untouched-heldout results, policy-ranking metrics/uncertainty, Studio/TaskWorldBundle evidence, failures, and remaining gaps. The prompt explicitly asks whether the project credibly demonstrates bridging the sim-to-real gap through coding agents, software engineering, and multiple composable mechanisms. | Fable is advisory and cannot override repository evidence, safety, heldouts, or proof classes. Do not accept vague requests for more architecture; require a concrete proof defect or implementation opportunity. |
-| CC14 | `PENDING` | Triage and implement Fable's material in-scope recommendations. | Every recommendation is classified as: a new queue card with acceptance/evidence; a receipt-backed reject/defer decision; or already satisfied with exact evidence. All accepted recommendations are implemented, tested, evaluated on affected untouched heldouts, committed, pushed, and reflected in the graph and application package. | Reject recommendations that require overclaiming, evidence leakage, unsafe action, unbounded redesign, unavailable external authority, or work unrelated to the declared sim-to-real claim. A rejection records the evidence and rationale. |
-| CC15 | `PENDING` | Return the updated result to Fable for a final defect check, then perform full closeout. | Fable reports no material unresolved in-scope proof defect, or every remaining issue is bound to a genuine external/safety/authority limitation. Focused/full tests, workflow audit, torque/process/camera/gateway cleanup, `brev ls` cleanup, scoped pushed commits, exact claim text, final graph, and application package all pass. | Any new concrete in-scope defect reopens CC14. Continue CC14<->CC15 until the review is clean or a genuine documented boundary remains. |
+| CC13 | `DONE_TERMINAL_BOUNDARY_REVIEW` | Present the completed evidence and documented CC03K boundary to the existing project Fable thread for an adversarial review. | Fable received exact claims/limitations, `0/0` directional denominators, action/evaluator/config hashes, available object/contact/first-divergence evidence, simulator changes and heldouts, the zero-sample policy-ranking limitation, Studio evidence, failures, and remaining gaps. | Review bound in `docs/advisory/fable-elbow-boundary-and-endgame-review-20260729.md`; Fable remained advisory and opened no repository or hardware authority. |
+| CC14 | `DONE_DISPOSITIONED` | Triage and implement or disposition Fable's material in-scope recommendations. | Elbow telemetry and directional-displacement search were implemented. The artifact-pair successor, gain write, further locked-elbow task search, other-arm/tool route, and new architecture were classified with exact evidence; human repair was deferred. | CC03E receipt `876cc478...` and CC03K receipt `f8bb0e86...` close the accepted cards. No recommendation was used to weaken a gate or overclaim a proof class. |
+| CC15 | `DONE_NO_MATERIAL_DEFECT_EXTERNAL_BOUNDARY` | Return the updated result to Fable for a final defect check, then perform full closeout. | Fable independently reproduced the fresh-anchor collision boundary, tested the historical-artifact loophole, and reported no material unresolved in-scope proof defect. Advisory SHA-256 `7c586e0f...`; application package SHA-256 `46c83f47...`. Campaign-focused tests, graph rebuild, workflow audit, torque/process/camera/gateway cleanup, Brev cleanup, scoped push, exact claim text, and graph are the final closeout gates. The attempted full suite's unrelated frozen-hash failure and native OpenCV segfault are disclosed in the application package, not called a pass. | Successful transfer-path close is impossible without a hardware/external-state change. CC04--CC12 remain unpassed and cannot be represented as completed. |
 
 ## Promotion and claim boundaries
 
@@ -230,6 +230,11 @@ engineering, exact experimental controls, geometric calibration, causal
 observability, mechanism-specific simulator correction, physical transfer,
 and policy screening work together as one credible sim-to-real bridge.
 
+The unsuccessful-path closeout is also valid when a receipt-backed
+hardware/safety boundary prevents CC04--CC12. In that case the application
+package must state the missing transfer and policy evidence plainly, and the
+final Fable loop must independently report no material safe in-scope defect.
+
 ## Live ledger
 
 Current state:
@@ -237,8 +242,8 @@ Current state:
 - CC00 is complete.
 - CC00A is complete.
 - CC01 is complete.
-- CC03K is a terminal safety boundary pending the required final Fable defect
-  check; no implementation card is active.
+- CC03K is a terminal safety boundary. The required iterative Fable review is
+  complete and no implementation card is active.
 - The v1 seeded-action apparent pass is quarantined.
 - The calibrated-range v2 static run passed `2/2` actions per direction with
   the exact hashes listed above.
@@ -880,6 +885,20 @@ Current state:
   camera-mount/shoulder collisions. Direction counts remain `0/0`; no dynamic
   replay or physical task attempt occurred. Closeout SHA-256 is
   `ca107505f7a1b43da1c5776cf9c8c627bf4b9dac87809ed967548b258afce034`.
+- The existing Fable thread completed its final read-only defect check against
+  commit `6da1289`. It independently reproduced the fresh-anchor zero-contact
+  baseline and strict collision-free pose boundary, then challenged the two
+  historical folded-arm artifact pairs. No CC03K action fails on only those
+  pairs, the best reopened pose sliver exhausts the prior harmless penetration
+  evidence with zero margin, and every compiled action introduces additional
+  new self-contact. Fable reports no material unresolved in-scope defect.
+  Advisory SHA-256 is
+  `7c586e0f9d40fb85f8eee7df88861477fb211439c7f5415c6039bb4c1293b60e`.
+- The terminal application package records the exact supported claim,
+  limitations, hashes, `0/0` directional denominators, `0/10` task-attempt
+  ledger, wrist correspondence, telemetry truth, safety refusal, and
+  `INSUFFICIENT_PHYSICAL_SAMPLE` policy result at SHA-256
+  `46c83f47dfa978c30e66a224c96735028182884ed5312b95a5019e6e58f2f4ff`.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -921,11 +940,11 @@ This authorization:
 - expires at the stated time. A packet not admitted before expiry returns to
   closed physical authority.
 
-Next step:
+Final closeout:
 
-- Return the immutable CC03E/CC03K result to the existing Fable thread for the
-  required final defect check. Ask specifically whether the frozen direct
-  route omitted a material bounded in-scope collision-free path or whether
-  the preregistered terminal stop is sound. Any accepted recommendation must
-  satisfy the existing feedback-loop disposition rules; physical task
-  authority remains false.
+- Preserve the immutable CC03E/CC03K results and the final Fable verdict.
+- Do not reopen CC04--CC12 until the elbow is repaired/requalified or a
+  separately reviewed reachable actuator/tool creates a new safe prospective
+  action family.
+- Preserve false task, transfer, policy-ranking, and simulator-promotion
+  authority.

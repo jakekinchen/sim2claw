@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "829491295f853779d88457665b456a271b33966f83606f7b10e382975a50aae7",
+      "sha256": "ba1e3c54eb844e57d4d895c733b4f1440f94daa83cc037af2f1e16695e9971df",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -2551,6 +2551,16 @@
         "torque_off": true,
         "passed": false
       }
+    },
+    "fable_final_campaign_defect_check_v1": {
+      "path": "docs/advisory/fable-final-campaign-defect-check-20260729.md",
+      "sha256": "7c586e0f9d40fb85f8eee7df88861477fb211439c7f5415c6039bb4c1293b60e",
+      "proof_class": "read_only_advisory_independent_terminal_boundary_defect_check"
+    },
+    "causal_closure_terminal_application_package_v1": {
+      "path": "docs/run-logs/2026-07-29-causal-closure-terminal-application-package.md",
+      "sha256": "46c83f47dfa978c30e66a224c96735028182884ed5312b95a5019e6e58f2f4ff",
+      "proof_class": "terminal_external_hardware_boundary_application_evidence_package"
     },
     "simulator_candidate": {
       "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
@@ -6659,6 +6669,40 @@
       }
     },
     {
+      "id": "verdict:fable-final-no-material-defect-v1",
+      "type": "evaluator_verdict",
+      "label": "Fable independently confirms terminal safety boundary with no material in-scope defect",
+      "status": "complete_no_material_in_scope_proof_defect",
+      "source_binding": "fable_final_campaign_defect_check_v1",
+      "evaluator_identity": "f8bb0e86f61fbdb380a337d2f565d163534e37ce16acb9157e45f931750bb094",
+      "data": {
+        "fresh_anchor_baseline_legitimately_empty": true,
+        "strict_collision_boundary_independently_reproduced": true,
+        "historical_artifact_pair_loophole_closed": true,
+        "material_in_scope_proof_defect": false,
+        "external_hardware_boundary": true,
+        "bidirectional_transfer_claim": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "evidence:causal-closure-terminal-application-package-v1",
+      "type": "evidence",
+      "label": "Terminal application package preserves correspondence, hardware truth, and safety refusal",
+      "status": "complete_receipt_backed_external_hardware_boundary",
+      "source_binding": "causal_closure_terminal_application_package_v1",
+      "data": {
+        "real_to_sim_successes": 0,
+        "real_to_sim_attempts": 0,
+        "sim_to_real_successes": 0,
+        "sim_to_real_attempts": 0,
+        "physical_task_attempts": 0,
+        "policy_screening_status": "INSUFFICIENT_PHYSICAL_SAMPLE",
+        "task_transfer_claim": false,
+        "general_sim_to_real_claim": false
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -8591,6 +8635,26 @@
       "metadata": {
         "deferred": true
       }
+    },
+    {
+      "source": "verdict:fable-final-no-material-defect-v1",
+      "type": "evaluated-on",
+      "target": "verdict:directional-displacement-terminal-safety-boundary-v1",
+      "metadata": {
+        "read_only_independent_reproduction": true,
+        "material_in_scope_proof_defect": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "evidence:causal-closure-terminal-application-package-v1",
+      "type": "generated-from",
+      "target": "verdict:fable-final-no-material-defect-v1",
+      "metadata": {
+        "directional_denominators_explicit": true,
+        "policy_sample_limit_explicit": true,
+        "transfer_claim": false
+      }
     }
   ],
   "revision_timeline": [
@@ -10511,15 +10575,33 @@
       "node_ids_added": [
         "verdict:directional-displacement-terminal-safety-boundary-v1"
       ]
+    },
+    {
+      "revision": 211,
+      "event_id": "FABLE_FINAL_NO_MATERIAL_DEFECT_V1",
+      "status": "complete_no_material_in_scope_proof_defect",
+      "source_binding": "fable_final_campaign_defect_check_v1",
+      "node_ids_added": [
+        "verdict:fable-final-no-material-defect-v1"
+      ]
+    },
+    {
+      "revision": 212,
+      "event_id": "CAUSAL_CLOSURE_TERMINAL_APPLICATION_PACKAGE_V1",
+      "status": "complete_receipt_backed_external_hardware_boundary",
+      "source_binding": "causal_closure_terminal_application_package_v1",
+      "node_ids_added": [
+        "evidence:causal-closure-terminal-application-package-v1"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:directional-displacement-terminal-safety-boundary-v1",
+    "node_id": "evidence:causal-closure-terminal-application-package-v1",
     "milestone_id": "CC15",
-    "status": "terminal_boundary_final_fable_defect_check_pending",
-    "queue_status": "BLOCKED_CC03K_ZERO_SAFE_DIRECTIONAL_DISPLACEMENT_FAMILIES",
-    "resume_action": "request_existing_fable_thread_final_defect_check",
-    "resume_authorized": true,
+    "status": "complete_receipt_backed_external_hardware_boundary",
+    "queue_status": "COMPLETE_TERMINAL_EXTERNAL_HARDWARE_BOUNDARY_NO_TRANSFER_CLAIM",
+    "resume_action": "external_hardware_repair_and_requalification_required",
+    "resume_authorized": false,
     "heldout_open_count": 4,
     "cumulative_manifest_read_count": 4,
     "counted_task_attempts": 0

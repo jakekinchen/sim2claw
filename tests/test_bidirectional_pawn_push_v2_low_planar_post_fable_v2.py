@@ -123,7 +123,7 @@ def test_ranking_is_static_only_and_optional_hedge_is_prospectively_zero() -> No
         assert authorization["authority"][key] is False
 
 
-def test_terminal_closeout_is_preserved_after_successor_activation() -> None:
+def test_terminal_closeout_is_preserved_after_campaign_closeout() -> None:
     closeout = json.loads(CLOSEOUT.read_text(encoding="utf-8"))
     receipt = closeout["static_receipt"]
     assert _sha(ROOT / receipt["path"]) == receipt["sha256"]
@@ -139,10 +139,10 @@ def test_terminal_closeout_is_preserved_after_successor_activation() -> None:
         graph = json.loads(graph_path.read_text(encoding="utf-8"))
         pointer = graph["active_pointer"]
         assert pointer["status"] == (
-            "preregistered_before_exactly_once_official_dynamic_replay"
+            "complete_receipt_backed_external_hardware_boundary"
         )
-        assert pointer["milestone_id"] == "CC02"
-        assert pointer["resume_authorized"] is True
+        assert pointer["milestone_id"] == "CC15"
+        assert pointer["resume_authorized"] is False
         closeout_node = next(
             node
             for node in graph["nodes"]
