@@ -1,0 +1,20 @@
+{
+  "schema_version": "sim2claw.post_cable_safe_return_static_closeout.v1",
+  "decision_id": "post-cable-safe-return-static-20260729-v1-closeout",
+  "status": "dual_scene_clearance_reject_open_pan_away_successor",
+  "freeze_commit": "58981fb",
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-post-cable-safe-return-static-v1/receipt.json",
+    "sha256": "292ca78db9824ca2d3a3c9bfb9c83940237888cacbe8534da3e776aa2f4182f9"
+  },
+  "result": {
+    "registered_minimum_clearance_m": 0.10923268742317936,
+    "uncorrected_minimum_clearance_m": 0.03815408286066487,
+    "registered_scene_contact_free": true,
+    "uncorrected_scene_contact_free": true,
+    "failed_gate": "uncorrected scene 50 mm minimum clearance",
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Reject the two-stage route without hardware. The pessimistic uncorrected scene begins at the already camera-verified torque-off pose with only 38.154 mm clearance, so a uniform 50 mm gate is impossible at row zero. Open one three-stage successor that first pans away to -60 degrees, then lowers shoulder lift, then restores the natural pan. Permit at most 0.5 mm clearance worsening relative to the immutable row-zero baseline while requiring no contacts in both scenes and at least 50 mm registered-scene clearance."
+}
