@@ -148,6 +148,10 @@ Confirmed:
   `307b94fa...`, closeout `9938421b...`.
 - V3 changes only to lift before wrist rotation and is frozen at
   `3519c639...`.
+- V3 remained at three families (`2/1`) and rejected; receipt `dc4d3e60...`,
+  closeout `21d76b7c...`.
+- V4 changes only to a geometry-derived `35 mm` rear standoff followed by a
+  low horizontal precontact approach; frozen at `dc759ea2...`.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -194,7 +198,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC02 finite current-workcell wrist-orientation and precontact-path static successor.
 Completed: CC00, CC00A, CC01.
-Evidence: proxy negative 5f578024...; wrist/path V2 partial 307b94fa...; V3 freeze 3519c639....
+Evidence: wrist/path V3 partial dc4d3e60...; V4 freeze dc759ea2....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -202,7 +206,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
 Blockers: the frozen action set is dynamically rejected; physical/model mapping remains unapproved.
-Next step: commit/push the V2 partial and V3 freeze, then execute V3's unchanged 288-cell static grid once.
+Next step: commit/push the V3 partial and V4 freeze, then execute V4's unchanged 288-cell static grid once.
 ```
 
 ## Physical Authority Boundaries

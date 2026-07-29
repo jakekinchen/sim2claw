@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "3bbb0ade1efa35eaf6cd710cbb5a6f5d680fb8f6e2c49fcfdb34ce0f87c620fd",
+      "sha256": "22017e17c41e0dfd4cb69a74518b844c248eaceb105c1b91d384240f70781531",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1455,6 +1455,36 @@
         "schema_version": "sim2claw.canonical_wrist_path_static_successor.v3",
         "status": "frozen_after_three_family_partial_before_lift_then_rotate_static_enumeration",
         "proof_class": "prospective_cpu_fp64_current_workcell_lift_then_rotate_wrist_path_contact_normal_static_action_freeze"
+      }
+    },
+    "canonical_wrist_path_static_v3_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-v3/receipt.json",
+      "sha256": "dc4d3e6010710597211337d226b219e671cd5325bde0586d943a237123ce0303",
+      "proof_class": "cpu_fp64_current_workcell_wrist_path_contact_normal_static_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_static_receipt.v1",
+        "status": "canonical_wrist_path_static_reject",
+        "proof_class": "cpu_fp64_current_workcell_wrist_path_contact_normal_static_action_freeze"
+      }
+    },
+    "canonical_wrist_path_static_v3_closeout": {
+      "path": "configs/decisions/canonical_wrist_path_static_v3_closeout.json",
+      "sha256": "21d76b7c688103aeac481de98843eb3e24228b8f11367357f64b8e6c4e56b865",
+      "proof_class": "cpu_fp64_current_workcell_lift_then_rotate_wrist_path_static_negative",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_static_closeout.v1",
+        "status": "lift_then_rotate_three_family_static_reject",
+        "proof_class": "cpu_fp64_current_workcell_lift_then_rotate_wrist_path_static_negative"
+      }
+    },
+    "canonical_wrist_path_static_v4_contract": {
+      "path": "configs/evaluations/canonical_wrist_path_static_v4.json",
+      "sha256": "dc759ea2b13a9f29e82a86553b91cb4239f439876fc9f4926bc24c68bb236c64",
+      "proof_class": "prospective_cpu_fp64_current_workcell_low_horizontal_precontact_wrist_path_static_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_static_successor.v4",
+        "status": "frozen_after_lift_then_rotate_reject_before_low_horizontal_precontact_static_enumeration",
+        "proof_class": "prospective_cpu_fp64_current_workcell_low_horizontal_precontact_wrist_path_static_action_freeze"
       }
     },
     "simulator_candidate": {
@@ -4086,6 +4116,45 @@
       }
     },
     {
+      "id": "verdict:canonical-wrist-path-static-v3-three-family-reject",
+      "type": "evaluator_verdict",
+      "label": "Canonical lift-then-rotate wrist/path V3 rejected",
+      "status": "lift_then_rotate_three_family_static_reject",
+      "source_binding": "canonical_wrist_path_static_v3_closeout",
+      "evaluator_identity": "3519c6391ae5d14549a40fde10433eeb4e68435cf3f6ccd160475b17b344c019",
+      "data": {
+        "receipt_source_binding": "canonical_wrist_path_static_v3_receipt",
+        "family_count": 48,
+        "grid_result_count": 288,
+        "statically_eligible_family_count": 3,
+        "real_to_sim_families": 2,
+        "sim_to_real_families": 1,
+        "same_family_ceiling_as_v2": true,
+        "dynamic_replay_authorized": false,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:canonical-wrist-path-static-v4-frozen",
+      "type": "checkpoint",
+      "label": "Canonical low-horizontal precontact wrist/path V4 frozen",
+      "status": "preregistered_before_exactly_once_wrist_path_static_v4_enumeration",
+      "source_binding": "canonical_wrist_path_static_v4_contract",
+      "data": {
+        "single_mechanism_change": "geometry_derived_rear_standoff_then_low_horizontal_precontact",
+        "precontact_backoff_m": 0.035,
+        "family_grid_quarantine_jaw_target_and_gates_unchanged": true,
+        "maximum_total_cells": 288,
+        "required_families_per_direction": 2,
+        "dynamic_replay_authorized": false,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -5624,6 +5693,28 @@
       }
     },
     {
+      "source": "verdict:canonical-wrist-path-static-v3-three-family-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:canonical-wrist-path-static-v3-frozen",
+      "metadata": {
+        "same_family_ceiling_as_v2": true,
+        "two_per_direction_gate_passed": false,
+        "dynamic_replay_authorized": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:canonical-wrist-path-static-v4-frozen",
+      "type": "generated-from",
+      "target": "verdict:canonical-wrist-path-static-v3-three-family-reject",
+      "metadata": {
+        "single_mechanism_change": true,
+        "family_grid_quarantine_jaw_target_and_gates_unchanged": true,
+        "dynamic_replay_authorized": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -6748,14 +6839,32 @@
       "node_ids_added": [
         "checkpoint:canonical-wrist-path-static-v3-frozen"
       ]
+    },
+    {
+      "revision": 120,
+      "event_id": "CANONICAL_WRIST_PATH_STATIC_V3_THREE_FAMILY_REJECT",
+      "status": "lift_then_rotate_three_family_static_reject",
+      "source_binding": "canonical_wrist_path_static_v3_closeout",
+      "node_ids_added": [
+        "verdict:canonical-wrist-path-static-v3-three-family-reject"
+      ]
+    },
+    {
+      "revision": 121,
+      "event_id": "CANONICAL_WRIST_PATH_STATIC_V4_FROZEN",
+      "status": "preregistered_before_exactly_once_wrist_path_static_v4_enumeration",
+      "source_binding": "canonical_wrist_path_static_v4_contract",
+      "node_ids_added": [
+        "checkpoint:canonical-wrist-path-static-v4-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:canonical-wrist-path-static-v3-frozen",
+    "node_id": "checkpoint:canonical-wrist-path-static-v4-frozen",
     "milestone_id": "CC02",
-    "status": "preregistered_before_exactly_once_wrist_path_static_v3_enumeration",
+    "status": "preregistered_before_exactly_once_wrist_path_static_v4_enumeration",
     "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
-    "resume_action": "execute_canonical_wrist_path_static_v3_exactly_once",
+    "resume_action": "execute_canonical_wrist_path_static_v4_exactly_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

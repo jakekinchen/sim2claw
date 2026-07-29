@@ -331,6 +331,19 @@ Current state:
 - V3 changes only precontact order—lift with live wrist, then rotate at
   clearance—and is frozen at
   `3519c6391ae5d14549a40fde10433eeb4e68435cf3f6ccd160475b17b344c019`.
+- V3 ran once and left the exact V2 ceiling unchanged: three families,
+  `2` REAL->SIM and `1` SIM->REAL. Receipt SHA-256
+  `dc4d3e6010710597211337d226b219e671cd5325bde0586d943a237123ce0303`;
+  closeout SHA-256
+  `21d76b7c688103aeac481de98843eb3e24228b8f11367357f64b8e6c4e56b865`.
+  Lift-before-rotation is therefore rejected as a sufficient mechanism.
+- V4 changes only the precontact segment: descend at a geometry-derived
+  `35 mm` rear standoff, then approach the unchanged contact point
+  horizontally. Contract SHA-256
+  `dc759ea2b13a9f29e82a86553b91cb4239f439876fc9f4926bc24c68bb236c64`.
+  The family universe,
+  quarantine, wrist/contact grid, jaw target, offset, stroke, clearance,
+  gates, selection, dynamics, and physical authority remain unchanged.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -373,8 +386,8 @@ This authorization:
 
 Next step:
 
-- Commit and push the V2 three-family partial plus the V3 lift-then-rotate
-  static freeze, then execute V3 exactly once. Do not dynamically
+- Commit and push the V3 terminal static result plus the V4 low-horizontal
+  precontact freeze, then execute V4 exactly once. Do not dynamically
   replay unless four distinct safe families freeze `2/2` per direction.
   Preserve both baseline and challenger outcomes; a challenger pass does not
   itself promote geometry, approve mapping, or open hardware.

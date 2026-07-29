@@ -121,6 +121,7 @@ def _compile(
     sample_hz: float,
     target_rates: np.ndarray,
     maximum_ik_residual_m: float,
+    precontact_backoff_m: float = 0.0,
 ) -> tuple[np.ndarray, dict[str, Any]]:
     closed_seed = live_seed.copy()
     closed_seed[-1] = closed_jaw_rad
@@ -141,17 +142,31 @@ def _compile(
     )
     clearance = contact.copy()
     clearance[2] = source_xyz[2] + clearance_height_m
+    low_precontact = contact - direction * precontact_backoff_m
+    precontact_clearance = low_precontact.copy()
+    precontact_clearance[2] = clearance[2]
     pushed = contact + direction * stroke_m
     retreat = pushed.copy()
     retreat[2] = clearance[2]
-    cartesian_targets = [
-        live_lift,
-        live_lift,
-        clearance,
-        contact,
-        pushed,
-        retreat,
-    ]
+    if precontact_backoff_m > 0.0:
+        cartesian_targets = [
+            live_lift,
+            live_lift,
+            precontact_clearance,
+            low_precontact,
+            contact,
+            pushed,
+            retreat,
+        ]
+    else:
+        cartesian_targets = [
+            live_lift,
+            live_lift,
+            clearance,
+            contact,
+            pushed,
+            retreat,
+        ]
     targets = [live_seed.copy(), closed_seed.copy()]
     active = closed_seed.copy()
     residuals: list[float] = []
@@ -206,6 +221,8 @@ def _compile(
         ],
         "wrist_roll_target_rad": wrist_roll_rad,
         "wrist_rotation_after_live_lift": True,
+        "precontact_backoff_m": precontact_backoff_m,
+        "low_horizontal_precontact_approach": precontact_backoff_m > 0.0,
         "action_rows": len(action),
         "action_raw_float64le_sha256": hashlib.sha256(
             action.tobytes(order="C")
@@ -295,6 +312,56 @@ def enumerate_and_freeze(
         contract["action"]["path_shape"] = raw_contract[
             "path_shape_override"
         ]["to"]
+        contract["output_directory"] = raw_contract["output_directory"]
+        contract["claim_boundary"] = raw_contract["claim_boundary"]
+    elif raw_contract.get("schema_version") == (
+        "sim2claw.canonical_wrist_path_static_successor.v4"
+    ):
+        expected = {
+            "schema_version",
+            "contract_id",
+            "status",
+            "proof_class",
+            "base_contract",
+            "predecessor_closeout",
+            "implementation",
+            "path_shape_override",
+            "output_directory",
+            "unchanged_from_v3",
+            "claim_boundary",
+        }
+        override = raw_contract.get("path_shape_override")
+        if (
+            set(raw_contract) != expected
+            or not all(raw_contract["unchanged_from_v3"].values())
+            or override
+            != {
+                "from": "vertical descent at contact offset",
+                "to": (
+                    "descend at a 0.035 m rear standoff then approach "
+                    "contact horizontally"
+                ),
+                "precontact_backoff_m": 0.035,
+                "derivation": (
+                    "0.015 m modeled jaw collision half width plus "
+                    "0.010 m modeled pawn radius plus 0.010 m margin"
+                ),
+                "only_outcome_relevant_change": True,
+            }
+        ):
+            raise CanonicalWristPathStaticError(
+                "canonical wrist/path V4 widened its change surface"
+            )
+        contract = copy.deepcopy(_json(raw_contract["base_contract"]))
+        _bound(raw_contract["predecessor_closeout"])
+        _bound(raw_contract["implementation"])
+        contract["inputs"]["implementation"] = raw_contract[
+            "implementation"
+        ]
+        contract["action"]["path_shape"] = override["to"]
+        contract["action"]["precontact_backoff_m"] = override[
+            "precontact_backoff_m"
+        ]
         contract["output_directory"] = raw_contract["output_directory"]
         contract["claim_boundary"] = raw_contract["claim_boundary"]
     elif raw_contract.get("schema_version") != (
@@ -418,6 +485,11 @@ def enumerate_and_freeze(
                         target_rates=target_rates,
                         maximum_ik_residual_m=float(
                             contract["gates"]["maximum_ik_residual_m"]
+                        ),
+                        precontact_backoff_m=float(
+                            contract["action"].get(
+                                "precontact_backoff_m", 0.0
+                            )
                         ),
                     )
                 except (RuntimeError, ValueError) as error:

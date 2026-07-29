@@ -1,0 +1,61 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_static_closeout.v1",
+  "decision_id": "canonical-wrist-path-static-20260729-v3-closeout",
+  "status": "lift_then_rotate_three_family_static_reject",
+  "proof_class": "cpu_fp64_current_workcell_lift_then_rotate_wrist_path_static_negative",
+  "contract": {
+    "path": "configs/evaluations/canonical_wrist_path_static_v3.json",
+    "sha256": "3519c6391ae5d14549a40fde10433eeb4e68435cf3f6ccd160475b17b344c019"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-v3/receipt.json",
+    "sha256": "dc4d3e6010710597211337d226b219e671cd5325bde0586d943a237123ce0303"
+  },
+  "result": {
+    "family_count": 48,
+    "grid_result_count": 288,
+    "statically_eligible_family_count": 3,
+    "direction_counts": {
+      "REAL_TO_SIM": 2,
+      "SIM_TO_REAL": 1
+    },
+    "selected_case_ids": [
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_f7__f7_f8",
+      "tan_pawn_d7__d7_d8"
+    ],
+    "same_family_ceiling_as_v2": true,
+    "nearest_fourth_family": {
+      "case_id": "tan_pawn_g8__g8_h8",
+      "collision_only_cells": 2,
+      "disallowed_contacts": [
+        "tan_pawn_f7",
+        "tan_pawn_h7"
+      ]
+    },
+    "lateral_families_without_collision": {
+      "example_case_id": "tan_pawn_d7__d7_e7",
+      "failed_gates": [
+        "contact_height",
+        "contact_normal"
+      ],
+      "vertical_descent_first_contact_height_mm_range": [
+        46.799071505484235,
+        48.70582694522729
+      ]
+    }
+  },
+  "decision": "Do not dynamically replay. Reject lift-before-rotation as sufficient because it leaves the three-family ceiling unchanged. Prospectively change only the precontact segment: descend at a geometry-derived rear standoff, then approach the unchanged contact point horizontally. Preserve the family universe, quarantine, wrist and contact-height grid, jaw target, contact offset, stroke, clearance, gates, selection, physics, and false dynamic/physical authority.",
+  "authority": {
+    "dynamic_replay": false,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}
