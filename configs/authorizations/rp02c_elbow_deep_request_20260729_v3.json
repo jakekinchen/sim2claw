@@ -1,0 +1,23 @@
+{
+  "schema_version": "sim2claw.owner_physical_authorization.v1",
+  "authorization_id": "owner-rp02c-deep-request-20260729-081802-cdt-v3",
+  "status": "active",
+  "source_owner_instruction": "Proceed, and don't stop until we get a successful advancement in our goal metrics.",
+  "operation_id": "rp02c-elbow-deep-request-parking-20260729-v3",
+  "packet_sha256": "c99c2d613b415a763acd141217439d5931e614a73bac62e6c3b9c284cb742ba5",
+  "issued_at": "2026-07-29T08:18:02-05:00",
+  "expires_at": "2026-07-29T09:18:02-05:00",
+  "operator_name": "Kelly",
+  "operator_present_full_transaction": true,
+  "power_down_supply_on_torque_cleanup_error": true,
+  "physical_parking_transaction": true,
+  "physical_task_attempt": false,
+  "maximum_executions": 1,
+  "camera_setup_authorized": true,
+  "gateway_setup_authorized": true,
+  "serial_authorized": true,
+  "torque_authorized": true,
+  "pawn_contact_authorized": false,
+  "servo_configuration_write_authorized": false,
+  "claim_boundary": "Exactly one RP02C no-write deep-request setup/recovery execution under the frozen V3 packet. This is not a pawn-task attempt and does not authorize transfer, mapping promotion, policy ranking, retry, configuration writes, or any other physical operation."
+}
