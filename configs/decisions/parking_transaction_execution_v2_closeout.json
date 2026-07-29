@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.parking_transaction_execution_closeout.v2",
+  "decision_id": "rp02a-elbow-parking-execution-v2-closeout",
+  "status": "safe_stall_above_certificate_open_deep_request_preview_only",
+  "proof_class": "physical_setup_recovery_not_task_evidence",
+  "packet": {
+    "path": "configs/hardware/parking_transaction_execution_v2.json",
+    "sha256": "af3149ccceaf7d49b0f1765c11afbc66c7782a0d7968a9815042e90337e58a6d"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-execution-v2/receipt.json",
+    "sha256": "fa328c856f41ecc703d3c21d76fae043355007355b9574c1da196d73e7a4f8de"
+  },
+  "result": {
+    "passed": false,
+    "failure": "PhysicalGatewayError: Follower made no measurable progress toward a commanded joint for 5.0 seconds; torque released.",
+    "start_elbow_degrees": 99.47252747252747,
+    "minimum_observed_elbow_degrees": 94.9010989010989,
+    "requested_elbow_degrees_at_stall": 91.0,
+    "steady_tracking_error_degrees": 3.901098901098905,
+    "plateau_present_current_raw_range": [
+      16.0,
+      23.0
+    ],
+    "plateau_present_load_raw": 192.0,
+    "plateau_temperature_c": 29.0,
+    "postflight_elbow_degrees": 103.42857142857143,
+    "postflight_torque_enabled": false,
+    "telemetry_rows": 49,
+    "physical_task_attempts": 0,
+    "pawn_contact": false,
+    "c922_completed": true,
+    "pi_completed": true
+  },
+  "successor_scope": {
+    "allowed_next_step": "One motion-free CPU/fp64 preview of an evidence-directed deeper command floor with no servo configuration write.",
+    "physical_motion_authorized": false,
+    "task_attempt_authorized": false,
+    "configuration_write_authorized": false
+  }
+}

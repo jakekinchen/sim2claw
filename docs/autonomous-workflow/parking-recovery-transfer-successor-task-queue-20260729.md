@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP02A_FROZEN_PENDING_SCOPED_OWNER_AUTHORIZATION`
+Status: `RP02B_DEEP_REQUEST_PREVIEW_FROZEN`
 
 Created: `2026-07-29`
 
@@ -32,7 +32,8 @@ does not rewrite that result.
 | RP00 | `DONE_PASS` | Prospectively freeze and run one route-level parking-target certificate across elbow locks `{97,95,93,91,90,88} deg`. | Existing CC03K family universe, compiler, collision/contact/camera/gateway gates, and false physical authority remain unchanged. At least one distinct family per direction passes at a maximum viable angle and again at a passing target at least `2 deg` lower. Code, contract, tests, and advisory predate the single run. | Receipt `e1bc7d8e...` passes: `97/95 deg` reject, `93/91/90/88 deg` pass with `1` family per direction. Threshold `93 deg`; target `91 deg`. No motion or task attempt. |
 | RP01 | `DONE_PASS` | Freeze a high-clearance, contact-impossible elbow parking transaction to the RP00 target. | Fresh torque-off anchor bound; no-op setup; full `[88, 99.6] deg` corridor previewed every `0.1 deg`; moving chain stays at least `120 mm` from table, board, and pawns; all robot contacts remain absent; at most `5 deg` requested per step; read/verify each step; abort after two consecutive steps with less than `0.3 deg` progress; `15 s` hold drift below `0.5 deg`; torque-off cleanup; no task/pawn contact reachable. | Receipt `e9e99a4a...` passes; Fable independently returns `CONTINUE_RP02_FREEZE`. No motion or task attempt. |
 | RP02 | `DONE_FAIL_CLOSED_BEFORE_MOTION` | Execute parking once under separately reopened physical authority. | Packet SHA `79382c1a...`; hash-pinned executor; fresh timestamped preflight; held-joint and camera/writer stops; exact C922+Pi enclosure; reviewed gateway only; target reached; hold gate passes; exact receipt; torque off and `60 s` read. No retry without new preregistration. | V1 stopped before motion because its first changed target arrived at zero command time. Cameras completed, torque is off, pawn/task ledgers remain unchanged. |
-| RP02A | `FROZEN_PENDING_SCOPED_AUTHORIZATION` | Re-run parking once with the single prospectively declared clock-compatibility repair. | Preserve every RP02 target, geometry, collision, telemetry, camera, stall, hold, cleanup, and claim gate. Add one exact anchor row at elapsed zero and one `0.2 s` lead period before every changed destination; no destination bytes, target, limits, clipping, smoothing, or offsets change. | Any rate-limit/clamp/correction, target above `93 deg`, stall, camera/writer loss, held-joint drift, or cleanup failure safely stops. No reuse of the spent V1 authorization. |
+| RP02A | `DONE_SAFE_STALL_ABOVE_CERTIFICATE` | Re-run parking once with the single prospectively declared clock-compatibility repair. | Preserve every RP02 target, geometry, collision, telemetry, camera, stall, hold, cleanup, and claim gate. Add one exact anchor row at elapsed zero and one `0.2 s` lead period before every changed destination; no destination bytes, target, limits, clipping, smoothing, or offsets change. | Exact rows executed, but the elbow stalled at `94.901099 deg`; gateway released torque and postflight passed. No pawn contact or task attempt. |
+| RP02B | `FROZEN_PREVIEW_PENDING_ONE_RUN` | Test a bounded no-write deep-request corridor after the measured proportional-torque stall. | Sweep `[80.0,103.5] deg` at `0.1 deg`; strict contact-free through `99.6 deg`; above it allow only the exact live-anchor modeled pairs with at most `0.5 mm` additional penetration; preserve `120 mm` moving-chain/environment clearance and all false physical authority. | Any new/worsened contact, range, clearance, or inventory defect rejects without motion. A pass opens one prospectively frozen command transaction, not hardware authority. |
 | RP03 | `PENDING` | Freeze fresh task actions at the achieved lock. | Strict unchanged gates; fresh C922 scene admission; at least one distinct family per direction; exact bytes and evaluator freeze predate outcomes. | Zero eligible families ends the successor without a task attempt. |
 | RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
 | RP05 | `PENDING` | Complete a distinct SIM->REAL task transfer. | Simulator success and robustness predate freeze; distinct family; camera-owned physical success with identical bytes. | At most three task attempts; failures stay in the denominator. |
@@ -53,11 +54,10 @@ does not rewrite that result.
 
 ## Current next step
 
-Bind a new time-bounded owner authorization for the exact RP02A packet, then
-execute it exactly once. The V1 authorization is spent and cannot be reused.
-The only successor change is the prospectively frozen clock-compatible anchor
-and target-transition timing; this is a localized gateway-contract repair, so
-Fable is reserved rather than invoked.
+Commit and push the RP02B preview implementation and contract, then run its
+immutable motion-free output exactly once. A pass may open a separately
+frozen, tested, hash-bound deep-request transaction; it does not itself open
+camera, gateway, serial, torque, or task authority.
 
 ## RP00 immutable result
 
@@ -135,6 +135,34 @@ Fable is reserved rather than invoked.
 - Focused executor and gateway suite: `42 passed`.
 - Physical authority remains false until a new packet-hash-bound,
   time-bounded authorization validates.
+
+## RP02A immutable V2 execution result
+
+- Packet SHA-256:
+  `af3149ccceaf7d49b0f1765c11afbc66c7782a0d7968a9815042e90337e58a6d`.
+- Receipt SHA-256:
+  `fa328c856f41ecc703d3c21d76fae043355007355b9574c1da196d73e7a4f8de`.
+- Exact rows executed with no rate limiting or safety clamping.
+- The elbow progressed `99.472527 -> 94.901099 deg`, then the gateway stopped
+  after `5 s` without measurable progress under a `91 deg` request.
+- Plateau current was approximately `16--23` raw, load `192`, temperature
+  `29 C`; torque-off postflight passed at `103.428571 deg`.
+- Both cameras completed; pawn contacts and task attempts remain zero.
+- This is the genuine trajectory blocker that triggered one targeted Fable
+  consult under the reserved-use policy.
+
+## RP02B prospective deep-request preview
+
+- No servo configuration write is permitted.
+- Requested floors will be considered only after a motion-free corridor
+  preview passes.
+- The strict contact-free segment is `[80.0,99.6] deg`.
+- The live anchor segment ends at `103.5 deg` and may contain only the three
+  model contact pairs already present at the exact torque-off anchor, with at
+  most `0.5 mm` worsening.
+- Fable suggested an upper bound of `104.5 deg`; independent reconciliation
+  rejected it because modeled penetration worsened beyond the bound.
+- Physical authority remains false.
 
 ## RP01 freeze
 
