@@ -65,6 +65,14 @@ Confirmed:
   four exact actions selected `2/2` per direction. It applied the reviewed
   calibrated ranges and achieved a minimum selected model-joint margin of
   `0.001829670515161086 rad`.
+- The authoritative V2 receipt SHA-256 is
+  `c68599e9f18120f46bea955732ccc82c3582b9f18af280292f2aad73cfd47977`.
+  Closeout decision
+  `configs/decisions/canonical_seeded_action_static_v2_closeout.json`,
+  SHA-256
+  `ced92042e73ed53a5ccf27810ddce9d36f9a50f8f6a71110ca517bf116669929`,
+  accepts static action freeze only and preserves false dynamic, mapping, and
+  physical authority.
 - Dynamic consequence, mapping approval, physical execution, object
   trajectory agreement, task success, and transfer remain unproven.
 
@@ -222,6 +230,7 @@ Current state:
 - The v1 seeded-action apparent pass is quarantined.
 - The calibrated-range v2 static run passed `2/2` actions per direction with
   the exact hashes listed above.
+- V2 receipt `c68599e9...` and closeout decision `ced92042...` are bound.
 - Dynamic simulation has not executed for the v2-admitted action set.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.

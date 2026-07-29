@@ -1,0 +1,82 @@
+{
+  "schema_version": "sim2claw.canonical_seeded_action_static_closeout.v2",
+  "decision_id": "canonical-seeded-action-static-v2-closeout-20260728",
+  "status": "accepted_static_action_freeze_dynamic_replay_next",
+  "contract": {
+    "path": "configs/evaluations/canonical_seeded_action_static_v2.json",
+    "sha256": "f79ad5dc65895affe13796199bd5ab682c12acf80c0134a995fdeb95ba2fef2c"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/receipt.json",
+    "sha256": "c68599e9f18120f46bea955732ccc82c3582b9f18af280292f2aad73cfd47977",
+    "status": "canonical_seeded_action_static_v2_pass",
+    "proof_class": "cpu_fp64_canonical_current_anchor_seeded_calibrated_range_static_action_freeze"
+  },
+  "result": {
+    "family_count": 52,
+    "grid_cell_count": 208,
+    "eligible_cell_count": 44,
+    "selected_family_count": 4,
+    "real_to_sim_lanes": 2,
+    "sim_to_real_lanes": 2,
+    "row_zero_exact_live_anchor": true,
+    "minimum_selected_model_joint_margin_rad": 0.001829670515161086,
+    "model_joint_margin_gate_passed": true,
+    "mapping_calibration_approved": false,
+    "dynamic_simulation_executed": false,
+    "physical_motion": false,
+    "task_attempts": 0
+  },
+  "selected_actions": [
+    {
+      "case_id": "tan_pawn_h7__h7_h6",
+      "direction": "REAL_TO_SIM",
+      "sha256": "73b681e2581ea1477f4deec90d1f48d78e8cce2b7c42923dd5c5b612415dbf42",
+      "shape": [
+        1017,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_h7__h7_g7",
+      "direction": "SIM_TO_REAL",
+      "sha256": "8526b423206ea88fe8d6edd5fb0ab5cf0d0a0333c68aa0489cd28430bebadfaf",
+      "shape": [
+        948,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_f6",
+      "direction": "REAL_TO_SIM",
+      "sha256": "52c89c2f51e190ae0cd94512405e98b20fd6e630e139144503a0a68a3c3ddd87",
+      "shape": [
+        1033,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_g7",
+      "direction": "SIM_TO_REAL",
+      "sha256": "57e9192b8ec0a13331b1bfc6bf911c528f5dbe7df89055c89baa02465edab296",
+      "shape": [
+        965,
+        6
+      ]
+    }
+  ],
+  "authority": {
+    "dynamic_simulation_contract": true,
+    "dynamic_simulation_execution": false,
+    "mapping_approval": false,
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "physical_packet": false,
+    "physical_motion": false,
+    "task_attempt": false,
+    "transfer_claim": false
+  },
+  "next_action": "adopt_causal_closure_successor_queue_then_freeze_dynamic_replay",
+  "claim_boundary": "V2 proves only defect-free static action eligibility from the current anchor. The mapping remains unapproved and no dynamic or physical task evidence exists."
+}

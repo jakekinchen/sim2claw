@@ -87,6 +87,11 @@ Confirmed:
 - The calibrated-range v2 static rerun is frozen and passed at `fc23364`,
   re-admitting the same four exact actions `2/2` per direction with a minimum
   selected model-joint margin of `0.001829670515161086 rad`.
+- Its authoritative receipt SHA-256 is
+  `c68599e9f18120f46bea955732ccc82c3582b9f18af280292f2aad73cfd47977`;
+  closeout decision SHA-256
+  `ced92042e73ed53a5ccf27810ddce9d36f9a50f8f6a71110ca517bf116669929`
+  preserves false dynamic, mapping, and physical authority.
 - CC01 in the successor queue is the sole active card.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
