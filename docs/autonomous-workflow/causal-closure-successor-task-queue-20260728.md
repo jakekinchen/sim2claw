@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_WRIST_COPY_FIX_V5_DIAGNOSTIC`
+Status: `ACTIVE_CC03_WRIST_FRESH_V4_EXECUTE`
 
 Created: `2026-07-28`
 
@@ -663,6 +663,16 @@ Current state:
   `feedf3ede2c7aa723f209157254c4c904a81a778c0dae57d909e16a8ba52899b`;
   its new-output diagnostic contract SHA-256 is
   `dfc17f942c1e5c0432326bfdd9848f18c19f31d0330bbd21cb79f29eddba0c35`.
+- The V5 copy-safe diagnostic passed every unchanged gate on the opened V3
+  capture: normalized correlation `0.985783`, RMSE `0.062148`, maximum error
+  `0.168894`, and simulated peak `2.813187 deg`. Receipt SHA-256 is
+  `a7f1bfa773067b4185b266910de14126daf9db4631e79c23e6b8d96abf671d07`.
+  It remains diagnostic-only and does not approve mapping.
+- A fresh prospective wrist capture is compiled from torque-off anchor wrist
+  `-16.395604 deg`. Route SHA-256 is `5e1ad4b6...`, packet SHA-256 is
+  `68513862...`, plan SHA-256 is `1e880940...`, exact action SHA-256 is
+  `6872ca20...`, and review SHA-256 is `dbbd9f88...`. Static preview adds no
+  new or worsened contact and admits exactly one no-contact execution.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -704,7 +714,6 @@ This authorization:
 
 Next step:
 
-- Run the copy-safe V5 implementation on the already-opened V3 capture as a
-  diagnostic only. If it proves the bounded fix, freeze and execute a fresh
-  no-contact wrist capture before any new frame is opened. Do not touch a pawn
-  or count a task attempt.
+- Execute the fresh wrist-only V4 capture exactly once, verify tricam
+  enclosure and torque-off, then bind the already-frozen copy-safe evaluator
+  before opening any new frame. Do not touch a pawn or count a task attempt.

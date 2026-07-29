@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 3,
     "heldout_open_count": 3,
     "milestone_id": "CC03",
-    "node_id": "checkpoint:calibration-graph-d405-wrist-corner-shape-copy-fix-diagnostic-v5-frozen",
-    "queue_status": "ACTIVE_CC03_WRIST_COPY_FIX_V5_DIAGNOSTIC",
-    "resume_action": "execute_copy_safe_v5_diagnostic_once",
+    "node_id": "verdict:calibration-graph-d405-wrist-corner-shape-review-v4-admit",
+    "queue_status": "ACTIVE_CC03_WRIST_FRESH_V4_EXECUTE",
+    "resume_action": "execute_fresh_wrist_v4_once",
     "resume_authorized": true,
-    "status": "copy_fix_v5_diagnostic_frozen_on_opened_v3_capture"
+    "status": "fresh_wrist_v4_reviewed_for_one_execution"
   },
   "authority": {
     "camera_open": false,
@@ -95,14 +95,14 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 198,
+    "nodes": 202,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 128,
+      "checkpoint": 130,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 42,
+      "evaluator_verdict": 44,
       "evidence": 7,
       "intervention": 1,
       "mechanism": 3,
@@ -2126,7 +2126,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "bcc1b0483097e3a4e5d8c93136f2570f2923f4b08bced722503a932e7fb610e0",
+  "graph_digest": "49b72a0e6a4a0f4f79fc252a606e3b7f2f7691985190ba944b8681dbe46a0b4a",
   "node_types": [
     "workcell",
     "session",
@@ -2636,6 +2636,30 @@
     },
     {
       "data": {
+        "action_sha256": "6872ca20a7b31cba8b014c23ed7f11cf845b4d5e88da28e6304464e7786ddf1d",
+        "no_new_or_worsened_contact": true,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_d405_wrist_corner_shape_packet_v4"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:calibration-graph-d405-wrist-corner-shape-packet-v4-compiled",
+      "label": "Fresh wrist-only heldout packet V4 compiled",
+      "proof_class": "fresh_reviewable_no_contact_wrist_mapping_capture_packet",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/packet.json",
+        "payload_contract": {
+          "physical_motion_commanded": false,
+          "plan_sha256": "1e880940278a863e4ab6133bed463eb952dcdaf6ea73f89ac32834e143e73213",
+          "schema_version": "sim2claw.wrist_view_reposition_packet.v2"
+        },
+        "proof_class": "fresh_reviewable_no_contact_wrist_mapping_capture_packet",
+        "sha256": "685138622b18a9b1989df08fdb1f316e7bae48a7b4dd72b86272675793786bc4"
+      },
+      "status": "compiled_no_motion",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "depth_required": false,
         "elbow_actuated": false,
         "physical_task_attempts": 0,
@@ -2656,6 +2680,29 @@
         "sha256": "063342cfa052238950b7ad749095984e75652b44550ee12d535671103f36f03a"
       },
       "status": "preregistered_before_packet_compile",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "depth_required": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_d405_wrist_corner_shape_route_v4",
+        "wrist_excursion_degrees": 3.0
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:calibration-graph-d405-wrist-corner-shape-route-v4-frozen",
+      "label": "Fresh wrist-only heldout route V4 frozen",
+      "proof_class": "prospective_fresh_static_safe_no_contact_wrist_mapping_capture",
+      "source": {
+        "path": "configs/hardware/calibration_graph_d405_wrist_corner_shape_heldout_tricam_v4.json",
+        "payload_contract": {
+          "route_id": "calibration_graph_d405_wrist_corner_shape_heldout_tricam_20260729_v4",
+          "schema_version": "sim2claw.wrist_view_reposition_route.v1"
+        },
+        "proof_class": "prospective_fresh_static_safe_no_contact_wrist_mapping_capture",
+        "sha256": "5e1ad4b66ecebfb1b35a4ec066a8c226256058206092c706d9c0b320fc19aac1"
+      },
+      "status": "preregistered_before_fresh_capture",
       "type": "checkpoint"
     },
     {
@@ -3636,7 +3683,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "11aa96abdd6a260570351945eee8980084a44286f4d5572751b8918ed5e96c9c"
+        "sha256": "cd33fa0e71b6bb7f8eb68bdbabaa59781d1ced4161f03ee2d532b38cd4a22edc"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6838,6 +6885,34 @@
     },
     {
       "data": {
+        "fresh_heldout_required": true,
+        "mapping_approval": false,
+        "normalized_shape_correlation": 0.9857833420337594,
+        "normalized_shape_max_error": 0.16889381754849134,
+        "normalized_shape_rmse": 0.06214767838505849,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_d405_wrist_corner_shape_copy_fix_receipt_v5"
+      },
+      "evaluator_identity": "feedf3ede2c7aa723f209157254c4c904a81a778c0dae57d909e16a8ba52899b",
+      "id": "verdict:calibration-graph-d405-wrist-corner-shape-copy-fix-v5-pass",
+      "label": "Copy-safe wrist trajectory diagnostic passes unchanged gates",
+      "proof_class": "corrected_evaluator_diagnostic_on_opened_v3_capture",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/evaluation-v5-copy-fix-diagnostic/receipt.json",
+        "payload_contract": {
+          "diagnostic_passed": true,
+          "heldout_passed": false,
+          "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_heldout_receipt.v4",
+          "status": "wrist_corner_shape_v4_passed_no_automatic_promotion"
+        },
+        "proof_class": "corrected_evaluator_diagnostic_on_opened_v3_capture",
+        "sha256": "a7f1bfa773067b4185b266910de14126daf9db4631e79c23e6b8d96abf671d07"
+      },
+      "status": "diagnostic_pass_fresh_heldout_still_required",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "no_contact_calibration_only": true,
         "packet_source_binding": "calibration_graph_d405_wrist_corner_shape_packet_v3",
         "physical_task_attempts": 0,
@@ -6857,6 +6932,30 @@
         },
         "proof_class": "independent_single_stage_no_contact_wrist_corner_shape_packet_review",
         "sha256": "233fb3e7067384e1e321082e1b6edde6a1f19abb950a2dc5f096638817dc1dca"
+      },
+      "status": "admitted_for_one_execution_per_stage",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
+        "no_contact_calibration_only": true,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_d405_wrist_corner_shape_review_v4",
+        "stage_count": 1
+      },
+      "evaluator_identity": "685138622b18a9b1989df08fdb1f316e7bae48a7b4dd72b86272675793786bc4",
+      "id": "verdict:calibration-graph-d405-wrist-corner-shape-review-v4-admit",
+      "label": "Fresh wrist-only heldout execution admitted once",
+      "proof_class": "fresh_single_stage_no_contact_wrist_mapping_packet_review",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/review.json",
+        "payload_contract": {
+          "physical_authority": false,
+          "schema_version": "sim2claw.wrist_view_reposition_review.v2",
+          "status": "admitted_for_one_execution_per_stage"
+        },
+        "proof_class": "fresh_single_stage_no_contact_wrist_mapping_packet_review",
+        "sha256": "dbbd9f889b1f3a362131e7a75e0df525d3e3447a9afd32bff44682be7b1668a7"
       },
       "status": "admitted_for_one_execution_per_stage",
       "type": "evaluator_verdict"
@@ -9101,7 +9200,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "11aa96abdd6a260570351945eee8980084a44286f4d5572751b8918ed5e96c9c",
+      "source_sha256": "cd33fa0e71b6bb7f8eb68bdbabaa59781d1ced4161f03ee2d532b38cd4a22edc",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -9853,6 +9952,46 @@
       "source_binding": "calibration_graph_d405_wrist_corner_shape_copy_fix_diagnostic_v5",
       "source_sha256": "dfc17f942c1e5c0432326bfdd9848f18c19f31d0330bbd21cb79f29eddba0c35",
       "status": "frozen_copy_fix_diagnostic_after_v3_capture_open"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_COPY_FIX_V5_PASS",
+      "node_ids_added": [
+        "verdict:calibration-graph-d405-wrist-corner-shape-copy-fix-v5-pass"
+      ],
+      "revision": 179,
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_copy_fix_receipt_v5",
+      "source_sha256": "a7f1bfa773067b4185b266910de14126daf9db4631e79c23e6b8d96abf671d07",
+      "status": "diagnostic_pass_fresh_heldout_still_required"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_ROUTE_V4_FROZEN",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-wrist-corner-shape-route-v4-frozen"
+      ],
+      "revision": 180,
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_route_v4",
+      "source_sha256": "5e1ad4b66ecebfb1b35a4ec066a8c226256058206092c706d9c0b320fc19aac1",
+      "status": "preregistered_before_fresh_capture"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_PACKET_V4_COMPILED",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-wrist-corner-shape-packet-v4-compiled"
+      ],
+      "revision": 181,
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_packet_v4",
+      "source_sha256": "685138622b18a9b1989df08fdb1f316e7bae48a7b4dd72b86272675793786bc4",
+      "status": "compiled_no_motion"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_REVIEW_V4_ADMIT",
+      "node_ids_added": [
+        "verdict:calibration-graph-d405-wrist-corner-shape-review-v4-admit"
+      ],
+      "revision": 182,
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_review_v4",
+      "source_sha256": "dbbd9f889b1f3a362131e7a75e0df525d3e3447a9afd32bff44682be7b1668a7",
+      "status": "admitted_for_one_execution_per_stage"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -10099,6 +10238,18 @@
       "sha256": "dfc17f942c1e5c0432326bfdd9848f18c19f31d0330bbd21cb79f29eddba0c35"
     },
     {
+      "id": "calibration_graph_d405_wrist_corner_shape_copy_fix_receipt_v5",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/evaluation-v5-copy-fix-diagnostic/receipt.json",
+      "payload_contract": {
+        "diagnostic_passed": true,
+        "heldout_passed": false,
+        "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_heldout_receipt.v4",
+        "status": "wrist_corner_shape_v4_passed_no_automatic_promotion"
+      },
+      "proof_class": "corrected_evaluator_diagnostic_on_opened_v3_capture",
+      "sha256": "a7f1bfa773067b4185b266910de14126daf9db4631e79c23e6b8d96abf671d07"
+    },
+    {
       "id": "calibration_graph_d405_wrist_corner_shape_evaluator_v3",
       "path": "tools/evaluate_calibration_graph_d405_wrist_corner_shape_heldout_v3.py",
       "proof_class": "prospective_gauge_free_d405_fixed_tag_wrist_only_raw_corner_trajectory_shape_evaluator",
@@ -10140,6 +10291,17 @@
       "sha256": "819a2cbad0b611226213763d4640b87d8da83808a2a648a7b738323d7915201e"
     },
     {
+      "id": "calibration_graph_d405_wrist_corner_shape_packet_v4",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/packet.json",
+      "payload_contract": {
+        "physical_motion_commanded": false,
+        "plan_sha256": "1e880940278a863e4ab6133bed463eb952dcdaf6ea73f89ac32834e143e73213",
+        "schema_version": "sim2claw.wrist_view_reposition_packet.v2"
+      },
+      "proof_class": "fresh_reviewable_no_contact_wrist_mapping_capture_packet",
+      "sha256": "685138622b18a9b1989df08fdb1f316e7bae48a7b4dd72b86272675793786bc4"
+    },
+    {
       "id": "calibration_graph_d405_wrist_corner_shape_receipt_v3",
       "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/evaluation/receipt.json",
       "payload_contract": {
@@ -10163,6 +10325,17 @@
       "sha256": "233fb3e7067384e1e321082e1b6edde6a1f19abb950a2dc5f096638817dc1dca"
     },
     {
+      "id": "calibration_graph_d405_wrist_corner_shape_review_v4",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/review.json",
+      "payload_contract": {
+        "physical_authority": false,
+        "schema_version": "sim2claw.wrist_view_reposition_review.v2",
+        "status": "admitted_for_one_execution_per_stage"
+      },
+      "proof_class": "fresh_single_stage_no_contact_wrist_mapping_packet_review",
+      "sha256": "dbbd9f889b1f3a362131e7a75e0df525d3e3447a9afd32bff44682be7b1668a7"
+    },
+    {
       "id": "calibration_graph_d405_wrist_corner_shape_route_v3",
       "path": "configs/hardware/calibration_graph_d405_wrist_corner_shape_heldout_tricam_v3.json",
       "payload_contract": {
@@ -10171,6 +10344,16 @@
       },
       "proof_class": "prospective_static_safe_no_contact_wrist_only_raw_corner_shape_mapping_heldout",
       "sha256": "063342cfa052238950b7ad749095984e75652b44550ee12d535671103f36f03a"
+    },
+    {
+      "id": "calibration_graph_d405_wrist_corner_shape_route_v4",
+      "path": "configs/hardware/calibration_graph_d405_wrist_corner_shape_heldout_tricam_v4.json",
+      "payload_contract": {
+        "route_id": "calibration_graph_d405_wrist_corner_shape_heldout_tricam_20260729_v4",
+        "schema_version": "sim2claw.wrist_view_reposition_route.v1"
+      },
+      "proof_class": "prospective_fresh_static_safe_no_contact_wrist_mapping_capture",
+      "sha256": "5e1ad4b66ecebfb1b35a4ec066a8c226256058206092c706d9c0b320fc19aac1"
     },
     {
       "id": "calibration_graph_d405_wrist_corner_shape_runner_closeout_v4",
@@ -10915,7 +11098,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "11aa96abdd6a260570351945eee8980084a44286f4d5572751b8918ed5e96c9c"
+      "sha256": "cd33fa0e71b6bb7f8eb68bdbabaa59781d1ced4161f03ee2d532b38cd4a22edc"
     },
     {
       "id": "current_task_scene_labels",
