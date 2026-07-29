@@ -3,12 +3,12 @@
     "counted_task_attempts": 0,
     "cumulative_manifest_read_count": 4,
     "heldout_open_count": 4,
-    "milestone_id": "CC03E",
-    "node_id": "checkpoint:elbow-telemetry-probe-v4-frozen",
-    "queue_status": "IN_PROGRESS_CC03E_ELBOW_TELEMETRY_DIAGNOSTIC",
-    "resume_action": "execute_frozen_no_contact_elbow_and_wrist_control_probe_once",
+    "milestone_id": "CC03K",
+    "node_id": "verdict:elbow-mechanical-resistance-signature-v4",
+    "queue_status": "IN_PROGRESS_CC03K_DIRECTIONAL_DISPLACEMENT_STATIC_FREEZE",
+    "resume_action": "freeze_directional_displacement_static_contract_before_model_loading",
     "resume_authorized": true,
-    "status": "bounded_elbow_telemetry_diagnostic_active"
+    "status": "directional_displacement_static_freeze_active"
   },
   "authority": {
     "camera_open": false,
@@ -95,15 +95,15 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 225,
+    "nodes": 227,
     "nodes_by_type": {
       "candidate": 2,
       "checkpoint": 139,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 56,
-      "evidence": 9,
+      "evaluator_verdict": 57,
+      "evidence": 10,
       "intervention": 1,
       "mechanism": 3,
       "parameter_posterior": 1,
@@ -2126,7 +2126,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "3cb45b9066a8ee4861799895f3196f594803fbbc48bc3a04af71ca481d8d7f93",
+  "graph_digest": "fb63488033007caa207fcb7672963c28fb1e643ba629e5d26bdbe2d25de0fdf8",
   "node_types": [
     "workcell",
     "session",
@@ -3829,7 +3829,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "70aaf6289fc1d80db54cf0db00bc1de1500ee11d7c5c053843d6b1cdebd85f7d"
+        "sha256": "58d3a8a50d5674a0e2a5a9fed76c4ebcd38acd1121c2ed62983bf957c41c37c8"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6713,6 +6713,41 @@
     },
     {
       "data": {
+        "camera_frames": 67,
+        "camera_large_gap_count": 0,
+        "completed_exact_rows": 217,
+        "elbow_maximum_excursion_after_cycle_degrees": 1.7582417582417662,
+        "elbow_maximum_excursion_before_cycle_degrees": 1.6703296703296786,
+        "matched_wrist_maximum_excursion_degrees": 4.835164835164836,
+        "physical_task_attempts": 0,
+        "source_binding_id": "elbow_telemetry_probe_receipt_v4",
+        "torque_cycle_count": 1
+      },
+      "evaluator_identity": null,
+      "id": "evidence:elbow-telemetry-probe-v4-complete",
+      "label": "CC03E exact telemetry and torque-cycle probe complete",
+      "proof_class": "physical_no_contact_elbow_and_wrist_control_telemetry",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-cc03e-elbow-telemetry-probe-v4/receipt.json",
+        "payload_contract": {
+          "configuration_write": false,
+          "gain_write": false,
+          "passed": true,
+          "pawn_contact": false,
+          "physical_task_attempts": 0,
+          "proof_class": "physical_no_contact_elbow_and_wrist_control_telemetry",
+          "schema_version": "sim2claw.elbow_telemetry_probe_receipt.v1",
+          "status": "completed_no_contact_elbow_telemetry_probe",
+          "torque_cycle_count": 1
+        },
+        "proof_class": "physical_no_contact_elbow_and_wrist_control_telemetry",
+        "sha256": "876cc47862b21f719646b7797b3e67c5dc8ec7e654735e984f4ee09265da666b"
+      },
+      "status": "completed_no_contact_elbow_telemetry_probe",
+      "type": "evidence"
+    },
+    {
+      "data": {
         "directional_displacement_successor_required": true,
         "elbow_mechanically_dead_proven": false,
         "elbow_telemetry_probe_required": true,
@@ -8015,6 +8050,42 @@
         "sha256": "97fbe64d7b4de126e3f29e2323cb613fea13ebd3dee2ae7d30f287f77dc4552c"
       },
       "status": "two_of_four_two_lane_static_partial_reject",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
+        "configuration_write_authorized": false,
+        "current_and_load_rise": true,
+        "directional_displacement_static_successor_active": true,
+        "gain_write_authorized": false,
+        "human_repair_required_for_elbow_requalification": true,
+        "matched_wrist_tracks": true,
+        "physical_task_attempts": 0,
+        "source_binding_id": "elbow_telemetry_probe_closeout_v4",
+        "symmetric_partial_response": true,
+        "torque_cycle_restores_response": false
+      },
+      "evaluator_identity": "876cc47862b21f719646b7797b3e67c5dc8ec7e654735e984f4ee09265da666b",
+      "id": "verdict:elbow-mechanical-resistance-signature-v4",
+      "label": "CC03E accepts mechanical-resistance signature and human repair boundary",
+      "proof_class": "physical_no_contact_elbow_and_wrist_control_telemetry",
+      "source": {
+        "path": "configs/decisions/elbow_telemetry_probe_v4_closeout.json",
+        "payload_contract": {
+          "configuration_write_authorized": false,
+          "gain_write_authorized": false,
+          "human_repair_required_for_elbow_requalification": true,
+          "passed": true,
+          "physical_task_attempts": 0,
+          "proof_class": "physical_no_contact_elbow_and_wrist_control_telemetry",
+          "schema_version": "sim2claw.elbow_telemetry_probe_closeout.v4",
+          "status": "accepted_mechanical_resistance_signature_human_repair_boundary",
+          "torque_off_cleanup": true
+        },
+        "proof_class": "physical_no_contact_elbow_and_wrist_control_telemetry",
+        "sha256": "f9c5d8fac4c2b50eb46dcc0e566f076f216dd6925c121712b9f2675f3ea685a8"
+      },
+      "status": "accepted_mechanical_resistance_signature_human_repair_boundary",
       "type": "evaluator_verdict"
     },
     {
@@ -9863,7 +9934,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "70aaf6289fc1d80db54cf0db00bc1de1500ee11d7c5c053843d6b1cdebd85f7d",
+      "source_sha256": "58d3a8a50d5674a0e2a5a9fed76c4ebcd38acd1121c2ed62983bf957c41c37c8",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -10885,6 +10956,26 @@
       "source_binding": "elbow_telemetry_probe_contract_v4",
       "source_sha256": "0bc1fdcd4fc6455b563e0174842e7ea9aa2b6ef37065b527d38e0a6490912976",
       "status": "preregistered_before_no_contact_probe"
+    },
+    {
+      "event_id": "ELBOW_TELEMETRY_PROBE_V4_COMPLETE",
+      "node_ids_added": [
+        "evidence:elbow-telemetry-probe-v4-complete"
+      ],
+      "revision": 206,
+      "source_binding": "elbow_telemetry_probe_receipt_v4",
+      "source_sha256": "876cc47862b21f719646b7797b3e67c5dc8ec7e654735e984f4ee09265da666b",
+      "status": "completed_no_contact_elbow_telemetry_probe"
+    },
+    {
+      "event_id": "ELBOW_MECHANICAL_RESISTANCE_SIGNATURE_V4",
+      "node_ids_added": [
+        "verdict:elbow-mechanical-resistance-signature-v4"
+      ],
+      "revision": 207,
+      "source_binding": "elbow_telemetry_probe_closeout_v4",
+      "source_sha256": "f9c5d8fac4c2b50eb46dcc0e566f076f216dd6925c121712b9f2675f3ea685a8",
+      "status": "accepted_mechanical_resistance_signature_human_repair_boundary"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -12172,7 +12263,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "70aaf6289fc1d80db54cf0db00bc1de1500ee11d7c5c053843d6b1cdebd85f7d"
+      "sha256": "58d3a8a50d5674a0e2a5a9fed76c4ebcd38acd1121c2ed62983bf957c41c37c8"
     },
     {
       "id": "current_task_scene_labels",
@@ -12228,6 +12319,23 @@
       },
       "proof_class": "physical_camera_enclosed_gateway_fail_closed_before_command",
       "sha256": "03b64d11f57038361127808ee387110a59ae50fcd9e2eef3ae937d50ac9c143a"
+    },
+    {
+      "id": "elbow_telemetry_probe_closeout_v4",
+      "path": "configs/decisions/elbow_telemetry_probe_v4_closeout.json",
+      "payload_contract": {
+        "configuration_write_authorized": false,
+        "gain_write_authorized": false,
+        "human_repair_required_for_elbow_requalification": true,
+        "passed": true,
+        "physical_task_attempts": 0,
+        "proof_class": "physical_no_contact_elbow_and_wrist_control_telemetry",
+        "schema_version": "sim2claw.elbow_telemetry_probe_closeout.v4",
+        "status": "accepted_mechanical_resistance_signature_human_repair_boundary",
+        "torque_off_cleanup": true
+      },
+      "proof_class": "physical_no_contact_elbow_and_wrist_control_telemetry",
+      "sha256": "f9c5d8fac4c2b50eb46dcc0e566f076f216dd6925c121712b9f2675f3ea685a8"
     },
     {
       "id": "elbow_telemetry_probe_contract_v1",
@@ -12289,6 +12397,23 @@
       },
       "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
       "sha256": "0bc1fdcd4fc6455b563e0174842e7ea9aa2b6ef37065b527d38e0a6490912976"
+    },
+    {
+      "id": "elbow_telemetry_probe_receipt_v4",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-cc03e-elbow-telemetry-probe-v4/receipt.json",
+      "payload_contract": {
+        "configuration_write": false,
+        "gain_write": false,
+        "passed": true,
+        "pawn_contact": false,
+        "physical_task_attempts": 0,
+        "proof_class": "physical_no_contact_elbow_and_wrist_control_telemetry",
+        "schema_version": "sim2claw.elbow_telemetry_probe_receipt.v1",
+        "status": "completed_no_contact_elbow_telemetry_probe",
+        "torque_cycle_count": 1
+      },
+      "proof_class": "physical_no_contact_elbow_and_wrist_control_telemetry",
+      "sha256": "876cc47862b21f719646b7797b3e67c5dc8ec7e654735e984f4ee09265da666b"
     },
     {
       "id": "fable_elbow_boundary_endgame_review_v1",

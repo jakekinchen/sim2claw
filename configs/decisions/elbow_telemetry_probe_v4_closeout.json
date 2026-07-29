@@ -1,0 +1,49 @@
+{
+  "schema_version": "sim2claw.elbow_telemetry_probe_closeout.v4",
+  "decision_id": "cc03e-elbow-telemetry-probe-v4-closeout",
+  "status": "accepted_mechanical_resistance_signature_human_repair_boundary",
+  "proof_class": "physical_no_contact_elbow_and_wrist_control_telemetry",
+  "contract_sha256": "0bc1fdcd4fc6455b563e0174842e7ea9aa2b6ef37065b527d38e0a6490912976",
+  "executor_sha256": "8201f67662e90221fa5c79552970f44c4cf215874f5754e59bb3deddd8c2c843",
+  "receipt_path": "runs/bidirectional-pawn-push-v2/20260729-cc03e-elbow-telemetry-probe-v4/receipt.json",
+  "receipt_sha256": "876cc47862b21f719646b7797b3e67c5dc8ec7e654735e984f4ee09265da666b",
+  "telemetry_sha256": "f3ff1253bf200057ee5e29122a940b4ba216e5c857dc0b4b935ff39936854fe5",
+  "evidence": {
+    "completed_exact_rows": 217,
+    "planned_exact_rows": 217,
+    "before_torque_cycle_elbow_maximum_excursion_degrees": 1.6703296703296786,
+    "after_torque_cycle_elbow_maximum_excursion_degrees": 1.7582417582417662,
+    "matched_wrist_maximum_excursion_degrees": 4.835164835164836,
+    "five_degree_elbow_outbound_actual_span_degrees": 1.5824175824175905,
+    "five_degree_elbow_return_actual_span_degrees": 1.5824175824175905,
+    "post_cycle_five_degree_elbow_outbound_actual_span_degrees": 1.7582417582417662,
+    "post_cycle_five_degree_elbow_return_actual_span_degrees": 1.6703296703296786,
+    "elbow_outbound_peak_present_current_raw": 24.0,
+    "elbow_outbound_peak_present_load_raw": 196.0,
+    "elbow_return_peak_present_current_raw": 12.0,
+    "elbow_return_peak_present_load_raw": 164.0,
+    "elbow_temperature_range_c": [
+      25.0,
+      26.0
+    ],
+    "elbow_status_values": [
+      0.0
+    ],
+    "elbow_torque_enable_values": [
+      1.0
+    ],
+    "torque_cycle_count": 1,
+    "camera_frames": 67,
+    "camera_large_gap_count": 0,
+    "physical_task_attempts": 0
+  },
+  "diagnosis": "The elbow responds in both commanded directions but achieves only about one third of the five-degree excursion while current and load rise materially. The matched wrist tracks nearly the full request. Status remains zero, torque readback remains enabled, temperature is normal, and a torque off/on cycle does not restore response. This is a mechanical-resistance signature, not a flat-current command/protection anomaly and not the asymmetric low-current signature required to consider a RAM P-gain experiment.",
+  "decision": "Accept the telemetry as the requested diagnostic closeout. Preserve the elbow as unqualified for task motion and treat inspection or repair as a human external boundary. Do not change Position-P, torque, EEPROM, ID, or controller configuration. Activate the statically preregistered directional pawn-displacement path that holds elbow at the measured anchor.",
+  "gain_write_authorized": false,
+  "configuration_write_authorized": false,
+  "human_repair_required_for_elbow_requalification": true,
+  "physical_task_attempts": 0,
+  "pawn_contact": false,
+  "torque_off_cleanup": true,
+  "passed": true
+}

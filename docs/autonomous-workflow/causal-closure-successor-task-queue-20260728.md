@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `IN_PROGRESS_CC03E_ELBOW_TELEMETRY_DIAGNOSTIC`
+Status: `IN_PROGRESS_CC03K_DIRECTIONAL_DISPLACEMENT_STATIC_FREEZE`
 
 Created: `2026-07-28`
 
@@ -188,8 +188,8 @@ Requirements:
 | CC01 | `DONE` | Implement `ObservableEpisode.v2-min` plus deterministic simulator and physical-source adapters without opening hardware. | Schema validates exact actions, monotonic timestamps, joint/link state, board-plane object SE(2)+covariance, contact/motion events, task outcome, and explicit missingness; synthetic fixtures prove serialization and first-divergence extraction. | Accepted closeout `fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178`; no dynamic, mapping, or physical authority. |
 | CC02 | `DONE` | Replay every v2-admitted current-anchor action in canonical CPU/fp64 MuJoCo and emit `ObservableEpisode.v2-min` traces. | Requested/applied action hashes remain exact; at least two distinct cases per direction report link, contact, object trajectory, exclusions, and outcome under direct-target and the frozen timing-stress plant; `2/2` per direction pass the unchanged task and robustness gates before case freeze. | Accepted closeout `2c7f8483663a619c25c6aece2c041a7327aa440b8d961857a101bbc0590a5ed5`; simulator-only, no mapping or transfer claim. |
 | CC03 | `BLOCKED_SLIDING_PUSH_BOUNDARY_CONFIRMED` | Implement the minimum gauge-fixed `CalibrationGraph.v1` required to approve or reject the current physical/model mapping. | Shared variables cover fixed camera/board, robot-to-board rigid transform, physical-degree-to-MuJoCo sign/zero/scale, and declared jaw reference. Factors reuse accepted board/endpoint data, fixed-base evidence, one-joint sweeps, exact encoder holds, and an untouched composite held-out. Receipt reports factor residuals, Jacobian rank/spectrum, correlations, bounds, condition, and held-out result. | Wrist mapping passed only in a bounded elbow-locked scope. V4 plus Fable's independent pose sweep prove the unchanged sliding-push contact-height gate unreachable at the current anchor. No more sliding-push search. |
-| CC03E | `IN_PROGRESS` | Sharpen the elbow diagnosis with a receipt-bound, no-contact telemetry probe and a matched wrist-flex control. | Preregistered `+3/-3/+5/-5 deg` elbow offsets in both gravity directions and identical-magnitude wrist-flex control record requested/goal/sent/measured position, current/load, temperature, status, torque-enable readback, clocks, tracking/stall decisions, return residual, and torque-off cleanup at `>=5 Hz`. One torque disable/enable cycle precedes one repeated elbow probe; no configuration/gain write. | Stop on identity, camera, bus, torque, tracking, stall, or return uncertainty. Classify asymmetric low-current, symmetric rising-current, symmetric flat-current, or inconclusive. No class automatically authorizes a gain change. |
-| CC03K | `PENDING_AFTER_CC03E` | Prospectively freeze and statically screen the directional pawn-displacement primitive within the physically responsive envelope. | Static-only finite grid; selected pawn contacted collision-free at the modeled reachable head-height band; robot-board and exclusion margins, calibrated joint/gateway/slew margins, camera visibility, exact action identity, distinct direction families, and false physical authority all pass. At least one eligible family per direction is required. Primary displacement threshold and direction quadrant plus secondary topple/fall quadrant are frozen before dynamic outcomes. | If either direction has zero safe families, record a terminal workspace boundary. Do not weaken collision/contact/camera/gateway gates, relabel the result as sliding push, or continue outcome-informed family search. |
+| CC03E | `DONE_MECHANICAL_RESISTANCE_SIGNATURE` | Sharpen the elbow diagnosis with a receipt-bound, no-contact telemetry probe and a matched wrist-flex control. | Preregistered range-safe elbow destinations and equal returns plus identical-magnitude wrist-flex control record requested/goal/sent/measured position, current/load, temperature, status, torque-enable readback, clocks, tracking/stall decisions, return residual, and torque-off cleanup at `>=5 Hz`. One torque disable/enable cycle precedes one repeated elbow probe; no configuration/gain write. | Accepted closeout `f9c5d8fa...`: symmetric partial elbow response with rising current/load, normal status/temperature, matched wrist tracking, no post-cycle recovery. Human repair boundary; no gain experiment. |
+| CC03K | `IN_PROGRESS` | Prospectively freeze and statically screen the directional pawn-displacement primitive within the physically responsive envelope. | Static-only finite grid; selected pawn contacted collision-free at the modeled reachable head-height band; robot-board and exclusion margins, calibrated joint/gateway/slew margins, camera visibility, exact action identity, distinct direction families, and false physical authority all pass. At least one eligible family per direction is required. Primary displacement threshold and direction quadrant plus secondary topple/fall quadrant are frozen before dynamic outcomes. | If either direction has zero safe families, record a terminal workspace boundary. Do not weaken collision/contact/camera/gateway gates, relabel the result as sliding push, or continue outcome-informed family search. |
 | CC04 | `PENDING` | Approve the mapping and freeze evaluator v2 plus at least two feasible distinct cases per direction. | `physical_model_mapping_approved:true`; canonical registration remains admitted; dynamic CC02 cases pass; evaluator, object tracker, camera thresholds, clocks/missingness, exclusions, mapping, scene, setup, task hashes, one-attempt rule, and maximum-ten ledger freeze prospectively. | Mapping reject routes back to one discriminating calibration factor/probe. Dynamic reject routes to one mechanism-specific simulator intervention. No physical packet. |
 | CC05 | `PENDING` | Execute one admitted REAL->SIM case: physical task and object consequence first, then byte-identical replay in simulation. | C922-enclosed physical success; requested=mapped=sent identity; torque-off cleanup; exact simulator replay with no clipping/retiming/repair/state forcing; simulator outcome passes; full first-divergence trace includes links, contact, pawn state, and outcome. | A failure stays in the REAL->SIM denominator. If links agree but pawn response diverges, activate CC07; otherwise diagnose the earliest upstream channel before another case. |
 | CC06 | `PENDING` | Execute one distinct admitted SIM->REAL case: simulator success and robustness first, then the frozen identical action once physically. | Sim outcome and robustness predate action freeze; distinct pawn/file; reviewed physical packet; C922-owned physical success; exact bytes; exclusions pass; torque-off cleanup. | A failure stays in the SIM->REAL denominator. Physical outcome never tunes the frozen case. |
@@ -237,7 +237,7 @@ Current state:
 - CC00 is complete.
 - CC00A is complete.
 - CC01 is complete.
-- CC03E is the only active card.
+- CC03K is the only active card.
 - The v1 seeded-action apparent pass is quarantined.
 - The calibrated-range v2 static run passed `2/2` actions per direction with
   the exact hashes listed above.
@@ -843,6 +843,18 @@ Current state:
   `8201f67662e90221fa5c79552970f44c4cf215874f5754e59bb3deddd8c2c843`.
   Every V3 destination, timing, camera, telemetry, stop, and authority field
   remains unchanged.
+- V4 completed all `217/217` exact rows, including the post-torque-cycle
+  repeat, with D405 enclosure (`67` frames, zero large gaps) and torque-off
+  cleanup. Receipt SHA-256 is
+  `876cc47862b21f719646b7797b3e67c5dc8ec7e654735e984f4ee09265da666b`;
+  closeout SHA-256 is
+  `f9c5d8fac4c2b50eb46dcc0e566f076f216dd6925c121712b9f2675f3ea685a8`.
+  The elbow achieved only `1.58--1.76 deg` of a five-degree probe in both
+  directions while current/load rose as high as raw `24/196`; the matched
+  wrist reached `4.84 deg`. Status stayed `0`, torque readback `1`,
+  temperature `25--26 C`, and the torque cycle did not restore response. This
+  is accepted as a mechanical-resistance signature. Gain writes remain
+  unauthorized; elbow inspection/repair is a human boundary.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -862,7 +874,6 @@ Completed:
 Blockers:
 
 - No approved physical/model mapping for straight sliding-push actions.
-- The elbow diagnostic class is not yet receipt-bound.
 - Directional-displacement static feasibility is not yet frozen or tested.
 
 ## Time-bounded physical authorization
@@ -885,9 +896,6 @@ This authorization:
 
 Next step:
 
-- Preregister and run `CC03E` under the time-bounded diagnostic-probe
-  authorization. Keep camera enclosure, return, and torque-off fail-closed;
-  do not touch a pawn or count a task attempt.
-- Then freeze `CC03K` statically. Physical task authority remains false unless
+- Freeze `CC03K` statically. Physical task authority remains false unless
   at least one safe family per direction survives and CC04 freezes the new
   evaluator/cases prospectively.

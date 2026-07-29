@@ -261,7 +261,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 
 ```text
 Current state:
-Active card: CC03E receipt-bound elbow telemetry diagnostic.
+Active card: CC03K directional-displacement static freeze.
 Completed: CC00, CC00A, CC01, CC02.
 Evidence: fresh wrist pass 16b7896c...; low-path terminal receipt eceb14e3...; safety closeout 0df993af....
 REAL->SIM successes/attempts:
@@ -269,9 +269,9 @@ SIM->REAL successes/attempts:
 Heldout open count: 4
 Physical task attempts: 0/10
 Physical/camera/torque state: closed after wrist-only calibration; torque false.
-Remaining: CC03E, CC03K, and CC04 through CC15.
-Blockers: straight sliding push is geometrically unsafe at the current elbow anchor; the elbow failure class is not yet receipt-bound; directional-displacement feasibility is not yet frozen.
-Next step: execute the no-contact CC03E telemetry/control probe, then freeze and statically screen CC03K. Preserve false task/transfer authority until both directional families and the new evaluator are prospectively admitted.
+Remaining: CC03K and CC04 through CC15.
+Blockers: straight sliding push is geometrically unsafe at the current elbow anchor; CC03E confirms a mechanical-resistance signature and leaves elbow repair at a human boundary; directional-displacement feasibility is not yet frozen.
+Next step: freeze and statically screen CC03K. Preserve false task/transfer authority until both directional families and the new evaluator are prospectively admitted.
 ```
 
 ## Physical Authority Boundaries

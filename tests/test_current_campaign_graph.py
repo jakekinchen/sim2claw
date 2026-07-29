@@ -29,14 +29,16 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     )
 
     assert rebuilt == tracked
-    assert tracked["active_pointer"]["milestone_id"] == "CC03E"
+    assert tracked["active_pointer"]["milestone_id"] == "CC03K"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:elbow-telemetry-probe-v4-frozen",
-        "milestone_id": "CC03E",
-        "status": "bounded_elbow_telemetry_diagnostic_active",
-        "queue_status": "IN_PROGRESS_CC03E_ELBOW_TELEMETRY_DIAGNOSTIC",
+        "node_id": "verdict:elbow-mechanical-resistance-signature-v4",
+        "milestone_id": "CC03K",
+        "status": "directional_displacement_static_freeze_active",
+        "queue_status": (
+            "IN_PROGRESS_CC03K_DIRECTIONAL_DISPLACEMENT_STATIC_FREEZE"
+        ),
         "resume_action": (
-            "execute_frozen_no_contact_elbow_and_wrist_control_probe_once"
+            "freeze_directional_displacement_static_contract_before_model_loading"
         ),
         "resume_authorized": True,
         "heldout_open_count": 4,
@@ -44,7 +46,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(206)
+        range(208)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +56,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "ELBOW_TELEMETRY_PROBE_V4_FROZEN"
+        "ELBOW_MECHANICAL_RESISTANCE_SIGNATURE_V4"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:elbow-telemetry-probe-v4-frozen"
+        "verdict:elbow-mechanical-resistance-signature-v4"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True
