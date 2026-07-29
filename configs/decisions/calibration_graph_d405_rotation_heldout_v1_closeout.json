@@ -1,0 +1,56 @@
+{
+  "schema_version": "sim2claw.calibration_graph_d405_rotation_heldout_closeout.v1",
+  "status": "rejected_actuator_response_and_pnp_channel_not_mapping_approved",
+  "proof_class": "prospective_downstream_rotation_heldout_negative_with_post_result_channel_localization",
+  "contract": {
+    "path": "configs/evaluations/calibration_graph_d405_rotation_heldout_v1.json",
+    "sha256": "e78908139ee586894ccfdcb5325c081251b23e795a34a8c7626d52e6409aaa8c"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/evaluation/receipt.json",
+    "sha256": "0b1901baabf93a479d3b48faee1bc119f47b9627a71aedd00fd6f1adaacabc67"
+  },
+  "immutable_result": {
+    "heldout_passed": false,
+    "stage_1_elbow": {
+      "command_excursion_degrees": 3.0,
+      "measured_excursion_degrees": 0.0879120879120876,
+      "simulated_rotation_rms_degrees": 0.0879120879120833,
+      "interpretation": "insufficient_measured_actuator_response_for_mapping_factor"
+    },
+    "stage_2_wrist": {
+      "command_excursion_degrees": 3.0,
+      "measured_excursion_degrees": 2.813186813186814,
+      "rotation_angle_correlation": 0.0,
+      "interpretation": "pnp_rotation_magnitude_channel_rejected"
+    }
+  },
+  "post_result_diagnostic": {
+    "authority": "outcome_informed_read_only_localization_not_heldout_evidence",
+    "stage_2_raw_tag_corner_displacement_vs_measured_joint_excursion_correlation": 0.9924154699337587,
+    "stage_2_raw_tag_center_displacement_vs_measured_joint_excursion_correlation": 0.9921670569148965,
+    "interpretation": "raw_image_space_tag_motion_is_observable_but_the_pnp_rotation_magnitude_extractor_is_not",
+    "may_not_promote_mapping": true
+  },
+  "decision": {
+    "physical_model_mapping_approved": false,
+    "camera_to_wrist_extrinsics_approved": false,
+    "simulator_promotion": false,
+    "physical_task_authority": false,
+    "physical_task_attempts": 0,
+    "next_mechanism": "prospectively_frozen_raw_tag_corner_trajectory_shape_heldout_with_larger_bounded_elbow_excitation"
+  },
+  "claim_boundary": {
+    "does_not_show": [
+      "wrong_elbow_joint_sign_or_scale",
+      "wrong_wrist_joint_sign_or_scale",
+      "global_camera_or_base_geometry_failure",
+      "task_contact_or_transfer_failure"
+    ],
+    "does_show": [
+      "three_degree_negative_elbow_command_did_not_produce_an_observable_measured_elbow_excursion",
+      "the_frozen_pnp_rotation_magnitude_evaluator_is_not_admissible_for_mapping_approval",
+      "raw_d405_tag_corner_motion_remains_a_high_signal_candidate_channel"
+    ]
+  }
+}

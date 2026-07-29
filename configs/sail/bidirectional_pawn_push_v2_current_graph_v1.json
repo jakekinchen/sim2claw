@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "f22cd4a64fc58e794bc0846522637380af227e5872f77ff51cfc859200d813dd",
+      "sha256": "adaa0de03ac9b38add6322deef973e86722edb8832da2488a77c9780157b4114",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1972,6 +1972,40 @@
         "status": "frozen_after_execution_before_action_interval_trajectory_open",
         "proof_class": "prospective_exact_action_physical_d405_fixed_tag_downstream_rotation_mapping_heldout"
       }
+    },
+    "calibration_graph_d405_rotation_heldout_v1_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/evaluation/receipt.json",
+      "sha256": "0b1901baabf93a479d3b48faee1bc119f47b9627a71aedd00fd6f1adaacabc67",
+      "proof_class": "prospective_exact_action_physical_d405_fixed_tag_downstream_rotation_mapping_heldout",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_d405_rotation_heldout_receipt.v1",
+        "status": "downstream_rotation_heldout_rejected_no_automatic_promotion",
+        "heldout_passed": false
+      }
+    },
+    "calibration_graph_d405_rotation_heldout_v1_closeout": {
+      "path": "configs/decisions/calibration_graph_d405_rotation_heldout_v1_closeout.json",
+      "sha256": "3391f6053f2910430dc4263817bb9645ea8207bad22dd214ad24059f916bbcab",
+      "proof_class": "prospective_downstream_rotation_heldout_negative_with_post_result_channel_localization",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_d405_rotation_heldout_closeout.v1",
+        "status": "rejected_actuator_response_and_pnp_channel_not_mapping_approved",
+        "proof_class": "prospective_downstream_rotation_heldout_negative_with_post_result_channel_localization"
+      }
+    },
+    "calibration_graph_d405_corner_shape_route_v2": {
+      "path": "configs/hardware/calibration_graph_d405_corner_shape_heldout_tricam_v2.json",
+      "sha256": "80e2d59d56f91987741ceed3774711bd608a973f6f3e8cc88021de4f336d9aaa",
+      "proof_class": "prospective_static_safe_no_contact_raw_corner_shape_downstream_mapping_heldout",
+      "payload_contract": {
+        "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+        "route_id": "calibration_graph_d405_corner_shape_heldout_tricam_20260729_v2"
+      }
+    },
+    "calibration_graph_d405_corner_shape_evaluator_v2": {
+      "path": "tools/evaluate_calibration_graph_d405_corner_shape_heldout_v2.py",
+      "sha256": "f364b374616e89becbdf8eb1a49358f85aa796b4389550021a271db5238cc3ad",
+      "proof_class": "prospective_gauge_free_d405_fixed_tag_raw_corner_trajectory_shape_evaluator"
     },
     "simulator_candidate": {
       "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
@@ -5264,6 +5298,49 @@
         "stage_count": 2,
         "stage_1_final_hold_frame_safety_inspection_only": true,
         "action_interval_trajectories_opened": false,
+        "parameter_fit": false,
+        "mapping_approval": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "verdict:calibration-graph-d405-rotation-heldout-v1-reject",
+      "type": "evaluator_verdict",
+      "label": "D405 PnP rotation heldout rejects without mapping promotion",
+      "status": "rejected_actuator_response_and_pnp_channel_not_mapping_approved",
+      "source_binding": "calibration_graph_d405_rotation_heldout_v1_closeout",
+      "evaluator_identity": "e78908139ee586894ccfdcb5325c081251b23e795a34a8c7626d52e6409aaa8c",
+      "data": {
+        "receipt_source_binding": "calibration_graph_d405_rotation_heldout_v1_receipt",
+        "elbow_measured_excursion_degrees": 0.0879120879120876,
+        "wrist_measured_excursion_degrees": 2.813186813186814,
+        "pnp_rotation_channel_admitted": false,
+        "physical_model_mapping_approved": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:calibration-graph-d405-corner-shape-route-v2-frozen",
+      "type": "checkpoint",
+      "label": "Raw D405 tag-corner shape successor route frozen",
+      "status": "preregistered_before_packet_compile",
+      "source_binding": "calibration_graph_d405_corner_shape_route_v2",
+      "data": {
+        "elbow_excursion_degrees": 5.0,
+        "wrist_excursion_degrees": 3.0,
+        "depth_required": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:calibration-graph-d405-corner-shape-evaluator-v2-frozen",
+      "type": "checkpoint",
+      "label": "Raw D405 tag-corner trajectory-shape evaluator frozen",
+      "status": "preregistered_before_new_capture",
+      "source_binding": "calibration_graph_d405_corner_shape_evaluator_v2",
+      "data": {
+        "raw_tag_corners": true,
+        "normalized_trajectory_shape": true,
         "parameter_fit": false,
         "mapping_approval": false,
         "physical_task_attempts": 0
@@ -8654,16 +8731,43 @@
       "node_ids_added": [
         "checkpoint:calibration-graph-d405-rotation-heldout-v1-frozen"
       ]
+    },
+    {
+      "revision": 159,
+      "event_id": "CALIBRATION_GRAPH_D405_ROTATION_HELDOUT_V1_REJECT",
+      "status": "rejected_actuator_response_and_pnp_channel_not_mapping_approved",
+      "source_binding": "calibration_graph_d405_rotation_heldout_v1_closeout",
+      "node_ids_added": [
+        "verdict:calibration-graph-d405-rotation-heldout-v1-reject"
+      ]
+    },
+    {
+      "revision": 160,
+      "event_id": "CALIBRATION_GRAPH_D405_CORNER_SHAPE_ROUTE_V2_FROZEN",
+      "status": "preregistered_before_packet_compile",
+      "source_binding": "calibration_graph_d405_corner_shape_route_v2",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-corner-shape-route-v2-frozen"
+      ]
+    },
+    {
+      "revision": 161,
+      "event_id": "CALIBRATION_GRAPH_D405_CORNER_SHAPE_EVALUATOR_V2_FROZEN",
+      "status": "preregistered_before_new_capture",
+      "source_binding": "calibration_graph_d405_corner_shape_evaluator_v2",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-corner-shape-evaluator-v2-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:calibration-graph-d405-rotation-heldout-v1-frozen",
+    "node_id": "checkpoint:calibration-graph-d405-corner-shape-evaluator-v2-frozen",
     "milestone_id": "CC03",
-    "status": "preregistered_before_exactly_once_heldout_evaluation",
-    "queue_status": "ACTIVE_CC03_DOWNSTREAM_ROTATION_HELDOUT_EVALUATE",
-    "resume_action": "execute_d405_rotation_heldout_v1_once",
+    "status": "preregistered_before_packet_compile",
+    "queue_status": "ACTIVE_CC03_CORNER_SHAPE_PACKET_COMPILE",
+    "resume_action": "compile_corner_shape_v2_packet",
     "resume_authorized": true,
-    "heldout_open_count": 1,
+    "heldout_open_count": 2,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0
   },

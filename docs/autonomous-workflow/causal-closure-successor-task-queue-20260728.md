@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_DOWNSTREAM_ROTATION_HELDOUT_EVALUATE`
+Status: `ACTIVE_CC03_CORNER_SHAPE_PACKET_COMPILE`
 
 Created: `2026-07-28`
 
@@ -555,6 +555,25 @@ Current state:
   `25ac3ad5bd95c35d5cc7946b5d25341a440b566f9ea6c732c443deefe5c59c43`.
   It may read only the bound captures, fit no parameter, and cannot
   automatically approve mapping.
+- D405 rotation heldout V1 ran exactly once and rejected. Receipt SHA-256 is
+  `0b1901baabf93a479d3b48faee1bc119f47b9627a71aedd00fd6f1adaacabc67`;
+  closeout SHA-256 is
+  `3391f6053f2910430dc4263817bb9645ea8207bad22dd214ad24059f916bbcab`.
+  The elbow command produced only `0.087912 deg` measured excursion, so that
+  stage lacked physical signal. The wrist moved `2.813187 deg`, but the
+  frozen PnP rotation-magnitude correlation was `0.0`. Mapping remains
+  unapproved.
+- A post-result, outcome-informed localization found the raw wrist-stage tag
+  corner displacement correlated `0.992415` with measured wrist excursion.
+  This diagnostic cannot promote mapping, but it identifies the PnP-derived
+  rotation channel—not raw D405 observability—as the wrist-stage defect.
+- Corner-shape heldout V2 is prospectively defined by route SHA-256
+  `80e2d59d56f91987741ceed3774711bd608a973f6f3e8cc88021de4f336d9aaa`
+  and evaluator implementation SHA-256
+  `f364b374616e89becbdf8eb1a49358f85aa796b4389550021a271db5238cc3ad`.
+  It increases only the elbow excursion from three to five degrees, retains
+  the wrist action at three degrees, replaces PnP rotation with normalized raw
+  tag-corner trajectory shape, fits nothing, and requires no depth.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -596,6 +615,7 @@ This authorization:
 
 Next step:
 
-- Execute the frozen D405 action-interval rotation heldout exactly once.
-  Preserve its immutable pass or reject, then perform a separate bounded
-  mapping reconciliation. Do not touch a pawn or count a task attempt.
+- Compile and independently review the corner-shape V2 packet from the fresh
+  torque-off anchor. If admitted, execute each no-contact stage once and
+  freeze its evaluator contract before opening any new frame. Do not touch a
+  pawn or count a task attempt.

@@ -255,15 +255,15 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
 Completed: CC00, CC00A, CC01, CC02.
-Evidence: composite negative 5b10d59d...; downstream stage receipts 6613d126... and ccbf276b...; heldout contract e7890813....
+Evidence: downstream heldout reject 0b1901ba...; closeout 3391f605...; corner-shape successor route 80e2d59d....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
-Heldout open count: 1
+Heldout open count: 2
 Physical task attempts: 0/10
 Physical/camera/torque state: closed after two calibration-only stages; fresh preflight torque false.
 Remaining: CC03 through CC15.
 Blockers: physical/model mapping remains unapproved.
-Next step: execute the frozen D405 action-interval heldout once; no pawn contact or task attempt.
+Next step: compile/review the prospective corner-shape successor; no pawn contact or task attempt.
 ```
 
 ## Physical Authority Boundaries

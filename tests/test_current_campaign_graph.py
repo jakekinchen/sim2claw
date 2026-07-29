@@ -32,19 +32,19 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert tracked["active_pointer"]["milestone_id"] == "CC03"
     assert tracked["active_pointer"] == {
         "node_id": (
-            "checkpoint:calibration-graph-d405-rotation-heldout-v1-frozen"
+            "checkpoint:calibration-graph-d405-corner-shape-evaluator-v2-frozen"
         ),
         "milestone_id": "CC03",
-        "status": "preregistered_before_exactly_once_heldout_evaluation",
-        "queue_status": "ACTIVE_CC03_DOWNSTREAM_ROTATION_HELDOUT_EVALUATE",
-        "resume_action": "execute_d405_rotation_heldout_v1_once",
+        "status": "preregistered_before_packet_compile",
+        "queue_status": "ACTIVE_CC03_CORNER_SHAPE_PACKET_COMPILE",
+        "resume_action": "compile_corner_shape_v2_packet",
         "resume_authorized": True,
-        "heldout_open_count": 1,
+        "heldout_open_count": 2,
         "cumulative_manifest_read_count": 2,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(159)
+        range(162)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +54,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "CALIBRATION_GRAPH_D405_ROTATION_HELDOUT_V1_FROZEN"
+        "CALIBRATION_GRAPH_D405_CORNER_SHAPE_EVALUATOR_V2_FROZEN"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:calibration-graph-d405-rotation-heldout-v1-frozen"
+        "checkpoint:calibration-graph-d405-corner-shape-evaluator-v2-frozen"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True
