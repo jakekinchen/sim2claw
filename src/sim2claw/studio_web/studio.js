@@ -62,6 +62,11 @@ const state = {
   sailFetchActive: false,
   sailSelectedEpisodeId: null,
   sailFrameIndex: 0,
+  proof: null,
+  proofError: null,
+  proofFetchActive: false,
+  proofFrameIndex: 0,
+  proofJointIndex: 2,
   projectMap: null,
   projectMapError: null,
   projectMapFetchActive: false,
@@ -125,6 +130,39 @@ const elements = {
   sailProofLegend: document.querySelector("#sail-proof-legend"),
   sailEmpty: document.querySelector("#sail-empty"),
   sailEmptyDetail: document.querySelector("#sail-empty-detail"),
+  proofStatus: document.querySelector("#proof-status"),
+  proofReceipt: document.querySelector("#proof-receipt"),
+  proofPlantVerdict: document.querySelector("#proof-plant-verdict"),
+  proofMissionVerdict: document.querySelector("#proof-mission-verdict"),
+  proofRobustVerdict: document.querySelector("#proof-robust-verdict"),
+  proofMappingVerdict: document.querySelector("#proof-mapping-verdict"),
+  proofVideo: document.querySelector("#proof-video"),
+  proofVideoTime: document.querySelector("#proof-video-time"),
+  proofCenterError: document.querySelector("#proof-center-error"),
+  proofOutcomeFacts: document.querySelector("#proof-outcome-facts"),
+  proofEventList: document.querySelector("#proof-event-list"),
+  proofJoint: document.querySelector("#proof-joint"),
+  proofSample: document.querySelector("#proof-sample"),
+  proofControlTime: document.querySelector("#proof-control-time"),
+  proofSyncedVideoTime: document.querySelector("#proof-synced-video-time"),
+  proofContact: document.querySelector("#proof-contact"),
+  proofScrubber: document.querySelector("#proof-scrubber"),
+  proofPlot: document.querySelector("#proof-plot"),
+  proofFrameReadouts: document.querySelector("#proof-frame-readouts"),
+  proofActuatorMetrics: document.querySelector("#proof-actuator-metrics"),
+  proofActuatorBoundary: document.querySelector("#proof-actuator-boundary"),
+  proofDivergenceList: document.querySelector("#proof-divergence-list"),
+  proofContactCount: document.querySelector("#proof-contact-count"),
+  proofContactBoundary: document.querySelector("#proof-contact-boundary"),
+  proofContactNeeds: document.querySelector("#proof-contact-needs"),
+  proofGeometryList: document.querySelector("#proof-geometry-list"),
+  proofGateGrid: document.querySelector("#proof-gate-grid"),
+  proofPathGrid: document.querySelector("#proof-path-grid"),
+  proofAvailabilityGrid: document.querySelector("#proof-availability-grid"),
+  proofHashList: document.querySelector("#proof-hash-list"),
+  proofClaimBoundary: document.querySelector("#proof-claim-boundary"),
+  proofEmpty: document.querySelector("#proof-empty"),
+  proofEmptyDetail: document.querySelector("#proof-empty-detail"),
   taskFilterList: document.querySelector("#task-filter-list"),
   taskFilterTemplate: document.querySelector("#task-filter-template"),
   railContext: document.querySelector("#rail-context"),
@@ -1070,6 +1108,399 @@ async function fetchSailObservatory() {
   } finally {
     state.sailFetchActive = false;
     renderSail();
+  }
+}
+
+function proofNode(tag, className = "", value = "") {
+  const element = document.createElement(tag);
+  if (className) element.className = className;
+  if (value !== "") text(element, value);
+  return element;
+}
+
+function proofSvgNode(tag, attributes = {}) {
+  const node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, String(value)));
+  return node;
+}
+
+function proofFact(term, value) {
+  const wrapper = document.createElement("div");
+  wrapper.append(proofNode("dt", "", term), proofNode("dd", "", value));
+  return wrapper;
+}
+
+function proofMetric(label, before, after, unit) {
+  const card = proofNode("div", "proof-metric");
+  const improvement = before > 0 ? ((before - after) / before) * 100 : 0;
+  card.append(
+    proofNode("span", "", label),
+    proofNode("b", "", `${before.toFixed(2)} → ${after.toFixed(2)} ${unit}`),
+    proofNode("em", "", `${improvement.toFixed(1)}% lower on validation`),
+  );
+  return card;
+}
+
+function proofPathPoints(values, { left, width, top, height, minimum, maximum }) {
+  const span = maximum - minimum || 1;
+  return values.map((value, index) => {
+    const x = left + (index / Math.max(1, values.length - 1)) * width;
+    const y = top + height - ((Number(value) - minimum) / span) * height;
+    return `${x.toFixed(2)},${y.toFixed(2)}`;
+  }).join(" ");
+}
+
+function drawProofBand({ label, unit, top, height, series }) {
+  const svg = elements.proofPlot;
+  const left = 122;
+  const right = 18;
+  const width = 960 - left - right;
+  const allValues = series.flatMap((row) => row.values).filter(Number.isFinite);
+  let minimum = Math.min(...allValues);
+  let maximum = Math.max(...allValues);
+  if (!Number.isFinite(minimum) || !Number.isFinite(maximum)) {
+    minimum = 0;
+    maximum = 1;
+  }
+  if (minimum === maximum) {
+    minimum -= 0.5;
+    maximum += 0.5;
+  }
+  const padding = (maximum - minimum) * 0.06;
+  minimum -= padding;
+  maximum += padding;
+  svg.append(
+    proofSvgNode("rect", { x: 0, y: top, width: 960, height, fill: top % 2 ? "#f7f7f4" : "#fafaf8" }),
+    proofSvgNode("line", { x1: left, x2: 960 - right, y1: top + height, y2: top + height, stroke: "#ccd0cd", "stroke-width": 1 }),
+  );
+  const heading = proofSvgNode("text", {
+    x: 10,
+    y: top + 18,
+    fill: "#313734",
+    "font-size": 11,
+    "font-family": "ui-monospace, monospace",
+  });
+  heading.textContent = label;
+  const range = proofSvgNode("text", {
+    x: 10,
+    y: top + 34,
+    fill: "#727875",
+    "font-size": 8,
+    "font-family": "ui-monospace, monospace",
+  });
+  range.textContent = `${minimum.toFixed(1)}…${maximum.toFixed(1)} ${unit}`;
+  svg.append(heading, range);
+  series.forEach((row) => {
+    svg.append(proofSvgNode("polyline", {
+      points: proofPathPoints(row.values, { left, width, top: top + 7, height: height - 14, minimum, maximum }),
+      fill: "none",
+      stroke: row.color,
+      "stroke-width": row.width || 1.5,
+      "stroke-dasharray": row.dash || "",
+      "vector-effect": "non-scaling-stroke",
+    }));
+  });
+}
+
+function renderProofPlot() {
+  if (!state.proof || !elements.proofPlot) return;
+  const timeline = state.proof.timeline;
+  const joint = state.proofJointIndex;
+  const column = (rows) => rows.map((row) => Number(row[joint]));
+  elements.proofPlot.replaceChildren();
+  drawProofBand({
+    label: formatIdentifier(state.proof.recording.joint_order[joint]),
+    unit: "deg",
+    top: 0,
+    height: 94,
+    series: [
+      { values: column(timeline.requested_degrees), color: "#8a7466", width: 1.1, dash: "3 3" },
+      { values: column(timeline.sent_degrees), color: "#f06429", width: 1.5 },
+      { values: column(timeline.measured_degrees), color: "#2f6b61", width: 1.5 },
+      { values: column(timeline.identified_applied_degrees), color: "#7256a8", width: 1.4 },
+    ],
+  });
+  drawProofBand({
+    label: "Joint RMS",
+    unit: "deg",
+    top: 94,
+    height: 78,
+    series: [
+      { values: timeline.direct_joint_rms_degrees, color: "#f06429", width: 1.4 },
+      { values: timeline.identified_joint_rms_degrees, color: "#7256a8", width: 1.4 },
+    ],
+  });
+  drawProofBand({
+    label: "Pawn planar",
+    unit: "mm",
+    top: 172,
+    height: 78,
+    series: [{ values: timeline.pawn_planar_displacement_mm, color: "#c12f35", width: 1.7 }],
+  });
+  drawProofBand({
+    label: "Pawn height",
+    unit: "mm",
+    top: 250,
+    height: 78,
+    series: [{ values: timeline.pawn_height_delta_mm, color: "#b98a13", width: 1.5 }],
+  });
+  drawProofBand({
+    label: "Pawn tilt",
+    unit: "deg",
+    top: 328,
+    height: 82,
+    series: [{ values: timeline.pawn_tilt_degrees, color: "#c12f35", width: 1.5 }],
+  });
+  const left = 122;
+  const width = 960 - left - 18;
+  state.proof.failure_markers.forEach((marker) => {
+    const x = left + (marker.sample_index / Math.max(1, timeline.sample_count - 1)) * width;
+    const line = proofSvgNode("line", {
+      x1: x,
+      x2: x,
+      y1: 0,
+      y2: 410,
+      stroke: "#c12f35",
+      "stroke-width": 1,
+      "stroke-dasharray": marker.sample_index === 388 ? "0" : "4 3",
+      "vector-effect": "non-scaling-stroke",
+    });
+    const label = proofSvgNode("text", {
+      x: Math.min(x + 4, 885),
+      y: marker.sample_index === 388 ? 18 : 31,
+      fill: "#9c252a",
+      "font-size": 8,
+      "font-family": "ui-monospace, monospace",
+    });
+    label.textContent = `#${marker.sample_index} ${marker.kind.replaceAll("_", " ")}`;
+    elements.proofPlot.append(line, label);
+  });
+  elements.proofPlot.append(proofSvgNode("line", {
+    id: "proof-playhead",
+    x1: left,
+    x2: left,
+    y1: 0,
+    y2: 410,
+    stroke: "#222825",
+    "stroke-width": 1.4,
+    "vector-effect": "non-scaling-stroke",
+  }));
+}
+
+function renderProofFrame({ syncVideo = false } = {}) {
+  if (!state.proof) return;
+  const timeline = state.proof.timeline;
+  const index = Math.max(0, Math.min(timeline.sample_count - 1, Number(state.proofFrameIndex || 0)));
+  const joint = state.proofJointIndex;
+  state.proofFrameIndex = index;
+  elements.proofScrubber.value = String(index);
+  text(elements.proofSample, `${index + 1} / ${timeline.sample_count}`);
+  text(elements.proofControlTime, `${Number(timeline.time_seconds[index]).toFixed(3)} s`);
+  text(elements.proofSyncedVideoTime, `${Number(timeline.video_time_seconds[index]).toFixed(3)} s`);
+  text(elements.proofVideoTime, `video ${Number(timeline.video_time_seconds[index]).toFixed(3)} s`);
+  text(elements.proofContact, `${timeline.selected_jaw_contact_count[index]} jaw contacts`);
+  const readouts = [
+    ["Requested", timeline.requested_degrees[index][joint], "°"],
+    ["Gateway sent", timeline.sent_degrees[index][joint], "°"],
+    ["Measured", timeline.measured_degrees[index][joint], "°"],
+    ["C4 applied", timeline.identified_applied_degrees[index][joint], "°"],
+    ["Sim pawn ΔXY", timeline.pawn_planar_displacement_mm[index], " mm"],
+  ];
+  elements.proofFrameReadouts.replaceChildren(...readouts.map(([label, value, unit]) => {
+    const card = proofNode("div", "proof-frame-readout");
+    card.append(proofNode("span", "", label), proofNode("b", "", `${Number(value).toFixed(3)}${unit}`));
+    return card;
+  }));
+  const left = 122;
+  const x = left + (index / Math.max(1, timeline.sample_count - 1)) * (960 - left - 18);
+  const playhead = elements.proofPlot.querySelector("#proof-playhead");
+  playhead?.setAttribute("x1", String(x));
+  playhead?.setAttribute("x2", String(x));
+  if (syncVideo && Number.isFinite(elements.proofVideo.duration)) {
+    elements.proofVideo.currentTime = Math.min(
+      elements.proofVideo.duration,
+      Number(timeline.video_time_seconds[index]),
+    );
+  }
+}
+
+function renderProofVerdicts() {
+  const proof = state.proof;
+  const status = proof.proof_status;
+  text(elements.proofPlantVerdict, status.plant_identification.replace("PASS_VALIDATED_", ""));
+  text(elements.proofMissionVerdict, `${proof.mission.successes} / ${proof.mission.attempts} · terminal`);
+  text(elements.proofRobustVerdict, `${proof.robustness.deterministic_path_successes} / ${proof.robustness.deterministic_path_attempts}`);
+  text(elements.proofMappingVerdict, status.global_mapping_approved ? "APPROVED" : "NOT APPROVED");
+  const outcome = proof.mission.outcome;
+  text(elements.proofCenterError, `${(Number(outcome.final_planar_center_error_m) * 1000).toFixed(1)} mm`);
+  elements.proofOutcomeFacts.replaceChildren(
+    proofFact("Upright tilt", `${Number(outcome.final_upright_tilt_degrees).toFixed(3)}°`),
+    proofFact("Height error", `${(Number(outcome.final_height_error_m) * 1000).toFixed(3)} mm`),
+    proofFact("Exclusion motion", `${(Number(outcome.maximum_other_piece_displacement_m) * 1000).toFixed(3)} mm`),
+    proofFact("Jaw contact steps", String(outcome.selected_piece_contact_steps)),
+  );
+  elements.proofEventList.replaceChildren(...proof.failure_markers.map((marker) => {
+    const card = proofNode("div", "proof-event");
+    card.append(
+      proofNode("b", "", `#${marker.sample_index}`),
+      proofNode("span", "", `${marker.label} · ${marker.time_seconds.toFixed(3)} s · Δz ${marker.pawn_height_delta_mm.toFixed(1)} mm`),
+    );
+    return card;
+  }));
+}
+
+function renderProofActuator() {
+  const actuator = state.proof.actuator;
+  const validation = actuator.validation;
+  elements.proofActuatorMetrics.replaceChildren(
+    proofMetric(
+      "Joint RMS",
+      Number(validation.direct_joint_rms_degrees),
+      Number(validation.identified_joint_rms_degrees),
+      "deg",
+    ),
+    proofMetric(
+      "Provisional EE RMS",
+      Number(validation.direct_provisional_ee_rms_mm),
+      Number(validation.identified_provisional_ee_rms_mm),
+      "mm",
+    ),
+  );
+  text(
+    elements.proofActuatorBoundary,
+    `Best association is +${actuator.best_sample_association.shift_samples} samples. It is sample-domain alignment, not causal command latency. ${actuator.claim_boundary}`,
+  );
+}
+
+function renderProofDivergence() {
+  elements.proofDivergenceList.replaceChildren(...state.proof.first_divergence.ordered_channels.map((event) => {
+    const row = proofNode("div", "proof-divergence");
+    const at = event.sample_index == null ? "unobservable" : `#${event.sample_index} · ${Number(event.timestamp_seconds).toFixed(3)} s`;
+    row.append(
+      proofNode("b", "", formatIdentifier(event.channel)),
+      proofNode("span", "", `${at} · ${formatIdentifier(event.status)}`),
+    );
+    return row;
+  }));
+}
+
+function renderProofContact() {
+  const contact = state.proof.contact;
+  text(elements.proofContactCount, `${contact.eligible_dimension_count} / ${contact.candidate_dimensions.length} eligible`);
+  text(elements.proofContactBoundary, contact.claim_boundary);
+  elements.proofContactNeeds.replaceChildren(...contact.new_evidence_required.map((requirement) => proofNode("li", "", requirement)));
+}
+
+function renderProofGeometry() {
+  const channels = state.proof.geometry.channels;
+  const rows = [
+    ["Task plane", `${(channels.task_plane_board_corners.task_plane_rms_mm).toFixed(3)} mm RMS · accepted`],
+    ["Pawn endpoints", `${(channels.pawn_base_endpoints.initial_d1_error_m * 1000).toFixed(3)} / ${(channels.pawn_base_endpoints.terminal_d2_error_m * 1000).toFixed(3)} mm · endpoint only`],
+    ["Robot silhouette", `${channels.robot_silhouette.cad_edge_clipped_rmse_px.toFixed(3)} px · nonpromotable`],
+    ["Fixed base", `${(channels.fixed_base_robot.within_4px_fraction * 100).toFixed(1)}% within 4 px · rejected`],
+    ["Articulated wrist", `${channels.articulated_keypoint_differential.wrist.displacement_residual_rmse_px.toFixed(3)} px · rejected`],
+    ["Floor / support", "metric residual missing"],
+  ];
+  elements.proofGeometryList.replaceChildren(...rows.map(([label, value]) => {
+    const row = proofNode("div", "proof-geometry");
+    row.append(proofNode("b", "", label), proofNode("span", "", value));
+    return row;
+  }));
+}
+
+function renderProofGates() {
+  const outcome = state.proof.mission.outcome;
+  elements.proofGateGrid.replaceChildren(...Object.entries(outcome.gates).map(([name, passed]) => {
+    const card = proofNode("div", "proof-gate");
+    card.dataset.pass = String(Boolean(passed));
+    card.append(
+      proofNode("b", "", formatIdentifier(name)),
+      proofNode("span", "", passed ? "PASS" : "FAIL"),
+    );
+    return card;
+  }));
+  elements.proofPathGrid.replaceChildren(...state.proof.robustness.path_results.map((path) => {
+    const card = proofNode("div", "proof-path");
+    card.dataset.pass = String(Boolean(path.numeric_task_success));
+    card.append(
+      proofNode("b", "", formatIdentifier(path.path_id)),
+      proofNode("span", "", `${(Number(path.outcome.final_planar_center_error_m) * 1000).toFixed(3)} mm center`),
+      proofNode("small", "", `${Number(path.outcome.final_upright_tilt_degrees).toFixed(3)}° tilt · ${path.outcome.selected_piece_contact_steps} jaw contact steps`),
+    );
+    return card;
+  }));
+}
+
+function renderProofAvailability() {
+  elements.proofAvailabilityGrid.replaceChildren(...state.proof.availability.map((entry) => {
+    const card = proofNode("div", "proof-availability");
+    card.dataset.status = entry.status;
+    card.append(proofNode("b", "", formatIdentifier(entry.id)), proofNode("span", "", formatIdentifier(entry.status)));
+    return card;
+  }));
+  elements.proofHashList.replaceChildren(...Object.entries(state.proof.hashes).map(([name, binding]) => {
+    const row = document.createElement("div");
+    row.append(
+      proofNode("dt", "", formatIdentifier(name)),
+      proofNode("dd", "", `${binding.sha256} · ${binding.path}`),
+    );
+    return row;
+  }));
+  text(elements.proofClaimBoundary, state.proof.claim_boundary);
+}
+
+function renderProof() {
+  if (!elements.proofEmpty) return;
+  if (!state.proof) {
+    elements.proofEmpty.hidden = false;
+    text(elements.proofStatus, state.proofFetchActive ? "Loading proof" : "Unavailable");
+    text(elements.proofReceipt, "no verified receipt");
+    text(elements.proofEmptyDetail, state.proofError || "Compile the hash-bound proof bundle and reload Studio.");
+    return;
+  }
+  elements.proofEmpty.hidden = true;
+  text(elements.proofStatus, "TERMINAL NEGATIVE · 0 / 1");
+  text(elements.proofReceipt, state.proof.receipt_sha256);
+  const video = state.proof.recording.video;
+  if (elements.proofVideo.dataset.sha256 !== video.sha256) {
+    elements.proofVideo.src = video.url;
+    elements.proofVideo.dataset.sha256 = video.sha256;
+    elements.proofVideo.style.transform = `rotate(${Number(video.display_rotation_degrees || 0)}deg)`;
+  }
+  elements.proofJoint.replaceChildren(...state.proof.recording.joint_order.map((joint, index) => {
+    const option = proofNode("option", "", formatIdentifier(joint));
+    option.value = String(index);
+    option.selected = index === state.proofJointIndex;
+    return option;
+  }));
+  elements.proofScrubber.max = String(state.proof.timeline.sample_count - 1);
+  renderProofVerdicts();
+  renderProofPlot();
+  renderProofFrame();
+  renderProofActuator();
+  renderProofDivergence();
+  renderProofContact();
+  renderProofGeometry();
+  renderProofGates();
+  renderProofAvailability();
+}
+
+async function fetchRealizedActionProof() {
+  if (state.proofFetchActive) return;
+  state.proofFetchActive = true;
+  renderProof();
+  try {
+    const response = await fetch("/api/realized-action-proof", { cache: "no-store" });
+    const payload = await response.json();
+    if (!response.ok || !payload.available) throw new Error(payload.error || `causal proof returned ${response.status}`);
+    state.proof = payload;
+    state.proofError = null;
+  } catch (error) {
+    state.proof = null;
+    state.proofError = String(error.message || error);
+  } finally {
+    state.proofFetchActive = false;
+    renderProof();
   }
 }
 
@@ -3920,7 +4351,7 @@ async function postOrchestrator(path, payload) {
 }
 
 function setActiveView(view, { updateRoute = true } = {}) {
-  const safeView = ["replay", "sail", "library", "calibration", "robots", "orchestrator", "record"].includes(view) ? view : "replay";
+  const safeView = ["replay", "sail", "proof", "library", "calibration", "robots", "orchestrator", "record"].includes(view) ? view : "replay";
   state.view = safeView;
   document.body.dataset.view = safeView;
   text(elements.mobileNavLabel, safeView === "orchestrator" ? "Tasks" : formatIdentifier(safeView));
@@ -3933,6 +4364,8 @@ function setActiveView(view, { updateRoute = true } = {}) {
   window.Sim2ClawCalibration?.setActive(safeView === "calibration");
   if (safeView === "orchestrator") fetchOrchestrator();
   if (safeView === "sail" && !state.sail && !state.sailFetchActive) fetchSailObservatory();
+  if (safeView === "proof" && !state.proof && !state.proofFetchActive) fetchRealizedActionProof();
+  if (safeView !== "proof") elements.proofVideo?.pause();
   document.querySelectorAll("[data-route]").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.route === safeView && button.classList.contains("view-button"));
   });
@@ -3974,6 +4407,10 @@ function restoreRoute() {
   }
   if (route === "sail") {
     setActiveView("sail", { updateRoute: false });
+    return;
+  }
+  if (route === "proof") {
+    setActiveView("proof", { updateRoute: false });
     return;
   }
   if (route === "robots") {
@@ -4335,6 +4772,32 @@ elements.orchestratorFrame.addEventListener("error", () => {
   elements.orchestratorFrame.hidden = true;
   elements.orchestratorFrameEmpty.hidden = false;
   text(elements.orchestratorFrameEmpty, "Accepted frame unavailable");
+});
+elements.proofScrubber.addEventListener("input", () => {
+  state.proofFrameIndex = Number(elements.proofScrubber.value);
+  renderProofFrame({ syncVideo: true });
+});
+elements.proofJoint.addEventListener("change", () => {
+  state.proofJointIndex = Number(elements.proofJoint.value);
+  renderProofPlot();
+  renderProofFrame();
+});
+elements.proofVideo.addEventListener("timeupdate", () => {
+  if (!state.proof || elements.proofVideo.seeking) return;
+  const target = Number(elements.proofVideo.currentTime);
+  const times = state.proof.timeline.video_time_seconds;
+  let nearest = 0;
+  let distance = Number.POSITIVE_INFINITY;
+  for (let index = 0; index < times.length; index += 1) {
+    const candidate = Math.abs(Number(times[index]) - target);
+    if (candidate >= distance) break;
+    distance = candidate;
+    nearest = index;
+  }
+  if (nearest !== state.proofFrameIndex) {
+    state.proofFrameIndex = nearest;
+    renderProofFrame();
+  }
 });
 document.querySelectorAll("[data-route]").forEach((button) => button.addEventListener("click", () => navigate(button.dataset.route)));
 document.addEventListener("keydown", (event) => {

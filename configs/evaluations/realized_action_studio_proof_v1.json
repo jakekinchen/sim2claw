@@ -1,0 +1,103 @@
+{
+  "schema_version": "sim2claw.realized_action_studio_proof_contract.v1",
+  "experiment_id": "realized-action-studio-proof-v1",
+  "recording_id": "20260727T041737Z-89190e53",
+  "proof_class": "read_only_causal_evidence_projection",
+  "sources": {
+    "episode_twin_bundle": {
+      "path": "outputs/episode_twin_bundle_v1/20260727T041737Z-89190e53/bundle.json",
+      "sha256": "0e82210d690c209268a01efa72b68d021f083922e28021af0c5891e10b08516d",
+      "artifact_sha256": "c696e4218f914fd118b4f7c2613655e96befcb66c9dfd439703451db9bb75555"
+    },
+    "static_geometry_receipt": {
+      "path": "outputs/realized_action_static_geometry_reconciliation_v1/receipt.json",
+      "sha256": "a2a66a99a7fb4412dc260a61e3cad6b5309565d2a5f02dcc7092d91d92d6089e",
+      "artifact_sha256": "db3104c720293076eaf4b30bf8ed3744ae35e5de7ce183c1902e8f6a48aa1f44"
+    },
+    "sage_lite_receipt": {
+      "path": "outputs/realized_action_sage_lite_v1/receipt.json",
+      "sha256": "41e1d8853cc5d6c10e7e1da3dab48fe409f9728d2089c4f9cd0076c7721d86a0",
+      "artifact_sha256": "f03dbd13d2fdd85d1893e2ed03923dcdc4b15fa6deeb9bb9f95845b367c6054f"
+    },
+    "first_divergence_receipt": {
+      "path": "outputs/realized_action_first_divergence_v1/receipt.json",
+      "sha256": "7939cbb9b61e783502bb1970763a9af37594b538e223f58a89d3be40e4556100",
+      "artifact_sha256": "6cdc2b9b1022bdcb41f1df0f35d29af61f563018078940ab8d4f6d5217ba82c3"
+    },
+    "effective_plant_receipt": {
+      "path": "outputs/realized_action_effective_plant_v1/receipt.json",
+      "sha256": "5afba2e280e7c34308aa51548b938a6af54bd299e49038d6083043342b353c07",
+      "artifact_sha256": "df50459a4c7f60894690610c8578f67e064c13de3d0a9f7e286aa8c26e736aa6"
+    },
+    "identified_applied_trace": {
+      "path": "outputs/realized_action_effective_plant_v1/traces/20260727T041737Z-89190e53/identified_effective_plant_v1.applied.f8le",
+      "sha256": "4b486ac78d2377f5fad70f713ab1183cfd9717996e975b87e0288eb5fc7a259c"
+    },
+    "contact_receipt": {
+      "path": "outputs/realized_action_contact_identifiability_v1/receipt.json",
+      "sha256": "e676ab052a00ae30009d22c6f842a1ed7c71b99cd1a4987fb683fa4503c5d1c9",
+      "artifact_sha256": "6a904ef2231f634a65661778afd59ec5e901204386d7dfeee85a05d574961692"
+    },
+    "mission_receipt": {
+      "path": "outputs/realized_action_outcome_mission_v1/receipt.json",
+      "sha256": "4bcf1f1a6c389c61fb1eb1445afd20ab0be814eb1cbaee13ad2d11e0198587d4",
+      "artifact_sha256": "df3f6abab728ec6a74a468afeb531b4bec99346c693ec081786c8dd8fb8c2c38"
+    },
+    "mission_trace": {
+      "path": "outputs/realized_action_outcome_mission_v1/trace.json",
+      "sha256": "c3e885803d7382aabf051c5daf467998076b4fa1063c7020faaaef8172508d69"
+    },
+    "robustness_receipt": {
+      "path": "outputs/realized_action_robustness_v1/receipt.json",
+      "sha256": "bdeeffa5e010575b8b3785ef16b7d03751ecbb4f11b49256ae6a9f0859ad9574",
+      "artifact_sha256": "5224dd435d9cbbd8db36fe4a917edce2d2c1e8a2647a6f202574e5c32c7ab682"
+    },
+    "recording_receipt": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/recording_receipt.json",
+      "sha256": "74a3da30468922df00dfefd12e38ff346b2fd59fb5752458477be29360b9e0d3"
+    },
+    "recording_samples": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/samples.jsonl",
+      "sha256": "ad606b9b917d985a4e866399a0c2d44adb12f3b48d310aa11452de9e03e73302"
+    },
+    "overhead_video": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/overhead_c922.mp4",
+      "sha256": "6c03bd268f0e227879c2c54ff4731d4ee8111d94b136b9bd6cbd81ca93e966bf"
+    }
+  },
+  "failure_markers": [
+    {
+      "sample_index": 386,
+      "label": "first >1 mm simulated pawn displacement",
+      "kind": "first_simulated_pawn_motion"
+    },
+    {
+      "sample_index": 388,
+      "label": "catastrophic simulated launch",
+      "kind": "catastrophic_simulated_launch"
+    }
+  ],
+  "rules": {
+    "action_rows_must_match": 531,
+    "action_columns_must_match": 6,
+    "mission_attempts_must_match": 1,
+    "mission_successes_must_match": 0,
+    "later_observations_must_match": 0,
+    "contact_parameters_must_match": 0,
+    "unknown_dimensions_may_be_randomized": false,
+    "video_is_diagnostic_only": true,
+    "global_mapping_must_remain_unapproved": true,
+    "proof_class_may_be_promoted": false
+  },
+  "authority": {
+    "camera": false,
+    "gateway": false,
+    "hardware": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "serial": false,
+    "simulator_replay": false,
+    "write": false
+  }
+}

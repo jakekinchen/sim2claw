@@ -31,6 +31,7 @@
         <nav class="view-switch" id="studio-view-switch" aria-label="Studio views">
           <button class="view-button is-active" type="button" data-route="replay">Replay</button>
           <button class="view-button" type="button" data-route="sail">SAIL</button>
+          <button class="view-button" type="button" data-route="proof">Causal Proof</button>
           <button class="view-button" type="button" data-route="library">Library</button>
           <button class="view-button" type="button" data-route="calibration">Calibration</button>
           <button class="view-button" type="button" data-route="robots">Robots</button>
@@ -305,6 +306,132 @@
           <div class="sail-empty" id="sail-empty" hidden>
             <b>SAIL observatory unavailable</b>
             <p id="sail-empty-detail">Compile the bound observatory assets and reload Studio.</p>
+          </div>
+        </section>
+
+        <section class="view-panel proof-view" data-view-panel="proof" aria-labelledby="proof-heading">
+          <header class="view-heading proof-heading">
+            <div>
+              <span class="section-label">Exact actions · honest outcome</span>
+              <h1 id="proof-heading">Realized-action causal proof</h1>
+              <p>One synchronized inspection of the retained physical episode, identified actuator response, simulator object consequence, and every unresolved proof boundary.</p>
+            </div>
+            <div class="proof-heading-status">
+              <b id="proof-status">Loading proof</b>
+              <code id="proof-receipt">receipt pending</code>
+            </div>
+          </header>
+
+          <div class="proof-authority-notice" role="note">
+            <span class="lock-icon" aria-hidden="true"></span>
+            <p><b>Read-only terminal evidence.</b> This page cannot open a camera, gateway, serial bus, simulator replay, physical motion, or promotion path. Actuator calibration passed; action-to-task transfer did not.</p>
+          </div>
+
+          <section class="proof-verdict-band" aria-label="Current proof result">
+            <article><span>Plant identification</span><b id="proof-plant-verdict">—</b><small>Untouched validation</small></article>
+            <article class="is-negative"><span>Action → task</span><b id="proof-mission-verdict">—</b><small>Exact one-run denominator</small></article>
+            <article class="is-negative"><span>Robust paths</span><b id="proof-robust-verdict">—</b><small>Identified · direct · ZOH</small></article>
+            <article class="is-missing"><span>Global mapping</span><b id="proof-mapping-verdict">—</b><small>Floor + articulated robot unresolved</small></article>
+          </section>
+
+          <div class="proof-primary-grid">
+            <article class="proof-video-card">
+              <header>
+                <div><span class="section-label">Physical observation lane</span><h2>C922 source episode</h2></div>
+                <b>DIAGNOSTIC</b>
+              </header>
+              <div class="proof-video-frame">
+                <video id="proof-video" controls playsinline muted preload="metadata"></video>
+                <span id="proof-video-time">video —</span>
+              </div>
+              <p>Camera exposure is not synchronized. The video documents the physical consequence; it never drives the simulator after D1 initialization.</p>
+            </article>
+
+            <article class="proof-outcome-card">
+              <header><div><span class="section-label">Simulator consequence lane</span><h2>Where the replay breaks</h2></div><b>0 / 1</b></header>
+              <div class="proof-outcome-hero">
+                <strong id="proof-center-error">—</strong>
+                <span>final center error</span>
+              </div>
+              <dl id="proof-outcome-facts"></dl>
+              <div class="proof-event-list" id="proof-event-list"></div>
+            </article>
+          </div>
+
+          <section class="proof-timeline-card" aria-labelledby="proof-timeline-heading">
+            <header>
+              <div><span class="section-label">Synchronized evidence lanes</span><h2 id="proof-timeline-heading">Requested → sent → measured → applied → object</h2></div>
+              <label>Joint
+                <select id="proof-joint" aria-label="Select action joint"></select>
+              </label>
+            </header>
+            <div class="proof-scrub-head">
+              <span>Sample <b id="proof-sample">—</b></span>
+              <span>Control <b id="proof-control-time">—</b></span>
+              <span>Video <b id="proof-synced-video-time">—</b></span>
+              <span>Contact <b id="proof-contact">—</b></span>
+            </div>
+            <input id="proof-scrubber" type="range" min="0" max="0" value="0" aria-label="Synchronized causal proof sample">
+            <div class="proof-plot-shell">
+              <svg id="proof-plot" viewBox="0 0 960 410" role="img" aria-label="Action, actuator residual, and simulated pawn consequence traces"></svg>
+            </div>
+            <div class="proof-legend" aria-label="Trace legend">
+              <span data-lane="requested">Requested</span>
+              <span data-lane="sent">Gateway sent</span>
+              <span data-lane="measured">Measured</span>
+              <span data-lane="applied">C4 applied</span>
+              <span data-lane="pawn">Sim pawn</span>
+            </div>
+            <div class="proof-frame-readouts" id="proof-frame-readouts" aria-live="polite"></div>
+          </section>
+
+          <div class="proof-evidence-grid">
+            <section class="proof-evidence-card" aria-labelledby="proof-actuator-heading">
+              <header><span class="section-label">C3 / C4</span><h2 id="proof-actuator-heading">Actuator model</h2></header>
+              <div class="proof-metric-pair" id="proof-actuator-metrics"></div>
+              <p id="proof-actuator-boundary"></p>
+            </section>
+
+            <section class="proof-evidence-card" aria-labelledby="proof-divergence-heading">
+              <header><span class="section-label">C3A</span><h2 id="proof-divergence-heading">First divergence</h2></header>
+              <div class="proof-divergence-list" id="proof-divergence-list"></div>
+            </section>
+
+            <section class="proof-evidence-card is-gap" aria-labelledby="proof-contact-heading">
+              <header><span class="section-label">C5 · terminal gap</span><h2 id="proof-contact-heading">Contact identifiability</h2></header>
+              <strong id="proof-contact-count">—</strong>
+              <p id="proof-contact-boundary"></p>
+              <details><summary>Minimum new evidence</summary><ul id="proof-contact-needs"></ul></details>
+            </section>
+
+            <section class="proof-evidence-card is-gap" aria-labelledby="proof-geometry-heading">
+              <header><span class="section-label">C2 · partial</span><h2 id="proof-geometry-heading">Geometry channels</h2></header>
+              <div class="proof-geometry-list" id="proof-geometry-list"></div>
+            </section>
+          </div>
+
+          <section class="proof-gates-card" aria-labelledby="proof-gates-heading">
+            <header>
+              <div><span class="section-label">Evaluator-owned outcome</span><h2 id="proof-gates-heading">Task gates and robustness</h2></div>
+              <p>No gate is hidden and no unmeasured distribution is invented.</p>
+            </header>
+            <div class="proof-gate-grid" id="proof-gate-grid"></div>
+            <div class="proof-path-grid" id="proof-path-grid"></div>
+          </section>
+
+          <section class="proof-availability-card" aria-labelledby="proof-availability-heading">
+            <header><div><span class="section-label">Known · modeled · missing</span><h2 id="proof-availability-heading">Evidence availability</h2></div><b>NO IMPUTATION</b></header>
+            <div class="proof-availability-grid" id="proof-availability-grid"></div>
+            <details>
+              <summary>Hash-bound source ledger</summary>
+              <dl class="proof-hash-list" id="proof-hash-list"></dl>
+            </details>
+            <p class="proof-claim-boundary" id="proof-claim-boundary"></p>
+          </section>
+
+          <div class="proof-empty" id="proof-empty" hidden>
+            <b>Causal proof unavailable</b>
+            <p id="proof-empty-detail">Compile the hash-bound proof bundle and reload Studio.</p>
           </div>
         </section>
 

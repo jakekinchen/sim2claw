@@ -1,6 +1,6 @@
 # Realized-Action Outcome Calibration Goal Loop
 
-Status: `ACTIVE_C8`
+Status: `ACTIVE_C9`
 
 Created: `2026-07-29`
 
@@ -123,12 +123,12 @@ safe alternatives. Do not tune sealed inputs or repeat C6.
 
 ```text
 Current state: ACTIVE
-Active card: C8
-Completed: C0, C1, C2 partial reconciliation, C2-RP04N terminal negative, C3, C3A, C4, C5 terminal negative, C6 terminal negative, C7
-Evidence: C7 artifact 5224dd435d9cbbd8db36fe4a917edce2d2c1e8a2647a6f202574e5c32c7ab682
-Remaining: C8, C9 boundary
-Blockers: physical pathway closed at elbow service boundary; not needed for C0-C8
-Next step: build and verify the read-only C8 Studio causal proof surface
+Active card: C9
+Completed: C0, C1, C2 partial reconciliation, C2-RP04N terminal negative, C3, C3A, C4, C5 terminal negative, C6 terminal negative, C7, C8
+Evidence: C8 bundle artifact 34b8dc493aa9d365a2bb25d8c90773c565f4e7dd39e294a02dc45d0b1b772436
+Remaining: C9 external service boundary and final audit
+Blockers: physical pathway closed at follower-elbow service boundary
+Next step: close C9 without physical execution, bind the graph, and finish repository verification
 ```
 
 ## Stop conditions

@@ -1,0 +1,87 @@
+{
+  "schema_version": "sim2claw.realized_action_studio_proof_closeout.v1",
+  "decision_id": "realized-action-studio-proof-v1-closeout",
+  "result": "PASS_READ_ONLY_CAUSAL_PROOF_SURFACE",
+  "proof_class": "read_only_causal_evidence_projection",
+  "freeze_anchor": {
+    "brief": "docs/briefs/091-realized-action-c8-studio-proof.md",
+    "commit": "91faa7e"
+  },
+  "contract": {
+    "path": "configs/evaluations/realized_action_studio_proof_v1.json",
+    "sha256": "34130a3fa66ec5d758013a9c6665856e8aaf6226b268e0680a6160d2a7c753f3"
+  },
+  "implementation": {
+    "compiler_path": "src/sim2claw/realized_action_studio_proof.py",
+    "compiler_sha256": "9047f29f0034dd54ec8422a0539c8297685e5a7794bd4e1badd7f386bdf3b5f7",
+    "server_path": "src/sim2claw/studio_server.py",
+    "server_sha256": "64e72124e2d31a8a717adc708b384c9d30f6e368d12c605c2fd16996dceac2dc",
+    "html_path": "src/sim2claw/studio_web/index.html",
+    "html_sha256": "a3fc53f86000c78e1ade0da6c74902cd5ce6903ba4fcdc8178bfa2dc46344570",
+    "css_path": "src/sim2claw/studio_web/studio.css",
+    "css_sha256": "b2c012977df54a88a62f88a7a19058e4e862bc619753edb1f4fee2797d649274",
+    "javascript_path": "src/sim2claw/studio_web/studio.js",
+    "javascript_sha256": "bf0f056193d6aebffc9bef682e0eccf25a821649125770559e16b9c537d75bd4"
+  },
+  "generated_receipt": {
+    "path": "outputs/realized_action_studio_proof_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "9d17e4137b79f746db533a2ff102e8b8e5fc83b6fb02330c34ebae49e251b3f0",
+    "artifact_sha256": "bf295feefc506c4d3eaf1885154e9aa5bb6b152083df5d3bb812d1d27d5769c2",
+    "deterministic_rebuild_match": true
+  },
+  "generated_bundle": {
+    "path": "outputs/realized_action_studio_proof_v1/bundle.json",
+    "git_ignored": true,
+    "sha256": "ad4bf47e5cafe9231f87cbc5fe8cdca6f40204f6df6f286fb7e58058c5b859bd",
+    "artifact_sha256": "34b8dc493aa9d365a2bb25d8c90773c565f4e7dd39e294a02dc45d0b1b772436",
+    "requested_sent_measured_applied_rows": 531,
+    "failure_markers": [
+      386,
+      388
+    ]
+  },
+  "visual_verification": {
+    "desktop_viewport": [
+      1280,
+      720
+    ],
+    "phone_viewport": [
+      390,
+      844
+    ],
+    "phone_horizontal_overflow_pixels": 0,
+    "trace_polyline_count": 9,
+    "availability_card_count": 11,
+    "sample_388_scrub_verified": true,
+    "joint_selector_verified": true,
+    "video_timeline_sync_verified": true,
+    "javascript_console_errors": 0
+  },
+  "proof_boundaries": {
+    "plant_identification": "PASS_VALIDATED_EFFECTIVE_JOINT_PLANT",
+    "action_to_outcome": "TERMINAL_NEGATIVE_0_OF_1",
+    "robustness": "DETERMINISTIC_NEGATIVE_0_OF_3",
+    "global_mapping_approved": false,
+    "contact_identification": "TERMINAL_NEGATIVE",
+    "missingness_visible": true,
+    "proof_class_promoted": false
+  },
+  "validation": {
+    "focused_tests": "36 passed, 2 subtests passed",
+    "node_syntax": "pass",
+    "python_compileall": "pass",
+    "diff_check": "pass"
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replay": false,
+    "paid_compute": false
+  },
+  "next_card": "C9"
+}

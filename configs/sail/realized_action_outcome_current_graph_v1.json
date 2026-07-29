@@ -1,0 +1,310 @@
+{
+  "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
+  "campaign_id": "realized_action_outcome_calibration_v1",
+  "generated_at": "2026-07-29",
+  "status": "active_c9_external_service_boundary",
+  "node_types": [
+    "workcell",
+    "session",
+    "context",
+    "evidence",
+    "residual_channel",
+    "simulator_version",
+    "mechanism",
+    "intervention",
+    "evaluator_verdict",
+    "counterexample",
+    "external_boundary"
+  ],
+  "edge_types": [
+    "observed-by",
+    "generated-from",
+    "applied-to",
+    "affected-by",
+    "fitted-on",
+    "evaluated-on",
+    "invalidates",
+    "predicts",
+    "admitted-to",
+    "counterexample-to"
+  ],
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "source_bindings": {
+    "queue": {
+      "path": "docs/autonomous-workflow/realized-action-outcome-calibration-task-queue-20260729.md",
+      "sha256": "32404bffd626f6aa106e36c853f27952841d406ffb5e889bafbe88e4989b2502",
+      "proof_class": "campaign_control_state"
+    },
+    "c0": {
+      "path": "configs/decisions/realized_action_retrospective_corpus_v1_closeout.json",
+      "sha256": "be72a19193af2bbf322cec1057b919bfeaaba76e8564c9daab0b7384f735c3e4",
+      "proof_class": "retrospective_evidence_corpus_freeze"
+    },
+    "c1": {
+      "path": "configs/decisions/episode_twin_bundle_v1_closeout.json",
+      "sha256": "f85b8406426c5e4e540224ce6f367be802763dc77cbfe0464ccea9e6bf3f3f86",
+      "proof_class": "deterministic_episode_twin_bundle"
+    },
+    "c2": {
+      "path": "configs/decisions/realized_action_static_geometry_reconciliation_v1_closeout.json",
+      "sha256": "4c8ff2dae45ff6715d8fa35fef081d0891dd0bb3eb377fa85eb9b820e202b116",
+      "proof_class": "retrospective_static_geometry_reconciliation"
+    },
+    "rp04n": {
+      "path": "configs/decisions/rp04n_c922_crown_track_v1_closeout.json",
+      "sha256": "c18496b4d9ab279b0ca3f8eb26b504528b7d345f9657e1afca3bbee495dafde5",
+      "proof_class": "camera_projected_carry_prefix_diagnostic"
+    },
+    "c3": {
+      "path": "configs/decisions/realized_action_sage_lite_v1_closeout.json",
+      "sha256": "e5ae97283c5504f752203605a74be78e4129282212159697b4aeadeded652d80",
+      "proof_class": "retrospective_actuator_association_analysis"
+    },
+    "c3a": {
+      "path": "configs/decisions/realized_action_first_divergence_v1_closeout.json",
+      "sha256": "5bc6748bb9b0e4023730fd20fd1e1e89cb42bacb2744b7b5fa4b43ee12bb0da1",
+      "proof_class": "ordered_first_divergence_attribution"
+    },
+    "c4": {
+      "path": "configs/decisions/realized_action_effective_plant_v1_closeout.json",
+      "sha256": "01192e6d605c273b70c3d60d58978bf92b0b53622789aaa33acdfecac7b66686",
+      "proof_class": "retrospective_fit_validation_effective_joint_plant"
+    },
+    "c5": {
+      "path": "configs/decisions/realized_action_contact_identifiability_v1_closeout.json",
+      "sha256": "9ac27196f6037111634f9a3f1263002736059d2159aceeaa31457ec78695306c",
+      "proof_class": "retrospective_contact_identifiability_audit"
+    },
+    "c6": {
+      "path": "configs/decisions/realized_action_outcome_mission_v1_closeout.json",
+      "sha256": "6b38a2b2498dba32db71828e518bdb8610542a89d7227c111d44387530060447",
+      "proof_class": "physical_realized_gateway_sent_action_trajectory_to_identified_simulator_task_outcome"
+    },
+    "c7": {
+      "path": "configs/decisions/realized_action_robustness_v1_closeout.json",
+      "sha256": "17a34841ff3165f3c90c2633a91ae5200ccd81071541b7714ca14011b19c8b44",
+      "proof_class": "deterministic_multi_plant_natural_contact_robustness_diagnostic"
+    },
+    "c8": {
+      "path": "configs/decisions/realized_action_studio_proof_v1_closeout.json",
+      "sha256": "eced5de0a144e26ac759f9fa6985be404dafaaad6204ee44b235ba0f9a559d2d",
+      "proof_class": "read_only_causal_evidence_projection"
+    }
+  },
+  "nodes": [
+    {
+      "id": "workcell:current-so101-chessboard",
+      "type": "workcell",
+      "label": "Current SO-101 chessboard workspace",
+      "status": "physical_path_closed_follower_elbow_service_required",
+      "source_binding": "queue",
+      "data": {
+        "physical_task_attempts": 0,
+        "maximum_physical_task_attempts": 10
+      }
+    },
+    {
+      "id": "session:realized-action-outcome-v1",
+      "type": "session",
+      "label": "Realized-action outcome calibration",
+      "status": "active_c9_external_service_boundary",
+      "source_binding": "queue",
+      "data": {
+        "real_to_sim_action_outcome_successes": 0,
+        "real_to_sim_action_outcome_attempts": 1,
+        "sim_to_real_successes": 0,
+        "sim_to_real_attempts": 0
+      }
+    },
+    {
+      "id": "evidence:c0-corpus",
+      "type": "evidence",
+      "label": "Frozen retrospective corpus",
+      "status": "pass_8_episodes_3433_samples",
+      "source_binding": "c0"
+    },
+    {
+      "id": "evidence:c1-twin-bundles",
+      "type": "evidence",
+      "label": "EpisodeTwinBundle v1",
+      "status": "pass_8_deterministic_bundles",
+      "source_binding": "c1"
+    },
+    {
+      "id": "context:c2-partial-geometry",
+      "type": "context",
+      "label": "Task-bounded geometry",
+      "status": "partial_global_mapping_unapproved",
+      "source_binding": "c2",
+      "data": {
+        "task_plane_rms_mm": 4.741722953437291,
+        "initial_pawn_error_mm": 3.100600525428267,
+        "floor_metric_residual": null
+      }
+    },
+    {
+      "id": "counterexample:rp04n-occluded-carry",
+      "type": "counterexample",
+      "label": "C922 crown carry-prefix visibility",
+      "status": "terminal_negative_0_of_1",
+      "source_binding": "rp04n"
+    },
+    {
+      "id": "residual:c3-actuator",
+      "type": "residual_channel",
+      "label": "Gateway-sent to measured actuator residual",
+      "status": "cross_episode_repeatable",
+      "source_binding": "c3",
+      "data": {
+        "best_sample_association": 3,
+        "causal_latency_identified": false
+      }
+    },
+    {
+      "id": "evidence:c3a-first-divergence",
+      "type": "evidence",
+      "label": "Ordered first-divergence attribution",
+      "status": "pass",
+      "source_binding": "c3a"
+    },
+    {
+      "id": "mechanism:c4-effective-plant",
+      "type": "mechanism",
+      "label": "Three-sample hold plus direction-conditioned response",
+      "status": "validated_effective_joint_plant",
+      "source_binding": "c4",
+      "data": {
+        "validation_joint_rms_before_degrees": 2.3681585334313286,
+        "validation_joint_rms_after_degrees": 1.0550656887103746,
+        "validation_provisional_ee_rms_before_mm": 16.786387557335896,
+        "validation_provisional_ee_rms_after_mm": 6.964960165054739
+      }
+    },
+    {
+      "id": "counterexample:c5-contact-identifiability",
+      "type": "counterexample",
+      "label": "Contact and object parameter identifiability",
+      "status": "terminal_negative_0_of_5_dimensions",
+      "source_binding": "c5"
+    },
+    {
+      "id": "counterexample:c6-action-outcome",
+      "type": "counterexample",
+      "label": "Exact realized action trajectory to simulator task outcome",
+      "status": "terminal_negative_0_of_1",
+      "source_binding": "c6",
+      "data": {
+        "first_simulated_pawn_motion_sample": 386,
+        "catastrophic_launch_sample": 388,
+        "final_center_error_mm": 69.14757217991721,
+        "selected_jaw_contact_steps": 0
+      }
+    },
+    {
+      "id": "counterexample:c7-deterministic-robustness",
+      "type": "counterexample",
+      "label": "Identified, direct, and diagnostic ZOH paths",
+      "status": "deterministic_negative_0_of_3",
+      "source_binding": "c7"
+    },
+    {
+      "id": "evidence:c8-studio-proof",
+      "type": "evidence",
+      "label": "Read-only Studio causal proof",
+      "status": "pass_desktop_and_phone",
+      "source_binding": "c8"
+    },
+    {
+      "id": "boundary:c9-elbow-service",
+      "type": "external_boundary",
+      "label": "Follower elbow service and fresh requalification",
+      "status": "active_external_safety_boundary",
+      "source_binding": "queue",
+      "data": {
+        "policy_ranking": "insufficient_physical_sample",
+        "global_mapping_approved": false,
+        "physical_authority": false
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "evidence:c0-corpus",
+      "type": "generated-from",
+      "target": "workcell:current-so101-chessboard"
+    },
+    {
+      "source": "evidence:c1-twin-bundles",
+      "type": "generated-from",
+      "target": "evidence:c0-corpus"
+    },
+    {
+      "source": "context:c2-partial-geometry",
+      "type": "generated-from",
+      "target": "evidence:c1-twin-bundles"
+    },
+    {
+      "source": "counterexample:rp04n-occluded-carry",
+      "type": "evaluated-on",
+      "target": "context:c2-partial-geometry"
+    },
+    {
+      "source": "residual:c3-actuator",
+      "type": "generated-from",
+      "target": "evidence:c1-twin-bundles"
+    },
+    {
+      "source": "evidence:c3a-first-divergence",
+      "type": "generated-from",
+      "target": "residual:c3-actuator"
+    },
+    {
+      "source": "mechanism:c4-effective-plant",
+      "type": "fitted-on",
+      "target": "residual:c3-actuator"
+    },
+    {
+      "source": "counterexample:c5-contact-identifiability",
+      "type": "counterexample-to",
+      "target": "session:realized-action-outcome-v1"
+    },
+    {
+      "source": "counterexample:c6-action-outcome",
+      "type": "evaluated-on",
+      "target": "mechanism:c4-effective-plant"
+    },
+    {
+      "source": "counterexample:c5-contact-identifiability",
+      "type": "predicts",
+      "target": "counterexample:c6-action-outcome"
+    },
+    {
+      "source": "counterexample:c7-deterministic-robustness",
+      "type": "counterexample-to",
+      "target": "counterexample:c6-action-outcome"
+    },
+    {
+      "source": "evidence:c8-studio-proof",
+      "type": "generated-from",
+      "target": "counterexample:c6-action-outcome"
+    },
+    {
+      "source": "session:realized-action-outcome-v1",
+      "type": "affected-by",
+      "target": "boundary:c9-elbow-service"
+    },
+    {
+      "source": "session:realized-action-outcome-v1",
+      "type": "observed-by",
+      "target": "evidence:c8-studio-proof"
+    }
+  ]
+}

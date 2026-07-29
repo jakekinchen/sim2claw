@@ -177,4 +177,4 @@ def test_frontend_keeps_sail_inside_existing_mobile_read_only_studio() -> None:
     assert 'id="sail-figure-list"' in html_text
     assert "@media (max-width: 620px)" in css_text
     assert 'fetch("/api/sail-observatory"' in js_text
-    assert '["replay", "sail", "library"' in js_text
+    assert '["replay", "sail", "proof", "library"' in js_text

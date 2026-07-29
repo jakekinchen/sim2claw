@@ -1,6 +1,6 @@
 # Realized-Action Outcome Calibration Task Queue
 
-Status: `ACTIVE_C8`
+Status: `ACTIVE_C9`
 
 Created: `2026-07-29`
 
@@ -86,8 +86,8 @@ diagnostic, but it is explicitly action-free and cannot satisfy the mission.
 | C5 | `TERMINAL_NEGATIVE` | Fit only identifiable contact/object mechanisms from retained evidence. | `0/5` candidate dimensions have nonsealed witnesses; no parameter fit; artifact `6a904ef2231f634a65661778afd59ec5e901204386d7dfeee85a05d574961692`. | Current MuJoCo contact remains unvalidated diagnostic baseline and cannot promote C6. |
 | C6 | `TERMINAL_NEGATIVE_0_OF_1` | Freeze and run the physical realized-action trajectory to simulator outcome replay exactly once. | Exact action/plant replay used no later observation or marker; no jaw carry formed; final error `69.148 mm`, tilt `179.992 deg`, height error `31.947 mm`; artifact `df3f6abab728ec6a74a468afeb531b4bec99346c693ec081786c8dd8fb8c2c38`. | Immutable `0/1`; no successor admitted because cross-episode contact evidence is absent. |
 | C7 | `DETERMINISTIC_NEGATIVE_0_OF_3` | Populate measured uncertainty and run robustness checks. | Identified, direct, and diagnostic ZOH all fail; identified is best; no unknown distribution invented; artifact `5224dd435d9cbbd8db36fe4a917edce2d2c1e8a2647a6f202574e5c32c7ab682`. | C6 remains immutable `0/1`; probabilistic robustness unavailable. |
-| C8 | `IN_PROGRESS` | Package the causal proof in Studio. | Mobile and desktop views synchronize physical video, requested/sent/measured/applied traces, residuals, first divergence, contact gap, pawn path, geometry channels, uncertainty result, task gates, hashes, and proof-class limits. | Missing evidence remains visibly missing; the interface cannot promote a proof class. |
-| C9 | `DEFERRED_UNTIL_SERVICE` | Prepare a future robust SIM-to-REAL packet and policy-ranking pilot. | Only after elbow service, fresh requalification, and a separately reviewed physical authorization. | No execution or counted attempt is allowed from this queue. |
+| C8 | `PASS` | Package the causal proof in Studio. | `#/proof` synchronizes `531` requested/sent/measured/applied rows, C922 video, residuals, first divergence, contact gap, pawn path, geometry, robustness, gates, hashes, and proof limits; desktop/phone acceptance passed; artifact `34b8dc493aa9d365a2bb25d8c90773c565f4e7dd39e294a02dc45d0b1b772436`. | Missing evidence remains visibly missing; the interface cannot promote a proof class. |
+| C9 | `IN_PROGRESS` | Close future robust SIM-to-REAL packet and policy-ranking work at the service boundary. | Record elbow service, fresh requalification, preregistration, mapping, and separate authorization as prerequisites without opening physical authority. | No execution or counted attempt is allowed from this queue. |
 
 ## C2-RP04N prospective design boundary
 

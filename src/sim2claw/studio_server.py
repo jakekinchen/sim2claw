@@ -19,10 +19,12 @@ from .paths import REPO_ROOT
 from .demo_loop_controller import DemoLoopController
 from .owner_directed_base_loop import OwnerDirectedLoopError
 from .learning_factory import LearningFactoryError
+from .learning_factory_artifacts import FactoryArtifactError
 from .learning_factory_studio import DEFAULT_FACTORY_PROJECT, build_factory_navigation
 from .orchestrator_frames import LocalOverheadSnapshotAdapter
 from .physical_gateway import PhysicalGatewayError
 from .physical_sim_replay import replay_physical_recording
+from .realized_action_studio_proof import load_realized_action_studio_proof
 from .studio_catalog import build_catalog, open_media_token
 from .studio_live import LiveWorkspaceError, LiveWorkspaceService, MJPEG_BOUNDARY
 from .studio_project_map import StudioProjectMapError, build_project_map
@@ -295,6 +297,27 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                     load_studio_observatory(repo_root=self.server.repo_root)
                 )
             except (StudioObservatoryError, OSError, ValueError, json.JSONDecodeError) as error:
+                self._send_json(
+                    {
+                        "available": False,
+                        "read_only": True,
+                        "physical_authority": False,
+                        "error": str(error),
+                    },
+                    HTTPStatus.SERVICE_UNAVAILABLE,
+                )
+            return
+        if path == "/api/realized-action-proof":
+            try:
+                self._send_json(
+                    load_realized_action_studio_proof(root=self.server.repo_root)
+                )
+            except (
+                FactoryArtifactError,
+                OSError,
+                ValueError,
+                json.JSONDecodeError,
+            ) as error:
                 self._send_json(
                     {
                         "available": False,
