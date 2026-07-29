@@ -56,8 +56,12 @@ predecessor v2 queue remains immutable authority for its terminal results.
 - At least one distinct complete success exists in each direction.
 - Studio exposes synchronized spatial and temporal evidence, direction-specific
   numerators/denominators, failures, hashes, proof class, and limitations.
+- After all implementation/evidence cards pass, the complete package receives
+  an adversarial review in the existing project Fable thread. Every material
+  recommendation is implemented or dispositioned with repository evidence,
+  and the updated result returns to Fable for a final defect check.
 - Tests, workflow audit, torque/process/camera/gateway cleanup, Brev cleanup,
-  scoped push, graph update, and final read-only Fable defect review complete.
+  scoped push, graph update, and the CC13--CC15 Fable feedback loop complete.
 
 The only final capability claim is the narrow preregistered bidirectional
 straight pawn-push claim recorded in the queue.
@@ -154,7 +158,8 @@ paid-compute, or unrelated work. No human repositioning is assumed.
 
 Stop successfully only after both directional transfer successes, the bounded
 policy-screening result, the executable task-world bundle, the targeted
-variation connection, and the full closeout package exist. Stop unsuccessfully
-only with a receipt-backed robot/camera safety or authority boundary after safe
-autonomous alternatives in the queue are exhausted. A counted stopped action
-stays in its denominator.
+variation connection, the iterative Fable review has no material unresolved
+in-scope proof defect, and the full closeout package exists. Stop
+unsuccessfully only with a receipt-backed robot/camera safety or authority
+boundary after safe autonomous alternatives in the queue are exhausted. A
+counted stopped action stays in its denominator.

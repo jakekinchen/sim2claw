@@ -181,7 +181,9 @@ Requirements:
 | CC10 | `REQUIRED_AFTER_TRANSFER` | Pilot `PolicyScreeningPredictive` with at least three declared controller/checkpoint variants, using deliberately differentiated scripted policies if trained checkpoints are not already admissible. | Frozen ID/OOD case distribution; rank correlation, outcome agreement, spatial failure overlap, boundary agreement, uncertainty intervals, and worst misranking; paired physical evidence is sufficient for the exact declared slice, or the result is explicitly `INSUFFICIENT_PHYSICAL_SAMPLE` rather than predictive. | This certificate grants decision utility only, never general twin fidelity or physical-transfer authority. Do not delay the first bidirectional proof for training. |
 | CC11 | `REQUIRED_AFTER_SCREENING` | Implement `TaskWorldBundle.v1` from the successful slice. | One bundle binds workcell/transform graph, clocks, sensors, appearance/physics assets, observed channels, parameter posterior, source interactions, splits, evaluator, variations, policy-screening result, and certificates; compiles deterministically to MuJoCo, Studio, replay, sysid, and evaluation. | Do not build a broad editor or marketplace first. |
 | CC12 | `REQUIRED_AFTER_SCREENING` | Connect measured posterior and policy failure map to targeted variation generation. | Variations sample only measured calibration/contact uncertainty, observed reset variation, and near-boundary/disagreement states; new checkpoints are screened against the frozen certificate. | No broad uniform randomization or held-out search. |
-| CC13 | `PENDING` | Final validation, cleanup, push, application package, and Fable reconciliation. | Focused/full tests, workflow audit, torque/process/camera/gateway cleanup, `brev ls` cleanup, scoped pushed commits, exact claim text, and final read-only Fable defect review. | Reopen the responsible card for any concrete proof defect. |
+| CC13 | `PENDING` | Present the completed CC01--CC12 evidence package to the existing project Fable thread for an adversarial review. | Fable receives exact claims/limitations, directional numerators and denominators, action/evaluator/config hashes, object/contact/first-divergence traces, simulator changes plus untouched-heldout results, policy-ranking metrics/uncertainty, Studio/TaskWorldBundle evidence, failures, and remaining gaps. The prompt explicitly asks whether the project credibly demonstrates bridging the sim-to-real gap through coding agents, software engineering, and multiple composable mechanisms. | Fable is advisory and cannot override repository evidence, safety, heldouts, or proof classes. Do not accept vague requests for more architecture; require a concrete proof defect or implementation opportunity. |
+| CC14 | `PENDING` | Triage and implement Fable's material in-scope recommendations. | Every recommendation is classified as: a new queue card with acceptance/evidence; a receipt-backed reject/defer decision; or already satisfied with exact evidence. All accepted recommendations are implemented, tested, evaluated on affected untouched heldouts, committed, pushed, and reflected in the graph and application package. | Reject recommendations that require overclaiming, evidence leakage, unsafe action, unbounded redesign, unavailable external authority, or work unrelated to the declared sim-to-real claim. A rejection records the evidence and rationale. |
+| CC15 | `PENDING` | Return the updated result to Fable for a final defect check, then perform full closeout. | Fable reports no material unresolved in-scope proof defect, or every remaining issue is bound to a genuine external/safety/authority limitation. Focused/full tests, workflow audit, torque/process/camera/gateway cleanup, `brev ls` cleanup, scoped pushed commits, exact claim text, final graph, and application package all pass. | Any new concrete in-scope defect reopens CC14. Continue CC14<->CC15 until the review is clean or a genuine documented boundary remains. |
 
 ## Promotion and claim boundaries
 
@@ -201,6 +203,14 @@ After one complete success in each direction:
 Only CC10 may support a narrower policy-screening claim. Nothing in this queue
 alone proves general world-model quality, full Twin fidelity, general
 manipulation, learned-policy transfer, or broad policy ranking.
+
+CC13--CC15 are a mandatory feedback loop, not a ceremonial review. The
+successful closeout must show how the accepted Fable findings improved the
+system or why each finding was already satisfied or rejected. The product
+story must demonstrate that coding agents, evidence-oriented software
+engineering, exact experimental controls, geometric calibration, causal
+observability, mechanism-specific simulator correction, physical transfer,
+and policy screening work together as one credible sim-to-real bridge.
 
 ## Live ledger
 
