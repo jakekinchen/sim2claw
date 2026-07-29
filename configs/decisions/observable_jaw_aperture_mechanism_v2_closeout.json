@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.observable_jaw_aperture_mechanism_closeout.v2",
+  "decision_id": "observable-jaw-aperture-mechanism-v2-closeout",
+  "result": "SINGLE_GRIPPER_ZERO_OFFSET_APERTURE_MAPPING_IDENTIFIABLE",
+  "proof_class": "telemetry_and_simulator_geometry_only_aggregate_rank_jaw_aperture_identifiability",
+  "freeze_commit": "22b64a1",
+  "contract": {
+    "path": "configs/evaluations/observable_jaw_aperture_mechanism_v2.json",
+    "sha256": "b16c6474ec990385372dfc5b440d09c9495a51ecdcea49ea68fce351a17978f1"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_jaw_aperture_mechanism_v2.py",
+    "sha256": "23a3f5af2c70e3752487f4d6736a75b87b9dfe6b7593b8bcb33c2a333abcaf65"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_jaw_aperture_mechanism_v2/receipt.json",
+    "git_ignored": true,
+    "sha256": "1d42d35063fb98bd86ea57b2a4287767d716f1baaca5e520eb15b10b15e24dd4",
+    "artifact_sha256": "74845f8e2553a1a9dfd8c6ae9bf82399111d7caf865feea68d7e408936b7a902"
+  },
+  "v1_negative": {
+    "closeout_sha256": "1d5e47db9835afd9e984e5442fbfe94d62a1725e02b605df454cf4d8312eecf7",
+    "preserved": true,
+    "overwritten": false
+  },
+  "identifiability": {
+    "fit_pose_count": 6,
+    "validation_pose_count": 4,
+    "gripper_gain_identifiable": false,
+    "gripper_zero_offset_identifiable": true,
+    "parameter_rank": 1,
+    "jacobian_condition_number": 1.0,
+    "aggregate_jacobian_singular_value_px_per_rad": 204.97189027845425,
+    "mean_absolute_sensitivity_px_per_rad": 83.14889657886847,
+    "minimum_absolute_sensitivity_px_per_rad": 72.08727441692461,
+    "same_sign_sensitivity_fraction": 1.0
+  },
+  "unopened_outcomes": {
+    "fit_visual_annotation_values_opened_by_v2": false,
+    "validation_visual_annotation_values_opened": false,
+    "sealed_d1_to_d2_task_outcome_used": false
+  },
+  "declared_family": {
+    "family_id": "single_gripper_zero_offset_aperture_mapping_v1",
+    "fit_parameters": ["gripper_zero_offset_rad"],
+    "minimum_gripper_zero_offset_rad": -0.174533,
+    "maximum_gripper_zero_offset_rad": 0.174533,
+    "fit_objective": "jaw_tip_pair_separation_pixels_only"
+  },
+  "proof_boundaries": {
+    "parameter_fit": false,
+    "candidate_promoted": false,
+    "dynamic_replay": false,
+    "global_mapping_approved": false,
+    "contact_or_transfer_proved": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "paid_compute": false
+  },
+  "next_card": "OR6"
+}

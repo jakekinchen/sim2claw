@@ -99,12 +99,12 @@ after repository evidence and bounded alternatives have been exhausted.
 
 ```text
 Current state: ACTIVE
-Active card: OR5
-Completed: predecessor evidence; OR0 corpus; OR1 bounded camera model; OR2 rigid mapping negative; OR3 physical event episode; OR4 first contact divergence
-Evidence: OR4 artifact e6a44d7c1791fcae8a5403b10ed6d580874bafc91d6cb4bb3d10e1f4564f1745; missing simulator selected-jaw enclosure at physical sample 232; 7.697 s object-consequence gap
-Remaining: OR5-OR8
+Active card: OR6
+Completed: predecessor evidence; OR0 corpus; OR1 bounded camera model; OR2 rigid mapping negative; OR3 physical event episode; OR4 first contact divergence; OR5 single zero-offset aperture mechanism
+Evidence: OR5 v2 artifact 74845f8e2553a1a9dfd8c6ae9bf82399111d7caf865feea68d7e408936b7a902; aggregate Jacobian singular value 204.972 px/rad; rank 1; validation visual values unopened
+Remaining: OR6-OR8
 Blockers: no current software blocker; physical motion remains service-gated
-Next step: prospectively freeze the smallest static-observation-supported jaw aperture/contact geometry mechanism
+Next step: fit one scalar on six v4 views and open the four-view v3 no-refit validation exactly once
 ```
 
 ## Stop conditions

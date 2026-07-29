@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or5_method_successor",
+  "status": "active_or6_jaw_aperture_fit",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "bd81d99779cbd1e2ec0eda5bb331ae2a3c6a136c0802dd643e64747b7721603f",
+      "sha256": "14afdffcaa680445e0fd346272432fb42df1a8e96868a52a70df36c0835f0d65",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -95,6 +95,11 @@
       "path": "configs/decisions/observable_jaw_aperture_mechanism_v1_closeout.json",
       "sha256": "1d5e47db9835afd9e984e5442fbfe94d62a1725e02b605df454cf4d8312eecf7",
       "proof_class": "frozen_fit_only_jaw_aperture_identifiability_negative"
+    },
+    "or5_v2": {
+      "path": "configs/decisions/observable_jaw_aperture_mechanism_v2_closeout.json",
+      "sha256": "605e4def5c1156d7b4f6aaf9b80e440b4484d65e84bd4251db83d8a5e0bf8466",
+      "proof_class": "telemetry_and_simulator_geometry_only_aggregate_rank_jaw_aperture_identifiability"
     }
   },
   "nodes": [
@@ -108,7 +113,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_or5",
+      "status": "active_or6",
       "source_binding": "queue"
     },
     {
@@ -187,7 +192,19 @@
       "id": "mechanism:or5-jaw-aperture-geometry",
       "type": "mechanism",
       "label": "Bounded jaw aperture and contact geometry",
-      "status": "active_aggregate_rank_method_successor_after_preserved_v1_negative",
+      "status": "accepted_single_gripper_zero_offset_aperture_mapping",
+      "source_binding": "or5_v2",
+      "data": {
+        "parameter_rank": 1,
+        "aggregate_jacobian_singular_value_px_per_rad": 204.97189027845425,
+        "validation_annotations_opened": false
+      }
+    },
+    {
+      "id": "intervention:or6-fit-gripper-zero-offset",
+      "type": "intervention",
+      "label": "Fit and validate gripper zero offset",
+      "status": "active_freeze_before_validation_open",
       "source_binding": "queue"
     },
     {
@@ -308,6 +325,11 @@
       "type": "counterexample-to"
     },
     {
+      "source": "mechanism:or5-jaw-aperture-geometry",
+      "target": "intervention:or6-fit-gripper-zero-offset",
+      "type": "predicts"
+    },
+    {
       "source": "mapping:or2-robot-jaw-rigid",
       "target": "residual:jaw-aperture-underprediction",
       "type": "generated-from"
@@ -323,6 +345,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR5",
-  "next_transition": "or5_freeze_aggregate_rank_identifiability_successor_with_validation_annotations_unopened"
+  "active_card": "OR6",
+  "next_transition": "or6_freeze_fit_and_no_refit_validation_then_open_v3_annotations_once"
 }

@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR5 JAW METHOD SUCCESSOR`
+Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR6 JAW APERTURE FIT`
 
 ## Active long-horizon alignment successor
 
@@ -24,12 +24,12 @@ enclosure is bounded to samples `228–232`, carried motion is visible from
 upright at D2. OR4 localizes the first divergence: physical enclosure is
 definite by sample `232`, while the simulator has zero selected-jaw contact and
 does not move the pawn by more than `1 mm` until sample `386`, `7.697 s` later.
-OR5 v1 preserves a narrow preregistered negative: the zero-offset aperture
-Jacobian is rank one and monotonic, but one view measures `72.087 px/rad`
-against its frozen `75 px/rad` every-view floor. The v3 validation annotations
-remain unopened, so one aggregate-rank method successor is active for the same
-single parameter family. Physical motion remains closed at the follower-elbow
-service boundary.
+OR5 v1 preserves a narrow preregistered negative; OR5 v2 accepts the unchanged
+single zero-offset aperture family under an aggregate rank gate: singular
+value `204.972 px/rad`, rank `1`, condition number `1.0`. The v3 validation
+annotations remained unopened. OR6 is active to fit the scalar on six v4
+static views and score the fixed candidate once on four v3 views. Physical
+motion remains closed at the follower-elbow service boundary.
 
 ## Latest realized-action outcome result
 
