@@ -69,6 +69,7 @@ def load_packet(path: Path) -> dict[str, Any]:
         in {
             "sim2claw.parking_transaction_execution_packet.v1",
             "sim2claw.parking_transaction_execution_packet.v2",
+            "sim2claw.parking_transaction_execution_packet.v3",
         }
         and packet.get("status")
         == "frozen_pending_independent_review_and_owner_authorization",
@@ -81,7 +82,7 @@ def load_packet(path: Path) -> dict[str, Any]:
         and packet.get("retry_without_new_preregistration") is False,
         "RP02 packet authority widened",
     )
-    expected = {
+    expected: dict[str, Any] = {
         "target_degrees": 91.0,
         "maximum_request_step_degrees": 5.0,
         "maximum_iterations": 12,
@@ -105,15 +106,54 @@ def load_packet(path: Path) -> dict[str, Any]:
                 "new_target_lead_periods": 1,
             }
         )
+    elif schema_version == "sim2claw.parking_transaction_execution_packet.v3":
+        expected = {
+            "success_minimum_degrees": 88.0,
+            "success_maximum_degrees": 93.0,
+            "initial_request_floor_degrees": 86.0,
+            "deepened_request_floor_degrees": 82.0,
+            "maximum_request_step_degrees": 5.0,
+            "maximum_iterations": 16,
+            "wait_after_request_seconds": 2.0,
+            "telemetry_hz": 5.0,
+            "stall_minimum_progress_degrees": 0.3,
+            "stall_consecutive_iterations_before_deepen": 2,
+            "stall_consecutive_iterations_after_deepen": 2,
+            "held_joint_rebase_maximum_degrees": 0.5,
+            "elbow_rebase_maximum_degrees": 1.0,
+            "live_anchor_rebase_maximum_degrees": 3.0,
+            "held_joint_drift_stop_degrees": 2.0,
+            "hold_seconds": 15.0,
+            "maximum_hold_drift_degrees": 0.5,
+            "hold_deep_segment_seconds": 4.0,
+            "hold_reset_segment_seconds": 0.2,
+            "hold_reset_error_degrees": 2.9,
+            "maximum_elbow_current_raw": 150.0,
+            "maximum_current_duration_seconds": 1.0,
+            "maximum_temperature_c": 45.0,
+            "post_torque_off_read_seconds": 60.0,
+            "clock_establishing_anchor_samples": 1,
+            "new_target_lead_periods": 1,
+        }
     _require(packet.get("runtime") == expected, "RP02 runtime constants changed")
+    expected_safety_note = (
+        (
+            "The narrowed calibrated-command corridor passes zero contact "
+            "violations and at least 145.386 mm pawn clearance; baseline "
+            "live-anchor model contacts are bounded separately and never "
+            "treated as task evidence."
+        )
+        if schema_version
+        == "sim2claw.parking_transaction_execution_packet.v3"
+        else (
+            "registered scene clears 120 mm moving-chain gate; "
+            "uncorrected canonical scene independently remains contact-free"
+        )
+    )
     _require(
         packet.get("camera_stop_rule")
         == "camera_loss_or_writer_failure_safe_stop"
-        and packet.get("dual_scene_safety_note")
-        == (
-            "registered scene clears 120 mm moving-chain gate; "
-            "uncorrected canonical scene independently remains contact-free"
-        ),
+        and packet.get("dual_scene_safety_note") == expected_safety_note,
         "RP02 safety disclosure changed",
     )
     for binding in packet["inputs"].values():
@@ -124,7 +164,7 @@ def load_packet(path: Path) -> dict[str, Any]:
             closeout.get("status") == "pass_open_rp02_packet_freeze_only",
             "RP01 did not open RP02 packet freeze",
         )
-    else:
+    elif schema_version == "sim2claw.parking_transaction_execution_packet.v2":
         predecessor = _json(packet["inputs"]["predecessor_execution_receipt"])
         _require(
             predecessor.get("schema_version")
@@ -149,6 +189,24 @@ def load_packet(path: Path) -> dict[str, Any]:
             closeout.get("status")
             == "fail_closed_before_motion_open_clock_compatible_successor",
             "RP02 predecessor closeout did not open the bounded successor",
+        )
+    else:
+        predecessor = _json(packet["inputs"]["predecessor_preview_receipt"])
+        _require(
+            predecessor.get("schema_version")
+            == "sim2claw.parking_deep_request_preview_receipt.v1"
+            and predecessor.get("passed") is True
+            and predecessor.get("joint_ranges_ok") is True
+            and not predecessor.get("contact_violations")
+            and predecessor.get("physical_motion") is False
+            and predecessor.get("physical_task_attempts") == 0,
+            "RP02C predecessor is not the exact passing motion-free preview",
+        )
+        closeout = _json(packet["inputs"]["predecessor_preview_closeout"])
+        _require(
+            closeout.get("status")
+            == "pass_open_deep_request_transaction_freeze_only",
+            "RP02B did not open the deep-request transaction freeze",
         )
     return packet
 
@@ -492,6 +550,267 @@ def run_ladder(
     }
 
 
+def _joint_register_value(
+    row: Mapping[str, Any],
+    register: str,
+    joint: str,
+) -> float:
+    value = row["registers"][register]
+    _require(
+        isinstance(value, Mapping)
+        and joint in value
+        and np.isfinite(float(value[joint])),
+        f"{register} {joint} telemetry unavailable",
+    )
+    return float(value[joint])
+
+
+def run_deep_request_ladder(
+    *,
+    gateway: Any,
+    camera: CameraEnclosure,
+    anchor: np.ndarray,
+    packet: Mapping[str, Any],
+    telemetry: Any,
+    clock: Callable[[], float] = time.monotonic,
+    sleep: Callable[[float], None] = time.sleep,
+) -> dict[str, Any]:
+    """Run the no-write, read-conditioned deep-request successor."""
+
+    spec = packet["runtime"]
+    period = 1.0 / float(spec["telemetry_hz"])
+    started = clock()
+    previous_read = float(anchor[2])
+    request = anchor.copy()
+    current_over_limit_samples = 0
+    current_limit_samples = int(
+        np.ceil(
+            float(spec["maximum_current_duration_seconds"])
+            * float(spec["telemetry_hz"])
+        )
+    )
+
+    def guarded_sample(
+        *,
+        phase: str,
+        iteration: int,
+        target: np.ndarray,
+    ) -> dict[str, Any]:
+        nonlocal current_over_limit_samples
+        row = _sample(
+            gateway=gateway,
+            camera=camera,
+            request=target,
+            elapsed=clock() - started,
+            anchor=anchor,
+            phase=phase,
+            iteration=iteration,
+            telemetry=telemetry,
+            clock=clock,
+        )
+        current = abs(
+            _joint_register_value(
+                row, "Present_Current", "elbow_flex"
+            )
+        )
+        temperature = _joint_register_value(
+            row, "Present_Temperature", "elbow_flex"
+        )
+        current_over_limit_samples = (
+            current_over_limit_samples + 1
+            if current > float(spec["maximum_elbow_current_raw"])
+            else 0
+        )
+        _require(
+            current_over_limit_samples < current_limit_samples,
+            "deep-request elbow current exceeded the sustained limit",
+        )
+        _require(
+            temperature <= float(spec["maximum_temperature_c"]),
+            "deep-request elbow temperature exceeded the limit",
+        )
+        return row
+
+    for sample_index in range(
+        int(spec["clock_establishing_anchor_samples"])
+    ):
+        guarded_sample(
+            phase="clock_establishing_anchor",
+            iteration=0,
+            target=anchor,
+        )
+        if (
+            sample_index + 1
+            < int(spec["clock_establishing_anchor_samples"])
+        ):
+            sleep(period)
+
+    floor = float(spec["initial_request_floor_degrees"])
+    deepened = False
+    stall_count = 0
+    iterations: list[dict[str, Any]] = []
+    final_row: dict[str, Any] | None = None
+    outcome = "iteration_budget_exhausted"
+
+    for iteration in range(1, int(spec["maximum_iterations"]) + 1):
+        sleep(period * int(spec["new_target_lead_periods"]))
+        request = anchor.copy()
+        request[2] = max(
+            floor,
+            previous_read - float(spec["maximum_request_step_degrees"]),
+        )
+        interval_start = clock()
+        sample_index = 0
+        while True:
+            due = interval_start + sample_index * period
+            delay = due - clock()
+            if delay > 0:
+                sleep(delay)
+            final_row = guarded_sample(
+                phase="deep_request",
+                iteration=iteration,
+                target=request,
+            )
+            if clock() - interval_start >= float(
+                spec["wait_after_request_seconds"]
+            ):
+                break
+            sample_index += 1
+        observed = float(final_row["follower_actual_position_degrees"][2])
+        progress = previous_read - observed
+        stall_count = (
+            stall_count + 1
+            if progress < float(spec["stall_minimum_progress_degrees"])
+            else 0
+        )
+        iterations.append(
+            {
+                "iteration": iteration,
+                "previous_read_degrees": previous_read,
+                "requested_degrees": float(request[2]),
+                "observed_degrees": observed,
+                "progress_degrees": progress,
+                "active_floor_degrees": floor,
+                "deepened": deepened,
+                "consecutive_stall_count": stall_count,
+            }
+        )
+        previous_read = observed
+        if (
+            float(spec["success_minimum_degrees"])
+            <= observed
+            <= float(spec["success_maximum_degrees"])
+        ):
+            outcome = "deep_request_success"
+            break
+        if observed < float(spec["success_minimum_degrees"]):
+            outcome = "below_certified_band_safe_stop"
+            break
+        if (
+            not deepened
+            and stall_count
+            >= int(spec["stall_consecutive_iterations_before_deepen"])
+        ):
+            floor = float(spec["deepened_request_floor_degrees"])
+            deepened = True
+            stall_count = 0
+        elif (
+            deepened
+            and stall_count
+            >= int(spec["stall_consecutive_iterations_after_deepen"])
+        ):
+            outcome = "deepened_stall_safe_stop"
+            break
+
+    hold: dict[str, Any] | None = None
+    if outcome == "deep_request_success":
+        hold_start = clock()
+        hold_initial = previous_read
+        maximum_drift = 0.0
+        deep_request = request.copy()
+        phase_started = hold_start
+        reset_pending = False
+        sample_index = 0
+        while clock() - hold_start < float(spec["hold_seconds"]):
+            due = hold_start + sample_index * period
+            delay = due - clock()
+            if delay > 0:
+                sleep(delay)
+            if (
+                not reset_pending
+                and clock() - phase_started
+                >= float(spec["hold_deep_segment_seconds"])
+            ):
+                observed_now = float(
+                    final_row["follower_actual_position_degrees"][2]
+                )
+                reset = anchor.copy()
+                reset[2] = max(
+                    floor,
+                    observed_now
+                    - float(spec["hold_reset_error_degrees"]),
+                )
+                final_row = guarded_sample(
+                    phase="hold_reset",
+                    iteration=len(iterations),
+                    target=reset,
+                )
+                reset_pending = True
+                phase_started = clock()
+            else:
+                if (
+                    reset_pending
+                    and clock() - phase_started
+                    >= float(spec["hold_reset_segment_seconds"])
+                ):
+                    reset_pending = False
+                    phase_started = clock()
+                final_row = guarded_sample(
+                    phase="hold_deep",
+                    iteration=len(iterations),
+                    target=deep_request,
+                )
+            elbow = float(
+                final_row["follower_actual_position_degrees"][2]
+            )
+            maximum_drift = max(
+                maximum_drift, abs(elbow - hold_initial)
+            )
+            _require(
+                maximum_drift
+                <= float(spec["maximum_hold_drift_degrees"]),
+                "deep-request hold drift exceeded gate",
+            )
+            _require(
+                float(spec["success_minimum_degrees"])
+                <= elbow
+                <= float(spec["success_maximum_degrees"]),
+                "deep-request hold left the certified band",
+            )
+            sample_index += 1
+        hold = {
+            "duration_seconds": clock() - hold_start,
+            "initial_elbow_degrees": hold_initial,
+            "maximum_elbow_drift_degrees": maximum_drift,
+            "deep_request_floor_degrees": floor,
+            "passed": True,
+        }
+
+    return {
+        "outcome": outcome,
+        "iterations": iterations,
+        "final_elbow_degrees": previous_read,
+        "active_floor_degrees": floor,
+        "deepened": deepened,
+        "hold": hold,
+        "terminal_outside_certified_band": not (
+            float(spec["success_minimum_degrees"])
+            <= previous_read
+            <= float(spec["success_maximum_degrees"])
+        ),
+    }
+
+
 def execute(
     *,
     packet_path: Path,
@@ -578,20 +897,39 @@ def execute(
         live_delta = np.abs(anchor - observed)
         _require(
             float(np.max(live_delta[[0, 1, 3, 4, 5]])) <= 0.5
-            and float(live_delta[2]) <= 1.0,
+            and float(live_delta[2])
+            <= float(
+                packet["runtime"].get(
+                    "live_anchor_rebase_maximum_degrees", 1.0
+                )
+            ),
             "torque-on RP02 anchor exceeded rebase gate",
         )
         action_started = clock()
         with telemetry_path.open("x", encoding="utf-8") as telemetry:
-            ladder = run_ladder(
-                gateway=gateway,
-                camera=camera,
-                anchor=anchor,
-                packet=packet,
-                telemetry=telemetry,
-                clock=clock,
-                sleep=sleep,
-            )
+            if (
+                packet.get("schema_version")
+                == "sim2claw.parking_transaction_execution_packet.v3"
+            ):
+                ladder = run_deep_request_ladder(
+                    gateway=gateway,
+                    camera=camera,
+                    anchor=anchor,
+                    packet=packet,
+                    telemetry=telemetry,
+                    clock=clock,
+                    sleep=sleep,
+                )
+            else:
+                ladder = run_ladder(
+                    gateway=gateway,
+                    camera=camera,
+                    anchor=anchor,
+                    packet=packet,
+                    telemetry=telemetry,
+                    clock=clock,
+                    sleep=sleep,
+                )
         action_stopped = clock()
     except Exception as error:
         failure = f"{type(error).__name__}: {error}"
@@ -636,6 +974,7 @@ def execute(
             "primary_success",
             "marginal_success",
             "marginal_success_after_stall",
+            "deep_request_success",
         }
         and postflight is not None
         and camera_result is not None

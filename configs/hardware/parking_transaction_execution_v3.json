@@ -1,0 +1,139 @@
+{
+  "schema_version": "sim2claw.parking_transaction_execution_packet.v3",
+  "operation_id": "rp02c-elbow-deep-request-parking-20260729-v3",
+  "status": "frozen_pending_independent_review_and_owner_authorization",
+  "proof_class": "prospective_physical_setup_recovery_not_task_evidence",
+  "inputs": {
+    "predecessor_preview_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-parking-deep-request-preview-v2/receipt.json",
+      "sha256": "ef4a2b45a4355390205b3cd68a4e1058c82f70f0a294a228c9c658db8da3fb63"
+    },
+    "predecessor_preview_closeout": {
+      "path": "configs/decisions/parking_deep_request_preview_v2_closeout.json",
+      "sha256": "274fe68b56a153d94f1ced04538cf2e5f41628f115b0451d1b8350a3073338b2"
+    },
+    "predecessor_execution_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-execution-v2/receipt.json",
+      "sha256": "fa328c856f41ecc703d3c21d76fae043355007355b9574c1da196d73e7a4f8de"
+    },
+    "predecessor_execution_closeout": {
+      "path": "configs/decisions/parking_transaction_execution_v2_closeout.json",
+      "sha256": "fc03072b65404970bd8cb5f64fe306314c8b749c18651984f998399c6fe86ebc"
+    },
+    "fable_blocker_advisory": {
+      "path": "docs/advisory/fable-rp02a-stall-unblock-20260729.md",
+      "sha256": "6b5f996a20a48f5128a3746d2775dd236dd4430fa31c42079225caa15f3d355c"
+    },
+    "executor": {
+      "path": "src/sim2claw/parking_transaction_executor.py",
+      "sha256": "35236deb3606716b82c2087643d390b2e330e10695a91d569d56dfdc21038442"
+    },
+    "c922_implementation": {
+      "path": "src/sim2claw/c922_terminal_hold_capture.py",
+      "sha256": "9bb6dcce8cb7281bd5564b3961b6441d38fcd63e89d1d22d1f53406a5263fc19"
+    },
+    "pi_implementation": {
+      "path": "src/sim2claw/pi_motion_video.py",
+      "sha256": "fb2a745ff8037ff28016a10411567b01e1a5daf44133bc46caf138d2a943c5f5"
+    },
+    "c922_contract": {
+      "path": "configs/acquisition/current_static_tricam_capture_v1.json",
+      "sha256": "54acf4a2b4eed47036c2229c9ba4c15786584eb5e6cbc278816ac12c35c03115"
+    },
+    "pi_contract": {
+      "path": "configs/acquisition/pi_imx708_motion_video_180s_v1.json",
+      "sha256": "e84d64a2cdedfeb6d1b5d2b2aa0b70eb381a31ea5e86e1c57b2e1620180e768d"
+    }
+  },
+  "expected_anchor_degrees_percent": [
+    5.802197802197802,
+    -85.01098901098901,
+    103.42857142857143,
+    -15.076923076923077,
+    -103.34065934065934,
+    2.375296912114014
+  ],
+  "follower_port": "/dev/cu.usbmodem5B3D0406411",
+  "follower_calibration_sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4",
+  "runtime": {
+    "success_minimum_degrees": 88.0,
+    "success_maximum_degrees": 93.0,
+    "initial_request_floor_degrees": 86.0,
+    "deepened_request_floor_degrees": 82.0,
+    "maximum_request_step_degrees": 5.0,
+    "maximum_iterations": 16,
+    "wait_after_request_seconds": 2.0,
+    "telemetry_hz": 5.0,
+    "stall_minimum_progress_degrees": 0.3,
+    "stall_consecutive_iterations_before_deepen": 2,
+    "stall_consecutive_iterations_after_deepen": 2,
+    "held_joint_rebase_maximum_degrees": 0.5,
+    "elbow_rebase_maximum_degrees": 1.0,
+    "live_anchor_rebase_maximum_degrees": 3.0,
+    "held_joint_drift_stop_degrees": 2.0,
+    "hold_seconds": 15.0,
+    "maximum_hold_drift_degrees": 0.5,
+    "hold_deep_segment_seconds": 4.0,
+    "hold_reset_segment_seconds": 0.2,
+    "hold_reset_error_degrees": 2.9,
+    "maximum_elbow_current_raw": 150.0,
+    "maximum_current_duration_seconds": 1.0,
+    "maximum_temperature_c": 45.0,
+    "post_torque_off_read_seconds": 60.0,
+    "clock_establishing_anchor_samples": 1,
+    "new_target_lead_periods": 1
+  },
+  "mechanism": {
+    "class": "evidence_directed_command_space_torque_margin_no_configuration_write",
+    "request_formula": "max(active_floor, previous_read_degrees - 5.0)",
+    "active_floor_initial_degrees": 86.0,
+    "active_floor_one_time_deepened_degrees": 82.0,
+    "configuration_or_gain_write": false,
+    "hold_watchdog_compatible_bias_reset": "Every 4.0 seconds, one 0.2 second exact reset row requests observed_elbow - 2.9 degrees before returning to the unchanged successful deep request.",
+    "clipping_smoothing_or_gateway_rate_limiting_allowed": false,
+    "physical_task_action_bytes": false
+  },
+  "camera": {
+    "c922_localized_name": "C922 Pro Stream Webcam",
+    "c922_unique_id": "0x8310000046d085c",
+    "c922_width": 640,
+    "c922_height": 480,
+    "c922_fps": 30.00003000003,
+    "pi_camera": "imx708_wide",
+    "pi_ssh_host": "vexy@192.168.1.117",
+    "pi_width": 1536,
+    "pi_height": 864,
+    "pi_fps": 30,
+    "pi_bounded_duration_seconds": 180,
+    "session_token": "rp02c-elbow-deep-request-20260729-v3",
+    "fixed_mount_token": "current-workcell-c922-fixed-v1",
+    "start_before_gateway": true,
+    "enclose_through_postflight": true,
+    "d405_required": false
+  },
+  "camera_stop_rule": "camera_loss_or_writer_failure_safe_stop",
+  "dual_scene_safety_note": "The narrowed calibrated-command corridor passes zero contact violations and at least 145.386 mm pawn clearance; baseline live-anchor model contacts are bounded separately and never treated as task evidence.",
+  "terminal_semantics": {
+    "final_in_88_to_93_with_15s_0p5deg_hold": "success_open_exact_angle_task_freeze",
+    "final_below_88": "safe_stop_outside_certified_band",
+    "stall_above_93_after_82deg_floor": "terminal_hardware_boundary",
+    "any_current_temperature_camera_drift_or_cleanup_failure": "safe_stop",
+    "any_failure_stays_in_setup_recovery_class": true
+  },
+  "owner_authorization": {
+    "required_at_runtime": true,
+    "schema_version": "sim2claw.owner_physical_authorization.v1",
+    "operation_id": "rp02c-elbow-deep-request-parking-20260729-v3",
+    "maximum_executions": 1,
+    "packet_sha256_must_match_at_runtime": true,
+    "named_operator_present_full_transaction_required": true,
+    "power_down_supply_on_torque_cleanup_error_acknowledgement_required": true,
+    "currently_bound": false
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-execution-v3",
+  "physical_authority": false,
+  "physical_task_attempt": false,
+  "pawn_contact": false,
+  "retry_without_new_preregistration": false,
+  "claim_boundary": "Prospectively frozen no-write deep-request setup/recovery packet. It cannot run without a fresh exact packet-hash-bound owner authorization and cannot count as pawn-task, transfer, mapping, policy-ranking, or simulator-promotion evidence."
+}

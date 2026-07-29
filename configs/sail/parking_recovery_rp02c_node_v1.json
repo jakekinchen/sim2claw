@@ -1,0 +1,31 @@
+{
+  "schema_version": "sim2claw.campaign_graph_node.v1",
+  "node_id": "parking-recovery-rp02c-deep-request-packet-20260729-v1",
+  "status": "prospectively_frozen_physical_authority_false",
+  "predecessors": [
+    {
+      "node_id": "parking-recovery-rp02a-clock-compatible-successor-20260729-v1",
+      "result": "safe_stall_at_94p901099_degrees"
+    },
+    {
+      "node_id": "rp02b-deep-request-preview-v2",
+      "result": "pass_222_of_222_calibrated_command_poses"
+    }
+  ],
+  "mechanism": "no_write_read_conditioned_deep_request_with_bounded_hold_reset",
+  "evidence": {
+    "preview_receipt_sha256": "ef4a2b45a4355390205b3cd68a4e1058c82f70f0a294a228c9c658db8da3fb63",
+    "packet_sha256": "c99c2d613b415a763acd141217439d5931e614a73bac62e6c3b9c284cb742ba5",
+    "focused_tests": "46 passed"
+  },
+  "ledger": {
+    "real_to_sim": "0/0",
+    "sim_to_real": "0/0",
+    "physical_task_attempts": "0/10",
+    "global_mapping_approved": false,
+    "policy_ranking": "INSUFFICIENT_PHYSICAL_SAMPLE"
+  },
+  "active_card": "RP02C",
+  "next_gate": "exact_packet_hash_bound_time_bounded_owner_authorization",
+  "physical_authority": false
+}

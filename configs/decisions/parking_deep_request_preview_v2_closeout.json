@@ -1,0 +1,32 @@
+{
+  "schema_version": "sim2claw.parking_deep_request_preview_closeout.v2",
+  "decision_id": "rp02b-deep-request-preview-v2-closeout",
+  "status": "pass_open_deep_request_transaction_freeze_only",
+  "proof_class": "cpu_fp64_motion_free_deep_request_calibrated_command_corridor_preview",
+  "contract": {
+    "path": "configs/hardware/parking_deep_request_preview_v2.json",
+    "sha256": "f08f738db8a0fc356bd2528d18a9ba55bfd47d6a95b1af0ec409b4c1396366ea"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-parking-deep-request-preview-v2/receipt.json",
+    "sha256": "ef4a2b45a4355390205b3cd68a4e1058c82f70f0a294a228c9c658db8da3fb63"
+  },
+  "result": {
+    "passed": true,
+    "joint_ranges_ok": true,
+    "contact_violations": 0,
+    "sample_count": 222,
+    "elbow_interval_degrees": [
+      80.0,
+      102.1
+    ],
+    "minimum_pawn_clearance_m": 0.145386793516195,
+    "minimum_board_clearance_m": 0.19255444986194858,
+    "minimum_table_clearance_m": 0.2085544498619486,
+    "minimum_pinch_clearance_m": 0.21385841008183593,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "next_gate": "Freeze and test one no-write deep-request physical setup transaction. A separately hash-bound active owner authorization remains mandatory.",
+  "physical_authority": false
+}

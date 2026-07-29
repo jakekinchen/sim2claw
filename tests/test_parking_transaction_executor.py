@@ -11,6 +11,7 @@ from sim2claw.parking_transaction_executor import (
     ParkingTransactionExecutionError,
     _require_frozen_output_root,
     load_packet,
+    run_deep_request_ladder,
     run_ladder,
 )
 
@@ -101,7 +102,7 @@ def _packet() -> dict[str, Any]:
 
 def test_frozen_packet_requires_separate_owner_authorization() -> None:
     packet = load_packet(
-        ROOT / "configs/hardware/parking_transaction_execution_v2.json"
+        ROOT / "configs/hardware/parking_transaction_execution_v3.json"
     )
     assert packet["physical_authority"] is False
     assert packet["owner_authorization"]["currently_bound"] is False
@@ -114,7 +115,7 @@ def test_one_execution_latch_rejects_any_other_output_path(
     tmp_path: Path,
 ) -> None:
     packet = load_packet(
-        ROOT / "configs/hardware/parking_transaction_execution_v2.json"
+        ROOT / "configs/hardware/parking_transaction_execution_v3.json"
     )
     with pytest.raises(
         ParkingTransactionExecutionError, match="one-execution path"
@@ -192,6 +193,63 @@ def test_clock_compatible_successor_primes_anchor_and_spaces_new_targets() -> No
     assert np.array_equal(gateway.requests[0][1], anchor)
     assert gateway.requests[1][0] == pytest.approx(0.2)
     assert gateway.requests[1][1][2] == pytest.approx(94.47)
+
+
+def test_deep_request_reaches_band_and_holds_with_bounded_bias() -> None:
+    class _BiasedGateway(_Gateway):
+        def sample(
+            self, elapsed: float, *, exact_requested_degrees: np.ndarray
+        ) -> dict[str, Any]:
+            del elapsed
+            equilibrium = float(exact_requested_degrees[2]) + 3.9
+            self.actual[2] += 0.3 * (equilibrium - self.actual[2])
+            return {
+                "precompiled_exact_action": True,
+                "rate_limited": False,
+                "safety_clamped": False,
+                "physical_follower_torque_enabled": True,
+                "follower_actual_position_degrees": self.actual.tolist(),
+            }
+
+    anchor = np.asarray([5, -85, 99.47, -15, -103, 2], dtype=float)
+    packet = {
+        "runtime": {
+            "success_minimum_degrees": 88.0,
+            "success_maximum_degrees": 93.0,
+            "initial_request_floor_degrees": 86.0,
+            "deepened_request_floor_degrees": 82.0,
+            "maximum_request_step_degrees": 5.0,
+            "maximum_iterations": 16,
+            "wait_after_request_seconds": 2.0,
+            "telemetry_hz": 5.0,
+            "stall_minimum_progress_degrees": 0.3,
+            "stall_consecutive_iterations_before_deepen": 2,
+            "stall_consecutive_iterations_after_deepen": 2,
+            "hold_seconds": 15.0,
+            "maximum_hold_drift_degrees": 0.5,
+            "hold_deep_segment_seconds": 4.0,
+            "hold_reset_segment_seconds": 0.2,
+            "hold_reset_error_degrees": 2.9,
+            "maximum_elbow_current_raw": 150.0,
+            "maximum_current_duration_seconds": 1.0,
+            "maximum_temperature_c": 45.0,
+            "clock_establishing_anchor_samples": 1,
+            "new_target_lead_periods": 1,
+        }
+    }
+    clock = _Clock()
+    report = run_deep_request_ladder(
+        gateway=_BiasedGateway(anchor, motion_per_sample=0.0),
+        camera=_Camera(),
+        anchor=anchor,
+        packet=packet,
+        telemetry=io.StringIO(),
+        clock=clock,
+        sleep=clock.sleep,
+    )
+    assert report["outcome"] == "deep_request_success"
+    assert 88.0 <= report["final_elbow_degrees"] <= 93.0
+    assert report["hold"]["passed"] is True
 
 
 def test_two_no_progress_intervals_stop_safely_above_93() -> None:
