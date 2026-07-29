@@ -1,0 +1,50 @@
+{
+  "schema_version": "sim2claw.elbow_telemetry_probe_contract.v2",
+  "contract_id": "cc03e-elbow-telemetry-probe-20260729-v2",
+  "status": "preregistered_before_no_contact_probe",
+  "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
+  "authorization_expires_at": "2026-07-29T05:38:00-05:00",
+  "sample_hz": 20.0,
+  "register_hz": 5.0,
+  "registers": [
+    "Present_Current",
+    "Present_Load",
+    "Present_Temperature",
+    "Status",
+    "Goal_Position",
+    "Torque_Enable"
+  ],
+  "elbow_offsets_degrees": [
+    -3.0,
+    -5.0
+  ],
+  "elbow_direction_interpretation": "Each negative destination is followed by an equal positive-direction return to the fresh live anchor; both physical directions are therefore observed without exceeding the calibrated elbow maximum.",
+  "wrist_control_offsets_degrees": [
+    3.0,
+    -3.0,
+    5.0,
+    -5.0
+  ],
+  "repeat_after_torque_cycle": {
+    "joint": "elbow_flex",
+    "offset_degrees": -5.0
+  },
+  "maximum_slew_degrees_s": 10.0,
+  "hold_seconds": 0.35,
+  "physical_task_attempt": false,
+  "pawn_contact": false,
+  "gain_write": false,
+  "configuration_write": false,
+  "camera_required": "native_d405_rgb",
+  "stop_rules": [
+    "identity_mismatch",
+    "camera_not_recording",
+    "bus_read_or_write_failure",
+    "torque_state_uncertain",
+    "gateway_tracking_or_stall_stop",
+    "exact_target_modified",
+    "calibrated_limit_violation",
+    "return_or_cleanup_uncertain"
+  ],
+  "claim_boundary": "This is no-contact diagnostic telemetry. It does not prove task execution, task transfer, a mechanically broken elbow, or authority for gain/configuration writes."
+}

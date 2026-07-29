@@ -14,7 +14,7 @@ from sim2claw.elbow_telemetry_probe import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTRACT = ROOT / "configs/evaluations/elbow_telemetry_probe_v1.json"
+CONTRACT = ROOT / "configs/evaluations/elbow_telemetry_probe_v2.json"
 
 
 def test_contract_is_bounded_and_has_no_task_or_config_authority() -> None:
@@ -23,7 +23,7 @@ def test_contract_is_bounded_and_has_no_task_or_config_authority() -> None:
     assert contract["pawn_contact"] is False
     assert contract["gain_write"] is False
     assert contract["configuration_write"] is False
-    assert contract["elbow_offsets_degrees"] == [3.0, -3.0, 5.0, -5.0]
+    assert contract["elbow_offsets_degrees"] == [-3.0, -5.0]
     assert contract["wrist_control_offsets_degrees"] == [3.0, -3.0, 5.0, -5.0]
 
 

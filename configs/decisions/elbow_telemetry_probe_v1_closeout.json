@@ -1,0 +1,20 @@
+{
+  "schema_version": "sim2claw.elbow_telemetry_probe_closeout.v1",
+  "decision_id": "cc03e-elbow-telemetry-probe-v1-closeout",
+  "status": "closed_unexecuted_fresh_calibrated_limit_contradiction",
+  "proof_class": "read_only_preflight_contract_rejection_no_physical_motion",
+  "contract_sha256": "95666864bb00d8cb43308399eacf6c6bac377610d789b8f4b92e1640af5f317a",
+  "fresh_preflight": {
+    "physical_follower_torque_enabled": false,
+    "follower_elbow_degrees": 99.64835164835165,
+    "follower_elbow_calibrated_maximum_degrees": 102.10989010989012,
+    "positive_margin_degrees": 2.461538461538467
+  },
+  "rejection": "The frozen +3 and +5 degree elbow offsets exceed the fresh calibrated maximum. The executor was not invoked, no output directory was created, torque remained off, no camera or gateway process remained, and no physical or task attempt occurred.",
+  "successor_rule": "Freeze a V2 with -3 and -5 degree elbow destinations. Each destination includes the equal positive-direction return to the fresh anchor, preserving both physical movement directions without exceeding the calibrated envelope. Preserve the full matched wrist-flex control and repeat the -5 degree elbow destination after one torque cycle.",
+  "physical_motion": false,
+  "physical_task_attempts": 0,
+  "pawn_contact": false,
+  "gain_write": false,
+  "configuration_write": false
+}

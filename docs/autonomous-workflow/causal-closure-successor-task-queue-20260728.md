@@ -797,16 +797,24 @@ Current state:
   and new viewer/architecture work are receipt-backed rejects. `CC03K` is the
   prospectively frozen proof-task redesign; it cannot inherit a straight-push
   claim.
-- `CC03E` is prospectively frozen before physical execution at contract
+- `CC03E` V1 was prospectively frozen before physical execution at contract
   SHA-256
   `95666864bb00d8cb43308399eacf6c6bac377610d789b8f4b92e1640af5f317a`
   and executor SHA-256
   `7dd414f3793e4c40821adb45c89ad48721d827d5a420a3f85ae822eaac9a4db7`.
-  It records `+3/-3/+5/-5 deg` elbow offsets, the identical wrist-flex
-  control, one torque off/on repeat, exact-target and calibrated-limit checks,
-  native D405 enclosure, and six optional servo registers at `5 Hz`. It
-  grants no pawn, task-attempt, gain-write, or configuration-write authority.
-  `38` focused tests pass.
+  A fresh torque-off preflight then found the elbow at `99.648352 deg` with a
+  `102.109890 deg` calibrated maximum, making its `+3/+5 deg` targets
+  inadmissible. V1 was not executed; closeout SHA-256 is
+  `9bff36ce9a15922fc22b1ea6c8e788fc184d11a4c4b08bd2044604239092bc84`.
+- `CC03E` V2 is frozen before motion at contract SHA-256
+  `d221e9a925b5949ab7315485f8bd5e30c08f139aba00ac097d7976f8af8723b5`
+  and executor SHA-256
+  `f6f3e9466eeddb0beaf612a6ddfde8c6b46da38b3254eff30312a425f8af5998`.
+  It records `-3/-5 deg` elbow destinations and their equal positive-direction
+  returns, the full `+3/-3/+5/-5 deg` wrist-flex control, one torque off/on
+  repeat, exact-target and calibrated-limit checks, native D405 enclosure,
+  and six optional servo registers at `5 Hz`. It grants no pawn, task-attempt,
+  gain-write, or configuration-write authority. `36` focused tests pass.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task

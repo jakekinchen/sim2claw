@@ -25,7 +25,7 @@ from .replay_eligibility import action_sha256
 from .wrist_view_reposition import preview_wrist_view_actions
 
 
-CONTRACT_SCHEMA = "sim2claw.elbow_telemetry_probe_contract.v1"
+CONTRACT_SCHEMA = "sim2claw.elbow_telemetry_probe_contract.v2"
 RECEIPT_SCHEMA = "sim2claw.elbow_telemetry_probe_receipt.v1"
 SAMPLE_HZ = 20.0
 REGISTER_HZ = 5.0
@@ -76,12 +76,12 @@ def load_contract(path: Path) -> dict[str, Any]:
         "contract identity changed",
     )
     _require(
-        contract.get("elbow_offsets_degrees") == [3.0, -3.0, 5.0, -5.0]
+        contract.get("elbow_offsets_degrees") == [-3.0, -5.0]
         and contract.get("wrist_control_offsets_degrees")
         == [3.0, -3.0, 5.0, -5.0]
         and contract.get("repeat_after_torque_cycle") == {
             "joint": "elbow_flex",
-            "offset_degrees": 5.0,
+            "offset_degrees": -5.0,
         },
         "probe offsets changed",
     )
