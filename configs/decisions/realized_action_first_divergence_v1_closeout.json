@@ -1,0 +1,61 @@
+{
+  "schema_version": "sim2claw.realized_action_first_divergence_closeout.v1",
+  "decision_id": "realized-action-first-divergence-v1-closeout",
+  "result": "PASS_TEMPORAL_MECHANISMS_ADMITTED_CONTACT_NOT_IDENTIFIED",
+  "proof_class": "retrospective_ordered_first_divergence_and_cross_episode_attribution",
+  "freeze_commit": "05b1189",
+  "contract": {
+    "path": "configs/evaluations/realized_action_first_divergence_v1.json",
+    "sha256": "92c093d4aefdb3ba007a50dd8e29e312b3169c7b57bafceb487858f7c3ecfa0e"
+  },
+  "implementation": {
+    "path": "src/sim2claw/realized_action_first_divergence.py",
+    "sha256": "aca50b47eb91f00792a484d20b873377fee1a8d48ffff1ad43bcf680b95411e8"
+  },
+  "generated_receipt": {
+    "path": "outputs/realized_action_first_divergence_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "7939cbb9b61e783502bb1970763a9af37594b538e223f58a89d3be40e4556100",
+    "artifact_sha256": "6cdc2b9b1022bdcb41f1df0f35d29af61f563018078940ab8d4f6d5217ba82c3",
+    "deterministic_rebuild_match": true
+  },
+  "denominators": {
+    "episodes": 8,
+    "ordered_channels_per_episode": 9,
+    "first_requested_to_sent_divergences": 8
+  },
+  "admitted_successors": {
+    "C4": [
+      "three_sample_sample_domain_command_hold_challenger",
+      "direction_conditioned_effective_joint_response"
+    ],
+    "C5": [],
+    "C5_diagnostic_only": [
+      "free_release_support_and_upright_contact_consequence"
+    ]
+  },
+  "identifiability": {
+    "causal_latency_identified": false,
+    "global_mapping_approved": false,
+    "nonsealed_contact_witness_available": false,
+    "per_sample_physical_object_path_available": false,
+    "sealed_episode_used_for_selection": false
+  },
+  "compensating_parameter_pairs_flagged": [
+    "sample_hold_or_delay__direction_conditioned_undertravel",
+    "release_timing__support_or_contact_mode",
+    "camera_or_task_plane_mapping__joint_or_link_mapping"
+  ],
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "parameter_fit": false,
+    "simulator_replay": false,
+    "paid_compute": false
+  },
+  "next_card": "C4"
+}
