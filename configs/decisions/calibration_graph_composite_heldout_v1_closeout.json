@@ -1,0 +1,55 @@
+{
+  "schema_version": "sim2claw.calibration_graph_composite_heldout_closeout.v1",
+  "decision_id": "calibration-graph-composite-heldout-20260729-v1-closeout",
+  "status": "projection_tag_geometry_confounded_downstream_rotation_heldout_required",
+  "proof_class": "prospective_composite_heldout_negative_with_mechanism_localization",
+  "contract": {
+    "path": "configs/evaluations/calibration_graph_composite_heldout_v1.json",
+    "sha256": "4c38902e8b8168fd1ef7d300a82951575db28801d748ae064ff6534dd744a59f"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/evaluation/receipt.json",
+    "sha256": "5b10d59d65248895943f0f4efbb88687de1bd25b8f889880ef8b48a6af81041a"
+  },
+  "result": {
+    "upper_arm_tag": {
+      "passed": true,
+      "displacement_residual_rmse_px": 1.4318145298610043,
+      "flattened_displacement_correlation": 0.9801051414167526
+    },
+    "wrist_tag": {
+      "passed": false,
+      "displacement_residual_rmse_px": 5.196287679637153,
+      "flattened_displacement_correlation": -0.5259963779572117,
+      "only_failed_gate": "correlation"
+    },
+    "physical_model_mapping_approved": false,
+    "physical_task_attempts": 0
+  },
+  "reconciliation": {
+    "broad_camera_or_base_rewrite_supported": false,
+    "prior_d405_wrist_flex_background_signal_available": true,
+    "prior_pi_differential_wrist_direction_difference_degrees": 0.5315133053292037,
+    "prior_pi_differential_wrist_magnitude_ratio": 0.43541174583992276,
+    "outcome_informed_d405_composite_rotation_diagnostic": {
+      "heldout_authority": false,
+      "observed_over_simulated_rotation_rms_ratio": 0.9591524278373934,
+      "rotation_angle_rmse_degrees": 0.6467973235178617,
+      "rotation_angle_max_error_degrees": 1.4186775363235622,
+      "rotation_angle_correlation": 0.7964998803819798
+    }
+  },
+  "decision": "Do not alter joint signs, scales, camera/base registration, or the frozen CAD from this negative. The passing proximal tag plus matching gauge-free D405 rotation diagnostic localize the failure to the Pi wrist-tag projection/mount channel. Freeze one distinct elbow-only plus wrist-only D405 relative-rotation heldout that uses a fixed scene tag, measured intrinsics, exact encoders, and the current MuJoCo camera-mount orientation. This channel removes camera-to-wrist extrinsic and translation gauge from the tested rotation magnitude.",
+  "authority": {
+    "freeze_downstream_rotation_heldout": true,
+    "fit_parameters": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

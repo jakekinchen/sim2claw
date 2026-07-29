@@ -201,6 +201,12 @@ Confirmed:
   enclosure and torque-off cleanup; physical task attempts remain zero.
 - Prospective composite heldout evaluator V1 is frozen at `4c38902e...`
   before opening heldout frames; it has no fit or mapping-promotion authority.
+- Composite heldout V1 rejected only the wrist-tag correlation channel at
+  receipt `5b10d59d...`; closeout `8bb6f4c0...` localizes this to the Pi
+  downstream projection/mount channel, not a broad camera/base defect.
+- A distinct elbow-only/wrist-only exact-return tricam route is frozen at
+  `370b3dab...`; gauge-free D405 rotation evaluator implementation
+  `a7628f27...` is frozen before its new captures exist.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -247,7 +253,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
 Completed: CC00, CC00A, CC01, CC02.
-Evidence: calibration reject 718cedd9...; V1 compile reject ca9b3527...; V2 execution ef0d2571...; heldout contract 4c38902e....
+Evidence: calibration reject 718cedd9...; composite negative 5b10d59d...; localized closeout 8bb6f4c0...; downstream route 370b3dab....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -255,7 +261,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC03 through CC15.
 Blockers: physical/model mapping remains unapproved.
-Next step: run the frozen composite heldout evaluator exactly once; no pawn contact or task attempt.
+Next step: compile/review the frozen two-stage downstream rotation route; no pawn contact or task attempt.
 ```
 
 ## Physical Authority Boundaries

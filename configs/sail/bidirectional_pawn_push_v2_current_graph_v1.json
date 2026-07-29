@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "e053d105db65684676d45f39572645eb2fa831868c4c91a99d3b1e16d94fd456",
+      "sha256": "9d9b2fec96ea901f0549a22d40c04633bbb5feb6840f781b67fd3c1bc9405407",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1885,6 +1885,41 @@
         "status": "frozen_after_execution_before_heldout_frame_open",
         "proof_class": "prospective_action_frozen_physical_no_contact_composite_mapping_heldout"
       }
+    },
+    "calibration_graph_composite_heldout_v1_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/evaluation/receipt.json",
+      "sha256": "5b10d59d65248895943f0f4efbb88687de1bd25b8f889880ef8b48a6af81041a",
+      "proof_class": "prospective_action_frozen_physical_no_contact_composite_mapping_heldout",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_composite_heldout_receipt.v1",
+        "status": "composite_heldout_rejected_no_automatic_promotion",
+        "heldout_passed": false,
+        "physical_model_mapping_approved": false
+      }
+    },
+    "calibration_graph_composite_heldout_v1_closeout": {
+      "path": "configs/decisions/calibration_graph_composite_heldout_v1_closeout.json",
+      "sha256": "8bb6f4c0295449c19e6423338c5e52bcde316d2ebb036052df6674d8170ba3f4",
+      "proof_class": "prospective_composite_heldout_negative_with_mechanism_localization",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_composite_heldout_closeout.v1",
+        "status": "projection_tag_geometry_confounded_downstream_rotation_heldout_required",
+        "proof_class": "prospective_composite_heldout_negative_with_mechanism_localization"
+      }
+    },
+    "calibration_graph_downstream_rotation_route": {
+      "path": "configs/hardware/calibration_graph_downstream_rotation_heldout_tricam_v1.json",
+      "sha256": "370b3daba18a1022b4cc2911f15591c889fe3917a35e5b8ace92bfbc795c1380",
+      "proof_class": "prospective_static_safe_no_contact_downstream_rotation_mapping_heldout",
+      "payload_contract": {
+        "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+        "route_id": "calibration_graph_downstream_rotation_heldout_tricam_20260729_v1"
+      }
+    },
+    "calibration_graph_d405_rotation_evaluator": {
+      "path": "tools/evaluate_calibration_graph_d405_rotation_heldout_v1.py",
+      "sha256": "a7628f277c502e6f8ed3113f953ef0b554778322ed1ee983705e4c08c00f85c6",
+      "proof_class": "prospective_gauge_free_d405_fixed_tag_relative_rotation_evaluator"
     },
     "simulator_candidate": {
       "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
@@ -5080,6 +5115,37 @@
       }
     },
     {
+      "id": "verdict:calibration-graph-composite-heldout-v1-reject",
+      "type": "evaluator_verdict",
+      "label": "Composite heldout rejects wrist-tag projection correlation",
+      "status": "projection_tag_geometry_confounded_downstream_rotation_heldout_required",
+      "source_binding": "calibration_graph_composite_heldout_v1_closeout",
+      "evaluator_identity": "4c38902e8b8168fd1ef7d300a82951575db28801d748ae064ff6534dd744a59f",
+      "data": {
+        "receipt_source_binding": "calibration_graph_composite_heldout_v1_receipt",
+        "upper_arm_tag_passed": true,
+        "wrist_tag_passed": false,
+        "broad_camera_or_base_rewrite_supported": false,
+        "physical_model_mapping_approved": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:calibration-graph-downstream-rotation-route-frozen",
+      "type": "checkpoint",
+      "label": "Elbow-only and wrist-only D405 rotation heldout route frozen",
+      "status": "preregistered_before_packet_compile",
+      "source_binding": "calibration_graph_downstream_rotation_route",
+      "data": {
+        "evaluator_source_binding": "calibration_graph_d405_rotation_evaluator",
+        "stage_count": 2,
+        "maximum_joint_excursion_degrees": 3.0,
+        "returns_to_exact_start_each_stage": true,
+        "depth_required": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -6948,6 +7014,27 @@
       }
     },
     {
+      "source": "verdict:calibration-graph-composite-heldout-v1-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:calibration-graph-composite-heldout-v1-frozen",
+      "metadata": {
+        "upper_arm_tag_passed": true,
+        "wrist_tag_passed": false,
+        "mapping_approval": false
+      }
+    },
+    {
+      "source": "checkpoint:calibration-graph-downstream-rotation-route-frozen",
+      "type": "generated-from",
+      "target": "verdict:calibration-graph-composite-heldout-v1-reject",
+      "metadata": {
+        "single_mechanism_specific_successor": true,
+        "gauge_free_rotation_magnitude": true,
+        "depth_required": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -8360,14 +8447,32 @@
       "node_ids_added": [
         "checkpoint:calibration-graph-composite-heldout-v1-frozen"
       ]
+    },
+    {
+      "revision": 152,
+      "event_id": "CALIBRATION_GRAPH_COMPOSITE_HELDOUT_V1_REJECT",
+      "status": "projection_tag_geometry_confounded_downstream_rotation_heldout_required",
+      "source_binding": "calibration_graph_composite_heldout_v1_closeout",
+      "node_ids_added": [
+        "verdict:calibration-graph-composite-heldout-v1-reject"
+      ]
+    },
+    {
+      "revision": 153,
+      "event_id": "CALIBRATION_GRAPH_DOWNSTREAM_ROTATION_ROUTE_FROZEN",
+      "status": "preregistered_before_packet_compile",
+      "source_binding": "calibration_graph_downstream_rotation_route",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-downstream-rotation-route-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:calibration-graph-composite-heldout-v1-frozen",
+    "node_id": "checkpoint:calibration-graph-downstream-rotation-route-frozen",
     "milestone_id": "CC03",
-    "status": "preregistered_before_exactly_once_heldout_evaluation",
-    "queue_status": "ACTIVE_CC03_COMPOSITE_HELDOUT_EVALUATE",
-    "resume_action": "execute_calibration_graph_composite_heldout_v1_exactly_once",
+    "status": "preregistered_before_packet_compile",
+    "queue_status": "ACTIVE_CC03_DOWNSTREAM_ROTATION_PACKET_COMPILE",
+    "resume_action": "compile_review_downstream_rotation_packet",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

@@ -1,0 +1,130 @@
+{
+  "authority": {
+    "camera": false,
+    "evaluate_composite_factor": true,
+    "fit_parameters": false,
+    "gateway": false,
+    "mapping_approval": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "read_bound_physical_capture": true,
+    "serial": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "This prospective heldout may accept or reject only the constant-offset-invariant composite image-motion factor for the frozen current CAD comparator. It cannot approve the physical/model mapping, alter joint transforms, fit camera or robot parameters, prove task transfer, or erase the prior differential and hold failures.",
+  "contract_path": "configs/evaluations/calibration_graph_composite_heldout_v1.json",
+  "contract_sha256": "4c38902e8b8168fd1ef7d300a82951575db28801d748ae064ff6534dd744a59f",
+  "gates": {
+    "all_required_tags_must_pass": true,
+    "displacement_residual_max_px": 20.0,
+    "displacement_residual_rmse_max_px": 8.0,
+    "minimum_displacement_correlation": 0.8,
+    "minimum_reference_sample_count": 3,
+    "minimum_sample_count": 20,
+    "minimum_simulated_displacement_rms_px": 2.0,
+    "signal_ratio_range": [
+      0.5,
+      1.5
+    ]
+  },
+  "heldout_passed": false,
+  "method": {
+    "active_joint_indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "anchor_reference_radius_degrees": 0.75,
+    "camera": "Pi IMX708 wide RGB",
+    "frame_stride": 3,
+    "gauge": "subtract only the mean observed and simulated image center over encoder rows within the frozen anchor radius",
+    "maximum_frame_to_joint_delta_ms": 30.0,
+    "outcome_input": false,
+    "parameter_fit": false,
+    "signal": "AprilTag center trajectory aligned to nearest follower encoder sample on host monotonic time",
+    "simulated_signal": "same measured joint rows projected through the frozen current CAD and historical camera/tag-mount candidate"
+  },
+  "physical_follower_torque_enabled_at_close": false,
+  "physical_model_mapping_approved": false,
+  "physical_motion_already_completed": true,
+  "physical_task_attempts": 0,
+  "proof_class": "prospective_action_frozen_physical_no_contact_composite_mapping_heldout",
+  "schema_version": "sim2claw.calibration_graph_composite_heldout_receipt.v1",
+  "sources": {
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "execution_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/stage-1/execution_receipt.json",
+      "sha256": "ef0d257151fd3f58f1c5e5659bb2d3ffdf5a339fe90352a499b070a061809b77"
+    },
+    "packet": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/packet.json",
+      "sha256": "d7f095627c4735ab4b6132aa6ff4666ca57372468837031a93ecc3fd887eb930"
+    },
+    "review": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/review.json",
+      "sha256": "81b2524acd777e51497151ddbae09c81cdbe2b1a15c931572af45fdd99b590e1"
+    },
+    "static_candidate": {
+      "path": "runs/pi-link-tag-calibration/20260727-current-session-articulated-cad-bundle-v2/receipt.json",
+      "sha256": "a6c14a319f1cd57c77f69d04b2fe732fdcd5aa9c0f0d1e249b77454c81520f9d"
+    },
+    "static_contract": {
+      "path": "configs/evaluations/current_session_pi_articulated_cad_bundle_v2.json",
+      "sha256": "183b6c0c511d393bd0249ecdf00f9b1c00f1b9ab61dc5c7a8aafcd33da7049ce"
+    }
+  },
+  "status": "composite_heldout_rejected_no_automatic_promotion",
+  "tag_results": {
+    "1": {
+      "body": "left_upper_arm",
+      "checks": {
+        "correlation": true,
+        "reference_sample_count": true,
+        "residual_max": true,
+        "residual_rmse": true,
+        "sample_count": true,
+        "signal_ratio": true,
+        "simulated_signal": true
+      },
+      "metrics": {
+        "displacement_residual_max_px": 3.2217230096775578,
+        "displacement_residual_rmse_px": 1.4318145298610043,
+        "flattened_displacement_correlation": 0.9801051414167526,
+        "observed_displacement_rms_px": 4.175240403709945,
+        "observed_over_simulated_signal_ratio": 0.840535616256249,
+        "reference_sample_count": 59,
+        "sample_count": 259,
+        "simulated_displacement_rms_px": 4.967356912615426
+      },
+      "passed": true
+    },
+    "2": {
+      "body": "left_wrist",
+      "checks": {
+        "correlation": false,
+        "reference_sample_count": true,
+        "residual_max": true,
+        "residual_rmse": true,
+        "sample_count": true,
+        "signal_ratio": true,
+        "simulated_signal": true
+      },
+      "metrics": {
+        "displacement_residual_max_px": 7.139843900073683,
+        "displacement_residual_rmse_px": 5.196287679637153,
+        "flattened_displacement_correlation": -0.5259963779572117,
+        "observed_displacement_rms_px": 2.3300001371639953,
+        "observed_over_simulated_signal_ratio": 0.6672291330060496,
+        "reference_sample_count": 59,
+        "sample_count": 260,
+        "simulated_displacement_rms_px": 3.4920539615329864
+      },
+      "passed": false
+    }
+  }
+}

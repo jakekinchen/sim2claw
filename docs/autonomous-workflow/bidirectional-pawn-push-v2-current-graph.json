@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC03",
-    "node_id": "checkpoint:calibration-graph-composite-heldout-v1-frozen",
-    "queue_status": "ACTIVE_CC03_COMPOSITE_HELDOUT_EVALUATE",
-    "resume_action": "execute_calibration_graph_composite_heldout_v1_exactly_once",
+    "node_id": "checkpoint:calibration-graph-downstream-rotation-route-frozen",
+    "queue_status": "ACTIVE_CC03_DOWNSTREAM_ROTATION_PACKET_COMPILE",
+    "resume_action": "compile_review_downstream_rotation_packet",
     "resume_authorized": true,
-    "status": "preregistered_before_exactly_once_heldout_evaluation"
+    "status": "preregistered_before_packet_compile"
   },
   "authority": {
     "camera_open": false,
@@ -82,27 +82,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 177,
+    "edges": 179,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
-      "evaluated-on": 48,
+      "evaluated-on": 49,
       "fitted-on": 4,
-      "generated-from": 109,
+      "generated-from": 110,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 171,
+    "nodes": 173,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 111,
+      "checkpoint": 112,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 33,
+      "evaluator_verdict": 34,
       "evidence": 6,
       "intervention": 1,
       "mechanism": 3,
@@ -281,6 +281,17 @@
       },
       "source": "checkpoint:calibration-graph-composite-probe-v2-route-frozen",
       "target": "verdict:calibration-graph-composite-probe-v1-compile-reject",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "depth_required": false,
+        "gauge_free_rotation_magnitude": true,
+        "physical_task_attempts": 0,
+        "single_mechanism_specific_successor": true
+      },
+      "source": "checkpoint:calibration-graph-downstream-rotation-route-frozen",
+      "target": "verdict:calibration-graph-composite-heldout-v1-reject",
       "type": "generated-from"
     },
     {
@@ -1682,6 +1693,16 @@
     },
     {
       "metadata": {
+        "mapping_approval": false,
+        "upper_arm_tag_passed": true,
+        "wrist_tag_passed": false
+      },
+      "source": "verdict:calibration-graph-composite-heldout-v1-reject",
+      "target": "checkpoint:calibration-graph-composite-heldout-v1-frozen",
+      "type": "evaluated-on"
+    },
+    {
+      "metadata": {
         "packet_written": false,
         "physical_motion": false,
         "safety_envelope_preserved": true
@@ -2085,7 +2106,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "031d161642fe895fa310308494dac95f78895a1b28ae06031ea6adbb6b17b4b1",
+  "graph_digest": "26e819cdea2e99b642997522bb3bd1ce3c39d1d82da051720dac3777911d6321",
   "node_types": [
     "workcell",
     "session",
@@ -2304,6 +2325,32 @@
         },
         "proof_class": "prospective_static_safe_no_contact_composite_mapping_heldout",
         "sha256": "5cf70e332236729dbf5cd1562c8992947f59592e0590b33148654b24b47e69df"
+      },
+      "status": "preregistered_before_packet_compile",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "depth_required": false,
+        "evaluator_source_binding": "calibration_graph_d405_rotation_evaluator",
+        "maximum_joint_excursion_degrees": 3.0,
+        "physical_task_attempts": 0,
+        "returns_to_exact_start_each_stage": true,
+        "source_binding_id": "calibration_graph_downstream_rotation_route",
+        "stage_count": 2
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:calibration-graph-downstream-rotation-route-frozen",
+      "label": "Elbow-only and wrist-only D405 rotation heldout route frozen",
+      "proof_class": "prospective_static_safe_no_contact_downstream_rotation_mapping_heldout",
+      "source": {
+        "path": "configs/hardware/calibration_graph_downstream_rotation_heldout_tricam_v1.json",
+        "payload_contract": {
+          "route_id": "calibration_graph_downstream_rotation_heldout_tricam_20260729_v1",
+          "schema_version": "sim2claw.wrist_view_reposition_route.v1"
+        },
+        "proof_class": "prospective_static_safe_no_contact_downstream_rotation_mapping_heldout",
+        "sha256": "370b3daba18a1022b4cc2911f15591c889fe3917a35e5b8ace92bfbc795c1380"
       },
       "status": "preregistered_before_packet_compile",
       "type": "checkpoint"
@@ -3180,7 +3227,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "e053d105db65684676d45f39572645eb2fa831868c4c91a99d3b1e16d94fd456"
+        "sha256": "9d9b2fec96ea901f0549a22d40c04633bbb5feb6840f781b67fd3c1bc9405407"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6195,6 +6242,33 @@
     },
     {
       "data": {
+        "broad_camera_or_base_rewrite_supported": false,
+        "physical_model_mapping_approved": false,
+        "physical_task_attempts": 0,
+        "receipt_source_binding": "calibration_graph_composite_heldout_v1_receipt",
+        "source_binding_id": "calibration_graph_composite_heldout_v1_closeout",
+        "upper_arm_tag_passed": true,
+        "wrist_tag_passed": false
+      },
+      "evaluator_identity": "4c38902e8b8168fd1ef7d300a82951575db28801d748ae064ff6534dd744a59f",
+      "id": "verdict:calibration-graph-composite-heldout-v1-reject",
+      "label": "Composite heldout rejects wrist-tag projection correlation",
+      "proof_class": "prospective_composite_heldout_negative_with_mechanism_localization",
+      "source": {
+        "path": "configs/decisions/calibration_graph_composite_heldout_v1_closeout.json",
+        "payload_contract": {
+          "proof_class": "prospective_composite_heldout_negative_with_mechanism_localization",
+          "schema_version": "sim2claw.calibration_graph_composite_heldout_closeout.v1",
+          "status": "projection_tag_geometry_confounded_downstream_rotation_heldout_required"
+        },
+        "proof_class": "prospective_composite_heldout_negative_with_mechanism_localization",
+        "sha256": "8bb6f4c0295449c19e6423338c5e52bcde316d2ebb036052df6674d8170ba3f4"
+      },
+      "status": "projection_tag_geometry_confounded_downstream_rotation_heldout_required",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "packet_written": false,
         "physical_motion": false,
         "physical_task_attempts": 0,
@@ -8379,7 +8453,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "e053d105db65684676d45f39572645eb2fa831868c4c91a99d3b1e16d94fd456",
+      "source_sha256": "9d9b2fec96ea901f0549a22d40c04633bbb5feb6840f781b67fd3c1bc9405407",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -8861,10 +8935,41 @@
       "source_binding": "calibration_graph_composite_heldout_v1_contract",
       "source_sha256": "4c38902e8b8168fd1ef7d300a82951575db28801d748ae064ff6534dd744a59f",
       "status": "preregistered_before_exactly_once_heldout_evaluation"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_COMPOSITE_HELDOUT_V1_REJECT",
+      "node_ids_added": [
+        "verdict:calibration-graph-composite-heldout-v1-reject"
+      ],
+      "revision": 152,
+      "source_binding": "calibration_graph_composite_heldout_v1_closeout",
+      "source_sha256": "8bb6f4c0295449c19e6423338c5e52bcde316d2ebb036052df6674d8170ba3f4",
+      "status": "projection_tag_geometry_confounded_downstream_rotation_heldout_required"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_DOWNSTREAM_ROTATION_ROUTE_FROZEN",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-downstream-rotation-route-frozen"
+      ],
+      "revision": 153,
+      "source_binding": "calibration_graph_downstream_rotation_route",
+      "source_sha256": "370b3daba18a1022b4cc2911f15591c889fe3917a35e5b8ace92bfbc795c1380",
+      "status": "preregistered_before_packet_compile"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
   "source_identities": [
+    {
+      "id": "calibration_graph_composite_heldout_v1_closeout",
+      "path": "configs/decisions/calibration_graph_composite_heldout_v1_closeout.json",
+      "payload_contract": {
+        "proof_class": "prospective_composite_heldout_negative_with_mechanism_localization",
+        "schema_version": "sim2claw.calibration_graph_composite_heldout_closeout.v1",
+        "status": "projection_tag_geometry_confounded_downstream_rotation_heldout_required"
+      },
+      "proof_class": "prospective_composite_heldout_negative_with_mechanism_localization",
+      "sha256": "8bb6f4c0295449c19e6423338c5e52bcde316d2ebb036052df6674d8170ba3f4"
+    },
     {
       "id": "calibration_graph_composite_heldout_v1_contract",
       "path": "configs/evaluations/calibration_graph_composite_heldout_v1.json",
@@ -8875,6 +8980,18 @@
       },
       "proof_class": "prospective_action_frozen_physical_no_contact_composite_mapping_heldout",
       "sha256": "4c38902e8b8168fd1ef7d300a82951575db28801d748ae064ff6534dd744a59f"
+    },
+    {
+      "id": "calibration_graph_composite_heldout_v1_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/evaluation/receipt.json",
+      "payload_contract": {
+        "heldout_passed": false,
+        "physical_model_mapping_approved": false,
+        "schema_version": "sim2claw.calibration_graph_composite_heldout_receipt.v1",
+        "status": "composite_heldout_rejected_no_automatic_promotion"
+      },
+      "proof_class": "prospective_action_frozen_physical_no_contact_composite_mapping_heldout",
+      "sha256": "5b10d59d65248895943f0f4efbb88687de1bd25b8f889880ef8b48a6af81041a"
     },
     {
       "id": "calibration_graph_composite_probe_route",
@@ -8939,6 +9056,22 @@
       },
       "proof_class": "prospective_static_safe_no_contact_composite_mapping_heldout",
       "sha256": "5cf70e332236729dbf5cd1562c8992947f59592e0590b33148654b24b47e69df"
+    },
+    {
+      "id": "calibration_graph_d405_rotation_evaluator",
+      "path": "tools/evaluate_calibration_graph_d405_rotation_heldout_v1.py",
+      "proof_class": "prospective_gauge_free_d405_fixed_tag_relative_rotation_evaluator",
+      "sha256": "a7628f277c502e6f8ed3113f953ef0b554778322ed1ee983705e4c08c00f85c6"
+    },
+    {
+      "id": "calibration_graph_downstream_rotation_route",
+      "path": "configs/hardware/calibration_graph_downstream_rotation_heldout_tricam_v1.json",
+      "payload_contract": {
+        "route_id": "calibration_graph_downstream_rotation_heldout_tricam_20260729_v1",
+        "schema_version": "sim2claw.wrist_view_reposition_route.v1"
+      },
+      "proof_class": "prospective_static_safe_no_contact_downstream_rotation_mapping_heldout",
+      "sha256": "370b3daba18a1022b4cc2911f15591c889fe3917a35e5b8ace92bfbc795c1380"
     },
     {
       "id": "calibration_graph_v1_closeout",
@@ -9605,7 +9738,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "e053d105db65684676d45f39572645eb2fa831868c4c91a99d3b1e16d94fd456"
+      "sha256": "9d9b2fec96ea901f0549a22d40c04633bbb5feb6840f781b67fd3c1bc9405407"
     },
     {
       "id": "current_task_scene_labels",

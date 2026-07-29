@@ -1,0 +1,101 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "calibration_graph_downstream_rotation_heldout_tricam_20260729_v1",
+  "samples_per_stage": 641,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_35s_v1.json",
+    "contract_sha256": "744a0c63c1d7282265299397c4a9bf3083bb3c35899878aa5480f3362feeef23"
+  },
+  "reviewed_anchor_degrees": [
+    5.802197802197802,
+    -85.01098901098901,
+    99.38461538461539,
+    -18.857142857142858,
+    -103.34065934065934,
+    2.375296912114014
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        5.802197802197802,
+        -85.01098901098901,
+        96.38461538461539,
+        -18.857142857142858,
+        -103.34065934065934,
+        2.375296912114014
+      ],
+      [
+        5.802197802197802,
+        -85.01098901098901,
+        99.38461538461539,
+        -18.857142857142858,
+        -103.34065934065934,
+        2.375296912114014
+      ]
+    ],
+    [
+      [
+        5.802197802197802,
+        -85.01098901098901,
+        99.38461538461539,
+        -15.857142857142858,
+        -103.34065934065934,
+        2.375296912114014
+      ],
+      [
+        5.802197802197802,
+        -85.01098901098901,
+        99.38461538461539,
+        -18.857142857142858,
+        -103.34065934065934,
+        2.375296912114014
+      ]
+    ]
+  ],
+  "geometric_derivation": {
+    "purpose": "fresh downstream joint-map heldout after the composite Pi wrist-tag projection factor was confounded",
+    "stage_order": [
+      "elbow_flex_minus_3_degrees_exact_return",
+      "wrist_flex_plus_3_degrees_exact_return"
+    ],
+    "maximum_body_excursion_degrees": 3.0,
+    "returns_to_exact_start_each_stage": true,
+    "static_collision_preview": {
+      "outcome_blind": true,
+      "stage_action_sha256": [
+        "afda88ae1117862831bc7b4fd4fe183df62cec135dff07ff98a5683ce93d2d13",
+        "d5d1aaffad6722f33377b01611662e48f2115a0b68eeceb843b3ca3cff7b8468"
+      ],
+      "observed_contact_pairs": [],
+      "dynamic_replay_used": false,
+      "new_physical_images_or_joint_traces_opened": false
+    },
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+    "known_safe_contact_envelope_path": "configs/evaluations/wrist_view_known_safe_self_contact_envelope_v1.json",
+    "known_safe_contact_envelope_sha256": "d2506d5b1adf3c193142d17cb4ddd6e59fcf4c5cbda19cb802f31e3e38822e6b"
+  },
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "two separate C922 D405 Pi single-joint exact-return stages",
+    "target_selection": "Elbow and wrist flex are the only unresolved downstream mapping channels. Each stage changes one joint by three degrees in a statically collision-free direction and returns exactly to the fresh torque-off anchor.",
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "return_to_stable_anchor_before_torque_off": true,
+    "evidence_limits": {
+      "prospective_downstream_rotation_mapping_heldout": true,
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "simultaneous_C922_D405_Pi_capture_required": true,
+      "pawn_contact": false,
+      "pawn_task_success": false,
+      "camera_exposure_synchronization": false,
+      "depth_required": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false
+    }
+  }
+}

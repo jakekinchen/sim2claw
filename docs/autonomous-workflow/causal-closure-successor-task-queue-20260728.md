@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_COMPOSITE_HELDOUT_EVALUATE`
+Status: `ACTIVE_CC03_DOWNSTREAM_ROTATION_PACKET_COMPILE`
 
 Created: `2026-07-28`
 
@@ -507,6 +507,26 @@ Current state:
   It compares constant-offset-invariant Pi AprilTag motion for tags `1` and
   `2` against the frozen CAD projection along the exact measured trajectory.
   It may not fit parameters or automatically approve mapping.
+- Composite heldout V1 rejected only the wrist-tag correlation factor. The
+  upper-arm tag passed at `1.431815 px` RMSE and `0.980105` correlation; the
+  wrist tag reported `5.196288 px` RMSE and `-0.525996` correlation. Receipt
+  SHA-256
+  `5b10d59d65248895943f0f4efbb88687de1bd25b8f889880ef8b48a6af81041a`;
+  closeout SHA-256
+  `8bb6f4c0295449c19e6423338c5e52bcde316d2ebb036052df6674d8170ba3f4`.
+- The outcome-informed, diagnostic-only D405 relative-rotation check on that
+  capture found `0.959153` observed/simulated rotation RMS ratio,
+  `0.646797 deg` RMSE, `1.418678 deg` maximum error, and `0.796500`
+  correlation. Together with the passing proximal tag and prior D405
+  wrist-motion witness, this rejects a broad camera/base rewrite and points to
+  Pi wrist-tag projection/mount confounding.
+- A distinct elbow-only then wrist-only three-degree exact-return tricam route
+  is prospectively frozen at SHA-256
+  `370b3daba18a1022b4cc2911f15591c889fe3917a35e5b8ace92bfbc795c1380`.
+  Both stages pass the exact static collision screen with action SHA-256 values
+  `afda88ae...` and `d5d1aaff...`. The gauge-free D405 fixed-tag relative
+  rotation evaluator implementation is frozen at SHA-256
+  `a7628f277c502e6f8ed3113f953ef0b554778322ed1ee983705e4c08c00f85c6`.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -548,7 +568,7 @@ This authorization:
 
 Next step:
 
-- Execute the frozen composite-heldout evaluator exactly once. Preserve its
-  result, reconcile it with the prior differential and hold failures, and make
-  only one mechanism-specific mapping decision. Do not touch a pawn or count a
-  task attempt.
+- Compile and independently review the downstream rotation route. If admitted,
+  execute its two stages once each with exact-return and torque-off receipts,
+  then freeze the evaluator contract before opening either new D405 stream.
+  Do not touch a pawn or count a task attempt.
