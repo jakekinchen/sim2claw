@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.canonical_proxy_contact_temporal_postexecution_closeout.v1",
+  "decision_id": "canonical-proxy-contact-temporal-20260728-v2-postexecution-closeout",
+  "status": "closed_postexecution_summary_serialization_abort_outputs_quarantined",
+  "proof_class": "nonadmissible_uninspected_dynamic_outputs_without_summary_receipt",
+  "contract": {
+    "path": "configs/evaluations/canonical_proxy_contact_temporal_v2.json",
+    "sha256": "a911f2a3b1945176949eff6de775f8602b656d919f6273262faedc0fc82fa496"
+  },
+  "failure": {
+    "stage": "summary_receipt_serialization_after_episode_and_trace_generation",
+    "error": "compact JSON adapter implemented loads but omitted the pass-through dumps method required by the frozen temporal runner",
+    "output_directory_created": true,
+    "receipt_created": false,
+    "generated_file_count": 104,
+    "generated_total_bytes": 125545280,
+    "path_and_content_hash_aggregate_sha256": "8f9b470dea762611dbfb9537f6c20d1b3393a300e8238380f3a471845dc32412",
+    "outcome_files_inspected_or_parsed": false,
+    "outcomes_used_for_change": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "quarantine": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-proxy-contact-temporal-v2",
+    "admissible_evidence": false,
+    "may_authorize_or_select": false,
+    "preserved_for_audit": true
+  },
+  "successor_rule": "V3 may add only a pass-through JSON dumps method and bind this closeout. Collision mechanism, exact actions, plants, reset variants, gates, and all authority remain unchanged. V2 output contents remain uninspected.",
+  "authority": {
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

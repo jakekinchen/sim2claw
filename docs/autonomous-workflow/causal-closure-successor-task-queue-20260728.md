@@ -288,6 +288,17 @@ Current state:
   at `a911f2a3b1945176949eff6de775f8602b656d919f6273262faedc0fc82fa496`.
   The collision mechanism, exact actions, plants, variants, gates, and
   authority are unchanged from V1.
+- V2 generated its episode and trace files but failed before its summary
+  receipt because the compact JSON adapter omitted a pass-through serializer.
+  Its `104` files / `125545280` bytes are uninspected and quarantined under
+  aggregate SHA-256
+  `8f9b470dea762611dbfb9537f6c20d1b3393a300e8238380f3a471845dc32412`.
+  Closeout SHA-256
+  `24e9eb55c93734e8bdde0c06b2fd2a11462e92236dc53be48c521b2aae89c5ef`
+  grants no result authority.
+- V3 adds only the missing JSON serialization pass-through and is frozen at
+  `7edc2866728d6787548cb911c4d4c168973e7acf6e28800fdc19596e5cb03156`.
+  No V2 outcome was parsed or used.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -330,7 +341,7 @@ This authorization:
 
 Next step:
 
-- Commit and push the V1 pre-execution closeout plus V2 proxy-only collision
-  challenger freeze, then execute the V2 immutable challenger exactly once.
+- Commit and push the V2 post-execution quarantine plus V3 proxy-only
+  challenger freeze, then execute the V3 immutable challenger exactly once.
   Preserve both baseline and challenger outcomes; a challenger pass does not
   itself promote geometry, approve mapping, or open hardware.

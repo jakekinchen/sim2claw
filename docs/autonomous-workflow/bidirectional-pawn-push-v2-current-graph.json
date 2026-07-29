@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC02",
-    "node_id": "checkpoint:canonical-proxy-contact-temporal-v2-frozen",
+    "node_id": "checkpoint:canonical-proxy-contact-temporal-v3-frozen",
     "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
-    "resume_action": "execute_canonical_proxy_contact_temporal_v2_exactly_once",
+    "resume_action": "execute_canonical_proxy_contact_temporal_v3_exactly_once",
     "resume_authorized": true,
-    "status": "preregistered_before_exactly_once_proxy_contact_v2_replay"
+    "status": "preregistered_before_exactly_once_proxy_contact_v3_replay"
   },
   "authority": {
     "camera_open": false,
@@ -82,23 +82,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 137,
+    "edges": 139,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
-      "evaluated-on": 29,
+      "evaluated-on": 30,
       "fitted-on": 4,
-      "generated-from": 88,
+      "generated-from": 89,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 131,
+    "nodes": 133,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 83,
+      "checkpoint": 85,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
@@ -271,6 +271,27 @@
       },
       "source": "checkpoint:canonical-proxy-contact-temporal-v2-frozen",
       "target": "checkpoint:canonical-proxy-contact-temporal-v1-preexecution-abort",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "admissible_evidence": false,
+        "outcome_inspected": false,
+        "physical_motion": false,
+        "receipt_created": false
+      },
+      "source": "checkpoint:canonical-proxy-contact-temporal-v2-quarantined",
+      "target": "checkpoint:canonical-proxy-contact-temporal-v2-frozen",
+      "type": "evaluated-on"
+    },
+    {
+      "metadata": {
+        "outcome_relevant_change": false,
+        "physical_motion": false,
+        "serializer_only_successor": true
+      },
+      "source": "checkpoint:canonical-proxy-contact-temporal-v3-frozen",
+      "target": "checkpoint:canonical-proxy-contact-temporal-v2-quarantined",
       "type": "generated-from"
     },
     {
@@ -1671,7 +1692,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "a5a2ab41c44cb3c91101198a79e070db55bfbe9dd6a765cfa542af347ce5334d",
+  "graph_digest": "7dc4efb026751cc11d13c940f6f3cdf05624a4028a01b4dac1074f1b3255c322",
   "node_types": [
     "workcell",
     "session",
@@ -1881,6 +1902,63 @@
     },
     {
       "data": {
+        "admissible_evidence": false,
+        "generated_file_count": 104,
+        "generated_total_bytes": 125545280,
+        "outcomes_inspected": false,
+        "outcomes_used_for_change": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "receipt_created": false,
+        "source_binding_id": "canonical_proxy_contact_temporal_v2_postexecution_closeout"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:canonical-proxy-contact-temporal-v2-quarantined",
+      "label": "Canonical proxy-only challenger V2 outputs quarantined",
+      "proof_class": "nonadmissible_uninspected_dynamic_outputs_without_summary_receipt",
+      "source": {
+        "path": "configs/decisions/canonical_proxy_contact_temporal_v2_postexecution_closeout.json",
+        "payload_contract": {
+          "proof_class": "nonadmissible_uninspected_dynamic_outputs_without_summary_receipt",
+          "schema_version": "sim2claw.canonical_proxy_contact_temporal_postexecution_closeout.v1",
+          "status": "closed_postexecution_summary_serialization_abort_outputs_quarantined"
+        },
+        "proof_class": "nonadmissible_uninspected_dynamic_outputs_without_summary_receipt",
+        "sha256": "24e9eb55c93734e8bdde0c06b2fd2a11462e92236dc53be48c521b2aae89c5ef"
+      },
+      "status": "closed_postexecution_summary_serialization_abort_outputs_quarantined",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "evaluator_v2_freeze_authorized": false,
+        "mapping_calibration_approved": false,
+        "mechanism_actions_plants_variants_gates_unchanged": true,
+        "outcome_relevant_change": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "serializer_only_change_from_v2": true,
+        "source_binding_id": "canonical_proxy_contact_temporal_v3_contract"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:canonical-proxy-contact-temporal-v3-frozen",
+      "label": "Canonical proxy-only jaw collision challenger V3 frozen",
+      "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+      "source": {
+        "path": "configs/evaluations/canonical_proxy_contact_temporal_v3.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+          "schema_version": "sim2claw.canonical_proxy_contact_temporal.v3",
+          "status": "frozen_after_v2_summary_serialization_abort_before_proxy_only_replay"
+        },
+        "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+        "sha256": "7edc2866728d6787548cb911c4d4c168973e7acf6e28800fdc19596e5cb03156"
+      },
+      "status": "preregistered_before_exactly_once_proxy_contact_v3_replay",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "mapping_calibration_approved": false,
         "official_attempts": 0,
         "outcomes_used_for_change": false,
@@ -1960,7 +2038,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "0891525e5234282635536f44f5774b520d196609c8da8d94c4cb9ad785327f47"
+        "sha256": "25487d211028aaa49d62a301d79db83bd2d1ee8838ff8e9c8e8804f07ee1a82f"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6796,7 +6874,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "0891525e5234282635536f44f5774b520d196609c8da8d94c4cb9ad785327f47",
+      "source_sha256": "25487d211028aaa49d62a301d79db83bd2d1ee8838ff8e9c8e8804f07ee1a82f",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -6878,6 +6956,26 @@
       "source_binding": "canonical_proxy_contact_temporal_v2_contract",
       "source_sha256": "a911f2a3b1945176949eff6de775f8602b656d919f6273262faedc0fc82fa496",
       "status": "preregistered_before_exactly_once_proxy_contact_v2_replay"
+    },
+    {
+      "event_id": "CANONICAL_PROXY_CONTACT_TEMPORAL_V2_QUARANTINED",
+      "node_ids_added": [
+        "checkpoint:canonical-proxy-contact-temporal-v2-quarantined"
+      ],
+      "revision": 112,
+      "source_binding": "canonical_proxy_contact_temporal_v2_postexecution_closeout",
+      "source_sha256": "24e9eb55c93734e8bdde0c06b2fd2a11462e92236dc53be48c521b2aae89c5ef",
+      "status": "closed_postexecution_summary_serialization_abort_outputs_quarantined"
+    },
+    {
+      "event_id": "CANONICAL_PROXY_CONTACT_TEMPORAL_V3_FROZEN",
+      "node_ids_added": [
+        "checkpoint:canonical-proxy-contact-temporal-v3-frozen"
+      ],
+      "revision": 113,
+      "source_binding": "canonical_proxy_contact_temporal_v3_contract",
+      "source_sha256": "7edc2866728d6787548cb911c4d4c168973e7acf6e28800fdc19596e5cb03156",
+      "status": "preregistered_before_exactly_once_proxy_contact_v3_replay"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -6971,6 +7069,28 @@
       "sha256": "a911f2a3b1945176949eff6de775f8602b656d919f6273262faedc0fc82fa496"
     },
     {
+      "id": "canonical_proxy_contact_temporal_v2_postexecution_closeout",
+      "path": "configs/decisions/canonical_proxy_contact_temporal_v2_postexecution_closeout.json",
+      "payload_contract": {
+        "proof_class": "nonadmissible_uninspected_dynamic_outputs_without_summary_receipt",
+        "schema_version": "sim2claw.canonical_proxy_contact_temporal_postexecution_closeout.v1",
+        "status": "closed_postexecution_summary_serialization_abort_outputs_quarantined"
+      },
+      "proof_class": "nonadmissible_uninspected_dynamic_outputs_without_summary_receipt",
+      "sha256": "24e9eb55c93734e8bdde0c06b2fd2a11462e92236dc53be48c521b2aae89c5ef"
+    },
+    {
+      "id": "canonical_proxy_contact_temporal_v3_contract",
+      "path": "configs/evaluations/canonical_proxy_contact_temporal_v3.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+        "schema_version": "sim2claw.canonical_proxy_contact_temporal.v3",
+        "status": "frozen_after_v2_summary_serialization_abort_before_proxy_only_replay"
+      },
+      "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+      "sha256": "7edc2866728d6787548cb911c4d4c168973e7acf6e28800fdc19596e5cb03156"
+    },
+    {
       "id": "canonical_seeded_static_v2_closeout",
       "path": "configs/decisions/canonical_seeded_action_static_v2_closeout.json",
       "payload_contract": {
@@ -7041,7 +7161,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "0891525e5234282635536f44f5774b520d196609c8da8d94c4cb9ad785327f47"
+      "sha256": "25487d211028aaa49d62a301d79db83bd2d1ee8838ff8e9c8e8804f07ee1a82f"
     },
     {
       "id": "current_task_scene_labels",

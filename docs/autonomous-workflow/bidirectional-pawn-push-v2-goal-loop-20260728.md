@@ -131,6 +131,11 @@ Confirmed:
   `a6ec6ab6b5b434f083b6a13f180d25888a834d2c73828e3d63652fc2f00daa39`.
 - The outcome-identical V2 wiring successor is frozen at
   `a911f2a3b1945176949eff6de775f8602b656d919f6273262faedc0fc82fa496`.
+- V2 generated files but failed at summary serialization. They remain
+  uninspected and non-admissible under closeout
+  `24e9eb55c93734e8bdde0c06b2fd2a11462e92236dc53be48c521b2aae89c5ef`.
+- V3 adds only the serializer pass-through and is frozen at
+  `7edc2866728d6787548cb911c4d4c168973e7acf6e28800fdc19596e5cb03156`.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -177,7 +182,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC02 exact-action proxy-only jaw collision challenger after preserved temporal rejection and witness.
 Completed: CC00, CC00A, CC01.
-Evidence: temporal negative 727ecd64...; contact witness 89ecb1d2...; V1 binding abort a6ec6ab6...; V2 proxy freeze a911f2a3....
+Evidence: temporal negative 727ecd64...; contact witness 89ecb1d2...; V2 quarantine 24e9eb55...; V3 proxy freeze 7edc2866....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -185,7 +190,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
 Blockers: the frozen action set is dynamically rejected; physical/model mapping remains unapproved.
-Next step: commit/push the V1 pre-execution closeout and V2 proxy-only freeze, then execute V2 exactly once.
+Next step: commit/push the V2 quarantine and V3 proxy-only freeze, then execute V3 exactly once.
 ```
 
 ## Physical Authority Boundaries

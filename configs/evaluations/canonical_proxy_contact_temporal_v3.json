@@ -1,0 +1,90 @@
+{
+  "schema_version": "sim2claw.canonical_proxy_contact_temporal.v3",
+  "contract_id": "canonical-proxy-contact-temporal-20260728-v3",
+  "status": "frozen_after_v2_summary_serialization_abort_before_proxy_only_replay",
+  "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+  "predecessor_contract": {
+    "path": "configs/evaluations/canonical_proxy_contact_temporal_v2.json",
+    "sha256": "a911f2a3b1945176949eff6de775f8602b656d919f6273262faedc0fc82fa496"
+  },
+  "predecessor_closeout": {
+    "path": "configs/decisions/canonical_proxy_contact_temporal_v2_postexecution_closeout.json",
+    "sha256": "24e9eb55c93734e8bdde0c06b2fd2a11462e92236dc53be48c521b2aae89c5ef"
+  },
+  "base_temporal_contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+    "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+  },
+  "temporal_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-temporal-v2/receipt.json",
+    "sha256": "727ecd642681a6cb4a85327ccd95e4637df60e3ebdf4e2acd49e26e8f2e526ff"
+  },
+  "temporal_closeout": {
+    "path": "configs/decisions/canonical_seeded_action_temporal_v2_closeout.json",
+    "sha256": "98e3154e65a778c5f77e52cfc84b12e6886030a0bff7a4d66ac43fb8f184bfaf"
+  },
+  "contact_witness_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-contact-witness-v1/receipt.json",
+    "sha256": "89ecb1d20b2176fb0e890b1afda128c8f9eb577cc519277b171361626c4f5bc2"
+  },
+  "model_source": {
+    "path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+    "sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+  },
+  "temporal_implementation": {
+    "path": "src/sim2claw/canonical_seeded_action_temporal.py",
+    "sha256": "a6321b32553b37492bef01ae0e4ed0d8fafae7b8f86f74246b1c4f1feee5f697"
+  },
+  "challenger_implementation": {
+    "path": "src/sim2claw/canonical_proxy_contact_temporal.py",
+    "sha256": "7121e014fe80fa96dc9326631923e64d2e3de4a6224d891b4681b365994f3a86"
+  },
+  "mechanism_change": {
+    "mechanism_id": "jaw_collision_mesh_to_named_proxy_only_v1",
+    "disable_collision_meshes_on_bodies": [
+      "left_gripper",
+      "left_moving_jaw_so101_v1"
+    ],
+    "preserve_named_collision_primitives": true,
+    "expected_disabled_mesh_assets": [
+      "left_moving_jaw_so101_gripper_part0_v1",
+      "left_moving_jaw_so101_gripper_part1_v1",
+      "left_wrist_roll_follower_so101_gripper_part0_v1"
+    ],
+    "other_geometry_unchanged": true,
+    "mass_friction_damping_timing_and_actions_unchanged": true,
+    "calibrated_physical_geometry": false,
+    "diagnostic_challenger": true
+  },
+  "unchanged_from_baseline": {
+    "four_action_paths_and_sha256s": true,
+    "direction_labels": true,
+    "direct_target_plant": true,
+    "diagnostic_uncalibrated_0p11_second_zoh_plant": true,
+    "five_reset_variants": true,
+    "minimum_36p025_mm_progress": true,
+    "contact_exclusion_collision_no_lift_and_camera_gates": true,
+    "two_families_per_direction": true,
+    "observable_episode_channels_and_thresholds": true,
+    "calibrated_joint_ranges": true,
+    "registration": true,
+    "pawn_geometry": true,
+    "board_geometry": true,
+    "mass_friction_damping_and_actuation": true,
+    "physical_authority_false": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260728-canonical-proxy-contact-temporal-v3",
+  "authority": {
+    "dynamic_simulation": true,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospectively frozen V3 one-mechanism simulator challenger after V2 completed episode and trace generation but failed summary serialization. V2 outputs remain uninspected and quarantined. V3 adds only the required pass-through JSON dumps method. The collision mechanism, exact actions, plants, variants, thresholds, object geometry, dynamics, and physical authority remain unchanged. A pass is diagnostic and cannot calibrate physical geometry, promote a simulator, approve mapping, freeze evaluator V2, open hardware, or support transfer."
+}

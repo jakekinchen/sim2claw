@@ -17,7 +17,7 @@ def main() -> None:
         "--contract",
         type=Path,
         default=REPO_ROOT
-        / "configs/evaluations/canonical_proxy_contact_temporal_v2.json",
+        / "configs/evaluations/canonical_proxy_contact_temporal_v3.json",
     )
     parser.add_argument("--output-directory", type=Path)
     args = parser.parse_args()

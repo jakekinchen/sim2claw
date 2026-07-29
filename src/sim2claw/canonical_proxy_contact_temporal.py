@@ -61,6 +61,7 @@ class _ResolvedJson:
             in {
                 "sim2claw.canonical_proxy_contact_temporal.v1",
                 "sim2claw.canonical_proxy_contact_temporal.v2",
+                "sim2claw.canonical_proxy_contact_temporal.v3",
             }
         ):
             if parsed != self._compact:
@@ -78,6 +79,9 @@ class _ResolvedJson:
             ]
             return resolved
         return parsed
+
+    def dumps(self, value: Any, *args: Any, **kwargs: Any) -> str:
+        return json.dumps(value, *args, **kwargs)
 
 
 def replay(
@@ -115,11 +119,17 @@ def replay(
             "predecessor_contract",
             "preexecution_closeout",
         }
+    if schema_version == "sim2claw.canonical_proxy_contact_temporal.v3":
+        expected_keys |= {
+            "predecessor_contract",
+            "predecessor_closeout",
+        }
     if (
         schema_version
         not in {
             "sim2claw.canonical_proxy_contact_temporal.v1",
             "sim2claw.canonical_proxy_contact_temporal.v2",
+            "sim2claw.canonical_proxy_contact_temporal.v3",
         }
         or set(compact) != expected_keys
         or not all(compact["unchanged_from_baseline"].values())
@@ -145,6 +155,9 @@ def replay(
         _bound(compact[key])
     if schema_version == "sim2claw.canonical_proxy_contact_temporal.v2":
         for key in ("predecessor_contract", "preexecution_closeout"):
+            _bound(compact[key])
+    if schema_version == "sim2claw.canonical_proxy_contact_temporal.v3":
+        for key in ("predecessor_contract", "predecessor_closeout"):
             _bound(compact[key])
     if output_directory != (REPO_ROOT / compact["output_directory"]).resolve():
         raise CanonicalProxyContactTemporalError(

@@ -31,12 +31,12 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "CC02"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:canonical-proxy-contact-temporal-v2-frozen",
+        "node_id": "checkpoint:canonical-proxy-contact-temporal-v3-frozen",
         "milestone_id": "CC02",
-        "status": "preregistered_before_exactly_once_proxy_contact_v2_replay",
+        "status": "preregistered_before_exactly_once_proxy_contact_v3_replay",
         "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
         "resume_action": (
-            "execute_canonical_proxy_contact_temporal_v2_exactly_once"
+            "execute_canonical_proxy_contact_temporal_v3_exactly_once"
         ),
         "resume_authorized": True,
         "heldout_open_count": 1,
@@ -44,7 +44,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(112)
+        range(114)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +54,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "CANONICAL_PROXY_CONTACT_TEMPORAL_V2_FROZEN"
+        "CANONICAL_PROXY_CONTACT_TEMPORAL_V3_FROZEN"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:canonical-proxy-contact-temporal-v2-frozen"
+        "checkpoint:canonical-proxy-contact-temporal-v3-frozen"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True
