@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_WRIST_ONLY_PACKET_COMPILE`
+Status: `ACTIVE_CC03_WRIST_ONLY_EXECUTE`
 
 Created: `2026-07-28`
 
@@ -607,6 +607,14 @@ Current state:
   It retains the prior three-degree wrist action, uses raw tag-corner
   trajectory shape, fits nothing, opens no depth channel, and makes no elbow
   claim.
+- Wrist-only V3 compiled from the fresh torque-off elbow-locked anchor with
+  no new or worsened modeled contact. Packet SHA-256 is
+  `819a2cbad0b611226213763d4640b87d8da83808a2a648a7b738323d7915201e`;
+  plan SHA-256 is
+  `2da67f0d028c503bf12172837305f8f8eb30a47a84de872ae5ee4d3624985201`;
+  exact wrist action SHA-256 is `7cdb934e...`. Independent review admits one
+  execution at review SHA-256
+  `233fb3e7067384e1e321082e1b6edde6a1f19abb950a2dc5f096638817dc1dca`.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -648,7 +656,6 @@ This authorization:
 
 Next step:
 
-- Compile and independently review the wrist-only V3 packet from the fresh
-  torque-off anchor. If admitted, execute it once and freeze the evaluator
-  contract before opening any frame. Do not touch a pawn or count a task
-  attempt.
+- Execute wrist-only V3 exactly once, verify tricam enclosure, measured wrist
+  response, exact return, and torque-off, then freeze its evaluator contract
+  before opening any frame. Do not touch a pawn or count a task attempt.

@@ -1,0 +1,20 @@
+{
+  "bounded_slew_reviewed": true,
+  "camera_inspection_between_stages_acknowledged": true,
+  "clear_workcell_acknowledged": true,
+  "decision_id": "cc03-d405-wrist-corner-shape-heldout-20260729-v3",
+  "final_hold_capture_reviewed": true,
+  "fresh_anchor_and_identity_checks_reviewed": true,
+  "frozen_float64_actions_reviewed": true,
+  "packet_path": "/Users/kelly/Developer/sim2claw/runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/packet.json",
+  "packet_sha256": "819a2cbad0b611226213763d4640b87d8da83808a2a648a7b738323d7915201e",
+  "physical_authority": false,
+  "plan_sha256": "2da67f0d028c503bf12172837305f8f8eb30a47a84de872ae5ee4d3624985201",
+  "recovery_source_contact_admission_reviewed": false,
+  "reviewer": "codex-cc03-wrist-corner-shape-review",
+  "schema_version": "sim2claw.wrist_view_reposition_review.v2",
+  "simulation_contact_preview_reviewed": true,
+  "stage_excursions_reviewed": true,
+  "status": "admitted_for_one_execution_per_stage",
+  "torque_off_close_reviewed": true
+}

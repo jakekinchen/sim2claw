@@ -255,7 +255,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
 Completed: CC00, CC00A, CC01, CC02.
-Evidence: elbow safe-stop 8b72ae4c...; scope closeout 65f71a1b...; wrist-only route 063342cf....
+Evidence: wrist-only packet 819a2cba...; review 233fb3e7...; action 7cdb934e....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 2
@@ -263,7 +263,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed after two calibration-only stages; fresh preflight torque false.
 Remaining: CC03 through CC15.
 Blockers: physical/model mapping remains unapproved.
-Next step: compile/review the wrist-only mapping successor; no pawn contact or task attempt.
+Next step: execute the wrist-only mapping successor once; no pawn contact or task attempt.
 ```
 
 ## Physical Authority Boundaries
