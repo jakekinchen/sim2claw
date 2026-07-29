@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_CORNER_SHAPE_PACKET_COMPILE`
+Status: `ACTIVE_CC03_CORNER_SHAPE_STAGE_1_EXECUTE`
 
 Created: `2026-07-28`
 
@@ -574,6 +574,15 @@ Current state:
   It increases only the elbow excursion from three to five degrees, retains
   the wrist action at three degrees, replaces PnP rotation with normalized raw
   tag-corner trajectory shape, fits nothing, and requires no depth.
+- Corner-shape V2 compiled from the fresh torque-off anchor with no modeled
+  contact. Packet SHA-256 is
+  `241eea8d705bf303d5f7c3d9c8e5c4e7b81def094108d221a584374b97c428e7`;
+  plan SHA-256 is
+  `0c2fad04474f95c9b1e882417bd451586432eb47c5eb1b7b69b417511b67a68b`.
+  Stage action SHA-256 values are `c16b3e1e...` for elbow and `d4fd8f1a...`
+  for wrist. Independent review admits exactly one execution per stage at
+  review SHA-256
+  `184052d965563e6d111dc33bb9ef3abb92188abdff98e94733db1c438b88bad9`.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -615,7 +624,7 @@ This authorization:
 
 Next step:
 
-- Compile and independently review the corner-shape V2 packet from the fresh
-  torque-off anchor. If admitted, execute each no-contact stage once and
-  freeze its evaluator contract before opening any new frame. Do not touch a
-  pawn or count a task attempt.
+- Execute corner-shape stage 1 exactly once, verify tricam enclosure,
+  sufficient measured elbow response, exact return, and torque-off, then
+  execute stage 2 using the bound stage-1 receipt. Do not open any new frame,
+  touch a pawn, or count a task attempt.
