@@ -1,0 +1,88 @@
+{
+  "schema_version": "sim2claw.realized_action_effective_plant_contract.v1",
+  "contract_id": "realized-action-effective-plant-v1",
+  "sources": {
+    "c3a_closeout": {
+      "path": "configs/decisions/realized_action_first_divergence_v1_closeout.json",
+      "sha256": "5bc6748bb9b0e4023730fd20fd1e1e89cb42bacb2744b7b5fa4b43ee12bb0da1"
+    },
+    "c3a_receipt": {
+      "path": "outputs/realized_action_first_divergence_v1/receipt.json",
+      "sha256": "7939cbb9b61e783502bb1970763a9af37594b538e223f58a89d3be40e4556100",
+      "artifact_sha256": "6cdc2b9b1022bdcb41f1df0f35d29af61f563018078940ab8d4f6d5217ba82c3"
+    },
+    "c3_closeout": {
+      "path": "configs/decisions/realized_action_sage_lite_v1_closeout.json",
+      "sha256": "e5ae97283c5504f752203605a74be78e4129282212159697b4aeadeded652d80"
+    },
+    "c3_receipt": {
+      "path": "outputs/realized_action_sage_lite_v1/receipt.json",
+      "sha256": "41e1d8853cc5d6c10e7e1da3dab48fe409f9728d2089c4f9cd0076c7721d86a0",
+      "artifact_sha256": "f03dbd13d2fdd85d1893e2ed03923dcdc4b15fa6deeb9bb9f95845b367c6054f"
+    }
+  },
+  "plant_paths": [
+    {
+      "path_id": "direct_target",
+      "kind": "direct_gateway_sent_target"
+    },
+    {
+      "path_id": "diagnostic_zoh_0p11s",
+      "kind": "timestamp_zoh_delay",
+      "delay_seconds": 0.11,
+      "diagnostic_only": true,
+      "calibrated_physical_latency": false
+    },
+    {
+      "path_id": "identified_effective_plant_v1",
+      "kind": "sample_hold_first_order_direction_response",
+      "sample_hold": 3,
+      "sample_hold_semantics": "effective_sample_domain_association_not_causal_latency",
+      "alpha_grid": [
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "direction_delta_min_degrees": 0.05,
+      "minimum_branch_samples": 50,
+      "maximum_absolute_direction_offset_degrees": 5.0
+    }
+  ],
+  "fit_order": [
+    "preserve_gateway_sent_lane",
+    "three_sample_hold",
+    "per_joint_first_order_response",
+    "direction_conditioned_residual"
+  ],
+  "validation_gates": {
+    "minimum_pooled_joint_rms_improvement_fraction": 0.2,
+    "minimum_pooled_provisional_ee_rms_improvement_fraction": 0.15,
+    "maximum_per_joint_rms_regression_degrees": 0.1,
+    "required_requested_sent_source_hash_match": true,
+    "required_validation_episode_count": 3
+  },
+  "rules": {
+    "fit_episodes_select_parameters": true,
+    "validation_episodes_gate_parameters": true,
+    "sealed_episode_report_only": true,
+    "requested_bytes_preserved": true,
+    "gateway_sent_bytes_preserved": true,
+    "source_row_order_preserved": true,
+    "source_timestamps_preserved": true,
+    "initial_measured_robot_state_only": true,
+    "no_later_observed_state_driving": true,
+    "no_action_clipping_smoothing_offset_or_retiming": true,
+    "no_contact_or_camera_compensation": true
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_task_replay": false,
+    "paid_compute": false
+  }
+}
