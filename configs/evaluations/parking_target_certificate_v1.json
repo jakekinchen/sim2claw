@@ -1,0 +1,57 @@
+{
+  "schema_version": "sim2claw.parking_target_certificate.v1",
+  "contract_id": "parking-target-certificate-20260729-v1",
+  "status": "frozen_before_one_static_route_level_enumeration",
+  "proof_class": "prospective_cpu_fp64_static_route_level_parking_target_certificate",
+  "fable_recovery_review": {
+    "path": "docs/advisory/fable-transfer-recovery-review-20260729.md",
+    "sha256": "c1b7d6688ae0aa29d2fdea379dda632282d00ff784a5da091482754d493e7245"
+  },
+  "predecessor_contract": {
+    "path": "configs/evaluations/directional_displacement_static_v1.json",
+    "sha256": "852dfc133f4c74e6ee25728610b4b77b73a76f63f237e7243ec6997fa430902b"
+  },
+  "predecessor_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-directional-displacement-static-v1/receipt.json",
+    "sha256": "f8bb0e86f61fbdb380a337d2f565d163534e37ce16acb9157e45f931750bb094"
+  },
+  "predecessor_closeout": {
+    "path": "configs/decisions/directional_displacement_static_v1_closeout.json",
+    "sha256": "ca107505f7a1b43da1c5776cf9c8c627bf4b9dac87809ed967548b258afce034"
+  },
+  "implementation": {
+    "path": "src/sim2claw/parking_target_certificate.py",
+    "sha256": "b73f15e3080f0c21344f9135b0ea05132505b9d2cf0f90a63054c1a8c628b8d7"
+  },
+  "lock_angle_grid_degrees": [
+    97.0,
+    95.0,
+    93.0,
+    91.0,
+    90.0,
+    88.0
+  ],
+  "selection": {
+    "minimum_distinct_families_per_direction": 1,
+    "maximum_viable_lock_angle_is_threshold": true,
+    "recommended_target_requires_at_least_2deg_lower_passing_angle": true,
+    "dynamic_outcome_used": false,
+    "physical_outcome_used": false,
+    "grid_expansion_after_run": false
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-parking-target-certificate-v1",
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "dynamic_simulation": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "One prospective simulation-only route-level certificate over a frozen elbow-lock grid. Every CC03K gate remains unchanged. This cannot authorize dynamics, mapping approval, cameras, gateway, serial, physical motion, pawn contact, task attempts, simulator promotion, or transfer."
+}
