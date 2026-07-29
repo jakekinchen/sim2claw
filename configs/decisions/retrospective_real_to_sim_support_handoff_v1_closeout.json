@@ -1,0 +1,78 @@
+{
+  "schema_version": "sim2claw.retrospective_real_to_sim_support_handoff_closeout.v1",
+  "status": "accepted_observation_conditioned_real_to_sim_advancement_timing_sensitive",
+  "proof_class": "physical_source_observed_state_plus_camera_observed_object_mode_to_simulator_support_handoff",
+  "freeze_commit": "8346460ddd74857fd3298c9d51f0301a8f583710",
+  "contract": {
+    "path": "configs/evaluations/retrospective_real_to_sim_support_handoff_v1.json",
+    "sha256": "3065e63ed550bb61c7444212f1cec14065d1703ef6c0c4de4068cd8e89ba697f"
+  },
+  "implementation": {
+    "path": "src/sim2claw/retrospective_real_to_sim_support_handoff.py",
+    "sha256_at_freeze": "c006ca37100ecf0bd3522e5d51cd37bbdb0f493a576361fb98a863c7c393894e"
+  },
+  "receipt": {
+    "path": "outputs/retrospective_real_to_sim_support_handoff_v1/receipt.json",
+    "file_sha256": "1af33c78d2a5846e009ff1d14561afd648df687bcb48a29a6b61089f7c33db51",
+    "canonical_receipt_sha256": "f6c8f3a76b5ee84a33a10f3df9da4e5c0b59681e6c9b94bd4a94d08104e101fd",
+    "verdict": "OBSERVATION_CONDITIONED_REAL_TO_SIM_ADVANCED_TIMING_SENSITIVE"
+  },
+  "ledger": {
+    "pure_action_only_real_to_sim": {
+      "successes": 0,
+      "attempts": 0
+    },
+    "free_release_hybrid_real_to_sim": {
+      "successes": 0,
+      "attempts": 2
+    },
+    "observed_state_plus_upright_support_mode_real_to_sim": {
+      "successes": 1,
+      "attempts": 3
+    },
+    "physical_task_attempts_added": 0,
+    "sim_to_real_added": 0
+  },
+  "variants": {
+    "minus_1": {
+      "release_event_sample_index": 399,
+      "coarse_square_task_success": true,
+      "composable_task_success": false,
+      "final_planar_center_error_m": 0.0083192128737314,
+      "final_upright_tilt_degrees": 0.0024340619487165003,
+      "vertical_support_projection_m": 0.02886243072593042,
+      "xy_projection_m": 0.0,
+      "maximum_other_piece_displacement_m": 1.52214725449253e-7,
+      "trace_sha256": "0ed901f39a0f2f54d79817c061b6da818099cc44a44a3b0b1133786ccab1f642",
+      "state_trace_sha256": "32352b3692ac805c78ddcd13759c76d0234228035def7eaa2f32c0a1a7bb81d3"
+    },
+    "zero": {
+      "release_event_sample_index": 400,
+      "coarse_square_task_success": false,
+      "composable_task_success": false,
+      "final_planar_center_error_m": 0.009023994590161873,
+      "vertical_support_projection_m": 0.030450771768590568,
+      "xy_projection_m": 0.0,
+      "trace_sha256": "74b7f01d66778ba215062ec992e0d03fa1b1d7623363ee1fd872c240dfa9aea6",
+      "state_trace_sha256": "32888cd13a47ad466552d5751b36f6bf8298ad444880088911c0ca2916010838"
+    },
+    "plus_1": {
+      "release_event_sample_index": 401,
+      "coarse_square_task_success": false,
+      "composable_task_success": false,
+      "final_planar_center_error_m": 0.011469609020345188,
+      "vertical_support_projection_m": 0.03357461496892522,
+      "xy_projection_m": 0.0,
+      "trace_sha256": "310c7e97d2cc97ccf2787f35a0e181c63d0c56fe8e424f0bf93f10c2899ade7d",
+      "state_trace_sha256": "d922fabc63887f3fd73bff8a8143eee8675dd629f289084c229c1fda64222796"
+    }
+  },
+  "accepted_claim": "The retained physical D1-to-D2 episode transfers to MuJoCo in one of three prospectively frozen observation-conditioned support-handoff timing variants. The successful -1-sample variant preserves the measured physical joint trace, handoff XY, destination, and evaluator, then settles upright with the whole pawn base inside D2. This establishes 1/3 narrow REAL-to-SIM observation-conditioned reproduction.",
+  "limitations": [
+    "The result is timing-sensitive because zero and +1 sample offsets fail the whole-base containment gate.",
+    "The camera-observed upright/support mode projects the pawn height and orientation before returning to free physics.",
+    "The result is not pure action-only replay, free-release contact prediction, composable-center success, a calibrated contact model, global mapping approval, SIM-to-REAL evidence, or physical authority.",
+    "No physical task attempt was added."
+  ],
+  "next_decision": "Do not mine more offsets or fit contact parameters to this episode. A stronger hardware-free REAL-to-SIM successor requires an independently reviewed metric object endpoint or trajectory from the retained cameras. Strict action-only transfer requires a new exact source after elbow service."
+}

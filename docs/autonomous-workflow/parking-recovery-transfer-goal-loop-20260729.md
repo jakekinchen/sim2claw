@@ -41,20 +41,24 @@ in that queue are exhausted.
 - RP01: complete PASS at receipt SHA-256
   `e9e99a4ad774a04e5dc031a9b6060df6e32f7ceceb6e56fa40cfba61f481fc1f`.
 - RP04K: complete negative; command+mode `0/1`, observed-state+mode `0/1`.
-- Active card: RP04L frozen software-only REAL->SIM support-handoff replay.
+- RP04L: complete timing-sensitive narrow advancement; observed-state plus
+  camera-observed upright-support mode `1/3`.
+- Active card: none; the owner-requested positive metric advancement is bound.
 - Certified threshold: `93 deg`.
 - Certified parking target: `91 deg`.
-- REAL->SIM: `0/0`.
+- Strict pure-action REAL->SIM: `0/0`.
+- Observation-conditioned support-handoff REAL->SIM: `1/3`.
 - SIM->REAL: `0/0`.
 - Physical task attempts: `0/10`.
 - Physical authority: false.
 
 The follower elbow mechanical-resistance signature closes further hardware
-task motion until human service. RP04L must not open a camera, gateway, serial
-bus, torque, or robot action. It may run one prospectively frozen local
-simulator replay over the existing camera-verified Phase-A source. Its
-observed-state+upright-support-mode ledger remains distinct from the strict
-pure-action and free-release-physics ledgers.
+task motion until human service. No active card may open a camera, gateway,
+serial bus, torque, or robot action. RP04L's `1/3` result remains distinct
+from the strict pure-action and free-release-physics ledgers. Do not expand its
+timing grid after outcomes. Resume hardware-free REAL->SIM work only from an
+independently reviewed metric camera endpoint/trajectory, or resume strict
+action-only work from a new exact source after elbow service.
 
 Fable is reserved for a genuine blocker where the correct next trajectory is
 unclear. Routine queue transitions and verification do not require Fable.

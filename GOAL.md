@@ -2,6 +2,34 @@
 
 Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
 
+## Latest hardware-free REAL→SIM advancement
+
+The owner redirected work away from SIM→REAL while the follower elbow remains
+at a human-service boundary. The existing camera-verified physical D1→D2
+episode still cannot support strict action-only replay: it contains gateway
+rate limiting/clamping, requested-versus-sent differences, and no actuator
+application timestamps. Strict REAL→SIM therefore remains `0/0`.
+
+Two prospectively frozen software-only replays were completed without opening
+cameras, serial, torque, or hardware. RP04K's free-release hybrid was negative:
+command+observed-grasp-mode `0/1` and observed-state+observed-grasp-mode `0/1`.
+Its state driver tracked within `0.003266` simulator units and carried the pawn
+to `9.024 mm` of D2, but the simulated `30.451 mm` free drop toppled a pawn
+that the physical C922 review showed upright.
+
+RP04L then tested only the preregistered `[-1,0,+1]` event-timing uncertainty
+and supplied the already observed upright/support object mode while preserving
+the measured joint trace, handoff XY, destination, and evaluator. It advances
+the separate observation-conditioned support-handoff ledger to `1/3`: offset
+`-1` settles at `8.319 mm` planar error, `0.0024 deg` tilt, zero XY projection,
+and negligible exclusion movement. Offsets `0/+1` fail at `9.024/11.470 mm`,
+so the result is timing-sensitive and not composable-center success.
+
+Accepted proof class:
+`physical_source_observed_state_plus_camera_observed_object_mode_to_simulator_support_handoff`.
+It is not pure action-only replay, free-release contact prediction, global
+mapping approval, SIM→REAL evidence, or physical authority.
+
 ## Latest prospective D1→D2 gate
 
 The owner-authorized continuation has now completed the next motion-free
