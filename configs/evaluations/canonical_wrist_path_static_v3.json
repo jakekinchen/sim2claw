@@ -1,0 +1,37 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_static_successor.v3",
+  "contract_id": "canonical-wrist-path-static-20260729-v3",
+  "status": "frozen_after_three_family_partial_before_lift_then_rotate_static_enumeration",
+  "proof_class": "prospective_cpu_fp64_current_workcell_lift_then_rotate_wrist_path_contact_normal_static_action_freeze",
+  "base_contract": {
+    "path": "configs/evaluations/canonical_wrist_path_static_v1.json",
+    "sha256": "4912e8000648f088dd0677189f4a25715e750b59ddfecd7202e2f7b8ff2435cf"
+  },
+  "predecessor_closeout": {
+    "path": "configs/decisions/canonical_wrist_path_static_v2_closeout.json",
+    "sha256": "9938421bedb9f06e8f514eb9c689a179870496c002983c61772614e440c5f45e"
+  },
+  "implementation": {
+    "path": "src/sim2claw/canonical_wrist_path_static.py",
+    "sha256": "79189aa5c0b239ebd6a5d18a93164211eed85a84d783d5f8a5e4bc49bfb33f60"
+  },
+  "path_shape_override": {
+    "from": "rotate wrist at low live pose before lift",
+    "to": "lift with live wrist then rotate at clearance",
+    "only_outcome_relevant_change": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-v3",
+  "unchanged_from_v2": {
+    "current_anchor_and_calibrated_ranges": true,
+    "four_outcome_informed_cases_quarantined": true,
+    "remaining_48_family_universe": true,
+    "three_wrist_roll_targets": true,
+    "two_contact_heights": true,
+    "contact_offset_stroke_and_clearance": true,
+    "maximum_288_cells": true,
+    "collision_camera_gateway_contact_height_and_normal_gates": true,
+    "four_distinct_families_two_per_direction": true,
+    "dynamic_and_physical_authority_false": true
+  },
+  "claim_boundary": "Prospectively frozen V3 static-only path-shape successor after V2 admitted only three families. It changes only wrist rotation order: lift with the live wrist first, then rotate at clearance before descent and push. The current anchor, quarantine, finite grid, gates, selection, physics, and authority remain unchanged. A pass freezes actions only and cannot authorize dynamics, mapping, evaluator V2, hardware, or transfer."
+}

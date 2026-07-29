@@ -122,43 +122,90 @@ def _compile(
     target_rates: np.ndarray,
     maximum_ik_residual_m: float,
 ) -> tuple[np.ndarray, dict[str, Any]]:
-    wrist_seed = live_seed.copy()
-    wrist_seed[4] = wrist_roll_rad
-    base_action, metrics = _static._compile(
-        model,
-        addresses,
-        wrist_seed,
+    closed_seed = live_seed.copy()
+    closed_seed[-1] = closed_jaw_rad
+    data = mujoco.MjData(model)
+    data.qpos[addresses] = closed_seed
+    mujoco.mj_forward(model, data)
+    pinch_local = _static._pinch_offset(model, data, "left")
+    current_pinch = _static._pinch_point(
+        model, data, "left", pinch_local
+    )
+    contact = source_xyz.copy()
+    contact[:2] -= direction[:2] * contact_offset_m
+    contact[2] += contact_height_m
+    live_lift = current_pinch.copy()
+    live_lift[2] = max(
+        current_pinch[2] + 0.03,
+        source_xyz[2] + clearance_height_m,
+    )
+    clearance = contact.copy()
+    clearance[2] = source_xyz[2] + clearance_height_m
+    pushed = contact + direction * stroke_m
+    retreat = pushed.copy()
+    retreat[2] = clearance[2]
+    cartesian_targets = [
+        live_lift,
+        live_lift,
+        clearance,
+        contact,
+        pushed,
+        retreat,
+    ]
+    targets = [live_seed.copy(), closed_seed.copy()]
+    active = closed_seed.copy()
+    residuals: list[float] = []
+    for index, target in enumerate(cartesian_targets):
+        if index == 1:
+            active[4] = wrist_roll_rad
+        active, residual = _static._solve_fixed_roll(
+            model,
+            active,
+            target,
+            pinch_local,
+            iterations=260,
+            damping=0.015,
+            step_limit=0.08,
+        )
+        residuals.append(float(residual))
+        if residual > maximum_ik_residual_m:
+            raise CanonicalWristPathStaticError(
+                "canonical lifted-wrist IK residual exceeded gate"
+            )
+        active[-1] = closed_jaw_rad
+        targets.append(active.copy())
+    action = _static._interpolate_targets(
+        targets,
         candidate_config,
-        source_xyz=source_xyz,
-        direction=direction,
-        contact_offset_m=contact_offset_m,
-        contact_height_m=contact_height_m,
-        clearance_height_m=clearance_height_m,
-        stroke_m=stroke_m,
-        closed_jaw_rad=closed_jaw_rad,
         sample_hz=sample_hz,
         target_rates=target_rates,
-        maximum_ik_residual_m=maximum_ik_residual_m,
-    )
-    prefix = _static._interpolate_targets(
-        [live_seed, wrist_seed],
-        candidate_config,
-        sample_hz=sample_hz,
-        target_rates=target_rates,
-    )
-    action = np.asarray(
-        np.concatenate((prefix[:-1], base_action), axis=0),
-        dtype="<f8",
-        order="C",
     )
     if not np.array_equal(action[0], live_seed):
         raise CanonicalWristPathStaticError(
             "canonical wrist/path row zero changed"
         )
+    margins = []
+    for index, name in enumerate(_static.ALL_JOINTS):
+        joint_id = _static._named_id(
+            model, mujoco.mjtObj.mjOBJ_JOINT, name
+        )
+        low, high = model.jnt_range[joint_id]
+        margins.append(
+            float(
+                min(
+                    np.min(action[:, index] - low),
+                    np.min(high - action[:, index]),
+                )
+            )
+        )
     return action, {
-        **metrics,
+        "maximum_ik_residual_m": max(residuals),
+        "minimum_model_joint_margin_rad": min(margins),
+        "cartesian_targets_xyz_m": [
+            item.tolist() for item in cartesian_targets
+        ],
         "wrist_roll_target_rad": wrist_roll_rad,
-        "prefix_rows": len(prefix) - 1,
+        "wrist_rotation_after_live_lift": True,
         "action_rows": len(action),
         "action_raw_float64le_sha256": hashlib.sha256(
             action.tobytes(order="C")
@@ -208,6 +255,46 @@ def enumerate_and_freeze(
         contract["inputs"]["implementation"] = raw_contract[
             "implementation"
         ]
+        contract["output_directory"] = raw_contract["output_directory"]
+        contract["claim_boundary"] = raw_contract["claim_boundary"]
+    elif raw_contract.get("schema_version") == (
+        "sim2claw.canonical_wrist_path_static_successor.v3"
+    ):
+        expected = {
+            "schema_version",
+            "contract_id",
+            "status",
+            "proof_class",
+            "base_contract",
+            "predecessor_closeout",
+            "implementation",
+            "path_shape_override",
+            "output_directory",
+            "unchanged_from_v2",
+            "claim_boundary",
+        }
+        if (
+            set(raw_contract) != expected
+            or not all(raw_contract["unchanged_from_v2"].values())
+            or raw_contract["path_shape_override"]
+            != {
+                "from": "rotate wrist at low live pose before lift",
+                "to": "lift with live wrist then rotate at clearance",
+                "only_outcome_relevant_change": True,
+            }
+        ):
+            raise CanonicalWristPathStaticError(
+                "canonical wrist/path V3 widened its change surface"
+            )
+        contract = copy.deepcopy(_json(raw_contract["base_contract"]))
+        _bound(raw_contract["predecessor_closeout"])
+        _bound(raw_contract["implementation"])
+        contract["inputs"]["implementation"] = raw_contract[
+            "implementation"
+        ]
+        contract["action"]["path_shape"] = raw_contract[
+            "path_shape_override"
+        ]["to"]
         contract["output_directory"] = raw_contract["output_directory"]
         contract["claim_boundary"] = raw_contract["claim_boundary"]
     elif raw_contract.get("schema_version") != (

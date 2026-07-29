@@ -321,6 +321,16 @@ Current state:
 - V2 changes only that import source and is frozen at
   `e73b07b6a73eb60471949d18329e7ab2a4d5042c0e54d2c92f510e1f18021935`.
   Every grid, quarantine, gate, and authority field remains unchanged.
+- V2 ran once and admitted only three distinct families (`2` REAL->SIM,
+  `1` SIM->REAL), so dynamic replay remains closed. The three contacts are
+  low and nearly planar (`13.592--13.940 mm`, `|n_z| 0.054--0.187`), while
+  `225/288` cells failed IK. Receipt SHA-256
+  `307b94fa25a84e725c567647367d6029c285ff496a995a0825476d4b7f5b4d39`;
+  closeout SHA-256
+  `9938421bedb9f06e8f514eb9c689a179870496c002983c61772614e440c5f45e`.
+- V3 changes only precontact order—lift with live wrist, then rotate at
+  clearance—and is frozen at
+  `3519c6391ae5d14549a40fde10433eeb4e68435cf3f6ccd160475b17b344c019`.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -363,8 +373,8 @@ This authorization:
 
 Next step:
 
-- Commit and push the V1 import-abort closeout plus the V2 finite wrist/path
-  static freeze, then execute V2 exactly once. Do not dynamically
+- Commit and push the V2 three-family partial plus the V3 lift-then-rotate
+  static freeze, then execute V3 exactly once. Do not dynamically
   replay unless four distinct safe families freeze `2/2` per direction.
   Preserve both baseline and challenger outcomes; a challenger pass does not
   itself promote geometry, approve mapping, or open hardware.

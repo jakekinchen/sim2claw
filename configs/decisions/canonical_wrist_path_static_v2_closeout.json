@@ -1,0 +1,62 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_static_closeout.v1",
+  "decision_id": "canonical-wrist-path-static-20260729-v2-closeout",
+  "status": "three_family_static_partial_reject",
+  "proof_class": "cpu_fp64_current_workcell_wrist_path_contact_normal_static_partial_negative",
+  "contract": {
+    "path": "configs/evaluations/canonical_wrist_path_static_v2.json",
+    "sha256": "e73b07b6a73eb60471949d18329e7ab2a4d5042c0e54d2c92f510e1f18021935"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-v2/receipt.json",
+    "sha256": "307b94fa25a84e725c567647367d6029c285ff496a995a0825476d4b7f5b4d39"
+  },
+  "result": {
+    "family_count": 48,
+    "grid_result_count": 288,
+    "compile_reject_count": 225,
+    "static_reject_count": 54,
+    "static_eligible_cell_count": 9,
+    "statically_eligible_family_count": 3,
+    "direction_counts": {
+      "REAL_TO_SIM": 2,
+      "SIM_TO_REAL": 1
+    },
+    "selected_case_ids": [
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_f7__f7_f8",
+      "tan_pawn_d7__d7_d8"
+    ],
+    "selected_first_contact_height_mm_range": [
+      13.591977826467372,
+      13.939574674547761
+    ],
+    "selected_first_contact_abs_vertical_normal_range": [
+      0.05388460332364117,
+      0.18670248175571721
+    ],
+    "nearest_fourth_family": {
+      "case_id": "tan_pawn_g8__g8_h8",
+      "only_failed_gate": "collision",
+      "first_contact_height_mm": 17.825313512190966,
+      "first_contact_abs_vertical_normal": 0.00028295346437589593,
+      "disallowed_contacts": [
+        "tan_pawn_f7",
+        "tan_pawn_h7"
+      ]
+    }
+  },
+  "decision": "Do not dynamically replay. Preserve the three-family partial as proof that the contact-normal mechanism is viable but insufficient. Prospectively change only the precontact route so wrist rotation occurs after the live-wrist lift at clearance instead of at the low live pose; retain the same family universe, quarantine, wrist/contact grid, gates, and two-per-direction requirement.",
+  "authority": {
+    "dynamic_replay": false,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

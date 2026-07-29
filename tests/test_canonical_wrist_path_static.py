@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTRACT = Path("configs/evaluations/canonical_wrist_path_static_v2.json")
+CONTRACT = Path("configs/evaluations/canonical_wrist_path_static_v3.json")
 
 
 def _sha(path: Path) -> str:
@@ -15,10 +15,13 @@ def _sha(path: Path) -> str:
 
 def _resolved_contract() -> tuple[dict, dict]:
     successor = json.loads((ROOT / CONTRACT).read_text(encoding="utf-8"))
-    predecessor = successor["predecessor_contract"]
+    predecessor = successor["base_contract"]
     assert _sha(ROOT / predecessor["path"]) == predecessor["sha256"]
-    assert all(successor["unchanged_from_v1"].values())
-    for key in ("preexecution_closeout", "implementation"):
+    assert all(successor["unchanged_from_v2"].values())
+    assert successor["path_shape_override"][
+        "only_outcome_relevant_change"
+    ]
+    for key in ("predecessor_closeout", "implementation"):
         binding = successor[key]
         assert _sha(ROOT / binding["path"]) == binding["sha256"]
     return successor, json.loads(
