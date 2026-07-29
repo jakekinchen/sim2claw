@@ -1,0 +1,58 @@
+{
+  "schema_version": "sim2claw.parking_recovery_rp03c_cartesian_corridor_static.v1",
+  "contract_id": "parking-recovery-rp03c-cartesian-corridor-static-20260729-v1",
+  "status": "frozen_before_one_bounded_static_cartesian_corridor_run",
+  "proof_class": "prospective_cpu_fp64_exact_lock_cartesian_chord_constrained_static_action_freeze",
+  "base_contract": {
+    "path": "configs/evaluations/achieved_lock_task_freeze_v1.json",
+    "sha256": "2ca78853446b4ddd80c21a1724a523f44d7db0b5e72f84be009447ee7832691d"
+  },
+  "predecessor_closeout": {
+    "path": "configs/decisions/directional_displacement_static_stroke_v2_closeout.json",
+    "sha256": "a59d387317299eb920796234fe92a95a609cc123a03ecbb37c8c5029e22353bd"
+  },
+  "predecessor_temporal_closeout": {
+    "path": "configs/decisions/achieved_lock_task_temporal_v1_closeout.json",
+    "sha256": "7c4ed72c2009045d12aaddf6c9b5e423db7dd708c0a7ed25409ac2e3975944d6"
+  },
+  "implementation": {
+    "path": "src/sim2claw/canonical_elbow_locked_cartesian_corridor_static.py",
+    "sha256": "cd1bc280d8ecd95bf22595014677147849d073d39e2f6451302805cf908d8eea"
+  },
+  "intervention": {
+    "maximum_cartesian_chord_error_m": 0.0005,
+    "maximum_refinement_depth": 6,
+    "maximum_post_contact_backtrack_m": 0.00025,
+    "only_outcome_relevant_change": "joint_interpolation_between_existing_cartesian_endpoints"
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-rp03c-cartesian-corridor-static-v1",
+  "unchanged": {
+    "exact_achieved_elbow_lock_92p43956043956044_degrees": true,
+    "exact_40mm_stroke": true,
+    "exact_35mm_precontact_backoff": true,
+    "same_48_family_quarantined_universe": true,
+    "same_three_wrist_rolls_and_four_contact_heights": true,
+    "same_576_cell_ceiling": true,
+    "same_closed_jaw_target": true,
+    "same_40hz_and_target_rates": true,
+    "same_ik_collision_contact_camera_and_gateway_gates": true,
+    "same_one_family_per_direction_requirement": true,
+    "no_friction_mass_damping_timing_solver_or_threshold_change": true,
+    "dynamic_outcomes_not_used_for_static_selection": true,
+    "no_clipping_smoothing_retiming_offset_suffix_or_assistance": true
+  },
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "dynamic_simulation": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "One prospectively frozen static-only RP03C successor changes only interpolation between the existing 35 mm precontact, contact, and 40 mm pushed Cartesian endpoints. Every emitted corridor row must stay within 0.5 mm of its actual-FK chord and post-contact task-axis backtracking must remain at most 0.25 mm. A pass may open the unchanged 20-episode direct/ZOH dynamic gate only; it cannot approve mapping, hardware, a physical attempt, simulator promotion, or transfer."
+}
