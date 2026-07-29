@@ -1,0 +1,16 @@
+{
+  "schema_version": "sim2claw.owner_physical_authorization.v1",
+  "authorization_id": "owner-standing-rp04g-post-cable-no-contact-20260729-v3",
+  "operation_id": "rp04g-post-cable-full-range-no-contact-20260729-v3",
+  "packet_sha256": "d36dab543dbc3eae63e783c1b8b0215d3a9c7731f90194afe6fe7ef44d69b681",
+  "issued_at": "2026-07-29T12:13:18-05:00",
+  "expires_at": "2026-07-29T13:13:18-05:00",
+  "maximum_executions": 1,
+  "physical_no_contact_diagnostic": true,
+  "physical_task_attempt": false,
+  "pawn_contact": false,
+  "autonomous_agent_supervision": true,
+  "power_down_supply_on_torque_cleanup_error": true,
+  "owner_authority_source": "The owner explicitly granted Codex authority to issue future scoped authorizations and specifically requested the prior physical identification work be retried after correcting likely wrist-camera cable tension.",
+  "scope": "One exact packet-hash-bound, camera-enclosed rerun of the byte-identical V2 static-qualified, reachable-pan, robot-only identification route under the owner-reported post-cable-routing configuration, plus exact reverse/controlled return. Fresh preflight, cable-slack review, no pawn contact, no task attempt, no configuration write, no mapping approval, and torque-off cleanup remain mandatory."
+}
