@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04C_FULL_RANGE_NO_CONTACT_IDENTIFICATION_FREEZE`
+Status: `RP04C_FULL_RANGE_STATIC_FROZEN_PENDING_ONE_RUN`
 
 Created: `2026-07-29`
 
@@ -46,7 +46,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP03D | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Add one small tangent-seat waypoint after contact without changing the original push endpoint. | Static receipt `488bf150...` passed all 576 cells with one selected family per direction. Dynamic receipt `8bb253ef...` ran the exact 20 frozen episodes. | `0/20` passed. The tangent-seat and locked-elbow task route are closed without hardware. |
 | RP04 | `DONE_EXISTING_SIMULATOR_PASS_RECONCILED` | Select the strongest already frozen natural-anchor simulator route without using later outcomes to alter its actions. | Canonical wrist-path V5 predates this successor and has exactly two families per direction across direct/ZOH and five resets, with exact actions and ObservableEpisode traces. | Receipt `cf21bd8c...` passes `40/40`; its four action tensors are immutable transfer candidates. This does not approve mapping or hardware. |
 | RP04A | `DONE_TERMINAL_V5_TRACKING_NEGATIVE` | Approve or reject the coordinated-unloading hypothesis before any task packet. | The elbow-only fit passed its untouched tail, then the exact 20-episode challenger preserved all V5 requested bytes and the canonical evaluator. | `0/20` task episodes passed. All four V5 actions are closed for hardware; no retry, task-conditioned refit, action repair, or gate relaxation. |
-| RP04C | `FULL_RANGE_NO_CONTACT_IDENTIFICATION_FREEZE` | Extend execution evidence toward the smallest V5 contact-angle corridor without pawn or board contact. | Prospectively compile a high-clearance robot-only route from the returned natural anchor through finite elbow targets ending no lower than needed for the `f7 -> e7` contact geometry; prove collision-free in registered and stress scenes, calibrated ranges, gateway rates, bounded per-segment excursions, exact cameras, controlled return, and false task authority. | Any static geometry or start-envelope defect rejects before motion. Physical evidence may fit a new plant only on a frozen split; it cannot reopen V5 or count a task attempt. |
+| RP04C | `FULL_RANGE_STATIC_FROZEN_PENDING_ONE_RUN` | Extend execution evidence toward the smallest V5 contact-angle corridor without pawn or board contact. | Rotate shoulder pan to `-115 deg`, cap shoulder lift at `0 deg`, and traverse the immutable `f7 -> e7` coordinated profile as a robot-only identification route. Require both geometry hypotheses, at least `75 mm` clearance, calibrated ranges/rates, five bounded segments, exact reverse, and false hardware/task authority. | Any static geometry or route defect rejects before motion. A pass may freeze one camera-enclosed physical packet; physical evidence cannot reopen V5 or count a task attempt. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -66,12 +66,11 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-Freeze the smallest high-clearance robot-only identification route that
-extends observed elbow support from `50.593407 deg` toward the `f7 -> e7`
-canonical contact angle (`-0.863822 deg`) without reaching any pawn or board.
-The route must be prospectively finite, dual-scene collision-free, camera
-enclosed, segmented for bounded gateway excursion, and incapable of counting
-as a task attempt. No V5 task action may execute.
+Run the already frozen RP04C static compiler exactly once. It must produce
+`1160` physical rows, reach at least `-0.863822 deg` elbow, retain at least
+`75 mm` moving-chain clearance in both scene hypotheses, and pass every
+calibrated-range, gateway-rate, segment-excursion, contact, and exact-reverse
+gate before any camera-enclosed physical packet can be authored.
 
 ## RP00 immutable result
 
