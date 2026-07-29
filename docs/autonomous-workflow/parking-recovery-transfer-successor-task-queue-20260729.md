@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04A_PHYSICAL_NEGATIVE_TRACKING_CHALLENGER_FREEZE`
+Status: `RP04A_TRACKING_FIT_FROZEN_PENDING_ONE_RUN`
 
 Created: `2026-07-29`
 
@@ -45,7 +45,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP03C | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Replace only sparse joint interpolation between the existing 35 mm precontact, contact, and 40 mm pushed Cartesian endpoints with a deterministic chord-error-constrained corridor. | Static receipt `5a9230fa...` passed all 576 cells with one selected family per direction. Dynamic receipt `8b7a889d...` then ran all `20` frozen episodes. | `0/20` passed; every episode still failed progress and no-lift. Cartesian interpolation bow alone is closed. |
 | RP03D | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Add one small tangent-seat waypoint after contact without changing the original push endpoint. | Static receipt `488bf150...` passed all 576 cells with one selected family per direction. Dynamic receipt `8bb253ef...` ran the exact 20 frozen episodes. | `0/20` passed. The tangent-seat and locked-elbow task route are closed without hardware. |
 | RP04 | `DONE_EXISTING_SIMULATOR_PASS_RECONCILED` | Select the strongest already frozen natural-anchor simulator route without using later outcomes to alter its actions. | Canonical wrist-path V5 predates this successor and has exactly two families per direction across direct/ZOH and five resets, with exact actions and ObservableEpisode traces. | Receipt `cf21bd8c...` passes `40/40`; its four action tensors are immutable transfer candidates. This does not approve mapping or hardware. |
-| RP04A | `PHYSICAL_NEGATIVE_TRACKING_CHALLENGER_FREEZE` | Approve or reject the coordinated-unloading hypothesis before any task packet. | The one execution completed `434` source rows with zero clamps and visibly no contact, moving the elbow `49.49 deg`; however, error stayed above `3 deg` for `10.325 s` and the requested boundary missed the `2 deg` gate. Controlled return and torque-off passed. | No retry and no mapping promotion. Freeze one action-identical simulator tracking challenger from requested/observed evidence; close V5 if untouched tasks fail it. |
+| RP04A | `TRACKING_FIT_FROZEN_PENDING_ONE_RUN` | Approve or reject the coordinated-unloading hypothesis before any task packet. | The one execution completed `434` source rows with zero clamps and visibly no contact, moving the elbow `49.49 deg`; however, error stayed above `3 deg` for `10.325 s` and the requested boundary missed the `2 deg` gate. The frozen elbow-only sample-domain fit uses rows `0..303`; rows `304..433` are untouched validation and no task outcomes enter the fit. | No retry and no mapping promotion. A heldout fit pass may freeze one action-identical V5 simulator tracking challenger; close V5 if untouched tasks fail it. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -65,11 +65,11 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-Freeze one evidence-directed action-identical tracking challenger from the
-immutable RP04A no-contact requested/observed trace. Fit no task outcomes and
-keep the original V5 action bytes untouched. Run the four V5 cases only after
-the plant contract, fit split, heldout thresholds, and exact dynamic
-denominator are committed and pushed.
+Run the already frozen elbow-only sample-domain tracking fit exactly once.
+Only after its immutable heldout result is recorded may the four-case V5
+dynamic contract be frozen. Keep the original V5 requested action bytes
+untouched, retain direct targets for all non-elbow joints, and label any
+motion beyond the fit's physical support as extrapolative diagnostic evidence.
 
 ## RP00 immutable result
 

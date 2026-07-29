@@ -1,0 +1,74 @@
+{
+  "schema_version": "sim2claw.coordinated_unloading_tracking_fit.v1",
+  "contract_id": "coordinated-unloading-tracking-fit-20260729-v1",
+  "status": "frozen_before_fit_and_before_any_task_replay",
+  "proof_class": "physical_no_contact_sample_domain_elbow_tracking_diagnostic",
+  "inputs": {
+    "physical_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-coordinated-unloading-shadow-execution-v1/receipt.json",
+      "sha256": "1999c73276264269b14dd6319fffdccebdb143d890e19c0c3216b5d51cee771f"
+    },
+    "physical_closeout": {
+      "path": "configs/decisions/coordinated_unloading_shadow_execution_v1_closeout.json",
+      "sha256": "80e023319b32eb140d072d67f9fe54349eb6ad850d95180b52d4e5209de3214d"
+    },
+    "telemetry": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-coordinated-unloading-shadow-execution-v1/telemetry.jsonl",
+      "sha256": "163557fd1c6d1195f585add56adf835dc5bf3a41ca925fee6f430ef09e4c4e6b"
+    },
+    "physical_prefix": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-coordinated-unloading-shadow-probe-static-v1/physical_prefix.f64le",
+      "sha256": "d0990da76953d742aa4a3688cd32feba3266f8a32206fdd2a1880e0ba8167021",
+      "shape": [
+        491,
+        6
+      ]
+    },
+    "v5_temporal_contract": {
+      "path": "configs/evaluations/canonical_wrist_path_selected_temporal_v5.json",
+      "sha256": "a303b12eaf959186fc0b904023552ab8a4898ac691ec933d60b4cd00ae6b09a5"
+    },
+    "implementation": {
+      "path": "src/sim2claw/coordinated_unloading_tracking_challenger.py",
+      "sha256": "96d135d9b1ec124d5157c1bc64b2c71756fd5889b356c45cb40784ffc109f3ee"
+    }
+  },
+  "trace": {
+    "phase": "forward_source",
+    "expected_forward_rows": 434,
+    "expected_source_rows_inclusive": [
+      0,
+      433
+    ],
+    "nominal_sample_hz": 40.0,
+    "timing_semantics": "sample_domain_only_not_causal_command_application_latency"
+  },
+  "fit": {
+    "joint_name": "elbow_flex",
+    "joint_index": 2,
+    "model_kind": "first_order_affine_error_response_per_sample",
+    "train_row_count": 304,
+    "heldout_row_count": 130,
+    "chronological_split": true,
+    "minimum_alpha": 0.0,
+    "maximum_alpha": 1.0,
+    "maximum_absolute_bias_degrees_per_sample": 0.25,
+    "task_outcomes_used": false
+  },
+  "heldout_acceptance": {
+    "maximum_rmse_degrees": 0.5,
+    "maximum_absolute_error_degrees": 1.0,
+    "minimum_relative_improvement_over_requested": 0.8
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-coordinated-unloading-tracking-fit-v1",
+  "authority": {
+    "read_physical_evidence": true,
+    "fit_sample_domain_tracking": true,
+    "dynamic_task_replay": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "mapping_approval": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "This prospectively frozen fit uses only the elbow requested-versus-observed samples from one immutable, camera-reviewed, no-contact physical prefix. The first 304 rows fit a first-order affine sample-domain response and the final 130 rows are untouched chronological validation. No pawn outcome, task outcome, contact parameter, latency label, other joint, action repair, or simulator result is used. A pass only admits a task-bounded diagnostic challenger; it cannot calibrate causal latency, approve a global or task mapping, authorize hardware, count a task attempt, or claim transfer."
+}
