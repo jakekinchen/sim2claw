@@ -1,0 +1,2084 @@
+{
+  "all_rise_events_follow_jaw_contact": true,
+  "authority": {
+    "action_change": false,
+    "camera": false,
+    "dynamics_change": false,
+    "evaluator_v2_freeze": false,
+    "gateway": false,
+    "mapping_approval": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Simulator-only exact-action contact witness for the already rejected nominal direct and diagnostic ZOH replays. It can localize modeled contact geometry but cannot identify physical contact, calibrate a parameter, alter the rejected result, approve mapping, or authorize hardware.",
+  "contract_path": "configs/evaluations/canonical_contact_witness_v1.json",
+  "contract_sha256": "fa1524a2e27c4666c2185303ecddaa1014876f70ac8560d13e4073ed00730482",
+  "dynamics_or_action_changed": false,
+  "physical_motion": false,
+  "physical_task_attempts": 0,
+  "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+  "results": [
+    {
+      "action_rows": 1017,
+      "applied_action_sha256": "73b681e2581ea1477f4deec90d1f48d78e8cce2b7c42923dd5c5b612415dbf42",
+      "case_id": "tan_pawn_h7__h7_h6",
+      "direction": "REAL_TO_SIM",
+      "first_jaw_contact_row": 731,
+      "first_jaw_contact_witness": {
+        "contact_height_relative_initial_pawn_root_m": 0.050276346323190446,
+        "contact_position_xyz_m": [
+          -0.2724308810863743,
+          0.4324886998466428,
+          0.8511602873231905
+        ],
+        "jaw_geom": "geom-493",
+        "jaw_to_pawn_normal_xyz": [
+          0.4618652163135301,
+          0.41887566679085453,
+          -0.7818079672977074
+        ],
+        "normal_force": 0.5419748488760786,
+        "pawn_geom": "geom-446",
+        "row_index": 731,
+        "substep_index": 4
+      },
+      "first_planar_motion_row": 792,
+      "first_rise_above_threshold_row": 801,
+      "jaw_pawn_contact_pairs": [
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.8394282966564764,
+            "mean": 0.6426335523872377,
+            "minimum": 0.1924490542673681
+          },
+          "contact_count": 1441,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.026086240079282175,
+            "minimum": 0.01826632569962927
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 6.703318790270008,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.5561210834505284,
+            "mean": 0.4704663688027976,
+            "minimum": 0.30141145375992395
+          },
+          "contact_count": 1161,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.021795924374270137,
+            "minimum": 0.020313060102353897
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box4",
+          "maximum_normal_force": 3.113412017317719,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.4831230862019111,
+            "mean": 0.4576851125654411,
+            "minimum": 0.41799800588487074
+          },
+          "contact_count": 945,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.019588033023510643,
+            "minimum": 0.01862844069684677
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 1.756356347886166,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.6910725533162477,
+            "mean": 0.5105463840532276,
+            "minimum": 0.24859521736748397
+          },
+          "contact_count": 913,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.026578404423655555,
+            "minimum": 0.020210794956257327
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "left_moving_jaw_box3",
+          "maximum_normal_force": 6.494837402742235,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7407274619619829,
+            "mean": 0.6990911981837715,
+            "minimum": 0.6365313283667422
+          },
+          "contact_count": 760,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.025233418270704022,
+            "minimum": 0.020661909309270032
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 3.415651234319237,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-434"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.8786283768080229,
+            "mean": 0.8188033376666864,
+            "minimum": 0.741017097258412
+          },
+          "contact_count": 719,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024987223003563153,
+            "minimum": 0.02237711804807152
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 3.4721055728605092,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-434"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7931408985842577,
+            "mean": 0.772733959296042,
+            "minimum": 0.3505183668343411
+          },
+          "contact_count": 705,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.050276346323190446,
+            "minimum": 0.04759283873477049
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 14.123021021597994,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-446"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.6372151791070702,
+            "mean": 0.6136804628222431,
+            "minimum": 0.5903582710836928
+          },
+          "contact_count": 506,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.023207134510141003,
+            "minimum": 0.02187095714278886
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 1.9496814449724356,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-434"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.15096941490673121,
+            "mean": 0.14531093650414953,
+            "minimum": 0.10869305304607549
+          },
+          "contact_count": 370,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.01959382115135444,
+            "minimum": 0.01806697551279335
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_sph_tip3",
+          "maximum_normal_force": 1.4888623532866183,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.5149876214405651,
+            "mean": 0.46202414426292254,
+            "minimum": 0.4316089257708636
+          },
+          "contact_count": 296,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02016274090495418,
+            "minimum": 0.018584863216554504
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box5",
+          "maximum_normal_force": 1.0645252323955963,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.3552371812750735,
+            "mean": 0.1679814688783492,
+            "minimum": 0.0016660331995174992
+          },
+          "contact_count": 89,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.04623228137672519,
+            "minimum": 0.042867848244078854
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 0.5826575420920919,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-446"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7394864921945818,
+            "mean": 0.7383316661914641,
+            "minimum": 0.7375923140933376
+          },
+          "contact_count": 27,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.022420137303260645,
+            "minimum": 0.02210376662929714
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.1917770502673162,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-435"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7476945447375052,
+            "mean": 0.740641552535065,
+            "minimum": 0.7026063066822908
+          },
+          "contact_count": 11,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.0496454657785349,
+            "minimum": 0.047478675654180624
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 13.450730914672734,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-446"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.685188576030691,
+            "mean": 0.6762978131842873,
+            "minimum": 0.6663665550989507
+          },
+          "contact_count": 6,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.022249662723688002,
+            "minimum": 0.022097826295893408
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 0.0,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-435"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7037300724406782,
+            "mean": 0.7003107404012806,
+            "minimum": 0.698335443604318
+          },
+          "contact_count": 6,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.04892227031461949,
+            "minimum": 0.04798420626851718
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box7",
+          "maximum_normal_force": 6.289217149559488,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-446"
+        }
+      ],
+      "path_id": "canonical_direct_target",
+      "peak_vertical_rise_mm": 14.329728271477826,
+      "peak_vertical_rise_row": 889,
+      "requested_action_sha256": "73b681e2581ea1477f4deec90d1f48d78e8cce2b7c42923dd5c5b612415dbf42",
+      "rise_after_first_jaw_contact_rows": 70,
+      "selected_piece_id": "tan_pawn_h7",
+      "support_contact_steps": 48721
+    },
+    {
+      "action_rows": 1017,
+      "applied_action_sha256": "6ccc20a72eb18ade3d8a2f1c7db6448f98c130f71f610e46c16e6edf840299c9",
+      "case_id": "tan_pawn_h7__h7_h6",
+      "direction": "REAL_TO_SIM",
+      "first_jaw_contact_row": 736,
+      "first_jaw_contact_witness": {
+        "contact_height_relative_initial_pawn_root_m": 0.050276399943539274,
+        "contact_position_xyz_m": [
+          -0.2724307623084059,
+          0.43248878936430835,
+          0.8511603409435393
+        ],
+        "jaw_geom": "geom-493",
+        "jaw_to_pawn_normal_xyz": [
+          0.46186521631412175,
+          0.418875666790322,
+          -0.7818079672976431
+        ],
+        "normal_force": 0.541650180854961,
+        "pawn_geom": "geom-446",
+        "row_index": 736,
+        "substep_index": 4
+      },
+      "first_planar_motion_row": 797,
+      "first_rise_above_threshold_row": 806,
+      "jaw_pawn_contact_pairs": [
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.8385707713533239,
+            "mean": 0.6568379266144406,
+            "minimum": 0.20953794047797963
+          },
+          "contact_count": 1386,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02617069850030107,
+            "minimum": 0.018254001635841344
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 7.344040001581305,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.43435344807379156,
+            "mean": 0.3851060824802503,
+            "minimum": 0.3748927618675943
+          },
+          "contact_count": 1144,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.0191227232518576,
+            "minimum": 0.018091781402387874
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box5",
+          "maximum_normal_force": 1.0868321229516023,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7145974558827547,
+            "mean": 0.5008899534657556,
+            "minimum": 0.22691431819623314
+          },
+          "contact_count": 938,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.026526324620770758,
+            "minimum": 0.020243041977980325
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "left_moving_jaw_box3",
+          "maximum_normal_force": 6.711238417771084,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.4616651026466912,
+            "mean": 0.43150196599530344,
+            "minimum": 0.36987743084060665
+          },
+          "contact_count": 777,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02144408334376091,
+            "minimum": 0.020273475372947103
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box4",
+          "maximum_normal_force": 3.574314265575781,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.740815329588457,
+            "mean": 0.6980343887595584,
+            "minimum": 0.635610080971431
+          },
+          "contact_count": 767,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02523767363081919,
+            "minimum": 0.020659201693294382
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 3.416276366064034,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-434"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.8782746099302613,
+            "mean": 0.8195171943792491,
+            "minimum": 0.7411676560590401
+          },
+          "contact_count": 725,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02500219965044559,
+            "minimum": 0.022366762159137132
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 3.4722007119430485,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-434"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7931408921006707,
+            "mean": 0.7727335567358324,
+            "minimum": 0.35049301504591757
+          },
+          "contact_count": 705,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.050276399943539274,
+            "minimum": 0.04759272683064297
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 14.123020928408963,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-446"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.48139667336563446,
+            "mean": 0.44926730750185817,
+            "minimum": 0.40491300283023546
+          },
+          "contact_count": 636,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.0194596379826516,
+            "minimum": 0.01838778095856264
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 1.8526098596464298,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.6426034063644718,
+            "mean": 0.6161982103852884,
+            "minimum": 0.5891693055876543
+          },
+          "contact_count": 551,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.023038531353519187,
+            "minimum": 0.021552855126693582
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 2.259762759508286,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-434"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.14768121120510744,
+            "mean": 0.14475120111093298,
+            "minimum": 0.10961495176800684
+          },
+          "contact_count": 222,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.01856774485442081,
+            "minimum": 0.01724196417530155
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_sph_tip3",
+          "maximum_normal_force": 1.1859954809411724,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.3552387205239749,
+            "mean": 0.16798180077394204,
+            "minimum": 0.0016657118868189135
+          },
+          "contact_count": 89,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.04623228929590095,
+            "minimum": 0.04286785108699154
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 0.5826571898829856,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-446"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7394360103972955,
+            "mean": 0.7382764254407715,
+            "minimum": 0.7375569716366187
+          },
+          "contact_count": 27,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02242471016428249,
+            "minimum": 0.02209946951407804
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.18522352711905576,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-435"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7477035200642997,
+            "mean": 0.7406522932668121,
+            "minimum": 0.7026184115793017
+          },
+          "contact_count": 11,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.049645389235628445,
+            "minimum": 0.047478609703619834
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 13.451116858575613,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-446"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.6990110626749999,
+            "mean": 0.6676014353320178,
+            "minimum": 0.6405775125539734
+          },
+          "contact_count": 7,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.022268084267334287,
+            "minimum": 0.022095786952898155
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 0.16221222709577302,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-435"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7037283450089513,
+            "mean": 0.7003083667477901,
+            "minimum": 0.698332986971497
+          },
+          "contact_count": 6,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.04892209499498079,
+            "minimum": 0.04798409334483911
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box7",
+          "maximum_normal_force": 6.289198029997896,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-446"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9495241543835964,
+            "mean": 0.9484773409567607,
+            "minimum": 0.9476302577179762
+          },
+          "contact_count": 3,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.020458773328998814,
+            "minimum": 0.020423209373442552
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.0,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        }
+      ],
+      "path_id": "diagnostic_zoh_0p11s",
+      "peak_vertical_rise_mm": 13.988675325215416,
+      "peak_vertical_rise_row": 898,
+      "requested_action_sha256": "73b681e2581ea1477f4deec90d1f48d78e8cce2b7c42923dd5c5b612415dbf42",
+      "rise_after_first_jaw_contact_rows": 70,
+      "selected_piece_id": "tan_pawn_h7",
+      "support_contact_steps": 48808
+    },
+    {
+      "action_rows": 948,
+      "applied_action_sha256": "8526b423206ea88fe8d6edd5fb0ab5cf0d0a0333c68aa0489cd28430bebadfaf",
+      "case_id": "tan_pawn_h7__h7_g7",
+      "direction": "SIM_TO_REAL",
+      "first_jaw_contact_row": 685,
+      "first_jaw_contact_witness": {
+        "contact_height_relative_initial_pawn_root_m": 0.0504952962261761,
+        "contact_position_xyz_m": [
+          -0.27340684109333513,
+          0.4348846028101263,
+          0.8513792372261761
+        ],
+        "jaw_geom": "geom-483",
+        "jaw_to_pawn_normal_xyz": [
+          0.5738770293312636,
+          0.14280248250736968,
+          -0.8063948202931717
+        ],
+        "normal_force": 0.025875506543831896,
+        "pawn_geom": "geom-446",
+        "row_index": 685,
+        "substep_index": 9
+      },
+      "first_planar_motion_row": 729,
+      "first_rise_above_threshold_row": 729,
+      "jaw_pawn_contact_pairs": [
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.8063948202931717,
+            "mean": 0.6941420265536107,
+            "minimum": 0.343612825366239
+          },
+          "contact_count": 435,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.0504952962261761,
+            "minimum": 0.046802028946794416
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 12.42998867608044,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-446"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7126911332255951,
+            "mean": 0.38205080886032117,
+            "minimum": 0.17026706797955207
+          },
+          "contact_count": 284,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.04938006974143894,
+            "minimum": 0.04484175762123821
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box5",
+          "maximum_normal_force": 3.473586766305297,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-446"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.711212847152534,
+            "mean": 0.6846885491004832,
+            "minimum": 0.6548627155138337
+          },
+          "contact_count": 114,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02264027486737541,
+            "minimum": 0.02199255427541169
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 1.4424957132722407,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-434"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.6630038746703683,
+            "mean": 0.6087924858414484,
+            "minimum": 0.5772232008318374
+          },
+          "contact_count": 40,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.021807871588676808,
+            "minimum": 0.020581978155211345
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 1.136740379425053,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-434"
+        }
+      ],
+      "path_id": "canonical_direct_target",
+      "peak_vertical_rise_mm": 14.454307797355792,
+      "peak_vertical_rise_row": 732,
+      "requested_action_sha256": "8526b423206ea88fe8d6edd5fb0ab5cf0d0a0333c68aa0489cd28430bebadfaf",
+      "rise_after_first_jaw_contact_rows": 44,
+      "selected_piece_id": "tan_pawn_h7",
+      "support_contact_steps": 45017
+    },
+    {
+      "action_rows": 948,
+      "applied_action_sha256": "c754fd239ba107b294fe3abfed8ad0485783ad541951f1a5a14db83011cbb986",
+      "case_id": "tan_pawn_h7__h7_g7",
+      "direction": "SIM_TO_REAL",
+      "first_jaw_contact_row": 690,
+      "first_jaw_contact_witness": {
+        "contact_height_relative_initial_pawn_root_m": 0.05049530435580374,
+        "contact_position_xyz_m": [
+          -0.2734067278463014,
+          0.4348847590326895,
+          0.8513792453558038
+        ],
+        "jaw_geom": "geom-483",
+        "jaw_to_pawn_normal_xyz": [
+          0.573891194318488,
+          0.14279175991943147,
+          -0.8063866382714999
+        ],
+        "normal_force": 0.02511730986161852,
+        "pawn_geom": "geom-446",
+        "row_index": 690,
+        "substep_index": 9
+      },
+      "first_planar_motion_row": 734,
+      "first_rise_above_threshold_row": 734,
+      "jaw_pawn_contact_pairs": [
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7551035693543359,
+            "mean": 0.6586443618222589,
+            "minimum": 0.5957564723722223
+          },
+          "contact_count": 1464,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02339904033545681,
+            "minimum": 0.021953637579581575
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 3.483601200057767,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-433"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.8063866382714999,
+            "mean": 0.6941570886400941,
+            "minimum": 0.3436110663532677
+          },
+          "contact_count": 435,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.05049530435580374,
+            "minimum": 0.04680230930629581
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 12.430005588251605,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-446"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.712699988878819,
+            "mean": 0.38206177103418854,
+            "minimum": 0.1702950161362256
+          },
+          "contact_count": 284,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.049380127685367925,
+            "minimum": 0.04484195703585714
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box5",
+          "maximum_normal_force": 3.473609461110597,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-446"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.5995122937351977,
+            "mean": 0.5984623372720014,
+            "minimum": 0.597247119841555
+          },
+          "contact_count": 279,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.022393782121138517,
+            "minimum": 0.02138316486915537
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 2.7185088495646474,
+          "pawn_body": "tan_pawn_h7",
+          "pawn_geom": "geom-434"
+        }
+      ],
+      "path_id": "diagnostic_zoh_0p11s",
+      "peak_vertical_rise_mm": 14.203831958125024,
+      "peak_vertical_rise_row": 737,
+      "requested_action_sha256": "8526b423206ea88fe8d6edd5fb0ab5cf0d0a0333c68aa0489cd28430bebadfaf",
+      "rise_after_first_jaw_contact_rows": 44,
+      "selected_piece_id": "tan_pawn_h7",
+      "support_contact_steps": 44669
+    },
+    {
+      "action_rows": 1033,
+      "applied_action_sha256": "52c89c2f51e190ae0cd94512405e98b20fd6e630e139144503a0a68a3c3ddd87",
+      "case_id": "tan_pawn_f7__f7_f6",
+      "direction": "REAL_TO_SIM",
+      "first_jaw_contact_row": 749,
+      "first_jaw_contact_witness": {
+        "contact_height_relative_initial_pawn_root_m": 0.050320205911884575,
+        "contact_position_xyz_m": [
+          -0.1875032800565489,
+          0.4031033330023999,
+          0.8512041469118846
+        ],
+        "jaw_geom": "geom-493",
+        "jaw_to_pawn_normal_xyz": [
+          0.37043630497435664,
+          0.4959375223414699,
+          -0.7853807470843358
+        ],
+        "normal_force": 0.0479400036289498,
+        "pawn_geom": "geom-418",
+        "row_index": 749,
+        "substep_index": 9
+      },
+      "first_planar_motion_row": 773,
+      "first_rise_above_threshold_row": 773,
+      "jaw_pawn_contact_pairs": [
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7772914126036833,
+            "mean": 0.4189786130542445,
+            "minimum": 0.08006164722776081
+          },
+          "contact_count": 1823,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.03563152944714221,
+            "minimum": 0.0335371461861832
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 4.343994400636854,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-415"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.864770941555094,
+            "mean": 0.8445889671578388,
+            "minimum": 0.8165981428724755
+          },
+          "contact_count": 1710,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02494244026739112,
+            "minimum": 0.018545517029182612
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 4.732968960801701,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-407"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9010913545117937,
+            "mean": 0.8665197826843981,
+            "minimum": 0.8199454131111719
+          },
+          "contact_count": 1562,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024439940219294853,
+            "minimum": 0.017184473133354805
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 5.817196995956235,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-406"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7505606628507007,
+            "mean": 0.7044920289580829,
+            "minimum": 0.6567898261797924
+          },
+          "contact_count": 1291,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.026673287588906747,
+            "minimum": 0.024306978146354852
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 2.5758298264860553,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-408"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.5684474663760446,
+            "mean": 0.4031320096119408,
+            "minimum": 0.3333788356843711
+          },
+          "contact_count": 1274,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02605866364195042,
+            "minimum": 0.02359938662553218
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 1.6691078173592013,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-408"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7499017575757382,
+            "mean": 0.7094403846050417,
+            "minimum": 0.6627577002442764
+          },
+          "contact_count": 1114,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.026915987320676682,
+            "minimum": 0.025745709763355107
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 1.750327555900314,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-409"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7684455189870886,
+            "mean": 0.33277808799609737,
+            "minimum": 3.068469905507677e-06
+          },
+          "contact_count": 857,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.038405462346364216,
+            "minimum": 0.03540269027973442
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 10.472485917268754,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-417"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7433562732699809,
+            "mean": 0.7156186165808573,
+            "minimum": 0.6685682777036408
+          },
+          "contact_count": 783,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.0277075489211146,
+            "minimum": 0.027224036498060156
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.6158161619033408,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-410"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.538801044848159,
+            "mean": 0.3964981428661288,
+            "minimum": 0.3445996856295226
+          },
+          "contact_count": 733,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.03362447719293915,
+            "minimum": 0.03200363796458505
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 2.3042754141292208,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-414"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.5468811100621658,
+            "mean": 0.4565104822614925,
+            "minimum": 0.427196376259684
+          },
+          "contact_count": 688,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.03198907242520577,
+            "minimum": 0.03159841523632456
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.5213529780370578,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-413"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.8311948453274061,
+            "mean": 0.8246876950130102,
+            "minimum": 0.8192559931116075
+          },
+          "contact_count": 639,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02287995419294886,
+            "minimum": 0.021348576436172162
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 1.3383584807898954,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-405"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.44141279051789284,
+            "mean": 0.2228550509565124,
+            "minimum": 0.1809369626411487
+          },
+          "contact_count": 570,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.04699383992700179,
+            "minimum": 0.045385643556716926
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box7",
+          "maximum_normal_force": 6.325979619593567,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-418"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.819255623810962,
+            "mean": 0.6979986743201234,
+            "minimum": 0.6252955807973706
+          },
+          "contact_count": 567,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02566517149151981,
+            "minimum": 0.021768476755266275
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 2.6008437063506307,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-416"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.24260548183440833,
+            "mean": 0.12053969078972668,
+            "minimum": 0.09882396742143514
+          },
+          "contact_count": 543,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.045989327707097516,
+            "minimum": 0.04483395178669969
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 4.242058639731867,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-418"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.5512154684887051,
+            "mean": 0.4046929039859232,
+            "minimum": 1.3354870778962726e-05
+          },
+          "contact_count": 465,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.04937017120549103,
+            "minimum": 0.0394798382677336
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box6",
+          "maximum_normal_force": 4.079748089412913,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-418"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9322576010594813,
+            "mean": 0.8716455135275512,
+            "minimum": 0.7956799686658332
+          },
+          "contact_count": 394,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024442409589758296,
+            "minimum": 0.022110056001859335
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 1.3284314302195803,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-416"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7853807470843358,
+            "mean": 0.5203504771937458,
+            "minimum": 0.022731008440375185
+          },
+          "contact_count": 340,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.050320205911884575,
+            "minimum": 0.04210400782457857
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 10.851938813742935,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-418"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7291075172140119,
+            "mean": 0.7111651429699865,
+            "minimum": 0.7001552856630906
+          },
+          "contact_count": 315,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.029145444526086695,
+            "minimum": 0.028690209326239002
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.2297510183329645,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-411"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.43815839210624064,
+            "mean": 0.193461195425402,
+            "minimum": 0.001019271950914983
+          },
+          "contact_count": 116,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.0470305924384149,
+            "minimum": 0.042233524505925324
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 0.7783918078029443,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-418"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.6799167607896074,
+            "mean": 0.6493071667844557,
+            "minimum": 0.618128631395419
+          },
+          "contact_count": 100,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.030587389867806514,
+            "minimum": 0.03024470338857499
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.22774088064589962,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-412"
+        }
+      ],
+      "path_id": "canonical_direct_target",
+      "peak_vertical_rise_mm": 13.859933624233989,
+      "peak_vertical_rise_row": 921,
+      "requested_action_sha256": "52c89c2f51e190ae0cd94512405e98b20fd6e630e139144503a0a68a3c3ddd87",
+      "rise_after_first_jaw_contact_rows": 24,
+      "selected_piece_id": "tan_pawn_f7",
+      "support_contact_steps": 49364
+    },
+    {
+      "action_rows": 1033,
+      "applied_action_sha256": "2bcab0dbd63a1d1b8c8042528801689d96aca0290f47d68759fef1e4f6c27fc8",
+      "case_id": "tan_pawn_f7__f7_f6",
+      "direction": "REAL_TO_SIM",
+      "first_jaw_contact_row": 754,
+      "first_jaw_contact_witness": {
+        "contact_height_relative_initial_pawn_root_m": 0.05032033915595091,
+        "contact_position_xyz_m": [
+          -0.18750325584281677,
+          0.4031037514451475,
+          0.851204280155951
+        ],
+        "jaw_geom": "geom-493",
+        "jaw_to_pawn_normal_xyz": [
+          0.3704287793409595,
+          0.49593882567667186,
+          -0.7853834736117195
+        ],
+        "normal_force": 0.05081528111396989,
+        "pawn_geom": "geom-418",
+        "row_index": 754,
+        "substep_index": 9
+      },
+      "first_planar_motion_row": 778,
+      "first_rise_above_threshold_row": 778,
+      "jaw_pawn_contact_pairs": [
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7870999787375893,
+            "mean": 0.2659496842252658,
+            "minimum": 0.00024883741229842876
+          },
+          "contact_count": 1862,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.03500884072913113,
+            "minimum": 0.03321342443838937
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 4.050623713559369,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-415"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7977000185509326,
+            "mean": 0.7068653303563905,
+            "minimum": 0.6026085714707196
+          },
+          "contact_count": 1628,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024310044745216364,
+            "minimum": 0.023305794043813943
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 2.8655717718941127,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-408"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7570371942627933,
+            "mean": 0.688705124446886,
+            "minimum": 0.5906361186690501
+          },
+          "contact_count": 1491,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02575718629776913,
+            "minimum": 0.025064060007276345
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 2.039981730074301,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-409"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.768098932782615,
+            "mean": 0.23002061335213642,
+            "minimum": 0.0001933026429924259
+          },
+          "contact_count": 1205,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.038244488790122766,
+            "minimum": 0.03579546787451171
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 8.87826752464067,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-417"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.38093061150816443,
+            "mean": 0.33883052252068663,
+            "minimum": 0.3171007696634792
+          },
+          "contact_count": 1177,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.03323557856103465,
+            "minimum": 0.031534629526712266
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 2.408536115407547,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-414"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7519319146084588,
+            "mean": 0.6978642970070795,
+            "minimum": 0.5899268683506524
+          },
+          "contact_count": 1023,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.0272182431958804,
+            "minimum": 0.026703691839269572
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 1.0179581150986756,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-410"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.26721700202233245,
+            "mean": 0.2008429662277034,
+            "minimum": 0.167976088432558
+          },
+          "contact_count": 1001,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.048984479257895286,
+            "minimum": 0.04578874505356123
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box7",
+          "maximum_normal_force": 6.605651538298424,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-418"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.3803980702509863,
+            "mean": 0.34201322148255553,
+            "minimum": 0.3075306135310568
+          },
+          "contact_count": 888,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02383013055272898,
+            "minimum": 0.02327862219844612
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 2.399753066530517,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-408"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.1429742829747404,
+            "mean": 0.1051714926916642,
+            "minimum": 0.06707634582021124
+          },
+          "contact_count": 794,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.045986681240509975,
+            "minimum": 0.04526388023212402
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 4.427266211840413,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-418"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.4244241557759568,
+            "mean": 0.40069270334337254,
+            "minimum": 0.3648553722360885
+          },
+          "contact_count": 769,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.0315877423492531,
+            "minimum": 0.030777230361681118
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.6028034185390247,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-413"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7510765726906415,
+            "mean": 0.6824498258688408,
+            "minimum": 0.6052308652334674
+          },
+          "contact_count": 583,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.021677899515399335,
+            "minimum": 0.02009373894106614
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 2.408690558771555,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-416"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7853834736117195,
+            "mean": 0.37200730063650955,
+            "minimum": 0.0026021781006717514
+          },
+          "contact_count": 554,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.05032033915595091,
+            "minimum": 0.042142402872530904
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 10.851727937186993,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-418"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.5556010800314306,
+            "mean": 0.34904446223969504,
+            "minimum": 0.0016050436499031814
+          },
+          "contact_count": 495,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.049480342011017364,
+            "minimum": 0.03966246539039642
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box6",
+          "maximum_normal_force": 3.9898978559121425,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-418"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.8940785736859385,
+            "mean": 0.7233004555924373,
+            "minimum": 0.6145795163070046
+          },
+          "contact_count": 488,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.01763492218753071,
+            "minimum": 0.016845473406429945
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 1.3554010352557833,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-407"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.7338035071082138,
+            "mean": 0.6886269782873224,
+            "minimum": 0.609442028602732
+          },
+          "contact_count": 403,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.028761891184924893,
+            "minimum": 0.028237292596008934
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.45899056611848366,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-411"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9172841868416136,
+            "mean": 0.8719126567285826,
+            "minimum": 0.8075042140001022
+          },
+          "contact_count": 357,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.022145843852615532,
+            "minimum": 0.02172192253675498
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.5648694991588319,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-416"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.647064761542792,
+            "mean": 0.5397990247390099,
+            "minimum": 0.49801208335383934
+          },
+          "contact_count": 147,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.03043469229002349,
+            "minimum": 0.029845030858497323
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.3536820744931128,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-412"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.4381697079315013,
+            "mean": 0.1934530168738895,
+            "minimum": 0.0010417505070830534
+          },
+          "contact_count": 116,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.04703067608296441,
+            "minimum": 0.04223342784167872
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 0.7782413746231638,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-418"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.8425869858858769,
+            "mean": 0.8272418359136547,
+            "minimum": 0.8087454084888656
+          },
+          "contact_count": 82,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.015303717243298931,
+            "minimum": 0.014972184051008974
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 0.3341827477190806,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-406"
+        }
+      ],
+      "path_id": "diagnostic_zoh_0p11s",
+      "peak_vertical_rise_mm": 4.162642681156625,
+      "peak_vertical_rise_row": 839,
+      "requested_action_sha256": "52c89c2f51e190ae0cd94512405e98b20fd6e630e139144503a0a68a3c3ddd87",
+      "rise_after_first_jaw_contact_rows": 24,
+      "selected_piece_id": "tan_pawn_f7",
+      "support_contact_steps": 49061
+    },
+    {
+      "action_rows": 965,
+      "applied_action_sha256": "57e9192b8ec0a13331b1bfc6bf911c528f5dbe7df89055c89baa02465edab296",
+      "case_id": "tan_pawn_f7__f7_g7",
+      "direction": "SIM_TO_REAL",
+      "first_jaw_contact_row": 777,
+      "first_jaw_contact_witness": {
+        "contact_height_relative_initial_pawn_root_m": 0.03267870988588817,
+        "contact_position_xyz_m": [
+          -0.1772993435239341,
+          0.4142030192718616,
+          0.8335626508858882
+        ],
+        "jaw_geom": "geom-493",
+        "jaw_to_pawn_normal_xyz": [
+          -0.6853264208944126,
+          -0.6613050715257014,
+          0.3049644228405037
+        ],
+        "normal_force": 0.09630267407226142,
+        "pawn_geom": "geom-417",
+        "row_index": 777,
+        "substep_index": 3
+      },
+      "first_planar_motion_row": 780,
+      "first_rise_above_threshold_row": 825,
+      "jaw_pawn_contact_pairs": [
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.585611862375646,
+            "mean": 0.5521709351532464,
+            "minimum": 0.41396200403350425
+          },
+          "contact_count": 1078,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02469578957968266,
+            "minimum": 0.018211041822988494
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 3.9732709091434972,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-408"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.5817627490119506,
+            "mean": 0.4884641999653867,
+            "minimum": 0.3327939908304472
+          },
+          "contact_count": 960,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024231142670530947,
+            "minimum": 0.020007536939994464
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 3.1621868037564043,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-409"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9975454784080283,
+            "mean": 0.7258930418707666,
+            "minimum": 0.6304195197711887
+          },
+          "contact_count": 946,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.025060667173071205,
+            "minimum": 0.01377706422272773
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 4.49872979634832,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-407"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.5718256555135511,
+            "mean": 0.3261448365066523,
+            "minimum": 0.27215666958342927
+          },
+          "contact_count": 573,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02427323982367302,
+            "minimum": 0.02192435030048423
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 1.244156122678851,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-410"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.6258592464953914,
+            "mean": 0.5930294449910604,
+            "minimum": 0.5751936362076714
+          },
+          "contact_count": 445,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024997633838679256,
+            "minimum": 0.016431227851056662
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 3.0862874227356243,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-416"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9996961044541546,
+            "mean": 0.9830275957663062,
+            "minimum": 0.9337412915512658
+          },
+          "contact_count": 440,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02657146416349443,
+            "minimum": 0.0145245031254152
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 5.820512160385319,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-406"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9772027141954315,
+            "mean": 0.6599118775247804,
+            "minimum": 0.5665134537445576
+          },
+          "contact_count": 154,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.02579654076542026,
+            "minimum": 0.021570850412466758
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "left_moving_jaw_box2",
+          "maximum_normal_force": 3.8892615409334343,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-406"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.998213319868275,
+            "mean": 0.9937119863633882,
+            "minimum": 0.9751760949343601
+          },
+          "contact_count": 85,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024807833757726327,
+            "minimum": 0.024119232437618376
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box4",
+          "maximum_normal_force": 3.0639440397178697,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-405"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.980796409953379,
+            "mean": 0.9736722097819077,
+            "minimum": 0.9558001512091298
+          },
+          "contact_count": 79,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024655299584978807,
+            "minimum": 0.02392203043793173
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box3",
+          "maximum_normal_force": 2.774018838021557,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-405"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9510874948245582,
+            "mean": 0.935969059407651,
+            "minimum": 0.11471747057956012
+          },
+          "contact_count": 63,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024978513609274944,
+            "minimum": 0.02426358564414699
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "left_moving_jaw_box2",
+          "maximum_normal_force": 1.1421691280666542,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-405"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9815055401597241,
+            "mean": 0.9765792021527024,
+            "minimum": 0.9697657876403243
+          },
+          "contact_count": 49,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.0247092728996805,
+            "minimum": 0.0240592401384202
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 1.6177497887300045,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-405"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.4777740846969939,
+            "mean": 0.3401925562498348,
+            "minimum": 0.24874218641924445
+          },
+          "contact_count": 49,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.03034970833792172,
+            "minimum": 0.028977743723899385
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.13572001335918674,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-415"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.48771128464980695,
+            "mean": 0.4297778732169128,
+            "minimum": 0.3049644228405037
+          },
+          "contact_count": 40,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.03371457083204732,
+            "minimum": 0.032272703729406826
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.14738851477230358,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-417"
+        }
+      ],
+      "path_id": "canonical_direct_target",
+      "peak_vertical_rise_mm": 13.9424476232487,
+      "peak_vertical_rise_row": 853,
+      "requested_action_sha256": "57e9192b8ec0a13331b1bfc6bf911c528f5dbe7df89055c89baa02465edab296",
+      "rise_after_first_jaw_contact_rows": 48,
+      "selected_piece_id": "tan_pawn_f7",
+      "support_contact_steps": 46269
+    },
+    {
+      "action_rows": 965,
+      "applied_action_sha256": "018371ec28ed62f09a8fbda98353fdd1d42868fde69c239672eed9de99f00bc1",
+      "case_id": "tan_pawn_f7__f7_g7",
+      "direction": "SIM_TO_REAL",
+      "first_jaw_contact_row": 782,
+      "first_jaw_contact_witness": {
+        "contact_height_relative_initial_pawn_root_m": 0.032678703347644666,
+        "contact_position_xyz_m": [
+          -0.17729933310234633,
+          0.4142030266798036,
+          0.8335626443476447
+        ],
+        "jaw_geom": "geom-493",
+        "jaw_to_pawn_normal_xyz": [
+          -0.6853262610875015,
+          -0.6613051722391401,
+          0.3049645635702403
+        ],
+        "normal_force": 0.0963813670348669,
+        "pawn_geom": "geom-417",
+        "row_index": 782,
+        "substep_index": 3
+      },
+      "first_planar_motion_row": 785,
+      "first_rise_above_threshold_row": 830,
+      "jaw_pawn_contact_pairs": [
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.5851159976650713,
+            "mean": 0.5526236432686964,
+            "minimum": 0.4117314841766899
+          },
+          "contact_count": 1101,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024747695440502926,
+            "minimum": 0.018209409858976566
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 3.9870415828197197,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-408"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.5818090428635451,
+            "mean": 0.4909561915015011,
+            "minimum": 0.3336109274195571
+          },
+          "contact_count": 962,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024224346908389482,
+            "minimum": 0.02000596891099138
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 3.1483051686778913,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-409"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9969979054334974,
+            "mean": 0.7275799686045705,
+            "minimum": 0.6303598102014631
+          },
+          "contact_count": 940,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.025062159890340996,
+            "minimum": 0.013778019466440528
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 4.603660675897573,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-407"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.571824655845677,
+            "mean": 0.327263344832037,
+            "minimum": 0.23526369857786492
+          },
+          "contact_count": 573,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024255720699167926,
+            "minimum": 0.021793254839216014
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 1.2559636842907924,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-410"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.6258498784612072,
+            "mean": 0.5931165724807647,
+            "minimum": 0.5751743413983651
+          },
+          "contact_count": 446,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.0250613599007955,
+            "minimum": 0.0164272469901533
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 3.055901881513301,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-416"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9996975084852937,
+            "mean": 0.9829460346173147,
+            "minimum": 0.93378581148775
+          },
+          "contact_count": 434,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.026573237037991304,
+            "minimum": 0.014600652713470219
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-494",
+          "maximum_normal_force": 6.036759044186081,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-406"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9792490262203634,
+            "mean": 0.6883425933928629,
+            "minimum": 0.5634418764473307
+          },
+          "contact_count": 151,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.025796647844362863,
+            "minimum": 0.021576950534462846
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "left_moving_jaw_box2",
+          "maximum_normal_force": 3.8239051428319457,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-406"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9982181830989699,
+            "mean": 0.9937537919694216,
+            "minimum": 0.9749410797644726
+          },
+          "contact_count": 86,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024803097632201787,
+            "minimum": 0.024117943885359927
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box4",
+          "maximum_normal_force": 3.0216022888636473,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-405"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9810000155085276,
+            "mean": 0.973981485307341,
+            "minimum": 0.9560854213143583
+          },
+          "contact_count": 79,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024652014881548,
+            "minimum": 0.023927807888214248
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "left_fixed_jaw_box3",
+          "maximum_normal_force": 2.7465138594619325,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-405"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9507416299211993,
+            "mean": 0.9491026262830637,
+            "minimum": 0.9465265442220281
+          },
+          "contact_count": 61,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024986307618535597,
+            "minimum": 0.02408359508017288
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "left_moving_jaw_box2",
+          "maximum_normal_force": 1.1009348277523796,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-405"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.9814922078687744,
+            "mean": 0.9764467272181092,
+            "minimum": 0.967998962020094
+          },
+          "contact_count": 49,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.024717325319994488,
+            "minimum": 0.024065039432030866
+          },
+          "jaw_body": "left_gripper",
+          "jaw_geom": "geom-483",
+          "maximum_normal_force": 1.6151579288006577,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-405"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.4777741248428875,
+            "mean": 0.3401978267855573,
+            "minimum": 0.24880215254648438
+          },
+          "contact_count": 49,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.03034993390917584,
+            "minimum": 0.02897675397713695
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.13568213921389013,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-415"
+        },
+        {
+          "absolute_vertical_normal_component": {
+            "maximum": 0.4877308233302045,
+            "mean": 0.4283702712266383,
+            "minimum": 0.3049645635702403
+          },
+          "contact_count": 39,
+          "contact_height_relative_initial_pawn_root_m": {
+            "maximum": 0.03371481991276293,
+            "minimum": 0.032273050537828585
+          },
+          "jaw_body": "left_moving_jaw_so101_v1",
+          "jaw_geom": "geom-493",
+          "maximum_normal_force": 0.14739777240570967,
+          "pawn_body": "tan_pawn_f7",
+          "pawn_geom": "geom-417"
+        }
+      ],
+      "path_id": "diagnostic_zoh_0p11s",
+      "peak_vertical_rise_mm": 13.939199220454611,
+      "peak_vertical_rise_row": 858,
+      "requested_action_sha256": "57e9192b8ec0a13331b1bfc6bf911c528f5dbe7df89055c89baa02465edab296",
+      "rise_after_first_jaw_contact_rows": 48,
+      "selected_piece_id": "tan_pawn_f7",
+      "support_contact_steps": 46291
+    }
+  ],
+  "schema_version": "sim2claw.canonical_contact_witness_receipt.v1",
+  "source_temporal_receipt_sha256": "727ecd642681a6cb4a85327ccd95e4637df60e3ebdf4e2acd49e26e8f2e526ff",
+  "status": "canonical_contact_witness_completed"
+}

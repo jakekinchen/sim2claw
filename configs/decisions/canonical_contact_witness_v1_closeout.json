@@ -1,0 +1,55 @@
+{
+  "schema_version": "sim2claw.canonical_contact_witness_closeout.v1",
+  "decision_id": "canonical-contact-witness-20260728-v1-closeout",
+  "status": "contact_witness_completed_proxy_only_challenger_next",
+  "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/canonical_contact_witness_v1.json",
+    "sha256": "fa1524a2e27c4666c2185303ecddaa1014876f70ac8560d13e4073ed00730482"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-contact-witness-v1/receipt.json",
+    "sha256": "89ecb1d20b2176fb0e890b1afda128c8f9eb577cc519277b171361626c4f5bc2"
+  },
+  "result": {
+    "case_plant_paths": 8,
+    "all_rise_events_follow_jaw_contact": true,
+    "first_contact_height_relative_pawn_root_mm": {
+      "minimum": 32.678703347644664,
+      "maximum": 50.49530435580374,
+      "six_of_eight_paths_above": 50.0
+    },
+    "first_contact_absolute_vertical_normal_component": {
+      "minimum": 0.3049644228405037,
+      "maximum": 0.8063948202931717
+    },
+    "first_contact_to_rise_lag_rows": {
+      "minimum": 24,
+      "maximum": 70
+    },
+    "peak_vertical_rise_mm": {
+      "minimum": 4.162642681156625,
+      "maximum": 14.454307797355792
+    },
+    "first_contact_geometry_class": "enabled_high_detail_jaw_collision_mesh_to_pawn_upper_profile",
+    "named_jaw_collision_primitives_also_present": true
+  },
+  "diagnostic_defect": {
+    "field": "support_contact_steps",
+    "issue": "implementation increments per matching board contact inside each substep rather than once per unique substep",
+    "disposition": "exclude this field from mechanism selection and downstream claims; first contact, motion, rise, pair, height, normal, and force witnesses are unaffected"
+  },
+  "decision": "Preserve the canonical action-set negative. Prospectively test exactly one model-semantics mechanism: disable the three enabled left-jaw high-detail collision meshes while preserving all named jaw collision primitives. Keep actions, plants, variants, gates, pawn and board geometry, mass, friction, damping, timing, and actuation unchanged. This remains a diagnostic challenger and is not calibrated physical geometry.",
+  "authority": {
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "next_gate": "commit and push the proxy-only collision challenger freeze, then execute its immutable output exactly once"
+}

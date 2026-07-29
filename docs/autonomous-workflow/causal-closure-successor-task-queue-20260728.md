@@ -262,6 +262,21 @@ Current state:
   It replays the same four exact actions under the unchanged direct and ZOH
   paths only to localize modeled jaw/pawn contact height, normal, force, and
   timing before one mechanism is selected or rejected.
+- The witness executed exactly once. Receipt SHA-256
+  `89ecb1d20b2176fb0e890b1afda128c8f9eb577cc519277b171361626c4f5bc2`
+  shows that all eight nominal case/plant rises follow jaw contact. Six of
+  eight paths first contact above `50 mm` from the pawn root with strongly
+  vertical contact normals; all first contacts are from enabled high-detail
+  jaw collision meshes even though named collision primitives are also
+  present. Closeout SHA-256
+  `d32139d76575d727262bf2f0e100fb63ae7b7bf04db117820d6f2a6e69cad775`
+  excludes the defective per-contact `support_contact_steps` count from use.
+- One mechanism-only proxy collision challenger is frozen at
+  `5bfefa645281fb9ea5fe99cbd93082d105c1972daeb7a5b9450ec7425432fdd6`.
+  It disables only the three enabled left-jaw collision meshes and preserves
+  named jaw collision primitives. Exact actions, plants, reset variants,
+  gates, pawn/board geometry, mass, friction, damping, timing, and actuation
+  remain unchanged. This is diagnostic, not calibrated physical geometry.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -304,7 +319,7 @@ This authorization:
 
 Next step:
 
-- Commit and push the official V2 negative plus the prospectively frozen
-  nominal contact-witness diagnostic, then execute that immutable diagnostic
-  exactly once. Use its result only to declare or reject one bounded simulator
-  contact-geometry mechanism; retain exact actions, gates, and heldouts.
+- Commit and push the contact-witness result plus the proxy-only collision
+  challenger freeze, then execute the immutable challenger exactly once.
+  Preserve both baseline and challenger outcomes; a challenger pass does not
+  itself promote geometry, approve mapping, or open hardware.

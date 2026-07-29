@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "11bd84c0914c044e32e33176a696b2d3e7855da2ec7c1ee10d5ce6cb9e0ae4df",
+      "sha256": "5b491f8b1eeeb183ef1171ab1c9d562162c1bd4d96f40079755558c6c122c201",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1306,6 +1306,36 @@
         "schema_version": "sim2claw.canonical_contact_witness.v1",
         "status": "frozen_after_temporal_v2_reject_before_contact_witness_replay",
         "proof_class": "prospective_cpu_fp64_exact_action_nominal_contact_witness_diagnostic"
+      }
+    },
+    "canonical_contact_witness_v1_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-contact-witness-v1/receipt.json",
+      "sha256": "89ecb1d20b2176fb0e890b1afda128c8f9eb577cc519277b171361626c4f5bc2",
+      "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_contact_witness_receipt.v1",
+        "status": "canonical_contact_witness_completed",
+        "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic"
+      }
+    },
+    "canonical_contact_witness_v1_closeout": {
+      "path": "configs/decisions/canonical_contact_witness_v1_closeout.json",
+      "sha256": "d32139d76575d727262bf2f0e100fb63ae7b7bf04db117820d6f2a6e69cad775",
+      "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_contact_witness_closeout.v1",
+        "status": "contact_witness_completed_proxy_only_challenger_next",
+        "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic"
+      }
+    },
+    "canonical_proxy_contact_temporal_v1_contract": {
+      "path": "configs/evaluations/canonical_proxy_contact_temporal_v1.json",
+      "sha256": "5bfefa645281fb9ea5fe99cbd93082d105c1972daeb7a5b9450ec7425432fdd6",
+      "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_proxy_contact_temporal.v1",
+        "status": "frozen_after_contact_witness_before_proxy_only_replay",
+        "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger"
       }
     },
     "simulator_candidate": {
@@ -3729,6 +3759,44 @@
       }
     },
     {
+      "id": "evidence:canonical-contact-witness-v1-result",
+      "type": "evidence",
+      "label": "Canonical exact-action contact witness V1 result",
+      "status": "jaw_contact_precedes_rise_proxy_collision_challenger_selected",
+      "source_binding": "canonical_contact_witness_v1_closeout",
+      "data": {
+        "receipt_source_binding": "canonical_contact_witness_v1_receipt",
+        "case_plant_paths": 8,
+        "all_rise_events_follow_jaw_contact": true,
+        "upper_profile_first_contact_paths": 6,
+        "support_contact_steps_field_excluded": true,
+        "mapping_calibration_approved": false,
+        "evaluator_v2_freeze_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:canonical-proxy-contact-temporal-v1-frozen",
+      "type": "checkpoint",
+      "label": "Canonical proxy-only jaw collision challenger frozen",
+      "status": "preregistered_before_exactly_once_proxy_contact_replay",
+      "source_binding": "canonical_proxy_contact_temporal_v1_contract",
+      "data": {
+        "mechanism_id": "jaw_collision_mesh_to_named_proxy_only_v1",
+        "disabled_collision_mesh_count": 3,
+        "named_collision_primitives_preserved": true,
+        "actions_plants_variants_gates_unchanged": true,
+        "calibrated_physical_geometry": false,
+        "mapping_calibration_approved": false,
+        "evaluator_v2_freeze_authorized": false,
+        "camera_authorized": false,
+        "gateway_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -5142,6 +5210,27 @@
       }
     },
     {
+      "source": "evidence:canonical-contact-witness-v1-result",
+      "type": "evaluated-on",
+      "target": "checkpoint:canonical-contact-witness-v1-frozen",
+      "metadata": {
+        "all_rise_events_follow_jaw_contact": true,
+        "support_contact_steps_field_excluded": true,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:canonical-proxy-contact-temporal-v1-frozen",
+      "type": "generated-from",
+      "target": "evidence:canonical-contact-witness-v1-result",
+      "metadata": {
+        "single_mechanism_change": true,
+        "actions_plants_variants_and_gates_unchanged": true,
+        "simulator_promotion_authorized": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -6158,14 +6247,32 @@
       "node_ids_added": [
         "checkpoint:canonical-contact-witness-v1-frozen"
       ]
+    },
+    {
+      "revision": 108,
+      "event_id": "CANONICAL_CONTACT_WITNESS_V1_COMPLETED",
+      "status": "jaw_contact_precedes_rise_proxy_collision_challenger_selected",
+      "source_binding": "canonical_contact_witness_v1_closeout",
+      "node_ids_added": [
+        "evidence:canonical-contact-witness-v1-result"
+      ]
+    },
+    {
+      "revision": 109,
+      "event_id": "CANONICAL_PROXY_CONTACT_TEMPORAL_V1_FROZEN",
+      "status": "preregistered_before_exactly_once_proxy_contact_replay",
+      "source_binding": "canonical_proxy_contact_temporal_v1_contract",
+      "node_ids_added": [
+        "checkpoint:canonical-proxy-contact-temporal-v1-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:canonical-contact-witness-v1-frozen",
+    "node_id": "checkpoint:canonical-proxy-contact-temporal-v1-frozen",
     "milestone_id": "CC02",
-    "status": "preregistered_before_exactly_once_contact_witness_replay",
+    "status": "preregistered_before_exactly_once_proxy_contact_replay",
     "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
-    "resume_action": "execute_canonical_contact_witness_v1_exactly_once",
+    "resume_action": "execute_canonical_proxy_contact_temporal_v1_exactly_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

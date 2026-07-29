@@ -116,6 +116,16 @@ Confirmed:
   `fa1524a2e27c4666c2185303ecddaa1014876f70ac8560d13e4073ed00730482`.
   It may localize modeled contact geometry and timing but cannot tune an
   outcome, calibrate physical parameters, change actions, or authorize motion.
+- The witness ran once. Receipt SHA-256
+  `89ecb1d20b2176fb0e890b1afda128c8f9eb577cc519277b171361626c4f5bc2`
+  establishes that all eight nominal rises follow jaw contact and that six
+  first contacts occur above `50 mm` from the pawn root from high-detail jaw
+  collision meshes with strong vertical normals.
+- A one-mechanism proxy-only jaw collision challenger is frozen at SHA-256
+  `5bfefa645281fb9ea5fe99cbd93082d105c1972daeb7a5b9450ec7425432fdd6`.
+  It preserves the exact action/evaluator surface and changes only the enabled
+  jaw collision representation from meshes-plus-primitives to named
+  primitives. It remains an uncalibrated diagnostic.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -160,9 +170,9 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 
 ```text
 Current state:
-Active card: CC02 exact-action nominal contact-witness diagnostic after preserved temporal rejection.
+Active card: CC02 exact-action proxy-only jaw collision challenger after preserved temporal rejection and witness.
 Completed: CC00, CC00A, CC01.
-Evidence: V2 static receipt c68599e9...; ObservableEpisode closeout fe586670...; temporal receipt 727ecd64... and closeout 98e3154e....
+Evidence: temporal negative 727ecd64...; contact witness 89ecb1d2...; proxy challenger freeze 5bfefa64....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -170,7 +180,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
 Blockers: the frozen action set is dynamically rejected; physical/model mapping remains unapproved.
-Next step: commit/push the preserved negative and witness freeze, then execute the nominal direct/ZOH witness exactly once and select or reject one bounded mechanism.
+Next step: commit/push the witness result and proxy-only freeze, then execute the exact-action direct/ZOH challenger exactly once.
 ```
 
 ## Physical Authority Boundaries

@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC02",
-    "node_id": "checkpoint:canonical-contact-witness-v1-frozen",
+    "node_id": "checkpoint:canonical-proxy-contact-temporal-v1-frozen",
     "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
-    "resume_action": "execute_canonical_contact_witness_v1_exactly_once",
+    "resume_action": "execute_canonical_proxy_contact_temporal_v1_exactly_once",
     "resume_authorized": true,
-    "status": "preregistered_before_exactly_once_contact_witness_replay"
+    "status": "preregistered_before_exactly_once_proxy_contact_replay"
   },
   "authority": {
     "camera_open": false,
@@ -82,28 +82,28 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 133,
+    "edges": 135,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
-      "evaluated-on": 27,
+      "evaluated-on": 28,
       "fitted-on": 4,
-      "generated-from": 86,
+      "generated-from": 87,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 127,
+    "nodes": 129,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 80,
+      "checkpoint": 81,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
       "evaluator_verdict": 21,
-      "evidence": 5,
+      "evidence": 6,
       "intervention": 1,
       "mechanism": 3,
       "parameter_posterior": 1,
@@ -240,6 +240,17 @@
       },
       "source": "checkpoint:canonical-contact-witness-v1-frozen",
       "target": "verdict:canonical-temporal-v2-reject",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "actions_plants_variants_and_gates_unchanged": true,
+        "physical_motion": false,
+        "simulator_promotion_authorized": false,
+        "single_mechanism_change": true
+      },
+      "source": "checkpoint:canonical-proxy-contact-temporal-v1-frozen",
+      "target": "evidence:canonical-contact-witness-v1-result",
       "type": "generated-from"
     },
     {
@@ -1237,6 +1248,16 @@
       "type": "generated-from"
     },
     {
+      "metadata": {
+        "all_rise_events_follow_jaw_contact": true,
+        "physical_motion": false,
+        "support_contact_steps_field_excluded": true
+      },
+      "source": "evidence:canonical-contact-witness-v1-result",
+      "target": "checkpoint:canonical-contact-witness-v1-frozen",
+      "type": "evaluated-on"
+    },
+    {
       "metadata": {},
       "source": "evidence:img5349-world-visual",
       "target": "context:c922-rgb-no-depth",
@@ -1630,7 +1651,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "ffe49b4ab36ce5af2cded25bbffdc2b4388d36e3879f1c3aa00d459511176a6a",
+  "graph_digest": "65040cd4375c7130949fe090c6dc9cd7de2da0593a295db6950bdd6edaa06c42",
   "node_types": [
     "workcell",
     "session",
@@ -1752,6 +1773,38 @@
     },
     {
       "data": {
+        "actions_plants_variants_gates_unchanged": true,
+        "calibrated_physical_geometry": false,
+        "camera_authorized": false,
+        "disabled_collision_mesh_count": 3,
+        "evaluator_v2_freeze_authorized": false,
+        "gateway_authorized": false,
+        "mapping_calibration_approved": false,
+        "mechanism_id": "jaw_collision_mesh_to_named_proxy_only_v1",
+        "named_collision_primitives_preserved": true,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "canonical_proxy_contact_temporal_v1_contract"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:canonical-proxy-contact-temporal-v1-frozen",
+      "label": "Canonical proxy-only jaw collision challenger frozen",
+      "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+      "source": {
+        "path": "configs/evaluations/canonical_proxy_contact_temporal_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+          "schema_version": "sim2claw.canonical_proxy_contact_temporal.v1",
+          "status": "frozen_after_contact_witness_before_proxy_only_replay"
+        },
+        "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+        "sha256": "5bfefa645281fb9ea5fe99cbd93082d105c1972daeb7a5b9450ec7425432fdd6"
+      },
+      "status": "preregistered_before_exactly_once_proxy_contact_replay",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "mapping_calibration_approved": false,
         "official_attempts": 0,
         "outcomes_used_for_change": false,
@@ -1831,7 +1884,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "11bd84c0914c044e32e33176a696b2d3e7855da2ec7c1ee10d5ce6cb9e0ae4df"
+        "sha256": "5b491f8b1eeeb183ef1171ab1c9d562162c1bd4d96f40079755558c6c122c201"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -4493,6 +4546,36 @@
     },
     {
       "data": {
+        "all_rise_events_follow_jaw_contact": true,
+        "case_plant_paths": 8,
+        "evaluator_v2_freeze_authorized": false,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "receipt_source_binding": "canonical_contact_witness_v1_receipt",
+        "source_binding_id": "canonical_contact_witness_v1_closeout",
+        "support_contact_steps_field_excluded": true,
+        "upper_profile_first_contact_paths": 6
+      },
+      "evaluator_identity": null,
+      "id": "evidence:canonical-contact-witness-v1-result",
+      "label": "Canonical exact-action contact witness V1 result",
+      "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+      "source": {
+        "path": "configs/decisions/canonical_contact_witness_v1_closeout.json",
+        "payload_contract": {
+          "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+          "schema_version": "sim2claw.canonical_contact_witness_closeout.v1",
+          "status": "contact_witness_completed_proxy_only_challenger_next"
+        },
+        "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+        "sha256": "d32139d76575d727262bf2f0e100fb63ae7b7bf04db117820d6f2a6e69cad775"
+      },
+      "status": "jaw_contact_precedes_rise_proxy_collision_challenger_selected",
+      "type": "evidence"
+    },
+    {
+      "data": {
         "complete_simulation_geometry_used": true,
         "source_binding_id": "world_visual",
         "splat_count": 334537
@@ -6637,7 +6720,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "11bd84c0914c044e32e33176a696b2d3e7855da2ec7c1ee10d5ce6cb9e0ae4df",
+      "source_sha256": "5b491f8b1eeeb183ef1171ab1c9d562162c1bd4d96f40079755558c6c122c201",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -6679,6 +6762,26 @@
       "source_binding": "canonical_contact_witness_v1_contract",
       "source_sha256": "fa1524a2e27c4666c2185303ecddaa1014876f70ac8560d13e4073ed00730482",
       "status": "preregistered_before_exactly_once_contact_witness_replay"
+    },
+    {
+      "event_id": "CANONICAL_CONTACT_WITNESS_V1_COMPLETED",
+      "node_ids_added": [
+        "evidence:canonical-contact-witness-v1-result"
+      ],
+      "revision": 108,
+      "source_binding": "canonical_contact_witness_v1_closeout",
+      "source_sha256": "d32139d76575d727262bf2f0e100fb63ae7b7bf04db117820d6f2a6e69cad775",
+      "status": "jaw_contact_precedes_rise_proxy_collision_challenger_selected"
+    },
+    {
+      "event_id": "CANONICAL_PROXY_CONTACT_TEMPORAL_V1_FROZEN",
+      "node_ids_added": [
+        "checkpoint:canonical-proxy-contact-temporal-v1-frozen"
+      ],
+      "revision": 109,
+      "source_binding": "canonical_proxy_contact_temporal_v1_contract",
+      "source_sha256": "5bfefa645281fb9ea5fe99cbd93082d105c1972daeb7a5b9450ec7425432fdd6",
+      "status": "preregistered_before_exactly_once_proxy_contact_replay"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -6695,6 +6798,17 @@
       "sha256": "d67168f6f1163a1bc67dfe977fa00e69d27b07148b807c3f953f1874e112d129"
     },
     {
+      "id": "canonical_contact_witness_v1_closeout",
+      "path": "configs/decisions/canonical_contact_witness_v1_closeout.json",
+      "payload_contract": {
+        "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+        "schema_version": "sim2claw.canonical_contact_witness_closeout.v1",
+        "status": "contact_witness_completed_proxy_only_challenger_next"
+      },
+      "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+      "sha256": "d32139d76575d727262bf2f0e100fb63ae7b7bf04db117820d6f2a6e69cad775"
+    },
+    {
       "id": "canonical_contact_witness_v1_contract",
       "path": "configs/evaluations/canonical_contact_witness_v1.json",
       "payload_contract": {
@@ -6706,6 +6820,17 @@
       "sha256": "fa1524a2e27c4666c2185303ecddaa1014876f70ac8560d13e4073ed00730482"
     },
     {
+      "id": "canonical_contact_witness_v1_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-contact-witness-v1/receipt.json",
+      "payload_contract": {
+        "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+        "schema_version": "sim2claw.canonical_contact_witness_receipt.v1",
+        "status": "canonical_contact_witness_completed"
+      },
+      "proof_class": "cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+      "sha256": "89ecb1d20b2176fb0e890b1afda128c8f9eb577cc519277b171361626c4f5bc2"
+    },
+    {
       "id": "canonical_orientation_migration",
       "path": "configs/migrations/chessboard_orientation_legacy_to_canonical_v1.json",
       "payload_contract": {
@@ -6715,6 +6840,17 @@
       },
       "proof_class": "metadata_and_visualization_coordinate_migration_only",
       "sha256": "e638c538b276d78c4d9dd438a1902b23d5df52953e05a83024a3ae5c5bce2c3f"
+    },
+    {
+      "id": "canonical_proxy_contact_temporal_v1_contract",
+      "path": "configs/evaluations/canonical_proxy_contact_temporal_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+        "schema_version": "sim2claw.canonical_proxy_contact_temporal.v1",
+        "status": "frozen_after_contact_witness_before_proxy_only_replay"
+      },
+      "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+      "sha256": "5bfefa645281fb9ea5fe99cbd93082d105c1972daeb7a5b9450ec7425432fdd6"
     },
     {
       "id": "canonical_seeded_static_v2_closeout",
@@ -6787,7 +6923,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "11bd84c0914c044e32e33176a696b2d3e7855da2ec7c1ee10d5ce6cb9e0ae4df"
+      "sha256": "5b491f8b1eeeb183ef1171ab1c9d562162c1bd4d96f40079755558c6c122c201"
     },
     {
       "id": "current_task_scene_labels",
