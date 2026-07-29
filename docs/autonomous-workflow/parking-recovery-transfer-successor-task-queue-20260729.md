@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP03C_CARTESIAN_CORRIDOR_DYNAMIC_FROZEN_PENDING_ONE_RUN`
+Status: `RP03D_TANGENT_SEAT_STATIC_FROZEN_PENDING_ONE_RUN`
 
 Created: `2026-07-29`
 
@@ -39,7 +39,8 @@ does not rewrite that result.
 | RP03 | `DONE_PASS` | Freeze fresh task actions at the achieved lock. | Exact RP02D torque-on pose, unchanged bounded family universe and static gates; at least one distinct family per direction; exact bytes predate outcomes. | Passed with exactly one eligible family per direction; no dynamic or physical execution. |
 | RP03A | `DONE_IMMUTABLE_NEGATIVE` | Replay both exact achieved-lock actions under baseline and timing stress. | Preserve exact action bytes, 40 Hz row order, five reset deltas, `36.025 mm` progress, contact/exclusion/no-lift/collision/camera gates, direct target plus diagnostic `0.11 s` ZOH, and ObservableEpisode.v2-min first-divergence traces. Both cases must pass both paths. | Both directions rejected: contact occurred but progress and no-lift failed. Identity, camera, collision, and exclusions passed. |
 | RP03B | `DONE_TERMINAL_STATIC_NEGATIVE` | Compile one bounded longer-stroke successor at the exact achieved lock. | Change only stroke from `40 mm` to the previously preregistered `66 mm`; preserve the 48-family universe, 576-cell bound, ranking, wrist/contact grid, IK, collision, contact, camera, calibrated-range, gateway-rate, one-family-per-direction, and false physical authority. | `0/576` cells were eligible; the uniform longer-stroke mechanism is closed without dynamics or hardware. |
-| RP03C | `STATIC_PASS_DYNAMIC_FROZEN_PENDING_ONE_RUN` | Replace only sparse joint interpolation between the existing 35 mm precontact, contact, and 40 mm pushed Cartesian endpoints with a deterministic chord-error-constrained corridor. | Static receipt `5a9230fa...` passes all 576 cells with one selected family per direction. Every emitted corridor row stays within `0.5 mm` of its actual-FK chord, task-axis backtracking stays within `0.25 mm`, and exact lock, grid, rates, contact/collision/camera/gateway gates remain unchanged. The frozen dynamic gate is exactly `2 directions × 2 plants × 5 resets = 20` episodes and requires all 20 to pass. | A static or dynamic negative closes this interpolation mechanism. No friction fitting, threshold weakening, outcome-private tuning, or physical attempt before all 20 dynamic episodes pass. |
+| RP03C | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Replace only sparse joint interpolation between the existing 35 mm precontact, contact, and 40 mm pushed Cartesian endpoints with a deterministic chord-error-constrained corridor. | Static receipt `5a9230fa...` passed all 576 cells with one selected family per direction. Dynamic receipt `8b7a889d...` then ran all `20` frozen episodes. | `0/20` passed; every episode still failed progress and no-lift. Cartesian interpolation bow alone is closed. |
+| RP03D | `STATIC_FROZEN_PENDING_ONE_RUN` | Add one small tangent-seat waypoint after contact without changing the original push endpoint. | Exactly `1.5 mm`, the midpoint of the prospectively advised `1--2 mm` range; same 48 families, 576 cells, contact/wrist grid, exact lock, 40 mm endpoint, 40 Hz rates, 0.5 mm corridor audit, collision/contact/camera/gateway gates, and false physical authority. | A static negative closes the tangent-seat mechanism. A pass opens the same exact 20-episode dynamic gate; no hardware beforehand. |
 | RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
 | RP05 | `PENDING` | Complete a distinct SIM->REAL task transfer. | Simulator success and robustness predate freeze; distinct family; camera-owned physical success with identical bytes. | At most three task attempts; failures stay in the denominator. |
 | RP06 | `PENDING` | Approve a task-bounded mapping for the successful locked-elbow slice. | Scope and factors are preregistered; accepted wrist/pan/lift evidence plus successful first-divergence bounds support the exact task slice. | Never relabel as global mapping approval. |
@@ -59,8 +60,9 @@ does not rewrite that result.
 
 ## Current next step
 
-RP03C static passed. Run the already frozen 20-episode Cartesian-corridor
-dynamic contract exactly once. Physical authority remains false.
+RP03C dynamic rejected the interpolation-only hypothesis. Run the already
+frozen RP03D 1.5 mm tangent-seat static universe exactly once. Physical
+authority remains false.
 
 ## RP00 immutable result
 
@@ -291,6 +293,22 @@ dynamic contract exactly once. Physical authority remains false.
   zero.
 - This proves a statically admissible planar corridor, not task consequence.
   Physical attempts and transfer ledgers remain unchanged.
+
+## RP03C immutable Cartesian-corridor dynamic negative
+
+- Freeze commit: `0cf6956`.
+- Receipt SHA-256:
+  `8b7a889d231877d4163ff453327d74887b7870ea3f96fb68be6ed150962a60a5`.
+- All `20` episodes ran: two directions, two plant paths, and five reset
+  variants. Passing episodes: `0`.
+- Every episode preserved identity, selected contact, exclusions, collision,
+  camera, and gateway compatibility, but failed both progress and no-lift.
+- Nominal direct REAL->SIM progress/rise was
+  `12.363033 / 13.881540 mm`; SIM->REAL was
+  `5.624995 / 4.877620 mm`.
+- The interpolation-bow hypothesis is rejected without spending a physical
+  attempt. RP03D changes only one prospectively frozen `1.5 mm`
+  task-horizontal tangent-seat waypoint.
 
 ## RP01 freeze
 

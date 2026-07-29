@@ -1,0 +1,54 @@
+{
+  "schema_version": "sim2claw.parking_recovery_rp03d_tangent_seat_static.v1",
+  "contract_id": "parking-recovery-rp03d-tangent-seat-static-20260729-v1",
+  "status": "frozen_before_one_bounded_static_tangent_seat_run",
+  "proof_class": "prospective_cpu_fp64_exact_lock_cartesian_tangent_seat_static_action_freeze",
+  "base_contract": {
+    "path": "configs/evaluations/achieved_lock_task_freeze_v1.json",
+    "sha256": "2ca78853446b4ddd80c21a1724a523f44d7db0b5e72f84be009447ee7832691d"
+  },
+  "predecessor_closeout": {
+    "path": "configs/decisions/achieved_lock_cartesian_corridor_temporal_v1_closeout.json",
+    "sha256": "ceac5d0ed86b99eaf31db0125a78827a6dfef28be132ff3be769b7543dbef6a9"
+  },
+  "implementation": {
+    "path": "src/sim2claw/canonical_elbow_locked_tangent_seat_static.py",
+    "sha256": "68d44afbfa2a9ce5b2baa8866ccd35ca4dc0f1f82c03cf021abc22f822666315"
+  },
+  "intervention": {
+    "tangent_seat_depth_m": 0.0015,
+    "derivation": "midpoint_of_prospectively_advised_1_to_2mm_range",
+    "only_outcome_relevant_change": "one_task_horizontal_seat_waypoint_after_contact"
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-rp03d-tangent-seat-static-v1",
+  "unchanged": {
+    "exact_achieved_elbow_lock_92p43956043956044_degrees": true,
+    "exact_40mm_endpoint": true,
+    "exact_35mm_precontact_backoff": true,
+    "same_48_family_quarantined_universe": true,
+    "same_three_wrist_rolls_and_four_contact_heights": true,
+    "same_576_cell_ceiling": true,
+    "same_closed_jaw_target": true,
+    "same_40hz_and_target_rates": true,
+    "same_0p5mm_cartesian_corridor_audit": true,
+    "same_ik_collision_contact_camera_and_gateway_gates": true,
+    "same_one_family_per_direction_requirement": true,
+    "no_dwell_friction_mass_damping_timing_solver_or_threshold_change": true,
+    "dynamic_outcomes_not_used_for_static_selection": true,
+    "no_clipping_smoothing_retiming_offset_suffix_or_assistance": true
+  },
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "dynamic_simulation": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "One prospectively frozen static-only RP03D successor adds exactly one 1.5 mm task-horizontal tangent-seat waypoint after the existing contact point while preserving the 35 mm precontact, contact height and wrist grids, and original 40 mm endpoint. A pass may open the unchanged 20-episode direct/ZOH dynamic gate only; it cannot approve mapping, hardware, a physical attempt, simulator promotion, or transfer."
+}

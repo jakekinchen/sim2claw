@@ -1,0 +1,40 @@
+{
+  "schema_version": "sim2claw.achieved_lock_cartesian_corridor_temporal_closeout.v1",
+  "decision_id": "achieved-lock-cartesian-corridor-temporal-20260729-v1-closeout",
+  "status": "accepted_terminal_dynamic_negative",
+  "freeze_commit": "0cf6956",
+  "contract": {
+    "path": "configs/evaluations/achieved_lock_cartesian_corridor_temporal_v1.json",
+    "sha256": "d0fd1b7997089901bb176c4bff65608fa38cca6b65de2baf1aa851c94ff78d35"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-rp03c-cartesian-corridor-temporal-v1/receipt.json",
+    "sha256": "8b7a889d231877d4163ff453327d74887b7870ea3f96fb68be6ed150962a60a5"
+  },
+  "result": {
+    "episode_count": 20,
+    "passing_episode_count": 0,
+    "direction_counts": {
+      "REAL_TO_SIM": 0,
+      "SIM_TO_REAL": 0
+    },
+    "nominal_direct": {
+      "REAL_TO_SIM": {
+        "signed_progress_mm": 12.363032541136402,
+        "maximum_selected_vertical_rise_mm": 13.881539610252513
+      },
+      "SIM_TO_REAL": {
+        "signed_progress_mm": 5.624995460734505,
+        "maximum_selected_vertical_rise_mm": 4.877619587094539
+      }
+    },
+    "failed_gates_all_episodes": [
+      "progress",
+      "no_lift"
+    ],
+    "requested_mapped_sent_identity_passed": true,
+    "contact_exclusion_collision_camera_and_gateway_passed": true,
+    "physical_task_attempts": 0
+  },
+  "decision": "Reject Cartesian chord refinement alone as the missing consequence mechanism. It removed the measured end-effector interpolation bow but did not restore pawn progress or no-lift behavior. Preserve exact actions and traces; do not open hardware. The next prospectively frozen mechanism may add one small task-horizontal tangent-seat waypoint while preserving contact height, wrist roll, endpoint, timing plants, and evaluator."
+}
