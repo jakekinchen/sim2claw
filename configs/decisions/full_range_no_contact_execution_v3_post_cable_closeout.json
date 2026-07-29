@@ -1,0 +1,56 @@
+{
+  "schema_version": "sim2claw.full_range_no_contact_execution_closeout.v3",
+  "decision_id": "full-range-no-contact-execution-20260729-v3-post-cable-closeout",
+  "status": "post_cable_tracking_negative_safe_return_incomplete",
+  "packet_freeze_commit": "995735e",
+  "authorization_commit": "a9aaddf",
+  "packet": {
+    "path": "configs/hardware/full_range_no_contact_execution_v3_post_cable.json",
+    "sha256": "d36dab543dbc3eae63e783c1b8b0215d3a9c7731f90194afe6fe7ef44d69b681"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-full-range-no-contact-execution-v3-post-cable/receipt.json",
+    "sha256": "a3ab1eee8935e10c9e9cb64639b274b74b3734cb98c4f01e0e4d20f1b55b39d6"
+  },
+  "camera_review": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-full-range-no-contact-execution-v3-post-cable/review/camera_review.json",
+    "sha256": "1c14707768c6eaaf717469370dead721748d3eb6d7ebf4093dc18beb78f8e5fa"
+  },
+  "comparison_to_pre_cable_v2": {
+    "minimum_observed_elbow_degrees": {
+      "pre_cable_v2": 77.4065934065934,
+      "post_cable_v3": 76.52747252747253,
+      "change_degrees": -0.8791208791208766
+    },
+    "maximum_forward_elbow_error_degrees": {
+      "pre_cable_v2": 30.46807216057887,
+      "post_cable_v3": 29.588951281457994,
+      "change_degrees": -0.8791208791208766
+    },
+    "longest_error_over_threshold_seconds": {
+      "pre_cable_v2": 7.85,
+      "post_cable_v3": 8.5
+    }
+  },
+  "result": {
+    "forward_source_rows_completed": 501,
+    "failure": "forward boundary 500 did not reach the frozen boundary gate",
+    "cameras_complete": true,
+    "camera_review_no_pawn_or_board_contact": true,
+    "camera_review_visible_cable_slack_without_obvious_snag": true,
+    "controlled_return_requested": true,
+    "controlled_return_completed": false,
+    "postflight_pose_degrees": [
+      -15.296703296703297,
+      -63.38461538461539,
+      99.38461538461539,
+      -12.703296703296703,
+      -102.28571428571429,
+      1.66270783847981
+    ],
+    "postflight_torque_off": true,
+    "physical_task_attempts": 0,
+    "mapping_approved": false
+  },
+  "decision": "The cable-routing change produced only a 0.879-degree improvement in minimum elbow reach and maximum error while the sustained-error duration worsened. It does not explain or close the roughly 30-degree physical tracking deficit. Preserve both receipts; do not retry the full route or reopen simulator-negative actions. Freeze a separately static-qualified, camera-enclosed return from the fresh torque-off pose to the natural anchor before any further physical identification or task motion."
+}

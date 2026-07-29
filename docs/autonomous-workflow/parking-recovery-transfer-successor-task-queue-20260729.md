@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04G_POST_CABLE_NO_CONTACT_ONE_EXECUTION_AUTHORIZED`
+Status: `RP04H_POST_CABLE_SAFE_RETURN_REQUIRED`
 
 Created: `2026-07-29`
 
@@ -50,7 +50,8 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP04D | `DONE_TERMINAL_80DEG_40MM_DYNAMIC_NEGATIVE` | Compile task geometry around the physically observed elbow floor instead of ideal V5 angles. | Static receipt `065e75e...` passed all locks; the predeclared 80-degree pair then ran `20` direct/ZOH/reset episodes with exact bytes. | `0/20` passed. Both cases made contact but failed progress and no-lift. Do not switch to 85 or 77.5 degree families after outcomes. |
 | RP04E | `DONE_TERMINAL_80DEG_66MM_DYNAMIC_NEGATIVE` | Test the evidence-directed undertravel mechanism at the same reachable lock. | Static receipt `0e3facb0...` passed with `6` eligible cells and froze one exact family per direction. Dynamic receipt `ba8bc2ed...` ran the exact direct/ZOH pair across five resets. | `0/20` passed. Progress improved into `19.70--45.28 mm`, but REAL_TO_SIM remained nonrobust and SIM_TO_REAL lifted `13.91--14.51 mm`. Close both exact tensors for hardware. |
 | RP04F | `DONE_TERMINAL_LOWER_CONTACT_DYNAMIC_NEGATIVE` | Test the one clean unresolved geometry mechanism after the 66 mm causal negative. | Static receipt `6b7d7fa6...` passed; dynamic receipt `e8c5ac49...` ran all 20 exact episodes. | `0/20` passed; lift worsened to `5.99--14.19 mm`. Close permanently under the preregistered stop rule. No hardware. |
-| RP04G | `POST_CABLE_NO_CONTACT_ONE_EXECUTION_AUTHORIZED` | Re-establish physical tracking and task-corridor evidence after the owner-reported wrist-camera cable tension change. | Packet `d36dab54...` reuses the exact V2 static-qualified 1105-row route under a new configuration token and camera session. One packet-hash-bound no-contact execution is authorized through `13:13:18 CDT`; fresh torque-off anchor, cameras, gateway, tracking, return, cable-slack review, and torque-off gates remain mandatory. | Do not blindly retry simulator-negative pawn actions. A clean no-contact pass may update physical tracking/mapping scope; any defect stops before task motion. |
+| RP04G | `DONE_POST_CABLE_TRACKING_NEGATIVE_RETURN_INCOMPLETE` | Re-establish physical tracking and task-corridor evidence after the owner-reported wrist-camera cable tension change. | Receipt `a3ab1eee...` completed 501 exact rows and both cameras; camera review found no pawn/board contact and visible cable slack without an obvious snag. | Cable relief improved the reach/error by only `0.879 deg`; the roughly `30 deg` deficit remains. Controlled return did not reach the natural anchor, but postflight torque is off. No retry. |
+| RP04H | `POST_CABLE_SAFE_RETURN_REQUIRED` | Restore the arm from the fresh torque-off postflight pose to the natural anchor without contacting the board or pawns. | Prospectively freeze a bounded static-qualified route from the exact observed pose; fresh cameras, gateway identity, start envelope, small steps, tracking/stall stop, return target, and torque-off cleanup. | No task motion or further identification until the return completes or a receipt-backed safety boundary stops it. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -70,11 +71,10 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-Build and freeze the post-cable-routing no-contact retest around the same exact
-V2 static-qualified route. Issue a new packet-hash-bound, time-bounded
-authorization only after tests and push. A fresh torque-off anchor, both
-cameras, controlled return, and torque-off cleanup remain mandatory. The
-retest cannot rescue any simulator-negative action or count as a pawn task.
+Freeze and complete a separate post-cable safe return from the exact torque-off
+postflight pose to the natural anchor. Do not issue another full-range retry or
+any task motion. Both cameras, static collision clearance, a fresh start check,
+small steps, tracking/stall stop, and torque-off cleanup remain mandatory.
 
 ## RP00 immutable result
 
