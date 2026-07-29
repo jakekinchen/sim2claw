@@ -3,22 +3,26 @@
 ## Mission
 
 Autonomously complete the smallest honest, camera-verifiable bidirectional
-straight closed-jaw pawn-push proof, or stop only at a genuine receipt-backed
-safety or authority boundary after safe in-scope alternatives are exhausted.
+straight pawn-push proof by closing the causal chain from exact action through
+joint/link response, contact, planar object response, and task consequence.
+Stop only at a genuine receipt-backed safety or authority boundary after safe
+in-scope alternatives are exhausted.
 
 ## Source of Truth
 
 1. Latest owner instruction.
 2. `AGENTS.md`.
-3. `docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md`.
-4. `docs/autonomous-workflow/bidirectional-pawn-push-v2-current-graph.json`.
-5. Immutable camera, gateway, simulator, evaluator, action, and cleanup
+3. `docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md`.
+4. The immutable predecessor queue
+   `docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md`.
+5. `docs/autonomous-workflow/bidirectional-pawn-push-v2-current-graph.json`.
+6. Immutable camera, gateway, simulator, evaluator, action, and cleanup
    receipts.
-6. `GOAL.md`, repository tests, and workflow protocols.
-7. Advisory Fable output, which never overrides repository evidence.
+7. `GOAL.md`, repository tests, and workflow protocols.
+8. Advisory Fable output, which never overrides repository evidence.
 
-The existing v2 queue is the only task-list source of truth. Do not create a
-competing backlog.
+The causal-closure successor queue is the sole active task list. The
+predecessor v2 queue remains immutable authority for its terminal results.
 
 ## Intended Outcome
 
@@ -36,7 +40,14 @@ competing backlog.
 - One preregistration commit predates every counted task action.
 - Registration fit and sealed-heldout gates pass exactly as frozen in the
   queue.
-- Sim-only push feasibility passes before evaluator freeze.
+- `ObservableEpisode.v2-min` preserves exact actions, timestamps, joint/link
+  state, board-plane object state/covariance, contact/motion events, outcome,
+  and explicit missingness.
+- The four canonical seeded actions complete their frozen simulator
+  consequence screen only after the v1 stock-range defect is closed and a
+  calibrated-range v2 static receipt admits their exact hashes.
+- The physical/model mapping receives a gauge-fixed, held-out-reviewed
+  approval before any physical task packet.
 - Evaluator ID/SHA, case list, mappings, scene, setup actions, task actions,
   stop rules, and camera thresholds are frozen before counted motion.
 - Requested, mapped, and sent task bytes are identical; there is no clipping,
@@ -63,19 +74,30 @@ separate proof classes.
 
 Confirmed:
 
-- The owner resumed V04 and authorized agent-led physical testing only after
-  all prospective safety/evidence gates pass.
-- V04 is the sole active card; the prior row-zero stop is immutable.
+- The predecessor V2 campaign is terminal without task or transfer authority.
+- Canonical current-workcell cutover and task-plane registration pass.
+- Legacy actions are rejected because their starts do not match the live
+  anchor and the physical/model mapping is not approved.
+- The v1 current-anchor-seeded apparent pass is quarantined because its live
+  elbow seed is about 2.64 degrees outside the stock MuJoCo elbow limit.
+- The calibrated-range v2 static rerun is frozen and passed at `fc23364`,
+  re-admitting the same four exact actions `2/2` per direction with a minimum
+  selected model-joint margin of `0.001829670515161086 rad`.
+- CC01 in the successor queue is the sole active card.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
 
 Recommended default:
 
-- Preserve the frozen acquisition-v2 arrays and repair the start with a
-  versioned, hash-bound time-only setup bridge.
-- Prefer rank-3-ward pushes when the frozen feasibility audit supports their
-  larger lattice clearance.
+- Implement the minimum object/contact episode contract and replay only the
+  calibrated-range v2-admitted exact actions.
+- Implement only the gauge-fixed calibration-graph factors required to
+  approve or reject the current physical/model mapping.
+- Fit only the simulation mechanism identified by first divergence, preserving
+  exact actions and untouched held-outs.
+- Complete bidirectional task evidence before the required bounded
+  policy-screening pilot; do not delay transfer for new model training.
 
 Open decisions are resolved only through the queue's recorded gates and
 fallbacks. Do not activate deferred methods without their specified trigger.
@@ -96,6 +118,11 @@ Repeat:
 
 Do not stop for planning, weak tooling friction, a recoverable camera defect,
 or a preventable evaluator/registration defect.
+
+Owner physical authorization is time-bounded from `2026-07-28 22:38 CDT`
+through `2026-07-29 05:38 CDT`. It allows reviewed, recorded, productive
+physical actions after their queue gates pass; it does not waive any safety,
+identity, preregistration, evidence, action-integrity, or cleanup gate.
 
 ## Progress Ledger
 
@@ -125,7 +152,9 @@ paid-compute, or unrelated work. No human repositioning is assumed.
 
 ## Stop Conditions
 
-Stop successfully only after both directional transfer successes and the full
-closeout package exist. Stop unsuccessfully only with a receipt-backed
-robot/camera safety or authority boundary after safe autonomous alternatives
-in the queue are exhausted. A counted stopped action stays in its denominator.
+Stop successfully only after both directional transfer successes, the bounded
+policy-screening result, the executable task-world bundle, the targeted
+variation connection, and the full closeout package exist. Stop unsuccessfully
+only with a receipt-backed robot/camera safety or authority boundary after safe
+autonomous alternatives in the queue are exhausted. A counted stopped action
+stays in its denominator.
