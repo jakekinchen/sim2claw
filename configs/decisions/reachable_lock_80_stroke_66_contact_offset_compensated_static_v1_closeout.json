@@ -1,0 +1,43 @@
+{
+  "schema_version": "sim2claw.reachable_lock_80_stroke_66_contact_offset_compensated_static_closeout.v1",
+  "status": "terminal_static_negative",
+  "contract": {
+    "path": "configs/evaluations/reachable_lock_80_stroke_66_contact_offset_compensated_static_v1.json",
+    "sha256": "a97c4ae63f343bb6e5c80d2a455971c5f2901ef2829ead00b4dadcaaff6da620"
+  },
+  "freeze_commits": [
+    "5b34fa0",
+    "a740a38"
+  ],
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-80-stroke-66-contact-offset-compensated-static-v1/receipt.json",
+    "sha256": "52ebdc33b83777a2bace8d92482ade5298076557d82bc94e9a0883388591a547"
+  },
+  "result": {
+    "passed": false,
+    "grid_cells_evaluated": 528,
+    "statically_eligible_family_count": 1,
+    "eligible_cell_count": 12,
+    "direction_counts": {
+      "REAL_TO_SIM": 1,
+      "SIM_TO_REAL": 0
+    },
+    "only_eligible_case_id": "brown_pawn_f1__f1_f2",
+    "selected_action_sha256": "e446f5698758db55641e502b990f772eee7514506fb323eee7a4b0da1b419d43",
+    "selected_target_height_m": 0.0225,
+    "selected_observed_first_contact_height_m": 0.04654376808722771
+  },
+  "decision": "Close this exact fixed 12.5 mm contact-offset compensation without dynamic replay or hardware. Do not expand or rerun the height grid. The result shows that lowering the sustained endpoint can retain one collision-free REAL_TO_SIM family, but no distinct SIM_TO_REAL family survives the frozen static gates. Escalate only the bounded mechanism-selection blocker; preserve all gates and false physical authority.",
+  "authority": {
+    "dynamic_replay": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Immutable static negative for one prospectively frozen contact-offset-compensated mechanism. It is evidence about static feasibility only and does not alter any transfer, task-attempt, mapping, or policy-ranking ledger."
+}

@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04I_CONTACT_OFFSET_COMPENSATED_STATIC_FROZEN_PENDING_ONE_RUN`
+Status: `RP04J_BOUNDED_BLOCKER_REVIEW_PENDING`
 
 Created: `2026-07-29`
 
@@ -52,7 +52,8 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP04F | `DONE_TERMINAL_LOWER_CONTACT_DYNAMIC_NEGATIVE` | Test the one clean unresolved geometry mechanism after the 66 mm causal negative. | Static receipt `6b7d7fa6...` passed; dynamic receipt `e8c5ac49...` ran all 20 exact episodes. | `0/20` passed; lift worsened to `5.99--14.19 mm`. Close permanently under the preregistered stop rule. No hardware. |
 | RP04G | `DONE_POST_CABLE_TRACKING_NEGATIVE_RETURN_INCOMPLETE` | Re-establish physical tracking and task-corridor evidence after the owner-reported wrist-camera cable tension change. | Receipt `a3ab1eee...` completed 501 exact rows and both cameras; camera review found no pawn/board contact and visible cable slack without an obvious snag. | Cable relief improved the reach/error by only `0.879 deg`; the roughly `30 deg` deficit remains. Controlled return did not reach the natural anchor, but postflight torque is off. No retry. |
 | RP04H | `DONE_NATURAL_ANCHOR_RESTORED_PROTOCOL_NEGATIVE` | Restore the arm from the fresh torque-off postflight pose to the natural anchor without contacting the board or pawns. | Receipt `ed4945d5...` executed all 278 rows, restored the natural anchor within `1.759 deg`, completed both cameras, showed no pawn/board contact, and confirmed torque off. | Protocol pass remains false: a stage-deadline bug caused 67 rows to be rate-limited. Do not rerun only to improve the label. |
-| RP04I | `CONTACT_OFFSET_COMPENSATED_STATIC_FROZEN_PENDING_ONE_RUN` | Test one separately named sustained-contact mechanism after the preregistered lower-contact target grid failed. | Subtract one fixed `12.5 mm` kinematic jaw-to-contact witness offset from the entire predecessor target grid, yielding exactly `[22.5, 25, 27.5, 30] mm`; preserve the observed first-contact `[35,65] mm` gate, `80 deg` lock, `66 mm` stroke, three wrist rolls, physics, evaluator, and all collision/camera/gateway gates. All eight previously selected cases are quarantined; exactly `44 × 12 = 528` static cells may run once. | A static negative closes this exact mechanism. A pass freezes one fresh family per direction for the unchanged direct/ZOH five-reset `20/20` gate. No hardware task packet until that dynamic pair passes. Fable remains blocker-only. |
+| RP04I | `DONE_TERMINAL_STATIC_NEGATIVE` | Test one separately named sustained-contact mechanism after the preregistered lower-contact target grid failed. | Subtract one fixed `12.5 mm` kinematic jaw-to-contact witness offset from the entire predecessor target grid, yielding exactly `[22.5, 25, 27.5, 30] mm`; preserve the observed first-contact `[35,65] mm` gate, `80 deg` lock, `66 mm` stroke, three wrist rolls, physics, evaluator, and all collision/camera/gateway gates. All eight previously selected cases are quarantined; exactly `44 × 12 = 528` static cells may run once. | Receipt `52ebdc33...` evaluated all `528` cells but admitted only `brown_pawn_f1__f1_f2`: REAL_TO_SIM `1`, SIM_TO_REAL `0`. No dynamics or hardware. The exact compensation mechanism is closed. |
+| RP04J | `BOUNDED_BLOCKER_REVIEW_PENDING` | Select the next highest-leverage mechanism without weakening gates or exhausting advisory usage. | Provide Fable only the exact repeated-negative causal summary: one fresh low endpoint remains statically feasible, but no distinct bidirectional pair survives at the reachable lock; prior open-jaw, orientation/path, stroke, contact-height, timing, and unloading mechanisms are closed. Ask for one bounded mechanism or an evidence-backed terminal boundary. | Convert the response to one prospectively frozen finite queue card or a receipt-backed reject/defer. Fable remains advisory; no model loading, dynamic replay, mapping promotion, or hardware is implied. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -72,10 +73,11 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-The robot is restored to the natural anchor and torque is off. Run the frozen
-RP04I contact-offset-compensated static screen exactly once. Do not expand its
-grid, rerun the return, start dynamic replay before a static pair is frozen, or
-open hardware task motion until a fresh action pair passes all 20 simulator
+The robot is restored to the natural anchor and torque is off. RP04I is closed
+after its one static run admitted only one direction. Use the reserved Fable
+review once on this now-material mechanism-selection blocker, then bind one
+finite successor or a terminal boundary. Do not expand RP04I, rerun the return,
+or open hardware task motion until a fresh action pair passes all 20 simulator
 gates.
 
 ## RP04I freeze
@@ -99,6 +101,21 @@ gates.
 - One static run is authorized after the contract and focused test pass and
   the freeze is committed and pushed. A pass may only open an exact-action
   direct/ZOH simulator gate; it cannot approve mapping or hardware.
+
+## RP04I immutable result
+
+- Freeze commits: `5b34fa0`, then fail-closed vocabulary repair `a740a38`.
+- Receipt SHA-256:
+  `52ebdc33b83777a2bace8d92482ade5298076557d82bc94e9a0883388591a547`.
+- All `528` frozen cells ran once. Twelve cells belonging to only one family
+  were eligible; the family count, not cell count, governs the pair gate.
+- The sole eligible family was `brown_pawn_f1__f1_f2`, assigned
+  REAL_TO_SIM. SIM_TO_REAL remained `0`.
+- The selected `22.5 mm` sustained target retained an observed first-contact
+  witness at `46.544 mm`, confirming that target and first-contact height are
+  distinct, while still failing to create a second safe family.
+- No dynamic replay, camera, gateway, serial, physical motion, physical task
+  attempt, mapping approval, policy ranking, or transfer occurred.
 
 ## RP00 immutable result
 
