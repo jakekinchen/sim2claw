@@ -20,6 +20,19 @@
     "transfer_claim": false
   },
   "campaign_id": "bidirectional_pawn_push_v2",
+  "canonical_transfer_campaign": {
+    "active_milestone": "HC-R03",
+    "campaign_id": "canonical-transfer-20260728-v1",
+    "contract": "configs/evaluations/canonical_transfer_readiness_v1.json",
+    "gateway_or_serial_authority": false,
+    "legacy_candidates_are_diagnostics_only": true,
+    "live_anchor_source": "fresh_configuration_free_physical_gateway_preflight",
+    "next_action": "execute_read_only_canonical_transfer_readiness_once",
+    "physical_authority": false,
+    "physical_packet_authorized": false,
+    "status": "readiness_contract_frozen_before_read_only_execution",
+    "task_attempts": 0
+  },
   "claim_boundary": "This graph preserves declared lineage and influence scope. Connectivity, similarity, and chronology are not causal identification, simulator promotion, training admission, policy selection, or physical-transfer evidence.",
   "configuration_context": {
     "canonical_board_frame": "standard_robot_near_rank1_v1",
@@ -72,6 +85,41 @@
       "twin_worthiness_certificate": 1,
       "workcell": 1
     }
+  },
+  "current_workcell_hard_cutover": {
+    "active_entrypoints": [
+      "src/sim2claw/studio_live.py",
+      "src/sim2claw/studio_assets.py",
+      "src/sim2claw/teleop_recording.py"
+    ],
+    "counted_task_attempts_authorized": false,
+    "cutover_id": "canonical_rank1_near_v1",
+    "gateway_or_serial_authority": false,
+    "historical_boundary_commit": "9e563f4",
+    "historical_scene_sha256": "4b7dd7b251c87580505a40164117cc0999f36960244a5c66c2065165afcf3e46",
+    "legacy_reproduction": "explicit_read_only_facade",
+    "manifest": "configs/migrations/current_workcell_hard_cutover_v1.json",
+    "physical_authority": false,
+    "physical_resume_gate": "fresh_canonical_task_plane_registration_lte_25_mm",
+    "public_frame_or_transform_options": [],
+    "registration_revalidation": {
+      "contract": "configs/evaluations/canonical_task_plane_registration_v1.json",
+      "maximum_task_plane_max_mm_exclusive": 25.0,
+      "maximum_task_plane_rms_mm_exclusive": 25.0,
+      "next_action": "freeze_new_canonical_runtime_native_transfer_campaign",
+      "physical_authority": false,
+      "physical_packet_authorized": false,
+      "physical_recapture": false,
+      "raw_image_reopen": false,
+      "receipt": "runs/bidirectional-pawn-push-v2/20260728-canonical-task-plane-registration-v1/receipt.json",
+      "receipt_sha256": "566f12b2b939e493e86849d8526e35416ecac3d85e6331b4a71ded241c4dccf5",
+      "registration_prerequisite_satisfied": true,
+      "status": "accepted_registration_prerequisite_satisfied",
+      "task_plane_max_mm": 7.104332681776422,
+      "task_plane_rms_mm": 4.741722953437291
+    },
+    "runtime": "sim2claw.current_workcell",
+    "status": "verified_complete_commit_4706851_pushed"
   },
   "delta_assessment": {
     "conclusion": "A non-zero visual and camera-registration delta is detected; the observed mismatch is not only action data. No global metric geometry delta or directional action-transfer RMS is established.",
@@ -1480,7 +1528,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "37983f339f75fb2ffd5c709a891fcac73ac29f3c509d61e984605a7e0200969b",
+  "graph_digest": "467daa2527eb2c6fba439ca0695328099b1169e26098765db31a38e7de173dec",
   "node_types": [
     "workcell",
     "session",
@@ -1563,7 +1611,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b"
+        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
@@ -2083,7 +2131,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b"
+        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
       },
       "status": "implementation_repair_pending_no_motion",
       "type": "checkpoint"
@@ -2134,7 +2182,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b"
+        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
       },
       "status": "active_paused",
       "type": "checkpoint"
@@ -2155,7 +2203,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b"
+        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
       },
       "status": "active_versioned_recapture_design",
       "type": "checkpoint"
@@ -2184,7 +2232,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b"
+        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
       },
       "status": "active_start_bridge_design_no_motion_authority",
       "type": "checkpoint"
@@ -2593,7 +2641,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b"
+        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
       },
       "status": "active_simulator_only_no_physical_authority",
       "type": "checkpoint"
@@ -4345,7 +4393,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b"
+        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
       },
       "status": "deferred_no_directional_task_observation",
       "type": "mechanism"
@@ -4405,7 +4453,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b"
+        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
       },
       "status": "one_static_action_no_dynamic_or_transfer_admission",
       "type": "policy"
@@ -4423,7 +4471,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b"
+        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
       },
       "status": "not_updated_underidentified",
       "type": "parameter_posterior"
@@ -4491,7 +4539,7 @@
       "source": {
         "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
         "proof_class": "campaign_control_state",
-        "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b"
+        "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
       },
       "status": "paused_v04_execution_stopped_before_first_row",
       "type": "session"
@@ -5292,7 +5340,7 @@
       ],
       "revision": 5,
       "source_binding": "queue",
-      "source_sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b",
+      "source_sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54",
       "status": "owner_resume_versioned_recapture_design"
     },
     {
@@ -5322,7 +5370,7 @@
       ],
       "revision": 8,
       "source_binding": "queue",
-      "source_sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b",
+      "source_sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54",
       "status": "live_review_stopped_before_camera_for_rebase_repair"
     },
     {
@@ -5352,7 +5400,7 @@
       ],
       "revision": 11,
       "source_binding": "queue",
-      "source_sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b",
+      "source_sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54",
       "status": "active_start_bridge_design_no_motion_authority"
     },
     {
@@ -5634,7 +5682,7 @@
       ],
       "revision": 39,
       "source_binding": "queue",
-      "source_sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b",
+      "source_sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54",
       "status": "active_simulator_only_no_physical_authority"
     },
     {
@@ -6345,7 +6393,7 @@
       "id": "queue",
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
       "proof_class": "campaign_control_state",
-      "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b"
+      "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54"
     },
     {
       "id": "simulator_candidate",
@@ -7553,40 +7601,5 @@
       "proof_class": "board_conditioned_monocular_3dgs_to_sim_visual_registration",
       "sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4"
     }
-  ],
-  "current_workcell_hard_cutover": {
-    "cutover_id": "canonical_rank1_near_v1",
-    "status": "verified_complete_commit_4706851_pushed",
-    "historical_boundary_commit": "9e563f4",
-    "historical_scene_sha256": "4b7dd7b251c87580505a40164117cc0999f36960244a5c66c2065165afcf3e46",
-    "manifest": "configs/migrations/current_workcell_hard_cutover_v1.json",
-    "runtime": "sim2claw.current_workcell",
-    "active_entrypoints": [
-      "src/sim2claw/studio_live.py",
-      "src/sim2claw/studio_assets.py",
-      "src/sim2claw/teleop_recording.py"
-    ],
-    "public_frame_or_transform_options": [],
-    "legacy_reproduction": "explicit_read_only_facade",
-    "physical_authority": false,
-    "gateway_or_serial_authority": false,
-    "counted_task_attempts_authorized": false,
-    "physical_resume_gate": "fresh_canonical_task_plane_registration_lte_25_mm",
-    "registration_revalidation": {
-      "status": "accepted_registration_prerequisite_satisfied",
-      "contract": "configs/evaluations/canonical_task_plane_registration_v1.json",
-      "receipt": "runs/bidirectional-pawn-push-v2/20260728-canonical-task-plane-registration-v1/receipt.json",
-      "receipt_sha256": "566f12b2b939e493e86849d8526e35416ecac3d85e6331b4a71ded241c4dccf5",
-      "maximum_task_plane_rms_mm_exclusive": 25.0,
-      "maximum_task_plane_max_mm_exclusive": 25.0,
-      "task_plane_rms_mm": 4.741722953437291,
-      "task_plane_max_mm": 7.104332681776422,
-      "registration_prerequisite_satisfied": true,
-      "raw_image_reopen": false,
-      "physical_recapture": false,
-      "physical_authority": false,
-      "physical_packet_authorized": false,
-      "next_action": "freeze_new_canonical_runtime_native_transfer_campaign"
-    }
-  }
+  ]
 }

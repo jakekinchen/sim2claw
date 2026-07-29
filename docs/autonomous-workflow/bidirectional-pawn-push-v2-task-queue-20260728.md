@@ -3595,3 +3595,24 @@ gateway, serial, recapture, physical motion, or task attempt occurred. A
 physical packet remains unauthorized until a new canonical-runtime-native
 action/evaluator campaign is prospectively frozen and passes its simulator
 gates.
+
+### HC-R03 canonical transfer-readiness freeze — 2026-07-28
+
+The fresh torque-off preflight passed at
+`[6.505495, -85.538462, 99.472527, -20.087912, -103.340659, 2.375297]`.
+C922 and D405 RGB were available; two read-only live frames are retained in
+the ignored readiness run directory. No camera stream, gateway, or serial
+owner remains and follower torque is false.
+
+The new read-only contract
+`configs/evaluations/canonical_transfer_readiness_v1.json` binds that anchor,
+the accepted canonical registration, the strongest frozen SIM_TO_REAL
+`e2->e3` action, the successful teleoperation-source D1 episode, calibrated
+bounds, gateway rates, and the still-provisional physical/model transform.
+It fails closed unless the mapping is explicitly approved and both exact task
+starts are within `10 deg` on every arm joint and `5%` on the gripper.
+
+HC-R03 is frozen before its one execution. Authority remains false for camera
+ownership, gateway, serial, physical packets, torque, contact, motion, and
+task attempts. A reject authorizes only a fresh current-anchor-seeded
+canonical action compiler.

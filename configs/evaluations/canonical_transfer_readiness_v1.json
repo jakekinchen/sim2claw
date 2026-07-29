@@ -1,0 +1,117 @@
+{
+  "schema_version": "sim2claw.canonical_transfer_readiness.v1",
+  "contract_id": "canonical-transfer-readiness-20260728-v1",
+  "status": "preregistered_before_read_only_evaluation",
+  "proof_class": "motion_free_live_anchor_and_frozen_candidate_readiness_contract",
+  "mission": "Fail closed on legacy candidate reuse unless the canonical registration, live torque-off state, physical-model mapping, action bounds, rates, and exact task starts are all currently qualified.",
+  "inputs": {
+    "hard_cutover": {
+      "path": "configs/migrations/current_workcell_hard_cutover_v1.json",
+      "sha256": "37fb5b02a6f42376cd0dcadf19401f7442cc28f37b71cf297090ae27cf0b9701"
+    },
+    "registration_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-task-plane-registration-v1/receipt.json",
+      "sha256": "566f12b2b939e493e86849d8526e35416ecac3d85e6331b4a71ded241c4dccf5"
+    },
+    "registration_closeout": {
+      "path": "configs/decisions/canonical_task_plane_registration_closeout_v1.json",
+      "sha256": "23a7db903929d37f3e59d834c7de0e87006b619fbf6d869ef7634a2086c334ff"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "sim_to_real_action": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v05-tj-jaw-successor-v1/temporal-replay-v1/traces/brown_pawn_e2__e2_e3/canonical_direct_target/requested.f64le",
+      "sha256": "06267b31afd342c977f8198778ae79ec8d260e63816e92f295705948d655be96",
+      "shape": [
+        118,
+        6
+      ]
+    },
+    "d1_derivation": {
+      "path": "runs/prospective-real-to-sim/20260727-d1-d2-exact-v4/compiled/derivation_receipt.json",
+      "sha256": "507b5730e7efccd36cf632d761487b3a0b8137cfe6c420492fe48cd374a1a557"
+    },
+    "real_to_sim_source_samples": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/samples.jsonl",
+      "sha256": "ad606b9b917d985a4e866399a0c2d44adb12f3b48d310aa11452de9e03e73302"
+    },
+    "live_c922_frame": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-transfer-readiness-v1/live/c922.jpg",
+      "sha256": "5603144198775817e77006f16baee4e08529ca425aa74a2bea178ca311247064"
+    },
+    "live_d405_frame": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-transfer-readiness-v1/live/d405.jpg",
+      "sha256": "7fefaff3164a56878cc712ba2d7134f490c6316b3b1efee6f8b5b1cd0d9a302d"
+    },
+    "evaluator_implementation": {
+      "path": "src/sim2claw/canonical_transfer_readiness.py",
+      "sha256": "3689b47e429909b105cb35e92a39f8d717f78e1ce35234b2d8e306b88b44f058"
+    }
+  },
+  "canonical_runtime": {
+    "current_workcell_id": "canonical_rank1_near_v1",
+    "rank_1_side": "near_robot_operator",
+    "wrist_depth_required": false
+  },
+  "live_snapshot": {
+    "captured_at_local_date": "2026-07-28",
+    "preflight_passed": true,
+    "follower_port": "/dev/cu.usbmodem5B3D0406411",
+    "follower_position_degrees": [
+      6.5054945054945055,
+      -85.53846153846153,
+      99.47252747252747,
+      -20.087912087912088,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "follower_calibrated_minimum": [
+      -120.26373626373626,
+      -106.63736263736264,
+      -102.10989010989012,
+      -107.47252747252747,
+      -180.0,
+      0.0
+    ],
+    "follower_calibrated_maximum": [
+      120.26373626373626,
+      106.63736263736264,
+      102.10989010989012,
+      107.47252747252747,
+      180.0,
+      100.0
+    ],
+    "physical_follower_torque_enabled": false,
+    "start_alignment_motion_commanded": false,
+    "device_configuration_rewritten": false,
+    "c922_available": true,
+    "d405_available": true
+  },
+  "gates": {
+    "sample_hz": 40.0,
+    "gateway_rate_limits_per_joint": [
+      60.0,
+      60.0,
+      60.0,
+      60.0,
+      90.0,
+      100.0
+    ],
+    "maximum_unplanned_start_delta_degrees": 10.0,
+    "maximum_unplanned_gripper_delta_percent": 5.0,
+    "physical_model_mapping_must_be_approved": true,
+    "all_checks_required": true
+  },
+  "output": "runs/bidirectional-pawn-push-v2/20260728-canonical-transfer-readiness-v1/receipt.json",
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "task_attempt": false,
+    "physical_packet_freeze": false
+  },
+  "claim_boundary": "This read-only audit can reject or admit candidate readiness only. It cannot prove task success, contact physics, physical transfer, or bidirectional transfer."
+}

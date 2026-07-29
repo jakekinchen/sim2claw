@@ -91,6 +91,15 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         is False
     )
     assert tracked["authority"] and not any(tracked["authority"].values())
+    assert tracked["current_workcell_hard_cutover"] == config[
+        "current_workcell_hard_cutover"
+    ]
+    assert tracked["canonical_transfer_campaign"] == config[
+        "canonical_transfer_campaign"
+    ]
+    assert (
+        tracked["canonical_transfer_campaign"]["physical_authority"] is False
+    )
 
 
 def test_current_campaign_graph_fails_closed_on_source_or_lineage_drift() -> None:

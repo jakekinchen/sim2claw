@@ -242,6 +242,12 @@ def build_current_campaign_graph(
                 config.get("configuration_context") or {}
             ),
             "delta_assessment": copy.deepcopy(config.get("delta_assessment") or {}),
+            "current_workcell_hard_cutover": copy.deepcopy(
+                config.get("current_workcell_hard_cutover") or {}
+            ),
+            "canonical_transfer_campaign": copy.deepcopy(
+                config.get("canonical_transfer_campaign") or {}
+            ),
         }
     )
     return validate_graph({**unsigned, "graph_digest": canonical_digest(unsigned)})

@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "5e09a98a656b6f44e760a6af55588bde24422d47664c8221a67ef927255f449b",
+      "sha256": "119e5463c6760cf1198baa633f1b33f5dd3c6ceba3152b5cf8bc4ea30261cf54",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -5854,5 +5854,53 @@
       "reason": "no_directional_task_attempt_or_admitted_action_exists"
     },
     "conclusion": "A non-zero visual and camera-registration delta is detected; the observed mismatch is not only action data. No global metric geometry delta or directional action-transfer RMS is established."
+  },
+  "current_workcell_hard_cutover": {
+    "cutover_id": "canonical_rank1_near_v1",
+    "status": "verified_complete_commit_4706851_pushed",
+    "historical_boundary_commit": "9e563f4",
+    "historical_scene_sha256": "4b7dd7b251c87580505a40164117cc0999f36960244a5c66c2065165afcf3e46",
+    "manifest": "configs/migrations/current_workcell_hard_cutover_v1.json",
+    "runtime": "sim2claw.current_workcell",
+    "active_entrypoints": [
+      "src/sim2claw/studio_live.py",
+      "src/sim2claw/studio_assets.py",
+      "src/sim2claw/teleop_recording.py"
+    ],
+    "public_frame_or_transform_options": [],
+    "legacy_reproduction": "explicit_read_only_facade",
+    "physical_authority": false,
+    "gateway_or_serial_authority": false,
+    "counted_task_attempts_authorized": false,
+    "physical_resume_gate": "fresh_canonical_task_plane_registration_lte_25_mm",
+    "registration_revalidation": {
+      "status": "accepted_registration_prerequisite_satisfied",
+      "contract": "configs/evaluations/canonical_task_plane_registration_v1.json",
+      "receipt": "runs/bidirectional-pawn-push-v2/20260728-canonical-task-plane-registration-v1/receipt.json",
+      "receipt_sha256": "566f12b2b939e493e86849d8526e35416ecac3d85e6331b4a71ded241c4dccf5",
+      "maximum_task_plane_rms_mm_exclusive": 25.0,
+      "maximum_task_plane_max_mm_exclusive": 25.0,
+      "task_plane_rms_mm": 4.741722953437291,
+      "task_plane_max_mm": 7.104332681776422,
+      "registration_prerequisite_satisfied": true,
+      "raw_image_reopen": false,
+      "physical_recapture": false,
+      "physical_authority": false,
+      "physical_packet_authorized": false,
+      "next_action": "freeze_new_canonical_runtime_native_transfer_campaign"
+    }
+  },
+  "canonical_transfer_campaign": {
+    "campaign_id": "canonical-transfer-20260728-v1",
+    "status": "readiness_contract_frozen_before_read_only_execution",
+    "active_milestone": "HC-R03",
+    "contract": "configs/evaluations/canonical_transfer_readiness_v1.json",
+    "live_anchor_source": "fresh_configuration_free_physical_gateway_preflight",
+    "legacy_candidates_are_diagnostics_only": true,
+    "physical_authority": false,
+    "gateway_or_serial_authority": false,
+    "physical_packet_authorized": false,
+    "task_attempts": 0,
+    "next_action": "execute_read_only_canonical_transfer_readiness_once"
   }
 }
