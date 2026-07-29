@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC02_BOUNDED_STROKE_DYNAMIC_REPLAY`
+Status: `ACTIVE_CC02_TWO_LANE_STATIC_SUCCESSOR`
 
 Created: `2026-07-28`
 
@@ -423,6 +423,13 @@ Current state:
   `7f385088702537cf0867dd4b83ea5a449a872cb3c095f53efd23b66c80239fa4`.
   It preserves the V3 direction split, isolated reset, two plant paths, five
   deltas, 40 Hz bytes, causal traces, and every acceptance gate.
+- Stroke temporal V4 ran once: REAL->SIM passed `2/2`; SIM->REAL passed
+  `1/2`. Three families pass both plants and all five resets. The only
+  remaining failure is `d7->e7` progress at `lateral_plus_3mm`
+  (`35.219246 mm` direct, `32.553492 mm` ZOH). Receipt SHA-256
+  `0f4fb9e7eb50c1501e53b365795e11c1913310714878c9ef5663e00687985a8b`;
+  closeout records stroke length as insufficient and freezes a uniform
+  two-lane `-3/+3 mm` path-shape successor across all four families.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -464,6 +471,5 @@ This authorization:
 
 Next step:
 
-- Execute stroke temporal V4 exactly once. Preserve its immutable result and
-  move to CC03 only if both directions pass `2/2` under both plants and all
-  five reset variants.
+- Freeze and run the four-family two-lane static successor. Dynamic replay
+  remains closed until all four new exact actions pass static admission.

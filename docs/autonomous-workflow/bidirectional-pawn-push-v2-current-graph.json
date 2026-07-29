@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC02",
-    "node_id": "checkpoint:canonical-wrist-path-stroke-temporal-v4-frozen",
-    "queue_status": "ACTIVE_CC02_BOUNDED_STROKE_DYNAMIC_REPLAY",
-    "resume_action": "execute_canonical_wrist_path_stroke_temporal_v4_exactly_once",
+    "node_id": "verdict:canonical-wrist-path-stroke-temporal-v4-partial-reject",
+    "queue_status": "ACTIVE_CC02_TWO_LANE_STATIC_SUCCESSOR",
+    "resume_action": "freeze_four_family_two_lane_static_successor",
     "resume_authorized": true,
-    "status": "preregistered_before_exactly_once_66mm_stroke_dynamic_replay"
+    "status": "stroke_real_to_sim_pass_sim_to_real_partial_reject_before_two_lane_static_freeze"
   },
   "authority": {
     "camera_open": false,
@@ -82,12 +82,12 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 161,
+    "edges": 162,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
-      "evaluated-on": 41,
+      "evaluated-on": 42,
       "fitted-on": 4,
       "generated-from": 100,
       "invalidates": 3,
@@ -95,14 +95,14 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 155,
+    "nodes": 156,
     "nodes_by_type": {
       "candidate": 2,
       "checkpoint": 101,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 27,
+      "evaluator_verdict": 28,
       "evidence": 6,
       "intervention": 1,
       "mechanism": 3,
@@ -1656,6 +1656,17 @@
     },
     {
       "metadata": {
+        "passing_case_count": 3,
+        "physical_motion": false,
+        "real_to_sim_gate_passed": true,
+        "sim_to_real_gate_passed": false
+      },
+      "source": "verdict:canonical-wrist-path-stroke-temporal-v4-partial-reject",
+      "target": "checkpoint:canonical-wrist-path-stroke-temporal-v4-frozen",
+      "type": "evaluated-on"
+    },
+    {
+      "metadata": {
         "passing_case_count": 1,
         "physical_motion": false,
         "two_per_direction_gate_passed": false
@@ -1921,7 +1932,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "2a0ed2b01b707f8d196ab743018b5b2b3be40b5cfb9a00e75ca28e0df19a8fbc",
+  "graph_digest": "cf08ebf281141eabb73d853914c4efb1c912a665c0bfc6cc0f1bcf9489be0a16",
   "node_types": [
     "workcell",
     "session",
@@ -2730,7 +2741,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "95f37c280bca535259093d73da443ced656d9d140092659c02930df7a1e77106"
+        "sha256": "ae0f6e7e2a3c5bb4f24ab243a495706ae64704833d07d2f1e9fc94da26244aa6"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -5972,6 +5983,37 @@
     },
     {
       "data": {
+        "mapping_calibration_approved": false,
+        "observable_episode_count": 40,
+        "only_failure_channel": "progress",
+        "passing_case_count": 3,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "real_to_sim_families": 2,
+        "receipt_source_binding": "canonical_wrist_path_stroke_temporal_v4_receipt",
+        "required_per_direction": 2,
+        "sim_to_real_families": 1,
+        "source_binding_id": "canonical_wrist_path_stroke_temporal_v4_closeout"
+      },
+      "evaluator_identity": "7f385088702537cf0867dd4b83ea5a449a872cb3c095f53efd23b66c80239fa4",
+      "id": "verdict:canonical-wrist-path-stroke-temporal-v4-partial-reject",
+      "label": "Stroke V4 closes REAL-to-SIM but leaves one SIM-to-REAL family",
+      "proof_class": "cpu_fp64_exact_66mm_stroke_action_isolated_reset_direct_target_and_diagnostic_zoh_dynamic_partial_negative",
+      "source": {
+        "path": "configs/decisions/canonical_wrist_path_stroke_temporal_v4_closeout.json",
+        "payload_contract": {
+          "proof_class": "cpu_fp64_exact_66mm_stroke_action_isolated_reset_direct_target_and_diagnostic_zoh_dynamic_partial_negative",
+          "schema_version": "sim2claw.canonical_wrist_path_temporal_closeout.v1",
+          "status": "stroke_real_to_sim_pass_sim_to_real_partial_reject"
+        },
+        "proof_class": "cpu_fp64_exact_66mm_stroke_action_isolated_reset_direct_target_and_diagnostic_zoh_dynamic_partial_negative",
+        "sha256": "54c85ca5221164c40622c5fa8a00256c55979984f355b4b08092f8b231cf51cc"
+      },
+      "status": "stroke_real_to_sim_pass_sim_to_real_partial_reject",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "all_action_and_trace_identity_checks_passed": true,
         "mapping_calibration_approved": false,
         "observable_episode_count": 40,
@@ -7757,7 +7799,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "95f37c280bca535259093d73da443ced656d9d140092659c02930df7a1e77106",
+      "source_sha256": "ae0f6e7e2a3c5bb4f24ab243a495706ae64704833d07d2f1e9fc94da26244aa6",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -8079,6 +8121,16 @@
       "source_binding": "canonical_wrist_path_stroke_temporal_v4_contract",
       "source_sha256": "7f385088702537cf0867dd4b83ea5a449a872cb3c095f53efd23b66c80239fa4",
       "status": "preregistered_before_exactly_once_66mm_stroke_dynamic_replay"
+    },
+    {
+      "event_id": "CANONICAL_WRIST_PATH_STROKE_TEMPORAL_V4_PARTIAL_REJECT",
+      "node_ids_added": [
+        "verdict:canonical-wrist-path-stroke-temporal-v4-partial-reject"
+      ],
+      "revision": 136,
+      "source_binding": "canonical_wrist_path_stroke_temporal_v4_closeout",
+      "source_sha256": "54c85ca5221164c40622c5fa8a00256c55979984f355b4b08092f8b231cf51cc",
+      "status": "stroke_real_to_sim_pass_sim_to_real_partial_reject_before_two_lane_static_freeze"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -8547,6 +8599,17 @@
       "sha256": "f4b97af0f219b21cb7ee59bc39b123f85f6e3d66a943d6245ffe3cd9af9c2815"
     },
     {
+      "id": "canonical_wrist_path_stroke_temporal_v4_closeout",
+      "path": "configs/decisions/canonical_wrist_path_stroke_temporal_v4_closeout.json",
+      "payload_contract": {
+        "proof_class": "cpu_fp64_exact_66mm_stroke_action_isolated_reset_direct_target_and_diagnostic_zoh_dynamic_partial_negative",
+        "schema_version": "sim2claw.canonical_wrist_path_temporal_closeout.v1",
+        "status": "stroke_real_to_sim_pass_sim_to_real_partial_reject"
+      },
+      "proof_class": "cpu_fp64_exact_66mm_stroke_action_isolated_reset_direct_target_and_diagnostic_zoh_dynamic_partial_negative",
+      "sha256": "54c85ca5221164c40622c5fa8a00256c55979984f355b4b08092f8b231cf51cc"
+    },
+    {
       "id": "canonical_wrist_path_stroke_temporal_v4_contract",
       "path": "configs/evaluations/canonical_wrist_path_stroke_temporal_v4.json",
       "payload_contract": {
@@ -8556,6 +8619,17 @@
       },
       "proof_class": "prospective_cpu_fp64_exact_66mm_stroke_action_isolated_reset_direct_target_and_diagnostic_zoh_causal_replay",
       "sha256": "7f385088702537cf0867dd4b83ea5a449a872cb3c095f53efd23b66c80239fa4"
+    },
+    {
+      "id": "canonical_wrist_path_stroke_temporal_v4_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-stroke-temporal-v4/receipt.json",
+      "payload_contract": {
+        "passed": false,
+        "schema_version": "sim2claw.canonical_seeded_action_temporal_receipt.v1",
+        "status": "canonical_seeded_action_temporal_reject"
+      },
+      "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+      "sha256": "0f4fb9e7eb50c1501e53b365795e11c1913310714878c9ef5663e00687985a8b"
     },
     {
       "id": "canonical_wrist_path_temporal_v1_closeout",
@@ -8594,7 +8668,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "95f37c280bca535259093d73da443ced656d9d140092659c02930df7a1e77106"
+      "sha256": "ae0f6e7e2a3c5bb4f24ab243a495706ae64704833d07d2f1e9fc94da26244aa6"
     },
     {
       "id": "current_task_scene_labels",

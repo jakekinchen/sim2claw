@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "95f37c280bca535259093d73da443ced656d9d140092659c02930df7a1e77106",
+      "sha256": "ae0f6e7e2a3c5bb4f24ab243a495706ae64704833d07d2f1e9fc94da26244aa6",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1676,6 +1676,26 @@
         "schema_version": "sim2claw.canonical_wrist_path_stroke_temporal.v4",
         "status": "frozen_after_four_family_66mm_stroke_static_pass_before_isolated_reset_dynamic_replay",
         "proof_class": "prospective_cpu_fp64_exact_66mm_stroke_action_isolated_reset_direct_target_and_diagnostic_zoh_causal_replay"
+      }
+    },
+    "canonical_wrist_path_stroke_temporal_v4_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-stroke-temporal-v4/receipt.json",
+      "sha256": "0f4fb9e7eb50c1501e53b365795e11c1913310714878c9ef5663e00687985a8b",
+      "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_seeded_action_temporal_receipt.v1",
+        "status": "canonical_seeded_action_temporal_reject",
+        "passed": false
+      }
+    },
+    "canonical_wrist_path_stroke_temporal_v4_closeout": {
+      "path": "configs/decisions/canonical_wrist_path_stroke_temporal_v4_closeout.json",
+      "sha256": "54c85ca5221164c40622c5fa8a00256c55979984f355b4b08092f8b231cf51cc",
+      "proof_class": "cpu_fp64_exact_66mm_stroke_action_isolated_reset_direct_target_and_diagnostic_zoh_dynamic_partial_negative",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_temporal_closeout.v1",
+        "status": "stroke_real_to_sim_pass_sim_to_real_partial_reject",
+        "proof_class": "cpu_fp64_exact_66mm_stroke_action_isolated_reset_direct_target_and_diagnostic_zoh_dynamic_partial_negative"
       }
     },
     "simulator_candidate": {
@@ -4598,6 +4618,26 @@
       }
     },
     {
+      "id": "verdict:canonical-wrist-path-stroke-temporal-v4-partial-reject",
+      "type": "evaluator_verdict",
+      "label": "Stroke V4 closes REAL-to-SIM but leaves one SIM-to-REAL family",
+      "status": "stroke_real_to_sim_pass_sim_to_real_partial_reject",
+      "source_binding": "canonical_wrist_path_stroke_temporal_v4_closeout",
+      "evaluator_identity": "7f385088702537cf0867dd4b83ea5a449a872cb3c095f53efd23b66c80239fa4",
+      "data": {
+        "receipt_source_binding": "canonical_wrist_path_stroke_temporal_v4_receipt",
+        "observable_episode_count": 40,
+        "passing_case_count": 3,
+        "real_to_sim_families": 2,
+        "sim_to_real_families": 1,
+        "required_per_direction": 2,
+        "only_failure_channel": "progress",
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -6302,6 +6342,17 @@
       }
     },
     {
+      "source": "verdict:canonical-wrist-path-stroke-temporal-v4-partial-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:canonical-wrist-path-stroke-temporal-v4-frozen",
+      "metadata": {
+        "real_to_sim_gate_passed": true,
+        "sim_to_real_gate_passed": false,
+        "passing_case_count": 3,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -7570,14 +7621,23 @@
       "node_ids_added": [
         "checkpoint:canonical-wrist-path-stroke-temporal-v4-frozen"
       ]
+    },
+    {
+      "revision": 136,
+      "event_id": "CANONICAL_WRIST_PATH_STROKE_TEMPORAL_V4_PARTIAL_REJECT",
+      "status": "stroke_real_to_sim_pass_sim_to_real_partial_reject_before_two_lane_static_freeze",
+      "source_binding": "canonical_wrist_path_stroke_temporal_v4_closeout",
+      "node_ids_added": [
+        "verdict:canonical-wrist-path-stroke-temporal-v4-partial-reject"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:canonical-wrist-path-stroke-temporal-v4-frozen",
+    "node_id": "verdict:canonical-wrist-path-stroke-temporal-v4-partial-reject",
     "milestone_id": "CC02",
-    "status": "preregistered_before_exactly_once_66mm_stroke_dynamic_replay",
-    "queue_status": "ACTIVE_CC02_BOUNDED_STROKE_DYNAMIC_REPLAY",
-    "resume_action": "execute_canonical_wrist_path_stroke_temporal_v4_exactly_once",
+    "status": "stroke_real_to_sim_pass_sim_to_real_partial_reject_before_two_lane_static_freeze",
+    "queue_status": "ACTIVE_CC02_TWO_LANE_STATIC_SUCCESSOR",
+    "resume_action": "freeze_four_family_two_lane_static_successor",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
