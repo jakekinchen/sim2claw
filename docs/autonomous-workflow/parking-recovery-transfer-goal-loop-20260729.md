@@ -2,7 +2,7 @@
 
 ## Mission
 
-Goal-loop through RP00--RP08 plus the owner-authorized RP04K REAL->SIM
+Goal-loop through RP00--RP08 plus the owner-authorized RP04K/RP04L REAL->SIM
 hard-cutover in
 `parking-recovery-transfer-successor-task-queue-20260729.md` until genuine
 bidirectional task transfer is evidenced or a new receipt-backed terminal
@@ -40,7 +40,8 @@ in that queue are exhausted.
   `e1bc7d8e1bbeeaa4b1e08f26d7e609e2714c33800d22899bd876f7298c75db7b`.
 - RP01: complete PASS at receipt SHA-256
   `e9e99a4ad774a04e5dc031a9b6060df6e32f7ceceb6e56fa40cfba61f481fc1f`.
-- Active card: RP04K frozen software-only REAL->SIM hybrid replay.
+- RP04K: complete negative; command+mode `0/1`, observed-state+mode `0/1`.
+- Active card: RP04L frozen software-only REAL->SIM support-handoff replay.
 - Certified threshold: `93 deg`.
 - Certified parking target: `91 deg`.
 - REAL->SIM: `0/0`.
@@ -49,11 +50,11 @@ in that queue are exhausted.
 - Physical authority: false.
 
 The follower elbow mechanical-resistance signature closes further hardware
-task motion until human service. RP04K must not open a camera, gateway, serial
+task motion until human service. RP04L must not open a camera, gateway, serial
 bus, torque, or robot action. It may run one prospectively frozen local
 simulator replay over the existing camera-verified Phase-A source. Its
-command+mode and observed-state+mode ledgers remain distinct from the strict
-pure-action ledger.
+observed-state+upright-support-mode ledger remains distinct from the strict
+pure-action and free-release-physics ledgers.
 
 Fable is reserved for a genuine blocker where the correct next trajectory is
 unclear. Routine queue transitions and verification do not require Fable.

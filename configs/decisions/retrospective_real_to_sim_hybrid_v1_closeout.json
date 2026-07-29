@@ -1,0 +1,59 @@
+{
+  "schema_version": "sim2claw.retrospective_real_to_sim_hybrid_closeout.v1",
+  "status": "accepted_hybrid_real_to_sim_negative",
+  "proof_class": "physical_source_command_plus_observed_grasp_mode_to_simulator_task_replay",
+  "freeze_commit": "5c36257506fe493021c0fa8899985ce21aa13a90",
+  "contract": {
+    "path": "configs/evaluations/retrospective_real_to_sim_hybrid_v1.json",
+    "sha256": "b74c8f14593fd1a2237332526c6c84c428654115ab73ed6394a5b527cbcec332"
+  },
+  "implementation": {
+    "path": "src/sim2claw/retrospective_real_to_sim_hybrid.py",
+    "sha256_at_freeze": "4f76e408134b0cf2ae8df4bf7e3290cf22196815581274b0fd7d41691de23531"
+  },
+  "receipt": {
+    "path": "outputs/retrospective_real_to_sim_hybrid_v1/receipt.json",
+    "file_sha256": "d3dfbf5c047de5cf12d176dd717ec58a04ccaed708372c3078e401af5b0f5429",
+    "canonical_receipt_sha256": "afaac3301bb54a47dacb5ec6901919cca1dc73c3b1269548b2cb176ff71ef2f8",
+    "verdict": "HYBRID_REAL_TO_SIM_TASK_REPLAY_NEGATIVE"
+  },
+  "ledger": {
+    "pure_action_only_real_to_sim": {
+      "successes": 0,
+      "attempts": 0
+    },
+    "command_plus_observed_grasp_mode_real_to_sim": {
+      "successes": 0,
+      "attempts": 1
+    },
+    "observed_state_plus_observed_grasp_mode_real_to_sim": {
+      "successes": 0,
+      "attempts": 1
+    },
+    "physical_task_attempts_added": 0,
+    "sim_to_real_added": 0
+  },
+  "first_divergence": {
+    "channel": "release_and_support_contact_consequence",
+    "command_driver": {
+      "release_attach_distance_m": 0.038651005783044645,
+      "final_planar_center_error_m": 0.06149211430862523,
+      "final_upright_tilt_degrees": 97.79792047475263
+    },
+    "observed_state_driver": {
+      "maximum_joint_tracking_error_sim_units": 0.003265897937926393,
+      "release_sample_planar_center_error_m": 0.009023992701779312,
+      "release_sample_height_above_initial_support_m": 0.0304507498165829,
+      "final_planar_center_error_m": 0.019442528376180997,
+      "final_upright_tilt_degrees": 97.79770031195905
+    },
+    "interpretation": "The state upper bound reproduces the observed arm joints closely and carries the pawn into the target neighborhood. The frozen free release then drops the pawn about 30 mm, after which the simulated pawn topples despite the camera-reviewed physical terminal pawn remaining upright. This localizes the first material mismatch after the mode-conditioned carry to the release/support-contact consequence; it does not identify a globally correct contact parameter."
+  },
+  "trace_hashes": {
+    "mapped_gateway_command_zoh": "4c6301bf7b2310e911860d6d9d9eb2e434aba1ed30b7e7d054fddd29cf04243a",
+    "observed_joint_state_upper_bound": "715cdab678e0db6124149d788115aa82177f66022c59b792951aca02a7bb4484",
+    "mapped_gateway_command_zoh_state": "c8c6586d05292652ba4832f2219f5c3a89502b8b6019394ec3017833d63e20e6",
+    "observed_joint_state_upper_bound_state": "b0a482469b607aaf01f25d2062f68ccb80c9207ad4bfef4cad73e862df32083b"
+  },
+  "decision": "Preserve RP04K as a terminal negative. Do not tune a contact posterior or relabel it as action-only transfer. A single successor may use the already reviewed terminal-upright observation as an explicit support-handoff mode and may enumerate only the symmetric one-sample event-alignment uncertainty caused by the absent actuator application timestamps. It must preserve source actions, measured states, row order, XY at handoff, destination, evaluator, and false hardware authority."
+}

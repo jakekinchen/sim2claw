@@ -1,0 +1,64 @@
+{
+  "schema_version": "sim2claw.retrospective_real_to_sim_support_handoff.v1",
+  "experiment_id": "phase_a_d1_d2_observed_state_support_handoff_v1",
+  "proof_class": "physical_source_observed_state_plus_camera_observed_object_mode_to_simulator_support_handoff",
+  "predecessor": {
+    "contract_path": "configs/evaluations/retrospective_real_to_sim_hybrid_v1.json",
+    "contract_sha256": "b74c8f14593fd1a2237332526c6c84c428654115ab73ed6394a5b527cbcec332",
+    "closeout_path": "configs/decisions/retrospective_real_to_sim_hybrid_v1_closeout.json",
+    "closeout_sha256": "384fc187e9e8ecd41e02571f1015172e177b0f611243cecc608bbdcf0bc84f6f",
+    "predecessor_verdict": "HYBRID_REAL_TO_SIM_TASK_REPLAY_NEGATIVE"
+  },
+  "source": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "source_square": "d1",
+    "destination_square": "d2",
+    "selected_piece": "brown_pawn_d1",
+    "grasp_marker_sample_index": 250,
+    "release_marker_sample_index": 400,
+    "physical_initial_upright_reviewed": true,
+    "physical_terminal_upright_reviewed": true
+  },
+  "replay": {
+    "driver": "observed_joint_state_upper_bound",
+    "release_event_sample_offsets": [
+      -1,
+      0,
+      1
+    ],
+    "release_event_offset_rationale": "symmetric one-sample host-to-application uncertainty; the source has no actuator application or acknowledgment timestamps",
+    "preserve_source_row_order": true,
+    "preserve_source_host_timestamps": true,
+    "preserve_observed_joint_state_bytes": true,
+    "preserve_handoff_xy": true,
+    "preserve_destination": true,
+    "action_clipping_allowed": false,
+    "action_smoothing_allowed": false,
+    "action_offset_or_ik_repair_allowed": false,
+    "terminal_xy_forcing_allowed": false,
+    "terminal_destination_pose_forcing_allowed": false,
+    "support_handoff_mode": "camera_observed_upright_quasistatic_support_projection",
+    "support_height_source": "same_episode_initial_settled_selected_pawn",
+    "upright_orientation_source": "same_episode_initial_settled_selected_pawn",
+    "maximum_vertical_support_projection_m": 0.04,
+    "post_handoff_free_physics_settle_seconds": 1.0,
+    "maximum_timestamp_quantization_error_seconds": 0.003
+  },
+  "acceptance": {
+    "report_every_offset": true,
+    "minimum_successful_offsets_for_narrow_advancement": 1,
+    "timing_sensitive_when_not_all_offsets_pass": true,
+    "evaluator_inherited_without_change": true
+  },
+  "authority": {
+    "camera": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "sim_to_real": false,
+    "pure_action_only_transfer": false,
+    "free_release_physics_transfer": false,
+    "simulator_replay": true
+  },
+  "claim_boundary": "A pass is a narrow observation-conditioned REAL-to-SIM support-handoff replay. It uses the measured physical joint trajectory and the camera-reviewed upright terminal object mode, preserves the simulated pawn XY at the handoff, projects only height and upright orientation to the observed support mode, and then returns to free MuJoCo physics. It is not action-only transfer, free-release contact prediction, a calibrated contact model, global mapping approval, SIM-to-REAL evidence, or physical authority."
+}
