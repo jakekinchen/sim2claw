@@ -367,6 +367,15 @@ Current state:
   for action materialization only at contract SHA-256
   `4d38d758fcf408fc1267c30acd599a554bd98d0a62ad67ed0a2140e2640ff6d1`.
   This is a two-case bounded completion, not renewed family enumeration.
+- The completion ran once and reproduced both frozen hashes exactly without
+  dynamics. Receipt SHA-256
+  `7e8d927d932be0c11a67cf3147b214429e95458dac8dcbaa35b69e60f4c17cf3`.
+- Reset temporal V2 is frozen at contract SHA-256
+  `77ee0f180aaf656005edecfd2d3e08555080c14c03397e36059b53ce83fc54a3`.
+  It replays all six exact actions and moves only nonselected pawns to
+  deterministic offboard parking poses. The two unopened actions are
+  validation cases. Selected pose, physics, both plant paths, five deltas,
+  traces, gates, and false mapping/physical authority are unchanged.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -409,8 +418,7 @@ This authorization:
 
 Next step:
 
-- Commit and push the dynamic V1 partial negative plus the two-action static
-  completion freeze, then materialize those two unopened exact actions once.
-  Next freeze one isolated-selected-pawn reset-layout replay over all six
-  actions. Preserve both plant paths and all gates; no result itself promotes
-  geometry, approves mapping, or opens hardware.
+- Commit and push the action-completion result plus isolated-reset temporal
+  freeze, then replay all six exact actions under both plants and five deltas
+  exactly once. Preserve all gates; no result itself promotes geometry,
+  approves mapping, or opens hardware.

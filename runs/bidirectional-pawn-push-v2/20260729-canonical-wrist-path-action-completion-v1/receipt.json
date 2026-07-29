@@ -1,0 +1,60 @@
+{
+  "authority": {
+    "camera": false,
+    "dynamic_simulation": false,
+    "gateway": false,
+    "mapping_approval": false,
+    "model_loading": true,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "static_simulation": true,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective materialization of exactly two V4 statically eligible family actions that were not selected into or opened by temporal V1. The case cells, float64 hashes, shapes, wrist targets, contact heights, path mechanism, current anchor, and static evidence predate this run. It performs no dynamic simulation, outcome selection, mapping, hardware action, or transfer.",
+  "contract_path": "configs/evaluations/canonical_wrist_path_action_completion_v1.json",
+  "contract_sha256": "4d38d758fcf408fc1267c30acd599a554bd98d0a62ad67ed0a2140e2640ff6d1",
+  "dynamic_simulation": false,
+  "frozen_actions": [
+    {
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-action-completion-v1/actions/00.f64le",
+      "action_sha256": "0361acadf35c34b34617645265848ec98908a2caa9d3a364d8bbd8b5a953bb51",
+      "action_shape": [
+        1028,
+        6
+      ],
+      "case_id": "tan_pawn_h7__h7_h8",
+      "contact_height_index": 1,
+      "contact_height_m": 0.014,
+      "destination_square": "h8",
+      "dynamic_outcome_opened": false,
+      "selected_piece_id": "tan_pawn_h7",
+      "source_square": "h7",
+      "wrist_orientation_index": 1,
+      "wrist_roll_target_rad": -1.803634756676338
+    },
+    {
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-action-completion-v1/actions/01.f64le",
+      "action_sha256": "f33d94ae6d13024d217771a731d0fa1cc46c12c736e540e41cfa343ea41f6dbd",
+      "action_shape": [
+        1319,
+        6
+      ],
+      "case_id": "tan_pawn_d7__d7_e7",
+      "contact_height_index": 1,
+      "contact_height_m": 0.014,
+      "destination_square": "e7",
+      "dynamic_outcome_opened": false,
+      "selected_piece_id": "tan_pawn_d7",
+      "source_square": "d7",
+      "wrist_orientation_index": 2,
+      "wrist_roll_target_rad": -1.6509854282810728
+    }
+  ],
+  "physical_motion": false,
+  "physical_task_attempts": 0,
+  "proof_class": "cpu_fp64_static_action_completion_without_dynamic_outcomes",
+  "schema_version": "sim2claw.canonical_wrist_path_action_completion_receipt.v1",
+  "status": "two_unopened_v4_family_actions_frozen"
+}

@@ -194,6 +194,7 @@ def _replay(
     first_object_motion_threshold_m: float,
     camera: np.ndarray,
     image_size: tuple[int, int],
+    reset_layout: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     data = mujoco.MjData(model)
     selected_id = _static._named_id(
@@ -204,14 +205,42 @@ def _replay(
     data.qpos[selected_qpos : selected_qpos + 2] += source_delta_m
     data.qpos[addresses] = action[0]
     data.ctrl[actuators] = action[0]
-    mujoco.mj_forward(model, data)
-    initial_selected = data.xpos[selected_id].copy()
     pawn_ids = {
         body_id
         for body_id in range(model.nbody)
         if "_pawn_" in _body_name(model, body_id)
     }
     excluded_ids = pawn_ids - {selected_id}
+    if reset_layout is not None:
+        if reset_layout != {
+            "mode": "isolated_selected_pawn_offboard_parking",
+            "parking_origin_xyz_m": [0.8, 0.1, 0.800883941],
+            "parking_spacing_m": 0.05,
+            "selected_pawn_pose_unchanged": True,
+            "nonselected_pawn_dynamics_unchanged": True,
+        }:
+            raise CanonicalSeededActionTemporalError(
+                "canonical reset layout changed"
+            )
+        origin = np.asarray(
+            reset_layout["parking_origin_xyz_m"], dtype=np.float64
+        )
+        for parking_index, body_id in enumerate(
+            sorted(excluded_ids, key=lambda item: _body_name(model, item))
+        ):
+            joint_id = int(model.body_jntadr[body_id])
+            qpos_address = int(model.jnt_qposadr[joint_id])
+            data.qpos[qpos_address : qpos_address + 3] = origin + np.asarray(
+                [
+                    parking_index
+                    * float(reset_layout["parking_spacing_m"]),
+                    0.0,
+                    0.0,
+                ],
+                dtype=np.float64,
+            )
+    mujoco.mj_forward(model, data)
+    initial_selected = data.xpos[selected_id].copy()
     initial_excluded = {
         body_id: data.xpos[body_id].copy() for body_id in excluded_ids
     }
@@ -329,6 +358,7 @@ def _replay(
             list(item) for item in collision_pairs
         ],
         "camera_margin_px": camera_margin,
+        "reset_layout": reset_layout,
         "observable_inputs": {
             "joint_states": np.asarray(joint_states, dtype="<f8"),
             "link_poses": link_poses,
@@ -444,6 +474,69 @@ def replay(
         contract["live_seed"] = raw_contract["live_seed"]
         contract["output_directory"] = raw_contract["output_directory"]
         contract["claim_boundary"] = raw_contract["claim_boundary"]
+    elif contract.get("schema_version") == (
+        "sim2claw.canonical_wrist_path_reset_temporal.v2"
+    ):
+        expected_fields = {
+            "schema_version",
+            "contract_id",
+            "status",
+            "proof_class",
+            "base_temporal_contract",
+            "static_receipt",
+            "static_closeout",
+            "action_completion_receipt",
+            "temporal_closeout",
+            "temporal_implementation",
+            "cases",
+            "live_seed",
+            "reset_layout",
+            "output_directory",
+            "unchanged_from_base",
+            "claim_boundary",
+        }
+        if (
+            set(contract) != expected_fields
+            or not all(contract["unchanged_from_base"].values())
+            or len(contract["cases"]) != 6
+        ):
+            raise CanonicalSeededActionTemporalError(
+                "canonical reset-layout temporal contract widened"
+            )
+        base = _json(contract["base_temporal_contract"])
+        for binding_name in (
+            "static_receipt",
+            "static_closeout",
+            "action_completion_receipt",
+            "temporal_closeout",
+            "temporal_implementation",
+        ):
+            _bound(contract[binding_name])
+        contract = copy.deepcopy(base)
+        contract["contract_id"] = raw_contract["contract_id"]
+        contract["status"] = raw_contract["status"]
+        contract["proof_class"] = raw_contract["proof_class"]
+        contract["inputs"]["static_receipt"] = raw_contract[
+            "static_receipt"
+        ]
+        contract["inputs"]["static_closeout"] = raw_contract[
+            "static_closeout"
+        ]
+        contract["inputs"]["action_completion_receipt"] = raw_contract[
+            "action_completion_receipt"
+        ]
+        contract["inputs"]["temporal_closeout"] = raw_contract[
+            "temporal_closeout"
+        ]
+        contract["inputs"]["temporal_implementation"] = raw_contract[
+            "temporal_implementation"
+        ]
+        contract["cases"] = raw_contract["cases"]
+        contract["live_seed"] = raw_contract["live_seed"]
+        contract["reset_layout"] = raw_contract["reset_layout"]
+        contract["observable_episode"]["expected_episode_count"] = 60
+        contract["output_directory"] = raw_contract["output_directory"]
+        contract["claim_boundary"] = raw_contract["claim_boundary"]
     elif contract.get("schema_version") != (
         "sim2claw.canonical_seeded_action_temporal.v1"
     ):
@@ -451,6 +544,11 @@ def replay(
             "unexpected canonical temporal contract"
         )
     static_receipt = _json(contract["inputs"]["static_receipt"])
+    completion_receipt = (
+        _json(contract["inputs"]["action_completion_receipt"])
+        if "action_completion_receipt" in contract["inputs"]
+        else None
+    )
     manifest = _json(contract["inputs"]["candidate_manifest"])
     rigid = _json(contract["inputs"]["registration_candidate"])
     for name in (
@@ -531,9 +629,19 @@ def replay(
         raise CanonicalSeededActionTemporalError(
             "canonical static admission changed"
         )
-    static_by_id = {
-        row["case_id"]: row for row in static_receipt["selected"]
-    }
+    static_rows = list(static_receipt["selected"])
+    if completion_receipt is not None:
+        if (
+            completion_receipt["status"]
+            != "two_unopened_v4_family_actions_frozen"
+            or completion_receipt["dynamic_simulation"]
+            or completion_receipt["physical_motion"]
+        ):
+            raise CanonicalSeededActionTemporalError(
+                "canonical action completion admission changed"
+            )
+        static_rows.extend(completion_receipt["frozen_actions"])
+    static_by_id = {row["case_id"]: row for row in static_rows}
     contract_case_ids = [case["case_id"] for case in contract["cases"]]
     if (
         len(static_by_id) != len(contract["cases"])
@@ -564,7 +672,8 @@ def replay(
         if (
             static is None
             or static["action_sha256"] != case["action_sha256"]
-            or static["direction"] != case["direction"]
+            or static.get("direction", case["direction"])
+            != case["direction"]
         ):
             raise CanonicalSeededActionTemporalError(
                 "temporal case differs from static freeze"
@@ -665,6 +774,7 @@ def replay(
                     ),
                     camera=camera,
                     image_size=image_size,
+                    reset_layout=contract.get("reset_layout"),
                 )
                 observable_inputs = consequence.pop("observable_inputs")
                 checks = {
@@ -811,10 +921,17 @@ def replay(
                 "timestamps_strictly_monotonic": bool(
                     np.all(np.diff(timestamps) > 0.0)
                 ),
-                "row_zero_exact_live_seed": static["gateway"][
-                    "row_zero_physical"
-                ]
-                == contract["live_seed"]["follower_position_degrees"],
+                "row_zero_exact_live_seed": np.array_equal(
+                    _static._physical_actions(
+                        requested[:1], manifest["candidate_config"]
+                    )[0],
+                    np.asarray(
+                        contract["live_seed"][
+                            "follower_position_degrees"
+                        ],
+                        dtype=np.float64,
+                    ),
+                ),
                 "applied_gateway_rate_compatible_without_modification": bool(
                     np.all(maximum_applied_rates <= gateway_rate_limits)
                 ),

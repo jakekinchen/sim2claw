@@ -160,6 +160,8 @@ Confirmed:
   `cbda502b...`, closeout `7491189f...`.
 - The two unopened V4 family actions are frozen for static-only materialization
   at `4d38d758...`.
+- Completion reproduced both exact hashes at receipt `7e8d927d...`.
+- Six-action isolated-reset replay is frozen at `77ee0f18...`.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -206,7 +208,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC02 finite current-workcell wrist-orientation and precontact-path static successor.
 Completed: CC00, CC00A, CC01.
-Evidence: dynamic V1 partial cbda502b...; action completion freeze 4d38d758....
+Evidence: dynamic V1 partial cbda502b...; completion 7e8d927d...; reset replay freeze 77ee0f18....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -214,7 +216,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
 Blockers: the frozen action set is dynamically rejected; physical/model mapping remains unapproved.
-Next step: commit/push the dynamic partial and completion freeze, then materialize the two unopened actions exactly once.
+Next step: commit/push completion and reset replay freeze, then execute all six exact actions under both plants once.
 ```
 
 ## Physical Authority Boundaries
