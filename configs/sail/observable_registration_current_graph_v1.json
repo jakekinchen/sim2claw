@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or5_mechanism_declaration",
+  "status": "active_or5_method_successor",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "ce03169ccaa28464af3b6b5c81ff16fa185fe8ee918cd43713b8dd24cb5b84e8",
+      "sha256": "bd81d99779cbd1e2ec0eda5bb331ae2a3c6a136c0802dd643e64747b7721603f",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -90,6 +90,11 @@
       "path": "configs/decisions/observable_first_contact_divergence_v1_closeout.json",
       "sha256": "61d750b9a270e22fb7d5fe1f0ca919ead7bb941a371bc5c91c14b74dec0b678e",
       "proof_class": "exact_time_base_physical_simulator_contact_object_first_divergence"
+    },
+    "or5_v1": {
+      "path": "configs/decisions/observable_jaw_aperture_mechanism_v1_closeout.json",
+      "sha256": "1d5e47db9835afd9e984e5442fbfe94d62a1725e02b605df454cf4d8312eecf7",
+      "proof_class": "frozen_fit_only_jaw_aperture_identifiability_negative"
     }
   },
   "nodes": [
@@ -182,8 +187,22 @@
       "id": "mechanism:or5-jaw-aperture-geometry",
       "type": "mechanism",
       "label": "Bounded jaw aperture and contact geometry",
-      "status": "active_identifiability_and_preregistration",
+      "status": "active_aggregate_rank_method_successor_after_preserved_v1_negative",
       "source_binding": "queue"
+    },
+    {
+      "id": "counterexample:or5-v1-per-view-sensitivity",
+      "type": "counterexample",
+      "label": "OR5 v1 every-view sensitivity gate",
+      "status": "terminal_negative_min_72_087_below_75_px_per_rad",
+      "source_binding": "or5_v1",
+      "data": {
+        "parameter_rank": 1,
+        "same_sign_sensitivity_fraction": 1.0,
+        "mean_aperture_sensitivity_px_per_rad": 83.14889657886847,
+        "minimum_aperture_sensitivity_px_per_rad": 72.08727441692461,
+        "validation_annotations_opened": false
+      }
     },
     {
       "id": "evidence:or0-corpus",
@@ -284,6 +303,11 @@
       "type": "predicts"
     },
     {
+      "source": "counterexample:or5-v1-per-view-sensitivity",
+      "target": "mechanism:or5-jaw-aperture-geometry",
+      "type": "counterexample-to"
+    },
+    {
       "source": "mapping:or2-robot-jaw-rigid",
       "target": "residual:jaw-aperture-underprediction",
       "type": "generated-from"
@@ -300,5 +324,5 @@
     }
   ],
   "active_card": "OR5",
-  "next_transition": "or5_freeze_smallest_static_observation_supported_jaw_aperture_contact_geometry_mechanism"
+  "next_transition": "or5_freeze_aggregate_rank_identifiability_successor_with_validation_annotations_unopened"
 }

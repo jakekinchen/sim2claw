@@ -1,0 +1,63 @@
+{
+  "schema_version": "sim2claw.observable_jaw_aperture_mechanism_closeout.v1",
+  "decision_id": "observable-jaw-aperture-mechanism-v1-closeout",
+  "result": "NO_IDENTIFIABLE_STATIC_JAW_APERTURE_MECHANISM_UNDER_V1_PER_VIEW_GATE",
+  "proof_class": "frozen_fit_only_jaw_aperture_identifiability_negative",
+  "freeze_commit": "dd78a9e",
+  "contract": {
+    "path": "configs/evaluations/observable_jaw_aperture_mechanism_v1.json",
+    "sha256": "24b4b3a72f5a92206b1f2f8889ccbdd663f2bfd945a6205437e367ca06c10125"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_jaw_aperture_mechanism.py",
+    "sha256": "b55fcf43b9bd8c6be3ebddb9d319fee1726af013490bfa0490a98bbfb2ac1814"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_jaw_aperture_mechanism_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "0f07cfd977191f82fc89e36394f11087d7faa29d64f9339582f6f9ac459be950",
+    "artifact_sha256": "d3f784d9ee6865b5ec831ea0f4049112a1fbd5d570a31105b1d9c8ebeababd15"
+  },
+  "fit_identifiability": {
+    "pose_count": 6,
+    "gripper_span_physical_units": 0.0,
+    "gripper_gain_identifiable": false,
+    "parameter_rank": 1,
+    "same_sign_sensitivity_fraction": 1.0,
+    "mean_aperture_sensitivity_px_per_rad": 83.14889657886847,
+    "minimum_aperture_sensitivity_px_per_rad": 72.08727441692461,
+    "frozen_minimum_per_view_gate_px_per_rad": 75.0,
+    "frozen_gate_passed": false
+  },
+  "validation_reservation": {
+    "pose_count": 4,
+    "annotations_opened": false,
+    "candidate_refit": false
+  },
+  "successor_rationale": {
+    "same_mechanism_family_allowed": true,
+    "visual_fit_outcome_opened_by_v1": true,
+    "validation_visual_outcome_opened_by_v1": false,
+    "sensitivity_depends_on_visual_annotation_values": false,
+    "methodological_change": "replace arbitrary every-view 75 px/rad floor with bounded nonzero per-view sensitivity plus aggregate rank/singular-value gate",
+    "v1_result_may_be_overwritten": false
+  },
+  "proof_boundaries": {
+    "parameter_fit": false,
+    "candidate_promoted": false,
+    "dynamic_replay": false,
+    "global_mapping_approved": false,
+    "contact_or_transfer_proved": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "paid_compute": false
+  },
+  "next_card": "OR5_METHOD_SUCCESSOR"
+}

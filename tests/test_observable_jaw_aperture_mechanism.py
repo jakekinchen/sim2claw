@@ -19,22 +19,20 @@ def test_or5_contract_is_narrow_and_nonphysical() -> None:
     assert not any(contract["authority"].values())
 
 
-def test_or5_declaration_is_identifiable_without_validation_outcome() -> None:
+def test_or5_v1_preserves_its_frozen_per_view_gate_negative() -> None:
     contract = load_mechanism_contract()
     receipt = evaluate_mechanism_declaration(contract)
-    assert receipt["accepted"] is True
+    assert receipt["accepted"] is False
     assert receipt["result"] == (
-        "SINGLE_GRIPPER_ZERO_OFFSET_APERTURE_MAPPING_IDENTIFIABLE"
+        "NO_IDENTIFIABLE_STATIC_JAW_APERTURE_MECHANISM"
     )
     assert receipt["fit"]["pose_count"] == 6
     assert receipt["fit"]["gripper_span_physical_units"] == 0.0
-    assert (
-        receipt["fit"]["minimum_aperture_sensitivity_px_per_rad"] >= 75.0
-    )
+    assert receipt["fit"]["minimum_aperture_sensitivity_px_per_rad"] < 75.0
     assert receipt["validation_reservation"]["pose_count"] == 4
     assert receipt["validation_reservation"]["annotations_opened"] is False
     assert receipt["checks"]["gain_unidentifiable_from_fit_span"] is True
-    assert receipt["checks"]["offset_aperture_sensitivity"] is True
+    assert receipt["checks"]["offset_aperture_sensitivity"] is False
 
 
 def test_or5_receipt_is_deterministic(tmp_path) -> None:

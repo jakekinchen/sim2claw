@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `ACTIVE_OR5_MECHANISM_DECLARATION`
+Status: `ACTIVE_OR5_METHOD_SUCCESSOR`
 
 Created: `2026-07-29`
 
@@ -87,7 +87,7 @@ task success are accepted only if their frozen evaluator gates pass.
 | OR2 | `TERMINAL_NEGATIVE` | Reconcile robot base, articulated links, wrist, jaws, board, and support plane under the frozen camera model. | Fixed base, articulated links, jaws, board, and support each have separate fit and untouched gates. A global approval requires every mandatory channel to pass. | Artifact `3151318a6c58ad0d56b8b01376b29e964c1da2df0972e4c5b397ca2fcc9b4292`; rigid fit/validation `16.324 / 16.302 px` tip RMS; modeled jaw separation underpredicts observed by about `21.2 px`; global mapping remains false. |
 | OR3 | `PASS` | Compile an observable physical episode supplement for the sealed D1-to-D2 source. | C922 and wrist RGB timestamps are bound; jaw/pawn visibility, two-dimensional tracks, board-plane coordinates where valid, grasp/lift/release events, covariance or bounds, and missing depth/contact are explicit. Two-pass or independent validation is required for gating observations. | Artifact `0913aee74cfc08a491a6e17184fb9ecfbf7265208dcb354801ed8010d7c059b2`; physical contact bounded to samples `228–232`, carried motion `260–390`, release `400–407`; endpoint upright at D2. |
 | OR4 | `PASS` | Localize the earliest physical/simulator contact-and-object divergence under exact C6 actions. | Camera-projected simulator jaws/pawn and physical observations share a frozen time base; the evaluator distinguishes actuator, jaw projection, candidate contact, object motion, and outcome. Unknown physical metric depth remains unknown. | Artifact `e6a44d7c1791fcae8a5403b10ed6d580874bafc91d6cb4bb3d10e1f4564f1745`; physical enclosure by sample `232`, simulator selected-jaw contact absent, and first simulated pawn motion at `386`: `154` samples / `7.697 s` later. |
-| OR5 | `ACTIVE` | Prospectively declare one smallest simulator mechanism supported by OR4 and nonsealed evidence. | One mechanism family only; parameters and fit/validation/sealed splits freeze before evaluation; identifiability and regression gates are explicit. | Frozen contract or terminal `no_identifiable_mechanism` closeout. |
+| OR5 | `ACTIVE` | Prospectively declare one smallest simulator mechanism supported by OR4 and nonsealed evidence. | One mechanism family only; parameters and fit/validation/sealed splits freeze before evaluation; identifiability and regression gates are explicit. | V1 artifact `d3f784d9ee6865b5ec831ea0f4049112a1fbd5d570a31105b1d9c8ebeababd15` is a preserved negative: rank one and monotonic, but `72.087 px/rad` misses the frozen `75 px/rad` every-view floor. One aggregate-rank method successor is active; validation annotations remain unopened. |
 | OR6 | `PENDING` | Fit and validate the declared mechanism without touching C6 or held-out outcomes. | Fit improvement and untouched validation pass; camera, action bytes, actuator plant, and unrelated mechanisms remain unchanged. Reject non-identifiable or outcome-tuned candidates. | Versioned simulator candidate, parameter provenance, fit/validation residuals, and promotion decision. |
 | OR7 | `PENDING` | Freeze and run one successor exact-action replay. | New experiment ID; exact C6 gateway-sent bytes and row order; frozen initialization and evaluator; no later observations; natural contact only. Report selected-jaw contact, first object motion, progress, final pose, collisions, and change versus immutable C6. | Immutable successor receipt. Material advancement requires a later first causal divergence, selected-jaw contact, or improved task gates; task success is claimed only if every frozen gate passes. |
 | OR8 | `PENDING` | Publish and close the evidence chain. | Studio exposes physical/simulator camera alignment, tracks, missingness, residuals, first divergence, mechanism change, C6-versus-successor outcome, proof limits, and mobile/desktop acceptance. Focused and broad relevant tests pass; queue/graph/GOAL agree; `HEAD == origin/main`; worktree clean. | Closeout commits, screenshots or acceptance receipt, exact ledger, and next physical/service boundary if any. |
@@ -147,11 +147,11 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: ACTIVE_OR5_MECHANISM_DECLARATION
+Current state: ACTIVE_OR5_METHOD_SUCCESSOR
 Active card: OR5
 Completed: immutable predecessor C0-C9; OR0; OR1 bounded camera; OR2 rigid-mapping negative; OR3 observable physical episode; OR4 first contact divergence; camera endpoint REAL-to-SIM 1/1
-Evidence: OR4 artifact e6a44d7c1791fcae8a5403b10ed6d580874bafc91d6cb4bb3d10e1f4564f1745; physical enclosure sample 232; simulator selected contact absent; first simulator pawn motion sample 386; gap 154 samples / 7.697 s
+Evidence: OR5 v1 artifact d3f784d9ee6865b5ec831ea0f4049112a1fbd5d570a31105b1d9c8ebeababd15; gripper gain unidentifiable; offset sensitivity rank one/monotonic but minimum 72.087 px/rad misses frozen 75 px/rad gate; validation annotations unopened
 Remaining: OR5-OR8
 Physical boundary: follower elbow service; hardware authority false
-Next step: test identifiability in the frozen OR2 static poses and preregister one bounded jaw-aperture/contact-geometry mechanism without opening C6 outcome
+Next step: freeze one aggregate-Jacobian identifiability successor for the unchanged single zero-offset aperture family; preserve v1 and keep validation unopened
 ```
