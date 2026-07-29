@@ -1,0 +1,35 @@
+{
+  "schema_version": "sim2claw.reachable_lock_static_projection.v1",
+  "projection_id": "reachable-lock-80-stroke-66-static-projection-20260729-v1",
+  "status": "achieved_lock_task_freeze_pass",
+  "source_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-80-stroke-66-static-v1/receipt.json",
+    "sha256": "0e3facb0b765804736bd06233a4a696390ababefaf542145e4a9c953f317114c"
+  },
+  "lock_degrees": 80.0,
+  "stroke_mm": 66.0,
+  "passed": true,
+  "direction_counts": {
+    "REAL_TO_SIM": 1,
+    "SIM_TO_REAL": 1
+  },
+  "statically_eligible_family_count": 2,
+  "source_statically_eligible_cell_count": 6,
+  "selected": [
+    {
+      "case_id": "brown_pawn_h1__h1_g1",
+      "direction": "REAL_TO_SIM",
+      "action_sha256": "8922b58f74af7aacf2afb5cac36fd5d29cdac0732285ce744d9c9721351cfe40"
+    },
+    {
+      "case_id": "brown_pawn_f1__f1_e1",
+      "direction": "SIM_TO_REAL",
+      "action_sha256": "9d6ff6126111d9940fd87c86fbc2139ad20433a1b0da3b12962e9a16c3071133"
+    }
+  ],
+  "dynamic_replay_executed": false,
+  "physical_motion": false,
+  "physical_task_attempts": 0,
+  "mapping_approved": false,
+  "claim_boundary": "Read-only exact projection of the two predeclared selected 80 degree, 66 mm actions from the immutable static receipt into the reviewed achieved-lock temporal adapter. Six static cells were eligible; exactly one selected action per direction is admitted. It does not alter actions, gates, direction counts, or authority."
+}

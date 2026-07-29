@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04E_80DEG_66MM_STATIC_FROZEN_PENDING_ONE_RUN`
+Status: `RP04E_80DEG_66MM_DYNAMIC_FROZEN_PENDING_ONE_RUN`
 
 Created: `2026-07-29`
 
@@ -48,7 +48,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP04A | `DONE_TERMINAL_V5_TRACKING_NEGATIVE` | Approve or reject the coordinated-unloading hypothesis before any task packet. | The elbow-only fit passed its untouched tail, then the exact 20-episode challenger preserved all V5 requested bytes and the canonical evaluator. | `0/20` task episodes passed. All four V5 actions are closed for hardware; no retry, task-conditioned refit, action repair, or gate relaxation. |
 | RP04C | `V2_ONE_PHYSICAL_EXECUTION_AUTHORIZED` | Extend execution evidence toward the smallest V5 contact-angle corridor without pawn or board contact. | V2 static receipt `accd098e...` passes: `1105` rows, reachable `-60 deg` pan, `-10.409 deg` elbow, `75.874 mm` worst-case clearance, both scenes contact-free, and all route gates. Packet commit `6ca36ab` passed four focused tests; one packet-hash-bound authorization is active until `12:29:14 CDT`. | No V1 retry. Any live start, camera, gateway, tracking, boundary, or cleanup defect stops safely; still zero task attempts. |
 | RP04D | `DONE_TERMINAL_80DEG_40MM_DYNAMIC_NEGATIVE` | Compile task geometry around the physically observed elbow floor instead of ideal V5 angles. | Static receipt `065e75e...` passed all locks; the predeclared 80-degree pair then ran `20` direct/ZOH/reset episodes with exact bytes. | `0/20` passed. Both cases made contact but failed progress and no-lift. Do not switch to 85 or 77.5 degree families after outcomes. |
-| RP04E | `80DEG_66MM_STATIC_FROZEN_PENDING_ONE_RUN` | Test the evidence-directed undertravel mechanism at the same reachable lock. | Change only stroke from `40 mm` to the already established `66 mm` successor; retain 80-degree lock, 48-family universe, 576 cells, wrist/head-height grid, jaw/contact/collision/camera/gateway gates, and false dynamic/hardware authority. | Static failure closes this mechanism without dynamics. A pass freezes exactly one family per direction for the unchanged temporal gate. |
+| RP04E | `80DEG_66MM_DYNAMIC_FROZEN_PENDING_ONE_RUN` | Test the evidence-directed undertravel mechanism at the same reachable lock. | Static receipt `0e3facb0...` passes with `6` eligible cells and freezes one exact family per direction. Run those two exact actions under direct target and diagnostic `0.11 s` ZOH across five resets with the unchanged progress, no-lift, contact, exclusion, collision, and camera gates. | Any dynamic failure closes this exact mechanism without hardware. A `20/20` pass opens bounded task-packet design but does not approve mapping, hardware, or transfer. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -68,10 +68,11 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-Run the already frozen 80-degree, 66 mm stroke static screen exactly once. It
-must yield one distinct family per direction under every unchanged static
-gate before any dynamic outcome opens. Do not alter the lock, stroke, family
-universe, or gates after the result.
+Run the already frozen 80-degree, 66 mm stroke dynamic replay exactly once.
+The exact selected actions must pass direct target and diagnostic `0.11 s`
+ZOH across all five resets before any task-packet design opens. Do not alter
+the lock, stroke, action bytes, family selection, plant paths, or gates after
+the result.
 
 ## RP00 immutable result
 
