@@ -7571,6 +7571,15 @@
     "physical_authority": false,
     "gateway_or_serial_authority": false,
     "counted_task_attempts_authorized": false,
-    "physical_resume_gate": "fresh_canonical_task_plane_registration_lte_25_mm"
+    "physical_resume_gate": "fresh_canonical_task_plane_registration_lte_25_mm",
+    "registration_revalidation": {
+      "status": "preregistered_pending_one_motion_free_execution",
+      "contract": "configs/evaluations/canonical_task_plane_registration_v1.json",
+      "maximum_task_plane_rms_mm_exclusive": 25.0,
+      "maximum_task_plane_max_mm_exclusive": 25.0,
+      "raw_image_reopen": false,
+      "physical_recapture": false,
+      "physical_authority": false
+    }
   }
 }

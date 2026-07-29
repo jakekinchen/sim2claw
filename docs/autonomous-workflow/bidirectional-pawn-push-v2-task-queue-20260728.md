@@ -3555,3 +3555,23 @@ complete in commit `4706851`, pushed to
 This cutover grants no physical, gateway, serial, evaluator, or counted-action
 authority. A fresh canonical task-plane registration with error `<=25 mm`
 remains mandatory before any physical experiment packet can be frozen.
+
+### HC-R01 canonical task-plane registration freeze — 2026-07-28
+
+The motion-free revalidation contract
+`configs/evaluations/canonical_task_plane_registration_v1.json` is frozen
+before its one canonical recomputation. It binds the immutable hard cutover,
+canonical runtime, exact V4 fit and heldout annotations, candidate, candidate
+manifest, joint ledger, single-open receipt, and historical heldout receipt.
+
+The evaluator must independently compile `sim2claw.current_workcell`, prove
+the standard `a8, h8, h1, a1` playing-corner association, align all 16 reset
+pawns to canonical centers within `1e-9 m`, retain 64 unique square centers,
+and recompute all four sealed heldouts without reopening raw images. Both
+task-plane RMS and maximum must be strictly below `25 mm`; reprojection RMS
+and maximum must be at most `8 px`; no refit is allowed.
+
+Focused pre-execution tests pass `10/10`. Exactly one receipt execution is
+authorized after this freeze is committed and pushed. Camera, gateway,
+serial, physical recapture, motion, task-attempt, and transfer authority
+remain false.
