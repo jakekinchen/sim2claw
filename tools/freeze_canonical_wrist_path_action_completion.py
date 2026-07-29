@@ -17,7 +17,7 @@ def main() -> None:
         "--contract",
         type=Path,
         default=REPO_ROOT
-        / "configs/evaluations/canonical_wrist_path_action_completion_v1.json",
+        / "configs/evaluations/canonical_wrist_path_action_completion_v2.json",
     )
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()

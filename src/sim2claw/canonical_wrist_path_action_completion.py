@@ -67,11 +67,15 @@ def freeze_actions(
         "authority",
         "claim_boundary",
     }
+    schema_version = contract.get("schema_version")
+    expected_case_count = {
+        "sim2claw.canonical_wrist_path_action_completion.v1": 2,
+        "sim2claw.canonical_wrist_path_action_completion.v2": 4,
+    }.get(schema_version)
     if (
         set(contract) != expected
-        or contract["schema_version"]
-        != "sim2claw.canonical_wrist_path_action_completion.v1"
-        or len(contract["cases"]) != 2
+        or expected_case_count is None
+        or len(contract["cases"]) != expected_case_count
         or contract["authority"] != {
             "model_loading": True,
             "static_simulation": True,
@@ -209,7 +213,11 @@ def freeze_actions(
         "schema_version": (
             "sim2claw.canonical_wrist_path_action_completion_receipt.v1"
         ),
-        "status": "two_unopened_v4_family_actions_frozen",
+        "status": (
+            "two_unopened_v4_family_actions_frozen"
+            if expected_case_count == 2
+            else "four_low_contact_v4_family_actions_frozen"
+        ),
         "proof_class": (
             "cpu_fp64_static_action_completion_without_dynamic_outcomes"
         ),

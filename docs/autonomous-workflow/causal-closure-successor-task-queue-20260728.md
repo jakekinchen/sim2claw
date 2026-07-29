@@ -376,6 +376,18 @@ Current state:
   deterministic offboard parking poses. The two unopened actions are
   validation cases. Selected pose, physics, both plant paths, five deltas,
   traces, gates, and false mapping/physical authority are unchanged.
+- Reset temporal V2 ran once and passed `1` family per direction, below the
+  required `2/2`. It eliminated excluded displacement but left only
+  progress/no-lift boundaries; neither unopened validation family passed.
+  Receipt SHA-256
+  `e2986fac6f6e2e3d4ae0cb1191ae42d6b6955fab6cc46eaee2874b4a9c79c406`;
+  closeout SHA-256
+  `30633e88f8e0d43bba66f23377c4b0042a3d5cb15d784b7c377ee24c1929a206`.
+- Four V4 cells that were already statically eligible at `10 mm` contact
+  height are frozen for exact action materialization at contract SHA-256
+  `3987ee1b898cb634b6f9688c2a35d057a0a07c936ab631b9d4deaa515067379a`.
+  Their 14 mm predecessors remain immutable; no family search or dynamic
+  outcome occurs in this step.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -418,7 +430,7 @@ This authorization:
 
 Next step:
 
-- Commit and push the action-completion result plus isolated-reset temporal
-  freeze, then replay all six exact actions under both plants and five deltas
-  exactly once. Preserve all gates; no result itself promotes geometry,
-  approves mapping, or opens hardware.
+- Commit and push reset V2's partial negative plus the four-action low-contact
+  completion freeze, then materialize those four exact tensors once.
+  Preserve all gates and prior action bytes; no result itself promotes
+  geometry, approves mapping, or opens hardware.

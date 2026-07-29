@@ -15,7 +15,7 @@ from sim2claw.paths import REPO_ROOT
 
 CONTRACT = (
     REPO_ROOT
-    / "configs/evaluations/canonical_wrist_path_action_completion_v1.json"
+    / "configs/evaluations/canonical_wrist_path_action_completion_v2.json"
 )
 
 
@@ -23,9 +23,12 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def test_action_completion_is_two_case_static_only_freeze() -> None:
+def test_action_completion_is_four_case_static_only_freeze() -> None:
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
-    assert len(contract["cases"]) == 2
+    assert len(contract["cases"]) == 4
+    assert {case["contact_height_m"] for case in contract["cases"]} == {
+        0.01
+    }
     assert all(
         case["dynamic_outcome_opened"] is False
         for case in contract["cases"]
