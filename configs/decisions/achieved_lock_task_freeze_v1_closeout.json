@@ -1,0 +1,51 @@
+{
+  "schema_version": "sim2claw.achieved_lock_task_freeze_closeout.v1",
+  "decision_id": "achieved-lock-task-freeze-20260729-v1-closeout",
+  "status": "accepted_two_direction_static_freeze",
+  "contract": {
+    "path": "configs/evaluations/achieved_lock_task_freeze_v1.json",
+    "sha256": "2ca78853446b4ddd80c21a1724a523f44d7db0b5e72f84be009447ee7832691d"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-achieved-lock-task-freeze-v1/receipt.json",
+    "sha256": "3a935d15860b732975d2839a4aba7fcda2239ff32e658b2df5fe5dc5ea45204b"
+  },
+  "result": {
+    "exact_achieved_elbow_degrees": 92.43956043956044,
+    "statically_eligible_family_count": 2,
+    "direction_counts": {
+      "REAL_TO_SIM": 1,
+      "SIM_TO_REAL": 1
+    },
+    "all_selected_actions_constant_at_achieved_elbow": true,
+    "dynamic_replay_executed": false,
+    "physical_task_attempts": 0
+  },
+  "accepted_cases": [
+    {
+      "case_id": "brown_pawn_g2__g2_f2",
+      "direction": "REAL_TO_SIM",
+      "action_sha256": "a19730f789fae4f813e31497925082e722767649afa08f208dbd49ba0179e042"
+    },
+    {
+      "case_id": "brown_pawn_f1__f1_f2",
+      "direction": "SIM_TO_REAL",
+      "action_sha256": "2a1a7ff9ff271c93c05afff0f9723ff0fa87862f8a1099eae8763b6b1a416cb4"
+    }
+  ],
+  "mapping": {
+    "global_mapping_approved": false,
+    "status": "provisional_range_audit_blocked"
+  },
+  "authority": {
+    "dynamic_simulation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "mapping_approval": false,
+    "transfer_claim": false
+  },
+  "decision": "Accept the exact achieved-lock static result and open one prospectively frozen dynamic replay under the unchanged direct-target baseline and diagnostic 0.11 second ZOH challenger. No hardware or transfer authority opens."
+}

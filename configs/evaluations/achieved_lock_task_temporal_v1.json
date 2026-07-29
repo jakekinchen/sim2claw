@@ -1,0 +1,76 @@
+{
+  "schema_version": "sim2claw.achieved_lock_task_temporal.v1",
+  "contract_id": "achieved-lock-task-temporal-20260729-v1",
+  "status": "frozen_after_exact_achieved_lock_static_pass_before_dynamic_replay",
+  "proof_class": "prospective_cpu_fp64_exact_achieved_lock_action_direct_target_and_diagnostic_zoh_causal_replay",
+  "base_temporal_contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+    "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+  },
+  "static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-achieved-lock-task-freeze-v1/receipt.json",
+    "sha256": "3a935d15860b732975d2839a4aba7fcda2239ff32e658b2df5fe5dc5ea45204b"
+  },
+  "static_closeout": {
+    "path": "configs/decisions/achieved_lock_task_freeze_v1_closeout.json",
+    "sha256": "9174c15bb829cc77ad5357fc45c34cb14eb456847917887e68e74f51c6785cba"
+  },
+  "temporal_implementation": {
+    "path": "src/sim2claw/achieved_lock_task_temporal.py",
+    "sha256": "49e80b36a9dc71e07e68e0bffaf6df47e3e97a1088a74415309cd87c2fcb45f1"
+  },
+  "cases": [
+    {
+      "case_id": "brown_pawn_g2__g2_f2",
+      "direction": "REAL_TO_SIM",
+      "source_square": "g2",
+      "destination_square": "f2",
+      "selected_piece_id": "brown_pawn_g2",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-achieved-lock-task-freeze-v1/actions/00.f64le",
+      "action_sha256": "a19730f789fae4f813e31497925082e722767649afa08f208dbd49ba0179e042",
+      "action_shape": [
+        512,
+        6
+      ]
+    },
+    {
+      "case_id": "brown_pawn_f1__f1_f2",
+      "direction": "SIM_TO_REAL",
+      "source_square": "f1",
+      "destination_square": "f2",
+      "selected_piece_id": "brown_pawn_f1",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-achieved-lock-task-freeze-v1/actions/01.f64le",
+      "action_sha256": "2a1a7ff9ff271c93c05afff0f9723ff0fa87862f8a1099eae8763b6b1a416cb4",
+      "action_shape": [
+        674,
+        6
+      ]
+    }
+  ],
+  "live_seed": {
+    "source": "rp02d_successful_torque_on_held_pose",
+    "follower_position_degrees": [
+      5.802197802197802,
+      -85.01098901098901,
+      92.43956043956044,
+      -12.0,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "torque_enabled": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-achieved-lock-task-temporal-v1",
+  "unchanged_from_base": {
+    "requested_mapped_sent_action_identity": true,
+    "forty_hz_row_order_and_timing": true,
+    "direct_target_baseline_and_uncalibrated_0p11s_zoh_challenger": true,
+    "five_frozen_reset_variants": true,
+    "cpu_fp64_mujoco_and_substeps": true,
+    "observable_episode_v2_min_and_first_divergence": true,
+    "progress_gate_36p025mm": true,
+    "contact_exclusion_no_lift_collision_and_camera_gates": true,
+    "one_case_per_direction_both_plant_paths_required": true,
+    "dynamic_only_authority": true
+  },
+  "claim_boundary": "Prospectively frozen CPU/fp64 replay of the two exact RP03 actions from the successful RP02D torque-on held pose. Both the canonical direct-target baseline and diagnostic uncalibrated 0.11 second ZOH challenger, all five reset deltas, exact action bytes, 40 Hz timing, ObservableEpisode.v2-min traces, first-divergence channels, and the unchanged 36.025 mm consequence gate remain required. A pass opens task-packet design only; it cannot approve mapping, hardware, a physical attempt, simulator promotion, or transfer."
+}

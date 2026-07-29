@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP03_EXACT_ACHIEVED_LOCK_STATIC_FREEZE`
+Status: `RP03A_EXACT_ACHIEVED_LOCK_TEMPORAL_FROZEN`
 
 Created: `2026-07-29`
 
@@ -36,7 +36,8 @@ does not rewrite that result.
 | RP02B | `V1_RANGE_REJECT_V2_FROZEN_PENDING_ONE_RUN` | Test a bounded no-write deep-request corridor after the measured proportional-torque stall. | V1 honestly rejected because the torque-off observation exceeded the calibrated command maximum. V2 sweeps only `[80.0,102.1] deg` at `0.1 deg`; strict contact-free through `99.6 deg`; above it allow only live-anchor modeled pairs with at most `0.5 mm` additional penetration; preserve `120 mm` moving-chain/environment clearance and false physical authority. | Any new/worsened contact, range, clearance, or inventory defect rejects without motion. A pass opens one prospectively frozen command transaction, not hardware authority. |
 | RP02C | `FROZEN_PENDING_SCOPED_AUTHORIZATION` | Execute one no-write read-conditioned deep-request parking transaction. | Start floor `86 deg`; one prospective deepen to `82 deg`; changed requests remain at most `5 deg`; success only in `[88,93] deg` plus `15 s / 0.5 deg` hold; elbow current `>150` raw for `1 s` or temperature `>45 C` stops; exact cameras/gateway/cleanup/one-execution latch. | Any out-of-band, current, temperature, drift, camera, exact-action, or cleanup defect stops safely. Still zero task attempts. |
 | RP02D | `DONE_PASS` | Repeat the successful band-entry mechanism with only the first/recurring hold reset moved from `4.0 s` to `2.0 s`. | Preserve V3 requests, `[88,93] deg`, `15 s / 0.5 deg`, current/temperature, geometry, cameras, exact gateway, cleanup, and zero task authority. | Passed at `92.439560 deg`; `15.017 s` hold, `0.175824 deg` drift, both cameras complete, torque off. |
-| RP03 | `FROZEN_PENDING_ONE_STATIC_RUN` | Freeze fresh task actions at the achieved lock. | Exact RP02D torque-on pose, unchanged bounded family universe and static gates; at least one distinct family per direction; exact bytes predate outcomes. | Zero eligible families ends the successor without a task attempt. |
+| RP03 | `DONE_PASS` | Freeze fresh task actions at the achieved lock. | Exact RP02D torque-on pose, unchanged bounded family universe and static gates; at least one distinct family per direction; exact bytes predate outcomes. | Passed with exactly one eligible family per direction; no dynamic or physical execution. |
+| RP03A | `FROZEN_PENDING_ONE_DYNAMIC_RUN` | Replay both exact achieved-lock actions under baseline and timing stress. | Preserve exact action bytes, 40 Hz row order, five reset deltas, `36.025 mm` progress, contact/exclusion/no-lift/collision/camera gates, direct target plus diagnostic `0.11 s` ZOH, and ObservableEpisode.v2-min first-divergence traces. Both cases must pass both paths. | A negative remains immutable and cannot be repaired after outcomes. A pass opens task-packet design only. |
 | RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
 | RP05 | `PENDING` | Complete a distinct SIM->REAL task transfer. | Simulator success and robustness predate freeze; distinct family; camera-owned physical success with identical bytes. | At most three task attempts; failures stay in the denominator. |
 | RP06 | `PENDING` | Approve a task-bounded mapping for the successful locked-elbow slice. | Scope and factors are preregistered; accepted wrist/pan/lift evidence plus successful first-divergence bounds support the exact task slice. | Never relabel as global mapping approval. |
@@ -56,9 +57,9 @@ does not rewrite that result.
 
 ## Current next step
 
-Run the committed RP03 exact-achieved-lock static freeze exactly once. A pass
-must yield at least one distinct family per direction before any dynamic or
-physical task packet can be considered.
+Run the committed RP03A exact-achieved-lock dynamic replay exactly once. Both
+frozen cases must pass all five reset variants under direct target and the
+diagnostic ZOH path before any physical task packet can be considered.
 
 ## RP00 immutable result
 
@@ -216,6 +217,33 @@ physical task packet can be considered.
   `5 s` stall clock carried approximately `2 s` from the final descent
   interval. Torque-off and both cameras completed.
 - RP02D changes only the reset cadence to `2 s`; task attempts remain `0/10`.
+
+## RP02D immutable achieved-lock result
+
+- Receipt SHA-256:
+  `1b3c792007b02f5e7118a6a3ddb73a4b97520a3ba1a3df89984214cb7e281578`.
+- The robot reached `92.439560 deg` using the exact no-write deep request and
+  held for `15.017248 s` with maximum drift `0.175824 deg`.
+- Maximum observed elbow current remained low; temperature stayed
+  approximately `29--30 C`.
+- C922 and Pi camera receipts completed and cleanup confirmed torque off.
+- This is a camera-backed mechanism success, not a pawn task attempt or
+  transfer.
+
+## RP03 immutable exact-lock static result
+
+- Freeze commit: `c1a2f84`.
+- Receipt SHA-256:
+  `3a935d15860b732975d2839a4aba7fcda2239ff32e658b2df5fe5dc5ea45204b`.
+- `brown_pawn_g2__g2_f2` is the frozen REAL->SIM family at action SHA-256
+  `a19730f789fae4f813e31497925082e722767649afa08f208dbd49ba0179e042`.
+- `brown_pawn_f1__f1_f2` is the frozen SIM->REAL family at action SHA-256
+  `2a1a7ff9ff271c93c05afff0f9723ff0fa87862f8a1099eae8763b6b1a416cb4`.
+- Both actions start at the exact RP02D achieved pose and keep the elbow
+  model coordinate exactly constant at `92.439560 deg`.
+- All selected static collision, contact, calibrated-range, gateway-rate, and
+  camera gates passed. Mapping remains
+  `provisional_range_audit_blocked`; physical authority remains false.
 
 ## RP01 freeze
 

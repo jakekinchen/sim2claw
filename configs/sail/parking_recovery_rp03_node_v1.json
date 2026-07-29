@@ -1,0 +1,24 @@
+{
+  "schema_version": "sim2claw.campaign_graph_node.v1",
+  "node_id": "parking-recovery-rp03-exact-lock-static-20260729-v1",
+  "status": "accepted_static_pass_dynamic_frozen",
+  "predecessors": [
+    {
+      "node_id": "parking-recovery-rp02d-hold-timing-20260729-v1",
+      "result": "camera_backed_achieved_lock_hold_pass"
+    }
+  ],
+  "single_mechanism_change": "freeze_task_actions_at_exact_observed_torque_on_lock",
+  "static_receipt_sha256": "3a935d15860b732975d2839a4aba7fcda2239ff32e658b2df5fe5dc5ea45204b",
+  "direction_counts": {
+    "REAL_TO_SIM": 1,
+    "SIM_TO_REAL": 1
+  },
+  "ledger": {
+    "real_to_sim": "0/0",
+    "sim_to_real": "0/0",
+    "physical_task_attempts": "0/10"
+  },
+  "active_card": "RP03A",
+  "physical_authority": false
+}
