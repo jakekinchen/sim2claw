@@ -7,7 +7,7 @@
     "path": "configs/evaluations/directional_displacement_static_bridge_contact_offset_compensated_v4.json",
     "sha256": "05e2dc29157e2875596cc39778be5f579024731cb828bc268c0080cdc0ee9dd1"
   },
-  "predecessor_temporal_closeout": {
+  "mapping_closeout": {
     "path": "configs/decisions/reachable_lock_80_stroke_66_lower_contact_temporal_v1_closeout.json",
     "sha256": "96b2a952675fa45731c9575720c5c45b7a558ee45dc889adfc1414c71fc1ac9d"
   },
