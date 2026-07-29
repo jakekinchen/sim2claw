@@ -1,0 +1,101 @@
+{
+  "schema_version": "sim2claw.realized_action_contact_identifiability_contract.v1",
+  "contract_id": "realized-action-contact-identifiability-v1",
+  "sources": {
+    "c3a_closeout": {
+      "path": "configs/decisions/realized_action_first_divergence_v1_closeout.json",
+      "sha256": "5bc6748bb9b0e4023730fd20fd1e1e89cb42bacb2744b7b5fa4b43ee12bb0da1"
+    },
+    "c4_closeout": {
+      "path": "configs/decisions/realized_action_effective_plant_v1_closeout.json",
+      "sha256": "01192e6d605c273b70c3d60d58978bf92b0b53622789aaa33acdfecac7b66686"
+    },
+    "c4_receipt": {
+      "path": "outputs/realized_action_effective_plant_v1/receipt.json",
+      "sha256": "5afba2e280e7c34308aa51548b938a6af54bd299e49038d6083043342b353c07",
+      "artifact_sha256": "df50459a4c7f60894690610c8578f67e064c13de3d0a9f7e286aa8c26e736aa6"
+    },
+    "episode_twin_receipt": {
+      "path": "outputs/episode_twin_bundle_v1/receipt.json",
+      "sha256": "33fb5ced9ad2eee5adfb5042c017dfb321af5f32e434283547e789e74b308fc8",
+      "artifact_sha256": "5290ef26caa3fa5a22db8f0bfc4aa1ec8e69c9eca63d431fab73a612e8258914"
+    },
+    "current_contact_baseline": {
+      "path": "src/sim2claw/current_workcell.py",
+      "sha256": "df6bdf6b4408b7dcaaa1670fc0575f8506e11cef3add37124cc1afa2e8b69fad",
+      "status": "unvalidated_baseline_not_parameter_authority"
+    }
+  },
+  "candidate_dimensions": [
+    {
+      "name": "effective_jaw_or_pusher_geometry",
+      "required_nonsealed_observables": [
+        "per_sample_contact_state",
+        "metric_object_pose_path",
+        "metric_robot_or_jaw_pose_path"
+      ]
+    },
+    {
+      "name": "contact_height",
+      "required_nonsealed_observables": [
+        "per_sample_contact_state",
+        "metric_object_pose_path"
+      ]
+    },
+    {
+      "name": "pawn_board_friction",
+      "required_nonsealed_observables": [
+        "metric_object_pose_path",
+        "known_contact_or_applied_force"
+      ]
+    },
+    {
+      "name": "contact_compliance_or_damping",
+      "required_nonsealed_observables": [
+        "metric_contact_deformation",
+        "known_contact_or_applied_force",
+        "metric_object_pose_path"
+      ]
+    },
+    {
+      "name": "pawn_mass_or_center_of_mass",
+      "required_nonsealed_observables": [
+        "metric_object_pose_path",
+        "known_contact_or_applied_force",
+        "metric_object_orientation_path"
+      ]
+    }
+  ],
+  "minimum_evidence": {
+    "fit_episodes_per_required_observable": 2,
+    "validation_episodes_per_required_observable": 1
+  },
+  "forbidden_inputs": [
+    "sealed_mission_outcome_for_selection",
+    "observed_grasp_or_release_marker",
+    "final_square_loss",
+    "terminal_endpoint_forcing",
+    "support_or_upright_projection",
+    "motor_current_as_force",
+    "unsupported_contact_force",
+    "impossible_geometry"
+  ],
+  "rules": {
+    "missing_observable_rejects_dimension": true,
+    "sealed_episode_report_only": true,
+    "no_parameter_fit_without_eligible_dimension": true,
+    "baseline_contact_model_remains_unvalidated": true,
+    "terminal_negative_is_valid_closeout": true
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "parameter_fit": false,
+    "simulator_replay": false,
+    "paid_compute": false
+  }
+}
