@@ -70,6 +70,7 @@ def load_packet(path: Path) -> dict[str, Any]:
             "sim2claw.parking_transaction_execution_packet.v1",
             "sim2claw.parking_transaction_execution_packet.v2",
             "sim2claw.parking_transaction_execution_packet.v3",
+            "sim2claw.parking_transaction_execution_packet.v4",
         }
         and packet.get("status")
         == "frozen_pending_independent_review_and_owner_authorization",
@@ -106,7 +107,10 @@ def load_packet(path: Path) -> dict[str, Any]:
                 "new_target_lead_periods": 1,
             }
         )
-    elif schema_version == "sim2claw.parking_transaction_execution_packet.v3":
+    elif schema_version in {
+        "sim2claw.parking_transaction_execution_packet.v3",
+        "sim2claw.parking_transaction_execution_packet.v4",
+    }:
         expected = {
             "success_minimum_degrees": 88.0,
             "success_maximum_degrees": 93.0,
@@ -125,7 +129,12 @@ def load_packet(path: Path) -> dict[str, Any]:
             "held_joint_drift_stop_degrees": 2.0,
             "hold_seconds": 15.0,
             "maximum_hold_drift_degrees": 0.5,
-            "hold_deep_segment_seconds": 4.0,
+            "hold_deep_segment_seconds": (
+                2.0
+                if schema_version
+                == "sim2claw.parking_transaction_execution_packet.v4"
+                else 4.0
+            ),
             "hold_reset_segment_seconds": 0.2,
             "hold_reset_error_degrees": 2.9,
             "maximum_elbow_current_raw": 150.0,
@@ -144,7 +153,10 @@ def load_packet(path: Path) -> dict[str, Any]:
             "treated as task evidence."
         )
         if schema_version
-        == "sim2claw.parking_transaction_execution_packet.v3"
+        in {
+            "sim2claw.parking_transaction_execution_packet.v3",
+            "sim2claw.parking_transaction_execution_packet.v4",
+        }
         else (
             "registered scene clears 120 mm moving-chain gate; "
             "uncorrected canonical scene independently remains contact-free"
@@ -208,6 +220,37 @@ def load_packet(path: Path) -> dict[str, Any]:
             == "pass_open_deep_request_transaction_freeze_only",
             "RP02B did not open the deep-request transaction freeze",
         )
+        if (
+            schema_version
+            == "sim2claw.parking_transaction_execution_packet.v4"
+        ):
+            failed_hold = _json(
+                packet["inputs"]["predecessor_execution_receipt"]
+            )
+            _require(
+                failed_hold.get("passed") is False
+                and failed_hold.get("physical_task_attempts") == 0
+                and failed_hold.get("pawn_contact") is False
+                and failed_hold.get("failure")
+                == (
+                    "PhysicalGatewayError: Follower made no measurable "
+                    "progress toward a commanded joint for 5.0 seconds; "
+                    "torque released."
+                )
+                and failed_hold.get("postflight", {}).get(
+                    "physical_follower_torque_enabled"
+                )
+                is False,
+                "RP02D predecessor is not the exact safe hold-timing receipt",
+            )
+            failed_closeout = _json(
+                packet["inputs"]["predecessor_execution_closeout"]
+            )
+            _require(
+                failed_closeout.get("status")
+                == "band_entry_pass_hold_reset_too_late_open_2s_successor",
+                "RP02C closeout did not open the hold-timing successor",
+            )
     return packet
 
 
@@ -909,7 +952,10 @@ def execute(
         with telemetry_path.open("x", encoding="utf-8") as telemetry:
             if (
                 packet.get("schema_version")
-                == "sim2claw.parking_transaction_execution_packet.v3"
+                in {
+                    "sim2claw.parking_transaction_execution_packet.v3",
+                    "sim2claw.parking_transaction_execution_packet.v4",
+                }
             ):
                 ladder = run_deep_request_ladder(
                     gateway=gateway,

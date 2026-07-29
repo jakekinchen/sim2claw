@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP02C_DEEP_REQUEST_PACKET_FROZEN`
+Status: `RP02D_HOLD_TIMING_PACKET_FROZEN`
 
 Created: `2026-07-29`
 
@@ -35,6 +35,7 @@ does not rewrite that result.
 | RP02A | `DONE_SAFE_STALL_ABOVE_CERTIFICATE` | Re-run parking once with the single prospectively declared clock-compatibility repair. | Preserve every RP02 target, geometry, collision, telemetry, camera, stall, hold, cleanup, and claim gate. Add one exact anchor row at elapsed zero and one `0.2 s` lead period before every changed destination; no destination bytes, target, limits, clipping, smoothing, or offsets change. | Exact rows executed, but the elbow stalled at `94.901099 deg`; gateway released torque and postflight passed. No pawn contact or task attempt. |
 | RP02B | `V1_RANGE_REJECT_V2_FROZEN_PENDING_ONE_RUN` | Test a bounded no-write deep-request corridor after the measured proportional-torque stall. | V1 honestly rejected because the torque-off observation exceeded the calibrated command maximum. V2 sweeps only `[80.0,102.1] deg` at `0.1 deg`; strict contact-free through `99.6 deg`; above it allow only live-anchor modeled pairs with at most `0.5 mm` additional penetration; preserve `120 mm` moving-chain/environment clearance and false physical authority. | Any new/worsened contact, range, clearance, or inventory defect rejects without motion. A pass opens one prospectively frozen command transaction, not hardware authority. |
 | RP02C | `FROZEN_PENDING_SCOPED_AUTHORIZATION` | Execute one no-write read-conditioned deep-request parking transaction. | Start floor `86 deg`; one prospective deepen to `82 deg`; changed requests remain at most `5 deg`; success only in `[88,93] deg` plus `15 s / 0.5 deg` hold; elbow current `>150` raw for `1 s` or temperature `>45 C` stops; exact cameras/gateway/cleanup/one-execution latch. | Any out-of-band, current, temperature, drift, camera, exact-action, or cleanup defect stops safely. Still zero task attempts. |
+| RP02D | `FROZEN_PENDING_SCOPED_AUTHORIZATION` | Repeat the successful band-entry mechanism with only the first/recurring hold reset moved from `4.0 s` to `2.0 s`. | Preserve V3 requests, `[88,93] deg`, `15 s / 0.5 deg`, current/temperature, geometry, cameras, exact gateway, cleanup, and zero task authority. | Any failure stops safely. No second mechanism change or configuration write. |
 | RP03 | `PENDING` | Freeze fresh task actions at the achieved lock. | Strict unchanged gates; fresh C922 scene admission; at least one distinct family per direction; exact bytes and evaluator freeze predate outcomes. | Zero eligible families ends the successor without a task attempt. |
 | RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
 | RP05 | `PENDING` | Complete a distinct SIM->REAL task transfer. | Simulator success and robustness predate freeze; distinct family; camera-owned physical success with identical bytes. | At most three task attempts; failures stay in the denominator. |
@@ -55,9 +56,9 @@ does not rewrite that result.
 
 ## Current next step
 
-Commit and push the RP02C packet, bind a fresh one-execution time-bounded
-authorization, and execute once. A pass opens exact achieved-angle task
-freeze; it still does not count as a task attempt or transfer.
+Commit and push RP02D, bind a fresh one-execution time-bounded authorization,
+and execute once. A pass opens exact achieved-angle task freeze; it still
+does not count as a task attempt or transfer.
 
 ## RP00 immutable result
 
@@ -202,6 +203,19 @@ freeze; it still does not count as a task attempt or transfer.
   remain fail-closed.
 - Physical authority remains false pending a separate exact packet-hash-bound
   authorization.
+
+## RP02C immutable band-entry / hold-timing result
+
+- Receipt SHA-256:
+  `99619e6f77f8fdc9a812e11f475d21305f85163930fbcf5a4375977a0543ad01`.
+- Observed elbow entered the certified band at `92.087912 deg` under the exact
+  `88.406593 deg` deep request.
+- The first `16` hold rows had `0.0 deg` observed drift, current at most `20`
+  raw, and temperature `29 C`.
+- The gateway stopped before the first planned `4 s` reset because its
+  `5 s` stall clock carried approximately `2 s` from the final descent
+  interval. Torque-off and both cameras completed.
+- RP02D changes only the reset cadence to `2 s`; task attempts remain `0/10`.
 
 ## RP01 freeze
 

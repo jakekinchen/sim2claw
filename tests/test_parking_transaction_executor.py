@@ -102,7 +102,7 @@ def _packet() -> dict[str, Any]:
 
 def test_frozen_packet_requires_separate_owner_authorization() -> None:
     packet = load_packet(
-        ROOT / "configs/hardware/parking_transaction_execution_v3.json"
+        ROOT / "configs/hardware/parking_transaction_execution_v4.json"
     )
     assert packet["physical_authority"] is False
     assert packet["owner_authorization"]["currently_bound"] is False
@@ -115,7 +115,7 @@ def test_one_execution_latch_rejects_any_other_output_path(
     tmp_path: Path,
 ) -> None:
     packet = load_packet(
-        ROOT / "configs/hardware/parking_transaction_execution_v3.json"
+        ROOT / "configs/hardware/parking_transaction_execution_v4.json"
     )
     with pytest.raises(
         ParkingTransactionExecutionError, match="one-execution path"

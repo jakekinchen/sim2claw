@@ -1,0 +1,29 @@
+{
+  "schema_version": "sim2claw.parking_transaction_execution_closeout.v3",
+  "decision_id": "rp02c-deep-request-execution-v3-closeout",
+  "status": "band_entry_pass_hold_reset_too_late_open_2s_successor",
+  "proof_class": "physical_setup_recovery_not_task_evidence",
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-execution-v3/receipt.json",
+    "sha256": "99619e6f77f8fdc9a812e11f475d21305f85163930fbcf5a4375977a0543ad01"
+  },
+  "result": {
+    "passed": false,
+    "failure": "PhysicalGatewayError: Follower made no measurable progress toward a commanded joint for 5.0 seconds; torque released.",
+    "certified_band_entered": true,
+    "minimum_observed_elbow_degrees": 92.08791208791209,
+    "successful_deep_request_degrees": 88.4065934065934,
+    "hold_rows_before_stop": 16,
+    "hold_observed_drift_degrees": 0.0,
+    "maximum_observed_current_raw": 20.0,
+    "maximum_observed_temperature_c": 29.0,
+    "postflight_torque_enabled": false,
+    "physical_task_attempts": 0,
+    "pawn_contact": false
+  },
+  "localization": "The gateway stall clock carried approximately two seconds from the final settled descent interval into the hold. The first reset was scheduled at four seconds, so the five-second gateway stop fired after 3.2 hold seconds. No hold reset row was sent.",
+  "successor_scope": {
+    "allowed_change": "Move only the first and recurring hold reset cadence from 4.0 seconds to 2.0 seconds. Preserve the exact successful deep request, 0.2 second reset row, 2.9 degree reset error, 15 second and 0.5 degree hold gates, current/temperature stops, geometry, cameras, gateway, cleanup, and false task authority.",
+    "physical_authority": false
+  }
+}

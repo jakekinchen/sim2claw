@@ -1,0 +1,20 @@
+{
+  "schema_version": "sim2claw.campaign_graph_node.v1",
+  "node_id": "parking-recovery-rp02d-hold-timing-20260729-v1",
+  "status": "prospectively_frozen_physical_authority_false",
+  "predecessors": [
+    {
+      "node_id": "parking-recovery-rp02c-deep-request-packet-20260729-v1",
+      "result": "certified_band_entry_then_hold_reset_too_late"
+    }
+  ],
+  "single_mechanism_change": "hold_reset_cadence_4s_to_2s",
+  "packet_sha256": "006f1a5e2112ac8f81fb779622298b128e2f12093af5706a2baab999a9d50856",
+  "ledger": {
+    "real_to_sim": "0/0",
+    "sim_to_real": "0/0",
+    "physical_task_attempts": "0/10"
+  },
+  "active_card": "RP02D",
+  "physical_authority": false
+}
