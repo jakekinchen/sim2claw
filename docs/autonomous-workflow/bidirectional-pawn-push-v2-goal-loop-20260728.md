@@ -255,15 +255,15 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
 Completed: CC00, CC00A, CC01, CC02.
-Evidence: V5 diagnostic pass a7f1bfa7...; fresh packet 68513862...; review dbbd9f88....
+Evidence: V5 diagnostic pass a7f1bfa7...; fresh execution cb4820f6...; frozen heldout contract 607a4b8c....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
-Heldout open count: 2
+Heldout open count: 3
 Physical task attempts: 0/10
 Physical/camera/torque state: closed after wrist-only calibration; torque false.
 Remaining: CC03 through CC15.
 Blockers: physical/model mapping remains unapproved.
-Next step: execute fresh wrist-only V4 once, then freeze its held-out contract before opening frames; no pawn contact or task attempt.
+Next step: run the frozen fresh wrist V4 heldout evaluator exactly once, then bind its result and make the narrow elbow-locked task-scope mapping decision; no pawn contact or task attempt.
 ```
 
 ## Physical Authority Boundaries

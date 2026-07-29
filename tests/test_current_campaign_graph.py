@@ -32,19 +32,19 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert tracked["active_pointer"]["milestone_id"] == "CC03"
     assert tracked["active_pointer"] == {
         "node_id": (
-            "verdict:calibration-graph-d405-wrist-corner-shape-review-v4-admit"
+            "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v6-frozen"
         ),
         "milestone_id": "CC03",
-        "status": "fresh_wrist_v4_reviewed_for_one_execution",
-        "queue_status": "ACTIVE_CC03_WRIST_FRESH_V4_EXECUTE",
-        "resume_action": "execute_fresh_wrist_v4_once",
-        "resume_authorized": True,
+        "status": "fresh_wrist_heldout_frozen_before_frame_open",
+        "queue_status": "ACTIVE_CC03_WRIST_FRESH_V4_EVALUATE",
+        "resume_action": "evaluate_fresh_wrist_v4_once",
+        "resume_authorized": False,
         "heldout_open_count": 3,
         "cumulative_manifest_read_count": 3,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(183)
+        range(185)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,13 +54,13 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_REVIEW_V4_ADMIT"
+        "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_CONTRACT_V6_FROZEN"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "verdict:calibration-graph-d405-wrist-corner-shape-review-v4-admit"
+        "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v6-frozen"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
-    assert tracked["active_pointer"]["resume_authorized"] is True
+    assert tracked["active_pointer"]["resume_authorized"] is False
     closeout = next(
         row
         for row in tracked["nodes"]

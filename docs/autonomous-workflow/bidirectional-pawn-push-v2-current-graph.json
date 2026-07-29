@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 3,
     "heldout_open_count": 3,
     "milestone_id": "CC03",
-    "node_id": "verdict:calibration-graph-d405-wrist-corner-shape-review-v4-admit",
-    "queue_status": "ACTIVE_CC03_WRIST_FRESH_V4_EXECUTE",
-    "resume_action": "execute_fresh_wrist_v4_once",
-    "resume_authorized": true,
-    "status": "fresh_wrist_v4_reviewed_for_one_execution"
+    "node_id": "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v6-frozen",
+    "queue_status": "ACTIVE_CC03_WRIST_FRESH_V4_EVALUATE",
+    "resume_action": "evaluate_fresh_wrist_v4_once",
+    "resume_authorized": false,
+    "status": "fresh_wrist_heldout_frozen_before_frame_open"
   },
   "authority": {
     "camera_open": false,
@@ -95,15 +95,15 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 202,
+    "nodes": 204,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 130,
+      "checkpoint": 131,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
       "evaluator_verdict": 44,
-      "evidence": 7,
+      "evidence": 8,
       "intervention": 1,
       "mechanism": 3,
       "parameter_posterior": 1,
@@ -2126,7 +2126,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "49b72a0e6a4a0f4f79fc252a606e3b7f2f7691985190ba944b8681dbe46a0b4a",
+  "graph_digest": "edc63ba90423a796ff381a00f6c611bbb98b23e52585a08c3b84dc44703814d5",
   "node_types": [
     "workcell",
     "session",
@@ -2490,6 +2490,35 @@
         },
         "proof_class": "prospective_one_shot_wrist_only_raw_corner_shape_mapping_heldout_contract",
         "sha256": "862acd451e684c680b69467bb596d5dcfbf4ff28c686dada2de6b35dc62e0733"
+      },
+      "status": "frozen_after_execution_before_any_new_frame_open",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "action_sha256": "6872ca20a7b31cba8b014c23ed7f11cf845b4d5e88da28e6304464e7786ddf1d",
+        "depth_required": false,
+        "evaluator_source_binding": "calibration_graph_d405_wrist_corner_shape_evaluator_v5",
+        "execution_source_binding": "calibration_graph_d405_wrist_corner_shape_execution_v4",
+        "mapping_approval": false,
+        "parameter_fit": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_d405_wrist_corner_shape_contract_v6",
+        "v4_frames_opened": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v6-frozen",
+      "label": "Fresh wrist-only copy-safe heldout contract frozen",
+      "proof_class": "prospective_fresh_exact_action_wrist_mapping_heldout_contract",
+      "source": {
+        "path": "configs/evaluations/calibration_graph_d405_wrist_corner_shape_heldout_v6.json",
+        "payload_contract": {
+          "evidence_class": "fresh_prospective_capture",
+          "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_heldout.v4",
+          "status": "frozen_after_execution_before_any_new_frame_open"
+        },
+        "proof_class": "prospective_fresh_exact_action_wrist_mapping_heldout_contract",
+        "sha256": "607a4b8c8a2eecc086bfa08b65e1d1c19012e1546aa0e4ecb2dca930ea8735e6"
       },
       "status": "frozen_after_execution_before_any_new_frame_open",
       "type": "checkpoint"
@@ -3683,7 +3712,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "cd33fa0e71b6bb7f8eb68bdbabaa59781d1ced4161f03ee2d532b38cd4a22edc"
+        "sha256": "92b2c79f2bfac1d2594f98a1d76387fc9f0faa011936f0dc896e0294bd96d164"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6368,6 +6397,34 @@
         },
         "proof_class": "recorded_exact_action_no_contact_wrist_only_calibration_execution",
         "sha256": "53672fa50261887f352e2d9cc17d45ce770edbe4b4d4d70fa1eb635f3d54b507"
+      },
+      "status": "completed_exact_action_tricam_torque_off",
+      "type": "evidence"
+    },
+    {
+      "data": {
+        "action_sha256": "6872ca20a7b31cba8b014c23ed7f11cf845b4d5e88da28e6304464e7786ddf1d",
+        "c922_drops": 0,
+        "completed_capture_hold_samples": 80,
+        "completed_motion_samples": 641,
+        "d405_drops": 0,
+        "final_wrist_residual_degrees": 1.3186813186813175,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_d405_wrist_corner_shape_execution_v4"
+      },
+      "evaluator_identity": null,
+      "id": "evidence:calibration-graph-d405-wrist-corner-shape-execution-v4",
+      "label": "Fresh wrist-only calibration capture completed exactly once",
+      "proof_class": "fresh_exact_action_no_contact_wrist_mapping_capture",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/stage-1/execution_receipt.json",
+        "payload_contract": {
+          "physical_follower_torque_enabled": false,
+          "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+          "status": "completed_wrist_view_reposition_stage"
+        },
+        "proof_class": "fresh_exact_action_no_contact_wrist_mapping_capture",
+        "sha256": "cb4820f697128a16a68b6c481a3919d56a0ad5e00e66d3c4fb35e3a9a7f615e6"
       },
       "status": "completed_exact_action_tricam_torque_off",
       "type": "evidence"
@@ -9200,7 +9257,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "cd33fa0e71b6bb7f8eb68bdbabaa59781d1ced4161f03ee2d532b38cd4a22edc",
+      "source_sha256": "92b2c79f2bfac1d2594f98a1d76387fc9f0faa011936f0dc896e0294bd96d164",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -9992,6 +10049,26 @@
       "source_binding": "calibration_graph_d405_wrist_corner_shape_review_v4",
       "source_sha256": "dbbd9f889b1f3a362131e7a75e0df525d3e3447a9afd32bff44682be7b1668a7",
       "status": "admitted_for_one_execution_per_stage"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_EXECUTION_V4",
+      "node_ids_added": [
+        "evidence:calibration-graph-d405-wrist-corner-shape-execution-v4"
+      ],
+      "revision": 183,
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_execution_v4",
+      "source_sha256": "cb4820f697128a16a68b6c481a3919d56a0ad5e00e66d3c4fb35e3a9a7f615e6",
+      "status": "completed_exact_action_tricam_torque_off"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_CONTRACT_V6_FROZEN",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v6-frozen"
+      ],
+      "revision": 184,
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_contract_v6",
+      "source_sha256": "607a4b8c8a2eecc086bfa08b65e1d1c19012e1546aa0e4ecb2dca930ea8735e6",
+      "status": "frozen_after_execution_before_any_new_frame_open"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -10216,6 +10293,17 @@
       "sha256": "862acd451e684c680b69467bb596d5dcfbf4ff28c686dada2de6b35dc62e0733"
     },
     {
+      "id": "calibration_graph_d405_wrist_corner_shape_contract_v6",
+      "path": "configs/evaluations/calibration_graph_d405_wrist_corner_shape_heldout_v6.json",
+      "payload_contract": {
+        "evidence_class": "fresh_prospective_capture",
+        "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_heldout.v4",
+        "status": "frozen_after_execution_before_any_new_frame_open"
+      },
+      "proof_class": "prospective_fresh_exact_action_wrist_mapping_heldout_contract",
+      "sha256": "607a4b8c8a2eecc086bfa08b65e1d1c19012e1546aa0e4ecb2dca930ea8735e6"
+    },
+    {
       "id": "calibration_graph_d405_wrist_corner_shape_copy_fix_diagnostic_v4",
       "path": "configs/evaluations/calibration_graph_d405_wrist_corner_shape_copy_fix_diagnostic_v4.json",
       "payload_contract": {
@@ -10278,6 +10366,17 @@
       },
       "proof_class": "recorded_exact_action_no_contact_wrist_only_calibration_execution",
       "sha256": "53672fa50261887f352e2d9cc17d45ce770edbe4b4d4d70fa1eb635f3d54b507"
+    },
+    {
+      "id": "calibration_graph_d405_wrist_corner_shape_execution_v4",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/stage-1/execution_receipt.json",
+      "payload_contract": {
+        "physical_follower_torque_enabled": false,
+        "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+        "status": "completed_wrist_view_reposition_stage"
+      },
+      "proof_class": "fresh_exact_action_no_contact_wrist_mapping_capture",
+      "sha256": "cb4820f697128a16a68b6c481a3919d56a0ad5e00e66d3c4fb35e3a9a7f615e6"
     },
     {
       "id": "calibration_graph_d405_wrist_corner_shape_packet_v3",
@@ -11098,7 +11197,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "cd33fa0e71b6bb7f8eb68bdbabaa59781d1ced4161f03ee2d532b38cd4a22edc"
+      "sha256": "92b2c79f2bfac1d2594f98a1d76387fc9f0faa011936f0dc896e0294bd96d164"
     },
     {
       "id": "current_task_scene_labels",

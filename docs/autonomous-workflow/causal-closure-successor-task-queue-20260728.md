@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_WRIST_FRESH_V4_EXECUTE`
+Status: `ACTIVE_CC03_WRIST_FRESH_V4_EVALUATE`
 
 Created: `2026-07-28`
 
@@ -673,6 +673,19 @@ Current state:
   `68513862...`, plan SHA-256 is `1e880940...`, exact action SHA-256 is
   `6872ca20...`, and review SHA-256 is `dbbd9f88...`. Static preview adds no
   new or worsened contact and admits exactly one no-contact execution.
+- Fresh wrist-only V4 executed exactly once. Execution receipt SHA-256 is
+  `cb4820f697128a16a68b6c481a3919d56a0ad5e00e66d3c4fb35e3a9a7f615e6`;
+  all `641` action rows and `80` hold rows completed, exact action SHA-256
+  `6872ca20...` held, C922/D405/Pi enclosed the action, the two native cameras
+  reported zero drops and zero writer backpressure, final wrist residual was
+  `1.318681 deg`, and torque closed false. This was calibration-only and does
+  not enter either transfer denominator.
+- The fresh wrist heldout contract is frozen after that execution and before
+  any V4 frame is opened at SHA-256
+  `607a4b8c8a2eecc086bfa08b65e1d1c19012e1546aa0e4ecb2dca930ea8735e6`.
+  It reuses the copy-safe V5 implementation and every unchanged V5 diagnostic
+  gate, binds exact action `6872ca20...`, requires no depth, fits no parameter,
+  and grants no automatic mapping, task, simulator, or transfer authority.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -714,6 +727,6 @@ This authorization:
 
 Next step:
 
-- Execute the fresh wrist-only V4 capture exactly once, verify tricam
-  enclosure and torque-off, then bind the already-frozen copy-safe evaluator
-  before opening any new frame. Do not touch a pawn or count a task attempt.
+- Run the frozen fresh wrist V4 heldout evaluator exactly once, then bind its
+  immutable result and make the narrow elbow-locked task-scope mapping
+  decision. Do not touch a pawn or count a task attempt.
