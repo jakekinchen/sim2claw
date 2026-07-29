@@ -1,0 +1,39 @@
+{
+  "schema_version": "sim2claw.post_cable_safe_return_execution_closeout.v1",
+  "decision_id": "post-cable-safe-return-execution-20260729-v2-closeout",
+  "status": "natural_anchor_restored_protocol_negative_rate_limited_rows",
+  "packet_freeze_commit": "1997b58",
+  "authorization_commit": "dca68cb",
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-post-cable-safe-return-execution-v2/receipt.json",
+    "sha256": "ed4945d5180056735457c50f9e8be5e7533742e2a2a194068ca2f52b693b690c"
+  },
+  "camera_review": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-post-cable-safe-return-execution-v2/review/camera_review.json",
+    "sha256": "06162ccaf0e7ad9e28abf161724f8b938abcda09a1086f0bca391f73101b7cd6"
+  },
+  "result": {
+    "route_rows": 278,
+    "executed_rows": 278,
+    "rate_limited_rows": 67,
+    "safety_clamped_rows": 68,
+    "failure": null,
+    "cleanup_errors": [],
+    "final_residual_degrees": [
+      0.7912087912087911,
+      -1.2307692307692264,
+      0.2637362637362628,
+      -1.758241758241759,
+      -0.3516483516483504,
+      0.4750593824228022
+    ],
+    "natural_anchor_restored_within_three_degrees": true,
+    "both_cameras_complete": true,
+    "camera_review_no_pawn_or_board_contact": true,
+    "postflight_torque_off": true,
+    "physical_task_attempts": 0,
+    "mapping_approved": false
+  },
+  "defect": "The executor held for two seconds at the second boundary but retained absolute route deadlines. Subsequent rows attempted to catch up and the reviewed gateway rate-limited them. Therefore the positional restoration and safety cleanup are valid, but the exact-route protocol pass is false.",
+  "decision": "The robot is operationally restored to the natural anchor and torque is off. Do not rerun the return merely to improve its proof label. Preserve the protocol negative and fix the stage-deadline defect in tests before any future use of this executor. No physical task attempt was consumed and no mapping or transfer claim opened."
+}
