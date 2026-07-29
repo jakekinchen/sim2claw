@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC02_TWO_LANE_STATIC_SUCCESSOR`
+Status: `ACTIVE_CC02_TWO_LANE_STATIC_REPLAY`
 
 Created: `2026-07-28`
 
@@ -430,6 +430,10 @@ Current state:
   `0f4fb9e7eb50c1501e53b365795e11c1913310714878c9ef5663e00687985a8b`;
   closeout records stroke length as insufficient and freezes a uniform
   two-lane `-3/+3 mm` path-shape successor across all four families.
+- Two-lane static V6 is frozen before execution at contract SHA-256
+  `adb0908a23f4180a80a24dc49172d9a97f9ba13c1d847b4982816dcbf15286f7`.
+  It contains the complete four-family set and applies the same two lanes,
+  stroke, return, static gates, and false physical authority to every case.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -471,5 +475,5 @@ This authorization:
 
 Next step:
 
-- Freeze and run the four-family two-lane static successor. Dynamic replay
-  remains closed until all four new exact actions pass static admission.
+- Execute two-lane static V6 exactly once. Dynamic replay remains closed until
+  all four new exact actions pass static admission.

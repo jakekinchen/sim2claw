@@ -180,6 +180,7 @@ Confirmed:
 - V4 passed REAL->SIM `2/2` and SIM->REAL `1/2`; receipt `0f4fb9e7...`.
   The only remaining failure is d7->e7 progress at lateral-plus 3 mm under
   both plants. A uniform two-lane `-3/+3 mm` static path successor is next.
+- Two-lane static V6 is frozen at `adb0908a...`.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -226,7 +227,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC02 four-family two-lane lateral path-shape static successor.
 Completed: CC00, CC00A, CC01.
-Evidence: stroke temporal V4 partial 0f4fb9e7...; closeout 54c85ca5....
+Evidence: V4 partial 0f4fb9e7...; two-lane V6 freeze adb0908a....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -234,7 +235,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
 Blockers: V3 is only 1/1 dynamically; physical/model mapping remains unapproved.
-Next step: freeze and execute the uniform two-lane static successor; keep dynamic replay and hardware closed.
+Next step: execute two-lane static V6 exactly once; keep dynamic replay and hardware closed.
 ```
 
 ## Physical Authority Boundaries
