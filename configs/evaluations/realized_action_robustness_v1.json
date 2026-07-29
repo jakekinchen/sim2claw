@@ -1,0 +1,80 @@
+{
+  "schema_version": "sim2claw.realized_action_robustness_contract.v1",
+  "contract_id": "realized-action-robustness-v1",
+  "sources": {
+    "c6_closeout": {
+      "path": "configs/decisions/realized_action_outcome_mission_v1_closeout.json",
+      "sha256": "6b38a2b2498dba32db71828e518bdb8610542a89d7227c111d44387530060447"
+    },
+    "c6_contract": {
+      "path": "configs/evaluations/realized_action_outcome_mission_v1.json",
+      "sha256": "f406149f51578b7ecae646c46b35c9237693b4f172c66dbb271cee67b9728b77"
+    },
+    "c6_implementation": {
+      "path": "src/sim2claw/realized_action_outcome_mission.py",
+      "sha256": "c2a0749226b6fa00db4bd927ed4c4b9faf8692d94f69b95004588553f5a5f3c3"
+    },
+    "c6_receipt": {
+      "path": "outputs/realized_action_outcome_mission_v1/receipt.json",
+      "sha256": "4bcf1f1a6c389c61fb1eb1445afd20ab0be814eb1cbaee13ad2d11e0198587d4",
+      "artifact_sha256": "df3f6abab728ec6a74a468afeb531b4bec99346c693ec081786c8dd8fb8c2c38"
+    },
+    "c4_closeout": {
+      "path": "configs/decisions/realized_action_effective_plant_v1_closeout.json",
+      "sha256": "01192e6d605c273b70c3d60d58978bf92b0b53622789aaa33acdfecac7b66686"
+    },
+    "c4_receipt": {
+      "path": "outputs/realized_action_effective_plant_v1/receipt.json",
+      "sha256": "5afba2e280e7c34308aa51548b938a6af54bd299e49038d6083043342b353c07",
+      "artifact_sha256": "df50459a4c7f60894690610c8578f67e064c13de3d0a9f7e286aa8c26e736aa6"
+    }
+  },
+  "challenger_paths": [
+    {
+      "path_id": "direct_target",
+      "path": "outputs/realized_action_effective_plant_v1/traces/20260727T041737Z-89190e53/direct_target.applied.f8le",
+      "sha256": "8968f31fdbe27e3b9baec285cf4b6e55b5341c22084e070f7a48b5c7e9ae2170",
+      "dtype": "<f8",
+      "shape": [
+        531,
+        6
+      ]
+    },
+    {
+      "path_id": "diagnostic_zoh_0p11s",
+      "path": "outputs/realized_action_effective_plant_v1/traces/20260727T041737Z-89190e53/diagnostic_zoh_0p11s.applied.f8le",
+      "sha256": "ca7deb748ced1fe667d6549cf7542ceee8830e112920de91665efa4e9b4e6cb6",
+      "dtype": "<f8",
+      "shape": [
+        531,
+        6
+      ],
+      "diagnostic_only": true,
+      "calibrated_plant": false
+    }
+  ],
+  "uncertainty": {
+    "geometry_distribution": null,
+    "contact_distribution": null,
+    "reason": "C2 did not approve global geometry and C5 identified no contact dimensions or distributions",
+    "unknown_dimensions_randomized": false
+  },
+  "rules": {
+    "c6_identified_path_not_rerun": true,
+    "c6_result_immutable": true,
+    "same_source_initialization_and_evaluator": true,
+    "source_actions_preserved": true,
+    "unknown_dimensions_not_randomized": true,
+    "challengers_cannot_redefine_c6": true
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_replay": true,
+    "paid_compute": false
+  }
+}
