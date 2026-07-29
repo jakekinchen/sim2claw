@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "58d3a8a50d5674a0e2a5a9fed76c4ebcd38acd1121c2ed62983bf957c41c37c8",
+      "sha256": "5f0d7f7265d1ad052bacdd1509b669960f81299ea0cadf873b03b9206d8c9d19",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -2510,6 +2510,16 @@
         "physical_task_attempts": 0,
         "torque_off_cleanup": true,
         "passed": true
+      }
+    },
+    "directional_displacement_static_contract_v1": {
+      "path": "configs/evaluations/directional_displacement_static_v1.json",
+      "sha256": "852dfc133f4c74e6ee25728610b4b77b73a76f63f237e7243ec6997fa430902b",
+      "proof_class": "prospective_cpu_fp64_elbow_locked_head_height_directional_displacement_static",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static.v1",
+        "status": "frozen_before_static_only_elbow_locked_enumeration",
+        "proof_class": "prospective_cpu_fp64_elbow_locked_head_height_directional_displacement_static"
       }
     },
     "simulator_candidate": {
@@ -6559,6 +6569,28 @@
       }
     },
     {
+      "id": "checkpoint:directional-displacement-static-v1-frozen",
+      "type": "checkpoint",
+      "label": "CC03K head-height directional-displacement static grid frozen",
+      "status": "frozen_before_static_only_elbow_locked_enumeration",
+      "source_binding": "directional_displacement_static_contract_v1",
+      "data": {
+        "family_count": 48,
+        "maximum_grid_cells": 576,
+        "contact_height_targets_mm": [
+          45,
+          50,
+          55,
+          60
+        ],
+        "minimum_families_per_direction": 1,
+        "straight_sliding_push_claim": false,
+        "chess_play_claim": false,
+        "dynamic_simulation": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -10384,14 +10416,23 @@
       "node_ids_added": [
         "verdict:elbow-mechanical-resistance-signature-v4"
       ]
+    },
+    {
+      "revision": 208,
+      "event_id": "DIRECTIONAL_DISPLACEMENT_STATIC_V1_FROZEN",
+      "status": "frozen_before_static_only_elbow_locked_enumeration",
+      "source_binding": "directional_displacement_static_contract_v1",
+      "node_ids_added": [
+        "checkpoint:directional-displacement-static-v1-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:elbow-mechanical-resistance-signature-v4",
+    "node_id": "checkpoint:directional-displacement-static-v1-frozen",
     "milestone_id": "CC03K",
     "status": "directional_displacement_static_freeze_active",
     "queue_status": "IN_PROGRESS_CC03K_DIRECTIONAL_DISPLACEMENT_STATIC_FREEZE",
-    "resume_action": "freeze_directional_displacement_static_contract_before_model_loading",
+    "resume_action": "run_frozen_directional_displacement_static_enumeration_once",
     "resume_authorized": true,
     "heldout_open_count": 4,
     "cumulative_manifest_read_count": 4,

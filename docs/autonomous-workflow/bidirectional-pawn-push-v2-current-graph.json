@@ -4,9 +4,9 @@
     "cumulative_manifest_read_count": 4,
     "heldout_open_count": 4,
     "milestone_id": "CC03K",
-    "node_id": "verdict:elbow-mechanical-resistance-signature-v4",
+    "node_id": "checkpoint:directional-displacement-static-v1-frozen",
     "queue_status": "IN_PROGRESS_CC03K_DIRECTIONAL_DISPLACEMENT_STATIC_FREEZE",
-    "resume_action": "freeze_directional_displacement_static_contract_before_model_loading",
+    "resume_action": "run_frozen_directional_displacement_static_enumeration_once",
     "resume_authorized": true,
     "status": "directional_displacement_static_freeze_active"
   },
@@ -95,10 +95,10 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 227,
+    "nodes": 228,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 139,
+      "checkpoint": 140,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
@@ -2126,7 +2126,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "fb63488033007caa207fcb7672963c28fb1e643ba629e5d26bdbe2d25de0fdf8",
+  "graph_digest": "e9493c8a8cfa5f300a6d894c0f570abac1b0d3658a55b4cd3f472513d5819914",
   "node_types": [
     "workcell",
     "session",
@@ -3829,9 +3829,43 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "58d3a8a50d5674a0e2a5a9fed76c4ebcd38acd1121c2ed62983bf957c41c37c8"
+        "sha256": "5f0d7f7265d1ad052bacdd1509b669960f81299ea0cadf873b03b9206d8c9d19"
       },
       "status": "contract_design_active_before_dynamic_execution",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "chess_play_claim": false,
+        "contact_height_targets_mm": [
+          45,
+          50,
+          55,
+          60
+        ],
+        "dynamic_simulation": false,
+        "family_count": 48,
+        "maximum_grid_cells": 576,
+        "minimum_families_per_direction": 1,
+        "physical_task_attempts": 0,
+        "source_binding_id": "directional_displacement_static_contract_v1",
+        "straight_sliding_push_claim": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:directional-displacement-static-v1-frozen",
+      "label": "CC03K head-height directional-displacement static grid frozen",
+      "proof_class": "prospective_cpu_fp64_elbow_locked_head_height_directional_displacement_static",
+      "source": {
+        "path": "configs/evaluations/directional_displacement_static_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_elbow_locked_head_height_directional_displacement_static",
+          "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static.v1",
+          "status": "frozen_before_static_only_elbow_locked_enumeration"
+        },
+        "proof_class": "prospective_cpu_fp64_elbow_locked_head_height_directional_displacement_static",
+        "sha256": "852dfc133f4c74e6ee25728610b4b77b73a76f63f237e7243ec6997fa430902b"
+      },
+      "status": "frozen_before_static_only_elbow_locked_enumeration",
       "type": "checkpoint"
     },
     {
@@ -9934,7 +9968,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "58d3a8a50d5674a0e2a5a9fed76c4ebcd38acd1121c2ed62983bf957c41c37c8",
+      "source_sha256": "5f0d7f7265d1ad052bacdd1509b669960f81299ea0cadf873b03b9206d8c9d19",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -10976,6 +11010,16 @@
       "source_binding": "elbow_telemetry_probe_closeout_v4",
       "source_sha256": "f9c5d8fac4c2b50eb46dcc0e566f076f216dd6925c121712b9f2675f3ea685a8",
       "status": "accepted_mechanical_resistance_signature_human_repair_boundary"
+    },
+    {
+      "event_id": "DIRECTIONAL_DISPLACEMENT_STATIC_V1_FROZEN",
+      "node_ids_added": [
+        "checkpoint:directional-displacement-static-v1-frozen"
+      ],
+      "revision": 208,
+      "source_binding": "directional_displacement_static_contract_v1",
+      "source_sha256": "852dfc133f4c74e6ee25728610b4b77b73a76f63f237e7243ec6997fa430902b",
+      "status": "frozen_before_static_only_elbow_locked_enumeration"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -12263,7 +12307,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "58d3a8a50d5674a0e2a5a9fed76c4ebcd38acd1121c2ed62983bf957c41c37c8"
+      "sha256": "5f0d7f7265d1ad052bacdd1509b669960f81299ea0cadf873b03b9206d8c9d19"
     },
     {
       "id": "current_task_scene_labels",
@@ -12275,6 +12319,17 @@
       },
       "proof_class": "deterministic_scene_label_contract_only",
       "sha256": "187b91a51fe3a51adda64c7dd682025e2143edaae16ad3fdd1c1a9d9c43550ed"
+    },
+    {
+      "id": "directional_displacement_static_contract_v1",
+      "path": "configs/evaluations/directional_displacement_static_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_elbow_locked_head_height_directional_displacement_static",
+        "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static.v1",
+        "status": "frozen_before_static_only_elbow_locked_enumeration"
+      },
+      "proof_class": "prospective_cpu_fp64_elbow_locked_head_height_directional_displacement_static",
+      "sha256": "852dfc133f4c74e6ee25728610b4b77b73a76f63f237e7243ec6997fa430902b"
     },
     {
       "id": "elbow_telemetry_probe_closeout_v1",

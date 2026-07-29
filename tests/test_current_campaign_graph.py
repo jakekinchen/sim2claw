@@ -31,14 +31,14 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "CC03K"
     assert tracked["active_pointer"] == {
-        "node_id": "verdict:elbow-mechanical-resistance-signature-v4",
+        "node_id": "checkpoint:directional-displacement-static-v1-frozen",
         "milestone_id": "CC03K",
         "status": "directional_displacement_static_freeze_active",
         "queue_status": (
             "IN_PROGRESS_CC03K_DIRECTIONAL_DISPLACEMENT_STATIC_FREEZE"
         ),
         "resume_action": (
-            "freeze_directional_displacement_static_contract_before_model_loading"
+            "run_frozen_directional_displacement_static_enumeration_once"
         ),
         "resume_authorized": True,
         "heldout_open_count": 4,
@@ -46,7 +46,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(208)
+        range(209)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -56,10 +56,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "ELBOW_MECHANICAL_RESISTANCE_SIGNATURE_V4"
+        "DIRECTIONAL_DISPLACEMENT_STATIC_V1_FROZEN"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "verdict:elbow-mechanical-resistance-signature-v4"
+        "checkpoint:directional-displacement-static-v1-frozen"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True

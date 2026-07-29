@@ -855,6 +855,19 @@ Current state:
   temperature `25--26 C`, and the torque cycle did not restore response. This
   is accepted as a mechanical-resistance signature. Gain writes remain
   unauthorized; elbow inspection/repair is a human boundary.
+- `CC03K` V1 is prospectively frozen before model loading or enumeration at
+  contract SHA-256
+  `852dfc133f4c74e6ee25728610b4b77b73a76f63f237e7243ec6997fa430902b`.
+  Its static-only grid covers the unchanged `48` nonquarantined families,
+  three wrist rolls, and `45/50/55/60 mm` head-height targets (`576` maximum
+  cells), with the elbow exact at `99.472527 deg`. It requires contact in the
+  `35--65 mm` band, collision/board/exclusion, calibrated limit/rate, camera,
+  and contact-normal gates, and selects one distinct family per direction.
+  Future primary consequence is `>=20 mm` selected-pawn displacement inside a
+  frozen `45 deg` direction quadrant with exclusions `<=2 mm`; topple/fall
+  quadrant is secondary. Static and physical authority remain false beyond
+  model loading/static enumeration, and this primitive cannot inherit a
+  straight-push or chess-play claim.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
