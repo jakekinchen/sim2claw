@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04H_PAN_AWAY_SAFE_RETURN_PACKET_FROZEN_PENDING_TESTS_PUSH_AUTH`
+Status: `RP04H_PAN_AWAY_SAFE_RETURN_ONE_EXECUTION_AUTHORIZED`
 
 Created: `2026-07-29`
 
@@ -51,7 +51,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP04E | `DONE_TERMINAL_80DEG_66MM_DYNAMIC_NEGATIVE` | Test the evidence-directed undertravel mechanism at the same reachable lock. | Static receipt `0e3facb0...` passed with `6` eligible cells and froze one exact family per direction. Dynamic receipt `ba8bc2ed...` ran the exact direct/ZOH pair across five resets. | `0/20` passed. Progress improved into `19.70--45.28 mm`, but REAL_TO_SIM remained nonrobust and SIM_TO_REAL lifted `13.91--14.51 mm`. Close both exact tensors for hardware. |
 | RP04F | `DONE_TERMINAL_LOWER_CONTACT_DYNAMIC_NEGATIVE` | Test the one clean unresolved geometry mechanism after the 66 mm causal negative. | Static receipt `6b7d7fa6...` passed; dynamic receipt `e8c5ac49...` ran all 20 exact episodes. | `0/20` passed; lift worsened to `5.99--14.19 mm`. Close permanently under the preregistered stop rule. No hardware. |
 | RP04G | `DONE_POST_CABLE_TRACKING_NEGATIVE_RETURN_INCOMPLETE` | Re-establish physical tracking and task-corridor evidence after the owner-reported wrist-camera cable tension change. | Receipt `a3ab1eee...` completed 501 exact rows and both cameras; camera review found no pawn/board contact and visible cable slack without an obvious snag. | Cable relief improved the reach/error by only `0.879 deg`; the roughly `30 deg` deficit remains. Controlled return did not reach the natural anchor, but postflight torque is off. No retry. |
-| RP04H | `PAN_AWAY_SAFE_RETURN_PACKET_FROZEN_PENDING_TESTS_PUSH_AUTH` | Restore the arm from the fresh torque-off postflight pose to the natural anchor without contacting the board or pawns. | Static receipt `f5d45d51...` passes: exact 270-row pan-away route, both scenes contact-free, `95.603 mm` registered clearance, and only `0.247 mm` pessimistic-baseline worsening. One camera-enclosed return packet is frozen with a fresh three-degree start check and natural-anchor final gate. | No task motion or further identification until the return completes or a receipt-backed safety boundary stops it. |
+| RP04H | `PAN_AWAY_SAFE_RETURN_ONE_EXECUTION_AUTHORIZED` | Restore the arm from the fresh torque-off postflight pose to the natural anchor without contacting the board or pawns. | Packet `3d6a5b7f...` binds the exact 270-row passing route. One camera-enclosed execution is authorized through `13:29:17 CDT`, with a fresh three-degree start check, zero clamps, natural-anchor final gate, both cameras, and postflight torque off. | No task motion or further identification until the return completes or a receipt-backed safety boundary stops it. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -71,8 +71,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-Test, commit, and push the frozen pan-away return packet, then issue one
-packet-hash-bound time-bounded authorization. No full-range retry or task
+Execute the single authorized pan-away safe return. No full-range retry or task
 motion is allowed.
 
 ## RP00 immutable result

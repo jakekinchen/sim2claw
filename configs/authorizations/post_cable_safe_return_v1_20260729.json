@@ -1,0 +1,16 @@
+{
+  "schema_version": "sim2claw.owner_physical_authorization.v1",
+  "authorization_id": "owner-standing-rp04h-post-cable-safe-return-20260729-v1",
+  "operation_id": "rp04h-post-cable-safe-return-20260729-v1",
+  "packet_sha256": "3d6a5b7fe6ee757769c47dbb95c13e81de2a93777758d96e1dac80484093e84a",
+  "issued_at": "2026-07-29T12:29:17-05:00",
+  "expires_at": "2026-07-29T13:29:17-05:00",
+  "maximum_executions": 1,
+  "physical_no_contact_diagnostic": true,
+  "physical_task_attempt": false,
+  "pawn_contact": false,
+  "autonomous_agent_supervision": true,
+  "power_down_supply_on_torque_cleanup_error": true,
+  "owner_authority_source": "The owner explicitly granted Codex authority to issue future scoped authorizations, requested agent-led robot positioning, and requested the physical work be retried after the wrist-camera cable routing change.",
+  "scope": "One exact packet-hash-bound, camera-enclosed execution of the static-qualified 270-row pan-away safe-return route from the immutable post-cable torque-off pose to the natural anchor. No full-range identification retry, task attempt, pawn contact, configuration write, mapping approval, or transfer claim is authorized."
+}
