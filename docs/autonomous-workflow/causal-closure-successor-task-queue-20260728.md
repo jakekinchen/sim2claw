@@ -827,6 +827,22 @@ Current state:
   `1e8e5fcb68b24a4d586f061d1941426aad65c3cbff6fd7d5508bb1c3674ab4f6`.
   All V2 probe geometry, telemetry, camera, stop, and authority fields remain
   unchanged. `36` focused tests pass.
+- V3 opened the D405 and reviewed gateway, but the first planned row was
+  already `0.5 deg` from the fresh anchor and arrived before a command clock
+  interval existed. The gateway rejected it before sending any row. Receipt
+  SHA-256 is
+  `f2e778ed2d7c7fb4de9a648067ac29a68659c9c796c6923339bc413a32ef10d2`;
+  closeout SHA-256 is
+  `03b64d11f57038361127808ee387110a59ae50fcd9e2eef3ae937d50ac9c143a`.
+  Camera enclosure completed, telemetry/sent rows are zero, and torque closed
+  off.
+- `CC03E` V4 changes only the trajectory prefix by adding one exact live-anchor
+  row. V4 is frozen before execution at contract SHA-256
+  `0bc1fdcd4fc6455b563e0174842e7ea9aa2b6ef37065b527d38e0a6490912976`
+  and executor SHA-256
+  `8201f67662e90221fa5c79552970f44c4cf215874f5754e59bb3deddd8c2c843`.
+  Every V3 destination, timing, camera, telemetry, stop, and authority field
+  remains unchanged.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task

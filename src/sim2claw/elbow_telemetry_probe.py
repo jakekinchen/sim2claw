@@ -26,7 +26,7 @@ from .live_anchored_camera_reposition import _preflight_identity_and_limits
 from .wrist_view_reposition import preview_wrist_view_actions
 
 
-CONTRACT_SCHEMA = "sim2claw.elbow_telemetry_probe_contract.v3"
+CONTRACT_SCHEMA = "sim2claw.elbow_telemetry_probe_contract.v4"
 RECEIPT_SCHEMA = "sim2claw.elbow_telemetry_probe_receipt.v1"
 SAMPLE_HZ = 20.0
 REGISTER_HZ = 5.0
@@ -113,7 +113,7 @@ def _trajectory(
     hold_seconds: float,
 ) -> tuple[np.ndarray, list[dict[str, Any]]]:
     index = JOINT_INDEX[joint]
-    rows: list[np.ndarray] = []
+    rows: list[np.ndarray] = [anchor.astype("<f8", copy=True)]
     phases: list[dict[str, Any]] = []
     current = anchor.copy()
     for offset in offsets:

@@ -1,0 +1,20 @@
+{
+  "schema_version": "sim2claw.elbow_telemetry_probe_closeout.v3",
+  "decision_id": "cc03e-elbow-telemetry-probe-v3-closeout",
+  "status": "stopped_before_first_command_missing_anchor_sample",
+  "proof_class": "physical_camera_enclosed_gateway_fail_closed_before_command",
+  "contract_sha256": "31eb35429f37aaf82d0517d9be8e22b7bddb0afd061af2b5b528e037ec4067d9",
+  "receipt_path": "runs/bidirectional-pawn-push-v2/20260729-cc03e-elbow-telemetry-probe-v3/receipt.json",
+  "receipt_sha256": "f2e778ed2d7c7fb4de9a648067ac29a68659c9c796c6923339bc413a32ef10d2",
+  "failure": "PhysicalGatewayError: Precompiled exact target would require rate limiting, clamping, or correction; the current sample was not sent.",
+  "localization": "The first planned row was already 0.5 degrees away from the fresh command anchor. It was presented with effectively zero command elapsed time, so the gateway correctly rejected it before persistence.",
+  "successor_rule": "Prepend one exact live-anchor row so the reviewed gateway establishes the command clock without correction. Preserve every V3 destination, slew, hold, camera, telemetry, stop, and authority field.",
+  "camera_completed": true,
+  "telemetry_rows": 0,
+  "sent_command_rows": 0,
+  "physical_task_attempts": 0,
+  "pawn_contact": false,
+  "gain_write": false,
+  "configuration_write": false,
+  "torque_off_cleanup": true
+}

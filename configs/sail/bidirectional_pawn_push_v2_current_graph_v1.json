@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "d04e345095c68b050497c27cbd0491e254dfc83485bcc6ee227328987176ad59",
+      "sha256": "70aaf6289fc1d80db54cf0db00bc1de1500ee11d7c5c053843d6b1cdebd85f7d",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -2445,6 +2445,35 @@
         "schema_version": "sim2claw.elbow_telemetry_probe_contract.v3",
         "status": "preregistered_before_no_contact_probe",
         "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
+        "physical_task_attempt": false,
+        "pawn_contact": false,
+        "gain_write": false,
+        "configuration_write": false
+      }
+    },
+    "elbow_telemetry_probe_closeout_v3": {
+      "path": "configs/decisions/elbow_telemetry_probe_v3_closeout.json",
+      "sha256": "03b64d11f57038361127808ee387110a59ae50fcd9e2eef3ae937d50ac9c143a",
+      "proof_class": "physical_camera_enclosed_gateway_fail_closed_before_command",
+      "payload_contract": {
+        "schema_version": "sim2claw.elbow_telemetry_probe_closeout.v3",
+        "status": "stopped_before_first_command_missing_anchor_sample",
+        "proof_class": "physical_camera_enclosed_gateway_fail_closed_before_command",
+        "telemetry_rows": 0,
+        "sent_command_rows": 0,
+        "physical_task_attempts": 0,
+        "torque_off_cleanup": true
+      }
+    },
+    "elbow_telemetry_probe_contract_v4": {
+      "path": "configs/evaluations/elbow_telemetry_probe_v4.json",
+      "sha256": "0bc1fdcd4fc6455b563e0174842e7ea9aa2b6ef37065b527d38e0a6490912976",
+      "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
+      "payload_contract": {
+        "schema_version": "sim2claw.elbow_telemetry_probe_contract.v4",
+        "status": "preregistered_before_no_contact_probe",
+        "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
+        "initial_exact_anchor_sample": true,
         "physical_task_attempt": false,
         "pawn_contact": false,
         "gain_write": false,
@@ -6433,6 +6462,35 @@
       }
     },
     {
+      "id": "verdict:elbow-telemetry-probe-v3-first-command-reject",
+      "type": "evaluator_verdict",
+      "label": "CC03E V3 gateway rejects first non-anchor row before send",
+      "status": "stopped_before_first_command_missing_anchor_sample",
+      "source_binding": "elbow_telemetry_probe_closeout_v3",
+      "evaluator_identity": "f2e778ed2d7c7fb4de9a648067ac29a68659c9c796c6923339bc413a32ef10d2",
+      "data": {
+        "camera_completed": true,
+        "telemetry_rows": 0,
+        "sent_command_rows": 0,
+        "torque_off_cleanup": true,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:elbow-telemetry-probe-v4-frozen",
+      "type": "checkpoint",
+      "label": "CC03E V4 exact-anchor-prefixed telemetry probe frozen",
+      "status": "preregistered_before_no_contact_probe",
+      "source_binding": "elbow_telemetry_probe_contract_v4",
+      "data": {
+        "executor_sha256": "8201f67662e90221fa5c79552970f44c4cf215874f5754e59bb3deddd8c2c843",
+        "initial_exact_anchor_sample": true,
+        "v3_probe_geometry_preserved": true,
+        "v3_telemetry_camera_and_authority_preserved": true,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -10222,10 +10280,28 @@
       "node_ids_added": [
         "checkpoint:elbow-telemetry-probe-v3-frozen"
       ]
+    },
+    {
+      "revision": 204,
+      "event_id": "ELBOW_TELEMETRY_PROBE_V3_FIRST_COMMAND_REJECT",
+      "status": "stopped_before_first_command_missing_anchor_sample",
+      "source_binding": "elbow_telemetry_probe_closeout_v3",
+      "node_ids_added": [
+        "verdict:elbow-telemetry-probe-v3-first-command-reject"
+      ]
+    },
+    {
+      "revision": 205,
+      "event_id": "ELBOW_TELEMETRY_PROBE_V4_FROZEN",
+      "status": "preregistered_before_no_contact_probe",
+      "source_binding": "elbow_telemetry_probe_contract_v4",
+      "node_ids_added": [
+        "checkpoint:elbow-telemetry-probe-v4-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:elbow-telemetry-probe-v3-frozen",
+    "node_id": "checkpoint:elbow-telemetry-probe-v4-frozen",
     "milestone_id": "CC03E",
     "status": "bounded_elbow_telemetry_diagnostic_active",
     "queue_status": "IN_PROGRESS_CC03E_ELBOW_TELEMETRY_DIAGNOSTIC",

@@ -4,7 +4,7 @@
     "cumulative_manifest_read_count": 4,
     "heldout_open_count": 4,
     "milestone_id": "CC03E",
-    "node_id": "checkpoint:elbow-telemetry-probe-v3-frozen",
+    "node_id": "checkpoint:elbow-telemetry-probe-v4-frozen",
     "queue_status": "IN_PROGRESS_CC03E_ELBOW_TELEMETRY_DIAGNOSTIC",
     "resume_action": "execute_frozen_no_contact_elbow_and_wrist_control_probe_once",
     "resume_authorized": true,
@@ -95,14 +95,14 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 223,
+    "nodes": 225,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 138,
+      "checkpoint": 139,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 55,
+      "evaluator_verdict": 56,
       "evidence": 9,
       "intervention": 1,
       "mechanism": 3,
@@ -2126,7 +2126,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "68314422080baa7adb7b14db9587175cc4a83ed0c7148db448dd902bfe4b5e1b",
+  "graph_digest": "3cb45b9066a8ee4861799895f3196f594803fbbc48bc3a04af71ca481d8d7f93",
   "node_types": [
     "workcell",
     "session",
@@ -3829,7 +3829,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "d04e345095c68b050497c27cbd0491e254dfc83485bcc6ee227328987176ad59"
+        "sha256": "70aaf6289fc1d80db54cf0db00bc1de1500ee11d7c5c053843d6b1cdebd85f7d"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -3934,6 +3934,37 @@
         },
         "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
         "sha256": "31eb35429f37aaf82d0517d9be8e22b7bddb0afd061af2b5b528e037ec4067d9"
+      },
+      "status": "preregistered_before_no_contact_probe",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "executor_sha256": "8201f67662e90221fa5c79552970f44c4cf215874f5754e59bb3deddd8c2c843",
+        "initial_exact_anchor_sample": true,
+        "physical_task_attempts": 0,
+        "source_binding_id": "elbow_telemetry_probe_contract_v4",
+        "v3_probe_geometry_preserved": true,
+        "v3_telemetry_camera_and_authority_preserved": true
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:elbow-telemetry-probe-v4-frozen",
+      "label": "CC03E V4 exact-anchor-prefixed telemetry probe frozen",
+      "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
+      "source": {
+        "path": "configs/evaluations/elbow_telemetry_probe_v4.json",
+        "payload_contract": {
+          "configuration_write": false,
+          "gain_write": false,
+          "initial_exact_anchor_sample": true,
+          "pawn_contact": false,
+          "physical_task_attempt": false,
+          "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
+          "schema_version": "sim2claw.elbow_telemetry_probe_contract.v4",
+          "status": "preregistered_before_no_contact_probe"
+        },
+        "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
+        "sha256": "0bc1fdcd4fc6455b563e0174842e7ea9aa2b6ef37065b527d38e0a6490912976"
       },
       "status": "preregistered_before_no_contact_probe",
       "type": "checkpoint"
@@ -8047,6 +8078,36 @@
     },
     {
       "data": {
+        "camera_completed": true,
+        "physical_task_attempts": 0,
+        "sent_command_rows": 0,
+        "source_binding_id": "elbow_telemetry_probe_closeout_v3",
+        "telemetry_rows": 0,
+        "torque_off_cleanup": true
+      },
+      "evaluator_identity": "f2e778ed2d7c7fb4de9a648067ac29a68659c9c796c6923339bc413a32ef10d2",
+      "id": "verdict:elbow-telemetry-probe-v3-first-command-reject",
+      "label": "CC03E V3 gateway rejects first non-anchor row before send",
+      "proof_class": "physical_camera_enclosed_gateway_fail_closed_before_command",
+      "source": {
+        "path": "configs/decisions/elbow_telemetry_probe_v3_closeout.json",
+        "payload_contract": {
+          "physical_task_attempts": 0,
+          "proof_class": "physical_camera_enclosed_gateway_fail_closed_before_command",
+          "schema_version": "sim2claw.elbow_telemetry_probe_closeout.v3",
+          "sent_command_rows": 0,
+          "status": "stopped_before_first_command_missing_anchor_sample",
+          "telemetry_rows": 0,
+          "torque_off_cleanup": true
+        },
+        "proof_class": "physical_camera_enclosed_gateway_fail_closed_before_command",
+        "sha256": "03b64d11f57038361127808ee387110a59ae50fcd9e2eef3ae937d50ac9c143a"
+      },
+      "status": "stopped_before_first_command_missing_anchor_sample",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "camera_authorized": false,
         "dominant_failure": "multi_start_ik_residual_exceeded_gate",
         "dynamic_replay_executed": false,
@@ -9802,7 +9863,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "d04e345095c68b050497c27cbd0491e254dfc83485bcc6ee227328987176ad59",
+      "source_sha256": "70aaf6289fc1d80db54cf0db00bc1de1500ee11d7c5c053843d6b1cdebd85f7d",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -10803,6 +10864,26 @@
       "revision": 203,
       "source_binding": "elbow_telemetry_probe_contract_v3",
       "source_sha256": "31eb35429f37aaf82d0517d9be8e22b7bddb0afd061af2b5b528e037ec4067d9",
+      "status": "preregistered_before_no_contact_probe"
+    },
+    {
+      "event_id": "ELBOW_TELEMETRY_PROBE_V3_FIRST_COMMAND_REJECT",
+      "node_ids_added": [
+        "verdict:elbow-telemetry-probe-v3-first-command-reject"
+      ],
+      "revision": 204,
+      "source_binding": "elbow_telemetry_probe_closeout_v3",
+      "source_sha256": "03b64d11f57038361127808ee387110a59ae50fcd9e2eef3ae937d50ac9c143a",
+      "status": "stopped_before_first_command_missing_anchor_sample"
+    },
+    {
+      "event_id": "ELBOW_TELEMETRY_PROBE_V4_FROZEN",
+      "node_ids_added": [
+        "checkpoint:elbow-telemetry-probe-v4-frozen"
+      ],
+      "revision": 205,
+      "source_binding": "elbow_telemetry_probe_contract_v4",
+      "source_sha256": "0bc1fdcd4fc6455b563e0174842e7ea9aa2b6ef37065b527d38e0a6490912976",
       "status": "preregistered_before_no_contact_probe"
     }
   ],
@@ -12091,7 +12172,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "d04e345095c68b050497c27cbd0491e254dfc83485bcc6ee227328987176ad59"
+      "sha256": "70aaf6289fc1d80db54cf0db00bc1de1500ee11d7c5c053843d6b1cdebd85f7d"
     },
     {
       "id": "current_task_scene_labels",
@@ -12132,6 +12213,21 @@
       },
       "proof_class": "preexecution_implementation_negative_no_physical_motion",
       "sha256": "ddb71eefe667525198cebf2eebe956636bb87ba9af23db32c296800a09bf371e"
+    },
+    {
+      "id": "elbow_telemetry_probe_closeout_v3",
+      "path": "configs/decisions/elbow_telemetry_probe_v3_closeout.json",
+      "payload_contract": {
+        "physical_task_attempts": 0,
+        "proof_class": "physical_camera_enclosed_gateway_fail_closed_before_command",
+        "schema_version": "sim2claw.elbow_telemetry_probe_closeout.v3",
+        "sent_command_rows": 0,
+        "status": "stopped_before_first_command_missing_anchor_sample",
+        "telemetry_rows": 0,
+        "torque_off_cleanup": true
+      },
+      "proof_class": "physical_camera_enclosed_gateway_fail_closed_before_command",
+      "sha256": "03b64d11f57038361127808ee387110a59ae50fcd9e2eef3ae937d50ac9c143a"
     },
     {
       "id": "elbow_telemetry_probe_contract_v1",
@@ -12177,6 +12273,22 @@
       },
       "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
       "sha256": "31eb35429f37aaf82d0517d9be8e22b7bddb0afd061af2b5b528e037ec4067d9"
+    },
+    {
+      "id": "elbow_telemetry_probe_contract_v4",
+      "path": "configs/evaluations/elbow_telemetry_probe_v4.json",
+      "payload_contract": {
+        "configuration_write": false,
+        "gain_write": false,
+        "initial_exact_anchor_sample": true,
+        "pawn_contact": false,
+        "physical_task_attempt": false,
+        "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
+        "schema_version": "sim2claw.elbow_telemetry_probe_contract.v4",
+        "status": "preregistered_before_no_contact_probe"
+      },
+      "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
+      "sha256": "0bc1fdcd4fc6455b563e0174842e7ea9aa2b6ef37065b527d38e0a6490912976"
     },
     {
       "id": "fable_elbow_boundary_endgame_review_v1",
