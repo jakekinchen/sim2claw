@@ -1,6 +1,6 @@
 # Realized-Action Outcome Calibration Task Queue
 
-Status: `PLAN_READY_C0_PENDING`
+Status: `ACTIVE_C0_CORPUS_FREEZE`
 
 Created: `2026-07-29`
 
@@ -76,7 +76,7 @@ diagnostic, but it is explicitly action-free and cannot satisfy the mission.
 
 | ID | Status | Required outcome | Acceptance gate | Failure / redirect |
 |---|---|---|---|---|
-| C0 | `PENDING` | Freeze the retrospective evidence corpus and whole-episode cohorts. | One hash-bound manifest names every usable physical episode/video, requested/sent/measured trace, timestamp source, calibration, task annotation, simulator receipt, duplicate, superseded artifact, and missing channel. Fit, validation, and sealed episode membership is disjoint. Canonical square orientation is explicit. | Any provenance or split leakage blocks fitting. Do not normalize a proof class upward. |
+| C0 | `IN_PROGRESS` | Freeze the retrospective evidence corpus and whole-episode cohorts. | One hash-bound manifest names every usable physical episode/video, requested/sent/measured trace, timestamp source, calibration, task annotation, simulator receipt, duplicate, superseded artifact, and missing channel. Fit, validation, and sealed episode membership is disjoint. Canonical square orientation is explicit. | Any provenance or split leakage blocks fitting. Do not normalize a proof class upward. |
 | C1 | `PENDING` | Build deterministic `EpisodeTwinBundle.v1` artifacts. | At minimum, create bundles for the current D1→D2 mission episode and each fit/validation episode used by C3--C5. Rebuilds are digest-identical; units/time origins are explicit; first measured state and first sent action reproduce exactly; initial pawn projection agrees with the physical first frame. | Missing observables remain explicit. Do not impute actuator application time, depth, contact force, or hidden pawn pose. |
 | C2 | `PENDING` | Reconcile defensible static geometry using existing images only. | Report held-out board-corner, pawn-base, fixed-base robot, articulated-keypoint, and silhouette residuals separately. Camera pose may not absorb joint-zero/link errors. Preserve the accepted task-plane mapping unless held-out evidence rejects it. | A rejected geometry factor remains rejected; do not run a joint camera/robot/object optimizer that is structurally rank deficient. |
 | C2-RP04N | `PENDING_DIAGNOSTIC_ONLY` | Run the GPT-advised D1-conditioned C922 pawn-crown carry-prefix correspondence test. | Freeze evaluator and 18 sample indices before annotation; annotate with simulator hidden in two passes; admit at least 12 visible points with temporal coverage; compare only to the immutable RP04K observed-state-plus-grasp-mode pre-release trace using frozen ordered-curve gates. No timing, depth, metric 3D, RP04L, or terminal D2 fit. | Pass adds only `camera_projected_carry_prefix_real_to_sim: 1/1`. Failure is terminal for this retained crown-track diagnostic. Neither outcome satisfies the mission. |
