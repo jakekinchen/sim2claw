@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "9b7c9903c27a52d0805697879196385f5e7878e438645a2abbeb7699fb0522d5",
+      "sha256": "e053d105db65684676d45f39572645eb2fa831868c4c91a99d3b1e16d94fd456",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1864,6 +1864,26 @@
         "schema_version": "sim2claw.wrist_view_reposition_review.v2",
         "status": "admitted_for_one_execution_per_stage",
         "physical_authority": false
+      }
+    },
+    "calibration_graph_composite_probe_v2_execution": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/stage-1/execution_receipt.json",
+      "sha256": "ef0d257151fd3f58f1c5e5659bb2d3ffdf5a339fe90352a499b070a061809b77",
+      "proof_class": "physical_no_contact_tricam_composite_mapping_probe",
+      "payload_contract": {
+        "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+        "status": "completed_wrist_view_reposition_stage",
+        "physical_follower_torque_enabled": false
+      }
+    },
+    "calibration_graph_composite_heldout_v1_contract": {
+      "path": "configs/evaluations/calibration_graph_composite_heldout_v1.json",
+      "sha256": "4c38902e8b8168fd1ef7d300a82951575db28801d748ae064ff6534dd744a59f",
+      "proof_class": "prospective_action_frozen_physical_no_contact_composite_mapping_heldout",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_composite_heldout.v1",
+        "status": "frozen_after_execution_before_heldout_frame_open",
+        "proof_class": "prospective_action_frozen_physical_no_contact_composite_mapping_heldout"
       }
     },
     "simulator_candidate": {
@@ -5028,6 +5048,38 @@
       }
     },
     {
+      "id": "checkpoint:calibration-graph-composite-probe-v2-executed",
+      "type": "checkpoint",
+      "label": "Composite no-contact tricam V2 probe completed and torque off",
+      "status": "completed_wrist_view_reposition_stage",
+      "source_binding": "calibration_graph_composite_probe_v2_execution",
+      "data": {
+        "completed_motion_samples": 961,
+        "completed_capture_hold_samples": 80,
+        "tricam_action_enclosed": true,
+        "physical_motion": true,
+        "physical_follower_torque_enabled_at_close": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:calibration-graph-composite-heldout-v1-frozen",
+      "type": "checkpoint",
+      "label": "Composite image-motion heldout V1 frozen before frame open",
+      "status": "preregistered_before_exactly_once_heldout_evaluation",
+      "source_binding": "calibration_graph_composite_heldout_v1_contract",
+      "data": {
+        "required_tag_ids": [
+          1,
+          2
+        ],
+        "constant_image_offset_only": true,
+        "parameter_fit": false,
+        "mapping_approval": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -6875,6 +6927,27 @@
       }
     },
     {
+      "source": "checkpoint:calibration-graph-composite-probe-v2-executed",
+      "type": "generated-from",
+      "target": "verdict:calibration-graph-composite-probe-v2-review-admit",
+      "metadata": {
+        "exact_action_identity": true,
+        "tricam_action_enclosed": true,
+        "torque_off_at_close": true,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "source": "checkpoint:calibration-graph-composite-heldout-v1-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:calibration-graph-composite-probe-v2-executed",
+      "metadata": {
+        "heldout_frames_unopened_at_freeze": true,
+        "parameter_fit": false,
+        "mapping_approval": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -8269,14 +8342,32 @@
       "node_ids_added": [
         "verdict:calibration-graph-composite-probe-v2-review-admit"
       ]
+    },
+    {
+      "revision": 150,
+      "event_id": "CALIBRATION_GRAPH_COMPOSITE_PROBE_V2_EXECUTED",
+      "status": "completed_wrist_view_reposition_stage",
+      "source_binding": "calibration_graph_composite_probe_v2_execution",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-composite-probe-v2-executed"
+      ]
+    },
+    {
+      "revision": 151,
+      "event_id": "CALIBRATION_GRAPH_COMPOSITE_HELDOUT_V1_FROZEN",
+      "status": "preregistered_before_exactly_once_heldout_evaluation",
+      "source_binding": "calibration_graph_composite_heldout_v1_contract",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-composite-heldout-v1-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:calibration-graph-composite-probe-v2-review-admit",
+    "node_id": "checkpoint:calibration-graph-composite-heldout-v1-frozen",
     "milestone_id": "CC03",
-    "status": "reviewed_for_single_calibration_execution",
-    "queue_status": "ACTIVE_CC03_COMPOSITE_PROBE_V2_EXECUTE",
-    "resume_action": "execute_composite_calibration_probe_v2_stage_1_once",
+    "status": "preregistered_before_exactly_once_heldout_evaluation",
+    "queue_status": "ACTIVE_CC03_COMPOSITE_HELDOUT_EVALUATE",
+    "resume_action": "execute_calibration_graph_composite_heldout_v1_exactly_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

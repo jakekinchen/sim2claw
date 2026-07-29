@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_COMPOSITE_PROBE_V2_EXECUTE`
+Status: `ACTIVE_CC03_COMPOSITE_HELDOUT_EVALUATE`
 
 Created: `2026-07-28`
 
@@ -495,6 +495,18 @@ Current state:
   Independent review admitted exactly one stage execution; review SHA-256
   `81b2524acd777e51497151ddbae09c81cdbe2b1a15c931572af45fdd99b590e1`.
   Compilation and review commanded no motion and opened no cameras.
+- Composite tricam V2 executed exactly once. Execution receipt SHA-256
+  `ef0d257151fd3f58f1c5e5659bb2d3ffdf5a339fe90352a499b070a061809b77`;
+  all `961` motion and `80` hold samples completed, C922/D405/Pi enclosed the
+  action, exact action identity held, the return residual stayed within the
+  reviewed gate, and both the receipt and a fresh post-run preflight report
+  follower torque off. This was calibration-only; task attempts remain zero.
+- Composite heldout evaluator V1 is frozen after execution and before opening
+  heldout frames at contract SHA-256
+  `4c38902e8b8168fd1ef7d300a82951575db28801d748ae064ff6534dd744a59f`.
+  It compares constant-offset-invariant Pi AprilTag motion for tags `1` and
+  `2` against the frozen CAD projection along the exact measured trajectory.
+  It may not fit parameters or automatically approve mapping.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -536,7 +548,7 @@ This authorization:
 
 Next step:
 
-- Execute the single reviewed composite calibration probe V2 stage within the
-  owner authorization window, verify tricam/action/return/torque-off receipts,
-  and evaluate it only as the untouched composite mapping factor. Do not
-  weaken the V1 safety reject, touch a pawn, or count a task attempt.
+- Execute the frozen composite-heldout evaluator exactly once. Preserve its
+  result, reconcile it with the prior differential and hold failures, and make
+  only one mechanism-specific mapping decision. Do not touch a pawn or count a
+  task attempt.

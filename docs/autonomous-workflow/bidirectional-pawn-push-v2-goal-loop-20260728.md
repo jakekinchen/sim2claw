@@ -197,6 +197,10 @@ Confirmed:
   `5cf70e33...`; its selected static-safe action hash is `25df23c1...`.
 - Composite V2 packet `d7f09562...` compiled with no modeled contact and
   independent review `81b2524a...` admits exactly one stage execution.
+- Composite V2 execution `ef0d2571...` completed all samples with tricam
+  enclosure and torque-off cleanup; physical task attempts remain zero.
+- Prospective composite heldout evaluator V1 is frozen at `4c38902e...`
+  before opening heldout frames; it has no fit or mapping-promotion authority.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -243,7 +247,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
 Completed: CC00, CC00A, CC01, CC02.
-Evidence: calibration reject 718cedd9...; V1 compile reject ca9b3527...; V2 packet d7f09562...; review 81b2524a....
+Evidence: calibration reject 718cedd9...; V1 compile reject ca9b3527...; V2 execution ef0d2571...; heldout contract 4c38902e....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -251,7 +255,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC03 through CC15.
 Blockers: physical/model mapping remains unapproved.
-Next step: execute the one reviewed calibration-only composite probe V2 stage; no pawn contact or task attempt.
+Next step: run the frozen composite heldout evaluator exactly once; no pawn contact or task attempt.
 ```
 
 ## Physical Authority Boundaries

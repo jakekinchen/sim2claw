@@ -1,0 +1,88 @@
+{
+  "schema_version": "sim2claw.calibration_graph_composite_heldout.v1",
+  "contract_id": "calibration_graph_composite_heldout_20260729_v1",
+  "status": "frozen_after_execution_before_heldout_frame_open",
+  "proof_class": "prospective_action_frozen_physical_no_contact_composite_mapping_heldout",
+  "sources": {
+    "packet": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/packet.json",
+      "sha256": "d7f095627c4735ab4b6132aa6ff4666ca57372468837031a93ecc3fd887eb930"
+    },
+    "review": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/review.json",
+      "sha256": "81b2524acd777e51497151ddbae09c81cdbe2b1a15c931572af45fdd99b590e1"
+    },
+    "execution_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/stage-1/execution_receipt.json",
+      "sha256": "ef0d257151fd3f58f1c5e5659bb2d3ffdf5a339fe90352a499b070a061809b77"
+    },
+    "static_candidate": {
+      "path": "runs/pi-link-tag-calibration/20260727-current-session-articulated-cad-bundle-v2/receipt.json",
+      "sha256": "a6c14a319f1cd57c77f69d04b2fe732fdcd5aa9c0f0d1e249b77454c81520f9d"
+    },
+    "static_contract": {
+      "path": "configs/evaluations/current_session_pi_articulated_cad_bundle_v2.json",
+      "sha256": "183b6c0c511d393bd0249ecdf00f9b1c00f1b9ab61dc5c7a8aafcd33da7049ce"
+    }
+  },
+  "implementation": {
+    "path": "tools/evaluate_calibration_graph_composite_heldout_v1.py",
+    "sha256": "166aa5c74cca54738addae0592d5cc1e9c932551a735b892d3f8e0cc0a286256"
+  },
+  "expected": {
+    "plan_sha256": "1a8cabd2416c421061092506cf3595b02ba96573eec7a94747ce79cc4835930e",
+    "action_sha256": "25df23c1cc7a392e190b2eda42afcc23ea3b523e9ce760dfe607d3be3993502b",
+    "motion_samples": 961,
+    "capture_hold_samples": 80,
+    "physical_task_attempts": 0
+  },
+  "required_tag_ids": [
+    1,
+    2
+  ],
+  "method": {
+    "camera": "Pi IMX708 wide RGB",
+    "signal": "AprilTag center trajectory aligned to nearest follower encoder sample on host monotonic time",
+    "simulated_signal": "same measured joint rows projected through the frozen current CAD and historical camera/tag-mount candidate",
+    "gauge": "subtract only the mean observed and simulated image center over encoder rows within the frozen anchor radius",
+    "frame_stride": 3,
+    "maximum_frame_to_joint_delta_ms": 30.0,
+    "active_joint_indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "anchor_reference_radius_degrees": 0.75,
+    "parameter_fit": false,
+    "outcome_input": false
+  },
+  "gates": {
+    "minimum_sample_count": 20,
+    "minimum_reference_sample_count": 3,
+    "minimum_simulated_displacement_rms_px": 2.0,
+    "signal_ratio_range": [
+      0.5,
+      1.5
+    ],
+    "displacement_residual_rmse_max_px": 8.0,
+    "displacement_residual_max_px": 20.0,
+    "minimum_displacement_correlation": 0.8,
+    "all_required_tags_must_pass": true
+  },
+  "output_path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/evaluation/receipt.json",
+  "authority": {
+    "read_bound_physical_capture": true,
+    "evaluate_composite_factor": true,
+    "fit_parameters": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "This prospective heldout may accept or reject only the constant-offset-invariant composite image-motion factor for the frozen current CAD comparator. It cannot approve the physical/model mapping, alter joint transforms, fit camera or robot parameters, prove task transfer, or erase the prior differential and hold failures."
+}
