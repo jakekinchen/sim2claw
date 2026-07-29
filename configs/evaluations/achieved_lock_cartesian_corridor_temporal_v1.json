@@ -1,0 +1,85 @@
+{
+  "schema_version": "sim2claw.achieved_lock_cartesian_corridor_temporal.v1",
+  "contract_id": "achieved-lock-cartesian-corridor-temporal-20260729-v1",
+  "status": "frozen_after_rp03c_static_pass_before_dynamic_replay",
+  "proof_class": "prospective_cpu_fp64_exact_lock_cartesian_corridor_direct_target_and_diagnostic_zoh_causal_replay",
+  "base_temporal_contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+    "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+  },
+  "static_contract": {
+    "path": "configs/evaluations/parking_recovery_rp03c_cartesian_corridor_static_v1.json",
+    "sha256": "aa78cb2340e5d6d309cb2ec6df50410f2be317d64cb89263bc36a030a4c0b892"
+  },
+  "static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-rp03c-cartesian-corridor-static-v1/receipt.json",
+    "sha256": "5a9230faf9bb8ebdb8a7ef887f08fc4c72b6dc9684552e52903e3a08ad734d05"
+  },
+  "static_closeout": {
+    "path": "configs/decisions/parking_recovery_rp03c_cartesian_corridor_static_v1_closeout.json",
+    "sha256": "03a746101ed8cb1fb317035988871b994837a08d49d5637ff148d5b0d1ad8b4f"
+  },
+  "base_temporal_implementation": {
+    "path": "src/sim2claw/achieved_lock_task_temporal.py",
+    "sha256": "49e80b36a9dc71e07e68e0bffaf6df47e3e97a1088a74415309cd87c2fcb45f1"
+  },
+  "implementation": {
+    "path": "src/sim2claw/achieved_lock_cartesian_corridor_temporal.py",
+    "sha256": "ec74c22a9ecac864cb3a2011f791abe2a04c999f2799618629fc1d533b2ddf34"
+  },
+  "cases": [
+    {
+      "case_id": "brown_pawn_g2__g2_f2",
+      "direction": "REAL_TO_SIM",
+      "source_square": "g2",
+      "destination_square": "f2",
+      "selected_piece_id": "brown_pawn_g2",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-rp03c-cartesian-corridor-static-v1/actions/00.f64le",
+      "action_sha256": "cb819555bfa092c6e91d9c8d187c739c877946327a73f3da4eeb1888d3f3e21d",
+      "action_shape": [
+        515,
+        6
+      ]
+    },
+    {
+      "case_id": "brown_pawn_f1__f1_f2",
+      "direction": "SIM_TO_REAL",
+      "source_square": "f1",
+      "destination_square": "f2",
+      "selected_piece_id": "brown_pawn_f1",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-rp03c-cartesian-corridor-static-v1/actions/01.f64le",
+      "action_sha256": "9484207778fe9b847411212bed1e5912f8aaa659967ab7ccb07551acbba95f2b",
+      "action_shape": [
+        676,
+        6
+      ]
+    }
+  ],
+  "live_seed": {
+    "source": "rp02d_successful_torque_on_held_pose",
+    "follower_position_degrees": [
+      5.802197802197802,
+      -85.01098901098901,
+      92.43956043956044,
+      -12.0,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "torque_enabled": true
+  },
+  "materialization_directory": "runs/bidirectional-pawn-push-v2/20260729-rp03c-cartesian-corridor-temporal-materialization-v1",
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-rp03c-cartesian-corridor-temporal-v1",
+  "unchanged": {
+    "requested_mapped_sent_action_identity": true,
+    "forty_hz_row_order_and_timing": true,
+    "direct_target_baseline_and_uncalibrated_0p11s_zoh_challenger": true,
+    "five_frozen_reset_variants": true,
+    "cpu_fp64_mujoco_and_substeps": true,
+    "observable_episode_v2_min_and_first_divergence": true,
+    "progress_gate_36p025mm": true,
+    "contact_exclusion_no_lift_collision_and_camera_gates": true,
+    "one_case_per_direction_both_plant_paths_required": true,
+    "dynamic_only_authority": true
+  },
+  "claim_boundary": "Prospectively frozen CPU/fp64 replay of the two exact RP03C Cartesian-corridor action tensors. Both the canonical direct-target baseline and diagnostic uncalibrated 0.11 second ZOH challenger, all five reset deltas, exact action bytes, 40 Hz timing, ObservableEpisode.v2-min traces, compact causal summaries, first-divergence channels, and the unchanged 36.025 mm consequence gate remain required. All 20 episodes must pass before physical packet design; this run cannot approve mapping, hardware, a physical attempt, simulator promotion, or transfer."
+}

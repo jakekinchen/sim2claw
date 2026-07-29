@@ -1,0 +1,53 @@
+{
+  "schema_version": "sim2claw.parking_recovery_rp03c_cartesian_corridor_static_closeout.v1",
+  "decision_id": "parking-recovery-rp03c-cartesian-corridor-static-20260729-v1-closeout",
+  "status": "accepted_static_pass_opens_frozen_dynamic_gate",
+  "freeze_commit": "dbe490c",
+  "contract": {
+    "path": "configs/evaluations/parking_recovery_rp03c_cartesian_corridor_static_v1.json",
+    "sha256": "aa78cb2340e5d6d309cb2ec6df50410f2be317d64cb89263bc36a030a4c0b892"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-rp03c-cartesian-corridor-static-v1/receipt.json",
+    "sha256": "5a9230faf9bb8ebdb8a7ef887f08fc4c72b6dc9684552e52903e3a08ad734d05"
+  },
+  "result": {
+    "family_count": 48,
+    "grid_result_count": 576,
+    "compile_reject_count": 483,
+    "static_reject_count": 89,
+    "static_eligible_cell_count": 4,
+    "statically_eligible_family_count": 2,
+    "direction_counts": {
+      "REAL_TO_SIM": 1,
+      "SIM_TO_REAL": 1
+    },
+    "selected": [
+      {
+        "case_id": "brown_pawn_g2__g2_f2",
+        "direction": "REAL_TO_SIM",
+        "action_sha256": "cb819555bfa092c6e91d9c8d187c739c877946327a73f3da4eeb1888d3f3e21d",
+        "action_shape": [
+          515,
+          6
+        ],
+        "maximum_cartesian_chord_error_m": 0.00040418287922804513,
+        "maximum_post_contact_task_axis_backtrack_m": 0.0
+      },
+      {
+        "case_id": "brown_pawn_f1__f1_f2",
+        "direction": "SIM_TO_REAL",
+        "action_sha256": "9484207778fe9b847411212bed1e5912f8aaa659967ab7ccb07551acbba95f2b",
+        "action_shape": [
+          676,
+          6
+        ],
+        "maximum_cartesian_chord_error_m": 0.0004933250773856709,
+        "maximum_post_contact_task_axis_backtrack_m": 0.0
+      }
+    ],
+    "dynamic_replay_executed": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Accept the two prospectively selected exact-lock RP03C action tensors for one unchanged 20-episode CPU/fp64 dynamic gate: two directions by direct/ZOH plant paths by five frozen reset variants. Physical authority remains false until every episode passes."
+}
