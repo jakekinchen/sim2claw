@@ -1,0 +1,1088 @@
+{
+  "authority": {
+    "camera": false,
+    "dynamic_replay": false,
+    "evaluator_v2_freeze": false,
+    "gateway": false,
+    "mapping_approval": false,
+    "model_loading": true,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "static_simulation": true,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospectively frozen static-only path-shape successor after stroke temporal V4 passed REAL_TO_SIM 2/2 but left d7-to-e7 below progress only at the lateral-plus 3 mm endpoint. Every one of the complete four-family set receives the same two sequential 66 mm push lanes at the exact minus 3 mm and plus 3 mm endpoints of the already-frozen reset envelope, with a return to the exact live seed between lanes. No case receives a private adjustment and no dynamics are run here. A pass freezes four static action tensors only and cannot approve dynamic replay, mapping, evaluator V2, hardware, or transfer.",
+  "contract_path": "configs/evaluations/canonical_wrist_path_two_lane_static_v6.json",
+  "contract_sha256": "adb0908a23f4180a80a24dc49172d9a97f9ba13c1d847b4982816dcbf15286f7",
+  "direction_counts": {
+    "REAL_TO_SIM": 1,
+    "SIM_TO_REAL": 1
+  },
+  "dynamic_replay_executed": false,
+  "family_count": 4,
+  "grid_result_count": 4,
+  "grid_results": [
+    {
+      "camera": {
+        "minimum_margin_px": 116.78889813992309,
+        "passed": true
+      },
+      "case_id": "tan_pawn_h7__h7_h8",
+      "checks": {
+        "camera": true,
+        "collision": true,
+        "contact_height": true,
+        "contact_normal": false,
+        "contact_witness": true,
+        "gateway_limits": true,
+        "gateway_rates": true
+      },
+      "collision": {
+        "baseline_robot_contact_pairs": [],
+        "new_disallowed_robot_contact_pairs": [],
+        "passed": true,
+        "selected_contact_observed": true
+      },
+      "compile": {
+        "action_raw_float64le_sha256": "95dbb1b1d35d7a56374e5b3969d43acfce3cc39519fc3be926ddc3fba08d4e46",
+        "action_rows": 2900,
+        "lane_metrics": [
+          {
+            "action_raw_float64le_sha256": "69828cbad95d5296fe3a2606fd3e715f1b21894fa139278e8f5b87e2d2d88bee",
+            "action_rows": 1085,
+            "cartesian_targets_xyz_m": [
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.25285266924389094,
+                0.491040495537516,
+                0.890883941
+              ],
+              [
+                -0.25285266924389094,
+                0.491040495537516,
+                0.810883941
+              ],
+              [
+                -0.26415427240376715,
+                0.45791537265447335,
+                0.810883941
+              ],
+              [
+                -0.2854658669338195,
+                0.39545085521787865,
+                0.810883941
+              ],
+              [
+                -0.2854658669338195,
+                0.39545085521787865,
+                0.890883941
+              ]
+            ],
+            "low_horizontal_precontact_approach": true,
+            "maximum_ik_residual_m": 0.0004986439692701726,
+            "minimum_model_joint_margin_rad": 0.001829670515161086,
+            "precontact_backoff_m": 0.035,
+            "wrist_roll_target_rad": -1.803634756676338,
+            "wrist_rotation_after_live_lift": true
+          },
+          {
+            "action_raw_float64le_sha256": "344eafb69d8d5074ee29b953bd25d0bb61d660a047632a50483d384bbaadfc2b",
+            "action_rows": 1083,
+            "cartesian_targets_xyz_m": [
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.24717407674965505,
+                0.48910307785296575,
+                0.890883941
+              ],
+              [
+                -0.24717407674965505,
+                0.48910307785296575,
+                0.810883941
+              ],
+              [
+                -0.2584756799095313,
+                0.4559779549699231,
+                0.810883941
+              ],
+              [
+                -0.2797872744395836,
+                0.3935134375333284,
+                0.810883941
+              ],
+              [
+                -0.2797872744395836,
+                0.3935134375333284,
+                0.890883941
+              ]
+            ],
+            "low_horizontal_precontact_approach": true,
+            "maximum_ik_residual_m": 0.0005049198875829949,
+            "minimum_model_joint_margin_rad": 0.001829670515161086,
+            "precontact_backoff_m": 0.035,
+            "wrist_roll_target_rad": -1.803634756676338,
+            "wrist_rotation_after_live_lift": true
+          }
+        ],
+        "lateral_offsets_m": [
+          -0.003,
+          0.003
+        ],
+        "return_to_live_seed_between_lanes": true
+      },
+      "contact_height_index": 0,
+      "contact_height_m": 0.01,
+      "destination_square": "h8",
+      "direction": "REAL_TO_SIM",
+      "first_contact_witness": {
+        "absolute_vertical_normal_component": 0.7772801347375863,
+        "contact_height_relative_initial_pawn_root_m": 0.007769676605803855,
+        "jaw_geom": "left_fixed_jaw_box3",
+        "observed": true,
+        "pawn_geom": "geom-434",
+        "row_index": 757
+      },
+      "gateway": {
+        "all_rates_within_gateway_limits": true,
+        "all_rows_inside_calibrated_limits": true,
+        "mapping_calibration_approved": false,
+        "mapping_review_status": "provisional_range_audit_blocked",
+        "maximum_absolute_rate_per_second": [
+          1.1407811447524807,
+          7.996672827141538,
+          7.99121630583997,
+          6.994253646694233,
+          0.0,
+          18.239956989260115
+        ],
+        "physical_action_raw_float64le_sha256": "62c4df81f01f3ae700c6858dbf01518102d2a6450dfd20ef6a0501ea71b68ea4",
+        "row_zero_physical": [
+          6.5054945054945055,
+          -85.53846153846153,
+          99.47252747252747,
+          -20.087912087912088,
+          -103.34065934065934,
+          2.3752969121140137
+        ]
+      },
+      "lateral_offsets_m": [
+        -0.003,
+        0.003
+      ],
+      "selected_piece_id": "tan_pawn_h7",
+      "source_square": "h7",
+      "static_eligible": false,
+      "status": "static_reject",
+      "stroke_m": 0.066,
+      "wrist_orientation_index": 1,
+      "wrist_roll_target_rad": -1.803634756676338
+    },
+    {
+      "camera": {
+        "minimum_margin_px": 128.7299739441831,
+        "passed": true
+      },
+      "case_id": "tan_pawn_d7__d7_c7",
+      "checks": {
+        "camera": true,
+        "collision": true,
+        "contact_height": true,
+        "contact_normal": false,
+        "contact_witness": true,
+        "gateway_limits": true,
+        "gateway_rates": true
+      },
+      "collision": {
+        "baseline_robot_contact_pairs": [],
+        "new_disallowed_robot_contact_pairs": [],
+        "passed": true,
+        "selected_contact_observed": true
+      },
+      "compile": {
+        "action_raw_float64le_sha256": "a12cd651a65a506c3853092583e25dc76f33cc82d04a711470ecdeae035e2b34",
+        "action_rows": 3195,
+        "lane_metrics": [
+          {
+            "action_raw_float64le_sha256": "1125a7b4ca22dfa6c192064e78a41fbce4e8c67a7ff1a30eb25b4ee37813c0a9",
+            "action_rows": 1225,
+            "cartesian_targets_xyz_m": [
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.155058554537516,
+                0.3942791857561091,
+                0.890883941
+              ],
+              [
+                -0.155058554537516,
+                0.3942791857561091,
+                0.810883941
+              ],
+              [
+                -0.12193343165447335,
+                0.3829775825962329,
+                0.810883941
+              ],
+              [
+                -0.059468914217878636,
+                0.36166598806618055,
+                0.810883941
+              ],
+              [
+                -0.059468914217878636,
+                0.36166598806618055,
+                0.890883941
+              ]
+            ],
+            "low_horizontal_precontact_approach": true,
+            "maximum_ik_residual_m": 0.000673478764481167,
+            "minimum_model_joint_margin_rad": 0.001829670515161086,
+            "precontact_backoff_m": 0.035,
+            "wrist_roll_target_rad": -1.9562840850716032,
+            "wrist_rotation_after_live_lift": true
+          },
+          {
+            "action_raw_float64le_sha256": "8f4872dd5e8bcfcf438c06a61c7bdcb2fe85dd6f7737729af6e04455e56152bb",
+            "action_rows": 1176,
+            "cartesian_targets_xyz_m": [
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.15312113685296577,
+                0.39995777825034495,
+                0.890883941
+              ],
+              [
+                -0.15312113685296577,
+                0.39995777825034495,
+                0.810883941
+              ],
+              [
+                -0.11999601396992313,
+                0.38865617509046874,
+                0.810883941
+              ],
+              [
+                -0.05753149653332842,
+                0.3673445805604164,
+                0.810883941
+              ],
+              [
+                -0.05753149653332842,
+                0.3673445805604164,
+                0.890883941
+              ]
+            ],
+            "low_horizontal_precontact_approach": true,
+            "maximum_ik_residual_m": 0.0008021226714604728,
+            "minimum_model_joint_margin_rad": 0.001829670515161086,
+            "precontact_backoff_m": 0.035,
+            "wrist_roll_target_rad": -1.9562840850716032,
+            "wrist_rotation_after_live_lift": true
+          }
+        ],
+        "lateral_offsets_m": [
+          -0.003,
+          0.003
+        ],
+        "return_to_live_seed_between_lanes": true
+      },
+      "contact_height_index": 0,
+      "contact_height_m": 0.01,
+      "destination_square": "c7",
+      "direction": "SIM_TO_REAL",
+      "first_contact_witness": {
+        "absolute_vertical_normal_component": 0.3767720817590185,
+        "contact_height_relative_initial_pawn_root_m": 0.01032197731649942,
+        "jaw_geom": "geom-483",
+        "observed": true,
+        "pawn_geom": "geom-379",
+        "row_index": 857
+      },
+      "gateway": {
+        "all_rates_within_gateway_limits": true,
+        "all_rows_inside_calibrated_limits": true,
+        "mapping_calibration_approved": false,
+        "mapping_review_status": "provisional_range_audit_blocked",
+        "maximum_absolute_rate_per_second": [
+          5.938798058766928,
+          7.997293667901033,
+          7.986770568819566,
+          7.650133482434143,
+          11.661549683407202,
+          18.239956989260115
+        ],
+        "physical_action_raw_float64le_sha256": "3a30bce1c9b56bf9cac8f7540fb137c4c9479071c86f48f50a425279d0b3e99f",
+        "row_zero_physical": [
+          6.5054945054945055,
+          -85.53846153846153,
+          99.47252747252747,
+          -20.087912087912088,
+          -103.34065934065934,
+          2.3752969121140137
+        ]
+      },
+      "lateral_offsets_m": [
+        -0.003,
+        0.003
+      ],
+      "selected_piece_id": "tan_pawn_d7",
+      "source_square": "d7",
+      "static_eligible": false,
+      "status": "static_reject",
+      "stroke_m": 0.066,
+      "wrist_orientation_index": 0,
+      "wrist_roll_target_rad": -1.9562840850716032
+    },
+    {
+      "camera": {
+        "minimum_margin_px": 134.1522733926885,
+        "passed": true
+      },
+      "case_id": "tan_pawn_f7__f7_e7",
+      "checks": {
+        "camera": true,
+        "collision": true,
+        "contact_height": true,
+        "contact_normal": true,
+        "contact_witness": true,
+        "gateway_limits": true,
+        "gateway_rates": true
+      },
+      "collision": {
+        "baseline_robot_contact_pairs": [],
+        "new_disallowed_robot_contact_pairs": [],
+        "passed": true,
+        "selected_contact_observed": true
+      },
+      "compile": {
+        "action_raw_float64le_sha256": "85b37b3f7a6e27d77e302716395dbdba5bc6b73e86ac5bb57fa80d5cc0f21416",
+        "action_rows": 2691,
+        "lane_metrics": [
+          {
+            "action_raw_float64le_sha256": "375b1e3f4379b861ae00aec41bc3b02913474fd5126944eafeaceb2a8b85c34a",
+            "action_rows": 1041,
+            "cartesian_targets_xyz_m": [
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.239196366537516,
+                0.42298525775610907,
+                0.890883941
+              ],
+              [
+                -0.239196366537516,
+                0.42298525775610907,
+                0.810883941
+              ],
+              [
+                -0.20607124365447335,
+                0.41168365459623285,
+                0.810883941
+              ],
+              [
+                -0.14360672621787865,
+                0.3903720600661805,
+                0.810883941
+              ],
+              [
+                -0.14360672621787865,
+                0.3903720600661805,
+                0.890883941
+              ]
+            ],
+            "low_horizontal_precontact_approach": true,
+            "maximum_ik_residual_m": 0.0012217078101945155,
+            "minimum_model_joint_margin_rad": 0.001829670515161086,
+            "precontact_backoff_m": 0.035,
+            "wrist_roll_target_rad": -1.6509854282810728,
+            "wrist_rotation_after_live_lift": true
+          },
+          {
+            "action_raw_float64le_sha256": "74a7d2adc3cc39fe80085e99c93d9a53bc070d164a035ce3b8dcffa120173254",
+            "action_rows": 1033,
+            "cartesian_targets_xyz_m": [
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.2372589488529658,
+                0.4286638502503449,
+                0.890883941
+              ],
+              [
+                -0.2372589488529658,
+                0.4286638502503449,
+                0.810883941
+              ],
+              [
+                -0.20413382596992316,
+                0.4173622470904687,
+                0.810883941
+              ],
+              [
+                -0.14166930853332846,
+                0.3960506525604164,
+                0.810883941
+              ],
+              [
+                -0.14166930853332846,
+                0.3960506525604164,
+                0.890883941
+              ]
+            ],
+            "low_horizontal_precontact_approach": true,
+            "maximum_ik_residual_m": 0.000571351957572506,
+            "minimum_model_joint_margin_rad": 0.001829670515161086,
+            "precontact_backoff_m": 0.035,
+            "wrist_roll_target_rad": -1.6509854282810728,
+            "wrist_rotation_after_live_lift": true
+          }
+        ],
+        "lateral_offsets_m": [
+          -0.003,
+          0.003
+        ],
+        "return_to_live_seed_between_lanes": true
+      },
+      "contact_height_index": 0,
+      "contact_height_m": 0.01,
+      "destination_square": "e7",
+      "direction": "REAL_TO_SIM",
+      "first_contact_witness": {
+        "absolute_vertical_normal_component": 0.3452827705488799,
+        "contact_height_relative_initial_pawn_root_m": 0.007722402732036171,
+        "jaw_geom": "geom-483",
+        "observed": true,
+        "pawn_geom": "geom-406",
+        "row_index": 819
+      },
+      "gateway": {
+        "all_rates_within_gateway_limits": true,
+        "all_rows_inside_calibrated_limits": true,
+        "mapping_calibration_approved": false,
+        "mapping_review_status": "provisional_range_audit_blocked",
+        "maximum_absolute_rate_per_second": [
+          7.979570681245036,
+          7.99941075226374,
+          7.80154220389079,
+          4.431733752171851,
+          11.661549683407202,
+          18.239956989260115
+        ],
+        "physical_action_raw_float64le_sha256": "4997587a59383a6b0bad3d2e61dcefcd5d7ebd72658c89ebd58c2bad437e3dd0",
+        "row_zero_physical": [
+          6.5054945054945055,
+          -85.53846153846153,
+          99.47252747252747,
+          -20.087912087912088,
+          -103.34065934065934,
+          2.3752969121140137
+        ]
+      },
+      "lateral_offsets_m": [
+        -0.003,
+        0.003
+      ],
+      "selected_piece_id": "tan_pawn_f7",
+      "source_square": "f7",
+      "static_eligible": true,
+      "status": "static_eligible",
+      "stroke_m": 0.066,
+      "wrist_orientation_index": 2,
+      "wrist_roll_target_rad": -1.6509854282810728
+    },
+    {
+      "camera": {
+        "minimum_margin_px": 132.76996671853593,
+        "passed": true
+      },
+      "case_id": "tan_pawn_d7__d7_e7",
+      "checks": {
+        "camera": true,
+        "collision": true,
+        "contact_height": true,
+        "contact_normal": true,
+        "contact_witness": true,
+        "gateway_limits": true,
+        "gateway_rates": true
+      },
+      "collision": {
+        "baseline_robot_contact_pairs": [],
+        "new_disallowed_robot_contact_pairs": [],
+        "passed": true,
+        "selected_contact_observed": true
+      },
+      "compile": {
+        "action_raw_float64le_sha256": "dcd5edef44f2dc5f5603c46534409a68d3462a15048c29381447a5cce2d0407d",
+        "action_rows": 3405,
+        "lane_metrics": [
+          {
+            "action_raw_float64le_sha256": "af9795596f2ca4aabacae21e12fe0a7afc4a55990ca6ad63112c6a6c2c76d131",
+            "action_rows": 1332,
+            "cartesian_targets_xyz_m": [
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.04522787946248402,
+                0.3631468422438909,
+                0.890883941
+              ],
+              [
+                -0.04522787946248402,
+                0.3631468422438909,
+                0.810883941
+              ],
+              [
+                -0.07835300234552667,
+                0.37444844540376715,
+                0.810883941
+              ],
+              [
+                -0.14081751978212137,
+                0.3957600399338195,
+                0.810883941
+              ],
+              [
+                -0.14081751978212137,
+                0.3957600399338195,
+                0.890883941
+              ]
+            ],
+            "low_horizontal_precontact_approach": true,
+            "maximum_ik_residual_m": 0.0014556749163608176,
+            "minimum_model_joint_margin_rad": 0.001829670515161086,
+            "precontact_backoff_m": 0.035,
+            "wrist_roll_target_rad": -1.9562840850716032,
+            "wrist_rotation_after_live_lift": true
+          },
+          {
+            "action_raw_float64le_sha256": "5d0c9afd096e6b43663f3927da59acd191738089058be7c4801c89a05fed8a3d",
+            "action_rows": 1331,
+            "cartesian_targets_xyz_m": [
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.04716529714703424,
+                0.357468249749655,
+                0.890883941
+              ],
+              [
+                -0.04716529714703424,
+                0.357468249749655,
+                0.810883941
+              ],
+              [
+                -0.08029042003007689,
+                0.3687698529095313,
+                0.810883941
+              ],
+              [
+                -0.1427549374666716,
+                0.3900814474395836,
+                0.810883941
+              ],
+              [
+                -0.1427549374666716,
+                0.3900814474395836,
+                0.890883941
+              ]
+            ],
+            "low_horizontal_precontact_approach": true,
+            "maximum_ik_residual_m": 0.002720909963360023,
+            "minimum_model_joint_margin_rad": 0.001829670515161086,
+            "precontact_backoff_m": 0.035,
+            "wrist_roll_target_rad": -1.9562840850716032,
+            "wrist_rotation_after_live_lift": true
+          }
+        ],
+        "lateral_offsets_m": [
+          -0.003,
+          0.003
+        ],
+        "return_to_live_seed_between_lanes": true
+      },
+      "contact_height_index": 0,
+      "contact_height_m": 0.01,
+      "destination_square": "e7",
+      "direction": "SIM_TO_REAL",
+      "first_contact_witness": {
+        "absolute_vertical_normal_component": 9.026934944876178e-05,
+        "contact_height_relative_initial_pawn_root_m": 0.016915528249792477,
+        "jaw_geom": "geom-493",
+        "observed": true,
+        "pawn_geom": "geom-380",
+        "row_index": 1110
+      },
+      "gateway": {
+        "all_rates_within_gateway_limits": true,
+        "all_rows_inside_calibrated_limits": true,
+        "mapping_calibration_approved": false,
+        "mapping_review_status": "provisional_range_audit_blocked",
+        "maximum_absolute_rate_per_second": [
+          5.679888469328702,
+          7.999175798533997,
+          7.997263993428874,
+          7.97574570751614,
+          11.661549683407202,
+          18.239956989260115
+        ],
+        "physical_action_raw_float64le_sha256": "e669c45993c46432b49c79dd4d0f90ad0afe4f32b4b6057c70490500d0dc2590",
+        "row_zero_physical": [
+          6.5054945054945055,
+          -85.53846153846153,
+          99.47252747252747,
+          -20.087912087912088,
+          -103.34065934065934,
+          2.3752969121140137
+        ]
+      },
+      "lateral_offsets_m": [
+        -0.003,
+        0.003
+      ],
+      "selected_piece_id": "tan_pawn_d7",
+      "source_square": "d7",
+      "static_eligible": true,
+      "status": "static_eligible",
+      "stroke_m": 0.066,
+      "wrist_orientation_index": 0,
+      "wrist_roll_target_rad": -1.9562840850716032
+    }
+  ],
+  "minimum_per_direction": 2,
+  "passed": false,
+  "physical_motion": false,
+  "physical_task_attempts": 0,
+  "proof_class": "cpu_fp64_four_family_two_lane_static_action_freeze",
+  "schema_version": "sim2claw.canonical_wrist_path_two_lane_static_receipt.v1",
+  "selected": [
+    {
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-two-lane-static-v6/actions/00.f64le",
+      "action_sha256": "85b37b3f7a6e27d77e302716395dbdba5bc6b73e86ac5bb57fa80d5cc0f21416",
+      "action_shape": [
+        2691,
+        6
+      ],
+      "camera": {
+        "minimum_margin_px": 134.1522733926885,
+        "passed": true
+      },
+      "case_id": "tan_pawn_f7__f7_e7",
+      "checks": {
+        "camera": true,
+        "collision": true,
+        "contact_height": true,
+        "contact_normal": true,
+        "contact_witness": true,
+        "gateway_limits": true,
+        "gateway_rates": true
+      },
+      "collision": {
+        "baseline_robot_contact_pairs": [],
+        "new_disallowed_robot_contact_pairs": [],
+        "passed": true,
+        "selected_contact_observed": true
+      },
+      "compile": {
+        "action_raw_float64le_sha256": "85b37b3f7a6e27d77e302716395dbdba5bc6b73e86ac5bb57fa80d5cc0f21416",
+        "action_rows": 2691,
+        "lane_metrics": [
+          {
+            "action_raw_float64le_sha256": "375b1e3f4379b861ae00aec41bc3b02913474fd5126944eafeaceb2a8b85c34a",
+            "action_rows": 1041,
+            "cartesian_targets_xyz_m": [
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.239196366537516,
+                0.42298525775610907,
+                0.890883941
+              ],
+              [
+                -0.239196366537516,
+                0.42298525775610907,
+                0.810883941
+              ],
+              [
+                -0.20607124365447335,
+                0.41168365459623285,
+                0.810883941
+              ],
+              [
+                -0.14360672621787865,
+                0.3903720600661805,
+                0.810883941
+              ],
+              [
+                -0.14360672621787865,
+                0.3903720600661805,
+                0.890883941
+              ]
+            ],
+            "low_horizontal_precontact_approach": true,
+            "maximum_ik_residual_m": 0.0012217078101945155,
+            "minimum_model_joint_margin_rad": 0.001829670515161086,
+            "precontact_backoff_m": 0.035,
+            "wrist_roll_target_rad": -1.6509854282810728,
+            "wrist_rotation_after_live_lift": true
+          },
+          {
+            "action_raw_float64le_sha256": "74a7d2adc3cc39fe80085e99c93d9a53bc070d164a035ce3b8dcffa120173254",
+            "action_rows": 1033,
+            "cartesian_targets_xyz_m": [
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.2372589488529658,
+                0.4286638502503449,
+                0.890883941
+              ],
+              [
+                -0.2372589488529658,
+                0.4286638502503449,
+                0.810883941
+              ],
+              [
+                -0.20413382596992316,
+                0.4173622470904687,
+                0.810883941
+              ],
+              [
+                -0.14166930853332846,
+                0.3960506525604164,
+                0.810883941
+              ],
+              [
+                -0.14166930853332846,
+                0.3960506525604164,
+                0.890883941
+              ]
+            ],
+            "low_horizontal_precontact_approach": true,
+            "maximum_ik_residual_m": 0.000571351957572506,
+            "minimum_model_joint_margin_rad": 0.001829670515161086,
+            "precontact_backoff_m": 0.035,
+            "wrist_roll_target_rad": -1.6509854282810728,
+            "wrist_rotation_after_live_lift": true
+          }
+        ],
+        "lateral_offsets_m": [
+          -0.003,
+          0.003
+        ],
+        "return_to_live_seed_between_lanes": true
+      },
+      "contact_height_index": 0,
+      "contact_height_m": 0.01,
+      "destination_square": "e7",
+      "direction": "REAL_TO_SIM",
+      "first_contact_witness": {
+        "absolute_vertical_normal_component": 0.3452827705488799,
+        "contact_height_relative_initial_pawn_root_m": 0.007722402732036171,
+        "jaw_geom": "geom-483",
+        "observed": true,
+        "pawn_geom": "geom-406",
+        "row_index": 819
+      },
+      "gateway": {
+        "all_rates_within_gateway_limits": true,
+        "all_rows_inside_calibrated_limits": true,
+        "mapping_calibration_approved": false,
+        "mapping_review_status": "provisional_range_audit_blocked",
+        "maximum_absolute_rate_per_second": [
+          7.979570681245036,
+          7.99941075226374,
+          7.80154220389079,
+          4.431733752171851,
+          11.661549683407202,
+          18.239956989260115
+        ],
+        "physical_action_raw_float64le_sha256": "4997587a59383a6b0bad3d2e61dcefcd5d7ebd72658c89ebd58c2bad437e3dd0",
+        "row_zero_physical": [
+          6.5054945054945055,
+          -85.53846153846153,
+          99.47252747252747,
+          -20.087912087912088,
+          -103.34065934065934,
+          2.3752969121140137
+        ]
+      },
+      "lateral_offsets_m": [
+        -0.003,
+        0.003
+      ],
+      "selected_piece_id": "tan_pawn_f7",
+      "source_square": "f7",
+      "static_eligible": true,
+      "status": "static_eligible",
+      "stroke_m": 0.066,
+      "wrist_orientation_index": 2,
+      "wrist_roll_target_rad": -1.6509854282810728
+    },
+    {
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-two-lane-static-v6/actions/01.f64le",
+      "action_sha256": "dcd5edef44f2dc5f5603c46534409a68d3462a15048c29381447a5cce2d0407d",
+      "action_shape": [
+        3405,
+        6
+      ],
+      "camera": {
+        "minimum_margin_px": 132.76996671853593,
+        "passed": true
+      },
+      "case_id": "tan_pawn_d7__d7_e7",
+      "checks": {
+        "camera": true,
+        "collision": true,
+        "contact_height": true,
+        "contact_normal": true,
+        "contact_witness": true,
+        "gateway_limits": true,
+        "gateway_rates": true
+      },
+      "collision": {
+        "baseline_robot_contact_pairs": [],
+        "new_disallowed_robot_contact_pairs": [],
+        "passed": true,
+        "selected_contact_observed": true
+      },
+      "compile": {
+        "action_raw_float64le_sha256": "dcd5edef44f2dc5f5603c46534409a68d3462a15048c29381447a5cce2d0407d",
+        "action_rows": 3405,
+        "lane_metrics": [
+          {
+            "action_raw_float64le_sha256": "af9795596f2ca4aabacae21e12fe0a7afc4a55990ca6ad63112c6a6c2c76d131",
+            "action_rows": 1332,
+            "cartesian_targets_xyz_m": [
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.04522787946248402,
+                0.3631468422438909,
+                0.890883941
+              ],
+              [
+                -0.04522787946248402,
+                0.3631468422438909,
+                0.810883941
+              ],
+              [
+                -0.07835300234552667,
+                0.37444844540376715,
+                0.810883941
+              ],
+              [
+                -0.14081751978212137,
+                0.3957600399338195,
+                0.810883941
+              ],
+              [
+                -0.14081751978212137,
+                0.3957600399338195,
+                0.890883941
+              ]
+            ],
+            "low_horizontal_precontact_approach": true,
+            "maximum_ik_residual_m": 0.0014556749163608176,
+            "minimum_model_joint_margin_rad": 0.001829670515161086,
+            "precontact_backoff_m": 0.035,
+            "wrist_roll_target_rad": -1.9562840850716032,
+            "wrist_rotation_after_live_lift": true
+          },
+          {
+            "action_raw_float64le_sha256": "5d0c9afd096e6b43663f3927da59acd191738089058be7c4801c89a05fed8a3d",
+            "action_rows": 1331,
+            "cartesian_targets_xyz_m": [
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.18739865763766358,
+                0.5230050711911579,
+                1.072693173778627
+              ],
+              [
+                -0.04716529714703424,
+                0.357468249749655,
+                0.890883941
+              ],
+              [
+                -0.04716529714703424,
+                0.357468249749655,
+                0.810883941
+              ],
+              [
+                -0.08029042003007689,
+                0.3687698529095313,
+                0.810883941
+              ],
+              [
+                -0.1427549374666716,
+                0.3900814474395836,
+                0.810883941
+              ],
+              [
+                -0.1427549374666716,
+                0.3900814474395836,
+                0.890883941
+              ]
+            ],
+            "low_horizontal_precontact_approach": true,
+            "maximum_ik_residual_m": 0.002720909963360023,
+            "minimum_model_joint_margin_rad": 0.001829670515161086,
+            "precontact_backoff_m": 0.035,
+            "wrist_roll_target_rad": -1.9562840850716032,
+            "wrist_rotation_after_live_lift": true
+          }
+        ],
+        "lateral_offsets_m": [
+          -0.003,
+          0.003
+        ],
+        "return_to_live_seed_between_lanes": true
+      },
+      "contact_height_index": 0,
+      "contact_height_m": 0.01,
+      "destination_square": "e7",
+      "direction": "SIM_TO_REAL",
+      "first_contact_witness": {
+        "absolute_vertical_normal_component": 9.026934944876178e-05,
+        "contact_height_relative_initial_pawn_root_m": 0.016915528249792477,
+        "jaw_geom": "geom-493",
+        "observed": true,
+        "pawn_geom": "geom-380",
+        "row_index": 1110
+      },
+      "gateway": {
+        "all_rates_within_gateway_limits": true,
+        "all_rows_inside_calibrated_limits": true,
+        "mapping_calibration_approved": false,
+        "mapping_review_status": "provisional_range_audit_blocked",
+        "maximum_absolute_rate_per_second": [
+          5.679888469328702,
+          7.999175798533997,
+          7.997263993428874,
+          7.97574570751614,
+          11.661549683407202,
+          18.239956989260115
+        ],
+        "physical_action_raw_float64le_sha256": "e669c45993c46432b49c79dd4d0f90ad0afe4f32b4b6057c70490500d0dc2590",
+        "row_zero_physical": [
+          6.5054945054945055,
+          -85.53846153846153,
+          99.47252747252747,
+          -20.087912087912088,
+          -103.34065934065934,
+          2.3752969121140137
+        ]
+      },
+      "lateral_offsets_m": [
+        -0.003,
+        0.003
+      ],
+      "selected_piece_id": "tan_pawn_d7",
+      "source_square": "d7",
+      "static_eligible": true,
+      "status": "static_eligible",
+      "stroke_m": 0.066,
+      "wrist_orientation_index": 0,
+      "wrist_roll_target_rad": -1.9562840850716032
+    }
+  ],
+  "statically_eligible_family_count": 2,
+  "status": "canonical_wrist_path_two_lane_static_reject"
+}

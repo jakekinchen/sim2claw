@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC02_TWO_LANE_STATIC_REPLAY`
+Status: `ACTIVE_CC02_STATIC_SELECTOR`
 
 Created: `2026-07-28`
 
@@ -434,6 +434,17 @@ Current state:
   `adb0908a23f4180a80a24dc49172d9a97f9ba13c1d847b4982816dcbf15286f7`.
   It contains the complete four-family set and applies the same two lanes,
   stroke, return, static gates, and false physical authority to every case.
+- Two-lane V6 ran once and admitted `f7->e7` plus the missing `d7->e7`; the
+  other two actions rejected only on the unchanged contact-normal gate.
+  Receipt SHA-256
+  `3e32303fa6ebb0f102a2562f76df43480c8880ab4400a7e80a3860c819a25940`;
+  closeout SHA-256
+  `97fbe64d7b4de126e3f29e2323cb613fea13ebd3dee2ae7d30f287f77dc4552c`.
+- Static selector V1 is frozen at contract SHA-256
+  `cdd2d7ced436b789d2c90fddece2d29d0c9725ec95a70e205b0227b063c53e8b`.
+  It reads only the two static receipts and selects the eligible candidate
+  with the lowest absolute vertical contact normal, tie-breaking canonical;
+  dynamic outcomes are excluded.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -475,5 +486,5 @@ This authorization:
 
 Next step:
 
-- Execute two-lane static V6 exactly once. Dynamic replay remains closed until
-  all four new exact actions pass static admission.
+- Execute static selector V1 exactly once and bind its four selected tensors.
+  Dynamic replay remains closed until the selector passes `2/2` directions.

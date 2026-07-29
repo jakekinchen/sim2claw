@@ -1,0 +1,46 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_static_selector.v1",
+  "contract_id": "canonical-wrist-path-static-selector-20260729-v1",
+  "status": "frozen_after_two_lane_static_partial_before_static_only_candidate_selection",
+  "proof_class": "prospective_static_only_frozen_action_candidate_selection",
+  "canonical_static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-stroke-static-v5/receipt.json",
+    "sha256": "f4b97af0f219b21cb7ee59bc39b123f85f6e3d66a943d6245ffe3cd9af9c2815"
+  },
+  "two_lane_static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-two-lane-static-v6/receipt.json",
+    "sha256": "3e32303fa6ebb0f102a2562f76df43480c8880ab4400a7e80a3860c819a25940"
+  },
+  "predecessor_closeout": {
+    "path": "configs/decisions/canonical_wrist_path_two_lane_static_v6_closeout.json",
+    "sha256": "97fbe64d7b4de126e3f29e2323cb613fea13ebd3dee2ae7d30f287f77dc4552c"
+  },
+  "implementation": {
+    "path": "src/sim2claw/canonical_wrist_path_static_selector.py",
+    "sha256": "5ae00cc0fc203f7ec4a79d87735edbbaad4ce2b30bbfa950d4cba5fd42b0b38a"
+  },
+  "selection_rule": {
+    "eligible_candidates": [
+      "canonical_single_lane_stroke_v5",
+      "two_lane_v6"
+    ],
+    "primary_key": "minimum_absolute_first_contact_vertical_normal_component",
+    "tie_break": "canonical_single_lane_stroke_v5",
+    "dynamic_outcomes_used": false
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1",
+  "authority": {
+    "model_loading": false,
+    "static_selection": true,
+    "dynamic_simulation": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospectively frozen static-only selection over exactly the canonical single-lane stroke V5 and two-lane V6 action candidates. Per family, only statically eligible candidates compete; the lowest absolute first-contact vertical-normal component wins and ties prefer the canonical path. Dynamic outcomes are not read or used. A pass materializes four exact selected tensors only and cannot authorize dynamic replay, mapping, evaluator V2, hardware, or transfer."
+}

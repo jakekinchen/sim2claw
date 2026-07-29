@@ -1,0 +1,42 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_two_lane_static_closeout.v1",
+  "decision_id": "canonical-wrist-path-two-lane-static-20260729-v6-closeout",
+  "status": "two_of_four_two_lane_static_partial_reject",
+  "proof_class": "cpu_fp64_four_family_two_lane_static_partial_negative",
+  "contract": {
+    "path": "configs/evaluations/canonical_wrist_path_two_lane_static_v6.json",
+    "sha256": "adb0908a23f4180a80a24dc49172d9a97f9ba13c1d847b4982816dcbf15286f7"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-two-lane-static-v6/receipt.json",
+    "sha256": "3e32303fa6ebb0f102a2562f76df43480c8880ab4400a7e80a3860c819a25940"
+  },
+  "result": {
+    "statically_eligible_case_ids": [
+      "tan_pawn_f7__f7_e7",
+      "tan_pawn_d7__d7_e7"
+    ],
+    "rejected_case_ids": [
+      "tan_pawn_h7__h7_h8",
+      "tan_pawn_d7__d7_c7"
+    ],
+    "only_rejection_gate": "contact_normal",
+    "dynamic_replay_executed": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Do not replay the two rejected two-lane actions. Freeze a static-only per-family selector over exactly two already-frozen candidates: canonical single-lane stroke V5 and two-lane V6. Select the statically eligible candidate with the lowest absolute first-contact vertical-normal component, breaking ties toward the canonical single-lane path. Dynamic outcomes are forbidden from the selector. Materialize the four selected exact tensors, preserve directions and all downstream gates, then freeze one dynamic replay only if the selector returns two families per direction.",
+  "authority": {
+    "static_selector": true,
+    "dynamic_replay": false,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

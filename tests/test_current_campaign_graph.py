@@ -31,12 +31,12 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "CC02"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:canonical-wrist-path-two-lane-static-v6-frozen",
+        "node_id": "checkpoint:canonical-wrist-path-static-selector-v1-frozen",
         "milestone_id": "CC02",
-        "status": "preregistered_before_exactly_once_two_lane_static_replay",
-        "queue_status": "ACTIVE_CC02_TWO_LANE_STATIC_REPLAY",
+        "status": "preregistered_before_exactly_once_static_candidate_selection",
+        "queue_status": "ACTIVE_CC02_STATIC_SELECTOR",
         "resume_action": (
-            "execute_canonical_wrist_path_two_lane_static_v6_exactly_once"
+            "execute_canonical_wrist_path_static_selector_v1_exactly_once"
         ),
         "resume_authorized": True,
         "heldout_open_count": 1,
@@ -44,7 +44,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(138)
+        range(140)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +54,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "CANONICAL_WRIST_PATH_TWO_LANE_STATIC_V6_FROZEN"
+        "CANONICAL_WRIST_PATH_STATIC_SELECTOR_V1_FROZEN"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:canonical-wrist-path-two-lane-static-v6-frozen"
+        "checkpoint:canonical-wrist-path-static-selector-v1-frozen"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True
