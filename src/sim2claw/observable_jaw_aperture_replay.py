@@ -268,7 +268,7 @@ def run_aperture_replay_once(
         label="OR6 candidate",
     )
     _require(
-        candidate_manifest.get("candidate_config_sha256")
+        canonical_digest(candidate_manifest)
         == contract["sources"]["or6_candidate"]["canonical_sha256"],
         "OR6 candidate canonical hash changed",
     )
