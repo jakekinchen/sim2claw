@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC03",
-    "node_id": "verdict:calibration-graph-downstream-rotation-review-admit",
-    "queue_status": "ACTIVE_CC03_DOWNSTREAM_ROTATION_STAGE_1_EXECUTE",
-    "resume_action": "execute_downstream_rotation_stage_1_once",
+    "node_id": "checkpoint:calibration-graph-d405-rotation-heldout-v1-frozen",
+    "queue_status": "ACTIVE_CC03_DOWNSTREAM_ROTATION_HELDOUT_EVALUATE",
+    "resume_action": "execute_d405_rotation_heldout_v1_once",
     "resume_authorized": true,
-    "status": "reviewed_for_stage_1_execution"
+    "status": "preregistered_before_exactly_once_heldout_evaluation"
   },
   "authority": {
     "camera_open": false,
@@ -95,10 +95,10 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 175,
+    "nodes": 178,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 113,
+      "checkpoint": 116,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
@@ -2126,7 +2126,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "81731f65e4e5c418f3f7ae349d2e785e6283cd48e4d7b80b6a0533ffe11da1ed",
+  "graph_digest": "a30bcbe16618cc9cd12cce726afcb8ae1681978015bf34fbc239c28ed53723a3",
   "node_types": [
     "workcell",
     "session",
@@ -2351,6 +2351,33 @@
     },
     {
       "data": {
+        "action_interval_trajectories_opened": false,
+        "mapping_approval": false,
+        "parameter_fit": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_d405_rotation_heldout_v1_contract",
+        "stage_1_final_hold_frame_safety_inspection_only": true,
+        "stage_count": 2
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:calibration-graph-d405-rotation-heldout-v1-frozen",
+      "label": "D405 action-interval rotation heldout frozen before trajectory open",
+      "proof_class": "prospective_exact_action_physical_d405_fixed_tag_downstream_rotation_mapping_heldout",
+      "source": {
+        "path": "configs/evaluations/calibration_graph_d405_rotation_heldout_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_exact_action_physical_d405_fixed_tag_downstream_rotation_mapping_heldout",
+          "schema_version": "sim2claw.calibration_graph_d405_rotation_heldout.v1",
+          "status": "frozen_after_execution_before_action_interval_trajectory_open"
+        },
+        "proof_class": "prospective_exact_action_physical_d405_fixed_tag_downstream_rotation_mapping_heldout",
+        "sha256": "e78908139ee586894ccfdcb5325c081251b23e795a34a8c7626d52e6409aaa8c"
+      },
+      "status": "preregistered_before_exactly_once_heldout_evaluation",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "no_modeled_contacts": true,
         "physical_motion": false,
         "physical_task_attempts": 0,
@@ -2399,6 +2426,60 @@
         "sha256": "370b3daba18a1022b4cc2911f15591c889fe3917a35e5b8ace92bfbc795c1380"
       },
       "status": "preregistered_before_packet_compile",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "active_joint_return_residual_degrees": 0.0879120879120876,
+        "completed_capture_hold_samples": 80,
+        "completed_motion_samples": 641,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_downstream_rotation_stage_1_execution",
+        "tricam_action_enclosed": true
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:calibration-graph-downstream-rotation-stage-1-executed",
+      "label": "Elbow-only D405 rotation stage completed and torque off",
+      "proof_class": "recorded_no_contact_downstream_rotation_calibration_stage",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/stage-1/execution_receipt.json",
+        "payload_contract": {
+          "physical_follower_torque_enabled": false,
+          "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+          "stage_index": 1,
+          "status": "completed_wrist_view_reposition_stage"
+        },
+        "proof_class": "recorded_no_contact_downstream_rotation_calibration_stage",
+        "sha256": "6613d126a4fc257a642a4dcc67b3f4398f97e96643b21212217e36f05b2c7843"
+      },
+      "status": "completed_wrist_view_reposition_stage",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "active_joint_return_residual_degrees": 1.4065934065934087,
+        "completed_capture_hold_samples": 80,
+        "completed_motion_samples": 641,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_downstream_rotation_stage_2_execution",
+        "tricam_action_enclosed": true
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:calibration-graph-downstream-rotation-stage-2-executed",
+      "label": "Wrist-only D405 rotation stage completed and torque off",
+      "proof_class": "recorded_no_contact_downstream_rotation_calibration_stage",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/stage-2/execution_receipt.json",
+        "payload_contract": {
+          "physical_follower_torque_enabled": false,
+          "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+          "stage_index": 2,
+          "status": "completed_wrist_view_reposition_stage"
+        },
+        "proof_class": "recorded_no_contact_downstream_rotation_calibration_stage",
+        "sha256": "ccbf276b63505920dde91e03c206d0578ef42be8645b93ee9170a9faefd8135a"
+      },
+      "status": "completed_wrist_view_reposition_stage",
       "type": "checkpoint"
     },
     {
@@ -3273,7 +3354,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "fda760eb18160e76eafef24419bdda4169fb58bc93a3363a75094d581bcee49a"
+        "sha256": "f22cd4a64fc58e794bc0846522637380af227e5872f77ff51cfc859200d813dd"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -8525,7 +8606,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "fda760eb18160e76eafef24419bdda4169fb58bc93a3363a75094d581bcee49a",
+      "source_sha256": "f22cd4a64fc58e794bc0846522637380af227e5872f77ff51cfc859200d813dd",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -9047,6 +9128,36 @@
       "source_binding": "calibration_graph_downstream_rotation_review",
       "source_sha256": "67c41e55b15571f22a9497a1e84dd6545d7f8ffc834b8d12fed3afeacd30d788",
       "status": "admitted_for_one_execution_per_stage"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_DOWNSTREAM_ROTATION_STAGE_1_EXECUTED",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-downstream-rotation-stage-1-executed"
+      ],
+      "revision": 156,
+      "source_binding": "calibration_graph_downstream_rotation_stage_1_execution",
+      "source_sha256": "6613d126a4fc257a642a4dcc67b3f4398f97e96643b21212217e36f05b2c7843",
+      "status": "completed_wrist_view_reposition_stage"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_DOWNSTREAM_ROTATION_STAGE_2_EXECUTED",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-downstream-rotation-stage-2-executed"
+      ],
+      "revision": 157,
+      "source_binding": "calibration_graph_downstream_rotation_stage_2_execution",
+      "source_sha256": "ccbf276b63505920dde91e03c206d0578ef42be8645b93ee9170a9faefd8135a",
+      "status": "completed_wrist_view_reposition_stage"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_D405_ROTATION_HELDOUT_V1_FROZEN",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-rotation-heldout-v1-frozen"
+      ],
+      "revision": 158,
+      "source_binding": "calibration_graph_d405_rotation_heldout_v1_contract",
+      "source_sha256": "e78908139ee586894ccfdcb5325c081251b23e795a34a8c7626d52e6409aaa8c",
+      "status": "preregistered_before_exactly_once_heldout_evaluation"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -9153,7 +9264,18 @@
       "id": "calibration_graph_d405_rotation_evaluator",
       "path": "tools/evaluate_calibration_graph_d405_rotation_heldout_v1.py",
       "proof_class": "prospective_gauge_free_d405_fixed_tag_relative_rotation_evaluator",
-      "sha256": "a7628f277c502e6f8ed3113f953ef0b554778322ed1ee983705e4c08c00f85c6"
+      "sha256": "25ac3ad5bd95c35d5cc7946b5d25341a440b566f9ea6c732c443deefe5c59c43"
+    },
+    {
+      "id": "calibration_graph_d405_rotation_heldout_v1_contract",
+      "path": "configs/evaluations/calibration_graph_d405_rotation_heldout_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_exact_action_physical_d405_fixed_tag_downstream_rotation_mapping_heldout",
+        "schema_version": "sim2claw.calibration_graph_d405_rotation_heldout.v1",
+        "status": "frozen_after_execution_before_action_interval_trajectory_open"
+      },
+      "proof_class": "prospective_exact_action_physical_d405_fixed_tag_downstream_rotation_mapping_heldout",
+      "sha256": "e78908139ee586894ccfdcb5325c081251b23e795a34a8c7626d52e6409aaa8c"
     },
     {
       "id": "calibration_graph_downstream_rotation_packet",
@@ -9186,6 +9308,30 @@
       },
       "proof_class": "prospective_static_safe_no_contact_downstream_rotation_mapping_heldout",
       "sha256": "370b3daba18a1022b4cc2911f15591c889fe3917a35e5b8ace92bfbc795c1380"
+    },
+    {
+      "id": "calibration_graph_downstream_rotation_stage_1_execution",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/stage-1/execution_receipt.json",
+      "payload_contract": {
+        "physical_follower_torque_enabled": false,
+        "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+        "stage_index": 1,
+        "status": "completed_wrist_view_reposition_stage"
+      },
+      "proof_class": "recorded_no_contact_downstream_rotation_calibration_stage",
+      "sha256": "6613d126a4fc257a642a4dcc67b3f4398f97e96643b21212217e36f05b2c7843"
+    },
+    {
+      "id": "calibration_graph_downstream_rotation_stage_2_execution",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/stage-2/execution_receipt.json",
+      "payload_contract": {
+        "physical_follower_torque_enabled": false,
+        "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+        "stage_index": 2,
+        "status": "completed_wrist_view_reposition_stage"
+      },
+      "proof_class": "recorded_no_contact_downstream_rotation_calibration_stage",
+      "sha256": "ccbf276b63505920dde91e03c206d0578ef42be8645b93ee9170a9faefd8135a"
     },
     {
       "id": "calibration_graph_v1_closeout",
@@ -9852,7 +9998,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "fda760eb18160e76eafef24419bdda4169fb58bc93a3363a75094d581bcee49a"
+      "sha256": "f22cd4a64fc58e794bc0846522637380af227e5872f77ff51cfc859200d813dd"
     },
     {
       "id": "current_task_scene_labels",

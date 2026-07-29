@@ -1,0 +1,112 @@
+{
+  "schema_version": "sim2claw.calibration_graph_d405_rotation_heldout.v1",
+  "status": "frozen_after_execution_before_action_interval_trajectory_open",
+  "proof_class": "prospective_exact_action_physical_d405_fixed_tag_downstream_rotation_mapping_heldout",
+  "sources": {
+    "packet": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/packet.json",
+      "sha256": "431a6d513bae769fcd21d6497e34023cf018c8d25b1d51384529fe94a43c590b"
+    },
+    "review": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/review.json",
+      "sha256": "67c41e55b15571f22a9497a1e84dd6545d7f8ffc834b8d12fed3afeacd30d788"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "d405_intrinsics": {
+      "path": "runs/d405-rgbd-capture/20260725-stationary-v2/evaluation/receipt.json",
+      "sha256": "aa9eeb5081977c13c88763b6e1f93c1d1dbed459dd20da4de03084ec60a8070a"
+    }
+  },
+  "implementation": {
+    "path": "tools/evaluate_calibration_graph_d405_rotation_heldout_v1.py",
+    "sha256": "25ac3ad5bd95c35d5cc7946b5d25341a440b566f9ea6c732c443deefe5c59c43"
+  },
+  "stages": {
+    "1": {
+      "execution_receipt": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/stage-1/execution_receipt.json",
+        "sha256": "6613d126a4fc257a642a4dcc67b3f4398f97e96643b21212217e36f05b2c7843"
+      },
+      "expected_action_sha256": "afda88ae1117862831bc7b4fd4fe183df62cec135dff07ff98a5683ce93d2d13",
+      "joint_name": "elbow_flex",
+      "joint_index": 2
+    },
+    "2": {
+      "execution_receipt": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/stage-2/execution_receipt.json",
+        "sha256": "ccbf276b63505920dde91e03c206d0578ef42be8645b93ee9170a9faefd8135a"
+      },
+      "expected_action_sha256": "d5d1aaffad6722f33377b01611662e48f2115a0b68eeceb843b3ca3cff7b8468",
+      "joint_name": "wrist_flex",
+      "joint_index": 3
+    }
+  },
+  "method": {
+    "fixed_scene_tag_id": 0,
+    "nominal_tag_black_edge_m": 0.08,
+    "maximum_frame_to_joint_delta_ms": 30.0,
+    "active_joint_indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "anchor_reference_radius_degrees": 0.75,
+    "minimum_detected_frame_count": 60,
+    "minimum_reference_frame_count": 10,
+    "observed_channel": "gauge_free_relative_rotation_magnitude_from_d405_tag_0_solvepnp",
+    "simulated_channel": "gauge_free_relative_rotation_magnitude_of_current_mujoco_left_camera_mount",
+    "depth_required": false,
+    "operational_safety_inspection": {
+      "stage_1_final_hold_frame_opened": true,
+      "stage_1_action_interval_trajectory_opened": false,
+      "stage_2_any_frame_opened": false,
+      "purpose": "between_stage_operational_safety_only",
+      "metric_or_outcome_scoring_performed": false
+    }
+  },
+  "gates": {
+    "minimum_simulated_rotation_rms_degrees": 0.5,
+    "rotation_rms_ratio_range": [
+      0.8,
+      1.2
+    ],
+    "rotation_angle_rmse_max_degrees": 1.0,
+    "rotation_angle_max_error_degrees": 2.0,
+    "minimum_rotation_angle_correlation": 0.75,
+    "maximum_active_joint_return_residual_degrees": 1.5
+  },
+  "output_path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/evaluation/receipt.json",
+  "authority": {
+    "read_bound_physical_capture": true,
+    "evaluate_downstream_rotation_mapping": true,
+    "fit_parameters": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": {
+    "may_support": [
+      "bounded_current_mujoco_downstream_rotation_consistency_for_elbow_and_wrist_flex",
+      "later_human_or_separately_frozen_calibration_graph_reconciliation"
+    ],
+    "does_not_prove": [
+      "camera_to_wrist_metric_extrinsics",
+      "depth_alignment",
+      "global_cad_or_twin_fidelity",
+      "contact_or_task_outcome",
+      "physical_model_mapping_approval",
+      "physical_task_transfer"
+    ],
+    "automatic_promotion": false,
+    "physical_task_attempts": 0
+  }
+}

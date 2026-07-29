@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "fda760eb18160e76eafef24419bdda4169fb58bc93a3363a75094d581bcee49a",
+      "sha256": "f22cd4a64fc58e794bc0846522637380af227e5872f77ff51cfc859200d813dd",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1918,7 +1918,7 @@
     },
     "calibration_graph_d405_rotation_evaluator": {
       "path": "tools/evaluate_calibration_graph_d405_rotation_heldout_v1.py",
-      "sha256": "a7628f277c502e6f8ed3113f953ef0b554778322ed1ee983705e4c08c00f85c6",
+      "sha256": "25ac3ad5bd95c35d5cc7946b5d25341a440b566f9ea6c732c443deefe5c59c43",
       "proof_class": "prospective_gauge_free_d405_fixed_tag_relative_rotation_evaluator"
     },
     "calibration_graph_downstream_rotation_packet": {
@@ -1939,6 +1939,38 @@
         "schema_version": "sim2claw.wrist_view_reposition_review.v2",
         "status": "admitted_for_one_execution_per_stage",
         "physical_authority": false
+      }
+    },
+    "calibration_graph_downstream_rotation_stage_1_execution": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/stage-1/execution_receipt.json",
+      "sha256": "6613d126a4fc257a642a4dcc67b3f4398f97e96643b21212217e36f05b2c7843",
+      "proof_class": "recorded_no_contact_downstream_rotation_calibration_stage",
+      "payload_contract": {
+        "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+        "status": "completed_wrist_view_reposition_stage",
+        "stage_index": 1,
+        "physical_follower_torque_enabled": false
+      }
+    },
+    "calibration_graph_downstream_rotation_stage_2_execution": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/stage-2/execution_receipt.json",
+      "sha256": "ccbf276b63505920dde91e03c206d0578ef42be8645b93ee9170a9faefd8135a",
+      "proof_class": "recorded_no_contact_downstream_rotation_calibration_stage",
+      "payload_contract": {
+        "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+        "status": "completed_wrist_view_reposition_stage",
+        "stage_index": 2,
+        "physical_follower_torque_enabled": false
+      }
+    },
+    "calibration_graph_d405_rotation_heldout_v1_contract": {
+      "path": "configs/evaluations/calibration_graph_d405_rotation_heldout_v1.json",
+      "sha256": "e78908139ee586894ccfdcb5325c081251b23e795a34a8c7626d52e6409aaa8c",
+      "proof_class": "prospective_exact_action_physical_d405_fixed_tag_downstream_rotation_mapping_heldout",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_d405_rotation_heldout.v1",
+        "status": "frozen_after_execution_before_action_interval_trajectory_open",
+        "proof_class": "prospective_exact_action_physical_d405_fixed_tag_downstream_rotation_mapping_heldout"
       }
     },
     "simulator_candidate": {
@@ -5191,6 +5223,49 @@
         "stage_count": 2,
         "no_contact_calibration_only": true,
         "physical_motion_at_review": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:calibration-graph-downstream-rotation-stage-1-executed",
+      "type": "checkpoint",
+      "label": "Elbow-only D405 rotation stage completed and torque off",
+      "status": "completed_wrist_view_reposition_stage",
+      "source_binding": "calibration_graph_downstream_rotation_stage_1_execution",
+      "data": {
+        "completed_motion_samples": 641,
+        "completed_capture_hold_samples": 80,
+        "tricam_action_enclosed": true,
+        "active_joint_return_residual_degrees": 0.0879120879120876,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:calibration-graph-downstream-rotation-stage-2-executed",
+      "type": "checkpoint",
+      "label": "Wrist-only D405 rotation stage completed and torque off",
+      "status": "completed_wrist_view_reposition_stage",
+      "source_binding": "calibration_graph_downstream_rotation_stage_2_execution",
+      "data": {
+        "completed_motion_samples": 641,
+        "completed_capture_hold_samples": 80,
+        "tricam_action_enclosed": true,
+        "active_joint_return_residual_degrees": 1.4065934065934087,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:calibration-graph-d405-rotation-heldout-v1-frozen",
+      "type": "checkpoint",
+      "label": "D405 action-interval rotation heldout frozen before trajectory open",
+      "status": "preregistered_before_exactly_once_heldout_evaluation",
+      "source_binding": "calibration_graph_d405_rotation_heldout_v1_contract",
+      "data": {
+        "stage_count": 2,
+        "stage_1_final_hold_frame_safety_inspection_only": true,
+        "action_interval_trajectories_opened": false,
+        "parameter_fit": false,
+        "mapping_approval": false,
         "physical_task_attempts": 0
       }
     },
@@ -8552,14 +8627,41 @@
       "node_ids_added": [
         "verdict:calibration-graph-downstream-rotation-review-admit"
       ]
+    },
+    {
+      "revision": 156,
+      "event_id": "CALIBRATION_GRAPH_DOWNSTREAM_ROTATION_STAGE_1_EXECUTED",
+      "status": "completed_wrist_view_reposition_stage",
+      "source_binding": "calibration_graph_downstream_rotation_stage_1_execution",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-downstream-rotation-stage-1-executed"
+      ]
+    },
+    {
+      "revision": 157,
+      "event_id": "CALIBRATION_GRAPH_DOWNSTREAM_ROTATION_STAGE_2_EXECUTED",
+      "status": "completed_wrist_view_reposition_stage",
+      "source_binding": "calibration_graph_downstream_rotation_stage_2_execution",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-downstream-rotation-stage-2-executed"
+      ]
+    },
+    {
+      "revision": 158,
+      "event_id": "CALIBRATION_GRAPH_D405_ROTATION_HELDOUT_V1_FROZEN",
+      "status": "preregistered_before_exactly_once_heldout_evaluation",
+      "source_binding": "calibration_graph_d405_rotation_heldout_v1_contract",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-rotation-heldout-v1-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:calibration-graph-downstream-rotation-review-admit",
+    "node_id": "checkpoint:calibration-graph-d405-rotation-heldout-v1-frozen",
     "milestone_id": "CC03",
-    "status": "reviewed_for_stage_1_execution",
-    "queue_status": "ACTIVE_CC03_DOWNSTREAM_ROTATION_STAGE_1_EXECUTE",
-    "resume_action": "execute_downstream_rotation_stage_1_once",
+    "status": "preregistered_before_exactly_once_heldout_evaluation",
+    "queue_status": "ACTIVE_CC03_DOWNSTREAM_ROTATION_HELDOUT_EVALUATE",
+    "resume_action": "execute_d405_rotation_heldout_v1_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

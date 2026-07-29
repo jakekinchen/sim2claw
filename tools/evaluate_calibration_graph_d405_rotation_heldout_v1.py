@@ -318,7 +318,15 @@ def evaluate(contract_path: Path) -> dict[str, Any]:
         contract.get("schema_version")
         == "sim2claw.calibration_graph_d405_rotation_heldout.v1"
         and contract.get("status")
-        == "frozen_after_execution_before_heldout_frame_open"
+        == "frozen_after_execution_before_action_interval_trajectory_open"
+        and contract["method"]["operational_safety_inspection"]
+        == {
+            "stage_1_final_hold_frame_opened": True,
+            "stage_1_action_interval_trajectory_opened": False,
+            "stage_2_any_frame_opened": False,
+            "purpose": "between_stage_operational_safety_only",
+            "metric_or_outcome_scoring_performed": False,
+        }
         and contract["authority"]
         == {
             "read_bound_physical_capture": True,

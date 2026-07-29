@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_DOWNSTREAM_ROTATION_STAGE_1_EXECUTE`
+Status: `ACTIVE_CC03_DOWNSTREAM_ROTATION_HELDOUT_EVALUATE`
 
 Created: `2026-07-28`
 
@@ -535,6 +535,26 @@ Current state:
   Independent review admitted one execution per stage at review SHA-256
   `67c41e55b15571f22a9497a1e84dd6545d7f8ffc834b8d12fed3afeacd30d788`.
   Compilation and review used no physical motion.
+- Downstream rotation stages 1 and 2 each executed exactly once as reviewed.
+  Stage 1 receipt SHA-256 is
+  `6613d126a4fc257a642a4dcc67b3f4398f97e96643b21212217e36f05b2c7843`;
+  stage 2 receipt SHA-256 is
+  `ccbf276b63505920dde91e03c206d0578ef42be8645b93ee9170a9faefd8135a`.
+  Each completed all `641` action samples plus `80` hold samples with tricam
+  enclosure, exact action identity, no task contact, and torque off. The
+  active-joint return residuals were `0.087913 deg` for elbow flex and
+  `1.406594 deg` for wrist flex.
+- Exactly one stage-1 final-hold D405 frame was inspected between stages for
+  operational safety only; no action-interval trajectory, metric, or outcome
+  was opened. Stage-2 frames remain unopened. This provenance is explicit in
+  the downstream heldout contract.
+- The D405 action-interval rotation heldout is frozen before opening either
+  action trajectory at contract SHA-256
+  `e78908139ee586894ccfdcb5325c081251b23e795a34a8c7626d52e6409aaa8c`.
+  Its evaluator implementation SHA-256 is
+  `25ac3ad5bd95c35d5cc7946b5d25341a440b566f9ea6c732c443deefe5c59c43`.
+  It may read only the bound captures, fit no parameter, and cannot
+  automatically approve mapping.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -576,7 +596,6 @@ This authorization:
 
 Next step:
 
-- Execute downstream rotation stage 1 exactly once, verify tricam enclosure,
-  exact action, return, and torque-off, then execute stage 2 once using the
-  bound stage-1 receipt. Do not open either new D405 stream for evaluation,
-  touch a pawn, or count a task attempt.
+- Execute the frozen D405 action-interval rotation heldout exactly once.
+  Preserve its immutable pass or reject, then perform a separate bounded
+  mapping reconciliation. Do not touch a pawn or count a task attempt.
