@@ -1,0 +1,78 @@
+{
+  "schema_version": "sim2claw.episode_twin_bundle_contract.v1",
+  "contract_id": "episode-twin-bundle-v1",
+  "corpus": {
+    "closeout_path": "configs/decisions/realized_action_retrospective_corpus_v1_closeout.json",
+    "closeout_sha256": "be72a19193af2bbf322cec1057b919bfeaaba76e8564c9daab0b7384f735c3e4",
+    "receipt_path": "outputs/realized_action_retrospective_corpus_v1/receipt.json",
+    "receipt_sha256": "7511180748e12b0df842129004d692458b23df297df8cd94106100487c490bd5",
+    "artifact_sha256": "232c80bb28cac325f54d829e31fd2b84d12df85df1948d3d8fb5b4fd3e4739d1",
+    "required_roles": [
+      "fit",
+      "validation",
+      "sealed"
+    ],
+    "expected_bundle_count": 8
+  },
+  "initial_mission_observation": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "receipt_path": "outputs/retrospective_c922_endpoint_to_sim_v1/receipt.json",
+    "receipt_file_sha256": "3f73fc8cd41365517a287895fc23b973e783e764dee022987cecd28e89c7a011",
+    "receipt_canonical_sha256": "a6885b310cfe5c26bdc88e46899a9fb71378c20f4221462b042bbb02cef8e60d",
+    "closeout_path": "configs/decisions/retrospective_c922_endpoint_to_sim_v1_closeout.json",
+    "closeout_sha256": "b1a5529ade25992cd88cc00a3b926b3f7cb987956b41ad3d50c4a50ea0303761",
+    "allowed_observation": "initial_d1_metric_base_center_only",
+    "terminal_observation_as_replay_input_allowed": false
+  },
+  "tensor_contract": {
+    "joint_order": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "operator_requested": {
+      "source_field": "follower_requested_degrees",
+      "dtype": "<f4",
+      "unit": "degree"
+    },
+    "gateway_sent": {
+      "source_field": "follower_command_degrees",
+      "dtype": "<f4",
+      "unit": "degree"
+    },
+    "measured_joints": {
+      "source_field": "follower_actual_position_degrees",
+      "dtype": "<f8",
+      "unit": "degree"
+    },
+    "source_timestamps": {
+      "source_field": "timestamp_monotonic_seconds",
+      "dtype": "<f8",
+      "unit": "second",
+      "time_origin": "recording_control_loop_elapsed_time_with_first_value_preserved",
+      "actuator_application_semantics": false
+    }
+  },
+  "explicitly_missing_observables": [
+    "actuator_application_or_ack_timestamp",
+    "actuator_applied_command",
+    "contact_force",
+    "per_sample_contact_state",
+    "per_sample_metric_object_pose",
+    "hidden_pawn_pose",
+    "metric_wrist_depth",
+    "terminal_endpoint_as_replay_input"
+  ],
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "paid_compute": false
+  }
+}
