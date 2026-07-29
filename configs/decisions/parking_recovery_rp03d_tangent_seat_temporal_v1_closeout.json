@@ -1,0 +1,30 @@
+{
+  "schema_version": "sim2claw.parking_recovery_rp03d_tangent_seat_temporal_closeout.v1",
+  "decision_id": "parking-recovery-rp03d-tangent-seat-temporal-20260729-v1-closeout",
+  "status": "terminal_dynamic_negative",
+  "freeze_commit": "2c13895",
+  "contract": {
+    "path": "configs/evaluations/parking_recovery_rp03d_tangent_seat_temporal_v1.json"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-rp03d-tangent-seat-temporal-v1/receipt.json",
+    "sha256": "8bb253ef0c9b3e6e9c960e90e68524f36f5418b74d985906aa077c1e4df5ff28"
+  },
+  "result": {
+    "episode_count": 20,
+    "required_episode_count": 20,
+    "passing_episode_count": 0,
+    "direction_counts": {
+      "REAL_TO_SIM": 0,
+      "SIM_TO_REAL": 0
+    },
+    "all_identity_checks_passed": true,
+    "all_selected_contact_checks_passed": true,
+    "all_exclusion_checks_passed": true,
+    "all_collision_checks_passed": true,
+    "all_camera_checks_passed": true,
+    "all_gateway_rate_checks_passed": true,
+    "physical_task_attempts": 0
+  },
+  "decision": "Close the exact-lock tangent-seat mechanism without hardware. Do not continue outcome-driven local edits around the locked-elbow families. Reconcile the already frozen, evaluator-owned canonical wrist-path V5 screen as the active natural-anchor route and qualify its task-bounded physical/model mapping before any task attempt."
+}

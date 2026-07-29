@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP03D_TANGENT_SEAT_DYNAMIC_FROZEN_PENDING_ONE_RUN`
+Status: `RP04A_NATURAL_ANCHOR_V5_MAPPING_PROBE_DESIGN`
 
 Created: `2026-07-29`
 
@@ -8,13 +8,16 @@ Branch: `main`
 
 ## Mission
 
-Convert the new lock-angle hypothesis into the smallest honest route to
-nonzero task transfer while preserving every collision, evidence, action,
-camera, gateway, and attempt gate.
+Reach nonzero bidirectional task transfer through the smallest evidence-backed
+route while preserving every collision, evidence, action, camera, gateway, and
+attempt gate.
 
 The prior causal-closure queue remains immutable authority for CC00--CC15 and
 its terminal result at the exact `99.472527 deg` elbow lock. This successor
-does not rewrite that result.
+does not rewrite that result. RP00--RP03D also preserve the achieved-lock
+parking result and the subsequent static passes and dynamic negatives. Those
+negatives close the locked-elbow task route; they do not erase the separately
+frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Starting ledger
 
@@ -40,12 +43,14 @@ does not rewrite that result.
 | RP03A | `DONE_IMMUTABLE_NEGATIVE` | Replay both exact achieved-lock actions under baseline and timing stress. | Preserve exact action bytes, 40 Hz row order, five reset deltas, `36.025 mm` progress, contact/exclusion/no-lift/collision/camera gates, direct target plus diagnostic `0.11 s` ZOH, and ObservableEpisode.v2-min first-divergence traces. Both cases must pass both paths. | Both directions rejected: contact occurred but progress and no-lift failed. Identity, camera, collision, and exclusions passed. |
 | RP03B | `DONE_TERMINAL_STATIC_NEGATIVE` | Compile one bounded longer-stroke successor at the exact achieved lock. | Change only stroke from `40 mm` to the previously preregistered `66 mm`; preserve the 48-family universe, 576-cell bound, ranking, wrist/contact grid, IK, collision, contact, camera, calibrated-range, gateway-rate, one-family-per-direction, and false physical authority. | `0/576` cells were eligible; the uniform longer-stroke mechanism is closed without dynamics or hardware. |
 | RP03C | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Replace only sparse joint interpolation between the existing 35 mm precontact, contact, and 40 mm pushed Cartesian endpoints with a deterministic chord-error-constrained corridor. | Static receipt `5a9230fa...` passed all 576 cells with one selected family per direction. Dynamic receipt `8b7a889d...` then ran all `20` frozen episodes. | `0/20` passed; every episode still failed progress and no-lift. Cartesian interpolation bow alone is closed. |
-| RP03D | `STATIC_PASS_DYNAMIC_FROZEN_PENDING_ONE_RUN` | Add one small tangent-seat waypoint after contact without changing the original push endpoint. | Static receipt `488bf150...` passes all 576 cells with one selected family per direction. The seat remains exactly `1.5 mm`; same contact/wrist grid, exact lock, 40 mm endpoint, 40 Hz rates, 0.5 mm corridor audit, collision/contact/camera/gateway gates, and false physical authority. The frozen consequence denominator remains exactly 20 episodes. | A dynamic negative closes the tangent-seat mechanism. All 20 episodes must pass before any physical packet. |
-| RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
-| RP05 | `PENDING` | Complete a distinct SIM->REAL task transfer. | Simulator success and robustness predate freeze; distinct family; camera-owned physical success with identical bytes. | At most three task attempts; failures stay in the denominator. |
-| RP06 | `PENDING` | Approve a task-bounded mapping for the successful locked-elbow slice. | Scope and factors are preregistered; accepted wrist/pan/lift evidence plus successful first-divergence bounds support the exact task slice. | Never relabel as global mapping approval. |
-| RP07 | `CONDITIONAL` | Pilot predictive policy ranking. | At least four paired physical cases remain within the ten-attempt ledger; controller set and ranking hypothesis freeze first. | Fewer than four pairs remains `INSUFFICIENT_PHYSICAL_SAMPLE`. |
-| RP08 | `PENDING` | Package the result and return it to Fable for a defect check. | Exact ledgers, hashes, failures, mapping scope, policy limitations, Studio episodes, tests, cleanup, commit, and push agree. | Reopen the responsible card for a concrete in-scope defect. |
+| RP03D | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Add one small tangent-seat waypoint after contact without changing the original push endpoint. | Static receipt `488bf150...` passed all 576 cells with one selected family per direction. Dynamic receipt `8bb253ef...` ran the exact 20 frozen episodes. | `0/20` passed. The tangent-seat and locked-elbow task route are closed without hardware. |
+| RP04 | `DONE_EXISTING_SIMULATOR_PASS_RECONCILED` | Select the strongest already frozen natural-anchor simulator route without using later outcomes to alter its actions. | Canonical wrist-path V5 predates this successor and has exactly two families per direction across direct/ZOH and five resets, with exact actions and ObservableEpisode traces. | Receipt `cf21bd8c...` passes `40/40`; its four action tensors are immutable transfer candidates. This does not approve mapping or hardware. |
+| RP04A | `ACTIVE` | Approve or reject a task-bounded physical/model mapping for the V5 natural-anchor corridor using a contact-impossible physical probe. | Freeze exact prefixes of three single-lane V5 actions before their static first-contact rows; preserve natural row-zero, commands and timing; prove no pawn contact is reachable; camera-enclose execution; record requested/sent/observed traces; require joint direction, range, tracking, return, and cleanup gates. | A pass approves only the exact task corridor, never global mapping. Any unexpected contact, tracking, range, camera, gateway, or cleanup defect stops before a task attempt. |
+| RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
+| RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
+| RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
+| RP07 | `PENDING` | Package evidence in Studio and the TaskWorldBundle. | Exact ledgers, hashes, source footage, simulator twins, residual timelines, mapping scope, policy uncertainty, failures, tests, cleanup, commit, and push agree. | Missing physics or physical evidence remains visibly missing. |
+| RP08 | `CONDITIONAL_BLOCKER_ONLY` | Return the result to Fable only for an unresolved material trajectory blocker or final defect check. | Include the bounded question and exact repository evidence; independently reconcile recommendations. | Do not consume Fable for routine milestone updates. |
 
 ## RP00 freeze
 
@@ -60,8 +65,11 @@ does not rewrite that result.
 
 ## Current next step
 
-RP03D static passed. Run the already frozen 20-episode tangent-seat dynamic
-contract exactly once. Physical authority remains false.
+RP03D is a terminal dynamic negative. Freeze the smallest contact-impossible
+RP04A probe against the three single-lane canonical V5 paths. Resolve the
+gateway's excursion and controlled-return contract without weakening joint,
+collision, camera, exact-action, or cleanup gates. Physical task authority
+remains false.
 
 ## RP00 immutable result
 
@@ -322,6 +330,38 @@ contract exactly once. Physical authority remains false.
   `1.5 mm` tangent-seat waypoint. Chord error remains below `0.5 mm`,
   task-axis backtracking is zero, and all static gates pass.
 - This opens exactly one 20-episode dynamic run, not hardware.
+
+## RP03D immutable tangent-seat dynamic negative
+
+- Freeze commit: `2c13895`.
+- Receipt SHA-256:
+  `8bb253ef0c9b3e6e9c960e90e68524f36f5418b74d985906aa077c1e4df5ff28`.
+- All `20` episodes ran across two directions, two plant paths, and five reset
+  variants; passing episodes: `0`.
+- Identity, selected contact, exclusions, collision, camera, and gateway-rate
+  gates passed, but the task progress and no-lift gates did not.
+- One reset produced large progress by tipping/launching the pawn and still
+  failed the no-lift gate. It is not a task success.
+- This closes further local edits around the locked-elbow action family and
+  spends no physical task attempt.
+
+## RP04 reconciled natural-anchor V5 simulator pass
+
+- Temporal closeout:
+  `configs/decisions/canonical_wrist_path_selected_temporal_v5_closeout.json`.
+- Temporal receipt SHA-256:
+  `cf21bd8cc7b408d50ffcaae039fa993173514d49c4abf6f455bb7b484af0f36a`.
+- The frozen screen contains `40` passing ObservableEpisodes: four cases,
+  direct target plus diagnostic `0.11 s` ZOH, and five reset variants.
+- Direction counts are exactly REAL->SIM `2` and SIM->REAL `2`.
+- The three single-lane candidates are `tan_pawn_h7__h7_h8`,
+  `tan_pawn_d7__d7_c7`, and `tan_pawn_f7__f7_e7`. Their action tensors start
+  at the natural torque-off anchor and remain byte-frozen.
+- The two-lane `tan_pawn_d7__d7_e7` remains an untouched reserve because it
+  approaches a shoulder-lift limit more closely.
+- V5 is simulator evidence only. Its mapping label remains
+  `provisional_range_audit_blocked`, and physical authority remains false
+  until RP04A passes.
 
 ## RP01 freeze
 
