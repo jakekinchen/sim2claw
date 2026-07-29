@@ -1,0 +1,84 @@
+{
+  "schema_version": "sim2claw.realized_action_first_divergence_contract.v1",
+  "contract_id": "realized-action-first-divergence-v1",
+  "sources": {
+    "c3_closeout": {
+      "path": "configs/decisions/realized_action_sage_lite_v1_closeout.json",
+      "sha256": "e5ae97283c5504f752203605a74be78e4129282212159697b4aeadeded652d80"
+    },
+    "c3_receipt": {
+      "path": "outputs/realized_action_sage_lite_v1/receipt.json",
+      "sha256": "41e1d8853cc5d6c10e7e1da3dab48fe409f9728d2089c4f9cd0076c7721d86a0",
+      "artifact_sha256": "f03dbd13d2fdd85d1893e2ed03923dcdc4b15fa6deeb9bb9f95845b367c6054f"
+    },
+    "c2_closeout": {
+      "path": "configs/decisions/realized_action_static_geometry_reconciliation_v1_closeout.json",
+      "sha256": "4c8ff2dae45ff6715d8fa35fef081d0891dd0bb3eb377fa85eb9b820e202b116"
+    },
+    "rp04k_closeout": {
+      "path": "configs/decisions/retrospective_real_to_sim_hybrid_v1_closeout.json",
+      "sha256": "384fc187e9e8ecd41e02571f1015172e177b0f611243cecc608bbdcf0bc84f6f"
+    },
+    "rp04k_receipt": {
+      "path": "outputs/retrospective_real_to_sim_hybrid_v1/receipt.json",
+      "sha256": "d3dfbf5c047de5cf12d176dd717ec58a04ccaed708372c3078e401af5b0f5429"
+    },
+    "rp04k_observed_state_trace": {
+      "path": "outputs/retrospective_real_to_sim_hybrid_v1/observed_joint_state_upper_bound_trace.json",
+      "sha256": "715cdab678e0db6124149d788115aa82177f66022c59b792951aca02a7bb4484"
+    },
+    "rp04l_closeout": {
+      "path": "configs/decisions/retrospective_real_to_sim_support_handoff_v1_closeout.json",
+      "sha256": "49320ded361471b88bd858b68274ea2580339d2c92d44a3a4477c2e3fd074f28"
+    },
+    "rp04l_receipt": {
+      "path": "outputs/retrospective_real_to_sim_support_handoff_v1/receipt.json",
+      "sha256": "1af33c78d2a5846e009ff1d14561afd648df687bcb48a29a6b61089f7c33db51"
+    },
+    "rp04m_closeout": {
+      "path": "configs/decisions/retrospective_c922_endpoint_to_sim_v1_closeout.json",
+      "sha256": "b1a5529ade25992cd88cc00a3b926b3f7cb987956b41ad3d50c4a50ea0303761"
+    },
+    "rp04m_receipt": {
+      "path": "outputs/retrospective_c922_endpoint_to_sim_v1/receipt.json",
+      "sha256": "3f73fc8cd41365517a287895fc23b973e783e764dee022987cecd28e89c7a011"
+    }
+  },
+  "ordered_channels": [
+    "initial_geometry",
+    "requested_to_sent_action",
+    "sent_to_measured_joint_response",
+    "provisional_end_effector_projection",
+    "first_contact",
+    "pawn_planar_motion",
+    "lift_or_tip",
+    "release_or_support",
+    "final_consequence"
+  ],
+  "thresholds": {
+    "requested_sent_exact_difference": true,
+    "joint_response_absolute_degrees": 1.0,
+    "provisional_end_effector_error_mm": 6.0,
+    "simulated_pawn_planar_motion_mm": 1.0,
+    "simulated_pawn_lift_mm": 1.0
+  },
+  "rules": {
+    "absent_channel_is_unobservable_not_passed": true,
+    "sealed_episode_selects_no_mechanism": true,
+    "sample_alignment_is_not_causal_latency": true,
+    "observed_grasp_mode_is_not_contact_witness": true,
+    "support_projection_is_not_free_contact_prediction": true,
+    "parameter_requires_nonsealed_repetition": true
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "parameter_fit": false,
+    "simulator_replay": false,
+    "paid_compute": false
+  }
+}
