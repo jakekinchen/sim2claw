@@ -1,0 +1,42 @@
+{
+  "schema_version": "sim2claw.calibration_graph_closeout.v1",
+  "decision_id": "minimum-gauge-fixed-calibration-graph-20260729-v1-closeout",
+  "status": "mapping_rejected_composite_probe_required",
+  "proof_class": "gauge_fixed_existing_evidence_mapping_rejection",
+  "contract": {
+    "path": "configs/evaluations/calibration_graph_v1.json",
+    "sha256": "f80e4e14539c43902b1c9d04257c937ca6c2a2cc41fe58892c5463034cbd358c"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-v1/receipt.json",
+    "sha256": "718cedd9ff0f8cb7389e92051fa288162527415f40d0b4c4f06186c80001908a"
+  },
+  "result": {
+    "active_jacobian_rank": 4,
+    "required_rank": 4,
+    "condition_number": 5.6936633786994335,
+    "differential_failures": [
+      "elbow_flex_direction",
+      "wrist_flex_direction_and_scale"
+    ],
+    "encoder_hold_failure": "pose_K_0p439560_degrees",
+    "untouched_composite_heldout_available": false,
+    "physical_model_mapping_approved": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Preserve the mapping rejection. The graph itself is full-rank and well-conditioned, so do not broaden it. Freeze one no-contact composite physical calibration probe that jointly excites shoulder pan, shoulder lift, elbow flex, and wrist flex within prior demonstrated ranges, records exact requested/mapped/sent/actual traces plus the owned task camera, includes endpoint holds, returns to the verified start, and remains untouched by fitting. Use it only to add the missing composite factor and discriminate the elbow/wrist differential and hold defects. No pawn contact, evaluator V2, or task packet is authorized.",
+  "authority": {
+    "calibration_probe_freeze": true,
+    "calibration_probe_execution": false,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

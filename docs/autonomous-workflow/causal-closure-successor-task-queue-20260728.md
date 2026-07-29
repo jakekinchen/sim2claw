@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_CALIBRATION_GRAPH_REPLAY`
+Status: `ACTIVE_CC03_COMPOSITE_PROBE_COMPILE`
 
 Created: `2026-07-28`
 
@@ -465,6 +465,17 @@ Current state:
   `f80e4e14539c43902b1c9d04257c937ca6c2a2cc41fe58892c5463034cbd358c`.
   Camera/board, robot/board, joint signs/zeros, and jaw reference are fixed;
   four joint scales are active; the untouched composite heldout is required.
+- CalibrationGraph.v1 ran once. Its active Jacobian is full rank (`4/4`) and
+  well-conditioned (`5.693663`), but mapping is rejected by elbow/wrist
+  differential factors, the pose-K hold, and the missing untouched composite
+  heldout. Receipt SHA-256
+  `718cedd9ff0f8cb7389e92051fa288162527415f40d0b4c4f06186c80001908a`;
+  closeout SHA-256
+  `4bcefbd4595fbdf9698c6d48058ea726c62beffd28f26f2c89bf0158cb9241ea`.
+- One no-contact composite tricam route is frozen at SHA-256
+  `0c9e41d71af945144e782778d5fa4f52f2096f6e2705598b7dad742d3a0069be`.
+  It jointly excites the four active joints by `+/-2 deg`, returns exactly to
+  the fresh torque-off start, and remains calibration-only.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -506,5 +517,6 @@ This authorization:
 
 Next step:
 
-- Execute CalibrationGraph.v1 exactly once and preserve its approval/rejection
-  receipt. Keep evaluator V2, cameras, gateway, and motion closed.
+- Compile, independently review, and execute the single no-contact composite
+  calibration probe within the owner authorization window. Do not touch a
+  pawn or count a task attempt.

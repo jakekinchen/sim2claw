@@ -188,6 +188,9 @@ Confirmed:
 - Selected temporal V5 passed `2/2` in both directions over all 40 episodes;
   receipt `cf21bd8c...`, closeout `2c7f8483...`. CC02 is complete.
 - CalibrationGraph.v1 is frozen at `f80e4e14...`.
+- CalibrationGraph rejected mapping at `718cedd9...`; the graph is rank `4/4`
+  with condition `5.69`, so a bounded composite heldout probe is next.
+- The `+/-2 deg` four-joint tricam route is frozen at `0c9e41d7...`.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -234,7 +237,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
 Completed: CC00, CC00A, CC01, CC02.
-Evidence: simulator pass cf21bd8c...; calibration graph freeze f80e4e14....
+Evidence: calibration reject 718cedd9...; composite route 0c9e41d7....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -242,7 +245,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC03 through CC15.
 Blockers: physical/model mapping remains unapproved.
-Next step: execute CalibrationGraph.v1 exactly once; keep evaluator freeze and hardware closed.
+Next step: compile/review/execute the calibration-only composite probe; no pawn contact or task attempt.
 ```
 
 ## Physical Authority Boundaries

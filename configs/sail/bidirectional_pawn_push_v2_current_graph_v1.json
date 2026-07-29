@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "f26cc5e4aaa067b87203c7d8ef2dc9ef047a21b5604b6293a55ec3b85893eb3e",
+      "sha256": "d61352082f78fcac2ef31f241c93c819717ebebf369ffe71b07d19f07149590b",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1796,6 +1796,35 @@
         "schema_version": "sim2claw.calibration_graph.v1",
         "status": "frozen_before_existing_evidence_mapping_evaluation",
         "proof_class": "prospective_gauge_fixed_existing_evidence_mapping_diagnostic"
+      }
+    },
+    "calibration_graph_v1_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-v1/receipt.json",
+      "sha256": "718cedd9ff0f8cb7389e92051fa288162527415f40d0b4c4f06186c80001908a",
+      "proof_class": "gauge_fixed_existing_evidence_mapping_diagnostic",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_receipt.v1",
+        "status": "physical_model_mapping_rejected",
+        "physical_model_mapping_approved": false
+      }
+    },
+    "calibration_graph_v1_closeout": {
+      "path": "configs/decisions/calibration_graph_v1_closeout.json",
+      "sha256": "4bcefbd4595fbdf9698c6d48058ea726c62beffd28f26f2c89bf0158cb9241ea",
+      "proof_class": "gauge_fixed_existing_evidence_mapping_rejection",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_closeout.v1",
+        "status": "mapping_rejected_composite_probe_required",
+        "proof_class": "gauge_fixed_existing_evidence_mapping_rejection"
+      }
+    },
+    "calibration_graph_composite_probe_route": {
+      "path": "configs/hardware/calibration_graph_composite_heldout_tricam_v1.json",
+      "sha256": "0c9e41d71af945144e782778d5fa4f52f2096f6e2705598b7dad742d3a0069be",
+      "proof_class": "prospective_no_contact_composite_mapping_heldout",
+      "payload_contract": {
+        "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+        "route_id": "calibration_graph_composite_heldout_tricam_20260729_v1"
       }
     },
     "simulator_candidate": {
@@ -4869,6 +4898,38 @@
       }
     },
     {
+      "id": "verdict:calibration-graph-v1-mapping-reject",
+      "type": "evaluator_verdict",
+      "label": "Calibration graph rejects current physical-model mapping",
+      "status": "mapping_rejected_composite_probe_required",
+      "source_binding": "calibration_graph_v1_closeout",
+      "evaluator_identity": "f80e4e14539c43902b1c9d04257c937ca6c2a2cc41fe58892c5463034cbd358c",
+      "data": {
+        "receipt_source_binding": "calibration_graph_v1_receipt",
+        "active_jacobian_rank": 4,
+        "required_rank": 4,
+        "condition_number": 5.6936633786994335,
+        "physical_model_mapping_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:calibration-graph-composite-probe-route-frozen",
+      "type": "checkpoint",
+      "label": "No-contact four-joint composite tricam route frozen",
+      "status": "preregistered_before_packet_compile",
+      "source_binding": "calibration_graph_composite_probe_route",
+      "data": {
+        "active_joint_count": 4,
+        "maximum_joint_excursion_degrees": 2.0,
+        "returns_to_exact_start": true,
+        "tricam_required": true,
+        "pawn_contact": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -6655,6 +6716,26 @@
       }
     },
     {
+      "source": "verdict:calibration-graph-v1-mapping-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:calibration-graph-v1-frozen",
+      "metadata": {
+        "full_active_rank": true,
+        "physical_model_mapping_approved": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:calibration-graph-composite-probe-route-frozen",
+      "type": "generated-from",
+      "target": "verdict:calibration-graph-v1-mapping-reject",
+      "metadata": {
+        "single_discriminating_probe": true,
+        "no_contact": true,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -7995,14 +8076,32 @@
       "node_ids_added": [
         "checkpoint:calibration-graph-v1-frozen"
       ]
+    },
+    {
+      "revision": 144,
+      "event_id": "CALIBRATION_GRAPH_V1_MAPPING_REJECT",
+      "status": "mapping_rejected_composite_probe_required",
+      "source_binding": "calibration_graph_v1_closeout",
+      "node_ids_added": [
+        "verdict:calibration-graph-v1-mapping-reject"
+      ]
+    },
+    {
+      "revision": 145,
+      "event_id": "CALIBRATION_GRAPH_COMPOSITE_PROBE_ROUTE_FROZEN",
+      "status": "preregistered_before_packet_compile",
+      "source_binding": "calibration_graph_composite_probe_route",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-composite-probe-route-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:calibration-graph-v1-frozen",
+    "node_id": "checkpoint:calibration-graph-composite-probe-route-frozen",
     "milestone_id": "CC03",
-    "status": "preregistered_before_exactly_once_mapping_evaluation",
-    "queue_status": "ACTIVE_CC03_CALIBRATION_GRAPH_REPLAY",
-    "resume_action": "execute_calibration_graph_v1_exactly_once",
+    "status": "preregistered_before_packet_compile",
+    "queue_status": "ACTIVE_CC03_COMPOSITE_PROBE_COMPILE",
+    "resume_action": "compile_review_execute_composite_calibration_probe",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

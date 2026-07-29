@@ -1,0 +1,228 @@
+{
+  "authority": {
+    "camera": false,
+    "evaluator_v2_freeze": false,
+    "fit_mapping_diagnostic": true,
+    "gateway": false,
+    "mapping_approval": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "read_existing_evidence": true,
+    "serial": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "bounds": {
+    "joint_scale": [
+      0.65,
+      1.35
+    ]
+  },
+  "claim_boundary": "Minimum gauge-fixed CalibrationGraph.v1 over existing physical evidence. Camera/board, robot/board, joint signs and zeros, and jaw reference remain fixed; only four local joint scales are active. The graph reports factor residuals, active Jacobian rank and spectrum, correlations, bounds, encoder holds, and untouched heldout availability. It may reject the current mapping but cannot approve it because mapping approval authority remains false; no camera, gateway, serial, or physical motion is opened.",
+  "contract_path": "configs/evaluations/calibration_graph_v1.json",
+  "contract_sha256": "f80e4e14539c43902b1c9d04257c937ca6c2a2cc41fe58892c5463034cbd358c",
+  "factor_checks": {
+    "differential:elbow_flex": {
+      "direction_passed": false,
+      "r_squared_passed": true,
+      "scale_in_bounds": true
+    },
+    "differential:shoulder_lift": {
+      "direction_passed": true,
+      "r_squared_passed": true,
+      "scale_in_bounds": true
+    },
+    "differential:shoulder_pan": {
+      "direction_passed": true,
+      "r_squared_passed": true,
+      "scale_in_bounds": true
+    },
+    "differential:wrist_flex": {
+      "direction_passed": false,
+      "r_squared_passed": true,
+      "scale_in_bounds": false
+    }
+  },
+  "factor_residuals": [
+    {
+      "direction_difference_degrees": 3.3882812959599997,
+      "estimated_scale": 0.7412938174428241,
+      "factor_id": "differential:shoulder_pan",
+      "observed_r_squared": 0.8451524694968053,
+      "observed_xy_px_per_degree": [
+        -0.5606854957872246,
+        0.17718111148277144
+      ],
+      "residual_norm_px_per_degree": 0.03475296802235477,
+      "residual_xy_px_per_degree": [
+        0.008494974684864376,
+        0.03369872685230596
+      ],
+      "simulated_xy_px_per_degree": [
+        -0.7678203393568567,
+        0.1935566994547776
+      ]
+    },
+    {
+      "direction_difference_degrees": 4.256814475447455,
+      "estimated_scale": 1.0003653678332456,
+      "factor_id": "differential:shoulder_lift",
+      "observed_r_squared": 0.8267336014842461,
+      "observed_xy_px_per_degree": [
+        1.2801225805511407,
+        0.7760117923141622
+      ],
+      "residual_norm_px_per_degree": 0.11111546422503994,
+      "residual_xy_px_per_degree": [
+        0.06449524538110296,
+        -0.09048209609186475
+      ],
+      "simulated_xy_px_per_degree": [
+        1.2151833462638173,
+        0.8661774150406872
+      ]
+    },
+    {
+      "direction_difference_degrees": 22.129178882002563,
+      "estimated_scale": 1.1137434433413187,
+      "factor_id": "differential:elbow_flex",
+      "observed_r_squared": 0.8281561827652377,
+      "observed_xy_px_per_degree": [
+        1.88260722837757,
+        5.083159440027493
+      ],
+      "residual_norm_px_per_degree": 2.0419122811526402,
+      "residual_xy_px_per_degree": [
+        -1.5066137998660343,
+        1.37823097555352
+      ],
+      "simulated_xy_px_per_degree": [
+        3.0430895449994053,
+        3.3265546806353297
+      ]
+    },
+    {
+      "direction_difference_degrees": 52.72800332453628,
+      "estimated_scale": 0.1299972659727969,
+      "factor_id": "differential:wrist_flex",
+      "observed_r_squared": 0.5941873907601662,
+      "observed_xy_px_per_degree": [
+        0.18316963264698305,
+        -0.008717083140342344
+      ],
+      "residual_norm_px_per_degree": 0.14592578680338908,
+      "residual_xy_px_per_degree": [
+        0.11179110630704948,
+        -0.09379277053608197
+      ],
+      "simulated_xy_px_per_degree": [
+        0.5490771348596682,
+        0.6544421281409293
+      ]
+    }
+  ],
+  "gauge": {
+    "active_variables": [
+      "joint_scale:shoulder_pan",
+      "joint_scale:shoulder_lift",
+      "joint_scale:elbow_flex",
+      "joint_scale:wrist_flex"
+    ],
+    "fixed_camera_board": true,
+    "fixed_jaw_reference": true,
+    "fixed_joint_signs_and_zero_offsets": true,
+    "fixed_robot_to_board_rigid_transform": true
+  },
+  "heldout": {
+    "mapping_score": null,
+    "passed": false,
+    "status": "not_scored_no_pre_m_fit_candidate",
+    "untouched_composite_available": false
+  },
+  "hold_factors": {
+    "J": {
+      "maximum_absolute_drift_degrees": 0.2637362637362628,
+      "passed": true
+    },
+    "K": {
+      "maximum_absolute_drift_degrees": 0.439560439560438,
+      "passed": false
+    },
+    "L": {
+      "maximum_absolute_drift_degrees": 0.2637362637362628,
+      "passed": true
+    },
+    "S": {
+      "maximum_absolute_drift_degrees": 0.1758241758241752,
+      "passed": true
+    }
+  },
+  "jacobian": {
+    "condition_number": 5.6936633786994335,
+    "correlation_matrix": [
+      [
+        0.9999999999999999,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "rank": 4,
+    "required_rank": 4,
+    "shape": [
+      8,
+      4
+    ],
+    "singular_values": [
+      4.508476463523072,
+      1.4922914860587713,
+      0.8542717361070369,
+      0.7918410632405378
+    ]
+  },
+  "physical_model_mapping_approved": false,
+  "physical_motion": false,
+  "physical_task_attempts": 0,
+  "proof_class": "gauge_fixed_existing_evidence_mapping_diagnostic",
+  "rejection_reasons": [
+    "differential_factor_gates",
+    "encoder_hold_gates",
+    "untouched_composite_heldout_missing"
+  ],
+  "schema_version": "sim2claw.calibration_graph_receipt.v1",
+  "status": "physical_model_mapping_rejected",
+  "variable_estimates": {
+    "fixed_variables": {
+      "camera_board": "accepted_canonical_task_plane_registration",
+      "gripper_scale": "fixed_no_independent_differential_factor",
+      "jaw_reference": "closed_jaw_rad_minus_0p1727003294848389",
+      "physical_degree_to_mujoco_joint_signs": "current_gateway_mapping",
+      "physical_degree_to_mujoco_joint_zero_offsets": "current_gateway_mapping",
+      "robot_to_board_rigid_transform": "accepted_current_workcell_registration"
+    },
+    "joint_scales": {
+      "elbow_flex": 1.1137434433413187,
+      "shoulder_lift": 1.0003653678332456,
+      "shoulder_pan": 0.7412938174428241,
+      "wrist_flex": 0.1299972659727969
+    }
+  }
+}
