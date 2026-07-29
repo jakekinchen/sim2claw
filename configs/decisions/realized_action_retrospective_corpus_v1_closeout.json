@@ -1,0 +1,64 @@
+{
+  "schema_version": "sim2claw.realized_action_retrospective_corpus_closeout.v1",
+  "decision_id": "realized-action-retrospective-corpus-v1-closeout",
+  "result": "PASS",
+  "proof_class": "retrospective_physical_evidence_inventory_and_whole_episode_split",
+  "freeze_commit": "4a21f92",
+  "contract": {
+    "path": "configs/evaluations/realized_action_retrospective_corpus_v1.json",
+    "sha256": "460b9e65e577a9001a4532a4fc9f0a4675dca5ecb2a4494d8f0358a65e8db211"
+  },
+  "implementation": {
+    "path": "src/sim2claw/realized_action_corpus.py",
+    "sha256": "53ca34a573ed997696d31abbafd83f108ac382d634fc94309d6811efd861c76c"
+  },
+  "generated_receipt": {
+    "path": "outputs/realized_action_retrospective_corpus_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "7511180748e12b0df842129004d692458b23df297df8cd94106100487c490bd5",
+    "artifact_sha256": "232c80bb28cac325f54d829e31fd2b84d12df85df1948d3d8fb5b4fd3e4739d1"
+  },
+  "counts": {
+    "discovered_episodes": 29,
+    "catalog_episodes": 18,
+    "fit_episodes": 4,
+    "validation_episodes": 3,
+    "sealed_episodes": 1,
+    "metadata_conflict_provenance_only": 11,
+    "discarded_catalog_recordings": 1
+  },
+  "sealed_mission": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "canonical_task": "d1_to_d2",
+    "raw_receipt_task": "b2_to_b1",
+    "fit_or_validation_leakage": false,
+    "operator_requested_float32_sha256": "5d58874c166d2df9b890177ab9f1ef0a6934e53d46242b2346bf3428e5904c79",
+    "gateway_sent_float32_sha256": "3b034bd965d4bf1a71591cc77f033e97f1fe8eb30aa75cb314cc529b4e40e3ef",
+    "measured_joint_float64_sha256": "ec75ad25adf9957311e837744af7340e27b602cfec5a2985db7841b5c3558312",
+    "timestamp_float64_sha256": "68e87c15992123e4415b2a3ec6d1a8e68cffd1ca642ac35002ed255544829f48",
+    "actuator_application_or_ack_timestamp_rows": 0
+  },
+  "proof_boundaries": [
+    "legacy self-consistent square labels remain unmigrated and noncanonical",
+    "metadata-conflicted recordings remain provenance-only",
+    "diagnostic recordings are not task-outcome cohorts",
+    "no actuator application timestamp, contact force, depth, or hidden pawn pose was imputed",
+    "this corpus result does not itself advance a transfer numerator"
+  ],
+  "rehearsal": {
+    "occurred_before_freeze_commit": true,
+    "authoritative": false,
+    "artifact_sha256": "232c80bb28cac325f54d829e31fd2b84d12df85df1948d3d8fb5b4fd3e4739d1",
+    "note": "The identical deterministic rehearsal was quarantined; the recorded result was rebuilt after freeze commit 4a21f92."
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "paid_compute": false
+  },
+  "next_card": "C1"
+}
