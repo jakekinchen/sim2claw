@@ -1,0 +1,33 @@
+{
+  "schema_version": "sim2claw.full_range_no_contact_execution_closeout.v1",
+  "decision_id": "full-range-no-contact-execution-20260729-v1-closeout",
+  "status": "safe_pan_range_negative_successor_admitted",
+  "packet_freeze_commit": "ad761c1",
+  "authorization_commit": "229b7c7",
+  "packet": {
+    "path": "configs/hardware/full_range_no_contact_execution_v1.json",
+    "sha256": "1c00e5cdbe884ffb7256158851f6f049f7fef9e4a925eb73035451675732bf6c"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-full-range-no-contact-execution-v1/receipt.json",
+    "sha256": "88639f500df4e6c286bcc1a8480deaf366c0e0b5090d1634dab394dc67c9787b"
+  },
+  "camera_review": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-full-range-no-contact-execution-v1/review/camera_review.json",
+    "sha256": "f8b07e07f5d1740d27ce6398fa26db0c5eb153ef17911773fb648eb7f7bd1e9e"
+  },
+  "result": {
+    "forward_source_rows_completed": 123,
+    "shoulder_pan_requested_terminal_degrees": -115.0,
+    "shoulder_pan_observed_minimum_degrees": -64.0,
+    "failure": "forward_boundary_122 did not reach the frozen boundary gate",
+    "cameras_complete": true,
+    "camera_review_no_pawn_or_board_contact": true,
+    "controlled_return_completed": true,
+    "maximum_controlled_return_residual_degrees": 1.4945054945054927,
+    "postflight_torque_off": true,
+    "physical_task_attempts": 0,
+    "mapping_approved": false
+  },
+  "decision": "Do not retry the -115 degree packet. The shoulder pan mechanically saturated near -64 degrees before any elbow sweep, so the route failed safely and supplied a direct reachable-range bound. Admit one prospectively frozen successor changing only shoulder-pan target to -60 degrees, its derived prefix length and segment boundaries, while retaining the 0 degree lift cap, full elbow profile, dual-scene clearance/contact gates, cameras, exact reverse, controlled return, zero pawn contact, and false task/mapping authority."
+}
