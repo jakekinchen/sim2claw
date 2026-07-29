@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_CORNER_SHAPE_STAGE_1_EXECUTE`
+Status: `ACTIVE_CC03_WRIST_ONLY_PACKET_COMPILE`
 
 Created: `2026-07-28`
 
@@ -586,6 +586,27 @@ Current state:
   for wrist. Independent review admits exactly one execution per stage at
   review SHA-256
   `184052d965563e6d111dc33bb9ef3abb92188abdff98e94733db1c438b88bad9`.
+- Corner-shape V2 stage 1 stopped safely at motion sample `233`. The commanded
+  elbow reached `95.671703 deg`, but measured elbow remained within
+  `[99.208791, 99.296703] deg`; the stall warning rejected the action, all
+  cameras enclosed the stopped interval, and torque was released. Execution
+  receipt SHA-256 is
+  `8b72ae4c77d0a81fc2dc170ad3678831b79e4e739b3eb63694a27c6dccad8331`;
+  closeout SHA-256 is
+  `65f71a1bbf418e43632ebf834d2aaffab7e5f3b0dd6cdb45f8f3d4d0caacfbef`.
+  Stage 2 under that packet is forbidden.
+- The repeated two-, three-, and five-degree negative elbow nonresponse
+  establishes an actuator-scope boundary for the current hardware state.
+  Rather than ask for physical intervention or weaken safety, the task proof
+  cuts over to elbow-locked action families. Elbow is a constant encoder
+  anchor, not an approved actuated mapping factor.
+- A single-stage wrist-only successor is frozen at route SHA-256
+  `063342cfa052238950b7ad749095984e75652b44550ee12d535671103f36f03a`
+  and evaluator SHA-256
+  `e1abac05ab99bcddd3f3432d1f549f35fc7afd4be36e375040b2d02d4571ff26`.
+  It retains the prior three-degree wrist action, uses raw tag-corner
+  trajectory shape, fits nothing, opens no depth channel, and makes no elbow
+  claim.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -627,7 +648,7 @@ This authorization:
 
 Next step:
 
-- Execute corner-shape stage 1 exactly once, verify tricam enclosure,
-  sufficient measured elbow response, exact return, and torque-off, then
-  execute stage 2 using the bound stage-1 receipt. Do not open any new frame,
-  touch a pawn, or count a task attempt.
+- Compile and independently review the wrist-only V3 packet from the fresh
+  torque-off anchor. If admitted, execute it once and freeze the evaluator
+  contract before opening any frame. Do not touch a pawn or count a task
+  attempt.

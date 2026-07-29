@@ -1,0 +1,58 @@
+{
+  "schema_version": "sim2claw.calibration_graph_d405_corner_shape_elbow_stall_closeout.v1",
+  "status": "terminal_elbow_actuator_stall_elbow_locked_task_cutover_required",
+  "proof_class": "prospective_no_contact_calibration_stage_safe_stop_with_actuator_scope_cutover",
+  "packet": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-corner-shape-v2/packet.json",
+    "sha256": "241eea8d705bf303d5f7c3d9c8e5c4e7b81def094108d221a584374b97c428e7"
+  },
+  "review": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-corner-shape-v2/review.json",
+    "sha256": "184052d965563e6d111dc33bb9ef3abb92188abdff98e94733db1c438b88bad9"
+  },
+  "stage_1_execution": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-corner-shape-v2/stage-1/execution_receipt.json",
+    "sha256": "8b72ae4c77d0a81fc2dc170ad3678831b79e4e739b3eb63694a27c6dccad8331",
+    "status": "stopped_safely",
+    "completed_motion_samples": 233,
+    "commanded_elbow_range_degrees": [
+      95.6717032967033,
+      99.2967032967033
+    ],
+    "measured_elbow_range_degrees": [
+      99.20879120879121,
+      99.2967032967033
+    ],
+    "maximum_measured_elbow_excursion_degrees": 0.0879120879120876,
+    "trigger": "gateway_stall_warning_after_more_than_one_second_above_three_degree_command_error",
+    "camera_interval_enclosed": true,
+    "physical_follower_torque_enabled_at_close": false
+  },
+  "prior_consistent_evidence": {
+    "three_degree_elbow_stage_measured_excursion_degrees": 0.0879120879120876,
+    "two_degree_composite_stage_measured_excursion_degrees": 0.0879120879120876,
+    "interpretation": "negative_elbow_motion_is_not_an_admissible_actuated_channel_in_the_current_hardware_state"
+  },
+  "decision": {
+    "physical_model_mapping_approved": false,
+    "resume_stage_2_under_failed_packet": false,
+    "further_negative_elbow_probe_authorized": false,
+    "elbow_locked_task_successor_required": true,
+    "elbow_lock_source": "fresh_torque_off_encoder_anchor",
+    "next_mapping_factor": "prospective_wrist_only_raw_corner_shape_heldout",
+    "physical_task_attempts": 0
+  },
+  "claim_boundary": {
+    "does_not_prove": [
+      "elbow_motor_electrical_root_cause",
+      "global_joint_mapping_failure",
+      "wrist_or_shoulder_mapping_failure",
+      "task_transfer_failure"
+    ],
+    "does_prove": [
+      "the_frozen_five_degree_negative_elbow_stage_is_not_physically_executable_in_the_current_state",
+      "the_gateway_stopped_safely_and_released_torque",
+      "elbow_varying_task_actions_are_not_admissible_without_a_new_hardware_state"
+    ]
+  }
+}

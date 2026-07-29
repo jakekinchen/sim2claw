@@ -1,0 +1,589 @@
+{
+  "action_sha256": "c16b3e1e97306fb08f17fa1404a287e70fee664856530256183ddaeaaa34a032",
+  "camera_capture_completed_before_torque_off": true,
+  "camera_finished": {
+    "common_session": {
+      "callback_timestamp_bytes": 102406,
+      "callback_timestamp_path": "native_dual_camera/camera_callback_timestamps.jsonl",
+      "callback_timestamp_sha256": "0834451f141e686f5ce4c07e40f623143466eaf2d05a70d43fae60b549647b40",
+      "capture_mechanism": "one_native_avcapture_session",
+      "claim_limits": {
+        "camera_exposure_synchronization": false,
+        "metric_depth": false,
+        "physical_authority": false,
+        "task_success": false
+      },
+      "independent_camera_sessions": 0,
+      "operational_gates": {
+        "active_session_exact_formats": true,
+        "active_session_exact_stream_bindings": true,
+        "after_stop_format_index_operational_gate": false,
+        "writers_completed": true
+      },
+      "report_path": "native_dual_camera/native_camera_report.json",
+      "report_sha256": "c7c2eff51f79492c869e1300798d5cf0118734c2adeff8961960ee2d385b2796",
+      "runtime_identity": {
+        "binary_path": "native_dual_camera/runtime/dual-camera-recorder",
+        "binary_sha256": "457ba8884f5b76fcadead1c0cd9e3265bd0971085cd25c583dc6aa3b5f846207",
+        "compiler_path": "/usr/bin/swiftc",
+        "compiler_sha256": "3e7d30871a9740446f33a907b14d28f10ebe6d4e1c146a4c0788308f573a6609",
+        "proven_active_session_contract_path": "configs/evaluations/avfoundation_dual_camera_runtime_binding_v2.json",
+        "proven_active_session_contract_sha256": "fa0e2601d84c2978bcb93a5ff45566c026f727ef728cb9e20a7ddab7c2ccd48c",
+        "schema_version": "sim2claw.native_dual_camera_recorder_runtime.v1",
+        "source_path": "tools/macos/AVFoundationDualCameraRecorder.swift",
+        "source_sha256": "5f6dfc08311f06e495804a4f17203d3dbe25ba6b2953fa513aec0eb039244a55",
+        "swift_version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)\nTarget: arm64-apple-macosx26.0"
+      },
+      "schema_version": "sim2claw.native_dual_camera_capture.v1",
+      "session_count": 1
+    },
+    "overhead": {
+      "action_interval_enclosed_by_callback_frames": true,
+      "action_start_video_offset_seconds": 3.0022078339243308,
+      "action_stop_video_offset_seconds": 8.863419083994813,
+      "apple_drop_callback_count": 0,
+      "browser_frame_count": 220,
+      "browser_observed_video": {
+        "container_timing": {
+          "configured_fps": null,
+          "duplicate_pts_count": 0,
+          "first_pts_seconds": 0.0,
+          "frame_count": 220,
+          "inferred_missing_frame_intervals": null,
+          "interval_seconds": {
+            "maximum": 0.033334000000000086,
+            "median": 0.03333300000000006,
+            "minimum": 0.033332999999999835,
+            "p95": 0.033333999999999975
+          },
+          "large_gap_count": null,
+          "last_pts_seconds": 7.3,
+          "nominal_interval_seconds": null,
+          "non_monotonic_interval_count": 0,
+          "repeat_picture_count": 0,
+          "schema_version": "sim2claw.video_container_timing.v1",
+          "semantics": {
+            "camera_exposure_timestamps": false,
+            "clock": "encoded_container_presentation_timestamps",
+            "device_synchronized": false,
+            "large_gap_interpretation": "Intervals above 1.5 configured frame periods are diagnostic container gaps, not independently observed camera drops.",
+            "proves_camera_frame_drop": false,
+            "proves_camera_frame_duplication": false
+          },
+          "status": "observed_container_timing"
+        },
+        "format": {
+          "duration": "7.333333",
+          "size": "60861"
+        },
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "avg_frame_rate": "30/1",
+            "codec_name": "h264",
+            "height": 480,
+            "nb_frames": "220",
+            "width": 640
+          }
+        ]
+      },
+      "browser_video_path": "overhead_c922.mp4",
+      "browser_video_sha256": "851fe4ecb4dd66c49f4e310b77c895a83a26cd6605dc9e848cd51c6f53ecc2d2",
+      "callback_frame_count": 220,
+      "callback_timestamp_path": "native_dual_camera/camera_callback_timestamps.jsonl",
+      "callback_timestamp_sha256": "0834451f141e686f5ce4c07e40f623143466eaf2d05a70d43fae60b549647b40",
+      "camera_model_id": "UVC Camera VendorID_1133 ProductID_2140",
+      "camera_name": "C922 Pro Stream Webcam",
+      "camera_unique_id": "0x8310000046d085c",
+      "capture_mechanism": "one_native_avcapture_session",
+      "claim_limits": {
+        "camera_exposure_synchronization": false,
+        "metric_depth": false,
+        "physical_authority": false,
+        "task_success": false
+      },
+      "configured_fps": 30.00003000003,
+      "configured_height": 480,
+      "configured_pixel_format": "420v",
+      "configured_width": 640,
+      "container_frame_count": 220,
+      "diagnostic_only": true,
+      "first_frame_recorder_offset_seconds": 1.8212902919622138,
+      "first_host_continuous_ns": 983095815708708,
+      "first_source_pts_seconds": 983095.7513,
+      "is_training_data": false,
+      "last_frame_recorder_offset_seconds": 9.113757874933071,
+      "last_host_continuous_ns": 983103108176291,
+      "last_source_pts_seconds": 983103.0512666666,
+      "metric_depth": false,
+      "native_report_path": "native_dual_camera/native_camera_report.json",
+      "native_report_sha256": "c7c2eff51f79492c869e1300798d5cf0118734c2adeff8961960ee2d385b2796",
+      "observed_callback_count": 249,
+      "observed_video": {
+        "container_timing": {
+          "configured_fps": 30.00003000003,
+          "duplicate_pts_count": 0,
+          "first_pts_seconds": 0.0,
+          "frame_count": 220,
+          "inferred_missing_frame_intervals": 0,
+          "interval_seconds": {
+            "maximum": 0.033334000000000086,
+            "median": 0.03333300000000006,
+            "minimum": 0.033332999999999835,
+            "p95": 0.033333999999999975
+          },
+          "large_gap_count": 0,
+          "last_pts_seconds": 7.3,
+          "nominal_interval_seconds": 0.033333299999999996,
+          "non_monotonic_interval_count": 0,
+          "repeat_picture_count": 0,
+          "schema_version": "sim2claw.video_container_timing.v1",
+          "semantics": {
+            "camera_exposure_timestamps": false,
+            "clock": "encoded_container_presentation_timestamps",
+            "device_synchronized": false,
+            "large_gap_interpretation": "Intervals above 1.5 configured frame periods are diagnostic container gaps, not independently observed camera drops.",
+            "proves_camera_frame_drop": false,
+            "proves_camera_frame_duplication": false
+          },
+          "status": "observed_container_timing"
+        },
+        "format": {
+          "duration": "7.333333",
+          "size": "3703905"
+        },
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "avg_frame_rate": "30/1",
+            "codec_name": "h264",
+            "height": 480,
+            "nb_frames": "220",
+            "width": 640
+          }
+        ]
+      },
+      "orientation_rotation_degrees": 180,
+      "post_roll_seconds_configured": 0.25,
+      "post_roll_seconds_observed": 0.2600327079417184,
+      "schema_version": "sim2claw.overhead_diagnostic_video.v1",
+      "status": "completed",
+      "timestamp_semantics": {
+        "camera_exposure_timestamps": false,
+        "cross_camera_exposure_synchronized": false,
+        "host_clock": "mach_continuous_time",
+        "source_pts": "avfoundation_sample_presentation_timestamp"
+      },
+      "video_finalization_seconds": 1.0226244579534978,
+      "video_path": "native_dual_camera/overhead_c922.native.mov",
+      "video_sha256": "006fb3185e4fa9fa92a5a530d7f787463b69c92fb98cac666070f870203b8016",
+      "warmup_excluded_callback_count": 29,
+      "writer_backpressure_count": 0
+    },
+    "pi": {
+      "action_interval_enclosed": true,
+      "browser_video_path": "/Users/kelly/Developer/sim2claw/runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-corner-shape-v2/stage-1/final_hold_camera/pi_motion/pi_imx708.browser.mp4",
+      "browser_video_sha256": "6fcc86e76c4d76bdaa13e9954ce612c8dedde061a4b6766cbd04bb118fc4d810",
+      "camera": "imx708_wide",
+      "claim_limits": {
+        "camera_extrinsics": false,
+        "camera_intrinsics": false,
+        "metric_registration": false,
+        "physical_authority": false,
+        "task_success": false
+      },
+      "configured_framerate": 30,
+      "configured_height": 864,
+      "configured_width": 1536,
+      "host_monotonic_end": 983131.821880041,
+      "host_monotonic_start": 983095.9430735,
+      "observed_video": {
+        "avg_frame_rate": "30/1",
+        "bytes": 6636107,
+        "codec_name": "h264",
+        "duration_seconds": 34.666667,
+        "frame_count": 1040,
+        "height": 864,
+        "width": 1536
+      },
+      "post_roll_seconds_requested": 0.25,
+      "pts": {
+        "count": 1040,
+        "first": 0.0,
+        "last": 34617.71
+      },
+      "pts_path": "/Users/kelly/Developer/sim2claw/runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-corner-shape-v2/stage-1/final_hold_camera/pi_motion/pi_imx708.pts",
+      "pts_sha256": "9d07b7e2dff3d2c11fea2162904b1a57a7b67e0907f2c969417e3da39b94d163",
+      "raw_video_path": "/Users/kelly/Developer/sim2claw/runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-corner-shape-v2/stage-1/final_hold_camera/pi_motion/pi_imx708.mjpeg",
+      "raw_video_sha256": "754816a57f3c841c93ccbeec7e99a6b0d3633dfd7bb3a17fdeb595a08e926356",
+      "schema_version": "sim2claw.pi_motion_video_capture.v1",
+      "status": "completed",
+      "timestamp_semantics": {
+        "camera_exposure_synchronized": false,
+        "cross_camera_exposure_synchronized": false,
+        "host_bounds_only": true,
+        "pi_pts": "rpicam_vid_save_pts"
+      }
+    },
+    "wrist": {
+      "action_interval_enclosed_by_callback_frames": true,
+      "action_start_video_offset_seconds": 3.0022078339243308,
+      "action_stop_video_offset_seconds": 8.863419083994813,
+      "apple_drop_callback_count": 0,
+      "browser_frame_count": 37,
+      "browser_observed_video": {
+        "container_timing": {
+          "configured_fps": null,
+          "duplicate_pts_count": 0,
+          "first_pts_seconds": 0.0,
+          "frame_count": 37,
+          "inferred_missing_frame_intervals": null,
+          "interval_seconds": {
+            "maximum": 0.20000000000000018,
+            "median": 0.20000000000000018,
+            "minimum": 0.1999999999999993,
+            "p95": 0.20000000000000018
+          },
+          "large_gap_count": null,
+          "last_pts_seconds": 7.2,
+          "nominal_interval_seconds": null,
+          "non_monotonic_interval_count": 0,
+          "repeat_picture_count": 0,
+          "schema_version": "sim2claw.video_container_timing.v1",
+          "semantics": {
+            "camera_exposure_timestamps": false,
+            "clock": "encoded_container_presentation_timestamps",
+            "device_synchronized": false,
+            "large_gap_interpretation": "Intervals above 1.5 configured frame periods are diagnostic container gaps, not independently observed camera drops.",
+            "proves_camera_frame_drop": false,
+            "proves_camera_frame_duplication": false
+          },
+          "status": "observed_container_timing"
+        },
+        "format": {
+          "duration": "7.400000",
+          "size": "29060"
+        },
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "avg_frame_rate": "5/1",
+            "codec_name": "h264",
+            "height": 240,
+            "nb_frames": "37",
+            "width": 424
+          }
+        ]
+      },
+      "browser_video_path": "wrist_d405.browser.mp4",
+      "browser_video_sha256": "bc329b49847ee6b1a2d4991b7be44e0e54a7b32e3377cc0eb4a729f7e02bc06a",
+      "callback_frame_count": 37,
+      "callback_timestamp_path": "native_dual_camera/camera_callback_timestamps.jsonl",
+      "callback_timestamp_sha256": "0834451f141e686f5ce4c07e40f623143466eaf2d05a70d43fae60b549647b40",
+      "camera_model_id": "UVC Camera VendorID_32902 ProductID_2907",
+      "camera_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+      "camera_unique_id": "0x812000080860b5b",
+      "capture_mechanism": "one_native_avcapture_session",
+      "claim_limits": {
+        "camera_exposure_synchronization": false,
+        "metric_depth": false,
+        "physical_authority": false,
+        "task_success": false
+      },
+      "configured_fps": 5.0,
+      "configured_height": 240,
+      "configured_pixel_format": "yuvs",
+      "configured_width": 424,
+      "container_frame_count": 37,
+      "diagnostic_only": true,
+      "first_frame_recorder_offset_seconds": 1.9024974999483675,
+      "first_host_continuous_ns": 983095896915916,
+      "first_source_pts_seconds": 983095.8956,
+      "is_training_data": false,
+      "last_frame_recorder_offset_seconds": 9.102743458934128,
+      "last_host_continuous_ns": 983103097161875,
+      "last_source_pts_seconds": 983103.0956,
+      "metric_depth": false,
+      "native_report_path": "native_dual_camera/native_camera_report.json",
+      "native_report_sha256": "c7c2eff51f79492c869e1300798d5cf0118734c2adeff8961960ee2d385b2796",
+      "observed_callback_count": 43,
+      "observed_video": {
+        "container_timing": {
+          "configured_fps": 5.0,
+          "duplicate_pts_count": 0,
+          "first_pts_seconds": 0.0,
+          "frame_count": 37,
+          "inferred_missing_frame_intervals": 0,
+          "interval_seconds": {
+            "maximum": 0.20000000000000018,
+            "median": 0.20000000000000018,
+            "minimum": 0.1999999999999993,
+            "p95": 0.20000000000000018
+          },
+          "large_gap_count": 0,
+          "last_pts_seconds": 7.2,
+          "nominal_interval_seconds": 0.2,
+          "non_monotonic_interval_count": 0,
+          "repeat_picture_count": 0,
+          "schema_version": "sim2claw.video_container_timing.v1",
+          "semantics": {
+            "camera_exposure_timestamps": false,
+            "clock": "encoded_container_presentation_timestamps",
+            "device_synchronized": false,
+            "large_gap_interpretation": "Intervals above 1.5 configured frame periods are diagnostic container gaps, not independently observed camera drops.",
+            "proves_camera_frame_drop": false,
+            "proves_camera_frame_duplication": false
+          },
+          "status": "observed_container_timing"
+        },
+        "format": {
+          "duration": "7.400000",
+          "size": "685022"
+        },
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "avg_frame_rate": "5/1",
+            "codec_name": "h264",
+            "height": 240,
+            "nb_frames": "37",
+            "width": 424
+          }
+        ]
+      },
+      "orientation_rotation_degrees": 0,
+      "post_roll_seconds_configured": 0.25,
+      "post_roll_seconds_observed": 0.2600327079417184,
+      "schema_version": "sim2claw.wrist_diagnostic_video.v1",
+      "status": "completed",
+      "timestamp_semantics": {
+        "camera_exposure_timestamps": false,
+        "cross_camera_exposure_synchronized": false,
+        "host_clock": "mach_continuous_time",
+        "source_pts": "avfoundation_sample_presentation_timestamp"
+      },
+      "video_finalization_seconds": 1.0226244579534978,
+      "video_path": "native_dual_camera/wrist_d405.native.mov",
+      "video_sha256": "c7fa1fde53a35fc0f82b9ab3cad5a34231eeb6851ef1e5fabafc231c98a8961c",
+      "warmup_excluded_callback_count": 6,
+      "writer_backpressure_count": 0
+    }
+  },
+  "camera_opened": true,
+  "camera_started": {
+    "dual_camera": {
+      "callback_timestamp_path": "native_dual_camera/camera_callback_timestamps.jsonl",
+      "capture_mechanism": "one_native_avcapture_session",
+      "claim_limits": {
+        "camera_exposure_synchronization": false,
+        "metric_depth": false,
+        "physical_authority": false,
+        "task_success": false
+      },
+      "independent_camera_sessions": 0,
+      "overhead": {
+        "browser_video_path": "overhead_c922.mp4",
+        "callback_timestamp_path": "native_dual_camera/camera_callback_timestamps.jsonl",
+        "camera_model_id": "UVC Camera VendorID_1133 ProductID_2140",
+        "camera_name": "C922 Pro Stream Webcam",
+        "camera_unique_id": "0x8310000046d085c",
+        "capture_mechanism": "one_native_avcapture_session",
+        "configured_fps": 30.00003000003,
+        "configured_height": 480,
+        "configured_pixel_format": "420v",
+        "configured_width": 640,
+        "diagnostic_only": true,
+        "is_training_data": false,
+        "metric_depth": false,
+        "orientation_rotation_degrees": 180,
+        "schema_version": "sim2claw.overhead_diagnostic_video.v1",
+        "status": "recording",
+        "video_path": "native_dual_camera/overhead_c922.native.mov"
+      },
+      "runtime_identity": {
+        "binary_path": "native_dual_camera/runtime/dual-camera-recorder",
+        "binary_sha256": "457ba8884f5b76fcadead1c0cd9e3265bd0971085cd25c583dc6aa3b5f846207",
+        "compiler_path": "/usr/bin/swiftc",
+        "compiler_sha256": "3e7d30871a9740446f33a907b14d28f10ebe6d4e1c146a4c0788308f573a6609",
+        "proven_active_session_contract_path": "configs/evaluations/avfoundation_dual_camera_runtime_binding_v2.json",
+        "proven_active_session_contract_sha256": "fa0e2601d84c2978bcb93a5ff45566c026f727ef728cb9e20a7ddab7c2ccd48c",
+        "schema_version": "sim2claw.native_dual_camera_recorder_runtime.v1",
+        "source_path": "tools/macos/AVFoundationDualCameraRecorder.swift",
+        "source_sha256": "5f6dfc08311f06e495804a4f17203d3dbe25ba6b2953fa513aec0eb039244a55",
+        "swift_version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)\nTarget: arm64-apple-macosx26.0"
+      },
+      "schema_version": "sim2claw.native_dual_camera_capture.v1",
+      "session_count": 1,
+      "started_at": "2026-07-29T07:34:27.027950+00:00",
+      "status": "recording",
+      "wrist": {
+        "browser_video_path": "wrist_d405.browser.mp4",
+        "callback_timestamp_path": "native_dual_camera/camera_callback_timestamps.jsonl",
+        "camera_model_id": "UVC Camera VendorID_32902 ProductID_2907",
+        "camera_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+        "camera_unique_id": "0x812000080860b5b",
+        "capture_mechanism": "one_native_avcapture_session",
+        "configured_fps": 5.0,
+        "configured_height": 240,
+        "configured_pixel_format": "yuvs",
+        "configured_width": 424,
+        "diagnostic_only": true,
+        "is_training_data": false,
+        "metric_depth": false,
+        "orientation_rotation_degrees": 0,
+        "schema_version": "sim2claw.wrist_diagnostic_video.v1",
+        "status": "recording",
+        "video_path": "native_dual_camera/wrist_d405.native.mov"
+      }
+    },
+    "pi": {
+      "bounded_duration_seconds": 35,
+      "camera": "imx708_wide",
+      "configured_framerate": 30,
+      "configured_height": 864,
+      "configured_width": 1536,
+      "host_monotonic_start": 983095.9430735,
+      "schema_version": "sim2claw.pi_motion_video_started.v1",
+      "status": "recording"
+    },
+    "schema_version": "sim2claw.motion_tricam_started.v1"
+  },
+  "camera_started_before_gateway_open_setup_motion": false,
+  "capture_artifacts": null,
+  "capture_hold_action_sha256": "863cb8ee440d907c875af6ab75f9e0ddebb1320a26f493d3177e8d9088227745",
+  "capture_mode": "native_motion_tricam",
+  "completed_capture_hold_samples": 0,
+  "completed_motion_samples": 233,
+  "completed_samples": 233,
+  "counted_task_action_sha256": null,
+  "counted_task_boundary_actual_degrees": null,
+  "error": "gateway modified or could not safely track a frozen motion action",
+  "evidence_action_boundary": null,
+  "expected_anchor_degrees": [
+    5.802197802197802,
+    -85.01098901098901,
+    99.2967032967033,
+    -17.45054945054945,
+    -103.34065934065934,
+    2.375296912114014
+  ],
+  "final_actual_degrees": [
+    5.802197802197802,
+    -85.01098901098901,
+    99.20879120879121,
+    -17.45054945054945,
+    -103.34065934065934,
+    2.375296912114014
+  ],
+  "final_residual_degrees": [
+    0.0,
+    0.0,
+    -0.0879120879120876,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "frame_joint_alignment": null,
+  "fresh_preflight_anchor_degrees": [
+    5.802197802197802,
+    -85.01098901098901,
+    99.2967032967033,
+    -17.45054945054945,
+    -103.34065934065934,
+    2.375296912114014
+  ],
+  "fresh_setup_recovery_simulation_preview": null,
+  "fresh_simulation_preview": {
+    "baseline_contact_pairs": [],
+    "baseline_minimum_distance_m": null,
+    "candidate_digest": "2da7425cbf0fd10e27822a415890ca180dde7a4f1b042bf3ed49030bcad018af",
+    "candidate_manifest_path": "/Users/kelly/Developer/sim2claw/runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+    "contact_pair_minimum_distances_m": [],
+    "contact_pairs_unchanged_or_removed_only": true,
+    "external_contact_pairs": [],
+    "final_contact_pairs": [],
+    "initial_preexisting_contact_pairs": [],
+    "known_safe_contact_envelope": {
+      "allowed_pairs": [
+        {
+          "bodies": [
+            "left_lower_arm",
+            "left_shoulder"
+          ],
+          "maximum_penetration_m": 7.1634e-05,
+          "numerical_tolerance_m": 1.0007e-07,
+          "observed_prior_maximum_penetration_m": 7.153393e-05
+        }
+      ],
+      "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "envelope_id": "pose_j_shoulder_lower_arm_prior_physical_safe_20260727_v1",
+      "path": "/Users/kelly/Developer/sim2claw/configs/evaluations/wrist_view_known_safe_self_contact_envelope_v1.json",
+      "physical_evidence": {
+        "execution_receipt": {
+          "path": "/Users/kelly/Developer/sim2claw/runs/pi-link-tag-calibration/20260726-new-scene-tags-pose-j-identity-validation-v1/stage-1/execution_receipt.json",
+          "sha256": "3d377ff0dd1c86301c636778df427bb5081609b8fef26c52304d1a37363cb962"
+        },
+        "packet": {
+          "path": "/Users/kelly/Developer/sim2claw/runs/pi-link-tag-calibration/20260726-new-scene-tags-pose-j-identity-validation-v1/packet.json",
+          "sha256": "7e84e2f46f8a6a79a1101b10060d45f4ff888503e7e003df0adb9cb6acb29f0b"
+        }
+      },
+      "sha256": "d2506d5b1adf3c193142d17cb4ddd6e59fcf4c5cbda19cb802f31e3e38822e6b"
+    },
+    "minimum_distance_m": null,
+    "no_new_or_worsened_kinematic_contact": true,
+    "recovery_source_contact_admission": {
+      "contact_pairs_subset_of_source": false,
+      "enabled": false,
+      "final_contact_pairs_cleared": false,
+      "penetration_never_worse_than_source": false,
+      "source_pairs_robot_self_contact_only": false
+    },
+    "runtime": "cpu_mujoco_mj_forward",
+    "stages": [
+      {
+        "contact_pair_minimum_distances_m": [],
+        "exact_physical_action_sha256": "c16b3e1e97306fb08f17fa1404a287e70fee664856530256183ddaeaaa34a032",
+        "external_contact_pairs": [],
+        "known_safe_envelope_pairs_observed": [],
+        "minimum_distance_m": null,
+        "no_new_or_worsened_kinematic_contact": true,
+        "observed_contact_pairs": [],
+        "sample_count": 641,
+        "stage_index": 1
+      }
+    ]
+  },
+  "gateway_open_attempted": true,
+  "gateway_open_completed": true,
+  "gateway_open_setup_command_anchor_degrees": null,
+  "gateway_open_setup_motion_commanded": false,
+  "inspect_wrist_camera_before_next_stage": true,
+  "joint_samples_path": "/Users/kelly/Developer/sim2claw/runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-corner-shape-v2/stage-1/joint_samples.jsonl",
+  "joint_samples_sha256": "181a02b02279eb48bd08b22242a20eccd10199774535df0f9305e546cec10bfc",
+  "packet_sha256": "241eea8d705bf303d5f7c3d9c8e5c4e7b81def094108d221a584374b97c428e7",
+  "physical_authority": false,
+  "physical_follower_torque_enabled": false,
+  "physical_motion_commanded": true,
+  "pi_hold_still": null,
+  "recovery_source_contact_admission": null,
+  "review_sha256": "184052d965563e6d111dc33bb9ef3abb92188abdff98e94733db1c438b88bad9",
+  "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+  "stage_index": 1,
+  "status": "stopped_safely",
+  "stop_before_further_robot_command": true,
+  "target_degrees": [
+    5.802197802197802,
+    -85.01098901098901,
+    99.2967032967033,
+    -17.45054945054945,
+    -103.34065934065934,
+    2.375296912114014
+  ],
+  "wall_duration_seconds": 42.69491712504532
+}

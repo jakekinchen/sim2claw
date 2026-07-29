@@ -1,0 +1,79 @@
+{
+  "schema_version": "sim2claw.wrist_view_reposition_route.v1",
+  "route_id": "calibration_graph_d405_wrist_corner_shape_heldout_tricam_20260729_v3",
+  "samples_per_stage": 641,
+  "capture_during_motion": true,
+  "capture_mode": "native_motion_tricam",
+  "pi_motion_video": {
+    "contract_path": "configs/acquisition/pi_imx708_motion_video_35s_v1.json",
+    "contract_sha256": "744a0c63c1d7282265299397c4a9bf3083bb3c35899878aa5480f3362feeef23"
+  },
+  "reviewed_anchor_degrees": [
+    5.802197802197802,
+    -85.01098901098901,
+    99.64835164835165,
+    -17.45054945054945,
+    -103.34065934065934,
+    2.375296912114014
+  ],
+  "stage_waypoints_degrees": [
+    [
+      [
+        5.802197802197802,
+        -85.01098901098901,
+        99.64835164835165,
+        -14.45054945054945,
+        -103.34065934065934,
+        2.375296912114014
+      ],
+      [
+        5.802197802197802,
+        -85.01098901098901,
+        99.64835164835165,
+        -17.45054945054945,
+        -103.34065934065934,
+        2.375296912114014
+      ]
+    ]
+  ],
+  "geometric_derivation": {
+    "purpose": "prospective wrist-only mapping factor after elbow-varying hardware scope was quarantined",
+    "stage_order": [
+      "wrist_flex_plus_3_degrees_exact_return"
+    ],
+    "elbow_semantics": "constant_fresh_encoder_anchor_not_an_actuated_factor",
+    "maximum_body_excursion_degrees": 3.0,
+    "returns_to_exact_start_each_stage": true,
+    "static_collision_preview": {
+      "outcome_blind": true,
+      "dynamic_replay_used": false,
+      "new_physical_images_or_joint_traces_opened": false,
+      "required_before_packet_review": true
+    },
+    "candidate_manifest_path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "candidate_manifest_sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+    "known_safe_contact_envelope_path": "configs/evaluations/wrist_view_known_safe_self_contact_envelope_v1.json",
+    "known_safe_contact_envelope_sha256": "d2506d5b1adf3c193142d17cb4ddd6e59fcf4c5cbda19cb802f31e3e38822e6b"
+  },
+  "review_basis": {
+    "physical_scope": "calibration_capture_only",
+    "capture_scope": "one C922 D405 Pi wrist-only exact-return stage",
+    "target_selection": "The wrist action is unchanged in amplitude and direction from the prior completed stage; only the prospectively frozen raw-corner trajectory-shape evaluator is new.",
+    "pawn_contact_forbidden": true,
+    "board_contact_forbidden": true,
+    "table_contact_forbidden": true,
+    "return_to_stable_anchor_before_torque_off": true,
+    "evidence_limits": {
+      "prospective_wrist_corner_shape_mapping_heldout": true,
+      "elbow_mapping_or_actuation": false,
+      "physical_no_contact_geometric_transfer_diagnostic": true,
+      "simultaneous_C922_D405_Pi_capture_required": true,
+      "pawn_contact": false,
+      "pawn_task_success": false,
+      "depth_required": false,
+      "simulator_parameter_promotion": false,
+      "physical_joint_transform_promotion": false,
+      "policy_evidence": false
+    }
+  }
+}
