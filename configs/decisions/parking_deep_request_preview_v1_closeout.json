@@ -1,0 +1,31 @@
+{
+  "schema_version": "sim2claw.parking_deep_request_preview_closeout.v1",
+  "decision_id": "rp02b-deep-request-preview-v1-closeout",
+  "status": "reject_out_of_calibrated_command_range_open_narrowed_successor",
+  "proof_class": "cpu_fp64_motion_free_deep_request_corridor_preview",
+  "contract": {
+    "path": "configs/hardware/parking_deep_request_preview_v1.json",
+    "sha256": "36adb64ee04c49e9f546e544a21f23d184f015c9b0303c88d8e5781447a503ac"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-parking-deep-request-preview-v1/receipt.json",
+    "sha256": "0e409fab5447cc7c767b2f158dea9bea51ad1d8a1a1dc322688e3b6220a5d340"
+  },
+  "result": {
+    "passed": false,
+    "joint_ranges_ok": false,
+    "contact_violations": 0,
+    "minimum_pawn_clearance_m": 0.14057522513103232,
+    "minimum_board_clearance_m": 0.18698030736797588,
+    "minimum_table_clearance_m": 0.202980307367976,
+    "minimum_pinch_clearance_m": 0.2067813813791166,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "localization": "The torque-off elbow observation at 103.428571 degrees is 1.318681 degrees above the calibrated command maximum of 102.109890 degrees. It is an observation, not an admissible exact command.",
+  "successor_scope": {
+    "allowed_change": "Narrow the preview upper command bound to 102.1 degrees, below the calibrated command maximum. Keep the 80 degree lower bound and every contact, clearance, inventory, authority, and claim gate unchanged.",
+    "torque_on_anchor_snap": "The reviewed gateway already maps an out-of-range torque-off observation to a calibrated command anchor with a maximum 3 degree elbow snap before exposing the settled live anchor.",
+    "physical_authority": false
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "schema_version": "sim2claw.parking_deep_request_preview.v2",
+  "contract_id": "rp02b-deep-request-preview-20260729-v2",
+  "status": "frozen_for_one_motion_free_cpu_fp64_preview",
+  "proof_class": "prospective_cpu_fp64_motion_free_deep_request_calibrated_command_corridor_preview",
+  "inputs": {
+    "predecessor_execution_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-execution-v2/receipt.json",
+      "sha256": "fa328c856f41ecc703d3c21d76fae043355007355b9574c1da196d73e7a4f8de"
+    },
+    "predecessor_execution_closeout": {
+      "path": "configs/decisions/parking_transaction_execution_v2_closeout.json",
+      "sha256": "fc03072b65404970bd8cb5f64fe306314c8b749c18651984f998399c6fe86ebc"
+    },
+    "predecessor_preview_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-parking-deep-request-preview-v1/receipt.json",
+      "sha256": "0e409fab5447cc7c767b2f158dea9bea51ad1d8a1a1dc322688e3b6220a5d340"
+    },
+    "predecessor_preview_closeout": {
+      "path": "configs/decisions/parking_deep_request_preview_v1_closeout.json",
+      "sha256": "75bb6c4291e6cfd3e019b855d37bd18e9072e101973dbcdf1c7e57b95d527bb8"
+    },
+    "fable_blocker_advisory": {
+      "path": "docs/advisory/fable-rp02a-stall-unblock-20260729.md",
+      "sha256": "6b5f996a20a48f5128a3746d2775dd236dd4430fa31c42079225caa15f3d355c"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "registration_candidate": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+      "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+    },
+    "implementation": {
+      "path": "src/sim2claw/parking_deep_request_preview.py",
+      "sha256": "4269b04a108ca87ee8fda8a616b05116ced986759c87a8029aab958bc658ea81"
+    }
+  },
+  "fresh_anchor": {
+    "source": "rp02a_configuration_free_torque_off_postflight_observation",
+    "expected_degrees_percent": [
+      5.802197802197802,
+      -85.01098901098901,
+      103.42857142857143,
+      -15.076923076923077,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "maximum_held_joint_rebase_degrees": 0.5,
+    "maximum_elbow_rebase_degrees": 1.0,
+    "follower_port": "/dev/cu.usbmodem5B3D0406411",
+    "follower_calibration_sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4",
+    "calibrated_elbow_command_maximum_degrees": 102.10989010989012,
+    "torque_on_anchor_snap_maximum_degrees": 3.0,
+    "expected_inventory": {
+      "moving_chain_geoms": 28,
+      "environment_geoms": {
+        "table": 5,
+        "board": 1,
+        "pawns": 224
+      }
+    }
+  },
+  "setup": {
+    "mode": "reviewed_live_anchor_snap_to_calibrated_command_range",
+    "maximum_elbow_snap_degrees": 3.0,
+    "moving_chain_root_body": "left_upper_arm",
+    "minimum_dynamic_clearance_m": 0.12
+  },
+  "static_preview": {
+    "engine": "mujoco",
+    "numeric_mode": "cpu_float64",
+    "elbow_interval_degrees": [
+      80.0,
+      102.1
+    ],
+    "sample_increment_degrees": 0.1,
+    "expected_sample_count": 222,
+    "strict_contact_free_maximum_degrees": 99.6,
+    "live_anchor_contact_maximum_additional_penetration_m": 0.0005,
+    "minimum_dynamic_clearance_m": 0.12
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-parking-deep-request-preview-v2",
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "torque": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "mapping_approval": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "One motion-free CPU/fp64 preview of the narrowed calibrated-command deep-request corridor. The out-of-range torque-off observation is not treated as an admissible command. This cannot authorize physical motion, task contact, transfer, mapping approval, or simulator promotion."
+}

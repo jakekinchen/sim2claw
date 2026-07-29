@@ -100,9 +100,13 @@ def _contact_envelope_passes(
 
 
 def _validate(contract: Mapping[str, Any]) -> None:
+    schema_version = contract.get("schema_version")
     _require(
-        contract.get("schema_version")
-        == "sim2claw.parking_deep_request_preview.v1"
+        schema_version
+        in {
+            "sim2claw.parking_deep_request_preview.v1",
+            "sim2claw.parking_deep_request_preview.v2",
+        }
         and contract.get("status")
         == "frozen_for_one_motion_free_cpu_fp64_preview"
         and contract.get("authority")
@@ -121,14 +125,20 @@ def _validate(contract: Mapping[str, Any]) -> None:
         },
         "deep-request preview identity or authority changed",
     )
+    expected_stop = (
+        103.5
+        if schema_version == "sim2claw.parking_deep_request_preview.v1"
+        else 102.1
+    )
+    expected_samples = 236 if expected_stop == 103.5 else 222
     _require(
         contract.get("static_preview")
         == {
             "engine": "mujoco",
             "numeric_mode": "cpu_float64",
-            "elbow_interval_degrees": [80.0, 103.5],
+            "elbow_interval_degrees": [80.0, expected_stop],
             "sample_increment_degrees": 0.1,
-            "expected_sample_count": 236,
+            "expected_sample_count": expected_samples,
             "strict_contact_free_maximum_degrees": 99.6,
             "live_anchor_contact_maximum_additional_penetration_m": 0.0005,
             "minimum_dynamic_clearance_m": 0.12,
