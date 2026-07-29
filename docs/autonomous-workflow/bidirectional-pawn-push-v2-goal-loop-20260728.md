@@ -3,10 +3,16 @@
 ## Mission
 
 Autonomously complete the smallest honest, camera-verifiable bidirectional
-straight pawn-push proof by closing the causal chain from exact action through
+pawn-consequence proof by closing the causal chain from exact action through
 joint/link response, contact, planar object response, and task consequence.
 Stop only at a genuine receipt-backed safety or authority boundary after safe
 in-scope alternatives are exhausted.
+
+The straight sliding-push branch is closed at the current locked-elbow
+workspace boundary. The active hard cutover is a separately named
+**directional pawn displacement** primitive with prospectively frozen
+displacement/direction gates and optional secondary toppling evidence. Never
+describe that result as a straight push or chess play.
 
 ## Source of Truth
 
@@ -63,8 +69,10 @@ predecessor v2 queue remains immutable authority for its terminal results.
 - Tests, workflow audit, torque/process/camera/gateway cleanup, Brev cleanup,
   scoped push, graph update, and the CC13--CC15 Fable feedback loop complete.
 
-The only final capability claim is the narrow preregistered bidirectional
-straight pawn-push claim recorded in the queue.
+The final capability claim is whichever narrow preregistered bidirectional
+primitive the receipts support: straight sliding push only if its existing
+gates pass, otherwise directional pawn displacement under its distinct frozen
+evaluator. Claim wording must preserve that distinction.
 
 ## Evidence Standard
 
@@ -96,7 +104,7 @@ Confirmed:
   `fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178`
   accepts strict causal serialization and adapters without dynamic or
   physical authority.
-- CC03 in the successor queue is the sole active card.
+- CC03E in the successor queue is the sole active card.
 - V1 full-action temporary test outputs are explicitly non-admissible and
   closed by SHA-256 `1693f5c68af7298d27d6125340f48bd87b713f5fa3cd8639848b772eb5fc5f8d`.
   No outcome was used to change the action set, paths, variants, or gates.
@@ -253,7 +261,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 
 ```text
 Current state:
-Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
+Active card: CC03E receipt-bound elbow telemetry diagnostic.
 Completed: CC00, CC00A, CC01, CC02.
 Evidence: fresh wrist pass 16b7896c...; low-path terminal receipt eceb14e3...; safety closeout 0df993af....
 REAL->SIM successes/attempts:
@@ -261,9 +269,9 @@ SIM->REAL successes/attempts:
 Heldout open count: 4
 Physical task attempts: 0/10
 Physical/camera/torque state: closed after wrist-only calibration; torque false.
-Remaining: CC03 through CC15.
-Blockers: the elbow is physically nonresponsive, and every compiled elbow-locked pawn-push cell violates self-collision and first-contact-height gates.
-Next step: request an adversarial review in the existing Fable thread, disposition any concrete safe recommendation, and preserve false task/transfer authority unless the hardware/external boundary changes.
+Remaining: CC03E, CC03K, and CC04 through CC15.
+Blockers: straight sliding push is geometrically unsafe at the current elbow anchor; the elbow failure class is not yet receipt-bound; directional-displacement feasibility is not yet frozen.
+Next step: execute the no-contact CC03E telemetry/control probe, then freeze and statically screen CC03K. Preserve false task/transfer authority until both directional families and the new evaluator are prospectively admitted.
 ```
 
 ## Physical Authority Boundaries

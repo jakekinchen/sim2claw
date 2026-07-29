@@ -3,12 +3,12 @@
     "counted_task_attempts": 0,
     "cumulative_manifest_read_count": 4,
     "heldout_open_count": 4,
-    "milestone_id": "CC03",
-    "node_id": "verdict:canonical-elbow-locked-low-path-static-v4-terminal-boundary",
-    "queue_status": "BLOCKED_CC03_ELBOW_ACTUATOR_LOCKED_WORKSPACE_SAFETY_BOUNDARY",
-    "resume_action": "request_existing_fable_thread_advisory_review",
-    "resume_authorized": false,
-    "status": "terminal_elbow_actuator_locked_workspace_safety_boundary"
+    "milestone_id": "CC03E",
+    "node_id": "evidence:fable-elbow-boundary-endgame-review-v1",
+    "queue_status": "IN_PROGRESS_CC03E_ELBOW_TELEMETRY_DIAGNOSTIC",
+    "resume_action": "preregister_and_execute_no_contact_elbow_and_wrist_control_probe",
+    "resume_authorized": true,
+    "status": "bounded_elbow_telemetry_diagnostic_active"
   },
   "authority": {
     "camera_open": false,
@@ -95,7 +95,7 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 217,
+    "nodes": 218,
     "nodes_by_type": {
       "candidate": 2,
       "checkpoint": 135,
@@ -103,7 +103,7 @@
       "counterexample": 4,
       "dataset": 1,
       "evaluator_verdict": 53,
-      "evidence": 8,
+      "evidence": 9,
       "intervention": 1,
       "mechanism": 3,
       "parameter_posterior": 1,
@@ -2126,7 +2126,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "26c97b262fd205087fe0a271689ee4fdd15039aedd052413ff4d888392e11184",
+  "graph_digest": "20ff2b507ce71715ed2066b5933285c76e50ed7f5dbfd1ef0d1d3f7f740312e3",
   "node_types": [
     "workcell",
     "session",
@@ -3829,7 +3829,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "97d95434d75cc5116fd4bfa1509420ba8d47997be85fbc05a5239cdfadf02081"
+        "sha256": "171091e6b60c5cac66d39fc5f7369c17be19bb58718f6c7476477b52e1a34b2e"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6574,6 +6574,30 @@
         "sha256": "d32139d76575d727262bf2f0e100fb63ae7b7bf04db117820d6f2a6e69cad775"
       },
       "status": "jaw_contact_precedes_rise_proxy_collision_challenger_selected",
+      "type": "evidence"
+    },
+    {
+      "data": {
+        "directional_displacement_successor_required": true,
+        "elbow_mechanically_dead_proven": false,
+        "elbow_telemetry_probe_required": true,
+        "human_repair_authorized": false,
+        "physical_task_attempts": 0,
+        "physical_task_authority": false,
+        "ram_gain_change_authorized": false,
+        "sliding_push_boundary_independently_reproduced": true,
+        "source_binding_id": "fable_elbow_boundary_endgame_review_v1"
+      },
+      "evaluator_identity": null,
+      "id": "evidence:fable-elbow-boundary-endgame-review-v1",
+      "label": "Fable independently confirms sliding-push boundary and identifies directional-displacement successor",
+      "proof_class": "read_only_advisory_independent_pose_sweep_and_recommendation_disposition",
+      "source": {
+        "path": "docs/advisory/fable-elbow-boundary-and-endgame-review-20260729.md",
+        "proof_class": "read_only_advisory_independent_pose_sweep_and_recommendation_disposition",
+        "sha256": "96b5f641e624c70fac4d352819976d9fd8df3c138a0237f32491caa09cd50024"
+      },
+      "status": "advisory_review_complete_cc03e_telemetry_active_cc03k_pending",
       "type": "evidence"
     },
     {
@@ -9615,7 +9639,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "97d95434d75cc5116fd4bfa1509420ba8d47997be85fbc05a5239cdfadf02081",
+      "source_sha256": "171091e6b60c5cac66d39fc5f7369c17be19bb58718f6c7476477b52e1a34b2e",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -10557,6 +10581,16 @@
       "source_binding": "canonical_elbow_locked_low_path_static_closeout_v4",
       "source_sha256": "0df993af40b6ea274878d874a315d46757f7a2e44a918730c948807f15395b33",
       "status": "terminal_elbow_actuator_locked_workspace_safety_boundary_no_task_mapping"
+    },
+    {
+      "event_id": "FABLE_ELBOW_BOUNDARY_ENDGAME_REVIEW_V1",
+      "node_ids_added": [
+        "evidence:fable-elbow-boundary-endgame-review-v1"
+      ],
+      "revision": 198,
+      "source_binding": "fable_elbow_boundary_endgame_review_v1",
+      "source_sha256": "96b5f641e624c70fac4d352819976d9fd8df3c138a0237f32491caa09cd50024",
+      "status": "advisory_review_complete_cc03e_telemetry_active_cc03k_pending"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -11844,7 +11878,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "97d95434d75cc5116fd4bfa1509420ba8d47997be85fbc05a5239cdfadf02081"
+      "sha256": "171091e6b60c5cac66d39fc5f7369c17be19bb58718f6c7476477b52e1a34b2e"
     },
     {
       "id": "current_task_scene_labels",
@@ -11856,6 +11890,12 @@
       },
       "proof_class": "deterministic_scene_label_contract_only",
       "sha256": "187b91a51fe3a51adda64c7dd682025e2143edaae16ad3fdd1c1a9d9c43550ed"
+    },
+    {
+      "id": "fable_elbow_boundary_endgame_review_v1",
+      "path": "docs/advisory/fable-elbow-boundary-and-endgame-review-20260729.md",
+      "proof_class": "read_only_advisory_independent_pose_sweep_and_recommendation_disposition",
+      "sha256": "96b5f641e624c70fac4d352819976d9fd8df3c138a0237f32491caa09cd50024"
     },
     {
       "id": "observable_episode_v2_min_closeout",

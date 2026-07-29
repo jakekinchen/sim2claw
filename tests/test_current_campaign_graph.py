@@ -29,22 +29,22 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     )
 
     assert rebuilt == tracked
-    assert tracked["active_pointer"]["milestone_id"] == "CC03"
+    assert tracked["active_pointer"]["milestone_id"] == "CC03E"
     assert tracked["active_pointer"] == {
-        "node_id": (
-            "verdict:canonical-elbow-locked-low-path-static-v4-terminal-boundary"
+        "node_id": "evidence:fable-elbow-boundary-endgame-review-v1",
+        "milestone_id": "CC03E",
+        "status": "bounded_elbow_telemetry_diagnostic_active",
+        "queue_status": "IN_PROGRESS_CC03E_ELBOW_TELEMETRY_DIAGNOSTIC",
+        "resume_action": (
+            "preregister_and_execute_no_contact_elbow_and_wrist_control_probe"
         ),
-        "milestone_id": "CC03",
-        "status": "terminal_elbow_actuator_locked_workspace_safety_boundary",
-        "queue_status": "BLOCKED_CC03_ELBOW_ACTUATOR_LOCKED_WORKSPACE_SAFETY_BOUNDARY",
-        "resume_action": "request_existing_fable_thread_advisory_review",
-        "resume_authorized": False,
+        "resume_authorized": True,
         "heldout_open_count": 4,
         "cumulative_manifest_read_count": 4,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(198)
+        range(199)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,13 +54,13 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "CANONICAL_ELBOW_LOCKED_LOW_PATH_STATIC_V4_TERMINAL_BOUNDARY"
+        "FABLE_ELBOW_BOUNDARY_ENDGAME_REVIEW_V1"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "verdict:canonical-elbow-locked-low-path-static-v4-terminal-boundary"
+        "evidence:fable-elbow-boundary-endgame-review-v1"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
-    assert tracked["active_pointer"]["resume_authorized"] is False
+    assert tracked["active_pointer"]["resume_authorized"] is True
     closeout = next(
         row
         for row in tracked["nodes"]

@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `BLOCKED_CC03_ELBOW_ACTUATOR_LOCKED_WORKSPACE_SAFETY_BOUNDARY`
+Status: `IN_PROGRESS_CC03E_ELBOW_TELEMETRY_DIAGNOSTIC`
 
 Created: `2026-07-28`
 
@@ -12,11 +12,19 @@ Branch: `codex/bidirectional-transfer-goal-loop-20260728`
 
 Use the accepted canonical task-plane registration and a defect-free,
 current-anchor-seeded action set to close one complete causal task-transfer
-chain:
+chain for the smallest safely executable pawn consequence:
 
 > exact action -> measured joint/link response -> contact onset -> planar
 > object response -> task consequence -> one REAL->SIM success and one
 > distinct SIM->REAL success.
+
+The original straight sliding-push primitive remains the preferred claim, but
+the elbow-locked workspace has a receipt-backed and independently reproduced
+`<=32 mm` contact-height safety boundary. The active hard cutover is therefore
+to a separately named **directional pawn displacement** primitive: selected
+pawn displacement in a preregistered direction quadrant, with toppling/fall
+quadrant secondary and exclusions stationary. This is not described as a
+straight push or chess play.
 
 After that narrow bidirectional proof exists, extend the same evidence into
 contact system identification and a bounded policy-screening result. Do not
@@ -179,7 +187,9 @@ Requirements:
 | CC00A | `DONE` | Reconcile the concurrent seeded-static v1 defect and finish the calibrated-range v2 rerun before using any action hash downstream. | V1 is explicitly closed as non-authoritative; v2 contract/code hashes predate its one run; calibrated model and gateway ranges are both named; every selected row has nonnegative model-limit and gateway margin; focused tests, workflow audit, receipt, reviewer decision, graph, queue, commit, and push agree. | A v2 reject remains a static negative and routes to one evidence-backed compiler/model correction. It never silently restores v1 or opens dynamics/hardware. |
 | CC01 | `DONE` | Implement `ObservableEpisode.v2-min` plus deterministic simulator and physical-source adapters without opening hardware. | Schema validates exact actions, monotonic timestamps, joint/link state, board-plane object SE(2)+covariance, contact/motion events, task outcome, and explicit missingness; synthetic fixtures prove serialization and first-divergence extraction. | Accepted closeout `fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178`; no dynamic, mapping, or physical authority. |
 | CC02 | `DONE` | Replay every v2-admitted current-anchor action in canonical CPU/fp64 MuJoCo and emit `ObservableEpisode.v2-min` traces. | Requested/applied action hashes remain exact; at least two distinct cases per direction report link, contact, object trajectory, exclusions, and outcome under direct-target and the frozen timing-stress plant; `2/2` per direction pass the unchanged task and robustness gates before case freeze. | Accepted closeout `2c7f8483663a619c25c6aece2c041a7327aa440b8d961857a101bbc0590a5ed5`; simulator-only, no mapping or transfer claim. |
-| CC03 | `IN_PROGRESS` | Implement the minimum gauge-fixed `CalibrationGraph.v1` required to approve or reject the current physical/model mapping. | Shared variables cover fixed camera/board, robot-to-board rigid transform, physical-degree-to-MuJoCo sign/zero/scale, and declared jaw reference. Factors reuse accepted board/endpoint data, fixed-base evidence, one-joint sweeps, exact encoder holds, and an untouched composite held-out. Receipt reports factor residuals, Jacobian rank/spectrum, correlations, bounds, condition, and held-out result. | Keep the accepted camera/board solution fixed unless a factor falsifies it. Add z-buffered body masks only if observability requires them. No broad graph rewrite. |
+| CC03 | `BLOCKED_SLIDING_PUSH_BOUNDARY_CONFIRMED` | Implement the minimum gauge-fixed `CalibrationGraph.v1` required to approve or reject the current physical/model mapping. | Shared variables cover fixed camera/board, robot-to-board rigid transform, physical-degree-to-MuJoCo sign/zero/scale, and declared jaw reference. Factors reuse accepted board/endpoint data, fixed-base evidence, one-joint sweeps, exact encoder holds, and an untouched composite held-out. Receipt reports factor residuals, Jacobian rank/spectrum, correlations, bounds, condition, and held-out result. | Wrist mapping passed only in a bounded elbow-locked scope. V4 plus Fable's independent pose sweep prove the unchanged sliding-push contact-height gate unreachable at the current anchor. No more sliding-push search. |
+| CC03E | `IN_PROGRESS` | Sharpen the elbow diagnosis with a receipt-bound, no-contact telemetry probe and a matched wrist-flex control. | Preregistered `+3/-3/+5/-5 deg` elbow offsets in both gravity directions and identical-magnitude wrist-flex control record requested/goal/sent/measured position, current/load, temperature, status, torque-enable readback, clocks, tracking/stall decisions, return residual, and torque-off cleanup at `>=5 Hz`. One torque disable/enable cycle precedes one repeated elbow probe; no configuration/gain write. | Stop on identity, camera, bus, torque, tracking, stall, or return uncertainty. Classify asymmetric low-current, symmetric rising-current, symmetric flat-current, or inconclusive. No class automatically authorizes a gain change. |
+| CC03K | `PENDING_AFTER_CC03E` | Prospectively freeze and statically screen the directional pawn-displacement primitive within the physically responsive envelope. | Static-only finite grid; selected pawn contacted collision-free at the modeled reachable head-height band; robot-board and exclusion margins, calibrated joint/gateway/slew margins, camera visibility, exact action identity, distinct direction families, and false physical authority all pass. At least one eligible family per direction is required. Primary displacement threshold and direction quadrant plus secondary topple/fall quadrant are frozen before dynamic outcomes. | If either direction has zero safe families, record a terminal workspace boundary. Do not weaken collision/contact/camera/gateway gates, relabel the result as sliding push, or continue outcome-informed family search. |
 | CC04 | `PENDING` | Approve the mapping and freeze evaluator v2 plus at least two feasible distinct cases per direction. | `physical_model_mapping_approved:true`; canonical registration remains admitted; dynamic CC02 cases pass; evaluator, object tracker, camera thresholds, clocks/missingness, exclusions, mapping, scene, setup, task hashes, one-attempt rule, and maximum-ten ledger freeze prospectively. | Mapping reject routes back to one discriminating calibration factor/probe. Dynamic reject routes to one mechanism-specific simulator intervention. No physical packet. |
 | CC05 | `PENDING` | Execute one admitted REAL->SIM case: physical task and object consequence first, then byte-identical replay in simulation. | C922-enclosed physical success; requested=mapped=sent identity; torque-off cleanup; exact simulator replay with no clipping/retiming/repair/state forcing; simulator outcome passes; full first-divergence trace includes links, contact, pawn state, and outcome. | A failure stays in the REAL->SIM denominator. If links agree but pawn response diverges, activate CC07; otherwise diagnose the earliest upstream channel before another case. |
 | CC06 | `PENDING` | Execute one distinct admitted SIM->REAL case: simulator success and robustness first, then the frozen identical action once physically. | Sim outcome and robustness predate action freeze; distinct pawn/file; reviewed physical packet; C922-owned physical success; exact bytes; exclusions pass; torque-off cleanup. | A failure stays in the SIM->REAL denominator. Physical outcome never tunes the frozen case. |
@@ -227,7 +237,7 @@ Current state:
 - CC00 is complete.
 - CC00A is complete.
 - CC01 is complete.
-- CC03 is the only active card.
+- CC03E is the only active card.
 - The v1 seeded-action apparent pass is quarantined.
 - The calibrated-range v2 static run passed `2/2` actions per direction with
   the exact hashes listed above.
@@ -772,6 +782,21 @@ Current state:
   Further task progress requires a genuine hardware/external state change
   (responsive elbow repair, a different reachable actuator/tool, or an
   explicitly redesigned physically executable proof task).
+- The existing Fable project thread completed a read-only adversarial review
+  at commit `e4d4f3d`. Advisory summary SHA-256 is
+  `96b5f641e624c70fac4d352819976d9fd8df3c138a0237f32491caa09cd50024`.
+  Its independent pose sweep reproduced the locked-elbow sliding-push
+  boundary, while identifying reachable `45--58 mm` pawn contact and a
+  distinctly labeled directional-displacement/knockdown consequence as the
+  only honest route to nonzero transfer before hardware repair.
+- Fable's elbow diagnosis is adopted as a correction to the admission
+  wording: the channel is nonresponsive for task admission but not proven
+  mechanically dead. `CC03E` will bind full telemetry and a matched wrist
+  control. RAM gain change remains deferred and unauthorized.
+- More elbow-locked sliding-push successors, simulated-other-arm/tool routes,
+  and new viewer/architecture work are receipt-backed rejects. `CC03K` is the
+  prospectively frozen proof-task redesign; it cannot inherit a straight-push
+  claim.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -790,8 +815,9 @@ Completed:
 
 Blockers:
 
-- No approved physical/model mapping.
-- Low-contact V3 remains below the two-family-per-direction dynamic gate.
+- No approved physical/model mapping for straight sliding-push actions.
+- The elbow diagnostic class is not yet receipt-bound.
+- Directional-displacement static feasibility is not yet frozen or tested.
 
 ## Time-bounded physical authorization
 
@@ -813,8 +839,9 @@ This authorization:
 
 Next step:
 
-- Present the bound CC03 safety boundary and full causal evidence to the
-  existing project Fable thread for an adversarial review of missing safe
-  mechanisms and the highest-leverage next implementation. Classify every
-  concrete recommendation into an evidence-backed queue action, rejection, or
-  already-satisfied item. Do not touch a pawn or count a task attempt.
+- Preregister and run `CC03E` under the time-bounded diagnostic-probe
+  authorization. Keep camera enclosure, return, and torque-off fail-closed;
+  do not touch a pawn or count a task attempt.
+- Then freeze `CC03K` statically. Physical task authority remains false unless
+  at least one safe family per direction survives and CC04 freezes the new
+  evaluator/cases prospectively.
