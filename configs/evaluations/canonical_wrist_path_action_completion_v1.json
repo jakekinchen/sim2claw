@@ -1,0 +1,71 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_action_completion.v1",
+  "contract_id": "canonical-wrist-path-action-completion-20260729-v1",
+  "status": "frozen_after_temporal_partial_before_two_unopened_action_materialization",
+  "proof_class": "prospective_cpu_fp64_static_action_completion_without_dynamic_outcomes",
+  "static_contract": {
+    "path": "configs/evaluations/canonical_wrist_path_static_v4.json",
+    "sha256": "dc759ea2b13a9f29e82a86553b91cb4239f439876fc9f4926bc24c68bb236c64"
+  },
+  "static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-v4/receipt.json",
+    "sha256": "b9374eaa326af2bdb063eac577e76293c2a3e45f11001c1d135bdd7258a15e31"
+  },
+  "temporal_closeout": {
+    "path": "configs/decisions/canonical_wrist_path_temporal_v1_closeout.json",
+    "sha256": "7491189fb996428c5bf6c0dcad6950a62c15205fcc9ad075fe624366a67d33e2"
+  },
+  "implementation": {
+    "path": "src/sim2claw/canonical_wrist_path_action_completion.py",
+    "sha256": "6fa30ee760c371b246baf8f5bec6028086e6b77a925907ba0f41b2b880138bef"
+  },
+  "cases": [
+    {
+      "case_id": "tan_pawn_h7__h7_h8",
+      "selected_piece_id": "tan_pawn_h7",
+      "source_square": "h7",
+      "destination_square": "h8",
+      "wrist_orientation_index": 1,
+      "contact_height_index": 1,
+      "wrist_roll_target_rad": -1.803634756676338,
+      "contact_height_m": 0.014,
+      "action_sha256": "0361acadf35c34b34617645265848ec98908a2caa9d3a364d8bbd8b5a953bb51",
+      "action_shape": [
+        1028,
+        6
+      ],
+      "dynamic_outcome_opened": false
+    },
+    {
+      "case_id": "tan_pawn_d7__d7_e7",
+      "selected_piece_id": "tan_pawn_d7",
+      "source_square": "d7",
+      "destination_square": "e7",
+      "wrist_orientation_index": 2,
+      "contact_height_index": 1,
+      "wrist_roll_target_rad": -1.6509854282810728,
+      "contact_height_m": 0.014,
+      "action_sha256": "f33d94ae6d13024d217771a731d0fa1cc46c12c736e540e41cfa343ea41f6dbd",
+      "action_shape": [
+        1319,
+        6
+      ],
+      "dynamic_outcome_opened": false
+    }
+  ],
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-action-completion-v1",
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "dynamic_simulation": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective materialization of exactly two V4 statically eligible family actions that were not selected into or opened by temporal V1. The case cells, float64 hashes, shapes, wrist targets, contact heights, path mechanism, current anchor, and static evidence predate this run. It performs no dynamic simulation, outcome selection, mapping, hardware action, or transfer."
+}

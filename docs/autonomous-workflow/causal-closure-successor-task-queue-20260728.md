@@ -355,6 +355,18 @@ Current state:
   Requested bytes, row order, 40 Hz timing, five reset variants,
   ObservableEpisode.v2-min, first-divergence channels, and all gates remain
   unchanged.
+- Dynamic V1 ran once and passed only `tan_pawn_f7__f7_f8`: REAL->SIM
+  `0/2`, SIM->REAL `1/2`. All action, trace, timing, and rate-compatibility
+  checks passed. The failures localize to neighboring-pawn displacement for
+  two lateral cases and progress/no-lift boundaries for the remaining
+  forward case. Receipt SHA-256
+  `cbda502b2b07f75f87695c9e2a19635b01a7197e1cf90732d9c1bbb391c792e0`;
+  closeout SHA-256
+  `7491189fb996428c5bf6c0dcad6950a62c15205fcc9ad075fe624366a67d33e2`.
+- The two V4 statically eligible families not opened dynamically are frozen
+  for action materialization only at contract SHA-256
+  `4d38d758fcf408fc1267c30acd599a554bd98d0a62ad67ed0a2140e2640ff6d1`.
+  This is a two-case bounded completion, not renewed family enumeration.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -397,7 +409,8 @@ This authorization:
 
 Next step:
 
-- Commit and push the V4 static pass plus the dynamic replay freeze, then
-  execute the four exact actions under both plant paths exactly once.
-  Preserve both baseline and challenger outcomes; a pass does not itself
-  promote geometry, approve mapping, or open hardware.
+- Commit and push the dynamic V1 partial negative plus the two-action static
+  completion freeze, then materialize those two unopened exact actions once.
+  Next freeze one isolated-selected-pawn reset-layout replay over all six
+  actions. Preserve both plant paths and all gates; no result itself promotes
+  geometry, approves mapping, or opens hardware.
