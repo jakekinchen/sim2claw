@@ -1,0 +1,50 @@
+{
+  "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static_closeout.v3",
+  "decision_id": "canonical-elbow-locked-wrist-path-static-20260729-v3-closeout",
+  "status": "static_reject_high_clearance_unreachable_low_direct_path_successor_required",
+  "proof_class": "cpu_fp64_elbow_locked_static_ik_negative_with_stage_localization",
+  "contract": {
+    "path": "configs/evaluations/canonical_elbow_locked_wrist_path_static_v3.json",
+    "sha256": "3d1e00daf8c673e8c509bc0e7dba146f4fc3b548ce2f9cea2ba80f6d53f2c404"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-elbow-locked-wrist-path-static-v3/receipt.json",
+    "sha256": "8a61f2501af576e22383d9419dfbad0bfcc872146292db100b92941e9f1e8a16"
+  },
+  "result": {
+    "family_count": 48,
+    "grid_result_count": 288,
+    "compile_reject_count": 288,
+    "compile_reject_reason": "canonical lifted-wrist IK residual exceeded gate",
+    "statically_eligible_family_count": 0,
+    "dynamic_simulation": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "stage_localization": {
+    "dynamic_or_physical_outcomes_used": false,
+    "family": "brown_pawn_h1__h1_g1",
+    "target_contact_height_m": 0.04,
+    "frozen_ik_gate_m": 0.004,
+    "live_lift_residual_m": 0.003590301132685519,
+    "high_preclear_residual_m": 0.06739440534742086,
+    "low_precontact_residual_m": 0.0014060322119245408,
+    "contact_residual_m": 0.0008032137388966921,
+    "pushed_residual_m": 0.00021158402137263347,
+    "high_retreat_residual_m": 0.04015253001563418
+  },
+  "decision": "Preserve V3 as a complete static IK negative for the inherited high-clearance path. The exact stage localization shows that low precontact, contact, and push targets pass the unchanged 4 mm IK gate while high preclear and high retreat fail by 67.4 mm and 40.2 mm. Freeze one path-shape-only successor that removes the unreachable high-clearance and high-retreat targets and ends at the pushed target. Keep the fresh anchor, bitwise elbow lock, 36/40 mm target heights, 35 mm rear standoff, 48 families, 288-cell maximum, quarantine, stroke, jaw, collision, camera, gateway, first-contact-height, contact-normal, and two-per-direction gates. Static collision and contact witnesses must fail closed on any unsafe direct approach. No dynamics or hardware are authorized.",
+  "authority": {
+    "freeze_low_direct_path_static_successor": true,
+    "dynamic_simulation": false,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

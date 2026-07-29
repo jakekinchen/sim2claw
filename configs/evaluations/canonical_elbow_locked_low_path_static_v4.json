@@ -1,0 +1,67 @@
+{
+  "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static.v1",
+  "contract_id": "canonical-elbow-locked-low-path-static-20260729-v4",
+  "status": "frozen_before_static_only_elbow_locked_enumeration",
+  "proof_class": "prospective_cpu_fp64_current_workcell_elbow_locked_low_direct_path_static_action_search",
+  "base_contract": {
+    "path": "configs/evaluations/canonical_elbow_locked_wrist_path_contact_height_bridge_v3.json",
+    "sha256": "4052cf57a0a68bbc2de12e5e1f2a7de0e15503aa51b6ee7441ce1f93f0c42939"
+  },
+  "mapping_closeout": {
+    "path": "configs/decisions/canonical_elbow_locked_wrist_path_static_v3_closeout.json",
+    "sha256": "03a73adefe514e4d1d68c37434f7b725a0859fc6bc69cfc274faa1716e4a39b7"
+  },
+  "fresh_wrist_heldout_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/evaluation/receipt.json",
+    "sha256": "16b7896c45904c7563d00f8b8386cddf3892de9deec70c77c0a2c9ff087294c6"
+  },
+  "elbow_stall_closeout": {
+    "path": "configs/decisions/calibration_graph_d405_corner_shape_v2_elbow_stall_closeout.json",
+    "sha256": "65f71a1bbf418e43632ebf834d2aaffab7e5f3b0dd6cdb45f8f3d4d0caacfbef"
+  },
+  "implementation": {
+    "path": "src/sim2claw/canonical_elbow_locked_low_path_static.py",
+    "sha256": "7c101120fa4ea4cad4cadc113e59dd5e8287c6b21b69f730d4a0232f5b3e9a8e"
+  },
+  "live_seed": {
+    "source": "fresh_v4_torque_off_preflight_anchor",
+    "follower_position_degrees": [
+      5.802197802197802,
+      -85.01098901098901,
+      99.64835164835165,
+      -16.395604395604394,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "locked_joint_name": "elbow_flex",
+    "locked_joint_index": 2,
+    "locked_value_degrees": 99.64835164835165
+  },
+  "unchanged_from_base": {
+    "four_outcome_informed_cases_remain_quarantined": true,
+    "remaining_48_family_universe": true,
+    "three_wrist_roll_targets": true,
+    "target_contact_heights_36_and_40mm": true,
+    "jaw_target_contact_offset_stroke_and_35mm_precontact_backoff": true,
+    "maximum_288_cells": true,
+    "collision_camera_gateway_first_contact_height_and_contact_normal_gates": true,
+    "four_distinct_selected_families_two_per_direction": true,
+    "dynamic_outcomes_not_read_or_used": true,
+    "dynamic_and_physical_authority_false": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-canonical-elbow-locked-low-path-static-v4",
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "dynamic_simulation": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospectively frozen path-shape-only successor after V3 localized the unreachable stages. It removes only high preclear and high retreat, follows direct low precontact to contact to the unchanged 60 mm pushed endpoint, and ends there. All static collision, camera, gateway, first-contact height, contact-normal, quarantine, family, grid, elbow-lock, and direction gates remain unchanged. It cannot authorize dynamics, mapping, evaluator V2, hardware, pawn contact, or transfer."
+}

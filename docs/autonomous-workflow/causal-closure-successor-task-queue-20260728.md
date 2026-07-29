@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_ELBOW_LOCKED_STATIC_V3_RUN`
+Status: `ACTIVE_CC03_ELBOW_LOCKED_LOW_PATH_STATIC_V4_RUN`
 
 Created: `2026-07-28`
 
@@ -740,6 +740,22 @@ Current state:
   gate. The `48` families, `288`-cell maximum, quarantine, stroke, jaw,
   collision, camera, gateway, contact-normal, direction, and authority gates
   remain unchanged.
+- V3 also rejected all `288` cells at IK before collision/contact evaluation;
+  receipt SHA-256 is
+  `8a61f2501af576e22383d9419dfbad0bfcc872146292db100b92941e9f1e8a16`.
+  Exact stage localization on `h1->g1` at the frozen `40 mm` target found
+  low-precontact `1.406 mm`, contact `0.803 mm`, and pushed `0.212 mm`
+  residuals, all below the `4 mm` gate, while high preclear and high retreat
+  missed by `67.394 mm` and `40.153 mm`. Closeout SHA-256 is
+  `03a73adefe514e4d1d68c37434f7b725a0859fc6bc69cfc274faa1716e4a39b7`.
+- Path-shape-only V4 is frozen at SHA-256
+  `3351b2c6b4967d05bfcc86e59c0439a42e653d98305bbe6a903db61b0f203f95`.
+  It removes only the unreachable high-preclear and high-retreat stages and
+  follows low precontact -> contact -> the unchanged `60 mm` pushed endpoint.
+  It retains the fresh anchor, bitwise elbow lock, `36/40 mm` targets,
+  `35 mm` backoff, `48` families, `288` cells, quarantine, jaw, collision,
+  camera, gateway, first-contact-height, contact-normal, and two-per-direction
+  gates. Static simulation is its only authority.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -781,7 +797,7 @@ This authorization:
 
 Next step:
 
-- Run the frozen elbow-locked contact-height V3 exactly once. If at least two
+- Run the frozen elbow-locked low-path V4 exactly once. If at least two
   statically safe families per direction survive with bitwise-constant elbow,
   freeze their exact baseline/ZOH dynamic screen before opening dynamics.
   Otherwise preserve the terminal static result and select one bounded,

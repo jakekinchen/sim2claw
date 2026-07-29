@@ -7,6 +7,9 @@ from pathlib import Path
 
 import numpy as np
 
+from sim2claw.canonical_elbow_locked_low_path_static import (
+    _compile_low_direct,
+)
 from sim2claw.canonical_elbow_locked_wrist_path_static import (
     _locked_elbow_solver,
 )
@@ -84,3 +87,30 @@ def test_v3_height_successor_materializes_path_without_weakening_contact_gate() 
     assert base["gates"]["maximum_first_contact_height_m"] == 0.032
     assert base["grid"]["maximum_total_cells"] == 288
     assert all(successor["unchanged_from_base"].values())
+
+
+def test_v4_low_path_removes_only_unreachable_clearance_stages() -> None:
+    source = inspect.getsource(_compile_low_direct)
+    assert "cartesian_targets = [low_precontact, contact, pushed]" in source
+    assert '"high_clearance_stage_removed": True' in source
+    assert '"high_retreat_stage_removed": True' in source
+    contract_path = (
+        ROOT
+        / "configs/evaluations/canonical_elbow_locked_low_path_static_v4.json"
+    )
+    contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    for key in (
+        "base_contract",
+        "mapping_closeout",
+        "fresh_wrist_heldout_receipt",
+        "elbow_stall_closeout",
+        "implementation",
+    ):
+        binding = contract[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    assert all(contract["unchanged_from_base"].values())
+    assert not any(
+        value
+        for key, value in contract["authority"].items()
+        if key not in {"model_loading", "static_simulation"}
+    )
