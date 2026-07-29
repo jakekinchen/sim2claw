@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04A_STATIC_PASS_PHYSICAL_DIAGNOSTIC_PACKET_BUILD`
+Status: `RP04A_PHYSICAL_DIAGNOSTIC_AUTHORIZED_PENDING_ONE_EXECUTION`
 
 Created: `2026-07-29`
 
@@ -45,7 +45,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP03C | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Replace only sparse joint interpolation between the existing 35 mm precontact, contact, and 40 mm pushed Cartesian endpoints with a deterministic chord-error-constrained corridor. | Static receipt `5a9230fa...` passed all 576 cells with one selected family per direction. Dynamic receipt `8b7a889d...` then ran all `20` frozen episodes. | `0/20` passed; every episode still failed progress and no-lift. Cartesian interpolation bow alone is closed. |
 | RP03D | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Add one small tangent-seat waypoint after contact without changing the original push endpoint. | Static receipt `488bf150...` passed all 576 cells with one selected family per direction. Dynamic receipt `8bb253ef...` ran the exact 20 frozen episodes. | `0/20` passed. The tangent-seat and locked-elbow task route are closed without hardware. |
 | RP04 | `DONE_EXISTING_SIMULATOR_PASS_RECONCILED` | Select the strongest already frozen natural-anchor simulator route without using later outcomes to alter its actions. | Canonical wrist-path V5 predates this successor and has exactly two families per direction across direct/ZOH and five resets, with exact actions and ObservableEpisode traces. | Receipt `cf21bd8c...` passes `40/40`; its four action tensors are immutable transfer candidates. This does not approve mapping or hardware. |
-| RP04A | `STATIC_PASS_PHYSICAL_PACKET_BUILD` | Approve or reject the coordinated-unloading hypothesis before any task packet. | Static receipt `bfe84b39...` passes rows `0..490` of V5 `f7->e7` under both scene hypotheses and both `80 deg` segments. One camera-enclosed execution must preserve exact requested/sent/observed traces, ≤`5 deg` maximum elbow error, no `>3 deg` error for `1 s`, ≤`2 deg` boundary/return residual, and torque-off. | Build and freeze one separately hash-bound execution packet. A physical pass opens a registered-only extension probe; a fail closes V5. Neither is a pawn-task attempt or global mapping approval. |
+| RP04A | `AUTHORIZED_PENDING_ONE_EXECUTION` | Approve or reject the coordinated-unloading hypothesis before any task packet. | Static receipt `bfe84b39...` passes. Execution packet `b890bd92...` is tested and frozen. One camera-enclosed execution must preserve exact requested rows and sent/observed traces, ≤`5 deg` maximum elbow error, no `>3 deg` error for `1 s`, ≤`2 deg` boundary/return residual, and torque-off. | Authorization is active only `10:37:29--11:37:29 CDT`, maximum one execution. A pass opens a registered-only extension probe; a fail closes V5. Neither is a pawn-task attempt or global mapping approval. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -65,10 +65,9 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-The RP04A static compiler passed. Build, test, freeze, commit, and push one
-camera-enclosed, exact-byte, two-segment execution packet with a controlled
-exact-row reverse return. Physical authority remains false until the packet is
-hash-bound to a fresh time-bounded authorization.
+Run the exact RP04A physical diagnostic once under authorization
+`owner-standing-rp04a-shadow-20260729-v1`. Do not retry. Finish camera review
+and torque-off verification before choosing the pass or fail branch.
 
 ## RP00 immutable result
 
