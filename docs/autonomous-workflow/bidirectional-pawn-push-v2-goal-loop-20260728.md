@@ -152,6 +152,10 @@ Confirmed:
   closeout `21d76b7c...`.
 - V4 changes only to a geometry-derived `35 mm` rear standoff followed by a
   low horizontal precontact approach; frozen at `dc759ea2...`.
+- V4 passed static admission with six families and a selected `2/2` split;
+  receipt `b9374eaa...`, closeout `7b24317c...`.
+- Exact-action dynamic baseline plus diagnostic ZOH replay is frozen at
+  `ec29f12c...`.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -198,7 +202,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC02 finite current-workcell wrist-orientation and precontact-path static successor.
 Completed: CC00, CC00A, CC01.
-Evidence: wrist/path V3 partial dc4d3e60...; V4 freeze dc759ea2....
+Evidence: wrist/path V4 static pass b9374eaa...; dynamic freeze ec29f12c....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -206,7 +210,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
 Blockers: the frozen action set is dynamically rejected; physical/model mapping remains unapproved.
-Next step: commit/push the V3 partial and V4 freeze, then execute V4's unchanged 288-cell static grid once.
+Next step: commit/push the V4 pass and dynamic freeze, then replay the four exact actions under baseline and ZOH exactly once.
 ```
 
 ## Physical Authority Boundaries

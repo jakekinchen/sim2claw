@@ -344,6 +344,17 @@ Current state:
   The family universe,
   quarantine, wrist/contact grid, jaw target, offset, stroke, clearance,
   gates, selection, dynamics, and physical authority remain unchanged.
+- V4 ran once and passed the static gate with six eligible families and the
+  selected `2` REAL->SIM / `2` SIM->REAL split. Receipt SHA-256
+  `b9374eaa326af2bdb063eac577e76293c2a3e45f11001c1d135bdd7258a15e31`;
+  closeout SHA-256
+  `7b24317c4d11ad36506b89331da239669286a59414d4e5905b8af259512193c1`.
+- The four exact V4 float64 action tensors are frozen for dynamic baseline
+  plus diagnostic ZOH replay at contract SHA-256
+  `ec29f12c57bdb2bcedc5fc4543ac593db1f1b12a846695e16071f69bb42495f6`.
+  Requested bytes, row order, 40 Hz timing, five reset variants,
+  ObservableEpisode.v2-min, first-divergence channels, and all gates remain
+  unchanged.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -386,8 +397,7 @@ This authorization:
 
 Next step:
 
-- Commit and push the V3 terminal static result plus the V4 low-horizontal
-  precontact freeze, then execute V4 exactly once. Do not dynamically
-  replay unless four distinct safe families freeze `2/2` per direction.
-  Preserve both baseline and challenger outcomes; a challenger pass does not
-  itself promote geometry, approve mapping, or open hardware.
+- Commit and push the V4 static pass plus the dynamic replay freeze, then
+  execute the four exact actions under both plant paths exactly once.
+  Preserve both baseline and challenger outcomes; a pass does not itself
+  promote geometry, approve mapping, or open hardware.

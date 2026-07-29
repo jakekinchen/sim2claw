@@ -394,6 +394,56 @@ def replay(
         ]
         contract["output_directory"] = raw_contract["output_directory"]
         contract["claim_boundary"] = raw_contract["claim_boundary"]
+    elif contract.get("schema_version") == (
+        "sim2claw.canonical_wrist_path_temporal.v1"
+    ):
+        expected_fields = {
+            "schema_version",
+            "contract_id",
+            "status",
+            "proof_class",
+            "base_temporal_contract",
+            "static_receipt",
+            "static_closeout",
+            "temporal_implementation",
+            "cases",
+            "live_seed",
+            "output_directory",
+            "unchanged_from_base",
+            "claim_boundary",
+        }
+        if (
+            set(contract) != expected_fields
+            or not all(contract["unchanged_from_base"].values())
+            or len(contract["cases"]) != 4
+        ):
+            raise CanonicalSeededActionTemporalError(
+                "canonical wrist/path temporal contract widened its surface"
+            )
+        base = _json(contract["base_temporal_contract"])
+        for binding_name in (
+            "static_receipt",
+            "static_closeout",
+            "temporal_implementation",
+        ):
+            _bound(contract[binding_name])
+        contract = copy.deepcopy(base)
+        contract["contract_id"] = raw_contract["contract_id"]
+        contract["status"] = raw_contract["status"]
+        contract["proof_class"] = raw_contract["proof_class"]
+        contract["inputs"]["static_receipt"] = raw_contract[
+            "static_receipt"
+        ]
+        contract["inputs"]["static_closeout"] = raw_contract[
+            "static_closeout"
+        ]
+        contract["inputs"]["temporal_implementation"] = raw_contract[
+            "temporal_implementation"
+        ]
+        contract["cases"] = raw_contract["cases"]
+        contract["live_seed"] = raw_contract["live_seed"]
+        contract["output_directory"] = raw_contract["output_directory"]
+        contract["claim_boundary"] = raw_contract["claim_boundary"]
     elif contract.get("schema_version") != (
         "sim2claw.canonical_seeded_action_temporal.v1"
     ):
@@ -460,13 +510,24 @@ def replay(
         raise CanonicalSeededActionTemporalError(
             "simulator substeps do not preserve frozen 40 Hz timing"
         )
-    if (
-        static_receipt["status"]
-        != "canonical_seeded_action_static_v2_pass"
-        or not static_receipt["model_joint_margin_gate_passed"]
-        or static_receipt["dynamic_simulation_executed"]
-        or static_receipt["physical_motion"]
-    ):
+    seeded_static_admitted = (
+        static_receipt.get("status")
+        == "canonical_seeded_action_static_v2_pass"
+        and static_receipt.get("model_joint_margin_gate_passed") is True
+        and static_receipt.get("dynamic_simulation_executed") is False
+        and static_receipt.get("physical_motion") is False
+    )
+    wrist_path_static_admitted = (
+        static_receipt.get("status")
+        == "canonical_wrist_path_static_pass"
+        and static_receipt.get("passed") is True
+        and static_receipt.get("statically_eligible_family_count", 0) >= 4
+        and static_receipt.get("direction_counts")
+        == {"REAL_TO_SIM": 2, "SIM_TO_REAL": 2}
+        and static_receipt.get("dynamic_replay_executed") is False
+        and static_receipt.get("physical_motion") is False
+    )
+    if not (seeded_static_admitted or wrist_path_static_admitted):
         raise CanonicalSeededActionTemporalError(
             "canonical static admission changed"
         )

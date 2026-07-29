@@ -1,0 +1,101 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_temporal.v1",
+  "contract_id": "canonical-wrist-path-temporal-20260729-v1",
+  "status": "frozen_after_low_horizontal_precontact_static_pass_before_dynamic_replay",
+  "proof_class": "prospective_cpu_fp64_exact_action_wrist_path_direct_target_and_diagnostic_zoh_causal_replay",
+  "base_temporal_contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+    "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+  },
+  "static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-v4/receipt.json",
+    "sha256": "b9374eaa326af2bdb063eac577e76293c2a3e45f11001c1d135bdd7258a15e31"
+  },
+  "static_closeout": {
+    "path": "configs/decisions/canonical_wrist_path_static_v4_closeout.json",
+    "sha256": "7b24317c4d11ad36506b89331da239669286a59414d4e5905b8af259512193c1"
+  },
+  "temporal_implementation": {
+    "path": "src/sim2claw/canonical_seeded_action_temporal.py",
+    "sha256": "2c9dc2d4116869079a7e43d04b1efd6a55d71da5b0cdde751a0c5f41847cb177"
+  },
+  "cases": [
+    {
+      "case_id": "tan_pawn_d7__d7_c7",
+      "direction": "REAL_TO_SIM",
+      "source_square": "d7",
+      "destination_square": "c7",
+      "selected_piece_id": "tan_pawn_d7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-v4/actions/00.f64le",
+      "action_sha256": "6deb1dc8144f266ed04683eccfc69a3f3d31857b563809cc11b97ecae3874dc0",
+      "action_shape": [
+        1109,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_f8",
+      "direction": "SIM_TO_REAL",
+      "source_square": "f7",
+      "destination_square": "f8",
+      "selected_piece_id": "tan_pawn_f7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-v4/actions/01.f64le",
+      "action_sha256": "63ac31f0fa691902cb6c6af962b8b7f4ac9af79e9e3cd6c28804f9bcc380f5c1",
+      "action_shape": [
+        1064,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_d7__d7_d8",
+      "direction": "REAL_TO_SIM",
+      "source_square": "d7",
+      "destination_square": "d8",
+      "selected_piece_id": "tan_pawn_d7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-v4/actions/02.f64le",
+      "action_sha256": "8a559806baa1fb677594e8f12e1f8350ad205b3068be52010c044bfd198661b1",
+      "action_shape": [
+        1414,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_e7",
+      "direction": "SIM_TO_REAL",
+      "source_square": "f7",
+      "destination_square": "e7",
+      "selected_piece_id": "tan_pawn_f7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-v4/actions/03.f64le",
+      "action_sha256": "660b50920d7d040bdec7efdc14d379f8b0d721052ec4bd9a75fc352e9b155be7",
+      "action_shape": [
+        1021,
+        6
+      ]
+    }
+  ],
+  "live_seed": {
+    "source": "canonical_wrist_path_static_v4_gateway_mapping_of_exact_row_zero",
+    "follower_position_degrees": [
+      6.5054945054945055,
+      -85.53846153846153,
+      99.47252747252747,
+      -20.087912087912088,
+      -103.34065934065934,
+      2.3752969121140137
+    ],
+    "torque_enabled": false
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-temporal-v1",
+  "unchanged_from_base": {
+    "requested_mapped_sent_action_identity": true,
+    "forty_hz_row_order_and_timing": true,
+    "direct_target_baseline_and_uncalibrated_0p11s_zoh_challenger": true,
+    "five_frozen_reset_variants": true,
+    "cpu_fp64_mujoco_and_substeps": true,
+    "observable_episode_v2_min_and_first_divergence": true,
+    "progress_contact_exclusion_no_lift_collision_and_camera_gates": true,
+    "two_cases_per_direction_both_plant_paths_required": true,
+    "dynamic_only_authority": true
+  },
+  "claim_boundary": "Prospectively frozen CPU/fp64 dynamic replay of the four exact V4 low-horizontal-precontact action tensors under the canonical MuJoCo direct-target baseline and the diagnostic uncalibrated 0.11 second ZOH challenger. It preserves all five reset variants, causal ObservableEpisode.v2-min traces, first-divergence channels, task gates, and the two-family-per-direction requirement. A pass can close CC02 action replay only; it cannot approve the physical/model mapping, freeze evaluator V2, open hardware, promote a plant, count a physical attempt, or support transfer."
+}
