@@ -1,0 +1,76 @@
+{
+  "schema_version": "sim2claw.retrospective_real_to_sim_hybrid.v1",
+  "experiment_id": "phase_a_d1_d2_command_and_grasp_mode_hybrid_v1",
+  "proof_class": "physical_source_command_plus_observed_grasp_mode_to_simulator_task_replay",
+  "source": {
+    "directory": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53",
+    "recording_id": "20260727T041737Z-89190e53",
+    "recording_receipt_sha256": "74a3da30468922df00dfefd12e38ff346b2fd59fb5752458477be29360b9e0d3",
+    "samples_sha256": "ad606b9b917d985a4e866399a0c2d44adb12f3b48d310aa11452de9e03e73302",
+    "phase_a_receipt_sha256": "224c6b16ec672543946b77fe91403fa2d9e6849bce371812c0a096aaf032f6df",
+    "physical_outcome_authority": "evaluator_owned_manual_C922_review_with_D405_RGB_corroboration",
+    "source_square": "d1",
+    "destination_square": "d2",
+    "selected_piece": "brown_pawn_d1",
+    "initial_upright": true,
+    "terminal_upright": true,
+    "grasp_marker_sample_index": 250,
+    "release_marker_sample_index": 400
+  },
+  "mapping": {
+    "kind": "reconstructed_frozen_stage_d_bounded_joint_adapter",
+    "workcell_fit_contract": {
+      "path": "configs/optimization/pawn_bg_workcell_fit_v1.json",
+      "sha256": "a1cd0f7d53b22420536396eb724e4dcd877ea74206ae23442fe5b933efa7f69f"
+    },
+    "source_fit_contract": {
+      "path": "configs/optimization/pawn_bg_source_fit_v1.json",
+      "sha256": "9144e42316dc007f8fcd381c6b7c054cbfe12e8c7b639d2a06f1f91070172910"
+    },
+    "physical_catalog": {
+      "path": "configs/data/physical_pawn_move_catalog_20260719.json",
+      "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
+    },
+    "source_split": {
+      "path": "configs/sysid/physical_pawn_sysid_split_v1.json",
+      "sha256": "1aa839a31b896a26a000ed27ff649232427e3406403c66d7fe79c60b0a0acb08"
+    }
+  },
+  "replay": {
+    "drivers": [
+      "mapped_gateway_command_zoh",
+      "observed_joint_state_upper_bound"
+    ],
+    "preserve_source_row_order": true,
+    "preserve_source_host_timestamps": true,
+    "action_clipping_allowed": false,
+    "action_smoothing_allowed": false,
+    "action_offset_or_ik_repair_allowed": false,
+    "terminal_object_pose_forcing_allowed": false,
+    "grasp_mode": "source_observed_discrete_hold_interval",
+    "grasp_relative_transform": "captured_once_in_simulator_at_source_grasp_marker",
+    "release_rule": "release_at_source_reviewed_release_marker_then_free_physics",
+    "post_release_settle_seconds": 1.0,
+    "maximum_attach_distance_m": 0.06,
+    "maximum_timestamp_quantization_error_seconds": 0.003
+  },
+  "evaluator": {
+    "maximum_final_planar_center_error_for_whole_base_inside_m": 0.008425,
+    "maximum_final_planar_center_error_composable_m": 0.006,
+    "maximum_upright_tilt_degrees": 10.0,
+    "maximum_other_piece_displacement_m": 0.005,
+    "maximum_final_linear_speed_m_s": 0.02,
+    "maximum_final_angular_speed_rad_s": 1.0,
+    "maximum_final_height_error_m": 0.006
+  },
+  "authority": {
+    "camera": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "sim_to_real": false,
+    "pure_action_only_transfer": false,
+    "simulator_replay": true
+  },
+  "claim_boundary": "A pass is a REAL-to-SIM hybrid task replay conditioned on the physical episode's visually reviewed discrete grasp/hold/release mode. The simulator receives no terminal pawn pose and must carry, release, settle, and score the pawn. It is not pure action-only replay, SIM-to-REAL evidence, global mapping approval, or physical authority."
+}
