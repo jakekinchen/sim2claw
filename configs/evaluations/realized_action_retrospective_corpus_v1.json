@@ -1,0 +1,92 @@
+{
+  "schema_version": "sim2claw.realized_action_retrospective_corpus.v1",
+  "contract_id": "realized-action-retrospective-corpus-v1",
+  "frozen_date": "2026-07-29",
+  "episode_root": "datasets/manipulation_source_recordings",
+  "expected_discovered_episode_count": 29,
+  "catalog": {
+    "path": "configs/data/physical_pawn_move_catalog_20260719.json",
+    "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e",
+    "expected_episode_count": 18
+  },
+  "canonical_correction": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "source_square": "d1",
+    "destination_square": "d2",
+    "binding_path": "configs/evaluations/retrospective_c922_endpoint_to_sim_v1.json",
+    "binding_sha256": "7e16fbd2b7f068b96f2e8888dc812a091885805b6a66bd5ebbd67999d9567538",
+    "closeout_path": "configs/decisions/retrospective_c922_endpoint_to_sim_v1_closeout.json",
+    "closeout_sha256": "b1a5529ade25992cd88cc00a3b926b3f7cb987956b41ad3d50c4a50ea0303761"
+  },
+  "cohorts": {
+    "fit": [
+      "20260719T030059Z-a26f8400",
+      "20260719T031324Z-bf91502b",
+      "20260719T032853Z-1ee203e8",
+      "20260719T032810Z-9e623c5e"
+    ],
+    "validation": [
+      "20260719T032315Z-d3c3cf0b",
+      "20260719T032620Z-0c7e3d86",
+      "20260719T031813Z-b147b429"
+    ],
+    "sealed": [
+      "20260727T041737Z-89190e53"
+    ]
+  },
+  "diagnostic_roles": {
+    "actuator_diagnostic_only": [
+      "20260725T132035Z-a639a469",
+      "20260725T132043Z-5768b9e5",
+      "20260725T132050Z-de10cfc8",
+      "20260725T132058Z-b0c68985",
+      "20260725T132107Z-4af4013e"
+    ],
+    "retrospective_task_diagnostic_only": [
+      "20260724T042909Z-1ecaf500",
+      "20260724T043250Z-07a6fdf3",
+      "20260724T050132Z-02baf745"
+    ],
+    "kinematic_diagnostic_only": [
+      "20260727T041940Z-5b15dc6e"
+    ]
+  },
+  "asset_paths": [
+    "recording_receipt.json",
+    "samples.jsonl",
+    "initial_evaluator_privileged_state.json",
+    "evaluator_privileged_state.jsonl",
+    "overhead_video.json",
+    "wrist_video.json",
+    "overhead_c922.mp4",
+    "wrist_d405.browser.mp4",
+    "native_dual_camera/overhead_c922.native.mov",
+    "native_dual_camera/wrist_d405.native.mov",
+    "native_dual_camera/camera_callback_timestamps.jsonl",
+    "native_dual_camera/native_camera_report.json",
+    "phase_a_comparison_receipt.json",
+    "phase_a_kinematic_state_trace.json",
+    "phase_a_comparison.mp4",
+    "phase_a_comparison_poster.png",
+    "sim_replay_receipt.json",
+    "sim_replay_state_trace.json",
+    "sim_replay_trace.jsonl"
+  ],
+  "proof_boundaries": {
+    "legacy_self_consistent_labels_are_current_canonical": false,
+    "metadata_conflicted_episodes_are_fit_eligible": false,
+    "diagnostic_roles_are_task_outcome_cohorts": false,
+    "sealed_episode_may_enter_fit_or_validation": false,
+    "actuator_application_timestamps_may_be_imputed": false,
+    "generated_outputs_are_git_tracked": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "paid_compute": false
+  }
+}
