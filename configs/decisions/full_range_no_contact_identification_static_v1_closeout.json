@@ -1,0 +1,26 @@
+{
+  "schema_version": "sim2claw.full_range_no_contact_identification_static_closeout.v1",
+  "decision_id": "full-range-no-contact-identification-static-20260729-v1-closeout",
+  "status": "static_pass_physical_packet_admitted",
+  "freeze_commit": "2cf9ec1",
+  "contract": {
+    "path": "configs/evaluations/full_range_no_contact_identification_v1.json",
+    "sha256": "e3ad4e74d68424fc0325e4037855b3060ce7193e6408b6db1c4ed52d8bce5248"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-full-range-no-contact-identification-static-v1/receipt.json",
+    "sha256": "8df7e2fc96289a35f5fb3cd97b85a233dc82c6d02311c55c1394d76567233c12"
+  },
+  "result": {
+    "route_rows": 1160,
+    "route_sha256": "d2dd4299be8700a236a1bcda941bd2c8ceb4465bcc31f4e3de11010a86abcadd",
+    "minimum_elbow_degrees": -10.408544612674717,
+    "registered_minimum_clearance_m": 0.15078735941976484,
+    "stress_minimum_clearance_m": 0.08438968911429683,
+    "registered_scene_contact_free": true,
+    "stress_scene_contact_free": true,
+    "all_gateway_and_segment_gates_passed": true,
+    "physical_task_attempts": 0
+  },
+  "decision": "Admit one separately authorized, camera-enclosed physical execution of the exact 1160-row no-contact route plus its exact reverse. Preserve five frozen segment boundaries, controlled return, postflight torque-off, false pawn contact and task authority, and one-execution latch. The result may extend elbow tracking support and support a prospectively split plant fit; it cannot reopen V5, approve mapping, or claim transfer."
+}
