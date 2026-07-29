@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `IN_PROGRESS_CC03K_DIRECTIONAL_DISPLACEMENT_STATIC_FREEZE`
+Status: `BLOCKED_CC03K_ZERO_SAFE_DIRECTIONAL_DISPLACEMENT_FAMILIES`
 
 Created: `2026-07-28`
 
@@ -189,7 +189,7 @@ Requirements:
 | CC02 | `DONE` | Replay every v2-admitted current-anchor action in canonical CPU/fp64 MuJoCo and emit `ObservableEpisode.v2-min` traces. | Requested/applied action hashes remain exact; at least two distinct cases per direction report link, contact, object trajectory, exclusions, and outcome under direct-target and the frozen timing-stress plant; `2/2` per direction pass the unchanged task and robustness gates before case freeze. | Accepted closeout `2c7f8483663a619c25c6aece2c041a7327aa440b8d961857a101bbc0590a5ed5`; simulator-only, no mapping or transfer claim. |
 | CC03 | `BLOCKED_SLIDING_PUSH_BOUNDARY_CONFIRMED` | Implement the minimum gauge-fixed `CalibrationGraph.v1` required to approve or reject the current physical/model mapping. | Shared variables cover fixed camera/board, robot-to-board rigid transform, physical-degree-to-MuJoCo sign/zero/scale, and declared jaw reference. Factors reuse accepted board/endpoint data, fixed-base evidence, one-joint sweeps, exact encoder holds, and an untouched composite held-out. Receipt reports factor residuals, Jacobian rank/spectrum, correlations, bounds, condition, and held-out result. | Wrist mapping passed only in a bounded elbow-locked scope. V4 plus Fable's independent pose sweep prove the unchanged sliding-push contact-height gate unreachable at the current anchor. No more sliding-push search. |
 | CC03E | `DONE_MECHANICAL_RESISTANCE_SIGNATURE` | Sharpen the elbow diagnosis with a receipt-bound, no-contact telemetry probe and a matched wrist-flex control. | Preregistered range-safe elbow destinations and equal returns plus identical-magnitude wrist-flex control record requested/goal/sent/measured position, current/load, temperature, status, torque-enable readback, clocks, tracking/stall decisions, return residual, and torque-off cleanup at `>=5 Hz`. One torque disable/enable cycle precedes one repeated elbow probe; no configuration/gain write. | Accepted closeout `f9c5d8fa...`: symmetric partial elbow response with rising current/load, normal status/temperature, matched wrist tracking, no post-cycle recovery. Human repair boundary; no gain experiment. |
-| CC03K | `IN_PROGRESS` | Prospectively freeze and statically screen the directional pawn-displacement primitive within the physically responsive envelope. | Static-only finite grid; selected pawn contacted collision-free at the modeled reachable head-height band; robot-board and exclusion margins, calibrated joint/gateway/slew margins, camera visibility, exact action identity, distinct direction families, and false physical authority all pass. At least one eligible family per direction is required. Primary displacement threshold and direction quadrant plus secondary topple/fall quadrant are frozen before dynamic outcomes. | If either direction has zero safe families, record a terminal workspace boundary. Do not weaken collision/contact/camera/gateway gates, relabel the result as sliding push, or continue outcome-informed family search. |
+| CC03K | `TERMINAL_ZERO_SAFE_FAMILIES` | Prospectively freeze and statically screen the directional pawn-displacement primitive within the physically responsive envelope. | Static-only finite grid; selected pawn contacted collision-free at the modeled reachable head-height band; robot-board and exclusion margins, calibrated joint/gateway/slew margins, camera visibility, exact action identity, distinct direction families, and false physical authority all pass. At least one eligible family per direction is required. Primary displacement threshold and direction quadrant plus secondary topple/fall quadrant are frozen before dynamic outcomes. | Accepted closeout `ca107505...`: zero eligible families in both directions because every compiled action introduces arm self-collision. No dynamics, evaluator freeze, pawn contact, or path-grid expansion. |
 | CC04 | `PENDING` | Approve the mapping and freeze evaluator v2 plus at least two feasible distinct cases per direction. | `physical_model_mapping_approved:true`; canonical registration remains admitted; dynamic CC02 cases pass; evaluator, object tracker, camera thresholds, clocks/missingness, exclusions, mapping, scene, setup, task hashes, one-attempt rule, and maximum-ten ledger freeze prospectively. | Mapping reject routes back to one discriminating calibration factor/probe. Dynamic reject routes to one mechanism-specific simulator intervention. No physical packet. |
 | CC05 | `PENDING` | Execute one admitted REAL->SIM case: physical task and object consequence first, then byte-identical replay in simulation. | C922-enclosed physical success; requested=mapped=sent identity; torque-off cleanup; exact simulator replay with no clipping/retiming/repair/state forcing; simulator outcome passes; full first-divergence trace includes links, contact, pawn state, and outcome. | A failure stays in the REAL->SIM denominator. If links agree but pawn response diverges, activate CC07; otherwise diagnose the earliest upstream channel before another case. |
 | CC06 | `PENDING` | Execute one distinct admitted SIM->REAL case: simulator success and robustness first, then the frozen identical action once physically. | Sim outcome and robustness predate action freeze; distinct pawn/file; reviewed physical packet; C922-owned physical success; exact bytes; exclusions pass; torque-off cleanup. | A failure stays in the SIM->REAL denominator. Physical outcome never tunes the frozen case. |
@@ -237,7 +237,8 @@ Current state:
 - CC00 is complete.
 - CC00A is complete.
 - CC01 is complete.
-- CC03K is the only active card.
+- CC03K is a terminal safety boundary pending the required final Fable defect
+  check; no implementation card is active.
 - The v1 seeded-action apparent pass is quarantined.
 - The calibrated-range v2 static run passed `2/2` actions per direction with
   the exact hashes listed above.
@@ -868,6 +869,17 @@ Current state:
   quadrant is secondary. Static and physical authority remain false beyond
   model loading/static enumeration, and this primitive cannot inherit a
   straight-push or chess-play claim.
+- CC03K ran exactly once. Receipt SHA-256
+  `f8bb0e86f61fbdb380a337d2f565d163534e37ce16acb9157e45f931750bb094`
+  records `504/576` IK rejects and `72/576` compiled static rejects across
+  seven near-side families. All compiled cells pass gateway limits/rates and
+  camera visibility; `51` observe selected-pawn contact at
+  `45.339--52.080 mm`, but collision passes are `0/72`. Every compiled action
+  introduces lower-arm/shoulder and shoulder/wrist collision, with additional
+  upper-arm/wrist, gripper/shoulder, moving-jaw/shoulder, or
+  camera-mount/shoulder collisions. Direction counts remain `0/0`; no dynamic
+  replay or physical task attempt occurred. Closeout SHA-256 is
+  `ca107505f7a1b43da1c5776cf9c8c627bf4b9dac87809ed967548b258afce034`.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -887,7 +899,9 @@ Completed:
 Blockers:
 
 - No approved physical/model mapping for straight sliding-push actions.
-- Directional-displacement static feasibility is not yet frozen or tested.
+- The only preregistered directional-displacement successor has zero safe
+  families in either direction at the mechanically resistant elbow anchor.
+- Repair/requalification of the elbow is a human external boundary.
 
 ## Time-bounded physical authorization
 
@@ -909,6 +923,9 @@ This authorization:
 
 Next step:
 
-- Freeze `CC03K` statically. Physical task authority remains false unless
-  at least one safe family per direction survives and CC04 freezes the new
-  evaluator/cases prospectively.
+- Return the immutable CC03E/CC03K result to the existing Fable thread for the
+  required final defect check. Ask specifically whether the frozen direct
+  route omitted a material bounded in-scope collision-free path or whether
+  the preregistered terminal stop is sound. Any accepted recommendation must
+  satisfy the existing feedback-loop disposition rules; physical task
+  authority remains false.

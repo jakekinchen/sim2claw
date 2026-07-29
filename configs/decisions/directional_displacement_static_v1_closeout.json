@@ -1,0 +1,48 @@
+{
+  "schema_version": "sim2claw.directional_displacement_static_closeout.v1",
+  "decision_id": "cc03k-directional-displacement-static-v1-closeout",
+  "status": "terminal_zero_safe_directional_displacement_families",
+  "proof_class": "cpu_fp64_elbow_locked_head_height_directional_displacement_terminal_safety_negative",
+  "contract_sha256": "852dfc133f4c74e6ee25728610b4b77b73a76f63f237e7243ec6997fa430902b",
+  "receipt_path": "runs/bidirectional-pawn-push-v2/20260729-directional-displacement-static-v1/receipt.json",
+  "receipt_sha256": "f8bb0e86f61fbdb380a337d2f565d163534e37ce16acb9157e45f931750bb094",
+  "result": {
+    "family_count": 48,
+    "grid_result_count": 576,
+    "compile_reject_count": 504,
+    "static_reject_count": 72,
+    "compiled_family_count": 7,
+    "statically_eligible_family_count": 0,
+    "real_to_sim_family_count": 0,
+    "sim_to_real_family_count": 0,
+    "gateway_limit_pass_count": 72,
+    "gateway_rate_pass_count": 72,
+    "camera_pass_count": 72,
+    "contact_witness_pass_count": 51,
+    "contact_height_pass_count": 51,
+    "contact_normal_pass_count": 31,
+    "collision_pass_count": 0,
+    "observed_first_contact_height_range_mm": [
+      45.338784424718284,
+      52.080333760646916
+    ],
+    "new_disallowed_contact_pair_counts": {
+      "left_lower_arm__left_shoulder": 72,
+      "left_shoulder__left_wrist": 72,
+      "left_upper_arm__left_wrist": 69,
+      "left_gripper__left_shoulder": 65,
+      "left_moving_jaw_so101_v1__left_shoulder": 42,
+      "left_camera_mount__left_shoulder": 6
+    }
+  },
+  "decision": "Reject the directional-displacement primitive at the current elbow anchor. The frozen grid reproduced the reachable head-height contact band, but every compiled action introduced arm self-collision. The preregistered stop rule and Fable decision sequence require a terminal boundary when either direction has zero safe families. Do not weaken collision gates, run dynamics, freeze an evaluator, touch a pawn, or expand the outcome-informed path search. Return the result to the existing Fable thread for a final defect check of whether any material in-scope proof defect remains.",
+  "straight_sliding_push_claim": false,
+  "directional_displacement_claim": false,
+  "bidirectional_transfer_claim": false,
+  "dynamic_replay_authorized": false,
+  "evaluator_freeze_authorized": false,
+  "physical_task_authorized": false,
+  "physical_task_attempts": 0,
+  "torque_off": true,
+  "passed": false
+}

@@ -261,7 +261,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 
 ```text
 Current state:
-Active card: CC03K directional-displacement static freeze.
+Active card: none; CC03K terminal boundary pending final Fable defect check.
 Completed: CC00, CC00A, CC01, CC02.
 Evidence: fresh wrist pass 16b7896c...; low-path terminal receipt eceb14e3...; safety closeout 0df993af....
 REAL->SIM successes/attempts:
@@ -269,9 +269,9 @@ SIM->REAL successes/attempts:
 Heldout open count: 4
 Physical task attempts: 0/10
 Physical/camera/torque state: closed after wrist-only calibration; torque false.
-Remaining: CC03K and CC04 through CC15.
-Blockers: straight sliding push is geometrically unsafe at the current elbow anchor; CC03E confirms a mechanical-resistance signature and leaves elbow repair at a human boundary; directional-displacement feasibility is not yet frozen.
-Next step: freeze and statically screen CC03K. Preserve false task/transfer authority until both directional families and the new evaluator are prospectively admitted.
+Remaining: final Fable defect check and evidence closeout; CC04--CC12 cannot open without a new safe physical family.
+Blockers: straight sliding push is geometrically unsafe at the current elbow anchor; CC03E confirms a mechanical-resistance signature and leaves elbow repair at a human boundary; CC03K has zero safe directional-displacement families because every compiled route self-collides.
+Next step: present the immutable terminal result to Fable and disposition any concrete bounded in-scope defect. Preserve false task/transfer authority.
 ```
 
 ## Physical Authority Boundaries

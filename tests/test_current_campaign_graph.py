@@ -29,16 +29,18 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     )
 
     assert rebuilt == tracked
-    assert tracked["active_pointer"]["milestone_id"] == "CC03K"
+    assert tracked["active_pointer"]["milestone_id"] == "CC15"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:directional-displacement-static-v1-frozen",
-        "milestone_id": "CC03K",
-        "status": "directional_displacement_static_freeze_active",
+        "node_id": (
+            "verdict:directional-displacement-terminal-safety-boundary-v1"
+        ),
+        "milestone_id": "CC15",
+        "status": "terminal_boundary_final_fable_defect_check_pending",
         "queue_status": (
-            "IN_PROGRESS_CC03K_DIRECTIONAL_DISPLACEMENT_STATIC_FREEZE"
+            "BLOCKED_CC03K_ZERO_SAFE_DIRECTIONAL_DISPLACEMENT_FAMILIES"
         ),
         "resume_action": (
-            "run_frozen_directional_displacement_static_enumeration_once"
+            "request_existing_fable_thread_final_defect_check"
         ),
         "resume_authorized": True,
         "heldout_open_count": 4,
@@ -46,7 +48,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(209)
+        range(211)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -56,10 +58,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "DIRECTIONAL_DISPLACEMENT_STATIC_V1_FROZEN"
+        "DIRECTIONAL_DISPLACEMENT_TERMINAL_SAFETY_BOUNDARY_V1"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:directional-displacement-static-v1-frozen"
+        "verdict:directional-displacement-terminal-safety-boundary-v1"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True
