@@ -1,0 +1,100 @@
+{
+  "schema_version": "sim2claw.observable_first_contact_divergence_contract.v1",
+  "experiment_id": "observable-first-contact-divergence-v1",
+  "frozen_date": "2026-07-29",
+  "sources": {
+    "or3_closeout": {
+      "path": "configs/decisions/observable_physical_episode_observations_v1_closeout.json",
+      "sha256": "4d64346dfbf671e04a6d05ac204f2381abfc650a2c7bbe2418b471b26c6469bf"
+    },
+    "or3_receipt": {
+      "path": "outputs/observable_physical_episode_observations_v1/receipt.json",
+      "sha256": "e8e76bf8f9d1f44789c647e967a313b57893770edb1d3570f3b4974cb4b94d1a"
+    },
+    "c6_closeout": {
+      "path": "configs/decisions/realized_action_outcome_mission_v1_closeout.json",
+      "sha256": "6b38a2b2498dba32db71828e518bdb8610542a89d7227c111d44387530060447"
+    },
+    "c6_receipt": {
+      "path": "outputs/realized_action_outcome_mission_v1/receipt.json",
+      "sha256": "4bcf1f1a6c389c61fb1eb1445afd20ab0be814eb1cbaee13ad2d11e0198587d4"
+    },
+    "c6_trace": {
+      "path": "outputs/realized_action_outcome_mission_v1/trace.json",
+      "sha256": "c3e885803d7382aabf051c5daf467998076b4fa1063c7020faaaef8172508d69"
+    },
+    "or2_closeout": {
+      "path": "configs/decisions/observable_robot_jaw_mapping_v1_closeout.json",
+      "sha256": "28461906ca0b3cb8e67e5e68471f434c3498ea425bb8b6f93f4512baf6cf5da1"
+    },
+    "or2_receipt": {
+      "path": "outputs/observable_robot_jaw_mapping_v1/receipt.json",
+      "sha256": "436cd9f629b780e5f8a08e9f00708659c4fa416a5362fe603bfee6f1f6484c3a"
+    },
+    "or0_receipt": {
+      "path": "outputs/observable_registration_corpus_v1/receipt.json",
+      "sha256": "e4332e483908c4ba465c99bff3a543deb50bacf6c0ae281ea12555fafa52a739"
+    },
+    "physical_samples": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/samples.jsonl",
+      "sha256": "ad606b9b917d985a4e866399a0c2d44adb12f3b48d310aa11452de9e03e73302"
+    }
+  },
+  "expected": {
+    "row_count": 531,
+    "physical_last_separate_sample": 224,
+    "physical_candidate_contact_interval_samples": [228, 232],
+    "physical_first_definite_enclosure_sample": 232,
+    "physical_first_definite_carried_motion_sample": 260,
+    "physical_last_definite_carried_motion_sample": 390,
+    "physical_candidate_release_interval_samples": [400, 407],
+    "c6_first_planar_motion_over_1mm_sample": 386,
+    "c6_catastrophic_launch_sample": 388,
+    "c6_selected_jaw_contact_steps": 0
+  },
+  "gates": {
+    "maximum_timestamp_absolute_error_seconds": 0.0,
+    "maximum_all_joint_rms_error_degrees_at_definite_enclosure": 1.0,
+    "maximum_gripper_absolute_error_degrees_at_definite_enclosure": 1.0,
+    "maximum_simulator_pawn_planar_displacement_m_at_physical_carry_start": 0.001,
+    "minimum_or2_jaw_separation_underprediction_px": 15.0,
+    "require_action_hash_identity": true,
+    "require_zero_simulator_selected_jaw_contact_at_physical_enclosure": true
+  },
+  "causal_policy": {
+    "ordered_channels": [
+      "action_identity",
+      "actuator_state",
+      "jaw_projection_and_aperture",
+      "selected_jaw_contact",
+      "object_motion",
+      "outcome"
+    ],
+    "contact_material_may_be_primary_without_simulator_contact": false,
+    "actuator_timing_may_be_primary_when_enclosure_joint_gate_passes": false,
+    "jaw_geometry_or_gripper_mapping_may_be_selected": true,
+    "global_articulated_mapping_remains_alternative_until_approved": true,
+    "mechanism_parameters_may_be_fit_in_or4": false,
+    "simulator_may_run_in_or4": false
+  },
+  "proof_boundaries": {
+    "physical_candidate_contact_is_force_ground_truth": false,
+    "jaw_aperture_residual_proves_unique_3d_geometry": false,
+    "first_divergence_approves_global_mapping": false,
+    "causal_family_is_already_promoted": false,
+    "or4_changes_simulator": false,
+    "or4_proves_matching_simulator_outcome": false,
+    "or4_proves_bidirectional_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "training": false,
+    "paid_compute": false
+  }
+}
