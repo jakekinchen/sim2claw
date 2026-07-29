@@ -1,0 +1,43 @@
+{
+  "schema_version": "sim2claw.achieved_lock_task_freeze.v1",
+  "contract_id": "rp03-achieved-lock-task-freeze-20260729-v1",
+  "status": "frozen_before_one_static_only_exact_lock_enumeration",
+  "proof_class": "prospective_cpu_fp64_static_task_actions_at_exact_physical_hold",
+  "inputs": {
+    "parking_execution_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-execution-v4/receipt.json",
+      "sha256": "1b3c792007b02f5e7118a6a3ddb73a4b97520a3ba1a3df89984214cb7e281578"
+    },
+    "template_contract": {
+      "path": "configs/evaluations/directional_displacement_static_v1.json",
+      "sha256": "852dfc133f4c74e6ee25728610b4b77b73a76f63f237e7243ec6997fa430902b"
+    },
+    "implementation": {
+      "path": "src/sim2claw/achieved_lock_task_freeze.py",
+      "sha256": "e95fc6f2ecc82e536492fdcabe43111f9d35c227ec4cfeaf9d8e30b5c17544c8"
+    }
+  },
+  "selection": {
+    "minimum_distinct_families_per_direction": 1,
+    "exact_achieved_elbow_required": true,
+    "exact_torque_on_held_joints_required": true,
+    "dynamic_outcome_used": false,
+    "task_outcome_used": false,
+    "no_grid_expansion_after_run": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-achieved-lock-task-freeze-v1",
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "dynamic_simulation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "mapping_approval": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "One static-only freeze at the exact successful RP02D torque-on held pose. It cannot authorize dynamic replay, camera, gateway, serial, physical motion, pawn contact, a task attempt, mapping approval, simulator promotion, or transfer."
+}
