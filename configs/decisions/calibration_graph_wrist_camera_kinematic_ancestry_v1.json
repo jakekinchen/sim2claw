@@ -1,0 +1,54 @@
+{
+  "schema_version": "sim2claw.calibration_graph_wrist_camera_kinematic_ancestry_decision.v1",
+  "status": "rejected_missing_wrist_inheritance_hypothesis_model_unchanged",
+  "proof_class": "outcome_blind_static_model_kinematic_audit",
+  "question": "Does the current MuJoCo left_camera_mount fail to inherit left_wrist_flex rotation?",
+  "sources": {
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "so101_model": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+      "sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+    },
+    "current_workcell": {
+      "path": "src/sim2claw/current_workcell.py",
+      "sha256": "df6bdf6b4408b7dcaaa1670fc0575f8506e11cef3add37124cc1afa2e8b69fad"
+    },
+    "prior_rotation_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/evaluation/receipt.json",
+      "sha256": "0b1901baabf93a479d3b48faee1bc119f47b9627a71aedd00fd6f1adaacabc67"
+    }
+  },
+  "audit": {
+    "body_parent_chain": [
+      "left_lower_arm",
+      "left_wrist",
+      "left_gripper",
+      "left_camera_mount"
+    ],
+    "left_wrist_joint": "left_wrist_flex",
+    "synthetic_physical_wrist_flex_perturbation_degrees": 3.0,
+    "physical_to_model_scale_radians_per_degree": 0.017453292519943295,
+    "relative_body_rotation_degrees": {
+      "left_lower_arm": 0.0,
+      "left_wrist": 3.0,
+      "left_gripper": 3.0,
+      "left_camera_mount": 3.0
+    },
+    "prior_value_reconciled": {
+      "value_degrees": 1.3186813186813209,
+      "metric": "simulated_rotation_rms_degrees",
+      "not_a_peak_or_joint_gain": true
+    }
+  },
+  "decision": {
+    "camera_mount_reparenting_authorized": false,
+    "camera_mount_geometry_change_authorized": false,
+    "physical_to_model_wrist_scale_change_authorized": false,
+    "model_changed": false,
+    "next_action": "freeze_and_run_the_prospectively_declared_raw_corner_shape_v3_evaluator_on_the_unopened_wrist_capture"
+  },
+  "claim_boundary": "This audit establishes only the current model's kinematic ancestry and one-to-one wrist-flex rotation response. It does not calibrate camera extrinsics, approve the physical/model mapping, inspect the V3 held-out frames, or authorize task motion."
+}

@@ -96,7 +96,7 @@ Confirmed:
   `fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178`
   accepts strict causal serialization and adapters without dynamic or
   physical authority.
-- CC02 in the successor queue is the sole active card.
+- CC03 in the successor queue is the sole active card.
 - V1 full-action temporary test outputs are explicitly non-admissible and
   closed by SHA-256 `1693f5c68af7298d27d6125340f48bd87b713f5fa3cd8639848b772eb5fc5f8d`.
   No outcome was used to change the action set, paths, variants, or gates.
@@ -255,15 +255,15 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
 Completed: CC00, CC00A, CC01, CC02.
-Evidence: wrist-only packet 819a2cba...; review 233fb3e7...; action 7cdb934e....
+Evidence: wrist-only execution 53672fa5...; held-out contract 862acd45...; action 7cdb934e....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 2
 Physical task attempts: 0/10
-Physical/camera/torque state: closed after two calibration-only stages; fresh preflight torque false.
+Physical/camera/torque state: closed after wrist-only calibration; torque false.
 Remaining: CC03 through CC15.
 Blockers: physical/model mapping remains unapproved.
-Next step: execute the wrist-only mapping successor once; no pawn contact or task attempt.
+Next step: run the frozen wrist-only V3 evaluator exactly once; no pawn contact or task attempt.
 ```
 
 ## Physical Authority Boundaries

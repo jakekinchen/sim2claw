@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 2,
     "milestone_id": "CC03",
-    "node_id": "verdict:calibration-graph-d405-wrist-corner-shape-review-v3-admit",
-    "queue_status": "ACTIVE_CC03_WRIST_ONLY_EXECUTE",
-    "resume_action": "execute_wrist_only_v3_once",
+    "node_id": "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v3-frozen",
+    "queue_status": "ACTIVE_CC03_WRIST_EVALUATOR_FROZEN",
+    "resume_action": "execute_wrist_only_v3_evaluator_once",
     "resume_authorized": true,
-    "status": "reviewed_for_stage_1_execution"
+    "status": "heldout_contract_frozen_before_v3_capture_open"
   },
   "authority": {
     "camera_open": false,
@@ -95,15 +95,15 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 189,
+    "nodes": 192,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 123,
+      "checkpoint": 124,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 39,
-      "evidence": 6,
+      "evaluator_verdict": 40,
+      "evidence": 7,
       "intervention": 1,
       "mechanism": 3,
       "parameter_posterior": 1,
@@ -2126,7 +2126,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "972fcd146d354f0e2c21ca920e5a2fa8ceb5367eab43561ed9d222ae3d65c2e0",
+  "graph_digest": "001944974aea46f4e4d0c5df3000b469baacfb00406a1e5e2486676d52f605ad",
   "node_types": [
     "workcell",
     "session",
@@ -2465,6 +2465,33 @@
         "sha256": "e78908139ee586894ccfdcb5325c081251b23e795a34a8c7626d52e6409aaa8c"
       },
       "status": "preregistered_before_exactly_once_heldout_evaluation",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "depth_required": false,
+        "execution_source_binding": "calibration_graph_d405_wrist_corner_shape_execution_v3",
+        "kinematic_ancestry_source_binding": "calibration_graph_wrist_camera_kinematic_ancestry_v1",
+        "mapping_approval": false,
+        "parameter_fit": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_d405_wrist_corner_shape_contract_v3",
+        "v3_frames_opened": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v3-frozen",
+      "label": "Wrist-only D405 raw-corner heldout contract frozen",
+      "proof_class": "prospective_one_shot_wrist_only_raw_corner_shape_mapping_heldout_contract",
+      "source": {
+        "path": "configs/evaluations/calibration_graph_d405_wrist_corner_shape_heldout_v3.json",
+        "payload_contract": {
+          "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_heldout.v3",
+          "status": "frozen_after_execution_before_any_new_frame_open"
+        },
+        "proof_class": "prospective_one_shot_wrist_only_raw_corner_shape_mapping_heldout_contract",
+        "sha256": "862acd451e684c680b69467bb596d5dcfbf4ff28c686dada2de6b35dc62e0733"
+      },
+      "status": "frozen_after_execution_before_any_new_frame_open",
       "type": "checkpoint"
     },
     {
@@ -3516,7 +3543,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "1f1e9edbba422f406bc8fcd2c34338c79d8d407557f0205c4113c35a0141d600"
+        "sha256": "5935aa251d305dfeea64d65f3a23a25eb64cd28db12a4e43a11c6b9b2e32bb35"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6178,6 +6205,35 @@
     },
     {
       "data": {
+        "action_sha256": "7cdb934ebceadbb52327d626f2a3f2fc4c6d4e391a058c13f4348822107363ce",
+        "c922_drops": 0,
+        "completed_capture_hold_samples": 80,
+        "completed_motion_samples": 641,
+        "d405_drops": 0,
+        "final_wrist_residual_degrees": 1.0549450549450547,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_d405_wrist_corner_shape_execution_v3"
+      },
+      "evaluator_identity": null,
+      "id": "evidence:calibration-graph-d405-wrist-corner-shape-execution-v3",
+      "label": "Wrist-only calibration capture completed exactly once",
+      "proof_class": "recorded_exact_action_no_contact_wrist_only_calibration_execution",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/stage-1/execution_receipt.json",
+        "payload_contract": {
+          "physical_follower_torque_enabled": false,
+          "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+          "stage_index": 1,
+          "status": "completed_wrist_view_reposition_stage"
+        },
+        "proof_class": "recorded_exact_action_no_contact_wrist_only_calibration_execution",
+        "sha256": "53672fa50261887f352e2d9cc17d45ce770edbe4b4d4d70fa1eb635f3d54b507"
+      },
+      "status": "completed_exact_action_tricam_torque_off",
+      "type": "evidence"
+    },
+    {
+      "data": {
         "all_rise_events_follow_jaw_contact": true,
         "case_plant_paths": 8,
         "evaluator_v2_freeze_authorized": false,
@@ -6764,6 +6820,33 @@
         "sha256": "4bcefbd4595fbdf9698c6d48058ea726c62beffd28f26f2c89bf0158cb9241ea"
       },
       "status": "mapping_rejected_composite_probe_required",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
+        "model_changed": false,
+        "physical_task_attempts": 0,
+        "prior_1_318681_value_is_trajectory_rms": true,
+        "simulated_camera_mount_rotation_degrees": 3.0,
+        "source_binding_id": "calibration_graph_wrist_camera_kinematic_ancestry_v1",
+        "synthetic_wrist_perturbation_degrees": 3.0,
+        "v3_frames_opened": false
+      },
+      "evaluator_identity": "3e65536edb2a7e9950fdb3565c15905e63219bfdf6b6e0303660f6d8ba7e1b7c",
+      "id": "verdict:calibration-graph-wrist-camera-kinematic-ancestry-v1",
+      "label": "Missing wrist-camera inheritance hypothesis rejected",
+      "proof_class": "outcome_blind_static_model_kinematic_audit",
+      "source": {
+        "path": "configs/decisions/calibration_graph_wrist_camera_kinematic_ancestry_v1.json",
+        "payload_contract": {
+          "proof_class": "outcome_blind_static_model_kinematic_audit",
+          "schema_version": "sim2claw.calibration_graph_wrist_camera_kinematic_ancestry_decision.v1",
+          "status": "rejected_missing_wrist_inheritance_hypothesis_model_unchanged"
+        },
+        "proof_class": "outcome_blind_static_model_kinematic_audit",
+        "sha256": "3e65536edb2a7e9950fdb3565c15905e63219bfdf6b6e0303660f6d8ba7e1b7c"
+      },
+      "status": "model_unchanged_one_to_one_wrist_inheritance_confirmed",
       "type": "evaluator_verdict"
     },
     {
@@ -8873,7 +8956,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "1f1e9edbba422f406bc8fcd2c34338c79d8d407557f0205c4113c35a0141d600",
+      "source_sha256": "5935aa251d305dfeea64d65f3a23a25eb64cd28db12a4e43a11c6b9b2e32bb35",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -9535,6 +9618,36 @@
       "source_binding": "calibration_graph_d405_wrist_corner_shape_review_v3",
       "source_sha256": "233fb3e7067384e1e321082e1b6edde6a1f19abb950a2dc5f096638817dc1dca",
       "status": "admitted_for_one_execution_per_stage"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_EXECUTION_V3",
+      "node_ids_added": [
+        "evidence:calibration-graph-d405-wrist-corner-shape-execution-v3"
+      ],
+      "revision": 170,
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_execution_v3",
+      "source_sha256": "53672fa50261887f352e2d9cc17d45ce770edbe4b4d4d70fa1eb635f3d54b507",
+      "status": "completed_exact_action_tricam_torque_off"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_WRIST_CAMERA_KINEMATIC_ANCESTRY_V1",
+      "node_ids_added": [
+        "verdict:calibration-graph-wrist-camera-kinematic-ancestry-v1"
+      ],
+      "revision": 171,
+      "source_binding": "calibration_graph_wrist_camera_kinematic_ancestry_v1",
+      "source_sha256": "3e65536edb2a7e9950fdb3565c15905e63219bfdf6b6e0303660f6d8ba7e1b7c",
+      "status": "model_unchanged_one_to_one_wrist_inheritance_confirmed"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_CONTRACT_V3_FROZEN",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v3-frozen"
+      ],
+      "revision": 172,
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_contract_v3",
+      "source_sha256": "862acd451e684c680b69467bb596d5dcfbf4ff28c686dada2de6b35dc62e0733",
+      "status": "frozen_after_execution_before_any_new_frame_open"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -9738,10 +9851,32 @@
       "sha256": "0b1901baabf93a479d3b48faee1bc119f47b9627a71aedd00fd6f1adaacabc67"
     },
     {
+      "id": "calibration_graph_d405_wrist_corner_shape_contract_v3",
+      "path": "configs/evaluations/calibration_graph_d405_wrist_corner_shape_heldout_v3.json",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_heldout.v3",
+        "status": "frozen_after_execution_before_any_new_frame_open"
+      },
+      "proof_class": "prospective_one_shot_wrist_only_raw_corner_shape_mapping_heldout_contract",
+      "sha256": "862acd451e684c680b69467bb596d5dcfbf4ff28c686dada2de6b35dc62e0733"
+    },
+    {
       "id": "calibration_graph_d405_wrist_corner_shape_evaluator_v3",
       "path": "tools/evaluate_calibration_graph_d405_wrist_corner_shape_heldout_v3.py",
       "proof_class": "prospective_gauge_free_d405_fixed_tag_wrist_only_raw_corner_trajectory_shape_evaluator",
       "sha256": "e1abac05ab99bcddd3f3432d1f549f35fc7afd4be36e375040b2d02d4571ff26"
+    },
+    {
+      "id": "calibration_graph_d405_wrist_corner_shape_execution_v3",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/stage-1/execution_receipt.json",
+      "payload_contract": {
+        "physical_follower_torque_enabled": false,
+        "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+        "stage_index": 1,
+        "status": "completed_wrist_view_reposition_stage"
+      },
+      "proof_class": "recorded_exact_action_no_contact_wrist_only_calibration_execution",
+      "sha256": "53672fa50261887f352e2d9cc17d45ce770edbe4b4d4d70fa1eb635f3d54b507"
     },
     {
       "id": "calibration_graph_d405_wrist_corner_shape_packet_v3",
@@ -9863,6 +9998,17 @@
       },
       "proof_class": "gauge_fixed_existing_evidence_mapping_diagnostic",
       "sha256": "718cedd9ff0f8cb7389e92051fa288162527415f40d0b4c4f06186c80001908a"
+    },
+    {
+      "id": "calibration_graph_wrist_camera_kinematic_ancestry_v1",
+      "path": "configs/decisions/calibration_graph_wrist_camera_kinematic_ancestry_v1.json",
+      "payload_contract": {
+        "proof_class": "outcome_blind_static_model_kinematic_audit",
+        "schema_version": "sim2claw.calibration_graph_wrist_camera_kinematic_ancestry_decision.v1",
+        "status": "rejected_missing_wrist_inheritance_hypothesis_model_unchanged"
+      },
+      "proof_class": "outcome_blind_static_model_kinematic_audit",
+      "sha256": "3e65536edb2a7e9950fdb3565c15905e63219bfdf6b6e0303660f6d8ba7e1b7c"
     },
     {
       "id": "canonical_board_orientation",
@@ -10496,7 +10642,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "1f1e9edbba422f406bc8fcd2c34338c79d8d407557f0205c4113c35a0141d600"
+      "sha256": "5935aa251d305dfeea64d65f3a23a25eb64cd28db12a4e43a11c6b9b2e32bb35"
     },
     {
       "id": "current_task_scene_labels",

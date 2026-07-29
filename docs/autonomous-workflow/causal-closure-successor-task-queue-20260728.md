@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_WRIST_ONLY_EXECUTE`
+Status: `ACTIVE_CC03_WRIST_EVALUATOR_FROZEN`
 
 Created: `2026-07-28`
 
@@ -227,7 +227,7 @@ Current state:
 - CC00 is complete.
 - CC00A is complete.
 - CC01 is complete.
-- CC02 is the only active card.
+- CC03 is the only active card.
 - The v1 seeded-action apparent pass is quarantined.
 - The calibrated-range v2 static run passed `2/2` actions per direction with
   the exact hashes listed above.
@@ -615,6 +615,28 @@ Current state:
   exact wrist action SHA-256 is `7cdb934e...`. Independent review admits one
   execution at review SHA-256
   `233fb3e7067384e1e321082e1b6edde6a1f19abb950a2dc5f096638817dc1dca`.
+- Wrist-only V3 executed exactly once. All `641` action rows and `80` capture
+  hold rows completed with exact action SHA-256 `7cdb934e...`; C922, D405,
+  and Pi enclosed the interval; both native cameras reported zero drops and
+  zero writer backpressure; final wrist residual was `1.054945 deg`; and
+  torque closed false. Execution receipt SHA-256 is
+  `53672fa50261887f352e2d9cc17d45ce770edbe4b4d4d70fa1eb635f3d54b507`.
+  This was calibration-only motion and does not enter either transfer
+  denominator.
+- A static model audit rejected the proposed missing camera-mount inheritance
+  defect. `left_camera_mount` is a child of `left_gripper`, which is a child
+  of `left_wrist`; a synthetic `+3 deg` wrist-flex perturbation rotates
+  `left_wrist`, `left_gripper`, and `left_camera_mount` by exactly `3 deg`
+  while leaving `left_lower_arm` unchanged. The prior `1.318681 deg` value
+  was trajectory RMS, not peak gain. Decision SHA-256 is
+  `3e65536edb2a7e9950fdb3565c15905e63219bfdf6b6e0303660f6d8ba7e1b7c`;
+  the model remains unchanged.
+- The one-shot V3 held-out contract is frozen after execution and before any
+  V3 frame is opened at SHA-256
+  `862acd451e684c680b69467bb596d5dcfbf4ff28c686dada2de6b35dc62e0733`.
+  It binds the packet, review, execution, candidate model, evaluator and
+  dependency hashes; fits no parameter; requires no depth; and grants no
+  automatic mapping or task authority.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -656,6 +678,7 @@ This authorization:
 
 Next step:
 
-- Execute wrist-only V3 exactly once, verify tricam enclosure, measured wrist
-  response, exact return, and torque-off, then freeze its evaluator contract
-  before opening any frame. Do not touch a pawn or count a task attempt.
+- Execute the frozen wrist-only V3 evaluator exactly once, preserve its
+  immutable receipt, and either approve the elbow-locked task-scope mapping
+  through a separate bounded decision or retain the negative and select one
+  evidence-directed factor. Do not touch a pawn or count a task attempt.

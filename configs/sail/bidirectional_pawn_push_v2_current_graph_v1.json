@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "1f1e9edbba422f406bc8fcd2c34338c79d8d407557f0205c4113c35a0141d600",
+      "sha256": "5935aa251d305dfeea64d65f3a23a25eb64cd28db12a4e43a11c6b9b2e32bb35",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -2080,6 +2080,36 @@
         "schema_version": "sim2claw.wrist_view_reposition_review.v2",
         "status": "admitted_for_one_execution_per_stage",
         "physical_authority": false
+      }
+    },
+    "calibration_graph_d405_wrist_corner_shape_execution_v3": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/stage-1/execution_receipt.json",
+      "sha256": "53672fa50261887f352e2d9cc17d45ce770edbe4b4d4d70fa1eb635f3d54b507",
+      "proof_class": "recorded_exact_action_no_contact_wrist_only_calibration_execution",
+      "payload_contract": {
+        "schema_version": "sim2claw.wrist_view_reposition_execution.v2",
+        "status": "completed_wrist_view_reposition_stage",
+        "stage_index": 1,
+        "physical_follower_torque_enabled": false
+      }
+    },
+    "calibration_graph_wrist_camera_kinematic_ancestry_v1": {
+      "path": "configs/decisions/calibration_graph_wrist_camera_kinematic_ancestry_v1.json",
+      "sha256": "3e65536edb2a7e9950fdb3565c15905e63219bfdf6b6e0303660f6d8ba7e1b7c",
+      "proof_class": "outcome_blind_static_model_kinematic_audit",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_wrist_camera_kinematic_ancestry_decision.v1",
+        "status": "rejected_missing_wrist_inheritance_hypothesis_model_unchanged",
+        "proof_class": "outcome_blind_static_model_kinematic_audit"
+      }
+    },
+    "calibration_graph_d405_wrist_corner_shape_contract_v3": {
+      "path": "configs/evaluations/calibration_graph_d405_wrist_corner_shape_heldout_v3.json",
+      "sha256": "862acd451e684c680b69467bb596d5dcfbf4ff28c686dada2de6b35dc62e0733",
+      "proof_class": "prospective_one_shot_wrist_only_raw_corner_shape_mapping_heldout_contract",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_heldout.v3",
+        "status": "frozen_after_execution_before_any_new_frame_open"
       }
     },
     "simulator_candidate": {
@@ -5531,6 +5561,54 @@
         "packet_source_binding": "calibration_graph_d405_wrist_corner_shape_packet_v3",
         "stage_count": 1,
         "no_contact_calibration_only": true,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "evidence:calibration-graph-d405-wrist-corner-shape-execution-v3",
+      "type": "evidence",
+      "label": "Wrist-only calibration capture completed exactly once",
+      "status": "completed_exact_action_tricam_torque_off",
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_execution_v3",
+      "data": {
+        "completed_motion_samples": 641,
+        "completed_capture_hold_samples": 80,
+        "action_sha256": "7cdb934ebceadbb52327d626f2a3f2fc4c6d4e391a058c13f4348822107363ce",
+        "final_wrist_residual_degrees": 1.0549450549450547,
+        "c922_drops": 0,
+        "d405_drops": 0,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "verdict:calibration-graph-wrist-camera-kinematic-ancestry-v1",
+      "type": "evaluator_verdict",
+      "label": "Missing wrist-camera inheritance hypothesis rejected",
+      "status": "model_unchanged_one_to_one_wrist_inheritance_confirmed",
+      "source_binding": "calibration_graph_wrist_camera_kinematic_ancestry_v1",
+      "evaluator_identity": "3e65536edb2a7e9950fdb3565c15905e63219bfdf6b6e0303660f6d8ba7e1b7c",
+      "data": {
+        "synthetic_wrist_perturbation_degrees": 3.0,
+        "simulated_camera_mount_rotation_degrees": 3.0,
+        "prior_1_318681_value_is_trajectory_rms": true,
+        "model_changed": false,
+        "v3_frames_opened": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v3-frozen",
+      "type": "checkpoint",
+      "label": "Wrist-only D405 raw-corner heldout contract frozen",
+      "status": "frozen_after_execution_before_any_new_frame_open",
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_contract_v3",
+      "data": {
+        "execution_source_binding": "calibration_graph_d405_wrist_corner_shape_execution_v3",
+        "kinematic_ancestry_source_binding": "calibration_graph_wrist_camera_kinematic_ancestry_v1",
+        "parameter_fit": false,
+        "depth_required": false,
+        "mapping_approval": false,
+        "v3_frames_opened": false,
         "physical_task_attempts": 0
       }
     },
@@ -9018,14 +9096,41 @@
       "node_ids_added": [
         "verdict:calibration-graph-d405-wrist-corner-shape-review-v3-admit"
       ]
+    },
+    {
+      "revision": 170,
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_EXECUTION_V3",
+      "status": "completed_exact_action_tricam_torque_off",
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_execution_v3",
+      "node_ids_added": [
+        "evidence:calibration-graph-d405-wrist-corner-shape-execution-v3"
+      ]
+    },
+    {
+      "revision": 171,
+      "event_id": "CALIBRATION_GRAPH_WRIST_CAMERA_KINEMATIC_ANCESTRY_V1",
+      "status": "model_unchanged_one_to_one_wrist_inheritance_confirmed",
+      "source_binding": "calibration_graph_wrist_camera_kinematic_ancestry_v1",
+      "node_ids_added": [
+        "verdict:calibration-graph-wrist-camera-kinematic-ancestry-v1"
+      ]
+    },
+    {
+      "revision": 172,
+      "event_id": "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_CONTRACT_V3_FROZEN",
+      "status": "frozen_after_execution_before_any_new_frame_open",
+      "source_binding": "calibration_graph_d405_wrist_corner_shape_contract_v3",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v3-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:calibration-graph-d405-wrist-corner-shape-review-v3-admit",
+    "node_id": "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v3-frozen",
     "milestone_id": "CC03",
-    "status": "reviewed_for_stage_1_execution",
-    "queue_status": "ACTIVE_CC03_WRIST_ONLY_EXECUTE",
-    "resume_action": "execute_wrist_only_v3_once",
+    "status": "heldout_contract_frozen_before_v3_capture_open",
+    "queue_status": "ACTIVE_CC03_WRIST_EVALUATOR_FROZEN",
+    "resume_action": "execute_wrist_only_v3_evaluator_once",
     "resume_authorized": true,
     "heldout_open_count": 2,
     "cumulative_manifest_read_count": 2,

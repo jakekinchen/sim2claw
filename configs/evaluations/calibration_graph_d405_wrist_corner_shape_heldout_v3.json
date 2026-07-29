@@ -1,0 +1,77 @@
+{
+  "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_heldout.v3",
+  "status": "frozen_after_execution_before_any_new_frame_open",
+  "sources": {
+    "packet": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/packet.json",
+      "sha256": "819a2cbad0b611226213763d4640b87d8da83808a2a648a7b738323d7915201e"
+    },
+    "review": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/review.json",
+      "sha256": "233fb3e7067384e1e321082e1b6edde6a1f19abb950a2dc5f096638817dc1dca"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "kinematic_ancestry_decision": {
+      "path": "configs/decisions/calibration_graph_wrist_camera_kinematic_ancestry_v1.json",
+      "sha256": "3e65536edb2a7e9950fdb3565c15905e63219bfdf6b6e0303660f6d8ba7e1b7c"
+    }
+  },
+  "implementation": {
+    "path": "tools/evaluate_calibration_graph_d405_wrist_corner_shape_heldout_v3.py",
+    "sha256": "e1abac05ab99bcddd3f3432d1f549f35fc7afd4be36e375040b2d02d4571ff26"
+  },
+  "implementation_dependency": {
+    "path": "tools/evaluate_calibration_graph_d405_corner_shape_heldout_v2.py",
+    "sha256": "fc9fd098525eae3c65de8a63d92a7602c5178a1e0a3ee793eea857226c1c9bf0"
+  },
+  "stage": {
+    "execution_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/stage-1/execution_receipt.json",
+      "sha256": "53672fa50261887f352e2d9cc17d45ce770edbe4b4d4d70fa1eb635f3d54b507"
+    },
+    "expected_action_sha256": "7cdb934ebceadbb52327d626f2a3f2fc4c6d4e391a058c13f4348822107363ce",
+    "joint_name": "wrist_flex",
+    "joint_index": 3
+  },
+  "method": {
+    "fixed_scene_tag_id": 0,
+    "maximum_frame_to_joint_delta_ms": 30.0,
+    "active_joint_indices": [
+      3
+    ],
+    "anchor_reference_radius_degrees": 0.75,
+    "minimum_detected_frame_count": 60,
+    "minimum_reference_frame_count": 10,
+    "observed_channel": "gauge_free_normalized_rms_raw_tag_corner_displacement_from_d405_fixed_scene_tag_0",
+    "simulated_channel": "gauge_free_normalized_relative_rotation_magnitude_of_current_mujoco_left_camera_mount",
+    "depth_required": false,
+    "parameter_fit": false
+  },
+  "gates": {
+    "minimum_measured_joint_excursion_degrees": 2.0,
+    "minimum_observed_corner_displacement_peak_px": 5.0,
+    "minimum_simulated_rotation_peak_degrees": 2.0,
+    "normalized_shape_rmse_max": 0.25,
+    "normalized_shape_max_error_max": 0.5,
+    "minimum_normalized_shape_correlation": 0.75,
+    "maximum_active_joint_return_residual_degrees": 1.5
+  },
+  "output_path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/evaluation/receipt.json",
+  "authority": {
+    "read_bound_physical_capture": true,
+    "evaluate_wrist_trajectory_shape": true,
+    "fit_parameters": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "This one-shot held-out evaluator tests only whether the measured wrist-flex trajectory and fixed-tag D405 raw-corner displacement have the normalized shape predicted by the current one-to-one MuJoCo camera-mount kinematics. A pass does not automatically approve the mapping, camera extrinsics, task actions, simulator dynamics, physical task motion, or transfer."
+}
